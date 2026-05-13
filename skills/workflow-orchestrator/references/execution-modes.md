@@ -1,28 +1,36 @@
-# Execution Mode Contract
+# Execution Modes
 
-This contract defines the strict permissions and boundaries for each orchestration mode in `workflow-orchestrator`.
+The `workflow-orchestrator` supports five distinct execution modes, each with different safety boundaries and user involvement.
 
-| Mode | May create files? | May call downstream skills? | May commit? | Requires approval? |
-| :--- | :---: | :---: | :---: | :---: |
-| **`plan_only`** | No | No | No | No |
-| **`prompt_chain`** | No | No | No | No |
-| **`guided_execution`** | Maybe | Yes, one step at a time | No, unless approved | **Yes** |
-| **`autonomous_execution`** | Maybe | Yes | Only in feature branch, if explicitly allowed | **High-risk opt-in** |
+| Mode | Allowed | Description | Approval Gates | Safety Requirements |
+| :--- | :--- | :--- | :--- | :--- |
+| `plan_only` | Yes | Generate plan only. No execution. | N/A | None |
+| `prompt_chain` | Yes | Generate copy/paste prompts for specialized skills. | N/A | None |
+| `guided_execution` | Yes | Execute one step at a time with user approval. | Mandatory | None |
+| `autonomous_execution` | Yes | Execute full chain automatically with approval gates. | Mandatory | High-risk opt-in |
+| `yolo_execution` | Yes | Full automation of local steps without intermediate gates. | Bypassed | Explicit YOLO opt-in, Feature Branch, Run Log |
 
-## Mode Descriptions
+---
 
 ### 1. `plan_only` (Default)
-The orchestrator selects a workflow and lists the sequence of skills and gates. No actual tools are called beyond reading the repository state.
+The safest mode. The orchestrator analyzes the brief, selects a workflow, and explains the sequence without touching the repository.
 
 ### 2. `prompt_chain`
-The orchestrator generates a sequence of copy-pasteable prompts for the user to run in other agents or sessions. No execution occurs.
+Produces a series of prompts that the user can manually copy and paste into other agent sessions. Useful when the user wants full control over the execution context.
 
 ### 3. `guided_execution`
-The orchestrator runs the workflow one step at a time. After each step (e.g., after `grill-with-docs` produces a report), it MUST stop and wait for explicit user approval before proceeding to the next skill.
+The orchestrator executes steps one by one. After each step, it must present the artifact produced and wait for user approval before proceeding to the next step.
 
 ### 4. `autonomous_execution`
-The orchestrator executes the full skill chain without stopping for intermediate approvals. 
-- **Prohibited**: Direct commits to `main` or `master`.
-- **Prohibited**: Deleting core architectural files.
-- **Requirement**: Must log every step to a `run-log.md`.
-- **Requirement**: User must provide an explicit high-risk opt-in string: *"I choose autonomous_execution and accept high-risk bypassed gates."*
+The orchestrator executes the full chain but **MUST stop at every defined [Approval Gate](approval-gates.md)**.
+- **Requirement**: User must provide the opt-in string: `"I accept the risks of autonomous execution."`
+- **Safety**: Cannot commit to `main`, cannot delete core files.
+
+### 5. `yolo_execution`
+Maximum automation for local sensemaking skills. All approval gates are bypassed for `local` skills.
+- **Requirement**: User must provide the exact opt-in string: 
+  `"I choose yolo_execution and accept automated repository changes, feature-branch commits, bypassed gates, and recovery risk."`
+- **Requirement**: Every step must be `availability.type: local`. External skills are NOT permitted in YOLO mode.
+- **Requirement**: Must use a **feature branch**. Direct commits to `main` or `master` are strictly prohibited.
+- **Requirement**: Must write a [Run Log](run-log-template.md) before and after mutation.
+- **Requirement**: Must follow the [Git Safety Policy](git-safety-policy.md) and [Recovery Policy](recovery-policy.md).

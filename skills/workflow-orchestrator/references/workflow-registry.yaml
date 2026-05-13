@@ -1,47 +1,80 @@
-version: 1
 workflows:
-  - id: docs-architecture
-    display_name: Documentation & Architecture Alignment
-    purpose: "Resolve vocabulary drift and align system documentation with the codebase."
-    steps:
-      - skill: grill-with-docs
-      - skill: to-prd
-      - skill: handoff
-    gates: ["Alignment Report Review", "PRD Review"]
-
-  - id: validator-tdd
-    display_name: Validator & TDD Cycle
-    purpose: "Implement automated validation and logic via TDD vertical slices."
-    steps:
-      - skill: to-issues
-      - skill: triage
-      - skill: tdd
-    gates: ["Issue List Review", "Agent Brief Review", "Commit Review"]
-
-  - id: experimental-autonomous-sprint
-    display_name: Experimental Autonomous Sprint
-    purpose: "End-to-end autonomous feature delivery with safety gates."
-    steps:
-      - skill: grill-with-docs
-      - skill: to-prd
-      - skill: to-issues
-      - skill: triage
-      - skill: tdd
-      - skill: handoff
-    gates: ["EVERY STEP requires human approval in guided mode"]
-
   - id: sensemaking-to-workflow
     display_name: Sensemaking to Workflow
-    purpose: 'Move from raw fog to a selected workflow with approval gates.'
+    purpose: Move from raw fog to a selected workflow with approval gates.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+      - yolo_execution
+    requires_clean_worktree: true
+    requires_run_log: true
+    branch_policy:
+      required: true
+      pattern: "yolo/{workflow_id}/{timestamp}"
     steps:
-      - skill: problem-framer
-      - skill: unknowns-mapper
-      - skill: repo-sensemaker
-      - skill: workflow-orchestrator
-      - skill: prompt-handoff
-    gates:
-      - Problem Frame Review
-      - Unknowns Map Review
-      - Repository Brief Review
-      - Workflow Plan Review
-      - Prompt Review
+      - id: 1
+        skill: problem-framer
+        gate: review_problem_frame
+      - id: 2
+        skill: unknowns-mapper
+        gate: review_unknowns_map
+      - id: 3
+        skill: repo-sensemaker
+        gate: review_sensemaking_brief
+      - id: 4
+        skill: workflow-orchestrator
+        gate: review_workflow_plan
+      - id: 5
+        skill: prompt-handoff
+        gate: review_final_prompt
+
+  - id: fast-diagnostic
+    display_name: Fast Diagnostic
+    purpose: Quickly identify the weakest boundary in a repository.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+      - yolo_execution
+    requires_run_log: true
+    branch_policy:
+      required: true
+      pattern: "yolo/{workflow_id}/{timestamp}"
+    steps:
+      - id: 1
+        skill: repo-sensemaker
+        gate: review_sensemaking_brief
+      - id: 2
+        skill: workflow-orchestrator
+        gate: review_workflow_plan
+
+  - id: experimental-autonomous-sprint
+    display_name: Autonomous Sprint (Experimental)
+    purpose: High-velocity execution using Matt Pocock skills.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+      - autonomous_execution
+    steps:
+      - id: 1
+        skill: grill-with-docs
+        gate: review_domain_alignment
+      - id: 2
+        skill: to-prd
+        gate: review_prd
+      - id: 3
+        skill: to-issues
+        gate: review_issue_list
+      - id: 4
+        skill: triage
+        gate: review_agent_briefs
+      - id: 5
+        skill: tdd
+        gate: verify_tests
+      - id: 6
+        skill: handoff
+        gate: session_close
