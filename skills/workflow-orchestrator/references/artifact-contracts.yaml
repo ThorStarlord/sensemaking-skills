@@ -68,6 +68,13 @@ artifacts:
       - execution_mode
       - prompt_chain
       - run_log_template
+      - machine_readable_plan
+    required_machine_fields:
+      - chosen_workflow_id
+      - execution_mode
+      - steps
+      - approval_gates
+      - stop_conditions
 
   - id: prompt_handoff
     produced_by: prompt-handoff

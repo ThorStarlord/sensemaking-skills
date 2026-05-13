@@ -18,7 +18,10 @@ description: select and stage a workflow from a repository sensemaking brief. us
    - `yolo_execution`: execute only eligible steps with no intermediate approval, but stop immediately on missing artifact, invalid handoff, failed validation, non-executable skill, dirty git state, or run-log failure.
 
 ## Output Format
-Every response must follow the [Workflow Orchestration Plan](references/workflow-orchestration-template.md) structure.
+Every response must follow the [Workflow Orchestration Plan](references/workflow-orchestration-template.md) structure. 
+
+**CRITICAL**: Every plan MUST include the **Section 11: Machine-readable plan** YAML block. Plans without this block are invalid and violate the artifact contract.
+
 Use [Run Log Template](references/run-log-template.md) only when recording an actual guided or autonomous run.
 
 ## Execution Modes
@@ -27,6 +30,7 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 ## Boundary Rules
 - **Safety First**: Default to `plan_only` mode. 
 - **Contract Enforcement**: If a brief does not contain a valid machine-readable handoff, or the requested execution mode is not allowed by [Execution Modes](references/execution-modes.md), the orchestrator MUST refuse the request or downgrade to `plan_only` or `guided_execution`.
+- **Machine Verifiability**: The orchestrator MUST generate Section 11 (Machine-readable plan) in every orchestration plan. Failure to do so renders the artifact non-verifiable.
 - **Handoff Compliance**: Transitions between skills in a workflow MUST comply with the [Artifact Contracts](references/artifact-contracts.yaml).
 - **Execution Authority**: The orchestrator may execute only registry-approved steps where `availability.executable_by_orchestrator: true` and `availability.type` is either `local` or `local_command`.
   - `local` means the skill is bundled in this repository.

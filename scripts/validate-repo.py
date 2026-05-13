@@ -188,7 +188,7 @@ def validate_repo():
     # 7. Template Section Count Check
     templates = {
         "skills/repo-sensemaker/references/repo-analysis-template.md": 13,
-        "skills/workflow-orchestrator/references/workflow-orchestration-template.md": 10,
+        "skills/workflow-orchestrator/references/workflow-orchestration-template.md": 11,
         "skills/problem-framer/references/problem-frame-template.md": 7,
         "skills/unknowns-mapper/references/unknowns-map-template.md": 6,
         "skills/prompt-handoff/references/prompt-handoff-template.md": 8

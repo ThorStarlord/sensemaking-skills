@@ -29,3 +29,16 @@ Ready-to-copy prompts (if applicable).
 
 ## 10. Run log template
 How to record what happened during the execution.
+
+## 11. Machine-readable plan
+
+```yaml
+artifact_id: workflow_orchestration_plan
+chosen_workflow_id: 
+execution_mode: 
+steps:
+  - id: 
+    skill: 
+    step_type: 
+    gate: 
+```
