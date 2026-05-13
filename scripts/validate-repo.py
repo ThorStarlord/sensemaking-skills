@@ -112,15 +112,39 @@ def validate_repo():
 
     # 6. Check examples
     examples_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative", "examples/problem-framer", "examples/unknowns-mapper", "examples/prompt-handoff"]
+    
+    # Mandatory Example Directories
+    mandatory_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative"]
+    for md in mandatory_dirs:
+        if not os.path.exists(md):
+            errors.append(f"Missing mandatory example directory: {md}")
+
     for ex_dir in examples_dirs:
         if os.path.exists(ex_dir):
-            for f in os.listdir(ex_dir):
+            files = os.listdir(ex_dir)
+            if not any(f.endswith(".md") for f in files):
+                 errors.append(f"Example directory {ex_dir} contains no Markdown fixtures")
+            
+            for f in files:
                 if f.endswith(".md"):
                     path = os.path.join(ex_dir, f)
                     with open(path, 'r', encoding='utf-8') as file:
                         content = file.read()
                         if "## Expected Behavior Checklist" not in content:
                             errors.append(f"Example {f} in {ex_dir} is missing expected behavior checklist")
+                        if "file:///" in content:
+                            errors.append(f"Example {f} in {ex_dir} contains absolute file:/// paths (use relative links)")
+
+    # 7. Check for stale section counts in README/CONTEXT
+    v1_docs = ["README.md", "CONTEXT.md"]
+    for doc in v1_docs:
+        if os.path.exists(doc):
+            with open(doc, 'r', encoding='utf-8') as f:
+                content = f.read()
+                if "11-section" in content or "12-section" in content:
+                     # Allow 12-section only if it's not describing the Repo Brief
+                     if "11-section" in content or "12-section Repository" in content or "12-section Sensemaking Brief" in content:
+                        errors.append(f"Document {doc} contains stale section count references (11 or 12). Should be 13 for Repo Brief.")
 
     if errors:
         print("Validation failed:")
@@ -128,7 +152,7 @@ def validate_repo():
             print(f" - {err}")
         sys.exit(1)
     else:
-        print("Validation passed! Repo is aligned with the expanded sensemaking architecture.")
+        print("Validation passed! Repo is aligned with the hardened V1 artifact contracts.")
 
 if __name__ == "__main__":
     validate_repo()

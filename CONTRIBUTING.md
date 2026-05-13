@@ -13,9 +13,12 @@ Sensemaking skills sit **before** specialized tools. They are designed for uncer
    - `expected_input`
    - `expected_output`
    - `example_prompt`
-3. **Examples**: Every new example must follow the 12-section **Sensemaking Brief** template and include an **Expected Behavior Checklist**.
-4. **Boundary Rule**: Skills must not perform downstream building (PRDs, code, issues) unless explicitly requested.
-5. **V1 Validation**: Do not add downstream execution skills until the core `repo-sensemaker` V1 is fully validated.
+3. **V1 Validation**: All new skills or major workflows must include at least one fixture in the `examples/` directory that passes `scripts/validate-repo.py`.
+4. **Template Compliance**: Examples must follow the exact template for their skill (e.g., 13 sections for `repo-sensemaker`, 10 sections for `workflow-orchestrator`).
+5. **Evidence Requirement**: Diagnostic examples must cite specific file paths and line ranges.
+6. **Negative Fixtures**: Changes to orchestration logic must include a negative fixture proving safe refusal or downgrade behavior.
+7. **Boundary Rule**: Skills must not perform downstream building (PRDs, code, issues) unless explicitly requested.
+8. **V1 Validation**: Do not add downstream execution skills until the core `repo-sensemaker` V1 is fully validated.
 
 ## Submission Process
 1. Fork the repo.

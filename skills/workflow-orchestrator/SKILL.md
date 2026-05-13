@@ -32,8 +32,11 @@ Use [Run Log Template](references/run-log-template.md) only when recording an ac
 | `guided_execution` | Run one step at a time and ask for approval between steps. |
 | `autonomous_execution` | Execute full chain (Only when user explicitly opts in). |
 
-## Boundary Rule
-`workflow-orchestrator` must not execute an irreversible action unless the user explicitly chooses an execution mode that allows it. Irreversible actions include:
+## Boundary Rules
+- **Safety First**: Default to `plan_only` mode. 
+- **Contract Enforcement**: If a brief does not contain a valid machine-readable handoff, or the requested execution mode is not allowed by [Execution Modes](references/execution-modes.md), the orchestrator MUST refuse the request or downgrade to `plan_only` or `guided_execution`.
+- **Approval Gates**: Do not bypass approval gates in `guided_execution` mode.
+- **Irreversible Actions**: `workflow-orchestrator` must not execute an irreversible action unless the user explicitly chooses an execution mode that allows it. Irreversible actions include:
 - Committing to `main`
 - Creating issues / opening PRs
 - Rewriting architecture docs / deleting files
@@ -42,5 +45,6 @@ Use [Run Log Template](references/run-log-template.md) only when recording an ac
 - [Workflow Orchestration Template](references/workflow-orchestration-template.md)
 - [Skill Registry](references/skill-registry.yaml)
 - [Workflow Registry](references/workflow-registry.yaml)
+- [Execution Modes](references/execution-modes.md)
 - [Approval Gates](references/approval-gates.md)
 - [Run Log Template](references/run-log-template.md)

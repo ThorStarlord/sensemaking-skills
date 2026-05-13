@@ -23,8 +23,8 @@ Consolidate all templates into a top-level `templates/` directory to improve reu
 The handoff contract between the two skills is currently the most fragile point, as it relies on the model correctly parsing the machine-readable YAML block.
 
 ## 7. Evidence
-- [SKILL.md](file:///h:/GithubRepositories/sensemaking-skills/skills/repo-sensemaker/SKILL.md): Mentions the handoff but lacks a hard schema check.
-- [repo-analysis-template.md](file:///h:/GithubRepositories/sensemaking-skills/skills/repo-sensemaker/references/repo-analysis-template.md): Section 12 is a new addition and unproven in automated tests.
+- [SKILL.md](../../skills/repo-sensemaker/SKILL.md): Mentions the handoff but lacks a hard schema check.
+- [repo-analysis-template.md](../../skills/repo-sensemaker/references/repo-analysis-template.md): Section 12 is a new addition and unproven in automated tests.
 
 ## 8. Why this boundary matters
 If the handoff fails, the orchestrator might guess the workflow or mode, potentially leading to unsafe or irrelevant execution.
