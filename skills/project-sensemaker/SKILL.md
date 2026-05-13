@@ -56,7 +56,9 @@ The part of the system that is most ambiguous or unproven.
 One concrete artifact or action.
 
 ### 10. Next Skill Prompt
-A ready-to-copy prompt for `grill-me`, `grill-with-docs`, `prototype`, `to-prd`, `to-issues`, or `tdd`.
+A ready-to-copy prompt for `grill-me`, `grill-with-docs`, `prototype`, `to-prd`, `to-issues`, or `tdd`. 
+
+For deep implementation, recommend the [Autonomous Sprint](file:///h:/GithubRepositories/sensemaking-skills/workflows/autonomous-sprint.md) composite workflow.
 
 ## References
 - [Skill Registry](file:///h:/GithubRepositories/sensemaking-skills/skills/project-sensemaker/references/skill-registry.yaml)

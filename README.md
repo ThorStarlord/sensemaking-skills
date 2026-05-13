@@ -24,5 +24,6 @@ This toolkit acts as a meta-layer, helping you choose between:
 ## Repository Structure
 
 - `skills/`: Packaged instructions for AI agents.
+- `workflows/`: Composite skill chains (e.g., Autonomous Sprint).
 - `references/`: Knowledge maps, registries, and templates.
 - `examples/`: Real-world "fog-to-clarity" cases.
