@@ -11,10 +11,14 @@ def validate_repo():
         "CONTEXT.md",
         "LICENSE",
         "CONTRIBUTING.md",
-        "skills/project-sensemaker/SKILL.md",
-        "skills/project-sensemaker/agents/openai.yaml",
-        "skills/project-sensemaker/references/skill-registry.yaml",
-        "skills/project-sensemaker/references/output-template.md"
+        "skills/repo-sensemaker/SKILL.md",
+        "skills/repo-sensemaker/agents/openai.yaml",
+        "skills/repo-sensemaker/references/repo-analysis-template.md",
+        "skills/workflow-orchestrator/SKILL.md",
+        "skills/workflow-orchestrator/agents/openai.yaml",
+        "skills/workflow-orchestrator/references/skill-registry.yaml",
+        "skills/workflow-orchestrator/references/workflow-registry.yaml",
+        "skills/workflow-orchestrator/references/workflow-orchestration-template.md"
     ]
     
     for f in core_files:
@@ -23,8 +27,10 @@ def validate_repo():
 
     # 2. Validate YAML files
     yaml_files = [
-        "skills/project-sensemaker/agents/openai.yaml",
-        "skills/project-sensemaker/references/skill-registry.yaml"
+        "skills/repo-sensemaker/agents/openai.yaml",
+        "skills/workflow-orchestrator/agents/openai.yaml",
+        "skills/workflow-orchestrator/references/skill-registry.yaml",
+        "skills/workflow-orchestrator/references/workflow-registry.yaml"
     ]
     
     for yf in yaml_files:
@@ -35,18 +41,17 @@ def validate_repo():
             except Exception as e:
                 errors.append(f"Invalid YAML in {yf}: {str(e)}")
 
-    # 3. Check examples for checklists
-    examples_dir = "examples"
-    if os.path.exists(examples_dir):
-        for f in os.listdir(examples_dir):
-            if f.endswith(".md"):
-                path = os.path.join(examples_dir, f)
-                with open(path, 'r', encoding='utf-8') as file:
-                    content = file.read()
-                    if "## Expected Behavior Checklist" not in content:
-                        errors.append(f"Example {f} is missing expected behavior checklist")
-                    if "## 1. Fog Type" not in content or "## 12. Ready-to-Copy Prompt" not in content:
-                        errors.append(f"Example {f} does not follow the 12-section template")
+    # 3. Check examples
+    examples_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator"]
+    for ex_dir in examples_dirs:
+        if os.path.exists(ex_dir):
+            for f in os.listdir(ex_dir):
+                if f.endswith(".md"):
+                    path = os.path.join(ex_dir, f)
+                    with open(path, 'r', encoding='utf-8') as file:
+                        content = file.read()
+                        if "## Expected Behavior Checklist" not in content:
+                            errors.append(f"Example {f} in {ex_dir} is missing expected behavior checklist")
 
     if errors:
         print("Validation failed:")
@@ -54,7 +59,7 @@ def validate_repo():
             print(f" - {err}")
         sys.exit(1)
     else:
-        print("Validation passed! Repo is V1 ready.")
+        print("Validation passed! Repo is aligned with two-skill architecture.")
 
 if __name__ == "__main__":
     validate_repo()

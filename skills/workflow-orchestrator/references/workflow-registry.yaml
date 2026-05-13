@@ -1,0 +1,31 @@
+version: 1
+workflows:
+  - id: docs-architecture
+    display_name: Documentation & Architecture Alignment
+    purpose: "Resolve vocabulary drift and align system documentation with the codebase."
+    steps:
+      - skill: grill-with-docs
+      - skill: to-prd
+      - skill: handoff
+    gates: ["Alignment Report Review", "PRD Review"]
+
+  - id: validator-tdd
+    display_name: Validator & TDD Cycle
+    purpose: "Implement automated validation and logic via TDD vertical slices."
+    steps:
+      - skill: to-issues
+      - skill: triage
+      - skill: tdd
+    gates: ["Issue List Review", "Agent Brief Review", "Commit Review"]
+
+  - id: experimental-autonomous-sprint
+    display_name: Experimental Autonomous Sprint
+    purpose: "End-to-end autonomous feature delivery with safety gates."
+    steps:
+      - skill: grill-with-docs
+      - skill: to-prd
+      - skill: to-issues
+      - skill: triage
+      - skill: tdd
+      - skill: handoff
+    gates: ["EVERY STEP requires human approval in guided mode"]

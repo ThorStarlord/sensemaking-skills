@@ -15,7 +15,7 @@ Sensemaking skills sit **before** specialized tools. They are designed for uncer
    - `example_prompt`
 3. **Examples**: Every new example must follow the 12-section **Sensemaking Brief** template and include an **Expected Behavior Checklist**.
 4. **Boundary Rule**: Skills must not perform downstream building (PRDs, code, issues) unless explicitly requested.
-5. **V1 Validation**: Do not add downstream execution skills until the core `project-sensemaker` V1 is fully validated.
+5. **V1 Validation**: Do not add downstream execution skills until the core `repo-sensemaker` V1 is fully validated.
 
 ## Submission Process
 1. Fork the repo.

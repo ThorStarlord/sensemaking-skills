@@ -14,7 +14,7 @@ The **Autonomous Sprint** is a high-velocity execution pattern that chains multi
 
 It leverages [Matt Pocock's Skills](https://github.com/mattpocock/skills) to ensure engineering rigor while maintaining maximum automation.
 
-Copy and paste the following prompt once you have achieved clarity via `project-sensemaker`:
+Copy and paste the following prompt once you have achieved clarity via `repo-sensemaker`:
 
 ```markdown
 prompt 1: use grill-with-docs skill to extract the goal from the context. Answer each question by exploring the codebase and existing docs. If a decision is not documented, make the most conservative architectural recommendation consistent with the project's domain language (CONTEXT.md). Prepare the alignment report and STOP for my review.
@@ -55,6 +55,6 @@ npx skills@latest add mattpocock/skills
 ## When to Use
 
 Use this workflow when:
-- You have already cleared the initial "fog" using `project-sensemaker`.
+- You have already cleared the initial "fog" using `repo-sensemaker`.
 - You trust the agent to make technical decisions within the established `CONTEXT.md` and ADRs.
 - You want to implement a feature "AFK" (Away From Keyboard) while maintaining high TDD standards.

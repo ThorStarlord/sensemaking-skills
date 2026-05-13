@@ -1,45 +1,44 @@
-# PRD: Sensemaking Skills V1 (Flagship Release)
+# PRD: Sensemaking Skills V1 (Refactored Release)
 
-## Status: Draft
+## Status: Refactored
 ## Date: 2026-05-13
 
 ## 1. Executive Summary
-Sensemaking Skills V1 establishes a robust "meta-routing" layer for AI agents. It standardizes the transition from project uncertainty to actionable implementation by producing a "Sensemaking Brief" and routing to specialized ecosystems (Interface, Matt, PM).
+Sensemaking Skills V1 establishes a robust "meta-routing" layer for AI agents. It standardizes the transition from repository uncertainty to actionable implementation by splitting the job into two specialized skills: `repo-sensemaker` (Diagnosis) and `workflow-orchestrator` (Orchestration).
 
 ## 2. Problem Statement
-Agents often jump into implementation ("building") before they understand the "fog" (uncertainty). This leads to misaligned PRDs, incorrect architectural choices, and technical debt.
+Agents often jump into implementation ("building") before they understand the repository-level "fog" (uncertainty). This leads to misaligned PRDs, incorrect architectural choices, and technical debt.
 
 ## 3. Goals
-- Provide a package-valid `project-sensemaker` skill.
-- Enforce structural integrity via a 12-section output template.
-- Enable precise routing via a structured skill registry.
-- Maintain human-in-the-loop control for high-velocity workflows.
+- Provide package-valid `repo-sensemaker` and `workflow-orchestrator` skills.
+- Enforce structural integrity via canonical output templates (11-section Brief / 10-section Plan).
+- Enable precise, gated orchestration of skill sequences.
+- Maintain safety-first human-in-the-loop control for all execution workflows.
 
 ## 4. Key Features
-- **Project Sensemaker Skill**: YAML frontmatter, Boundary Rules, Core Philosophy, and portable Skill UI metadata.
-- **Sensemaking Brief**: Canonical 12-section structure (Fog Type, Object Under Pressure, etc.).
-- **Structured Skill Registry**: Valid YAML routing table with tie-breakers and confidence rules.
-- **Validation Fixtures**: 3 positive examples and 1 negative fixture, all aligned with the 12-section template and behavior checklists.
-- **Experimental Workflows**: Hardened "Autonomous Sprint" with "review and stop" gates.
+- **Repo Sensemaker Skill**: Diagnostic focus on finding the "Weakest Boundary".
+- **Workflow Orchestrator Skill**: Procedural focus on selecting and running gated workflows.
+- **Structured Registries**: Valid YAML for both skills and workflows.
+- **Validation Fixtures**: Diagnostic and Orchestration examples with behavior checklists.
+- **Safety Gates**: Explicit "Guided" and "Plan Only" execution modes.
 - **Governance**: MIT License, CONTRIBUTING.md, and `validate-repo.py` script.
 
 ## 5. Functional Requirements
-- Must produce a 12-section Markdown report by default.
-- Must recommend at least one downstream skill or concrete artifact.
-- Must use valid YAML for the skill registry to enable future automation.
-- Must refuse to route downstream if unknowns are too fundamental (Confidence Rule).
-- Must include a negative fixture demonstrating "refusal to route."
+- `repo-sensemaker` must produce an 11-section diagnostic brief by default.
+- `workflow-orchestrator` must produce a 10-section orchestration plan.
+- Must refuse to act if a diagnostic brief is missing or unknowns are too fundamental.
+- Must include negative fixtures demonstrating safe refusal-to-route.
 
 ## 6. Non-Functional Requirements
-- **Portability**: Must be installable as a ChatGPT skill.
-- **Safety**: Must not commit to `main` or approve designs without user permission.
-- **Clarity**: Must identify "Fog Type" before any implementation.
+- **Decoupling**: Diagnosis must be separate from Action.
+- **Safety**: No irreversible actions (commits, deletions) without explicit "Autonomous" opt-in.
+- **Clarity**: Must identify "Weakest Boundary" before orchestration.
 
 ## 7. Success Metrics
-- 100% compliance with the 12-section template in dogfooding tests.
-- 0 instances of "downstream building" by `project-sensemaker` unless requested.
-- Successful routing to at least 3 different ecosystems.
+- 100% compliance with canonical templates.
+- 0 instances of unapproved execution in guided mode.
+- Successful orchestration of at least 3 distinct workflow types.
 
 ## 8. Open Questions
-- Should we add a `ui-spec-linter` equivalent for Sensemaking Briefs?
-- How do we handle external skill updates in the registry?
+- Should we add a automated contract validator between the Brief and the Plan?
+- How do we handle dynamic skill discovery in the registry?

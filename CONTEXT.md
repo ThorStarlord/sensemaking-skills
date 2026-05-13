@@ -10,16 +10,22 @@ To provide a meta-routing layer for AI agents that turns project uncertainty ("f
 4. **Human in the Loop**: Skills provide judgment, but humans approve usefulness.
 
 ## Domain Language
-- **Fog**: The state of project uncertainty.
-- **Sensemaking Brief**: The canonical 12-section output of `project-sensemaker`.
+- **Fog**: The state of project uncertainty (Product, Architecture, Strategy, or Routing).
+- **Repository Sensemaking Brief**: The canonical 11-section output of `repo-sensemaker`.
+- **Workflow Orchestration Plan**: The canonical 10-section output of `workflow-orchestrator`.
 - **Object Under Pressure**: The specific artifact or system boundary that is most ambiguous.
-- **Resonance Tiers**: (Explorer, Builder, Strategist) - borrowed from educational game design as a classification method for project depth.
+- **Weakest Boundary**: The most fragile or unenforced point in a repository.
+- **Approval Gates**: Mandatory review points in an orchestration workflow.
 - **Tracer Bullets**: AFK-compatible vertical slices of implementation.
 
 ## Tech Stack
 - Markdown-based skill definitions (`SKILL.md`).
 - YAML-based registries and agent definitions.
 - Relative linking for package portability.
+
+## Skills Split
+1. **repo-sensemaker**: Diagnostic. Finds the weakest boundary.
+2. **workflow-orchestrator**: Procedural. Acts on the weak point via gated sequences.
 
 ## Ecosystems
 - **Interface Skills**: Spec Packages and UI validation.

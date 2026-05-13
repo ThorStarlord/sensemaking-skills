@@ -2,7 +2,7 @@
 
 A collection of skills designed to turn vague project uncertainty into clear problem frames, research paths, decisions, and next-step prompts.
 
-The flagship skill is `project-sensemaker`, which routes unclear work to the right downstream method, skill, or artifact.
+The repository is organized around a clean split: **Diagnosis** (`repo-sensemaker`) and **Orchestration** (`workflow-orchestrator`).
 
 ## Core Philosophy
 
@@ -13,80 +13,56 @@ Sensemaking skills sit **before** specialized tools. They handle the moment of "
 ## What this is / is not
 
 ### What this is
-- A meta-routing layer to convert project uncertainty ("fog") into actionable next steps.
-- A way to choose the right specialized workflow (PM, Engineering, UI) before building.
+- A meta-routing layer to convert repository uncertainty ("fog") into actionable next steps.
+- A split between **Diagnosis** (`repo-sensemaker`) and **Orchestration** (`workflow-orchestrator`).
 - A structural enforcement tool for mental model alignment.
 
 ### What this is not
 - A replacement for specialized tools (PM skills, Matt Pocock skills, Interface Skills).
-- An implementation or coding agent (by default).
-- A PRD or Issue generator (it routes to these, it doesn't replace them).
+- A blind automation engine. It uses explicit approval gates.
 
-## Core Artifact: Sensemaking Brief
+## Core Skills
 
-A **Sensemaking Brief** is the primary output of `project-sensemaker`. It does not solve the downstream work; it makes the work answerable by naming:
-- The fog type and object under pressure.
-- Knowns, unknowns, and assumptions.
-- Candidate paths and the weakest boundary.
-- The smallest useful next step and a ready-to-copy prompt for the next skill.
+### 1. `repo-sensemaker`
+**Purpose**: finds the weak point.
+Analyzes a repository to produce a **Repository Sensemaking Brief**. It identifies the weakest boundary, missing pieces, and recommended next moves.
 
-## Flagship Skill: `project-sensemaker`
+### 2. `workflow-orchestrator`
+**Purpose**: acts on the weak point.
+Takes a Sensemaking Brief, selects an appropriate workflow, and coordinates the execution (or prompt generation) with explicit safety gates.
 
-Turns vague project ideas, uncertainty, or early product fog into researched, concrete next-step options.
+## Core Artifacts
 
-### Ecosystems We Route To
-
-This toolkit acts as a meta-layer, helping you choose between:
-- **Interface Skills**: For Spec Packages, UI specs, and contract validation.
-- **Matt Pocock Skills**: For engineering discipline, grilling, TDD, and diagnosis.
-- **Product Manager Skills**: For discovery, hypotheses, PRDs, and GTM strategy.
-
-## V1 Definition of Done
-
-- `project-sensemaker` is a package-valid ChatGPT skill (includes YAML frontmatter and `agents/openai.yaml`).
-- It produces a **Sensemaking Brief** (12-section standard).
-- It routes using a curated registry with explicit skill entries.
-- It includes validation fixtures for representative fog types.
-- It adheres to the **Boundary Rule**: no downstream work by default.
-- It can recommend a next skill or concrete artifact.
+- **Repository Sensemaking Brief**: A diagnostic report naming the fog type, object under pressure, and the weakest boundary.
+- **Workflow Orchestration Plan**: A procedural plan naming the chosen workflow, skill sequence, and mandatory approval gates.
 
 ## Repository Structure
 
-- `skills/`: Packaged instructions for AI agents.
-  - `project-sensemaker/references/`: Registry, fog types, routing rules, and templates used by the flagship skill.
+- `skills/`:
+  - `repo-sensemaker/`: Diagnostic skill and templates.
+  - `workflow-orchestrator/`: Execution/Orchestration skill and registries.
 - `workflows/`: Composite skill chains (e.g., [Experimental Autonomous Sprint](workflows/experimental-autonomous-sprint.md)).
-- `examples/`: Real-world "fog-to-clarity" validation fixtures (including negative fixtures).
+- `examples/`: Validation fixtures for both skills.
 - `docs/`: Repository-level documentation (PRDs, Issues, ADRs).
 
 ## Usage
 
-Paste a vague project idea into an agent with `project-sensemaker` installed.
-
-**Example:**
-
-> /project-sensemaker
->
-> I want to build an AI assistant for my school, maybe with WhatsApp, maybe a web app, maybe something with games.
-
-## Fixture Pass Criteria
-
-A fixture passes when the skill:
-- Identifies the correct fog type.
-- Names the object under pressure.
-- Separates knowns, unknowns, and assumptions.
-- Recommends a bounded research path.
-- Identifies the weakest boundary.
-- Recommends a downstream skill or artifact.
-- Does not perform downstream work by default.
-- Produces a ready-to-copy prompt.
+1. Run `repo-sensemaker` on a codebase to find the weakest boundary.
+2. Review the **Repository Sensemaking Brief**.
+3. Pass the brief to `workflow-orchestrator` to select and run a corrective workflow.
 
 ## License
-
 MIT
 
 ## Contributing
-
-- New skills must have a `SKILL.md`.
-- New routing entries must include `use_when`, `do_not_use_when`, `expected_input`, `expected_output`, and `example_prompt`.
+- New diagnosis rules go in `repo-sensemaker/references/`.
+- New skill entries go in `workflow-orchestrator/references/skill-registry.yaml`.
+- New workflows go in `workflow-orchestrator/references/workflow-registry.yaml`.
 - New examples must include an expected behavior checklist.
-- Do not add downstream execution skills until `project-sensemaker` V1 is validated.
+
+## V1 Definition of Done (New Architecture)
+- Both skills are package-valid with separate `agents/openai.yaml`.
+- `repo-sensemaker` produces an 11-section diagnostic brief.
+- `workflow-orchestrator` produces a 10-section orchestration plan.
+- Registry-based routing is fully machine-readable.
+- Negative fixtures exist to test refusal-to-act.

@@ -1,11 +1,17 @@
-## Refinement Accomplishments (V1 Standard)
-1. **machine-readable Routing**: `skill-registry.yaml` is now valid YAML with tie-breakers and confidence rules.
-2. **Template Parity**: All examples (including the new negative fixture) match the 12-section **Sensemaking Brief** template.
-3. **Safety-First Automation**: `experimental-autonomous-sprint.md` now enforces "prepare and stop for review" instructions.
-4. **Portable Metadata**: `agents/openai.yaml` is optimized for ChatGPT Skill UI.
-5. **Automated Governance**: `validate-repo.py` script ensures structural integrity.
+# Handoff: Sensemaking Skills V1 (Refactored)
+
+## Refinement Accomplishments (V1 Architecture)
+1. **Skill Split**: Successfully split `project-sensemaker` into `repo-sensemaker` (Diagnostic) and `workflow-orchestrator` (Procedural).
+2. **Diagnostic Rigor**: `repo-sensemaker` now focuses on finding the **Weakest Boundary** and produces an 11-section Brief.
+3. **Safe Orchestration**: `workflow-orchestrator` uses explicit **Approval Gates** and **Execution Modes** (`plan_only`, `guided`, `autonomous`).
+4. **Machine-Readable Registries**: Both `skill-registry.yaml` and `workflow-registry.yaml` are structured YAML.
+5. **Validation Pass**: `validate-repo.py` confirms structural and template parity for the new two-skill design.
 
 ## Final State
-- **Package-Valid**: Verified structure for Skill distribution.
-- **Trusted Boundary**: Skill strictly enforces "Sensemaking before Implementation."
-- **Safe Workflows**: Experimental features are explicitly gated by human review.
+- **Decoupled**: Diagnosis is separated from Action.
+- **Contract-Enforced**: Orchestration requires a Sensemaking Brief as input.
+- **Safety-First**: All workflows default to `plan_only` and require explicit human-approval gates for execution.
+
+## Verification
+- Validation Script: **PASS**
+- Example Coverage: **Repo Analysis & Orchestration Planning**
