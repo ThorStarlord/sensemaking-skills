@@ -11,7 +11,7 @@ description: select and stage a workflow from a repository sensemaking brief. us
 3. **Plan**: Produce a Workflow Orchestration Plan with ordered steps and approval gates.
 4. **Mode Selection**: Determine the execution mode (Default: `plan_only`).
 5. **Execute/Generate**:
-   - `plan_only`: produce the plan and stop.
+   - `plan_only`: produce the plan artifact and stop. No workflow steps are executed, and no repository files are modified (except the plan itself if explicitly requested).
    - `prompt_chain`: produce copy/paste prompts and stop.
    - `guided_execution`: execute one eligible step, validate its output artifact, write/update the run log, then stop for approval.
    - `autonomous_execution`: execute eligible steps until the next approval gate, failed validation, non-executable skill, or stop condition.

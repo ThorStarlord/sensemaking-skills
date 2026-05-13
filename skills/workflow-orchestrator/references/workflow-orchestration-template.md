@@ -41,4 +41,6 @@ steps:
     skill: 
     step_type: 
     gate: 
+    input_artifact: 
+    output_artifact: 
 ```

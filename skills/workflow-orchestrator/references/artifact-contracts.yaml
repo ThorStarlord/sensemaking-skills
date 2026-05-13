@@ -89,3 +89,16 @@ artifacts:
       - expected_output
       - stop_condition
       - ready_to_copy_prompt
+
+  - id: docs_contract_reconciliation_report
+    produced_by: sensemaking-docs-reconciler
+    consumed_by:
+      - prompt-handoff
+    required_sections:
+      - drift_summary
+      - files_reviewed
+      - mismatches_found
+      - changes_required
+      - patches_proposed
+      - validation_result
+      - next_handoff

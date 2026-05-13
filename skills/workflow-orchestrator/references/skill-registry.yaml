@@ -172,5 +172,6 @@ ecosystems:
         capabilities: [write_files]
       - id: sensemaking-docs-reconciler
         purpose: align repository docs, registries, and contracts
+        artifact: docs_contract_reconciliation_report
         availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
         capabilities: [write_files]

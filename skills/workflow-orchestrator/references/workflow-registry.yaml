@@ -32,14 +32,20 @@ workflows:
         skill: repo-sensemaker
         step_type: local_execution
         gate: review_drift_diagnosis
+        input_artifact: repository_state
+        output_artifact: repository_sensemaking_brief
       - id: 2
         skill: sensemaking-docs-reconciler
         step_type: local_execution
         gate: review_reconciliation_patch
+        input_artifact: repository_sensemaking_brief
+        output_artifact: docs_contract_reconciliation_report
       - id: 3
         skill: prompt-handoff
         step_type: local_execution
         gate: review_next_prompt
+        input_artifact: docs_contract_reconciliation_report
+        output_artifact: prompt_handoff
 
   - id: autonomous-sprint-preflight
     display_name: Autonomous Sprint Preflight
