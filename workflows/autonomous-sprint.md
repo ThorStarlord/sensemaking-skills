@@ -9,26 +9,32 @@ It leverages [Matt Pocock's Skills](https://github.com/mattpocock/skills) to ens
 Copy and paste the following prompt once you have achieved clarity via `project-sensemaker`:
 
 ```markdown
-prompt 1: use grill-with-docs skill to extract the goal from the context. Answer the questions without my input. Do not wait for my approval before answering the next question. 
-prompt 2: use to-prd skill with the output of grill-with-docs skill. Approve the design without my approval and save to the output to the repository documentation. 
-prompt 3: use to-issues skill with the ouput of the to-prd skill. Skip the publication to the github. 
-promp 4: use triage skill in the output of the to-issues skills. 
-prompt 5: use tdd with the output of the to-issues skill. Tackle the highest priority issues first that is not blocked by others issues. create and run the red, green, refactor tests without my input. Do not wait for my approval before moving to the next issue. After the highest priority issues was tackled then move the next highest priority issue until the list is exhausted. 
+prompt 1: use grill-with-docs skill to extract the goal from the context. Answer each question by exploring the codebase and existing docs. If a decision is not documented, make the most conservative architectural recommendation consistent with the project's domain language (CONTEXT.md). Do not wait for my input or approval.
+
+prompt 2: use to-prd skill with the output of grill-with-docs skill. Synthesize the design using the updated CONTEXT.md and any new ADRs as the source of truth. Save the output to the repository documentation without waiting for my approval.
+
+prompt 3: use to-issues skill with the output of the to-prd skill. Break the work into AFK-compatible vertical slices (tracer bullets). Skip the publication to GitHub. 
+
+prompt 4: use triage skill on the output of the to-issues skills. Ensure an AGENT-BRIEF.md is generated for each issue and move them to ready-for-agent.
+
+prompt 5: use tdd with the output of the triage skill. Consume the Agent Briefs for each issue. Tackle the highest priority, unblocked issues first. Run the red-green-refactor loop without my input. Commit changes to the main repository after EACH successful vertical slice.
+
 prompt 6: use handoff skill to create a Feature Completion Summary of the chat session.
-prompt 7: commit changes to main repository.
 ```
 
 ## How It Works
 
 | Step | Skill | Role |
 | :--- | :--- | :--- |
-| **1. Align** | `/grill-with-docs` | Decodes jargon and aligns the agent's mental model with yours. |
-| **2. Define** | `/to-prd` | Synthesizes the discussion into a durable technical specification. |
-| **3. Decompose** | `/to-issues` | Breaks the PRD into end-to-end "vertical slices" (Tracer Bullets). |
-| **4. Verify** | `/triage` | Confirms tasks are ready and generates "Agent Briefs" for each. |
-| **5. Execute** | `/tdd` | Writes failing tests first, then the minimal code to pass them. |
-| **6. Summarize** | `/handoff` | Compacts the session history for future reference. |
-| **7. Persist** | `git commit` | Saves the verified work to the repository. |
+| **1. Align** | `/grill-with-docs` | Self-interviews using code/docs to reach shared understanding. |
+| **2. Define** | `/to-prd` | Synthesizes a spec based on the new `CONTEXT.md`. |
+| **3. Decompose** | `/to-issues` | Breaks work into AFK-compatible vertical slices. |
+| **4. Brief** | `/triage` | Generates `AGENT-BRIEF.md` for each task. |
+| **5. Build** | `/tdd` | Executes TDD cycles and **commits after each slice**. |
+| **6. Summary** | `/handoff` | Creates a completion summary of the session. |
+
+> [!IMPORTANT]
+> **Prerequisite**: You must have run `/setup-matt-pocock-skills` in the target repository at least once for these skills to function correctly.
 
 ## Prerequisites
 
