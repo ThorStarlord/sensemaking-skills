@@ -41,6 +41,35 @@ workflows:
         step_type: local_execution
         gate: review_next_prompt
 
+  - id: autonomous-sprint-preflight
+    display_name: Autonomous Sprint Preflight
+    purpose: Verify that a repository is ready for Autonomous Sprint before selecting the sprint workflow.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: repo-sensemaker
+        step_type: local_execution
+        gate: review_execution_readiness
+      - id: 2
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_sprint_prompt
+
+  - id: implementation-prompt-chain
+    display_name: Implementation Prompt Chain
+    purpose: Turn an approved brief or PRD into copy-paste prompts for external implementation skills.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+    steps:
+      - id: 1
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_prompt_chain
+
   - id: full-local-sensemaking
     display_name: Full Local Sensemaking
     purpose: Convert raw fog into a repository diagnosis and downstream handoff using only local executable skills.
