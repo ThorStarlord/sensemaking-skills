@@ -7,12 +7,6 @@ description: separate knowns, unknowns, assumptions, and risks for a given probl
 
 Produces an **Unknowns Map** to separate what we know from what we are guessing. This skill prevents premature implementation by making the "information gaps" visible.
 
-## Description
-Use after a problem has been framed but before a repository analysis or PRD is written. It helps identify exactly where research is needed.
-
-## Core Philosophy
-Unacknowledged assumptions are the primary cause of technical debt. Map them early.
-
 ## Workflow
 1. **Intake**: Review the Problem Frame or Repository goal.
 2. **Classification**:

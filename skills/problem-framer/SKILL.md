@@ -7,12 +7,6 @@ description: analyze a vague idea or repository fog to produce a structured prob
 
 Converts vague fog into a structured **Problem Frame**. This skill sits at the very beginning of the sensemaking process, helping to define the "problem under the problem."
 
-## Description
-Use when a request is ambiguous, "vibey," or lacks a clear objective. This skill forces the user and agent to agree on the underlying goal and success conditions before any technical work begins.
-
-## Core Philosophy
-A well-framed problem is half-solved. Do not skip to implementation until the frame is solid.
-
 ## Workflow
 1. **Fog Capture**: Listen to the user's raw idea or observation.
 2. **Deconstruction**: Identify the "Problem Under the Problem" (the root cause or hidden desire).

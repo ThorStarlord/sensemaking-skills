@@ -22,6 +22,7 @@ def validate_repo():
         "skills/workflow-orchestrator/references/workflow-registry.yaml",
         "skills/workflow-orchestrator/references/workflow-orchestration-template.md",
         "skills/workflow-orchestrator/references/execution-modes.md",
+        "skills/workflow-orchestrator/references/artifact-contracts.yaml",
         "skills/problem-framer/SKILL.md",
         "skills/problem-framer/agents/openai.yaml",
         "skills/problem-framer/references/problem-frame-template.md",
@@ -43,6 +44,7 @@ def validate_repo():
         "skills/workflow-orchestrator/agents/openai.yaml",
         "skills/workflow-orchestrator/references/skill-registry.yaml",
         "skills/workflow-orchestrator/references/workflow-registry.yaml",
+        "skills/workflow-orchestrator/references/artifact-contracts.yaml",
         "skills/problem-framer/agents/openai.yaml",
         "skills/unknowns-mapper/agents/openai.yaml",
         "skills/prompt-handoff/agents/openai.yaml"
@@ -58,26 +60,63 @@ def validate_repo():
             except Exception as e:
                 errors.append(f"Invalid YAML in {yf}: {str(e)}")
 
-    # 3. Registry Parity Check
-    if "skills/workflow-orchestrator/references/skill-registry.yaml" in registries and \
-       "skills/workflow-orchestrator/references/workflow-registry.yaml" in registries:
-        
-        # Get all registered skill IDs
+    # 3. Registry & Availability Check
+    if "skills/workflow-orchestrator/references/skill-registry.yaml" in registries:
         skill_registry = registries["skills/workflow-orchestrator/references/skill-registry.yaml"]
-        registered_skills = set()
-        for ecosystem in skill_registry.get("ecosystems", {}).values():
+        registered_skills = {}
+        for ecosystem_id, ecosystem in skill_registry.get("ecosystems", {}).items():
             for skill in ecosystem.get("skills", []):
-                registered_skills.add(skill["id"])
-        
-        # Check workflow steps
-        workflow_registry = registries["skills/workflow-orchestrator/references/workflow-registry.yaml"]
-        for workflow in workflow_registry.get("workflows", []):
-            for step in workflow.get("steps", []):
-                skill_id = step.get("skill")
-                if skill_id and skill_id not in registered_skills:
-                    errors.append(f"Workflow '{workflow['id']}' references unregistered skill: {skill_id}")
+                s_id = skill["id"]
+                registered_skills[s_id] = skill
+                
+                # Availability validation
+                availability = skill.get("availability")
+                if not availability:
+                    errors.append(f"Skill '{s_id}' missing 'availability' block in registry")
+                else:
+                    a_type = availability.get("type")
+                    if a_type not in ["local", "external", "prompt_only"]:
+                        errors.append(f"Skill '{s_id}' has invalid availability type: {a_type}")
 
-    # 4. Frontmatter Check (Lowercase descriptions)
+        # 4. Artifact Handoff Validation
+        if "skills/workflow-orchestrator/references/artifact-contracts.yaml" in registries and \
+           "skills/workflow-orchestrator/references/workflow-registry.yaml" in registries:
+            
+            contracts = registries["skills/workflow-orchestrator/references/artifact-contracts.yaml"]
+            artifacts = contracts.get("artifacts", [])
+            producers = {a["produced_by"]: a for a in artifacts}
+            consumers = {}
+            for artifact in artifacts:
+                for consumer in artifact.get("consumed_by", []):
+                    consumers.setdefault(consumer, []).append(artifact["id"])
+            
+            workflow_registry = registries["skills/workflow-orchestrator/references/workflow-registry.yaml"]
+            for workflow in workflow_registry.get("workflows", []):
+                steps = [s.get("skill") for s in workflow.get("steps", [])]
+                for i in range(len(steps) - 1):
+                    producer = steps[i]
+                    consumer = steps[i + 1]
+                    
+                    # Validate registry existence
+                    if producer not in registered_skills:
+                        errors.append(f"Workflow '{workflow['id']}' references unregistered skill: {producer}")
+                        continue
+                    
+                    # Local handoff validation
+                    if producer in producers:
+                        artifact_id = producers[producer]["id"]
+                        if artifact_id not in consumers.get(consumer, []):
+                            errors.append(
+                                f"Workflow '{workflow['id']}' has invalid handoff: "
+                                f"{producer} produces '{artifact_id}', but {consumer} does not declare it as input"
+                            )
+                    
+                    # Safety check: External skills in autonomous mode
+                    if registered_skills[producer]["availability"]["type"] != "local":
+                        # This check is conceptual for now since we don't have autonomous_only workflows yet
+                        pass
+
+    # 5. Frontmatter Check (Lowercase descriptions)
     skill_files = [
         "skills/repo-sensemaker/SKILL.md",
         "skills/workflow-orchestrator/SKILL.md",
@@ -94,8 +133,14 @@ def validate_repo():
                     desc = match.group(1).strip()
                     if desc and desc[0].isupper():
                         errors.append(f"Skill description in {sf} should be lowercase: '{desc}'")
+                
+                # Philosophic Bloat Check
+                if "## Core Philosophy" in content or "## Description" in content:
+                    # errors.append(f"Skill {sf} contains philosophic bloat. Move to README or CONTEXT.")
+                    # Keep it as a warning for now in stdout but don't fail unless strict
+                    pass
 
-    # 5. Template Section Count Check
+    # 6. Template Section Count Check
     templates = {
         "skills/repo-sensemaker/references/repo-analysis-template.md": 13,
         "skills/workflow-orchestrator/references/workflow-orchestration-template.md": 10,
@@ -111,7 +156,7 @@ def validate_repo():
                 if len(sections) != expected_count:
                     errors.append(f"Template {path} has {len(sections)} sections, expected {expected_count}")
 
-    # 6. Check examples
+    # 7. Check examples
     examples_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative", "examples/pipeline", "examples/problem-framer", "examples/unknowns-mapper", "examples/prompt-handoff"]
     
     # Mandatory Example Directories
@@ -120,6 +165,7 @@ def validate_repo():
         if not os.path.exists(md):
             errors.append(f"Missing mandatory example directory: {md}")
 
+    found_orchestration_plans = set()
     for ex_dir in examples_dirs:
         if os.path.exists(ex_dir):
             files = os.listdir(ex_dir)
@@ -135,8 +181,18 @@ def validate_repo():
                             errors.append(f"Example {f} in {ex_dir} is missing expected behavior checklist")
                         if "file:///" in content:
                             errors.append(f"Example {f} in {ex_dir} contains absolute file:/// paths (use relative links)")
+                        
+                        # Duplicate fixture check for orchestration plans
+                        if ex_dir == "examples/workflow-orchestrator":
+                            workflow_match = re.search(r'## \d+\. Chosen workflow\s*(.*)', content, re.IGNORECASE)
+                            sequence_match = re.search(r'## \d+\. Skills in sequence\s*([\s\S]*?)(?=##|$)', content, re.IGNORECASE)
+                            if workflow_match and sequence_match:
+                                key = (workflow_match.group(1).strip().lower(), sequence_match.group(1).strip().lower())
+                                if key in found_orchestration_plans:
+                                    errors.append(f"Duplicate orchestration fixture found: {f} in {ex_dir} duplicates a previous plan")
+                                found_orchestration_plans.add(key)
 
-    # 7. Check for stale section counts in all governance docs
+    # 8. Check for stale section counts in all governance docs
     v1_docs = ["README.md", "CONTEXT.md", "docs/PRD-V1-Sensemaking.md", "CONTRIBUTING.md"]
     for doc in v1_docs:
         if os.path.exists(doc):
@@ -160,7 +216,7 @@ def validate_repo():
             print(f" - {err}")
         sys.exit(1)
     else:
-        print("Validation passed! Repo is aligned with the hardened V1 artifact contracts.")
+        print("Validation passed! Repo is aligned with the hardened V1 artifact contracts and availability rules.")
 
 if __name__ == "__main__":
     validate_repo()

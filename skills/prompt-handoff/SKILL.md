@@ -7,12 +7,6 @@ description: convert a sensemaking artifact into a ready-to-copy prompt for the 
 
 Produces a **Prompt Handoff** to ensure that the judgment reached in sensemaking is successfully transmitted to the next specialized skill (e.g., `to-prd`, `tdd`).
 
-## Description
-Use as the final step in a sensemaking workflow. It prevents the "context drop" that happens when moving between skills.
-
-## Core Philosophy
-The quality of a specialized skill's output is limited by the quality of the prompt that triggered it.
-
 ## Workflow
 1. **Intake**: Review the latest sensemaking artifact (Problem Frame, Brief, or Plan).
 2. **Target Selection**: Identify the next specialized skill in the registry.

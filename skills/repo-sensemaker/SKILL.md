@@ -7,12 +7,6 @@ description: analyze a repository to produce a repository sensemaking brief. use
 
 Analyzes a repository and produces a **Repository Sensemaking Brief**. This skill is diagnostic, focusing on understanding the intent, structure, and fragility of a codebase to find the "weakest boundary."
 
-## Description
-Use when you need a deep audit of a repository's health, alignment with its stated goals, or a clear path forward when the repository feels stagnant, messy, or lacks direction.
-
-## Core Philosophy
-`repo-sensemaker` finds the weak point. It does not act; it diagnoses.
-
 ## Workflow
 1. **Analyze**: Inspect README, core files, folder structure, and existing documentation.
 2. **Signal Detection**: Identify what is working well (Strong Signals).

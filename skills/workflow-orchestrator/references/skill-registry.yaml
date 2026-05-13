@@ -1,134 +1,109 @@
-version: 1
 ecosystems:
   sensemaking:
-    display_name: Core Sensemaking Skills
-    purpose: "Decompose vague fog into structured artifacts and actionable paths."
+    name: Sensemaking Pipeline
     skills:
       - id: problem-framer
-        display_name: Problem Framer
-        use_when: ["Raw idea is vague", "User is unsure what to build"]
-        do_not_use_when: ["Problem is already well-defined", "Ready for technical mapping"]
-        expected_output: ["Problem Frame"]
-
+        purpose: capture fog and identify root pressure
+        artifact: problem_frame
+        availability:
+          type: local
+          executable_by_orchestrator: true
+          requires_installed_skill: true
       - id: unknowns-mapper
-        display_name: Unknowns Mapper
-        use_when: ["Problem is framed but research gaps exist", "Starting a new project phase"]
-        do_not_use_when: ["All critical information is already known", "Ready for repo diagnosis"]
-        expected_output: ["Unknowns Map"]
-
+        purpose: map knowledge gaps and research paths
+        artifact: unknowns_map
+        availability:
+          type: local
+          executable_by_orchestrator: true
+          requires_installed_skill: true
       - id: repo-sensemaker
-        display_name: Repository Sensemaker
-        use_when: ["Need to understand a repository's structure and goals", "Identifying the weakest boundary"]
-        expected_output: ["Repository Sensemaking Brief"]
-
-      - id: workflow-orchestrator
-        display_name: Workflow Orchestrator
-        use_when: ["Diagnostic brief exists", "Ready to coordinate execution"]
-        expected_output: ["Workflow Orchestration Plan"]
-
+        purpose: diagnostic focus on finding the weakest boundary
+        artifact: repository_sensemaking_brief
+        availability:
+          type: local
+          executable_by_orchestrator: true
+          requires_installed_skill: true
       - id: prompt-handoff
-        display_name: Prompt Handoff
-        use_when: ["Sensemaking is complete", "Ready to transition to specialized skills"]
-        do_not_use_when: ["Sensemaking artifact is still drafty or missing key context"]
-        expected_output: ["Prompt Handoff"]
+        purpose: bridge the sensemaking gap to specialized tools
+        artifact: prompt_handoff
+        availability:
+          type: local
+          executable_by_orchestrator: true
+          requires_installed_skill: true
 
-  matt_pocock:
-    display_name: Matt Pocock Engineering Skills
-    purpose: "Engineering discipline, mental model alignment, grilling, TDD, and architectural integrity."
+  engineering:
+    name: Engineering & Implementation
     skills:
-      - id: grill-me
-        display_name: Grill Me
-        use_when: ["Mental models are misaligned", "User needs assumptions challenged"]
-        do_not_use_when: ["Enough clarity exists to start a PRD or issue breakdown"]
-        expected_input: ["Rough idea or goal"]
-        expected_output: ["Clarified and challenged goal"]
-        example_prompt: "Use grill-me to challenge my assumptions about this feature."
-      
       - id: grill-with-docs
-        display_name: Grill With Docs
-        use_when: ["Project exists but has drifted from docs", "Need to align code with intent"]
-        do_not_use_when: ["No documentation exists yet"]
-        expected_input: ["Repository context", "Existing docs"]
-        expected_output: ["Updated context", "Resolved contradictions"]
-        example_prompt: "Use grill-with-docs to align this new proposal with our existing CONTEXT.md."
-
+        purpose: challenge proposal based on existing docs
+        availability:
+          type: external
+          executable_by_orchestrator: false
+          requires_installed_skill: true
       - id: tdd
-        display_name: Test-Driven Development
-        use_when: ["Ready to implement", "Logic is deterministic", "Want vertical slices"]
-        do_not_use_when: ["The 'how' is still unknown"]
-        expected_input: ["Issue list", "Agent Brief"]
-        expected_output: ["Verified, committed code"]
-        example_prompt: "Use tdd to implement the highest priority issue from the triage list."
-
+        purpose: implement minimal code to pass failing tests
+        availability:
+          type: external
+          executable_by_orchestrator: false
+          requires_installed_skill: true
       - id: diagnose
-        display_name: Diagnostic Audit
-        use_when: ["System is unstable", "Error patterns are repeating", "Root cause is unknown"]
-        expected_output: ["Diagnostic Report", "Fix Recommendations"]
+        purpose: find the root cause of a technical failure
+        availability:
+          type: external
+          executable_by_orchestrator: false
+          requires_installed_skill: true
 
-  interface_skills:
-    display_name: Interface Skills
-    purpose: "Turn fuzzy UI work into explicit, testable Spec Packages."
+  interface:
+    name: Interface Skills
     skills:
       - id: ui-brief
-        display_name: UI Brief
-        use_when: ["Starting a new UI feature", "Scope is undefined"]
-        expected_output: ["UI Spec", "Run Manifest"]
-      
-      - id: prototype
-        display_name: UI Prototyping
-        use_when: ["Multiple plausible solution shapes exist", "Interaction design is unproven"]
-        expected_output: ["Functional Prototype", "User Flow"]
+        purpose: create a high-fidelity UI specification
+        availability:
+          type: external
+          executable_by_orchestrator: false
+          requires_installed_skill: true
 
-  product_manager:
-    display_name: Product Manager Skills
-    purpose: "Product discovery, delivery, strategy, and validation."
+  product:
+    name: Product Management
     skills:
-      - id: zoom-out
-        display_name: Strategic Zoom-Out
-        use_when: ["User lacks system understanding", "Strategic direction is missing"]
-        expected_output: ["Context Map", "Strategic Recommendation"]
-
       - id: discovery
-        display_name: Product Discovery
-        use_when: ["The 'who' or 'why' is missing", "User problem is undefined"]
-        expected_output: ["Persona", "Hypothesis", "Opportunity Tree"]
-
-      - id: prd
-        display_name: PRD Generation
-        use_when: ["Problem is understood", "Solution needs detailed requirements"]
-        expected_output: ["Production-ready PRD"]
-
+        purpose: define the user persona and problem space
+        availability:
+          type: external
+          executable_by_orchestrator: false
+          requires_installed_skill: true
       - id: to-prd
-        display_name: Align to PRD
-        use_when: ["Alignment report exists", "Ready to synthesize specs"]
-        expected_input: ["Alignment Report"]
-        expected_output: ["Refined PRD"]
-
+        purpose: synthesize a problem frame into a PRD
+        availability:
+          type: prompt_only
+          executable_by_orchestrator: false
+          requires_installed_skill: false
       - id: to-issues
-        display_name: Decompose to Issues
-        use_when: ["PRD is approved", "Ready to break down work"]
-        expected_input: ["Approved PRD"]
-        expected_output: ["Issue List (Tracer Bullets)"]
-
+        purpose: break a PRD into actionable issues
+        availability:
+          type: prompt_only
+          executable_by_orchestrator: false
+          requires_installed_skill: false
       - id: triage
-        display_name: Issue Triage
-        use_when: ["Issue list exists", "Need individual Agent Briefs"]
-        expected_input: ["Issue List"]
-        expected_output: ["AGENT-BRIEF.md for each issue"]
-
+        purpose: organize and prioritize issues for an agent
+        availability:
+          type: prompt_only
+          executable_by_orchestrator: false
+          requires_installed_skill: false
       - id: handoff
-        display_name: Session Handoff
-        use_when: ["Work session is ending", "Need to capture final state"]
-        expected_output: ["Feature Completion Summary"]
+        purpose: create a feature completion summary
+        availability:
+          type: prompt_only
+          executable_by_orchestrator: false
+          requires_installed_skill: false
 
-routing_rules:
-  tie_breakers:
-    - rule: "If user lacks system understanding, route to /zoom-out."
-    - rule: "If user has proposed change and existing docs, route to /grill-with-docs."
-    - rule: "If multiple plausible solution shapes exist, route to /prototype."
-    - rule: "If desired behavior is deterministic and testable, route to /tdd."
-    - rule: "If issue is UI/spec drift, route to Interface Skills."
-    - rule: "If user/customer/value prop is unclear, route to PM discovery."
-  confidence_rules:
-    - rule: "If unknowns are too fundamental to choose a downstream skill, do not route. Recommend a research path or problem frame instead."
-
+  flagship:
+    name: Flagship Orchestration
+    skills:
+      - id: workflow-orchestrator
+        purpose: procedural focus on selecting and running gated workflows
+        artifact: workflow_orchestration_plan
+        availability:
+          type: local
+          executable_by_orchestrator: true
+          requires_installed_skill: true

@@ -7,12 +7,6 @@ description: select and stage a workflow from a repository sensemaking brief. us
 
 Takes a **Repository Sensemaking Brief** as input, selects the best workflow to address the identified weak point, and coordinates the execution of that workflow.
 
-## Description
-Use when you have a diagnostic brief and are ready to act. This skill manages the sequence of other skills, ensuring that execution is safe and bounded.
-
-## Core Philosophy
-`workflow-orchestrator` acts on the weak point. It manages the "how" of execution.
-
 ## Workflow
 1. **Consume Brief**: Review the diagnostic brief from `repo-sensemaker`.
 2. **Select Workflow**: Match the recommended path to an available workflow in the `workflow-registry.yaml`.
@@ -35,16 +29,15 @@ Use [Run Log Template](references/run-log-template.md) only when recording an ac
 ## Boundary Rules
 - **Safety First**: Default to `plan_only` mode. 
 - **Contract Enforcement**: If a brief does not contain a valid machine-readable handoff, or the requested execution mode is not allowed by [Execution Modes](references/execution-modes.md), the orchestrator MUST refuse the request or downgrade to `plan_only` or `guided_execution`.
+- **Handoff Compliance**: Transitions between skills in a workflow MUST comply with the [Artifact Contracts](references/artifact-contracts.yaml). The orchestrator must verify that the output artifact of a step is the required input for the next step.
+- **Execution Authority**: The orchestrator is ONLY authorized to execute `local` skills. `external` or `prompt_only` skills must be treated as routing targets for the human operator or downstream specialized agents.
 - **Approval Gates**: Do not bypass approval gates in `guided_execution` mode.
-- **Irreversible Actions**: `workflow-orchestrator` must not execute an irreversible action unless the user explicitly chooses an execution mode that allows it. Irreversible actions include:
-- Committing to `main`
-- Creating issues / opening PRs
-- Rewriting architecture docs / deleting files
 
 ## References
 - [Workflow Orchestration Template](references/workflow-orchestration-template.md)
 - [Skill Registry](references/skill-registry.yaml)
 - [Workflow Registry](references/workflow-registry.yaml)
+- [Artifact Contracts](references/artifact-contracts.yaml)
 - [Execution Modes](references/execution-modes.md)
 - [Approval Gates](references/approval-gates.md)
 - [Run Log Template](references/run-log-template.md)
