@@ -74,9 +74,19 @@ Guided Execution / Prompt Chain
 
 ## Usage
 
-1. Run `repo-sensemaker` on a codebase to find the weakest boundary.
+### Fast Path (Direct Repo Analysis)
+Use this when the goal is clear and you just need a repository-level diagnosis.
+1. Run `repo-sensemaker` to identify the **Weakest Boundary**.
 2. Review the **Repository Sensemaking Brief**.
 3. Pass the brief to `workflow-orchestrator` to select and run a corrective workflow.
+
+### Full Fog Path (Comprehensive Sensemaking)
+Use this when the project is highly ambiguous or lacks a clear problem frame.
+1. `problem-framer`: Define the "problem under the problem."
+2. `unknowns-mapper`: Map the research paths and assumptions.
+3. `repo-sensemaker`: Conduct the deep repository audit.
+4. `workflow-orchestrator`: Select the workflow and execution mode.
+5. `prompt-handoff`: Generate the bridge prompt for specialized tools.
 
 ## License
 MIT

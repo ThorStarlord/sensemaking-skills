@@ -12,6 +12,7 @@ def validate_repo():
         "CONTEXT.md",
         "LICENSE",
         "CONTRIBUTING.md",
+        "docs/PRD-V1-Sensemaking.md",
         "skills/repo-sensemaker/SKILL.md",
         "skills/repo-sensemaker/agents/openai.yaml",
         "skills/repo-sensemaker/references/repo-analysis-template.md",
@@ -111,10 +112,10 @@ def validate_repo():
                     errors.append(f"Template {path} has {len(sections)} sections, expected {expected_count}")
 
     # 6. Check examples
-    examples_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative", "examples/problem-framer", "examples/unknowns-mapper", "examples/prompt-handoff"]
+    examples_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative", "examples/pipeline", "examples/problem-framer", "examples/unknowns-mapper", "examples/prompt-handoff"]
     
     # Mandatory Example Directories
-    mandatory_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative"]
+    mandatory_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative", "examples/pipeline"]
     for md in mandatory_dirs:
         if not os.path.exists(md):
             errors.append(f"Missing mandatory example directory: {md}")
@@ -135,16 +136,23 @@ def validate_repo():
                         if "file:///" in content:
                             errors.append(f"Example {f} in {ex_dir} contains absolute file:/// paths (use relative links)")
 
-    # 7. Check for stale section counts in README/CONTEXT
-    v1_docs = ["README.md", "CONTEXT.md"]
+    # 7. Check for stale section counts in all governance docs
+    v1_docs = ["README.md", "CONTEXT.md", "docs/PRD-V1-Sensemaking.md", "CONTRIBUTING.md"]
     for doc in v1_docs:
         if os.path.exists(doc):
             with open(doc, 'r', encoding='utf-8') as f:
                 content = f.read()
+                # Stale section counts
                 if "11-section" in content or "12-section" in content:
-                     # Allow 12-section only if it's not describing the Repo Brief
                      if "11-section" in content or "12-section Repository" in content or "12-section Sensemaking Brief" in content:
                         errors.append(f"Document {doc} contains stale section count references (11 or 12). Should be 13 for Repo Brief.")
+                
+                # Check for the five core skills mention in PRD/README
+                if doc in ["README.md", "docs/PRD-V1-Sensemaking.md"]:
+                    required_skills = ["problem-framer", "unknowns-mapper", "repo-sensemaker", "workflow-orchestrator", "prompt-handoff"]
+                    for s in required_skills:
+                        if s not in content:
+                            errors.append(f"Document {doc} is missing mention of required V1 skill: {s}")
 
     if errors:
         print("Validation failed:")
