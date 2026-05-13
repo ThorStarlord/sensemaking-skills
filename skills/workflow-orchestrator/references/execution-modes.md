@@ -25,12 +25,13 @@ The orchestrator executes steps one by one. After each step, it must present the
 The orchestrator executes the full chain but **MUST stop at every defined [Approval Gate](approval-gates.md)**.
 - **Requirement**: User must provide the opt-in string: `"I accept the risks of autonomous execution."`
 - **Safety**: Cannot commit to `main`, cannot delete core files.
+- **Scope**: Can execute `local` and `local_command` skills.
 
 ### 5. `yolo_execution`
-Maximum automation for local sensemaking skills. All approval gates are bypassed for `local` skills.
+Maximum automation for local sensemaking and assumed-installed implementation skills. All approval gates are bypassed for eligible skills.
 - **Requirement**: User must provide the exact opt-in string: 
   `"I choose yolo_execution and accept automated repository changes, feature-branch commits, bypassed gates, and recovery risk."`
-- **Requirement**: Every step must be `availability.type: local`. External skills are NOT permitted in YOLO mode.
+- **Requirement**: Every step must be `availability.type: local` or `local_command`. Skills marked as `external`, `external_required`, or `prompt_only` are NOT permitted in YOLO mode.
 - **Requirement**: Must use a **feature branch**. Direct commits to `main` or `master` are strictly prohibited.
 - **Requirement**: Must write a [Run Log](run-log-template.md) before and after mutation.
 - **Requirement**: Must follow the [Git Safety Policy](git-safety-policy.md) and [Recovery Policy](recovery-policy.md).

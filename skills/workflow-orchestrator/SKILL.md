@@ -28,14 +28,20 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 - **Safety First**: Default to `plan_only` mode. 
 - **Contract Enforcement**: If a brief does not contain a valid machine-readable handoff, or the requested execution mode is not allowed by [Execution Modes](references/execution-modes.md), the orchestrator MUST refuse the request or downgrade to `plan_only` or `guided_execution`.
 - **Handoff Compliance**: Transitions between skills in a workflow MUST comply with the [Artifact Contracts](references/artifact-contracts.yaml).
-- **Execution Authority**: The orchestrator may execute skills whose registry entry has `availability.executable_by_orchestrator: true` and whose `availability.type` is either `local` or `local_command`.
-  - `local` skills are bundled in this repository.
-  - `local_command` skills are installed in the local working environment and MUST include an `invocation` block with `runtime`, `command`, `input_artifact`, and `output_artifact`.
-  - `external`, `external_required`, and `prompt_only` skills must be treated as routing targets, not executed steps.
+- **Execution Authority**: The orchestrator may execute only registry-approved steps where `availability.executable_by_orchestrator: true` and `availability.type` is either `local` or `local_command`.
+  - `local` means the skill is bundled in this repository.
+  - `local_command` means the skill is installed in the local working environment and MUST define an `invocation` block with `runtime`, `command`, `input_artifact`, and `output_artifact`.
+  - `external`, `external_required`, and `prompt_only` steps must be treated as routing targets, not executable steps.
 - **YOLO Mode Restrictions**: 
     - Requires exact opt-in: `"I choose yolo_execution and accept automated repository changes, feature-branch commits, bypassed gates, and recovery risk."`
     - Requires a feature branch (No direct commits to `main`).
     - Requires a [Run Log](references/run-log-template.md).
+- **YOLO Step Completion**:
+    - A YOLO step is not complete when a command is merely named.
+    - A YOLO step is complete only when the declared `output_artifact` exists, satisfies `artifact-contracts.yaml`, and is recorded in the run log.
+    - For `local_command` steps, the orchestrator MUST use the exact `invocation.command`; it must not invent command names.
+    - After each step, preserve only the declared output artifact, compact run-log entry, and fields required by the next step.
+    - Stop immediately if the command output cannot be mapped to the declared `output_artifact`.
 - **Approval Gates**: Do not bypass approval gates in `guided_execution` or `autonomous_execution` mode. Only `yolo_execution` bypasses gates for eligible local/command skills.
 
 ## Local Command Execution
