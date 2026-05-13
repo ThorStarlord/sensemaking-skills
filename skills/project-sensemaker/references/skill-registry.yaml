@@ -1,0 +1,56 @@
+ecosystems:
+  interface_skills:
+    purpose: >
+      Turn fuzzy, existing, or drifting UI work into explicit, testable Spec Packages.
+    core_object: Spec Package
+    use_when:
+      - UI scope needs a spec package
+      - implementation needs inspection or redline
+      - acceptance criteria need UI-specific labels
+      - fixtures or validators are involved
+      - agent routing needs to find spec docs
+    examples:
+      - ui-brief
+      - ui-blueprint
+      - ui-inspector
+      - ui-redline
+      - ui-spec-linter
+      - ui-spec-reconcile
+      - ui-agent-routing
+
+  matt_pocock_skills:
+    purpose: >
+      Improve engineering thinking, docs, tests, debugging, issues, and handoffs.
+    use_when:
+      - idea needs grilling
+      - docs need terminology challenge
+      - system shape is unclear
+      - deterministic code needs TDD
+      - failure needs diagnosis
+      - plan needs GitHub issues
+    examples:
+      - grill-me
+      - grill-with-docs
+      - zoom-out
+      - tdd
+      - diagnose
+      - to-issues
+      - handoff
+
+  product_manager_skills:
+    purpose: >
+      Move through product discovery, delivery, strategy, validation, launch, and GTM.
+    use_when:
+      - user/customer problem is unclear
+      - feature needs PRD
+      - hypothesis needs validation
+      - opportunities need prioritization
+      - launch or GTM needs planning
+    examples:
+      - discovery
+      - opportunity-tree
+      - hypothesis
+      - prd
+      - prioritize
+      - experiment-design
+      - gtm
