@@ -88,6 +88,16 @@ Use this when the project is highly ambiguous or lacks a clear problem frame.
 4. `workflow-orchestrator`: Select the workflow and execution mode.
 5. `prompt-handoff`: Generate the bridge prompt for specialized tools.
 
+## Downstream Skill Assumption
+
+This repository assumes the following downstream skill packs are installed in the local working environment when using product or implementation workflows:
+
+- [Product Manager Skills](https://github.com/ThorStarlord/pm-skills)
+- [Matt Pocock Skills](https://github.com/mattpocock/skills)
+- [Interface Skills](https://github.com/ThorStarlord/interface-skills)
+
+If these skills are not installed, `workflow-orchestrator` can still produce `prompt_chain` outputs, but it cannot execute those workflow steps directly.
+
 ## License
 MIT
 
