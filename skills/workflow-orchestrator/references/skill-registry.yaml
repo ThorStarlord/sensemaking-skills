@@ -107,3 +107,21 @@ ecosystems:
           type: local
           executable_by_orchestrator: true
           requires_installed_skill: true
+
+  support:
+    name: Support & Governance
+    skills:
+      - id: setup-sensemaking-skills
+        purpose: configure a repository for sensemaking operation
+        availability:
+          type: local
+          executable_by_orchestrator: true
+          requires_installed_skill: true
+        capabilities: [write_files]
+      - id: sensemaking-docs-reconciler
+        purpose: align repository docs, registries, and contracts
+        availability:
+          type: local
+          executable_by_orchestrator: true
+          requires_installed_skill: true
+        capabilities: [write_files]

@@ -31,7 +31,14 @@ def validate_repo():
         "skills/unknowns-mapper/references/unknowns-map-template.md",
         "skills/prompt-handoff/SKILL.md",
         "skills/prompt-handoff/agents/openai.yaml",
-        "skills/prompt-handoff/references/prompt-handoff-template.md"
+        "skills/prompt-handoff/references/prompt-handoff-template.md",
+        "skills/setup-sensemaking-skills/SKILL.md",
+        "skills/setup-sensemaking-skills/agents/openai.yaml",
+        "skills/setup-sensemaking-skills/references/agent-block-template.md",
+        "skills/setup-sensemaking-skills/references/sensemaking-config-template.md",
+        "skills/setup-sensemaking-skills/references/workflow-modes-template.md",
+        "skills/sensemaking-docs-reconciler/SKILL.md",
+        "skills/sensemaking-docs-reconciler/agents/openai.yaml"
     ]
     
     for f in core_files:
@@ -47,7 +54,9 @@ def validate_repo():
         "skills/workflow-orchestrator/references/artifact-contracts.yaml",
         "skills/problem-framer/agents/openai.yaml",
         "skills/unknowns-mapper/agents/openai.yaml",
-        "skills/prompt-handoff/agents/openai.yaml"
+        "skills/prompt-handoff/agents/openai.yaml",
+        "skills/setup-sensemaking-skills/agents/openai.yaml",
+        "skills/sensemaking-docs-reconciler/agents/openai.yaml"
     ]
     
     registries = {}
@@ -110,11 +119,6 @@ def validate_repo():
                                 f"Workflow '{workflow['id']}' has invalid handoff: "
                                 f"{producer} produces '{artifact_id}', but {consumer} does not declare it as input"
                             )
-                    
-                    # Safety check: External skills in autonomous mode
-                    if registered_skills[producer]["availability"]["type"] != "local":
-                        # This check is conceptual for now since we don't have autonomous_only workflows yet
-                        pass
 
     # 5. Frontmatter Check (Lowercase descriptions)
     skill_files = [
@@ -122,7 +126,9 @@ def validate_repo():
         "skills/workflow-orchestrator/SKILL.md",
         "skills/problem-framer/SKILL.md",
         "skills/unknowns-mapper/SKILL.md",
-        "skills/prompt-handoff/SKILL.md"
+        "skills/prompt-handoff/SKILL.md",
+        "skills/setup-sensemaking-skills/SKILL.md",
+        "skills/sensemaking-docs-reconciler/SKILL.md"
     ]
     for sf in skill_files:
         if os.path.exists(sf):
@@ -133,12 +139,6 @@ def validate_repo():
                     desc = match.group(1).strip()
                     if desc and desc[0].isupper():
                         errors.append(f"Skill description in {sf} should be lowercase: '{desc}'")
-                
-                # Philosophic Bloat Check
-                if "## Core Philosophy" in content or "## Description" in content:
-                    # errors.append(f"Skill {sf} contains philosophic bloat. Move to README or CONTEXT.")
-                    # Keep it as a warning for now in stdout but don't fail unless strict
-                    pass
 
     # 6. Template Section Count Check
     templates = {
