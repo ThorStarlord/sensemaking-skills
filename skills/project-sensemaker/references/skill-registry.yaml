@@ -20,37 +20,68 @@ ecosystems:
 
   matt_pocock_skills:
     purpose: >
-      Improve engineering thinking, docs, tests, debugging, issues, and handoffs.
+      Improve engineering thinking, docs, tests, debugging, issues, and handoffs using "Pragmatic Programmer" and DDD fundamentals.
     use_when:
-      - idea needs grilling
-      - docs need terminology challenge
-      - system shape is unclear
-      - deterministic code needs TDD
-      - failure needs diagnosis
-      - plan needs GitHub issues
+      - idea needs "grilling" to align mental models
+      - docs need terminology challenge (decoding jargon)
+      - system shape is unclear or has become a "ball of mud"
+      - deterministic code needs TDD (red-green-refactor)
+      - failure needs disciplined diagnosis
+      - plan needs vertical slices or GitHub issues
+      - project needs a shared language (CONTEXT.md)
+    
+    sub_categories:
+      engineering:
+        purpose: Daily code work and architectural integrity.
+        skills: [diagnose, grill-with-docs, triage, improve-codebase-architecture, setup-matt-pocock-skills, tdd, to-issues, to-prd, zoom-out, prototype]
+      productivity:
+        purpose: General workflow and agent communication.
+        skills: [caveman, grill-me, handoff, write-a-skill]
+    
     examples:
-      - grill-me
-      - grill-with-docs
-      - zoom-out
-      - tdd
-      - diagnose
-      - to-issues
-      - handoff
+      - /grill-with-docs (align mental models)
+      - /tdd (vertical slices)
+      - /diagnose (hard bugs)
+      - /improve-codebase-architecture (rescue ball of mud)
+      - /zoom-out (higher-level perspective)
+      - /to-issues (break down plan)
 
   product_manager_skills:
     purpose: >
       Move through product discovery, delivery, strategy, validation, launch, and GTM.
     use_when:
       - user/customer problem is unclear
-      - feature needs PRD
-      - hypothesis needs validation
-      - opportunities need prioritization
-      - launch or GTM needs planning
+      - feature needs PRD or stories
+      - hypothesis needs validation or experiment design
+      - opportunities need prioritization (RICE)
+      - launch, pricing, or GTM needs planning
+      - product-market fit needs measurement
+    
+    sub_categories:
+      discovery:
+        purpose: Understand the problem and user.
+        skills: [persona, discovery, interview-synthesis, competitive-analysis, opportunity-tree, hypothesis, customer-journey]
+      delivery:
+        purpose: Specify and break down the solution.
+        skills: [prd, user-stories, acceptance-criteria]
+      strategy:
+        purpose: Prioritize, align, and plan the roadmap.
+        skills: [prioritize, strategy, roadmap, okr, lean-canvas, pricing, north-star]
+      validation:
+        purpose: Test and measure product assumptions.
+        skills: [experiment-design, measure-pmf, ab-test-analysis]
+      execution:
+        purpose: Prepare for launch and mitigate risks.
+        skills: [pre-mortem, launch-checklist]
+      communication_gtm:
+        purpose: Communicate value and go-to-market.
+        skills: [release-notes, stakeholder-update, gtm, battlecard, ideal-customer-profile]
+
     examples:
-      - discovery
-      - opportunity-tree
-      - hypothesis
-      - prd
-      - prioritize
-      - experiment-design
-      - gtm
+      - /persona (kickoff)
+      - /discovery (foggy problems)
+      - /prd (validated ideas)
+      - /prioritize (RICE scoring)
+      - /experiment-design (before building)
+      - /gtm (launching)
+      - /pre-mortem (risk analysis)
