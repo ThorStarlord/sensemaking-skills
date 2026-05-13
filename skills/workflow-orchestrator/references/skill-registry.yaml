@@ -28,6 +28,11 @@ ecosystems:
         expected_output: ["Verified, committed code"]
         example_prompt: "Use tdd to implement the highest priority issue from the triage list."
 
+      - id: diagnose
+        display_name: Diagnostic Audit
+        use_when: ["System is unstable", "Error patterns are repeating", "Root cause is unknown"]
+        expected_output: ["Diagnostic Report", "Fix Recommendations"]
+
   interface_skills:
     display_name: Interface Skills
     purpose: "Turn fuzzy UI work into explicit, testable Spec Packages."
@@ -37,10 +42,20 @@ ecosystems:
         use_when: ["Starting a new UI feature", "Scope is undefined"]
         expected_output: ["UI Spec", "Run Manifest"]
       
+      - id: prototype
+        display_name: UI Prototyping
+        use_when: ["Multiple plausible solution shapes exist", "Interaction design is unproven"]
+        expected_output: ["Functional Prototype", "User Flow"]
+
   product_manager:
     display_name: Product Manager Skills
     purpose: "Product discovery, delivery, strategy, and validation."
     skills:
+      - id: zoom-out
+        display_name: Strategic Zoom-Out
+        use_when: ["User lacks system understanding", "Strategic direction is missing"]
+        expected_output: ["Context Map", "Strategic Recommendation"]
+
       - id: discovery
         display_name: Product Discovery
         use_when: ["The 'who' or 'why' is missing", "User problem is undefined"]
@@ -50,6 +65,29 @@ ecosystems:
         display_name: PRD Generation
         use_when: ["Problem is understood", "Solution needs detailed requirements"]
         expected_output: ["Production-ready PRD"]
+
+      - id: to-prd
+        display_name: Align to PRD
+        use_when: ["Alignment report exists", "Ready to synthesize specs"]
+        expected_input: ["Alignment Report"]
+        expected_output: ["Refined PRD"]
+
+      - id: to-issues
+        display_name: Decompose to Issues
+        use_when: ["PRD is approved", "Ready to break down work"]
+        expected_input: ["Approved PRD"]
+        expected_output: ["Issue List (Tracer Bullets)"]
+
+      - id: triage
+        display_name: Issue Triage
+        use_when: ["Issue list exists", "Need individual Agent Briefs"]
+        expected_input: ["Issue List"]
+        expected_output: ["AGENT-BRIEF.md for each issue"]
+
+      - id: handoff
+        display_name: Session Handoff
+        use_when: ["Work session is ending", "Need to capture final state"]
+        expected_output: ["Feature Completion Summary"]
 
 routing_rules:
   tie_breakers:

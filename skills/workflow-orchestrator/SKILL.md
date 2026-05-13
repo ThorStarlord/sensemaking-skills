@@ -1,6 +1,6 @@
 ---
 name: workflow-orchestrator
-description: Take a Repository Sensemaking Brief, select an appropriate workflow, and execute it with explicit gates and approval modes. Supports plan only, prompt chain, guided, and autonomous execution.
+description: select and stage a workflow from a repository sensemaking brief. use when the user has a diagnostic brief and wants a workflow plan, prompt chain, guided execution plan, or guarded orchestration with approval gates.
 ---
 
 # workflow-orchestrator
@@ -21,7 +21,8 @@ Use when you have a diagnostic brief and are ready to act. This skill manages th
 5. **Execute/Generate**: Depending on the mode, generate a prompt chain or coordinate step-by-step execution.
 
 ## Output Format
-Every response must follow the [Workflow Orchestration Plan](references/run-log-template.md) structure (Wait, the user called it Workflow Orchestration Plan but referenced run-log-template in the structure... I'll create a specific template).
+Every response must follow the [Workflow Orchestration Plan](references/workflow-orchestration-template.md) structure.
+Use [Run Log Template](references/run-log-template.md) only when recording an actual guided or autonomous run.
 
 ## Execution Modes
 | Mode | Behavior |

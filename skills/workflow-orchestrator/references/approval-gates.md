@@ -10,4 +10,7 @@ To ensure safety, every workflow step must pass an approval gate:
 
 ## Enforcement
 In `guided_execution` mode, the orchestrator MUST stop and wait for a "Go/No-Go" signal after every gate.
-In `autonomous_execution` mode, these gates are logged but bypassed (requires explicit high-risk opt-in).
+
+In `autonomous_execution` mode, these gates are logged but bypassed.
+- **MANDATORY OPT-IN**: This mode is never inferred. It requires the user to explicitly type: *"I choose autonomous_execution and accept high-risk bypassed gates."*
+- **DESTRUCTIVE ACTIONS**: Even in autonomous mode, the agent is prohibited from committing directly to `main` or deleting core architectural files unless a separate, specific override is granted.

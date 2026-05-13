@@ -18,17 +18,29 @@ Useful refinements that are not urgent blockers.
 ## 6. Weakest boundary
 The most ambiguous, unproven, unsafe, or unenforced part of the repo.
 
-## 7. Why this boundary matters
+## 7. Evidence
+File-level evidence supporting the diagnosis (cites specific files and line ranges).
+
+## 8. Why this boundary matters
 What breaks if this remains weak.
 
-## 8. Candidate next steps
+## 9. Candidate next steps
 2–5 possible next moves.
 
-## 9. Recommended next step
+## 10. Recommended next step
 The smallest concrete action with highest leverage.
 
-## 10. Recommended workflow
+## 11. Recommended workflow
 One workflow candidate, if appropriate (e.g., from `workflow-orchestrator`).
 
-## 11. Ready-to-copy prompt
+## 12. Machine-readable handoff
+```yaml
+recommended_workflow_id: 
+recommended_execution_mode: plan_only
+weakest_boundary: 
+required_inputs:
+  - repository_sensemaking_brief
+```
+
+## 13. Ready-to-copy prompt
 Prompt for `workflow-orchestrator` or another downstream skill.

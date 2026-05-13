@@ -1,6 +1,6 @@
 ---
 name: repo-sensemaker
-description: Analyze a repository to produce a Repository Sensemaking Brief. Identifies the repository goal, current structure, missing pieces, improvement opportunities, and the weakest boundary. Recommended next steps and workflows are provided.
+description: analyze a repository to produce a repository sensemaking brief. use when the user asks what a repo is for, what is missing, what can be improved, what the weakest boundary is, or what the next steps should be.
 ---
 
 # repo-sensemaker
@@ -17,8 +17,9 @@ Use when you need a deep audit of a repository's health, alignment with its stat
 1. **Analyze**: Inspect README, core files, folder structure, and existing documentation.
 2. **Signal Detection**: Identify what is working well (Strong Signals).
 3. **Gap Analysis**: Identify what is absent or incomplete (Missing Pieces).
-4. **Boundary Stress Test**: Find the "Weakest Boundary" (e.g., mismatch between README and code, unsafe workflows, missing validation).
-5. **Synthesis**: Produce a Repository Sensemaking Brief with candidate next steps and recommended workflows.
+4. **Evidence Gathering**: Cite specific file paths and code snippets to back up signals and gaps.
+5. **Boundary Stress Test**: Find the "Weakest Boundary" (e.g., mismatch between README and code, unsafe workflows, missing validation).
+6. **Synthesis**: Produce a Repository Sensemaking Brief with candidate next steps and recommended workflows.
 
 ## Output Format
 Every response must follow the [Repository Sensemaking Brief](references/repo-analysis-template.md) structure.

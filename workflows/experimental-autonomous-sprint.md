@@ -38,7 +38,7 @@ prompt 6: use handoff skill to create a Feature Completion Summary of the chat s
 | **2. Define** | `/to-prd` | Synthesizes a spec based on the new `CONTEXT.md`. |
 | **3. Decompose** | `/to-issues` | Breaks work into AFK-compatible vertical slices. |
 | **4. Brief** | `/triage` | Generates `AGENT-BRIEF.md` for each task. |
-| **5. Build** | `/tdd` | Executes TDD cycles and **commits after each slice**. |
+| **5. Build** | `/tdd` | Executes TDD cycles and **prepares commit summaries**. |
 | **6. Summary** | `/handoff` | Creates a completion summary of the session. |
 
 > [!IMPORTANT]
