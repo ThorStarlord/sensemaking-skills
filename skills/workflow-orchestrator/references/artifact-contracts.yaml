@@ -4,6 +4,7 @@ artifacts:
     produced_by: problem-framer
     consumed_by:
       - unknowns-mapper
+      - prompt-handoff
     required_sections:
       - raw_fog
       - problem_under_the_problem
@@ -17,6 +18,7 @@ artifacts:
     produced_by: unknowns-mapper
     consumed_by:
       - repo-sensemaker
+      - prompt-handoff
     required_sections:
       - knowns
       - unknowns
@@ -29,6 +31,8 @@ artifacts:
     produced_by: repo-sensemaker
     consumed_by:
       - workflow-orchestrator
+      - prompt-handoff
+      - sensemaking-docs-reconciler
     required_sections:
       - repository_goal
       - current_shape

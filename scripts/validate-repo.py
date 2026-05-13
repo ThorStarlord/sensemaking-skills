@@ -109,6 +109,31 @@ def validate_repo():
                         if registered_skills[s_id]["availability"]["type"] != "local":
                             errors.append(f"Workflow '{workflow['id']}' allows YOLO but contains non-local skill: {s_id}")
 
+            # 4b. Recursive Orchestrator Check & Step Type Validation
+            steps = workflow.get("steps", [])
+            for step in steps:
+                s_id = step.get("skill")
+                
+                # Recursive call check
+                if s_id == "workflow-orchestrator":
+                    errors.append(f"Workflow '{workflow['id']}' contains a recursive call to 'workflow-orchestrator'.")
+                
+                # Step type check
+                s_type = step.get("step_type")
+                if not s_type:
+                    errors.append(f"Workflow '{workflow['id']}' step '{s_id}' missing 'step_type'")
+                elif s_type not in ["local_execution", "prompt_handoff", "external_routing", "human_review"]:
+                    errors.append(f"Workflow '{workflow['id']}' step '{s_id}' has invalid step_type: {s_type}")
+                
+                # Step type vs Availability consistency
+                if s_id in registered_skills:
+                    availability = registered_skills[s_id]["availability"]["type"]
+                    if s_type == "local_execution" and availability != "local":
+                        errors.append(f"Workflow '{workflow['id']}' step '{s_id}' marked as local_execution but availability is {availability}")
+                    if s_type == "external_routing" and availability == "local":
+                         # Warning or error? If it's local, it SHOULD be executable.
+                         pass
+
     # 5. Artifact Handoff Validation
     if "skills/workflow-orchestrator/references/artifact-contracts.yaml" in registries and \
        "skills/workflow-orchestrator/references/workflow-registry.yaml" in registries:
@@ -191,7 +216,7 @@ def validate_repo():
             print(f" - {err}")
         sys.exit(1)
     else:
-        print("Validation passed! Repo is aligned with the hardened V1 artifact contracts and YOLO safety rules.")
+        print("Validation passed! Repo is aligned with the hardened V1 artifact contracts, YOLO safety, and recursive-free workflows.")
 
 if __name__ == "__main__":
     validate_repo()

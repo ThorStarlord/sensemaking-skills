@@ -1,7 +1,49 @@
 workflows:
-  - id: sensemaking-to-workflow
-    display_name: Sensemaking to Workflow
-    purpose: Move from raw fog to a selected workflow with approval gates.
+  - id: setup-sensemaking-repo
+    display_name: Setup Sensemaking Repo
+    purpose: Configure repository agent docs, artifact contracts, execution mode defaults, and downstream skill mappings.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: setup-sensemaking-skills
+        step_type: local_execution
+        gate: review_setup_plan
+      - id: 2
+        skill: repo-sensemaker
+        step_type: local_execution
+        gate: review_repo_brief
+      - id: 3
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_handoff_prompt
+
+  - id: docs-contract-reconciliation
+    display_name: Docs & Contract Reconciliation
+    purpose: Resolve drift between documentation, registries, artifact contracts, templates, and validator rules.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: repo-sensemaker
+        step_type: local_execution
+        gate: review_drift_diagnosis
+      - id: 2
+        skill: sensemaking-docs-reconciler
+        step_type: local_execution
+        gate: review_reconciliation_patch
+      - id: 3
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_next_prompt
+
+  - id: full-local-sensemaking
+    display_name: Full Local Sensemaking
+    purpose: Convert raw fog into a repository diagnosis and downstream handoff using only local executable skills.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -16,23 +58,24 @@ workflows:
     steps:
       - id: 1
         skill: problem-framer
+        step_type: local_execution
         gate: review_problem_frame
       - id: 2
         skill: unknowns-mapper
+        step_type: local_execution
         gate: review_unknowns_map
       - id: 3
         skill: repo-sensemaker
+        step_type: local_execution
         gate: review_sensemaking_brief
       - id: 4
-        skill: workflow-orchestrator
-        gate: review_workflow_plan
-      - id: 5
         skill: prompt-handoff
+        step_type: local_execution
         gate: review_final_prompt
 
-  - id: fast-diagnostic
-    display_name: Fast Diagnostic
-    purpose: Quickly identify the weakest boundary in a repository.
+  - id: fast-local-diagnostic
+    display_name: Fast Local Diagnostic
+    purpose: Quickly identify the weakest boundary and produce a handoff prompt.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -46,10 +89,12 @@ workflows:
     steps:
       - id: 1
         skill: repo-sensemaker
+        step_type: local_execution
         gate: review_sensemaking_brief
       - id: 2
-        skill: workflow-orchestrator
-        gate: review_workflow_plan
+        skill: prompt-handoff
+        step_type: local_execution
+        gate: review_handoff_prompt
 
   - id: experimental-autonomous-sprint
     display_name: Autonomous Sprint (Experimental)
@@ -58,23 +103,28 @@ workflows:
       - plan_only
       - prompt_chain
       - guided_execution
-      - autonomous_execution
     steps:
       - id: 1
         skill: grill-with-docs
+        step_type: external_routing
         gate: review_domain_alignment
       - id: 2
         skill: to-prd
+        step_type: external_routing
         gate: review_prd
       - id: 3
         skill: to-issues
+        step_type: external_routing
         gate: review_issue_list
       - id: 4
         skill: triage
+        step_type: external_routing
         gate: review_agent_briefs
       - id: 5
         skill: tdd
+        step_type: external_routing
         gate: verify_tests
       - id: 6
         skill: handoff
+        step_type: external_routing
         gate: session_close
