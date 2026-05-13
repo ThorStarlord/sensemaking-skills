@@ -14,20 +14,18 @@ The **Autonomous Sprint** is a high-velocity execution pattern that chains multi
 
 It leverages [Matt Pocock's Skills](https://github.com/mattpocock/skills) to ensure engineering rigor while maintaining maximum automation.
 
-## The Sequence
-
 Copy and paste the following prompt once you have achieved clarity via `project-sensemaker`:
 
 ```markdown
-prompt 1: use grill-with-docs skill to extract the goal from the context. Answer each question by exploring the codebase and existing docs. If a decision is not documented, make the most conservative architectural recommendation consistent with the project's domain language (CONTEXT.md). Do not wait for my input or approval.
+prompt 1: use grill-with-docs skill to extract the goal from the context. Answer each question by exploring the codebase and existing docs. If a decision is not documented, make the most conservative architectural recommendation consistent with the project's domain language (CONTEXT.md). Prepare the alignment report and STOP for my review.
 
-prompt 2: use to-prd skill with the output of grill-with-docs skill. Synthesize the design using the updated CONTEXT.md and any new ADRs as the source of truth. Save the output to the repository documentation without waiting for my approval.
+prompt 2: use to-prd skill with the output of grill-with-docs skill. Synthesize the design using the updated CONTEXT.md and any new ADRs as the source of truth. Save the PRD to the `docs/` directory and STOP for my review.
 
-prompt 3: use to-issues skill with the output of the to-prd skill. Break the work into AFK-compatible vertical slices (tracer bullets). Skip the publication to GitHub. 
+prompt 3: use to-issues skill with the output of the to-prd skill. Break the work into AFK-compatible vertical slices (tracer bullets). Prepare the issue list and STOP for my review.
 
-prompt 4: use triage skill on the output of the to-issues skills. Ensure an AGENT-BRIEF.md is generated for each issue and move them to ready-for-agent.
+prompt 4: use triage skill on the output of the to-issues skills. Ensure an AGENT-BRIEF.md is generated for each issue. Move them to `ready-for-agent/` and STOP for my review.
 
-prompt 5: use tdd with the output of the triage skill. Consume the Agent Briefs for each issue. Tackle the highest priority, unblocked issues first. Run the red-green-refactor loop without my input. Commit changes to the main repository after EACH successful vertical slice.
+prompt 5: use tdd with the output of the triage skill. Consume the Agent Briefs for each issue. Tackle the highest priority, unblocked issues first. Run the red-green-refactor loop. For each successful vertical slice, create a feature branch and prepare a commit summary for my review. DO NOT commit to main or push without explicit approval.
 
 prompt 6: use handoff skill to create a Feature Completion Summary of the chat session.
 ```

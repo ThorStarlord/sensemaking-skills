@@ -1,51 +1,57 @@
 # Example: Interface Skills Run Manifest
 
-## 1. Raw Idea
+## 1. Fog Type
+Architecture Fog (System pattern/Artifact uncertainty).
+
+## 2. Raw Idea
 "I think Interface Skills needs a run manifest, but I do not know what shape it should take."
 
-## 2. Likely Underlying Problem
+## 3. Likely Underlying Problem
 Agents lose context about which skills ran, what inputs they used, what artifacts changed, and which reports supersede older reports.
 
-## 3. Subject Map
-- Spec Package Architecture
-- Report Lifecycle
-- Agent Routing
-- Validator Design
-- Fixture Stability
+## 4. Object Under Pressure
+The Spec Package structure and the Agent Routing boundary.
 
-## 4. Known / Unknown / Assumed
+## 5. Known / Unknown / Assumed
 | Category | Item |
 | :--- | :--- |
 | **Known** | We have `00-index.md`. We have `reports/`. |
 | **Unknown** | Should the manifest be human-readable, machine-readable, or both? |
 | **Assumed** | Future agents will need to reconstruct a run to avoid stale data. |
 
-## 5. Research Paths
+## 6. Research Paths
 1. What information do future agents need to reconstruct a run?
 2. Does this overlap with `00-index.md`?
 3. What can a validator enforce deterministically?
 
-## 6. Findings
+## 7. Findings / Current Read
 Research suggests that a machine-readable format (YAML/JSON) is better for validators, but a Markdown summary is better for human review.
 
-## 7. Candidate Directions
+## 8. Candidate Directions
 1. Add `RUN-MANIFEST.md` for human readability.
 2. Add a "Run History" section to `00-index.md`.
 3. Add a machine-readable `run-manifest.yaml`.
 
-## 8. Weakest Boundary
+## 9. Weakest Boundary
 The transition between an agent finishing a run and a human approving the report.
 
-## 9. Smallest Useful Next Step
+## 10. Smallest Useful Next Step
 Prototype three formats for comparison.
 
-## 10. Next Skill Prompt
+## 11. Recommended Next Skill
+`prototype` (Engineering ecosystem).
+
+## 12. Ready-to-Copy Prompt
+```markdown
 /prototype
 
 Prototype three run manifest formats for Interface Skills:
 1. `RUN-MANIFEST.md`
 2. Run History section inside `00-index.md`
 3. machine-readable `run-manifest.yaml`
+
+Compare them for agent readability, validator friendliness, and spec package maintainability.
+```
 
 
 ## Expected Behavior Checklist

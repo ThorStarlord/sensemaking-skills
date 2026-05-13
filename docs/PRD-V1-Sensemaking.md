@@ -16,16 +16,19 @@ Agents often jump into implementation ("building") before they understand the "f
 - Maintain human-in-the-loop control for high-velocity workflows.
 
 ## 4. Key Features
-- **Project Sensemaker Skill**: YAML frontmatter, Boundary Rules, Core Philosophy.
-- **Sensemaking Brief**: 12 sections covering Fog Type, Object Under Pressure, Weakest Boundary, etc.
-- **Skill Registry**: Explicit routing table for Engineering, UI, and PM skills.
-- **Experimental Workflows**: Quarantined "Autonomous Sprint" with safety gates.
+- **Project Sensemaker Skill**: YAML frontmatter, Boundary Rules, Core Philosophy, and portable Skill UI metadata.
+- **Sensemaking Brief**: Canonical 12-section structure (Fog Type, Object Under Pressure, etc.).
+- **Structured Skill Registry**: Valid YAML routing table with tie-breakers and confidence rules.
+- **Validation Fixtures**: 3 positive examples and 1 negative fixture, all aligned with the 12-section template and behavior checklists.
+- **Experimental Workflows**: Hardened "Autonomous Sprint" with "review and stop" gates.
+- **Governance**: MIT License, CONTRIBUTING.md, and `validate-repo.py` script.
 
 ## 5. Functional Requirements
 - Must produce a 12-section Markdown report by default.
 - Must recommend at least one downstream skill or concrete artifact.
-- Must use relative links for all internal references.
-- Must include validation fixtures (examples) with expected behavior checklists.
+- Must use valid YAML for the skill registry to enable future automation.
+- Must refuse to route downstream if unknowns are too fundamental (Confidence Rule).
+- Must include a negative fixture demonstrating "refusal to route."
 
 ## 6. Non-Functional Requirements
 - **Portability**: Must be installable as a ChatGPT skill.

@@ -1,82 +1,64 @@
-# Skill Registry & Routing Table
+version: 1
+ecosystems:
+  matt_pocock:
+    display_name: Matt Pocock Engineering Skills
+    purpose: "Engineering discipline, mental model alignment, grilling, TDD, and architectural integrity."
+    skills:
+      - id: grill-me
+        display_name: Grill Me
+        use_when: ["Mental models are misaligned", "User needs assumptions challenged"]
+        do_not_use_when: ["Enough clarity exists to start a PRD or issue breakdown"]
+        expected_input: ["Rough idea or goal"]
+        expected_output: ["Clarified and challenged goal"]
+        example_prompt: "Use grill-me to challenge my assumptions about this feature."
+      
+      - id: grill-with-docs
+        display_name: Grill With Docs
+        use_when: ["Project exists but has drifted from docs", "Need to align code with intent"]
+        do_not_use_when: ["No documentation exists yet"]
+        expected_input: ["Repository context", "Existing docs"]
+        expected_output: ["Updated context", "Resolved contradictions"]
+        example_prompt: "Use grill-with-docs to align this new proposal with our existing CONTEXT.md."
 
-This registry defines the primary downstream skills and ecosystems that `project-sensemaker` routes to.
+      - id: tdd
+        display_name: Test-Driven Development
+        use_when: ["Ready to implement", "Logic is deterministic", "Want vertical slices"]
+        do_not_use_when: ["The 'how' is still unknown"]
+        expected_input: ["Issue list", "Agent Brief"]
+        expected_output: ["Verified, committed code"]
+        example_prompt: "Use tdd to implement the highest priority issue from the triage list."
 
----
+  interface_skills:
+    display_name: Interface Skills
+    purpose: "Turn fuzzy UI work into explicit, testable Spec Packages."
+    skills:
+      - id: ui-brief
+        display_name: UI Brief
+        use_when: ["Starting a new UI feature", "Scope is undefined"]
+        expected_output: ["UI Spec", "Run Manifest"]
+      
+  product_manager:
+    display_name: Product Manager Skills
+    purpose: "Product discovery, delivery, strategy, and validation."
+    skills:
+      - id: discovery
+        display_name: Product Discovery
+        use_when: ["The 'who' or 'why' is missing", "User problem is undefined"]
+        expected_output: ["Persona", "Hypothesis", "Opportunity Tree"]
 
-## Engineering Skills (Matt Pocock Ecosystem)
+      - id: prd
+        display_name: PRD Generation
+        use_when: ["Problem is understood", "Solution needs detailed requirements"]
+        expected_output: ["Production-ready PRD"]
 
-### grill-me
-- **use_when**: Mental models are misaligned; user needs a "rubber duck" to challenge assumptions.
-- **do_not_use_when**: You have enough clarity to start a PRD or issues.
-- **expected_input**: A rough idea or goal.
-- **expected_output**: A clarified, "grilled" version of the goal.
-- **example_prompts**: "Use grill-me to challenge my assumptions about this new feature."
-
-### grill-with-docs
-- **use_when**: The project exists but has drifted from docs; need to align code with intent.
-- **do_not_use_when**: No documentation exists yet.
-- **expected_input**: Repository context + existing docs.
-- **expected_output**: Updated context or a set of resolved contradictions.
-
-### zoom-out
-- **use_when**: Lost in implementation details; need a higher-level architectural or strategic view.
-- **do_not_use_when**: You are just starting the project (use `project-sensemaker`).
-
-### prototype
-- **use_when**: Need to test a technical approach quickly without full TDD or production overhead.
-- **do_not_use_when**: Implementation path is already clear and standard.
-
-### tdd
-- **use_when**: Ready to implement; logic is deterministic; want high confidence and vertical slices.
-- **do_not_use_when**: The "how" is still unknown (use `prototype`).
-
-### diagnose
-- **use_when**: Facing a hard bug, regression, or "impossible" system state.
-
-### to-issues
-- **use_when**: PRD or spec is ready; need to break work into AFK-compatible vertical slices.
-
-### handoff
-- **use_when**: Ending a session; need a "Feature Completion Summary" for the next agent or session.
-
----
-
-## Interface Skills (UI/UX Ecosystem)
-
-### interface-skills-workflow
-- **use_when**: Work is primarily about UI components, design systems, or frontend flows.
-- **expected_output**: A validated Spec Package (Run Manifest + UI Spec).
-- **skills**: [ui-brief, ui-blueprint, ui-inspector, ui-redline]
-
----
-
-## Product Manager Skills (Discovery/Strategy Ecosystem)
-
-### product-manager-discovery
-- **use_when**: The "who" or "why" is missing; user/market problem is undefined.
-- **expected_output**: Persona, Hypothesis, or Opportunity Tree.
-
-### product-manager-prd
-- **use_when**: Problem is understood; solution needs detailed requirements and acceptance criteria.
-- **expected_output**: A production-ready PRD.
-
-### product-manager-experiment
-- **use_when**: High-risk assumption identified; need to design an A/B test or validation experiment.
-
----
-
-## Ecosystem Overviews
-
-### Interface Skills
-- **Purpose**: Turn fuzzy UI work into explicit, testable Spec Packages.
-- **Core Object**: Spec Package.
-
-### Matt Pocock Skills
-- **Purpose**: Engineering discipline, grilling, TDD, and architectural integrity.
-- **Core Philosophy**: Pragmatic Programmer / DDD fundamentals.
-
-### Product Manager Skills
-- **Purpose**: Product discovery, delivery, strategy, and GTM.
-- **Focus**: Solving for the user and the business.
+routing_rules:
+  tie_breakers:
+    - rule: "If user lacks system understanding, route to /zoom-out."
+    - rule: "If user has proposed change and existing docs, route to /grill-with-docs."
+    - rule: "If multiple plausible solution shapes exist, route to /prototype."
+    - rule: "If desired behavior is deterministic and testable, route to /tdd."
+    - rule: "If issue is UI/spec drift, route to Interface Skills."
+    - rule: "If user/customer/value prop is unclear, route to PM discovery."
+  confidence_rules:
+    - rule: "If unknowns are too fundamental to choose a downstream skill, do not route. Recommend a research path or problem frame instead."
 
