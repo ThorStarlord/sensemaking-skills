@@ -66,36 +66,87 @@ ecosystems:
   product:
     name: Product Management
     skills:
+      - id: persona
+        purpose: define target user and player fantasy
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
       - id: discovery
-        purpose: define the user persona and problem space
-        availability:
-          type: external
-          executable_by_orchestrator: false
-          requires_installed_skill: true
-      - id: to-prd
-        purpose: synthesize a problem frame into a PRD
-        availability:
-          type: prompt_only
-          executable_by_orchestrator: false
-          requires_installed_skill: false
-      - id: to-issues
-        purpose: break a PRD into actionable issues
-        availability:
-          type: prompt_only
-          executable_by_orchestrator: false
-          requires_installed_skill: false
-      - id: triage
-        purpose: organize and prioritize issues for an agent
-        availability:
-          type: prompt_only
-          executable_by_orchestrator: false
-          requires_installed_skill: false
-      - id: handoff
-        purpose: create a feature completion summary
-        availability:
-          type: prompt_only
-          executable_by_orchestrator: false
-          requires_installed_skill: false
+        purpose: investigate problem space and user needs
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: interview-synthesis
+        purpose: extract patterns from customer interviews
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: competitive-analysis
+        purpose: audit market alternatives and positioning
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: opportunity-tree
+        purpose: map problems to desired outcomes
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: hypothesis
+        purpose: define testable product bets
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: customer-journey
+        purpose: map user flow and friction points
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: prd
+        purpose: synthesize requirements into a spec
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: user-stories
+        purpose: define feature slices from user perspective
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: acceptance-criteria
+        purpose: define done states for features
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: prioritize
+        purpose: rank work by impact and feasibility
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: strategy
+        purpose: define long-term product direction
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: roadmap
+        purpose: sequence feature delivery over time
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: okr
+        purpose: define goals and key results
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: lean-canvas
+        purpose: summarize business model on one page
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: pricing
+        purpose: design monetization and packaging
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: north-star
+        purpose: identify core leading metric
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: experiment-design
+        purpose: plan validation tests for hypotheses
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: measure-pmf
+        purpose: audit product-market fit signals
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: ab-test-analysis
+        purpose: evaluate results of split tests
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: pre-mortem
+        purpose: identify failure modes before launch
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: launch-checklist
+        purpose: verify operational readiness for release
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: release-notes
+        purpose: communicate value to users and stakeholders
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: stakeholder-update
+        purpose: communicate progress and blockers
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: gtm
+        purpose: define go-to-market execution plan
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: battlecard
+        purpose: summarize competitive talk tracks
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
+      - id: ideal-customer-profile
+        purpose: define highest-value user segments
+        availability: { type: external, executable_by_orchestrator: false, requires_installed_skill: true }
 
   flagship:
     name: Flagship Orchestration

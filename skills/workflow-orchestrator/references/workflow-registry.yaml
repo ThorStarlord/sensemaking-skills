@@ -70,6 +70,89 @@ workflows:
         step_type: local_execution
         gate: review_prompt_chain
 
+  - id: product-discovery-sprint
+    display_name: Product Discovery Sprint
+    purpose: Move from vague product fog to a validated opportunity and testable hypothesis.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: persona
+        step_type: external_routing
+        gate: review_persona
+      - id: 2
+        skill: discovery
+        step_type: external_routing
+        gate: review_discovery
+      - id: 3
+        skill: interview-synthesis
+        step_type: external_routing
+        gate: review_patterns
+      - id: 4
+        skill: opportunity-tree
+        step_type: external_routing
+        gate: review_opportunity_tree
+      - id: 5
+        skill: hypothesis
+        step_type: external_routing
+        gate: review_hypothesis
+
+  - id: feature-kickoff-sprint
+    display_name: Feature Kickoff Sprint
+    purpose: Turn a validated hypothesis into requirements, stories, and acceptance criteria.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: hypothesis
+        step_type: external_routing
+        gate: review_hypothesis
+      - id: 2
+        skill: prd
+        step_type: external_routing
+        gate: review_prd
+      - id: 3
+        skill: user-stories
+        step_type: external_routing
+        gate: review_user_stories
+      - id: 4
+        skill: acceptance-criteria
+        step_type: external_routing
+        gate: review_acceptance_criteria
+
+  - id: product-strategy-sprint
+    display_name: Product Strategy Sprint
+    purpose: Turn market and product context into strategy, OKRs, roadmap, and stakeholder update.
+    allowed_execution_modes:
+      - plan_only
+      - prompt_chain
+      - guided_execution
+    steps:
+      - id: 1
+        skill: competitive-analysis
+        step_type: external_routing
+        gate: review_competitive_analysis
+      - id: 2
+        skill: strategy
+        step_type: external_routing
+        gate: review_strategy
+      - id: 3
+        skill: okr
+        step_type: external_routing
+        gate: review_okrs
+      - id: 4
+        skill: roadmap
+        step_type: external_routing
+        gate: review_roadmap
+      - id: 5
+        skill: stakeholder-update
+        step_type: external_routing
+        gate: review_stakeholder_update
+
   - id: full-local-sensemaking
     display_name: Full Local Sensemaking
     purpose: Convert raw fog into a repository diagnosis and downstream handoff using only local executable skills.
