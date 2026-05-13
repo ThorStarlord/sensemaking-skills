@@ -1,41 +1,50 @@
-## Output Template
+# Sensemaking Brief Template
 
-Use this Markdown structure for every response from `project-sensemaker`.
+Every full `project-sensemaker` analysis should follow this 12-section structure to ensure maximum clarity and actionable routing.
 
-```md
-## 1. Raw Idea
-[Description of what the user initially said]
+---
 
-## 2. Likely Underlying Problem
-[The "pain" or "failure mode" that this idea is trying to solve]
+## 1. Fog Type
+[Identify the primary type of uncertainty: e.g., Product Fog, Architecture Fog, Research Fog, or Routing Fog.]
 
-## 3. Subject Map
-[List of disciplines or knowledge areas involved]
+## 2. Raw Idea
+[The initial request, idea, or problem statement as provided by the user.]
 
-## 4. Known / Unknown / Assumed
-| Category | Item |
+## 3. Likely Underlying Problem
+[The core pain point, failure mode, or "problem under the problem" identified through analysis.]
+
+## 4. Object Under Pressure
+[The specific artifact or boundary that is most stressed: e.g., Spec Package, API Contract, User Flow, or Knowledge Map.]
+
+## 5. Known / Unknown / Assumed
+| Status | Description |
 | :--- | :--- |
-| **Known** | [Fact] |
-| **Unknown** | [Missing Knowledge] |
-| **Assumed** | [Guess/Assumption] |
+| **Known** | Verified facts, existing docs, or stable code. |
+| **Unknown** | Explicit gaps in knowledge or missing documentation. |
+| **Assumed** | Beliefs or "vibes" that need verification. |
 
-## 5. Research Paths
-- [Research path 1]
-- [Research path 2]
+## 6. Research Paths
+[2–5 targeted, high-leverage research paths to resolve the most critical Unknowns.]
 
-## 6. Findings
-[Synthesis of findings from web research, file search, or documentation]
+## 7. Findings / Current Read
+[Synthesis of any research performed, repository inspection results, or "No research performed yet."]
 
-## 7. Candidate Directions
-- **Direction A**: [Description]
-- **Direction B**: [Description]
+## 8. Candidate Directions
+[2–4 possible next moves for the project, framed as high-level options.]
 
-## 8. Weakest Boundary
-[The part of the system or idea that is most ambiguous, unproven, or unenforced]
+## 9. Weakest Boundary
+[The part of the system or plan that is most ambiguous, unproven, or risky.]
 
-## 9. Smallest Useful Next Step
-[One concrete artifact or action that moves the needle]
+## 10. Smallest Useful Next Step
+[One single, concrete artifact or action that provides the most immediate value.]
 
-## 10. Next Skill Prompt
-[A ready-to-copy prompt for the next recommended skill]
-```
+## 11. Recommended Next Skill
+[The specific skill from the registry (e.g., `grill-me`, `prd`, `ui-brief`) to hand off to.]
+
+## 12. Ready-to-Copy Prompt
+[A pre-written prompt that the user can copy and paste into the next agent or skill to continue the work.]
+
+---
+
+### Compact Mode (Optional)
+For minor uncertainty, use sections 1, 2, 4, 5, 10, 11, and 12 only.

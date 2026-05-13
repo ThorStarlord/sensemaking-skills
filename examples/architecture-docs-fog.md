@@ -43,4 +43,11 @@ I am proposing moving agent routing logic from `CONTEXT.md` to a new `docs/archi
 Challenge this based on:
 1. RAG performance (agent discoverability).
 2. Maintenance overhead.
-3. Consistency with our other documentation patterns.
+
+## Expected Behavior Checklist
+
+- [ ] Identifies the primary fog type (Architecture Fog)
+- [ ] Names the "Object Under Pressure" (CONTEXT.md structure)
+- [ ] Recognizes that `CONTEXT.md` is becoming a "ball of mud"
+- [ ] Recommends `grill-with-docs` to align documentation intent
+- [ ] Does not perform the extraction itself

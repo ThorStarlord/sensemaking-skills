@@ -21,9 +21,18 @@ This toolkit acts as a meta-layer, helping you choose between:
 - **Matt Pocock Skills**: For engineering discipline, grilling, TDD, and diagnosis.
 - **Product Manager Skills**: For discovery, hypotheses, PRDs, and GTM strategy.
 
+## V1 Definition of Done
+
+- `project-sensemaker` is a package-valid ChatGPT skill (includes YAML frontmatter and `agents/openai.yaml`).
+- It produces a **Sensemaking Brief** (12-section standard).
+- It routes using a curated registry with explicit skill entries.
+- It includes validation fixtures for representative fog types.
+- It adheres to the **Boundary Rule**: no downstream work by default.
+- It can recommend a next skill or concrete artifact.
+
 ## Repository Structure
 
 - `skills/`: Packaged instructions for AI agents.
-- `workflows/`: Composite skill chains (e.g., Autonomous Sprint).
+- `workflows/`: Composite skill chains (e.g., [Experimental Autonomous Sprint](workflows/experimental-autonomous-sprint.md)).
 - `references/`: Knowledge maps, registries, and templates.
-- `examples/`: Real-world "fog-to-clarity" cases.
+- `examples/`: Real-world "fog-to-clarity" validation fixtures.

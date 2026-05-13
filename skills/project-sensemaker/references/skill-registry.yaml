@@ -1,87 +1,82 @@
-ecosystems:
-  interface_skills:
-    purpose: >
-      Turn fuzzy, existing, or drifting UI work into explicit, testable Spec Packages.
-    core_object: Spec Package
-    use_when:
-      - UI scope needs a spec package
-      - implementation needs inspection or redline
-      - acceptance criteria need UI-specific labels
-      - fixtures or validators are involved
-      - agent routing needs to find spec docs
-    examples:
-      - ui-brief
-      - ui-blueprint
-      - ui-inspector
-      - ui-redline
-      - ui-spec-linter
-      - ui-spec-reconcile
-      - ui-agent-routing
+# Skill Registry & Routing Table
 
-  matt_pocock_skills:
-    purpose: >
-      Improve engineering thinking, docs, tests, debugging, issues, and handoffs using "Pragmatic Programmer" and DDD fundamentals.
-    use_when:
-      - idea needs "grilling" to align mental models
-      - docs need terminology challenge (decoding jargon)
-      - system shape is unclear or has become a "ball of mud"
-      - deterministic code needs TDD (red-green-refactor)
-      - failure needs disciplined diagnosis
-      - plan needs vertical slices or GitHub issues
-      - project needs a shared language (CONTEXT.md)
-    
-    sub_categories:
-      engineering:
-        purpose: Daily code work and architectural integrity.
-        skills: [diagnose, grill-with-docs, triage, improve-codebase-architecture, setup-matt-pocock-skills, tdd, to-issues, to-prd, zoom-out, prototype]
-      productivity:
-        purpose: General workflow and agent communication.
-        skills: [caveman, grill-me, handoff, write-a-skill]
-    
-    examples:
-      - /grill-with-docs (align mental models)
-      - /tdd (vertical slices)
-      - /diagnose (hard bugs)
-      - /improve-codebase-architecture (rescue ball of mud)
-      - /zoom-out (higher-level perspective)
-      - /to-issues (break down plan)
+This registry defines the primary downstream skills and ecosystems that `project-sensemaker` routes to.
 
-  product_manager_skills:
-    purpose: >
-      Move through product discovery, delivery, strategy, validation, launch, and GTM.
-    use_when:
-      - user/customer problem is unclear
-      - feature needs PRD or stories
-      - hypothesis needs validation or experiment design
-      - opportunities need prioritization (RICE)
-      - launch, pricing, or GTM needs planning
-      - product-market fit needs measurement
-    
-    sub_categories:
-      discovery:
-        purpose: Understand the problem and user.
-        skills: [persona, discovery, interview-synthesis, competitive-analysis, opportunity-tree, hypothesis, customer-journey]
-      delivery:
-        purpose: Specify and break down the solution.
-        skills: [prd, user-stories, acceptance-criteria]
-      strategy:
-        purpose: Prioritize, align, and plan the roadmap.
-        skills: [prioritize, strategy, roadmap, okr, lean-canvas, pricing, north-star]
-      validation:
-        purpose: Test and measure product assumptions.
-        skills: [experiment-design, measure-pmf, ab-test-analysis]
-      execution:
-        purpose: Prepare for launch and mitigate risks.
-        skills: [pre-mortem, launch-checklist]
-      communication_gtm:
-        purpose: Communicate value and go-to-market.
-        skills: [release-notes, stakeholder-update, gtm, battlecard, ideal-customer-profile]
+---
 
-    examples:
-      - /persona (kickoff)
-      - /discovery (foggy problems)
-      - /prd (validated ideas)
-      - /prioritize (RICE scoring)
-      - /experiment-design (before building)
-      - /gtm (launching)
-      - /pre-mortem (risk analysis)
+## Engineering Skills (Matt Pocock Ecosystem)
+
+### grill-me
+- **use_when**: Mental models are misaligned; user needs a "rubber duck" to challenge assumptions.
+- **do_not_use_when**: You have enough clarity to start a PRD or issues.
+- **expected_input**: A rough idea or goal.
+- **expected_output**: A clarified, "grilled" version of the goal.
+- **example_prompts**: "Use grill-me to challenge my assumptions about this new feature."
+
+### grill-with-docs
+- **use_when**: The project exists but has drifted from docs; need to align code with intent.
+- **do_not_use_when**: No documentation exists yet.
+- **expected_input**: Repository context + existing docs.
+- **expected_output**: Updated context or a set of resolved contradictions.
+
+### zoom-out
+- **use_when**: Lost in implementation details; need a higher-level architectural or strategic view.
+- **do_not_use_when**: You are just starting the project (use `project-sensemaker`).
+
+### prototype
+- **use_when**: Need to test a technical approach quickly without full TDD or production overhead.
+- **do_not_use_when**: Implementation path is already clear and standard.
+
+### tdd
+- **use_when**: Ready to implement; logic is deterministic; want high confidence and vertical slices.
+- **do_not_use_when**: The "how" is still unknown (use `prototype`).
+
+### diagnose
+- **use_when**: Facing a hard bug, regression, or "impossible" system state.
+
+### to-issues
+- **use_when**: PRD or spec is ready; need to break work into AFK-compatible vertical slices.
+
+### handoff
+- **use_when**: Ending a session; need a "Feature Completion Summary" for the next agent or session.
+
+---
+
+## Interface Skills (UI/UX Ecosystem)
+
+### interface-skills-workflow
+- **use_when**: Work is primarily about UI components, design systems, or frontend flows.
+- **expected_output**: A validated Spec Package (Run Manifest + UI Spec).
+- **skills**: [ui-brief, ui-blueprint, ui-inspector, ui-redline]
+
+---
+
+## Product Manager Skills (Discovery/Strategy Ecosystem)
+
+### product-manager-discovery
+- **use_when**: The "who" or "why" is missing; user/market problem is undefined.
+- **expected_output**: Persona, Hypothesis, or Opportunity Tree.
+
+### product-manager-prd
+- **use_when**: Problem is understood; solution needs detailed requirements and acceptance criteria.
+- **expected_output**: A production-ready PRD.
+
+### product-manager-experiment
+- **use_when**: High-risk assumption identified; need to design an A/B test or validation experiment.
+
+---
+
+## Ecosystem Overviews
+
+### Interface Skills
+- **Purpose**: Turn fuzzy UI work into explicit, testable Spec Packages.
+- **Core Object**: Spec Package.
+
+### Matt Pocock Skills
+- **Purpose**: Engineering discipline, grilling, TDD, and architectural integrity.
+- **Core Philosophy**: Pragmatic Programmer / DDD fundamentals.
+
+### Product Manager Skills
+- **Purpose**: Product discovery, delivery, strategy, and GTM.
+- **Focus**: Solving for the user and the business.
+

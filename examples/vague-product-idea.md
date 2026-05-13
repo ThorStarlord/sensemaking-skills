@@ -43,4 +43,12 @@ We want to transform our "digital worksheet" games into narrative experiences fo
 Define the "Explorer" persona:
 - What are their favorite types of stories?
 - What mechanical complexity can they handle?
-- How does the "Math Goal" become a "Quest Reward"?
+
+## Expected Behavior Checklist
+
+- [ ] Identifies the primary fog type (Product Fog)
+- [ ] Names the "Object Under Pressure" (GDD Template / Player Fantasy)
+- [ ] Separates Knowns, Unknowns, and Assumptions clearly
+- [ ] Names the "Weakest Boundary" (Math Objective vs Quest Quest)
+- [ ] Recommends a relevant next skill (`discovery`)
+- [ ] Does not attempt to write the GDD or build the narrative layer

@@ -1,4 +1,14 @@
-# Autonomous Sprint Workflow
+# [EXPERIMENTAL] Autonomous Sprint Workflow
+
+> [!CAUTION]
+> **Status**: Experimental / Alpha
+> This workflow is designed for high-velocity, automated execution. It is **unstable** and may produce unexpected results or architectural drift if not carefully monitored.
+
+> [!IMPORTANT]
+> **Mandatory Human Approval Gates**:
+> - Do not approve PRDs or designs without explicit user permission.
+> - Do not commit directly to `main` by default; use feature branches unless the user overrides.
+> - Scripts enforce structure, but skills provide judgment. **Humans approve usefulness.**
 
 The **Autonomous Sprint** is a high-velocity execution pattern that chains multiple specialized skills together to move from a vague idea to verified, committed code in a single session.
 

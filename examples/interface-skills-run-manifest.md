@@ -47,4 +47,11 @@ Prototype three run manifest formats for Interface Skills:
 2. Run History section inside `00-index.md`
 3. machine-readable `run-manifest.yaml`
 
-Compare them for agent readability, validator friendliness, and spec package maintainability.
+
+## Expected Behavior Checklist
+
+- [ ] Identifies the primary fog type (Architecture Fog)
+- [ ] Names the "Object Under Pressure" (Spec Package / Run Manifest)
+- [ ] Identifies the "Weakest Boundary" (Agent completion vs Human approval)
+- [ ] Recommends `/prototype` to compare options
+- [ ] Does not create the manifest or build the validator
