@@ -29,3 +29,19 @@ workflows:
       - skill: tdd
       - skill: handoff
     gates: ["EVERY STEP requires human approval in guided mode"]
+
+  - id: sensemaking-to-workflow
+    display_name: Sensemaking to Workflow
+    purpose: 'Move from raw fog to a selected workflow with approval gates.'
+    steps:
+      - skill: problem-framer
+      - skill: unknowns-mapper
+      - skill: repo-sensemaker
+      - skill: workflow-orchestrator
+      - skill: prompt-handoff
+    gates:
+      - Problem Frame Review
+      - Unknowns Map Review
+      - Repository Brief Review
+      - Workflow Plan Review
+      - Prompt Review

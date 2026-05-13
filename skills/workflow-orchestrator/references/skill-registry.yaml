@@ -1,5 +1,37 @@
 version: 1
 ecosystems:
+  sensemaking:
+    display_name: Core Sensemaking Skills
+    purpose: "Decompose vague fog into structured artifacts and actionable paths."
+    skills:
+      - id: problem-framer
+        display_name: Problem Framer
+        use_when: ["Raw idea is vague", "User is unsure what to build"]
+        do_not_use_when: ["Problem is already well-defined", "Ready for technical mapping"]
+        expected_output: ["Problem Frame"]
+
+      - id: unknowns-mapper
+        display_name: Unknowns Mapper
+        use_when: ["Problem is framed but research gaps exist", "Starting a new project phase"]
+        do_not_use_when: ["All critical information is already known", "Ready for repo diagnosis"]
+        expected_output: ["Unknowns Map"]
+
+      - id: repo-sensemaker
+        display_name: Repository Sensemaker
+        use_when: ["Need to understand a repository's structure and goals", "Identifying the weakest boundary"]
+        expected_output: ["Repository Sensemaking Brief"]
+
+      - id: workflow-orchestrator
+        display_name: Workflow Orchestrator
+        use_when: ["Diagnostic brief exists", "Ready to coordinate execution"]
+        expected_output: ["Workflow Orchestration Plan"]
+
+      - id: prompt-handoff
+        display_name: Prompt Handoff
+        use_when: ["Sensemaking is complete", "Ready to transition to specialized skills"]
+        do_not_use_when: ["Sensemaking artifact is still drafty or missing key context"]
+        expected_output: ["Prompt Handoff"]
+
   matt_pocock:
     display_name: Matt Pocock Engineering Skills
     purpose: "Engineering discipline, mental model alignment, grilling, TDD, and architectural integrity."

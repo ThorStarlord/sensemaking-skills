@@ -20,7 +20,16 @@ def validate_repo():
         "skills/workflow-orchestrator/references/skill-registry.yaml",
         "skills/workflow-orchestrator/references/workflow-registry.yaml",
         "skills/workflow-orchestrator/references/workflow-orchestration-template.md",
-        "skills/workflow-orchestrator/references/execution-modes.md"
+        "skills/workflow-orchestrator/references/execution-modes.md",
+        "skills/problem-framer/SKILL.md",
+        "skills/problem-framer/agents/openai.yaml",
+        "skills/problem-framer/references/problem-frame-template.md",
+        "skills/unknowns-mapper/SKILL.md",
+        "skills/unknowns-mapper/agents/openai.yaml",
+        "skills/unknowns-mapper/references/unknowns-map-template.md",
+        "skills/prompt-handoff/SKILL.md",
+        "skills/prompt-handoff/agents/openai.yaml",
+        "skills/prompt-handoff/references/prompt-handoff-template.md"
     ]
     
     for f in core_files:
@@ -32,7 +41,10 @@ def validate_repo():
         "skills/repo-sensemaker/agents/openai.yaml",
         "skills/workflow-orchestrator/agents/openai.yaml",
         "skills/workflow-orchestrator/references/skill-registry.yaml",
-        "skills/workflow-orchestrator/references/workflow-registry.yaml"
+        "skills/workflow-orchestrator/references/workflow-registry.yaml",
+        "skills/problem-framer/agents/openai.yaml",
+        "skills/unknowns-mapper/agents/openai.yaml",
+        "skills/prompt-handoff/agents/openai.yaml"
     ]
     
     registries = {}
@@ -67,7 +79,10 @@ def validate_repo():
     # 4. Frontmatter Check (Lowercase descriptions)
     skill_files = [
         "skills/repo-sensemaker/SKILL.md",
-        "skills/workflow-orchestrator/SKILL.md"
+        "skills/workflow-orchestrator/SKILL.md",
+        "skills/problem-framer/SKILL.md",
+        "skills/unknowns-mapper/SKILL.md",
+        "skills/prompt-handoff/SKILL.md"
     ]
     for sf in skill_files:
         if os.path.exists(sf):
@@ -82,7 +97,10 @@ def validate_repo():
     # 5. Template Section Count Check
     templates = {
         "skills/repo-sensemaker/references/repo-analysis-template.md": 13,
-        "skills/workflow-orchestrator/references/workflow-orchestration-template.md": 10
+        "skills/workflow-orchestrator/references/workflow-orchestration-template.md": 10,
+        "skills/problem-framer/references/problem-frame-template.md": 7,
+        "skills/unknowns-mapper/references/unknowns-map-template.md": 6,
+        "skills/prompt-handoff/references/prompt-handoff-template.md": 8
     }
     for path, expected_count in templates.items():
         if os.path.exists(path):
@@ -93,7 +111,7 @@ def validate_repo():
                     errors.append(f"Template {path} has {len(sections)} sections, expected {expected_count}")
 
     # 6. Check examples
-    examples_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative"]
+    examples_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative", "examples/problem-framer", "examples/unknowns-mapper", "examples/prompt-handoff"]
     for ex_dir in examples_dirs:
         if os.path.exists(ex_dir):
             for f in os.listdir(ex_dir):
@@ -110,7 +128,7 @@ def validate_repo():
             print(f" - {err}")
         sys.exit(1)
     else:
-        print("Validation passed! Repo is aligned with V1 hardened architecture.")
+        print("Validation passed! Repo is aligned with the expanded sensemaking architecture.")
 
 if __name__ == "__main__":
     validate_repo()
