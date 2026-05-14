@@ -15,8 +15,10 @@
 - **input_source**: [Source ID or N/A]
 - **output_artifact**: [Artifact ID]
 - **artifact_path**: [Relative path, e.g., artifacts/name.md]
-- **validation_command**: [Exact command used to validate]
-- **validation_result**: [PASSED | FAILED]
+- **validator_stack**:
+    - level: [Generic | Specialized]
+      command: [Exact command]
+      result: [PASSED | FAILED]
 - **gate**: [Gate Name]
 - **status**: [COMPLETED | PAUSED | FAILED]
 

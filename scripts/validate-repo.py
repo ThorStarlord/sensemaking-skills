@@ -145,7 +145,23 @@ def validate_repo():
         
         contracts = registries["skills/workflow-orchestrator/references/artifact-contracts.yaml"]
         artifacts_list = contracts.get("artifacts", [])
-        contract_ids = {a["id"] for a in artifacts_list}
+        contract_ids = set()
+        
+        for art in artifacts_list:
+            a_id = art["id"]
+            contract_ids.add(a_id)
+            
+            # Verification block validation
+            verification = art.get("verification")
+            if not verification:
+                errors.append(f"Artifact '{a_id}' missing 'verification' block")
+            else:
+                if not verification.get("generic_validator"):
+                    errors.append(f"Artifact '{a_id}' verification missing 'generic_validator'")
+                if not verification.get("required_for_modes"):
+                    errors.append(f"Artifact '{a_id}' verification missing 'required_for_modes'")
+                elif not isinstance(verification["required_for_modes"], list):
+                    errors.append(f"Artifact '{a_id}' 'required_for_modes' must be a list")
         
         skill_registry = registries["skills/workflow-orchestrator/references/skill-registry.yaml"]
         skill_to_artifact = {}

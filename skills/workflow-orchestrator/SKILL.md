@@ -30,6 +30,7 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 ## Boundary Rules
 - **Safety First**: Default to `plan_only` mode. 
 - **Contract Enforcement**: If a brief does not contain a valid machine-readable handoff, or the requested execution mode is not allowed by [Execution Modes](references/execution-modes.md), the orchestrator MUST refuse the request or downgrade to `plan_only` or `guided_execution`.
+- **Validator Stack Compliance**: The orchestrator MUST follow the [Validator Stack Policy](references/validator-stack-policy.md) for every step. ALL registered validators (Generic and Specialized) MUST pass before a step is considered complete.
 - **Machine Verifiability**: The orchestrator MUST generate Section 11 (Machine-readable plan) in every orchestration plan. Failure to do so renders the artifact non-verifiable.
 - **Handoff Compliance**: Transitions between skills in a workflow MUST comply with the [Artifact Contracts](references/artifact-contracts.yaml).
 - **Plan-only Hygiene**: In `plan_only` mode, the orchestrator MUST NOT populate `Section 9: Prompt Chain` with copy-pasteable prompts. Section 9 should explicitly state: `N/A - mode is plan_only. No prompt chain generated.`
@@ -42,10 +43,11 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
     - **Context Check**: Before starting a YOLO chain, estimate the total repository context + task description. If it exceeds 100k tokens (or 80% of the model's comfortable limit), the orchestrator MUST automatically downgrade to `guided_execution` or `autonomous_execution` with mandatory gates.
     - **Clean State**: Verify `git status` is clean. Record the current `HEAD` SHA in the Run Log as `PRE_YOLO_COMMIT`.
 - **YOLO Post-Step Verification**:
-    - After every skill execution in YOLO mode, the orchestrator MUST perform two checks:
-        1. **Script Validation**: Execute the `verification.script` defined in `artifact-contracts.yaml` for the produced artifact.
-        2. **LLM Self-Review**: Perform a 1-shot internal review of the artifact against the `verification.llm_criteria`. 
-    - **Failure Protocol**: If either check fails, the orchestrator MUST:
+    - After every skill execution in YOLO mode, the orchestrator MUST perform the full validator stack defined in `artifact-contracts.yaml`:
+        1. **Level 2 (Generic)**: Execute the `verification.generic_validator` for the produced artifact.
+        2. **Level 3 (Specialized)**: Execute all scripts listed in `verification.specialized_validators`.
+        3. **LLM Self-Review**: Perform a 1-shot internal review of the artifact against the `verification.llm_criteria` if present. 
+    - **Failure Protocol**: If ANY check fails, the orchestrator MUST:
         - Stop the execution loop immediately.
         - Report the failure details in the Run Log.
         - Recommend the specific rollback command: `git reset --hard {PRE_YOLO_COMMIT}`.
@@ -87,6 +89,7 @@ The orchestrator MUST stop and report instead of continuing when any of these oc
 - The current context contains more than one full artifact from prior steps; summarize earlier artifacts before continuing.
 
 ## References
+- [Validator Stack Policy](references/validator-stack-policy.md)
 - [Workflow Orchestration Template](references/workflow-orchestration-template.md)
 - [Skill Registry](references/skill-registry.yaml)
 - [Workflow Registry](references/workflow-registry.yaml)
