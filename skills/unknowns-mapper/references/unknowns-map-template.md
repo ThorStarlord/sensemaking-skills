@@ -17,3 +17,7 @@ Specific, time-boxed questions or actions to resolve the most critical unknowns/
 
 ## 6. Stopping Rule
 The condition that, when met, indicates research is complete enough to resume routing or orchestration.
+
+Examples:
+- **Weak**: "Stop when the unknowns are resolved."
+- **Strong**: "Stop when the 3 missing files are found and the artifact handoff contract for Step 4 is confirmed as technically feasible."

@@ -12,8 +12,9 @@ Converts vague fog into a structured **Problem Frame**. This skill sits at the v
 2. **Deconstruction**: Identify the "Problem Under the Problem" (the root cause or hidden desire).
 3. **Boundary Identification**: Determine the "Object Under Pressure" (the specific system part that is most impacted).
 4. **Failure Analysis**: Identify the failure mode we are trying to avoid.
-5. **Success Definition**: Define what must be true for the solution to be considered successful.
-6. **Synthesis**: Produce a Problem Frame.
+5. **Technical Prerequisites**: Identify "What Must Be True" for the solution to be reachable.
+6. **Success Definition**: Define what must be true for the solution to be considered successful.
+7. **Synthesis**: Produce a Problem Frame.
 
 ## Output Format
 Every response must follow the [Problem Frame](references/problem-frame-template.md) structure.

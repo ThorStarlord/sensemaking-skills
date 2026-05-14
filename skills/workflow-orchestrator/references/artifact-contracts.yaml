@@ -381,3 +381,23 @@ artifacts:
         - guided_execution
         - autonomous_execution
         - yolo_execution
+
+  - id: usage_research_report
+    produced_by: user
+    consumed_by:
+      - workflow-orchestrator
+    required_sections:
+      - scenario_tested
+      - what_worked
+      - friction_points
+      - hard_to_fill_fields
+      - validation_friction
+      - handoff_quality
+      - recommended_skill_edits
+      - next_test
+    verification:
+      generic_validator: "python scripts/validate-artifact.py usage_research_report {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution

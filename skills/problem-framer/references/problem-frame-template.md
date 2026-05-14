@@ -9,6 +9,11 @@ The deeper root cause, desire, or technical tension identified during analysis.
 ## 3. Object Under Pressure
 The specific part of the system, documentation, or workflow that is most affected or ambiguous.
 
+Examples:
+- For a repo workflow: `workflow-registry.yaml`
+- For a user onboarding problem: the first-run setup path
+- For an agent pipeline: the artifact handoff between two skills
+
 ## 4. Failure Mode
 What will happen if this problem is not solved correctly? (The nightmare scenario).
 

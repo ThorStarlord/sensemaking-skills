@@ -15,7 +15,10 @@ Produces an **Unknowns Map** to separate what we know from what we are guessing.
     - **Assumed**: Beliefs treated as facts but not yet verified.
     - **Risk**: Potential failures or blockers.
 3. **Pathfinding**: Define "Research Paths" to convert unknowns/assumptions into knowns.
+    - **Rule**: Each critical assumption or risk should map to at least one research path.
 4. **Stopping Rules**: Define when research should stop (to prevent rabbit holes).
+    - **Weak**: Stop when we understand the problem.
+    - **Strong**: Stop when we have checked 3 core files and identified the next workflow with evidence.
 
 ## Output Format
 Every response must follow the [Unknowns Map](references/unknowns-map-template.md) structure.
