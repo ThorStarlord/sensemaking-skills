@@ -2,13 +2,13 @@
 
 The `workflow-orchestrator` supports five distinct execution modes, each with different safety boundaries and user involvement.
 
-| Mode | Allowed | Description | Approval Gates | Safety Requirements |
+| Mode | Status | Description | Approval Gates | Safety Requirements |
 | :--- | :--- | :--- | :--- | :--- |
-| `plan_only` | Yes | Generate plan only. No execution. | N/A | None |
-| `prompt_chain` | Yes | Generate copy/paste prompts for specialized skills. | N/A | None |
-| `guided_execution` | Yes | Execute one step at a time with user approval. | Mandatory | None |
-| `autonomous_execution` | Yes | Execute full chain automatically with approval gates. | Mandatory | High-risk opt-in |
-| `yolo_execution` | Yes | Full automation of local steps without intermediate gates. | Bypassed | Explicit YOLO opt-in, Feature Branch, Run Log |
+| `plan_only` | Stable | Generate plan only. No execution. | N/A | None |
+| `prompt_chain` | Stable | Generate copy/paste prompts for specialized skills. | N/A | None |
+| `guided_execution` | Stable | Execute one step at a time with user approval. | Mandatory | None |
+| `autonomous_execution` | Stable | Execute full chain automatically with approval gates. | Mandatory | High-risk opt-in |
+| `yolo_execution` | Stable | Full automation of local steps with mandatory post-step verification. | Bypassed | Pre-flight Context Check, Post-Step Script + LLM Verification, Feature Branch, Run Log |
 
 ---
 
@@ -35,3 +35,5 @@ Maximum automation for local sensemaking and assumed-installed implementation sk
 - **Requirement**: Must use a **feature branch**. Direct commits to `main` or `master` are strictly prohibited.
 - **Requirement**: Must write a [Run Log](run-log-template.md) before and after mutation.
 - **Requirement**: Must follow the [Git Safety Policy](git-safety-policy.md) and [Recovery Policy](recovery-policy.md).
+- **Safety Gate: Pre-flight Context Check**: The orchestrator will automatically downgrade the mode if the task/context size exceeds model limits.
+- **Safety Gate: Post-Step Verification**: After each step, the orchestrator automatically runs script-based and LLM-based validators. If any validator fails, the chain stops immediately and a rollback is recommended.

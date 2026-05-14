@@ -14,6 +14,9 @@ artifacts:
       - success_condition
       - what_must_be_true
       - next_artifact
+    verification:
+      script: "python scripts/validate-artifact.py problem_frame {artifact_path}"
+      llm_criteria: "Ensure the 'object_under_pressure' is a specific, actionable entity (e.g., a file, registry, or boundary) and not a vague concept."
 
   - id: unknowns_map
     produced_by: unknowns-mapper
@@ -27,6 +30,9 @@ artifacts:
       - risks
       - research_paths
       - stopping_rule
+    verification:
+      script: "python scripts/validate-artifact.py unknowns_map {artifact_path}"
+      llm_criteria: "Verify that at least 2 high-priority risks are identified and the stopping rule is quantitative or event-based."
 
   - id: repository_sensemaking_brief
     produced_by: repo-sensemaker
@@ -54,6 +60,9 @@ artifacts:
       - recommended_execution_mode
       - weakest_boundary
       - required_inputs
+    verification:
+      script: "python scripts/validate-brief.py {artifact_path}"
+      llm_criteria: "Confirm that every evidence excerpt is relevant to the identified 'weakest_boundary' and accurately represents the quoted file content."
 
   - id: discovery_findings
     produced_by: discovery

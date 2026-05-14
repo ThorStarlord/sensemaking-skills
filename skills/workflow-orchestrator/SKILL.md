@@ -15,7 +15,7 @@ description: select and stage a workflow from a repository sensemaking brief. us
    - `prompt_chain`: produce copy/paste prompts and stop.
    - `guided_execution`: execute one eligible step, validate its output artifact, write/update the run log, then stop for approval.
    - `autonomous_execution`: execute eligible steps until the next approval gate, failed validation, non-executable skill, or stop condition.
-   - `yolo_execution`: execute only eligible steps with no intermediate approval, but stop immediately on missing artifact, invalid handoff, failed validation, non-executable skill, dirty git state, or run-log failure.
+    - `yolo_execution`: [STABLE] execute only eligible steps with no intermediate approval. **MANDATORY**: Run `Post-Step Verification` after each skill execution. Stop immediately on missing artifact, invalid handoff, failed verification (script or LLM), non-executable skill, dirty git state, or run-log failure.
 
 ## Output Format
 Every response must follow the [Workflow Orchestration Plan](references/workflow-orchestration-template.md) structure. 
@@ -38,10 +38,17 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
   - `local` means the skill is bundled in this repository.
   - `local_command` means the skill is installed in the local working environment and MUST define an `invocation` block with `runtime`, `command`, `input_artifact`, and `output_artifact`.
   - `external`, `external_required`, and `prompt_only` steps must be treated as routing targets, not executable steps.
-- **YOLO Mode Restrictions**: 
-    - Requires exact opt-in: `"I choose yolo_execution and accept automated repository changes, feature-branch commits, bypassed gates, and recovery risk."`
-    - Requires a feature branch (No direct commits to `main`).
-    - Requires a [Run Log](references/run-log-template.md).
+- **YOLO Safety Heuristics (Pre-flight)**:
+    - **Context Check**: Before starting a YOLO chain, estimate the total repository context + task description. If it exceeds 100k tokens (or 80% of the model's comfortable limit), the orchestrator MUST automatically downgrade to `guided_execution` or `autonomous_execution` with mandatory gates.
+    - **Clean State**: Verify `git status` is clean. Record the current `HEAD` SHA in the Run Log as `PRE_YOLO_COMMIT`.
+- **YOLO Post-Step Verification**:
+    - After every skill execution in YOLO mode, the orchestrator MUST perform two checks:
+        1. **Script Validation**: Execute the `verification.script` defined in `artifact-contracts.yaml` for the produced artifact.
+        2. **LLM Self-Review**: Perform a 1-shot internal review of the artifact against the `verification.llm_criteria`. 
+    - **Failure Protocol**: If either check fails, the orchestrator MUST:
+        - Stop the execution loop immediately.
+        - Report the failure details in the Run Log.
+        - Recommend the specific rollback command: `git reset --hard {PRE_YOLO_COMMIT}`.
 - **YOLO Step Completion**:
     - A YOLO step is not complete when a command is merely named.
     - A YOLO step is complete only when the declared `output_artifact` exists, satisfies `artifact-contracts.yaml`, and is recorded in the run log.
