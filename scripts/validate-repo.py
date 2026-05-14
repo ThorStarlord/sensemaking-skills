@@ -138,32 +138,59 @@ def validate_repo():
                     if s_type == "local_execution" and availability not in ["local", "local_command"]:
                         errors.append(f"Workflow '{workflow['id']}' step '{s_id}' marked as local_execution but availability is {availability}")
 
-    # 5. Artifact Handoff Validation
+    # 5. Artifact Handoff & Initial Input Validation
     if "skills/workflow-orchestrator/references/artifact-contracts.yaml" in registries and \
-       "skills/workflow-orchestrator/references/workflow-registry.yaml" in registries:
+       "skills/workflow-orchestrator/references/workflow-registry.yaml" in registries and \
+       "skills/workflow-orchestrator/references/skill-registry.yaml" in registries:
         
         contracts = registries["skills/workflow-orchestrator/references/artifact-contracts.yaml"]
-        artifacts = contracts.get("artifacts", [])
-        producers = {a["produced_by"]: a for a in artifacts}
-        consumers = {}
-        for artifact in artifacts:
-            for consumer in artifact.get("consumed_by", []):
-                consumers.setdefault(consumer, []).append(artifact["id"])
+        artifacts_list = contracts.get("artifacts", [])
+        contract_ids = {a["id"] for a in artifacts_list}
+        
+        skill_registry = registries["skills/workflow-orchestrator/references/skill-registry.yaml"]
+        skill_to_artifact = {}
+        for ecosystem in skill_registry.get("ecosystems", {}).values():
+            for skill in ecosystem.get("skills", []):
+                if "artifact" in skill:
+                    skill_to_artifact[skill["id"]] = skill["artifact"]
         
         workflow_registry = registries["skills/workflow-orchestrator/references/workflow-registry.yaml"]
         for workflow in workflow_registry.get("workflows", []):
-            steps = [s.get("skill") for s in workflow.get("steps", [])]
-            for i in range(len(steps) - 1):
-                producer = steps[i]
-                consumer = steps[i + 1]
+            w_id = workflow["id"]
+            initial_inputs = {i["id"] for i in workflow.get("initial_inputs", [])}
+            steps = workflow.get("steps", [])
+            
+            for i, step in enumerate(steps):
+                s_id = step.get("skill")
+                in_art = step.get("input_artifact")
+                in_src = step.get("input_source")
+                out_art = step.get("output_artifact")
                 
-                if producer in producers:
-                    artifact_id = producers[producer]["id"]
-                    if artifact_id not in consumers.get(consumer, []):
-                        errors.append(
-                            f"Workflow '{workflow['id']}' has invalid handoff: "
-                            f"{producer} produces '{artifact_id}', but {consumer} does not declare it as input"
-                        )
+                # 5a. First Step Validation
+                if i == 0:
+                    if not in_art and not in_src:
+                        errors.append(f"Workflow '{w_id}' first step '{s_id}' missing 'input_artifact' or 'input_source'")
+                    if in_src and in_src not in initial_inputs:
+                        errors.append(f"Workflow '{w_id}' step '{s_id}' uses undeclared input_source: {in_src}")
+                
+                # 5b. Output Artifact Validation (Matches Registry)
+                if out_art:
+                    if s_id in skill_to_artifact:
+                        expected_out = skill_to_artifact[s_id]
+                        if out_art != expected_out:
+                            errors.append(f"Workflow '{w_id}' step '{s_id}' output '{out_art}' mismatch with skill registry: {expected_out}")
+                    if out_art not in contract_ids:
+                         errors.append(f"Workflow '{w_id}' step '{s_id}' produces unregistered artifact: {out_art}")
+
+                # 5c. Non-First Step Handoff Validation
+                if i > 0:
+                    prev_step = steps[i-1]
+                    prev_out = prev_step.get("output_artifact")
+                    if in_art:
+                        if in_art != prev_out:
+                            errors.append(f"Workflow '{w_id}' step '{s_id}' input '{in_art}' does not match previous step output '{prev_out}'")
+                        if in_art not in contract_ids:
+                            errors.append(f"Workflow '{w_id}' step '{s_id}' consumes unregistered artifact: {in_art}")
 
     # 6. Frontmatter Check
     skill_files = [

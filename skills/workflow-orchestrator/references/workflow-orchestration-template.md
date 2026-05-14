@@ -42,5 +42,6 @@ steps:
     step_type: 
     gate: 
     input_artifact: 
+    input_source: 
     output_artifact: 
 ```

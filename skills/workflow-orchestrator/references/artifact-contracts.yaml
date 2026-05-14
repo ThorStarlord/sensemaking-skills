@@ -102,3 +102,59 @@ artifacts:
       - patches_proposed
       - validation_result
       - next_handoff
+
+  - id: persona_definition
+    produced_by: persona
+    consumed_by:
+      - discovery
+      - customer-journey
+      - ideal-customer-profile
+
+  - id: discovery_findings
+    produced_by: discovery
+    consumed_by:
+      - interview-synthesis
+
+  - id: synthesis_report
+    produced_by: interview-synthesis
+    consumed_by:
+      - opportunity-tree
+
+  - id: market_analysis
+    produced_by: competitive-analysis
+    consumed_by:
+      - strategy
+      - pricing
+      - battlecard
+
+  - id: opportunity_map
+    produced_by: opportunity-tree
+    consumed_by:
+      - hypothesis
+
+  - id: hypothesis_statement
+    produced_by: hypothesis
+    consumed_by:
+      - prd
+      - experiment-design
+
+  - id: prd
+    produced_by: prd
+    consumed_by:
+      - user-stories
+      - ui-brief
+      - pre-mortem
+      - launch-checklist
+      - release-notes
+
+  - id: story_list
+    produced_by: user-stories
+    consumed_by:
+      - acceptance-criteria
+      - prioritize
+
+  - id: criteria_list
+    produced_by: acceptance-criteria
+    consumed_by:
+      - prompt-handoff
+

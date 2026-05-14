@@ -2,6 +2,11 @@ workflows:
   - id: setup-sensemaking-repo
     display_name: Setup Sensemaking Repo
     purpose: Configure repository agent docs, artifact contracts, execution mode defaults, and downstream skill mappings.
+    initial_inputs:
+      - id: repository_state
+        type: external_context
+        required: true
+        description: Current repository files, registries, templates, validator scripts, and git state.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -11,6 +16,7 @@ workflows:
         skill: setup-sensemaking-skills
         step_type: local_execution
         gate: review_setup_plan
+        input_source: repository_state
       - id: 2
         skill: repo-sensemaker
         step_type: local_execution
@@ -23,6 +29,11 @@ workflows:
   - id: docs-contract-reconciliation
     display_name: Docs & Contract Reconciliation
     purpose: Resolve drift between documentation, registries, artifact contracts, templates, and validator rules.
+    initial_inputs:
+      - id: repository_state
+        type: external_context
+        required: true
+        description: Current repository files, registries, templates, validator scripts, and git state.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -32,7 +43,7 @@ workflows:
         skill: repo-sensemaker
         step_type: local_execution
         gate: review_drift_diagnosis
-        input_artifact: repository_state
+        input_source: repository_state
         output_artifact: repository_sensemaking_brief
       - id: 2
         skill: sensemaking-docs-reconciler
@@ -50,6 +61,11 @@ workflows:
   - id: autonomous-sprint-preflight
     display_name: Autonomous Sprint Preflight
     purpose: Verify that a repository is ready for Autonomous Sprint before selecting the sprint workflow.
+    initial_inputs:
+      - id: repository_state
+        type: external_context
+        required: true
+        description: Current repository files, registries, templates, validator scripts, and git state.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -59,14 +75,23 @@ workflows:
         skill: repo-sensemaker
         step_type: local_execution
         gate: review_execution_readiness
+        input_source: repository_state
+        output_artifact: repository_sensemaking_brief
       - id: 2
         skill: prompt-handoff
         step_type: local_execution
         gate: review_sprint_prompt
+        input_artifact: repository_sensemaking_brief
+        output_artifact: prompt_handoff
 
   - id: implementation-prompt-chain
     display_name: Implementation Prompt Chain
     purpose: Turn an approved brief or PRD into copy-paste prompts for external implementation skills.
+    initial_inputs:
+      - id: repository_sensemaking_brief
+        type: artifact
+        required: true
+        description: A diagnostic brief containing the weakest boundary and next steps.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -75,10 +100,17 @@ workflows:
         skill: prompt-handoff
         step_type: local_execution
         gate: review_prompt_chain
+        input_artifact: repository_sensemaking_brief
+        output_artifact: prompt_handoff
 
   - id: product-discovery-sprint
     display_name: Product Discovery Sprint
     purpose: Move from vague product fog to a validated opportunity and testable hypothesis.
+    initial_inputs:
+      - id: repository_sensemaking_brief
+        type: artifact
+        required: true
+        description: A diagnostic brief defining the product fog and core objectives.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -88,6 +120,8 @@ workflows:
         skill: persona
         step_type: external_routing
         gate: review_persona
+        input_artifact: repository_sensemaking_brief
+        output_artifact: persona_definition
       - id: 2
         skill: discovery
         step_type: external_routing
@@ -108,6 +142,11 @@ workflows:
   - id: feature-kickoff-sprint
     display_name: Feature Kickoff Sprint
     purpose: Turn a validated hypothesis into requirements, stories, and acceptance criteria.
+    initial_inputs:
+      - id: opportunity_map
+        type: artifact
+        required: true
+        description: A map of problems to desired outcomes and hypotheses.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -117,6 +156,8 @@ workflows:
         skill: hypothesis
         step_type: external_routing
         gate: review_hypothesis
+        input_artifact: opportunity_map
+        output_artifact: hypothesis_statement
       - id: 2
         skill: prd
         step_type: external_routing
@@ -133,6 +174,11 @@ workflows:
   - id: product-strategy-sprint
     display_name: Product Strategy Sprint
     purpose: Turn market and product context into strategy, OKRs, roadmap, and stakeholder update.
+    initial_inputs:
+      - id: repository_sensemaking_brief
+        type: artifact
+        required: true
+        description: A diagnostic brief providing market context and repository state.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -142,6 +188,8 @@ workflows:
         skill: competitive-analysis
         step_type: external_routing
         gate: review_competitive_analysis
+        input_artifact: repository_sensemaking_brief
+        output_artifact: market_analysis
       - id: 2
         skill: strategy
         step_type: external_routing
@@ -162,6 +210,11 @@ workflows:
   - id: product-autonomous-sprint
     display_name: Product Autonomous Sprint (Drafting)
     purpose: Generate a full proposed product artifact chain from product fog to implementation-ready handoff.
+    initial_inputs:
+      - id: repository_sensemaking_brief
+        type: artifact
+        required: true
+        description: A diagnostic brief defining the initial product fog.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -175,6 +228,8 @@ workflows:
         skill: persona
         step_type: local_execution
         gate: review_persona
+        input_artifact: repository_sensemaking_brief
+        output_artifact: persona_definition
       - id: 2
         skill: discovery
         step_type: local_execution
@@ -207,6 +262,11 @@ workflows:
   - id: full-local-sensemaking
     display_name: Full Local Sensemaking
     purpose: Convert raw fog into a repository diagnosis and downstream handoff using only local executable skills.
+    initial_inputs:
+      - id: raw_fog
+        type: external_context
+        required: true
+        description: High-level project description, ambiguous ideas, or strategic goals.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -223,22 +283,35 @@ workflows:
         skill: problem-framer
         step_type: local_execution
         gate: review_problem_frame
+        input_source: raw_fog
+        output_artifact: problem_frame
       - id: 2
         skill: unknowns-mapper
         step_type: local_execution
         gate: review_unknowns_map
+        input_artifact: problem_frame
+        output_artifact: unknowns_map
       - id: 3
         skill: repo-sensemaker
         step_type: local_execution
         gate: review_sensemaking_brief
+        input_artifact: unknowns_map
+        output_artifact: repository_sensemaking_brief
       - id: 4
         skill: prompt-handoff
         step_type: local_execution
         gate: review_final_prompt
+        input_artifact: repository_sensemaking_brief
+        output_artifact: prompt_handoff
 
   - id: fast-local-diagnostic
     display_name: Fast Local Diagnostic
     purpose: Quickly identify the weakest boundary and produce a handoff prompt.
+    initial_inputs:
+      - id: repository_state
+        type: external_context
+        required: true
+        description: Current repository files, registries, templates, validator scripts, and git state.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -254,14 +327,23 @@ workflows:
         skill: repo-sensemaker
         step_type: local_execution
         gate: review_sensemaking_brief
+        input_source: repository_state
+        output_artifact: repository_sensemaking_brief
       - id: 2
         skill: prompt-handoff
         step_type: local_execution
         gate: review_handoff_prompt
+        input_artifact: repository_sensemaking_brief
+        output_artifact: prompt_handoff
 
   - id: experimental-autonomous-sprint
     display_name: Autonomous Sprint (Experimental)
     purpose: High-velocity execution using Matt Pocock skills.
+    initial_inputs:
+      - id: repository_state
+        type: external_context
+        required: true
+        description: Current repository files, registries, templates, validator scripts, and git state.
     allowed_execution_modes:
       - plan_only
       - prompt_chain
@@ -272,6 +354,7 @@ workflows:
         skill: grill-with-docs
         step_type: local_execution
         gate: review_domain_alignment
+        input_source: repository_state
       - id: 2
         skill: to-prd
         step_type: local_execution
