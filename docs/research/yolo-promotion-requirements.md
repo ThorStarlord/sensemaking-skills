@@ -4,7 +4,7 @@
 YOLO execution mode (`yolo_execution`) is currently defined as the maximum automation mode for local sensemaking and implementation skills.
 Its current boundaries include:
 - All approval gates are bypassed.
-- Requires explicit opt-in via a specific phrasing: `"I choose yolo_execution and accept automated repository changes, feature-branch commits, bypassed gates, and recovery risk."`
+- Requires explicit opt-in via an exact opt-in string: `"I choose yolo_execution and accept automated repository changes, feature-branch commits, bypassed gates, and recovery risk."`
 - Operates exclusively on a feature branch (direct commits to `main` or `master` are prohibited).
 - Demands a `Run Log` before and after mutations.
 - Adheres to `Git Safety Policy` and `Recovery Policy`.
