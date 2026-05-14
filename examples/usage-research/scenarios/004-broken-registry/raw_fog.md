@@ -1,0 +1,1 @@
+I want to run the 'product-discovery-sprint' workflow. I've already framed the problem, but when I try to start it, I get an error saying something about 'missing steps'. Can you help me fix my process?
