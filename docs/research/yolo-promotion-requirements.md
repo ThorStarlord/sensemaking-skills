@@ -34,8 +34,8 @@ To safely graduate YOLO mode from "draft" to a fully supported production featur
 ## 4. Promotion Checklist
 Before YOLO mode can be officially promoted, the following tasks must be completed and merged:
 
-- [ ] **Artifact Schema Enhancements:** Define specific script/LLM validation contracts in `artifact-contracts.yaml` for YOLO steps.
-- [ ] **Task Scoping Logic:** Implement heuristic checks in `workflow-orchestrator` to evaluate task size and context fit before allowing YOLO mode.
+- [ ] **Artifact Schema Enhancements:** Define specific script/LLM validation contracts in `../../skills/workflow-orchestrator/references/artifact-contracts.yaml` for YOLO steps.
+- [ ] **Task Scoping Logic:** Implement heuristic checks in `../../skills/workflow-orchestrator/` to evaluate task size and context fit before allowing YOLO mode.
 - [ ] **Validation Runner:** Build or integrate a mechanism to execute intermediate script and LLM validators during the YOLO loop.
 - [ ] **Negative Fixtures:** Add test cases in `examples/` that prove YOLO mode successfully halts and rolls back when a step produces an invalid output or fails validation.
-- [ ] **Documentation Update:** Remove "draft" references and explicitly document the automated validation safety nets in `execution-modes.md` and `SKILL.md`.
+- [ ] **Documentation Update:** Remove "draft" references and explicitly document the automated validation safety nets in `../../skills/workflow-orchestrator/references/execution-modes.md` and `../../skills/workflow-orchestrator/SKILL.md`.
