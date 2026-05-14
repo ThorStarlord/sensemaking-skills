@@ -109,3 +109,6 @@ The orchestrator MUST stop and report instead of continuing when any of these oc
 - [Recovery Policy](references/recovery-policy.md)
 - [Approval Gates](references/approval-gates.md)
 - [Run Log Template](references/run-log-template.md)
+- [Usage Research Scenarios](references/usage-research-scenarios.yaml)
+- [Usage Research Rubric](../../docs/usage-research-rubric.md)
+

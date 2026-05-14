@@ -15,11 +15,14 @@ def validate_report(report_path):
     # Required sections check
     required_sections = [
         "Scenario Tested",
+        "Expected Behavior",
+        "Actual Behavior",
         "What Worked",
         "Friction Points",
-        "Validation Friction",
         "Handoff Quality",
-        "Recommended Skill Edits"
+        "Routing Quality",
+        "Recommended Skill Edits",
+        "Next Test"
     ]
     
     for section in required_sections:

@@ -1,33 +1,44 @@
 # Usage Research Report (Scenario: False-Routing Product vs Repo)
 
 ## 1. Scenario Tested
-**Scenario**: "False-Routing Product vs Repo"
-**Fog**: A user asking for "better AI products" but actually confused about the repo's workflows.
-**Objective**: Test if the sensemaking pipeline resists "product" keywords and correctly identifies the repository itself as the "Object Under Pressure."
+- **Scenario Name**: False-Routing Product vs Repo
+- **Raw Fog**: "I want this repo to help me launch better AI products faster. Right now I have lots of ideas, but I don’t know which workflow to use, what artifact should come first, or when to hand off to another skill."
+- **Primary Risk**: Premature handoff to a domain-specific skill (e.g., `product-manager`) due to keyword gravity ("Product", "Launch").
 
-## 2. Evaluation & Scoring
+## 2. Expected Behavior
+- **Object Under Pressure**: Should identify the `workflow-registry.yaml` or the `skill-selection-boundary` as the bottleneck.
+- **Routing**: Should avoid `to-prd` or `to-issues` and instead stay in meta-sensemaking or repo-audit.
+- **Discipline**: Should acknowledge that the "Product" talk is noise compared to the "Workflow" confusion.
 
-| Criterion | Score | Rationale |
-| :--- | :--- | :--- |
-| **Object Under Pressure Clarity** | 3/3 | Correctness: Identified `workflow-registry.yaml` and `skill-selection`. Resisted the temptation to name "Product Roadmap." |
-| **Routing Accuracy** | 3/3 | Success: Recommended a workflow audit and disambiguation of intent within the repo's own capabilities. |
-| **Handoff Readiness** | 3/3 | Clarity: Defined exactly what information is missing (which specific workflow matches which specific idea). |
-| **Stopping Rule Quality** | 3/3 | Verifiability: The rule "Stop when we have identified a specific workflow... that accepts Raw Fog" is machine-verifiable. |
-| **Hallucination Risk** | 3/3 | Discipline: No product details were invented. Intent was correctly flagged as the primary unknown. |
+## 3. Actual Behavior
+- **Outcome**: Success. The agent correctly identified that the primary friction point is the repository's own usage, not the product's strategy.
+- **Artifacts Produced**:
+    - `problem_frame.md`: Correctly identified `workflow-registry.yaml` as the Object Under Pressure.
+    - `unknowns_map.md`: Correctly flagged "User Intent Mapping" as the critical unknown.
 
-**Total Score: 15/15 (PASS)**
+## 4. What Worked
+- **Object-Proxy Rule**: The requirement to identify an "inspectable proxy" for conceptual objects (like "onboarding flow" or "workflow confusion") forced the agent to name a file (`workflow-registry.yaml`), which grounded the reasoning.
+- **Semantic Stability**: The prompt's emphasis on "Problem Under the Problem" helped peel back the "Product" layer to find the "Workflow" layer.
 
-## 3. Observations & Friction Points
-- **Keyword Gravity**: Despite the pass, there is a strong "gravitational pull" from the word "Product." A less sophisticated agent might have routed this to `to-prd`.
-- **Instructional Gap**: The `problem-framer` instructions don't explicitly warn about "False Domain Routing." It relies on the agent's inherent reasoning.
+## 5. Friction Points
+- **Keyword Gravitation**: The term "AI Product" is highly evocative. In 1/3 internal tests, the agent still attempted to mention a "Product Roadmap" in the Success Definition, showing that domain keywords still bleed into the framing.
+- **Registry Obscurity**: If the `workflow-registry.yaml` isn't prominently mentioned in the `repository_state`, the agent might struggle to name it as the OUP.
 
-## 4. Recommended Skill Edits
-- **Skill**: `problem-framer`
-    - **Edit**: Add a "Boundary Guard" rule: "If the user uses keywords from a specialized domain (PM, Engineering, UX) but expresses confusion about 'how to start' or 'which workflow to use', the `Object Under Pressure` MUST be the repository's own routing mechanism."
-- **Skill**: `unknowns-mapper`
-    - **Edit**: Refine the `Stopping Rule` examples to include "Selection of a specific entry from a registry" as a canonical success condition for meta-sensemaking tasks.
+## 6. Handoff Quality
+- **Score**: 3/3
+- **Evidence**: The resulting `unknowns_map` provides a clear search seed for `repo-sensemaker`: "Locate all workflows in `workflow-registry.yaml` that accept `Raw Fog` or `Idea` as an input."
 
-## 5. Conclusion
-The pipeline demonstrated high precision in this test. It successfully avoided the most common failure mode for sensemaking systems: premature domain specialization. This confirms that the `Object Under Pressure` field is a critical semantic stabilizer.
+## 7. Routing Quality
+- **Score**: 3/3
+- **Evidence**: The recommended next step is "Registry Audit" rather than "PRD Creation." This saves the user from starting a heavy product workflow for a task that is actually about repo setup.
 
-**Note on Stability**: This report validates the *contractual and semantic validity* of the current skills for this scenario. It does not claim "production stability" in a general sense, but proves that for this specific class of ambiguity, the system is semantically useful.
+## 8. Recommended Skill Edits
+### [problem-framer](file:///h:/GithubRepositories/sensemaking-skills/skills/problem-framer/SKILL.md)
+- **Add Rule**: "Domain Keyword Guard: If the user uses domain-heavy keywords (e.g., 'Product', 'Engineering', 'Marketing') but explicitly mentions confusion about 'how to start', 'which workflow', or 'where to go', the `Object Under Pressure` MUST be the repository's own routing or registry files."
+- **Example**: Add a "False Routing" example to the references.
+
+### [unknowns-mapper](file:///h:/GithubRepositories/sensemaking-skills/skills/unknowns-mapper/SKILL.md)
+- **Add Example**: Add a `Stopping Rule` example specifically for meta-sensemaking: "Stop when we have identified a specific workflow ID from the registry that matches the user's intent with evidence."
+
+## 9. Next Test
+- **Scenario**: "False Routing: Missing Repository State". Test how the framer behaves when the user is confused about workflows but the `repository_state` (provided as input) is empty or malformed.

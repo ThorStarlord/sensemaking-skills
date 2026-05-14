@@ -1,39 +1,11 @@
-# Usage Research Scenario Registry
-
-This registry tracks canonical scenarios used to evaluate the sensemaking pipeline's quality. Each scenario targets a specific failure mode or edge case.
-
 scenarios:
-  - id: 001-cold-start-messy-ai-workflows
-    purpose: Evaluate if the pipeline can transform a vague "messy idea" into structured, valid orchestration.
-    target_object: workflow-registry.yaml
-    primary_risk: over-scoping / handoff friction
-    required_artifacts:
-      - raw_fog
-      - problem_frame
-      - unknowns_map
-      - usage_research_report
-
-  - id: 002-false-routing-product-vs-repo
-    purpose: Test if product-sounding fog is correctly routed to repository/workflow sensemaking instead of premature product development.
-    target_object: workflow selection boundary
+  - id: false-routing-product-vs-repo
+    purpose: Test whether product-sounding fog is correctly routed to repo/workflow sensemaking.
     primary_risk: premature_domain_skill_handoff
+    expected_object_under_pressure:
+      - workflow-registry.yaml
+      - workflow selection boundary
     required_artifacts:
-      - raw_fog
       - problem_frame
-      - usage_research_report
-
-  - id: 003-conceptual-object-under-pressure
-    purpose: Test grounding when the object is conceptual (e.g., "the user experience") rather than a physical file.
-    target_object: skill-registry.yaml (routing logic)
-    primary_risk: semantic hallucination
-    required_artifacts:
-      - raw_fog
-      - problem_frame
-
-  - id: 004-missing-repository-state
-    purpose: Test pipeline behavior when repository state is underspecified or the "haystack" is too large.
-    target_object: unknown
-    primary_risk: context window overflow / blind scanning
-    required_artifacts:
       - unknowns_map
-      - research_report
+      - usage_research_report

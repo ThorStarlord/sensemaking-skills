@@ -19,6 +19,7 @@ Produces an **Unknowns Map** to separate what we know from what we are guessing.
 4. **Stopping Rules**: Define when research should stop (to prevent rabbit holes).
     - **Weak**: Stop when we understand the problem.
     - **Strong**: Stop when we have checked 3 core files and identified the next workflow with evidence.
+    - **Meta-Sensemaking**: Stop when we have identified a specific workflow ID from the registry that matches the user's intent with evidence.
 5. **Handoff Readiness Check**: Before finalizing, verify that the map is ready for the next skill (typically `repo-sensemaker` or `prompt-handoff`).
     - **Rule**: Ensure the map provides a clear `Object Under Pressure` or `Search Seed`.
     - **Rule**: Ensure at least one concrete research path exists for each high-impact risk.
