@@ -1,10 +1,11 @@
-version: 1
+# Artifact Contracts: Sensemaking Pipeline
+
 artifacts:
   - id: problem_frame
     produced_by: problem-framer
     consumed_by:
       - unknowns-mapper
-      - prompt-handoff
+      - repo-sensemaker
     required_sections:
       - raw_fog
       - problem_under_the_problem
@@ -41,6 +42,7 @@ artifacts:
       - improvement_opportunities
       - weakest_boundary
       - evidence
+      - evidence_excerpts
       - why_this_boundary_matters
       - candidate_next_steps
       - recommended_next_step
@@ -53,10 +55,119 @@ artifacts:
       - weakest_boundary
       - required_inputs
 
+  - id: discovery_findings
+    produced_by: discovery
+    consumed_by:
+      - opportunity-tree
+      - prompt-handoff
+
+  - id: domain_alignment_report
+    produced_by: grill-with-docs
+    consumed_by:
+      - to-prd
+      - prompt-handoff
+
+  - id: prd
+    produced_by: to-prd
+    consumed_by:
+      - to-issues
+      - prompt-handoff
+
+  - id: issue_list
+    produced_by: to-issues
+    consumed_by:
+      - triage
+
+  - id: agent_brief
+    produced_by: triage
+    consumed_by:
+      - tdd
+
+  - id: code_patch
+    produced_by: tdd
+    consumed_by:
+      - handoff
+
+  - id: session_summary
+    produced_by: handoff
+    consumed_by:
+      - workflow-orchestrator
+
+  - id: okr_list
+    produced_by: okr
+    consumed_by:
+      - roadmap
+
+  - id: roadmap
+    produced_by: roadmap
+    consumed_by:
+      - stakeholder-update
+      - prompt-handoff
+
+  - id: stakeholder_update
+    produced_by: stakeholder-update
+    consumed_by:
+      - workflow-orchestrator
+
+  - id: business_canvas
+    produced_by: lean-canvas
+    consumed_by:
+      - product-manager
+
+  - id: north_star_metric
+    produced_by: north-star
+    consumed_by:
+      - okr
+
+  - id: persona_definition
+    produced_by: persona
+    consumed_by:
+      - discovery
+      - customer-journey
+
+  - id: synthesis_report
+    produced_by: interview-synthesis
+    consumed_by:
+      - opportunity-tree
+
+  - id: market_analysis
+    produced_by: competitive-analysis
+    consumed_by:
+      - pricing
+      - battlecard
+
+  - id: opportunity_map
+    produced_by: opportunity-tree
+    consumed_by:
+      - hypothesis
+
+  - id: hypothesis_statement
+    produced_by: hypothesis
+    consumed_by:
+      - experiment-design
+      - prd
+
+  - id: journey_map
+    produced_by: customer-journey
+    consumed_by:
+      - product-manager
+
+  - id: story_list
+    produced_by: user-stories
+    consumed_by:
+      - acceptance-criteria
+      - prioritize
+
+  - id: criteria_list
+    produced_by: acceptance-criteria
+    consumed_by:
+      - prompt-handoff
+
   - id: workflow_orchestration_plan
     produced_by: workflow-orchestrator
     consumed_by:
-      - prompt-handoff
+      - user
+      - agents (autonomous_execution)
     required_sections:
       - brief_consumed
       - chosen_workflow
@@ -77,9 +188,11 @@ artifacts:
       - stop_conditions
 
   - id: prompt_handoff
-    produced_by: prompt-handoff
+    produced_by: 
+      - prompt-handoff
+      - handoff
     consumed_by:
-      - downstream_skill
+      - external_agent
     required_sections:
       - target_skill
       - context_to_preserve
@@ -95,66 +208,16 @@ artifacts:
     consumed_by:
       - prompt-handoff
     required_sections:
-      - drift_summary
-      - files_reviewed
+      - drift_diagnosis
+      - weakest_boundary
+      - missing_instructions
+      - missing_examples
+      - validator_blind_spots
+      - ambiguous_artifact_names
+      - drift_risks
+      - recommended_patches
       - mismatches_found
       - changes_required
       - patches_proposed
       - validation_result
       - next_handoff
-
-  - id: persona_definition
-    produced_by: persona
-    consumed_by:
-      - discovery
-      - customer-journey
-      - ideal-customer-profile
-
-  - id: discovery_findings
-    produced_by: discovery
-    consumed_by:
-      - interview-synthesis
-
-  - id: synthesis_report
-    produced_by: interview-synthesis
-    consumed_by:
-      - opportunity-tree
-
-  - id: market_analysis
-    produced_by: competitive-analysis
-    consumed_by:
-      - strategy
-      - pricing
-      - battlecard
-
-  - id: opportunity_map
-    produced_by: opportunity-tree
-    consumed_by:
-      - hypothesis
-
-  - id: hypothesis_statement
-    produced_by: hypothesis
-    consumed_by:
-      - prd
-      - experiment-design
-
-  - id: prd
-    produced_by: prd
-    consumed_by:
-      - user-stories
-      - ui-brief
-      - pre-mortem
-      - launch-checklist
-      - release-notes
-
-  - id: story_list
-    produced_by: user-stories
-    consumed_by:
-      - acceptance-criteria
-      - prioritize
-
-  - id: criteria_list
-    produced_by: acceptance-criteria
-    consumed_by:
-      - prompt-handoff
-

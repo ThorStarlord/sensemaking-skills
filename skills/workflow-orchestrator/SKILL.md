@@ -32,6 +32,7 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 - **Contract Enforcement**: If a brief does not contain a valid machine-readable handoff, or the requested execution mode is not allowed by [Execution Modes](references/execution-modes.md), the orchestrator MUST refuse the request or downgrade to `plan_only` or `guided_execution`.
 - **Machine Verifiability**: The orchestrator MUST generate Section 11 (Machine-readable plan) in every orchestration plan. Failure to do so renders the artifact non-verifiable.
 - **Handoff Compliance**: Transitions between skills in a workflow MUST comply with the [Artifact Contracts](references/artifact-contracts.yaml).
+- **Plan-only Hygiene**: In `plan_only` mode, the orchestrator MUST NOT populate `Section 9: Prompt Chain` with copy-pasteable prompts. Section 9 should explicitly state: `N/A - mode is plan_only. No prompt chain generated.`
 - **Execution Authority**: The orchestrator may execute only registry-approved steps where `availability.executable_by_orchestrator: true` and `availability.type` is either `local` or `local_command`.
   - `local` means the skill is bundled in this repository.
   - `local_command` means the skill is installed in the local working environment and MUST define an `invocation` block with `runtime`, `command`, `input_artifact`, and `output_artifact`.
@@ -53,12 +54,14 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 When executing a `local_command` step, the orchestrator MUST:
 
 1. Read the skill's `invocation` block from `skill-registry.yaml`.
-2. Pass only the declared `input_artifact` plus the minimal necessary context.
+2. **Environment Pre-flight**: Verify the `invocation.runtime` is available in the local environment. If the runtime is missing, stop and report the environment mismatch.
+3. Pass only the declared `input_artifact` plus the minimal necessary context.
 3. Invoke the declared `command`; do not invent command names.
 4. Treat the declared `output_artifact` as the only valid result of the step.
 5. Append a compact run-log entry before continuing.
 6. Summarize prior full artifacts once more than one artifact exists in context.
-7. Stop if the command, input artifact, output artifact, or runtime is missing.
+7. **Ghost Artifact Handling**: If a skill produces files or artifacts not declared in the `output_artifact` contract, the orchestrator MUST NOT pass them forward as context. Record undeclared outputs in the run log and require user approval before proceeding if they contaminate the workspace.
+8. Stop if the command, input artifact, output artifact, or runtime is missing.
 
 A `local_command` step is not complete until its declared `output_artifact` exists and satisfies the next handoff contract.
 
@@ -71,6 +74,7 @@ The orchestrator MUST stop and report instead of continuing when any of these oc
 - The run log cannot be created or updated.
 - The working tree is dirty before `autonomous_execution` or `yolo_execution`.
 - The current branch is `main` or `master` during a mode that can mutate files.
+- **Interrupt Protocol**: If execution is interrupted, the orchestrator MUST attempt to save a partial Run Log to preserve the state of completed steps.
 - More than one retry would be required for the same step.
 - The current context contains more than one full artifact from prior steps; summarize earlier artifacts before continuing.
 

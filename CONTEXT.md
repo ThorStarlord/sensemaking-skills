@@ -12,8 +12,10 @@ To provide a meta-routing layer for AI agents that turns project uncertainty ("f
 ## Domain Language
 - **Fog**: The state of project uncertainty (Product, Architecture, Strategy, or Routing).
 - **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, and `prompt-handoff`.
-- **Sensemaking Brief**: The primary diagnostic artifact (13 sections). It must identify the "weakest boundary" and provide file-level evidence.
-- **Orchestration Plan**: The procedural artifact (10 sections). It defines the workflow, execution mode, and approval gates.
+- **Sensemaking Brief**: The primary diagnostic artifact (14 sections). It must identify the "weakest boundary" and provide file-level evidence and excerpts.
+- **Orchestration Plan**: The procedural artifact (11 sections). It defines the workflow, execution mode, and approval gates.
+- **Execution Modes**: The system supports `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, and `yolo_execution`.
+- **YOLO Execution**: High-velocity automation that bypasses approval gates for local skills. Requires explicit opt-in and feature branches.
 - **Skill Split**: Diagnosis (`repo-sensemaker`) is separated from Action (`workflow-orchestrator`) to ensure human-in-the-loop validation.
 - **Object Under Pressure**: The specific artifact or system boundary that is most ambiguous.
 - **Weakest Boundary**: The most fragile or unenforced point in a repository.

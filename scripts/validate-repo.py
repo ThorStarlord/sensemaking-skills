@@ -187,10 +187,14 @@ def validate_repo():
                     prev_step = steps[i-1]
                     prev_out = prev_step.get("output_artifact")
                     if in_art:
-                        if in_art != prev_out:
-                            errors.append(f"Workflow '{w_id}' step '{s_id}' input '{in_art}' does not match previous step output '{prev_out}'")
+                        if in_art != prev_out and in_art not in initial_inputs:
+                            errors.append(f"Workflow '{w_id}' step '{s_id}' input '{in_art}' does not match previous step output '{prev_out}' and is not an initial input")
                         if in_art not in contract_ids:
                             errors.append(f"Workflow '{w_id}' step '{s_id}' consumes unregistered artifact: {in_art}")
+                    
+                    # Ensure local_execution steps have output_artifact
+                    if step.get("step_type") == "local_execution" and not out_art:
+                        errors.append(f"Workflow '{w_id}' step '{s_id}' is local_execution but missing 'output_artifact'")
 
     # 6. Frontmatter Check
     skill_files = [
@@ -212,21 +216,39 @@ def validate_repo():
                     if desc and desc[0].isupper():
                         errors.append(f"Skill description in {sf} should be lowercase")
 
-    # 7. Template Section Count Check
-    templates = {
-        "skills/repo-sensemaker/references/repo-analysis-template.md": 13,
-        "skills/workflow-orchestrator/references/workflow-orchestration-template.md": 11,
-        "skills/problem-framer/references/problem-frame-template.md": 7,
-        "skills/unknowns-mapper/references/unknowns-map-template.md": 6,
-        "skills/prompt-handoff/references/prompt-handoff-template.md": 8
+    # 7. Template Section Header Validation
+    template_headers = {
+        "skills/repo-sensemaker/references/repo-analysis-template.md": [
+            "Repository Goal", "Current Shape", "Strong Signals", "Missing Pieces",
+            "Improvement Opportunities", "Weakest Boundary", "Evidence", "Evidence excerpts",
+            "Why This Boundary Matters", "Candidate Next Steps", "Recommended Next Step",
+            "Recommended Workflow", "Machine-readable handoff", "Ready-to-copy prompt"
+        ],
+        "skills/workflow-orchestrator/references/workflow-orchestration-template.md": [
+            "Brief consumed", "Chosen workflow", "Why this workflow", "Skills in sequence",
+            "Inputs and outputs", "Approval gates", "Stop conditions", "Execution mode",
+            "Prompt chain", "Run log template", "Machine-readable plan"
+        ],
+        "skills/problem-framer/references/problem-frame-template.md": [
+            "Raw Fog", "Problem Under the Problem", "Object Under Pressure",
+            "Failure Mode", "Success Condition", "What Must Be True", "Next Artifact"
+        ],
+        "skills/unknowns-mapper/references/unknowns-map-template.md": [
+            "Knowns", "Unknowns", "Assumptions", "Risks", "Research Paths", "Stopping Rule"
+        ],
+        "skills/prompt-handoff/references/prompt-handoff-template.md": [
+            "Target Skill", "Context to Preserve", "Task", "Constraints",
+            "Inputs", "Expected Output", "Stop Condition", "Ready-to-copy prompt"
+        ]
     }
-    for path, expected_count in templates.items():
+    for path, expected_headers in template_headers.items():
         if os.path.exists(path):
             with open(path, 'r', encoding='utf-8') as f:
                 content = f.read()
-                sections = re.findall(r'^## \d+\.', content, re.MULTILINE)
-                if len(sections) != expected_count:
-                    errors.append(f"Template {path} has {len(sections)} sections, expected {expected_count}")
+                for i, header in enumerate(expected_headers):
+                    header_pattern = rf"^## {i+1}\.\s+{re.escape(header)}"
+                    if not re.search(header_pattern, content, re.MULTILINE | re.IGNORECASE):
+                        errors.append(f"Template {path} missing or malformed section: {i+1}. {header}")
 
     # 8. Check examples
     examples_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative", "examples/pipeline", "examples/problem-framer", "examples/unknowns-mapper", "examples/prompt-handoff"]

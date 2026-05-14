@@ -21,19 +21,22 @@ The most ambiguous, unproven, unsafe, or unenforced part of the repo.
 ## 7. Evidence
 File-level evidence supporting the diagnosis (cites specific files and line ranges).
 
-## 8. Why this boundary matters
+## 8. Evidence excerpts
+Exact quotes, code snippets, or configuration blocks from the files cited above.
+
+## 9. Why this boundary matters
 What breaks if this remains weak.
 
-## 9. Candidate next steps
+## 10. Candidate next steps
 2–5 possible next moves.
 
-## 10. Recommended next step
+## 11. Recommended next step
 The smallest concrete action with highest leverage.
 
-## 11. Recommended workflow
+## 12. Recommended workflow
 One workflow candidate, if appropriate (e.g., from `workflow-orchestrator`).
 
-## 12. Machine-readable handoff
+## 13. Machine-readable handoff
 ```yaml
 recommended_workflow_id: 
 recommended_execution_mode: plan_only
@@ -42,5 +45,5 @@ required_inputs:
   - repository_sensemaking_brief
 ```
 
-## 13. Ready-to-copy prompt
+## 14. Ready-to-copy prompt
 Prompt for `workflow-orchestrator` or another downstream skill.
