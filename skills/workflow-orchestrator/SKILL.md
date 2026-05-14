@@ -64,12 +64,12 @@ When executing a `local_command` step, the orchestrator MUST:
 1. Read the skill's `invocation` block from `skill-registry.yaml`.
 2. **Environment Pre-flight**: Verify the `invocation.runtime` is available in the local environment. If the runtime is missing, stop and report the environment mismatch.
 3. Pass only the declared `input_artifact` plus the minimal necessary context.
-3. Invoke the declared `command`; do not invent command names.
-4. Treat the declared `output_artifact` as the only valid result of the step.
-5. Append a compact run-log entry before continuing.
-6. Summarize prior full artifacts once more than one artifact exists in context.
-7. **Ghost Artifact Handling**: If a skill produces files or artifacts not declared in the `output_artifact` contract, the orchestrator MUST NOT pass them forward as context. Record undeclared outputs in the run log and require user approval before proceeding if they contaminate the workspace.
-8. Stop if the command, input artifact, output artifact, or runtime is missing.
+4. Invoke the declared `command`; do not invent command names.
+5. Treat the declared `output_artifact` as the only valid result of the step.
+6. Append a compact run-log entry before continuing.
+7. Summarize prior full artifacts once more than one artifact exists in context.
+8. **Ghost Artifact Handling**: If a skill produces files or artifacts not declared in the `output_artifact` contract, the orchestrator MUST NOT pass them forward as context. Record undeclared outputs in the run log and require user approval before proceeding if they contaminate the workspace.
+9. Stop if the command, input artifact, output artifact, or runtime is missing.
 
 A `local_command` step is not complete until its declared `output_artifact` exists and satisfies the next handoff contract.
 
