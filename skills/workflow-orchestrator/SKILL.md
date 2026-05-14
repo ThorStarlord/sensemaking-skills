@@ -42,6 +42,7 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 - **YOLO Safety Heuristics (Pre-flight)**:
     - **Context Check**: Before starting a YOLO chain, estimate the total repository context + task description. If it exceeds 100k tokens (or 80% of the model's comfortable limit), the orchestrator MUST automatically downgrade to `guided_execution` or `autonomous_execution` with mandatory gates.
     - **Clean State**: Verify `git status` is clean. Record the current `HEAD` SHA in the Run Log as `PRE_YOLO_COMMIT`.
+    - **Explicit Pre-flight Log**: Every YOLO run log MUST include a `Preflight` block documenting the Level 1 structural validation (`python scripts/validate-repo.py`), current branch safety, and dry-run status.
 - **YOLO Post-Step Verification**:
     - After every skill execution in YOLO mode, the orchestrator MUST perform the full validator stack defined in `artifact-contracts.yaml`:
         1. **Level 2 (Generic)**: Execute the `verification.generic_validator` for the produced artifact.
@@ -50,14 +51,14 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
     - **Failure Protocol**: If ANY check fails, the orchestrator MUST:
         - Stop the execution loop immediately.
         - Report the failure details in the Run Log.
-        - Recommend the specific rollback command: `git reset --hard {PRE_YOLO_COMMIT}`.
+        - Recommend the specific rollback command: `git reset --hard {PRE_YOLO_COMMIT}`. For no-mutation dry-runs, use `rollback_recommendation: "No mutation occurred; no reset required."`
 - **YOLO Step Completion**:
     - A YOLO step is not complete when a command is merely named.
     - A YOLO step is complete only when the declared `output_artifact` exists, satisfies `artifact-contracts.yaml`, and is recorded in the run log.
     - For `local_command` steps, the orchestrator MUST use the exact `invocation.command`; it must not invent command names.
     - After each step, preserve only the declared output artifact, compact run-log entry, and fields required by the next step.
     - Stop immediately if the command output cannot be mapped to the declared `output_artifact`.
-- **Approval Gates**: Do not bypass approval gates in `guided_execution` or `autonomous_execution` mode. Only `yolo_execution` bypasses gates for eligible local/command skills.
+- **Approval Gates**: Do not bypass approval gates in `guided_execution` or `autonomous_execution` mode. In `yolo_execution`, approval gates are operationally bypassed only after eligibility checks, but they MUST remain present in the machine-readable plan and run log with `gate_behavior: bypassed_by_yolo`.
 
 ## Local Command Execution
 
