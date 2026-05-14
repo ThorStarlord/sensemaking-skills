@@ -19,8 +19,11 @@ Converts vague fog into a structured **Problem Frame**. This skill sits at the v
 ## Output Format
 Every response must follow the [Problem Frame](references/problem-frame-template.md) structure.
 
-## Boundary Rule
-Do not propose specific technical solutions or implementations. Focus only on framing the problem and the desired outcome.
+## Boundary Rules
+- **Non-Implementation**: Do not propose specific technical solutions or implementations. Focus only on framing the problem and the desired outcome.
+- **Conditional Object Verification**:
+    - If the `Object Under Pressure` names a file, registry, command, script, or directory, the framer SHOULD verify it exists in the `repository_state` (if provided).
+    - If it names a conceptual boundary (e.g., "onboarding flow"), the framer MUST identify a concrete **inspectable proxy** (e.g., a specific config file or entry point) to ground the research.
 
 ## References
 - [Problem Frame Template](references/problem-frame-template.md)

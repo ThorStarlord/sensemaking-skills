@@ -58,7 +58,15 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
     - For `local_command` steps, the orchestrator MUST use the exact `invocation.command`; it must not invent command names.
     - After each step, preserve only the declared output artifact, compact run-log entry, and fields required by the next step.
     - Stop immediately if the command output cannot be mapped to the declared `output_artifact`.
-- **Approval Gates**: Do not bypass approval gates in `guided_execution` or `autonomous_execution` mode. In `yolo_execution`, approval gates are operationally bypassed only after eligibility checks, but they MUST remain present in the machine-readable plan and run log with `gate_behavior: bypassed_by_yolo`.
+- **Approval Gates**: 
+    - Do not bypass approval gates in `guided_execution` or `autonomous_execution` mode. 
+    - In `guided_execution`, the orchestrator MUST record an explicit `gate_result: approved_by_user` (including `approved_at` and `approved_by`) in the run log before proceeding. Implicit approval is forbidden.
+    - In `yolo_execution`, approval gates are operationally bypassed only after eligibility checks, but they MUST remain present in the machine-readable plan and run log with `gate_behavior: bypassed_by_yolo`.
+- **Research & Subset Runs**:
+    - Research-mode or subset workflow runs (e.g., executing only Steps 1 & 2) MUST still produce contract-valid `workflow_orchestration_plan` and `run_log` artifacts. 
+    - Research mode may limit steps, but it MUST NOT relax Section 11 (must use `artifact_id` and `chosen_workflow_id`), `validator_stack`, path normalization, or approval-gate logging requirements.
+- **Strict Path Hygiene**:
+    - Generated artifacts, plans, run logs, and user-facing summaries MUST use relative paths and NEVER use absolute `file:///` links. This applies to both the file content and the final response text.
 
 ## Local Command Execution
 
