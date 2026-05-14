@@ -406,3 +406,31 @@ workflows:
         gate: session_close
         input_artifact: code_patch
         output_artifact: prompt_handoff
+
+  - id: skill-maintenance-loop
+    display_name: Skill Maintenance Loop
+    purpose: Translate usage research findings into auditable skill improvements.
+    initial_inputs:
+      - id: usage_research_report
+        type: artifact
+        required: true
+        description: A report detailing failure modes and friction points.
+      - id: repository_state
+        type: external_context
+        required: true
+    allowed_execution_modes:
+      - guided_execution
+    steps:
+      - id: 1
+        skill: skill-maintainer
+        step_type: local_execution
+        gate: review_improvement_plan
+        input_artifact: usage_research_report
+        input_source: repository_state
+        output_artifact: skill_improvement_plan
+      - id: 2
+        skill: handoff
+        step_type: local_execution
+        gate: final_review
+        input_artifact: skill_improvement_plan
+        output_artifact: prompt_handoff

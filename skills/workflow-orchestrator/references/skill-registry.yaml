@@ -30,6 +30,10 @@ ecosystems:
         purpose: summarize a session and prepare the next handoff
         artifact: prompt_handoff
         availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+      - id: skill-maintainer
+        purpose: translate usage research into auditable skill improvements
+        artifact: skill_improvement_plan
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
 
   drafting:
     name: Implementation Drafting

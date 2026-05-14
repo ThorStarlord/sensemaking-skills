@@ -41,8 +41,9 @@ def validate_repo():
         "skills/setup-sensemaking-skills/references/agent-block-template.md",
         "skills/setup-sensemaking-skills/references/sensemaking-config-template.md",
         "skills/setup-sensemaking-skills/references/workflow-modes-template.md",
-        "skills/sensemaking-docs-reconciler/SKILL.md",
-        "skills/sensemaking-docs-reconciler/agents/openai.yaml"
+        "skills/sensemaking-docs-reconciler/agents/openai.yaml",
+        "skills/skill-maintainer/SKILL.md",
+        "skills/skill-maintainer/references/improvement-plan-template.md"
     ]
     
     for f in core_files:
@@ -257,6 +258,9 @@ def validate_repo():
         "skills/prompt-handoff/references/prompt-handoff-template.md": [
             "Target Skill", "Context to Preserve", "Task", "Constraints",
             "Inputs", "Expected Output", "Stop Condition", "Ready-to-copy prompt"
+        ],
+        "skills/skill-maintainer/references/improvement-plan-template.md": [
+            "Diagnosis", "Evidence", "Proposed Edits", "Impact Assessment", "Verification Plan"
         ]
     }
     for path, expected_headers in template_headers.items():
