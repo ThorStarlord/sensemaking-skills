@@ -25,6 +25,9 @@ Produces an **Unknowns Map** to separate what we know from what we are guessing.
     - **Rule**: Ensure at least one concrete research path exists for each high-impact risk.
     - **Rule**: Ensure the `Stopping Rule` is verifiable and not a tautology.
     - **Rule**: Identify any required repository context or artifact input needed for the next step.
+- **Grounding Rules**:
+    - **Registry Search Seed**: For any meta-sensemaking task (where the OUP is a registry or workflow), the mapper MUST provide a specific "Search Seed" targeting the relevant entry or section of that file.
+    - **Handoff Contract Verification**: Before finalizing, explicitly check if the map satisfies the input artifacts and context required for the next recommended skill (e.g., if Step 3 is `repo-sensemaker`, ensure a `Search Seed` exists).
 
 ## Output Format
 Every response must follow the [Unknowns Map](references/unknowns-map-template.md) structure.

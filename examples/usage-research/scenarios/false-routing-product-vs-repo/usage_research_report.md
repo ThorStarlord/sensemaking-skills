@@ -33,11 +33,11 @@
 - **Evidence**: The recommended next step is "Registry Audit" rather than "PRD Creation." This saves the user from starting a heavy product workflow for a task that is actually about repo setup.
 
 ## 8. Recommended Skill Edits
-### [problem-framer](file:///h:/GithubRepositories/sensemaking-skills/skills/problem-framer/SKILL.md)
+### [problem-framer](skills/problem-framer/SKILL.md)
 - **Add Rule**: "Domain Keyword Guard: If the user uses domain-heavy keywords (e.g., 'Product', 'Engineering', 'Marketing') but explicitly mentions confusion about 'how to start', 'which workflow', or 'where to go', the `Object Under Pressure` MUST be the repository's own routing or registry files."
 - **Example**: Add a "False Routing" example to the references.
 
-### [unknowns-mapper](file:///h:/GithubRepositories/sensemaking-skills/skills/unknowns-mapper/SKILL.md)
+### [unknowns-mapper](skills/unknowns-mapper/SKILL.md)
 - **Add Example**: Add a `Stopping Rule` example specifically for meta-sensemaking: "Stop when we have identified a specific workflow ID from the registry that matches the user's intent with evidence."
 
 ## 9. Next Test

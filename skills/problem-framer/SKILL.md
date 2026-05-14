@@ -24,7 +24,9 @@ Every response must follow the [Problem Frame](references/problem-frame-template
 - **Conditional Object Verification**:
     - If the `Object Under Pressure` names a file, registry, command, script, or directory, the framer SHOULD verify it exists in the `repository_state` (if provided).
     - If it names a conceptual boundary (e.g., "onboarding flow"), the framer MUST identify a concrete **inspectable proxy** (e.g., a specific config file or entry point) to ground the research.
-- **Domain Keyword Guard**: If the user uses domain-heavy keywords (e.g., "Product", "Engineering", "Marketing") but explicitly mentions confusion about "how to start", "which workflow to use", or "where to go", the `Object Under Pressure` MUST be the repository's own routing or registry files (e.g., `workflow-registry.yaml`). Avoid premature domain handoff.
+- **Boundary Guards**:
+    - **Domain Keyword Guard**: If the user uses domain-heavy keywords (e.g., 'Product', 'Engineering', 'Marketing') but explicitly mentions confusion about 'how to start', 'which workflow', or 'where to go', the `Object Under Pressure` MUST be the repository's own routing or registry files.
+    - **Orchestration Shield**: If the user mentions building a 'workflow', 'pipeline', or 'process', the `Object Under Pressure` MUST be the repository's orchestration registry (e.g., `workflow-registry.yaml`), even if domain-specific artifacts (PRD, Code, Design) are mentioned as components.
 
 ## References
 - [Problem Frame Template](references/problem-frame-template.md)

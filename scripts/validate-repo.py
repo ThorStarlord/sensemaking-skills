@@ -295,15 +295,25 @@ def validate_repo():
                         if "## 11. Machine-readable plan" in content:
                             cmd = [sys.executable, "scripts/validate-plan.py", path, "--repo-root", "."]
                             res = subprocess.run(cmd, capture_output=True, text=True)
-                            if res.returncode != 0:
-                                errors.append(f"Example plan {f} failed validation:\n{res.stdout}{res.stderr}")
+                            is_negative = "examples/negative" in root.replace("\\", "/")
+                            if is_negative:
+                                if res.returncode == 0:
+                                    errors.append(f"Negative example plan {f} in {root} PASSED validation but should have FAILED")
+                            else:
+                                if res.returncode != 0:
+                                    errors.append(f"Example plan {f} failed validation:\n{res.stdout}{res.stderr}")
                         
                         # 8b. Validate usage research reports
                         if "# Usage Research Report" in content:
                             cmd = [sys.executable, "scripts/validate-usage-research-report.py", path]
                             res = subprocess.run(cmd, capture_output=True, text=True)
-                            if res.returncode != 0:
-                                errors.append(f"Example report {f} failed validation:\n{res.stdout}{res.stderr}")
+                            is_negative = "examples/negative" in root.replace("\\", "/")
+                            if is_negative:
+                                if res.returncode == 0:
+                                    errors.append(f"Negative example report {f} in {root} PASSED validation but should have FAILED")
+                            else:
+                                if res.returncode != 0:
+                                    errors.append(f"Example report {f} failed validation:\n{res.stdout}{res.stderr}")
 
     if errors:
         print("Validation failed:")
