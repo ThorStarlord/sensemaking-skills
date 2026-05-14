@@ -94,20 +94,30 @@ def validate_plan(plan_path, repo_root):
     reg_steps = workflow.get("steps", [])
     subset_run = plan_data.get("subset_run", False)
     
-    if not subset_run:
-        if len(plan_steps) != len(reg_steps):
-            errors.append(f"Step count mismatch: plan has {len(plan_steps)}, registry expects {len(reg_steps)}")
-        steps_to_validate = zip(plan_steps, reg_steps)
-    else:
+    if subset_run:
+        if not plan_data.get("subset_reason"):
+            errors.append("Missing 'subset_reason' for subset_run")
+            
         included_ids = plan_data.get("included_steps", [])
         excluded_data = plan_data.get("excluded_steps", [])
         excluded_ids = [s.get("id") for s in excluded_data]
         
-        all_reg_ids = {s["id"] for s in reg_steps}
+        all_reg_ids = [s["id"] for s in reg_steps]
         all_plan_ids = set(included_ids) | set(excluded_ids)
         
-        if all_reg_ids != all_plan_ids:
+        if set(all_reg_ids) != all_plan_ids:
             errors.append(f"Subset mismatch: registry steps {all_reg_ids} not fully accounted for in plan ({all_plan_ids})")
+
+        # Contiguity Check: included_steps must be a contiguous subsequence of registry steps
+        if included_ids:
+            try:
+                first_idx = all_reg_ids.index(included_ids[0])
+                last_idx = all_reg_ids.index(included_ids[-1])
+                expected_subsequence = all_reg_ids[first_idx:last_idx+1]
+                if included_ids != expected_subsequence:
+                    errors.append(f"Non-contiguous subset: included_steps {included_ids} is not a contiguous sequence in workflow registry")
+            except ValueError as e:
+                errors.append(f"Step ID in included_steps not found in registry: {e}")
             
         steps_to_validate = []
         for s_id in included_ids:
@@ -119,6 +129,10 @@ def validate_plan(plan_path, repo_root):
                 errors.append(f"Included step {s_id} not found in registry")
             else:
                 steps_to_validate.append((p_step, r_step))
+    else:
+        if len(plan_steps) != len(reg_steps):
+            errors.append(f"Step count mismatch: plan has {len(plan_steps)}, registry expects {len(reg_steps)}")
+        steps_to_validate = zip(plan_steps, reg_steps)
 
     for p_step, r_step in steps_to_validate:
         s_id = p_step.get("id")
@@ -181,6 +195,11 @@ def validate_plan(plan_path, repo_root):
     for g in plan_gates:
         if g not in gate_behavior:
             errors.append(f"Missing gate_behavior for gate '{g}'")
+        elif gate_behavior[g] == "simulated_for_research":
+            # Check if any step using this gate claims user approval
+            for s in plan_steps:
+                if s.get("gate") == g and s.get("approved_by_user") is True:
+                    errors.append(f"Gate clash: step {s.get('id')} claims 'approved_by_user: true' but gate '{g}' is simulated")
 
     # 9. Stop Conditions Check
     stop_conds = plan_data.get("stop_conditions", [])
