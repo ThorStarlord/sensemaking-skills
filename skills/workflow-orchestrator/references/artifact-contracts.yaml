@@ -329,10 +329,14 @@ artifacts:
         - autonomous_execution
         - yolo_execution
     required_machine_fields:
+      - artifact_id
       - chosen_workflow_id
       - execution_mode
+      - status
+      - initial_inputs
       - steps
       - approval_gates
+      - gate_behavior
       - stop_conditions
       - subset_run
       - subset_reason
