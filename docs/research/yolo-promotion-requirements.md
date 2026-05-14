@@ -8,7 +8,7 @@ Its current boundaries include:
 - Operates exclusively on a feature branch (direct commits to `main` or `master` are prohibited).
 - Demands a `Run Log` before and after mutations.
 - Adheres to `Git Safety Policy` and `Recovery Policy`.
-- Allowed skills are strictly `local` or `local_command`. External or prompt-only skills cause a hard stop.
+- Allowed skills are strictly `local` or `local_command`. Skills classified as `external`, `external_required`, or `prompt_only` cause a hard stop.
 
 While the git-level boundaries are well-defined, the mode is currently considered "draft" because of the inherent risks of autonomous execution without intermediate human review.
 
