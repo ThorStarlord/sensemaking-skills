@@ -240,6 +240,14 @@ def validate_repo():
                         content = file.read()
                         if "file:///" in content:
                             errors.append(f"Example {f} in {ex_dir} contains absolute file:/// paths")
+                    
+                    # 8a. Validate orchestration plans in examples/workflow-orchestrator
+                    if ex_dir == "examples/workflow-orchestrator" and "## 11. Machine-readable plan" in content:
+                        import subprocess
+                        cmd = [sys.executable, "scripts/validate-plan.py", path, "--repo-root", "."]
+                        res = subprocess.run(cmd, capture_output=True, text=True)
+                        if res.returncode != 0:
+                            errors.append(f"Example plan {f} failed validation:\n{res.stdout}{res.stderr}")
 
     if errors:
         print("Validation failed:")
