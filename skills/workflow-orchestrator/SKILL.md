@@ -33,6 +33,7 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 - **Machine Verifiability**: The orchestrator MUST generate Section 11 (Machine-readable plan) in every orchestration plan. Failure to do so renders the artifact non-verifiable.
 - **Handoff Compliance**: Transitions between skills in a workflow MUST comply with the [Artifact Contracts](references/artifact-contracts.yaml).
 - **Plan-only Hygiene**: In `plan_only` mode, the orchestrator MUST NOT populate `Section 9: Prompt Chain` with copy-pasteable prompts. Section 9 should explicitly state: `N/A - mode is plan_only. No prompt chain generated.`
+- **Path Normalization**: Generated artifacts, plans, and run logs MUST use relative paths (e.g., `artifacts/name.md` or `./runs/...`) and NEVER use absolute `file:///` links.
 - **Execution Authority**: The orchestrator may execute only registry-approved steps where `availability.executable_by_orchestrator: true` and `availability.type` is either `local` or `local_command`.
   - `local` means the skill is bundled in this repository.
   - `local_command` means the skill is installed in the local working environment and MUST define an `invocation` block with `runtime`, `command`, `input_artifact`, and `output_artifact`.

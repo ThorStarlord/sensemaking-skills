@@ -22,7 +22,13 @@ The most ambiguous, unproven, unsafe, or unenforced part of the repo.
 File-level evidence supporting the diagnosis (cites specific files and line ranges).
 
 ## 8. Evidence excerpts
-Exact quotes, code snippets, or configuration blocks from the files cited above.
+```yaml
+evidence_excerpts:
+  - file: path/to/file.ext
+    lines: 10-15
+    quote: "..."
+    supports_claim: "..."
+```
 
 ## 9. Why this boundary matters
 What breaks if this remains weak.
