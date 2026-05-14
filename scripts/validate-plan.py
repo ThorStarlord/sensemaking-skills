@@ -79,66 +79,90 @@ def validate_plan(plan_path, repo_root):
     # 6. Step Validation
     plan_steps = plan_data.get("steps", [])
     reg_steps = workflow.get("steps", [])
+    subset_run = plan_data.get("subset_run", False)
     
-    if len(plan_steps) != len(reg_steps):
-        errors.append(f"Step count mismatch: plan has {len(plan_steps)}, registry expects {len(reg_steps)}")
+    if not subset_run:
+        if len(plan_steps) != len(reg_steps):
+            errors.append(f"Step count mismatch: plan has {len(plan_steps)}, registry expects {len(reg_steps)}")
+        steps_to_validate = zip(plan_steps, reg_steps)
     else:
-        for p_step, r_step in zip(plan_steps, reg_steps):
-            s_id = p_step.get("id")
-            if s_id != r_step.get("id"):
-                errors.append(f"Step {s_id} ID mismatch with registry")
-                
-            skill = p_step.get("skill")
-            if skill != r_step.get("skill"):
-                errors.append(f"Step {s_id} skill mismatch: plan='{skill}', reg='{r_step.get('skill')}'")
-                
-            s_type = p_step.get("step_type")
-            if s_type != r_step.get("step_type"):
-                errors.append(f"Step {s_id} step_type mismatch: plan='{s_type}', reg='{r_step.get('step_type')}'")
-                
-            gate = p_step.get("gate")
-            if gate != r_step.get("gate"):
-                errors.append(f"Step {s_id} gate mismatch: plan='{gate}', reg='{r_step.get('gate')}'")
-                
-            # Input Source/Artifact Check
-            p_in_src = p_step.get("input_source")
-            r_in_src = r_step.get("input_source")
-            if p_in_src != r_in_src:
-                errors.append(f"Step {s_id} input_source mismatch: plan='{p_in_src}', reg='{r_in_src}'")
-                
-            p_in_art = p_step.get("input_artifact")
-            r_in_art = r_step.get("input_artifact")
-            if p_in_art != r_in_art:
-                errors.append(f"Step {s_id} input_artifact mismatch: plan='{p_in_art}', reg='{r_in_art}'")
-                
-            # Output Artifact Check
-            p_out_art = p_step.get("output_artifact")
-            r_out_art = r_step.get("output_artifact")
-            if p_out_art != r_out_art:
-                errors.append(f"Step {s_id} output_artifact mismatch: plan='{p_out_art}', reg='{r_out_art}'")
+        # Subset validation
+        included_ids = plan_data.get("included_steps", [])
+        excluded_data = plan_data.get("excluded_steps", [])
+        excluded_ids = [s.get("id") for s in excluded_data]
+        
+        # Verify that all registry steps are accounted for
+        all_reg_ids = {s["id"] for s in reg_steps}
+        all_plan_ids = set(included_ids) | set(excluded_ids)
+        
+        if all_reg_ids != all_plan_ids:
+            errors.append(f"Subset mismatch: registry steps {all_reg_ids} not fully accounted for in plan ({all_plan_ids})")
+            
+        # Validate included steps in sequence
+        steps_to_validate = []
+        for s_id in included_ids:
+            p_step = next((s for s in plan_steps if s["id"] == s_id), None)
+            r_step = next((s for s in reg_steps if s["id"] == s_id), None)
+            if not p_step:
+                errors.append(f"Included step {s_id} missing from 'steps' list")
+            elif not r_step:
+                errors.append(f"Included step {s_id} not found in registry")
+            else:
+                steps_to_validate.append((p_step, r_step))
 
-            # 7. Output Artifact Registry/Skill Check
-            if p_out_art:
-                # Exists in artifact-contracts.yaml?
-                contract = next((a for a in artifact_con.get("artifacts", []) if a["id"] == p_out_art), None)
-                if not contract:
-                    errors.append(f"Step {s_id} output_artifact '{p_out_art}' not found in artifact-contracts.yaml")
-                else:
-                    # Produced by the declared skill?
-                    # Check skill-registry.yaml first
-                    skill_meta = None
-                    for ecosystem in skill_reg.get("ecosystems", {}).values():
-                        skill_meta = next((s for s in ecosystem.get("skills", []) if s["id"] == skill), None)
-                        if skill_meta: break
+    for p_step, r_step in steps_to_validate:
+        s_id = p_step.get("id")
+        if s_id != r_step.get("id"):
+            errors.append(f"Step {s_id} ID mismatch with registry")
+            
+        skill = p_step.get("skill")
+        if skill != r_step.get("skill"):
+            errors.append(f"Step {s_id} skill mismatch: plan='{skill}', reg='{r_step.get('skill')}'")
+            
+        s_type = p_step.get("step_type")
+        if s_type != r_step.get("step_type"):
+            errors.append(f"Step {s_id} step_type mismatch: plan='{s_type}', reg='{r_step.get('step_type')}'")
+            
+        gate = p_step.get("gate")
+        if gate != r_step.get("gate"):
+            errors.append(f"Step {s_id} gate mismatch: plan='{gate}', reg='{r_step.get('gate')}'")
+            
+        # Input Source/Artifact Check
+        p_in_src = p_step.get("input_source")
+        r_in_src = r_step.get("input_source")
+        if p_in_src != r_in_src:
+            errors.append(f"Step {s_id} input_source mismatch: plan='{p_in_src}', reg='{r_in_src}'")
+            
+        p_in_art = p_step.get("input_artifact")
+        r_in_art = r_step.get("input_artifact")
+        if p_in_art != r_in_art:
+            errors.append(f"Step {s_id} input_artifact mismatch: plan='{p_in_art}', reg='{r_in_art}'")
+            
+        # Output Artifact Check
+        p_out_art = p_step.get("output_artifact")
+        r_out_art = r_step.get("output_artifact")
+        if p_out_art != r_out_art:
+            errors.append(f"Step {s_id} output_artifact mismatch: plan='{p_out_art}', reg='{r_out_art}'")
+
+        # 7. Output Artifact Registry/Skill Check
+        if p_out_art:
+            contract = next((a for a in artifact_con.get("artifacts", []) if a["id"] == p_out_art), None)
+            if not contract:
+                errors.append(f"Step {s_id} output_artifact '{p_out_art}' not found in artifact-contracts.yaml")
+            else:
+                skill_meta = None
+                for ecosystem in skill_reg.get("ecosystems", {}).values():
+                    skill_meta = next((s for s in ecosystem.get("skills", []) if s["id"] == skill), None)
+                    if skill_meta: break
+                
+                actual_producer = None
+                if skill_meta and skill_meta.get("artifact") == p_out_art:
+                    actual_producer = skill
+                elif contract.get("produced_by") == skill:
+                    actual_producer = skill
                     
-                    actual_producer = None
-                    if skill_meta and skill_meta.get("artifact") == p_out_art:
-                        actual_producer = skill
-                    elif contract.get("produced_by") == skill:
-                        actual_producer = skill
-                        
-                    if not actual_producer:
-                        errors.append(f"Step {s_id} skill '{skill}' is not contracted to produce '{p_out_art}'")
+                if not actual_producer:
+                    errors.append(f"Step {s_id} skill '{skill}' is not contracted to produce '{p_out_art}'")
 
     # 8. Approval Gates Check
     plan_gates = plan_data.get("approval_gates", [])

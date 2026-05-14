@@ -65,6 +65,7 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 - **Research & Subset Runs**:
     - Research-mode or subset workflow runs (e.g., executing only Steps 1 & 2) MUST still produce contract-valid `workflow_orchestration_plan` and `run_log` artifacts. 
     - Research mode may limit steps, but it MUST NOT relax Section 11 (must use `artifact_id` and `chosen_workflow_id`), `validator_stack`, path normalization, or approval-gate logging requirements.
+    - **Formal Subset Semantics**: When executing a subset of a registry workflow, the plan MUST set `subset_run: true` and define `included_steps` (contiguous from step 1), `excluded_steps` (with reasons), and matching `steps` entries. This allows `validate-plan.py` to verify the subset against the full registry definition.
 - **Strict Path Hygiene**:
     - Generated artifacts, plans, run logs, and user-facing summaries MUST use relative paths and NEVER use absolute `file:///` links. This applies to both the file content and the final response text.
 

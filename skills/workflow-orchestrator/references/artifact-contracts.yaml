@@ -334,6 +334,10 @@ artifacts:
       - steps
       - approval_gates
       - stop_conditions
+      - subset_run
+      - subset_reason
+      - included_steps
+      - excluded_steps
 
   - id: prompt_handoff
     produced_by: 
