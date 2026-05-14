@@ -43,9 +43,14 @@ Quickly produce a handoff prompt for the implementer.
 artifact_id: workflow_orchestration_plan
 chosen_workflow_id: fast-local-diagnostic
 execution_mode: guided_execution
+status: FAILED
+subset_run: false
+
 initial_inputs:
   - id: repository_state
-    type: external_context
+    type: repository_snapshot
+    required: true
+
 steps:
   - id: 1
     skill: repo-sensemaker
@@ -53,15 +58,23 @@ steps:
     gate: review_sensemaking_brief
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
+    status: FAILED
   - id: 2
     skill: handoff
     step_type: local_execution
     gate: review_handoff_prompt
     input_artifact: repository_sensemaking_brief
     output_artifact: prompt_handoff
+    status: CANCELLED
+
 approval_gates:
   - review_sensemaking_brief
   - review_handoff_prompt
+
+gate_behavior:
+  review_sensemaking_brief: human_approval
+  review_handoff_prompt: human_approval
+
 stop_conditions:
   - command_failure
   - malformed_artifact

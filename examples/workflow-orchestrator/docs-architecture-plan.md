@@ -46,9 +46,14 @@ Initialized at `docs/runs/2026-05-13-docs-alignment.md`.
 artifact_id: workflow_orchestration_plan
 chosen_workflow_id: docs-architecture
 execution_mode: guided_execution
+status: PENDING
+subset_run: false
+
 initial_inputs:
   - id: repository_state
-    type: external_context
+    type: repository_snapshot
+    required: true
+
 steps:
   - id: 1
     skill: grill-with-docs
@@ -56,22 +61,32 @@ steps:
     gate: review_alignment_report
     input_source: repository_state
     output_artifact: domain_alignment_report
+    status: PENDING
   - id: 2
     skill: to-prd
     step_type: local_execution
     gate: review_prd
     input_artifact: domain_alignment_report
     output_artifact: prd
+    status: PENDING
   - id: 3
     skill: handoff
     step_type: local_execution
     gate: review_handoff_prompt
     input_artifact: prd
     output_artifact: prompt_handoff
+    status: PENDING
+
 approval_gates:
   - review_alignment_report
   - review_prd
   - review_handoff_prompt
+
+gate_behavior:
+  review_alignment_report: human_approval
+  review_prd: human_approval
+  review_handoff_prompt: human_approval
+
 stop_conditions:
   - architectural_contradiction
 ```

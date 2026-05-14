@@ -44,17 +44,17 @@ artifact_id: workflow_orchestration_plan
 chosen_workflow_id: fast-local-diagnostic
 execution_mode: yolo_execution
 status: FAILED
+subset_run: false
 dry_run: true
 initial_inputs:
   - id: repository_state
-    type: external_context
+    type: repository_snapshot
     required: true
 steps:
   - id: 1
     skill: repo-sensemaker
     step_type: local_execution
     gate: review_sensemaking_brief
-    gate_behavior: bypassed_by_yolo
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
     status: FAILED
@@ -62,13 +62,15 @@ steps:
     skill: handoff
     step_type: local_execution
     gate: review_handoff_prompt
-    gate_behavior: not_reached
     input_artifact: repository_sensemaking_brief
     output_artifact: prompt_handoff
-    status: NOT_RUN
+    status: CANCELLED
 approval_gates:
   - review_sensemaking_brief
   - review_handoff_prompt
+gate_behavior:
+  review_sensemaking_brief: bypassed_by_yolo
+  review_handoff_prompt: bypassed_by_yolo
 stop_conditions:
   - id: validator_failure
     description: Halt on any validator failure.

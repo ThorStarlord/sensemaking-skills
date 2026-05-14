@@ -45,10 +45,13 @@ Initialized at `docs/runs/yolo-2026-05-14.md`.
 artifact_id: workflow_orchestration_plan
 chosen_workflow_id: fast-local-diagnostic
 execution_mode: yolo_execution
+status: PENDING
+subset_run: false
 yolo_opt_in: "I choose yolo_execution and accept automated repository changes, feature-branch commits, bypassed gates, and recovery risk."
 initial_inputs:
   - id: repository_state
-    type: external_context
+    type: repository_snapshot
+    required: true
 steps:
   - id: 1
     skill: repo-sensemaker
@@ -56,15 +59,20 @@ steps:
     gate: review_sensemaking_brief
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
+    status: PENDING
   - id: 2
     skill: handoff
     step_type: local_execution
     gate: review_handoff_prompt
     input_artifact: repository_sensemaking_brief
     output_artifact: prompt_handoff
+    status: PENDING
 approval_gates:
   - review_sensemaking_brief
   - review_handoff_prompt
+gate_behavior:
+  review_sensemaking_brief: bypassed_by_yolo
+  review_handoff_prompt: bypassed_by_yolo
 stop_conditions:
   - missing_artifact
   - failed_validation

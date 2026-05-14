@@ -50,9 +50,14 @@ N/A - mode is plan_only.
 artifact_id: workflow_orchestration_plan
 chosen_workflow_id: product-discovery-sprint
 execution_mode: plan_only
+status: COMPLETED
+subset_run: false
+
 initial_inputs:
   - id: repository_sensemaking_brief
     type: artifact
+    required: true
+
 steps:
   - id: 1
     skill: persona
@@ -60,36 +65,50 @@ steps:
     gate: review_persona
     input_artifact: repository_sensemaking_brief
     output_artifact: persona_definition
+    status: PENDING
   - id: 2
     skill: discovery
     step_type: external_routing
     gate: review_discovery
     input_artifact: persona_definition
     output_artifact: discovery_findings
+    status: PENDING
   - id: 3
     skill: interview-synthesis
     step_type: external_routing
     gate: review_patterns
     input_artifact: discovery_findings
     output_artifact: synthesis_report
+    status: PENDING
   - id: 4
     skill: opportunity-tree
     step_type: external_routing
     gate: review_opportunity_tree
     input_artifact: synthesis_report
     output_artifact: opportunity_map
+    status: PENDING
   - id: 5
     skill: hypothesis
     step_type: external_routing
     gate: review_hypothesis
     input_artifact: opportunity_map
     output_artifact: hypothesis_statement
+    status: PENDING
+
 approval_gates:
   - review_persona
   - review_discovery
   - review_patterns
   - review_opportunity_tree
   - review_hypothesis
+
+gate_behavior:
+  review_persona: human_approval
+  review_discovery: human_approval
+  review_patterns: human_approval
+  review_opportunity_tree: human_approval
+  review_hypothesis: human_approval
+
 stop_conditions:
   - user_abort
 ```

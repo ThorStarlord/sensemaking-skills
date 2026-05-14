@@ -25,6 +25,8 @@ def validate_repo():
         "skills/workflow-orchestrator/references/artifact-contracts.yaml",
         "skills/workflow-orchestrator/references/git-safety-policy.md",
         "skills/workflow-orchestrator/references/recovery-policy.md",
+        "skills/workflow-orchestrator/references/usage-research-scenarios.yaml",
+        "docs/research/usage-research-rubric.md",
         "skills/problem-framer/SKILL.md",
         "skills/problem-framer/agents/openai.yaml",
         "skills/problem-framer/references/problem-frame-template.md",
@@ -267,25 +269,41 @@ def validate_repo():
                         errors.append(f"Template {path} missing or malformed section: {i+1}. {header}")
 
     # 8. Check examples
-    examples_dirs = ["examples/repo-sensemaker", "examples/workflow-orchestrator", "examples/negative", "examples/pipeline", "examples/problem-framer", "examples/unknowns-mapper", "examples/prompt-handoff"]
+    examples_dirs = [
+        "examples/repo-sensemaker", 
+        "examples/workflow-orchestrator", 
+        "examples/negative", 
+        "examples/pipeline", 
+        "examples/problem-framer", 
+        "examples/unknowns-mapper", 
+        "examples/prompt-handoff",
+        "examples/usage-research"
+    ]
     for ex_dir in examples_dirs:
         if os.path.exists(ex_dir):
-            files = os.listdir(ex_dir)
-            for f in files:
-                if f.endswith(".md"):
-                    path = os.path.join(ex_dir, f)
-                    with open(path, 'r', encoding='utf-8') as file:
-                        content = file.read()
-                        if "file:///" in content:
-                            errors.append(f"Example {f} in {ex_dir} contains absolute file:/// paths")
-                    
-                    # 8a. Validate orchestration plans in examples/workflow-orchestrator
-                    if ex_dir == "examples/workflow-orchestrator" and "## 11. Machine-readable plan" in content:
+            for root, dirs, files in os.walk(ex_dir):
+                for f in files:
+                    if f.endswith(".md"):
+                        path = os.path.join(root, f)
+                        with open(path, 'r', encoding='utf-8') as file:
+                            content = file.read()
+                            if "file:///" in content:
+                                errors.append(f"Example {f} in {root} contains absolute file:/// paths")
+                        
                         import subprocess
-                        cmd = [sys.executable, "scripts/validate-plan.py", path, "--repo-root", "."]
-                        res = subprocess.run(cmd, capture_output=True, text=True)
-                        if res.returncode != 0:
-                            errors.append(f"Example plan {f} failed validation:\n{res.stdout}{res.stderr}")
+                        # 8a. Validate orchestration plans
+                        if "## 11. Machine-readable plan" in content:
+                            cmd = [sys.executable, "scripts/validate-plan.py", path, "--repo-root", "."]
+                            res = subprocess.run(cmd, capture_output=True, text=True)
+                            if res.returncode != 0:
+                                errors.append(f"Example plan {f} failed validation:\n{res.stdout}{res.stderr}")
+                        
+                        # 8b. Validate usage research reports
+                        if "# Usage Research Report" in content:
+                            cmd = [sys.executable, "scripts/validate-usage-research-report.py", path]
+                            res = subprocess.run(cmd, capture_output=True, text=True)
+                            if res.returncode != 0:
+                                errors.append(f"Example report {f} failed validation:\n{res.stdout}{res.stderr}")
 
     if errors:
         print("Validation failed:")
