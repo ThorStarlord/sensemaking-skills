@@ -3,3 +3,11 @@ required_cases:
     validator: validate-brief
     fixture: tests/fixtures/validate-brief/invalid/repo-sensemaker-id-hallucination.md
     reason: Prevent regression of hallucinated workflow IDs such as wave-1-execution.
+
+excluded_validators:
+  - validator: validate-repo
+    reason: Repository-level meta-validator; not fixture-tested by the Validator Verification Suite.
+  - validator: validate-artifact
+    reason: Core artifact validator; fixtures pending Wave 2 implementation.
+  - validator: validate-usage-research-report
+    reason: Behavioral research validator; fixtures pending Wave 2 implementation.

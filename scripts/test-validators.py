@@ -94,6 +94,26 @@ def main():
     
     results = []
     
+    # 0. Discover all validators in scripts/
+    all_validator_scripts = [f for f in os.listdir("scripts") if f.startswith("validate-") and f.endswith(".py")]
+    excluded_validators = []
+    
+    if os.path.exists(regressions_path):
+        with open(regressions_path, 'r') as f:
+            reg_data = yaml.safe_load(f) or {}
+            excluded_data = reg_data.get('excluded_validators', [])
+            excluded_validators = [e['validator'] if isinstance(e, dict) else e for e in excluded_data]
+
+    coverage_failures = []
+    for script in all_validator_scripts:
+        base_name = script.replace(".py", "")
+        if base_name in excluded_validators:
+            continue
+        
+        fixture_dir = os.path.join(fixtures_base, base_name)
+        if not os.path.exists(fixture_dir) or not os.path.isdir(fixture_dir):
+            coverage_failures.append(script)
+
     # 1. Discover validators in fixtures dir
     if os.path.exists(fixtures_base):
         for item in os.listdir(fixtures_base):
@@ -131,7 +151,7 @@ def main():
 
     # 3. Generate Report
     success_count = sum(1 for r in results if r["status"] == "PASS")
-    fail_count = len(results) - success_count + len(required_missing)
+    fail_count = len(results) - success_count + len(required_missing) + len(coverage_failures)
     
     report_lines = [
         "# Validator Verification Suite Report",
@@ -142,6 +162,7 @@ def main():
         f"- Passed: {success_count} ✅",
         f"- Failed: {fail_count} ❌",
         f"- Missing Required Regressions: {len(required_missing)}",
+        f"- Coverage Failures: {len(coverage_failures)}",
         "",
         "## Details",
         "| Validator | Fixture | Case | Result | Detail |",
@@ -154,6 +175,9 @@ def main():
     
     for m in required_missing:
         report_lines.append(f"| `{m['validator']}` | `{m['fixture']}` | N/A | ❌ MISSING | REQUIRED REGRESSION NOT FOUND |")
+    
+    for c in coverage_failures:
+        report_lines.append(f"| `{c}` | N/A | N/A | ❌ [CRITICAL] | VALIDATOR HAS NO FIXTURE DIRECTORY |")
 
     if fail_count > 0:
         report_lines.append("\n## Failure Breakdowns")
