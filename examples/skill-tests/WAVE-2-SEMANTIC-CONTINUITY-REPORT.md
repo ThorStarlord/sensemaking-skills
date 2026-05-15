@@ -1,7 +1,7 @@
 # WAVE-2-SEMANTIC-CONTINUITY-REPORT
 
 ## 1. Executive Summary
-Wave 2 execution successfully validated the **Semantic Continuity** of the sensemaking pipeline. By testing inter-skill handoffs (Framer -> Mapper) and consumer artifact fit (Sensemaker -> Orchestrator), we have proven that the repository can maintain a coherent thread of reasoning from raw "fog" to a structured execution plan.
+Wave 2 execution successfully validated the **Semantic Continuity** of the sensemaking pipeline. By testing inter-skill handoffs (Framer -> Mapper) and consumer artifact fit (Sensemaker -> Orchestrator), Wave 2 provides evidence that the repository can maintain a coherent thread of reasoning from raw "fog" to a structured execution plan across the tested handoff surfaces.
 
 ## 2. Required Semantic Continuity Checks
 
@@ -42,7 +42,10 @@ The thread remained unbroken. The final plan specifically addresses the "halluci
 ### 4.2. Artifact Fit
 The specialized `validate-plan.py` provided a high-integrity signal, forcing the `workflow-orchestrator` to strictly comply with complex YAML schemas. This proves that the consumer (Orchestrator) has a hardened "ingestion contract" that prevents semantic drift.
 
-## 5. Conclusion
+## 5. Potential Follow-ups
+- **Workflow ID Mismatch**: Investigate why `repo_sensemaking_brief.md` recommended a workflow ID (`wave-1-execution`) that was not present in `workflow-registry.yaml`. Classify as a potential `producer_artifact_defect` or documentation drift (Class 10) after further review.
+
+## 6. Conclusion
 Wave 2 provides evidence that the handoff surfaces are ready to be considered for a future full-chain dry run, subject to review of this report and any documented follow-ups.
 
 **Stop after Wave 2.**

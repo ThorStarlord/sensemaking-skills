@@ -8,7 +8,7 @@
 | **Output Path** | `examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md` |
 | **Validation Result** | PASS |
 | **Defect Class** | Class 3: Artifact Weakness (producer_artifact_defect) |
-| **Follow-up** | Finalize Wave 2 Report. |
+| **Follow-up** | None for Wave 2. Consider full-chain dry run in a future wave after review. |
 
 ## Execution Details
 - Consumed the `repo_sensemaking_brief.md` from Task 8.2.
