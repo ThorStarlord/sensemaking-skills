@@ -14,6 +14,7 @@
 | 2 | `unknowns-mapper` | `problem_frame.md` | `unknowns_map.md` | [x] Completed |
 | 3 | `repo-sensemaker` | Repository State | `repo_sensemaking_brief.md` | [x] Completed |
 | 4 | `workflow-orchestrator`| `repo_sensemaking_brief.md` | `workflow_orchestration_plan.md` | [x] Completed |
+| 5 | `prompt-handoff` | `repo_sensemaking_brief.md` | `prompt_handoff.md` | [x] Completed |
 
 ## 2. Search Seed Thread
 
@@ -29,6 +30,7 @@
 | `repo_brief.md` | `validate-artifact.py repository_sensemaking_brief` | [x] PASS |
 | `workflow_plan.md` | `validate-artifact.py workflow_orchestration_plan` | [x] PASS |
 | `workflow_plan.md` | `validate-plan.py` | [x] PASS |
+| `prompt_handoff.md` | `validate-artifact.py prompt_handoff` | [x] PASS |
 | Repository State | `validate-repo.py` | [x] PASS |
 
 ## 4. Failure Classification (If applicable)
