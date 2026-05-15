@@ -54,18 +54,22 @@ Before recommending any edit, classify the failure as one of:
 
 ## 6. Per-Task Run Log Requirement
 
-Every execution task must create a `TEST-RUN-LOG.md` in its assigned output directory.
+Every execution task must create a `TEST-RUN-LOG.md` in its assigned output directory. This log is the source of truth for the verification step.
 
-| Field | Description |
-| :--- | :--- |
-| **Task ID** | Descriptive name (e.g., `isolated-problem-framer-001`) |
-| **Skill Tested** | Name of the skill under test |
-| **Input Path** | Path to the input fixture used |
-| **Output Path** | Path to the generated artifact |
-| **Validation Result** | Pass/Fail + output from validation command |
-| **Defect Classification** | Required if failure observed (See Section 5) |
-| **Recommended Follow-up** | Logic or fixture fixes (do not apply them) |
-| **Files Not Edited** | List files that were candidates for editing but skipped due to scope |
+| Field | Description | Required |
+| :--- | :--- | :--- |
+| **Task ID** | Unique ID (e.g., `iso-framer-001`) | Yes |
+| **Skill Tested** | Name of the skill under test | Yes |
+| **Input Path** | Repository-relative path to input fixture | Yes |
+| **Output Path** | Repository-relative path to generated artifact | Yes |
+| **Files Edited** | List of all files modified/created | Yes |
+| **Files Skipped** | Files not edited due to scope/boundary rules | Yes |
+| **Validation Result** | Output from validation command (Pass/Fail) | Yes |
+| **Defect Class** | Classification if failure observed (Section 5) | If Fail |
+| **Follow-up** | Recommended changes (Logic/Fixtures) | If needed |
+
+> [!IMPORTANT]
+> Do not update global status, walkthrough, README, CONTEXT, registries, scripts, or SKILL.md files from execution tasks. Document these needs as "Follow-up" in the log.
 
 ## 7. Path Hygiene & Response Rules
 
@@ -75,85 +79,102 @@ Every execution task must create a `TEST-RUN-LOG.md` in its assigned output dire
 
 ## 8. Hardened Task Prompts
 
-### Isolated: Problem Framer
+## 8. Wave 1 Task Prompts (Phase 2)
+
+### 8.1. Isolated: Problem Framer
 ```text
-Task: Run problem-framer on examples/pipeline/raw_fog.md.
+Task: Run problem-framer on examples/usage-research/scenarios/001-cold-start-messy-ai-workflows/raw_fog.md.
 Allowed Edits:
 - examples/skill-tests/problem-framer/problem_frame.md
 - examples/skill-tests/problem-framer/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/problem-framer/problem_frame.md
 Validation Command: python scripts/validate-artifact.py examples/skill-tests/problem-framer/problem_frame.md
-Safety: Do not edit SKILL.md. Document follow-up in TEST-RUN-LOG.md. No file:/// links.
+Safety: Do not edit SKILL.md. Document follow-up in TEST-RUN-LOG.md. No file:/// links. Use repo-relative paths.
 ```
 
-### Isolated: Unknowns Mapper
-```text
-Task: Run unknowns-mapper on examples/pipeline/problem_frame.md.
-Allowed Edits:
-- examples/skill-tests/unknowns-mapper/unknowns_map.md
-- examples/skill-tests/unknowns-mapper/TEST-RUN-LOG.md
-Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
-Expected Output: examples/skill-tests/unknowns-mapper/unknowns_map.md
-Validation Command: python scripts/validate-artifact.py examples/skill-tests/unknowns-mapper/unknowns_map.md
-Safety: Do not edit SKILL.md. Document logic gaps in TEST-RUN-LOG.md. No file:/// links.
-```
-
-### Isolated: Repo Sensemaker
+### 8.2. Isolated: Repo Sensemaker
 ```text
 Task: Run repo-sensemaker on the current repository.
 Allowed Edits:
 - examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
 - examples/skill-tests/repo-sensemaker/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
 Validation Command: python scripts/validate-repo.py
 Follow-up: Run "python scripts/validate-brief.py examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md" for deeper audit.
+Safety: Do not edit SKILL.md. No file:/// links. Use repo-relative paths.
+```
+
+### 8.3. Isolated: Setup Sensemaking Skills (Dry Run)
+```text
+Task: Run setup-sensemaking-skills to audit repository configuration.
+Allowed Edits:
+- examples/skill-tests/setup-sensemaking-skills/config_audit.md
+- examples/skill-tests/setup-sensemaking-skills/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+Expected Output: examples/skill-tests/setup-sensemaking-skills/config_audit.md
+Validation Command: python scripts/validate-artifact.py examples/skill-tests/setup-sensemaking-skills/config_audit.md
+Safety: Do not modify core config files (AGENTS.md, etc.). Write audit findings only to config_audit.md. No file:/// links.
+```
+
+### 8.4. Isolated: Docs Reconciler (Dry Run)
+```text
+Task: Run sensemaking-docs-reconciler to identify vocabulary or contract drift.
+Allowed Edits:
+- examples/skill-tests/docs-reconciler/reconcile_report.md
+- examples/skill-tests/docs-reconciler/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+Expected Output: examples/skill-tests/docs-reconciler/reconcile_report.md
+Validation Command: python scripts/validate-artifact.py examples/skill-tests/docs-reconciler/reconcile_report.md
+Safety: Do not mutate CONTEXT.md or registries. Write discrepancies to reconcile_report.md. No file:/// links.
+```
+
+## 9. Future Phase Task Prompts
+
+### 9.1. Isolated: Unknowns Mapper
+```text
+Task: Run unknowns-mapper on examples/pipeline/problem_frame.md.
+Allowed Edits:
+- examples/skill-tests/unknowns-mapper/unknowns_map.md
+- examples/skill-tests/unknowns-mapper/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+Expected Output: examples/skill-tests/unknowns-mapper/unknowns_map.md
+Validation Command: python scripts/validate-artifact.py examples/skill-tests/unknowns-mapper/unknowns_map.md
 Safety: Do not edit SKILL.md. No file:/// links.
 ```
 
-### Isolated: Workflow Orchestrator
+### 9.2. Isolated: Workflow Orchestrator
 ```text
 Task: Run workflow-orchestrator on examples/pipeline/repo_sensemaking_brief.md.
 Allowed Edits:
 - examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
 - examples/skill-tests/workflow-orchestrator/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
 Validation Command: python scripts/validate-plan.py examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
 Safety: Ensure Section 11 is valid. Do not edit SKILL.md. No file:/// links.
 ```
 
-### Handoff: Framer -> Mapper
+### 9.3. Handoff: Framer -> Mapper
 ```text
 Task: Consume GENERATED problem_frame.md from Phase 2 and run unknowns-mapper.
 Allowed Edits:
 - examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
 - examples/skill-tests/handoff/framer-to-mapper/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Validation Command: python scripts/validate-artifact.py examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
 Safety: Classify defects as producer vs consumer in TEST-RUN-LOG.md. No file:/// links.
 ```
 
-### Full-Chain: Cold Start
-```text
-Task: Execute full pipeline from raw fog to prompt handoff.
-Target Path: examples/skill-tests/full-chain/001-cold-start/
-Allowed Edits:
-- examples/skill-tests/full-chain/001-cold-start/**
-- examples/skill-tests/full-chain/001-cold-start/TEST-RUN-LOG.md
-Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
-Validation: Run scripts/validate-repo.py and scripts/validate-plan.py on final artifacts.
-Safety: Document the thread of Search Seeds in the log. No file:/// links.
-```
-
-### Maintenance Loop Audit
+### 9.4. Maintenance Loop Audit
 ```text
 Task: Run usage-researcher -> skill-maintainer loop using Scenario 005.
 Input: examples/usage-research/scenarios/005-conflicting-fixes/
@@ -161,12 +182,26 @@ Allowed Edits:
 - examples/skill-tests/maintenance/output/**
 - examples/skill-tests/maintenance/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/scenarios/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+Expected Output: examples/skill-tests/maintenance/output/skill_improvement_plan.md
 Validation Command: python scripts/validate-skill-improvement-plan.py examples/skill-tests/maintenance/output/skill_improvement_plan.md
 Goal: Confirm it identifies "fixture_defect" instead of patching logic. No file:/// links.
 ```
 
-## 9. Final Validation Gates
+### 9.5. Full-Chain: Cold Start
+```text
+Task: Execute full pipeline from raw fog to prompt handoff.
+Target Path: examples/skill-tests/full-chain/001-cold-start/
+Allowed Edits:
+- examples/skill-tests/full-chain/001-cold-start/**
+- examples/skill-tests/full-chain/001-cold-start/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+Validation: Run scripts/validate-repo.py and scripts/validate-plan.py on final artifacts.
+Safety: Document the thread of Search Seeds in the log. No file:/// links.
+```
+
+## 10. Final Validation Gates
 
 1.  `python scripts/validate-repo.py`
 2.  `python scripts/validate-brief.py [generated-brief]`
