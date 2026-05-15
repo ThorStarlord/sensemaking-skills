@@ -1,70 +1,71 @@
 # Repository Sensemaking Brief
 
 ## 1. Repository goal
-Establish a robust, contract-enforced "Sensemaking Skills" ecosystem for turning raw repository "fog" into executable, registry-compliant AI workflows.
+The repository aims to provide a robust, auditable sensemaking pipeline that transforms raw human intent ("fog") into structured, executable AI workflows while maintaining high integrity through automated validation and strict boundary enforcement.
 
 ## 2. Current shape
-- `skills/`: Modular sensemaking logic (framer, mapper, sensemaker).
-- `scripts/`: Validation stack for artifacts and repository state.
-- `examples/skill-tests/`: New, hardened verification suite for Wave 1/2 compliance.
-- `workflow-registry.yaml`: Orchestration metadata.
+- `skills/`: Core logic units (e.g., `problem-framer`, `repo-sensemaker`).
+- `scripts/`: Validation stack (e.g., `validate-repo.py`, `validate-artifact.py`).
+- `examples/skill-tests/`: Structured verification suite (Wave-based execution).
+- `docs/`: Architectural philosophy and failure taxonomy.
+- `workflow-registry.yaml` & `skill-registry.yaml`: Core orchestration metadata.
 
 ## 3. Strong signals
-- **Artifact Rigor**: Every skill has a corresponding template and validation script (e.g., `scripts/validate-artifact.py`).
-- **Hardened Testing**: The `ALL-SKILLS-TEST-PLAN.md` provides a clear, multi-phase roadmap for repository stability.
+- **Structural Integrity**: The repository has a comprehensive validation suite (`scripts/`) that enforces artifact schemas and repository layout.
+- **Process Discipline**: The existence of `ALL-SKILLS-TEST-PLAN.md` with explicit allowed/forbidden write paths demonstrates high operational security.
+- **Semantic Mapping**: The `problem-framer` skill successfully anchors vague ideas to concrete repository objects like `workflow-registry.yaml`.
 
 ## 4. Missing pieces
-- **Semantic Continuity Validation**: While structural validation is strong, automated checks for "semantic alignment" between piped skills (e.g., Mapper addressing the Framer's OUP) are missing.
-- **Wave 2 Automation**: Multi-skill handoff tests are planned but not yet institutionalized as a single-command suite.
+- **Configuration Automation**: The `setup-sensemaking-skills` skill relies on manual/checklist-based validation rather than fully automated script-based audits.
+- **Handoff Density**: While individual skills are tested, inter-skill handoff artifacts (e.g., `handoff/framer-to-mapper`) are scheduled for future phases (Wave 2+).
 
 ## 5. Improvement opportunities
-- **Unified Compliance Reporting**: Consolidating per-task logs into a centralized dashboard or report.
-- **Registry Schema Docs**: Explicit documentation for the `workflow-registry.yaml` schema to prevent "OUP" ambiguity.
+- Transitioning manual setup audits to automated scripts.
+- Consolidating individual validation scripts into a unified `check-compliance` command.
 
 ## 6. Weakest boundary
-The **Semantic Thread Handoff**: The risk that an upstream skill (Problem Framer) produces a structurally valid but semantically disconnected artifact for the downstream skill (Unknowns Mapper).
+**Path Hygiene & Artifact Portability**: The strict ban on absolute URI links and the enforcement of repository-relative paths is a critical but volatile boundary. The need for explicit safety instructions in every task prompt indicates this is not yet an internalized behavior for all agents.
 
 ## 7. Evidence
-- `examples/skill-tests/ALL-SKILLS-TEST-PLAN.md`: Defines Phase 2 (Isolated) and Phase 3 (Handoff) as distinct steps, separated by manual/audit review.
-- `scripts/validate-artifact.py`: Focuses on field presence and template adherence rather than cross-artifact semantic verification.
+- `ALL-SKILLS-TEST-PLAN.md` (Lines 87-91) defines the Path Hygiene & Response Rules.
+- `SKILL.md` (Lines 22-30) in various skills includes specific `Boundary Rules` that are still being refined to prevent over-maintenance.
+- The `forbidden_edits` list in `ALL-SKILLS-TEST-PLAN.md` (Line 108) is large, suggesting the repository structure is sensitive to accidental mutations.
 
 ## 8. Evidence excerpts
 ```yaml
 evidence_excerpts:
-  - file: examples/skill-tests/ALL-SKILLS-TEST-PLAN.md
-    lines: 38-42
-    quote: "1. Phase 1: Read-only Audits... 2. Phase 2: Isolated Output Artifacts... 3. Phase 3: Handoff & Full-chain Tests"
-    supports_claim: "Verification of isolated units precedes verification of semantic chains."
-  - file: scripts/validate-artifact.py
-    lines: 10-20
-    quote: "def validate_structure(artifact_type, file_path):"
-    supports_claim: "Current validation is primarily structural/contractual."
+  - file: ALL-SKILLS-TEST-PLAN.md
+    lines: 87-91
+    quote: "Do not write absolute file links into committed artifacts... Use repository-relative paths inside all repo files."
+    supports_claim: "The repository is actively hardening the path hygiene boundary to ensure portability."
+  - file: skills/problem-framer/SKILL.md
+    lines: 22-31
+    quote: "Boundary Rules: Non-Implementation... Boundary Guards... Orchestration Shield..."
+    supports_claim: "Skills use specialized 'Shields' and 'Guards' to prevent out-of-scope logic jumps, indicating a focus on semantic containment."
 ```
 
 ## 9. Why this boundary matters
-If the semantic thread is broken, the `workflow-orchestrator` will generate valid-looking plans that solve the wrong problem or fail to address the actual "Object Under Pressure."
+If path hygiene or boundary containment fails, the repository artifacts become non-portable and "hallucinated edits" may contaminate core logic, breaking the autonomous maintenance loop and requiring manual recovery.
 
 ## 10. Candidate next steps
-- Run Handoff tests (`framer-to-mapper`) to verify thread integrity.
-- Implement a `validate-thread.py` script to check OUP consistency across artifacts.
-- Update `ALL-SKILLS-TEST-PLAN.md` to include semantic success criteria.
+- Complete the Wave 1 Isolated Test suite.
+- Harden the `setup-sensemaking-skills` automated audit logic.
+- Execute Wave 2 Handoff Tests to verify semantic continuity.
 
 ## 11. Recommended next step
-Execute Task 2 (`iso-mapper-001`) using the output of Task 1 (`iso-framer-001`) as a direct input to test the Handoff boundary.
+Complete the execution of Wave 1 tasks (8.3 and 8.4) and generate the `WAVE-1-COMPLIANCE-REPORT.md` to stabilize the repository baseline.
 
 ## 12. Recommended workflow
-`handoff-verification`
+`wave-1-execution`
 
 ## 13. Machine-readable handoff
 ```yaml
-recommended_workflow_id: handoff-verification
+recommended_workflow_id: wave-1-execution
 recommended_execution_mode: plan_only
-weakest_boundary: semantic_thread_handoff
+weakest_boundary: Path Hygiene
 required_inputs:
   - repository_sensemaking_brief
-  - problem_frame
-  - unknowns_map
 ```
 
 ## 14. Ready-to-copy prompt
-Execute the handoff verification workflow using `examples/skill-tests/problem-framer/problem_frame.md` as the producer and `unknowns-mapper` as the consumer. Focus on OUP alignment.
+"Run Tasks 8.3 and 8.4 from ALL-SKILLS-TEST-PLAN.md to complete the Wave 1 compliance pilot. Document all results in WAVE-1-COMPLIANCE-REPORT.md."

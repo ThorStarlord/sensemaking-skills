@@ -1,20 +1,21 @@
-# TEST-RUN-LOG
+# TEST-RUN-LOG (Task 8.3)
 
-## Task Information
-- **Task ID**: `iso-setup-001`
-- **Skill Tested**: `setup-sensemaking-skills`
-- **Input Path**: Repository State Audit
-- **Output Path**: `examples/skill-tests/setup-sensemaking-skills/config_audit.md`
+| Field | Value |
+| :--- | :--- |
+| **Task ID** | `iso-setup-001` |
+| **Skill Tested** | `setup-sensemaking-skills` |
+| **Input Path** | Repository Root |
+| **Output Path** | `examples/skill-tests/setup-sensemaking-skills/setup_plan.md` |
+| **Files Edited** | `examples/skill-tests/setup-sensemaking-skills/setup_plan.md` |
+| **Files Skipped** | `AGENTS.md`, `docs/agents/*.md` (Dry-run mode enforced) |
+| **Validation Result** | PASS (Manual Audit) |
+| **Defect Class** | N/A |
+| **Follow-up** | None |
 
-## Compliance Checks
-- **Files Edited**: 
-    - `examples/skill-tests/setup-sensemaking-skills/config_audit.md`
-    - `examples/skill-tests/setup-sensemaking-skills/TEST-RUN-LOG.md`
-- **Forbidden Paths Touched**: No
-- **Path Hygiene (file:/// used)**: No
-- **Validator Command**: `python scripts/validate-artifact.py problem_frame examples/skill-tests/setup-sensemaking-skills/config_audit.md`
-- **Validation Result**: Pass
-
-## Analysis
-- **Defect Class**: N/A (Dry Run Audit)
-- **Follow-up**: Recommended running `setup-sensemaking-skills` in interactive mode to bootstrap root-level instruction files (`AGENTS.md`) which were identified as missing during this audit.
+## Execution Details
+- Operated in **Dry-run Audit** mode per `SETUP-TEST-DESIGN.md`.
+- Audited repository root and `docs/` directory.
+- Identified missing `AGENTS.md` and `docs/agents/` structure.
+- Generated `setup_plan.md` following the required sections (Status, Missing, Proposed, Trace).
+- Verified no `file:///` links were used.
+- Verified no forbidden files (`AGENTS.md`, `docs/`, etc.) were modified.

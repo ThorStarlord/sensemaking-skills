@@ -1,39 +1,41 @@
 # WAVE-1-COMPLIANCE-REPORT
 
-This report summarizes the Formal Wave 1 Compliance Rerun from the Hardened Baseline.
-
 ## 1. Executive Summary
-The Wave 1 compliance pilot was executed against four isolated sensemaking skills. All tasks were completed successfully, artifacts were validated against their respective contracts, and strict boundary rules were maintained.
+Wave 1 of the `ALL-SKILLS-TEST-PLAN.md` has been successfully executed. All four isolated skill tests (Phase 2) passed their respective validation gates. The repository remained stable, and no forbidden paths were modified.
 
-## 2. Task Status Matrix
+## 2. Task Execution Summary
 
-| Task ID | Skill Tested | Input | Validation | Compliance |
+| ID | Task Name | Status | Validation | Log Path |
 | :--- | :--- | :--- | :--- | :--- |
-| `iso-framer-001` | `problem-framer` | raw_fog.md | **Pass** | **Green** |
-| `iso-mapper-001` | `unknowns-mapper` | problem_frame.md | **Pass** | **Green** |
-| `iso-repo-001` | `repo-sensemaker` | Repository | **Pass** | **Green** |
-| `iso-setup-001` | `setup-sensemaking-skills`| Repo Audit | **Pass** | **Green** |
+| 8.1 | Isolated: Problem Framer | PASS | Automated | `examples/skill-tests/problem-framer/TEST-RUN-LOG.md` |
+| 8.2 | Isolated: Repo Sensemaker | PASS | Automated | `examples/skill-tests/repo-sensemaker/TEST-RUN-LOG.md` |
+| 8.3 | Isolated: Setup (Dry Run) | PASS | Manual Audit | `examples/skill-tests/setup-sensemaking-skills/TEST-RUN-LOG.md` |
+| 8.4 | Isolated: Docs Reconciler | PASS | Automated | `examples/skill-tests/docs-reconciler/TEST-RUN-LOG.md` |
 
 ## 3. Compliance Audit
 
-### Boundary Enforcement
-- **Skills/Scripts**: **ZERO** modifications. All skill logic and validation scripts remain in their hardened state.
-- **Docs/Registries**: **ZERO** modifications to `README.md`, `CONTEXT.md`, or registry files.
-- **Quarantine**: **ZERO** modifications to the `quarantine/` directory.
+### 3.1. Path Hygiene
+- **file:/// links**: Checked all generated artifacts. Initial failure in Task 8.2 was remediated. Current status: **CLEAN**.
+- **Path Reference**: All paths inside repository files are repository-relative.
 
-### Path Hygiene
-- **ZERO** `file:///` URI links were detected in generated artifacts or logs.
-- All paths used are repository-relative (e.g., `examples/skill-tests/...`).
+### 3.2. Boundary Enforcement
+- **Forbidden Edits**: Verified via `git status`. No modifications detected in `skills/`, `scripts/`, `docs/`, or root configuration files.
+- **Allowed Edits**: All writes remained within the `examples/skill-tests/[skill-name]/` boundaries.
 
-## 4. Findings & Recommendations
+## 4. Notable Findings
 
-### iso-setup-001 (Setup Audit)
-- **Finding**: Standard root-level instruction files (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`) are missing from the repository root.
-- **Recommendation**: Run `setup-sensemaking-skills` in interactive mode to bootstrap these files, ensuring agents can identify the "Sensemaking Block" upon first entry.
+- **Task 8.2 (Repo Sensemaker)**: Identified a "Weakest Boundary" in Path Hygiene, which was immediately proven by a validator failure for literal `file:///` strings in the diagnostic text. This confirms the effectiveness of the current validation stack.
+- **Task 8.4 (Docs Reconciler)**: Identified vocabulary drift in `CONTEXT.md`. Specifically, the "Flagship Skills" list is out of sync with the actual 9 skills present in the repository.
 
-### iso-repo-001 (Semantic Boundary)
-- **Finding**: The "Semantic Thread Handoff" is the weakest boundary. While individual artifacts pass structural validation, there is no automated check that the Mapper is actually solving the Framer's identified problem.
-- **Recommendation**: Prioritize Phase 3 (Handoff Tests) and consider a `validate-thread.py` script to enforce OUP (Object Under Pressure) consistency across the pipeline.
+## 5. Defect Classification (Wave 1)
 
-## 5. Conclusion
-The sensemaking pipeline is structurally robust and compliant with the hardened baseline. The system is ready for Phase 3 (Handoff & Full-chain Tests) once the recommendation to bootstrap root-level instructions is addressed.
+| Task | Class | Source | Rationale |
+| :--- | :--- | :--- | :--- |
+| 8.2 | Class 7: Path Hygiene | Producer | Initial output contained `file:///` substring as text. |
+
+## 6. Next Steps
+- Approve Wave 1 results.
+- Proceed to Wave 2 (Handoff and Full-chain tests).
+- Implement recommended patches from Task 8.4 (Docs Reconciliation).
+
+**Stop after Wave 1.**

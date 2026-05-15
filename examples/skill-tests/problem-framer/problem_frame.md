@@ -4,21 +4,21 @@
 "I want this repo to help me turn messy ideas into useful AI workflows."
 
 ## 2. Problem Under the Problem
-The transition from unstructured thought ("messy ideas") to executable agentic structures ("AI workflows") lacks a systematic mapping process, leading to high friction and low-fidelity outputs.
+The user faces a semantic translation gap. Raw, unstructured intent ("messy ideas") cannot be directly consumed by the repository's execution engine. The friction lies in the lack of a formalized mapping process between human intuition and machine-executable agentic workflows.
 
 ## 3. Object Under Pressure
 `workflow-registry.yaml`
 
 ## 4. Failure Mode
-A fragmented ecosystem of brittle, hard-coded scripts that cannot be easily composed, verified, or improved, resulting in "workflow rot" and orphan automation.
+Users attempt to manually construct workflows without a sensemaking bridge, resulting in "Hallucinated Workflows" that pass structural validation but fail to achieve the intended behavioral outcome, leading to developer frustration and abandoned automation.
 
 ## 5. Success Condition
-A repeatable, contract-enforced pipeline that translates any vague concept into a validated, registry-compliant workflow definition.
+The repository provides a predictable, step-by-step pipeline that transforms raw text input into a validated, semantically sound `workflow-registry.yaml` entry.
 
 ## 6. What Must Be True
-- The `workflow-registry.yaml` schema must be stable and documented.
-- Sensemaking skills must produce artifacts that satisfy registry requirements.
-- The repository must have a defined interface for new workflow ingestion.
+- The `workflow-registry.yaml` schema is stable and documented.
+- The `problem-framer` and `unknowns-mapper` skills are capable of identifying orchestration needs.
+- The user has access to existing workflow examples to ground their intent.
 
 ## 7. Next Artifact
 Unknowns Map
