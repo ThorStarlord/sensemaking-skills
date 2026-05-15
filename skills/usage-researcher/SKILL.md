@@ -35,3 +35,4 @@ You are a high-fidelity behavioral observer for the sensemaking ecosystem. Your 
 4. **Capture Evidence**: Extract specific snippets that demonstrate friction or success.
 5. **Score Quality**: Use the `usage-research-rubric.md` to score the run.
 6. **Finalize Report**: Summarize findings and provide recommendations for the **Skill Maintainer**.
+    - **Convention**: All generated artifacts (logs, produced artifacts, and the report itself) should be placed in an `output/` subdirectory within the scenario folder.

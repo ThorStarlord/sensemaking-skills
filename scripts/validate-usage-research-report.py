@@ -78,6 +78,19 @@ def validate_report(report_path):
         if not re.search(r'- \*\*Classification\*\*: \[?(Structural|Semantic|Boundary|None)\]?', content, re.IGNORECASE):
             errors.append("Missing or invalid 'Failure Classification'. Must be one of: Structural, Semantic, Boundary, None.")
 
+    # Evidence Check (New Standard must have actual evidence)
+    if "Evidence Excerpts" in content:
+        if not re.search(r'>|```', content):
+            errors.append("Missing Evidence Excerpts content. You must provide specific snippets (blockquote or code block).")
+
+    # Role Boundary Guard: Researcher must not act as Maintainer
+    patching_terms = [r'edit\s+skill', r'patch\s+instruction', r'modify\s+instruction', r'change\s+logic\s+in', r'```diff']
+    for term in patching_terms:
+        if re.search(term, content, re.IGNORECASE):
+            # Allow mention of improvement plans but not direct instruction edits
+            if not re.search(r'recommended\s+maintainer\s+input', content, re.IGNORECASE):
+                errors.append(f"Role Boundary Violation: Usage researcher should not propose direct patches (found: '{term}'). Recommend investigation areas for the Skill Maintainer instead.")
+
     return errors
 
 if __name__ == "__main__":
