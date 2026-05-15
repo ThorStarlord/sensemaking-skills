@@ -4,11 +4,16 @@ A collection of skills designed to turn vague project uncertainty into clear pro
 
 The repository is organized around a clean split: **Diagnosis** (`repo-sensemaker`) and **Orchestration** (`workflow-orchestrator`).
 
-## Core Philosophy
+## Engineering Philosophy: Artifact-Driven Agentic Engineering
 
-"I do not know what I need because I do not yet understand what I am building."
+This repository is not just a collection of prompts; it is a **systems engineering** project built on the principle that **Artifacts are the API between skills**.
 
-Sensemaking skills sit **before** specialized tools. They handle the moment of "fog" where the type of problem is not yet known.
+By forcing agents to communicate via durable, validated artifacts instead of ephemeral conversation memory, we ensure:
+- **Auditability**: Every step of the reasoning is recorded in a structured document.
+- **Reliability**: Skills are grounded in evidence, not hallucinations.
+- **Safety**: Handoffs occur at explicit, human-approvable boundaries.
+
+For a deep dive into our methodology, failure taxonomy, and the "Anti-Causal Confusion Rule," see [docs/philosophy/ARTIFACT_DRIVEN_AGENTIC_ENGINEERING.md](docs/philosophy/ARTIFACT_DRIVEN_AGENTIC_ENGINEERING.md).
 
 ## What this is / is not
 

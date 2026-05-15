@@ -27,6 +27,32 @@ def validate_improvement_plan(plan_path, repo_root):
         if not re.search(pattern, content, re.IGNORECASE):
             errors.append(f"Missing required section: '{section}'")
 
+    # 1.1 Failure Mode Class Verification
+    fm_match = re.search(r'- \*\*Failure Mode Class\*\*: (Class \d+: [\w\s]+)', content, re.IGNORECASE)
+    if not fm_match:
+        errors.append("Missing mandatory field '- **Failure Mode Class**: Class X: Name'.")
+    else:
+        fm_class = fm_match.group(1)
+        valid_classes = [
+            "Class 1: Input Ambiguity",
+            "Class 2: Wrong Routing",
+            "Class 3: Artifact Weakness",
+            "Class 4: Handoff Failure",
+            "Class 5: Boundary Violation",
+            "Class 6: Hallucinated Evidence",
+            "Class 7: Path Hygiene Error",
+            "Class 8: Over-Maintenance",
+            "Class 9: Validator Mismatch",
+            "Class 10: Status Overclaiming"
+        ]
+        is_valid = False
+        for vc in valid_classes:
+            if vc.lower() in fm_class.lower():
+                is_valid = True
+                break
+        if not is_valid:
+            errors.append(f"Invalid Failure Mode Class '{fm_class}'. Must be one of the 10 formal classes.")
+
     # 2. Source Report Verification
     match = re.search(r'- \*\*Source Report\*\*: \[(.*?)\]\((.*?)\)', content)
     if not match:

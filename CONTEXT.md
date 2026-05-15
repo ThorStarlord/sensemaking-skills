@@ -3,11 +3,24 @@
 ## Goal
 To provide a meta-routing layer for AI agents that turns project uncertainty ("fog") into actionable problem frames, research paths, and specific skill recommendations.
 
+## Engineering Philosophy
+This repository is built on **Artifact-Driven Agentic Engineering**. We treat artifacts as the API between skills to ensure reliability, auditability, and safety. 
+> See [docs/philosophy/ARTIFACT_DRIVEN_AGENTIC_ENGINEERING.md](docs/philosophy/ARTIFACT_DRIVEN_AGENTIC_ENGINEERING.md) for the deep theory.
+
 ## Core Principles
 1. **Fog First**: Always classify the type of uncertainty before proposing a solution.
-2. **Boundary Rule**: Do not perform downstream work (building) by default. Focus on making the work answerable.
-3. **Pragmatic Routing**: Use the `skill-registry.yaml` to find the most specific tool for the job.
-4. **Human in the Loop**: Skills provide judgment, but humans approve usefulness.
+2. **Artifacts as API**: Skills communicate via durable artifacts, not conversation memory.
+3. **Boundary Rule**: Do not perform downstream work (building) by default.
+4. **Anti-Causal Confusion**: Classify defect source (Skill vs. Fixture) before any repair.
+5. **Human in the Loop**: Skills provide judgment, but humans approve usefulness.
+
+## Routing Source of Truth
+| Resource | Purpose |
+|----------|---------|
+| `skill-registry.yaml` | Find specific tools for a task |
+| `workflow-registry.yaml` | Find the sequence of skills for a project mode |
+| `examples/skill-tests/` | Behavioral evidence and test fixtures |
+| `docs/philosophy/` | Engineering rationale and FMEA taxonomies |
 
 ## Domain Language
 - **Fog**: The state of project uncertainty (Product, Architecture, Strategy, or Routing).

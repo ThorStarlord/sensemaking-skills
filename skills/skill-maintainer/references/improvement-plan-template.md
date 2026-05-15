@@ -1,7 +1,7 @@
 # Skill Improvement Plan: [Target Skill Name]
 
 ## 1. Diagnosis
-- **Failure Mode**: [Keyword Gravity | Handoff Gap | Stopping Rule Tautology | Registry Obscurity]
+- **Failure Mode Class**: [Class 1: Input Ambiguity | Class 2: Wrong Routing | Class 3: Artifact Weakness | Class 4: Handoff Failure | Class 5: Boundary Violation | Class 6: Hallucinated Evidence | Class 7: Path Hygiene Error | Class 8: Over-Maintenance | Class 9: Validator Mismatch | Class 10: Status Overclaiming]
 - **Severity**: [Low | Medium | High]
 - **Summary**: Brief description of the behavioral gap identified in research.
 
