@@ -4,7 +4,7 @@
 - **Skill Tested**: `usage-researcher` -> `skill-maintainer`
 - **Input Path**: `examples/usage-research/scenarios/005-conflicting-fixes/`
 - **Output Path**: `examples/skill-tests/maintenance/output/`
-- **Status**: [/] In Progress
+- **Status**: [x] Completed
 
 ## 1. Execution Thread
 
@@ -29,9 +29,12 @@
 
 ## 4. Failure Classification (If applicable)
 
-- **behavioral_failure_class**: N/A
-- **defect_source**: N/A
+- **behavioral_failure_class**: Class 8: Over-Maintenance
+- **defect_source**: fixture_defect
+- **recommended_action**: fixture_edit
+- **classification_note**: The agent behavior was correct; the failure belongs to the scenario fixture, not the tested skill.
 
 ## 5. Follow-ups
 
-- N/A
+- Future authorized fixture-maintenance pass: update `examples/usage-research/scenarios/005-conflicting-fixes/flawed_expected_behavior.md` to align expected behavior with the user’s registry-entry request.
+- Do not patch `skills/**`, registries, or validators for this finding.

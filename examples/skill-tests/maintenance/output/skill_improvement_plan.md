@@ -23,7 +23,7 @@
     - **Before**: Validator/Researcher flags a "failure" when the agent correctly answers a technical question.
     - **After**: Success criteria are aligned with actual system capabilities and user intent.
 - **Anti-Overfitting Guard**: This change prevents the maintainer from adding unnecessary "PRD-first" instructions to the sensemaker which would degrade its diagnostic precision.
-- **Regression Risk**: None.
+- **Regression Risk**: Low. Risk is limited to accidentally erasing the adversarial purpose of Scenario 005 if the corrected fixture no longer preserves the trap condition.
 
 **Instruction Block / Patch**:
 ```diff
