@@ -15,7 +15,7 @@
 1. **Authority Check**: Confirmed `repo-sensemaker` is tasked with recommending workflows in `SKILL.md` (Step 6) and template (Section 12/13).
 2. **Contract Check**: Verified `SKILL.md` lacks an explicit requirement to consult `workflow-registry.yaml` for ID values.
 3. **Causality Analysis**: Identified that the agent in `wave-1-execution` mismatch used task context ("Wave 1") to invent a label rather than looking up the registry.
-4. **Validation Check**: Confirmed existing `scripts/validate-brief.py` exists but its current depth regarding cross-registry ID validation is unknown without reading the code.
+4. **Validation Check**: Confirmed existing `scripts/validate-brief.py` exists; however, implementation inspection was deferred to the maintenance pass to maintain investigation/patch separation.
 
 ## 3. Validator Review
 - `scripts/validate-repo.py` run:
