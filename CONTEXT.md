@@ -48,3 +48,10 @@ This repository is built on **Artifact-Driven Agentic Engineering**. We treat ar
 - **Interface Skills**: Spec Packages and UI validation.
 - **Matt Pocock Skills**: Engineering rigor, TDD, and grilling.
 - **Product Manager Skills**: Discovery, PRDs, and Strategy.
+
+## Automation & Validation (scripts/)
+The repository uses a Python-based validation stack to enforce artifact integrity and safety:
+- **`validate-artifact.py`**: Enforces structural contracts for Sensemaking Briefs and Orchestration Plans.
+- **`validate-repo.py`**: Performs global consistency checks across registries and examples.
+- **`validate-skill-improvement-plan.py`**: Hardened gate for the maintenance loop; enforces formal failure mode classification and prevents logic overfitting.
+- **`validate-usage-research-report.py`**: Ensures research evidence is grounded and machine-readable.
