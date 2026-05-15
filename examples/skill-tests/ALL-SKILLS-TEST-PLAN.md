@@ -1,4 +1,4 @@
-# ALL-SKILLS-TEST-PLAN (Production Ready)
+# ALL-SKILLS-TEST-PLAN (Hardened Baseline)
 
 This plan defines a non-interfering verification suite for the Sensemaking Skills ecosystem. It is designed for parallel execution with strict boundary enforcement and machine-auditable run logs.
 
@@ -86,13 +86,19 @@ Every execution task must create a `TEST-RUN-LOG.md` in its assigned output dire
 
 ## 7. Path Hygiene & Response Rules
 
-- **NO `file:///` LINKS**: Do not use `file:///` syntax in artifacts, logs, reports, or final responses.
-- **RELATIVE PATHS**: Use repository-relative paths only (e.g., `examples/skill-tests/...`).
+- **Repository artifacts**: Do not write `file:///` links into committed artifacts, logs, reports, fixtures, docs, or markdown files.
+- **Repository-relative paths**: Use repository-relative paths inside all repo files.
+- **Transient agent UI responses**: Local clickable `file:///` links in the coding agent’s own UI response are acceptable for human navigation, but they must not be copied into repository files.
 - **NO IMPROVISATION**: Stay within the `Allowed Edits` paths. Document out-of-scope needs in the `TEST-RUN-LOG.md`.
 
 ## 8. Hardened Task Prompts
 
 ## 8. Wave 1 Task Prompts (Phase 2)
+
+> [!NOTE]
+> **Wave 1 Scope**: Wave 1 tests **execution discipline**, not semantic pipeline completeness.
+> - `docs-reconciler` is included because it tests whether an agent can identify docs drift without mutating protected docs.
+> - `unknowns-mapper` is moved to Phase 3 / Handoff because it consumes generated `problem_frame.md`.
 
 ### 8.1. Isolated: Problem Framer
 ```text
@@ -101,7 +107,7 @@ Allowed Edits:
 - examples/skill-tests/problem-framer/problem_frame.md
 - examples/skill-tests/problem-framer/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/problem-framer/problem_frame.md
 Validation Command: python scripts/validate-artifact.py problem_frame examples/skill-tests/problem-framer/problem_frame.md
 Safety: Do not edit SKILL.md. Document follow-up in TEST-RUN-LOG.md. No file:/// links. Use repo-relative paths.
@@ -114,7 +120,7 @@ Allowed Edits:
 - examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
 - examples/skill-tests/repo-sensemaker/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
 Validation Command: python scripts/validate-repo.py ; python scripts/validate-artifact.py repository_sensemaking_brief examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
 Follow-up: Run "python scripts/validate-brief.py examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md" for deeper audit.
@@ -129,7 +135,7 @@ Allowed Edits:
 - examples/skill-tests/setup-sensemaking-skills/setup_plan.md
 - examples/skill-tests/setup-sensemaking-skills/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/setup-sensemaking-skills/setup_plan.md
 Validation: Manual / Checklist-based (See SETUP-TEST-DESIGN.md).
 Safety: Do not modify core config files (AGENTS.md, etc.). Write audit findings only to setup_plan.md. No file:/// links.
@@ -142,7 +148,7 @@ Allowed Edits:
 - examples/skill-tests/docs-reconciler/reconcile_report.md
 - examples/skill-tests/docs-reconciler/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/docs-reconciler/reconcile_report.md
 Validation Command: python scripts/validate-artifact.py docs_contract_reconciliation_report examples/skill-tests/docs-reconciler/reconcile_report.md
 Safety: Do not mutate CONTEXT.md or registries. Write discrepancies to reconcile_report.md. No file:/// links.
@@ -157,7 +163,7 @@ Allowed Edits:
 - examples/skill-tests/unknowns-mapper/unknowns_map.md
 - examples/skill-tests/unknowns-mapper/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/unknowns-mapper/unknowns_map.md
 Validation Command: python scripts/validate-artifact.py unknowns_map examples/skill-tests/unknowns-mapper/unknowns_map.md
 Safety: Do not edit SKILL.md. No file:/// links.
@@ -165,12 +171,12 @@ Safety: Do not edit SKILL.md. No file:/// links.
 
 ### 9.2. Isolated: Workflow Orchestrator
 ```text
-Task: Run workflow-orchestrator on examples/pipeline/repo_sensemaking_brief.md.
+Task: Run workflow-orchestrator on examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md.
 Allowed Edits:
 - examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
 - examples/skill-tests/workflow-orchestrator/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
 Validation Command: python scripts/validate-artifact.py workflow_orchestration_plan examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md ; python scripts/validate-plan.py examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
 Safety: Ensure Section 11 is valid. Do not edit SKILL.md. No file:/// links.
@@ -183,7 +189,7 @@ Allowed Edits:
 - examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
 - examples/skill-tests/handoff/framer-to-mapper/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Validation Command: python scripts/validate-artifact.py unknowns_map examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
 Safety: Classify defects as producer vs consumer in TEST-RUN-LOG.md. No file:/// links.
 ```
@@ -196,7 +202,7 @@ Allowed Edits:
 - examples/skill-tests/maintenance/output/**
 - examples/skill-tests/maintenance/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/scenarios/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/scenarios/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/maintenance/output/skill_improvement_plan.md
 Validation Command: python scripts/validate-skill-improvement-plan.py examples/skill-tests/maintenance/output/skill_improvement_plan.md
 Goal: Confirm it identifies "fixture_defect" and "Class 8: Over-Maintenance" metadata. No file:/// links.
@@ -211,7 +217,7 @@ Allowed Edits:
 - examples/skill-tests/full-chain/001-cold-start/**
 - examples/skill-tests/full-chain/001-cold-start/TEST-RUN-LOG.md
 Forbidden Edits:
-- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
+- skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Validation: Run scripts/validate-repo.py and scripts/validate-plan.py on final artifacts.
 Safety: Document the thread of Search Seeds in the log. No file:/// links.
 ```
