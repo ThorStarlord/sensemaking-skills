@@ -18,8 +18,9 @@ Analyzes a repository and produces a **Repository Sensemaking Brief**. This skil
 ## Output Format
 Every response must follow the [Repository Sensemaking Brief](references/repo-analysis-template.md) structure.
 
-## Boundary Rule
-Do not execute workflows or implement changes. The output of this skill is a diagnostic artifact intended for consumption by `workflow-orchestrator` or a human.
+## Boundary Rules
+1. **No Implementation**: Do not execute workflows or implement changes. The output of this skill is a diagnostic artifact.
+2. **Registry Grounding**: Every `recommended_workflow_id` MUST be verified against `skills/workflow-orchestrator/references/workflow-registry.yaml`. Do not invent or "hallucinate" workflow IDs from semantic context. If no matching workflow exists, recommend a `plan_only` mode with the closest structural match or leave it blank with a note.
 
 ## References
 - [Repo Analysis Template](references/repo-analysis-template.md)

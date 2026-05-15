@@ -26,22 +26,31 @@ The linkage between `repo-sensemaker` output and `workflow-orchestrator` input. 
 - [SKILL.md](../../skills/repo-sensemaker/SKILL.md): Mentions the handoff but lacks a hard schema check.
 - [repo-analysis-template.md](../../skills/repo-sensemaker/references/repo-analysis-template.md): Section 12 is a new addition and unproven in automated tests.
 
-## 8. Why this boundary matters
+## 8. Evidence excerpts
+```yaml
+evidence_excerpts:
+  - file: skills/repo-sensemaker/SKILL.md
+    lines: L21-L23
+    quote: "The output of this skill is a diagnostic artifact"
+    supports_claim: "Diagnosis/Action boundary exists."
+```
+
+## 9. Why this boundary matters
 If the brief doesn't explicitly name a workflow ID, the orchestrator might guess the wrong path, leading to unsafe or irrelevant execution.
 
-## 9. Candidate next steps
+## 10. Candidate next steps
 1. Create a `shared-vocabulary.md` reference.
 2. Add a `validator-tdd` run to implement a brief-to-plan contract.
 
-## 10. Recommended next step
-Implement the `validator-tdd` workflow to harden the contract between the two skills.
+## 11. Recommended next step
+Implement the `full-local-sensemaking` workflow to harden the contract between the two skills.
 
-## 11. Recommended workflow
-`validator-tdd`
+## 12. Recommended workflow
+`full-local-sensemaking`
 
-## 12. Machine-readable handoff
+## 13. Machine-readable handoff
 ```yaml
-recommended_workflow_id: validator-tdd
+recommended_workflow_id: full-local-sensemaking
 recommended_execution_mode: guided_execution
 weakest_boundary: manual-handoff
 required_inputs:

@@ -26,23 +26,32 @@ The handoff contract between the two skills is currently the most fragile point,
 - [SKILL.md](../../skills/repo-sensemaker/SKILL.md): Mentions the handoff but lacks a hard schema check.
 - [repo-analysis-template.md](../../skills/repo-sensemaker/references/repo-analysis-template.md): Section 12 is a new addition and unproven in automated tests.
 
-## 8. Why this boundary matters
-If the handoff fails, the orchestrator might guess the workflow or mode, potentially leading to unsafe or irrelevant execution.
+## 8. Evidence excerpts
+```yaml
+evidence_excerpts:
+  - file: skills/repo-sensemaker/SKILL.md
+    lines: L21-L23
+    quote: "The output of this skill is a diagnostic artifact"
+    supports_claim: "Diagnosis/Action boundary exists."
+```
 
-## 9. Candidate next steps
+## 9. Why this boundary matters
+What breaks if this remains weak.
+
+## 10. Candidate next steps
 1. Implement registry parity validation in `scripts/validate-repo.py`.
 2. Add a negative fixture for unsafe orchestration.
 3. Polish skill frontmatter.
 
-## 10. Recommended next step
+## 11. Recommended next step
 Implement registry parity validation to ensure all workflow steps are registered.
 
-## 11. Recommended workflow
-`validator-tdd`
+## 12. Recommended workflow
+`docs-contract-reconciliation`
 
-## 12. Machine-readable handoff
+## 13. Machine-readable handoff
 ```yaml
-recommended_workflow_id: validator-tdd
+recommended_workflow_id: docs-contract-reconciliation
 recommended_execution_mode: guided_execution
 weakest_boundary: registry-parity
 required_inputs:

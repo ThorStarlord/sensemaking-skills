@@ -40,11 +40,11 @@ What breaks if this remains weak.
 The smallest concrete action with highest leverage.
 
 ## 12. Recommended workflow
-One workflow candidate, if appropriate (e.g., from `workflow-orchestrator`).
+One workflow candidate from the official `workflow-registry.yaml`. Do not invent workflow IDs.
 
 ## 13. Machine-readable handoff
 ```yaml
-recommended_workflow_id: 
+recommended_workflow_id: # MUST match an ID in workflow-registry.yaml
 recommended_execution_mode: plan_only
 weakest_boundary: 
 required_inputs:
