@@ -45,4 +45,4 @@ The current `SKILL.md` instructs the agent to "Inspect README, core files, folde
 ## 4. Conclusion
 The `repo-sensemaker` should be required to verify workflow IDs. Relying on "semantic fallback" in the orchestrator is a robust safety net, but "Producer-Side Integrity" is the preferred engineering standard for the sensemaking pipeline.
 
-**Final Recommendation**: Proceed with a staged maintenance pass (Inspect -> Harden Validator -> Harden Skill).
+**Final Recommendation**: Proceed with a staged maintenance pass: Inspect validator behavior -> Harden validator if needed -> Harden skill instructions and template.

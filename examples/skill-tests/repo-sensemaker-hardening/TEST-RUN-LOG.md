@@ -21,7 +21,7 @@
 - `scripts/validate-repo.py` run:
   - Result: SUCCESS (0 errors)
 - `git status --short`:
-  - Result: Clean (prior to artifact creation)
+   Result: Only review artifacts modified/created under `examples/skill-tests/repo-sensemaker-hardening/`.
 
 ## 4. Final Artifact Generation
 - [x] `examples/skill-tests/repo-sensemaker-hardening/REVIEW.md`
