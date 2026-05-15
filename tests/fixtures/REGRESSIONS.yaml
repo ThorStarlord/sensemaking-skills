@@ -1,0 +1,5 @@
+required_cases:
+  - id: repo-sensemaker-workflow-id-hallucination
+    validator: validate-brief
+    fixture: tests/fixtures/validate-brief/invalid/repo-sensemaker-id-hallucination.md
+    reason: Prevent regression of hallucinated workflow IDs such as wave-1-execution.

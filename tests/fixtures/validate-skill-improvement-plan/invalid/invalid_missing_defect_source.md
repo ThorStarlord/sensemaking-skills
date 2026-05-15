@@ -1,3 +1,7 @@
+---
+validator_case: negative
+expected_error_contains: "Defect Source"
+---
 # Invalid Missing Source
 ## 1. Diagnosis
 - **Failure Mode Class**: Class 1: Input Ambiguity
@@ -6,7 +10,7 @@
 - **Summary**: Missing source.
 
 ## 2. Evidence
-- **Source Report**: [usage_research_report.md](usage_research_report.md)
+- **Source Report**: [usage_research_report.sidecar](usage_research_report.sidecar)
 - **Evidence Snippet**:
 > ...
 
@@ -20,3 +24,5 @@
 ## 5. Verification Plan
 - **Rerun Scenario**: ...
 - **Success Criteria**: ...
+
+

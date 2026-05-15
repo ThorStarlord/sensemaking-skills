@@ -1,3 +1,6 @@
+---
+validator_case: positive
+---
 # Valid Fixture Edit
 ## 1. Diagnosis
 - **Failure Mode Class**: Class 8: Over-Maintenance
@@ -7,7 +10,7 @@
 - **Summary**: Fix a flawed test fixture.
 
 ## 2. Evidence
-- **Source Report**: [usage_research_report.md](usage_research_report.md)
+- **Source Report**: [usage_research_report.sidecar](usage_research_report.sidecar)
 - **Evidence Snippet**:
 > The test is wrong.
 
@@ -22,3 +25,5 @@
 ## 5. Verification Plan
 - **Rerun Scenario**: 005
 - **Success Criteria**: PASS
+
+

@@ -1,4 +1,8 @@
-# Fail: wrong gate
+---
+validator_case: negative
+expected_error_contains: "input_artifact mismatch"
+---
+# Fail: wrong handoff
 
 ## 11. Machine-readable plan
 ```yaml
@@ -20,19 +24,20 @@ steps:
   - id: 2
     skill: sensemaking-docs-reconciler
     step_type: local_execution
-    gate: wrong_gate
+    gate: review_reconciliation_patch
     input_artifact: repository_sensemaking_brief
     output_artifact: docs_contract_reconciliation_report
   - id: 3
     skill: prompt-handoff
     step_type: local_execution
     gate: review_next_prompt
-    input_artifact: docs_contract_reconciliation_report
+    input_artifact: wrong_artifact
     output_artifact: prompt_handoff
 approval_gates:
   - review_drift_diagnosis
-  - wrong_gate
+  - review_reconciliation_patch
   - review_next_prompt
 stop_conditions:
   - user_rejection
 ```
+

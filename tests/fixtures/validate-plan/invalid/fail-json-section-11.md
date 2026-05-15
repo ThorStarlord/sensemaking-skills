@@ -1,3 +1,7 @@
+---
+validator_case: negative
+expected_error_contains: "Section 11 YAML block"
+---
 # Fail: JSON Section 11
 
 ## 11. Machine-readable plan
@@ -9,3 +13,4 @@
   "status": "READY"
 }
 ```
+

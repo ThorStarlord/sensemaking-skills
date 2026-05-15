@@ -1,3 +1,7 @@
+---
+validator_case: negative
+expected_error_contains: "execution_mode"
+---
 # Fail: disallowed mode
 
 ## 11. Machine-readable plan
@@ -11,3 +15,4 @@ initial_inputs:
     type: external_context
     source: repository
 ```
+

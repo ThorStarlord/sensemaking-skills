@@ -1,3 +1,7 @@
+---
+validator_case: negative
+expected_error_contains: "stop_conditions missing"
+---
 # Fail: empty stop conditions
 
 ## 11. Machine-readable plan
@@ -21,3 +25,4 @@ approval_gates:
   - review_drift_diagnosis
 stop_conditions: []
 ```
+

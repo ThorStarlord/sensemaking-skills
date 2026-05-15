@@ -1,4 +1,8 @@
-# Fail: unknown artifact
+---
+validator_case: negative
+expected_error_contains: "approval_gates mismatch"
+---
+# Fail: approval_gates mismatch
 
 ## 11. Machine-readable plan
 ```yaml
@@ -22,17 +26,17 @@ steps:
     step_type: local_execution
     gate: review_reconciliation_patch
     input_artifact: repository_sensemaking_brief
-    output_artifact: unknown_artifact
+    output_artifact: docs_contract_reconciliation_report
   - id: 3
     skill: prompt-handoff
     step_type: local_execution
     gate: review_next_prompt
-    input_artifact: unknown_artifact
+    input_artifact: docs_contract_reconciliation_report
     output_artifact: prompt_handoff
 approval_gates:
   - review_drift_diagnosis
-  - review_reconciliation_patch
   - review_next_prompt
 stop_conditions:
   - user_rejection
 ```
+

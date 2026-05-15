@@ -1,3 +1,7 @@
+---
+validator_case: negative
+expected_error_contains: "Failure Mode Class"
+---
 # Invalid Missing Class
 ## 1. Diagnosis
 - **Defect Source**: fixture_defect
@@ -6,7 +10,7 @@
 - **Summary**: Missing class.
 
 ## 2. Evidence
-- **Source Report**: [usage_research_report.md](usage_research_report.md)
+- **Source Report**: [usage_research_report.sidecar](usage_research_report.sidecar)
 - **Evidence Snippet**:
 > ...
 
@@ -21,3 +25,5 @@
 ## 5. Verification Plan
 - **Rerun Scenario**: ...
 - **Success Criteria**: ...
+
+

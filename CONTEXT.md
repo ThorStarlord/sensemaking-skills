@@ -34,6 +34,7 @@ This repository is built on **Artifact-Driven Agentic Engineering**. We treat ar
 - **Weakest Boundary**: The most fragile or unenforced point in a repository.
 - **Approval Gates**: Mandatory review points in an orchestration workflow.
 - **Tracer Bullets**: AFK-compatible vertical slices of implementation.
+- **Validator Verification Suite**: A repeatable verification mechanism that checks validator behavior against positive and negative fixtures. It confirms that valid artifacts pass, invalid artifacts fail, and expected failures fail for the intended reason.
 
 ## Tech Stack
 - Markdown-based skill definitions (`SKILL.md`).

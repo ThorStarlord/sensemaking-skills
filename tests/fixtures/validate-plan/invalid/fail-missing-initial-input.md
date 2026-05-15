@@ -1,3 +1,7 @@
+---
+validator_case: negative
+expected_error_contains: "initial_inputs mismatch"
+---
 # Fail: missing initial input
 
 ## 11. Machine-readable plan
@@ -15,3 +19,4 @@ steps:
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
 ```
+

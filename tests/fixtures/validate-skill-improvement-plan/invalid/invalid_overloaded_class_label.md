@@ -1,3 +1,7 @@
+---
+validator_case: negative
+expected_error_contains: "Invalid Failure Mode Class"
+---
 # Invalid Overloaded Class
 ## 1. Diagnosis
 - **Failure Mode Class**: Class 9: Validator Mismatch / Registry Defect
@@ -7,7 +11,7 @@
 - **Summary**: Overloaded class label.
 
 ## 2. Evidence
-- **Source Report**: [usage_research_report.md](usage_research_report.md)
+- **Source Report**: [usage_research_report.sidecar](usage_research_report.sidecar)
 - **Evidence Snippet**:
 > ...
 
@@ -22,3 +26,5 @@
 ## 5. Verification Plan
 - **Rerun Scenario**: ...
 - **Success Criteria**: ...
+
+
