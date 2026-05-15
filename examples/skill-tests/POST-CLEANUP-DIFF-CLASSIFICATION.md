@@ -13,12 +13,12 @@ This document classifies the remaining differences in the repository after the W
 | `examples/skill-tests/quarantine/**` | `cleanup_quarantine` | Preserved evidence and logs from the accidental run. |
 | `examples/skill-tests/TEST-PLAN-DIFF-REVIEW.md` | `cleanup_quarantine` | Audit documentation for the test plan modifications. |
 | `examples/skill-tests/ALL-SKILLS-TEST-PLAN.md` | `test_plan_fix` | Hardened test plan with corrected validator signatures and fixtures. |
-| `scripts/validate-skill-improvement-plan.py` | `pending_failure_mode_hardening` | Level-3 validator for skill maintenance safety. |
-| `skills/skill-maintainer/SKILL.md` | `pending_failure_mode_hardening` | Skill updated with FMEA-based maintenance loop. |
-| `skills/skill-maintainer/references/improvement-plan-template.md` | `pending_failure_mode_hardening` | Hardened artifact contract for improvement plans. |
-| `CONTEXT.md` | `pending_failure_mode_hardening` | Documentation for the hardened validation suite. |
-| `docs/philosophy/**` | `pending_failure_mode_hardening` | Formal taxonomy of agentic failure modes. |
-| `tests/fixtures/improvement-plans/**` | `pending_failure_mode_hardening` | Test fixtures for the new maintenance validator. |
+| `scripts/validate-skill-improvement-plan.py` | `accepted_hardened_baseline` | Level-3 validator for skill maintenance safety. |
+| `skills/skill-maintainer/SKILL.md` | `accepted_hardened_baseline` | Skill updated with FMEA-based maintenance loop. |
+| `skills/skill-maintainer/references/improvement-plan-template.md` | `accepted_hardened_baseline` | Hardened artifact contract for improvement plans. |
+| `CONTEXT.md` | `accepted_hardened_baseline` | Documentation for the hardened validation suite. |
+| `docs/philosophy/**` | `accepted_hardened_baseline` | Formal taxonomy of agentic failure modes. |
+| `tests/fixtures/improvement-plans/**` | `accepted_hardened_baseline` | Test fixtures for the new maintenance validator. |
 | `examples/usage-research/scenarios/004-broken-registry/usage_research_report.md` | `cleanup_quarantine` | Moved to residual-scenario-artifacts. |
 | `examples/usage-research/scenarios/004-broken-registry/maintenance_run_log.md` | `cleanup_quarantine` | Moved to residual-scenario-artifacts. |
 | `examples/usage-research/scenarios/false-routing-product-vs-repo/usage_research_report.md` | `cleanup_quarantine` | Moved to residual-scenario-artifacts. |
@@ -54,3 +54,16 @@ The repository is **READY** for:
 - **Git State**: `Clean`
 - **Residual Artifacts**: `None remaining in active scenario paths`
 - **Ready for Wave 1 Rerun**: **YES** (from hardened baseline)
+
+## 6. Hardened Baseline Definition
+
+The following files are accepted as part of the hardened baseline for the formal Wave 1 rerun:
+
+- `examples/skill-tests/ALL-SKILLS-TEST-PLAN.md`
+- `scripts/validate-skill-improvement-plan.py`
+- `skills/skill-maintainer/SKILL.md`
+- `skills/skill-maintainer/references/improvement-plan-template.md`
+- `docs/philosophy/**`
+- `tests/fixtures/improvement-plans/**`
+
+These are not accidental-run outputs. They are accepted hardening changes discovered through the accidental pilot and retained as baseline preconditions.
