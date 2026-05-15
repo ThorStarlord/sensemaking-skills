@@ -29,8 +29,8 @@ It was an **invented routing label**. The agent likely derived the name semantic
 - **Defect Source**: `producer_artifact_defect`.
 
 ### 6. What follow-up action is recommended, if any?
-- **Skill Hardening**: Update `repo-sensemaker` instructions to mandate a registry lookup before recommending a `workflow_id`.
-- **Registry Update**: Consider adding `wave-1-execution` as a valid alias or a specific "Wave 1 Verification" workflow if repeatable Wave-based testing is institutionalized.
+- **Skill Hardening**: In a separately authorized maintenance pass, evaluate whether `repo-sensemaker` should require registry lookup before recommending `workflow_id` values. Do not patch `skills/**` or registries during this review.
+- **Registry Update**: Consider adding a dedicated "Wave 1 Verification" workflow ONLY if wave-based verification becomes a stable, reusable workflow concept. Do not add `wave-1-execution` merely to match the hallucinated label.
 - **Fixture Remediation**: The current `repo_sensemaking_brief.md` in the test suite should be noted as "drifted" but preserved for its audit value in this cycle.
 
 ## 3. Evidence Mapping
@@ -44,7 +44,7 @@ It was an **invented routing label**. The agent likely derived the name semantic
 ## 4. Final Classification
 - **Defect Source**: `producer_artifact_defect`
 - **Failure Class**: Class 6: Hallucinated Evidence
-- **Recommended Action**: no_skill_change (for this audit); doc_followup (for future hardening).
+- **Recommended Action**: no_skill_change_for_this_audit; future_instruction_hardening_review
 
 ## 5. Conclusion
 The mismatch was a semantic hallucination by the producer skill (`repo-sensemaker`). The downstream consumer (`workflow-orchestrator`) proved its robustness by detecting the drift and falling back to a valid registry entry. No registry patch was made during this review. The evidence is recorded for future authorized instruction hardening.

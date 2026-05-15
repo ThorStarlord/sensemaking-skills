@@ -27,4 +27,5 @@
 ## 4. Final Classification
 - **Defect Source**: `producer_artifact_defect`
 - **Failure Mode Class**: Class 6: Hallucinated Evidence
-- **Recommended Follow-up**: Update `repo-sensemaker` instructions to require registry lookup.
+- **Recommended Action**: no_skill_change_for_this_audit; future_instruction_hardening_review
+- **Follow-up**: In a separately authorized maintenance pass, evaluate whether `repo-sensemaker` should require registry lookup before recommending `workflow_id` values. Do not patch `skills/**` or registries during this review.
