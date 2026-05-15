@@ -91,8 +91,6 @@ Every execution task must create a `TEST-RUN-LOG.md` in its assigned output dire
 - **Transient agent UI responses**: Local clickable `file:///` links in the coding agent’s own UI response are acceptable for human navigation, but they must not be copied into repository files.
 - **NO IMPROVISATION**: Stay within the `Allowed Edits` paths. Document out-of-scope needs in the `TEST-RUN-LOG.md`.
 
-## 8. Hardened Task Prompts
-
 ## 8. Wave 1 Task Prompts (Phase 2)
 
 > [!NOTE]
@@ -110,7 +108,7 @@ Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/problem-framer/problem_frame.md
 Validation Command: python scripts/validate-artifact.py problem_frame examples/skill-tests/problem-framer/problem_frame.md
-Safety: Do not edit SKILL.md. Document follow-up in TEST-RUN-LOG.md. No file:/// links. Use repo-relative paths.
+Safety: Do not edit SKILL.md. Document follow-up in TEST-RUN-LOG.md. No file:/// links in repo files. Use repo-relative paths.
 ```
 
 ### 8.2. Isolated: Repo Sensemaker
@@ -124,7 +122,7 @@ Forbidden Edits:
 Expected Output: examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
 Validation Command: python scripts/validate-repo.py ; python scripts/validate-artifact.py repository_sensemaking_brief examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
 Follow-up: Run "python scripts/validate-brief.py examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md" for deeper audit.
-Safety: Do not edit SKILL.md. No file:/// links. Use repo-relative paths.
+Safety: Do not edit SKILL.md. No file:/// links in repo files. Use repo-relative paths.
 ```
 
 ### 8.3. Isolated: Setup Sensemaking Skills (Dry Run)
@@ -138,7 +136,7 @@ Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/setup-sensemaking-skills/setup_plan.md
 Validation: Manual / Checklist-based (See SETUP-TEST-DESIGN.md).
-Safety: Do not modify core config files (AGENTS.md, etc.). Write audit findings only to setup_plan.md. No file:/// links.
+Safety: Do not modify core config files (AGENTS.md, etc.). Write audit findings only to setup_plan.md. No file:/// links in repo files.
 ```
 
 ### 8.4. Isolated: Docs Reconciler (Dry Run)
@@ -151,7 +149,7 @@ Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md, examples/skill-tests/quarantine/**
 Expected Output: examples/skill-tests/docs-reconciler/reconcile_report.md
 Validation Command: python scripts/validate-artifact.py docs_contract_reconciliation_report examples/skill-tests/docs-reconciler/reconcile_report.md
-Safety: Do not mutate CONTEXT.md or registries. Write discrepancies to reconcile_report.md. No file:/// links.
+Safety: Do not mutate CONTEXT.md or registries. Write discrepancies to reconcile_report.md. No file:/// links in repo files.
 ```
 
 ## 9. Future Phase Task Prompts
