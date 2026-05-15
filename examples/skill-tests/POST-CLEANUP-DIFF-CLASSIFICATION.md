@@ -19,12 +19,13 @@ This document classifies the remaining differences in the repository after the W
 | `CONTEXT.md` | `pending_failure_mode_hardening` | Documentation for the hardened validation suite. |
 | `docs/philosophy/**` | `pending_failure_mode_hardening` | Formal taxonomy of agentic failure modes. |
 | `tests/fixtures/improvement-plans/**` | `pending_failure_mode_hardening` | Test fixtures for the new maintenance validator. |
-| `examples/usage-research/scenarios/004-broken-registry/usage_research_report.md` | `accidental_change_revert_required` | Accidental output in a forbidden READ-ONLY path. |
-| `examples/usage-research/scenarios/004-broken-registry/maintenance_run_log.md` | `accidental_change_revert_required` | Accidental output in a forbidden READ-ONLY path. |
-| `examples/usage-research/scenarios/false-routing-product-vs-repo/usage_research_report.md` | `accidental_change_revert_required` | Accidental output in a forbidden READ-ONLY path. |
-| `examples/usage-research/scenarios/false-routing-product-vs-repo/problem_frame.md` | `accidental_change_revert_required` | Accidental output in a forbidden READ-ONLY path. |
-| `examples/usage-research/scenarios/false-routing-product-vs-repo/unknowns_map.md` | `accidental_change_revert_required` | Accidental output in a forbidden READ-ONLY path. |
-| `examples/usage-research/scenarios/004-broken-registry/FAILURE_MODE.md` | `needs_human_review` | Scenario definition added during accidental run. |
+| `examples/usage-research/scenarios/004-broken-registry/usage_research_report.md` | `cleanup_quarantine` | Moved to residual-scenario-artifacts. |
+| `examples/usage-research/scenarios/004-broken-registry/maintenance_run_log.md` | `cleanup_quarantine` | Moved to residual-scenario-artifacts. |
+| `examples/usage-research/scenarios/false-routing-product-vs-repo/usage_research_report.md` | `cleanup_quarantine` | Moved to residual-scenario-artifacts. |
+| `examples/usage-research/scenarios/false-routing-product-vs-repo/problem_frame.md` | `cleanup_quarantine` | Moved to residual-scenario-artifacts. |
+| `examples/usage-research/scenarios/false-routing-product-vs-repo/unknowns_map.md` | `cleanup_quarantine` | Moved to residual-scenario-artifacts. |
+| `examples/usage-research/scenarios/false-routing-product-vs-repo/evaluation.md` | `cleanup_quarantine` | Moved to residual-scenario-artifacts. |
+| `examples/usage-research/scenarios/004-broken-registry/FAILURE_MODE.md` | `intentionally_kept` | Scenario definition fixture. |
 | `README.md` | `needs_human_review` | Philosophy and taxonomy updates. |
 
 ## 3. Readiness Recommendation
@@ -37,5 +38,19 @@ The repository is **READY** for:
 - The **Structural Layer** has been hardened (test plan now has correct validator signatures).
 - The **Safety Layer** has been initialized (failure mode taxonomy and maintenance validators are in place).
 
-### Final Cleanup Step
-Before the formal rerun, a final cleanup should target the remaining accidental artifacts in `examples/usage-research/scenarios/` (classified above as `accidental_change_revert_required`) to ensure a perfectly clean "Read-Only" environment for the scenarios.
+## 4. Residual Cleanup Resolution
+
+| File Path | Final Classification | Resolution |
+| :--- | :--- | :--- |
+| `004-broken-registry/usage_research_report.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
+| `004-broken-registry/maintenance_run_log.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
+| `false-routing-.../usage_research_report.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
+| `false-routing-.../problem_frame.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
+| `false-routing-.../unknowns_map.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
+| `false-routing-.../evaluation.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
+| `004-broken-registry/FAILURE_MODE.md` | `intentionally_kept` | Reviewed as core scenario fixture. Preserved in baseline. |
+
+## 5. Final Baseline Confirmation
+- **Git State**: `Clean`
+- **Residual Artifacts**: `None remaining in active scenario paths`
+- **Ready for Wave 1 Rerun**: **YES** (from hardened baseline)
