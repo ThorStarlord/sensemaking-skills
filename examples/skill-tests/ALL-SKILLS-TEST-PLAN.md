@@ -90,7 +90,7 @@ Allowed Edits:
 Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/problem-framer/problem_frame.md
-Validation Command: python scripts/validate-artifact.py examples/skill-tests/problem-framer/problem_frame.md
+Validation Command: python scripts/validate-artifact.py problem_frame examples/skill-tests/problem-framer/problem_frame.md
 Safety: Do not edit SKILL.md. Document follow-up in TEST-RUN-LOG.md. No file:/// links. Use repo-relative paths.
 ```
 
@@ -103,7 +103,7 @@ Allowed Edits:
 Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
-Validation Command: python scripts/validate-repo.py
+Validation Command: python scripts/validate-repo.py ; python scripts/validate-artifact.py repository_sensemaking_brief examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
 Follow-up: Run "python scripts/validate-brief.py examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md" for deeper audit.
 Safety: Do not edit SKILL.md. No file:/// links. Use repo-relative paths.
 ```
@@ -117,7 +117,7 @@ Allowed Edits:
 Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/setup-sensemaking-skills/config_audit.md
-Validation Command: python scripts/validate-artifact.py examples/skill-tests/setup-sensemaking-skills/config_audit.md
+Validation Command: python scripts/validate-artifact.py problem_frame examples/skill-tests/setup-sensemaking-skills/config_audit.md
 Safety: Do not modify core config files (AGENTS.md, etc.). Write audit findings only to config_audit.md. No file:/// links.
 ```
 
@@ -130,7 +130,7 @@ Allowed Edits:
 Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/docs-reconciler/reconcile_report.md
-Validation Command: python scripts/validate-artifact.py examples/skill-tests/docs-reconciler/reconcile_report.md
+Validation Command: python scripts/validate-artifact.py docs_contract_reconciliation_report examples/skill-tests/docs-reconciler/reconcile_report.md
 Safety: Do not mutate CONTEXT.md or registries. Write discrepancies to reconcile_report.md. No file:/// links.
 ```
 
@@ -138,14 +138,14 @@ Safety: Do not mutate CONTEXT.md or registries. Write discrepancies to reconcile
 
 ### 9.1. Isolated: Unknowns Mapper
 ```text
-Task: Run unknowns-mapper on examples/pipeline/problem_frame.md.
+Task: Run unknowns-mapper on examples/skill-tests/problem-framer/problem_frame.md.
 Allowed Edits:
 - examples/skill-tests/unknowns-mapper/unknowns_map.md
 - examples/skill-tests/unknowns-mapper/TEST-RUN-LOG.md
 Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/unknowns-mapper/unknowns_map.md
-Validation Command: python scripts/validate-artifact.py examples/skill-tests/unknowns-mapper/unknowns_map.md
+Validation Command: python scripts/validate-artifact.py unknowns_map examples/skill-tests/unknowns-mapper/unknowns_map.md
 Safety: Do not edit SKILL.md. No file:/// links.
 ```
 
@@ -158,7 +158,7 @@ Allowed Edits:
 Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
-Validation Command: python scripts/validate-plan.py examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
+Validation Command: python scripts/validate-artifact.py workflow_orchestration_plan examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md ; python scripts/validate-plan.py examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
 Safety: Ensure Section 11 is valid. Do not edit SKILL.md. No file:/// links.
 ```
 
@@ -170,7 +170,7 @@ Allowed Edits:
 - examples/skill-tests/handoff/framer-to-mapper/TEST-RUN-LOG.md
 Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
-Validation Command: python scripts/validate-artifact.py examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
+Validation Command: python scripts/validate-artifact.py unknowns_map examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
 Safety: Classify defects as producer vs consumer in TEST-RUN-LOG.md. No file:/// links.
 ```
 
