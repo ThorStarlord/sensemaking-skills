@@ -47,14 +47,28 @@ def validate_improvement_plan(plan_path, repo_root):
     if "Evidence Snippet" not in content or ">" not in content:
         errors.append("Missing Evidence Snippet (must include a blockquote with a cite).")
 
-    # 4. Proposed Edits Check
-    # Must include edit_type, risk_level, and logic_change
-    if not re.search(r'edit\W*type\W*:', content, re.IGNORECASE):
-        errors.append("Proposed edits must specify 'Edit Type' (e.g., instruction_edit, registry_edit).")
-    if not re.search(r'risk\W*level\W*:', content, re.IGNORECASE):
-        errors.append("Proposed edits must specify 'Risk Level' (e.g., low, medium, high).")
-    
-    # 5. Anti-Overfitting Check
+    # 4. Recommended Action Check
+    action_match = re.search(r'recommended\W*action\W*:\W*(\w+)', content, re.IGNORECASE)
+    if not action_match:
+        errors.append("Missing 'Recommended Action' (e.g., skill_edit, fixture_edit, no_skill_change).")
+    else:
+        action = action_match.group(1).lower()
+        valid_actions = ["skill_edit", "fixture_edit", "validator_edit", "registry_edit", "no_skill_change"]
+        if action not in valid_actions:
+            errors.append(f"Invalid Recommended Action '{action}'. Must be one of: {', '.join(valid_actions)}")
+
+    # 5. Proposed Edits Check (Conditional if action is skill_edit)
+    if action_match and action_match.group(1).lower() == "skill_edit":
+        if not re.search(r'edit\W*type\W*:', content, re.IGNORECASE):
+            errors.append("Proposed edits must specify 'Edit Type' for skill_edit.")
+        if not re.search(r'risk\W*level\W*:', content, re.IGNORECASE):
+            errors.append("Proposed edits must specify 'Risk Level' for skill_edit.")
+    else:
+        # For non-skill edits, we still want to see edit_type (e.g., fixture_edit)
+        if not re.search(r'edit\W*type\W*:', content, re.IGNORECASE):
+            errors.append("Proposed edits must specify 'Edit Type' (e.g., fixture_edit, none).")
+
+    # 6. Anti-Overfitting Check (Mandatory for all)
     if not re.search(r'anti\W*overfitting', content, re.IGNORECASE):
         errors.append("Missing 'Anti-Overfitting Guard' rationale for proposed edits.")
 
