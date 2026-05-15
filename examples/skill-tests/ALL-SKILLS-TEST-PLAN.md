@@ -41,16 +41,29 @@ The following paths are strictly **READ-ONLY** for all verification tasks. No ta
 4.  **Phase 4: Maintenance Safety Tests** (Defect classification loop).
 5.  **Phase 5: Status Update** (Only after all validation gates pass).
 
-## 5. Anti-Causal Confusion Rule
+## 5. Anti-Causal Confusion Rule (Taxonomy Integration)
 
-Before recommending any edit, classify the failure as one of:
+Before recommending any edit, classify the failure using the formal taxonomy:
 
-- `producer_artifact_defect`: Input artifact was malformed or semantically thin.
-- `consumer_skill_defect`: Skill ignored instructions or boundary rules.
-- `fixture_defect`: Test fixture (fog or repo state) is unrealistic or broken.
-- `evaluator_defect`: Evaluator used a flawed rubric.
-- `validator_defect`: Script flagged a false positive or missed a contract breach.
-- `registry_defect`: Workflow or skill registry entry contains incorrect metadata.
+### behavioral_failure_class (Docs: docs/philosophy/AGENTIC_FAILURE_MODES.md)
+- **Class 1: Input Ambiguity**: User was too vague.
+- **Class 2: Wrong Routing**: Chose the wrong skill/workflow.
+- **Class 3: Artifact Weakness**: Generated thin or low-quality artifact.
+- **Class 4: Handoff Failure**: Next agent can't use the output.
+- **Class 5: Boundary Violation**: Agent ignored `Forbidden Edits`.
+- **Class 6: Hallucinated Evidence**: Fact-check failed.
+- **Class 7: Path Hygiene Error**: Absolute paths or `file:///` links used.
+- **Class 8: Over-Maintenance**: Blindly patching correct logic for flawed tests.
+- **Class 9: Validator Mismatch**: Script or Registry is stale/broken.
+- **Class 10: Status Overclaiming**: Claimed "Done" but task incomplete.
+
+### defect_source (Structural Root Cause)
+- `fixture_defect`: Test fog or expected-behavior fixture is broken.
+- `validator_defect`: Validation script has a bug.
+- `registry_defect`: Metadata in skill/workflow registry is incorrect.
+- `consumer_skill_defect`: The skill logic itself failed.
+- `producer_artifact_defect`: The upstream artifact was low quality.
+
 
 ## 6. Per-Task Run Log Requirement
 
@@ -185,7 +198,8 @@ Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/scenarios/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/maintenance/output/skill_improvement_plan.md
 Validation Command: python scripts/validate-skill-improvement-plan.py examples/skill-tests/maintenance/output/skill_improvement_plan.md
-Goal: Confirm it identifies "fixture_defect" instead of patching logic. No file:/// links.
+Goal: Confirm it identifies "fixture_defect" and "Class 8: Over-Maintenance" metadata. No file:/// links.
+
 ```
 
 ### 9.5. Full-Chain: Cold Start

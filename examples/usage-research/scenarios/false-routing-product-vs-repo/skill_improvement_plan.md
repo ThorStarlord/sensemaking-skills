@@ -1,10 +1,12 @@
 # Skill Improvement Plan: problem-framer
 
 ## 1. Diagnosis
-- **Failure Mode**: Keyword Gravity
+- **Failure Mode Class**: Class 2: Wrong Routing
+- **Defect Source**: consumer_skill_defect
+- **Recommended Action**: skill_edit
 - **Severity**: High
 - **Summary**: Ambiguous "product" keywords in raw fog trigger premature routing to implementation workflows, even when the user explicitly asks for repository/workflow guidance.
-- **Recommended Action**: skill_edit
+
 
 ## 2. Evidence
 - **Source Report**: [usage_research_report.md](usage_research_report.md)

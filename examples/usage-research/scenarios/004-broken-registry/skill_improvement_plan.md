@@ -1,10 +1,12 @@
 # Skill Improvement Plan: System Diagnostics & Registry Guard
 
 ## 1. Diagnosis
-- **Failure Mode**: Registry Obscurity / Intent Misattribution
+- **Failure Mode Class**: Class 9: Validator Mismatch
+- **Defect Source**: registry_defect
+- **Recommended Action**: skill_edit
 - **Severity**: High
 - **Summary**: Agent blames user vagueness for execution failures that are actually caused by malformed registry entries.
-- **Recommended Action**: skill_edit
+
 
 ## 2. Evidence
 - **Source Report**: [usage_research_report.md](usage_research_report.md)
