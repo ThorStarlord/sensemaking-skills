@@ -1,163 +1,146 @@
-# ALL-SKILLS-TEST-PLAN
+# ALL-SKILLS-TEST-PLAN (Hardened)
 
-This plan defines a non-interfering verification suite for the Sensemaking Skills ecosystem. It focuses on artifact quality, handoff integrity, and behavioral correctness without patching the underlying skills.
+This plan defines a non-interfering verification suite for the Sensemaking Skills ecosystem. It is designed for parallel execution by multiple agents with zero interference and strict boundary enforcement.
 
 ## 1. Test Strategy
 
 | Strategy | Scope | Goal | Verification Method |
 | :--- | :--- | :--- | :--- |
-| **Isolated Skill Tests** | Single Skill | Verify logic compliance with `SKILL.md` boundary rules. | Input fixture -> Output artifact validation. |
-| **Handoff Tests** | Two Skills | Verify that artifact $A$ from Producer $P$ satisfies the requirements for Consumer $C$. | Cross-artifact validation (scripts/validate-artifact.py). |
-| **End-to-End Chain Tests** | Full Pipeline | Verify the semantic thread from raw fog to final executable prompt. | Sequential execution with frozen state. |
-| **Maintenance Safety Tests** | Meta-Skills | Verify that research/maintenance skills classify defects without blind patching. | Adversarial fixture testing (Scenario 005). |
+| **Isolated Skill Tests** | Single Skill | Verify logic compliance with `SKILL.md` boundary rules. | Fixed Input fixture -> Isolated Output artifact. |
+| **Handoff Tests** | Two Skills | Verify that generated artifact $A$ satisfies consumer $C$. | Generated Output $A$ -> Consumer Input $C$. |
+| **End-to-End Chain Tests** | Full Pipeline | Verify semantic thread from raw fog to final prompt. | Chain execution (Fog -> Handoff). |
+| **Maintenance Safety Tests** | Meta-Skills | Verify defect classification without blind patching. | Adversarial fixture testing (Scenario 005). |
 
-## 2. File Isolation Strategy
+## 2. File Ownership Matrix
 
-All test outputs must be written to isolated folders to prevent state contamination.
+| Task Category | Allowed Write Paths | Forbidden Write Paths |
+| :--- | :--- | :--- |
+| **Isolated Tests** | `examples/skill-tests/[skill-name]/**` | `skills/**`, `scripts/**`, `docs/**`, registries, examples/pipeline/** |
+| **Handoff Tests** | `examples/skill-tests/handoff/**` | `skills/**`, `scripts/**`, `docs/**`, registries, examples/pipeline/** |
+| **Full Chain** | `examples/skill-tests/full-chain/001-cold-start/**`| `skills/**`, `scripts/**`, `docs/**`, registries, examples/pipeline/** |
+| **Maintenance** | `examples/skill-tests/maintenance/**` | `skills/**`, `scripts/**`, `docs/**`, registries, examples/pipeline/** |
 
-- **Problem Framer**: examples/skill-tests/problem-framer/
-- **Unknowns Mapper**: examples/skill-tests/unknowns-mapper/
-- **Repo Sensemaker**: examples/skill-tests/repo-sensemaker/
-- **Workflow Orchestrator**: examples/skill-tests/workflow-orchestrator/
-- **Prompt Handoff**: examples/skill-tests/prompt-handoff/
-- **Usage Researcher**: examples/skill-tests/usage-researcher/
-- **Skill Maintainer**: examples/skill-tests/skill-maintainer/
-- **Docs Reconciler**: examples/skill-tests/docs-reconciler/
-- **Setup Skill**: examples/skill-tests/setup-skill/
-- **Full Chain**: examples/skill-tests/full-chain/001-cold-start/
+## 3. Shared-File Danger List (DO NOT EDIT)
 
-## 3. Skill Test Matrix
+The following files are strictly **Read-Only** during this verification phase. No task may modify them:
 
-| Skill | Test purpose | Input fixture | Expected output artifact | Failure modes to detect | Allowed edits |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **problem-framer** | Fog deconstruction | examples/pipeline/raw_fog.md | problem_frame.md | Non-implementation violation, vague OUP. | Test outputs only |
-| **unknowns-mapper** | Gap classification | examples/pipeline/problem_frame.md | unknowns_map.md | Premature research, tautological stopping rules. | Test outputs only |
-| **repo-sensemaker** | Diagnostic brief | Root directory | repo_sensemaking_brief.md | Lack of evidence, missing "Weakest Boundary". | Test outputs only |
-| **workflow-orchestrator**| Plan generation | examples/pipeline/repo_sensemaking_brief.md | workflow_orchestration_plan.md | Missing Section 11, registry mismatch. | Test outputs only |
-| **prompt-handoff** | Packaging | examples/pipeline/workflow_orchestration_plan.md | prompt_handoff.md | Lost constraints, non-actionable task. | Test outputs only |
-| **usage-researcher** | Behavioral audit | examples/usage-research/scenarios/004-broken-registry/maintenance_run_log.md | usage_research_report.md | Speculative reporting, missing failure category. | Test outputs only |
-| **skill-maintainer** | Maintenance plan | examples/usage-research/scenarios/005-conflicting-fixes/output/usage_research_report.md | skill_improvement_plan.md | Overfitting, missing risk classification. | Test outputs only |
-| **docs-reconciler** | Vocabulary sync | CONTEXT.md / workflow-registry.yaml | Resolution Proposal | Unapproved mutation, logic drift. | Test outputs only |
-| **setup-skill** | Config bootstrap | README.md | AGENTS.md (Sensemaking Block) | Premature file write, non-interactive bulk questions. | Test outputs only |
+- `skills/**/SKILL.md` (Core instructions)
+- `scripts/**` (Validation logic)
+- `docs/**` (Architecture and PRDs)
+- `examples/usage-research/**` (Scenario fixtures)
+- `workflow-registry.yaml` / `skill-registry.yaml` (Registries)
+- `walkthrough/*.md` / `status/*.md` (Maintenance docs)
+- `README.md` / `CONTEXT.md`
 
-## 4. Handoff Matrix
+## 4. Execution & Merge Order
 
-| Producer skill | Artifact | Consumer skill | Contract risk | Validation idea |
-| :--- | :--- | :--- | :--- | :--- |
-| problem-framer | problem_frame.md | unknowns-mapper | OUP too vague for mapper | Verify OUP provides an "inspectable proxy". |
-| unknowns-mapper | unknowns_map.md | repo-sensemaker | Missing Search Seed | Verify research paths map to concrete files. |
-| repo-sensemaker | repo_sensemaking_brief.md | workflow-orchestrator | Unmapped workflow ID | Match against workflow-registry.yaml IDs. |
-| workflow-orchestrator| workflow_orchestration_plan.md | prompt-handoff | Lost constraints | Verify critical "must-haves" persist. |
+To ensure safety and logical flow, tasks must be merged in this order:
 
-## 5. Parallel execution plan
+1.  **Phase 1: Read-only Audits** (No files written, observation only).
+2.  **Phase 2: Isolated Output Artifacts** (Independent skill verification).
+3.  **Phase 3: Handoff & Full-chain Tests** (Inter-skill consistency).
+4.  **Phase 4: Maintenance Safety Tests** (Defect classification loop).
+5.  **Phase 5: Status Update** (Only after all validation gates pass).
 
-1. **Phase 1 (Parallel)**:
-   - `problem-framer` test.
-   - `repo-sensemaker` test.
-   - `setup-skill` test.
-   - `docs-reconciler` test.
+## 5. Anti-Causal Confusion Rule
 
-2. **Phase 2 (Sequential)**:
-   - `unknowns-mapper` (depends on Framer output).
-   - `usage-researcher` (depends on existing run logs).
+If a validation failure or behavioral defect is detected, the task must classify the defect BEFORE recommending an edit. Choose one:
 
-3. **Phase 3 (Sequential)**:
-   - `workflow-orchestrator` (depends on Mapper/Sensemaker output).
-   - `skill-maintainer` (depends on Researcher output).
+- `producer_artifact_defect`: The input artifact was malformed or semantically thin.
+- `consumer_skill_defect`: The skill ignored instructions or boundary rules.
+- `fixture_defect`: The test fixture (fog or repository state) is unrealistic or broken.
+- `evaluator_defect`: The human or LLM evaluator used a flawed rubric.
+- `validator_defect`: The script flagged a false positive or missed a contract breach.
+- `registry_defect`: The workflow or skill registry entry contains incorrect metadata.
 
-4. **Phase 4 (Final)**:
-   - `prompt-handoff` (depends on Orchestrator output).
-   - `Full-chain integration test`.
+## 6. Isolated Skill Task Prompts
 
-## 6. Copy/paste Jules task prompts
-
-### Problem Framer Test
+### Isolated: Problem Framer
 ```text
 Task: Run problem-framer on examples/pipeline/raw_fog.md.
-Expected Output: examples/skill-tests/problem-framer/problem_frame.md.
-Rules: Do not propose technical solutions. Identify the Object Under Pressure (OUP).
-Validation: python scripts/validate-artifact.py examples/skill-tests/problem-framer/problem_frame.md
+Allowed Edits: examples/skill-tests/problem-framer/problem_frame.md
+Forbidden Edits: skills/**, scripts/**, docs/**, registries, status docs.
+Expected Output: examples/skill-tests/problem-framer/problem_frame.md
+Validation Command: python scripts/validate-artifact.py examples/skill-tests/problem-framer/problem_frame.md
+Safety: Do not edit SKILL.md. If logic errors are found, document follow-up instead of patching.
 ```
 
-### Unknowns Mapper Test
+### Isolated: Unknowns Mapper
 ```text
-Task: Run unknowns-mapper on examples/pipeline/problem_frame.md.
-Expected Output: examples/skill-tests/unknowns-mapper/unknowns_map.md.
-Rules: Do not perform research. Define concrete Stopping Rules.
-Validation: python scripts/validate-artifact.py examples/skill-tests/unknowns-mapper/unknowns_map.md
+Task: Run unknowns-mapper on examples/pipeline/problem_frame.md (fixture).
+Allowed Edits: examples/skill-tests/unknowns-mapper/unknowns_map.md
+Forbidden Edits: skills/**, scripts/**, docs/**, registries, status docs.
+Expected Output: examples/skill-tests/unknowns-mapper/unknowns_map.md
+Validation Command: python scripts/validate-artifact.py examples/skill-tests/unknowns-mapper/unknowns_map.md
+Safety: Do not edit SKILL.md. Document logic gaps in your response.
 ```
 
-### Repo Sensemaker Test
+### Isolated: Repo Sensemaker
 ```text
-Task: Run repo-sensemaker on the current repository.
-Expected Output: examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md.
-Rules: Cite file paths for all evidence. Identify the "Weakest Boundary".
-Validation: python scripts/validate-repo.py
+Task: Run repo-sensemaker on the current repository state.
+Allowed Edits: examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
+Forbidden Edits: skills/**, scripts/**, docs/**, registries, status docs.
+Expected Output: examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
+Validation Command: python scripts/validate-repo.py
+Safety: Do not edit SKILL.md. Focus on evidence-backed diagnostic brief quality.
 ```
 
-### Workflow Orchestrator Test
+### Isolated: Workflow Orchestrator
 ```text
-Task: Run workflow-orchestrator on examples/pipeline/repo_sensemaking_brief.md.
-Expected Output: examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md.
-Rules: Must include Section 11 (Machine-readable plan). Default to plan_only mode.
-Validation: python scripts/validate-plan.py examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
+Task: Run workflow-orchestrator on examples/pipeline/repo_sensemaking_brief.md (fixture).
+Allowed Edits: examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
+Forbidden Edits: skills/**, scripts/**, docs/**, registries, status docs.
+Expected Output: examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
+Validation Command: python scripts/validate-plan.py examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
+Safety: Do not edit SKILL.md. Ensure Section 11 is valid YAML.
 ```
 
-### Prompt Handoff Test
+## 7. Handoff & Full-Chain Task Prompts
+
+### Handoff: Framer -> Mapper
 ```text
-Task: Run prompt-handoff on examples/pipeline/workflow_orchestration_plan.md.
-Expected Output: examples/skill-tests/prompt-handoff/prompt_handoff.md.
-Rules: Preserve all critical constraints and evidence.
-Validation: python scripts/validate-artifact.py examples/skill-tests/prompt-handoff/prompt_handoff.md
+Task: Consume the GENERATED problem_frame.md from Phase 2 and run unknowns-mapper.
+Allowed Edits: examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
+Forbidden Edits: All shared-danger files.
+Expected Output: A map that satisfies the specific Search Seed requirements for the next step.
+Validation Command: python scripts/validate-artifact.py examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
+Classification: If the map is weak, classify if it is due to a producer defect (Framer) or consumer defect (Mapper).
 ```
 
-### Usage Researcher Test
+### Full-Chain: Cold Start
 ```text
-Task: Run usage-researcher on examples/usage-research/scenarios/004-broken-registry/maintenance_run_log.md.
-Expected Output: examples/skill-tests/usage-researcher/usage_research_report.md.
-Rules: Classify failures as Structural, Semantic, or Boundary. Link evidence to snippets.
-Validation: python scripts/validate-usage-research-report.py examples/skill-tests/usage-researcher/usage_research_report.md
+Task: Execute full pipeline from raw fog to prompt handoff.
+Target Path: examples/skill-tests/full-chain/001-cold-start/
+Steps:
+1. problem-framer -> problem_frame.md
+2. unknowns-mapper -> unknowns_map.md
+3. repo-sensemaker -> repo_sensemaking_brief.md
+4. workflow-orchestrator -> workflow_orchestration_plan.md
+5. prompt-handoff -> prompt_handoff.md
+Allowed Edits: Only files within the Target Path.
+Forbidden Edits: All shared-danger files.
+Validation: Run validate-repo.py and validate-plan.py on the final artifacts.
 ```
 
-### Skill Maintainer Test
+## 8. Maintenance Safety Test Prompt
+
+### Maintenance Loop Audit
 ```text
-Task: Run skill-maintainer on examples/usage-research/scenarios/005-conflicting-fixes/output/usage_research_report.md.
-Expected Output: examples/skill-tests/skill-maintainer/skill_improvement_plan.md.
-Rules: Do not patch SKILL.md. Classify edits by type and risk. Provide before/after behavior.
-Validation: python scripts/validate-skill-improvement-plan.py examples/skill-tests/skill-maintainer/skill_improvement_plan.md
+Task: Run usage-researcher -> skill-maintainer loop using Scenario 005 (Flawed Evaluation).
+Input: examples/usage-research/scenarios/005-conflicting-fixes/
+Allowed Edits: examples/skill-tests/maintenance/output/**
+Forbidden Edits: All SKILL.md files, all scripts.
+Goal: Verify that skill-maintainer classifies the failure as a `fixture_defect` and recommends a fixture edit instead of a logic patch.
+Validation: python scripts/validate-skill-improvement-plan.py examples/skill-tests/maintenance/output/skill_improvement_plan.md
 ```
 
-## 7. Full-chain integration test
+## 9. Final Validation Gates
 
-**Target**: examples/skill-tests/full-chain/001-cold-start/
+These commands must pass before any status or walkthrough documentation is updated:
 
-**Workflow**:
-1. raw_fog.md (Input)
-2. problem-framer -> problem_frame.md
-3. unknowns-mapper -> unknowns_map.md
-4. repo-sensemaker -> repo_sensemaking_brief.md
-5. workflow-orchestrator -> workflow_orchestration_plan.md
-6. prompt-handoff -> prompt_handoff.md
+1.  **Repository Structure**: `python scripts/validate-repo.py`
+2.  **Artifact Contracts**: `python scripts/validate-artifact.py [all-generated-artifacts]`
+3.  **Plan Integrity**: `python scripts/validate-plan.py [all-generated-plans]`
+4.  **Maintenance Logic**: `python scripts/validate-skill-improvement-plan.py [generated-plan]`
 
-**Success Criteria**: The final prompt_handoff.md must contain the specific "Search Seed" and "Stopping Rules" defined in the earlier steps.
-
-## 8. Maintenance safety test
-
-**Scenario**: Verify `usage-researcher` -> `skill-maintainer` loop against Scenario 005 (Flawed Evaluation).
-
-**Test**:
-1. Run `usage-researcher` on Scenario 005 fixtures.
-2. Verify the report correctly identifies that the *fixture* is flawed, not the skill logic.
-3. Pass the report to `skill-maintainer`.
-4. **Pass Condition**: `skill-maintainer` must propose a `fixture_edit` instead of an `instruction_edit`.
-
-## 9. Final validation gate
-
-After execution, run these commands to ensure repository integrity:
-
-1. `python scripts/validate-repo.py`
-2. `python scripts/validate-brief.py examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md`
-3. `python scripts/validate-plan.py examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md`
-4. `python scripts/validate-skill-improvement-plan.py examples/skill-tests/skill-maintainer/skill_improvement_plan.md`
-
-**Note**: Do not update walkthrough or status docs unless all validation gates pass.
+**Note**: If any validation gate fails, document the defect classification (Section 5) and stop. Do not update production status.
