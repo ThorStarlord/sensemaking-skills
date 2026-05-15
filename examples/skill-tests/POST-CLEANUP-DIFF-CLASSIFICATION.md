@@ -42,12 +42,12 @@ The repository is **READY** for:
 
 | File Path | Final Classification | Resolution |
 | :--- | :--- | :--- |
-| `004-broken-registry/usage_research_report.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
-| `004-broken-registry/maintenance_run_log.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
-| `false-routing-.../usage_research_report.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
-| `false-routing-.../problem_frame.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
-| `false-routing-.../unknowns_map.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
-| `false-routing-.../evaluation.md` | `moved_to_quarantine` | Found to be legacy residue (dated 14/05/2026). Quarantined. |
+| `004-broken-registry/usage_research_report.md` | `moved_to_quarantine` | Quarantined as `usage_research_report_004.md`. |
+| `004-broken-registry/maintenance_run_log.md` | `moved_to_quarantine` | Quarantined. |
+| `false-routing-.../usage_research_report.md` | `moved_to_quarantine` | Quarantined. |
+| `false-routing-.../problem_frame.md` | `moved_to_quarantine` | Quarantined. |
+| `false-routing-.../unknowns_map.md` | `moved_to_quarantine` | Quarantined. |
+| `false-routing-.../evaluation.md` | `moved_to_quarantine` | Quarantined. |
 | `004-broken-registry/FAILURE_MODE.md` | `intentionally_kept` | Reviewed as core scenario fixture. Preserved in baseline. |
 
 ## 5. Final Baseline Confirmation
