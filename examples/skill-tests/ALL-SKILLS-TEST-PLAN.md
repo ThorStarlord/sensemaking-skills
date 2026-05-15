@@ -124,14 +124,15 @@ Safety: Do not edit SKILL.md. No file:/// links. Use repo-relative paths.
 ### 8.3. Isolated: Setup Sensemaking Skills (Dry Run)
 ```text
 Task: Run setup-sensemaking-skills to audit repository configuration.
+Test Design: examples/skill-tests/setup-sensemaking-skills/SETUP-TEST-DESIGN.md
 Allowed Edits:
-- examples/skill-tests/setup-sensemaking-skills/config_audit.md
+- examples/skill-tests/setup-sensemaking-skills/setup_plan.md
 - examples/skill-tests/setup-sensemaking-skills/TEST-RUN-LOG.md
 Forbidden Edits:
 - skills/**/SKILL.md, scripts/**, docs/**, examples/usage-research/**, workflow-registry.yaml, skill-registry.yaml, walkthrough/**, status/**, README.md, CONTEXT.md
-Expected Output: examples/skill-tests/setup-sensemaking-skills/config_audit.md
-Validation Command: python scripts/validate-artifact.py problem_frame examples/skill-tests/setup-sensemaking-skills/config_audit.md
-Safety: Do not modify core config files (AGENTS.md, etc.). Write audit findings only to config_audit.md. No file:/// links.
+Expected Output: examples/skill-tests/setup-sensemaking-skills/setup_plan.md
+Validation: Manual / Checklist-based (See SETUP-TEST-DESIGN.md).
+Safety: Do not modify core config files (AGENTS.md, etc.). Write audit findings only to setup_plan.md. No file:/// links.
 ```
 
 ### 8.4. Isolated: Docs Reconciler (Dry Run)
