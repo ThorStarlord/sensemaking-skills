@@ -27,14 +27,6 @@ Boundary.
 ## 7. Evidence
 Evidence.
 
-## 8. Evidence Excerpts
-```yaml
-evidence_excerpts:
-  - file: "tests/fixtures/validate-artifact/invalid/malformed-evidence-excerpts.md"
-    lines: "1-2"
-    supports_claim: "A claim"
-```
-
 ## 9. Why This Boundary Matters
 Matters.
 
@@ -53,6 +45,14 @@ recommended_workflow_id: "test-workflow"
 recommended_execution_mode: "plan_only"
 weakest_boundary: "validation"
 required_inputs: []
+```
+
+## 8. Evidence Excerpts
+```yaml
+evidence_excerpts:
+  - file: "tests/fixtures/validate-artifact/invalid/malformed-evidence-excerpts.md"
+    lines: "1-2"
+    supports_claim: "A claim"
 ```
 
 ## 14. Ready-to-copy prompt

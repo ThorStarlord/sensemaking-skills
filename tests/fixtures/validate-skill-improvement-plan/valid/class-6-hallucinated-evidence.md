@@ -9,7 +9,7 @@ validator_case: positive
 - **Recommended Action**: registry_edit
 
 ## 2. Evidence
-- **Source Report**: [report](report.md)
+- **Source Report**: [report](usage_research_report.sidecar)
 - **Evidence Snippet**:
 > "Skill recommended a workflow that does not exist in the registry."
 

@@ -9,7 +9,7 @@ validator_case: positive
 - **Recommended Action**: fixture_edit
 
 ## 2. Evidence
-- **Source Report**: [report](report.md)
+- **Source Report**: [report](usage_research_report.sidecar)
 - **Evidence Snippet**:
 > "Skill was updated to handle a bad fixture, causing regressions."
 
