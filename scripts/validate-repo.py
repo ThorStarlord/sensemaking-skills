@@ -43,7 +43,10 @@ def validate_repo():
         "skills/setup-sensemaking-skills/references/workflow-modes-template.md",
         "skills/sensemaking-docs-reconciler/agents/openai.yaml",
         "skills/skill-maintainer/SKILL.md",
-        "skills/skill-maintainer/references/improvement-plan-template.md"
+        "skills/skill-maintainer/references/improvement-plan-template.md",
+        "skills/usage-researcher/SKILL.md",
+        "skills/usage-researcher/agents/openai.yaml",
+        "skills/usage-researcher/references/usage-research-report-template.md"
     ]
     
     for f in core_files:
@@ -223,7 +226,8 @@ def validate_repo():
         "skills/unknowns-mapper/SKILL.md",
         "skills/prompt-handoff/SKILL.md",
         "skills/setup-sensemaking-skills/SKILL.md",
-        "skills/sensemaking-docs-reconciler/SKILL.md"
+        "skills/sensemaking-docs-reconciler/SKILL.md",
+        "skills/usage-researcher/SKILL.md"
     ]
     for sf in skill_files:
         if os.path.exists(sf):
@@ -261,6 +265,11 @@ def validate_repo():
         ],
         "skills/skill-maintainer/references/improvement-plan-template.md": [
             "Diagnosis", "Evidence", "Proposed Edits", "Impact Assessment", "Verification Plan"
+        ],
+        "skills/usage-researcher/references/usage-research-report-template.md": [
+            "Scenario Tested", "Expected Behavior", "Actual Behavior", "Evidence Excerpts",
+            "Failure Classification", "What Worked", "Friction Points", "Routing Quality",
+            "Handoff Quality", "Semantic Quality Score", "Recommended Maintainer Input", "Next Test"
         ]
     }
     for path, expected_headers in template_headers.items():

@@ -4,6 +4,7 @@
 - **Failure Mode**: Registry Obscurity / Intent Misattribution
 - **Severity**: High
 - **Summary**: Agent blames user vagueness for execution failures that are actually caused by malformed registry entries.
+- **Recommended Action**: skill_edit
 
 ## 2. Evidence
 - **Source Report**: [usage_research_report.md](usage_research_report.md)

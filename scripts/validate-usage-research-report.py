@@ -19,17 +19,40 @@ def validate_report(report_path):
         "Actual Behavior",
         "What Worked",
         "Friction Points",
-        "Handoff Quality",
         "Routing Quality",
-        "Recommended Skill Edits",
+        "Handoff Quality",
         "Next Test"
     ]
+
+    # Sections that have aliases or are only required in the new format
+    optional_or_aliased = {
+        "Evidence Excerpts": [],
+        "Failure Classification": [],
+        "Semantic Quality Score": [],
+        "Recommended Maintainer Input": ["Recommended Skill Edits"]
+    }
     
     for section in required_sections:
-        # Match "## [number]. Section Name" or just "## Section Name"
         pattern = rf'## ([\d]+\. )?{re.escape(section)}'
         if not re.search(pattern, content, re.IGNORECASE):
             errors.append(f"Missing required section: '{section}'")
+
+    for section, aliases in optional_or_aliased.items():
+        patterns = [rf'## ([\d]+\. )?{re.escape(section)}']
+        patterns.extend([rf'## ([\d]+\. )?{re.escape(alias)}' for alias in aliases])
+        
+        found = False
+        for p in patterns:
+            if re.search(p, content, re.IGNORECASE):
+                found = True
+                break
+        
+        # If it's a new required section but not found, we only error if it's not a legacy report
+        if not found:
+            # Check if this is a new standard report (indicated by Score or Classification)
+            is_new_standard = "Semantic Quality Score" in content or "Failure Classification" in content
+            if is_new_standard:
+                errors.append(f"Missing required section in new standard report: '{section}'")
             
     # Check for placeholder text or generic AI tics if possible
     placeholders = ["TODO", "FIXME", "REPLACE_ME", "[INSERT"]
@@ -43,10 +66,17 @@ def validate_report(report_path):
         if re.search(pattern, content):
             errors.append(f"Absolute path detected in report (pattern: {pattern}). All paths must be relative.")
 
-    # Specific evidence check for Validation Friction
-    if "Validation Evidence" not in content and "Validation Friction" in required_sections:
-        # This is a bit looser but we want to encourage evidence
-        pass
+    # Check for Semantic Quality Score format (only for new standard)
+    score_match = re.search(r'- \*\*Score\*\*: \[?(\d+)\]?', content)
+    if score_match:
+        score = int(score_match.group(1))
+        if not (0 <= score <= 21):
+            errors.append(f"Invalid Semantic Quality Score: {score}. Must be between 0 and 21.")
+
+    # Check for failure classification (only for new standard)
+    if "Failure Classification" in content:
+        if not re.search(r'- \*\*Classification\*\*: \[?(Structural|Semantic|Boundary|None)\]?', content, re.IGNORECASE):
+            errors.append("Missing or invalid 'Failure Classification'. Must be one of: Structural, Semantic, Boundary, None.")
 
     return errors
 

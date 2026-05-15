@@ -4,6 +4,7 @@
 - **Failure Mode**: Keyword Gravity
 - **Severity**: High
 - **Summary**: Ambiguous "product" keywords in raw fog trigger premature routing to implementation workflows, even when the user explicitly asks for repository/workflow guidance.
+- **Recommended Action**: skill_edit
 
 ## 2. Evidence
 - **Source Report**: [usage_research_report.md](usage_research_report.md)
