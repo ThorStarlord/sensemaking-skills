@@ -9,7 +9,7 @@
 - **Decision**: The `full-local-sensemaking` workflow was successfully planned and validated in `plan_only` mode.
 
 ## 3. Task
-Proceed with the execution of the `full-local-sensemaking` workflow as staged in the orchestration plan.
+The next execution agent should proceed with the execution of the `full-local-sensemaking` workflow as staged in the orchestration plan.
 
 ## 4. Constraints
 - Do not mutate protected files (`skills/**/SKILL.md`, `scripts/**`, etc.).
