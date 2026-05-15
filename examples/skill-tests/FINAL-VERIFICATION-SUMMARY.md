@@ -11,18 +11,18 @@ This document summarizes the completion of the hardened verification plan for th
 
 | Wave | Description | Key Artifacts | Audit Result |
 | :--- | :--- | :--- | :--- |
-| **Wave 1** | Execution Discipline | `iso-repo-001`, `iso-framer-001` | ✅ PASS |
-| **Wave 2** | Handoff Compliance | `WAVE-2-CONTINUITY-REPORT.md` | ✅ PASS |
-| **Wave 3** | Full-Chain Semantic Thread | `prompt_handoff.md`, `acceptance-report.md` | ✅ PASS |
-| **Wave 4** | Maintenance Loop Safety | `skill_improvement_plan.md` (Scenario 005) | ✅ PASS |
+| **Wave 1** | Execution Discipline | `FORMAL-WAVE-1-COMPLIANCE-AUDIT.md`, isolated skill outputs | ✅ PASS |
+| **Wave 2** | Handoff & Semantic Continuity | `WAVE-2-SEMANTIC-CONTINUITY-REPORT.md` | ✅ PASS |
+| **Wave 3** | Full-Chain Semantic Thread | `prompt_handoff.md`, `WAVE-3-FULL-CHAIN-ACCEPTANCE-REPORT.md` | ✅ PASS |
+| **Wave 4** | Maintenance Loop Safety | `usage_research_report.md`, `skill_improvement_plan.md` | ✅ PASS |
 
 ## 3. Findings & Residual Risks
 
 ### Adherence to Artifact Contracts
-The repository has demonstrated strict adherence to machine-verifiable artifact contracts. All generated outputs pass Level 2 (structural) and Level 3 (semantic/plan) validation gates.
+The repository has demonstrated strict adherence to machine-verifiable artifact contracts. All generated outputs passed their applicable validation gates, including structural artifact validators, specialized plan/maintenance validators, checklist validation where specified, and final repository integrity checks.
 
 ### Resistance to Over-Maintenance
-Wave 4 successfully proved that the maintenance loop can distinguish between logic defects and fixture defects (Scenario 005), preventing "Class 8: Over-Maintenance" and protecting the core logic from overfitting.
+Wave 4 successfully detected a Class 8: Over-Maintenance trap and avoided an incorrect skill or registry patch by distinguishing between a logic defect and a fixture defect (Scenario 005).
 
 ### Path Hygiene
 Zero `file:///` links were introduced into the repository artifacts during this verification cycle.
