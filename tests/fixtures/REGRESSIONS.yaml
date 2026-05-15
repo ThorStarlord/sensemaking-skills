@@ -9,5 +9,3 @@ excluded_validators:
     reason: Repository-level meta-validator; not fixture-tested by the Validator Verification Suite.
   - validator: validate-artifact
     reason: Core artifact validator; fixtures pending Wave 2 implementation.
-  - validator: validate-usage-research-report
-    reason: Behavioral research validator; fixtures pending Wave 2 implementation.
