@@ -31,6 +31,6 @@ Stop after the first step of execution or upon any validation failure.
 ## 8. Ready-to-copy Prompt
 ```markdown
 /workflow-orchestrator
-Execute the full-local-sensemaking workflow as staged in examples/skill-tests/full-chain/001-cold-start/workflow_orchestration_plan.md.
+You are the next execution agent. Starting from the staged orchestration plan in examples/skill-tests/full-chain/001-cold-start/workflow_orchestration_plan.md, execute the `full-local-sensemaking` workflow only within the permissions and stop conditions specified.
 Ensure all artifact contracts are validated and git status is checked before each step.
 ```

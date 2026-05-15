@@ -27,9 +27,9 @@
 | :--- | :--- | :--- |
 | `problem_frame.md` | `validate-artifact.py problem_frame` | [x] PASS |
 | `unknowns_map.md` | `validate-artifact.py unknowns_map` | [x] PASS |
-| `repo_brief.md` | `validate-artifact.py repository_sensemaking_brief` | [x] PASS |
-| `workflow_plan.md` | `validate-artifact.py workflow_orchestration_plan` | [x] PASS |
-| `workflow_plan.md` | `validate-plan.py` | [x] PASS |
+| `repo_sensemaking_brief.md` | `validate-artifact.py repository_sensemaking_brief` | [x] PASS |
+| `workflow_orchestration_plan.md` | `validate-artifact.py workflow_orchestration_plan` | [x] PASS |
+| `workflow_orchestration_plan.md` | `validate-plan.py` | [x] PASS |
 | `prompt_handoff.md` | `validate-artifact.py prompt_handoff` | [x] PASS |
 | Repository State | `validate-repo.py` | [x] PASS |
 
