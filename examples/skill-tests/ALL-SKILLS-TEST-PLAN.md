@@ -1,6 +1,6 @@
-# ALL-SKILLS-TEST-PLAN (Hardened)
+# ALL-SKILLS-TEST-PLAN (Production Ready)
 
-This plan defines a non-interfering verification suite for the Sensemaking Skills ecosystem. It is designed for parallel execution by multiple agents with zero interference and strict boundary enforcement.
+This plan defines a non-interfering verification suite for the Sensemaking Skills ecosystem. It is designed for parallel execution with strict boundary enforcement and machine-auditable run logs.
 
 ## 1. Test Strategy
 
@@ -15,28 +15,27 @@ This plan defines a non-interfering verification suite for the Sensemaking Skill
 
 | Task Category | Allowed Write Paths | Forbidden Write Paths |
 | :--- | :--- | :--- |
-| **Isolated Tests** | `examples/skill-tests/[skill-name]/**` | `skills/**`, `scripts/**`, `docs/**`, registries, examples/pipeline/** |
-| **Handoff Tests** | `examples/skill-tests/handoff/**` | `skills/**`, `scripts/**`, `docs/**`, registries, examples/pipeline/** |
-| **Full Chain** | `examples/skill-tests/full-chain/001-cold-start/**`| `skills/**`, `scripts/**`, `docs/**`, registries, examples/pipeline/** |
-| **Maintenance** | `examples/skill-tests/maintenance/**` | `skills/**`, `scripts/**`, `docs/**`, registries, examples/pipeline/** |
+| **Isolated Tests** | `examples/skill-tests/[skill-name]/**` | See Section 3 (Danger List) |
+| **Handoff Tests** | `examples/skill-tests/handoff/**` | See Section 3 (Danger List) |
+| **Full Chain** | `examples/skill-tests/full-chain/001-cold-start/**`| See Section 3 (Danger List) |
+| **Maintenance** | `examples/skill-tests/maintenance/**` | See Section 3 (Danger List) |
 
 ## 3. Shared-File Danger List (DO NOT EDIT)
 
-The following files are strictly **Read-Only** during this verification phase. No task may modify them:
+The following paths are strictly **READ-ONLY** for all verification tasks. No task may modify these files:
 
 - `skills/**/SKILL.md` (Core instructions)
 - `scripts/**` (Validation logic)
 - `docs/**` (Architecture and PRDs)
 - `examples/usage-research/**` (Scenario fixtures)
 - `workflow-registry.yaml` / `skill-registry.yaml` (Registries)
-- `walkthrough/*.md` / `status/*.md` (Maintenance docs)
+- `walkthrough/**` / `status/**` (Maintenance/audit docs)
 - `README.md` / `CONTEXT.md`
+- `examples/pipeline/**` (Fixed input fixtures)
 
 ## 4. Execution & Merge Order
 
-To ensure safety and logical flow, tasks must be merged in this order:
-
-1.  **Phase 1: Read-only Audits** (No files written, observation only).
+1.  **Phase 1: Read-only Audits** (Observation only).
 2.  **Phase 2: Isolated Output Artifacts** (Independent skill verification).
 3.  **Phase 3: Handoff & Full-chain Tests** (Inter-skill consistency).
 4.  **Phase 4: Maintenance Safety Tests** (Defect classification loop).
@@ -44,103 +43,133 @@ To ensure safety and logical flow, tasks must be merged in this order:
 
 ## 5. Anti-Causal Confusion Rule
 
-If a validation failure or behavioral defect is detected, the task must classify the defect BEFORE recommending an edit. Choose one:
+Before recommending any edit, classify the failure as one of:
 
-- `producer_artifact_defect`: The input artifact was malformed or semantically thin.
-- `consumer_skill_defect`: The skill ignored instructions or boundary rules.
-- `fixture_defect`: The test fixture (fog or repository state) is unrealistic or broken.
-- `evaluator_defect`: The human or LLM evaluator used a flawed rubric.
-- `validator_defect`: The script flagged a false positive or missed a contract breach.
-- `registry_defect`: The workflow or skill registry entry contains incorrect metadata.
+- `producer_artifact_defect`: Input artifact was malformed or semantically thin.
+- `consumer_skill_defect`: Skill ignored instructions or boundary rules.
+- `fixture_defect`: Test fixture (fog or repo state) is unrealistic or broken.
+- `evaluator_defect`: Evaluator used a flawed rubric.
+- `validator_defect`: Script flagged a false positive or missed a contract breach.
+- `registry_defect`: Workflow or skill registry entry contains incorrect metadata.
 
-## 6. Isolated Skill Task Prompts
+## 6. Per-Task Run Log Requirement
+
+Every execution task must create a `TEST-RUN-LOG.md` in its assigned output directory.
+
+| Field | Description |
+| :--- | :--- |
+| **Task ID** | Descriptive name (e.g., `isolated-problem-framer-001`) |
+| **Skill Tested** | Name of the skill under test |
+| **Input Path** | Path to the input fixture used |
+| **Output Path** | Path to the generated artifact |
+| **Validation Result** | Pass/Fail + output from validation command |
+| **Defect Classification** | Required if failure observed (See Section 5) |
+| **Recommended Follow-up** | Logic or fixture fixes (do not apply them) |
+| **Files Not Edited** | List files that were candidates for editing but skipped due to scope |
+
+## 7. Path Hygiene & Response Rules
+
+- **NO `file:///` LINKS**: Do not use `file:///` syntax in artifacts, logs, reports, or final responses.
+- **RELATIVE PATHS**: Use repository-relative paths only (e.g., `examples/skill-tests/...`).
+- **NO IMPROVISATION**: Stay within the `Allowed Edits` paths. Document out-of-scope needs in the `TEST-RUN-LOG.md`.
+
+## 8. Hardened Task Prompts
 
 ### Isolated: Problem Framer
 ```text
 Task: Run problem-framer on examples/pipeline/raw_fog.md.
-Allowed Edits: examples/skill-tests/problem-framer/problem_frame.md
-Forbidden Edits: skills/**, scripts/**, docs/**, registries, status docs.
+Allowed Edits:
+- examples/skill-tests/problem-framer/problem_frame.md
+- examples/skill-tests/problem-framer/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/problem-framer/problem_frame.md
 Validation Command: python scripts/validate-artifact.py examples/skill-tests/problem-framer/problem_frame.md
-Safety: Do not edit SKILL.md. If logic errors are found, document follow-up instead of patching.
+Safety: Do not edit SKILL.md. Document follow-up in TEST-RUN-LOG.md. No file:/// links.
 ```
 
 ### Isolated: Unknowns Mapper
 ```text
-Task: Run unknowns-mapper on examples/pipeline/problem_frame.md (fixture).
-Allowed Edits: examples/skill-tests/unknowns-mapper/unknowns_map.md
-Forbidden Edits: skills/**, scripts/**, docs/**, registries, status docs.
+Task: Run unknowns-mapper on examples/pipeline/problem_frame.md.
+Allowed Edits:
+- examples/skill-tests/unknowns-mapper/unknowns_map.md
+- examples/skill-tests/unknowns-mapper/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/unknowns-mapper/unknowns_map.md
 Validation Command: python scripts/validate-artifact.py examples/skill-tests/unknowns-mapper/unknowns_map.md
-Safety: Do not edit SKILL.md. Document logic gaps in your response.
+Safety: Do not edit SKILL.md. Document logic gaps in TEST-RUN-LOG.md. No file:/// links.
 ```
 
 ### Isolated: Repo Sensemaker
 ```text
-Task: Run repo-sensemaker on the current repository state.
-Allowed Edits: examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
-Forbidden Edits: skills/**, scripts/**, docs/**, registries, status docs.
+Task: Run repo-sensemaker on the current repository.
+Allowed Edits:
+- examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
+- examples/skill-tests/repo-sensemaker/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md
 Validation Command: python scripts/validate-repo.py
-Safety: Do not edit SKILL.md. Focus on evidence-backed diagnostic brief quality.
+Follow-up: Run "python scripts/validate-brief.py examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md" for deeper audit.
+Safety: Do not edit SKILL.md. No file:/// links.
 ```
 
 ### Isolated: Workflow Orchestrator
 ```text
-Task: Run workflow-orchestrator on examples/pipeline/repo_sensemaking_brief.md (fixture).
-Allowed Edits: examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
-Forbidden Edits: skills/**, scripts/**, docs/**, registries, status docs.
+Task: Run workflow-orchestrator on examples/pipeline/repo_sensemaking_brief.md.
+Allowed Edits:
+- examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
+- examples/skill-tests/workflow-orchestrator/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
 Expected Output: examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
 Validation Command: python scripts/validate-plan.py examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md
-Safety: Do not edit SKILL.md. Ensure Section 11 is valid YAML.
+Safety: Ensure Section 11 is valid. Do not edit SKILL.md. No file:/// links.
 ```
-
-## 7. Handoff & Full-Chain Task Prompts
 
 ### Handoff: Framer -> Mapper
 ```text
-Task: Consume the GENERATED problem_frame.md from Phase 2 and run unknowns-mapper.
-Allowed Edits: examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
-Forbidden Edits: All shared-danger files.
-Expected Output: A map that satisfies the specific Search Seed requirements for the next step.
+Task: Consume GENERATED problem_frame.md from Phase 2 and run unknowns-mapper.
+Allowed Edits:
+- examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
+- examples/skill-tests/handoff/framer-to-mapper/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
 Validation Command: python scripts/validate-artifact.py examples/skill-tests/handoff/framer-to-mapper/unknowns_map.md
-Classification: If the map is weak, classify if it is due to a producer defect (Framer) or consumer defect (Mapper).
+Safety: Classify defects as producer vs consumer in TEST-RUN-LOG.md. No file:/// links.
 ```
 
 ### Full-Chain: Cold Start
 ```text
 Task: Execute full pipeline from raw fog to prompt handoff.
 Target Path: examples/skill-tests/full-chain/001-cold-start/
-Steps:
-1. problem-framer -> problem_frame.md
-2. unknowns-mapper -> unknowns_map.md
-3. repo-sensemaker -> repo_sensemaking_brief.md
-4. workflow-orchestrator -> workflow_orchestration_plan.md
-5. prompt-handoff -> prompt_handoff.md
-Allowed Edits: Only files within the Target Path.
-Forbidden Edits: All shared-danger files.
-Validation: Run validate-repo.py and validate-plan.py on the final artifacts.
+Allowed Edits:
+- examples/skill-tests/full-chain/001-cold-start/**
+- examples/skill-tests/full-chain/001-cold-start/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
+Validation: Run scripts/validate-repo.py and scripts/validate-plan.py on final artifacts.
+Safety: Document the thread of Search Seeds in the log. No file:/// links.
 ```
-
-## 8. Maintenance Safety Test Prompt
 
 ### Maintenance Loop Audit
 ```text
-Task: Run usage-researcher -> skill-maintainer loop using Scenario 005 (Flawed Evaluation).
+Task: Run usage-researcher -> skill-maintainer loop using Scenario 005.
 Input: examples/usage-research/scenarios/005-conflicting-fixes/
-Allowed Edits: examples/skill-tests/maintenance/output/**
-Forbidden Edits: All SKILL.md files, all scripts.
-Goal: Verify that skill-maintainer classifies the failure as a `fixture_defect` and recommends a fixture edit instead of a logic patch.
-Validation: python scripts/validate-skill-improvement-plan.py examples/skill-tests/maintenance/output/skill_improvement_plan.md
+Allowed Edits:
+- examples/skill-tests/maintenance/output/**
+- examples/skill-tests/maintenance/TEST-RUN-LOG.md
+Forbidden Edits:
+- skills/**/SKILL.md, scripts/**, docs/**, registries, walkthrough/**, status/**, README.md, CONTEXT.md
+Validation Command: python scripts/validate-skill-improvement-plan.py examples/skill-tests/maintenance/output/skill_improvement_plan.md
+Goal: Confirm it identifies "fixture_defect" instead of patching logic. No file:/// links.
 ```
 
 ## 9. Final Validation Gates
 
-These commands must pass before any status or walkthrough documentation is updated:
-
-1.  **Repository Structure**: `python scripts/validate-repo.py`
-2.  **Artifact Contracts**: `python scripts/validate-artifact.py [all-generated-artifacts]`
-3.  **Plan Integrity**: `python scripts/validate-plan.py [all-generated-plans]`
-4.  **Maintenance Logic**: `python scripts/validate-skill-improvement-plan.py [generated-plan]`
-
-**Note**: If any validation gate fails, document the defect classification (Section 5) and stop. Do not update production status.
+1.  `python scripts/validate-repo.py`
+2.  `python scripts/validate-brief.py [generated-brief]`
+3.  `python scripts/validate-plan.py [generated-plan]`
+4.  `python scripts/validate-usage-research-report.py [generated-report]`
+5.  `python scripts/validate-skill-improvement-plan.py [generated-improvement-plan]`
