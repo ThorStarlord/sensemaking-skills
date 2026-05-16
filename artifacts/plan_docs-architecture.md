@@ -1,10 +1,10 @@
 # Orchestration Plan: Docs & Architecture Alignment
 
-- **Session ID**: orchestration-20260516-173944-5f972338
+- **Session ID**: orchestration-20260516-183602-fb34ee92
 - **Date**: 2026-05-16
 - **Workflow**: docs-architecture
-- **Execution Mode**: guided_execution
-- **Purpose**: Turn an approved brief or PRD into copy-paste prompts for external implementation skills.
+- **Execution Mode**: plan_only
+- **Purpose**: Align documentation with domain language and generate copy-paste prompts for implementation.
 
 ## Skills in Sequence
 
@@ -13,12 +13,7 @@
 - **Gate**: review_alignment_report
 - **Output**: domain_alignment_report
 
-### Step 2: to-prd
-- **Type**: local_execution
-- **Gate**: review_prd
-- **Output**: prd
-
-### Step 3: handoff
+### Step 2: handoff
 - **Type**: local_execution
 - **Gate**: review_handoff_prompt
 - **Output**: prompt_handoff
@@ -29,12 +24,10 @@
 
 ## Approval Gates
 
-- **Mode**: guided_execution
-- **Gate Behavior**: mandatory
+- **Mode**: plan_only
+- **Gate Behavior**: none
 
-- review_alignment_report: REQUIRED (user must approve)
-- review_prd: REQUIRED (user must approve)
-- review_handoff_prompt: REQUIRED (user must approve)
+No gates required for this mode.
 
 ## Stop Conditions
 
@@ -48,9 +41,9 @@
 ```yaml
 artifact_id: workflow_orchestration_plan
 chosen_workflow_id: docs-architecture
-execution_mode: guided_execution
+execution_mode: plan_only
 status: created
-session_id: orchestration-20260516-173944-5f972338
+session_id: orchestration-20260516-183602-fb34ee92
 initial_inputs:
   repository_state: external_context
 steps:
@@ -60,17 +53,12 @@ steps:
     gate: review_alignment_report
     output_artifact: domain_alignment_report
   - id: 2
-    skill: to-prd
-    step_type: local_execution
-    gate: review_prd
-    output_artifact: prd
-  - id: 3
     skill: handoff
     step_type: local_execution
     gate: review_handoff_prompt
     output_artifact: prompt_handoff
 approval_gates:
-  behavior: mandatory
+  behavior: none
 stop_conditions:
   - validator_failure
   - gate_denial

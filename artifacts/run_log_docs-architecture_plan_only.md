@@ -1,7 +1,7 @@
 # Workflow Run Log: Docs & Architecture Alignment
 
 - **Date**: 2026-05-16
-- **Session ID**: orchestration-20260516-171510-b1c0877c
+- **Session ID**: orchestration-20260516-183602-fb34ee92
 - **Workflow ID**: docs-architecture
 - **Orchestrator Mode**: plan_only
 - **Branch**: main
@@ -30,16 +30,6 @@
 
 ### Step 2
 - **step_id**: 2
-- **skill**: to-prd
-- **runtime**: local_execution
-- **output_artifact**: prd
-- **artifact_path**: artifacts/prd.md
-- **validator_stack**: none (no artifact to validate)
-- **gate**: review_prd
-- **status**: COMPLETED
-
-### Step 3
-- **step_id**: 3
 - **skill**: handoff
 - **runtime**: local_execution
 - **output_artifact**: prompt_handoff
@@ -53,14 +43,13 @@
 
 ## Decisions & Overrides
 
-- Gate 'review_alignment_report' (step 1): not_applicable at 2026-05-16 17:15:15
-- Gate 'review_prd' (step 2): not_applicable at 2026-05-16 17:15:15
-- Gate 'review_handoff_prompt' (step 3): not_applicable at 2026-05-16 17:15:15
+- Gate 'review_alignment_report' (step 1): not_applicable at 2026-05-16 18:36:13
+- Gate 'review_handoff_prompt' (step 2): not_applicable at 2026-05-16 18:36:13
 
 ## Final State
 
 - **Status**: completed
-- **Note**: All 3 steps completed successfully in 'plan_only' mode.
-- **Steps completed**: 3/3
-- **Gate decisions**: 3
+- **Note**: All 2 steps completed successfully in 'plan_only' mode.
+- **Steps completed**: 2/2
+- **Gate decisions**: 2
 - **Errors**: 0
