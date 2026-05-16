@@ -7,5 +7,4 @@ required_cases:
 excluded_validators:
   - validator: validate-repo
     reason: Repository-level meta-validator; not fixture-tested by the Validator Verification Suite.
-  - validator: validate-artifact
-    reason: Core artifact validator; fixtures pending Wave 2 implementation.
+
