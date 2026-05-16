@@ -1,9 +1,9 @@
 # Workflow Run Log: Fast Local Diagnostic
 
 - **Date**: 2026-05-16
-- **Session ID**: orchestration-20260516-203641-b697051b
+- **Session ID**: orchestration-20260516-203654-134a5e80
 - **Workflow ID**: fast-local-diagnostic
-- **Orchestrator Mode**: plan_only
+- **Orchestrator Mode**: prompt_chain
 - **Branch**: claude/happy-allen-badf59
 - **Status**: completed
 
@@ -43,13 +43,13 @@
 
 ## Decisions & Overrides
 
-- Gate 'review_sensemaking_brief' (step 1): not_applicable at 2026-05-16 20:36:48
-- Gate 'review_handoff_prompt' (step 2): not_applicable at 2026-05-16 20:36:49
+- Gate 'review_sensemaking_brief' (step 1): not_applicable at 2026-05-16 20:36:59
+- Gate 'review_handoff_prompt' (step 2): not_applicable at 2026-05-16 20:36:59
 
 ## Final State
 
 - **Status**: completed
-- **Note**: All 2 steps completed successfully in 'plan_only' mode.
+- **Note**: All 2 steps completed successfully in 'prompt_chain' mode.
 - **Steps completed**: 2/2
 - **Gate decisions**: 2
 - **Errors**: 0
