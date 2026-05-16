@@ -123,7 +123,6 @@ workflows:
         required: true
         description: Output from docs-architecture workflow (grill-with-docs step).
     allowed_execution_modes:
-      - plan_only
       - guided_execution
     steps:
       - id: 1

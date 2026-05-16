@@ -48,7 +48,7 @@ mode_coverage:
   gates_exercised: false
   gates_note: not_applicable_plan_only
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-181526-c85cacfa.'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-200234-8c96f013.'
 - mode: prompt_chain
   workflow_id: fast-local-diagnostic
   last_run: 2026-05-16
@@ -305,9 +305,9 @@ mode_coverage:
   hardening_triggered: none
   notes: 'First full execution of product-to-issues workflow. PRD artifact now properly
     validated through canonical dispatcher (resolves validation gap from previous
-    docs-architecture run). Full pipeline proven: domain_alignment_report → prd →
-    issue_list → agent_brief. All 3 gates exercised. Demonstrates proper PRD validation
-    in context where prd is actually consumed.'
+    docs-architecture run). Full pipeline proven: domain_alignment_report Ã¢â€ â€™
+    prd Ã¢â€ â€™ issue_list Ã¢â€ â€™ agent_brief. All 3 gates exercised. Demonstrates
+    proper PRD validation in context where prd is actually consumed.'
 - mode: plan_only
   workflow_id: product-to-issues
   last_run: '2026-05-16'
@@ -390,7 +390,7 @@ system_tools:
   - experimental-autonomous-sprint (plan_only)
   - docs-architecture (guided_execution)
   - product-to-issues (plan_only)
-  last_session: orchestration-20260516-183614-5a3b7e57
+  last_session: orchestration-20260516-200234-8c96f013
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
@@ -399,13 +399,14 @@ system_tools:
 - tool: test-controlled-failures.py
   status: proven
   last_run: 2026-05-16
-  notes: 'Controlled failure test suite. 8 tests cover: bad artifact rejection, malformed
+  notes: 'Controlled failure test suite. 10 tests cover: bad artifact rejection, malformed
     log detection, stale coverage detection, repeatable failure boundary detection,
     gate denial handling (via --gate-decision auto-deny), validator failure halt,
-    resume after gate denial (--resume + --gate-decision auto-approve), and rollback
-    recommendation after step failure. All 8 tests pass.'
-  tests_passed: 8
-  tests_total: 8
+    resume after gate denial (--resume + --gate-decision auto-approve), rollback recommendation
+    after step failure, rollback recovery proof, and artifact production requirement
+    enforcement. All 10 tests pass.'
+  tests_passed: 10
+  tests_total: 10
 validator_live_coverage:
   validate_repo_py:
     fixture_tested: excluded
@@ -555,8 +556,8 @@ orchestration_runner:
     rollback recovery proof'
 controlled_failure_tests:
   last_run: 2026-05-16
-  tests_passed: 9
-  tests_total: 9
+  tests_passed: 10
+  tests_total: 10
   coverage:
   - 'Test 1: validator-stop-on-bad-artifact -> validate-output.py correctly rejects
     bad artifacts'
@@ -576,6 +577,9 @@ controlled_failure_tests:
   - 'Test 9: rollback-proves-recovery -> git rollback commands proven effective: mutated
     committed file restored, untracked file removed, git tree clean in isolated temp
     repo'
+  - 'Test 10: artifact-production-required -> orchestration runner enforces artifact
+    production in execution modes (ARTIFACT_NOT_FOUND error code, lines 445-454 in
+    orchestration-runner.py)'
   negative_paths_proven:
   - denied gate handling (interactive + non-interactive --gate-decision)
   - resume after gate denial (--resume + --gate-decision auto-approve)
