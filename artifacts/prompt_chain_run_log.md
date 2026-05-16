@@ -24,11 +24,8 @@
 - **output_artifact**: prompt_chain_output
 - **artifact_path**: artifacts/prompt-chain-output.md
 - **validator_stack**:
-    - level: Generic
-      command: `python scripts/validate-artifact.py prompt_handoff artifacts/prompt_handoff.md --repo-root .`
-      result: PASSED
-    - level: Specialized
-      command: `python scripts/validate-prompt-handoff.py artifacts/prompt_handoff.md --repo-root .`
+    - level: Dispatcher
+      command: `python scripts/validate-output.py prompt_handoff artifacts/prompt_handoff.md --repo-root .`
       result: PASSED
 - **gate**: N/A (bypassed by prompt_chain)
 - **status**: COMPLETED

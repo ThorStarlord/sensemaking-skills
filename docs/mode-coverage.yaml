@@ -11,14 +11,12 @@ mode_coverage:
     steps_total: 2
     validators_exercised:
       - level_1: validate-repo.py
-      - level_2: validate-artifact.py (repository_sensemaking_brief)
-      - level_2: validate-artifact.py (prompt_handoff)
-      - level_3: validate-brief.py
-      - level_3: validate-prompt-handoff.py
+      - dispatcher: validate-output.py (repository_sensemaking_brief)
+      - dispatcher: validate-output.py (prompt_handoff)
     gates_exercised: false
     gates_note: bypassed_by_yolo
     hardening_triggered: none
-    notes: "Two TDD cycles occurred (UNKNOWN_WEAKNESS_TYPE, NO_LOGIC_TRACE). Both were single-occurrence data issues, not repeatable failure boundaries. No structural hardening warranted."
+    notes: "Two TDD cycles occurred (UNKNOWN_WEAKNESS_TYPE, NO_LOGIC_TRACE). Both were single-occurrence data issues, not repeatable failure boundaries. No structural hardening warranted. Validators invoked through dispatcher (validate-output.py) per normal path. Dispatcher exercised validate-artifact.py + validate-brief.py (step 1) and validate-artifact.py + validate-prompt-handoff.py (step 2)."
 
   - mode: guided_execution
     workflow_id: docs-contract-reconciliation
@@ -27,14 +25,13 @@ mode_coverage:
     steps_completed: 3
     steps_total: 3
     validators_exercised:
-      - level_2: validate-artifact.py (repository_sensemaking_brief, from prior run)
-      - level_2: validate-artifact.py (docs_contract_reconciliation_report)
-      - level_2: validate-artifact.py (prompt_handoff)
-      - level_3: validate-prompt-handoff.py
+      - level_1: validate-repo.py
+      - dispatcher: validate-output.py (docs_contract_reconciliation_report)
+      - dispatcher: validate-output.py (prompt_handoff)
     gates_exercised: true
     gates_note: "All 3 gates exercised with approved_by_user. First live gate exercise in the system. Gate 1 (review_drift_diagnosis) continued, Gate 2 (review_reconciliation_patch) continued, Gate 3 (review_next_prompt) completion."
     hardening_triggered: none
-    notes: "Completed the guided execution that paused on 2026-05-14. All 3 gates recorded gate_result, approved_at, and approved_by. Proves the full gate lifecycle."
+    notes: "Completed the guided execution that paused on 2026-05-14. All 3 gates recorded gate_result, approved_at, and approved_by. Proves the full gate lifecycle. Step 1 validators from prior run (2026-05-14). Dispatcher exercised validate-artifact.py (step 2) and validate-artifact.py + validate-prompt-handoff.py (step 3)."
 
   - mode: plan_only
     workflow_id: fast-local-diagnostic
@@ -43,12 +40,12 @@ mode_coverage:
     steps_completed: 1
     steps_total: 1
     validators_exercised:
-      - level_2: validate-artifact.py (workflow_orchestration_plan)
-      - level_3: validate-plan.py
+      - level_1: validate-repo.py
+      - dispatcher: validate-output.py (workflow_orchestration_plan)
     gates_exercised: false
     gates_note: not_applicable_plan_only
     hardening_triggered: none
-    notes: "First live validate-plan.py invocation. Plan artifact produced with complete Section 11. All 9 plan validation categories passed. No mutation — no feature branch needed."
+    notes: "First live validate-plan.py invocation (via validate-output.py dispatcher). Plan artifact produced with complete Section 11. All 9 plan validation categories passed. No mutation. Dispatcher exercised validate-artifact.py + validate-plan.py."
 
   - mode: prompt_chain
     workflow_id: fast-local-diagnostic
@@ -57,14 +54,13 @@ mode_coverage:
     steps_completed: 1
     steps_total: 1
     validators_exercised:
-      - level_2: validate-artifact.py (repository_sensemaking_brief)
-      - level_2: validate-artifact.py (prompt_handoff)
-      - level_3: validate-brief.py
-      - level_3: validate-prompt-handoff.py
+      - level_1: validate-repo.py
+      - dispatcher: validate-output.py (prompt_handoff)
+      - cross_check: validate-brief.py
     gates_exercised: false
     gates_note: not_applicable_prompt_chain
     hardening_triggered: none
-    notes: "First live prompt chain. Copy-pasteable prompts produced for both workflow steps. All 4 validators passed."
+    notes: "First live prompt chain. Copy-pasteable prompts produced. Dispatcher exercised validate-artifact.py + validate-prompt-handoff.py. validate-brief.py exercised via cross-check table (standalone, not through dispatcher)."
 
   - mode: autonomous_execution
     workflow_id: fast-local-diagnostic
@@ -74,14 +70,27 @@ mode_coverage:
     steps_total: 2
     validators_exercised:
       - level_1: validate-repo.py
-      - level_2: validate-artifact.py (repository_sensemaking_brief)
-      - level_2: validate-artifact.py (prompt_handoff)
-      - level_3: validate-brief.py
-      - level_3: validate-prompt-handoff.py
+      - dispatcher: validate-output.py (repository_sensemaking_brief)
+      - dispatcher: validate-output.py (prompt_handoff)
     gates_exercised: true
     gates_note: "Both gates exercised with automated_approval. User provided autonomous-execution opt-in at session start. Gates recorded gate_result, approved_at, and approved_by."
     hardening_triggered: none
-    notes: "First autonomous execution. Opt-in gate mechanism verified: gates halt automatically without per-step human intervention. validate-output.py used as validator dispatcher."
+    notes: "First autonomous execution. Opt-in gate mechanism verified: gates halt automatically without per-step human intervention. All validators invoked through validate-output.py dispatcher. Dispatcher exercised validate-artifact.py + validate-brief.py (step 1) and validate-artifact.py + validate-prompt-handoff.py (step 2)."
+
+  - mode: guided_execution
+    workflow_id: validator-live-coverage
+    last_run: 2026-05-16
+    run_log_path: artifacts/validator_live_coverage_run_log.md
+    steps_completed: 4
+    steps_total: 4
+    validators_exercised:
+      - level_1: validate-repo.py
+      - dispatcher: validate-output.py (usage_research_report, 2 scenarios)
+      - dispatcher: validate-output.py (skill_improvement_plan, 2 examples)
+    gates_exercised: false
+    gates_note: bypassed_by_validation_only
+    hardening_triggered: none
+    notes: "First live invocations of validate-usage-research-report.py and validate-skill-improvement-plan.py. Both exercised through validate-output.py dispatcher against real scenario reports and valid plan examples. Closes the live coverage gap for these two validators."
 
 # Automation System Tools
 # These are tools that are proven but not mode-workflow combinations.
@@ -89,14 +98,15 @@ mode_coverage:
 system_tools:
   - tool: validate-run-log.py
     status: proven
-    last_verified: 2026-05-16
-    notes: "Validates run log structure, gate recording, pre-flight documentation, and path hygiene. All 5 run logs validated successfully."
+    last_verified: 2026-05-16 (validator-live-coverage run log added)
+    notes: "Validates run log structure, gate recording, pre-flight documentation, and path hygiene. All 6 run logs validated successfully."
     run_logs_validated:
       - artifacts/run_log.md (yolo_execution)
       - artifacts/plan_only_run_log.md (plan_only)
       - artifacts/prompt_chain_run_log.md (prompt_chain)
       - artifacts/guided_execution_completion_log.md (guided_execution)
       - artifacts/autonomous_execution_run_log.md (autonomous_execution)
+      - artifacts/validator_live_coverage_run_log.md (validator-live-coverage)
 
   - tool: analyze-run-failures.py
     status: proven
@@ -107,12 +117,14 @@ system_tools:
   - tool: validate-output.py
     status: proven_as_normal_path
     last_verified: 2026-05-16
-    notes: "Dispatcher that reads artifact-contracts.yaml and runs generic + specialized validators. Proven as the normal validator invocation path. 4 artifact types validated through dispatcher."
+    notes: "Dispatcher that reads artifact-contracts.yaml and runs generic + specialized validators. Proven as the normal validator invocation path. 6 artifact types validated through dispatcher."
     artifacts_validated:
       - repository_sensemaking_brief
       - prompt_handoff
       - workflow_orchestration_plan
       - docs_contract_reconciliation_report
+      - usage_research_report
+      - skill_improvement_plan
 
 # Validator Live Invocation Coverage
 validator_live_coverage:
@@ -124,37 +136,48 @@ validator_live_coverage:
       - plan_only (pre-flight)
       - prompt_chain (pre-flight)
       - autonomous_execution (pre-flight)
+  validate_output_py:
+    fixture_tested: excluded
+    live_invocations:
+      - "yolo_execution (step 1: brief, step 2: handoff)"
+      - "guided_execution (step 2: report, step 3: handoff)"
+      - "plan_only (step 0: plan)"
+      - "prompt_chain (step 0: handoff)"
+      - "autonomous_execution (step 1: brief, step 2: handoff)"
+    notes: "Dispatcher is the normal validation path. All step-level validators now invoked through validate-output.py."
   validate_artifact_py:
     fixture_tested: true
     live_invocations:
-      - yolo_execution (both steps)
-      - guided_execution (steps 1, 2, 3)
-      - plan_only (step 0)
-      - prompt_chain (cross-check)
-      - autonomous_execution (both steps)
+      - "yolo_execution (via validate-output.py dispatcher, both steps)"
+      - "guided_execution (via validate-output.py dispatcher, steps 2, 3)"
+      - "plan_only (via validate-output.py dispatcher)"
+      - "prompt_chain (cross-check table, standalone)"
+      - "autonomous_execution (via validate-output.py dispatcher, both steps)"
   validate_brief_py:
     fixture_tested: true
     live_invocations:
-      - yolo_execution (step 1, inc. TDD cycle)
-      - prompt_chain (cross-check)
-      - autonomous_execution (step 1)
+      - "yolo_execution (via validate-output.py dispatcher, step 1)"
+      - "prompt_chain (cross-check table, standalone)"
+      - "autonomous_execution (via validate-output.py dispatcher, step 1)"
   validate_plan_py:
     fixture_tested: true
     live_invocations:
-      - plan_only (step 0)
-      - autonomous_execution (via plan validation)
+      - "plan_only (via validate-output.py dispatcher)"
+      - "autonomous_execution (via plan validation, standalone)"
   validate_prompt_handoff_py:
     fixture_tested: true
     live_invocations:
-      - yolo_execution (step 2)
-      - guided_execution (step 3)
-      - prompt_chain (cross-check)
-      - autonomous_execution (step 2)
+      - "yolo_execution (via validate-output.py dispatcher, step 2)"
+      - "guided_execution (via validate-output.py dispatcher, step 3)"
+      - "prompt_chain (cross-check table, standalone)"
+      - "autonomous_execution (via validate-output.py dispatcher, step 2)"
   validate_skill_improvement_plan_py:
     fixture_tested: true
-    live_invocations: []
-    notes: "Live invocation requires a skill_improvement_plan artifact, which requires a usage_research_report input. Not yet triggered."
+    live_invocations:
+      - "validator-live-coverage (via validate-output.py dispatcher, 2 examples: fixture_edit, no_skill_change)"
+    notes: "First live invocation on 2026-05-16. Proven through validate-output.py dispatcher against valid skill improvement plan examples."
   validate_usage_research_report_py:
     fixture_tested: true
-    live_invocations: []
-    notes: "Live invocation requires a usage_research_report artifact from a usage research session. Not yet triggered."
+    live_invocations:
+      - "validator-live-coverage (via validate-output.py dispatcher, 2 scenarios: cold-start, false-routing)"
+    notes: "First live invocation on 2026-05-16. Proven through validate-output.py dispatcher against real usage research scenario reports."

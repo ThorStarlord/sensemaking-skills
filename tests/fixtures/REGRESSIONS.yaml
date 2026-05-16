@@ -16,4 +16,8 @@ excluded_validators:
     reason: Validator runner that delegates to registered validators via artifact-contracts.yaml; not a validator itself.
   - validator: validate-run-log
     reason: Run log meta-validator; validates dynamic run log documents, not static fixtures. Run logs are produced per-session and cannot be fixture-tested with static files.
+  - validator: validate-mode-coverage
+    reason: Mode coverage meta-validator; validates docs/mode-coverage.yaml against live run logs and failure ledger. Cannot be fixture-tested because its checks are dynamic (existence, consistency across actual run logs).
+  - validator: analyze-run-failures
+    reason: Failure ledger meta-validator; scans live run logs to build a failure ledger and detect repeatable failure boundaries. Cannot be fixture-tested because it operates on dynamic session data.
 

@@ -24,11 +24,8 @@
 - **output_artifact**: repository_sensemaking_brief
 - **artifact_path**: artifacts/repository_sensemaking_brief.md
 - **validator_stack**:
-    - level: Generic
-      command: `python scripts/validate-artifact.py repository_sensemaking_brief artifacts/repository_sensemaking_brief.md --repo-root .`
-      result: PASSED
-    - level: Specialized
-      command: `python scripts/validate-brief.py artifacts/repository_sensemaking_brief.md --repo-root .`
+    - level: Dispatcher
+      command: `python scripts/validate-output.py repository_sensemaking_brief artifacts/repository_sensemaking_brief.md --repo-root .`
       result: PASSED
 - **gate**: N/A (bypassed by yolo_execution)
 - **status**: COMPLETED
@@ -48,11 +45,8 @@
 - **output_artifact**: prompt_handoff
 - **artifact_path**: artifacts/prompt_handoff.md
 - **validator_stack**:
-    - level: Generic
-      command: `python scripts/validate-artifact.py prompt_handoff artifacts/prompt_handoff.md --repo-root .`
-      result: PASSED
-    - level: Specialized
-      command: `python scripts/validate-prompt-handoff.py artifacts/prompt_handoff.md --repo-root .`
+    - level: Dispatcher
+      command: `python scripts/validate-output.py prompt_handoff artifacts/prompt_handoff.md --repo-root .`
       result: PASSED
 - **gate**: N/A (bypassed by yolo_execution)
 - **status**: COMPLETED

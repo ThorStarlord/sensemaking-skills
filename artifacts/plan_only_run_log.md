@@ -24,11 +24,8 @@
 - **output_artifact**: workflow_orchestration_plan
 - **artifact_path**: artifacts/plan-only-orchestration-plan.md
 - **validator_stack**:
-    - level: Generic
-      command: `python scripts/validate-artifact.py workflow_orchestration_plan artifacts/plan-only-orchestration-plan.md --repo-root .`
-      result: PASSED
-    - level: Specialized
-      command: `python scripts/validate-plan.py artifacts/plan-only-orchestration-plan.md --repo-root .`
+    - level: Dispatcher
+      command: `python scripts/validate-output.py workflow_orchestration_plan artifacts/plan-only-orchestration-plan.md --repo-root .`
       result: PASSED
 - **gate**: N/A (bypassed by plan_only)
 - **status**: COMPLETED

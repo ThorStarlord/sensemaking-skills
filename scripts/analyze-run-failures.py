@@ -25,7 +25,7 @@ def _find_run_logs(logs_dir: str) -> list[str]:
         return matches
     for root, _dirs, files in os.walk(logs_dir):
         for f in files:
-            if f.endswith(".md") and "run_log" in f.lower():
+            if f.endswith(".md") and ("run_log" in f.lower() or "_run_" in f.lower() or "completion_log" in f.lower()):
                 matches.append(os.path.join(root, f))
     return sorted(matches)
 

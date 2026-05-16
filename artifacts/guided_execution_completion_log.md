@@ -44,8 +44,8 @@
 - **output_artifact**: docs_contract_reconciliation_report
 - **artifact_path**: artifacts/docs_contract_reconciliation_report.md
 - **validator_stack**:
-    - level: Generic
-      command: `python scripts/validate-artifact.py docs_contract_reconciliation_report artifacts/docs_contract_reconciliation_report.md --repo-root .`
+    - level: Dispatcher
+      command: `python scripts/validate-output.py docs_contract_reconciliation_report artifacts/docs_contract_reconciliation_report.md --repo-root .`
       result: PASSED
 - **gate**: review_reconciliation_patch
 - **status**: COMPLETED
@@ -68,11 +68,8 @@
 - **output_artifact**: prompt_handoff
 - **artifact_path**: artifacts/prompt_handoff.md
 - **validator_stack**:
-    - level: Generic
-      command: `python scripts/validate-artifact.py prompt_handoff artifacts/prompt_handoff.md --repo-root .`
-      result: PASSED
-    - level: Specialized
-      command: `python scripts/validate-prompt-handoff.py artifacts/prompt_handoff.md --repo-root .`
+    - level: Dispatcher
+      command: `python scripts/validate-output.py prompt_handoff artifacts/prompt_handoff.md --repo-root .`
       result: PASSED
 - **gate**: review_next_prompt
 - **status**: COMPLETED

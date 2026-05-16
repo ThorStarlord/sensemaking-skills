@@ -25,3 +25,19 @@ jobs:
 
       - name: Level 2/3 — Validator Verification Suite
         run: python scripts/test-validators.py
+
+      - name: Level 4 — Run Log Validation & Failure Analysis
+        run: |
+          echo "=== Validate all run logs ==="
+          python scripts/validate-run-log.py artifacts/run_log.md --repo-root .
+          python scripts/validate-run-log.py artifacts/plan_only_run_log.md --repo-root .
+          python scripts/validate-run-log.py artifacts/prompt_chain_run_log.md --repo-root .
+          python scripts/validate-run-log.py artifacts/guided_execution_completion_log.md --repo-root .
+          python scripts/validate-run-log.py artifacts/autonomous_execution_run_log.md --repo-root .
+          python scripts/validate-run-log.py artifacts/validator_live_coverage_run_log.md --repo-root .
+
+          echo "=== Analyze failure ledger ==="
+          python scripts/analyze-run-failures.py --logs-dir artifacts
+
+      - name: Level 5 — Mode Coverage Self-Validation
+        run: python scripts/validate-mode-coverage.py --repo-root .
