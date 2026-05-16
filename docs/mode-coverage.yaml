@@ -211,15 +211,15 @@ mode_coverage:
   workflow_id: docs-architecture
   last_run: '2026-05-16'
   run_log_path: artifacts/run_log_docs-architecture_plan_only.md
-  steps_completed: 3
-  steps_total: 3
+  steps_completed: 2
+  steps_total: 2
   validators_exercised:
   - 'level_1: validate-repo.py'
   - 'level_3: validate-output.py'
   gates_exercised: false
   gates_note: not_applicable_plan_only
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171510-b1c0877c.'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-183602-fb34ee92.'
 - mode: plan_only
   workflow_id: product-strategy-sprint
   last_run: '2026-05-16'
@@ -270,7 +270,9 @@ mode_coverage:
   gates_exercised: true
   gates_note: 3 approved, 0 denied
   hardening_triggered: none
-  notes: 'LEGACY (3-step version). Executed via production orchestration runner v2. Session: orchestration-20260516-173944-5f972338. This run predates workflow redesign; to-prd was removed to product-to-issues workflow.'
+  notes: 'LEGACY (3-step version). Executed via production orchestration runner v2.
+    Session: orchestration-20260516-173944-5f972338. This run predates workflow redesign;
+    to-prd was removed to product-to-issues workflow.'
 - mode: guided_execution
   workflow_id: docs-architecture
   last_run: '2026-05-16'
@@ -284,7 +286,9 @@ mode_coverage:
   gates_exercised: true
   gates_note: 2 approved, 0 denied
   hardening_triggered: none
-  notes: 'Redesigned docs-architecture workflow (2-step version). Removed to-prd step (moved to product-to-issues workflow). Focused on alignment + handoff. All validators invoked through canonical dispatcher. Proves redesigned workflow end-to-end.'
+  notes: Redesigned docs-architecture workflow (2-step version). Removed to-prd step
+    (moved to product-to-issues workflow). Focused on alignment + handoff. All validators
+    invoked through canonical dispatcher. Proves redesigned workflow end-to-end.
 - mode: guided_execution
   workflow_id: product-to-issues
   last_run: '2026-05-16'
@@ -299,7 +303,23 @@ mode_coverage:
   gates_exercised: true
   gates_note: 3 approved, 0 denied
   hardening_triggered: none
-  notes: 'First full execution of product-to-issues workflow. PRD artifact now properly validated through canonical dispatcher (resolves validation gap from previous docs-architecture run). Full pipeline proven: domain_alignment_report → prd → issue_list → agent_brief. All 3 gates exercised. Demonstrates proper PRD validation in context where prd is actually consumed.'
+  notes: 'First full execution of product-to-issues workflow. PRD artifact now properly
+    validated through canonical dispatcher (resolves validation gap from previous
+    docs-architecture run). Full pipeline proven: domain_alignment_report → prd →
+    issue_list → agent_brief. All 3 gates exercised. Demonstrates proper PRD validation
+    in context where prd is actually consumed.'
+- mode: plan_only
+  workflow_id: product-to-issues
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_product-to-issues_plan_only.md
+  steps_completed: 3
+  steps_total: 3
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  gates_exercised: false
+  gates_note: not_applicable_plan_only
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-183614-5a3b7e57.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
@@ -369,7 +389,8 @@ system_tools:
   - product-autonomous-sprint (plan_only)
   - experimental-autonomous-sprint (plan_only)
   - docs-architecture (guided_execution)
-  last_session: orchestration-20260516-181526-c85cacfa
+  - product-to-issues (plan_only)
+  last_session: orchestration-20260516-183614-5a3b7e57
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
@@ -518,10 +539,11 @@ orchestration_runner:
   - product-autonomous-sprint
   - product-discovery-sprint
   - product-strategy-sprint
+  - product-to-issues
   - setup-sensemaking-repo
   - skill-maintenance-loop
   - validator-live-coverage
-  total_workflow_families: 12
+  total_workflow_families: 13
   capabilities:
   - 'Canonical validator dispatch: orchestration-runner.py delegates to validate-output.py'
   - 'Non-interactive gate decisions: --gate-decision auto-approve / auto-deny'
@@ -562,9 +584,9 @@ controlled_failure_tests:
   - stale coverage detection
   - repeatable failure boundary detection
   - rollback recommendation after step failure (ROLLBACK_RECOMMENDED exit code)
-  - rollback recovery commands proven: git reset --hard HEAD + git clean -fd restore
-    committed state and remove untracked files
-  non_interactive_flags_proven:
-  - '--gate-decision auto-deny: non-interactive gate denial for testing'
-  - '--gate-decision auto-approve: non-interactive gate approval for testing'
-  - '--resume: continue execution from a paused gate state'
+  - rollback recovery commands proven: git reset --hard HEAD + git clean -fd (restore
+      committed state and remove untracked files)
+non_interactive_flags_proven:
+- '--gate-decision auto-deny: non-interactive gate denial for testing'
+- '--gate-decision auto-approve: non-interactive gate approval for testing'
+- '--resume: continue execution from a paused gate state'

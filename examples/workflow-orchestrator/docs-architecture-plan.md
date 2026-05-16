@@ -9,22 +9,19 @@ Recommended Workflow: `docs-architecture`
 `docs-architecture`
 
 ## 3. Why this workflow
-It specifically addresses documentation misalignment by using `grill-with-docs` and `to-prd`.
+It specifically addresses documentation misalignment by aligning docs with domain language and producing copy-paste prompts for implementation.
 
 ## 4. Skills in sequence
 1. `grill-with-docs`
-2. `to-prd`
-3. `handoff`
+2. `handoff`
 
 ## 5. Inputs and outputs
 - `grill-with-docs`: Receives Brief + Context. Produces Alignment Report.
-- `to-prd`: Receives Alignment Report. Produces updated PRD.
-- `handoff`: Receives final PRD. Produces Session Summary.
+- `handoff`: Receives Alignment Report. Produces copy-paste Handoff Prompt.
 
 ## 6. Approval gates
 - **Gate 1**: Review Alignment Report (after `grill-with-docs`).
-- **Gate 2**: Review updated PRD (after `to-prd`).
-- **Gate 3**: Review Handoff Prompt.
+- **Gate 2**: Review Handoff Prompt (after `handoff`).
 
 ## 7. Stop conditions
 - If `grill-with-docs` identifies a major architectural contradiction that requires a human decision.
@@ -34,8 +31,7 @@ It specifically addresses documentation misalignment by using `grill-with-docs` 
 
 ## 9. Prompt chain
 1. `/grill-with-docs: Align the system vocab in README with the new skill structure.`
-2. `/to-prd: Update the V1 PRD based on the alignment report.`
-3. `/handoff: Summarize the doc hardening.`
+2. `/handoff: Summarize the alignment findings and generate implementation prompts.`
 
 ## 10. Run log template
 Initialized at `docs/runs/2026-05-13-docs-alignment.md`.
@@ -63,28 +59,19 @@ steps:
     output_artifact: domain_alignment_report
     status: PENDING
   - id: 2
-    skill: to-prd
-    step_type: local_execution
-    gate: review_prd
-    input_artifact: domain_alignment_report
-    output_artifact: prd
-    status: PENDING
-  - id: 3
     skill: handoff
     step_type: local_execution
     gate: review_handoff_prompt
-    input_artifact: prd
+    input_artifact: domain_alignment_report
     output_artifact: prompt_handoff
     status: PENDING
 
 approval_gates:
   - review_alignment_report
-  - review_prd
   - review_handoff_prompt
 
 gate_behavior:
   review_alignment_report: human_approval
-  review_prd: human_approval
   review_handoff_prompt: human_approval
 
 stop_conditions:
@@ -92,8 +79,8 @@ stop_conditions:
 ```
 
 ## Expected Behavior Checklist
-- [x] Selects `docs-architecture` workflow.
-- [x] Correctly identifies skill sequence from registry.
+- [x] Selects `docs-architecture` workflow (redesigned 2-step version).
+- [x] Correctly identifies skill sequence from registry: grill-with-docs → handoff.
 - [x] Explicitly defines `guided_execution` mode.
-- [x] Lists mandatory approval gates.
+- [x] Lists 2 mandatory approval gates (review_alignment_report, review_handoff_prompt).
 - [x] Refuses to start execution until "Go" signal.
