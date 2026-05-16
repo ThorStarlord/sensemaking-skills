@@ -320,6 +320,19 @@ mode_coverage:
   gates_note: not_applicable_plan_only
   hardening_triggered: none
   notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-183614-5a3b7e57.'
+- mode: plan_only
+  workflow_id: full-local-sensemaking
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_full-local-sensemaking_plan_only.md
+  steps_completed: 4
+  steps_total: 4
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
+  gates_exercised: false
+  gates_note: not_applicable_plan_only
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-201418-ab96806a.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
@@ -390,7 +403,8 @@ system_tools:
   - experimental-autonomous-sprint (plan_only)
   - docs-architecture (guided_execution)
   - product-to-issues (plan_only)
-  last_session: orchestration-20260516-200234-8c96f013
+  - full-local-sensemaking (plan_only)
+  last_session: orchestration-20260516-201418-ab96806a
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
