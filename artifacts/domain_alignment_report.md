@@ -1,76 +1,135 @@
-# Domain Alignment Report: Post-Run Hardening Assessment
+# Domain Alignment Report: Mode Coverage & Hardening Threshold
 
 ## Source
-- **Session**: yolo/fast-local-diagnostic/2026-05-16
-- **Workflow**: fast-local-diagnostic (2-step variant: repo-sensemaker → handoff)
-- **Mode**: yolo_execution
-- **Artifacts consumed**: repository_sensemaking_brief, prompt_handoff, run_log
+- **Session**: grill-with-docs (autonomous)
+- **Date**: 2026-05-16
+- **Goal**: "Evolve sensemaking-skills into a pressure-tested automation system where each workflow mode is proven by live runs, and validation hardening is added only when real execution exposes a repeatable failure boundary."
+- **Artifacts consumed**: CONTEXT.md, workflow-registry.yaml, skill-registry.yaml, artifact-contracts.yaml, run logs (guided + YOLO), Domain Alignment Report (previous), PRDs, validator ecosystem docs, execution-modes.md
 
-## Goal
-Determine what to harden in the system based on actual pressure from the first automation slice run, per the constraint "only where the run exposed real pressure."
+---
 
-## Methodology: Harden Only Where Pressured
+## 1. Current Coverage: What Is Proven vs. Unproven
 
-The decision tree was:
-1. What friction did the run actually encounter? (from run_log.md validator traces)
-2. Was the friction caused by a system gap or user error? (from validate-brief.py error output)
-3. What did the run validate as working correctly? (from pass/fail evidence)
-4. What did the run NOT exercise? (from gate and contract status)
-5. For each candidate hardening target — was it pressured by the run? If not, skip.
+### Mode Coverage
 
-## Findings
+| Mode | Workflow | Steps | Validators Exercised | Gates Exercised? | Run Log? |
+|------|----------|-------|---------------------|-------------------|----------|
+| `yolo_execution` | fast-local-diagnostic | 2/2 | Level 1 + Level 2 + Level 3 (brief + prompt-handoff) | No (bypassed) | ✅ Feature branch |
+| `guided_execution` | docs-contract-reconciliation | 1/3 (paused at gate) | Level 2 only | No (never approved) | ✅ `runs/` |
+| `plan_only` | — | 0 | None | N/A | ❌ None |
+| `prompt_chain` | — | 0 | None | N/A | ❌ None |
+| `autonomous_execution` | — | 0 | None | No (never attempted) | ❌ None |
 
-### Friction Points (Real Pressure)
+### Validator Invocation in Live Runs
 
-| Friction | Root Cause | System Response | Resolution |
-|----------|-----------|----------------|------------|
-| UNKNOWN_WEAKNESS_TYPE | Author used non-canonical "Validator/Contract Synchronization" | Validator listed valid types in error message | 1 TDD cycle: changed to "Contract Mismatch" |
-| NO_LOGIC_TRACE | Section 9 lacked explicit diagnostic-chain sentence | Validator flagged missing "logic trace" in content | 1 TDD cycle: added sentence to Section 9 |
+| Validator | Fixture Tests | Live (yolo) | Live (guided) | Live (other modes) |
+|-----------|:------------:|:-----------:|:-------------:|:------------------:|
+| `validate-repo.py` (L1) | Excluded | ✅ Pre-flight | ✅ Pre-flight | ❌ |
+| `validate-artifact.py` (L2) | ✅ | ✅ Both steps | ✅ Step 1 | ❌ |
+| `validate-brief.py` (L3) | ✅ | ✅ Step 1 (inc. TDD cycle) | ❌ | ❌ |
+| `validate-plan.py` (L3) | ✅ | ❌ Never invoked | ❌ | ❌ |
+| `validate-prompt-handoff.py` (L3) | ✅ | ✅ Step 2 | ❌ | ❌ |
+| `validate-skill-improvement-plan.py` (L3) | ✅ | ❌ Never invoked | ❌ | ❌ |
+| `validate-usage-research-report.py` (L3) | ✅ | ❌ Never invoked | ❌ | ❌ |
 
-Both were **data-quality issues in the artifact**, not system failures. The validator stack caught them correctly.
+**Finding:** 3 of 5 Level 3 validators have never run in a live execution context. validate-plan.py has 7 negative fixtures but zero live invocations — its failure modes (hallucinated workflow IDs, missing section 11, approval gate mismatches) have never been tested against real artifacts.
 
-### System Validated as Sound
+### Gate Gap
 
-- Three-level hierarchy (Level 1 → 2 → 3) executed in order
-- Level 2 generic validators passed for both artifacts
-- Level 3 specialized validators caught real semantic issues with clear error messages
-- YOLO safety infrastructure: feature branch, pre-flight, post-step verification, run log, clean merge
-- [artifact-contracts.yaml](skills/workflow-orchestrator/references/artifact-contracts.yaml) was already using the correct `generic_validator` + `specialized_validators` pattern — no contract drift existed
+**No approval gate has ever been exercised in any live run, in any mode.** Specifically:
 
-### Boundaries NOT Exercised
+- `yolo_execution` bypasses gates by design — recorded as `"N/A (bypassed by yolo_execution)"`
+- `guided_execution` paused at `review_drift_diagnosis` before the gate was reached — the gate was never approved or denied
+- `plan_only` / `prompt_chain` / `autonomous_execution` have no run logs
 
-| Boundary | Why Not Pressured | Implication |
-|----------|-------------------|-------------|
-| Gate name validation | Gates bypassed (yolo mode) | Not tested — no action |
-| Contract drift | Contracts untouched, already consistent | Brief's theory not validated by run |
-| Multi-step gate enforcement | Only 2 steps, no gates | Not tested — no action |
-| Run-log schema validation | Run log written but not validated against registry | Not tested — no action |
+The entire gate system — approval prompts, `gate_result: approved_by_user` timestamps, gate_name validation against workflow-registry.yaml — is untested in practice.
 
-## Hardening Decision
+---
 
-**No structural hardening is warranted.** The system performed as designed at every friction point:
+## 2. Term Alignment: What Was Sharpened
 
-- The validators caught every issue their contracts specify
-- Error messages were actionable enough for one-cycle fixes
-- The TDD Validator Cycle resolved both failures efficiently
-- No validator script, contract, or reference file needed modification
-- The brief's "Contract Mismatch" theory was not validated by run evidence — the contracts are consistent and working
+### "Harden Only Where Pressured" → now qualified by "Repeatable Failure Boundary"
 
-The run validated the design where it was actually exercised. Adding preemptive hardening for boundaries the run didn't stress would violate the "Harden Only Where Pressured" principle.
+| Before | After | Why |
+|--------|-------|-----|
+| "restrict changes to boundaries the run actually stressed" | "restrict changes to boundaries where live execution exposes a **repeatable failure boundary** (same failure class across independent runs)" | Single-run pressure could be a data-quality fluke. Requiring repeatability prevents over-engineering for one-off issues. Isolated data issues are fixed in the artifact but do not trigger system hardening. |
 
-## CONTEXT.md Updates Applied
+### "Repeatable Failure Boundary" — new term
 
-Two domain terms were added to [CONTEXT.md](CONTEXT.md):
-- **Harden Only Where Pressured**: Principle formalized based on this session's constraint
-- **TDD Validator Cycle**: Pattern validated by the run's fix flow
+Defined as a failure class that recurs across independent live runs, signaling a systemic gap rather than an isolated data-quality issue. Distinguishes between:
+- **Single occurrence** → artifact-level fix (correct the data, update CONTEXT.md)
+- **Repeatable pattern** → systemic hardening (tooling, validators, contracts)
 
-## Next Recommendation
+---
 
-Run the next automation slice through a workflow that actually exercises gates (e.g., `docs-contract-reconciliation` in `guided_execution`) before deciding whether gate-related hardening is needed. The current system's validator stack is proven effective for YOLO-mode local diagnostic runs.
+## 3. Gaps Between Goal and Current System
 
-## Status
+### Gap 1: 3 of 5 modes have zero run evidence
 
-- **Domain alignment**: Confirmed — the domain model accurately describes the system's behavior
-- **Hardening required**: None
-- **CONTEXT.md**: Updated with validated terms
-- **ADRs**: None warranted (findings are trivial to reverse, not surprising, not a trade-off)
+The goal requires "each workflow mode is proven by live runs." Current reality: 1 mode fully proven (yolo), 1 partially proven (guided, 33%), 3 unproven (0%).
+
+**Obstacle to closing:** `plan_only` and `prompt_chain` are trivial to prove (no mutation, low risk). `autonomous_execution` requires opt-in and gate infrastructure that has never been exercised. The `skill-maintenance-loop` workflow only supports `guided_execution` — it cannot be used to prove any other mode.
+
+### Gap 2: validate-plan.py has never run in a live execution
+
+This validator enforces Section 11 (machine-readable plan), approval gate matching, disallowed modes, and subset-run semantics. But no orchestration plan has ever been produced in a live run:
+- YOLO skips the plan artifact (executes directly per SKILL.md)
+- Guided execution never completed Step 1, so no plan was produced
+
+### Gap 3: Approval gates exist only in theory
+
+The run-log template, SKILL.md, and workflow registry all define gates. But no run log documents:
+- A gate approval event (`gate_result: approved_by_user`)
+- A gate denial event
+- A `gate_behavior: bypassed_by_yolo` field (the YOLO log uses `"N/A (bypassed by yolo_execution)"` instead)
+
+### Gap 4: The "repeatable" threshold changes the hardening calculus
+
+Under the single-run threshold, the first YOLO run's UNKNOWN_WEAKNESS_TYPE and NO_LOGIC_TRACE could theoretically trigger hardening (adding a weakness-type autocomplete, or a logic-trace template enforcement). Under the repeatable threshold, both are correctly classified as isolated data issues requiring artifact-level correction only. But this also means: if UNKNOWN_WEAKNESS_TYPE occurs again in the next run, it triggers systemic hardening — and we won't know until we run again.
+
+---
+
+## 4. Mode Proving Order (Recommended)
+
+| Order | Mode | Workflow | Why This One | Risk |
+|:-----:|------|----------|-------------|:----:|
+| 1 | `plan_only` | fast-local-diagnostic | Already have the brief; plan_only produces Section 11 plan; exercises validate-plan.py live | None (no mutation) |
+| 2 | `prompt_chain` | fast-local-diagnostic | Produces copy-paste prompts for handoff; exercises validate-prompt-handoff.py on chain output | None (no mutation) |
+| 3 | `guided_execution` (full) | docs-contract-reconciliation | Already started (Step 1 done). Completing proves gates work end-to-end with human approval | Low (human gates) |
+| 4 | `autonomous_execution` | fast-local-diagnostic | 2 steps, all-local, exercises gates with automated approval | Medium (requires opt-in) |
+| 5 | `yolo_execution` (2nd workflow) | full-local-sensemaking | 4 steps (problem-framer → unknowns-mapper → repo-sensemaker → handoff). Exercises every core sensemaking skill | High (YOLO mutation) |
+
+**Rationale:** Risk gradient from "no mutation" to "full mutation" ensures the validator ecosystem is proven at every level before the risk increases. Each mode proves a different safety mechanism: `plan_only` validates Section 11 production, `prompt_chain` validates prompt quality, `guided_execution` validates gate protocol, `autonomous_execution` validates opt-in gates, `yolo_execution` validates zero-tolerance post-step verification.
+
+---
+
+## 5. Hardening Decision
+
+**No structural hardening is warranted at this point.**
+
+The first YOLO run's failures (UNKNOWN_WEAKNESS_TYPE, NO_LOGIC_TRACE) were single-occurrence data issues — artifact-level corrections applied in the same run via the TDD Validator Cycle. Under the sharpened "repeatable failure boundary" principle, these do not trigger systemic hardening.
+
+The current hardening candidates (in order of expected need):
+
+| Candidate | Trigger Condition | Current Status |
+|-----------|-----------------|----------------|
+| Weakness-type autocomplete | UNKNOWN_WEAKNESS_TYPE in 2+ independent runs | Not triggered (1 occurrence) |
+| Logic-trace template enforcement | NO_LOGIC_TRACE in 2+ independent runs | Not triggered (1 occurrence) |
+| Gate-name validation against registry | Gate mismatch in any run | Not triggered (gates never exercised) |
+| validate-plan.py live integration | Plan artifact produced and fails | Not triggered (no plan produced yet) |
+
+---
+
+## 6. CONTEXT.md Updates Applied
+
+- Updated **Harden Only Where Pressured** — added "repeatable failure boundary" qualifier
+- Added **Repeatable Failure Boundary** — new term distinguishing systemic vs. isolated failures
+
+---
+
+## 7. Status
+
+- **Domain alignment**: Confirmed with sharpened terms. The existing system (modes, validators, gates, registries) accurately describes the intended behavior. The gap is in execution coverage, not design.
+- **Hardening required**: None currently. First candidate would be RE-04 (weakness-type or logic-trace recurrence across runs).
+- **CONTEXT.md**: Updated with validated and sharpened terms.
+- **ADRs**: None warranted (term clarifications, no hard-to-reverse trade-offs).
