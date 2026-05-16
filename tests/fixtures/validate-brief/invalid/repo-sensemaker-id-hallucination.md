@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Hallucination detected!"
+expected_error_contains: "HALLUCINATED_WORKFLOW_ID"
 ---
 # Example: Repo-Sensemaker ID Hallucination (Negative Fixture)
 
@@ -22,7 +22,7 @@ Standard repo structure.
 - None.
 
 ## 6. Weakest boundary
-Workflow ID selection.
+Zero Validation: Workflow ID selection has no automated check against the registry.
 
 ## 7. Evidence
 The skill currently recommends `wave-1-execution` which does not exist in `workflow-registry.yaml`.
@@ -37,7 +37,7 @@ evidence_excerpts:
 ```
 
 ## 9. Why this boundary matters
-Prevents orchestrator failure.
+Logic trace: a hallucinated workflow ID causes orchestrator failure downstream, making this a high-impact boundary to enforce.
 
 ## 10. Candidate next steps
 - Fix grounding.

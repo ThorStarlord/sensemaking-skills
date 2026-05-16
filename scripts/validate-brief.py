@@ -4,103 +4,220 @@ import yaml
 import re
 import argparse
 
-def validate_brief(artifact_path, repo_root="."):
-    errors = []
-    
+# Stable error codes
+BRIEF_FILE_NOT_FOUND = "BRIEF_FILE_NOT_FOUND"
+MISSING_EVIDENCE_EXCERPTS = "MISSING_EVIDENCE_EXCERPTS"
+EVIDENCE_EXCERPT_FIELD = "EVIDENCE_EXCERPT_FIELD"
+HALLUCINATED_FILE = "HALLUCINATED_FILE"
+INVALID_LINE_FORMAT = "INVALID_LINE_FORMAT"
+PARSING_ERROR = "PARSING_ERROR"
+MISSING_WORKFLOW_ID = "MISSING_WORKFLOW_ID"
+HALLUCINATED_WORKFLOW_ID = "HALLUCINATED_WORKFLOW_ID"
+MISSING_HANDOFF_BLOCK = "MISSING_HANDOFF_BLOCK"
+REGISTRY_NOT_FOUND = "REGISTRY_NOT_FOUND"
+NO_LOGIC_TRACE = "NO_LOGIC_TRACE"
+NO_EVIDENCE_FILE_CITATIONS = "NO_EVIDENCE_FILE_CITATIONS"
+UNKNOWN_WEAKNESS_TYPE = "UNKNOWN_WEAKNESS_TYPE"
+
+FILE_CITATION_RE = re.compile(
+    r"`?[\w./\\-]+\.(?:md|py|yaml|yml|toml|txt)(?::\d+)?`?",
+    re.IGNORECASE,
+)
+
+HEADING_RE = re.compile(r"^##\s+(?:\d+\.\s*)?(?P<name>.+?)\s*$", re.MULTILINE)
+
+
+def _load_weakness_types(repo_root: str) -> list[str]:
+    types_path = os.path.join(
+        repo_root, "skills", "repo-sensemaker", "references", "weakness-types.md"
+    )
+    if not os.path.exists(types_path):
+        return []
+    with open(types_path, encoding="utf-8") as f:
+        return re.findall(r"\*\*(.+?)\*\*", f.read())
+
+
+def _extract_sections(text: str) -> dict[str, str]:
+    sections = {}
+    matches = list(HEADING_RE.finditer(text))
+    for idx, match in enumerate(matches):
+        start = match.end()
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
+        sections[match.group("name").strip().lower()] = text[start:end].strip()
+    return sections
+
+
+def _err(code: str, message: str) -> str:
+    return f"{code}: {message}"
+
+
+def validate_brief(artifact_path: str, repo_root: str = ".") -> list[str]:
+    errors: list[str] = []
+
     if not os.path.exists(artifact_path):
-        errors.append(f"Brief file not found: {artifact_path}")
+        errors.append(_err(BRIEF_FILE_NOT_FOUND, f"Brief file not found: {artifact_path}"))
         return errors
-        
-    with open(artifact_path, 'r', encoding='utf-8') as f:
+
+    with open(artifact_path, encoding="utf-8") as f:
         content = f.read()
-        
-    # 1. Extract evidence_excerpts YAML block
-    evidence_match = re.search(r'```yaml\s+(evidence_excerpts:.*?)\s+```', content, re.DOTALL | re.IGNORECASE)
+
+    sections = _extract_sections(content)
+    weakness_types = _load_weakness_types(repo_root)
+
+    # --- Novel checks from auteur validator ---
+
+    # 1. Logic trace reasoning marker
+    if "logic trace" not in content.lower():
+        errors.append(
+            _err(NO_LOGIC_TRACE, "Brief does not include a logic trace showing diagnostic reasoning.")
+        )
+
+    # 2. File-level citations in the Evidence section
+    evidence_section = sections.get("evidence", "")
+    if evidence_section and not FILE_CITATION_RE.search(evidence_section):
+        errors.append(
+            _err(
+                NO_EVIDENCE_FILE_CITATIONS,
+                "Evidence section has no file-level citations (e.g., path/to/file.py:42).",
+            )
+        )
+
+    # 3. Recognized weakness type in the Weakest boundary section
+    weakest_boundary = sections.get("weakest boundary", "")
+    if weakest_boundary and weakness_types:
+        if not any(kind.lower() in weakest_boundary.lower() for kind in weakness_types):
+            types_list = ", ".join(weakness_types)
+            errors.append(
+                _err(
+                    UNKNOWN_WEAKNESS_TYPE,
+                    f"Weakest boundary does not include a recognized weakness type. "
+                    f"Known types: {types_list}",
+                )
+            )
+
+    # --- Existing evidence_excerpts validation (now with error codes) ---
+    evidence_match = re.search(
+        r"```yaml\s+(evidence_excerpts:.*?)\s+```", content, re.DOTALL | re.IGNORECASE
+    )
     if not evidence_match:
-        # Fallback to searching for the list directly if header is different
-        evidence_match = re.search(r'```yaml\s+(- file:.*?)\s+```', content, re.DOTALL)
-        
+        evidence_match = re.search(r"```yaml\s+(- file:.*?)\s+```", content, re.DOTALL)
+
     if not evidence_match:
-        errors.append("Missing or malformed YAML block for evidence_excerpts. Required for YOLO safety.")
+        errors.append(
+            _err(MISSING_EVIDENCE_EXCERPTS, "Missing or malformed YAML block for evidence_excerpts.")
+        )
     else:
         try:
             data = yaml.safe_load(evidence_match.group(1))
-            # Handle both { evidence_excerpts: [] } and a direct list []
             if isinstance(data, dict):
-                excerpts = data.get('evidence_excerpts', [])
+                excerpts = data.get("evidence_excerpts", [])
             elif isinstance(data, list):
                 excerpts = data
             else:
-                errors.append("evidence_excerpts block must be a list or a dict containing 'evidence_excerpts'")
+                errors.append(
+                    _err(
+                        PARSING_ERROR,
+                        "evidence_excerpts block must be a list or dict containing 'evidence_excerpts'.",
+                    )
+                )
                 excerpts = []
-                
-            if not excerpts and "evidence_match" in locals(): # Only error if we found a block but it was empty
-                 errors.append("Evidence excerpts list is empty. YOLO mode requires at least one piece of evidence.")
-                
+
+            if not excerpts:
+                errors.append(_err(EVIDENCE_EXCERPT_FIELD, "Evidence excerpts list is empty."))
+
             for i, exc in enumerate(excerpts):
-                # Check fields
-                for field in ['file', 'lines', 'quote', 'supports_claim']:
+                for field in ["file", "lines", "quote", "supports_claim"]:
                     if field not in exc:
-                        errors.append(f"Excerpt[{i}] missing required field: {field}")
-                
-                # Check file existence (Relative to repo_root)
-                file_path = exc.get('file')
+                        errors.append(
+                            _err(EVIDENCE_EXCERPT_FIELD, f"Excerpt[{i}] missing required field: {field}")
+                        )
+
+                file_path = exc.get("file")
                 if file_path:
-                    if file_path.startswith('file:///'):
-                        errors.append(f"Excerpt[{i}] uses absolute file:/// path: {file_path}")
+                    if file_path.startswith("file:///"):
+                        errors.append(
+                            _err(HALLUCINATED_FILE, f"Excerpt[{i}] uses absolute file:/// path: {file_path}")
+                        )
                     else:
                         full_path = os.path.join(repo_root, file_path)
                         if not os.path.exists(full_path):
-                            errors.append(f"Excerpt[{i}] references non-existent file: {file_path} (Hallucination detected!)")
-                
-                # Check lines format
-                lines = exc.get('lines')
-                if lines and not re.match(r'^L\d+(?:-L\d+)?$', str(lines)):
-                    errors.append(f"Excerpt[{i}] has invalid lines format: {lines} (Expected Lx or Lx-Ly)")
+                            errors.append(
+                                _err(
+                                    HALLUCINATED_FILE,
+                                    f"Excerpt[{i}] references non-existent file: {file_path}",
+                                )
+                            )
 
+                lines = exc.get("lines")
+                if lines and not re.match(r"^L\d+(?:-L\d+)?$", str(lines)):
+                    errors.append(
+                        _err(
+                            INVALID_LINE_FORMAT,
+                            f"Excerpt[{i}] has invalid lines format: {lines} (Expected Lx or Lx-Ly)",
+                        )
+                    )
         except Exception as e:
-            errors.append(f"Failed to parse evidence YAML: {e}")
+            errors.append(_err(PARSING_ERROR, f"Failed to parse evidence YAML: {e}"))
 
-    # 2. Validate recommended_workflow_id against registry
-    handoff_match = re.search(r'## 13\. Machine-readable handoff\s+```yaml\s+(.*?)\s+```', content, re.DOTALL | re.IGNORECASE)
+    # --- Existing handoff / workflow ID validation (now with error codes) ---
+    handoff_match = re.search(
+        r"## 13\. Machine-readable handoff\s+```yaml\s+(.*?)\s+```",
+        content,
+        re.DOTALL | re.IGNORECASE,
+    )
     if handoff_match:
         try:
             handoff_data = yaml.safe_load(handoff_match.group(1))
-            workflow_id = handoff_data.get('recommended_workflow_id')
-            
+            workflow_id = handoff_data.get("recommended_workflow_id")
+
             if workflow_id:
-                registry_path = os.path.join(repo_root, "skills/workflow-orchestrator/references/workflow-registry.yaml")
+                registry_path = os.path.join(
+                    repo_root, "skills/workflow-orchestrator/references/workflow-registry.yaml"
+                )
                 if not os.path.exists(registry_path):
-                    errors.append(f"Workflow registry not found at {registry_path}. Cannot validate workflow ID.")
+                    errors.append(
+                        _err(REGISTRY_NOT_FOUND, f"Workflow registry not found at {registry_path}.")
+                    )
                 else:
-                    with open(registry_path, 'r', encoding='utf-8') as rf:
+                    with open(registry_path, encoding="utf-8") as rf:
                         registry = yaml.safe_load(rf)
-                        valid_ids = {w['id'] for w in registry.get('workflows', [])}
-                        if workflow_id not in valid_ids:
-                            errors.append(f"Recommended workflow ID '{workflow_id}' not found in registry (Hallucination detected!)")
+                    valid_ids = {w["id"] for w in registry.get("workflows", [])}
+                    if workflow_id not in valid_ids:
+                        errors.append(
+                            _err(
+                                HALLUCINATED_WORKFLOW_ID,
+                                f"Recommended workflow ID '{workflow_id}' not found in registry.",
+                            )
+                        )
             else:
-                errors.append("Machine-readable handoff missing 'recommended_workflow_id'")
+                errors.append(
+                    _err(MISSING_WORKFLOW_ID, "Handoff missing 'recommended_workflow_id'.")
+                )
         except Exception as e:
-            errors.append(f"Failed to parse handoff YAML: {e}")
+            errors.append(_err(PARSING_ERROR, f"Failed to parse handoff YAML: {e}"))
     else:
-        errors.append("Missing '13. Machine-readable handoff' YAML block")
+        errors.append(
+            _err(MISSING_HANDOFF_BLOCK, "Missing 'Machine-readable handoff' YAML block.")
+        )
 
     return errors
 
-if __name__ == "__main__":
+
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Specialized validator for repository sensemaking brief.")
     parser.add_argument("artifact_path", help="Path to the brief .md file")
     parser.add_argument("--repo-root", default=".", help="Root of the repository for file checks")
-    
-    args = parser.parse_args()
-    
+    args = parser.parse_args(argv)
+
     errs = validate_brief(args.artifact_path, args.repo_root)
     if errs:
-        print(f"Brief verification failed:")
         for e in errs:
-            print(f" - {e}")
-        sys.exit(1)
+            print(f"ERROR {e}")
+        return 1
     else:
         print("Brief verification passed! Evidence and workflow ID are valid.")
-        sys.exit(0)
+        return 0
 
+
+if __name__ == "__main__":
+    sys.exit(main())

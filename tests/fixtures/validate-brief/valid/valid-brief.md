@@ -23,7 +23,7 @@ The five-skill pipeline provides a high-leverage diagnostic frame. The separatio
 Consolidate shared references (like `skill-registry.yaml`) into a root `references/` directory to avoid duplication.
 
 ## 6. Weakest boundary
-The linkage between `repo-sensemaker` output and `workflow-orchestrator` input. It is currently manual and "vibe-based" rather than contract-enforced.
+Contract Mismatch: The linkage between `repo-sensemaker` output and `workflow-orchestrator` input. It is currently manual and "vibe-based" rather than contract-enforced.
 
 ## 7. Evidence
 - [SKILL.md](../../skills/repo-sensemaker/SKILL.md): Mentions the handoff but lacks a hard schema check.
@@ -39,7 +39,7 @@ evidence_excerpts:
 ```
 
 ## 9. Why this boundary matters
-If the brief doesn't explicitly name a workflow ID, the orchestrator might guess the wrong path, leading to unsafe or irrelevant execution.
+If the brief doesn't explicitly name a workflow ID, the orchestrator might guess the wrong path, leading to unsafe or irrelevant execution. Logic trace: the template defines the handoff shape but no automated check exists to enforce workflow ID accuracy.
 
 ## 10. Candidate next steps
 1. Create a `shared-vocabulary.md` reference.
