@@ -51,8 +51,17 @@ This repository is built on **Artifact-Driven Agentic Engineering**. We treat ar
 - **Product Manager Skills**: Discovery, PRDs, and Strategy.
 
 ## Automation & Validation (scripts/)
-The repository uses a Python-based validation stack to enforce artifact integrity and safety:
-- **`validate-artifact.py`**: Enforces structural contracts for Sensemaking Briefs and Orchestration Plans.
-- **`validate-repo.py`**: Performs global consistency checks across registries and examples.
-- **`validate-skill-improvement-plan.py`**: Hardened gate for the maintenance loop; enforces formal failure mode classification and prevents logic overfitting.
-- **`validate-usage-research-report.py`**: Ensures research evidence is grounded and machine-readable.
+The repository uses a Python-based three-level validator hierarchy to enforce artifact integrity and safety:
+
+- **Level 1 — Structural** (`validate-repo.py`): Repository-wide consistency checks across registries and examples. Runs pre-flight before any workflow that mutates the repo.
+- **Level 2 — Generic** (`validate-artifact.py`): Universal contract checks (sections, machine fields, no absolute paths). Runs after every artifact-producing step.
+- **Level 3 — Specialized** (one per artifact type): Semantic checks requiring registry cross-references. Currently:
+  - `validate-brief.py` — enforces evidence grounding, weakness-type recognition, workflow-ID validation
+  - `validate-plan.py` — verifies workflow steps, execution modes, approval gates, stop conditions
+  - `validate-skill-improvement-plan.py` — enforces formal failure mode classification and anti-overfitting
+  - `validate-usage-research-report.py` — checks semantic scores, role boundaries, evidence grounding
+  - `validate-prompt-handoff.py` — checks target skill exists in registry, artifact refs are real, stop conditions have content
+- **`validate-output.py`**: Dispatcher that delegates to per-artifact validators via `artifact-contracts.yaml`.
+- **`_validator_utils.py`**: Shared utility module for registry loading, path resolution, and error formatting.
+
+In YOLO and autonomous execution modes, validators function as **zero-tolerance safety gates**: any failure triggers an immediate hard stop and rollback recommendation. See [validator-stack-policy.md](skills/workflow-orchestrator/references/validator-stack-policy.md) for execution order.
