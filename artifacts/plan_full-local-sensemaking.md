@@ -1,9 +1,9 @@
 # Orchestration Plan: Full Local Sensemaking
 
-- **Session ID**: orchestration-20260516-201418-ab96806a
+- **Session ID**: orchestration-20260516-203735-cf32c251
 - **Date**: 2026-05-16
 - **Workflow**: full-local-sensemaking
-- **Execution Mode**: plan_only
+- **Execution Mode**: yolo_execution
 - **Purpose**: Convert raw fog into a repository diagnosis and downstream handoff using only local executable skills.
 
 ## Skills in Sequence
@@ -35,10 +35,13 @@
 
 ## Approval Gates
 
-- **Mode**: plan_only
-- **Gate Behavior**: none
+- **Mode**: yolo_execution
+- **Gate Behavior**: bypassed
 
-No gates required for this mode.
+- review_problem_frame: BYPASSED
+- review_unknowns_map: BYPASSED
+- review_sensemaking_brief: BYPASSED
+- review_final_prompt: BYPASSED
 
 ## Stop Conditions
 
@@ -52,9 +55,9 @@ No gates required for this mode.
 ```yaml
 artifact_id: workflow_orchestration_plan
 chosen_workflow_id: full-local-sensemaking
-execution_mode: plan_only
+execution_mode: yolo_execution
 status: created
-session_id: orchestration-20260516-201418-ab96806a
+session_id: orchestration-20260516-203735-cf32c251
 initial_inputs:
   raw_fog: external_context
   repository_state: external_context
@@ -80,7 +83,7 @@ steps:
     gate: review_final_prompt
     output_artifact: prompt_handoff
 approval_gates:
-  behavior: none
+  behavior: bypassed
 stop_conditions:
   - validator_failure
   - gate_denial

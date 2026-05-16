@@ -319,6 +319,19 @@ mode_coverage:
   gates_note: not_applicable_plan_only
   hardening_triggered: none
   notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-201418-ab96806a.'
+- mode: yolo_execution
+  workflow_id: full-local-sensemaking
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_full-local-sensemaking_yolo_execution.md
+  steps_completed: 0
+  steps_total: 4
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
+  gates_exercised: false
+  gates_note: bypassed_by_yolo
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-203735-cf32c251.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
@@ -393,7 +406,8 @@ system_tools:
   - fast-local-diagnostic (autonomous_execution)
   - fast-local-diagnostic (prompt_chain)
   - docs-contract-reconciliation (guided_execution)
-  last_session: orchestration-20260516-203722-ce36e082
+  - full-local-sensemaking (yolo_execution)
+  last_session: orchestration-20260516-203735-cf32c251
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
