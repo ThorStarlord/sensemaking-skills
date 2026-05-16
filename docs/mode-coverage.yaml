@@ -38,19 +38,17 @@ mode_coverage:
     (step 2) and validate-artifact.py + validate-prompt-handoff.py (step 3).
 - mode: plan_only
   workflow_id: fast-local-diagnostic
-  last_run: 2026-05-16
+  last_run: '2026-05-16'
   run_log_path: artifacts/run_log_fast-local-diagnostic_plan_only.md
   steps_completed: 2
   steps_total: 2
   validators_exercised:
-    - level_1: validate-repo.py
-    - level_2: validate-artifact.py
-    - level_3: validate-brief.py
-    - level_3: validate-prompt-handoff.py
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
   gates_exercised: false
   gates_note: not_applicable_plan_only
   hardening_triggered: none
-  notes: "Executed via production orchestration runner v2. Proves the orchestration runner executes correctly."
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-164219-e5c8b2da.'
 - mode: prompt_chain
   workflow_id: fast-local-diagnostic
   last_run: 2026-05-16
@@ -207,11 +205,12 @@ system_tools:
     of TEST_REPEATABLE_ERROR across independent runs.
   repeatable_boundaries_detected: 0
 - tool: validate-output.py
-  status: proven_as_normal_path
+  status: proven_as_canonical_dispatcher
   last_verified: 2026-05-16
-  notes: Dispatcher that reads artifact-contracts.yaml and runs generic + specialized
-    validators. Proven as the normal validator invocation path. 10 artifact types
-    validated through dispatcher.
+  notes: Canonical validator dispatcher. Reads artifact-contracts.yaml and runs generic
+    + specialized validators. orchestration-runner.py now delegates all validation
+    to this dispatcher, making it the single canonical validator invocation path.
+    10+ artifact types validated through dispatcher.
   artifacts_validated:
   - repository_sensemaking_brief
   - prompt_handoff
@@ -230,19 +229,28 @@ system_tools:
   status: proven
   last_run: '2026-05-16'
   notes: Production-grade orchestration runner. Reads workflow-registry.yaml, manages
-    pre-flight, plan generation, step execution, validator dispatch, gate management,
-    run log recording, and mode coverage updates.
+    pre-flight, plan generation, step execution, validator dispatch (via validate-output.py
+    canonical dispatcher), gate management (including --gate-decision non-interactive
+    flag), run log recording, mode coverage updates, and --resume capability for continuing
+    paused executions after gate denial.
   workflows_executed:
   - fast-local-diagnostic (plan_only)
-  last_session: orchestration-20260516-161913-6ae5a424
+  last_session: orchestration-20260516-164219-e5c8b2da
+  resume_capability: true
+  supported_flags:
+  - '--resume: continue a paused execution from the last gate denial'
+  - '--gate-decision auto-approve: non-interactive gate approval for testing'
+  - '--gate-decision auto-deny: non-interactive gate denial for testing'
 - tool: test-controlled-failures.py
   status: proven
   last_run: 2026-05-16
-  notes: 'Controlled failure test suite. 6 tests cover: bad artifact rejection, malformed
+  notes: 'Controlled failure test suite. 7 tests cover: bad artifact rejection, malformed
     log detection, stale coverage detection, repeatable failure boundary detection,
-    gate denial handling, and validator failure halt. All 6 tests pass.'
-  tests_passed: 6
-  tests_total: 6
+    gate denial handling (via --gate-decision auto-deny), validator failure halt,
+    and resume after gate denial (--resume + --gate-decision auto-approve). All 7
+    tests pass.'
+  tests_passed: 7
+  tests_total: 7
 validator_live_coverage:
   validate_repo_py:
     fixture_tested: excluded
@@ -328,10 +336,15 @@ orchestration_runner:
   - skill-maintenance-loop
   - validator-live-coverage
   total_workflow_families: 6
+  capabilities:
+  - 'Canonical validator dispatch: orchestration-runner.py delegates to validate-output.py'
+  - 'Non-interactive gate decisions: --gate-decision auto-approve / auto-deny'
+  - 'Resume capability: --resume continues paused execution after gate denial'
+  - 'Controlled failure integration tests: 7 tests covering all negative paths'
 controlled_failure_tests:
   last_run: 2026-05-16
-  tests_passed: 6
-  tests_total: 6
+  tests_passed: 7
+  tests_total: 7
   coverage:
   - 'Test 1: validator-stop-on-bad-artifact -> validate-output.py correctly rejects
     bad artifacts'
@@ -340,12 +353,19 @@ controlled_failure_tests:
     entries'
   - 'Test 4: repeatable-failure-detection -> analyze-run-failures.py detects repeatable
     boundaries'
-  - 'Test 5: gate-denial-stops-execution -> orchestration runner architecture handles
-    denial'
+  - 'Test 5: gate-denial-stops-execution -> orchestration runner denies gate via --gate-decision
+    auto-deny (non-interactive), exits 3, no later steps'
   - 'Test 6: validator-failure-halts-chain -> validator stack stops at first failure'
+  - 'Test 7: resume-after-gate-denial -> two-phase test: Phase 1 denies gate, Phase
+    2 resumes and completes all steps'
   negative_paths_proven:
-  - denied gate handling
+  - denied gate handling (interactive + non-interactive --gate-decision)
+  - resume after gate denial (--resume + --gate-decision auto-approve)
   - validator failure halt
   - malformed artifact rejection
   - stale coverage detection
   - repeatable failure boundary detection
+  non_interactive_flags_proven:
+  - '--gate-decision auto-deny: non-interactive gate denial for testing'
+  - '--gate-decision auto-approve: non-interactive gate approval for testing'
+  - '--resume: continue execution from a paused gate state'

@@ -178,6 +178,7 @@ class OrchestrationRunner:
         plan_out: str | None = None,
         log_dir: str | None = None,
         resume: bool = False,
+        gate_decision: str | None = None,
     ):
         self.workflow_id = workflow_id
         self.mode = mode
@@ -191,6 +192,8 @@ class OrchestrationRunner:
         self.errors: list[str] = []
         self.step_results: list[dict] = []
         self.gate_decisions: list[dict] = []
+        self.resume = resume
+        self.gate_decision = gate_decision
 
         # Load registries
         self._load_registries()
@@ -421,7 +424,7 @@ class OrchestrationRunner:
             artifact_path = contract_path
             # Store repo-relative path in the run log for portability
             rel = os.path.relpath(artifact_path, self.repo_root)
-            result["artifact_path"] = rel
+            result["artifact_path"] = rel.replace("\\", "/")
 
         # -- Run validators if artifact exists --------------------------
         if artifact_path and os.path.exists(artifact_path):
@@ -499,45 +502,41 @@ class OrchestrationRunner:
         return os.path.join(self.repo_root, rel)
 
     def _run_validator_stack(self, artifact_id: str, artifact_path: str) -> list[dict]:
-        """Run the full validator stack for an artifact. Returns list of validator results."""
+        """Run the full validator stack via validate-output.py (canonical dispatcher).
+
+        Delegates to validate-output.py which reads artifact-contracts.yaml and runs
+        the full generic + specialized validator chain. This makes validate-output.py
+        the single canonical validator dispatch path.
+        """
         stack = []
-        generic_cmd, specialized_cmds = _resolve_artifact_verification(artifact_id, self.contracts)
 
-        # Generic validator
-        if generic_cmd:
-            parts = generic_cmd.split()
-            print(f"  -> Running generic validator: {os.path.basename(parts[-2] if len(parts) > 1 else parts[0])}")
-            code, output, elapsed = _run_validator(parts, artifact_path, self.repo_root)
-            passed = code == 0
-            stack.append({
-                "level": "Generic",
-                "command": generic_cmd,
-                "result": "PASSED" if passed else "FAILED",
-                "output": output[:200] if not passed else "",
-                "elapsed_s": round(elapsed, 2),
-            })
-            if not passed:
-                print(f"    [FAIL] FAILED ({elapsed:.1f}s): {output[:150]}")
-                return stack
-            print(f"    [OK] PASSED ({elapsed:.1f}s)")
+        validator_script = os.path.join(self.repo_root, "scripts", "validate-output.py")
+        if not os.path.exists(validator_script):
+            print(f"  ~ validate-output.py not found, skipping validator dispatch")
+            return stack
 
-        # Specialized validators
-        for spec_cmd in specialized_cmds:
-            parts = spec_cmd.split()
-            print(f"  -> Running specialized: {os.path.basename(parts[-2] if len(parts) > 1 else parts[0])}")
-            code, output, elapsed = _run_validator(parts, artifact_path, self.repo_root)
-            passed = code == 0
-            stack.append({
-                "level": "Specialized",
-                "command": spec_cmd,
-                "result": "PASSED" if passed else "FAILED",
-                "output": output[:200] if not passed else "",
-                "elapsed_s": round(elapsed, 2),
-            })
-            if not passed:
-                print(f"    [FAIL] FAILED ({elapsed:.1f}s): {output[:150]}")
-                return stack
-            print(f"    [OK] PASSED ({elapsed:.1f}s)")
+        cmd = [sys.executable, validator_script, artifact_id, artifact_path,
+               "--repo-root", self.repo_root]
+
+        print(f"  -> Running dispatcher: validate-output.py {artifact_id}")
+        start = datetime.now()
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        elapsed = (datetime.now() - start).total_seconds()
+        output = (result.stdout + result.stderr).strip()
+
+        passed = result.returncode == 0
+        stack.append({
+            "level": "Dispatcher",
+            "command": f"validate-output.py {artifact_id}",
+            "result": "PASSED" if passed else "FAILED",
+            "output": output[:300] if not passed else "",
+            "elapsed_s": round(elapsed, 2),
+        })
+
+        if not passed:
+            print(f"    [FAIL] Dispatcher failed ({elapsed:.1f}s): {output[:150]}")
+        else:
+            print(f"    [OK] Dispatcher passed ({elapsed:.1f}s)")
 
         return stack
 
@@ -583,6 +582,34 @@ class OrchestrationRunner:
             })
             print(f"  ~ Gate '{gate_name}' AUTOMATED_APPROVAL (autonomous mode)")
             return "automated_approval"
+
+        # Check for auto gate decision (non-interactive testing mode)
+        if self.gate_decision:
+            if self.gate_decision == "auto-approve":
+                self.gate_decisions.append({
+                    "step": step_num,
+                    "gate": gate_name,
+                    "result": "approved_by_user",
+                    "timestamp": timestamp,
+                    "approved_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "approved_by": "auto_gate",
+                    "mode": self.mode,
+                })
+                print(f"  ~ Gate '{gate_name}' AUTO_APPROVED (--gate-decision={self.gate_decision})")
+                return "approved_by_user"
+
+            elif self.gate_decision == "auto-deny":
+                self.gate_decisions.append({
+                    "step": step_num,
+                    "gate": gate_name,
+                    "result": "denied_by_user",
+                    "timestamp": timestamp,
+                    "approved_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "reason": "auto_denied_by_flag",
+                    "mode": self.mode,
+                })
+                print(f"  [FAIL] Gate '{gate_name}' AUTO_DENIED (--gate-decision={self.gate_decision})")
+                return "denied_by_user"
 
         if behavior == "mandatory":
             # guided: requires manual approval
@@ -636,6 +663,45 @@ class OrchestrationRunner:
                 return "denied_by_user"
 
         return "unknown"
+
+    def _find_resume_state(self) -> dict | None:
+        """Parse existing run log to find resume state.
+
+        Returns dict with completed_steps and paused_step, or None if no resume needed.
+        """
+        run_log_path = os.path.join(self.log_dir, f"run_log_{self.workflow_id}_{self.mode}.md")
+        if not os.path.exists(run_log_path):
+            print(f"  ~ No existing run log found at {run_log_path}, starting fresh")
+            return None
+
+        with open(run_log_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        completed_steps: list[int] = []
+        paused_step: int | None = None
+
+        # Extract step statuses from the run log
+        step_blocks = re.findall(
+            r"### Step (\d+).*?\*\*status\*\*:\s*(\S+)",
+            content, re.DOTALL
+        )
+        for step_id_str, status in step_blocks:
+            step_id = int(step_id_str)
+            if status == "COMPLETED":
+                completed_steps.append(step_id)
+            elif status == "PAUSED":
+                paused_step = step_id
+
+        if not paused_step and not completed_steps:
+            print(f"  ~ No paused or completed steps found, starting fresh")
+            return None
+
+        print(f"  [OK] Found resume state: {len(completed_steps)} completed, paused at step {paused_step}")
+        return {
+            "completed_steps": sorted(set(completed_steps)),
+            "paused_step": paused_step,
+            "previous_log_path": run_log_path,
+        }
 
     def write_run_log(self) -> str:
         """Write the run log document. Returns the file path."""
@@ -813,7 +879,7 @@ class OrchestrationRunner:
             "mode": self.mode,
             "workflow_id": self.workflow_id,
             "last_run": datetime.now().strftime("%Y-%m-%d"),
-            "run_log_path": os.path.relpath(run_log_path, self.repo_root),
+            "run_log_path": os.path.relpath(run_log_path, self.repo_root).replace("\\", "/"),
             "steps_completed": len([s for s in self.step_results if s["status"] == "COMPLETED"]),
             "steps_total": num_steps,
             "validators_exercised": validators_exercised,
@@ -897,7 +963,38 @@ class OrchestrationRunner:
         print(f"{'='*60}")
 
         steps = self.workflow.get("steps", [])
+
+        # Check for resume state
+        resume_state = None
+        resume_skip = set()
+        if self.resume:
+            resume_state = self._find_resume_state()
+            if resume_state:
+                resume_skip = set(resume_state.get("completed_steps", []))
+                paused = resume_state.get("paused_step")
+                if paused:
+                    resume_skip.add(paused)
+                print(f"  [OK] Resuming: skipping steps {sorted(resume_skip)}, "
+                      f"starting from step {max(resume_skip) + 1 if resume_skip else 1}")
+
         for i, step in enumerate(steps, 1):
+            if i in resume_skip:
+                print(f"\n  ~ Step {i} already completed in previous session, skipping (resume mode)")
+                # Reconstruct a synthetic completed result for the run log
+                sr = {
+                    "step_id": str(i),
+                    "skill": step.get("skill", "?"),
+                    "gate": step.get("gate", "review"),
+                    "output_artifact": step.get("output_artifact", "N/A"),
+                    "artifact_path": "",
+                    "validator_stack": [],
+                    "gate_result": "resumed_from_previous_session",
+                    "status": "COMPLETED",
+                    "step_type": step.get("step_type", "local_execution"),
+                }
+                self.step_results.append(sr)
+                continue
+
             sr = self.execute_step(step, i, len(steps))
             self.step_results.append(sr)
 
@@ -985,8 +1082,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--log-dir", default=None, help="Directory for run log output")
     parser.add_argument("--list-workflows", action="store_true", help="List all registered workflows")
     parser.add_argument("--resume", action="store_true", help="Resume a paused execution")
-    parser.add_argument("--non-interactive", action="store_true",
-                        help="Non-interactive mode: auto-approve all gates for guided mode")
+    parser.add_argument("--gate-decision", default=None,
+                        choices=["auto-approve", "auto-deny"],
+                        help="Non-interactive gate decision for testing: auto-approve all gates or auto-deny the first gate")
 
     args = parser.parse_args(argv)
 
@@ -1005,20 +1103,18 @@ def main(argv: list[str] | None = None) -> int:
         print("\nError: workflow_id is required (use --list-workflows to see available workflows)")
         return 1
 
-    # If non-interactive, use automated approval for guided
-    mode = args.mode
-    if args.non_interactive and mode == "guided_execution":
-        # Override to autonomous for non-interactive -- guided requires human
-        print("Note: --non-interactive with guided_execution is not supported. Use autonomous_execution instead.")
-        return 1
+    # Validate gate_decision compatibility
+    if args.gate_decision and args.mode not in ("guided_execution", "autonomous_execution"):
+        print(f"Note: --gate-decision is only for guided/autonomous modes, ignoring for '{args.mode}'")
 
     runner = OrchestrationRunner(
         workflow_id=args.workflow_id,
-        mode=mode,
+        mode=args.mode,
         repo_root=repo_root,
         plan_out=args.plan_out,
         log_dir=args.log_dir,
         resume=args.resume,
+        gate_decision=args.gate_decision,
     )
 
     if runner.errors:
