@@ -443,8 +443,18 @@ class OrchestrationRunner:
                 result["status"] = "FAILED"
                 return result
         elif output_artifact and output_artifact != "N/A":
-            # Artifact expected but not yet produced (step hasn't been executed)
-            print(f"  ~ Artifact '{output_artifact}' not yet produced (expected after step execution)")
+            if self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
+                # Execution modes: FAIL if artifact expected but not produced
+                self.errors.append(
+                    format_error(ARTIFACT_NOT_FOUND,
+                        f"Step {step_num} ({skill}): Expected artifact '{output_artifact}' not produced")
+                )
+                result["status"] = "FAILED"
+                result["validator_stack"] = [{"level": "Dispatcher", "command": f"validate-output.py {output_artifact}", "result": "SKIPPED (artifact missing)"}]
+                return result
+            else:
+                # Plan modes: artifacts don't exist yet, OK to skip
+                print(f"  ~ Artifact '{output_artifact}' not yet produced (plan mode, expected after actual execution)")
 
         # -- Gate management --------------------------------------------
         gate_result = self._manage_gate(gate_name, step_num, skill)

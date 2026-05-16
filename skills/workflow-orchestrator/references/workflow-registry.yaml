@@ -90,7 +90,7 @@ workflows:
 
   - id: docs-architecture
     display_name: Docs & Architecture Alignment
-    purpose: Turn an approved brief or PRD into copy-paste prompts for external implementation skills.
+    purpose: Align documentation with domain language and generate copy-paste prompts for implementation.
     initial_inputs:
       - id: repository_state
         type: external_context
@@ -108,17 +108,42 @@ workflows:
         input_source: repository_state
         output_artifact: domain_alignment_report
       - id: 2
+        skill: handoff
+        step_type: local_execution
+        gate: review_handoff_prompt
+        input_artifact: domain_alignment_report
+        output_artifact: prompt_handoff
+
+  - id: product-to-issues
+    display_name: Product PRD & Implementation Issues
+    purpose: Transform domain alignment report into PRD, then into implementation issues and agent briefs.
+    initial_inputs:
+      - id: domain_alignment_report
+        type: artifact
+        required: true
+        description: Output from docs-architecture workflow (grill-with-docs step).
+    allowed_execution_modes:
+      - plan_only
+      - guided_execution
+    steps:
+      - id: 1
         skill: to-prd
         step_type: local_execution
         gate: review_prd
         input_artifact: domain_alignment_report
         output_artifact: prd
-      - id: 3
-        skill: handoff
+      - id: 2
+        skill: to-issues
         step_type: local_execution
-        gate: review_handoff_prompt
+        gate: review_issues
         input_artifact: prd
-        output_artifact: prompt_handoff
+        output_artifact: issue_list
+      - id: 3
+        skill: triage
+        step_type: local_execution
+        gate: review_agent_brief
+        input_artifact: issue_list
+        output_artifact: agent_brief
 
   - id: product-discovery-sprint
     display_name: Product Discovery Sprint

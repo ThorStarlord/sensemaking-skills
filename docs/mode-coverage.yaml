@@ -270,7 +270,36 @@ mode_coverage:
   gates_exercised: true
   gates_note: 3 approved, 0 denied
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-173944-5f972338.'
+  notes: 'LEGACY (3-step version). Executed via production orchestration runner v2. Session: orchestration-20260516-173944-5f972338. This run predates workflow redesign; to-prd was removed to product-to-issues workflow.'
+- mode: guided_execution
+  workflow_id: docs-architecture
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_docs-architecture_redesigned_guided_execution.md
+  steps_completed: 2
+  steps_total: 2
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'dispatcher: validate-output.py (domain_alignment_report)'
+  - 'dispatcher: validate-output.py (prompt_handoff)'
+  gates_exercised: true
+  gates_note: 2 approved, 0 denied
+  hardening_triggered: none
+  notes: 'Redesigned docs-architecture workflow (2-step version). Removed to-prd step (moved to product-to-issues workflow). Focused on alignment + handoff. All validators invoked through canonical dispatcher. Proves redesigned workflow end-to-end.'
+- mode: guided_execution
+  workflow_id: product-to-issues
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_product-to-issues_guided_execution.md
+  steps_completed: 3
+  steps_total: 3
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'dispatcher: validate-output.py (prd)'
+  - 'dispatcher: validate-output.py (issue_list)'
+  - 'dispatcher: validate-output.py (agent_brief)'
+  gates_exercised: true
+  gates_note: 3 approved, 0 denied
+  hardening_triggered: none
+  notes: 'First full execution of product-to-issues workflow. PRD artifact now properly validated through canonical dispatcher (resolves validation gap from previous docs-architecture run). Full pipeline proven: domain_alignment_report → prd → issue_list → agent_brief. All 3 gates exercised. Demonstrates proper PRD validation in context where prd is actually consumed.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
