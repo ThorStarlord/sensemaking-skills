@@ -20,7 +20,7 @@
 - **skill**: repo-sensemaker
 - **runtime**: local_execution
 - **output_artifact**: repository_sensemaking_brief
-- **artifact_path**: H:\GithubRepositories\sensemaking-skills\artifacts\repository_sensemaking_brief.md
+- **artifact_path**: artifacts/repository_sensemaking_brief.md
 - **validator_stack**:
     - level: Generic
       command: python scripts/validate-artifact.py repository_sensemaking_brief {artifact_path}
@@ -36,7 +36,7 @@
 - **skill**: handoff
 - **runtime**: local_execution
 - **output_artifact**: prompt_handoff
-- **artifact_path**: H:\GithubRepositories\sensemaking-skills\artifacts\prompt_handoff.md
+- **artifact_path**: artifacts/prompt_handoff.md
 - **validator_stack**:
     - level: Generic
       command: python scripts/validate-artifact.py prompt_handoff {artifact_path}

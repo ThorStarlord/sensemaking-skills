@@ -28,13 +28,14 @@ jobs:
 
       - name: Level 4 — Run Log Validation & Failure Analysis
         run: |
-          echo "=== Validate all run logs ==="
-          python scripts/validate-run-log.py artifacts/run_log.md --repo-root .
-          python scripts/validate-run-log.py artifacts/plan_only_run_log.md --repo-root .
-          python scripts/validate-run-log.py artifacts/prompt_chain_run_log.md --repo-root .
-          python scripts/validate-run-log.py artifacts/guided_execution_completion_log.md --repo-root .
-          python scripts/validate-run-log.py artifacts/autonomous_execution_run_log.md --repo-root .
-          python scripts/validate-run-log.py artifacts/validator_live_coverage_run_log.md --repo-root .
+          echo "=== Validate all run logs (dynamically discovered) ==="
+          # Discover all run logs by pattern — catches *run_log* files plus
+          # the older completion-log naming convention. This stays current
+          # as new workflow families add their evidence.
+          find artifacts -maxdepth 1 \( -name '*run_log*' -o -name '*completion_log*' \) -type f | sort | while IFS= read -r f; do
+            echo "  Validating: $f"
+            python scripts/validate-run-log.py "$f" --repo-root . || exit 1
+          done
 
           echo "=== Analyze failure ledger ==="
           python scripts/analyze-run-failures.py --logs-dir artifacts

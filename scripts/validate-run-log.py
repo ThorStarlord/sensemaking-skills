@@ -180,6 +180,15 @@ def validate_run_log(run_log_path: str, repo_root: str = ".") -> list[str]:
             )
         )
 
+    # Check for Windows absolute paths (e.g., H:\\...) anywhere in the log
+    if re.search(r"[A-Za-z]:[\\/]", content):
+        errors.append(
+            format_error(
+                ABSOLUTE_PATH_IN_LOG,
+                "Windows absolute paths (e.g., D:\\path) are banned in run logs."
+            )
+        )
+
     # 2. Parse the log
     log = _parse_run_log(content)
 
@@ -269,7 +278,7 @@ def validate_run_log(run_log_path: str, repo_root: str = ".") -> list[str]:
                     f"Step {sid} missing 'artifact_path'."
                 )
             )
-        elif artifact_path.startswith("/") or artifact_path.startswith("file:///"):
+        elif artifact_path.startswith("/") or artifact_path.startswith("file:///") or re.match(r"^[A-Za-z]:[\\/]", artifact_path):
             errors.append(
                 format_error(
                     ABSOLUTE_PATH_IN_LOG,

@@ -419,7 +419,9 @@ class OrchestrationRunner:
             # Determine artifact path based on contracts
             contract_path = self._resolve_artifact_path(output_artifact)
             artifact_path = contract_path
-            result["artifact_path"] = artifact_path
+            # Store repo-relative path in the run log for portability
+            rel = os.path.relpath(artifact_path, self.repo_root)
+            result["artifact_path"] = rel
 
         # -- Run validators if artifact exists --------------------------
         if artifact_path and os.path.exists(artifact_path):
