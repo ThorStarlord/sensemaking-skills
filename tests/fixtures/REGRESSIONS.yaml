@@ -14,4 +14,6 @@ excluded_validators:
     reason: Repository-level meta-validator; not fixture-tested by the Validator Verification Suite.
   - validator: validate-output
     reason: Validator runner that delegates to registered validators via artifact-contracts.yaml; not a validator itself.
+  - validator: validate-run-log
+    reason: Run log meta-validator; validates dynamic run log documents, not static fixtures. Run logs are produced per-session and cannot be fixture-tested with static files.
 

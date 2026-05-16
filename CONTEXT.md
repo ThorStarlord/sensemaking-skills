@@ -66,7 +66,9 @@ The repository uses a Python-based three-level validator hierarchy to enforce ar
   - `validate-skill-improvement-plan.py` — enforces formal failure mode classification and anti-overfitting
   - `validate-usage-research-report.py` — checks semantic scores, role boundaries, evidence grounding
   - `validate-prompt-handoff.py` — checks target skill exists in registry, artifact refs are real, stop conditions have content
-- **`validate-output.py`**: Dispatcher that delegates to per-artifact validators via `artifact-contracts.yaml`.
+- **`validate-output.py`**: Dispatcher that delegates to per-artifact validators via `artifact-contracts.yaml`. This is the normal validation path — all runs should use it instead of calling validators directly.
+- **`validate-run-log.py`**: Validates run log structure against the template specification. Checks header fields, step structure, gate recording consistency (gate_result, approved_at, approved_by), pre-flight documentation, and path hygiene.
+- **`analyze-run-failures.py`**: Builds a failure ledger from all run logs in a directory. Detects repeatable failure boundaries (same error code across 2+ independent runs) per the Repeatable Failure Boundary principle.
 - **`_validator_utils.py`**: Shared utility module for registry loading, path resolution, and error formatting.
 
 In YOLO and autonomous execution modes, validators function as **zero-tolerance safety gates**: any failure triggers an immediate hard stop and rollback recommendation. See [validator-stack-policy.md](skills/workflow-orchestrator/references/validator-stack-policy.md) for execution order.
