@@ -1,9 +1,9 @@
 # Orchestration Plan: Docs & Architecture Alignment
 
-- **Session ID**: orchestration-20260516-183602-fb34ee92
+- **Session ID**: orchestration-20260516-203036-111f9d18
 - **Date**: 2026-05-16
 - **Workflow**: docs-architecture
-- **Execution Mode**: plan_only
+- **Execution Mode**: guided_execution
 - **Purpose**: Align documentation with domain language and generate copy-paste prompts for implementation.
 
 ## Skills in Sequence
@@ -24,10 +24,11 @@
 
 ## Approval Gates
 
-- **Mode**: plan_only
-- **Gate Behavior**: none
+- **Mode**: guided_execution
+- **Gate Behavior**: mandatory
 
-No gates required for this mode.
+- review_alignment_report: REQUIRED (user must approve)
+- review_handoff_prompt: REQUIRED (user must approve)
 
 ## Stop Conditions
 
@@ -41,9 +42,9 @@ No gates required for this mode.
 ```yaml
 artifact_id: workflow_orchestration_plan
 chosen_workflow_id: docs-architecture
-execution_mode: plan_only
+execution_mode: guided_execution
 status: created
-session_id: orchestration-20260516-183602-fb34ee92
+session_id: orchestration-20260516-203036-111f9d18
 initial_inputs:
   repository_state: external_context
 steps:
@@ -58,7 +59,7 @@ steps:
     gate: review_handoff_prompt
     output_artifact: prompt_handoff
 approval_gates:
-  behavior: none
+  behavior: mandatory
 stop_conditions:
   - validator_failure
   - gate_denial

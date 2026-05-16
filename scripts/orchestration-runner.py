@@ -623,6 +623,45 @@ class OrchestrationRunner:
 
         if behavior == "mandatory":
             # guided: requires manual approval
+            # Check if stdin is available (TTY or pipe)
+            import sys
+            if not sys.stdin.isatty() and not self.gate_decision:
+                # No TTY and no auto-decision flag: error
+                error_msg = (
+                    f"[ERROR] Gate '{gate_name}' requires manual approval in guided_execution mode,\n"
+                    f"        but no TTY available and no --gate-decision flag provided.\n"
+                    f"        Use: --gate-decision auto-approve (for automation) or --gate-decision auto-deny (for testing)"
+                )
+                self.errors.append(format_error(GATE_AUTO_FAILED, error_msg))
+                return "timed_out"
+
+            # If auto-decision is set, use it instead of prompting
+            if self.gate_decision:
+                if self.gate_decision == "auto-approve":
+                    self.gate_decisions.append({
+                        "step": step_num,
+                        "gate": gate_name,
+                        "result": "approved_by_user",
+                        "timestamp": timestamp,
+                        "approved_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "approved_by": "auto_gate (mandatory mode)",
+                        "mode": self.mode,
+                    })
+                    print(f"  ~ Gate '{gate_name}' AUTO_APPROVED (--gate-decision={self.gate_decision})")
+                    return "approved_by_user"
+                elif self.gate_decision == "auto-deny":
+                    self.gate_decisions.append({
+                        "step": step_num,
+                        "gate": gate_name,
+                        "result": "denied_by_user",
+                        "timestamp": timestamp,
+                        "approved_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "reason": "auto_denied_by_flag",
+                        "mode": self.mode,
+                    })
+                    print(f"  [FAIL] Gate '{gate_name}' AUTO_DENIED (--gate-decision={self.gate_decision})")
+                    return "denied_by_user"
+
             print(f"\n  [PAUSE]  GATE: '{gate_name}' -- waiting for approval (Step {step_num}: {skill})")
             print(f"  Options: [A]pprove  [D]eny  [S]kip (treat as denied for testing)  [T]imeout")
             choice = input(f"  Enter choice (A/D/S/T): ").strip().upper()
