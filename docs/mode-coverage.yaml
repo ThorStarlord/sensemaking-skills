@@ -19,23 +19,17 @@ mode_coverage:
     (step 1) and validate-artifact.py + validate-prompt-handoff.py (step 2).
 - mode: guided_execution
   workflow_id: docs-contract-reconciliation
-  last_run: 2026-05-16
-  run_log_path: artifacts/guided_execution_completion_log.md (feature branch feature/guided-completion)
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_docs-contract-reconciliation_guided_execution.md
   steps_completed: 3
   steps_total: 3
   validators_exercised:
-  - level_1: validate-repo.py
-  - dispatcher: validate-output.py (docs_contract_reconciliation_report)
-  - dispatcher: validate-output.py (prompt_handoff)
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
   gates_exercised: true
-  gates_note: All 3 gates exercised with approved_by_user. First live gate exercise
-    in the system. Gate 1 (review_drift_diagnosis) continued, Gate 2 (review_reconciliation_patch)
-    continued, Gate 3 (review_next_prompt) completion.
+  gates_note: 3 approved, 0 denied
   hardening_triggered: none
-  notes: Completed the guided execution that paused on 2026-05-14. All 3 gates recorded
-    gate_result, approved_at, and approved_by. Proves the full gate lifecycle. Step
-    1 validators from prior run (2026-05-14). Dispatcher exercised validate-artifact.py
-    (step 2) and validate-artifact.py + validate-prompt-handoff.py (step 3).
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-203712-ee9f455b.'
 - mode: plan_only
   workflow_id: fast-local-diagnostic
   last_run: '2026-05-16'
@@ -398,7 +392,8 @@ system_tools:
   - full-local-sensemaking (plan_only)
   - fast-local-diagnostic (autonomous_execution)
   - fast-local-diagnostic (prompt_chain)
-  last_session: orchestration-20260516-203654-134a5e80
+  - docs-contract-reconciliation (guided_execution)
+  last_session: orchestration-20260516-203712-ee9f455b
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
