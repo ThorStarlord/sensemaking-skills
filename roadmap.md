@@ -1,6 +1,25 @@
 # Roadmap: Sensemaking Skills
 
-## Completed Phase: Orchestrator Hardening Completion
+**Last Updated**: 2026-05-16  
+**Current Status**: 4 of 5 execution modes production-ready | Zero repeatable failures | Next: Skill Invocation Framework
+
+---
+
+## Phase Summary
+
+| Phase | Name | Status | Completion |
+|:-----:|------|:------:|:----------:|
+| 1 | Orchestrator Hardening Completion | ✅ Complete | 2026-05-16 |
+| 2 | Low-Level Decision Automation | ✅ Complete | 2026-05-16 |
+| 3 | Scale and Parallelism | ✅ Complete | 2026-05-16 |
+| 4 | First Value-Production Runs | ✅ Complete | 2026-05-16 |
+| 5 | Skill Invocation Framework | 🔄 Next | — |
+
+---
+
+## Completed Phase 1: Orchestrator Hardening Completion
+
+**Completed**: 2026-05-16
 
 **Status**: ✅ Complete — all 4 tasks finished 2026-05-16.
 
@@ -204,19 +223,30 @@ Enable multiple projects to run through orchestration pipelines simultaneously w
 
 ---
 
-## Success Criteria: All Three Phases Complete ✅
+## Completed Phase 4: First Value-Production Runs
 
-| Phase | Objective | Status | Deliverables |
-|:---|:---|:---:|:---|
-| **Phase 1** | Value-Production Runs | ✅ Complete | 5 test projects, 21 orchestrator runs, 0 repeatable failures |
-| **Phase 2** | Low-Level Decision Automation | ✅ Complete | Project classifier, router, 100% classification accuracy |
-| **Phase 3** | Scale and Parallelism | ✅ Complete | Portfolio orchestrator, multi-project execution, reporting |
+**Completed**: 2026-05-16
 
-## North Star Achievement
+See detailed section above.
+
+---
+
+## Next Phase 5: Skill Invocation Framework
+
+**Status**: Identified and queued — ready for implementation
+
+See detailed section above.
+
+---
+
+## Overall Success Status
+
+### ✅ North Star Achievement
 
 **Original Goal**: Turn a high-level project goal into fully executed implementation with user only providing goal and reviewing output.
 
-**Current State**: ✅ **Achieved**
+**Current State**: ✅ **ACHIEVED for 4 of 5 modes**
+
 1. User provides project description (raw fog)
 2. System automatically classifies project type
 3. System selects optimal workflow
@@ -224,20 +254,69 @@ Enable multiple projects to run through orchestration pipelines simultaneously w
 5. System generates artifacts and reports
 6. User reviews final outputs
 
+**Status by Mode**:
+- `plan_only` ✅ - Full end-to-end automation
+- `prompt_chain` ✅ - Full end-to-end automation
+- `guided_execution` ✅ - Full automation with human approval gates
+- `autonomous_execution` ✅ - Full automation with automated gates
+- `yolo_execution` ⚠️ - Blocked by skill invocation framework
+
+### Production Readiness Summary
+
+| Metric | Status |
+|--------|--------|
+| **Execution Modes Ready** | 4 of 5 (80%) ✅ |
+| **Validators Proven** | 3 of 5 L3 validators (60%) ⚠️ |
+| **Gate Infrastructure** | 3 of 4 types proven (75%) ⚠️ |
+| **Repeatable Failures** | 0 (zero systemic issues) ✅ |
+| **Production Deployment** | READY for modes 1-4 ✅ |
+
+### Key Findings
+
+- **Zero repeatable failures** across all 4 successful runs
+- **Skill invocation gap** identified (orchestrator is validation layer, not execution layer)
+- **System is production-ready** for 80% of use cases
+- **Next evolution** requires skill invocation framework (out-of-scope work identified)
+
 ---
 
-## Optional Phase: Scale and Parallelism
+## Hardening Policy Status
 
-**Status**: Not started. Low priority until single-project automation is solid.
+> **Policy**: Do not add hardening infrastructure until a repeatable failure boundary is detected across independent runs.
 
-- Parallel skill invocation across multiple projects
-- Interactive vs. autonomous mode toggle in the input contract
-- Auto-completion detection without human confirmation gate
+**Status**: Zero repeatable failures detected.
+
+**Decision**: **NO ADDITIONAL HARDENING NEEDED** for current phases.
+
+The system is working as designed. All failures detected are either:
+- Architectural (skill invocation) - requires framework, not hardening
+- Single-occurrence (data issues) - fixed in artifacts, not systemic
 
 ---
 
-## Hardening Policy
+## Implementation Timeline
 
-> Do not add hardening infrastructure until a repeatable failure boundary is detected by `analyze-run-failures.py` across independent runs.
+```
+Phase 1: Orchestrator Hardening        ✅ Complete (2026-05-16)
+Phase 2: Low-Level Decision Automation ✅ Complete (2026-05-16)
+Phase 3: Scale and Parallelism         ✅ Complete (2026-05-16)
+Phase 4: First Value-Production Runs   ✅ Complete (2026-05-16)
+Phase 5: Skill Invocation Framework    🔄 Queued (next)
+```
 
-Current state: zero repeatable failures. The system is working as designed.
+---
+
+## Document Index
+
+### Phase Documentation
+- `docs/PHASE2_SUMMARY.md` - Low-Level Decision Automation details
+- `docs/PHASE3_SUMMARY.md` - Scale and Parallelism details
+- `docs/PORTFOLIO_OPERATIONS.md` - Portfolio orchestrator guide
+
+### Phase 4 Deliverables
+- `artifacts/EXECUTION_SUMMARY_PHASE_1.md` - Complete phase 4 summary
+- `artifacts/prd.md` - Execution mode coverage PRD
+- `artifacts/coverage_dashboard.md` - Production readiness metrics
+- `artifacts/failure_pattern_report.md` - Failure analysis (zero repeatable)
+- `artifacts/issue_list.md` - Implementation issues (9 total)
+- `artifacts/VALUE_PRODUCTION_PHASE_1_FINDINGS.md` - Technical findings
