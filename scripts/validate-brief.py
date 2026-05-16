@@ -205,9 +205,35 @@ def validate_brief(artifact_path: str, repo_root: str = ".") -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Specialized validator for repository sensemaking brief.")
-    parser.add_argument("artifact_path", help="Path to the brief .md file")
+    parser.add_argument("artifact_path", nargs="?", help="Path to the brief .md file")
     parser.add_argument("--repo-root", default=".", help="Root of the repository for file checks")
+    parser.add_argument("--list-codes", action="store_true", help="List all error codes and exit")
     args = parser.parse_args(argv)
+
+    if args.list_codes:
+        codes = [
+            BRIEF_FILE_NOT_FOUND,
+            PARSING_ERROR,
+            MISSING_EVIDENCE_EXCERPTS,
+            EVIDENCE_EXCERPT_FIELD,
+            HALLUCINATED_FILE,
+            INVALID_LINE_FORMAT,
+            MISSING_WORKFLOW_ID,
+            HALLUCINATED_WORKFLOW_ID,
+            MISSING_HANDOFF_BLOCK,
+            REGISTRY_NOT_FOUND,
+            NO_LOGIC_TRACE,
+            NO_EVIDENCE_FILE_CITATIONS,
+            UNKNOWN_WEAKNESS_TYPE,
+        ]
+        print("Stable error codes for brief validation:")
+        for code in codes:
+            print(f"  {code}")
+        return 0
+
+    if not args.artifact_path:
+        parser.print_usage()
+        return 1
 
     errs = validate_brief(args.artifact_path, args.repo_root)
     if errs:
