@@ -25,7 +25,7 @@ File-level evidence supporting the diagnosis (cites specific files and line rang
 ```yaml
 evidence_excerpts:
   - file: path/to/file.ext
-    lines: 10-15
+    lines: L10-L15
     quote: "..."
     supports_claim: "..."
 ```

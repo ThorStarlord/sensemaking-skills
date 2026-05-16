@@ -408,6 +408,8 @@ artifacts:
       - next_test
     verification:
       generic_validator: "python scripts/validate-artifact.py usage_research_report {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-usage-research-report.py {artifact_path}"
       required_for_modes:
         - guided_execution
         - autonomous_execution

@@ -12,4 +12,6 @@ required_cases:
 excluded_validators:
   - validator: validate-repo
     reason: Repository-level meta-validator; not fixture-tested by the Validator Verification Suite.
+  - validator: validate-output
+    reason: Validator runner that delegates to registered validators via artifact-contracts.yaml; not a validator itself.
 

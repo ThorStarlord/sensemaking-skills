@@ -37,7 +37,7 @@ Converts vague ideas into a structured **Problem Frame**. It identifies the "pro
 Separates **Knowns, Unknowns, Assumptions, and Risks**. It defines clear research paths and stopping rules to prevent premature implementation.
 
 ### 3. `repo-sensemaker`
-Produces a **13-section Repository Sensemaking Brief**. It audits the repository's health, identifies the "weakest boundary," and cites specific file-level evidence.
+Produces a **14-section Repository Sensemaking Brief**. It audits the repository's health, identifies the "weakest boundary," and cites specific file-level evidence.
 
 ### 4. `workflow-orchestrator`
 Consumes a Brief and produces a **Workflow Orchestration Plan**. It selects the correct execution mode (plan, chain, guided, or autonomous) and defines approval gates.
@@ -56,7 +56,7 @@ Problem Frame
   ↓ (unknowns-mapper)
 Unknowns Map
   ↓ (repo-sensemaker)
-Repository Sensemaking Brief (13 sections)
+Repository Sensemaking Brief (14 sections)
   ↓ (workflow-orchestrator)
 Workflow Orchestration Plan (10 sections)
   ↓ (prompt-handoff)
@@ -114,7 +114,7 @@ MIT
 
 ## V1 Definition of Done (New Architecture)
 - All five core skills are package-valid with separate `agents/openai.yaml`.
-- `repo-sensemaker` produces a 13-section diagnostic brief with evidence.
+- `repo-sensemaker` produces a 14-section diagnostic brief with evidence.
 - `workflow-orchestrator` produces a 10-section orchestration plan.
 - Registry-based routing is fully machine-readable.
 - Negative fixtures exist to test refusal-to-act.

@@ -260,7 +260,7 @@ excluded_validators:
 | `workflow_orchestration_plan` | ✅ validate-artifact.py | ✅ validate-plan.py | Full |
 | `skill_improvement_plan` | ✅ validate-artifact.py | ✅ validate-skill-improvement-plan.py | Full |
 | `usage_research_report` | ✅ validate-artifact.py | ✅ validate-usage-research-report.py | Full |
-| `prompt_handoff` | ✅ validate-artifact.py | ❌ (planned) | Specialized planned |
+| `prompt_handoff` | ✅ validate-artifact.py | ✅ validate-prompt-handoff.py | Full |
 | All other artifact types (15) | ✅ validate-artifact.py | ❌ | Generic only |
 
 **Design principle:** A Level 3 validator is added only when the artifact has external registry cross-references to validate, domain-specific semantics beyond section presence, or a high blast radius if broken (e.g., consumed by external agents with no human review).

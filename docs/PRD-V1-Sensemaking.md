@@ -11,7 +11,7 @@ Agents often jump into implementation ("building") before they understand the "p
 
 ## 3. Goals
 - Provide five package-valid core skills: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, and `prompt-handoff`.
-- Enforce structural integrity via canonical output templates (13-section Repository Brief / 10-section Orchestration Plan).
+- Enforce structural integrity via canonical output templates (14-section Repository Brief / 10-section Orchestration Plan).
 - Enforce evidence-backed diagnosis with file-level citations.
 - Maintain safety-first human-in-the-loop control through explicit execution modes and approval gates.
 
@@ -27,7 +27,7 @@ Agents often jump into implementation ("building") before they understand the "p
 ## 5. Functional Requirements
 - **Problem Framing**: Identify the "object under pressure" before mapping technical unknowns.
 - **Unknowns Mapping**: Separate knowns from assumptions and define stopping rules for research.
-- **Diagnostic Brief**: Produce a 13-section brief naming the weakest boundary and citing evidence.
+- **Diagnostic Brief**: Produce a 14-section brief naming the weakest boundary and citing evidence.
 - **Orchestration Planning**: Produce a 10-section plan naming the workflow, mode, and safety gates.
 - **Prompt Handoff**: Package the sensemaking trace into a ready-to-copy prompt for downstream skills.
 - **Safe Refusal**: Refuse to route downstream if unknowns are fundamental or the execution request is unsafe.
@@ -38,7 +38,7 @@ Agents often jump into implementation ("building") before they understand the "p
 - **Validation-as-Policy**: All core artifacts must pass the governance script.
 
 ## 7. Success Metrics
-- 100% compliance with canonical 13-section (Brief) and 10-section (Plan) templates.
+- 100% compliance with canonical 14-section (Brief) and 10-section (Plan) templates.
 - 0 instances of unapproved autonomous execution.
 - Successful self-dogfooding of the five-skill pipeline on the `sensemaking-skills` repository.
 
