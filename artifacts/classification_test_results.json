@@ -1,0 +1,62 @@
+[
+  {
+    "project": "project-001-saas-crm.md",
+    "classification": {
+      "type": "saas",
+      "confidence": 100
+    },
+    "recommended_workflow": {
+      "primary": "product-discovery-sprint",
+      "fallback": "product-autonomous-sprint",
+      "rationale": "High confidence (100%) saas classification."
+    }
+  },
+  {
+    "project": "project-002-content-platform.md",
+    "classification": {
+      "type": "content",
+      "confidence": 100
+    },
+    "recommended_workflow": {
+      "primary": "product-discovery-sprint",
+      "fallback": "full-local-sensemaking",
+      "rationale": "High confidence (100%) content classification."
+    }
+  },
+  {
+    "project": "project-003-observability-tool.md",
+    "classification": {
+      "type": "saas",
+      "confidence": 100
+    },
+    "recommended_workflow": {
+      "primary": "product-discovery-sprint",
+      "fallback": "product-autonomous-sprint",
+      "rationale": "High confidence (100%) saas classification."
+    }
+  },
+  {
+    "project": "project-004-marketplace.md",
+    "classification": {
+      "type": "marketplace",
+      "confidence": 100
+    },
+    "recommended_workflow": {
+      "primary": "product-discovery-sprint",
+      "fallback": "product-autonomous-sprint",
+      "rationale": "High confidence (100%) marketplace classification."
+    }
+  },
+  {
+    "project": "project-005-mobile-fitness.md",
+    "classification": {
+      "type": "consumer",
+      "confidence": 100
+    },
+    "recommended_workflow": {
+      "primary": "product-discovery-sprint",
+      "fallback": "product-autonomous-sprint",
+      "rationale": "High confidence (100%) consumer classification."
+    }
+  }
+]

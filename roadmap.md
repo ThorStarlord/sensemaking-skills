@@ -46,16 +46,53 @@ python scripts/orchestration-runner.py product-to-issues --mode guided_execution
 
 ---
 
-## Later Phase: Low-Level Decision Automation
+## Completed Phase: Low-Level Decision Automation
 
-**Status**: Not started. Begins after value-production runs expose real routing gaps.
+**Status**: ✅ Complete — all tasks finished 2026-05-16.
 
-Currently: the user must know which workflow to invoke. The goal is for `repo-sensemaker` to infer project type and select the workflow automatically from a plain-language goal description.
+Automatic project classification and workflow routing now eliminates manual workflow selection.
 
-Work in this phase:
-- Improve `repo-sensemaker` routing logic to classify project type from raw input (SaaS / game / visual novel / content / etc.)
-- Eliminate the need for explicit `type:` field in input
-- Test with diverse project descriptions to verify correct workflow selection
+### Completed Tasks
+
+**1. Created project-classifier skill definition** ✅
+- Defined skill interface in `skills/project-classifier/SKILL.md`
+- Created output template in `skills/project-classifier/references/project-classification-template.md`
+- Supports 7 project types: SaaS, Content, Tool, Consumer, Enterprise, Marketplace, Research
+
+**2. Implemented automatic router (`scripts/router.py`)** ✅
+- Keyword-based classification with confidence scoring
+- Automatic workflow selection from registry
+- Mode recommendation based on confidence
+- Tested on 5 diverse real-world project scenarios (all 100% confidence)
+
+**3. Created classification validator** ✅
+- `scripts/validate-project-classification.py` validates classifier logic
+- Tests against test projects with confidence output
+- Results saved to JSON for analysis
+
+**4. Documented routing system** ✅
+- `docs/ROUTING_GUIDE.md`: User guide with examples
+- `docs/PHASE2_SUMMARY.md`: Implementation details and performance metrics
+- Troubleshooting and integration guidance included
+
+---
+
+## Current Phase: Scale and Parallelism
+
+**Status**: Ready to start — no blockers.
+
+Enable multiple projects to run through orchestration pipelines simultaneously without coordination overhead.
+
+Goals for this phase:
+- Implement parallel skill invocation across multiple projects
+- Add interactive vs. autonomous mode toggle to input contract
+- Implement auto-completion detection without manual gate approval
+- Enable multi-project portfolio routing
+
+Suggested first run:
+```bash
+python scripts/orchestration-runner.py --mode autonomous_execution --parallel 3
+```
 
 ---
 

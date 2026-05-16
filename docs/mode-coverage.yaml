@@ -67,22 +67,17 @@ mode_coverage:
     via cross-check table (standalone, not through dispatcher).
 - mode: autonomous_execution
   workflow_id: fast-local-diagnostic
-  last_run: 2026-05-16
-  run_log_path: artifacts/autonomous_execution_run_log.md (feature branch feature/autonomous-proving)
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_fast-local-diagnostic_autonomous_execution.md
   steps_completed: 2
   steps_total: 2
   validators_exercised:
-  - level_1: validate-repo.py
-  - dispatcher: validate-output.py (repository_sensemaking_brief)
-  - dispatcher: validate-output.py (prompt_handoff)
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
   gates_exercised: true
-  gates_note: Both gates exercised with automated_approval. User provided autonomous-execution
-    opt-in at session start. Gates recorded gate_result, approved_at, and approved_by.
+  gates_note: automated_approval_all_gates
   hardening_triggered: none
-  notes: 'First autonomous execution. Opt-in gate mechanism verified: gates halt automatically
-    without per-step human intervention. All validators invoked through validate-output.py
-    dispatcher. Dispatcher exercised validate-artifact.py + validate-brief.py (step
-    1) and validate-artifact.py + validate-prompt-handoff.py (step 2).'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-201526-3566b100.'
 - mode: guided_execution
   workflow_id: validator-live-coverage
   last_run: 2026-05-16
@@ -404,7 +399,8 @@ system_tools:
   - docs-architecture (guided_execution)
   - product-to-issues (plan_only)
   - full-local-sensemaking (plan_only)
-  last_session: orchestration-20260516-201418-ab96806a
+  - fast-local-diagnostic (autonomous_execution)
+  last_session: orchestration-20260516-201526-3566b100
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
