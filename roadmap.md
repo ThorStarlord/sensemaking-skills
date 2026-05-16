@@ -1,36 +1,36 @@
 # Roadmap: Sensemaking Skills
 
-## Current Phase: Orchestrator Hardening Completion
+## Completed Phase: Orchestrator Hardening Completion
 
-**Status**: In progress — implementation plan ready, ~2.5 hours of work remaining.
+**Status**: ✅ Complete — all 4 tasks finished 2026-05-16.
 
-The validator ecosystem is complete. Zero repeatable failures detected. The remaining work closes the last gap before real value-production runs are safe to execute.
+The validator ecosystem is complete. Zero repeatable failures detected. All production-readiness gaps closed.
 
-### Remaining Tasks (do in order)
+### Completed Tasks
 
-**1. Enforce strict artifact validation in execution modes** — `scripts/orchestration-runner.py`
-- In `guided_execution`, `autonomous_execution`, `yolo_execution`: FAIL the step if a claimed output artifact is not produced.
-- Add error code `ARTIFACT_NOT_FOUND`.
-- Verify with: `python scripts/test-controlled-failures.py --test artifact-production-required`
+**1. Enforce strict artifact validation in execution modes** ✅
+- `ARTIFACT_NOT_FOUND` error code enforced in execution modes (lines 445-454, orchestration-runner.py)
+- Added `artifact-production-required` test to controlled failure suite (10 tests now pass)
 
-**2. Remove premature PRD step from docs-architecture workflow** — `skills/workflow-orchestrator/references/workflow-registry.yaml`
-- docs-architecture becomes 2 steps: `grill-with-docs` → `handoff`
-- PRD generation does not belong here (PRD is consumed downstream, not in this workflow)
+**2. Remove premature PRD step from docs-architecture workflow** ✅
+- docs-architecture streamlined to 2 steps: `grill-with-docs` → `handoff`
+- to-prd moved to product-to-issues workflow
 
-**3. Create product-to-issues workflow** — `skills/workflow-orchestrator/references/workflow-registry.yaml`
-- New 3-step pipeline: `to-prd` → `to-issues` → `triage`
-- `allowed_execution_modes: [guided_execution]`
-- First real test of the full PRD → issues → agent brief chain
+**3. Create product-to-issues workflow** ✅
+- 3-step pipeline: `to-prd` → `to-issues` → `triage`
+- Mode restricted to `guided_execution` (production-ready constraint)
+- Full PRD → issues → agent brief chain proven end-to-end
 
-**4. Update mode-coverage.yaml** — `docs/mode-coverage.yaml`
-- Record new runs for the 2-step docs-architecture and 3-step product-to-issues
-- Prove PRD validation gap is resolved
+**4. Update mode-coverage.yaml** ✅
+- Mode coverage updated with 10 controlled failure tests (up from 9)
+- 2-step docs-architecture and 3-step product-to-issues runs recorded
+- PRD validation gap resolved
 
 ---
 
-## Next Phase: First Value-Production Runs
+## Current Phase: First Value-Production Runs
 
-**Status**: Blocked on current phase completing.
+**Status**: Ready to start — no blockers.
 
 Run real projects through the pipeline — not system-proving tests. Pick one real project and run it end-to-end.
 
