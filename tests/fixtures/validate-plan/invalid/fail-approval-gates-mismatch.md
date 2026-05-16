@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "approval_gates mismatch"
+expected_error_contains: "GATE_MISMATCH"
 ---
 # Fail: approval_gates mismatch
 

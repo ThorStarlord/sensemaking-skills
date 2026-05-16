@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "gate mismatch"
+expected_error_contains: "GATE_MISMATCH"
 ---
 # Fail: wrong gate
 

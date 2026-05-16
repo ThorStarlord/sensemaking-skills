@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "initial_inputs mismatch"
+expected_error_contains: "INPUT_MISMATCH"
 ---
 # Fail: missing initial input
 

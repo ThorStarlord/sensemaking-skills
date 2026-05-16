@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Failure Mode Class"
+expected_error_contains: "INVALID_FAILURE_MODE_CLASS"
 ---
 # Invalid Missing Class
 ## 1. Diagnosis

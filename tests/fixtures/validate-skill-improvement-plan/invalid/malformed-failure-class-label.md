@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Invalid Failure Mode Class"
+expected_error_contains: "INVALID_FAILURE_MODE_CLASS"
 ---
 # Skill Improvement Plan
 

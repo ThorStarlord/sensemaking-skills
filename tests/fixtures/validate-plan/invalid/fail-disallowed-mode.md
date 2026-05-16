@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "execution_mode"
+expected_error_contains: "EXECUTION_MODE_DENIED"
 ---
 # Fail: disallowed mode
 

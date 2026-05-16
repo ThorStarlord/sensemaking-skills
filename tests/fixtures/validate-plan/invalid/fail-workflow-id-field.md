@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Missing chosen_workflow_id"
+expected_error_contains: "WORKFLOW_NOT_FOUND"
 ---
 # Fail: workflow_id field
 

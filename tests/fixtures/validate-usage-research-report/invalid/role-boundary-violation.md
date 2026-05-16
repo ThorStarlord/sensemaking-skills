@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Role Boundary Violation: Usage researcher should not propose direct patches"
+expected_error_contains: "ROLE_BOUNDARY_VIOLATION"
 ---
 # Usage Research Report
 

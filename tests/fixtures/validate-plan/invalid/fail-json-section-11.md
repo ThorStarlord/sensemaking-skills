@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Section 11 YAML block"
+expected_error_contains: "SECTION_11_MALFORMED"
 ---
 # Fail: JSON Section 11
 

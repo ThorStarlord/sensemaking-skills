@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "artifact_id mismatch"
+expected_error_contains: "SECTION_11_MALFORMED"
 ---
 # Fail: missing artifact_id
 

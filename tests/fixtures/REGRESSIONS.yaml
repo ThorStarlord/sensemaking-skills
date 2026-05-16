@@ -4,6 +4,11 @@ required_cases:
     fixture: tests/fixtures/validate-brief/invalid/repo-sensemaker-id-hallucination.md
     reason: Prevent regression of hallucinated workflow IDs such as wave-1-execution.
 
+  - id: prompt-handoff-unknown-target-skill
+    validator: validate-prompt-handoff
+    fixture: tests/fixtures/validate-prompt-handoff/invalid/unknown-target-skill.md
+    reason: Prevent regression of unknown target skill detection in prompt handoff artifacts.
+
 excluded_validators:
   - validator: validate-repo
     reason: Repository-level meta-validator; not fixture-tested by the Validator Verification Suite.

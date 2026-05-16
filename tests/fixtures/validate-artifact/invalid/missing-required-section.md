@@ -2,7 +2,7 @@
 validator_case: negative
 validator_args:
   - repository_sensemaking_brief
-expected_error_contains: "Missing required section: weakest_boundary"
+expected_error_contains: "MISSING_REQUIRED_SECTION"
 ---
 # Repository Sensemaking Brief
 

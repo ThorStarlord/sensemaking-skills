@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Missing required section: 'Routing Quality'"
+expected_error_contains: "MISSING_SECTION"
 ---
 # Usage Research Report
 

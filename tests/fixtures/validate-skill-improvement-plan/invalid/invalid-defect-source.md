@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Invalid Defect Source"
+expected_error_contains: "INVALID_DEFECT_SOURCE"
 ---
 # Skill Improvement Plan
 

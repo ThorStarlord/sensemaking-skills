@@ -2,7 +2,7 @@
 validator_case: negative
 validator_args:
   - repository_sensemaking_brief
-expected_error_contains: "Could not find a single YAML block containing all required machine fields"
+expected_error_contains: "MISSING_MACHINE_FIELDS"
 ---
 # Repository Sensemaking Brief
 

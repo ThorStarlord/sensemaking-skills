@@ -360,6 +360,8 @@ artifacts:
       - ready_to_copy_prompt
     verification:
       generic_validator: "python scripts/validate-artifact.py prompt_handoff {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-prompt-handoff.py {artifact_path}"
       required_for_modes:
         - guided_execution
         - autonomous_execution

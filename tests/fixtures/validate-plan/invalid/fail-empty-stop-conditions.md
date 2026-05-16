@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "stop_conditions missing"
+expected_error_contains: "STOP_CONDITIONS_EMPTY"
 ---
 # Fail: empty stop conditions
 

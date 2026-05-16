@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "not found in artifact-contracts.yaml"
+expected_error_contains: "ARTIFACT_NOT_CONTRACTED"
 ---
 # Fail: unknown artifact
 

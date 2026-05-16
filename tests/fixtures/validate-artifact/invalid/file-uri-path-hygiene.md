@@ -2,7 +2,7 @@
 validator_case: negative
 validator_args:
   - repository_sensemaking_brief
-expected_error_contains: "Absolute 'file:///' links are banned"
+expected_error_contains: "ABSOLUTE_FILE_LINK"
 ---
 # Repository Sensemaking Brief
 

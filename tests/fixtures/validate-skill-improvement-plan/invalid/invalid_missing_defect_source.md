@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Defect Source"
+expected_error_contains: "INVALID_DEFECT_SOURCE"
 ---
 # Invalid Missing Source
 ## 1. Diagnosis

@@ -2,7 +2,7 @@
 validator_case: negative
 validator_args:
   - repository_sensemaking_brief
-expected_error_contains: "missing field: quote"
+expected_error_contains: "MISSING_EXCERPT_FIELD"
 ---
 # Repository Sensemaking Brief
 

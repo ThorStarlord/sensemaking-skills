@@ -23,17 +23,11 @@ def parse_frontmatter(file_path):
 
 def run_validator(validator_path, fixture_path, repo_root=".", extra_args=None):
     """Runs a validator script against a fixture."""
-    # Build command - handle --repo-root if needed (some scripts might not support it yet)
-    # Most validators in this repo use: python script.py artifact_path
     cmd = [sys.executable, validator_path]
     if extra_args:
         cmd.extend(extra_args)
     cmd.append(fixture_path)
-    
-    # Check if the validator script supports --repo-root by reading its help or just assuming
-    # Based on scripts/ folder, validate-brief and validate-plan support it.
-    if "validate-brief.py" in validator_path or "validate-plan.py" in validator_path:
-        cmd.extend(["--repo-root", repo_root])
+    cmd.extend(["--repo-root", repo_root])
         
     result = subprocess.run(cmd, capture_output=True, text=True)
     return result.returncode == 0, result.stdout + result.stderr

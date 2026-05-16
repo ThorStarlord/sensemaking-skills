@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "Invalid Semantic Quality Score: 25. Must be between 0 and 21."
+expected_error_contains: "INVALID_SEMANTIC_SCORE"
 ---
 # Usage Research Report
 

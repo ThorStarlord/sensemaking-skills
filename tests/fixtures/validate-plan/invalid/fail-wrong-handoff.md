@@ -1,6 +1,6 @@
 ---
 validator_case: negative
-expected_error_contains: "input_artifact mismatch"
+expected_error_contains: "INPUT_ARTIFACT_MISMATCH"
 ---
 # Fail: wrong handoff
 
