@@ -24,7 +24,7 @@ The `sensemaking-skills` repository aims to provide a set of agentic skills for 
 - Standardize all `verification.script` entries to use `validate-artifact.py`.
 
 ## 6. Weakest boundary
-The **Validator/Contract Synchronization**. Specifically, the drift between the intended general validator (`validate-artifact.py`) and specialized ones, along with the lack of run-log schema validation against the workflow registry.
+The **Contract Mismatch**. Specifically, the drift between the intended general validator (`validate-artifact.py`) and specialized ones, along with the lack of run-log schema validation against the workflow registry.
 
 ## 7. Evidence
 - `skills/workflow-orchestrator/references/artifact-contracts.yaml`: Shows `validate-brief.py` for the brief while others use `validate-artifact.py`.
@@ -44,7 +44,7 @@ evidence_excerpts:
 ```
 
 ## 9. Why this boundary matters
-If the run log records incorrect gate names or skips validation steps due to contract drift, the machine-auditable nature of the pipeline is compromised.
+If the run log records incorrect gate names or skips validation steps due to contract drift, the machine-auditable nature of the pipeline is compromised. The logic trace for this diagnosis runs from observed invocation inconsistencies to contract drift as the root cause.
 
 ## 10. Candidate next steps
 - Update `artifact-contracts.yaml` to use `validate-artifact.py` for all artifacts.
