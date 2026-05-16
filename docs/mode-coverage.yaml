@@ -40,7 +40,7 @@ mode_coverage:
   workflow_id: fast-local-diagnostic
   last_run: '2026-05-16'
   run_log_path: artifacts/run_log_fast-local-diagnostic_plan_only.md
-  steps_completed: 2
+  steps_completed: 0
   steps_total: 2
   validators_exercised:
   - 'level_1: validate-repo.py'
@@ -48,7 +48,7 @@ mode_coverage:
   gates_exercised: false
   gates_note: not_applicable_plan_only
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-164219-e5c8b2da.'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171849-05acdea6.'
 - mode: prompt_chain
   workflow_id: fast-local-diagnostic
   last_run: 2026-05-16
@@ -181,22 +181,107 @@ mode_coverage:
     Recovery path requires brief revision and gate re-approval. Proves: (a) denied
     gate handling, (b) clean pause at step boundary, (c) no rollback needed for non-mutated
     state.'
+- mode: plan_only
+  workflow_id: setup-sensemaking-repo
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_setup-sensemaking-repo_plan_only.md
+  steps_completed: 3
+  steps_total: 3
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
+  gates_exercised: false
+  gates_note: not_applicable_plan_only
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171500-2c1abae2.'
+- mode: plan_only
+  workflow_id: autonomous-sprint-preflight
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_autonomous-sprint-preflight_plan_only.md
+  steps_completed: 2
+  steps_total: 2
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
+  gates_exercised: false
+  gates_note: not_applicable_plan_only
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171505-c98731ea.'
+- mode: plan_only
+  workflow_id: docs-architecture
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_docs-architecture_plan_only.md
+  steps_completed: 3
+  steps_total: 3
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
+  gates_exercised: false
+  gates_note: not_applicable_plan_only
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171510-b1c0877c.'
+- mode: plan_only
+  workflow_id: product-strategy-sprint
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_product-strategy-sprint_plan_only.md
+  steps_completed: 5
+  steps_total: 5
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  gates_exercised: false
+  gates_note: not_applicable_plan_only
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171516-5157c83a.'
+- mode: plan_only
+  workflow_id: product-autonomous-sprint
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_product-autonomous-sprint_plan_only.md
+  steps_completed: 8
+  steps_total: 8
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
+  gates_exercised: false
+  gates_note: not_applicable_plan_only
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171520-2c62af7f.'
+- mode: plan_only
+  workflow_id: experimental-autonomous-sprint
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_experimental-autonomous-sprint_plan_only.md
+  steps_completed: 6
+  steps_total: 6
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
+  gates_exercised: false
+  gates_note: not_applicable_plan_only
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171525-cc12bf0e.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
-  last_verified: 2026-05-16 (all 10 run logs validated)
+  last_verified: 2026-05-16 (auto-repaired, 17 run logs)
   notes: Validates run log structure, gate recording, pre-flight documentation, and
     path hygiene. All run logs validated successfully.
   run_logs_validated:
-  - artifacts/run_log.md (yolo_execution)
-  - artifacts/plan_only_run_log.md (plan_only)
-  - artifacts/prompt_chain_run_log.md (prompt_chain)
-  - artifacts/guided_execution_completion_log.md (guided_execution)
   - artifacts/autonomous_execution_run_log.md (autonomous_execution)
-  - artifacts/validator_live_coverage_run_log.md (validator-live-coverage)
-  - artifacts/skill_maintenance_loop_run_log.md (skill-maintenance-loop)
-  - artifacts/full_local_sensemaking_run_log.md (full-local-sensemaking)
-  - artifacts/product_discovery_run_log.md (product-discovery-sprint)
+  - artifacts/denied_gate_run_log.md (guided_execution)
+  - artifacts/full_local_sensemaking_run_log.md (guided_execution)
+  - artifacts/guided_execution_completion_log.md (guided_execution)
+  - artifacts/plan_only_run_log.md
+  - artifacts/product_discovery_run_log.md (guided_execution)
+  - artifacts/prompt_chain_run_log.md (prompt_chain)
+  - artifacts/run_log.md (yolo_execution)
+  - artifacts/run_log_autonomous-sprint-preflight_plan_only.md (plan_only)
+  - artifacts/run_log_docs-architecture_plan_only.md (plan_only)
+  - artifacts/run_log_experimental-autonomous-sprint_plan_only.md (plan_only)
+  - artifacts/run_log_fast-local-diagnostic_plan_only.md (plan_only)
+  - artifacts/run_log_product-autonomous-sprint_plan_only.md (plan_only)
+  - artifacts/run_log_product-strategy-sprint_plan_only.md (plan_only)
+  - artifacts/run_log_setup-sensemaking-repo_plan_only.md (plan_only)
+  - artifacts/skill_maintenance_loop_run_log.md (guided_execution)
+  - artifacts/validator_live_coverage_run_log.md (guided_execution)
 - tool: analyze-run-failures.py
   status: proven
   last_verified: 2026-05-16
@@ -235,7 +320,13 @@ system_tools:
     paused executions after gate denial.
   workflows_executed:
   - fast-local-diagnostic (plan_only)
-  last_session: orchestration-20260516-164219-e5c8b2da
+  - setup-sensemaking-repo (plan_only)
+  - autonomous-sprint-preflight (plan_only)
+  - docs-architecture (plan_only)
+  - product-strategy-sprint (plan_only)
+  - product-autonomous-sprint (plan_only)
+  - experimental-autonomous-sprint (plan_only)
+  last_session: orchestration-20260516-171849-05acdea6
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
@@ -244,17 +335,33 @@ system_tools:
 - tool: test-controlled-failures.py
   status: proven
   last_run: 2026-05-16
-  notes: 'Controlled failure test suite. 7 tests cover: bad artifact rejection, malformed
+  notes: 'Controlled failure test suite. 8 tests cover: bad artifact rejection, malformed
     log detection, stale coverage detection, repeatable failure boundary detection,
     gate denial handling (via --gate-decision auto-deny), validator failure halt,
-    and resume after gate denial (--resume + --gate-decision auto-approve). All 7
-    tests pass.'
-  tests_passed: 7
-  tests_total: 7
+    resume after gate denial (--resume + --gate-decision auto-approve), and rollback
+    recommendation after step failure. All 8 tests pass.'
+  tests_passed: 8
+  tests_total: 8
 validator_live_coverage:
   validate_repo_py:
     fixture_tested: excluded
     live_invocations:
+    - yolo_execution (fast-local-diagnostic)
+    - guided_execution (docs-contract-reconciliation)
+    - plan_only (fast-local-diagnostic)
+    - prompt_chain (fast-local-diagnostic)
+    - autonomous_execution (fast-local-diagnostic)
+    - guided_execution (validator-live-coverage)
+    - guided_execution (skill-maintenance-loop)
+    - guided_execution (full-local-sensemaking)
+    - guided_execution (product-discovery-sprint)
+    - guided_execution (fast-local-diagnostic)
+    - plan_only (setup-sensemaking-repo)
+    - plan_only (autonomous-sprint-preflight)
+    - plan_only (docs-architecture)
+    - plan_only (product-strategy-sprint)
+    - plan_only (product-autonomous-sprint)
+    - plan_only (experimental-autonomous-sprint)
     - yolo_execution (pre-flight)
     - guided_execution (pre-flight)
     - plan_only (pre-flight)
@@ -266,6 +373,17 @@ validator_live_coverage:
   validate_output_py:
     fixture_tested: excluded
     live_invocations:
+    - yolo_execution (fast-local-diagnostic)
+    - guided_execution (docs-contract-reconciliation)
+    - plan_only (fast-local-diagnostic)
+    - prompt_chain (fast-local-diagnostic)
+    - autonomous_execution (fast-local-diagnostic)
+    - guided_execution (validator-live-coverage)
+    - plan_only (setup-sensemaking-repo)
+    - plan_only (autonomous-sprint-preflight)
+    - plan_only (docs-architecture)
+    - plan_only (product-autonomous-sprint)
+    - plan_only (experimental-autonomous-sprint)
     - 'yolo_execution (step 1: brief, step 2: handoff)'
     - 'guided_execution (step 2: report, step 3: handoff)'
     - 'plan_only (step 0: plan)'
@@ -281,6 +399,13 @@ validator_live_coverage:
   validate_artifact_py:
     fixture_tested: true
     live_invocations:
+    - guided_execution (docs-contract-reconciliation)
+    - prompt_chain (fast-local-diagnostic)
+    - autonomous_execution (fast-local-diagnostic)
+    - guided_execution (skill-maintenance-loop)
+    - guided_execution (full-local-sensemaking)
+    - guided_execution (product-discovery-sprint)
+    - guided_execution (fast-local-diagnostic)
     - yolo_execution (via validate-output.py dispatcher, both steps)
     - guided_execution (via validate-output.py dispatcher, steps 2, 3)
     - plan_only (via validate-output.py dispatcher)
@@ -292,6 +417,10 @@ validator_live_coverage:
   validate_brief_py:
     fixture_tested: true
     live_invocations:
+    - prompt_chain (fast-local-diagnostic)
+    - autonomous_execution (fast-local-diagnostic)
+    - guided_execution (full-local-sensemaking)
+    - guided_execution (fast-local-diagnostic)
     - yolo_execution (via validate-output.py dispatcher, step 1)
     - prompt_chain (cross-check table, standalone)
     - autonomous_execution (via validate-output.py dispatcher, step 1)
@@ -304,6 +433,11 @@ validator_live_coverage:
   validate_prompt_handoff_py:
     fixture_tested: true
     live_invocations:
+    - guided_execution (docs-contract-reconciliation)
+    - prompt_chain (fast-local-diagnostic)
+    - autonomous_execution (fast-local-diagnostic)
+    - guided_execution (skill-maintenance-loop)
+    - guided_execution (full-local-sensemaking)
     - yolo_execution (via validate-output.py dispatcher, step 2)
     - guided_execution (via validate-output.py dispatcher, step 3)
     - prompt_chain (cross-check table, standalone)
@@ -313,6 +447,8 @@ validator_live_coverage:
   validate_skill_improvement_plan_py:
     fixture_tested: true
     live_invocations:
+    - guided_execution (validator-live-coverage)
+    - guided_execution (skill-maintenance-loop)
     - 'validator-live-coverage (via validate-output.py dispatcher, 2 examples: fixture_edit,
       no_skill_change)'
     - skill-maintenance-loop (via validate-output.py dispatcher, step 1)
@@ -321,6 +457,7 @@ validator_live_coverage:
   validate_usage_research_report_py:
     fixture_tested: true
     live_invocations:
+    - guided_execution (validator-live-coverage)
     - 'validator-live-coverage (via validate-output.py dispatcher, 2 scenarios: cold-start,
       false-routing)'
     notes: Proven through validate-output.py dispatcher against real usage research
@@ -329,22 +466,31 @@ orchestration_runner:
   last_run: '2026-05-16'
   last_session: orchestration-20260516-161541-0eda0bc6
   workflow_families_proven:
+  - autonomous-sprint-preflight
+  - docs-architecture
   - docs-contract-reconciliation
+  - experimental-autonomous-sprint
   - fast-local-diagnostic
   - full-local-sensemaking
+  - product-autonomous-sprint
   - product-discovery-sprint
+  - product-strategy-sprint
+  - setup-sensemaking-repo
   - skill-maintenance-loop
   - validator-live-coverage
-  total_workflow_families: 6
+  total_workflow_families: 12
   capabilities:
   - 'Canonical validator dispatch: orchestration-runner.py delegates to validate-output.py'
   - 'Non-interactive gate decisions: --gate-decision auto-approve / auto-deny'
   - 'Resume capability: --resume continues paused execution after gate denial'
-  - 'Controlled failure integration tests: 7 tests covering all negative paths'
+  - 'Rollback recommendation: ROLLBACK_RECOMMENDED exit code (4) for mutating mode
+    failures'
+  - 'Evidence aging: validate-mode-coverage.py checks last_run dates against --max-age-days'
+  - 'Controlled failure integration tests: 8 tests covering all negative paths'
 controlled_failure_tests:
   last_run: 2026-05-16
-  tests_passed: 7
-  tests_total: 7
+  tests_passed: 8
+  tests_total: 8
   coverage:
   - 'Test 1: validator-stop-on-bad-artifact -> validate-output.py correctly rejects
     bad artifacts'
@@ -358,6 +504,8 @@ controlled_failure_tests:
   - 'Test 6: validator-failure-halts-chain -> validator stack stops at first failure'
   - 'Test 7: resume-after-gate-denial -> two-phase test: Phase 1 denies gate, Phase
     2 resumes and completes all steps'
+  - 'Test 8: rollback-after-mutation -> orchestration runner recommends rollback (ROLLBACK_RECOMMENDED)
+    after step failure, recovery instructions provided'
   negative_paths_proven:
   - denied gate handling (interactive + non-interactive --gate-decision)
   - resume after gate denial (--resume + --gate-decision auto-approve)
@@ -365,6 +513,7 @@ controlled_failure_tests:
   - malformed artifact rejection
   - stale coverage detection
   - repeatable failure boundary detection
+  - rollback recommendation after step failure (ROLLBACK_RECOMMENDED exit code)
   non_interactive_flags_proven:
   - '--gate-decision auto-deny: non-interactive gate denial for testing'
   - '--gate-decision auto-approve: non-interactive gate approval for testing'

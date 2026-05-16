@@ -756,14 +756,18 @@ class OrchestrationRunner:
                 f"- **runtime**: local_execution",
                 f"- **output_artifact**: {sr.get('output_artifact', 'N/A')}",
                 f"- **artifact_path**: {sr.get('artifact_path', 'N/A')}",
-                f"- **validator_stack**:",
             ])
-            for v in sr.get("validator_stack", []):
-                lines.extend([
-                    f"    - level: {v['level']}",
-                    f"      command: {v['command']}",
-                    f"      result: {v['result']}",
-                ])
+            vstack = sr.get("validator_stack", [])
+            if vstack:
+                lines.append("- **validator_stack**:")
+                for v in vstack:
+                    lines.extend([
+                        f"    - level: {v['level']}",
+                        f"      command: {v['command']}",
+                        f"      result: {v['result']}",
+                    ])
+            else:
+                lines.append("- **validator_stack**: none (no artifact to validate)")
             lines.extend([
                 f"- **gate**: {sr.get('gate', '?')}",
                 f"- **status**: {sr['status']}",

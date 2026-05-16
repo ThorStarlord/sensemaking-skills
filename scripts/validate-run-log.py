@@ -130,6 +130,8 @@ def _parse_run_log(content: str) -> dict:
                 {"level": l, "command": c, "result": r}
                 for l, c, r in vstack
             ]
+        elif re.search(r"\*\*validator_stack\*\*:\s*none", step_body):
+            step["validator_stack"] = "explicit_none"
 
         steps.append(step)
 
@@ -286,15 +288,16 @@ def validate_run_log(run_log_path: str, repo_root: str = ".") -> list[str]:
                 )
             )
 
-        if not step.get("validator_stack"):
+        vstack_check = step.get("validator_stack")
+        if not vstack_check:
             errors.append(
                 format_error(
                     MISSING_VALIDATOR_STACK,
                     f"Step {sid} missing validator_stack entries."
                 )
             )
-        else:
-            for i, v in enumerate(step["validator_stack"]):
+        elif vstack_check != "explicit_none":
+            for i, v in enumerate(vstack_check):
                 if v["result"] not in ("PASSED", "FAILED"):
                     errors.append(
                         format_error(

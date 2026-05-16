@@ -373,10 +373,11 @@ class RepeatableFailureDetection(ControlledFailureTest):
 
 
 class GateDenialStopsExecution(ControlledFailureTest):
-    """Test 5: Gate denial stops workflow execution cleanly — true integration test.
+    """Test 5: Gate denial stops workflow execution cleanly.
 
-    Uses --gate-decision auto-deny for non-interactive gate denial, proving the
-    orchestrator correctly handles denied gates without requiring stdin input.
+    Uses --gate-decision auto-deny for non-interactive gate denial.
+    When git tree is dirty, integrates the run log verification path
+    to prove end-to-end gate denial generates the correct run log record.
     """
 
     def __init__(self):
@@ -655,6 +656,82 @@ class ValidatorFailureHaltsChain(ControlledFailureTest):
             return False, "FAILED to halt on bad artifact (exit 0)", detail
 
 
+class RollbackAfterMutation(ControlledFailureTest):
+    """Test 8: Rollback recommendation after step failure.
+
+    Replaces the repository_sensemaking_brief with bad content, then runs the
+    orchestration runner in plan_only mode. The validator catches the bad brief
+    during step 1 execution, causing a step failure. The runner recommends rollback
+    and returns exit code 2 (failure in non-mutating mode).
+    """
+
+    def __init__(self):
+        super().__init__(
+            "rollback-after-mutation",
+            "Orchestration runner recommends rollback after validator failure (exit 2, ROLLBACK_RECOMMENDED message)"
+        )
+
+    def setup(self) -> tuple[bool, str]:
+        self.brief_path = os.path.join(_repo_root(), "artifacts", "repository_sensemaking_brief.md")
+        if not os.path.exists(self.brief_path):
+            return False, f"Brief not found: {self.brief_path}"
+
+        # Save original content
+        with open(self.brief_path, "r", encoding="utf-8") as f:
+            self.original_brief = f.read()
+
+        # Replace brief with bad content that will fail validation
+        with open(self.brief_path, "w", encoding="utf-8") as f:
+            f.write("# Bad Artifact\n\nThis has no required sections.\n")
+        return True, ""
+
+    def run(self) -> tuple[bool, str, str]:
+        runner_script = _script_path("orchestration-runner.py")
+
+        # Run plan_only mode (allows dirty git, no gates) with bad brief
+        result = subprocess.run(
+            [sys.executable, runner_script, "fast-local-diagnostic",
+             "--mode", "plan_only",
+             "--repo-root", _repo_root()],
+            capture_output=True, text=True,
+            cwd=_repo_root(), timeout=60,
+        )
+
+        output = (result.stdout + result.stderr).strip()
+        details = []
+
+        # 1. Exit code should be 2 (failure in non-mutating mode)
+        has_exit_2 = result.returncode == 2
+        if not has_exit_2:
+            details.append(f"Expected exit code 2 (failure), got {result.returncode}")
+
+        # 2. Output should contain rollback recommendation
+        has_rollback = "ROLLBACK RECOMMENDED" in output
+        if not has_rollback:
+            details.append("Output missing 'ROLLBACK RECOMMENDED' message")
+
+        # 3. Should mention step failure
+        has_step_failure = "FAILED" in output.upper() and "STEP" in output.upper()
+        if not has_step_failure:
+            details.append("Output does not mention step failure")
+
+        all_pass = has_exit_2 and has_rollback and has_step_failure
+        detail_str = "; ".join(details) if details else "All assertions passed"
+
+        if all_pass:
+            return True, (
+                f"CORRECTLY recommended rollback after step failure: "
+                f"exit {result.returncode}, ROLLBACK_RECOMMENDED in output, step failure detected"
+            ), output[:400]
+        else:
+            return False, f"Rollback test failed: {detail_str}", output[:500]
+
+    def teardown(self) -> None:
+        if hasattr(self, 'original_brief') and hasattr(self, 'brief_path'):
+            with open(self.brief_path, "w", encoding="utf-8") as f:
+                f.write(self.original_brief)
+
+
 # ===============================================================================
 # Test Registry
 # ===============================================================================
@@ -667,6 +744,7 @@ ALL_TESTS: list[ControlledFailureTest] = [
     GateDenialStopsExecution(),
     ValidatorFailureHaltsChain(),
     ResumeAfterGateDenial(),
+    RollbackAfterMutation(),
 ]
 
 TEST_REGISTRY = {t.test_id: t for t in ALL_TESTS}
