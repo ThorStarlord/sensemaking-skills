@@ -21,6 +21,7 @@ This repository is built on **Artifact-Driven Agentic Engineering**. We treat ar
 | `workflow-registry.yaml` | Find the sequence of skills for a project mode |
 | `examples/skill-tests/` | Behavioral evidence and test fixtures |
 | `docs/philosophy/` | Engineering rationale and FMEA taxonomies |
+| `docs/mode-coverage.yaml` | Execution mode proving status and run log references |
 
 ## Domain Language
 - **Fog**: The state of project uncertainty (Product, Architecture, Strategy, or Routing).

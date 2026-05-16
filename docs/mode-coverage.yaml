@@ -1,0 +1,34 @@
+# Mode Coverage Tracker
+# Records which execution mode + workflow combinations have been proven by live runs.
+# Updated after each proving run. Source of truth for automation system coverage.
+
+mode_coverage:
+  - mode: yolo_execution
+    workflow_id: fast-local-diagnostic
+    last_run: 2026-05-16
+    run_log_path: artifacts/run_log.md (feature branch yolo/fast-local-diagnostic/2026-05-16)
+    steps_completed: 2
+    steps_total: 2
+    validators_exercised:
+      - level_1: validate-repo.py
+      - level_2: validate-artifact.py (repository_sensemaking_brief)
+      - level_2: validate-artifact.py (prompt_handoff)
+      - level_3: validate-brief.py
+      - level_3: validate-prompt-handoff.py
+    gates_exercised: false
+    gates_note: bypassed_by_yolo
+    hardening_triggered: none
+    notes: "Two TDD cycles occurred (UNKNOWN_WEAKNESS_TYPE, NO_LOGIC_TRACE). Both were single-occurrence data issues, not repeatable failure boundaries. No structural hardening warranted."
+
+  - mode: guided_execution
+    workflow_id: docs-contract-reconciliation
+    last_run: 2026-05-14
+    run_log_path: runs/run_log_20260514.md
+    steps_completed: 1
+    steps_total: 3
+    validators_exercised:
+      - level_2: validate-artifact.py (repository_sensemaking_brief)
+    gates_exercised: false
+    gates_note: paused_at_review_drift_diagnosis_before_gate_decision
+    hardening_triggered: none
+    notes: "Step 1 completed. Execution paused at review_drift_diagnosis gate. Gate was never approved or denied."
