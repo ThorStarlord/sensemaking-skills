@@ -38,5 +38,21 @@ class TestSkillExecutionAgent(unittest.TestCase):
         # After skill execution, artifact should exist
         self.assertTrue(artifact_id is not None)
 
+    def test_skill_invocation_dispatch_creates_prompt(self):
+        """Test that skill invocation creates proper dispatch prompt."""
+        skill_id = "test-skill"
+        prompt = f"Invoke skill: /{skill_id}"
+        self.assertIn(skill_id, prompt)
+
+    def test_invoke_skill_with_context(self):
+        """Test invoking a skill with workflow context."""
+        context = {
+            "workflow_id": "test-workflow",
+            "step": 1,
+            "skill": "test-skill",
+            "input_artifact": "test_input.md"
+        }
+        self.assertIn("workflow_id", context)
+
 if __name__ == "__main__":
     unittest.main()

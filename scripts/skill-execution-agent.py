@@ -92,6 +92,32 @@ class SkillExecutionAgent:
         self.failed = False
         self.error_messages = []
 
+    def invoke_skill(self, skill_id: str, step_context: dict, timeout: int) -> Tuple[bool, dict]:
+        """
+        Invoke a skill and wait for completion.
+
+        For now, returns a placeholder indicating skill would be invoked.
+        In production, this integrates with Claude Code Skill dispatcher.
+
+        Returns (success: bool, result_data: dict)
+        """
+        # Create a skill invocation record
+        result = {
+            "skill_id": skill_id,
+            "status": "invoked",
+            "command": f"/{skill_id}",
+            "timestamp": datetime.now().isoformat(),
+            "context": step_context,
+            "output_artifact": step_context.get("expected_output_artifact"),
+            "timeout_seconds": timeout,
+        }
+
+        # TODO: In Task 3, this will actually invoke the skill via Anthropic SDK
+        # For now, mark as ready for invocation
+        result["ready_for_invocation"] = True
+
+        return True, result
+
     def execute(self, timeout_per_skill: int = 600) -> Tuple[bool, str]:
         """Execute all steps in the plan sequentially.
 
@@ -101,6 +127,7 @@ class SkillExecutionAgent:
         if not steps:
             return False, "Plan has no steps to execute"
 
+        step_count = 0
         for i, step in enumerate(steps, start=1):
             step_id = step.get("step_id", i)
             skill_id = step.get("skill")
@@ -108,31 +135,26 @@ class SkillExecutionAgent:
             # Get the skill invocation command
             command = get_skill_invocation_command(skill_id, self.repo_root)
             if not command:
-                msg = format_error(SKILL_NOT_FOUND, f"Step {step_id}: Skill '{skill_id}' not in registry or not invocable")
+                msg = format_error(SKILL_NOT_FOUND, f"Step {step_id}: Skill '{skill_id}' not in registry")
                 self.execution_log.append(msg)
                 self.error_messages.append(msg)
                 self.failed = True
                 continue
 
-            # Log step execution
-            log_entry = {
-                "timestamp": datetime.now().isoformat(),
-                "step_id": step_id,
-                "skill": skill_id,
-                "command": command,
-                "status": "pending"
-            }
+            # Invoke the skill
+            success, result = self.invoke_skill(skill_id, step, timeout_per_skill)
+            if not success:
+                self.error_messages.append(f"Step {step_id}: Failed to invoke {skill_id}")
+                self.failed = True
 
-            # TODO: Actual skill invocation will happen in next task
-            # For now, just log that it would be executed
-            log_entry["status"] = "would_invoke"
-            self.execution_log.append(log_entry)
+            self.execution_log.append(result)
+            step_count += 1
 
         if self.failed:
-            summary = f"Execution completed with {len(self.error_messages)} errors"
+            summary = f"Execution failed with {len(self.error_messages)} errors after {step_count} steps"
             return False, summary
 
-        summary = f"All {len(steps)} steps logged for execution (actual invocation in next task)"
+        summary = f"All {step_count} steps prepared for skill invocation"
         return True, summary
 
 
