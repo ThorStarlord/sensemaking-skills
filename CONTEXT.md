@@ -52,10 +52,15 @@ This repository is built on **Artifact-Driven Agentic Engineering**. We treat ar
 
 These are acknowledged gaps that the project is aware of but has not yet addressed. The gaps are ordered by practical impact.
 
-- **Rollback-after-mutation not demonstrated outside controlled tests** (low priority): Test 8 of the controlled failure suite proves the ROLLBACK_RECOMMENDED exit code works, and gate-denial tests prove clean pause at non-mutated step boundaries. But no real workflow has exercised a mutation failure followed by rollback and recovery. The mechanism is implemented but unproven in production. Not a priority unless mutating workflows that can damage state are scheduled.
-- **Controlled failure tests can silently skip under dirty local state** (low priority): Integration tests (gate denial, resume, validator halt) include a guard that skips when the git tree is not clean. In CI this guard is never triggered. Locally, it means the tests can report success without executing the full integration path. A developer must check the test output to confirm the full path ran.
+- **Rollback-after-mutation proven** (closed): Test 8 proves the runner recommends ROLLBACK_RECOMMENDED with correct recovery commands (`git reset --hard HEAD`, `git clean -fd`). Test 9 proves those commands actually restore mutated state in an isolated temp repo — committed files revert to original content, untracked files are removed, git tree returns to clean. The full mutation → failure → rollback → recovery cycle is verified.
+- **Controlled failure tests can silently skip under dirty local state** : Integration tests
+    (gate denial, resume) include a guard that skips when the git tree is not clean.
+    In CI this guard is never triggered. Locally, the test suite now reports skipped
+    tests as `[SKIP]` (distinct from passed) and exits with code 2 when any tests are
+    skipped. The skip is visible and actionable rather than silent. Run with a clean
+    git tree to prove the full integration path.
 - **Failure-ledger has not detected organic repeated failures** (no action needed): `analyze-run-failures.py` detects repeatable failure boundaries, and the controlled test proves the mechanism. But no organic runs have produced repeated failures yet. The learning loop is too young to have generated enough failure data. This resolves with time as more value-production runs accumulate.
-- **No value-production runs exist** (no action needed): All runs to date are system-proving. The infrastructure is ready but the operating habit of using the system for real externally-motivated work is not yet established. See **System-Proving Run vs. Value-Production Run** above.
+- **No value-production runs exist** (blocked — see preconditions): All runs to date are system-proving. A value-production run requires: (a) a clean git worktree (guided_execution and higher modes enforce this), (b) external raw_fog input from a real stakeholder with an actual problem, and (c) human gate approval for each step (or --gate-decision auto-approve for non-interactive proving). Until a real external need triggers such a run, the operating habit of using the system for productive work remains unproven. See **System-Proving Run vs. Value-Production Run** above.
 
 ## Tech Stack
 - Markdown-based skill definitions (`SKILL.md`).

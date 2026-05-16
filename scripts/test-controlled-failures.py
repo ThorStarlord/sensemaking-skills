@@ -11,10 +11,10 @@ Usage:
     python scripts/test-controlled-failures.py --json     # Machine-readable output
 
 Exit codes:
-    0  All tests passed
-    1  One or more tests FAILED (system correctly caught the failure)
-    2  A test itself errored (test infrastructure issue)
-    99 All tests skipped (no controlled-failure fixture dir found)
+    0  All tests passed (every test ran and the system correctly caught all failures)
+    1  One or more tests FAILED (system did NOT detect the failure)
+    2  One or more tests errored or skipped (infrastructure issue or incomplete run)
+    99 All tests skipped (no controlled-failure fixture dir found, or all skipped)
 """
 
 import os
@@ -72,6 +72,15 @@ class ControlledFailureTest:
         self.test_id = test_id
         self.description = description
         self.fixtures_dir = os.path.join(_repo_root(), "tests", "fixtures", "controlled-failures")
+        self._skipped = False
+
+    def skip(self, message: str, detail: str = "") -> tuple[bool, str, str]:
+        """Mark the test as skipped (call from run()). Returns (True, message, detail).
+
+        The test framework treats skipped tests distinctly from passed tests:
+        they show as SKIPPED in output and cause a non-zero exit code."""
+        self._skipped = True
+        return True, message, detail
 
     def setup(self) -> tuple[bool, str]:
         """Prepare the test fixture. Return (success, message)."""
@@ -95,7 +104,10 @@ class ControlledFailureTest:
 
         try:
             passed, message, detail = self.run()
-            status = "passed" if passed else "failed"
+            if self._skipped:
+                status = "skipped"
+            else:
+                status = "passed" if passed else "failed"
             return {"test_id": self.test_id, "status": status, "message": message, "detail": detail}
         except Exception as e:
             return {"test_id": self.test_id, "status": "error", "message": str(e), "detail": ""}
@@ -405,12 +417,13 @@ class GateDenialStopsExecution(ControlledFailureTest):
         git_clean = len(git_check.stdout.strip()) == 0
 
         if not git_clean:
-            return True, (
+            return self.skip(
                 "SKIPPED full integration (git tree not clean). "
                 "Gate denial via --gate-decision auto-deny verified via code inspection: "
                 "_manage_gate returns denied_by_user when gate_decision='auto-deny', "
-                "step status PAUSED, runner exits with code 3."
-            ), f"Uncommitted changes detected:\n{git_check.stdout.strip()[:300]}"
+                "step status PAUSED, runner exits with code 3.",
+                f"Uncommitted changes detected:\n{git_check.stdout.strip()[:300]}"
+            )
 
         runner_script = _script_path("orchestration-runner.py")
 
@@ -534,12 +547,13 @@ class ResumeAfterGateDenial(ControlledFailureTest):
         git_clean = len(git_check.stdout.strip()) == 0
 
         if not git_clean:
-            return True, (
+            return self.skip(
                 "SKIPPED full integration (git tree not clean). "
                 "Resume capability verified via code inspection: "
                 "_find_resume_state parses run log for completed/paused steps, "
-                "run() skips completed steps and resumes from paused step."
-            ), f"Uncommitted changes detected:\n{git_check.stdout.strip()[:300]}"
+                "run() skips completed steps and resumes from paused step.",
+                f"Uncommitted changes detected:\n{git_check.stdout.strip()[:300]}"
+            )
 
         runner_script = _script_path("orchestration-runner.py")
         details = []
@@ -715,13 +729,22 @@ class RollbackAfterMutation(ControlledFailureTest):
         if not has_step_failure:
             details.append("Output does not mention step failure")
 
-        all_pass = has_exit_2 and has_rollback and has_step_failure
+        # 4. Output should contain the specific recovery commands from rollback()
+        has_git_reset = "git reset --hard HEAD" in output
+        has_git_clean = "git clean -fd" in output
+        if not has_git_reset:
+            details.append("Output missing 'git reset --hard HEAD' rollback command")
+        if not has_git_clean:
+            details.append("Output missing 'git clean -fd' rollback command")
+
+        all_pass = has_exit_2 and has_rollback and has_step_failure and has_git_reset and has_git_clean
         detail_str = "; ".join(details) if details else "All assertions passed"
 
         if all_pass:
             return True, (
                 f"CORRECTLY recommended rollback after step failure: "
-                f"exit {result.returncode}, ROLLBACK_RECOMMENDED in output, step failure detected"
+                f"exit {result.returncode}, ROLLBACK_RECOMMENDED in output, step failure detected, "
+                f"recovery commands present"
             ), output[:400]
         else:
             return False, f"Rollback test failed: {detail_str}", output[:500]
@@ -730,6 +753,128 @@ class RollbackAfterMutation(ControlledFailureTest):
         if hasattr(self, 'original_brief') and hasattr(self, 'brief_path'):
             with open(self.brief_path, "w", encoding="utf-8") as f:
                 f.write(self.original_brief)
+
+
+class RollbackProvesRecovery(ControlledFailureTest):
+    """Test 9: Prove git rollback commands restore mutated state.
+
+    Creates an isolated temp git repo, commits a file, mutates it, then runs
+    the exact recovery commands from the runner's rollback() method
+    (git reset --hard HEAD + git clean -fd). Verifies the committed file is
+    restored to original content and the untracked file is removed.
+
+    This proves the commands the runner recommends actually work. Combined
+    with Test 8 (which proves the runner outputs them), the full mutation ->
+    failure -> rollback -> recovery cycle is verified.
+    """
+
+    def __init__(self):
+        super().__init__(
+            "rollback-proves-recovery",
+            "Git rollback commands (git reset --hard HEAD + git clean -fd) restore mutated state in isolated temp repo"
+        )
+        self.temp_dir = ""
+
+    def setup(self) -> tuple[bool, str]:
+        self.temp_dir = tempfile.mkdtemp(prefix="rollback_recovery_")
+        self._git(["init"])
+        self._git(["config", "user.email", "rollback-test@test.com"])
+        self._git(["config", "user.name", "Rollback Test"])
+
+        # Create a committed file simulating a workflow artifact
+        self.committed_file = os.path.join(self.temp_dir, "artifact.md")
+        self.original_content = "# Repository Sensemaking Brief\n\n## repository_goal\nTest goal\n"
+        with open(self.committed_file, "w", encoding="utf-8") as f:
+            f.write(self.original_content)
+
+        self._git(["add", "."])
+        self._git(["commit", "-m", "Initial commit with artifact"])
+
+        # Create an untracked file simulating generated temp files
+        self.untracked_file = os.path.join(self.temp_dir, "_temp_build_output.txt")
+        with open(self.untracked_file, "w", encoding="utf-8") as f:
+            f.write("temporary build output")
+
+        return True, ""
+
+    def _git(self, args: list[str]) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            ["git"] + args, cwd=self.temp_dir,
+            capture_output=True, text=True, timeout=30,
+        )
+
+    def run(self) -> tuple[bool, str, str]:
+        details = []
+
+        # Verify state before rollback: committed file AND untracked file exist
+        committed_exists = os.path.exists(self.committed_file)
+        untracked_exists = os.path.exists(self.untracked_file)
+        if not committed_exists:
+            return False, "Setup failed: committed file not found before mutation", ""
+        if not untracked_exists:
+            details.append("Untracked file not found before rollback (test setup issue)")
+
+        # Mutate the committed file (simulating a bad workflow artifact)
+        with open(self.committed_file, "w", encoding="utf-8") as f:
+            f.write("# BAD ARTIFACT\n\nThis has no required sections.\n")
+
+        with open(self.committed_file, encoding="utf-8") as f:
+            mutated = f.read()
+        if "BAD ARTIFACT" not in mutated:
+            details.append("Mutation did not take effect")
+
+        # ---- Run the exact rollback commands from orchestration-runner.py rollback() ----
+        r1 = self._git(["reset", "--hard", "HEAD"])
+        r2 = self._git(["clean", "-fd"])
+
+        if r1.returncode != 0:
+            details.append(f"git reset --hard failed: {r1.stderr[:200]}")
+        if r2.returncode != 0:
+            details.append(f"git clean -fd failed: {r2.stderr[:200]}")
+
+        # ---- Verify recovery ----
+        # Committed file should be restored to original
+        file_restored = False
+        if os.path.exists(self.committed_file):
+            with open(self.committed_file, encoding="utf-8") as f:
+                content = f.read()
+            file_restored = content == self.original_content
+            if not file_restored:
+                details.append(f"Committed file not restored. Got: {content[:80]}")
+        else:
+            details.append("Committed file was deleted by rollback")
+
+        # Untracked file should be removed
+        untracked_gone = not os.path.exists(self.untracked_file)
+        if not untracked_gone:
+            details.append("Untracked file was not removed by git clean -fd")
+
+        # Git tree should be clean
+        status = self._git(["status", "--porcelain"])
+        tree_clean = len(status.stdout.strip()) == 0
+        if not tree_clean:
+            details.append(f"Git tree not clean after rollback: {status.stdout.strip()[:200]}")
+
+        all_pass = file_restored and untracked_gone and tree_clean
+        detail_str = "; ".join(details) if details else (
+            f"committed_file=restored, untracked_file=removed, git_tree=clean"
+        )
+
+        if all_pass:
+            return True, (
+                "CORRECTLY recovered from mutation: committed file restored, "
+                "untracked file removed, git tree clean"
+            ), detail_str
+        else:
+            return False, f"Rollback recovery test failed: {detail_str}", ""
+
+    def teardown(self) -> None:
+        if self.temp_dir and os.path.exists(self.temp_dir):
+            # Windows: git objects are read-only, make them writable before delete
+            for root, dirs, files in os.walk(self.temp_dir, topdown=False):
+                for name in files:
+                    os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
+            shutil.rmtree(self.temp_dir, ignore_errors=True)
 
 
 # ===============================================================================
@@ -745,6 +890,7 @@ ALL_TESTS: list[ControlledFailureTest] = [
     ValidatorFailureHaltsChain(),
     ResumeAfterGateDenial(),
     RollbackAfterMutation(),
+    RollbackProvesRecovery(),
 ]
 
 TEST_REGISTRY = {t.test_id: t for t in ALL_TESTS}
@@ -761,6 +907,8 @@ def print_result(result: dict, index: int, total: int) -> None:
         icon = f"{GREEN}{_CHECK}{RESET}"
     elif status == "failed":
         icon = f"{RED}{_XMARK}{RESET}"
+    elif status == "skipped":
+        icon = f"{YELLOW}[SKIP]{RESET}"
     else:
         icon = f"{YELLOW}{_WARN}{RESET}"
 
@@ -815,26 +963,41 @@ def main(argv: list[str] | None = None) -> int:
 
     # Summary
     passed = sum(1 for r in results if r["status"] == "passed")
+    skipped = sum(1 for r in results if r["status"] == "skipped")
     failed = sum(1 for r in results if r["status"] == "failed")
     errors = sum(1 for r in results if r["status"] == "error")
 
     print(f"\n{'='*60}")
-    print(f"RESULTS: {passed} passed, {failed} failed, {errors} errors / {total} total")
+    parts = []
+    if passed:
+        parts.append(f"{passed} passed")
+    if skipped:
+        parts.append(f"{YELLOW}{skipped} skipped{RESET}")
+    if failed:
+        parts.append(f"{RED}{failed} failed{RESET}")
+    if errors:
+        parts.append(f"{YELLOW}{errors} errors{RESET}")
+    print(f"RESULTS: {', '.join(parts)} / {total} total")
 
     if args.json:
         print(json.dumps({"results": results, "summary": {
-            "passed": passed, "failed": failed, "errors": errors, "total": total,
+            "passed": passed, "skipped": skipped, "failed": failed, "errors": errors, "total": total,
         }}, indent=2))
         return 0
 
     # Exit code:
     # 0 = all passed (system correctly detected all failures)
     # 1 = one or more tests "failed" (system did NOT detect the failure)
-    # 2 = one or more test infrastructure errors
+    # 2 = one or more test infrastructure errors or tests skipped
+    # 99 = all tests skipped
     if errors:
         return 2
     if failed:
         return 1
+    if skipped == total:
+        return 99
+    if skipped:
+        return 2
     return 0
 
 

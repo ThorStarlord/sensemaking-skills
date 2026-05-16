@@ -48,7 +48,7 @@ mode_coverage:
   gates_exercised: false
   gates_note: not_applicable_plan_only
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171849-05acdea6.'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-181526-c85cacfa.'
 - mode: prompt_chain
   workflow_id: fast-local-diagnostic
   last_run: 2026-05-16
@@ -340,7 +340,7 @@ system_tools:
   - product-autonomous-sprint (plan_only)
   - experimental-autonomous-sprint (plan_only)
   - docs-architecture (guided_execution)
-  last_session: orchestration-20260516-173944-5f972338
+  last_session: orchestration-20260516-181526-c85cacfa
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
@@ -500,11 +500,12 @@ orchestration_runner:
   - 'Rollback recommendation: ROLLBACK_RECOMMENDED exit code (4) for mutating mode
     failures'
   - 'Evidence aging: validate-mode-coverage.py checks last_run dates against --max-age-days'
-  - 'Controlled failure integration tests: 8 tests covering all negative paths'
+  - 'Controlled failure integration tests: 9 tests covering all negative paths plus
+    rollback recovery proof'
 controlled_failure_tests:
   last_run: 2026-05-16
-  tests_passed: 8
-  tests_total: 8
+  tests_passed: 9
+  tests_total: 9
   coverage:
   - 'Test 1: validator-stop-on-bad-artifact -> validate-output.py correctly rejects
     bad artifacts'
@@ -519,7 +520,11 @@ controlled_failure_tests:
   - 'Test 7: resume-after-gate-denial -> two-phase test: Phase 1 denies gate, Phase
     2 resumes and completes all steps'
   - 'Test 8: rollback-after-mutation -> orchestration runner recommends rollback (ROLLBACK_RECOMMENDED)
-    after step failure, recovery instructions provided'
+    after step failure, recovery commands (git reset --hard HEAD, git clean -fd) verified
+    in output'
+  - 'Test 9: rollback-proves-recovery -> git rollback commands proven effective: mutated
+    committed file restored, untracked file removed, git tree clean in isolated temp
+    repo'
   negative_paths_proven:
   - denied gate handling (interactive + non-interactive --gate-decision)
   - resume after gate denial (--resume + --gate-decision auto-approve)
@@ -528,6 +533,8 @@ controlled_failure_tests:
   - stale coverage detection
   - repeatable failure boundary detection
   - rollback recommendation after step failure (ROLLBACK_RECOMMENDED exit code)
+  - rollback recovery commands proven: git reset --hard HEAD + git clean -fd restore
+    committed state and remove untracked files
   non_interactive_flags_proven:
   - '--gate-decision auto-deny: non-interactive gate denial for testing'
   - '--gate-decision auto-approve: non-interactive gate approval for testing'
