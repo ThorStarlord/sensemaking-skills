@@ -1,0 +1,19 @@
+# Claude Code worktrees and local environment
+.claude/worktrees/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
