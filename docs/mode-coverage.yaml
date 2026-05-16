@@ -258,6 +258,19 @@ mode_coverage:
   gates_note: not_applicable_plan_only
   hardening_triggered: none
   notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171525-cc12bf0e.'
+- mode: guided_execution
+  workflow_id: docs-architecture
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_docs-architecture_guided_execution.md
+  steps_completed: 3
+  steps_total: 3
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  - 'level_3: validate-output.py'
+  gates_exercised: true
+  gates_note: 3 approved, 0 denied
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-173944-5f972338.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
@@ -326,7 +339,8 @@ system_tools:
   - product-strategy-sprint (plan_only)
   - product-autonomous-sprint (plan_only)
   - experimental-autonomous-sprint (plan_only)
-  last_session: orchestration-20260516-171849-05acdea6
+  - docs-architecture (guided_execution)
+  last_session: orchestration-20260516-173944-5f972338
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'

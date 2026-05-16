@@ -1,9 +1,9 @@
 # Orchestration Plan: Docs & Architecture Alignment
 
-- **Session ID**: orchestration-20260516-171510-b1c0877c
+- **Session ID**: orchestration-20260516-173944-5f972338
 - **Date**: 2026-05-16
 - **Workflow**: docs-architecture
-- **Execution Mode**: plan_only
+- **Execution Mode**: guided_execution
 - **Purpose**: Turn an approved brief or PRD into copy-paste prompts for external implementation skills.
 
 ## Skills in Sequence
@@ -29,10 +29,12 @@
 
 ## Approval Gates
 
-- **Mode**: plan_only
-- **Gate Behavior**: none
+- **Mode**: guided_execution
+- **Gate Behavior**: mandatory
 
-No gates required for this mode.
+- review_alignment_report: REQUIRED (user must approve)
+- review_prd: REQUIRED (user must approve)
+- review_handoff_prompt: REQUIRED (user must approve)
 
 ## Stop Conditions
 
@@ -46,9 +48,9 @@ No gates required for this mode.
 ```yaml
 artifact_id: workflow_orchestration_plan
 chosen_workflow_id: docs-architecture
-execution_mode: plan_only
+execution_mode: guided_execution
 status: created
-session_id: orchestration-20260516-171510-b1c0877c
+session_id: orchestration-20260516-173944-5f972338
 initial_inputs:
   repository_state: external_context
 steps:
@@ -68,7 +70,7 @@ steps:
     gate: review_handoff_prompt
     output_artifact: prompt_handoff
 approval_gates:
-  behavior: none
+  behavior: mandatory
 stop_conditions:
   - validator_failure
   - gate_denial
