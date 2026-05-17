@@ -1,22 +1,16 @@
 mode_coverage:
 - mode: yolo_execution
   workflow_id: fast-local-diagnostic
-  last_run: 2026-05-16
-  run_log_path: artifacts/run_log.md (feature branch yolo/fast-local-diagnostic/2026-05-16)
-  steps_completed: 2
+  last_run: '2026-05-16'
+  run_log_path: artifacts/run_log_fast-local-diagnostic_yolo_execution.md
+  steps_completed: 0
   steps_total: 2
   validators_exercised:
-  - level_1: validate-repo.py
-  - dispatcher: validate-output.py (repository_sensemaking_brief)
-  - dispatcher: validate-output.py (prompt_handoff)
+  - 'level_1: validate-repo.py'
   gates_exercised: false
   gates_note: bypassed_by_yolo
   hardening_triggered: none
-  notes: Two TDD cycles occurred (UNKNOWN_WEAKNESS_TYPE, NO_LOGIC_TRACE). Both were
-    single-occurrence data issues, not repeatable failure boundaries. No structural
-    hardening warranted. Validators invoked through dispatcher (validate-output.py)
-    per normal path. Dispatcher exercised validate-artifact.py + validate-brief.py
-    (step 1) and validate-artifact.py + validate-prompt-handoff.py (step 2).
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-210254-3bcceafc.'
 - mode: guided_execution
   workflow_id: docs-contract-reconciliation
   last_run: '2026-05-16'
@@ -407,7 +401,8 @@ system_tools:
   - fast-local-diagnostic (prompt_chain)
   - docs-contract-reconciliation (guided_execution)
   - full-local-sensemaking (yolo_execution)
-  last_session: orchestration-20260516-210235-75f7d455
+  - fast-local-diagnostic (yolo_execution)
+  last_session: orchestration-20260516-210254-3bcceafc
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
