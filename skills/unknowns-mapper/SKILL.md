@@ -32,6 +32,27 @@ Produces an **Unknowns Map** to separate what we know from what we are guessing.
 ## Output Format
 Every response must follow the [Unknowns Map](references/unknowns-map-template.md) structure.
 
+## Routing Signals
+The unknowns-mapper produces four machine-readable routing fields that guide downstream workflow execution:
+
+- **clarity_assessment** (`high`, `medium`, `low`): A judgment call on how well-defined the problem frame is. Low clarity indicates the problem space is contested, ambiguous, or has multiple valid interpretations.
+- **unknowns_count** (integer): Total number of explicitly identified unknowns in the map.
+- **assumptions_count** (integer): Total number of unverified assumptions that could block progress.
+- **research_needed** (boolean): A signal to the router about whether additional research/sensemaking skills should be inserted into the workflow.
+
+**Routing Heuristic (provisional):**
+```
+research_needed = (unknowns_count >= 5) OR (clarity_assessment == "low")
+```
+
+This heuristic is empirically validated in early runs and refined based on outcomes:
+- If `research_needed` is `true`, the router inserts additional discovery, sensemaking, or diagnostic skills before implementation.
+- If `research_needed` is `false`, the map is deemed sufficiently detailed for immediate action.
+
+**Responsibility Boundary:**
+- unknowns-mapper makes the clarity judgment and counts unknowns/assumptions based on available evidence.
+- The router (workflow executor) reads `research_needed` and inserts research skills into the plan as needed.
+
 ## Boundary Rule
 Do not perform the research yourself. Your job is to map the gaps and define the paths, not to travel them.
 
