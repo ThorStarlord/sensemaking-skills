@@ -26,24 +26,78 @@ For a deep dive into our methodology, failure taxonomy, and the "Anti-Causal Con
 - A replacement for specialized tools (PM skills, Matt Pocock skills, Interface Skills).
 - A blind automation engine. It uses explicit approval gates.
 
-## Core Skills
+## Skill Ecosystem
 
-The repository is built around a five-skill **Sensemaking Pipeline** that converts raw project "fog" into a safe, evidence-backed workflow plan.
+The repository provides a complete skill ecosystem for converting project uncertainty into action. Skills are organized by purpose and can be composed into workflows.
 
-### 1. `problem-framer`
-Converts vague ideas into a structured **Problem Frame**. It identifies the "problem under the problem" and the "object under pressure" before any technical mapping occurs.
+### Core Sensemaking (5 skills)
 
-### 2. `unknowns-mapper`
-Separates **Knowns, Unknowns, Assumptions, and Risks**. It defines clear research paths and stopping rules to prevent premature implementation.
+The foundation layer: diagnostic and orchestration skills that identify problems and route work.
 
-### 3. `repo-sensemaker`
-Produces a **14-section Repository Sensemaking Brief**. It audits the repository's health, identifies the "weakest boundary," and cites specific file-level evidence.
+- **`problem-framer`** — Converts vague ideas into structured Problem Frames. Identifies the "problem under the problem" and "object under pressure."
+- **`unknowns-mapper`** — Separates Knowns, Unknowns, Assumptions, and Risks. Defines research paths and stopping rules. Can dynamically trigger research skills based on fog clarity.
+- **`repo-sensemaker`** — Produces a 14-section Repository Sensemaking Brief. Audits repository health, identifies the "weakest boundary," cites file-level evidence.
+- **`workflow-orchestrator`** — Consumes a Brief and produces a Workflow Orchestration Plan. Selects execution mode and defines approval gates.
+- **`sensemaking-docs-reconciler`** — Aligns repository docs, registries, and artifact contracts to resolve drift.
+- **`prompt-handoff`** — Packages sensemaking context into a ready-to-copy Prompt for downstream skills.
 
-### 4. `workflow-orchestrator`
-Consumes a Brief and produces a **Workflow Orchestration Plan**. It selects the correct execution mode (plan, chain, guided, or autonomous) and defines approval gates.
+### Drafting & Implementation (6 skills)
 
-### 5. `prompt-handoff`
-Packages the sensemaking context into a **Ready-to-copy Prompt** for specialized downstream skills (e.g., `to-prd`, `tdd`), ensuring context is preserved across transitions.
+Transform diagnostic outputs into specifications and implementation plans.
+
+- **`grill-with-docs`** — Stress-test a plan against existing domain documentation. Sharpens terminology and updates docs inline.
+- **`to-prd`** — Transform a domain alignment report into a PRD.
+- **`to-issues`** — Transform a PRD into specific, independently-grabbable implementation issues (tracer bullets).
+- **`triage`** — Assign issues to agent briefs and prepare work for implementation.
+- **`tdd`** — Execute implementation using test-driven development (red-green-refactor loop).
+- **`ui-brief`** — Create high-fidelity UI specifications from product requirements.
+
+### Product Management (20+ skills)
+
+Comprehensive product and strategy toolkit for discovery, planning, and validation.
+
+**Discovery & Insights:**
+- `persona` — Define target user and player fantasy.
+- `discovery` — Investigate problem space and user needs.
+- `interview-synthesis` — Extract patterns from customer interviews.
+- `competitive-analysis` — Audit market alternatives and positioning.
+
+**Planning & Strategy:**
+- `opportunity-tree` — Map problems to desired outcomes.
+- `hypothesis` — Define testable product bets.
+- `customer-journey` — Map user flow and friction points.
+- `user-stories` — Define feature slices from user perspective.
+- `acceptance-criteria` — Define done states for features.
+
+**Prioritization & Execution:**
+- `prioritize` — Rank work by impact and feasibility.
+- `roadmap` — Sequence work across time.
+- `launch-checklist` — Verify operational readiness for release.
+- `pre-mortem` — Identify failure modes before launch.
+
+**Goals & Metrics:**
+- `okr` — Define goals and key results.
+- `north-star` — Identify core leading metric.
+- `lean-canvas` — Summarize business model on one page.
+- `measure-pmf` — Audit product-market fit signals.
+
+**Monetization & Growth:**
+- `pricing` — Design monetization and packaging.
+- `gtm` — Define go-to-market execution plan.
+- `battlecard` — Summarize competitive talk tracks.
+
+**Experimentation & Release:**
+- `experiment-design` — Plan validation tests for hypotheses.
+- `ab-test-analysis` — Evaluate results of split tests.
+- `release-notes` — Communicate value to users and stakeholders.
+- `stakeholder-update` — Communicate progress and blockers.
+
+### Research & Maintenance (2 skills)
+
+Support ongoing learning and skill improvement.
+
+- **`usage-researcher`** — Evaluate skill performance in realistic scenarios.
+- **`skill-maintainer`** — Translate usage research into auditable skill improvements.
 
 ---
 
