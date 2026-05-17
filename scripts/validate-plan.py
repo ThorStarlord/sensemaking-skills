@@ -25,6 +25,76 @@ STOP_CONDITIONS_EMPTY = "STOP_CONDITIONS_EMPTY"
 SUBSET_NOT_CONTIGUOUS = "SUBSET_NOT_CONTIGUOUS"
 SECTION_11_MALFORMED = "SECTION_11_MALFORMED"
 ABSOLUTE_PATH_DETECTED = "ABSOLUTE_PATH_DETECTED"
+HALLUCINATED_SKILL = "HALLUCINATED_SKILL"
+MISSING_DECISION_FIELD = "MISSING_DECISION_FIELD"
+INVALID_CONDITIONAL_BRANCH = "INVALID_CONDITIONAL_BRANCH"
+
+
+def _validate_conditional_step(step, workflow_id, repo_root="."):
+    """
+    Validate a conditional workflow step.
+
+    Args:
+        step: The step dictionary with conditional=true
+        workflow_id: The workflow ID (for error messages)
+        repo_root: Repository root for loading registries
+
+    Returns:
+        List of error strings (empty if no errors)
+    """
+    errors = []
+
+    # Check for required decision_field
+    decision_field = step.get("decision_field")
+    if not decision_field:
+        errors.append(format_error(MISSING_DECISION_FIELD, f"Step {step.get('id')} missing 'decision_field'"))
+        return errors
+
+    # Load skill registry to validate skill references
+    skill_reg = load_skill_registry(repo_root)
+    if skill_reg is None:
+        errors.append(format_error(WORKFLOW_NOT_FOUND, "Failed to load skill-registry.yaml"))
+        return errors
+
+    # Collect all valid skill IDs from all ecosystems
+    valid_skills = set()
+    for ecosystem in skill_reg.get("ecosystems", {}).values():
+        for skill in ecosystem.get("skills", []):
+            valid_skills.add(skill["id"])
+
+    # Validate if_true branch
+    if_true = step.get("if_true")
+    if if_true:
+        if_true_skill = if_true.get("skill")
+        if if_true_skill and if_true_skill not in valid_skills:
+            errors.append(
+                format_error(HALLUCINATED_SKILL, f"Step {step.get('id')} if_true branch references non-existent skill '{if_true_skill}'")
+            )
+
+        # Check that if_true has a way forward (skill or next_step)
+        has_forward = if_true_skill or if_true.get("next_step")
+        if not has_forward:
+            errors.append(
+                format_error(INVALID_CONDITIONAL_BRANCH, f"Step {step.get('id')} if_true branch must have either 'skill' or 'next_step'")
+            )
+
+    # Validate if_false branch
+    if_false = step.get("if_false")
+    if if_false:
+        if_false_skill = if_false.get("skill")
+        if if_false_skill and if_false_skill not in valid_skills:
+            errors.append(
+                format_error(HALLUCINATED_SKILL, f"Step {step.get('id')} if_false branch references non-existent skill '{if_false_skill}'")
+            )
+
+        # Check that if_false has a way forward (skill or next_step)
+        has_forward = if_false_skill or if_false.get("next_step")
+        if not has_forward:
+            errors.append(
+                format_error(INVALID_CONDITIONAL_BRANCH, f"Step {step.get('id')} if_false branch must have either 'skill' or 'next_step'")
+            )
+
+    return errors
 
 
 def validate_plan(plan_path, repo_root="."):
@@ -156,6 +226,11 @@ def validate_plan(plan_path, repo_root="."):
         if "status" not in p_step:
             errors.append(format_error(SECTION_11_MALFORMED, f"Step {s_id} missing 'status'"))
 
+        # Validate conditional steps
+        if p_step.get("conditional"):
+            conditional_errors = _validate_conditional_step(p_step, chosen_id, repo_root)
+            errors.extend(conditional_errors)
+
         skill = p_step.get("skill")
         if skill != r_step.get("skill"):
             errors.append(format_error(STEP_SKILL_MISMATCH, f"Step {s_id} skill mismatch: plan='{skill}', reg='{r_step.get('skill')}'"))
@@ -255,6 +330,9 @@ def main(argv: list[str] | None = None) -> int:
             SUBSET_NOT_CONTIGUOUS,
             SECTION_11_MALFORMED,
             ABSOLUTE_PATH_DETECTED,
+            HALLUCINATED_SKILL,
+            MISSING_DECISION_FIELD,
+            INVALID_CONDITIONAL_BRANCH,
         ]
         print("Stable error codes for plan validation:")
         for code in codes:
