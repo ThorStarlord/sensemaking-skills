@@ -54,15 +54,14 @@ mode_coverage:
   workflow_id: fast-local-diagnostic
   last_run: '2026-05-16'
   run_log_path: artifacts/run_log_fast-local-diagnostic_autonomous_execution.md
-  steps_completed: 2
+  steps_completed: 0
   steps_total: 2
   validators_exercised:
   - 'level_1: validate-repo.py'
-  - 'level_3: validate-output.py'
-  gates_exercised: true
+  gates_exercised: false
   gates_note: automated_approval_all_gates
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-203722-ce36e082.'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-211226-845000aa.'
 - mode: guided_execution
   workflow_id: validator-live-coverage
   last_run: 2026-05-16
@@ -402,7 +401,7 @@ system_tools:
   - docs-contract-reconciliation (guided_execution)
   - full-local-sensemaking (yolo_execution)
   - fast-local-diagnostic (yolo_execution)
-  last_session: orchestration-20260516-210254-3bcceafc
+  last_session: orchestration-20260516-211226-845000aa
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
