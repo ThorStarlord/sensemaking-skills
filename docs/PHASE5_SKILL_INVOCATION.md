@@ -231,6 +231,143 @@ All validators enforce artifact contracts defined in:
 - [ ] Ready for production deployment
 - [ ] Ready for customer onboarding
 
+## Manual Gate Approval Testing
+
+Gate approval is a critical control mechanism in `guided_execution` mode, where workflow steps require explicit user approval before proceeding. The orchestration runner implements a comprehensive gate management system with structured decision recording.
+
+### Gate Decision Structure
+
+All gate decisions are recorded with the following fields:
+
+```python
+gate_decision = {
+    "step": 1,                          # Step number in workflow
+    "gate": "review",                   # Gate name
+    "result": "approved_by_user",       # One of: approved_by_user, denied_by_user, automated_approval, bypassed, not_applicable
+    "timestamp": "2026-05-16 14:00:00", # ISO 8601 format timestamp
+    "mode": "guided_execution",         # Execution mode
+    
+    # Optional fields for approved gates
+    "approved_by": "alice",             # Name of approver
+    "approved_at": "2026-05-16 14:00:01",
+    
+    # Optional field for denied gates
+    "reason": "Additional analysis needed",  # Denial reason
+}
+```
+
+### Running in Guided Execution Mode
+
+To run a workflow with manual gates in `guided_execution` mode:
+
+```bash
+# Standard mode with interactive gate prompts (requires TTY)
+python scripts/orchestration-runner.py <workflow_id> --mode guided_execution
+
+# Non-interactive testing with auto-approval
+python scripts/orchestration-runner.py <workflow_id> --mode guided_execution --gate-decision auto-approve
+
+# Non-interactive testing with auto-denial (tests gate denial path)
+python scripts/orchestration-runner.py <workflow_id> --mode guided_execution --gate-decision auto-deny
+```
+
+### Gate Prompt Interface
+
+When running in interactive mode, the orchestrator displays a gate approval prompt:
+
+```
+STEP 2/5  |  Skill: validate-brief  |  Gate: content_review
+--------------------------------------------------
+
+  [PAUSE]  GATE: 'content_review' -- waiting for approval (Step 2: validate-brief)
+  Options: [A]pprove  [D]eny  [S]kip (treat as denied for testing)  [T]imeout
+  Enter choice (A/D/S/T):
+```
+
+User options:
+- **[A]pprove**: Approve the gate and continue to the next step
+- **[D]eny**: Deny the gate with a reason; workflow halts
+- **[S]kip**: Treat as denied (for testing gate denial paths)
+- **[T]imeout**: Simulate gate timeout (treated as denial)
+
+### Gate Behavior by Execution Mode
+
+| Mode | Gate Behavior | Result | Decision Recording |
+|------|--------------|--------|-------------------|
+| `plan_only` | None | `not_applicable` | Recorded but not enforced |
+| `prompt_chain` | None | `not_applicable` | Recorded but not enforced |
+| `guided_execution` | **Mandatory user approval** | `approved_by_user` or `denied_by_user` | Full decision with approver and timestamp |
+| `autonomous_execution` | Automatic | `automated_approval` | Recorded with automation flag |
+| `yolo_execution` | Bypassed | `bypassed` | Recorded as bypassed |
+
+### Gate Denial and Workflow Halting
+
+When a gate is denied in any approval-required mode:
+
+1. **Workflow immediately halts** - no subsequent steps are executed
+2. **Step status becomes PAUSED** - not FAILED, allowing potential resume
+3. **Reason is recorded** - explains why gate was denied
+4. **Run log documents decision** - persists all gate context
+5. **Rollback recommended** - for mutating modes (guided, autonomous, yolo)
+
+Example denial scenario:
+
+```
+Step 2: PAUSED at gate 'critical_review'
+  - Denial Reason: Output does not meet quality standards
+  - Denied By: reviewer@example.com
+  - Timestamp: 2026-05-16 14:10:00
+  - Recommendation: Review step output and re-run workflow with --resume flag
+```
+
+### Verification and Testing
+
+All manual gate approval workflows are tested in `tests/test_manual_gate_approval.py`:
+
+```bash
+$ pytest tests/test_manual_gate_approval.py -v
+
+test_gate_system_prompts_user_for_approval PASSED
+test_gate_denial_stops_workflow PASSED
+test_gate_decision_persists_in_run_log PASSED
+test_gate_decision_with_automated_approval PASSED
+test_gate_decision_with_bypass PASSED
+test_gate_decision_not_applicable PASSED
+test_multiple_gates_in_workflow PASSED
+```
+
+### Gate Decision Persistence
+
+Gate decisions are persisted in two locations:
+
+1. **In-memory gate_decisions list** - available during orchestrator execution
+2. **Run log document** - written to `artifacts/run_log_<workflow_id>_<mode>.md`
+
+Example run log section:
+
+```markdown
+## Decisions & Overrides
+
+- Gate 'plan_review' (step 1): approved_by_user at 2026-05-16 14:00:00
+- Gate 'brief_review' (step 2): approved_by_user at 2026-05-16 14:05:00
+- Gate 'critical_review' (step 3): denied_by_user at 2026-05-16 14:10:00
+- Errors encountered: 1
+  - [GATE_DENIED] Step 3 (validate-brief): Gate 'critical_review' was denied
+```
+
+### Mode Coverage Update
+
+After each run, the orchestrator updates `docs/mode-coverage.yaml` with gate exercise data:
+
+```yaml
+mode_coverage:
+  - mode: guided_execution
+    workflow_id: fast-local-diagnostic
+    gates_exercised: true
+    gates_note: "2 approved, 1 denied"
+    last_run: "2026-05-16"
+```
+
 ## Related Documents
 
 - `docs/PHASE2_SUMMARY.md` - Low-Level Decision Automation (routing)
