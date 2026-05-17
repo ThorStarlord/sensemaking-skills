@@ -33,8 +33,15 @@ artifacts:
       - risks
       - research_paths
       - stopping_rule
+    required_machine_fields:
+      - clarity_assessment
+      - unknowns_count
+      - assumptions_count
+      - research_needed
     verification:
       generic_validator: "python scripts/validate-artifact.py unknowns_map {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-unknowns-map.py {artifact_path}"
       required_for_modes:
         - guided_execution
         - autonomous_execution
