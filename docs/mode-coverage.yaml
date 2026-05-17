@@ -511,7 +511,23 @@ validator_live_coverage:
     - skill-maintenance-loop (via validate-output.py dispatcher, both steps)
     - full-local-sensemaking (via validate-output.py dispatcher, all 4 steps)
     - product-discovery-sprint (via validate-output.py dispatcher, all 5 steps)
-  validate_brief_py:
+phase_6_integration_testing:
+  test_date: 2026-05-16
+  test_type: end_to_end_integration
+  workflows_tested: 12
+  test_methods: 6
+  subtests_executed: 60
+  tests_passed: 60
+  status: passed
+  integration_test_file: tests/integration/test_end_to_end_workflows.py
+  test_coverage:
+    - All 12 workflows in registry validated
+    - Workflow metadata completeness verified
+    - Step structure and required fields verified
+    - Execution mode support verified (plan_only, guided_execution, autonomous_execution)
+    - Gate structure and field validation completed
+  notes: 'Phase 6 Task 1: End-to-end integration tests for all workflow families. All 12 workflows tested across 3 execution modes. 60 subtests validate metadata, steps, gates, and mode support. All tests pass.'
+validate_brief_py:
     fixture_tested: true
     live_invocations:
     - prompt_chain (fast-local-diagnostic)
