@@ -70,8 +70,9 @@ python scripts/orchestration-runner.py fast-local-diagnostic --mode autonomous_e
 #### Check the Logs
 
 After running a workflow, logs are available in:
-- `artifacts/run_log_<workflow>_<mode>.md` — Detailed execution log
-- `artifacts/execution_plan_<workflow>.json` — Execution plan (JSON)
+- `artifacts/NN-project-name/` — Run folder with numbered pipeline artifacts
+- `artifacts/run_log_<workflow>_<mode>.md` — Historical execution log (pre-organization)
+- `artifacts/execution_plan_<workflow>.json` — Historical execution plan (pre-organization)
 
 #### View Full Documentation
 

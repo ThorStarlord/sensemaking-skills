@@ -53,6 +53,35 @@ This repository is built on **Artifact-Driven Agentic Engineering**. We treat ar
 - **Tracer Bullets**: AFK-compatible vertical slices of implementation.
 - **Validator Verification Suite**: A repeatable verification mechanism that checks validator behavior against positive and negative fixtures. It confirms that valid artifacts pass, invalid artifacts fail, and expected failures fail for the intended reason. Now enforces mandatory fixture coverage for all validator scripts.
 
+## Artifact Run Organization
+
+Artifacts from pipeline runs follow a flat numbered sequence at `artifacts/` root:
+
+```
+artifacts/
+├── 01-metamorfose-finance/       ← NN-project-name/
+│   ├── 01-problem-frame.md       ← NN-file-name.md
+│   ├── 02-unknowns-map.md
+│   ├── 03-sensemaking-brief.md
+│   ├── 04-orchestration-plan.md
+│   ├── 05-run-analysis.md
+│   └── README.md
+├── 02-metamorfose-classes/
+│   ├── 01-problem-frame.md
+│   └── ...
+├── 03-[next-run]/
+├── meta-analyses/                ← cross-run analyses
+├── ORGANIZATION-GUIDE.md
+└── README.md
+```
+
+**Rules:**
+- **Numbered run folders**: `NN-project-name` at `artifacts/` root — no `runs/` subfolder nesting
+- **Numbered files inside**: `NN-file-name.md` showing pipeline sequence
+- **Historical root-level files**: Left in place as pre-organization archive — not migrated
+- **Path convention**: The workflow-orchestrator outputs future runs to `artifacts/NN-project-name/NN-file-name.md`
+- **Run folder numbering**: Monotonic across time — each new run gets the next integer in the sequence, regardless of date. Date metadata lives in the run's `README.md` or content, not the folder name.
+
 ## Known Gaps
 
 These are acknowledged gaps that the project is aware of but has not yet addressed. The gaps are ordered by practical impact.

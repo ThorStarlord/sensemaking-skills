@@ -25,7 +25,7 @@
 **Problem**: Workflow step output artifact wasn't created.
 
 **Solution**:
-1. Check execution log: `artifacts/run_log_<workflow>_<mode>.md`
+1. Check execution log: `artifacts/NN-project-name/` (new runs) or `artifacts/run_log_<workflow>_<mode>.md` (historical)
 2. Verify all previous steps passed validation
 3. Check artifact contracts in `artifact-contracts.yaml`
 
@@ -59,6 +59,9 @@ python scripts/orchestration-runner.py <workflow> --verbose
 
 After each run, review:
 ```bash
+# New runs: check the numbered run folder
+cat artifacts/NN-project-name/README.md
+# Historical runs:
 cat artifacts/run_log_<workflow>_<timestamp>.md
 ```
 
@@ -66,7 +69,8 @@ cat artifacts/run_log_<workflow>_<timestamp>.md
 
 ```bash
 ls -la artifacts/
-cat artifacts/<artifact_name>
+# New runs: artifacts/NN-project-name/NN-file-name.md
+# Historical: artifacts/<artifact_name>
 ```
 
 ## Performance Tuning

@@ -61,8 +61,9 @@ jobs:
 ## Monitoring and Logging
 
 Logs are automatically created in:
-- `artifacts/run_log_<workflow>_<timestamp>.md`
-- `artifacts/execution_plan_<workflow>.json`
+- `artifacts/NN-project-name/` — Run folder with numbered pipeline artifacts
+- `artifacts/run_log_<workflow>_<timestamp>.md` — Historical execution log (pre-organization)
+- `artifacts/execution_plan_<workflow>.json` — Historical execution plan (pre-organization)
 
 Monitor these files for:
 - Execution success/failure
