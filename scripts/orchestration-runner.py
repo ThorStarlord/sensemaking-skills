@@ -29,6 +29,7 @@ from _validator_utils import (
     load_skill_registry,
     resolve_repo_root,
 )
+from skill_execution_dispatcher import dispatch_skill_execution
 
 # -- Error codes --------------------------------------------------------------
 WORKFLOW_NOT_FOUND = "WORKFLOW_NOT_FOUND"
@@ -1010,7 +1011,72 @@ class OrchestrationRunner:
         print(f"{'='*60}")
         self.generate_plan()
 
-        # Phase 3: Execute steps
+        # For autonomous_execution and yolo_execution modes, dispatch to skill executor
+        if self.mode in ("autonomous_execution", "yolo_execution"):
+            print(f"\n{'='*60}")
+            print(f"PHASE 3: DISPATCH SKILL EXECUTION")
+            print(f"{'='*60}")
+
+            # Generate orchestration plan JSON for skill executor
+            plan_json_path = os.path.join(self.log_dir, f"execution_plan_{self.workflow_id}.json")
+            plan_data = {
+                "workflow_id": self.workflow_id,
+                "session_id": self.session_id,
+                "mode": self.mode,
+                "steps": self.workflow.get("steps", []),
+                "generated_at": datetime.now().isoformat(),
+            }
+
+            with open(plan_json_path, 'w', encoding='utf-8') as f:
+                json.dump(plan_data, f, indent=2)
+
+            print(f"  -> Execution plan written to {os.path.relpath(plan_json_path, self.repo_root)}")
+
+            # Dispatch to skill execution agent
+            print(f"  -> Dispatching to skill execution agent...")
+            success, output = dispatch_skill_execution(plan_json_path, self.repo_root, timeout=3600)
+            if not success:
+                self.errors.append(f"Skill execution failed: {output}")
+                self.final_state = "failed"
+                # Fall through to write run log and exit
+            else:
+                print(f"  [OK] Skill execution completed")
+                self.final_state = "completed"
+
+            # For execution modes, we still need to write run log and update coverage
+            # The step execution phase is replaced by skill execution dispatch
+            # Phase 4: Write run log
+            print(f"\n{'='*60}")
+            print(f"PHASE 4: WRITE RUN LOG")
+            print(f"{'='*60}")
+            run_log_path = self.write_run_log()
+
+            # Phase 5: Update mode coverage
+            print(f"\n{'='*60}")
+            print(f"PHASE 5: UPDATE MODE COVERAGE")
+            print(f"{'='*60}")
+            self.update_mode_coverage(run_log_path)
+
+            # Summary
+            print(f"\n{'='*60}")
+            print(f"SUMMARY")
+            print(f"{'='*60}")
+            print(f"  Workflow:     {self.workflow_id}")
+            print(f"  Mode:         {self.mode}")
+            print(f"  Session:      {self.session_id}")
+            print(f"  Status:       {self.final_state}")
+            print(f"  Errors:       {len(self.errors)}")
+            print(f"  Run Log:      {run_log_path}")
+            print()
+
+            if self.final_state == "failed":
+                print(f"  [FAIL] Skill execution failed.")
+                return 2
+            else:
+                print(f"  [OK] Execution completed successfully.")
+                return 0
+
+        # Phase 3: Execute steps (for non-execution modes)
         print(f"\n{'='*60}")
         print(f"PHASE 3: EXECUTE STEPS  ({len(self.workflow.get('steps', []))} total)")
         print(f"{'='*60}")

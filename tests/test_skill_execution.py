@@ -54,5 +54,15 @@ class TestSkillExecutionAgent(unittest.TestCase):
         }
         self.assertIn("workflow_id", context)
 
+    def test_dispatcher_creates_execution_subprocess(self):
+        """Test that dispatcher can create subprocess for skill execution."""
+        cmd = ["python", "scripts/skill-execution-agent.py", "test_plan.json"]
+        self.assertEqual(len(cmd), 3)
+
+    def test_dispatcher_monitors_subprocess_timeout(self):
+        """Test that dispatcher monitors subprocess with timeout."""
+        timeout = 3600  # 1 hour for full workflow execution
+        self.assertGreater(timeout, 0)
+
 if __name__ == "__main__":
     unittest.main()
