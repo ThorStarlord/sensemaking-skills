@@ -1,0 +1,172 @@
+{
+  "results": [
+    {
+      "timestamp": "2026-05-16T21:22:23.379002",
+      "name": "runner_startup",
+      "value": 0.68,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:22:23.526171",
+      "name": "single_workflow_execution",
+      "value": 0.14,
+      "unit": "s",
+      "target": 30.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:22:59.813351",
+      "name": "runner_startup",
+      "value": 0.32,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:23:09.499589",
+      "name": "single_workflow_execution",
+      "value": 9.68,
+      "unit": "s",
+      "target": 30.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:23:20.457083",
+      "name": "validation_overhead",
+      "value": 2.06,
+      "unit": "%",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:23:24.469719",
+      "name": "runner_startup",
+      "value": 0.17,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:23:33.871334",
+      "name": "runner_startup",
+      "value": 0.17,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:23:44.773612",
+      "name": "single_workflow_execution",
+      "value": 10.9,
+      "unit": "s",
+      "target": 30.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:23:55.759243",
+      "name": "validation_overhead",
+      "value": 0.28,
+      "unit": "%",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:23:58.995991",
+      "name": "runner_startup",
+      "value": 0.17,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:24:04.463676",
+      "name": "single_workflow_execution",
+      "value": 5.46,
+      "unit": "s",
+      "target": 30.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:24:21.260316",
+      "name": "validation_overhead",
+      "value": 106.95,
+      "unit": "%",
+      "target": 5.0,
+      "status": "FAIL"
+    },
+    {
+      "timestamp": "2026-05-16T21:24:35.203050",
+      "name": "runner_startup",
+      "value": 0.17,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:24:40.629770",
+      "name": "single_workflow_execution",
+      "value": 5.42,
+      "unit": "s",
+      "target": 30.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:24:46.060907",
+      "name": "orchestration_overhead",
+      "value": 5.43,
+      "unit": "s",
+      "target": 15.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:25:02.721578",
+      "name": "runner_startup",
+      "value": 0.69,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:25:08.657298",
+      "name": "single_workflow_execution",
+      "value": 5.93,
+      "unit": "s",
+      "target": 30.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:25:14.222952",
+      "name": "orchestration_overhead",
+      "value": 5.56,
+      "unit": "s",
+      "target": 15.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:25:30.494027",
+      "name": "runner_startup",
+      "value": 0.18,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:25:41.822952",
+      "name": "single_workflow_execution",
+      "value": 11.33,
+      "unit": "s",
+      "target": 30.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-16T21:25:47.328243",
+      "name": "orchestration_overhead",
+      "value": 5.5,
+      "unit": "s",
+      "target": 15.0,
+      "status": "PASS"
+    }
+  ]
+}
