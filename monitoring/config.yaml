@@ -1,0 +1,23 @@
+monitoring:
+  metrics:
+    - execution_time_seconds
+    - workflows_completed
+    - validation_failures
+    - gate_decisions_by_result
+
+  alerts:
+    - name: High Failure Rate
+      condition: validation_failures > 5 in last 1h
+      severity: critical
+      action: notify_ops_team
+
+    - name: Execution Timeout
+      condition: execution_time > 3600 seconds
+      severity: warning
+      action: log_and_continue
+
+  logging:
+    level: INFO
+    format: json
+    destination: artifacts/
+    retention: 30_days
