@@ -346,8 +346,9 @@ workflows:
           output_artifact: discovery_findings
           next_step: 4
         if_false:
+          output_artifact: unknowns_map
           next_step: 4
-        condition_rule: "If unknowns_map.research_needed == true, insert discovery; else skip to repo-sensemaker"
+        condition_rule: "If unknowns_map.research_needed == true, insert discovery (producing discovery_findings); else skip and pass through unknowns_map to repo-sensemaker"
       - id: 4
         skill: repo-sensemaker
         step_type: local_execution

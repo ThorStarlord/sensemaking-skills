@@ -66,10 +66,13 @@ included_steps:
   - 2
 
 excluded_steps:
-  - id: 3
-    skill: repo-sensemaker
+  - id: 3-conditional
+    skill: ~
     reason: user_requested_stop_after_step_2
   - id: 4
+    skill: repo-sensemaker
+    reason: user_requested_stop_after_step_2
+  - id: 5
     skill: handoff
     reason: user_requested_stop_after_step_2
 

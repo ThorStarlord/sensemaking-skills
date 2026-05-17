@@ -12,20 +12,25 @@ This workflow provides the end-to-end bridge (Framer -> Mapper -> Sensemaker -> 
 ## 4. Skills in sequence
 1. `problem-framer`
 2. `unknowns-mapper`
-3. `repo-sensemaker`
-4. `handoff`
+3. (Conditional) `discovery` - if `unknowns_map.research_needed == true`; otherwise skip
+4. `repo-sensemaker`
+5. `handoff`
 
 ## 5. Inputs and outputs
 - **Step 1**: Input `raw_fog`, Output `problem_frame`.
 - **Step 2**: Input `problem_frame`, Output `unknowns_map`.
-- **Step 3**: Input `unknowns_map` + `repository_state`, Output `repository_sensemaking_brief`.
-- **Step 4**: Input `repository_sensemaking_brief`, Output `prompt_handoff`.
+- **Step 3 (Conditional)**:
+  - If true: Input `unknowns_map`, Output `discovery_findings`.
+  - If false: Pass through `unknowns_map`.
+- **Step 4**: Input (from step 3 pass-through), Output `repository_sensemaking_brief`.
+- **Step 5**: Input `repository_sensemaking_brief`, Output `prompt_handoff`.
 
 ## 6. Approval gates
 - **Gate 1**: `review_problem_frame` (Manual verification of framing accuracy).
 - **Gate 2**: `review_unknowns_map` (Verification of research path completeness).
-- **Gate 3**: `review_sensemaking_brief` (Audit of weakest boundary identification).
-- **Gate 4**: `review_final_prompt` (Confirmation of handoff readiness).
+- **Gate 3**: `review_discovery` (Audit of discovery findings if needed).
+- **Gate 4**: `review_sensemaking_brief` (Audit of weakest boundary identification).
+- **Gate 5**: `review_final_prompt` (Confirmation of handoff readiness).
 
 ## 7. Stop conditions
 - **Structural Failure**: Stop if any generated artifact fails Level 2 (Generic) validation.
@@ -46,8 +51,9 @@ N/A - mode is plan_only. No prompt chain generated.
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | problem-framer | [ ] | [ ] | [ ] |
 | 2 | unknowns-mapper | [ ] | [ ] | [ ] |
-| 3 | repo-sensemaker | [ ] | [ ] | [ ] |
-| 4 | handoff | [ ] | [ ] | [ ] |
+| 3 | (conditional) discovery | [ ] | [ ] | [ ] |
+| 4 | repo-sensemaker | [ ] | [ ] | [ ] |
+| 5 | handoff | [ ] | [ ] | [ ] |
 ```
 
 ## 11. Machine-readable plan
@@ -78,7 +84,22 @@ steps:
     input_artifact: problem_frame
     output_artifact: unknowns_map
     status: pending
-  - id: 3
+  - id: 3-conditional
+    skill: ~
+    conditional: true
+    decision_field: unknowns_map.research_needed
+    if_true:
+      skill: discovery
+      step_type: external_routing
+      gate: review_discovery
+      input_artifact: unknowns_map
+      output_artifact: discovery_findings
+      next_step: 4
+    if_false:
+      output_artifact: unknowns_map
+      next_step: 4
+    status: pending
+  - id: 4
     skill: repo-sensemaker
     step_type: local_execution
     gate: review_sensemaking_brief
@@ -86,7 +107,7 @@ steps:
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
     status: pending
-  - id: 4
+  - id: 5
     skill: handoff
     step_type: local_execution
     gate: review_final_prompt

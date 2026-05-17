@@ -12,14 +12,18 @@ This workflow directly addresses the weakest boundary (semantic-handoff-continui
 ## 4. Skills in sequence
 1. `problem-framer`
 2. `unknowns-mapper`
-3. `repo-sensemaker`
-4. `handoff`
+3. (Conditional) `discovery` - if `unknowns_map.research_needed == true`; otherwise skip
+4. `repo-sensemaker`
+5. `handoff`
 
 ## 5. Inputs and outputs
 - **Step 1**: `raw_fog` -> `problem_frame`
 - **Step 2**: `problem_frame` -> `unknowns_map`
-- **Step 3**: `unknowns_map` + `repository_state` -> `repository_sensemaking_brief`
-- **Step 4**: `repository_sensemaking_brief` -> `prompt_handoff`
+- **Step 3 (Conditional)**:
+  - If true: `unknowns_map` -> `discovery_findings`
+  - If false: Pass through `unknowns_map`
+- **Step 4**: (from step 3 pass-through) + `repository_state` -> `repository_sensemaking_brief`
+- **Step 5**: `repository_sensemaking_brief` -> `prompt_handoff`
 
 ## 6. Approval gates
 - `review_problem_frame`
@@ -74,7 +78,22 @@ steps:
     input_artifact: problem_frame
     output_artifact: unknowns_map
     status: pending
-  - id: 3
+  - id: 3-conditional
+    skill: ~
+    conditional: true
+    decision_field: unknowns_map.research_needed
+    if_true:
+      skill: discovery
+      step_type: external_routing
+      gate: review_discovery
+      input_artifact: unknowns_map
+      output_artifact: discovery_findings
+      next_step: 4
+    if_false:
+      output_artifact: unknowns_map
+      next_step: 4
+    status: pending
+  - id: 4
     skill: repo-sensemaker
     step_type: local_execution
     gate: review_sensemaking_brief
@@ -82,7 +101,7 @@ steps:
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
     status: pending
-  - id: 4
+  - id: 5
     skill: handoff
     step_type: local_execution
     gate: review_final_prompt

@@ -226,10 +226,13 @@ def validate_plan(plan_path, repo_root="."):
         if "status" not in p_step:
             errors.append(format_error(SECTION_11_MALFORMED, f"Step {s_id} missing 'status'"))
 
-        # Validate conditional steps
-        if p_step.get("conditional"):
+        # For conditional steps in plans, skip the normal field comparison since they store data in branches
+        if p_step.get("conditional") and r_step.get("conditional"):
+            # Validate conditional steps
             conditional_errors = _validate_conditional_step(p_step, chosen_id, repo_root)
             errors.extend(conditional_errors)
+            # Skip the normal field validations for conditional steps
+            continue
 
         skill = p_step.get("skill")
         if skill != r_step.get("skill"):

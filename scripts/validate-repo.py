@@ -130,15 +130,27 @@ def validate_repo():
             steps = workflow.get("steps", [])
             for step in steps:
                 s_id = step.get("skill")
-                
+
                 if s_id == "workflow-orchestrator":
                     errors.append(f"Workflow '{workflow['id']}' contains a recursive call to 'workflow-orchestrator'.")
-                
-                s_type = step.get("step_type")
-                if not s_type:
-                    errors.append(f"Workflow '{workflow['id']}' step '{s_id}' missing 'step_type'")
-                elif s_type not in ["local_execution", "prompt_handoff", "external_routing", "human_review"]:
-                    errors.append(f"Workflow '{workflow['id']}' step '{s_id}' has invalid step_type: {s_type}")
+
+                # Conditional steps don't have top-level step_type; they have it in branches
+                if step.get("conditional"):
+                    # Validate that if_true branch has step_type if it has a skill
+                    if_true = step.get("if_true", {})
+                    if if_true.get("skill"):
+                        s_type = if_true.get("step_type")
+                        if not s_type:
+                            errors.append(f"Workflow '{workflow['id']}' conditional step '{step.get('id')}' if_true branch missing 'step_type'")
+                        elif s_type not in ["local_execution", "prompt_handoff", "external_routing", "human_review"]:
+                            errors.append(f"Workflow '{workflow['id']}' conditional step '{step.get('id')}' if_true has invalid step_type: {s_type}")
+                else:
+                    # Non-conditional steps must have step_type
+                    s_type = step.get("step_type")
+                    if not s_type:
+                        errors.append(f"Workflow '{workflow['id']}' step '{s_id}' missing 'step_type'")
+                    elif s_type not in ["local_execution", "prompt_handoff", "external_routing", "human_review"]:
+                        errors.append(f"Workflow '{workflow['id']}' step '{s_id}' has invalid step_type: {s_type}")
                 
                 if s_id in registered_skills:
                     availability = registered_skills[s_id]["availability"]["type"]
@@ -208,15 +220,34 @@ def validate_repo():
                 # 5c. Non-First Step Handoff Validation
                 if i > 0:
                     prev_step = steps[i-1]
-                    prev_out = prev_step.get("output_artifact")
+
+                    # For conditional steps, get outputs from both branches
+                    if prev_step.get("conditional"):
+                        prev_out_true = prev_step.get("if_true", {}).get("output_artifact")
+                        prev_out_false = prev_step.get("if_false", {}).get("output_artifact")
+                        # Current step must be able to accept either output or not depend on previous
+                    else:
+                        prev_out = prev_step.get("output_artifact")
+
                     if in_art:
-                        if in_art != prev_out and in_art not in initial_inputs:
-                            errors.append(f"Workflow '{w_id}' step '{s_id}' input '{in_art}' does not match previous step output '{prev_out}' and is not an initial input")
+                        # For conditional step inputs, be lenient - the input could come from either branch
+                        if prev_step.get("conditional"):
+                            prev_out_true = prev_step.get("if_true", {}).get("output_artifact")
+                            prev_out_false = prev_step.get("if_false", {}).get("output_artifact")
+                            # Check if input matches either branch output or is an initial input
+                            matches = (in_art == prev_out_true or in_art == prev_out_false or in_art in initial_inputs)
+                            if not matches:
+                                errors.append(f"Workflow '{w_id}' step '{s_id}' input '{in_art}' does not match conditional branch outputs ({prev_out_true}, {prev_out_false}) and is not an initial input")
+                        else:
+                            prev_out = prev_step.get("output_artifact")
+                            if in_art != prev_out and in_art not in initial_inputs:
+                                errors.append(f"Workflow '{w_id}' step '{s_id}' input '{in_art}' does not match previous step output '{prev_out}' and is not an initial input")
+
                         if in_art not in contract_ids:
                             errors.append(f"Workflow '{w_id}' step '{s_id}' consumes unregistered artifact: {in_art}")
-                    
-                    # Ensure local_execution steps have output_artifact
-                    if step.get("step_type") == "local_execution" and not out_art:
+
+                    # Ensure local_execution steps have output_artifact (but not conditional steps)
+                    if step.get("step_type") == "local_execution" and not out_art and not step.get("conditional"):
                         errors.append(f"Workflow '{w_id}' step '{s_id}' is local_execution but missing 'output_artifact'")
 
     # 6. Frontmatter Check

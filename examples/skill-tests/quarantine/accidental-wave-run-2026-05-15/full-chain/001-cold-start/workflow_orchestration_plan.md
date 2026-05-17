@@ -12,12 +12,13 @@ This is the standard pipeline for converting raw fog into a repository diagnosis
 ## 4. Skills in Sequence
 1. `problem-framer` (Completed)
 2. `unknowns-mapper` (Completed)
-3. `repo-sensemaker` (Completed)
-4. `handoff` (Pending)
+3. (Conditional) `discovery` (Skipped - no research needed)
+4. `repo-sensemaker` (Completed)
+5. `handoff` (Pending)
 
 ## 5. Inputs and Outputs
 - **Initial Input**: `raw_fog`, `repository_state`
-- **Step 4 Output**: `prompt_handoff`
+- **Step 5 Output**: `prompt_handoff`
 
 ## 6. Approval Gates
 - **Gate 1**: `review_problem_frame` (Bypassed)
@@ -67,7 +68,22 @@ steps:
     gate: review_unknowns_map
     input_artifact: problem_frame
     output_artifact: unknowns_map
-  - id: 3
+  - id: 3-conditional
+    skill: ~
+    conditional: true
+    decision_field: unknowns_map.research_needed
+    if_true:
+      skill: discovery
+      step_type: external_routing
+      gate: review_discovery
+      input_artifact: unknowns_map
+      output_artifact: discovery_findings
+      next_step: 4
+    if_false:
+      output_artifact: unknowns_map
+      next_step: 4
+    status: completed
+  - id: 4
     skill: repo-sensemaker
     step_type: local_execution
     status: completed
@@ -75,7 +91,7 @@ steps:
     input_artifact: unknowns_map
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
-  - id: 4
+  - id: 5
     skill: handoff
     step_type: local_execution
     status: pending
