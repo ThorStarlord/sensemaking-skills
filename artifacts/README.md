@@ -4,14 +4,17 @@ This directory contains sensemaking pipeline outputs, organized by run in a numb
 
 ## Run Folders
 
-| # | Run | Date | Problem Type | Unknowns | Status |
-|---|-----|------|--------------|----------|--------|
-| 01 | [metamorfose-finance](01-metamorfose-finance/README.md) | 2026-05-17 | Implementation-driven (complex) | 9 | Product-discovery-sprint recommended |
-| 02 | [metamorfose-classes](02-metamorfose-classes/README.md) | 2026-05-17 | Design-incomplete (simple) | 8 | Validated via grill-with-docs |
+| # | Run | Date | Type | Status |
+|---|-----|------|------|--------|
+| 01 | [metamorfose-finance](01-metamorfose-finance/README.md) | 2026-05-17 | System sensemaking (9 unknowns) | Product-discovery-sprint recommended |
+| 02 | [metamorfose-classes](02-metamorfose-classes/README.md) | 2026-05-17 | System sensemaking (8 unknowns) | Validated via grill-with-docs |
+| Phase 2 | [operator-interviews](runs/2026-05-17-05-phase2-operator-interviews/README.md) | 2026-05-17 | Validation (3 operators) | ✅ GO for Phase 3 (discovery-sprint) |
 
 ### Adding a new run
 
-Next run gets `NN-project-name` (e.g., `03-my-project`) at `artifacts/`. See [ORGANIZATION-GUIDE.md](ORGANIZATION-GUIDE.md).
+Numbered runs (01, 02, ...) use pattern `NN-project-name` at `artifacts/`.  
+Phase runs use pattern `runs/YYYY-MM-DD-NN-phase-name/`.  
+See [ORGANIZATION-GUIDE.md](ORGANIZATION-GUIDE.md).
 
 ## Meta-Analyses
 
