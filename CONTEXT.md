@@ -26,6 +26,11 @@ This repository is built on **Artifact-Driven Agentic Engineering**. We treat ar
 ## Domain Language
 - **Fog**: The state of project uncertainty (Product, Architecture, Strategy, or Routing).
 - **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, and `prompt-handoff`.
+- **Workflow**: An ordered sequence of Skill Steps that processes fog into actionable artifacts.
+- **Skill Step**: One skill invocation within a Workflow. Each Skill Step has inputs (artifacts or external context), a skill to execute, an output artifact, and an approval gate.
+- **Core Skills**: Skills that always execute in a Workflow (e.g., problem-framer, unknowns-mapper, repo-sensemaker). Define the backbone of the pipeline.
+- **Conditional Skills**: Skills inserted into a Workflow based on characteristics of the input or intermediate artifacts (e.g., discovery skill if raw_fog clarity is low).
+- **Dynamic Chaining**: The system of routing decisions that selects the next Skill Step based on analyzed input quality or artifact content. Primary decision point: raw_fog input clarity and specificity. Secondary decision points defer until recurrence validates their necessity (Harden Only Where Pressured).
 - **Sensemaking Brief**: The primary diagnostic artifact (14 sections). It must identify the "weakest boundary" and provide file-level evidence and excerpts.
 - **Orchestration Plan**: The procedural artifact (11 sections). It defines the workflow, execution mode, and approval gates.
 - **Execution Modes**: The system supports `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, and `yolo_execution`.
@@ -93,3 +98,39 @@ The repository uses a Python-based three-level validator hierarchy to enforce ar
 - **`_validator_utils.py`**: Shared utility module for registry loading, path resolution, and error formatting.
 
 In YOLO and autonomous execution modes, validators function as **zero-tolerance safety gates**: any failure triggers an immediate hard stop and rollback recommendation. See [validator-stack-policy.md](skills/workflow-orchestrator/references/validator-stack-policy.md) for execution order.
+
+## Dynamic Chaining Implementation
+
+**Overview:** Workflows support conditional routing of Skill Steps based on artifact signals. The primary decision point is the clarity of the initial raw_fog input, detected by unknowns-mapper and encoded in the unknowns_map routing fields.
+
+**Routing Signal:** unknowns_map.research_needed (boolean)
+- Determined by: `(unknowns_count >= 5) OR (clarity_assessment == "low")`
+- If true: A discovery or research skill is inserted into the workflow
+- If false: The workflow skips to repo-sensemaker
+
+**Provisional Heuristic:** The thresholds (5 unknowns, "low" clarity) are initial estimates. They are validated empirically in early value-production runs, then refined using repeatable failure analysis.
+
+**Conditional Step Schema:** Workflows can define conditional steps with if_true/if_false branches:
+```yaml
+- id: 3-conditional
+  conditional: true
+  decision_field: unknowns_map.research_needed
+  if_true:
+    skill: discovery
+    gate: review_discovery
+    input_artifact: unknowns_map
+    output_artifact: discovery_findings
+    next_step: 4
+  if_false:
+    next_step: 4
+```
+
+**Machine Fields on unknowns_map:**
+- clarity_assessment: "high" | "medium" | "low"
+- unknowns_count: integer (count of unknowns)
+- assumptions_count: integer (count of unvalidated assumptions)
+- research_needed: boolean (routing decision)
+
+**Validators:**
+- `validate-unknowns-map.py` — Validates unknowns_map routing fields are present and well-typed
+- `validate-plan.py` — Validates conditional step logic references real skills
