@@ -52,6 +52,9 @@ class TestAutonomousExecutionIntegration(unittest.TestCase):
             "--repo-root", str(self.repo_root),
         ]
 
+        # Restore artifacts before running mutating modes to ensure git status is clean
+        subprocess.run(["git", "restore", "artifacts/"], cwd=str(self.repo_root), capture_output=True)
+
         result = subprocess.run(
             cmd,
             cwd=str(self.repo_root),

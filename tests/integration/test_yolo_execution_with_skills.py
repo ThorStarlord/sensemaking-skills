@@ -39,6 +39,9 @@ class TestYoloExecutionWithSkills(unittest.TestCase):
             "--mode", "yolo_execution",
         ]
 
+        # Restore artifacts before running mutating modes to ensure git status is clean
+        subprocess.run(["git", "restore", "artifacts/"], cwd=str(self.repo_root), capture_output=True)
+
         result = subprocess.run(
             cmd,
             cwd=str(self.repo_root),
