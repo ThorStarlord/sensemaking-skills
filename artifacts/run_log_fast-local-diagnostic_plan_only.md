@@ -1,11 +1,11 @@
 # Workflow Run Log: Fast Local Diagnostic
 
-- **Date**: 2026-05-16
-- **Session ID**: orchestration-20260516-210235-75f7d455
+- **Date**: 2026-05-17
+- **Session ID**: orchestration-20260517-233305-f5890abf
 - **Workflow ID**: fast-local-diagnostic
 - **Orchestrator Mode**: plan_only
 - **Branch**: main
-- **Status**: completed
+- **Status**: failed
 
 ## Pre-flight
 
@@ -24,32 +24,27 @@
 - **validator_stack**:
     - level: Dispatcher
       command: validate-output.py repository_sensemaking_brief
-      result: PASSED
+      result: FAILED
 - **gate**: review_sensemaking_brief
-- **status**: COMPLETED
-
-### Step 2
-- **step_id**: 2
-- **skill**: handoff
-- **runtime**: local_execution
-- **output_artifact**: prompt_handoff
-- **artifact_path**: artifacts/prompt_handoff.md
-- **validator_stack**:
-    - level: Dispatcher
-      command: validate-output.py prompt_handoff
-      result: PASSED
-- **gate**: review_handoff_prompt
-- **status**: COMPLETED
+- **status**: FAILED
 
 ## Decisions & Overrides
 
-- Gate 'review_sensemaking_brief' (step 1): not_applicable at 2026-05-16 21:02:40
-- Gate 'review_handoff_prompt' (step 2): not_applicable at 2026-05-16 21:02:40
+- Errors encountered: 1
+  - VALIDATOR_FAILED: Step 1 (repo-sensemaker): 1 validator(s) failed
 
 ## Final State
 
-- **Status**: completed
-- **Note**: All 2 steps completed successfully in 'plan_only' mode.
-- **Steps completed**: 2/2
-- **Gate decisions**: 2
-- **Errors**: 0
+- **Status**: failed
+- **Note**: Step 1 (repo-sensemaker) failed. Run halted.
+- **Steps completed**: 0/2
+- **Gate decisions**: 0
+- **Errors**: 1
+
+## TDD Cycles
+
+- **Step 1**
+  - **RED**: ERROR VALIDATOR_FAILED: Generic validator failed:
+ERROR MISSING_REQUIRED_SECTION: Missing required s
+  - **GREEN**: (manual fix applied)
+  - **REFACTOR**: (hardening if warranted)
