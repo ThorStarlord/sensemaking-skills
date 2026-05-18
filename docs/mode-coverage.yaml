@@ -1,3 +1,21 @@
+﻿# Mode Coverage Evidence Tracker
+#
+# This file documents validated execution modes and workflow runs.
+# Each entry proves that a workflow executed successfully through a specific
+# execution mode and that artifacts were validated by the orchestrator.
+#
+# Updated: 2026-05-17
+# Status: PRD validation gap resolved - product-to-issues workflow operational
+# Evidence: 2 workflows in guided_execution mode with 4 artifact validators exercised,
+#           all gates functional, zero hardening triggered
+#
+# Key Achievement: Redesigned docs-architecture to focus on domain alignment,
+# moved PRD generation to dedicated product-to-issues workflow. Full pipeline
+# (alignment report → prd → issues → agent briefs) now proven end-to-end.
+#
+# Phase 4 Completion: All workflow changes documented with validation proof.
+# Orchestrator successfully records and validates both redesigned workflows.
+#
 mode_coverage:
 - mode: yolo_execution
   workflow_id: fast-local-diagnostic
@@ -213,7 +231,7 @@ mode_coverage:
   notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-171505-c98731ea.'
 - mode: plan_only
   workflow_id: docs-architecture
-  last_run: '2026-05-16'
+  last_run: '2026-05-17'
   run_log_path: artifacts/run_log_docs-architecture_plan_only.md
   steps_completed: 2
   steps_total: 2
@@ -223,7 +241,7 @@ mode_coverage:
   gates_exercised: false
   gates_note: not_applicable_plan_only
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-183602-fb34ee92.'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260517-233754-bc2d452e.'
 - mode: plan_only
   workflow_id: product-strategy-sprint
   last_run: '2026-05-16'
@@ -279,7 +297,7 @@ mode_coverage:
     to-prd was removed to product-to-issues workflow.'
 - mode: guided_execution
   workflow_id: docs-architecture
-  last_run: '2026-05-16'
+  last_run: '2026-05-17'
   run_log_path: artifacts/run_log_docs-architecture_redesigned_guided_execution.md
   steps_completed: 2
   steps_total: 2
@@ -292,10 +310,11 @@ mode_coverage:
   hardening_triggered: none
   notes: Redesigned docs-architecture workflow (2-step version). Removed to-prd step
     (moved to product-to-issues workflow). Focused on alignment + handoff. All validators
-    invoked through canonical dispatcher. Proves redesigned workflow end-to-end.
+    invoked through canonical dispatcher. Proves redesigned workflow end-to-end. Phase 4
+    verified: evidence tracking complete.
 - mode: guided_execution
   workflow_id: product-to-issues
-  last_run: '2026-05-16'
+  last_run: '2026-05-17'
   run_log_path: artifacts/run_log_product-to-issues_guided_execution.md
   steps_completed: 3
   steps_total: 3
@@ -309,10 +328,10 @@ mode_coverage:
   hardening_triggered: none
   notes: 'First full execution of product-to-issues workflow. PRD artifact now properly
     validated through canonical dispatcher (resolves validation gap from previous
-    docs-architecture run). Full pipeline proven: domain_alignment_report ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢
-    prd ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ issue_list ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢
-    agent_brief. All 3 gates exercised. Demonstrates proper PRD validation in context
-    where prd is actually consumed.'
+    docs-architecture run). Full pipeline proven: domain_alignment_report -> prd ->
+    issue_list -> agent_brief. All 3 gates exercised. Demonstrates proper PRD validation
+    in context where prd is actually consumed. Phase 4 verified: workflow changes recorded
+    with complete validation proof.'
 - mode: plan_only
   workflow_id: product-to-issues
   last_run: '2026-05-16'
@@ -427,7 +446,7 @@ system_tools:
   - docs-contract-reconciliation (guided_execution)
   - full-local-sensemaking (yolo_execution)
   - fast-local-diagnostic (yolo_execution)
-  last_session: orchestration-20260517-233305-f5890abf
+  last_session: orchestration-20260517-233754-bc2d452e
   resume_capability: true
   supported_flags:
   - '--resume: continue a paused execution from the last gate denial'
@@ -631,3 +650,4 @@ non_interactive_flags_proven:
 - '--gate-decision auto-deny: non-interactive gate denial for testing'
 - '--gate-decision auto-approve: non-interactive gate approval for testing'
 - '--resume: continue execution from a paused gate state'
+
