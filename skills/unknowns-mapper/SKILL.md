@@ -16,6 +16,12 @@ Produces an **Unknowns Map** to separate what we know from what we are guessing.
     - **Risk**: Potential failures or blockers.
 3. **Pathfinding**: Define "Research Paths" to convert unknowns/assumptions into knowns.
     - **Rule**: Each critical assumption or risk should map to at least one research path.
+    - **Dual-Path Detection** (NEW): Ask explicitly about coexisting data access patterns:
+        - "Are there multiple ways to access the same data (e.g., old direct queries + new DAL wrapper functions)?"
+        - "If refactoring is in progress, what percentage of the system uses the new pattern? (DAL coverage %)"
+        - "Are there tests comparing the old and new implementations to verify they produce identical results?"
+        - "Is there a documented deprecation roadmap for the old pattern?"
+        - These questions detect **Incomplete Refactoring with Divergence Risk**, which is higher priority than spec gaps alone.
 4. **Stopping Rules**: Define when research should stop (to prevent rabbit holes).
     - **Weak**: Stop when we understand the problem.
     - **Strong**: Stop when we have checked 3 core files and identified the next workflow with evidence.
@@ -45,9 +51,20 @@ The unknowns-mapper produces four machine-readable routing fields that guide dow
 research_needed = (unknowns_count >= 5) OR (clarity_assessment == "low")
 ```
 
+**Extended Heuristic for Dual-Path Divergence** (NEW):
+```
+IF (incomplete_refactoring == true) AND (dal_coverage < 0.80) THEN
+  escalate_priority = true  // Signal to router: consolidation should precede discovery
+ELSE
+  escalate_priority = false  // Normal research routing
+END
+```
+
 This heuristic is empirically validated in early runs and refined based on outcomes:
 - If `research_needed` is `true`, the router inserts additional discovery, sensemaking, or diagnostic skills before implementation.
-- If `research_needed` is `false`, the map is deemed sufficiently detailed for immediate action.
+- If `escalate_priority` is `true`, the router recommends **consolidation-before-discovery** (fix architecture coexistence first).
+- If `research_needed` is `false` and `escalate_priority` is `false`, the map is deemed sufficiently detailed for immediate action.
+- **May 18 Validation**: Dual-path divergence correctly escalated problem priority. Complete refactoring blocked behind spec extraction is worse than extracting specs on unstable foundation.
 
 **Responsibility Boundary:**
 - unknowns-mapper makes the clarity judgment and counts unknowns/assumptions based on available evidence.

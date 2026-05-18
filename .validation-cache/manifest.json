@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "cache_location": ".validation-cache",
+  "created_at": "2026-05-18T00:00:00Z",
+  "latest_run_pointer": "latest",
+  "runs": [],
+  "retention_policy": {
+    "keep_days": 90,
+    "archive_older": true,
+    "cleanup_frequency": "weekly"
+  },
+  "metadata": {
+    "description": "Baseline cache for validation workflow runs",
+    "purpose": "Store validation artifacts for comparison between runs",
+    "how_it_works": "After each successful validation run, artifacts are copied to run-{timestamp}/ and latest symlink is updated"
+  }
+}

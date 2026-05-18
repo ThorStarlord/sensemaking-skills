@@ -8,6 +8,7 @@ description: select and stage a workflow from a repository sensemaking brief. us
 ## Workflow
 1. **Consume Brief**: Review the diagnostic brief from `repo-sensemaker`.
 2. **Select Workflow**: Match the recommended path to an available workflow in the `workflow-registry.yaml`.
+   - **Consolidation-Before-Discovery Routing**: If the brief indicates `weakest_boundary == "incomplete_refactoring"` with `dal_coverage < 0.80`, recommend the `consolidation` workflow instead of `discovery`. This is because incomplete refactoring with coexisting patterns (old + new) blocks reliable discovery work. The recommendation sequence is: (1) complete refactoring + add consistency tests, (2) then extract specifications on stable architecture.
 3. **Plan**: Produce a Workflow Orchestration Plan with ordered steps and approval gates.
 4. **Mode Selection**: Determine the execution mode (Default: `plan_only`).
 5. **Execute/Generate**:
