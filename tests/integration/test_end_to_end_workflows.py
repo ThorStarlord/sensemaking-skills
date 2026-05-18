@@ -118,6 +118,8 @@ class TestEndToEndWorkflows(unittest.TestCase):
                 if "plan_only" in allowed_modes:
                     # Verify plan_only doesn't require gates
                     for step in workflow["steps"]:
+                        if step.get("conditional"):
+                            continue
                         self.assertIn("gate", step)
 
     def test_guided_execution_mode_all_workflows(self):
@@ -158,6 +160,8 @@ class TestEndToEndWorkflows(unittest.TestCase):
 
                     # Verify each step has a gate
                     for step in steps:
+                        if step.get("conditional"):
+                            continue
                         self.assertIn(
                             "gate",
                             step,
@@ -199,6 +203,8 @@ class TestEndToEndWorkflows(unittest.TestCase):
                     autonomous_count += 1
                     # Verify workflow has gates (needed for autonomous execution)
                     for step in workflow["steps"]:
+                        if step.get("conditional"):
+                            continue
                         self.assertIn("gate", step)
 
         # At least some workflows should support autonomous_execution
@@ -307,6 +313,14 @@ class TestEndToEndWorkflows(unittest.TestCase):
                 for step in workflow["steps"]:
                     step_id = step.get("id", "unknown")
                     step_context = f"{workflow_id}/step-{step_id}"
+
+                    if step.get("conditional"):
+                        # Verify conditional step structure
+                        self.assertIn("id", step, f"{step_context}: missing id")
+                        self.assertIn("decision_field", step, f"{step_context}: missing decision_field")
+                        self.assertIn("if_true", step, f"{step_context}: missing if_true branch")
+                        self.assertIn("if_false", step, f"{step_context}: missing if_false branch")
+                        continue
 
                     # Required fields
                     self.assertIn("id", step, f"{step_context}: missing id")
