@@ -174,6 +174,11 @@ if ($orchestratorAvailable) {
         "--repo-root", $repoRoot
     )
 
+    # Add --validate flag if NOT forcing (skip validation)
+    if (-not $Force) {
+        $orchestratorArgs += "--validate"
+    }
+
     # Add baseline directory hint via environment variable
     if ($CompareBaseline) {
         $env:VALIDATION_BASELINE_DIR = $latestCacheDir
