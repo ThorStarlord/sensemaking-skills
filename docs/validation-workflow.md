@@ -71,7 +71,7 @@ The validation workflow supports three modes, each suited to different needs:
 - Builds an audit trail of human decisions
 
 **Characteristics:**
-- Duration: 30-45 minutes
+- Duration: 30–45 minutes
 - Gates: Mandatory human approval at each step
 - Risk: Low (humans review before each action)
 - Best for: Production workflows, high-stakes changes, team collaboration
@@ -93,7 +93,7 @@ The validation workflow supports three modes, each suited to different needs:
 - Still creates an audit trail (but non-human)
 
 **Characteristics:**
-- Duration: 20-30 minutes
+- Duration: 20–30 minutes
 - Gates: Automated approval based on rules
 - Risk: Medium (no human review, but auditable)
 - Best for: Routine validations, CI/CD pipelines, low-risk iterations
@@ -116,7 +116,7 @@ The validation workflow supports three modes, each suited to different needs:
 - Takes no actions, creates no issues, makes no changes
 
 **Characteristics:**
-- Duration: 5-10 minutes
+- Duration: 5–10 minutes
 - Gates: None (no decisions needed)
 - Risk: None (read-only, no mutations)
 - Best for: Exploration, planning, understanding scope
@@ -133,7 +133,7 @@ The validation workflow supports three modes, each suited to different needs:
 
 ### Prerequisites
 
-- Working directory: Root of the repository (`H:\GithubRepositories\sensemaking-skills`)
+- Working directory: Root of the repository (`"H:\GithubRepositories\sensemaking-skills"`)
 - Python installed and in PATH
 - All recent commits pushed to git (required for baseline comparison)
 
@@ -148,6 +148,32 @@ python scripts/orchestration-runner.py docs-architecture --mode guided_execution
 
 # Or, to just preview what would happen:
 python scripts/orchestration-runner.py docs-architecture --mode plan_only
+```
+
+### Expected Output
+
+When validation succeeds, you'll see output like:
+
+```
+[Level 1] Validating repository structure...
+✓ Repo structure is valid
+✓ Git history is accessible
+
+[Step 1/3] Executing: grill-with-docs
+  Status: COMPLETED
+  → Generated domain_alignment_findings.md
+
+[Gate] Review findings?
+  Summary: 2 improvements identified
+  Approve? (yes/no): yes
+
+[Step 2/3] Executing: to-prd
+  Status: COMPLETED
+  → Generated prd_from_findings.md
+
+[VALIDATION COMPLETE]
+Status: PASS
+Next steps: Review artifacts/validation_summary.md
 ```
 
 ### After Running
@@ -170,7 +196,7 @@ That's it! You're now using the validation workflow.
 cd "H:\GithubRepositories\sensemaking-skills"
 
 # Verify you're in the right place
-pwd  # Should show: H:\GithubRepositories\sensemaking-skills
+pwd  # Should show: "H:\GithubRepositories\sensemaking-skills"
 ls scripts/orchestration-runner.py  # Should exist
 ```
 
@@ -178,7 +204,7 @@ If you get "not found" errors, you're not in the right directory. Try:
 
 ```powershell
 # Windows: Navigate from home
-cd $env:USERPROFILE\GithubRepositories\sensemaking-skills
+cd "H:\GithubRepositories\sensemaking-skills"
 
 # Or use git to find the repo root
 git rev-parse --show-toplevel
@@ -190,10 +216,10 @@ Decide which mode fits your situation:
 
 | Scenario | Use Mode | Time |
 |----------|----------|------|
-| First time running validation | `plan_only` | 5 min |
-| Production work, team consensus | `guided_execution` | 30-45 min |
-| Routine check, automated rules trusted | `autonomous_execution` | 20-30 min |
-| Quick preview of what's changed | `plan_only` | 5 min |
+| First time running validation | `plan_only` | 5 minutes |
+| Production work, team consensus | `guided_execution` | 30–45 minutes |
+| Routine check, automated rules trusted | `autonomous_execution` | 20–30 minutes |
+| Quick preview of what's changed | `plan_only` | 5 minutes |
 
 ### Step 3: Run the Script with Options
 
@@ -258,7 +284,7 @@ After validation completes:
 
 ## 6. Understanding Results
 
-Each validation run produces several key output files, stored in the `artifacts/` directory:
+Each validation run produces several key output files, stored in the `artifacts/` directory. Some reports are generated for every run, while others are optional and only appear with specific flags (for example, `--compare-baseline` produces `comparison_report.md`).
 
 ### validation_summary.md (Start Here!)
 
@@ -310,6 +336,8 @@ Status: WARNINGS
 - Which validator found it
 - Suggested fix
 - Link to related documentation
+
+**Note on validators**: The examples shown (like `validate-workflow-design.py`) are actual validator scripts in the `scripts/` directory. Check that directory for the complete list of available validators and their actual filenames.
 
 **Error categories:**
 - `SCHEMA_VALIDATION` — Artifact doesn't match required format
@@ -641,9 +669,9 @@ validators:
 
 | Mode | Duration | Variables |
 |------|----------|-----------|
-| plan_only | 5-10 min | Network latency only |
-| guided_execution | 30-45 min | Waiting for gate approvals |
-| autonomous_execution | 20-30 min | Number of artifacts to validate |
+| plan_only | 5–10 minutes | Network latency only |
+| guided_execution | 30–45 minutes | Waiting for gate approvals |
+| autonomous_execution | 20–30 minutes | Number of artifacts to validate |
 
 Factors that affect duration:
 - Number of artifacts to validate (more = longer)
@@ -677,7 +705,7 @@ while ($true) {
 **You have two options:**
 
 1. **Deny the gate**: At the gate prompt, type `no` to reject the validation
-   - Investigation the error in error_analysis.md
+   - Investigate the error in error_analysis.md
    - Determine if it's a real issue or false positive
    - Fix the code or the validator rule
 
@@ -770,8 +798,8 @@ The validation workflow is your automated quality checkpoint. Use it to:
 
 **Most common workflow:**
 1. Complete development iteration (hour of work)
-2. Run `orchestration-runner.py docs-architecture --mode guided_execution --compare-baseline` (30-45 min)
-3. Review artifacts in `artifacts/validation_summary.md` (5 min)
+2. Run `orchestration-runner.py docs-architecture --mode guided_execution --compare-baseline` (30–45 minutes)
+3. Review artifacts in `artifacts/validation_summary.md` (5 minutes)
 4. Approve or deny findings at gates (inline with execution)
 5. Create GitHub issues from findings (automatic)
 6. Use findings to plan next iteration
