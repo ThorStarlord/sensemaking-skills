@@ -17,3 +17,7 @@ env/
 
 # OS
 .DS_Store
+
+# Validation artifacts and cache
+.validation-cache/
+outputs/validation-*/
