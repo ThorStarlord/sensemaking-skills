@@ -245,7 +245,7 @@ if ($orchestratorAvailable) {
             }
 
             try {
-                $null = New-Item -ItemType SymbolicLink -Path $latestCacheDir -Target $cacheRunDir -Force -ErrorAction SilentlyContinue
+                $null = New-Item -ItemType SymbolicLink -Path $latestCacheDir -Target $cacheRunDir -Force
                 Write-Host "OK Latest symlink updated: $latestCacheDir -> $cacheRunDir" -ForegroundColor Green
             } catch {
                 Write-Host "WARNING Could not create symlink (may require admin): $($_.Exception.Message)" -ForegroundColor Yellow
@@ -266,6 +266,7 @@ if ($orchestratorAvailable) {
     Write-Host "Orchestrator script is still under development." -ForegroundColor Gray
     Write-Host "Script validation and planning complete, but workflow not executed." -ForegroundColor Gray
     Write-Host "Output would be written to: $outputDir" -ForegroundColor Gray
+    $exitCode = 0
 }
 
 # ==========================================
