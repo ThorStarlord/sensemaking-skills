@@ -42,14 +42,28 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 
 **What happens:**
 1. Orchestrator produces the orchestration-plan
-2. Automatically invokes `implementation-workflow` with sensemaking artifacts as `context_artifacts` input
-3. The implementation workflow executes: grill-with-docs → to-prd → to-issues → triage → tdd → handoff
-4. All steps marked `gate: none` execute without pausing; only final `session_close` gate pauses for approval
-5. Artifacts flow between steps automatically; no user intervention required between steps
+2. Parses the plan's problem classification to determine the implementation workflow type
+3. Routes to the appropriate workflow:
+   - **`product-implementation-workflow`**: For product/feature fog (includes discovery, opportunity-tree)
+   - **`ui-implementation-workflow`**: For UI/frontend fog (includes ui-flow, ui-screen-spec)
+   - **`implementation-workflow`**: For architecture/code design fog (default: grill-with-docs → prd → issues → tdd)
+   - **`docs-implementation-workflow`**: For documentation fog (default: grill-with-docs → docs spec)
+4. Invokes the selected workflow with sensemaking artifacts as `context_artifacts` input
+5. All steps marked `gate: none` execute without pausing; only final `session_close` gate pauses for approval
+6. Artifacts flow between steps automatically; no user intervention required between steps
+
+**Workflow routing logic:**
+- Parse orchestration-plan's fog classification (product_fog, architecture_fog, ui_fog, docs_fog, or other)
+- If `fog_type == "product"`: use `product-implementation-workflow`
+- If `fog_type == "ui"` or `fog_type == "frontend"`: use `ui-implementation-workflow`
+- If `fog_type == "docs"` or `fog_type == "documentation"`: use `docs-implementation-workflow`
+- Otherwise: use default `implementation-workflow`
+- Can override with explicit `recommended_implementation_workflow` field in orchestration-plan
 
 **For guided_execution mode:**
 - Orchestrator produces the orchestration-plan and presents it to the user
-- Asks: "Continue to implementation-workflow with these recommendations?"
+- Shows which implementation workflow will be used based on fog type
+- Asks: "Continue to [workflow-name] with these recommendations?"
 - Only proceeds if user approves
 
 ## Boundary Rules

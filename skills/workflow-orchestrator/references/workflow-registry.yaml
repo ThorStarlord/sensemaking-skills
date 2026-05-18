@@ -475,8 +475,8 @@ workflows:
         output_artifact: prompt_handoff
 
   - id: implementation-workflow
-    display_name: Implementation Workflow
-    purpose: Execute the full workflow sequence from domain alignment through implementation completion without stopping between steps.
+    display_name: Implementation Workflow (Default)
+    purpose: Generic implementation workflow for architecture/code design problems. Aligns domain, creates spec, decomposes into issues, and implements via TDD.
     initial_inputs:
       - id: context_artifacts
         type: artifact
@@ -532,5 +532,188 @@ workflows:
         step_type: local_execution
         gate: session_close
         input_artifact: code_patch
+        output_artifact: completion_summary
+        description: Completion summary - document session
+
+  - id: product-implementation-workflow
+    display_name: Product Implementation Workflow
+    purpose: For product/feature problems. Aligns domain, researches user needs, synthesizes opportunities, creates spec, and implements.
+    initial_inputs:
+      - id: context_artifacts
+        type: artifact
+        required: true
+        description: Artifacts from sensemaking pipeline (problem-frame, unknowns-map, sensemaking-brief, orchestration-plan).
+    allowed_execution_modes:
+      - guided_execution
+      - autonomous_execution
+    requires_run_log: true
+    steps:
+      - id: 1
+        skill: grill-with-docs
+        step_type: local_execution
+        gate: none
+        input_artifact: context_artifacts
+        output_artifact: context
+        description: Domain alignment - refine understanding and create CONTEXT.md
+
+      - id: 2
+        skill: discovery
+        step_type: local_execution
+        gate: none
+        input_artifact: context
+        output_artifact: discovery_findings
+        description: User research - interview stakeholders and extract needs
+
+      - id: 3
+        skill: opportunity-tree
+        step_type: local_execution
+        gate: none
+        input_artifact: discovery_findings
+        output_artifact: opportunity_map
+        description: Opportunity mapping - connect problems to solutions
+
+      - id: 4
+        skill: to-prd
+        step_type: local_execution
+        gate: none
+        input_artifact: opportunity_map
+        output_artifact: prd
+        description: Product requirements - synthesize into specification
+
+      - id: 5
+        skill: to-issues
+        step_type: local_execution
+        gate: none
+        input_artifact: prd
+        output_artifact: issue_list
+        description: Implementation decomposition - break into issues
+
+      - id: 6
+        skill: triage
+        step_type: local_execution
+        gate: none
+        input_artifact: issue_list
+        output_artifact: agent_brief
+        description: Issue preparation - create agent briefs
+
+      - id: 7
+        skill: tdd
+        step_type: local_execution
+        gate: none
+        input_artifact: agent_brief
+        output_artifact: code_patch
+        description: Implementation - execute TDD cycles
+
+      - id: 8
+        skill: handoff
+        step_type: local_execution
+        gate: session_close
+        input_artifact: code_patch
+        output_artifact: completion_summary
+        description: Completion summary - document session
+
+  - id: ui-implementation-workflow
+    display_name: UI Implementation Workflow
+    purpose: For UI/frontend design problems. Aligns domain, specifies flows and screens, decomposes into issues, and implements via TDD.
+    initial_inputs:
+      - id: context_artifacts
+        type: artifact
+        required: true
+        description: Artifacts from sensemaking pipeline (problem-frame, unknowns-map, sensemaking-brief, orchestration-plan).
+    allowed_execution_modes:
+      - guided_execution
+      - autonomous_execution
+    requires_run_log: true
+    steps:
+      - id: 1
+        skill: grill-with-docs
+        step_type: local_execution
+        gate: none
+        input_artifact: context_artifacts
+        output_artifact: context
+        description: Domain alignment - refine understanding and create CONTEXT.md
+
+      - id: 2
+        skill: ui-flow
+        step_type: local_execution
+        gate: none
+        input_artifact: context
+        output_artifact: ui_flows
+        description: UI flow specification - document user journeys and transitions
+
+      - id: 3
+        skill: ui-screen-spec
+        step_type: local_execution
+        gate: none
+        input_artifact: ui_flows
+        output_artifact: screen_specs
+        description: Screen specifications - detail each screen's content and interactions
+
+      - id: 4
+        skill: to-issues
+        step_type: local_execution
+        gate: none
+        input_artifact: screen_specs
+        output_artifact: issue_list
+        description: Implementation decomposition - break into issues
+
+      - id: 5
+        skill: triage
+        step_type: local_execution
+        gate: none
+        input_artifact: issue_list
+        output_artifact: agent_brief
+        description: Issue preparation - create agent briefs
+
+      - id: 6
+        skill: tdd
+        step_type: local_execution
+        gate: none
+        input_artifact: agent_brief
+        output_artifact: code_patch
+        description: Implementation - execute TDD cycles
+
+      - id: 7
+        skill: handoff
+        step_type: local_execution
+        gate: session_close
+        input_artifact: code_patch
+        output_artifact: completion_summary
+        description: Completion summary - document session
+
+  - id: docs-implementation-workflow
+    display_name: Documentation Implementation Workflow
+    purpose: For documentation/knowledge problems. Aligns domain understanding, creates documentation architecture, and generates docs.
+    initial_inputs:
+      - id: context_artifacts
+        type: artifact
+        required: true
+        description: Artifacts from sensemaking pipeline (problem-frame, unknowns-map, sensemaking-brief, orchestration-plan).
+    allowed_execution_modes:
+      - guided_execution
+      - autonomous_execution
+    requires_run_log: true
+    steps:
+      - id: 1
+        skill: grill-with-docs
+        step_type: local_execution
+        gate: none
+        input_artifact: context_artifacts
+        output_artifact: context
+        description: Domain alignment - refine understanding and create CONTEXT.md
+
+      - id: 2
+        skill: to-prd
+        step_type: local_execution
+        gate: none
+        input_artifact: context
+        output_artifact: prd
+        description: Documentation specification - define structure and coverage
+
+      - id: 3
+        skill: handoff
+        step_type: local_execution
+        gate: session_close
+        input_artifact: prd
         output_artifact: completion_summary
         description: Completion summary - document session
