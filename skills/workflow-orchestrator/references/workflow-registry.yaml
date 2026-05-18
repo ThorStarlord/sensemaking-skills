@@ -473,3 +473,64 @@ workflows:
         gate: final_review
         input_artifact: skill_improvement_plan
         output_artifact: prompt_handoff
+
+  - id: implementation-workflow
+    display_name: Implementation Workflow
+    purpose: Execute the full workflow sequence from domain alignment through implementation completion without stopping between steps.
+    initial_inputs:
+      - id: context_artifacts
+        type: artifact
+        required: true
+        description: Artifacts from sensemaking pipeline (problem-frame, unknowns-map, sensemaking-brief, orchestration-plan).
+    allowed_execution_modes:
+      - guided_execution
+      - autonomous_execution
+    requires_run_log: true
+    steps:
+      - id: 1
+        skill: grill-with-docs
+        step_type: local_execution
+        gate: none
+        input_artifact: context_artifacts
+        output_artifact: context
+        description: Domain alignment - refine understanding and create CONTEXT.md
+
+      - id: 2
+        skill: to-prd
+        step_type: local_execution
+        gate: none
+        input_artifact: context
+        output_artifact: prd
+        description: Product requirements - synthesize into specification
+
+      - id: 3
+        skill: to-issues
+        step_type: local_execution
+        gate: none
+        input_artifact: prd
+        output_artifact: issue_list
+        description: Implementation decomposition - break into issues
+
+      - id: 4
+        skill: triage
+        step_type: local_execution
+        gate: none
+        input_artifact: issue_list
+        output_artifact: agent_brief
+        description: Issue preparation - create agent briefs
+
+      - id: 5
+        skill: tdd
+        step_type: local_execution
+        gate: none
+        input_artifact: agent_brief
+        output_artifact: code_patch
+        description: Implementation - execute TDD cycles
+
+      - id: 6
+        skill: handoff
+        step_type: local_execution
+        gate: session_close
+        input_artifact: code_patch
+        output_artifact: completion_summary
+        description: Completion summary - document session

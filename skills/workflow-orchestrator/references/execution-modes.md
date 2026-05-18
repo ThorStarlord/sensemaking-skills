@@ -19,13 +19,14 @@ The safest mode. The orchestrator analyzes the brief, selects a workflow, and ex
 Produces a series of prompts that the user can manually copy and paste into other agent sessions. Useful when the user wants full control over the execution context.
 
 ### 3. `guided_execution`
-The orchestrator executes steps one by one. After each step, it must present the artifact produced and wait for user approval before proceeding to the next step.
+The orchestrator executes steps one by one. After each step, it must present the artifact produced and wait for user approval before proceeding to the next step. Steps marked with `gate: none` execute and present their output, but the orchestrator does not pause for approval—it automatically continues to the next step.
 
 ### 4. `autonomous_execution`
-The orchestrator executes the full chain but **MUST stop at every defined [Approval Gate](approval-gates.md)**.
+The orchestrator executes the full chain but **MUST stop at every defined [Approval Gate](approval-gates.md)** unless the gate is `gate: none`.
 - **Requirement**: User must provide the opt-in string: `"I accept the risks of autonomous execution."`
 - **Safety**: Cannot commit to `main`, cannot delete core files.
 - **Scope**: Can execute `local` and `local_command` skills.
+- **`gate: none` behavior**: Steps marked with `gate: none` execute immediately without approval pauses, even in `autonomous_execution` mode. This is useful for high-velocity workflows where intermediate approvals would introduce unnecessary delays.
 
 ### 5. `yolo_execution`
 Maximum automation for local sensemaking and assumed-installed implementation skills. All approval gates are bypassed for eligible skills.

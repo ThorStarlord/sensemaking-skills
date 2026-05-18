@@ -14,8 +14,9 @@ description: select and stage a workflow from a repository sensemaking brief. us
    - `plan_only`: produce the plan artifact and stop. No workflow steps are executed, and no repository files are modified (except the plan itself if explicitly requested).
    - `prompt_chain`: produce copy/paste prompts and stop.
    - `guided_execution`: execute one eligible step, validate its output artifact, write/update the run log, then stop for approval.
-   - `autonomous_execution`: execute eligible steps until the next approval gate, failed validation, non-executable skill, or stop condition.
-    - `yolo_execution`: [STABLE] execute only eligible steps with no intermediate approval. **MANDATORY**: Run `Post-Step Verification` after each skill execution. Stop immediately on missing artifact, invalid handoff, failed verification (script or LLM), non-executable skill, dirty git state, or run-log failure.
+   - `autonomous_execution`: execute eligible steps until the next approval gate, failed validation, non-executable skill, or stop condition. **After sensemaking completes**: if the orchestration-plan recommends external workflows, automatically invoke `implementation-workflow` with sensemaking artifacts and continue without stopping between steps.
+    - `yolo_execution`: [STABLE] execute only eligible steps with no intermediate approval. **MANDATORY**: Run `Post-Step Verification` after each skill execution. Stop immediately on missing artifact, invalid handoff, failed verification (script or LLM), non-executable skill, dirty git state, or run-log failure. **After sensemaking completes**: if the orchestration-plan recommends external workflows, automatically invoke `implementation-workflow` with sensemaking artifacts and continue without stopping between steps.
+6. **Implementation Workflow (autonomous modes only)**: If mode is `autonomous_execution` or `yolo_execution` and the orchestration-plan recommends external workflows, automatically execute the `implementation-workflow` (grill-with-docs → to-prd → to-issues → triage → tdd → handoff) with `gate: none` between steps. Pass sensemaking artifacts as initial context. Do not pause between steps.
 
 ## Output Format
 Every response must follow the [Workflow Orchestration Plan](references/workflow-orchestration-template.md) structure. 
@@ -26,6 +27,30 @@ Use [Run Log Template](references/run-log-template.md) only when recording an ac
 
 ## Execution Modes
 Use [Execution Modes](references/execution-modes.md) as the source of truth. The inline behavior summary in the workflow above is only a control-plane shortcut.
+
+## Approval Gate Handling
+- **`gate: none`**: Step executes without approval. Used for high-velocity workflows where intermediate gates would introduce unnecessary delays. The orchestrator skips approval wait for this step and immediately proceeds to the next step.
+- **`gate: <gate_name>`**: Standard approval gate. The orchestrator halts and requests approval before proceeding.
+- **`gate: session_close`**: Final gate. The orchestrator stops after completing this step and summarizes the session.
+
+## Automatic Implementation Workflow Invocation
+
+**When does it trigger:**
+- Only in `autonomous_execution` or `yolo_execution` modes
+- Only after sensemaking completes and the orchestration-plan is produced
+- Only if the plan recommends external workflows (not local sensemaking only)
+
+**What happens:**
+1. Orchestrator produces the orchestration-plan
+2. Automatically invokes `implementation-workflow` with sensemaking artifacts as `context_artifacts` input
+3. The implementation workflow executes: grill-with-docs → to-prd → to-issues → triage → tdd → handoff
+4. All steps marked `gate: none` execute without pausing; only final `session_close` gate pauses for approval
+5. Artifacts flow between steps automatically; no user intervention required between steps
+
+**For guided_execution mode:**
+- Orchestrator produces the orchestration-plan and presents it to the user
+- Asks: "Continue to implementation-workflow with these recommendations?"
+- Only proceeds if user approves
 
 ## Boundary Rules
 - **Safety First**: Default to `plan_only` mode. 
@@ -59,7 +84,8 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
     - After each step, preserve only the declared output artifact, compact run-log entry, and fields required by the next step.
     - Stop immediately if the command output cannot be mapped to the declared `output_artifact`.
 - **Approval Gates**: 
-    - Do not bypass approval gates in `guided_execution` or `autonomous_execution` mode. 
+    - **`gate: none`**: No approval required. Execute immediately and continue to the next step. Record `gate_behavior: skipped_by_design` in run log.
+    - Do not bypass standard approval gates in `guided_execution` or `autonomous_execution` mode. 
     - In `guided_execution`, the orchestrator MUST record an explicit `gate_result: approved_by_user` (including `approved_at` and `approved_by`) in the run log before proceeding. Implicit approval is forbidden.
     - In `yolo_execution`, approval gates are operationally bypassed only after eligibility checks, but they MUST remain present in the machine-readable plan and run log with `gate_behavior: bypassed_by_yolo`.
 - **Research & Subset Runs**:
@@ -87,7 +113,7 @@ A `local_command` step is not complete until its declared `output_artifact` exis
 
 ## Hard Stop Conditions
 The orchestrator MUST stop and report instead of continuing when any of these occur:
-- The skill is `external`, `external_required`, or `prompt_only`.
+- The skill is `external`, `external_required`, or `prompt_only` **and is not part of an automatic `implementation-workflow` invocation**.
 - The next step is `workflow-orchestrator` itself, unless the mode is `plan_only`.
 - The expected output artifact is missing, malformed, or does not satisfy `artifact-contracts.yaml`.
 - The selected workflow does not explicitly allow the requested execution mode.
@@ -97,6 +123,8 @@ The orchestrator MUST stop and report instead of continuing when any of these oc
 - **Interrupt Protocol**: If execution is interrupted, the orchestrator MUST attempt to save a partial Run Log to preserve the state of completed steps.
 - More than one retry would be required for the same step.
 - The current context contains more than one full artifact from prior steps; summarize earlier artifacts before continuing.
+
+**Exception for implementation-workflow:** Steps within `implementation-workflow` that have `gate: none` do NOT trigger hard stops—they continue to the next step automatically.
 
 ## References
 - [Validator Stack Policy](references/validator-stack-policy.md)
