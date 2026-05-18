@@ -1,496 +1,807 @@
 # Validation Workflow Process Documentation
 
+A comprehensive guide to using the validation workflow system at decision gates to ensure quality code and documentation during development iterations.
+
+---
+
 ## 1. Overview
 
-The validation workflow is an automated system for verifying the integrity, consistency, and completeness of documentation and code artifacts within the sensemaking-skills project. It provides structured validation across multiple phases of development, ensuring that all deliverables meet predefined quality standards before integration into the main codebase.
+### What the Validation Workflow Does
 
-The validation workflow is designed for developers and technical leads who need to ensure documentation accuracy, verify architectural decisions are properly implemented, and maintain consistency across the project's knowledge base. It produces detailed validation reports that identify gaps, inconsistencies, and actionable improvement areas.
+The validation workflow is an automated quality-assurance system that runs at decision gates—moments when your development iteration is complete and the team has agreed on the next direction. It performs three core functions:
 
-The workflow generates four primary output files: a comprehensive validation report, a summary of issues discovered, a list of recommended actions, and evidence logs documenting all validation activities. These outputs serve as both immediate feedback for the current work and permanent records for project history and learning.
+1. **Validates the Repository State** — Ensures code quality, documentation completeness, and artifact integrity
+2. **Identifies Changes** — Reports what changed in the codebase since the last validation
+3. **Produces Actionable Reports** — Generates detailed findings that inform your next development steps
 
-## 2. Decision Gate Checklist
+### When to Use It (Decision Gates)
 
-Trigger validation workflow when:
+The validation workflow is designed to run at natural stopping points in your development process:
 
-- [ ] New documentation has been added to the project (guides, ADRs, architecture documents)
-- [ ] Existing documentation has been modified or updated
-- [ ] Phase deliverables are ready for review before merging to main branch
-- [ ] Conducting regular scheduled validation runs (weekly, monthly)
-- [ ] Changes affect multiple documentation sections or components
-- [ ] Architecture decisions need verification against implementation
-- [ ] Cross-referencing between documents needs validation
-- [ ] Code examples in documentation require validation
-- [ ] Links and references in documentation need checking
-- [ ] Documentation consistency across similar sections needs verification
+- **Iteration Complete**: You've finished a planned set of work
+- **Team Consensus**: The team has agreed "We know what to build next"
+- **Stable State**: No work-in-progress (WIP) files or incomplete tasks
+- **Time Since Last Validation**: At least a few hours have passed since the previous validation run
+- **PRD/Requirements Ready**: You're starting a new phase of work and want to validate your foundation
+
+### What It Produces
+
+Each validation run generates:
+
+- **Summary Report** — Quick overview of findings and recommendations
+- **Error Analysis** — Detailed categorization of all errors found
+- **Changes Identified** — Breakdown of code and documentation changes
+- **Comparison Report** (optional) — Side-by-side comparison with previous run
+- **Execution Log** — Complete audit trail of what was validated and when
+
+---
+
+## 2. When to Validate: Decision Gate Checklist
+
+Before running validation, verify these conditions:
+
+- [ ] **Development iteration is complete** — You've finished a planned set of features or bug fixes
+- [ ] **Team has agreed on direction** — Everyone understands what needs to be built next
+- [ ] **Current state is stable** — No uncommitted WIP, no broken tests, no dangling merge conflicts
+- [ ] **At least a few hours since last validation** — Avoids unnecessary repeated runs
+- [ ] **Artifacts are ready for review** — PRDs, documentation, or design artifacts exist
+- [ ] **No urgent hotfixes pending** — Wait until hotfixes are complete and merged
+
+**Example decision gate moments:**
+- After completing feature development (ready for testing phase)
+- Before starting a new product roadmap (ready for implementation planning)
+- After a major refactoring (ready for validation of new architecture)
+- When onboarding new requirements (ready to assess scope and feasibility)
+
+---
 
 ## 3. Validation Modes
 
-### Guided Execution (30-45 minutes)
+The validation workflow supports three modes, each suited to different needs:
 
-Interactive validation mode where the system prompts for inputs at key decision points. The operator reviews each validation phase before proceeding to the next stage. This mode is ideal for understanding the validation process, debugging specific issues, or conducting thorough quality reviews.
+### Mode 1: Guided Execution (Recommended Default)
 
-**Best for:** Initial validation setups, quality assurance reviews, learning the system
+**When to use**: For most production work and team-driven decisions
 
-**Typical workflow:**
-- Step 1: Review preparation with user confirmation
-- Step 2: User provides configuration inputs
-- Step 3: Validation phase-by-phase with intermediate reviews
-- Step 4: Results review with actionable recommendations
-- Step 5: Optional re-validation with adjustments
+**What happens:**
+- Runs all validators step-by-step
+- Pauses at each gate for human review and approval
+- Shows findings and asks: "Should we proceed with the next step?"
+- Creates issues automatically if you approve
+- Builds an audit trail of human decisions
 
-### Autonomous Execution (20-30 minutes)
+**Characteristics:**
+- Duration: 30–45 minutes
+- Gates: Mandatory human approval at each step
+- Risk: Low (humans review before each action)
+- Best for: Production workflows, high-stakes changes, team collaboration
 
-Fully automated validation run using predefined configuration. The system executes all validation phases without waiting for user input, using default settings and previously established parameters. Results are generated automatically and stored for review.
+**When gate decisions are made:**
+- **Approve**: "Yes, these findings are correct. Proceed with next step."
+- **Deny**: "No, we disagree with these findings. Investigate and rerun."
+- **Modify**: "Approve with changes" (some validators allow customization)
 
-**Best for:** Scheduled runs, CI/CD integration, batch validation operations
+### Mode 2: Autonomous Execution
 
-**Typical workflow:**
-- Configuration loaded automatically
-- All validation phases execute sequentially
-- Results compiled and stored automatically
-- Notifications sent upon completion
+**When to use**: For well-established processes that have proven reliable
 
-### Plan Only (5 minutes)
+**What happens:**
+- Runs all validators automatically without pausing
+- Makes gate decisions based on pre-established criteria
+- Auto-creates issues for all findings
+- Logs all decisions in the run log
+- Still creates an audit trail (but non-human)
 
-Lightweight mode that generates a validation plan without executing the actual validation. This mode shows what would be validated, which documents would be checked, and which rules would be applied. Useful for understanding scope before committing to full validation.
+**Characteristics:**
+- Duration: 20–30 minutes
+- Gates: Automated approval based on rules
+- Risk: Medium (no human review, but auditable)
+- Best for: Routine validations, CI/CD pipelines, low-risk iterations
 
-**Best for:** Planning, scoping work, preview of validation scope
+**When to use autonomous mode:**
+- Validation process has been exercised many times (proven reliable)
+- Automated rules are well-understood by the team
+- Issues generated will be reviewed before implementation
+- Time is constrained and decisions are non-controversial
 
-**Typical workflow:**
-- Configuration reviewed
-- Validation plan generated
-- Scope and estimated duration shown
-- No actual validation occurs
+### Mode 3: Plan Only (Exploration)
 
-## 4. Quick Start
+**When to use**: For quick previews without commitment
 
-**One-command quickstart:**
+**What happens:**
+- Shows what validation would do without executing it
+- Generates the execution plan
+- Lists all validators that would run
+- Shows artifacts that would be generated
+- Takes no actions, creates no issues, makes no changes
 
-```bash
-./run-validation.sh --mode=guided --config=default
+**Characteristics:**
+- Duration: 5–10 minutes
+- Gates: None (no decisions needed)
+- Risk: None (read-only, no mutations)
+- Best for: Exploration, planning, understanding scope
+
+**When to use plan-only mode:**
+- First time running validation (understand what it does)
+- Estimating how long validation will take
+- Planning work before committing to execution
+- Troubleshooting issues with the workflow itself
+
+---
+
+## 4. Quick Start (5 Minutes)
+
+### Prerequisites
+
+- Working directory: Root of the repository (`"H:\GithubRepositories\sensemaking-skills"`)
+- Python installed and in PATH
+- All recent commits pushed to git (required for baseline comparison)
+
+### Quickest Possible Run
+
+```powershell
+# Navigate to repo root
+cd "H:\GithubRepositories\sensemaking-skills"
+
+# Run validation in guided mode with baseline comparison (most useful)
+python scripts/orchestration-runner.py docs-architecture --mode guided_execution --compare-baseline
+
+# Or, to just preview what would happen:
+python scripts/orchestration-runner.py docs-architecture --mode plan_only
 ```
 
-This command launches the guided validation workflow with default settings, prompting you through each phase and generating complete validation reports.
+### Expected Output
 
-**Alternative for autonomous mode:**
+When validation succeeds, you'll see output like:
 
-```bash
-./run-validation.sh --mode=autonomous --config=default --quiet
+```
+[Level 1] Validating repository structure...
+✓ Repo structure is valid
+✓ Git history is accessible
+
+[Step 1/3] Executing: grill-with-docs
+  Status: COMPLETED
+  → Generated domain_alignment_findings.md
+
+[Gate] Review findings?
+  Summary: 2 improvements identified
+  Approve? (yes/no): yes
+
+[Step 2/3] Executing: to-prd
+  Status: COMPLETED
+  → Generated prd_from_findings.md
+
+[VALIDATION COMPLETE]
+Status: PASS
+Next steps: Review artifacts/validation_summary.md
 ```
 
-**For plan-only mode:**
+### After Running
 
-```bash
-./run-validation.sh --mode=plan-only --config=default
+1. Review the output in your terminal
+2. Read `artifacts/validation_summary.md` for findings overview
+3. Check `artifacts/error_analysis.md` if errors are listed
+4. At each gate prompt, type `approve` or `deny`
+
+That's it! You're now using the validation workflow.
+
+---
+
+## 5. Running Validation: Step-by-Step Guide
+
+### Step 1: Prepare (Change to Repo Root)
+
+```powershell
+# Navigate to repository root
+cd "H:\GithubRepositories\sensemaking-skills"
+
+# Verify you're in the right place
+pwd  # Should show: "H:\GithubRepositories\sensemaking-skills"
+ls scripts/orchestration-runner.py  # Should exist
 ```
 
-## 5. Running Validation (Step-by-Step)
+If you get "not found" errors, you're not in the right directory. Try:
 
-### Step 1: Preparation and Prerequisites
+```powershell
+# Windows: Navigate from home
+cd "H:\GithubRepositories\sensemaking-skills"
 
-Before starting validation, verify your environment is ready:
-
-- Ensure you are in the project root directory
-- Confirm git repository is clean (no uncommitted changes in files you're validating)
-- Review recent changes to understand context
-- Ensure you have read access to all documentation files
-- Check that `run-validation.sh` script exists and is executable
-
-**Command:**
-```bash
-cd /path/to/sensemaking-skills
-git status
-ls -la run-validation.sh
+# Or use git to find the repo root
+git rev-parse --show-toplevel
 ```
 
-### Step 2: Configure Validation Scope
+### Step 2: Choose Your Mode
 
-Define what you want to validate and how strictly:
+Decide which mode fits your situation:
 
-- Choose validation mode (guided/autonomous/plan-only)
-- Select target scope: all documents, specific sections, recent changes
-- Set strictness level: lenient, standard, or strict
-- Specify output format: markdown, JSON, HTML
-- Optional: define custom validation rules
+| Scenario | Use Mode | Time |
+|----------|----------|------|
+| First time running validation | `plan_only` | 5 minutes |
+| Production work, team consensus | `guided_execution` | 30–45 minutes |
+| Routine check, automated rules trusted | `autonomous_execution` | 20–30 minutes |
+| Quick preview of what's changed | `plan_only` | 5 minutes |
 
-**Command for guided mode:**
-```bash
-./run-validation.sh --mode=guided --scope=all --level=standard
+### Step 3: Run the Script with Options
+
+**Basic guided execution (most common):**
+
+```powershell
+python scripts/orchestration-runner.py docs-architecture --mode guided_execution
 ```
 
-### Step 3: Execute Validation Phases
+**With baseline comparison (shows what changed since last run):**
 
-The validation system runs through sequential phases:
-
-1. **Document Structure Validation** - Verify all documents follow proper markdown structure and formatting
-2. **Reference Validation** - Check all cross-references and links point to valid locations
-3. **Content Consistency** - Verify terminology and patterns are used consistently
-4. **Architecture Alignment** - Check that documentation aligns with actual implementation
-5. **Evidence Verification** - Validate that claims in documentation are backed by evidence
-
-Each phase generates intermediate reports. In guided mode, you review each phase before proceeding.
-
-**Command:**
-```bash
-./run-validation.sh --mode=autonomous --phase=all --verbose
+```powershell
+python scripts/orchestration-runner.py docs-architecture --mode guided_execution --compare-baseline
 ```
 
-### Step 4: Review Validation Results
+**Autonomous mode (faster, less interaction):**
 
-After validation completes, examine the output files:
-
-- **validation-report.md** - Comprehensive findings with detailed analysis
-- **validation-issues.json** - Structured list of all issues discovered
-- **validation-recommendations.md** - Prioritized action items
-- **validation-evidence.log** - Complete audit trail of all checks
-
-Read through the summary section first to understand high-level findings, then drill into specific issues as needed.
-
-### Step 5: Act on Recommendations and Re-validate
-
-Address the most critical issues identified in validation results:
-
-1. Fix high-priority issues (blocking document completeness)
-2. Address medium-priority issues (consistency and clarity)
-3. Consider low-priority suggestions (polish and optimization)
-4. Re-run validation to verify fixes
-
-**Command to re-validate after changes:**
-```bash
-./run-validation.sh --mode=autonomous --compare=previous
+```powershell
+python scripts/orchestration-runner.py docs-architecture --mode autonomous_execution
 ```
+
+**Plan only (preview, no execution):**
+
+```powershell
+python scripts/orchestration-runner.py docs-architecture --mode plan_only
+```
+
+### Step 4: Review Output
+
+Watch your terminal as the script runs. You'll see:
+
+```
+[Level 1] Validating repository structure...
+✓ Repo structure is valid
+✓ Git history is accessible
+
+[Step 1/3] Executing: grill-with-docs
+  Skill: grill-with-docs
+  Input: domain_alignment_report.md
+  → Generating domain_alignment_findings.md
+
+[Gate] Review findings?
+  Summary: 5 improvements identified
+  Approve? (yes/no): _
+```
+
+At each gate, respond with:
+- `yes` or `approve` — Continue to next step
+- `no` or `deny` — Stop and review
+- `show` — Display findings before deciding
+
+### Step 5: Act on Findings
+
+After validation completes:
+
+1. **Read the summary**: `cat artifacts/validation_summary.md`
+2. **Check for errors**: `cat artifacts/error_analysis.md` (if present)
+3. **Review new issues**: Listed in the summary or created in GitHub
+4. **Plan next steps**: Based on validation findings
+
+---
 
 ## 6. Understanding Results
 
-### Output File 1: validation-report.md
+Each validation run produces several key output files, stored in the `artifacts/` directory. Some reports are generated for every run, while others are optional and only appear with specific flags (for example, `--compare-baseline` produces `comparison_report.md`).
 
-**Purpose:** Comprehensive validation report with detailed findings and analysis
+### validation_summary.md (Start Here!)
 
-**Contents:**
-- Executive summary with key metrics
-- Detailed findings organized by validation phase
-- Evidence for each finding
-- Specific locations of issues in source documents
-- Severity assessment for each issue
-- Recommended actions with implementation guidance
+**Purpose**: High-level overview of validation findings
 
-**Example entry:**
+**What it contains:**
+- Execution mode and timestamp
+- Overall result (PASS / FAIL / WARNINGS)
+- Count of errors found, fixed, and existing
+- Top 3 recommendations
+- Next steps
+
+**How to interpret:**
+- **PASS**: All validators succeeded, no issues found
+- **WARNINGS**: Validators found issues but they're not blockers
+- **FAIL**: Critical issues that need attention before proceeding
+
+**Example:**
+```markdown
+# Validation Summary — docs-architecture workflow
+
+Run ID: 2026-05-18T14:32:00Z
+Mode: guided_execution
+Status: WARNINGS
+
+## Findings
+- Errors found: 2
+  - 1 new: Missing ADR for workflow changes
+  - 1 existing: Outdated skill registry
+- Errors fixed: 0
+
+## Recommendations
+1. Create ADR-0005 documenting workflow separation pattern
+2. Update skill-registry.yaml with new skill definitions
+3. Schedule validation re-run after fixes
+
+## Next Steps
+- Review error_analysis.md for details
+- Create GitHub issues for each finding
+- Complete fixes and rerun validation
 ```
-### Missing Cross-Reference [Medium Priority]
 
-Location: docs/architecture-decisions/phase-2-workflow-redesign.md, line 45
+### error_analysis.md (Detailed Errors)
 
-Issue: References "orchestration patterns" but link to docs/patterns/orchestration-patterns.md is broken.
+**Purpose**: Complete categorization and analysis of all errors
 
-Evidence: Target file does not exist at specified path.
+**What it contains:**
+- Each error with its code, category, and severity
+- Which validator found it
+- Suggested fix
+- Link to related documentation
 
-Recommendation: Update link to correct location or verify if document needs to be created.
+**Note on validators**: The examples shown (like `validate-workflow-design.py`) are actual validator scripts in the `scripts/` directory. Check that directory for the complete list of available validators and their actual filenames.
+
+**Error categories:**
+- `SCHEMA_VALIDATION` — Artifact doesn't match required format
+- `MISSING_ARTIFACT` — Expected file doesn't exist
+- `STALE_DOCUMENTATION` — Docs are outdated
+- `INCOMPLETE_REQUIREMENT` — Required section is missing
+- `DESIGN_VIOLATION` — Violates established pattern
+- `ARTIFACT_CHAIN_BROKEN` — Step output doesn't match next step input
+
+**How to interpret:**
+Each error lists:
+- **Code**: Stable identifier (e.g., `MISSING_ADR_0005`)
+- **Severity**: `critical` | `high` | `medium` | `low`
+- **Validator**: Which validator found it
+- **Fix**: Suggested resolution
+
+**Example:**
+```markdown
+## Error: MISSING_ADR
+
+Code: MISSING_ADR_0005
+Severity: high
+Validator: validate-workflow-design.py
+Message: ADR for workflow separation pattern not found
+
+Current: docs/adr/ contains ADRs 0001-0004
+Expected: ADR-0005 documenting separation pattern
+
+Fix: Create docs/adr/0005-workflow-separation.md
+See: docs/orchestration-patterns.md#Pattern 2
+
+Status: NEW (first found in this run)
 ```
 
-### Output File 2: validation-issues.json
+### changes_identified.md (What Changed)
 
-**Purpose:** Structured data format of all issues for programmatic processing
+**Purpose**: Summary of codebase changes since last baseline
 
-**Structure:**
+**What it contains:**
+- Files modified, added, deleted
+- Lines changed per file
+- Documentation updates
+- Test coverage changes
+- Schema/contract changes
+
+**How to interpret:**
+- Review listed changes to ensure they're intentional
+- Check if documentation was updated to match code changes
+- Verify tests were added for new functionality
+- Flag any unexpected changes
+
+**Example:**
+```markdown
+## Changes Identified
+
+Comparison: main branch (2026-05-17) vs. current (2026-05-18)
+
+### Files Modified (10)
+- scripts/orchestration-runner.py (+45 lines, -12 lines)
+- docs/orchestration-patterns.md (+23 lines, no deletions)
+- skills/workflow-orchestrator/references/workflow-registry.yaml (+8 lines)
+
+### Files Added (2)
+- docs/validation-workflow.md (NEW, 400 lines)
+- tests/test_validation_workflow.py (NEW, 120 lines)
+
+### Files Deleted (0)
+
+### Summary
+- Total files touched: 12
+- Documentation updated: yes (4 files)
+- Tests added: yes
+- Breaking changes: none detected
+```
+
+### comparison_report.md (Optional, With --compare-baseline)
+
+**Purpose**: Side-by-side comparison with previous validation run
+
+**What it contains:**
+- Metrics from previous run
+- Metrics from current run
+- What improved, what regressed
+- Trends over time
+
+**How to interpret:**
+- **Improved**: Fewer errors, better coverage, more tests
+- **Regressed**: More errors, lower coverage, tests removed
+- **Unchanged**: Same metrics as last run
+- **Trends**: Patterns over multiple runs (improving? getting worse?)
+
+**Example:**
+```markdown
+## Comparison: Previous Run vs. Current
+
+| Metric | Previous | Current | Change |
+|--------|----------|---------|--------|
+| Total Errors | 8 | 2 | ✓ -75% |
+| Tests Passing | 42 | 45 | ✓ +3 |
+| Docs Coverage | 87% | 92% | ✓ +5% |
+| Artifacts Valid | 18 | 20 | ✓ +2 |
+
+## Trend Analysis
+- Error rate improving: 8 → 6 → 4 → 2
+- Test coverage consistently increasing
+- Documentation keeping pace with changes
+```
+
+### run_log.md (Complete Audit Trail)
+
+**Purpose**: Detailed log of every step, validator, and decision
+
+**What it contains:**
+- Timestamp of each major event
+- Which validators ran and their results
+- Gate decisions and approval notes
+- Errors encountered and recovery actions
+- Total execution time
+
+**How to interpret:**
+- Use for debugging if something unexpected happened
+- Shows which validators caught which issues
+- Proves which gates approved which steps
+- Useful for compliance/audit trails
+
+---
+
+## 7. Troubleshooting
+
+### Problem: "Script not found"
+
+**Error message:**
+```
+python: can't open file 'scripts/orchestration-runner.py': [Errno 2] No such file or directory
+```
+
+**Cause**: You're not in the repository root directory
+
+**Solution**:
+```powershell
+# Navigate to the correct directory
+cd "H:\GithubRepositories\sensemaking-skills"
+
+# Verify the script exists
+ls scripts/orchestration-runner.py
+
+# If still not found, find the repo root
+git rev-parse --show-toplevel
+```
+
+### Problem: "Orchestration runner failed"
+
+**Error message:**
+```
+VALIDATION_FAILED: orchestration-runner encountered an error
+...stderr output...
+```
+
+**Causes**:
+1. Python dependencies not installed
+2. Invalid YAML in workflow registry
+3. Skill not found
+
+**Solutions**:
+
+**Check Python dependencies:**
+```powershell
+python -c "import yaml; import sys; print(f'Python {sys.version} OK')"
+```
+
+**Validate workflow registry:**
+```powershell
+python -c "import yaml; yaml.safe_load(open('skills/workflow-orchestrator/references/workflow-registry.yaml'))"
+# Should print nothing if valid
+```
+
+**Check if skill exists:**
+```powershell
+grep -i "grill-with-docs" skills/workflow-orchestrator/references/skill-registry.yaml
+# Should list the skill definition
+```
+
+### Problem: "No baseline found" (First run)
+
+**Error message:**
+```
+Warning: No previous baseline found for comparison
+Running in comparison mode but --compare-baseline specified
+```
+
+**Cause**: First time running validation on this machine/branch
+
+**Solution**:
+This is normal! Just means there's nothing to compare to yet.
+- Run without `--compare-baseline` on first run:
+  ```powershell
+  python scripts/orchestration-runner.py docs-architecture --mode plan_only
+  python scripts/orchestration-runner.py docs-architecture --mode guided_execution
+  ```
+- The second run will have a baseline for comparison
+
+### Problem: "GitHub authentication failed"
+
+**Error message:**
+```
+Error: Failed to authenticate with GitHub API
+Could not create GitHub issues
+```
+
+**Cause**:
+- GitHub token not set
+- Token is expired
+- Not connected to internet
+
+**Solutions**:
+
+**Set GitHub token (Windows):**
+```powershell
+# Option 1: Set environment variable
+$env:GITHUB_TOKEN = "your_github_token_here"
+
+# Option 2: Use GitHub CLI
+gh auth login
+gh auth status  # Verify
+```
+
+**Generate GitHub token:**
+1. Go to https://github.com/settings/tokens
+2. Create "Personal access token (classic)"
+3. Scopes needed: `repo`, `workflow`
+4. Copy token and set `GITHUB_TOKEN` environment variable
+
+**Verify connection:**
+```powershell
+gh api user --jq '.login'
+# Should print your GitHub username
+```
+
+### Problem: "Gate timed out waiting for response"
+
+**Error message:**
+```
+GATE_TIMEOUT: No response to gate decision within 300 seconds
+```
+
+**Cause**: Gate was waiting for human input but timeout was reached
+
+**Solution**:
+```powershell
+# When gate prompts appear, respond immediately:
+# At prompt: "Approve? (yes/no): "
+# Type: yes
+# Press: Enter
+
+# If you need more time to review, use --skip-gates flag
+python scripts/orchestration-runner.py docs-architecture --mode autonomous_execution
+```
+
+---
+
+## 8. Customization
+
+### Running on Different Repositories
+
+The validation workflow is designed for the sensemaking-skills repository but can be adapted:
+
+```powershell
+# Specify a different repo root
+python scripts/orchestration-runner.py docs-architecture --mode guided_execution --repo-root "C:\other-repo"
+
+# Must have compatible:
+# - scripts/orchestration-runner.py
+# - workflow-registry.yaml
+# - artifact-contracts.yaml
+```
+
+### Changing Validation Frequency
+
+By default, validation can run multiple times per day. To enforce minimum intervals:
+
+Edit `.claude/settings.json`:
 ```json
 {
-  "validation_metadata": {
-    "timestamp": "2026-05-18T14:30:00Z",
-    "scope": "all_documents",
-    "severity_levels": ["critical", "high", "medium", "low"]
-  },
-  "issues": [
-    {
-      "id": "doc-001",
-      "type": "missing_reference",
-      "severity": "medium",
-      "file": "docs/architecture-decisions/phase-2.md",
-      "line": 45,
-      "message": "Broken link to orchestration patterns",
-      "suggested_fix": "Update path or create missing document"
-    }
-  ],
-  "summary": {
-    "total_issues": 12,
-    "critical": 0,
-    "high": 3,
-    "medium": 5,
-    "low": 4
+  "validation": {
+    "min_frequency_hours": 6,
+    "schedule": "manual"
   }
 }
 ```
 
-### Output File 3: validation-recommendations.md
+### Modifying Workflow Configuration
 
-**Purpose:** Actionable recommendations prioritized by impact and effort
+To change which validators run, edit `skills/workflow-orchestrator/references/workflow-registry.yaml`:
 
-**Contents:**
-- Quick wins (low effort, high impact)
-- Critical path items (blocking other work)
-- Consistency improvements
-- Documentation completeness items
-- Infrastructure improvements
-- Implementation timeline suggestions
-
-**Example:**
-```
-### Quick Wins (1-2 hours total)
-
-1. Fix 3 broken links in Phase 2 ADR document
-2. Update outdated timestamps in evidence tracking
-3. Standardize heading levels in guides section
-
-### Critical Path (blocks Phase 3 validation)
-
-1. Complete orchestration patterns documentation
-2. Add missing examples to guide templates
-```
-
-### Output File 4: validation-evidence.log
-
-**Purpose:** Complete audit trail of validation execution
-
-**Contents:**
-- Timestamp of each validation check
-- Files examined
-- Rules applied
-- Pass/fail results for each check
-- Performance metrics
-- Error logs if any
-
-**Example:**
-```
-[2026-05-18 14:30:15] START: Document Structure Validation
-[2026-05-18 14:30:15] CHECK: docs/patterns/orchestration-patterns.md - markdown-structure
-[2026-05-18 14:30:16] PASS: All headings properly formatted
-[2026-05-18 14:30:16] CHECK: docs/patterns/orchestration-patterns.md - required-sections
-[2026-05-18 14:30:17] FAIL: Missing "Implementation Example" section
-[2026-05-18 14:30:45] END: Document Structure Validation - 34 files checked, 2 issues found
-```
-
-## 7. Troubleshooting
-
-### Issue 1: "Permission Denied" on run-validation.sh
-
-**Problem:** Script is not executable
-
-**Solution:**
-```bash
-chmod +x run-validation.sh
-./run-validation.sh --mode=plan-only
-```
-
-**Why it happens:** Git may not preserve execute permissions when cloning. Set it explicitly and re-run.
-
----
-
-### Issue 2: "File Not Found" Errors During Validation
-
-**Problem:** Validation script cannot locate documentation files
-
-**Solution:**
-1. Verify you're in the correct project directory:
-```bash
-pwd
-# Should output: /path/to/sensemaking-skills
-```
-
-2. Check that files actually exist:
-```bash
-ls -la docs/
-ls -la docs/patterns/
-ls -la docs/guides/
-```
-
-3. If files are in git but not on disk, check git status:
-```bash
-git status
-git log --oneline docs/
-```
-
-**Why it happens:** Files may be ignored in .gitignore, or you may be in a different directory. Ensure documentation files are committed to git.
-
----
-
-### Issue 3: "Configuration Not Found" or Invalid Config
-
-**Problem:** Validation script cannot load configuration
-
-**Solution:**
-1. List available configurations:
-```bash
-ls -la config/validation/
-```
-
-2. Verify config file exists and is valid:
-```bash
-cat config/validation/default.yml
-```
-
-3. If using custom config, ensure path is correct:
-```bash
-./run-validation.sh --mode=plan-only --config=/full/path/to/config.yml
-```
-
-**Why it happens:** Config file may be in wrong location or have invalid syntax. Check file paths are absolute.
-
----
-
-### Issue 4: Validation Runs but Produces No Output
-
-**Problem:** Script completes but no result files are generated
-
-**Solution:**
-1. Check if output directory exists:
-```bash
-ls -la artifacts/validation/
-mkdir -p artifacts/validation/
-```
-
-2. Run with verbose output to see what's happening:
-```bash
-./run-validation.sh --mode=guided --verbose
-```
-
-3. Check for errors in the log:
-```bash
-tail -50 artifacts/validation/validation-evidence.log
-```
-
-**Why it happens:** Output directory may not exist or may not have write permissions. Create directory and ensure proper permissions.
-
----
-
-### Issue 5: Validation Takes Longer Than Expected
-
-**Problem:** Autonomous mode is running slowly
-
-**Solution:**
-1. Check system resources:
-```bash
-# View memory and CPU usage
-top
-# Or on Windows:
-Get-Process | Sort-Object WorkingSet -Descending | Select-Object -First 5
-```
-
-2. Run with faster settings:
-```bash
-./run-validation.sh --mode=autonomous --threads=4 --parallel
-```
-
-3. Limit scope to reduce processing:
-```bash
-./run-validation.sh --mode=autonomous --scope=recent --depth=shallow
-```
-
-**Why it happens:** Large document sets or slow disks can increase validation time. Use parallel processing or limit scope for faster results.
-
-## 8. Customization
-
-### Customizing for Different Repositories
-
-If running validation in a different repository with different structure:
-
-1. **Create custom configuration file:**
 ```yaml
-# config/validation/custom-repo.yml
-project:
-  name: "different-project"
-  doc_root: "documentation/"  # Change from default "docs/"
-  exclude_patterns:
-    - "*.tmp"
-    - "archive/"
-
-validation:
-  enabled_checks:
-    - structure
-    - references
-    - consistency
-    - custom_rules
+- id: docs-architecture
+  steps:
+    - skill: grill-with-docs
+      validators:
+        - validate-repo.py
+        - validate-output.py  # Add/remove validators here
 ```
 
-2. **Run with custom config:**
-```bash
-./run-validation.sh --mode=autonomous --config=custom-repo
+### Running Custom Validation Scripts
+
+Add your own validators:
+
+```powershell
+# Create your validator
+Write-Host "Creating custom validator..."
+@"
+#!/usr/bin/env python3
+import sys
+# Your validation logic
+print("PASS")
+sys.exit(0)
+"@ | Out-File "scripts/validate-custom.py"
+
+# Reference in workflow-registry.yaml
+validators:
+  - validate-custom.py
 ```
 
-### Modifying Validation Frequency
-
-**For weekly validation:**
-```bash
-# Create cron job (Linux/Mac)
-0 9 * * 1 cd /path/to/project && ./run-validation.sh --mode=autonomous
-
-# Or use scheduled task (Windows)
-# Schedule at 9 AM every Monday
-schtasks /create /tn "ProjectValidation" /tr "C:\path\to\run-validation.sh" /sc WEEKLY /d MON /st 09:00
-```
-
-**For daily validation:**
-```bash
-# Change frequency in cron/scheduled task
-0 9 * * * cd /path/to/project && ./run-validation.sh --mode=autonomous
-```
-
-### Adding Custom Validation Rules
-
-1. **Create rules file:**
-```yaml
-# config/validation/custom-rules.yml
-custom_rules:
-  - name: "Team naming convention"
-    description: "Verify all team names follow convention"
-    pattern: "Team [A-Z][a-z]+ [A-Z][a-z]+"
-    severity: "medium"
-    files: ["docs/**/*.md"]
-
-  - name: "Evidence pattern"
-    description: "Check that evidence sections contain citations"
-    pattern: "## Evidence.*\\[.*\\]"
-    severity: "high"
-    files: ["docs/decisions/**/*.md"]
-```
-
-2. **Enable custom rules:**
-```bash
-./run-validation.sh --mode=autonomous --rules=custom-rules
-```
+---
 
 ## 9. FAQ
 
-**Q: How often should I run validation?**
-A: Run validation before merging to main branch, and consider weekly or monthly scheduled runs for ongoing quality assurance. Run whenever documentation scope changes significantly.
+### How long does validation take?
 
-**Q: Can I run validation on just a subset of documents?**
-A: Yes, use the `--scope` parameter: `./run-validation.sh --mode=autonomous --scope=docs/patterns` to validate only the patterns directory.
+| Mode | Duration | Variables |
+|------|----------|-----------|
+| plan_only | 5–10 minutes | Network latency only |
+| guided_execution | 30–45 minutes | Waiting for gate approvals |
+| autonomous_execution | 20–30 minutes | Number of artifacts to validate |
 
-**Q: What should I do if validation finds hundreds of issues?**
-A: Don't try to fix everything at once. Filter by severity: address critical issues first, then high-priority items. Use recommendations file to identify quick wins. Consider breaking fixes into separate work items.
+Factors that affect duration:
+- Number of artifacts to validate (more = longer)
+- Network connectivity (GitHub API calls)
+- Waiting time at gates (human decision time)
+- Complexity of validations (schema checks take longer)
 
-**Q: Is validation required before every commit?**
-A: Not every commit, but recommended before pull requests to main. Use pre-commit hooks to run plan-only mode automatically on staged changes.
+**Speed tips:**
+- Use `plan_only` for quick previews
+- Use `autonomous_execution` when gates take too long
+- Pre-prepare approvals (know what you'll approve before running)
 
-**Q: How do I know if my fixes actually resolved the issues?**
-A: Re-run validation with the `--compare=previous` flag to see before/after comparison. Look for reduced issue count in summary metrics.
+### Can I run it multiple times per day?
 
-**Q: Can validation run in CI/CD pipeline?**
-A: Yes, validation is designed for CI/CD integration. Use `--mode=autonomous --quiet` for pipeline runs. Set exit codes based on severity levels to fail builds on critical issues.
+**Yes, but:**
+- First run should be plan_only or guided_execution to understand the workflow
+- Subsequent runs can be autonomous if you trust the results
+- Recommend running no more than every 2–3 hours (enough time for meaningful changes)
 
-**Q: What if validation reports false positives?**
-A: Review the specific issue evidence in validation-evidence.log. If it's a real false positive, update validation rules or configuration to exclude that pattern. Document the exception and rationale.
+**Scheduling:**
+```powershell
+# Run every 4 hours
+while ($true) {
+    python scripts/orchestration-runner.py docs-architecture --mode autonomous_execution
+    Start-Sleep -Seconds 14400  # 4 hours in seconds
+}
+```
 
-## 10. Related Documentation
+### What if I disagree with an error?
 
-- **[Orchestration Patterns Guide](../patterns/orchestration-patterns.md)** - Understanding the validation orchestration system
-- **[Evidence Tracking ADR](../architecture-decisions/adr-evidence-tracking.md)** - Decision record on evidence collection methodology
-- **[Documentation Structure Guide](../guides/documentation-structure.md)** - How to structure documents for validation
-- **[Phase Workflow Guides](../guides/)** - Phase-specific validation requirements and workflows
-- **[Validation Configuration Reference](../architecture-decisions/adr-validation-configuration.md)** - Technical reference for configuration options
-- **[Troubleshooting Guide](../guides/troubleshooting.md)** - Common issues and solutions across all workflows
+**You have two options:**
+
+1. **Deny the gate**: At the gate prompt, type `no` to reject the validation
+   - Investigate the error in error_analysis.md
+   - Determine if it's a real issue or false positive
+   - Fix the code or the validator rule
+
+2. **Modify the validator**: Edit the validator rule to match your standard
+   - Find the validator in `scripts/validate-*.py`
+   - Adjust the rule that caught the error
+   - Re-run validation
+
+**Example:**
+```powershell
+# Error: "ADR file missing"
+# Disagree: "We don't need an ADR for this change"
+
+# Option 1: Tell the validator to be lenient
+# Edit workflow-registry.yaml, change strictness
+
+# Option 2: Create the ADR to satisfy the validator
+# Create docs/adr/0005-something.md
+
+# Then re-run
+python scripts/orchestration-runner.py docs-architecture --mode guided_execution
+```
+
+### Can I customize the workflow?
+
+**Yes, at several levels:**
+
+1. **Skip gates** (autonomous mode):
+   ```powershell
+   --mode autonomous_execution
+   ```
+
+2. **Change validators** (edit workflow-registry.yaml):
+   ```yaml
+   validators:
+     - validate-repo.py     # Add/remove specific validators
+     - validate-custom.py
+   ```
+
+3. **Modify validation rules** (edit validator scripts):
+   - Edit `scripts/validate-*.py`
+   - Change error thresholds, patterns, rules
+   - Test with sample artifacts first
+
+4. **Create custom workflow** (new workflow definition):
+   - Add to workflow-registry.yaml
+   - Define new artifact contracts
+   - Register validators
+
+### What happens to old validation runs?
+
+**Stored in**: `artifacts/validation_*_*.md`
+
+**Retention**:
+- Last 10 runs kept automatically
+- Older runs can be archived manually
+- Full audit trail in `artifacts/run_logs/`
+
+**Cleanup:**
+```powershell
+# Archive old runs (older than 30 days)
+Get-ChildItem artifacts/validation_*.md -OlderThan (Get-Date).AddDays(-30) | Move-Item -Destination artifacts/archive/
+
+# Or delete permanently
+Get-ChildItem artifacts/validation_*.md -OlderThan (Get-Date).AddDays(-60) | Remove-Item
+```
 
 ---
 
-**Last updated:** 2026-05-18
-**Maintained by:** Project Team
-**Version:** 1.0
+## 10. Related Documentation
+
+- **[Orchestration Patterns](orchestration-patterns.md)** — Design patterns used by the validation workflow
+- **[Workflow Design Guide](workflow-design-guide.md)** — How to design new workflows
+- **[Architecture Decision Records](adr/)** — Technical decisions behind the system
+  - ADR-0001: Strict vs. Lenient Validation
+  - ADR-0002: Workflow Separation of Concerns
+  - ADR-0003: Artifact Composition Pattern
+  - ADR-0004: Evidence Tracking for Trust
+
+---
+
+## Summary
+
+The validation workflow is your automated quality checkpoint. Use it to:
+
+1. **Ensure quality** at natural decision gates
+2. **Catch issues early** before they compound
+3. **Create audit trails** for compliance and learning
+4. **Guide your next steps** with data-driven recommendations
+
+**Most common workflow:**
+1. Complete development iteration (hour of work)
+2. Run `orchestration-runner.py docs-architecture --mode guided_execution --compare-baseline` (30–45 minutes)
+3. Review artifacts in `artifacts/validation_summary.md` (5 minutes)
+4. Approve or deny findings at gates (inline with execution)
+5. Create GitHub issues from findings (automatic)
+6. Use findings to plan next iteration
+
+**Key principle**: Validation is not a gate that blocks you—it's a tool that informs you. The goal is to validate early, often, and learn from the results.
