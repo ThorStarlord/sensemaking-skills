@@ -1,0 +1,10 @@
+{
+  "manifest_version": "1.0",
+  "cache_location": ".validation-cache",
+  "latest_run": null,
+  "runs": [],
+  "retention_policy": {
+    "keep_days": 90,
+    "archive_older": true
+  }
+}
