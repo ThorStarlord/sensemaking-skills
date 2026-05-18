@@ -14,6 +14,36 @@ This repository is built on **Artifact-Driven Agentic Engineering**. We treat ar
 4. **Anti-Causal Confusion**: Classify defect source (Skill vs. Fixture) before any repair.
 5. **Human in the Loop**: Skills provide judgment, but humans approve usefulness.
 
+## Orchestration Principles
+
+The workflow orchestration system follows four key design patterns, each proven through implementation and testing:
+
+1. **Strict vs. Lenient Validation** (ADR 0001)
+   - **Planning modes** (`plan_only`, `prompt_chain`) use lenient validation — artifacts don't exist yet, so only structure is checked
+   - **Execution modes** (`guided_execution`, `autonomous_execution`, `yolo_execution`) use strict validation — artifacts MUST be produced or the step fails
+   - **Why**: Lenient validation allows planning ahead; strict validation prevents silent failures in production
+   - See: [docs/adr/0001-strict-validation-in-execution-modes.md](docs/adr/0001-strict-validation-in-execution-modes.md)
+
+2. **Workflow Separation of Concerns** (ADR 0002)
+   - Each workflow has **one clear purpose** — every step must advance that purpose
+   - If a step has a different purpose, move it to a separate workflow
+   - **Why**: Clear workflows are easier to understand, maintain, and compose
+   - See: [docs/adr/0002-workflow-separation-of-concerns.md](docs/adr/0002-workflow-separation-of-concerns.md)
+
+3. **Artifact Composition & Chaining** (ADR 0003)
+   - Each step must **meaningfully transform** its input artifact
+   - No pass-through steps, formatting steps, or renaming — each step adds semantic value
+   - **Why**: Clear transformations make workflows debuggable and reusable
+   - See: [docs/adr/0003-artifact-composition-pattern.md](docs/adr/0003-artifact-composition-pattern.md)
+
+4. **Evidence Tracking for Trust** (ADR 0004)
+   - Record which validators exercised which artifacts and which gates approved steps
+   - Create an audit trail in `mode-coverage.yaml` proving the system works
+   - **Why**: Trust comes from verifiable proof, not faith
+   - See: [docs/adr/0004-evidence-tracking-for-trust.md](docs/adr/0004-evidence-tracking-for-trust.md)
+
+**For designers**: See [docs/orchestration-patterns.md](docs/orchestration-patterns.md) for detailed patterns and [docs/workflow-design-guide.md](docs/workflow-design-guide.md) for step-by-step workflow design instructions.
+
 ## Routing Source of Truth
 | Resource | Purpose |
 |----------|---------|
