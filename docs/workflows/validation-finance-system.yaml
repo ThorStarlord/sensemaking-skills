@@ -1,0 +1,108 @@
+metadata:
+  name: "finance-system-validation"
+  description: "Validates finance system after each iteration using Full Fog Path"
+  version: "1.0"
+  trigger: "decision_gate"
+  target_repo: "H:\\GithubRepositories\\metamorfose-edutech"
+  target_focus: "finance-system"
+
+execution_config:
+  mode: "guided_execution"
+  run_evidence: true
+  validation_rules:
+    - "strict_validation_in_execution_mode"
+    - "separation_of_concerns"
+    - "composition_boundaries"
+
+workflow_steps:
+  - id: "frame_problem"
+    type: "problem_framer"
+    description: "Frame the problem space for finance system validation"
+    inputs:
+      - name: "repo"
+        description: "Target repository path"
+      - name: "focus"
+        description: "Focus area: finance-system"
+      - name: "context"
+        description: "Context about finding new errors"
+    outputs:
+      - name: "problem_frame.md"
+        description: "Framed problem statement and scope"
+
+  - id: "map_unknowns"
+    type: "unknowns_mapper"
+    description: "Map unknown areas and research paths"
+    depends_on: ["frame_problem"]
+    inputs:
+      - name: "problem_frame.md"
+        source: "frame_problem"
+    outputs:
+      - name: "unknowns_map.md"
+        description: "Map of unknowns in the finance system"
+      - name: "research_paths.md"
+        description: "Identified research paths to resolve unknowns"
+
+  - id: "analyze_repo"
+    type: "repo_sensemaker"
+    description: "Analyze repository state and identify errors"
+    depends_on: ["map_unknowns"]
+    inputs:
+      - name: "repo"
+        description: "Target repository"
+      - name: "focus"
+        description: "Focus area: finance-system"
+      - name: "unknowns_map"
+        source: "map_unknowns"
+    comparison_mode: true
+    baseline_dir: ".validation-cache/latest"
+    outputs:
+      - name: "sensemaking_brief.md"
+        description: "Sensemaking summary of repository state"
+      - name: "error_analysis.md"
+        description: "Detailed analysis of errors found"
+      - name: "changes_identified.md"
+        description: "Changes identified in the system"
+      - name: "comparison_report.md"
+        description: "Comparison against baseline validation"
+
+  - id: "orchestrate_fixes"
+    type: "workflow_orchestrator"
+    description: "Orchestrate corrective actions and workflows"
+    depends_on: ["analyze_repo"]
+    inputs:
+      - name: "sensemaking_brief"
+        source: "analyze_repo"
+      - name: "error_analysis"
+        source: "analyze_repo"
+      - name: "auto_select"
+        value: false
+        description: "Manual selection of fixes required"
+    outputs:
+      - name: "selected_workflow.md"
+        description: "Selected workflow for corrections"
+      - name: "corrective_actions.md"
+        description: "Identified corrective actions"
+      - name: "next_steps.md"
+        description: "Next steps for implementation"
+
+output_artifacts:
+  reports:
+    - "validation_summary.md"
+    - "error_comparison.md"
+    - "changes_summary.md"
+  evidence:
+    - "problem_frame.md"
+    - "unknowns_map.md"
+    - "research_paths.md"
+    - "sensemaking_brief.md"
+    - "error_analysis.md"
+    - "changes_identified.md"
+    - "comparison_report.md"
+    - "selected_workflow.md"
+    - "corrective_actions.md"
+    - "next_steps.md"
+  tickets:
+    auto_create_github_issues: true
+    labels:
+      - "validation-found"
+      - "finance-system"
