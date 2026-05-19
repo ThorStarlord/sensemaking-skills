@@ -13,7 +13,12 @@ Analyzes a repository and produces a **Repository Sensemaking Brief**. This skil
 3. **Gap Analysis**: Identify what is absent or incomplete (Missing Pieces).
 4. **Evidence Gathering**: Cite specific file paths and code snippets to back up signals and gaps.
 5. **Boundary Stress Test**: Find the "Weakest Boundary" (e.g., mismatch between README and code, unsafe workflows, missing validation).
-6. **Synthesis**: Produce a Repository Sensemaking Brief with candidate next steps and recommended workflows.
+6. **Problem Classification**: Classify the primary fog type based on the weakest boundary:
+   - **product_fog**: Unclear user needs, missing feature specs, undocumented workflows → needs discovery/research
+   - **ui_fog**: Navigation issues, screen design problems, unclear interactions → needs UI flows and specs
+   - **docs_fog**: Missing documentation, unclear specifications, knowledge silos → needs documentation architecture
+   - **architecture_fog**: Code structure problems, unclear boundaries, design issues → needs spec-driven refactoring (default)
+7. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, candidate next steps, and recommended workflows.
 
 ## Output Format
 Every response must follow the [Repository Sensemaking Brief](references/repo-analysis-template.md) structure.

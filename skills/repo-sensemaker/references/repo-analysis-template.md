@@ -18,6 +18,15 @@ Useful refinements that are not urgent blockers.
 ## 6. Weakest boundary
 The most ambiguous, unproven, unsafe, or unenforced part of the repo.
 
+## 6.5. Problem classification (fog type)
+Classify the primary type of uncertainty or problem:
+- **product_fog**: Vague user needs, unclear feature requirements, undocumented workflows
+- **ui_fog**: Navigation complexity, screen design issues, interaction patterns unclear
+- **docs_fog**: Missing documentation, unclear specifications, knowledge gaps
+- **architecture_fog**: Code structure problems, design issues, unclear boundaries (default if unclear)
+
+This classification determines which implementation workflow will be used downstream.
+
 ## 7. Evidence
 File-level evidence supporting the diagnosis (cites specific files and line ranges).
 

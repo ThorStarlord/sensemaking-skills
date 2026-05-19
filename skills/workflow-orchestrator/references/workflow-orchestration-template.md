@@ -1,7 +1,16 @@
 # Workflow Orchestration Plan
 
 ## 1. Brief consumed
-Short summary of the `repo-sensemaker` diagnosis.
+Short summary of the `repo-sensemaker` diagnosis, including fog type classification.
+
+## 1.5. Problem classification (fog type)
+The primary type of uncertainty identified:
+- **product_fog**: Vague user needs, feature requirements unclear
+- **ui_fog**: Navigation or screen design issues
+- **docs_fog**: Missing documentation, knowledge gaps
+- **architecture_fog**: Code structure, design boundary issues (default)
+
+This determines which implementation workflow will be automatically invoked.
 
 ## 2. Chosen workflow
 Name of the workflow.
@@ -34,6 +43,8 @@ How to record what happened during the execution.
 
 ```yaml
 artifact_id: workflow_orchestration_plan
+fog_type: # product_fog, ui_fog, docs_fog, or architecture_fog
+recommended_implementation_workflow: # optional override (e.g., product-implementation-workflow, ui-implementation-workflow, docs-implementation-workflow, or implementation-workflow). If omitted, orchestrator routes based on fog_type.
 chosen_workflow_id: 
 execution_mode: 
 steps:
