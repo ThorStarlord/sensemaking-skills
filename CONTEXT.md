@@ -42,10 +42,18 @@ The workflow orchestration system follows four key design patterns, each proven 
    - **Why**: Trust comes from verifiable proof, not faith
    - See: [docs/adr/0004-evidence-tracking-for-trust.md](docs/adr/0004-evidence-tracking-for-trust.md)
 
-5. **Dynamic Workflow Routing** (ADR 0005)
-   - **Fog Type Classification**: Sensemaking produces a classification of the primary problem type
+5. **Three-Stage Automation** (ADR 0005)
+   - **Stage 1 — Diagnostic Workflow**: User provides initial input (vague problem or repository state)
+   - **Stage 2 — Orchestration (workflow-orchestrator skill)**: Analyzes diagnostic output and produces orchestration-plan with fog_type classification and recommended_workflow_id
+   - **Stage 3 — Implementation Workflow (auto-invoked)**: orchestration-runner automatically reads recommended_workflow_id from orchestration-plan and invokes the implementation workflow
+   - **Result**: Single entry point (fast-path-workflow or full-fog-workflow) automatically chains to the right implementation path without manual intervention
+   - **Why**: Automates the human decision point between "what's the problem?" (diagnosis) and "what do we do?" (implementation)
+   - **Auto-invocation mechanism**: Workflows declare `auto_invoke_next_workflow: true` and `auto_invoke_source: <artifact_id>` in workflow-registry.yaml; orchestration-runner.py detects this after workflow completion and invokes the next workflow in the same execution mode
+   - **See**: [docs/adr/0005-skill-invocation-via-workflows.md](docs/adr/0005-skill-invocation-via-workflows.md)
+
+6. **Dynamic Workflow Routing**    - **Fog Type Classification**: Sensemaking produces a classification of the primary problem type
    - **Four fog types**: product_fog (user needs), ui_fog (design), docs_fog (knowledge), architecture_fog (code structure)
-   - **Automatic routing**: Orchestrator reads fog_type and invokes the appropriate implementation workflow
+   - **Automatic routing**: orchestration-runner reads fog_type from orchestration-plan and invokes the appropriate implementation workflow via auto-invocation
    - **Specialized workflows**: Four implementation workflows, each optimized for its fog type
    - **High-velocity execution**: Implementation workflows use `gate: none` between steps for automatic progression
    - **Why**: Allows single entry point (sensemaking) that automatically routes to the right implementation path
@@ -185,10 +193,11 @@ These are acknowledged gaps that the project is aware of but has not yet address
 ## Skills Split
 1. **repo-sensemaker**: Diagnostic. Finds the weakest boundary.
 2. **workflow-orchestrator**: Procedural. Acts on the weak point via gated sequences.
+3. **docs-aligner**: Domain alignment. Resolves contradictions between code and documentation, sharpens terminology, and updates CONTEXT.md inline. Automates grilling for autonomous workflows.
 
 ## Ecosystems
 - **Interface Skills**: Spec Packages and UI validation.
-- **Matt Pocock Skills**: Engineering rigor, TDD, and grilling.
+- **Matt Pocock Skills**: Engineering rigor, TDD, and docs-aligner (domain alignment).
 - **Product Manager Skills**: Discovery, PRDs, and Strategy.
 
 ## Automation & Validation (scripts/)
