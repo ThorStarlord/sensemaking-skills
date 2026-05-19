@@ -136,39 +136,59 @@ Guided Execution / Prompt Chain
 
 ## Usage
 
-The sensemaking system executes as automated workflows that chain skills together with explicit approval gates.
+The sensemaking system provides two automated diagnostic workflows that analyze your project and produce recommendations. You then choose which implementation workflow to run next.
 
-### Quick Start: Choose Your Entry Point
+### Quick Start: Choose Your Diagnostic Workflow
 
 **Fast Path** — When you have a clear repo goal:
 ```bash
-python scripts/orchestration-runner.py fast-path-workflow
+python scripts/orchestration-runner.py fast-path-workflow --mode guided_execution
 ```
-Chains: `repo-sensemaker` → `workflow-orchestrator`  
-Output: Repository Sensemaking Brief → Workflow Orchestration Plan
+**Chains**: `repo-sensemaker`  
+**Output**: Repository Sensemaking Brief (identifies weakest boundary + recommended workflows)  
+**Time**: ~5 minutes
 
 **Full Fog Path** — When the problem is ambiguous:
 ```bash
-python scripts/orchestration-runner.py full-fog-workflow
+python scripts/orchestration-runner.py full-fog-workflow --mode guided_execution
 ```
-Chains: `problem-framer` → `unknowns-mapper` → `repo-sensemaker` → `workflow-orchestrator` → `prompt-handoff`  
-Output: Problem Frame → Unknowns Map → Repository Brief → Workflow Plan
+**Chains**: `problem-framer` → `unknowns-mapper` → `repo-sensemaker` → `prompt-handoff`  
+**Output**: Problem Frame + Unknowns Map + Repository Brief + Ready-to-copy Prompts  
+**Time**: ~20 minutes
 
-### Default Execution Flow (guided_execution mode)
+### Execution Flow (Default: guided_execution mode)
 
-By default, workflows execute with automatic skill chaining and explicit approval gates:
+1. **Invoke diagnostic workflow** — `orchestration-runner.py <workflow-name>`
+2. **Provide initial inputs** — vague problem (Full Fog Path) or repository context (Fast Path)
+3. **Skills chain automatically** with approval gates at each step:
+   - Step 1 completes → Orchestrator pauses
+   - You review the artifact → Approve/Deny
+   - If approved → continues to Step 2
+   - If denied → workflow halts
+4. **Final artifact** is a brief with recommendations:
+   - Section 12: Recommended workflow (e.g., `docs-architecture`)
+   - Section 13: Machine-readable handoff (workflow ID, execution mode, inputs)
+   - Section 14: Ready-to-copy prompts for next skill
 
-1. **Invoke workflow** via `orchestration-runner.py <workflow-name>`
-2. **Orchestrator chains skills automatically** — no manual invocation between steps
-3. **Pauses at approval gates** — shows you each decision point before executing downstream workflows
-4. **You approve or deny** — each gate decision is recorded in the run log
-5. **Workflow continues or halts** — based on your approval
+### Next Steps: Run Implementation Workflow
 
-No copying prompts between steps. No invoking skills individually. The workflow orchestrates everything.
+After the diagnostic workflow completes, run the recommended workflow:
+
+```bash
+# Example: if brief recommends docs-architecture
+python scripts/orchestration-runner.py docs-architecture --mode guided_execution
+```
+
+Or copy the ready-to-copy prompt from the brief and paste it directly into the next skill.
 
 ### Advanced: Other Execution Modes
 
-For planning without execution (`plan_only`), copy-paste prompts (`prompt_chain`), fully autonomous runs (`autonomous_execution`), or zero-gate automation (`yolo_execution`), see [Execution Modes Reference](docs/orchestration-patterns.md#execution-modes) and [PHASE5_SKILL_INVOCATION.md](docs/PHASE5_SKILL_INVOCATION.md).
+- **`plan_only`**: See what WOULD happen without executing (safe for testing)
+- **`prompt_chain`**: Generate all prompts; user runs them manually
+- **`autonomous_execution`**: Automatic skill chaining with gates (but fewer pauses)
+- **`yolo_execution`**: Full automation, no gates (for trusted workflows only)
+
+See [Execution Modes Reference](docs/orchestration-patterns.md#execution-modes) for details.
 
 ## Skill Invocation & Downstream Workflows
 

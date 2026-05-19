@@ -39,7 +39,7 @@ repo-sensemaker produces brief, then invokes workflow-orchestrator
 ## Decision
 
 ### Core Rule
-**Skills are never invoked by other skills. Workflows are the unit of execution.**
+**Skills are never invoked by other skills. Workflows are the unit of execution. The external orchestrator decides the sequence.**
 
 ### Implementation
 
@@ -61,27 +61,31 @@ repo-sensemaker produces brief, then invokes workflow-orchestrator
    - Execution mode (plan_only, guided_execution, autonomous_execution, yolo_execution)
    - Approval gates (mandatory user approval at defined gates)
 
-4. **Two primary workflows formalized**:
+4. **Two primary diagnostic workflows formalized**:
 
-   **fast-path-workflow** (2 skills)
+   **fast-path-workflow** (1 skill)
    ```yaml
    - id: fast-path-workflow
-     purpose: Diagnose repository to identify weakest boundary
+     purpose: Diagnose repository to identify weakest boundary and recommend workflows
      steps:
        - repo-sensemaker (input: repository_state) → repository_sensemaking_brief
-       - workflow-orchestrator (input: brief) → workflow_orchestration_plan
+   
+   Outputs: Brief with sections 12-14 (recommended workflow, handoff, ready-to-copy prompts)
+   User then: Invokes recommended workflow or runs workflow-orchestrator manually
    ```
 
-   **full-fog-workflow** (5 skills)
+   **full-fog-workflow** (4 skills)
    ```yaml
    - id: full-fog-workflow
-     purpose: Comprehensively analyze ambiguous projects from raw fog to workflows
+     purpose: Comprehensively analyze vague problems and recommend implementation workflows
      steps:
        - problem-framer (input: raw_fog) → problem_frame
        - unknowns-mapper (input: problem_frame) → unknowns_map
        - repo-sensemaker (input: repository_state) → repository_sensemaking_brief
-       - workflow-orchestrator (input: brief) → workflow_orchestration_plan
-       - prompt-handoff (input: plan) → prompt_handoff
+       - prompt-handoff (input: brief) → prompt_handoff
+   
+   Outputs: Problem analysis + repository diagnosis + ready-to-copy prompts
+   User then: Invokes recommended workflow or runs workflow-orchestrator manually
    ```
 
 ### Execution Flow (Default: guided_execution)
@@ -104,6 +108,44 @@ repo-sensemaker produces brief, then invokes workflow-orchestrator
 
 ---
 
+## Design Correction: Removing Orchestrator from Workflow Steps
+
+**Initial Design (Incorrect)**
+```yaml
+fast-path-workflow:
+  steps:
+    - repo-sensemaker → brief
+    - workflow-orchestrator → plan  ❌ RECURSION RISK
+```
+
+**Issue**: `workflow-orchestrator` is the orchestrator itself, not a normal skill. Including it as a step creates a recursive scenario:
+- orchestration-runner invokes fast-path-workflow
+- fast-path-workflow step 2 invokes workflow-orchestrator (the skill)
+- workflow-orchestrator produces a plan and invokes the next workflow
+- Could loop back → recursion risk
+
+**Corrected Design (Final)**
+```yaml
+fast-path-workflow:
+  steps:
+    - repo-sensemaker → brief  ✅
+
+Output brief contains:
+  - Section 12: Recommended workflow
+  - Section 13: Machine-readable handoff
+  - Section 14: Ready-to-copy prompts
+
+User then:
+  - Invokes recommended workflow manually, OR
+  - Runs orchestration-runner.py workflow-orchestrator to select workflow
+```
+
+**Why This Works**:
+1. **No recursion**: The diagnostic workflow produces analysis; user/orchestrator decides next step
+2. **Cleaner separation**: Diagnosis (what's the problem?) vs. Orchestration (what do we do about it?)
+3. **Flexibility**: Same brief can be consumed by different workflows depending on user choice
+4. **Artifact-driven**: Handoff is the brief itself, not a workflow invocation
+
 ## Consequences
 
 ### Positive
@@ -114,19 +156,24 @@ repo-sensemaker produces brief, then invokes workflow-orchestrator
 5. **Testability**: Test workflows independently; test skills independently
 6. **Reusability**: repo-sensemaker used in fast-path, full-fog, setup, and reconciliation workflows
 7. **Auditability**: Run log documents exactly which skills ran, which gates approved/denied
+8. **No Recursion Risk**: Diagnostic workflows produce analysis; orchestration is external
+9. **Clear Separation**: Diagnosis (what's the problem?) vs. Orchestration (what to do about it?)
 
 ### Negative
 1. **Workflow Proliferation**: System has many workflow definitions to maintain
-2. **Explicit Orchestration**: Users must invoke orchestration-runner.py (requires knowing the workflow ID)
-3. **No Implicit Chaining**: Can't just invoke repo-sensemaker and expect it to chain automatically
+2. **Two-Step Invocation**: Run diagnostic workflow first, then run implementation workflow
+3. **No Implicit Chaining**: Can't just invoke repo-sensemaker and expect full pipeline
 4. **Registry Maintenance**: Workflow registry must stay in sync with skill changes
+5. **User Decision Point**: User must choose which implementation workflow to run (not automatic)
 
 ### Trade-offs
-We chose **explicit orchestration over implicit chaining** because:
-- Artifact contracts require explicit, validated artifact flow
-- Approval gates require explicit decision points (can't hide these in skill code)
-- Reusability (same skill in different workflows) requires loose coupling
-- Future maintenance is easier when workflows are visible, not buried in skill code
+We chose **diagnostic workflows + external orchestration** over embedded orchestration because:
+- **Recursion avoidance**: Orchestrator is external, not embedded in workflow steps
+- **Separation of concerns**: Diagnosis workflow ≠ Orchestration workflow
+- **Flexibility**: User can choose different implementation workflows based on brief recommendations
+- **Artifact-driven handoff**: Brief itself is the API; no workflow-to-workflow invocation needed
+- **Testability**: Can test diagnostic workflow independently; can test orchestration independently
+- **Clarity**: Clear boundary between "what's the problem?" (diagnostic) and "what do we do?" (orchestration)
 
 ---
 
@@ -165,28 +212,33 @@ We chose **explicit orchestration over implicit chaining** because:
 
 ## Evidence
 
-This decision was validated during Phase 5:
+This decision was validated during Phase 5 and corrected in Phase 5b (workflow registry formalization):
 
-### Before Formalization
-- Users had to manually invoke skills sequentially
-- README showed "step 1 → step 2 → step 3" but no mechanism to automate
-- Skills produced "ready-to-copy prompts" (section 14 of briefs)
-- No way to enforce approval gates between steps
+### Initial Design Validation (Phase 5)
+- Orchestrator skill invocation framework implemented
+- All 5 execution modes proven (plan_only, prompt_chain, guided_execution, autonomous_execution, yolo_execution)
+- Approval gates working correctly
+- Artifact contracts validated
+- 21+ independent workflow runs with zero repeatable failures
 
-### After Formalization
-- ✓ fast-path-workflow registered and tested
-- ✓ full-fog-workflow registered and tested
-- ✓ Orchestrator successfully chains skills automatically
-- ✓ All 5 execution modes proven (plan_only, prompt_chain, guided_execution, autonomous_execution, yolo_execution)
-- ✓ Approval gates work correctly in guided_execution mode
-- ✓ Artifact contracts validated between all steps
-- ✓ 21+ independent workflow runs with zero repeatable failures
+### Design Correction (Phase 5b: Workflow Registry Formalization)
+- **Issue Found**: Including workflow-orchestrator as a step in diagnostic workflows creates recursion risk
+- **Solution Applied**: Separated diagnostic workflows from orchestration
+  - fast-path-workflow now produces repository_sensemaking_brief (1 step)
+  - full-fog-workflow produces problem frame + unknowns map + brief + prompts (4 steps)
+  - User/orchestrator chooses implementation workflow separately
+- **Validation**: 
+  - ✓ Recursion issue resolved
+  - ✓ Workflows pass validate-repo.py checks
+  - ✓ Artifact contracts match between steps
+  - ✓ Clear handoff points via brief sections 12-14
 
 ### Real-World Validation
-- Orchestrator invokes workflows correctly: `orchestration-runner.py fast-path-workflow`
-- Skills chain automatically without manual intervention
-- Artifact validation catches mismatches before next skill runs
-- Approval gates recorded in run logs for audit trails
+- Diagnostic workflows execute without recursion issues
+- Brief artifacts contain all information needed for next workflow selection
+- Ready-to-copy prompts enable manual workflow invocation
+- Approval gates provide user control at each diagnostic step
+- Design follows artifact-driven engineering principle: artifacts are the API between workflows
 
 ---
 
@@ -256,14 +308,16 @@ When adding a new workflow:
 ## Acceptance Criteria
 
 This decision is accepted when:
-- ✓ fast-path-workflow registered in workflow-registry.yaml
-- ✓ full-fog-workflow registered in workflow-registry.yaml
-- ✓ Both workflows execute without manual skill invocation
+- ✓ fast-path-workflow registered (1 skill: repo-sensemaker)
+- ✓ full-fog-workflow registered (4 skills: problem-framer → unknowns-mapper → repo-sensemaker → prompt-handoff)
+- ✓ Both workflows produce briefs with recommendations (sections 12-14)
+- ✓ No workflow-orchestrator invocations inside diagnostic workflows (no recursion)
 - ✓ Artifact contracts validated between all steps
 - ✓ Approval gates work correctly in guided_execution mode
-- ✓ README documents skill invocation via workflow registry
+- ✓ README documents two-step process: diagnostic workflow → implementation workflow
 - ✓ No skills directly invoke other skills
-- ✓ All workflow design follows this pattern
+- ✓ ADR documents design correction and rationale
+- ✓ Validation (validate-repo.py) passes for diagnostic workflows
 
 ---
 
