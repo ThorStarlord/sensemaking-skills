@@ -57,7 +57,7 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 - If `fog_type == "product"`: use `product-implementation-workflow`
 - If `fog_type == "ui"` or `fog_type == "frontend"`: use `ui-implementation-workflow`
 - If `fog_type == "docs"` or `fog_type == "documentation"`: use `docs-implementation-workflow`
-- Otherwise: use default `implementation-workflow`
+- If `fog_type == "uncertain"` or unclassified: use default `implementation-workflow` (graceful degradation)
 - Can override with explicit `recommended_implementation_workflow` field in orchestration-plan
 
 **For guided_execution mode:**
@@ -65,6 +65,25 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 - Shows which implementation workflow will be used based on fog type
 - Asks: "Continue to [workflow-name] with these recommendations?"
 - Only proceeds if user approves
+
+## Error Handling in Implementation Workflows
+
+**When a step fails:**
+1. **Capture error**: Record step ID, skill name, error type, error message in run log
+2. **Stop immediately**: Do not continue to next step (fail-fast approach)
+3. **Record recovery**: Provide git reset command for rollback to pre-execution state
+4. **Recommend next action**: Suggest reviewing error logs, fixing issues, switching to guided_execution mode
+5. **Update run log**: Mark step as failed with remediation instructions
+
+**Graceful degradation for uncertain fog_type:**
+- If fog classification is uncertain or mixed, default to `implementation-workflow`
+- Log a note in machine-readable plan: `fog_type_confidence: low`
+- This prevents routing errors and ensures safe default behavior
+
+**Execution mode selection:**
+- If no mode specified: default to `plan_only` (safest)
+- If step fails in `autonomous_execution`: suggest switching to `guided_execution` for inspection
+- No automatic retry (manual intervention required)
 
 ## Boundary Rules
 - **Safety First**: Default to `plan_only` mode. 
