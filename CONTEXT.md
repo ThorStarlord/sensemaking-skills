@@ -42,6 +42,15 @@ The workflow orchestration system follows four key design patterns, each proven 
    - **Why**: Trust comes from verifiable proof, not faith
    - See: [docs/adr/0004-evidence-tracking-for-trust.md](docs/adr/0004-evidence-tracking-for-trust.md)
 
+5. **Dynamic Workflow Routing** (NEW)
+   - **Fog Type Classification**: Sensemaking produces a classification of the primary problem type
+   - **Four fog types**: product_fog (user needs), ui_fog (design), docs_fog (knowledge), architecture_fog (code structure)
+   - **Automatic routing**: Orchestrator reads fog_type and invokes the appropriate implementation workflow
+   - **Specialized workflows**: Four implementation workflows, each optimized for its fog type
+   - **High-velocity execution**: Implementation workflows use `gate: none` between steps for automatic progression
+   - **Why**: Allows single entry point (sensemaking) that automatically routes to the right implementation path
+   - **Details**: See [skills/workflow-orchestrator/](skills/workflow-orchestrator/) and workflow-registry.yaml
+
 **For designers**: See [docs/orchestration-patterns.md](docs/orchestration-patterns.md) for detailed patterns and [docs/workflow-design-guide.md](docs/workflow-design-guide.md) for step-by-step workflow design instructions.
 
 ## Routing Source of Truth
@@ -54,7 +63,12 @@ The workflow orchestration system follows four key design patterns, each proven 
 | `docs/mode-coverage.yaml` | Execution mode proving status and run log references |
 
 ## Domain Language
-- **Fog**: The state of project uncertainty (Product, Architecture, Strategy, or Routing).
+- **Fog**: The state of project uncertainty. Four primary types:
+  - **product_fog**: Unclear user needs, vague feature requirements, undocumented workflows
+  - **ui_fog**: Navigation complexity, screen design issues, interaction patterns unclear
+  - **docs_fog**: Missing documentation, unclear specifications, knowledge silos
+  - **architecture_fog**: Code structure problems, design boundaries unclear, implicit contracts
+- **Fog Type Classification**: Sensemaking stage (via `repo-sensemaker`) classifies the primary fog type to enable routing
 - **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, and `prompt-handoff`.
 - **Workflow**: An ordered sequence of Skill Steps that processes fog into actionable artifacts.
 - **Skill Step**: One skill invocation within a Workflow. Each Skill Step has inputs (artifacts or external context), a skill to execute, an output artifact, and an approval gate.
@@ -62,7 +76,13 @@ The workflow orchestration system follows four key design patterns, each proven 
 - **Conditional Skills**: Skills inserted into a Workflow based on characteristics of the input or intermediate artifacts (e.g., discovery skill if raw_fog clarity is low).
 - **Dynamic Chaining**: The system of routing decisions that selects the next Skill Step based on analyzed input quality or artifact content. Primary decision point: raw_fog input clarity and specificity. Secondary decision points defer until recurrence validates their necessity (Harden Only Where Pressured).
 - **Sensemaking Brief**: The primary diagnostic artifact (14 sections). It must identify the "weakest boundary" and provide file-level evidence and excerpts.
-- **Orchestration Plan**: The procedural artifact (11 sections). It defines the workflow, execution mode, and approval gates.
+- **Orchestration Plan**: The procedural artifact that includes fog type classification, recommended implementation workflow, and execution strategy
+- **Implementation Workflows**: Four specialized workflows that execute based on fog type classification:
+  - **product-implementation-workflow**: discovery → opportunity-tree → to-prd → to-issues → triage → tdd (for product_fog)
+  - **ui-implementation-workflow**: ui-flow → ui-screen-spec → to-issues → triage → tdd (for ui_fog)
+  - **docs-implementation-workflow**: to-prd → handoff (for docs_fog)
+  - **implementation-workflow**: to-prd → to-issues → triage → tdd (default for architecture_fog)
+- **High-Velocity Gate Pattern** (`gate: none`): Steps execute immediately without approval pauses. Used in implementation workflows for automatic progression between steps
 - **Execution Modes**: The system supports `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, and `yolo_execution`.
 - **YOLO Execution**: High-velocity automation that bypasses approval gates for local skills. Requires explicit opt-in and feature branches.
 - **Skill Split**: Diagnosis (`repo-sensemaker`) is separated from Action (`workflow-orchestrator`) to ensure human-in-the-loop validation.
