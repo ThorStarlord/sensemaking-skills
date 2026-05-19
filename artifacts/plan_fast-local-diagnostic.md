@@ -1,9 +1,9 @@
 # Orchestration Plan: Fast Local Diagnostic
 
-- **Session ID**: orchestration-20260518-005557-d00da514
-- **Date**: 2026-05-18
+- **Session ID**: orchestration-20260519-122912-1fd385e4
+- **Date**: 2026-05-19
 - **Workflow**: fast-local-diagnostic
-- **Execution Mode**: yolo_execution
+- **Execution Mode**: plan_only
 - **Purpose**: Quickly identify the weakest boundary and produce a handoff prompt.
 
 ## Skills in Sequence
@@ -24,11 +24,10 @@
 
 ## Approval Gates
 
-- **Mode**: yolo_execution
-- **Gate Behavior**: bypassed
+- **Mode**: plan_only
+- **Gate Behavior**: none
 
-- review_sensemaking_brief: BYPASSED
-- review_handoff_prompt: BYPASSED
+No gates required for this mode.
 
 ## Stop Conditions
 
@@ -41,12 +40,23 @@
 
 ```yaml
 artifact_id: workflow_orchestration_plan
+source_intent_ref: ../../00-user-intent.md
 chosen_workflow_id: fast-local-diagnostic
-execution_mode: yolo_execution
+system_recommended_workflow: fast-local-diagnostic
+selected_workflow: fast-local-diagnostic
+routing_divergence: false
+routing_decision_method: diagnosis_primary_soft_context
+escalation_recommended: false
+auto_escalation_allowed: false
+scope_expansion_requires_approval: true
+execution_mode: plan_only
 status: created
-session_id: orchestration-20260518-005557-d00da514
+session_id: orchestration-20260519-122912-1fd385e4
 initial_inputs:
-  repository_state: external_context
+  - id: repository_state
+    type: external_context
+    required: true
+    description: Current repository files, registries, templates, validator scripts, and git state.
 steps:
   - id: 1
     skill: repo-sensemaker
@@ -59,7 +69,7 @@ steps:
     gate: review_handoff_prompt
     output_artifact: prompt_handoff
 approval_gates:
-  behavior: bypassed
+  behavior: none
 stop_conditions:
   - validator_failure
   - gate_denial

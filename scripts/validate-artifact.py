@@ -24,9 +24,12 @@ MISSING_MACHINE_FIELDS = "MISSING_MACHINE_FIELDS"
 MISSING_EVIDENCE_EXCERPTS = "MISSING_EVIDENCE_EXCERPTS"
 MISSING_EXCERPT_FIELD = "MISSING_EXCERPT_FIELD"
 ABSOLUTE_EXCERPT_PATH = "ABSOLUTE_EXCERPT_PATH"
+MISSING_RECOMMENDED_FIELD = "MISSING_RECOMMENDED_FIELD"
+
+warnings = []  # Collect warnings separately from errors
 
 
-def validate_artifact(artifact_id, artifact_path, repo_root="."):
+def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommended=False):
     errors = []
 
     if not os.path.exists(artifact_path):
@@ -63,7 +66,10 @@ def validate_artifact(artifact_id, artifact_path, repo_root="."):
 
     # 3. Check machine fields in YAML block
     required_fields = contract.get("required_machine_fields", [])
-    if required_fields:
+    recommended_fields = contract.get("recommended_machine_fields", [])
+    yaml_data = None
+
+    if required_fields or recommended_fields:
         yaml_blocks = re.findall(r"```yaml\s+(.*?)\s+```", content, re.DOTALL)
         if not yaml_blocks:
             errors.append(format_error(MISSING_YAML_BLOCK, "Missing machine-readable YAML block"))
@@ -76,6 +82,7 @@ def validate_artifact(artifact_id, artifact_path, repo_root="."):
                         missing = [f for f in required_fields if f not in data]
                         if not missing:
                             found_valid_block = True
+                            yaml_data = data
                             break
                 except Exception:
                     pass
@@ -87,6 +94,16 @@ def validate_artifact(artifact_id, artifact_path, repo_root="."):
                         f"Could not find a single YAML block containing all required machine fields: {required_fields}",
                     )
                 )
+
+    # 3b. Check recommended fields (warnings only, unless --strict-recommended)
+    if yaml_data and recommended_fields:
+        for field in recommended_fields:
+            if field not in yaml_data:
+                msg = format_error(MISSING_RECOMMENDED_FIELD, f"Recommended field missing: {field}")
+                if strict_recommended:
+                    errors.append(msg)
+                else:
+                    warnings.append(msg)
 
     # 4. Specific validation for repository_sensemaking_brief
     if artifact_id == "repository_sensemaking_brief":
@@ -123,6 +140,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("artifact_path", nargs="?", help="Path to the artifact markdown file")
     parser.add_argument("--repo-root", default=".", help="Root directory of the repository")
     parser.add_argument("--list-codes", action="store_true", help="List all error codes and exit")
+    parser.add_argument("--strict-recommended", action="store_true", help="Treat missing recommended fields as errors")
     args = parser.parse_args(argv)
 
     if args.list_codes:
@@ -134,6 +152,7 @@ def main(argv: list[str] | None = None) -> int:
             MISSING_REQUIRED_SECTION,
             MISSING_YAML_BLOCK,
             MISSING_MACHINE_FIELDS,
+            MISSING_RECOMMENDED_FIELD,
             MISSING_EVIDENCE_EXCERPTS,
             MISSING_EXCERPT_FIELD,
             ABSOLUTE_EXCERPT_PATH,
@@ -147,13 +166,30 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_usage()
         return 1
 
-    errs = validate_artifact(args.artifact_id, args.artifact_path, args.repo_root)
+    global warnings
+    warnings = []  # Reset warnings for this run
+    errs = validate_artifact(args.artifact_id, args.artifact_path, args.repo_root, args.strict_recommended)
+
+    # Print results with clear formatting
     if errs:
+        print(f"[FAIL] Artifact validation failed:")
         for e in errs:
-            print(f"ERROR {e}")
+            print(f"  ERROR {e}")
         return 1
+
+    # All required fields present
+    print(f"[PASS] Required fields present")
+
+    # Print warnings if any
+    if warnings:
+        for w in warnings:
+            print(f"[WARN] {w}")
+        print(f"\n  • {len(warnings)} recommended field(s) missing")
+        print(f"  • Use --strict-recommended to promote warnings to errors")
+        return 0
     else:
-        print(f"Artifact validation passed for {args.artifact_path}!")
+        print(f"[OK] All fields (required + recommended) present")
+        return 0
         return 0
 
 

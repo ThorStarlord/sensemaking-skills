@@ -18,6 +18,70 @@ description: select and stage a workflow from a repository sensemaking brief. us
     - `yolo_execution`: [STABLE] execute only eligible steps with no intermediate approval. **MANDATORY**: Run `Post-Step Verification` after each skill execution. Stop immediately on missing artifact, invalid handoff, failed verification (script or LLM), non-executable skill, dirty git state, or run-log failure. **After sensemaking completes**: if the orchestration-plan recommends external workflows, automatically invoke `implementation-workflow` with sensemaking artifacts and continue without stopping between steps.
 6. **Implementation Workflow (autonomous modes only)**: If mode is `autonomous_execution` or `yolo_execution` and the orchestration-plan recommends external workflows, automatically execute the `implementation-workflow` (grill-with-docs → to-prd → to-issues → triage → tdd → handoff) with `gate: none` between steps. Pass sensemaking artifacts as initial context. Do not pause between steps.
 
+## Stage 2: Routing Audit
+
+**Routing Audit Fields** track the gap between what the system recommended and what was actually selected. These fields enable visibility into routing decisions, conflicts, and overrides.
+
+### Recording Routing Decisions
+
+**Step 1: Capture System Recommendation**
+- Read `recommended_workflow_id` from the repository sensemaking brief
+- Record this as `system_recommended_workflow` in the plan
+- This is what repo-sensemaker diagnosed based on fog type and conflict analysis
+
+**Step 2: Determine User Selection**
+- If in `guided_execution` mode and the user is presented a choice, record their explicit selection
+- If user explicitly overrides the recommendation, record the selected workflow (which differs from system recommendation)
+- If no override provided, selected workflow equals system recommendation
+
+**Step 3: Calculate Routing Divergence**
+- `routing_divergence: true` if `system_recommended_workflow != selected_workflow`
+- `routing_divergence: false` if they match
+
+**Step 4: Record Decision Method**
+Valid routing_decision_method values:
+- `diagnosis_primary_soft_context` — System recommendation based on primary fog type; user intent confirmed recommendation (no override)
+- `diagnosis_mixed_tiebreak_to_user_intent` — Diagnosis showed mixed fog; user intent broke the tie to select workflow
+- `user_explicit_override` — User explicitly selected different workflow than system recommended (routing divergence: true)
+- `escalation_recommended_accepted` — System recommended escalation to full-fog-workflow; user accepted
+- `escalation_recommended_rejected` — System recommended escalation; user stayed with narrower workflow (routing divergence: true)
+
+**Example Scenarios:**
+
+*Scenario A: Agreement (no override)*
+```yaml
+system_recommended_workflow: product-implementation-workflow
+selected_workflow: product-implementation-workflow
+routing_divergence: false
+routing_decision_method: diagnosis_primary_soft_context
+```
+
+*Scenario B: User Override*
+```yaml
+system_recommended_workflow: full-fog-workflow
+selected_workflow: product-implementation-workflow
+routing_divergence: true
+routing_decision_method: user_explicit_override
+```
+
+*Scenario C: Tie-breaker to User Intent*
+```yaml
+system_recommended_workflow: product-implementation-workflow
+selected_workflow: product-implementation-workflow
+routing_divergence: false
+routing_decision_method: diagnosis_mixed_tiebreak_to_user_intent
+```
+
+### Escalation in Routing Audit
+
+When `escalation_recommended: true` in the brief:
+- System recommends full-fog-workflow or other escalation path
+- Record `system_recommended_workflow: full-fog-workflow` (or appropriate escalation)
+- If user accepts: selected matches system, routing_divergence: false, decision_method: `escalation_recommended_accepted`
+- If user rejects: selected is narrower workflow, routing_divergence: true, decision_method: `escalation_recommended_rejected`
+
+Always include `escalation_recommended` and `auto_escalation_allowed` from brief. Escalation recommendations are informational; users always control final selection unless auto_escalation is enabled.
+
 ## Output Format
 Every response must follow the [Workflow Orchestration Plan](references/workflow-orchestration-template.md) structure. 
 

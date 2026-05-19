@@ -4,6 +4,10 @@ workflows:
     purpose: Diagnose a repository to identify the weakest boundary and recommend corrective workflows.
     description: Use this when you have a clear repo goal and need a quick diagnosis. Analyzes the repository and produces a diagnostic brief with recommendations. User then invokes workflow-orchestrator to select the next workflow.
     initial_inputs:
+      - id: user_intent
+        type: artifact
+        required: true
+        description: User's problem statement and scope mode (created by orchestration-runner)
       - id: repository_state
         type: external_context
         required: true
@@ -25,6 +29,10 @@ workflows:
     purpose: Comprehensively analyze ambiguous projects from raw fog to actionable recommendations.
     description: Use this when the problem is vague or highly uncertain. Chains problem-framer, unknowns-mapper, repo-sensemaker, and prompt-handoff automatically with approval gates between steps. Produces a comprehensive diagnostic brief with ready-to-copy prompts for next workflows.
     initial_inputs:
+      - id: user_intent
+        type: artifact
+        required: true
+        description: User's problem statement and scope mode (created by orchestration-runner)
       - id: raw_fog
         type: external_context
         required: true

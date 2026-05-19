@@ -232,6 +232,106 @@ class OrchestrationRunner:
 
         self.contracts = load_artifact_contracts(self.repo_root)
 
+    def _create_user_intent_artifact(self, problem_statement: str | None, scope_mode: str) -> str | None:
+        """Create 00-user-intent.md artifact. Returns artifact path or None on error."""
+
+        intent_source = "repo_inferred" if problem_statement is None else "user_problem_statement"
+
+        intent_yaml = {
+            "artifact_id": "user_intent",
+            "schema_version": 1,
+            "intent_source": intent_source,
+            "scope_mode": scope_mode,
+            "raw_problem_statement": problem_statement,
+            "immutable": True,
+            "created_at": datetime.utcnow().isoformat() + "Z",
+            "created_by": "orchestration-runner",
+            "repo_state_used": True,
+            "constraints": [],
+            "non_goals": [],
+            "clarifications": []
+        }
+
+        # Resolve artifact directory (create numbered run folder if needed)
+        artifact_base = os.path.join(self.repo_root, "artifacts")
+
+        # Find next run number (NN-run-name format)
+        import glob as glob_module
+        existing = glob_module.glob(os.path.join(artifact_base, "[0-9][0-9]-*"))
+        next_num = max([int(os.path.basename(d).split("-")[0]) for d in existing] + [0]) + 1
+        run_name = f"{next_num:02d}-orchestration-run"
+        artifact_dir = os.path.join(artifact_base, run_name)
+
+        try:
+            os.makedirs(artifact_dir, exist_ok=True)
+        except Exception as e:
+            self.errors.append(format_error("DIR_CREATE_FAILED", f"Failed to create artifact directory: {e}"))
+            return None
+
+        intent_path = os.path.join(artifact_dir, "00-user-intent.md")
+
+        try:
+            with open(intent_path, "w", encoding="utf-8") as f:
+                f.write("# User Intent\n\n")
+                f.write("---\n")
+                import yaml
+                yaml.dump(intent_yaml, f, default_flow_style=False)
+                f.write("---\n")
+
+            print(f"[OK] Created user intent artifact: {os.path.relpath(intent_path, self.repo_root)}")
+            return intent_path
+        except Exception as e:
+            self.errors.append(format_error("FILE_WRITE_FAILED", f"Failed to write user_intent artifact: {e}"))
+            return None
+
+    def create_intent_amendment(self, artifact_dir: str, clarification: str, clarification_type: str = "scope_refinement") -> str | None:
+        """Create 00b-user-clarification.md amendment artifact.
+
+        Args:
+            artifact_dir: Directory containing 00-user-intent.md
+            clarification: User's clarification or re-scoping
+            clarification_type: Type of change (scope_refinement, scope_expansion, out_of_scope_addition)
+
+        Returns:
+            Path to amendment artifact or None on error
+        """
+
+        amendment_yaml = {
+            "artifact_id": "user_intent_amendment",
+            "schema_version": 1,
+            "amends_intent_ref": "00-user-intent.md",
+            "raw_clarification": clarification,
+            "clarification_type": clarification_type,
+            "requires_reroute": True,  # Conservative: amendments always require reroute check
+            "created_at": datetime.utcnow().isoformat() + "Z",
+            "created_by": "user",
+        }
+
+        # Determine amendment filename (00b, 00c, 00d, etc.)
+        import glob as glob_module
+        existing = glob_module.glob(os.path.join(artifact_dir, "00*-user*.md"))
+        # Find highest amendment letter
+        amendment_count = len([f for f in existing if "-user-clarification" in f or "-user-intent" in f])
+        amendment_letter = chr(ord('b') + amendment_count - 1)  # b for first amendment
+        amendment_filename = f"00{amendment_letter}-user-clarification.md"
+
+        amendment_path = os.path.join(artifact_dir, amendment_filename)
+
+        try:
+            with open(amendment_path, "w", encoding="utf-8") as f:
+                f.write("# User Intent Amendment\n\n")
+                f.write("---\n")
+                import yaml
+                yaml.dump(amendment_yaml, f, default_flow_style=False)
+                f.write("---\n")
+                f.write(f"\n## Clarification\n\n{clarification}\n")
+
+            print(f"✓ Created intent amendment: {os.path.relpath(amendment_path, self.repo_root)}")
+            return amendment_path
+        except Exception as e:
+            self.errors.append(format_error("FILE_WRITE_FAILED", f"Failed to write intent amendment: {e}"))
+            return None
+
     def preflight_check(self) -> bool:
         """Run pre-flight checks. Returns True if all pass."""
         print(f"\n{'='*60}")
@@ -358,14 +458,26 @@ class OrchestrationRunner:
             f"",
             f"```yaml",
             f"artifact_id: workflow_orchestration_plan",
+            f"source_intent_ref: ../../00-user-intent.md",
             f"chosen_workflow_id: {self.workflow_id}",
+            f"system_recommended_workflow: {self.workflow_id}",
+            f"selected_workflow: {self.workflow_id}",
+            f"routing_divergence: false",
+            f"routing_decision_method: diagnosis_primary_soft_context",
+            f"escalation_recommended: false",
+            f"auto_escalation_allowed: false",
+            f"scope_expansion_requires_approval: true",
             f"execution_mode: {self.mode}",
             f"status: created",
             f"session_id: {self.session_id}",
             f"initial_inputs:",
         ])
         for inp in initial_inputs:
-            lines.append(f"  {inp['id']}: {inp.get('type', '?')}")
+            lines.append(f"  - id: {inp['id']}")
+            lines.append(f"    type: {inp.get('type', '?')}")
+            lines.append(f"    required: {str(inp.get('required', False)).lower()}")
+            if inp.get('description'):
+                lines.append(f"    description: {inp.get('description', '')}")
         lines.append(f"steps:")
         for i, step in enumerate(steps, 1):
             gate = step.get("gate", "review")
@@ -1000,16 +1112,26 @@ class OrchestrationRunner:
 
     def run(self) -> int:
         """Execute the full orchestration lifecycle. Returns exit code."""
-        # Phase 1: Pre-flight
-        if not self.preflight_check():
-            print(f"\n  [FAIL] Pre-flight failed. Aborting.")
-            return 1
+        # Phase 1: Pre-flight (skip for plan_only mode)
+        if self.mode != "plan_only":
+            if not self.preflight_check():
+                print(f"\n  [FAIL] Pre-flight failed. Aborting.")
+                return 1
+        else:
+            print(f"{'='*60}")
+            print(f"PHASE 1: PREFLIGHT (skipped for plan_only mode)")
+            print(f"{'='*60}")
 
         # Phase 2: Generate plan
         print(f"{'='*60}")
         print(f"PHASE 2: GENERATE PLAN")
         print(f"{'='*60}")
         self.generate_plan()
+
+        # For plan_only mode, stop here
+        if self.mode == "plan_only":
+            print(f"\n[OK] Plan-only mode complete. Exiting.")
+            return 0
 
         # For autonomous_execution and yolo_execution modes, dispatch to skill executor
         if self.mode in ("autonomous_execution", "yolo_execution"):
@@ -1193,9 +1315,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Production-grade orchestration runner for sensemaking workflows."
     )
-    parser.add_argument("workflow_id", nargs="?", help="Workflow ID from workflow-registry.yaml")
+    parser.add_argument("problem", nargs="?", default=None, help="Optional user problem statement or goal")
+    parser.add_argument("--workflow", default=None, help="Explicit workflow ID (overrides default)")
     parser.add_argument("--mode", default="plan_only", choices=list(KNOWN_MODES.keys()),
                         help="Execution mode (default: plan_only)")
+    parser.add_argument("--scope", default="soft", choices=["soft", "hard", "advisory"],
+                        help="How strictly the problem statement constrains analysis (default: soft)")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument("--plan-out", default=None, help="Output path for the orchestration plan")
     parser.add_argument("--log-dir", default=None, help="Directory for run log output")
@@ -1217,17 +1342,15 @@ def main(argv: list[str] | None = None) -> int:
         list_workflows(repo_root)
         return 0
 
-    if not args.workflow_id:
-        parser.print_usage()
-        print("\nError: workflow_id is required (use --list-workflows to see available workflows)")
-        return 1
+    # Determine workflow_id: explicit --workflow > default fast-local-diagnostic
+    workflow_id = args.workflow or "fast-local-diagnostic"
 
     # Validate gate_decision compatibility
     if args.gate_decision and args.mode not in ("guided_execution", "autonomous_execution"):
         print(f"Note: --gate-decision is only for guided/autonomous modes, ignoring for '{args.mode}'")
 
     runner = OrchestrationRunner(
-        workflow_id=args.workflow_id,
+        workflow_id=workflow_id,
         mode=args.mode,
         repo_root=repo_root,
         plan_out=args.plan_out,
@@ -1239,6 +1362,14 @@ def main(argv: list[str] | None = None) -> int:
     if runner.errors:
         for e in runner.errors:
             print(f"ERROR {e}")
+        return 1
+
+    # Create user intent artifact before running workflow
+    intent_path = runner._create_user_intent_artifact(args.problem, args.scope)
+    if not intent_path:
+        print("ERROR: Failed to create user_intent artifact")
+        for e in runner.errors:
+            print(f"  - {e}")
         return 1
 
     return runner.run()

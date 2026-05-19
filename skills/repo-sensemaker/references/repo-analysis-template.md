@@ -52,12 +52,43 @@ The smallest concrete action with highest leverage.
 One workflow candidate from the official `workflow-registry.yaml`. Do not invent workflow IDs.
 
 ## 13. Machine-readable handoff
+
+### Stage 1: Intent-Aware Fields (Required)
+```yaml
+artifact_id: repository_sensemaking_brief
+source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
+user_implied_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | unknown
+primary_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | mixed | unknown
+diagnosis_conflict: true | false
+escalation_recommended: true | false
+```
+
+### Standard Fields
 ```yaml
 recommended_workflow_id: # MUST match an ID in workflow-registry.yaml
-recommended_execution_mode: plan_only
+recommended_execution_mode: plan_only | guided_execution
 weakest_boundary: 
 required_inputs:
-  - repository_sensemaking_brief
+  - user_intent
+  - repository_state
+```
+
+### Complete Example
+```yaml
+artifact_id: repository_sensemaking_brief
+schema_version: 1
+source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
+recommended_workflow_id: product-implementation-workflow
+recommended_execution_mode: guided_execution
+weakest_boundary: analytics_feedback_gap
+required_inputs:
+  - user_intent
+  - repository_state
+user_implied_fog_type: product_fog
+primary_fog_type: product_fog
+diagnosis_conflict: false
+escalation_recommended: false
+created_at: "2026-05-19T16:00:00Z"
 ```
 
 ## 14. Ready-to-copy prompt

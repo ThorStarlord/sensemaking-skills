@@ -1,6 +1,67 @@
 # Artifact Contracts: Sensemaking Pipeline
 
 artifacts:
+  - id: user_intent
+    produced_by: orchestration-runner
+    consumed_by:
+      - problem-framer
+      - unknowns-mapper
+      - repo-sensemaker
+      - workflow-orchestrator
+      - grill-with-docs
+      - to-prd
+      - to-issues
+      - triage
+      - handoff
+    required_sections:
+      - raw_intent
+      - scope_mode
+      - intent_source
+      - constraints
+      - non_goals
+      - machine_readable_intent
+    required_machine_fields:
+      - artifact_id
+      - intent_source
+      - scope_mode
+      - raw_problem_statement
+      - created_at
+      - immutable
+    verification:
+      generic_validator: "python scripts/validate-artifact.py user_intent {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-user-intent.py {artifact_path}"
+      required_for_modes:
+        - plan_only
+        - prompt_chain
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: user_intent_amendment
+    produced_by: orchestration-runner
+    consumed_by:
+      - workflow-orchestrator
+      - repo-sensemaker
+      - prompt-handoff
+    required_sections:
+      - clarification
+    required_machine_fields:
+      - artifact_id
+      - amends_intent_ref
+      - clarification_type
+      - requires_reroute
+      - created_at
+      - created_by
+    verification:
+      generic_validator: "python scripts/validate-artifact.py user_intent_amendment {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-user-intent-amendment.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
   - id: problem_frame
     produced_by: problem-framer
     consumed_by:
@@ -69,10 +130,19 @@ artifacts:
       - machine_readable_handoff
       - ready_to_copy_prompt
     required_machine_fields:
+      - source_intent_ref
       - recommended_workflow_id
       - recommended_execution_mode
       - weakest_boundary
       - required_inputs
+      - user_implied_fog_type
+      - primary_fog_type
+      - diagnosis_conflict
+      - escalation_recommended
+    recommended_machine_fields:
+      - escalation_target
+      - escalation_reason
+      - auto_escalation_allowed
     verification:
       generic_validator: "python scripts/validate-artifact.py repository_sensemaking_brief {artifact_path}"
       specialized_validators:
@@ -111,6 +181,15 @@ artifacts:
     consumed_by:
       - to-issues
       - prompt-handoff
+    required_machine_fields:
+      - source_intent_ref
+      - user_goal_preserved_as
+      - scope_expansion_proposed
+      - scope_expansion_requires_approval
+    recommended_machine_fields:
+      - scope_expansion_status
+      - scope_expansion_details
+      - scope_expansion_approvals
     verification:
       generic_validator: "python scripts/validate-artifact.py prd {artifact_path}"
       required_for_modes:
@@ -122,6 +201,15 @@ artifacts:
     produced_by: to-issues
     consumed_by:
       - triage
+    required_machine_fields:
+      - source_intent_ref
+      - user_goal_preserved_as
+      - scope_expansion_proposed
+      - scope_expansion_status
+    recommended_machine_fields:
+      - escalation_required
+      - escalation_reason
+      - escalation_options
     verification:
       generic_validator: "python scripts/validate-artifact.py issue_list {artifact_path}"
       required_for_modes:
@@ -133,6 +221,8 @@ artifacts:
     produced_by: triage
     consumed_by:
       - tdd
+    required_machine_fields:
+      - source_intent_ref
     verification:
       generic_validator: "python scripts/validate-artifact.py agent_brief {artifact_path}"
       required_for_modes:
@@ -155,6 +245,8 @@ artifacts:
     produced_by: handoff
     consumed_by:
       - workflow-orchestrator
+    required_machine_fields:
+      - source_intent_ref
     verification:
       generic_validator: "python scripts/validate-artifact.py session_summary {artifact_path}"
       required_for_modes:
@@ -337,8 +429,16 @@ artifacts:
         - yolo_execution
     required_machine_fields:
       - artifact_id
+      - source_intent_ref
       - chosen_workflow_id
       - execution_mode
+      - system_recommended_workflow
+      - selected_workflow
+      - routing_divergence
+      - routing_decision_method
+      - escalation_recommended
+      - auto_escalation_allowed
+      - scope_expansion_requires_approval
       - status
       - initial_inputs
       - steps

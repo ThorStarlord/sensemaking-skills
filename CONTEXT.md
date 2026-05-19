@@ -42,14 +42,36 @@ The workflow orchestration system follows four key design patterns, each proven 
    - **Why**: Trust comes from verifiable proof, not faith
    - See: [docs/adr/0004-evidence-tracking-for-trust.md](docs/adr/0004-evidence-tracking-for-trust.md)
 
-5. **Dynamic Workflow Routing** (NEW)
+5. **Dynamic Workflow Routing** (ADR 0005)
    - **Fog Type Classification**: Sensemaking produces a classification of the primary problem type
    - **Four fog types**: product_fog (user needs), ui_fog (design), docs_fog (knowledge), architecture_fog (code structure)
    - **Automatic routing**: Orchestrator reads fog_type and invokes the appropriate implementation workflow
    - **Specialized workflows**: Four implementation workflows, each optimized for its fog type
    - **High-velocity execution**: Implementation workflows use `gate: none` between steps for automatic progression
    - **Why**: Allows single entry point (sensemaking) that automatically routes to the right implementation path
-   - **Details**: See [skills/workflow-orchestrator/](skills/workflow-orchestrator/) and workflow-registry.yaml
+   - **Details**: See [docs/adr/0005-skill-invocation-via-workflows.md](docs/adr/0005-skill-invocation-via-workflows.md)
+
+6. **User Intent as Durable Artifact** (ADR 0006)
+   - **Immutable raw intent**: Every run creates `00-user-intent.md` that preserves exactly what the user asked for
+   - **Append-only amendments**: User clarifications create separate `00b-user-clarification.md`, never edit the original
+   - **Intent propagation**: Downstream artifacts (brief, plan, prd, issues) reference intent and record how it's addressed
+   - **Why**: Audit trail remains unbroken; system can surface diagnosis that differs from user intent without losing user's original goal
+   - See: [docs/adr/0006-intent-as-durable-artifact.md](docs/adr/0006-intent-as-durable-artifact.md)
+
+7. **Soft Context Routing** (ADR 0007)
+   - **User intent shapes the question; repo diagnosis answers it**: System recommends workflows based on code analysis, not user assumption
+   - **Routing authority ladder**: Explicit override > approved gate > high-confidence diagnosis > low-confidence + intent tie-breaker > default
+   - **Low-confidence diagnosis can use intent as tie-breaker**: When multiple fog types are plausible, user intent can guide selection
+   - **Why**: Preserves diagnostic integrity while respecting user agency; explicit override is always available for experts
+   - See: [docs/adr/0007-soft-context-routing.md](docs/adr/0007-soft-context-routing.md)
+
+8. **Routing Divergence and Action Audit Trail** (ADR 0008)
+   - **Separate system recommendation from selected action**: Every decision records what was recommended vs. what was actually chosen
+   - **Explicit escalation control**: Fast-path recommends escalation to full-fog but does NOT auto-chain by default; user or execution mode must approve
+   - **Scope expansion is intentional**: Implementation workflows can propose additional work, but selection stays within approved scope unless a gate approves expansion
+   - **Intent changes invalidate approval**: If user re-scopes mid-workflow, prior approval becomes invalid; system pauses and requires re-approval
+   - **Why**: Audit trail is complete; divergences never silent; scope creep requires intentional approval; intent changes are safely detected
+   - See: [docs/adr/0008-routing-divergence-audit.md](docs/adr/0008-routing-divergence-audit.md)
 
 **For designers**: See [docs/orchestration-patterns.md](docs/orchestration-patterns.md) for detailed patterns and [docs/workflow-design-guide.md](docs/workflow-design-guide.md) for step-by-step workflow design instructions.
 
@@ -90,6 +112,15 @@ The workflow orchestration system follows four key design patterns, each proven 
 - **Weakest Boundary**: The most fragile or unenforced point in a repository. Diagnosed by repo-sensemaker via evidence-backed analysis of signal-gap boundaries.
 - **Approval Gates**: Mandatory review points in an orchestration workflow. In `yolo_execution` mode, validators replace gates as the safety mechanism — gates are bypassed, but post-step validation is zero-tolerance.
 - **Canonical Evidence Layer**: The validator + run-log + mode-coverage infrastructure (`scripts/validate-*.py` scripts, `docs/mode-coverage.yaml`, run logs in `runs/` and `artifacts/`) that provides machine-verifiable proof of system claims. Every workflow execution records which validators ran, which gates fired, and which artifacts were produced. This layer makes the system auditable: you can verify claims about mode coverage, gate behavior, and artifact integrity without trusting the agent that produced them. It proves the system works correctly but does not, by itself, produce value for anyone outside the system.
+
+- **User Intent**: What the user actually cares about solving. Can come from explicit problem statement (`--problem "..."`), imported ticket, or system inference from repo state. Recorded immutably in `00-user-intent.md` and propagated through artifacts with references.
+- **Intent Source**: How user intent was obtained. Values: `user_problem_statement` (explicit CLI), `repo_inferred` (system guessed from code), `imported_ticket` (loaded from issue tracker).
+- **Scope Mode**: How strictly intent constrains the system's analysis. Values: `soft` (intent is context; system can surface broader concerns), `hard` (intent defines boundary; out-of-scope findings are appendix-only), `advisory` (intent is primary; system can propose conflicts but execution stays bounded).
+- **Intent Amendment**: A user clarification or re-scoping created mid-workflow. Stored as separate artifact (`00b-user-clarification.md`, etc.), never edits to original intent. Invalidates prior approval if it changes routing/scope.
+- **Routing Divergence**: Occurs when `system_recommended_workflow` differs from `selected_workflow`. May be due to explicit user override, low-confidence diagnosis + intent tie-break, or approved gate decision. Always recorded with rationale in orchestration plan.
+- **Routing Decision Method**: How the system chose which workflow to run. Values: `diagnosis_primary_soft_context` (repo diagnosis won), `intent_tiebreaker` (user intent broke a low-confidence tie), `user_explicit_override` (user --workflow flag), `approved_gate` (human approval changed the decision), `escalation_approved` (escalation to deeper analysis was approved).
+- **Escalation**: Fast-path workflow recommends deeper analysis (full-fog) when uncertainty is high or diagnosis conflicts with intent. Escalation is recommended but NOT automatic by default; user or execution mode must approve. Recorded as `escalation_recommended: true` with `auto_escalation_allowed: false`.
+- **Scope Expansion**: Implementation workflows (to-prd, to-issues) can propose work beyond the user's stated intent. Proposed expansions are explicit and require approval before being included in selected scope. Recorded as `scope_expansion_proposed: [list]` and `scope_expansion_requires_approval: true`.
 
 - **Harden Only Where Pressured**: A principle for post-run system improvement — restrict changes to boundaries where live execution exposes a **repeatable failure boundary** (same failure class across independent runs). Isolated one-off data issues are fixed in the artifact but do not trigger system hardening. Prevents preemptive over-engineering based on theory alone.
   **Enforcement rule**: System-level hardening (new validators, runner features, or evidence tools) is only permitted when at least one condition is met: (1) a real (non-test) run fails with a specific error, (2) the same failure class recurs across independent runs, or (3) CI or static analysis detects a real inconsistency that a live run would miss. Exempted: artifact data fixes, bug fixes in existing validators, test fixtures, documentation, and contract/registry registration.

@@ -1,15 +1,15 @@
 # Workflow Run Log: Fast Local Diagnostic
 
-- **Date**: 2026-05-17
-- **Session ID**: orchestration-20260517-233305-f5890abf
+- **Date**: 2026-05-19
+- **Session ID**: orchestration-20260519-122840-d6a9a584
 - **Workflow ID**: fast-local-diagnostic
 - **Orchestrator Mode**: plan_only
-- **Branch**: main
+- **Branch**: claude/upbeat-jepsen-fdfca7
 - **Status**: failed
 
 ## Pre-flight
 
-- Branch: main
+- Branch: claude/upbeat-jepsen-fdfca7
 - validate-repo.py: PASSED
 - Orchestrator v2 engaged: PRODUCTION_RUNNER
 
@@ -45,6 +45,6 @@
 
 - **Step 1**
   - **RED**: ERROR VALIDATOR_FAILED: Generic validator failed:
-ERROR MISSING_REQUIRED_SECTION: Missing required s
+ERROR MISSING_MACHINE_FIELDS: Could not find a sin
   - **GREEN**: (manual fix applied)
   - **REFACTOR**: (hardening if warranted)
