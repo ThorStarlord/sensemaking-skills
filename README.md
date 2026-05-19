@@ -119,8 +119,11 @@ Guided Execution / Prompt Chain
 
 ## Core Artifacts
 
-- **Repository Sensemaking Brief**: A diagnostic report naming the fog type, object under pressure, and the weakest boundary.
-- **Workflow Orchestration Plan**: A procedural plan naming the chosen workflow, skill sequence, and mandatory approval gates.
+- **Problem Frame** (Full Fog Path only): Structured framing of the "problem under the problem" and the object under pressure.
+- **Unknowns Map** (Full Fog Path only): Separation of Knowns, Unknowns, Assumptions, and Risks with research paths.
+- **Repository Sensemaking Brief**: A 14-section diagnostic report naming the fog type, weakest boundary, and candidate workflows with evidence.
+- **Workflow Orchestration Plan**: A 10-section procedural plan naming the selected workflow, skill sequence, approval gates, and execution mode.
+- **Workflow Run Log**: Records all skill executions, gate decisions, artifact validations, and error handling for the workflow run.
 
 ## Repository Structure
 
@@ -133,29 +136,61 @@ Guided Execution / Prompt Chain
 
 ## Usage
 
-### Fast Path (Direct Repo Analysis)
-Use this when the goal is clear and you just need a repository-level diagnosis.
-1. Run `repo-sensemaker` to identify the **Weakest Boundary**.
-2. Review the **Repository Sensemaking Brief**.
-3. Pass the brief to `workflow-orchestrator` to select and run a corrective workflow.
+The sensemaking system executes as automated workflows that chain skills together with explicit approval gates.
 
-### Full Fog Path (Comprehensive Sensemaking)
-Use this when the project is highly ambiguous or lacks a clear problem frame.
-1. `problem-framer`: Define the "problem under the problem."
-2. `unknowns-mapper`: Map the research paths and assumptions.
-3. `repo-sensemaker`: Conduct the deep repository audit.
-4. `workflow-orchestrator`: Select the workflow and execution mode.
-5. `prompt-handoff`: Generate the bridge prompt for specialized tools.
+### Quick Start: Choose Your Entry Point
 
-## Downstream Skill Assumption
+**Fast Path** — When you have a clear repo goal:
+```bash
+python scripts/orchestration-runner.py fast-path-workflow
+```
+Chains: `repo-sensemaker` → `workflow-orchestrator`  
+Output: Repository Sensemaking Brief → Workflow Orchestration Plan
 
-This repository assumes the following downstream skill packs are installed in the local working environment when using product or implementation workflows:
+**Full Fog Path** — When the problem is ambiguous:
+```bash
+python scripts/orchestration-runner.py full-fog-workflow
+```
+Chains: `problem-framer` → `unknowns-mapper` → `repo-sensemaker` → `workflow-orchestrator` → `prompt-handoff`  
+Output: Problem Frame → Unknowns Map → Repository Brief → Workflow Plan
+
+### Default Execution Flow (guided_execution mode)
+
+By default, workflows execute with automatic skill chaining and explicit approval gates:
+
+1. **Invoke workflow** via `orchestration-runner.py <workflow-name>`
+2. **Orchestrator chains skills automatically** — no manual invocation between steps
+3. **Pauses at approval gates** — shows you each decision point before executing downstream workflows
+4. **You approve or deny** — each gate decision is recorded in the run log
+5. **Workflow continues or halts** — based on your approval
+
+No copying prompts between steps. No invoking skills individually. The workflow orchestrates everything.
+
+### Advanced: Other Execution Modes
+
+For planning without execution (`plan_only`), copy-paste prompts (`prompt_chain`), fully autonomous runs (`autonomous_execution`), or zero-gate automation (`yolo_execution`), see [Execution Modes Reference](docs/orchestration-patterns.md#execution-modes) and [PHASE5_SKILL_INVOCATION.md](docs/PHASE5_SKILL_INVOCATION.md).
+
+## Skill Invocation & Downstream Workflows
+
+### Automatic Skill Chaining (Phase 5 Complete)
+
+In `guided_execution`, `autonomous_execution`, and `yolo_execution` modes, `orchestration-runner.py` automatically chains skills within a workflow. No external agent invocation is required.
+
+### Downstream Implementation Workflows
+
+When a sensemaking workflow routes to an implementation workflow (e.g., `product-implementation-workflow`, `ui-implementation-workflow`, `implementation-workflow`, `docs-implementation-workflow`), the orchestrator automatically invokes those workflows in the same execution mode.
+
+### Optional Downstream Skill Packs
+
+For product, UI, and implementation workflows, this repository assumes the following skill packs are optionally installed:
 
 - [Product Manager Skills](https://github.com/ThorStarlord/pm-skills)
 - [Matt Pocock Skills](https://github.com/mattpocock/skills)
 - [Interface Skills](https://github.com/ThorStarlord/interface-skills)
 
-If these skills are not installed, `workflow-orchestrator` can still produce `prompt_chain` outputs, but it cannot execute those workflow steps directly.
+If these are not installed:
+- **In `plan_only` mode**: The orchestrator produces copy-paste prompts for manual invocation
+- **In execution modes**: The orchestrator fails with a clear error indicating which skill pack is required
 
 ## License
 MIT
