@@ -30,7 +30,7 @@ The validator ecosystem is complete. Zero repeatable failures detected. All prod
 ### Completed Tasks
 
 **1. Enforce strict artifact validation in execution modes** ✅
-- `ARTIFACT_NOT_FOUND` error code enforced in execution modes (lines 445-454, orchestration-runner.py)
+- `ARTIFACT_NOT_FOUND` error code enforced in execution modes (lines 445-454, workflow-runtime.py)
 - Added `artifact-production-required` test to controlled failure suite (10 tests now pass)
 
 **2. Remove premature PRD step from docs-architecture workflow** ✅
@@ -111,7 +111,7 @@ Successfully executed production-grade runs across 4 execution modes with real w
 - `artifacts/VALUE_PRODUCTION_PHASE_1_FINDINGS.md` - Technical findings on orchestration gaps
 - `artifacts/failure_pattern_report.md` - Comprehensive failure analysis (zero repeatable boundaries)
 - `artifacts/coverage_dashboard.md` - Production readiness dashboard with all metrics
-- Enhanced orchestration-runner.py with:
+- Enhanced workflow-runtime.py with:
   - TTY-aware gate handling
   - `--gate-decision auto-approve` support for non-interactive execution
   - Proper error handling in non-TTY environments

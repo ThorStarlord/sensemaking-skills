@@ -172,7 +172,7 @@ Full-fog workflow runs (if escalated)
 
 ## Next Stage (Stage 2)
 
-**Target**: `workflow-orchestrator`
+**Target**: `workflow-planner`
 
 **Fields to promote** (when orchestrator is patched):
 ```yaml

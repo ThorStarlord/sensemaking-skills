@@ -17,7 +17,7 @@ from pathlib import Path
 
 def load_workflow_registry():
     """Load and parse the workflow registry YAML."""
-    registry_path = Path("skills/workflow-orchestrator/references/workflow-registry.yaml")
+    registry_path = Path("skills/workflow-planner/references/workflow-registry.yaml")
 
     if not registry_path.exists():
         print(f"ERROR: Registry file not found at {registry_path}")

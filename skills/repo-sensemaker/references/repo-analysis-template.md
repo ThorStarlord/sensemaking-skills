@@ -92,4 +92,4 @@ created_at: "2026-05-19T16:00:00Z"
 ```
 
 ## 14. Ready-to-copy prompt
-Prompt for `workflow-orchestrator` or another downstream skill.
+Prompt for `workflow-planner` or another downstream skill.

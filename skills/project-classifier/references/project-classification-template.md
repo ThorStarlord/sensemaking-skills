@@ -81,5 +81,5 @@ Prompt that can be copied directly to invoke the recommended workflow in the orc
 
 Example:
 ```
-python scripts/orchestration-runner.py <workflow_id> --mode <mode>
+python scripts/workflow-runtime.py <workflow_id> --mode <mode>
 ```

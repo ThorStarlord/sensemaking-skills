@@ -83,7 +83,7 @@ class SkillExecutionDispatcher:
 
 def dispatch_skill_execution(plan_path: str, repo_root: str, timeout: int = 3600) -> Tuple[bool, str]:
     """
-    Convenience function for dispatching skill execution from orchestration-runner.
+    Convenience function for dispatching skill execution from workflow-runtime.
 
     Returns (success: bool, output: str)
     """

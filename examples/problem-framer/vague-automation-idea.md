@@ -7,7 +7,7 @@
 The repository has defined a two-skill architecture (Diagnosis and Orchestration), but the actual handoff between these skills is still manual and non-deterministic. The "lack of automation" is specifically a lack of contract enforcement between diagnosis and action.
 
 ## 3. Object Under Pressure
-The handoff contract between `repo-sensemaker` and `workflow-orchestrator`.
+The handoff contract between `repo-sensemaker` and `workflow-planner`.
 
 ## 4. Failure Mode
 The orchestrator guesses the wrong workflow or mode because the brief was ambiguous, leading to unsafe execution or user frustration.
@@ -17,7 +17,7 @@ A machine-readable section in the Sensemaking Brief that the orchestrator can pa
 
 ## 6. What Must Be True
 - `repo-sensemaker` must support YAML output sections.
-- `workflow-orchestrator` must prioritize these sections over prose.
+- `workflow-planner` must prioritize these sections over prose.
 
 ## 7. Next Artifact
 Unknowns Map

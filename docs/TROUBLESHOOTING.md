@@ -7,9 +7,9 @@
 **Problem**: Workflow doesn't exist or typo in workflow ID.
 
 **Solution**:
-1. List available workflows: `python scripts/orchestration-runner.py --list-workflows`
+1. List available workflows: `python scripts/workflow-runtime.py --list-workflows`
 2. Check spelling of workflow ID
-3. Verify workflow-registry.yaml exists in `skills/workflow-orchestrator/references/`
+3. Verify workflow-registry.yaml exists in `skills/workflow-planner/references/`
 
 ### Error: MODE_NOT_ALLOWED
 
@@ -52,7 +52,7 @@
 ### Enable Verbose Logging
 
 ```bash
-python scripts/orchestration-runner.py <workflow> --verbose
+python scripts/workflow-runtime.py <workflow> --verbose
 ```
 
 ### Check Execution Log

@@ -33,7 +33,7 @@ class WorkflowExecutionEngine:
 
     def load_workflow(self) -> bool:
         """Load workflow definition from registry."""
-        registry_path = os.path.join(self.repo_root, "skills/workflow-orchestrator/references/workflow-registry.yaml")
+        registry_path = os.path.join(self.repo_root, "skills/workflow-planner/references/workflow-registry.yaml")
         try:
             with open(registry_path) as f:
                 registry = yaml.safe_load(f)
@@ -53,7 +53,7 @@ class WorkflowExecutionEngine:
         """Load artifact contract definitions."""
         contracts_path = os.path.join(self.repo_root, "docs/ARTIFACT_CONTRACTS.md")
         try:
-            # For now, return True - contracts are validated by orchestration-runner
+            # For now, return True - contracts are validated by workflow-runtime
             return True
         except Exception as e:
             print(f"[ERROR] Failed to load artifact contracts: {e}")
@@ -64,7 +64,7 @@ class WorkflowExecutionEngine:
         print("\n[PHASE 1] Generating workflow plan...")
         cmd = [
             "python",
-            os.path.join(self.repo_root, "scripts/orchestration-runner.py"),
+            os.path.join(self.repo_root, "scripts/workflow-runtime.py"),
             self.workflow_id,
             "--mode", self.mode,
         ]

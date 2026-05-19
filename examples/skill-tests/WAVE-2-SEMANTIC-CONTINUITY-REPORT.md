@@ -40,7 +40,7 @@ Wave 2 execution successfully validated the **Semantic Continuity** of the sense
 The thread remained unbroken. The final plan specifically addresses the "hallucinated workflow" risk identified in Step 1.
 
 ### 4.2. Artifact Fit
-The specialized `validate-plan.py` provided a high-integrity signal, forcing the `workflow-orchestrator` to strictly comply with complex YAML schemas. This proves that the consumer (Orchestrator) has a hardened "ingestion contract" that prevents semantic drift.
+The specialized `validate-plan.py` provided a high-integrity signal, forcing the `workflow-planner` to strictly comply with complex YAML schemas. This proves that the consumer (Orchestrator) has a hardened "ingestion contract" that prevents semantic drift.
 
 ## 5. Potential Follow-ups
 - **Workflow ID Mismatch**: Investigate why `repo_sensemaking_brief.md` recommended a workflow ID (`wave-1-execution`) that was not present in `workflow-registry.yaml`. Classify as a potential `producer_artifact_defect` or documentation drift (Class 10) after further review.

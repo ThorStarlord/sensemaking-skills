@@ -2,7 +2,7 @@
 
 ## 1. Knowns
 - The repository uses a centralized `workflow-registry.yaml` to define "useful AI workflows."
-- The `workflow-orchestrator` skill is the consumer of this registry.
+- The `workflow-planner` skill is the consumer of this registry.
 - The user's intent is to move from "messy ideas" (raw fog) to "useful AI workflows."
 - A `problem_frame.md` has been generated, identifying the `workflow-registry.yaml` as the Object Under Pressure.
 

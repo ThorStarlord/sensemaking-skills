@@ -48,11 +48,11 @@ Every response must follow the [Project Classification Brief](references/project
 ## Boundary Rules
 
 1. **No Implementation**: Output is diagnostic only. Do not execute recommended workflows.
-2. **Registry Grounding**: All `recommended_workflow_id` values MUST be verified against `skills/workflow-orchestrator/references/workflow-registry.yaml`.
+2. **Registry Grounding**: All `recommended_workflow_id` values MUST be verified against `skills/workflow-planner/references/workflow-registry.yaml`.
 3. **Type Confidence**: If classification confidence is below 70%, recommend `plan_only` mode and note the ambiguity.
 4. **Input Clarity**: If critical inputs for the selected workflow are missing from the description, explicitly call them out as "Required Before Execution".
 
 ## References
 
 - [Project Classification Brief Template](references/project-classification-template.md)
-- [Workflow Registry](../workflow-orchestrator/references/workflow-registry.yaml)
+- [Workflow Registry](../workflow-planner/references/workflow-registry.yaml)

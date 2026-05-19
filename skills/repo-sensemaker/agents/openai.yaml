@@ -8,7 +8,7 @@ instructions: >
   Follow the workflow and 11-section output format defined in SKILL.md. 
   Your goal is to produce a "Repository Sensemaking Brief". 
   Identify the "Weakest Boundary" and back all claims with evidence from the files. 
-  Recommend the next workflow for workflow-orchestrator.
+  Recommend the next workflow for workflow-planner.
 
 tools:
   - web_search

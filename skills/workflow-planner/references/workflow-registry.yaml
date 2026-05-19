@@ -2,12 +2,12 @@ workflows:
   - id: fast-path-workflow
     display_name: Fast Path - Diagnostic & Orchestration
     purpose: Diagnose a repository and automatically invoke the recommended implementation workflow.
-    description: Use this when you have a clear repo goal. Analyzes the repository, produces a diagnostic brief, selects the best implementation workflow, and automatically invokes it. The orchestration-runner reads the orchestration-plan and chains to the implementation workflow without user intervention.
+    description: Use this when you have a clear repo goal. Analyzes the repository, produces a diagnostic brief, selects the best implementation workflow, and automatically invokes it. The workflow-runtime reads the orchestration-plan and chains to the implementation workflow without user intervention.
     initial_inputs:
       - id: user_intent
         type: artifact
         required: true
-        description: User's problem statement and scope mode (created by orchestration-runner)
+        description: User's problem statement and scope mode (created by workflow-runtime)
       - id: repository_state
         type: external_context
         required: true
@@ -25,7 +25,7 @@ workflows:
         input_source: repository_state
         output_artifact: repository_sensemaking_brief
       - id: 2
-        skill: workflow-orchestrator
+        skill: workflow-planner
         step_type: local_execution
         gate: review_orchestration_plan
         input_artifact: repository_sensemaking_brief
@@ -36,12 +36,12 @@ workflows:
   - id: full-fog-workflow
     display_name: Full Fog Path - Comprehensive Sensemaking & Orchestration
     purpose: Comprehensively analyze ambiguous projects from raw fog through diagnosis to automatic implementation workflow invocation.
-    description: Use this when the problem is vague or highly uncertain. Chains problem-framer → unknowns-mapper → repo-sensemaker → workflow-orchestrator with approval gates between steps. The orchestrator automatically invokes the recommended implementation workflow without user intervention.
+    description: Use this when the problem is vague or highly uncertain. Chains problem-framer → unknowns-mapper → repo-sensemaker → workflow-planner with approval gates between steps. The orchestrator automatically invokes the recommended implementation workflow without user intervention.
     initial_inputs:
       - id: user_intent
         type: artifact
         required: true
-        description: User's problem statement and scope mode (created by orchestration-runner)
+        description: User's problem statement and scope mode (created by workflow-runtime)
       - id: raw_fog
         type: external_context
         required: true
@@ -75,7 +75,7 @@ workflows:
         input_source: repository_state
         output_artifact: repository_sensemaking_brief
       - id: 4
-        skill: workflow-orchestrator
+        skill: workflow-planner
         step_type: local_execution
         gate: review_orchestration_plan
         input_artifact: repository_sensemaking_brief

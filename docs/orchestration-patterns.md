@@ -17,7 +17,7 @@ Different execution modes require different validation rigor:
 
 Use this pattern whenever your validator needs to work across multiple execution modes. Ask: "Does this artifact exist yet, or is it being planned?"
 
-**Example**: orchestration-runner.py validates artifact production:
+**Example**: workflow-runtime.py validates artifact production:
 ```python
 # Strict in execution modes - fail if artifact missing
 if self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
@@ -207,7 +207,7 @@ With evidence:
 
 ### Tracking Requirements
 
-1. **Machine-Produced**: Evidence should come from orchestration-runner.py, not hand-written
+1. **Machine-Produced**: Evidence should come from workflow-runtime.py, not hand-written
 2. **Artifact-Specific**: Record which validators ran for which artifacts
 3. **Gate-Specific**: Record which gates approved/denied and why
 4. **Hardening-Triggered**: Record if validators found issues that caused hardening
@@ -217,7 +217,7 @@ With evidence:
 
 Use after every workflow execution in production/test modes:
 1. Run completes
-2. orchestration-runner.py logs which validators ran
+2. workflow-runtime.py logs which validators ran
 3. Update mode-coverage.yaml with the evidence
 4. Next time someone questions the system, show the evidence
 

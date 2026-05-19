@@ -144,10 +144,10 @@ The validation workflow supports three modes, each suited to different needs:
 cd "H:\GithubRepositories\sensemaking-skills"
 
 # Run validation in guided mode with baseline comparison (most useful)
-python scripts/orchestration-runner.py docs-architecture --mode guided_execution --compare-baseline
+python scripts/workflow-runtime.py docs-architecture --mode guided_execution --compare-baseline
 
 # Or, to just preview what would happen:
-python scripts/orchestration-runner.py docs-architecture --mode plan_only
+python scripts/workflow-runtime.py docs-architecture --mode plan_only
 ```
 
 ### Expected Output
@@ -197,7 +197,7 @@ cd "H:\GithubRepositories\sensemaking-skills"
 
 # Verify you're in the right place
 pwd  # Should show: "H:\GithubRepositories\sensemaking-skills"
-ls scripts/orchestration-runner.py  # Should exist
+ls scripts/workflow-runtime.py  # Should exist
 ```
 
 If you get "not found" errors, you're not in the right directory. Try:
@@ -226,25 +226,25 @@ Decide which mode fits your situation:
 **Basic guided execution (most common):**
 
 ```powershell
-python scripts/orchestration-runner.py docs-architecture --mode guided_execution
+python scripts/workflow-runtime.py docs-architecture --mode guided_execution
 ```
 
 **With baseline comparison (shows what changed since last run):**
 
 ```powershell
-python scripts/orchestration-runner.py docs-architecture --mode guided_execution --compare-baseline
+python scripts/workflow-runtime.py docs-architecture --mode guided_execution --compare-baseline
 ```
 
 **Autonomous mode (faster, less interaction):**
 
 ```powershell
-python scripts/orchestration-runner.py docs-architecture --mode autonomous_execution
+python scripts/workflow-runtime.py docs-architecture --mode autonomous_execution
 ```
 
 **Plan only (preview, no execution):**
 
 ```powershell
-python scripts/orchestration-runner.py docs-architecture --mode plan_only
+python scripts/workflow-runtime.py docs-architecture --mode plan_only
 ```
 
 ### Step 4: Review Output
@@ -396,9 +396,9 @@ Status: NEW (first found in this run)
 Comparison: main branch (2026-05-17) vs. current (2026-05-18)
 
 ### Files Modified (10)
-- scripts/orchestration-runner.py (+45 lines, -12 lines)
+- scripts/workflow-runtime.py (+45 lines, -12 lines)
 - docs/orchestration-patterns.md (+23 lines, no deletions)
-- skills/workflow-orchestrator/references/workflow-registry.yaml (+8 lines)
+- skills/workflow-planner/references/workflow-registry.yaml (+8 lines)
 
 ### Files Added (2)
 - docs/validation-workflow.md (NEW, 400 lines)
@@ -471,7 +471,7 @@ Comparison: main branch (2026-05-17) vs. current (2026-05-18)
 
 **Error message:**
 ```
-python: can't open file 'scripts/orchestration-runner.py': [Errno 2] No such file or directory
+python: can't open file 'scripts/workflow-runtime.py': [Errno 2] No such file or directory
 ```
 
 **Cause**: You're not in the repository root directory
@@ -482,7 +482,7 @@ python: can't open file 'scripts/orchestration-runner.py': [Errno 2] No such fil
 cd "H:\GithubRepositories\sensemaking-skills"
 
 # Verify the script exists
-ls scripts/orchestration-runner.py
+ls scripts/workflow-runtime.py
 
 # If still not found, find the repo root
 git rev-parse --show-toplevel
@@ -492,7 +492,7 @@ git rev-parse --show-toplevel
 
 **Error message:**
 ```
-VALIDATION_FAILED: orchestration-runner encountered an error
+VALIDATION_FAILED: workflow-runtime encountered an error
 ...stderr output...
 ```
 
@@ -510,13 +510,13 @@ python -c "import yaml; import sys; print(f'Python {sys.version} OK')"
 
 **Validate workflow registry:**
 ```powershell
-python -c "import yaml; yaml.safe_load(open('skills/workflow-orchestrator/references/workflow-registry.yaml'))"
+python -c "import yaml; yaml.safe_load(open('skills/workflow-planner/references/workflow-registry.yaml'))"
 # Should print nothing if valid
 ```
 
 **Check if skill exists:**
 ```powershell
-grep -i "docs-aligner" skills/workflow-orchestrator/references/skill-registry.yaml
+grep -i "docs-aligner" skills/workflow-planner/references/skill-registry.yaml
 # Should list the skill definition
 ```
 
@@ -534,8 +534,8 @@ Running in comparison mode but --compare-baseline specified
 This is normal! Just means there's nothing to compare to yet.
 - Run without `--compare-baseline` on first run:
   ```powershell
-  python scripts/orchestration-runner.py docs-architecture --mode plan_only
-  python scripts/orchestration-runner.py docs-architecture --mode guided_execution
+  python scripts/workflow-runtime.py docs-architecture --mode plan_only
+  python scripts/workflow-runtime.py docs-architecture --mode guided_execution
   ```
 - The second run will have a baseline for comparison
 
@@ -593,7 +593,7 @@ GATE_TIMEOUT: No response to gate decision within 300 seconds
 # Press: Enter
 
 # If you need more time to review, use --skip-gates flag
-python scripts/orchestration-runner.py docs-architecture --mode autonomous_execution
+python scripts/workflow-runtime.py docs-architecture --mode autonomous_execution
 ```
 
 ---
@@ -606,10 +606,10 @@ The validation workflow is designed for the sensemaking-skills repository but ca
 
 ```powershell
 # Specify a different repo root
-python scripts/orchestration-runner.py docs-architecture --mode guided_execution --repo-root "C:\other-repo"
+python scripts/workflow-runtime.py docs-architecture --mode guided_execution --repo-root "C:\other-repo"
 
 # Must have compatible:
-# - scripts/orchestration-runner.py
+# - scripts/workflow-runtime.py
 # - workflow-registry.yaml
 # - artifact-contracts.yaml
 ```
@@ -630,7 +630,7 @@ Edit `.claude/settings.json`:
 
 ### Modifying Workflow Configuration
 
-To change which validators run, edit `skills/workflow-orchestrator/references/workflow-registry.yaml`:
+To change which validators run, edit `skills/workflow-planner/references/workflow-registry.yaml`:
 
 ```yaml
 - id: docs-architecture
@@ -695,7 +695,7 @@ Factors that affect duration:
 ```powershell
 # Run every 4 hours
 while ($true) {
-    python scripts/orchestration-runner.py docs-architecture --mode autonomous_execution
+    python scripts/workflow-runtime.py docs-architecture --mode autonomous_execution
     Start-Sleep -Seconds 14400  # 4 hours in seconds
 }
 ```
@@ -726,7 +726,7 @@ while ($true) {
 # Create docs/adr/0005-something.md
 
 # Then re-run
-python scripts/orchestration-runner.py docs-architecture --mode guided_execution
+python scripts/workflow-runtime.py docs-architecture --mode guided_execution
 ```
 
 ### Can I customize the workflow?
@@ -798,7 +798,7 @@ The validation workflow is your automated quality checkpoint. Use it to:
 
 **Most common workflow:**
 1. Complete development iteration (hour of work)
-2. Run `orchestration-runner.py docs-architecture --mode guided_execution --compare-baseline` (30–45 minutes)
+2. Run `workflow-runtime.py docs-architecture --mode guided_execution --compare-baseline` (30–45 minutes)
 3. Review artifacts in `artifacts/validation_summary.md` (5 minutes)
 4. Approve or deny findings at gates (inline with execution)
 5. Create GitHub issues from findings (automatic)

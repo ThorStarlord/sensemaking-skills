@@ -1,7 +1,7 @@
 # Prompt Handoff
 
 ## 1. Target Skill
-`workflow-orchestrator` (or User/External Agent)
+`workflow-planner` (or User/External Agent)
 
 ## 2. Context to Preserve
 - **Repository Goal**: Framework for transforming "messy ideas" into "useful AI workflows."

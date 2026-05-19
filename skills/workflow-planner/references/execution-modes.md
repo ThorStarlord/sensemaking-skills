@@ -1,6 +1,6 @@
 # Execution Modes
 
-The `workflow-orchestrator` supports five distinct execution modes, each with different safety boundaries and user involvement.
+The `workflow-planner` supports five distinct execution modes, each with different safety boundaries and user involvement.
 
 | Mode | Status | Description | Approval Gates | Safety Requirements |
 | :--- | :--- | :--- | :--- | :--- |

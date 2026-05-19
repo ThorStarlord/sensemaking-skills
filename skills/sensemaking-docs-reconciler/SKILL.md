@@ -26,5 +26,5 @@ Ensures that the stable domain language and technical contracts of the sensemaki
 
 ## References
 - [CONTEXT.md](../../CONTEXT.md)
-- [Artifact Contracts](../../skills/workflow-orchestrator/references/artifact-contracts.yaml)
-- [Skill Registry](../../skills/workflow-orchestrator/references/skill-registry.yaml)
+- [Artifact Contracts](../../skills/workflow-planner/references/artifact-contracts.yaml)
+- [Skill Registry](../../skills/workflow-planner/references/skill-registry.yaml)

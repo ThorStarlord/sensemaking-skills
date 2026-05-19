@@ -405,7 +405,7 @@ system_tools:
   status: proven_as_canonical_dispatcher
   last_verified: 2026-05-16
   notes: Canonical validator dispatcher. Reads artifact-contracts.yaml and runs generic
-    + specialized validators. orchestration-runner.py now delegates all validation
+    + specialized validators. workflow-runtime.py now delegates all validation
     to this dispatcher, making it the single canonical validator invocation path.
     10+ artifact types validated through dispatcher.
   artifacts_validated:
@@ -422,7 +422,7 @@ system_tools:
   - synthesis_report
   - opportunity_map
   - hypothesis_statement
-- tool: orchestration-runner.py
+- tool: workflow-runtime.py
   status: proven
   last_run: '2026-05-17'
   notes: Production-grade orchestration runner. Reads workflow-registry.yaml, manages
@@ -602,7 +602,7 @@ orchestration_runner:
   - validator-live-coverage
   total_workflow_families: 13
   capabilities:
-  - 'Canonical validator dispatch: orchestration-runner.py delegates to validate-output.py'
+  - 'Canonical validator dispatch: workflow-runtime.py delegates to validate-output.py'
   - 'Non-interactive gate decisions: --gate-decision auto-approve / auto-deny'
   - 'Resume capability: --resume continues paused execution after gate denial'
   - 'Rollback recommendation: ROLLBACK_RECOMMENDED exit code (4) for mutating mode
@@ -635,7 +635,7 @@ controlled_failure_tests:
     repo'
   - 'Test 10: artifact-production-required -> orchestration runner enforces artifact
     production in execution modes (ARTIFACT_NOT_FOUND error code, lines 445-454 in
-    orchestration-runner.py)'
+    workflow-runtime.py)'
   negative_paths_proven:
   - denied gate handling (interactive + non-interactive --gate-decision)
   - resume after gate denial (--resume + --gate-decision auto-approve)

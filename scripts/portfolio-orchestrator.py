@@ -122,7 +122,7 @@ class PortfolioOrchestrator:
         try:
             cmd = [
                 sys.executable,
-                str(self.repo_root / "scripts" / "orchestration-runner.py"),
+                str(self.repo_root / "scripts" / "workflow-runtime.py"),
                 result.workflow,
                 "--mode", result.mode,
                 "--repo-root", str(self.repo_root)

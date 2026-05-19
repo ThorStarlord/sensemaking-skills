@@ -23,7 +23,7 @@ The `sensemaking-skills` repository is an agentic framework designed to transfor
 - **Semantic Monitoring**: Enhancing Level 3 validators to check for semantic drift across the entire chain.
 
 ## 6. Weakest boundary
-The semantic handoff between `repo-sensemaker` and `workflow-orchestrator`. If the brief recommends a workflow ID that is stale or missing from the registry, the orchestrator must fail fast. This is currently enforced by `validate-plan.py`.
+The semantic handoff between `repo-sensemaker` and `workflow-planner`. If the brief recommends a workflow ID that is stale or missing from the registry, the orchestrator must fail fast. This is currently enforced by `validate-plan.py`.
 
 ## 7. Evidence
 - **Workflow Registry**: `skills/workflow-orchestrator/references/workflow-registry.yaml` (Lines 277-326) defines the `full-local-sensemaking` workflow.
@@ -46,12 +46,12 @@ evidence_excerpts:
 If the handoff fails, the agent will hallucinate a workflow path or attempt to execute skills out of order, violating the repository's safety policies and potentially corrupting the state.
 
 ## 10. Candidate next steps
-1. Execute Step 4 of the `full-chain-cold-start` using `workflow-orchestrator`.
+1. Execute Step 4 of the `full-chain-cold-start` using `workflow-planner`.
 2. Run `scripts/validate-plan.py` on the resulting orchestration plan.
 3. Verify repository integrity with `scripts/validate-repo.py`.
 
 ## 11. Recommended next step
-Execute `workflow-orchestrator` on this brief to generate a formal `workflow_orchestration_plan.md`.
+Execute `workflow-planner` on this brief to generate a formal `workflow_orchestration_plan.md`.
 
 ## 12. Recommended workflow
 `full-local-sensemaking`

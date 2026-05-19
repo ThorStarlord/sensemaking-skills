@@ -9,7 +9,7 @@ The sensemaking-skills system now provides **end-to-end automation** from diagno
 ```
 Sensemaking Stage (Diagnosis)
   ↓
-  problem-framer → unknowns-mapper → repo-sensemaker → workflow-orchestrator
+  problem-framer → unknowns-mapper → repo-sensemaker → workflow-planner
   ↓ produces: orchestration-plan with fog_type classification
   ↓
 Implementation Stage (Execution)

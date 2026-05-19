@@ -2,7 +2,7 @@
 
 ## 1. Registry Mapping
 - **Ecosystems**: [e.g., Matt Pocock, Interface, PM]
-- **Shared Registry Path**: [e.g., skills/workflow-orchestrator/references/skill-registry.yaml]
+- **Shared Registry Path**: [e.g., skills/workflow-planner/references/skill-registry.yaml]
 
 ## 2. Default Path
 - **Choice**: [fast_path | full_fog_path]

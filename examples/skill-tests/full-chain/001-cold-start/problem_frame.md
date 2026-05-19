@@ -17,7 +17,7 @@ The user's "messy idea" is successfully deconstructed and mapped to a specific w
 
 ## 6. What Must Be True
 - The `workflow-registry.yaml` must contain a workflow entry for "sensemaking" or "problem-to-workflow" transformation.
-- The repository must have a functioning `workflow-orchestrator` skill to ingest the resulting plan.
+- The repository must have a functioning `workflow-planner` skill to ingest the resulting plan.
 - The user must be willing to engage in a multi-step diagnostic process.
 
 ## 7. Next Artifact

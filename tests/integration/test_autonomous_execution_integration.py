@@ -42,10 +42,10 @@ class TestAutonomousExecutionIntegration(unittest.TestCase):
         - Execution plan is generated
         - Mode is properly recorded in output
         """
-        # Run orchestration-runner with fast-local-diagnostic in autonomous_execution mode
+        # Run workflow-runtime with fast-local-diagnostic in autonomous_execution mode
         cmd = [
             sys.executable,
-            str(self.scripts_dir / "orchestration-runner.py"),
+            str(self.scripts_dir / "workflow-runtime.py"),
             "fast-local-diagnostic",
             "--mode", "autonomous_execution",
             "--gate-decision", "auto-approve",

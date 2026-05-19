@@ -172,5 +172,5 @@ If PRD diverges from stated goal:
 ## References
 
 - [Issue List Template](references/issue-list-template.md)
-- [Artifact Contracts](../workflow-orchestrator/references/artifact-contracts.yaml)
-- [User Intent](../workflow-orchestrator/references/artifact-contracts.yaml#user_intent)
+- [Artifact Contracts](../workflow-planner/references/artifact-contracts.yaml)
+- [User Intent](../workflow-planner/references/artifact-contracts.yaml#user_intent)

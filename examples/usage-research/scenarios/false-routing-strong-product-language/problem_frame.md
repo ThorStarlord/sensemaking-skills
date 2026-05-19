@@ -7,7 +7,7 @@
 The user is attempting to perform **meta-workflow engineering**. They aren't just asking for a product strategy; they are asking for the repository to help them *define the process* of product strategy. The core tension is between **domain implementation** (writing a PRD) and **workflow orchestration** (deciding the sequence of skills).
 
 ## 3. Object Under Pressure
-`workflow-registry.yaml` and the `workflow-orchestrator` skill-selection boundary.
+`workflow-registry.yaml` and the `workflow-planner` skill-selection boundary.
 
 ## 4. Failure Mode
 **premature-implementation-loop**: The system interprets "product strategy" as a direct command to start a PRD workflow, thereby choosing the wrong skill "too early"—exactly what the user said they wanted to avoid.
@@ -16,7 +16,7 @@ The user is attempting to perform **meta-workflow engineering**. They aren't jus
 A new entry is added to `workflow-registry.yaml` (or an existing one is selected) that explicitly defines the "Product Strategy" sequence of artifacts, with validated input/output contracts.
 
 ## 6. What Must Be True
-- The `workflow-orchestrator` must support recursive or user-defined workflow definitions.
+- The `workflow-planner` must support recursive or user-defined workflow definitions.
 - The user must provide evidence for *why* one artifact should precede another in their specific context.
 
 ## 7. Next Artifact

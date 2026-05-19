@@ -4,13 +4,13 @@
 ## Date: 2026-05-13
 
 ## 1. Executive Summary
-Sensemaking Skills V1 establishes a robust "meta-routing" layer for AI agents. It standardizes the transition from project "fog" (uncertainty) to actionable implementation through a five-stage pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, and `prompt-handoff`.
+Sensemaking Skills V1 establishes a robust "meta-routing" layer for AI agents. It standardizes the transition from project "fog" (uncertainty) to actionable implementation through a five-stage pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, and `prompt-handoff`.
 
 ## 2. Problem Statement
 Agents often jump into implementation ("building") before they understand the "problem under the problem" or the repository-level "fog". This leads to misaligned PRDs, incorrect architectural choices, and technical debt.
 
 ## 3. Goals
-- Provide five package-valid core skills: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, and `prompt-handoff`.
+- Provide five package-valid core skills: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, and `prompt-handoff`.
 - Enforce structural integrity via canonical output templates (14-section Repository Brief / 10-section Orchestration Plan).
 - Enforce evidence-backed diagnosis with file-level citations.
 - Maintain safety-first human-in-the-loop control through explicit execution modes and approval gates.
@@ -33,7 +33,7 @@ Agents often jump into implementation ("building") before they understand the "p
 - **Safe Refusal**: Refuse to route downstream if unknowns are fundamental or the execution request is unsafe.
 
 ## 6. Non-Functional Requirements
-- **Decoupling**: Diagnosis (`repo-sensemaker`) must remain separate from Action (`workflow-orchestrator`).
+- **Decoupling**: Diagnosis (`repo-sensemaker`) must remain separate from Action (`workflow-planner`).
 - **Portability**: No absolute file paths in examples or templates.
 - **Validation-as-Policy**: All core artifacts must pass the governance script.
 
@@ -46,5 +46,5 @@ Agents often jump into implementation ("building") before they understand the "p
 1. `problem-framer`: Capture fog and identify root pressure.
 2. `unknowns-mapper`: Map knowledge gaps and research paths.
 3. `repo-sensemaker`: Analyze repository health and weakest boundaries.
-4. `workflow-orchestrator`: Plan and coordinate execution.
+4. `workflow-planner`: Plan and coordinate execution.
 5. `prompt-handoff`: Bridge the sensemaking gap to specialized tools.

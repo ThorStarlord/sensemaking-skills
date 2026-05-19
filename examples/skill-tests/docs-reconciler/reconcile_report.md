@@ -15,7 +15,7 @@ The repository lacks a "Gold Standard" example for:
 - `setup_plan`
 
 ## 5. Validator Blind Spots
-The `validate-artifact.py` script performs structural header checks but does not verify if the "Next Artifact" section of a `problem_frame.md` matches the actual workflow chosen by the `workflow-orchestrator`.
+The `validate-artifact.py` script performs structural header checks but does not verify if the "Next Artifact" section of a `problem_frame.md` matches the actual workflow chosen by the `workflow-planner`.
 
 ## 6. Ambiguous Artifact Names
 The term "Sensemaking Brief" is used in `CONTEXT.md`, but the machine ID in `artifact-contracts.yaml` is `repository_sensemaking_brief`. While semantically close, this could lead to ID mismatch in autonomous execution.
@@ -40,8 +40,8 @@ Medium. While the core five-skill pipeline is stable, the maintenance loop is cu
 
 ## 11. Patches Proposed
 ```diff
-- - **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, and `prompt-handoff`.
-+ - **Flagship Skills**: The repo contains a nine-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, `prompt-handoff`, `setup-sensemaking-skills`, `sensemaking-docs-reconciler`, `usage-researcher`, and `skill-maintainer`.
+- - **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, and `prompt-handoff`.
++ - **Flagship Skills**: The repo contains a nine-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, `prompt-handoff`, `setup-sensemaking-skills`, `sensemaking-docs-reconciler`, `usage-researcher`, and `skill-maintainer`.
 ```
 
 ## 12. Validation Result

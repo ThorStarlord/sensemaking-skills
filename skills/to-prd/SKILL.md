@@ -93,7 +93,7 @@ scope_expansion_status: pending_user_approval
 **Scenario C: Expansion Approved (Included in Development)**
 ```
 User goal: "Task list management"
-User approved: Due dates + recurring tasks in workflow-orchestrator gate
+User approved: Due dates + recurring tasks in workflow-planner gate
 PRD includes: All features (core + due dates + recurring)
 ---
 user_goal_preserved_as: core_with_expansion
@@ -106,7 +106,7 @@ scope_expansion_status: approved_by_user
 
 If discovery suggests features that contradict or significantly diverge from the user's stated goal:
 - Example: User asked for "simple task list" but discovery reveals "complex workflow engine" needed
-- Action: Set `user_goal_preserved_as: diverged` and escalate to workflow-orchestrator or user
+- Action: Set `user_goal_preserved_as: diverged` and escalate to workflow-planner or user
 - Do not force expansion; let user decide if new direction is acceptable
 
 ## PRD Structure
@@ -135,5 +135,5 @@ Every PRD must include these sections:
 ## References
 
 - [Product Requirements Document Template](references/prd-template.md)
-- [Artifact Contracts](../workflow-orchestrator/references/artifact-contracts.yaml)
-- [Intent Contract](../workflow-orchestrator/references/artifact-contracts.yaml#user_intent)
+- [Artifact Contracts](../workflow-planner/references/artifact-contracts.yaml)
+- [Intent Contract](../workflow-planner/references/artifact-contracts.yaml#user_intent)

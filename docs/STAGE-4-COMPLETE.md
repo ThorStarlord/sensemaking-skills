@@ -371,7 +371,7 @@ Stage 4 is complete and ready for:
 
 **All Four Hardening Stages Complete**:
 - repo-sensemaker: Intent-aware diagnosis ✅
-- workflow-orchestrator: Routing audit ✅
+- workflow-planner: Routing audit ✅
 - to-prd: Scope expansion tracking ✅
 - to-issues: Scope status tracking ✅
 

@@ -100,7 +100,7 @@ For every workflow execution, record:
 
 ### Where Evidence Comes From
 
-Evidence should be **machine-produced** by orchestration-runner.py:
+Evidence should be **machine-produced** by workflow-runtime.py:
 
 1. **Step Execution**: Runner records which steps executed (automatically)
 2. **Validator Invocation**: Runner logs which validators ran for which artifacts (automatically)
@@ -236,7 +236,7 @@ This decision was validated during Phase 4:
 ## Machine-Produced vs. Hand-Written Evidence
 
 **Machine-Produced** (Good):
-- Automatically logged by orchestration-runner.py
+- Automatically logged by workflow-runtime.py
 - Trustworthy (not subject to human error)
 - Consistent format
 - Complete (doesn't miss anything)
@@ -258,7 +258,7 @@ This decision is accepted when:
 - ✓ mode-coverage.yaml records gates_exercised for all workflows
 - ✓ mode-coverage.yaml records hardening_triggered for all workflows
 - ✓ All entries in mode-coverage.yaml have associated run_log files
-- ✓ Run logs are machine-produced by orchestration-runner.py
+- ✓ Run logs are machine-produced by workflow-runtime.py
 - ✓ Evidence clearly shows validators and gates were exercised
 - ✓ Zero repeatable failures detected (correct state)
 

@@ -25,7 +25,7 @@ This repository uses the Sensemaking Skills pipeline for all complex tasks.
 ## Sensemaking Pipeline
 1. **Problem Framing**: Use `problem-framer` for any vague request.
 2. **Sensemaking**: Use `repo-sensemaker` to diagnose repository shape.
-3. **Orchestration**: Use `workflow-orchestrator` to select a workflow.
+3. **Orchestration**: Use `workflow-planner` to select a workflow.
 4. **Maintenance**: Use `skill-maintainer` to improve skills based on logs.
 
 Refer to `docs/agents/sensemaking.md` for detailed protocols.

@@ -10,7 +10,7 @@
 ## Context
 
 ### The Original Question
-When a user runs `orchestration-runner.py --problem "..."`, where should that intent live? As runtime metadata? As a durable artifact? Should the system allow the user to refine or clarify it mid-workflow?
+When a user runs `workflow-runtime.py --problem "..."`, where should that intent live? As runtime metadata? As a durable artifact? Should the system allow the user to refine or clarify it mid-workflow?
 
 ### The Design Challenge
 In a system with multiple execution modes (plan_only, guided_execution, autonomous_execution, yolo_execution) and approval gates at critical points, we need to:
@@ -83,7 +83,7 @@ clarifications: []
 
 When the user runs:
 ```bash
-orchestration-runner.py
+workflow-runtime.py
 ```
 without a problem statement, the system still creates `00-user-intent.md` with:
 ```yaml

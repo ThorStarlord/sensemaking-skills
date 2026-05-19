@@ -10,7 +10,7 @@
 ## Context
 
 ### The Original Question
-When repo-sensemaker completes and creates a handoff (section 13 of the brief), should it automatically invoke the next skill (workflow-orchestrator)?
+When repo-sensemaker completes and creates a handoff (section 13 of the brief), should it automatically invoke the next skill (workflow-planner)?
 
 ### The Design Challenge
 In a system with multiple diagnostic skills (problem-framer, unknowns-mapper, repo-sensemaker) and multiple orchestration paths (Fast Path vs. Full Fog Path), how do we:
@@ -22,8 +22,8 @@ In a system with multiple diagnostic skills (problem-framer, unknowns-mapper, re
 ### The Anti-Pattern Considered
 **"Skills invoke the next skill as their last action"**
 ```
-repo-sensemaker produces brief, then invokes workflow-orchestrator
-  → workflow-orchestrator produces plan, then invokes prompt-handoff
+repo-sensemaker produces brief, then invokes workflow-planner
+  → workflow-planner produces plan, then invokes prompt-handoff
     → prompt-handoff produces prompt, then invokes ??? (no next skill defined)
 ```
 
@@ -53,7 +53,7 @@ repo-sensemaker produces brief, then invokes workflow-orchestrator
 
 2. **Users invoke workflows** via:
    ```bash
-   python scripts/orchestration-runner.py <workflow-id> --mode guided_execution
+   python scripts/workflow-runtime.py <workflow-id> --mode guided_execution
    ```
 
 3. **Orchestrator chains skills automatically** based on:
@@ -71,7 +71,7 @@ repo-sensemaker produces brief, then invokes workflow-orchestrator
        - repo-sensemaker (input: repository_state) → repository_sensemaking_brief
    
    Outputs: Brief with sections 12-14 (recommended workflow, handoff, ready-to-copy prompts)
-   User then: Invokes recommended workflow or runs workflow-orchestrator manually
+   User then: Invokes recommended workflow or runs workflow-planner manually
    ```
 
    **full-fog-workflow** (4 skills)
@@ -85,11 +85,11 @@ repo-sensemaker produces brief, then invokes workflow-orchestrator
        - prompt-handoff (input: brief) → prompt_handoff
    
    Outputs: Problem analysis + repository diagnosis + ready-to-copy prompts
-   User then: Invokes recommended workflow or runs workflow-orchestrator manually
+   User then: Invokes recommended workflow or runs workflow-planner manually
    ```
 
 ### Execution Flow (Default: guided_execution)
-1. User invokes: `orchestration-runner.py fast-path-workflow --mode guided_execution`
+1. User invokes: `workflow-runtime.py fast-path-workflow --mode guided_execution`
 2. Orchestrator reads workflow definition from registry
 3. For each step:
    - Orchestrator invokes the skill with required inputs
@@ -116,7 +116,7 @@ fast-path-workflow:
   steps:
     - repo-sensemaker → brief  ✅
 
-User then manually invokes workflow-orchestrator or implementation workflow
+User then manually invokes workflow-planner or implementation workflow
 ```
 
 **Issue Discovered**: Manual invocation between diagnostic and implementation workflows breaks the automation requirement: "I want the entire process to be automated from the initial input."
@@ -126,14 +126,14 @@ User then manually invokes workflow-orchestrator or implementation workflow
 fast-path-workflow:
   steps:
     - repo-sensemaker → repository_sensemaking_brief
-    - workflow-orchestrator → workflow_orchestration_plan  ✅
+    - workflow-planner → workflow_orchestration_plan  ✅
 
 full-fog-workflow:
   steps:
     - problem-framer → problem_frame
     - unknowns-mapper → unknowns_map
     - repo-sensemaker → repository_sensemaking_brief
-    - workflow-orchestrator → workflow_orchestration_plan  ✅
+    - workflow-planner → workflow_orchestration_plan  ✅
 
 Configuration (in workflow-registry.yaml):
   auto_invoke_next_workflow: true
@@ -141,9 +141,9 @@ Configuration (in workflow-registry.yaml):
 ```
 
 **Why This Works**:
-1. **No recursion**: `orchestration-runner.py` is the ENGINE; `workflow-orchestrator` is a SKILL. Engine invokes skill, not itself
+1. **No recursion**: `workflow-runtime.py` is the ENGINE; `workflow-planner` is a SKILL. Engine invokes skill, not itself
 2. **Cleaner separation**: Diagnosis workflow identifies the problem; orchestration workflow selects the implementation path
-3. **Full automation**: orchestration-runner detects auto_invoke_next_workflow flag after diagnostic workflow completes, reads recommended_workflow_id from the orchestration_plan, and automatically invokes the implementation workflow
+3. **Full automation**: workflow-runtime detects auto_invoke_next_workflow flag after diagnostic workflow completes, reads recommended_workflow_id from the orchestration_plan, and automatically invokes the implementation workflow
 4. **Three-stage automation**: User provides initial input → diagnostic workflow → orchestration skill → auto-invocation → implementation workflow (all without manual intervention)
 5. **Flexibility**: Same diagnostic workflow works for both fast-path and full-fog; implementation routing is determined by fog_type classification in the orchestration_plan
 
@@ -151,14 +151,14 @@ Configuration (in workflow-registry.yaml):
 
 When `auto_invoke_next_workflow: true` is set in a workflow definition:
 
-1. **After workflow completes successfully**, orchestration-runner.py:
+1. **After workflow completes successfully**, workflow-runtime.py:
    - Checks `auto_invoke_next_workflow` and `auto_invoke_source` fields
    - Reads the source artifact (e.g., `workflow_orchestration_plan`)
    - Parses the YAML machine-readable section
    - Extracts `recommended_workflow_id`
 
 2. **Automatically invokes next workflow**:
-   - Runs: `python scripts/orchestration-runner.py {next_workflow_id} --mode {same_mode}`
+   - Runs: `python scripts/workflow-runtime.py {next_workflow_id} --mode {same_mode}`
    - Propagates execution mode (guided_execution → guided_execution, yolo_execution → yolo_execution, etc.)
    - Returns the exit code from the invoked workflow
 
@@ -166,7 +166,7 @@ When `auto_invoke_next_workflow: true` is set in a workflow definition:
    - In `guided_execution` mode: Final gate pauses before auto-invocation; user can approve/deny the implementation workflow
    - In `autonomous_execution` and `yolo_execution` modes: Auto-invocation proceeds immediately without pausing
 
-See [scripts/orchestration-runner.py](scripts/orchestration-runner.py) for the implementation of `_should_auto_invoke_next()`, `_extract_recommended_workflow()`, and `_invoke_next_workflow()`.
+See [scripts/workflow-runtime.py](scripts/workflow-runtime.py) for the implementation of `_should_auto_invoke_next()`, `_extract_recommended_workflow()`, and `_invoke_next_workflow()`.
 
 ## Consequences
 
@@ -202,7 +202,7 @@ We chose **diagnostic workflows + external orchestration** over embedded orchest
 ## Alternatives Considered
 
 ### Alternative 1: Skills Invoke the Next Skill
-- Skills call each other: repo-sensemaker → workflow-orchestrator → prompt-handoff
+- Skills call each other: repo-sensemaker → workflow-planner → prompt-handoff
 - **Rejected because**:
   - Tight coupling; can't reuse repo-sensemaker in different workflows without code changes
   - No approval gates; user can't intervene between steps
@@ -244,7 +244,7 @@ This decision was validated during Phase 5 and corrected in Phase 5b (workflow r
 - 21+ independent workflow runs with zero repeatable failures
 
 ### Design Correction (Phase 5b: Workflow Registry Formalization)
-- **Issue Found**: Including workflow-orchestrator as a step in diagnostic workflows creates recursion risk
+- **Issue Found**: Including workflow-planner as a step in diagnostic workflows creates recursion risk
 - **Solution Applied**: Separated diagnostic workflows from orchestration
   - fast-path-workflow now produces repository_sensemaking_brief (1 step)
   - full-fog-workflow produces problem frame + unknowns map + brief + prompts (4 steps)
@@ -330,17 +330,17 @@ When adding a new workflow:
 ## Acceptance Criteria
 
 This decision is accepted when:
-- ✓ fast-path-workflow registered (2 skills: repo-sensemaker → workflow-orchestrator)
-- ✓ full-fog-workflow registered (4 skills: problem-framer → unknowns-mapper → repo-sensemaker → workflow-orchestrator)
+- ✓ fast-path-workflow registered (2 skills: repo-sensemaker → workflow-planner)
+- ✓ full-fog-workflow registered (4 skills: problem-framer → unknowns-mapper → repo-sensemaker → workflow-planner)
 - ✓ Diagnostic workflows produce orchestration_plan with fog_type and recommended_workflow_id
 - ✓ Orchestration-runner.py implements auto-invocation (reads auto_invoke_next_workflow and auto_invoke_source from workflow registry)
 - ✓ Auto-invocation extracts recommended_workflow_id from orchestration_plan machine-readable section
 - ✓ Auto-invocation invokes next workflow with same execution mode
-- ✓ No recursion risk (orchestration-runner is engine; workflow-orchestrator is skill)
+- ✓ No recursion risk (workflow-runtime is engine; workflow-planner is skill)
 - ✓ Artifact contracts validated between all steps
 - ✓ Approval gates work correctly in guided_execution mode
 - ✓ README documents three-stage automation: diagnostic → orchestration → auto-invoked implementation
-- ✓ No skills directly invoke other skills (only orchestration-runner engine invokes workflows)
+- ✓ No skills directly invoke other skills (only workflow-runtime engine invokes workflows)
 - ✓ ADR documents design correction and auto-invocation implementation
 - ✓ Validation (validate-repo.py) passes for all workflows
 
@@ -356,8 +356,8 @@ A: Technically yes, but not the intended usage. The intended path is always via 
 
 **Q: What if I want a skill to work in multiple workflows with different next steps?**  
 A: Exactly! That's the benefit of this design. The same skill (e.g., repo-sensemaker) can be used in:
-- fast-path-workflow (followed by workflow-orchestrator)
-- full-fog-workflow (followed by workflow-orchestrator)
+- fast-path-workflow (followed by workflow-planner)
+- full-fog-workflow (followed by workflow-planner)
 - setup-sensemaking-repo (followed by prompt-handoff)
 The skill doesn't know or care which workflow it's in.
 

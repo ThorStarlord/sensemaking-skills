@@ -7,7 +7,7 @@ validator_case: positive
 Turn vague project uncertainty into clear problem frames, research paths, and next-step prompts.
 
 ## 2. Current shape
-- `skills/`: Five-skill sensemaking pipeline (`problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, `prompt-handoff`).
+- `skills/`: Five-skill sensemaking pipeline (`problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, `prompt-handoff`).
 - `workflows/`: Experimental high-velocity chains.
 - `examples/`: Validation fixtures for diagnosis and orchestration.
 - `scripts/`: Automated governance.
@@ -23,7 +23,7 @@ The five-skill pipeline provides a high-leverage diagnostic frame. The separatio
 Consolidate shared references (like `skill-registry.yaml`) into a root `references/` directory to avoid duplication.
 
 ## 6. Weakest boundary
-Contract Mismatch: The linkage between `repo-sensemaker` output and `workflow-orchestrator` input. It is currently manual and "vibe-based" rather than contract-enforced.
+Contract Mismatch: The linkage between `repo-sensemaker` output and `workflow-planner` input. It is currently manual and "vibe-based" rather than contract-enforced.
 
 ## 7. Evidence
 - [SKILL.md](../../skills/repo-sensemaker/SKILL.md): Mentions the handoff but lacks a hard schema check.
@@ -62,10 +62,10 @@ required_inputs:
 
 ## 14. Ready-to-copy prompt
 ```markdown
-/workflow-orchestrator
+/workflow-planner
 
 Brief: [Link to this brief]
-Target: Harden the contract between repo-sensemaker and workflow-orchestrator.
+Target: Harden the contract between repo-sensemaker and workflow-planner.
 Workflow: validator-tdd
 Mode: guided_execution
 ```

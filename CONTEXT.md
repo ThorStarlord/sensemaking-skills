@@ -44,16 +44,16 @@ The workflow orchestration system follows four key design patterns, each proven 
 
 5. **Three-Stage Automation** (ADR 0005)
    - **Stage 1 — Diagnostic Workflow**: User provides initial input (vague problem or repository state)
-   - **Stage 2 — Orchestration (workflow-orchestrator skill)**: Analyzes diagnostic output and produces orchestration-plan with fog_type classification and recommended_workflow_id
-   - **Stage 3 — Implementation Workflow (auto-invoked)**: orchestration-runner automatically reads recommended_workflow_id from orchestration-plan and invokes the implementation workflow
+   - **Stage 2 — Orchestration (workflow-planner skill)**: Analyzes diagnostic output and produces orchestration-plan with fog_type classification and recommended_workflow_id
+   - **Stage 3 — Implementation Workflow (auto-invoked)**: workflow-runtime automatically reads recommended_workflow_id from orchestration-plan and invokes the implementation workflow
    - **Result**: Single entry point (fast-path-workflow or full-fog-workflow) automatically chains to the right implementation path without manual intervention
    - **Why**: Automates the human decision point between "what's the problem?" (diagnosis) and "what do we do?" (implementation)
-   - **Auto-invocation mechanism**: Workflows declare `auto_invoke_next_workflow: true` and `auto_invoke_source: <artifact_id>` in workflow-registry.yaml; orchestration-runner.py detects this after workflow completion and invokes the next workflow in the same execution mode
+   - **Auto-invocation mechanism**: Workflows declare `auto_invoke_next_workflow: true` and `auto_invoke_source: <artifact_id>` in workflow-registry.yaml; workflow-runtime.py detects this after workflow completion and invokes the next workflow in the same execution mode
    - **See**: [docs/adr/0005-skill-invocation-via-workflows.md](docs/adr/0005-skill-invocation-via-workflows.md)
 
 6. **Dynamic Workflow Routing**    - **Fog Type Classification**: Sensemaking produces a classification of the primary problem type
    - **Four fog types**: product_fog (user needs), ui_fog (design), docs_fog (knowledge), architecture_fog (code structure)
-   - **Automatic routing**: orchestration-runner reads fog_type from orchestration-plan and invokes the appropriate implementation workflow via auto-invocation
+   - **Automatic routing**: workflow-runtime reads fog_type from orchestration-plan and invokes the appropriate implementation workflow via auto-invocation
    - **Specialized workflows**: Four implementation workflows, each optimized for its fog type
    - **High-velocity execution**: Implementation workflows use `gate: none` between steps for automatic progression
    - **Why**: Allows single entry point (sensemaking) that automatically routes to the right implementation path
@@ -99,7 +99,7 @@ The workflow orchestration system follows four key design patterns, each proven 
   - **docs_fog**: Missing documentation, unclear specifications, knowledge silos
   - **architecture_fog**: Code structure problems, design boundaries unclear, implicit contracts
 - **Fog Type Classification**: Sensemaking stage (via `repo-sensemaker`) classifies the primary fog type to enable routing
-- **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-orchestrator`, and `prompt-handoff`.
+- **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, and `prompt-handoff`.
 - **Workflow**: An ordered sequence of Skill Steps that processes fog into actionable artifacts.
 - **Skill Step**: One skill invocation within a Workflow. Each Skill Step has inputs (artifacts or external context), a skill to execute, an output artifact, and an approval gate.
 - **Core Skills**: Skills that always execute in a Workflow (e.g., problem-framer, unknowns-mapper, repo-sensemaker). Define the backbone of the pipeline.
@@ -115,7 +115,7 @@ The workflow orchestration system follows four key design patterns, each proven 
 - **High-Velocity Gate Pattern** (`gate: none`): Steps execute immediately without approval pauses. Used in implementation workflows for automatic progression between steps
 - **Execution Modes**: The system supports `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, and `yolo_execution`.
 - **YOLO Execution**: High-velocity automation that bypasses approval gates for local skills. Requires explicit opt-in and feature branches.
-- **Skill Split**: Diagnosis (`repo-sensemaker`) is separated from Action (`workflow-orchestrator`) to ensure human-in-the-loop validation.
+- **Skill Split**: Diagnosis (`repo-sensemaker`) is separated from Action (`workflow-planner`) to ensure human-in-the-loop validation.
 - **Object Under Pressure**: The specific artifact or system boundary that is most ambiguous.
 - **Weakest Boundary**: The most fragile or unenforced point in a repository. Diagnosed by repo-sensemaker via evidence-backed analysis of signal-gap boundaries.
 - **Approval Gates**: Mandatory review points in an orchestration workflow. In `yolo_execution` mode, validators replace gates as the safety mechanism — gates are bypassed, but post-step validation is zero-tolerance.
@@ -137,7 +137,7 @@ The workflow orchestration system follows four key design patterns, each proven 
 - **Repeatable Failure Boundary**: A failure class that recurs across independent live runs, signaling a systemic gap rather than an isolated data-quality issue. Determines whether a friction point triggers system hardening (repeatable) or artifact-level correction (single occurrence). Example: if UNKNOWN_WEAKNESS_TYPE occurs in two different workflow runs with different authors, that's a repeatable pattern warranting tooling improvement; a one-time authoring mistake is not.
 
 - **System-Proving Run vs. Value-Production Run**: A distinction in run purpose. A **system-proving run** exists to demonstrate that the orchestrator, validators, gates, and run-log infrastructure work correctly — the run log notes say "Proves X works." A **value-production run** uses the proven system to produce artifacts someone outside the system wants — the purpose is the outcome, not the proof. The 5 PRD mode-proving runs plus all subsequent guided_execution runs (full-local-sensemaking, product-discovery-sprint, skill-maintenance-loop, validator-live-coverage) are system-proving. No value-production run exists yet. The canonical evidence layer is necessary before value-production is safe, but it is not sufficient — the system must also be *used*.
-- **Evidence Source Rule**: Going forward, mode-coverage entries and run logs MUST be produced by `orchestration-runner.py`, not hand-authored. Existing hand-authored entries (e.g., early yolo and guided_execution runs from 2026-05-14 through 2026-05-16 morning) are grandfathered. This ensures all evidence is machine-verifiable and follows the canonical execution path.
+- **Evidence Source Rule**: Going forward, mode-coverage entries and run logs MUST be produced by `workflow-runtime.py`, not hand-authored. Existing hand-authored entries (e.g., early yolo and guided_execution runs from 2026-05-14 through 2026-05-16 morning) are grandfathered. This ensures all evidence is machine-verifiable and follows the canonical execution path.
 - **TDD Validator Cycle**: The red-green-refactor loop triggered when a Level 3 validator fails during a workflow run. Failure = RED, artifact data fix = GREEN, re-validation pass = REFACTOR. Demonstrated in the first YOLO run when validate-brief.py caught UNKNOWN_WEAKNESS_TYPE and NO_LOGIC_TRACE.
 - **Tracer Bullets**: AFK-compatible vertical slices of implementation.
 - **Validator Verification Suite**: A repeatable verification mechanism that checks validator behavior against positive and negative fixtures. It confirms that valid artifacts pass, invalid artifacts fail, and expected failures fail for the intended reason. Now enforces mandatory fixture coverage for all validator scripts.
@@ -168,7 +168,7 @@ artifacts/
 - **Numbered run folders**: `NN-project-name` at `artifacts/` root — no `runs/` subfolder nesting
 - **Numbered files inside**: `NN-file-name.md` showing pipeline sequence
 - **Historical root-level files**: Left in place as pre-organization archive — not migrated
-- **Path convention**: The workflow-orchestrator outputs future runs to `artifacts/NN-project-name/NN-file-name.md`
+- **Path convention**: The workflow-planner outputs future runs to `artifacts/NN-project-name/NN-file-name.md`
 - **Run folder numbering**: Monotonic across time — each new run gets the next integer in the sequence, regardless of date. Date metadata lives in the run's `README.md` or content, not the folder name.
 
 ## Known Gaps
@@ -192,7 +192,7 @@ These are acknowledged gaps that the project is aware of but has not yet address
 
 ## Skills Split
 1. **repo-sensemaker**: Diagnostic. Finds the weakest boundary.
-2. **workflow-orchestrator**: Procedural. Acts on the weak point via gated sequences.
+2. **workflow-planner**: Procedural. Acts on the weak point via gated sequences.
 3. **docs-aligner**: Domain alignment. Resolves contradictions between code and documentation, sharpens terminology, and updates CONTEXT.md inline. Automates grilling for autonomous workflows.
 
 ## Ecosystems
@@ -216,7 +216,7 @@ The repository uses a Python-based three-level validator hierarchy to enforce ar
 - **`analyze-run-failures.py`**: Builds a failure ledger from all run logs in a directory. Detects repeatable failure boundaries (same error code across 2+ independent runs) per the Repeatable Failure Boundary principle.
 - **`_validator_utils.py`**: Shared utility module for registry loading, path resolution, and error formatting.
 
-In YOLO and autonomous execution modes, validators function as **zero-tolerance safety gates**: any failure triggers an immediate hard stop and rollback recommendation. See [validator-stack-policy.md](skills/workflow-orchestrator/references/validator-stack-policy.md) for execution order.
+In YOLO and autonomous execution modes, validators function as **zero-tolerance safety gates**: any failure triggers an immediate hard stop and rollback recommendation. See [validator-stack-policy.md](skills/workflow-planner/references/validator-stack-policy.md) for execution order.
 
 ## Dynamic Chaining Implementation
 

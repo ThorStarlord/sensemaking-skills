@@ -2,12 +2,12 @@
 
 artifacts:
   - id: user_intent
-    produced_by: orchestration-runner
+    produced_by: workflow-runtime
     consumed_by:
       - problem-framer
       - unknowns-mapper
       - repo-sensemaker
-      - workflow-orchestrator
+      - workflow-planner
       - docs-aligner
       - to-prd
       - to-issues
@@ -41,7 +41,7 @@ artifacts:
   - id: user_intent_amendment
     produced_by: orchestration-runner
     consumed_by:
-      - workflow-orchestrator
+      - workflow-planner
       - repo-sensemaker
       - prompt-handoff
     required_sections:
@@ -111,7 +111,7 @@ artifacts:
   - id: repository_sensemaking_brief
     produced_by: repo-sensemaker
     consumed_by:
-      - workflow-orchestrator
+      - workflow-planner
       - prompt-handoff
       - sensemaking-docs-reconciler
     required_sections:
@@ -244,7 +244,7 @@ artifacts:
   - id: session_summary
     produced_by: handoff
     consumed_by:
-      - workflow-orchestrator
+      - workflow-planner
     required_machine_fields:
       - source_intent_ref
     verification:
@@ -280,7 +280,7 @@ artifacts:
   - id: stakeholder_update
     produced_by: stakeholder-update
     consumed_by:
-      - workflow-orchestrator
+      - workflow-planner
     verification:
       generic_validator: "python scripts/validate-artifact.py stakeholder_update {artifact_path}"
       required_for_modes:
@@ -403,7 +403,7 @@ artifacts:
         - yolo_execution
 
   - id: workflow_orchestration_plan
-    produced_by: workflow-orchestrator
+    produced_by: workflow-planner
     consumed_by:
       - user
       - agents (autonomous_execution)
@@ -502,7 +502,7 @@ artifacts:
   - id: usage_research_report
     produced_by: user
     consumed_by:
-      - workflow-orchestrator
+      - workflow-planner
     required_sections:
       - scenario_tested
       - expected_behavior
@@ -525,7 +525,7 @@ artifacts:
   - id: skill_improvement_plan
     produced_by: skill-maintainer
     consumed_by:
-      - workflow-orchestrator
+      - workflow-planner
     required_sections:
       - diagnosis
       - evidence

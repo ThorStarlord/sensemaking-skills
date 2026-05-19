@@ -47,7 +47,7 @@ In `plan_only` and `prompt_chain` modes:
 
 ### Implementation
 ```python
-# In orchestration-runner.py _execute_step() method
+# In workflow-runtime.py _execute_step() method
 if output_artifact and output_artifact != "N/A":
     if self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
         # STRICT: Fail if artifact missing in execution mode
@@ -140,7 +140,7 @@ This decision was validated during Phase 1 of the orchestration system implement
 ## Related
 
 - **Pattern**: See `orchestration-patterns.md` → Pattern 1: Strict vs. Lenient Validation
-- **Implementation**: `scripts/orchestration-runner.py` lines 446-459
+- **Implementation**: `scripts/workflow-runtime.py` lines 446-459
 - **Testing**: `test-controlled-failures.py` → test_artifact_production_required()
 - **Prior Issue**: PRD artifact wasn't produced by to-prd in docs-architecture workflow (Phase 1 discovery)
 

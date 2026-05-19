@@ -2,7 +2,7 @@
 
 ## Task Information
 - **Task ID**: `iso-orch-001`
-- **Skill**: `workflow-orchestrator`
+- **Skill**: `workflow-planner`
 - **Workflow**: `setup-sensemaking-repo`
 
 ## Execution Audit

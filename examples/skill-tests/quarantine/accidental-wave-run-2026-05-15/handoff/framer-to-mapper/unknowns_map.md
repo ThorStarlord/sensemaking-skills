@@ -8,7 +8,7 @@
 
 ## 2. Unknowns
 - Which specific `workflow_id` in the registry handles "initial sensemaking" vs "domain implementation"?
-- What are the required input artifacts for the `workflow-orchestrator` to begin execution?
+- What are the required input artifacts for the `workflow-planner` to begin execution?
 - Are there any broken skill references in the `workflow-registry.yaml` that would cause execution to fail?
 
 ## 3. Assumptions
@@ -17,7 +17,7 @@
 
 ## 4. Risks
 - **Registry Out-of-Sync**: The registry might refer to skills that have been renamed or deleted in `skills/`.
-- **Validation Blind Spot**: The `workflow-orchestrator` might accept a plan that satisfies structural constraints but fails semantically in the specific repository context.
+- **Validation Blind Spot**: The `workflow-planner` might accept a plan that satisfies structural constraints but fails semantically in the specific repository context.
 
 ## 5. Research Paths
 - **Path 1**: Scan `workflow-registry.yaml` for keywords like `sensemaking`, `cold-start`, or `idea` to find matching workflows.

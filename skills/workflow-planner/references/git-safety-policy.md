@@ -1,6 +1,6 @@
 # Git Safety Policy
 
-This policy governs how the `workflow-orchestrator` interacts with the repository's version control system, specifically during `autonomous_execution` and `yolo_execution`.
+This policy governs how the `workflow-planner` interacts with the repository's version control system, specifically during `autonomous_execution` and `yolo_execution`.
 
 ## 1. Branch Policy
 - **No Direct Main Commits**: Committing directly to `main`, `master`, or any protected branch is strictly prohibited.

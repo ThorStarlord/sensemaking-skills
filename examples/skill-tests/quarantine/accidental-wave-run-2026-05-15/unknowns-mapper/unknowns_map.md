@@ -8,7 +8,7 @@
 
 ## 2. Unknowns
 - Which workflow IDs in `workflow-registry.yaml` are designed for initial "idea to workflow" transitions?
-- What are the specific input requirements for the downstream `workflow-orchestrator`?
+- What are the specific input requirements for the downstream `workflow-planner`?
 - Are there any skills in the registry currently marked as `draft` that are being incorrectly considered for this workflow?
 
 ## 3. Assumptions

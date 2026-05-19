@@ -45,4 +45,4 @@ Before YOLO mode can be officially promoted, the following tasks must be complet
 ## 5. Promotion Finalized
 **Status**: Stable
 **Promotion Date**: 2026-05-14
-**Validator Summary**: All automated safety gates (Pre-flight Context, Post-Step Script, and LLM Review) have been implemented, verified with negative fixtures, and integrated into the core `workflow-orchestrator` skill.
+**Validator Summary**: All automated safety gates (Pre-flight Context, Post-Step Script, and LLM Review) have been implemented, verified with negative fixtures, and integrated into the core `workflow-planner` skill.

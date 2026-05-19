@@ -7,7 +7,7 @@
 The problem frame identified that the "lack of automation" is specifically a lack of contract enforcement in the handoff between diagnosis and action.
 
 ## 3. Task
-Perform a diagnostic audit of the current `repo-sensemaker` and `workflow-orchestrator` handoff logic.
+Perform a diagnostic audit of the current `repo-sensemaker` and `workflow-planner` handoff logic.
 
 ## 4. Constraints
 - Cite file-level evidence in Section 7.

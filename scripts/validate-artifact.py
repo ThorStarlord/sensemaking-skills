@@ -39,7 +39,7 @@ def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommen
     # Load contracts using shared utility
     contracts_data = load_artifact_contracts(repo_root)
     if contracts_data is None:
-        errors.append(format_error(CONTRACTS_FILE_NOT_FOUND, "artifact-contracts.yaml not found in workflow-orchestrator references."))
+        errors.append(format_error(CONTRACTS_FILE_NOT_FOUND, "artifact-contracts.yaml not found in workflow-planner references."))
         return errors
 
     # Find specific contract

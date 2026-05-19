@@ -425,7 +425,7 @@ class GateDenialStopsExecution(ControlledFailureTest):
                 f"Uncommitted changes detected:\n{git_check.stdout.strip()[:300]}"
             )
 
-        runner_script = _script_path("orchestration-runner.py")
+        runner_script = _script_path("workflow-runtime.py")
 
         # Run guided_execution with --gate-decision auto-deny (non-interactive)
         result = subprocess.run(
@@ -555,7 +555,7 @@ class ResumeAfterGateDenial(ControlledFailureTest):
                 f"Uncommitted changes detected:\n{git_check.stdout.strip()[:300]}"
             )
 
-        runner_script = _script_path("orchestration-runner.py")
+        runner_script = _script_path("workflow-runtime.py")
         details = []
 
         # ---- Phase 1: Gate denial (create paused state) ----
@@ -700,7 +700,7 @@ class RollbackAfterMutation(ControlledFailureTest):
         return True, ""
 
     def run(self) -> tuple[bool, str, str]:
-        runner_script = _script_path("orchestration-runner.py")
+        runner_script = _script_path("workflow-runtime.py")
 
         # Run plan_only mode (allows dirty git, no gates) with bad brief
         result = subprocess.run(
@@ -774,7 +774,7 @@ class ArtifactProductionRequired(ControlledFailureTest):
         return True, ""
 
     def run(self) -> tuple[bool, str, str]:
-        runner_script = _script_path("orchestration-runner.py")
+        runner_script = _script_path("workflow-runtime.py")
 
         # Run in guided_execution mode with auto-deny on gates to prevent
         # actual skill execution (which would require interactive setup)
@@ -790,7 +790,7 @@ class ArtifactProductionRequired(ControlledFailureTest):
 
         output = (result.stdout + result.stderr).strip()
 
-        # The code at lines 445-454 in orchestration-runner.py shows:
+        # The code at lines 445-454 in workflow-runtime.py shows:
         # In execution modes, if output_artifact is claimed but not produced,
         # it should append error ARTIFACT_NOT_FOUND and set status FAILED
 
@@ -802,12 +802,12 @@ class ArtifactProductionRequired(ControlledFailureTest):
         # produce its artifact. For now, verify the code path exists:
         detail = f"exit_code={result.returncode}, has_ARTIFACT_NOT_FOUND={'ARTIFACT_NOT_FOUND' in output}"
 
-        # Code inspection confirms the path exists in orchestration-runner.py:
+        # Code inspection confirms the path exists in workflow-runtime.py:
         # Lines 445-454 in execute_step() enforce artifact production in execution modes
         passed = True  # The enforcement code is in place
         message = (
             "ARTIFACT_NOT_FOUND error code is enforced in execution modes. "
-            "Code path verified: lines 445-454 in orchestration-runner.py"
+            "Code path verified: lines 445-454 in workflow-runtime.py"
         )
 
         return passed, message, detail
@@ -884,7 +884,7 @@ class RollbackProvesRecovery(ControlledFailureTest):
         if "BAD ARTIFACT" not in mutated:
             details.append("Mutation did not take effect")
 
-        # ---- Run the exact rollback commands from orchestration-runner.py rollback() ----
+        # ---- Run the exact rollback commands from workflow-runtime.py rollback() ----
         r1 = self._git(["reset", "--hard", "HEAD"])
         r2 = self._git(["clean", "-fd"])
 

@@ -7,7 +7,7 @@
 The user's high-level desire for "product velocity" is masked by a foundational struggle with the **sensemaking meta-workflow**. The technical tension is not in the product domain, but in the repository's own **discovery and routing layer**.
 
 ## 3. Object Under Pressure
-`workflow-registry.yaml` and the `workflow-orchestrator` skill selection logic.
+`workflow-registry.yaml` and the `workflow-planner` skill selection logic.
 
 ## 4. Failure Mode
 **Premature Domain Routing**: The system takes the "product" keywords at face value and routes the user to a Product Manager skill (e.g., creating a PRD). This results in "garbage in, garbage out" because the user hasn't yet framed their specific idea within the repository's sensemaking capabilities.

@@ -31,10 +31,10 @@ class TestYoloExecutionWithSkills(unittest.TestCase):
 
     def test_execution_plan_created_by_yolo_mode(self):
         """Verify that yolo_execution mode creates an execution plan JSON."""
-        # Run orchestration-runner with fast-local-diagnostic in yolo_execution mode
+        # Run workflow-runtime with fast-local-diagnostic in yolo_execution mode
         cmd = [
             sys.executable,
-            str(self.scripts_dir / "orchestration-runner.py"),
+            str(self.scripts_dir / "workflow-runtime.py"),
             "fast-local-diagnostic",
             "--mode", "yolo_execution",
         ]
@@ -115,7 +115,7 @@ class TestYoloExecutionWithSkills(unittest.TestCase):
     def test_fast_local_diagnostic_workflow_registered(self):
         """Verify that fast-local-diagnostic workflow is properly registered."""
         registry_path = (
-            self.repo_root / "skills" / "workflow-orchestrator" /
+            self.repo_root / "skills" / "workflow-planner" /
             "references" / "workflow-registry.yaml"
         )
 
@@ -140,10 +140,10 @@ class TestYoloExecutionWithSkills(unittest.TestCase):
         )
 
     def test_orchestration_runner_callable(self):
-        """Verify that orchestration-runner.py is callable and lists workflows."""
+        """Verify that workflow-runtime.py is callable and lists workflows."""
         cmd = [
             sys.executable,
-            str(self.scripts_dir / "orchestration-runner.py"),
+            str(self.scripts_dir / "workflow-runtime.py"),
             "--list-workflows",
         ]
 
@@ -159,7 +159,7 @@ class TestYoloExecutionWithSkills(unittest.TestCase):
         self.assertEqual(
             result.returncode,
             0,
-            f"orchestration-runner.py --list-workflows should succeed, got: {result.stderr}"
+            f"workflow-runtime.py --list-workflows should succeed, got: {result.stderr}"
         )
 
         # Should list fast-local-diagnostic

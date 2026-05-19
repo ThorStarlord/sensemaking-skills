@@ -72,7 +72,7 @@ python scripts/validate-plan.py artifacts/*/04-*.md
     - problem-framer
     - unknowns-mapper
     - repo-sensemaker
-    - workflow-orchestrator
+    - workflow-planner
     - docs-aligner
     - to-prd
     - to-issues
@@ -450,7 +450,7 @@ required_machine_fields:
   - scope_expansion_requires_approval: boolean
 ```
 
-#### 5.2 — Update `workflow-orchestrator` skill to populate routing fields
+#### 5.2 — Update `workflow-planner` skill to populate routing fields
 
 When the skill produces the orchestration plan, it should:
 1. Read `user_intent.md` to get `user_implied_fog_type`

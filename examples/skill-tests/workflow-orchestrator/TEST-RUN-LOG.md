@@ -3,7 +3,7 @@
 | Field | Value |
 | :--- | :--- |
 | **Task ID** | `iso-orchestrator-001` |
-| **Skill Tested** | `workflow-orchestrator` |
+| **Skill Tested** | `workflow-planner` |
 | **Input Path** | `examples/skill-tests/repo-sensemaker/repo_sensemaking_brief.md` |
 | **Output Path** | `examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md` |
 | **Validation Result** | PASS |

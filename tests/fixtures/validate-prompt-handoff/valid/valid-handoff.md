@@ -11,7 +11,7 @@ validator_case: positive
 The problem frame identified that the lack of automation is specifically a lack of contract enforcement in the handoff.
 
 ## 3. Task
-Perform a diagnostic audit of the current repo-sensemaker and workflow-orchestrator handoff logic.
+Perform a diagnostic audit of the current repo-sensemaker and workflow-planner handoff logic.
 
 ## 4. Constraints
 - Cite file-level evidence.
@@ -19,7 +19,7 @@ Perform a diagnostic audit of the current repo-sensemaker and workflow-orchestra
 
 ## 5. Inputs
 - `skills/repo-sensemaker/SKILL.md`
-- `skills/workflow-orchestrator/SKILL.md`
+- `skills/workflow-planner/SKILL.md`
 
 ## 6. Expected Output
 A Repository Sensemaking Brief that identifies the weakest boundary.

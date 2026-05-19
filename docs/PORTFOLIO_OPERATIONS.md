@@ -265,7 +265,7 @@ done
 **Problem**: Workflow execution hangs or times out.
 
 **Solution**:
-1. Check individual project: `python scripts/orchestration-runner.py <workflow> --mode plan_only`
+1. Check individual project: `python scripts/workflow-runtime.py <workflow> --mode plan_only`
 2. Verify git working tree is clean
 3. Check disk space for artifact generation
 4. Increase timeout if needed: edit `scripts/portfolio-orchestrator.py` line ~180

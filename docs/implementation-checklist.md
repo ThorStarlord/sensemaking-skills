@@ -32,7 +32,7 @@
 ### Phase 1: Fix Orchestrator Artifact Validation (CRITICAL)
 **Goal**: Enforce strict artifact validation in execution modes  
 **Effort**: 2-3 hours  
-**Files to Edit**: `scripts/orchestration-runner.py`
+**Files to Edit**: `scripts/workflow-runtime.py`
 
 **Changes**:
 1. Add mode-aware validation logic
@@ -79,7 +79,7 @@ elif output_artifact and output_artifact != "N/A":
 ### Phase 2: Redesign docs-architecture Workflow (MEDIUM)
 **Goal**: Remove premature PRD generation, focus workflow on its stated purpose  
 **Effort**: 1 hour  
-**Files to Edit**: `skills/workflow-orchestrator/references/workflow-registry.yaml`
+**Files to Edit**: `skills/workflow-planner/references/workflow-registry.yaml`
 
 **Changes**:
 1. Remove step 2 (to-prd) from docs-architecture
@@ -120,7 +120,7 @@ elif output_artifact and output_artifact != "N/A":
 **Testing**:
 ```bash
 # Re-run docs-architecture to verify 2-step workflow
-python scripts/orchestration-runner.py docs-architecture --mode guided_execution
+python scripts/workflow-runtime.py docs-architecture --mode guided_execution
 # Expected: All 2 steps complete, 2 gates approved
 ```
 
@@ -129,7 +129,7 @@ python scripts/orchestration-runner.py docs-architecture --mode guided_execution
 ### Phase 3: Create product-to-issues Workflow (NEW)
 **Goal**: Add dedicated workflow for PRD generation and issue creation  
 **Effort**: 1 hour  
-**Files to Edit**: `skills/workflow-orchestrator/references/workflow-registry.yaml`
+**Files to Edit**: `skills/workflow-planner/references/workflow-registry.yaml`
 
 **Changes**:
 1. Add new workflow after docs-architecture
@@ -173,7 +173,7 @@ python scripts/orchestration-runner.py docs-architecture --mode guided_execution
 **Testing**:
 ```bash
 # Run new workflow (will be first real test)
-python scripts/orchestration-runner.py product-to-issues --mode guided_execution
+python scripts/workflow-runtime.py product-to-issues --mode guided_execution
 # Expected: All 3 steps complete, prd.md produced and validated
 ```
 
@@ -238,7 +238,7 @@ python scripts/test-controlled-failures.py --test artifact-production-required
 ### Phase 2 - Workflow Redesign
 ```bash
 # Run docs-architecture with new 2-step design
-python scripts/orchestration-runner.py docs-architecture --mode guided_execution --gate-decision auto-approve
+python scripts/workflow-runtime.py docs-architecture --mode guided_execution --gate-decision auto-approve
 # Verify: 2 steps completed, prd.md NOT in artifacts/, prompt_handoff exists
 ls -la artifacts/prompt_handoff.md  # Should exist
 ls -la artifacts/prd.md             # Should NOT exist (was removed from workflow)
@@ -247,7 +247,7 @@ ls -la artifacts/prd.md             # Should NOT exist (was removed from workflo
 ### Phase 3 - New Workflow
 ```bash
 # First full test of product-to-issues
-python scripts/orchestration-runner.py product-to-issues --mode guided_execution --gate-decision auto-approve
+python scripts/workflow-runtime.py product-to-issues --mode guided_execution --gate-decision auto-approve
 # Verify: 3 steps completed, all artifacts exist and validated
 ls -la artifacts/domain_alignment_report.md  # Input
 ls -la artifacts/prd.md                      # Step 1 output
@@ -289,8 +289,8 @@ After all phases complete, make one git commit:
 
 ```bash
 git add \
-  scripts/orchestration-runner.py \
-  skills/workflow-orchestrator/references/workflow-registry.yaml \
+  scripts/workflow-runtime.py \
+  skills/workflow-planner/references/workflow-registry.yaml \
   docs/mode-coverage.yaml \
   docs/evidence-verdict-analysis.md \
   docs/prd-validation-gap-fix.md \
@@ -319,7 +319,7 @@ Evidence: Zero repeatable failures, all artifacts validated through dispatcher
 
 All of these should be true after implementation:
 
-- ✅ orchestration-runner.py fails steps with ARTIFACT_NOT_FOUND when artifacts missing
+- ✅ workflow-runtime.py fails steps with ARTIFACT_NOT_FOUND when artifacts missing
 - ✅ docs-architecture workflow has 2 steps (docs-aligner, handoff)
 - ✅ product-to-issues workflow exists with 3 steps (to-prd, to-issues, triage)
 - ✅ product-to-issues guided_execution run produces prd.md and validates it
@@ -360,7 +360,7 @@ All of these should be true after implementation:
 
 ## Questions to Ask If Stuck
 
-1. **"Where exactly do I edit orchestration-runner.py?"**
+1. **"Where exactly do I edit workflow-runtime.py?"**
    - Answer: Line 445-447, in the `_execute_step()` method, `elif output_artifact` branch
 
 2. **"How do I know if Phase 1 is working?"**

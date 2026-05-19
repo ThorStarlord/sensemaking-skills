@@ -5,7 +5,7 @@ This example demonstrates the complete V1 pipeline run on the `sensemaking-skill
 ## Stage 1: Problem Frame (`problem-framer`)
 - **Raw Fog**: "How do we make sensemaking skills safe and reliable for autonomous agents?"
 - **Problem Under the Problem**: Unreliable handoffs between diagnostic judgment and execution coordination.
-- **Object Under Pressure**: The artifact-contract between `repo-sensemaker` and `workflow-orchestrator`.
+- **Object Under Pressure**: The artifact-contract between `repo-sensemaker` and `workflow-planner`.
 - **Next Artifact**: Unknowns Map
 
 ## Stage 2: Unknowns Map (`unknowns-mapper`)
@@ -25,7 +25,7 @@ This example demonstrates the complete V1 pipeline run on the `sensemaking-skill
   ```
 - **Next Artifact**: Workflow Orchestration Plan
 
-## Stage 4: Workflow Orchestration Plan (`workflow-orchestrator`)
+## Stage 4: Workflow Orchestration Plan (`workflow-planner`)
 - **Chosen Workflow**: `validator-tdd`
 - **Execution Mode**: `guided_execution`
 - **Approval Gates**: 

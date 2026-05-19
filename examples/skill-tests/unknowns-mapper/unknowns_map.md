@@ -20,7 +20,7 @@
 
 ## 5. Research Paths
 - **Path A**: Audit `workflow-registry.yaml` to identify common workflow patterns and required fields for new entries.
-- **Path B**: Research the `workflow-orchestrator`'s internal validation logic to understand what constitutes a "behaviorally sound" workflow.
+- **Path B**: Research the `workflow-planner`'s internal validation logic to understand what constitutes a "behaviorally sound" workflow.
 
 ## 6. Stopping Rule
 - **Meta-Sensemaking**: Stop when we have identified a specific Search Seed for `workflow-registry.yaml` and the handoff contract for `repo-sensemaker` (as defined in `artifact-contracts.yaml`) is confirmed as satisfied by this map.

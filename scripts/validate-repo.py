@@ -16,16 +16,16 @@ def validate_repo():
         "skills/repo-sensemaker/SKILL.md",
         "skills/repo-sensemaker/agents/openai.yaml",
         "skills/repo-sensemaker/references/repo-analysis-template.md",
-        "skills/workflow-orchestrator/SKILL.md",
-        "skills/workflow-orchestrator/agents/openai.yaml",
-        "skills/workflow-orchestrator/references/skill-registry.yaml",
-        "skills/workflow-orchestrator/references/workflow-registry.yaml",
-        "skills/workflow-orchestrator/references/workflow-orchestration-template.md",
-        "skills/workflow-orchestrator/references/execution-modes.md",
-        "skills/workflow-orchestrator/references/artifact-contracts.yaml",
-        "skills/workflow-orchestrator/references/git-safety-policy.md",
-        "skills/workflow-orchestrator/references/recovery-policy.md",
-        "skills/workflow-orchestrator/references/usage-research-scenarios.yaml",
+        "skills/workflow-planner/SKILL.md",
+        "skills/workflow-planner/agents/openai.yaml",
+        "skills/workflow-planner/references/skill-registry.yaml",
+        "skills/workflow-planner/references/workflow-registry.yaml",
+        "skills/workflow-planner/references/workflow-orchestration-template.md",
+        "skills/workflow-planner/references/execution-modes.md",
+        "skills/workflow-planner/references/artifact-contracts.yaml",
+        "skills/workflow-planner/references/git-safety-policy.md",
+        "skills/workflow-planner/references/recovery-policy.md",
+        "skills/workflow-planner/references/usage-research-scenarios.yaml",
         "docs/research/usage-research-rubric.md",
         "skills/problem-framer/SKILL.md",
         "skills/problem-framer/agents/openai.yaml",
@@ -57,10 +57,10 @@ def validate_repo():
     # 2. Validate YAML files
     yaml_files = [
         "skills/repo-sensemaker/agents/openai.yaml",
-        "skills/workflow-orchestrator/agents/openai.yaml",
-        "skills/workflow-orchestrator/references/skill-registry.yaml",
-        "skills/workflow-orchestrator/references/workflow-registry.yaml",
-        "skills/workflow-orchestrator/references/artifact-contracts.yaml",
+        "skills/workflow-planner/agents/openai.yaml",
+        "skills/workflow-planner/references/skill-registry.yaml",
+        "skills/workflow-planner/references/workflow-registry.yaml",
+        "skills/workflow-planner/references/artifact-contracts.yaml",
         "skills/problem-framer/agents/openai.yaml",
         "skills/unknowns-mapper/agents/openai.yaml",
         "skills/prompt-handoff/agents/openai.yaml",
@@ -80,8 +80,8 @@ def validate_repo():
 
     # 3. Registry & Availability Check
     registered_skills = {}
-    if "skills/workflow-orchestrator/references/skill-registry.yaml" in registries:
-        skill_registry = registries["skills/workflow-orchestrator/references/skill-registry.yaml"]
+    if "skills/workflow-planner/references/skill-registry.yaml" in registries:
+        skill_registry = registries["skills/workflow-planner/references/skill-registry.yaml"]
         for ecosystem_id, ecosystem in skill_registry.get("ecosystems", {}).items():
             for skill in ecosystem.get("skills", []):
                 s_id = skill["id"]
@@ -106,8 +106,8 @@ def validate_repo():
                                 errors.append(f"Skill '{s_id}' invocation missing 'command'")
 
     # 4. Workflow & YOLO Validation
-    if "skills/workflow-orchestrator/references/workflow-registry.yaml" in registries:
-        workflow_registry = registries["skills/workflow-orchestrator/references/workflow-registry.yaml"]
+    if "skills/workflow-planner/references/workflow-registry.yaml" in registries:
+        workflow_registry = registries["skills/workflow-planner/references/workflow-registry.yaml"]
         for workflow in workflow_registry.get("workflows", []):
             allowed_modes = workflow.get("allowed_execution_modes", [])
             if not allowed_modes:
@@ -131,8 +131,8 @@ def validate_repo():
             for step in steps:
                 s_id = step.get("skill")
 
-                if s_id == "workflow-orchestrator":
-                    errors.append(f"Workflow '{workflow['id']}' contains a recursive call to 'workflow-orchestrator'.")
+                if s_id == "workflow-planner":
+                    errors.append(f"Workflow '{workflow['id']}' contains a recursive call to 'workflow-planner'.")
 
                 # Conditional steps don't have top-level step_type; they have it in branches
                 if step.get("conditional"):
@@ -158,11 +158,11 @@ def validate_repo():
                         errors.append(f"Workflow '{workflow['id']}' step '{s_id}' marked as local_execution but availability is {availability}")
 
     # 5. Artifact Handoff & Initial Input Validation
-    if "skills/workflow-orchestrator/references/artifact-contracts.yaml" in registries and \
-       "skills/workflow-orchestrator/references/workflow-registry.yaml" in registries and \
-       "skills/workflow-orchestrator/references/skill-registry.yaml" in registries:
+    if "skills/workflow-planner/references/artifact-contracts.yaml" in registries and \
+       "skills/workflow-planner/references/workflow-registry.yaml" in registries and \
+       "skills/workflow-planner/references/skill-registry.yaml" in registries:
         
-        contracts = registries["skills/workflow-orchestrator/references/artifact-contracts.yaml"]
+        contracts = registries["skills/workflow-planner/references/artifact-contracts.yaml"]
         artifacts_list = contracts.get("artifacts", [])
         contract_ids = set()
         
@@ -182,14 +182,14 @@ def validate_repo():
                 elif not isinstance(verification["required_for_modes"], list):
                     errors.append(f"Artifact '{a_id}' 'required_for_modes' must be a list")
         
-        skill_registry = registries["skills/workflow-orchestrator/references/skill-registry.yaml"]
+        skill_registry = registries["skills/workflow-planner/references/skill-registry.yaml"]
         skill_to_artifact = {}
         for ecosystem in skill_registry.get("ecosystems", {}).values():
             for skill in ecosystem.get("skills", []):
                 if "artifact" in skill:
                     skill_to_artifact[skill["id"]] = skill["artifact"]
         
-        workflow_registry = registries["skills/workflow-orchestrator/references/workflow-registry.yaml"]
+        workflow_registry = registries["skills/workflow-planner/references/workflow-registry.yaml"]
         for workflow in workflow_registry.get("workflows", []):
             w_id = workflow["id"]
             initial_inputs = {i["id"] for i in workflow.get("initial_inputs", [])}
@@ -253,7 +253,7 @@ def validate_repo():
     # 6. Frontmatter Check
     skill_files = [
         "skills/repo-sensemaker/SKILL.md",
-        "skills/workflow-orchestrator/SKILL.md",
+        "skills/workflow-planner/SKILL.md",
         "skills/problem-framer/SKILL.md",
         "skills/unknowns-mapper/SKILL.md",
         "skills/prompt-handoff/SKILL.md",
@@ -279,7 +279,7 @@ def validate_repo():
             "Why This Boundary Matters", "Candidate Next Steps", "Recommended Next Step",
             "Recommended Workflow", "Machine-readable handoff", "Ready-to-copy prompt"
         ],
-        "skills/workflow-orchestrator/references/workflow-orchestration-template.md": [
+        "skills/workflow-planner/references/workflow-orchestration-template.md": [
             "Brief consumed", "Chosen workflow", "Why this workflow", "Skills in sequence",
             "Inputs and outputs", "Approval gates", "Stop conditions", "Execution mode",
             "Prompt chain", "Run log template", "Machine-readable plan"
@@ -316,7 +316,7 @@ def validate_repo():
     # 8. Check examples
     examples_dirs = [
         "examples/repo-sensemaker", 
-        "examples/workflow-orchestrator", 
+        "examples/workflow-planner", 
         "examples/negative", 
         "examples/pipeline", 
         "examples/problem-framer", 

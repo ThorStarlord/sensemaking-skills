@@ -114,7 +114,7 @@ Check `skill-registry.yaml` for skills that produce each artifact you need.
 **Example search:**
 ```bash
 # Find skills that produce 'prd'
-grep -B5 "artifact: prd" skills/workflow-orchestrator/references/skill-registry.yaml
+grep -B5 "artifact: prd" skills/workflow-planner/references/skill-registry.yaml
 # Result: to-prd (in drafting ecosystem), prd (in product ecosystem)
 ```
 
@@ -267,13 +267,13 @@ For each artifact, determine: Should validation be **strict** or **lenient**?
 
 Run syntax check:
 ```bash
-python -c "import yaml; yaml.safe_load(open('skills/workflow-orchestrator/references/workflow-registry.yaml'))"
+python -c "import yaml; yaml.safe_load(open('skills/workflow-planner/references/workflow-registry.yaml'))"
 # Expected: No output (valid YAML)
 ```
 
 Test planning:
 ```bash
-python scripts/orchestration-runner.py your-workflow-id --mode plan_only
+python scripts/workflow-runtime.py your-workflow-id --mode plan_only
 # Expected: All steps listed, artifacts shown
 ```
 
@@ -302,10 +302,10 @@ prd:
 
 ```bash
 # Verify workflow parses
-grep -A 30 "id: your-workflow-id" skills/workflow-orchestrator/references/workflow-registry.yaml
+grep -A 30 "id: your-workflow-id" skills/workflow-planner/references/workflow-registry.yaml
 
 # Test orchestrator recognition
-python scripts/orchestration-runner.py --list-workflows | grep your-workflow-id
+python scripts/workflow-runtime.py --list-workflows | grep your-workflow-id
 # Expected: Workflow listed with purpose
 ```
 
@@ -313,7 +313,7 @@ python scripts/orchestration-runner.py --list-workflows | grep your-workflow-id
 
 ```bash
 # Plan a run
-python scripts/orchestration-runner.py your-workflow-id --mode plan_only
+python scripts/workflow-runtime.py your-workflow-id --mode plan_only
 
 # Verify:
 # - All steps listed in order
@@ -340,7 +340,7 @@ python scripts/validate-artifact.py artifacts/sample_prd.md
 Run the workflow design validator:
 
 ```bash
-python scripts/validate-workflow-design.py skills/workflow-orchestrator/references/workflow-registry.yaml
+python scripts/validate-workflow-design.py skills/workflow-planner/references/workflow-registry.yaml
 # Expected: PASS (no design errors)
 ```
 
@@ -408,7 +408,7 @@ Before deploying your workflow, verify all these:
 - [ ] **Validation**: Strict/lenient rules clear
 - [ ] **Registry**: Entered in workflow-registry.yaml with valid YAML
 - [ ] **Syntax**: YAML parses without errors
-- [ ] **Planning**: `orchestration-runner.py --mode plan_only` succeeds
+- [ ] **Planning**: `workflow-runtime.py --mode plan_only` succeeds
 - [ ] **Validation**: No design errors from validate-workflow-design.py
 - [ ] **Documentation**: Workflow documented with purpose/steps/modes
 - [ ] **Tests**: Workflow has positive (valid) test fixtures

@@ -4,7 +4,7 @@
 Standardize repository diagnosis and orchestration through a meta-layer of sensemaking skills.
 
 ## 2. Current shape
-- `skills/`: `repo-sensemaker` and `workflow-orchestrator`.
+- `skills/`: `repo-sensemaker` and `workflow-planner`.
 - `workflows/`: Composite chains for execution.
 - `examples/`: Validation fixtures for both skills.
 - `scripts/`: Automated governance.

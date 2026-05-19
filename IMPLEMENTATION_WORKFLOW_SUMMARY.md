@@ -83,7 +83,7 @@ Entry Point: Sensemaking Pipeline
   problem-framer → unknowns-mapper → repo-sensemaker
   ↓ classifies fog_type
   ↓
-  workflow-orchestrator → produces orchestration-plan
+  workflow-planner → produces orchestration-plan
   ↓ includes fog_type classification
   ↓
 Routing Decision (Automatic in autonomous modes)
@@ -144,11 +144,11 @@ Implementation Workflows (All use gate: none for high-velocity)
 
 ### Templates (Updated)
 - `skills/repo-sensemaker/references/repo-analysis-template.md` - added fog type field
-- `skills/workflow-orchestrator/references/workflow-orchestration-template.md` - added fog type and routing
-- `skills/workflow-orchestrator/references/run-log-template.md` - added error handling fields
+- `skills/workflow-planner/references/workflow-orchestration-template.md` - added fog type and routing
+- `skills/workflow-planner/references/run-log-template.md` - added error handling fields
 
 ### Workflows (Created)
-- `skills/workflow-orchestrator/references/workflow-registry.yaml`
+- `skills/workflow-planner/references/workflow-registry.yaml`
   - product-implementation-workflow
   - ui-implementation-workflow
   - docs-implementation-workflow
@@ -293,7 +293,7 @@ Proceeds with discovery, opportunity-tree, etc.
 - No domain types
 - Implicit contracts
 
-### Routing Algorithm (workflow-orchestrator)
+### Routing Algorithm (workflow-planner)
 
 ```python
 def route_implementation_workflow(orchestration_plan):

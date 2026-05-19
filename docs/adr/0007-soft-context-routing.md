@@ -160,7 +160,7 @@ routing_rationale: |
 **Case D: User explicit override**
 
 ```bash
-orchestration-runner.py \
+workflow-runtime.py \
   --problem "we need a login page redesign" \
   --workflow ui-implementation-workflow
 ```

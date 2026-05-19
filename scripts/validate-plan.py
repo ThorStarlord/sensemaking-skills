@@ -106,7 +106,7 @@ def validate_plan(plan_path, repo_root="."):
     skill_reg = load_skill_registry(repo_root)
 
     if workflow_reg is None or artifact_con is None or skill_reg is None:
-        errors.append(format_error(WORKFLOW_NOT_FOUND, "Failed to load one or more registries from workflow-orchestrator references."))
+        errors.append(format_error(WORKFLOW_NOT_FOUND, "Failed to load one or more registries from workflow-planner references."))
         return errors
 
     # 2. Extract Section 11 from Plan

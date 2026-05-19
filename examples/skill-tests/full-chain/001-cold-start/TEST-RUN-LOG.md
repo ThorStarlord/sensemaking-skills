@@ -13,7 +13,7 @@
 | 1 | `problem-framer` | `examples/usage-research/scenarios/001-cold-start-messy-ai-workflows/raw_fog.md` | `problem_frame.md` | [x] Completed |
 | 2 | `unknowns-mapper` | `problem_frame.md` | `unknowns_map.md` | [x] Completed |
 | 3 | `repo-sensemaker` | Repository State | `repo_sensemaking_brief.md` | [x] Completed |
-| 4 | `workflow-orchestrator`| `repo_sensemaking_brief.md` | `workflow_orchestration_plan.md` | [x] Completed |
+| 4 | `workflow-planner`| `repo_sensemaking_brief.md` | `workflow_orchestration_plan.md` | [x] Completed |
 | 5 | `prompt-handoff` | `repo_sensemaking_brief.md` | `prompt_handoff.md` | [x] Completed |
 
 ## 2. Search Seed Thread

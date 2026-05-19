@@ -39,8 +39,8 @@ def load_weakness_types(repo_root: str) -> list[str]:
 
 
 def _registry_path(repo_root: str, filename: str) -> str:
-    """Build a path to a file in the workflow-orchestrator references directory."""
-    return os.path.join(repo_root, "skills", "workflow-orchestrator", "references", filename)
+    """Build a path to a file in the workflow-planner references directory."""
+    return os.path.join(repo_root, "skills", "workflow-planner", "references", filename)
 
 
 def load_workflow_registry(repo_root: str) -> dict | None:

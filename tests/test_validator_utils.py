@@ -62,7 +62,7 @@ def test_load_weakness_types_returns_empty_for_missing_file(tmp_path: Path):
 
 
 def test_load_workflow_registry_loads_yaml(tmp_path: Path):
-    ref_dir = tmp_path / "skills" / "workflow-orchestrator" / "references"
+    ref_dir = tmp_path / "skills" / "workflow-planner" / "references"
     ref_dir.mkdir(parents=True)
     (ref_dir / "workflow-registry.yaml").write_text("workflows:\n  - id: test\n")
     result = load_workflow_registry(str(tmp_path))
@@ -75,7 +75,7 @@ def test_load_workflow_registry_returns_none_for_missing(tmp_path: Path):
 
 
 def test_load_artifact_contracts_loads_yaml(tmp_path: Path):
-    ref_dir = tmp_path / "skills" / "workflow-orchestrator" / "references"
+    ref_dir = tmp_path / "skills" / "workflow-planner" / "references"
     ref_dir.mkdir(parents=True)
     (ref_dir / "artifact-contracts.yaml").write_text("artifacts:\n  - id: brief\n")
     result = load_artifact_contracts(str(tmp_path))
@@ -88,7 +88,7 @@ def test_load_artifact_contracts_returns_none_for_missing(tmp_path: Path):
 
 
 def test_load_skill_registry_loads_yaml(tmp_path: Path):
-    ref_dir = tmp_path / "skills" / "workflow-orchestrator" / "references"
+    ref_dir = tmp_path / "skills" / "workflow-planner" / "references"
     ref_dir.mkdir(parents=True)
     (ref_dir / "skill-registry.yaml").write_text("skills:\n  - id: test-skill\n")
     result = load_skill_registry(str(tmp_path))

@@ -26,7 +26,7 @@ The user reviews:
 ```
 raw_goal
   → repo-sensemaker      (diagnoses fog, classifies project, routes internally)
-  → workflow-orchestrator (picks workflow from registry, executes skill sequence)
+  → workflow-planner (picks workflow from registry, executes skill sequence)
   → artifacts            (validated outputs ready for downstream use)
 ```
 

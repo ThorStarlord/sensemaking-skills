@@ -126,7 +126,7 @@ def select_workflow(project_type: str, confidence: int, execution_mode: str = No
         "recommended_mode": selected_mode,
         "supported_modes": workflow_info["modes"],
         "rationale": rationale,
-        "command": f"python scripts/orchestration-runner.py {workflow_info['primary']} --mode {selected_mode}"
+        "command": f"python scripts/workflow-runtime.py {workflow_info['primary']} --mode {selected_mode}"
     }
 
 

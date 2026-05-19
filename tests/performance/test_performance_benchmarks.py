@@ -29,11 +29,11 @@ class TestPerformanceBenchmarks(unittest.TestCase):
         # Find repo root
         cls.repo_root = cls._find_repo_root()
         cls.scripts_dir = os.path.join(cls.repo_root, "scripts")
-        cls.runner_script = os.path.join(cls.scripts_dir, "orchestration-runner.py")
+        cls.runner_script = os.path.join(cls.scripts_dir, "workflow-runtime.py")
 
         # Verify runner exists
         if not os.path.exists(cls.runner_script):
-            raise RuntimeError(f"orchestration-runner.py not found at {cls.runner_script}")
+            raise RuntimeError(f"workflow-runtime.py not found at {cls.runner_script}")
 
     @staticmethod
     def _find_repo_root():

@@ -40,11 +40,11 @@ def load_registries(repo_root: str) -> tuple:
     """Load skill and workflow registries."""
     skill_registry_path = os.path.join(
         repo_root,
-        "skills/workflow-orchestrator/references/skill-registry.yaml"
+        "skills/workflow-planner/references/skill-registry.yaml"
     )
     workflow_registry_path = os.path.join(
         repo_root,
-        "skills/workflow-orchestrator/references/workflow-registry.yaml"
+        "skills/workflow-planner/references/workflow-registry.yaml"
     )
 
     with open(skill_registry_path) as f:

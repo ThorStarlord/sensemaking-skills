@@ -221,7 +221,7 @@ prd, issue_list
 Skills will populate these fields once the contracts are finalized:
 
 - repo-sensemaker: Populate escalation_recommended, escalation_target
-- workflow-orchestrator: Calculate routing_decision_method, routing_divergence
+- workflow-planner: Calculate routing_decision_method, routing_divergence
 - to-prd: Populate scope_expansion_proposed, user_goal_preserved_as
 - to-issues: Track scope_expansion_status, selected_scope_expansion_items
 

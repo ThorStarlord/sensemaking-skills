@@ -1,7 +1,7 @@
 # Feature Completion Summary
 
 ## 1. Target Skill
-`workflow-orchestrator`, `skill-maintainer`, or any AFK agent picking up the mode proving issues.
+`workflow-planner`, `skill-maintainer`, or any AFK agent picking up the mode proving issues.
 
 ## 2. Context to Preserve
 

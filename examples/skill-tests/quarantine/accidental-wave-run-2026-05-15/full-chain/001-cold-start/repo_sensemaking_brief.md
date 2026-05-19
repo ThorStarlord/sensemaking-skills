@@ -40,14 +40,14 @@ evidence_excerpts:
 ```
 
 ## 9. Why this boundary matters
-If a skill is created but not registered, the `workflow-orchestrator` cannot see it. If registered incorrectly, the entire pipeline fails during autonomous execution.
+If a skill is created but not registered, the `workflow-planner` cannot see it. If registered incorrectly, the entire pipeline fails during autonomous execution.
 
 ## 10. Candidate next steps
 - Run the `skill_maintenance_workflow` to prepare the registration patch.
 - Research existing skill templates in `skills/`.
 
 ## 11. Recommended next step
-Execute `workflow-orchestrator` to plan the "New Skill Addition" using the `skill_maintenance_workflow`.
+Execute `workflow-planner` to plan the "New Skill Addition" using the `skill_maintenance_workflow`.
 
 ## 12. Recommended workflow
 `skill_maintenance_workflow`

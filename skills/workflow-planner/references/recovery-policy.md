@@ -19,7 +19,7 @@ The orchestrator must NEVER delete or silently overwrite the following core file
 - `scripts/validate-repo.py`
 - `skills/*/SKILL.md`
 - `references/artifact-contracts.yaml`
-- `skills/workflow-orchestrator/references/skill-registry.yaml`
+- `skills/workflow-planner/references/skill-registry.yaml`
 
 ## 4. Rollback Command
 Example rollback instruction to be provided to the user:

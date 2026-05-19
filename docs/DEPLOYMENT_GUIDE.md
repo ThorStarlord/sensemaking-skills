@@ -35,7 +35,7 @@ Deployed as a service with portfolio orchestration for multiple projects.
 
 3. **Verify installation**
    ```bash
-   python scripts/orchestration-runner.py --list-workflows
+   python scripts/workflow-runtime.py --list-workflows
    ```
 
 ## CI/CD Integration

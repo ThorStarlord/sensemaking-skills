@@ -1,10 +1,10 @@
 # Repository Sensemaking Brief: sensemaking-skills
 
 ## 1. Repository goal
-The `sensemaking-skills` repository aims to provide a set of agentic skills for "sensemaking" — turning ambiguous project ideas (fog) into structured, machine-verifiable plans and execution paths. It formalizes the orchestration of these skills via a `workflow-orchestrator`.
+The `sensemaking-skills` repository aims to provide a set of agentic skills for "sensemaking" — turning ambiguous project ideas (fog) into structured, machine-verifiable plans and execution paths. It formalizes the orchestration of these skills via a `workflow-planner`.
 
 ## 2. Current shape
-- **skills/**: Logic and documentation for each skill (e.g., `workflow-orchestrator`, `repo-sensemaker`).
+- **skills/**: Logic and documentation for each skill (e.g., `workflow-planner`, `repo-sensemaker`).
 - **scripts/**: Python validators (`validate-artifact.py`, `validate-brief.py`, `validate-repo.py`).
 - **references/**: (Inside skills) Templates and registries.
 - **examples/**: Positive and negative fixtures for testing.

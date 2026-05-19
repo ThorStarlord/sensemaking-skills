@@ -279,7 +279,7 @@ class TestManualGateApproval(unittest.TestCase):
     # Helper methods
 
     def _generate_run_log_with_gates(self, gate_decisions):
-        """Generate a run log format similar to orchestration-runner.py output."""
+        """Generate a run log format similar to workflow-runtime.py output."""
         lines = [
             "# Workflow Run Log: Test Workflow",
             "",

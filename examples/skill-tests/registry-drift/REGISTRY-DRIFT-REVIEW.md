@@ -22,7 +22,7 @@ It is referenced **only** in generated artifacts and audit reports. A global sea
 It was an **invented routing label**. The agent likely derived the name semantically from the "Wave 1" context provided in the test plan, rather than looking up the valid ID `full-local-sensemaking` or `setup-sensemaking-repo` in the registry.
 
 ### 4. Was the orchestrator’s fallback to `full-local-sensemaking` valid?
-**Yes.** The `workflow-orchestrator` (Task 9.2) correctly identified that the recommended ID was invalid and successfully performed a semantic fallback to `full-local-sensemaking`, which covers the necessary steps (Sensemaker -> Handoff) to address the user's intent.
+**Yes.** The `workflow-planner` (Task 9.2) correctly identified that the recommended ID was invalid and successfully performed a semantic fallback to `full-local-sensemaking`, which covers the necessary steps (Sensemaker -> Handoff) to address the user's intent.
 
 ### 5. What is the correct defect classification?
 - **Failure Mode Class**: Class 6: Hallucinated Evidence (specifically a hallucinated routing label).
@@ -47,4 +47,4 @@ It was an **invented routing label**. The agent likely derived the name semantic
 - **Recommended Action**: no_skill_change_for_this_audit; future_instruction_hardening_review
 
 ## 5. Conclusion
-The mismatch was a semantic hallucination by the producer skill (`repo-sensemaker`). The downstream consumer (`workflow-orchestrator`) proved its robustness by detecting the drift and falling back to a valid registry entry. No registry patch was made during this review. The evidence is recorded for future authorized instruction hardening.
+The mismatch was a semantic hallucination by the producer skill (`repo-sensemaker`). The downstream consumer (`workflow-planner`) proved its robustness by detecting the drift and falling back to a valid registry entry. No registry patch was made during this review. The evidence is recorded for future authorized instruction hardening.

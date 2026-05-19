@@ -2,7 +2,7 @@
 
 ## 1. Knowns
 - The `sensemaking-skills` repository uses a central `workflow-registry.yaml` for orchestration.
-- The `workflow-orchestrator` can execute `local_execution` steps with validation.
+- The `workflow-planner` can execute `local_execution` steps with validation.
 - The `problem-framer` sitting before `unknowns-mapper` correctly identifies the "Object Under Pressure."
 - Artifact validation scripts are operational and enforce structural compliance.
 
@@ -14,7 +14,7 @@
 ## 3. Assumptions
 - We assume that "raw fog" is the primary bottleneck, and once framed, the repository scanning becomes trivial.
 - We assume that the user will approve artifacts at the gates without needing significant technical training.
-- We assume that the `stopping_rule` in this artifact will be actionable for the `workflow-orchestrator` to decide whether to loop or move forward.
+- We assume that the `stopping_rule` in this artifact will be actionable for the `workflow-planner` to decide whether to loop or move forward.
 
 ## 4. Risks
 - **Over-Scoping**: The research paths defined here might be too broad, leading the user into a "sensemaking loop" where they keep mapping unknowns instead of executing.

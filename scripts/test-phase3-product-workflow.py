@@ -3,7 +3,7 @@ import sys
 
 def test_product_to_issues_workflow_exists():
     """Verify product-to-issues workflow is in registry."""
-    with open('skills/workflow-orchestrator/references/workflow-registry.yaml', 'r') as f:
+    with open('skills/workflow-planner/references/workflow-registry.yaml', 'r') as f:
         registry = yaml.safe_load(f)
 
     # Find product-to-issues workflow
@@ -18,7 +18,7 @@ def test_product_to_issues_workflow_exists():
 
 def test_product_to_issues_structure():
     """Verify product-to-issues has correct 3-step structure."""
-    with open('skills/workflow-orchestrator/references/workflow-registry.yaml', 'r') as f:
+    with open('skills/workflow-planner/references/workflow-registry.yaml', 'r') as f:
         registry = yaml.safe_load(f)
 
     # Find product-to-issues workflow
@@ -73,7 +73,7 @@ def test_product_to_issues_structure():
 
 def test_artifact_chain():
     """Verify the artifact flow from docs-architecture to product-to-issues."""
-    with open('skills/workflow-orchestrator/references/workflow-registry.yaml', 'r') as f:
+    with open('skills/workflow-planner/references/workflow-registry.yaml', 'r') as f:
         registry = yaml.safe_load(f)
 
     # Find docs-architecture workflow

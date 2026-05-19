@@ -2,7 +2,7 @@
 
 A collection of skills designed to turn vague project uncertainty into clear problem frames, research paths, decisions, and next-step prompts.
 
-The repository is organized around a clean split: **Diagnosis** (`repo-sensemaker`) and **Orchestration** (`workflow-orchestrator`).
+The repository is organized around a clean split: **Diagnosis** (`repo-sensemaker`) and **Orchestration** (`workflow-planner`).
 
 ## Engineering Philosophy: Artifact-Driven Agentic Engineering
 
@@ -19,7 +19,7 @@ For a deep dive into our methodology, failure taxonomy, and the "Anti-Causal Con
 
 ### What this is
 - A meta-routing layer to convert repository uncertainty ("fog") into actionable next steps.
-- A split between **Diagnosis** (`repo-sensemaker`) and **Orchestration** (`workflow-orchestrator`).
+- A split between **Diagnosis** (`repo-sensemaker`) and **Orchestration** (`workflow-planner`).
 - A structural enforcement tool for mental model alignment.
 
 ### What this is not
@@ -37,7 +37,7 @@ The foundation layer: diagnostic and orchestration skills that identify problems
 - **`problem-framer`** — Converts vague ideas into structured Problem Frames. Identifies the "problem under the problem" and "object under pressure."
 - **`unknowns-mapper`** — Separates Knowns, Unknowns, Assumptions, and Risks. Defines research paths and stopping rules. Can dynamically trigger research skills based on fog clarity.
 - **`repo-sensemaker`** — Produces a 14-section Repository Sensemaking Brief. Audits repository health, identifies the "weakest boundary," cites file-level evidence.
-- **`workflow-orchestrator`** — Consumes a Brief and produces a Workflow Orchestration Plan. Selects execution mode and defines approval gates.
+- **`workflow-planner`** — Consumes a Brief and produces a Workflow Orchestration Plan. Selects execution mode and defines approval gates.
 - **`sensemaking-docs-reconciler`** — Aligns repository docs, registries, and artifact contracts to resolve drift.
 - **`prompt-handoff`** — Packages sensemaking context into a ready-to-copy Prompt for downstream skills.
 
@@ -111,7 +111,7 @@ Problem Frame
 Unknowns Map
   ↓ (repo-sensemaker)
 Repository Sensemaking Brief (14 sections)
-  ↓ (workflow-orchestrator)
+  ↓ (workflow-planner)
 Workflow Orchestration Plan (10 sections)
   ↓ (prompt-handoff)
 Guided Execution / Prompt Chain
@@ -129,7 +129,7 @@ Guided Execution / Prompt Chain
 
 - `skills/`:
   - `repo-sensemaker/`: Diagnostic skill and templates.
-  - `workflow-orchestrator/`: Execution/Orchestration skill and registries.
+  - `workflow-planner/`: Planning skill and registries.
 - `workflows/`: Composite skill chains (e.g., [Experimental Autonomous Sprint](workflows/experimental-autonomous-sprint.md)).
 - `examples/`: Validation fixtures for both skills.
 - `docs/`: Repository-level documentation (PRDs, Issues, ADRs).
@@ -142,7 +142,7 @@ The sensemaking system provides two automated diagnostic workflows that analyze 
 
 **Fast Path** — When you have a clear repo goal:
 ```bash
-python scripts/orchestration-runner.py fast-path-workflow --mode guided_execution
+python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
 ```
 **Chains**: `repo-sensemaker`  
 **Output**: Repository Sensemaking Brief (identifies weakest boundary + recommended workflows)  
@@ -150,7 +150,7 @@ python scripts/orchestration-runner.py fast-path-workflow --mode guided_executio
 
 **Full Fog Path** — When the problem is ambiguous:
 ```bash
-python scripts/orchestration-runner.py full-fog-workflow --mode guided_execution
+python scripts/workflow-runtime.py full-fog-workflow --mode guided_execution
 ```
 **Chains**: `problem-framer` → `unknowns-mapper` → `repo-sensemaker` → `prompt-handoff`  
 **Output**: Problem Frame + Unknowns Map + Repository Brief + Ready-to-copy Prompts  
@@ -158,7 +158,7 @@ python scripts/orchestration-runner.py full-fog-workflow --mode guided_execution
 
 ### Execution Flow (Default: guided_execution mode)
 
-1. **Invoke diagnostic workflow** — `orchestration-runner.py <workflow-name>`
+1. **Invoke diagnostic workflow** — `workflow-runtime.py <workflow-name>`
 2. **Provide initial inputs** — vague problem (Full Fog Path) or repository context (Fast Path)
 3. **Skills chain automatically** with approval gates at each step:
    - Step 1 completes → Orchestrator pauses
@@ -176,7 +176,7 @@ After the diagnostic workflow completes, run the recommended workflow:
 
 ```bash
 # Example: if brief recommends docs-architecture
-python scripts/orchestration-runner.py docs-architecture --mode guided_execution
+python scripts/workflow-runtime.py docs-architecture --mode guided_execution
 ```
 
 Or copy the ready-to-copy prompt from the brief and paste it directly into the next skill.
@@ -194,7 +194,7 @@ See [Execution Modes Reference](docs/orchestration-patterns.md#execution-modes) 
 
 ### Automatic Skill Chaining (Phase 5 Complete)
 
-In `guided_execution`, `autonomous_execution`, and `yolo_execution` modes, `orchestration-runner.py` automatically chains skills within a workflow. No external agent invocation is required.
+In `guided_execution`, `autonomous_execution`, and `yolo_execution` modes, `workflow-runtime.py` automatically chains skills within a workflow. No external agent invocation is required.
 
 ### Downstream Implementation Workflows
 
@@ -217,13 +217,13 @@ MIT
 
 ## Contributing
 - New diagnosis rules go in `repo-sensemaker/references/`.
-- New skill entries go in `workflow-orchestrator/references/skill-registry.yaml`.
-- New workflows go in `workflow-orchestrator/references/workflow-registry.yaml`.
+- New skill entries go in `workflow-planner/references/skill-registry.yaml`.
+- New workflows go in `workflow-planner/references/workflow-registry.yaml`.
 - New examples must include an expected behavior checklist.
 
 ## V1 Definition of Done (New Architecture)
 - All five core skills are package-valid with separate `agents/openai.yaml`.
 - `repo-sensemaker` produces a 14-section diagnostic brief with evidence.
-- `workflow-orchestrator` produces a 10-section orchestration plan.
+- `workflow-planner` produces a 10-section orchestration plan.
 - Registry-based routing is fully machine-readable.
 - Negative fixtures exist to test refusal-to-act.

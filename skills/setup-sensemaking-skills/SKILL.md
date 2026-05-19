@@ -1,6 +1,6 @@
 ---
 name: setup-sensemaking-skills
-description: configure a repository for sensemaking-skills by adding agent instructions, artifact contract references, workflow mode defaults, downstream skill mappings, and run-log conventions. use before first running repo-sensemaker, workflow-orchestrator, or the full sensemaking-to-workflow pipeline in a repository.
+description: configure a repository for sensemaking-skills by adding agent instructions, artifact contract references, workflow mode defaults, downstream skill mappings, and run-log conventions. use before first running repo-sensemaker, workflow-planner, or the full sensemaking-to-workflow pipeline in a repository.
 ---
 
 # setup-sensemaking-skills

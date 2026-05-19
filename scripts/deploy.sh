@@ -22,7 +22,7 @@ python -m pytest tests/ -q --tb=short
 
 # Verify installation
 echo "Verifying installation..."
-python scripts/orchestration-runner.py --list-workflows > /dev/null
+python scripts/workflow-runtime.py --list-workflows > /dev/null
 
 # Run preflight check
 echo "Running preflight check..."

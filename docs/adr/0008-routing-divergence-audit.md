@@ -183,7 +183,7 @@ requires_user_approval: true
 # User sees:
 # "Fast-path diagnosis found high uncertainty.
 #  Recommend escalation to full-fog for deeper analysis.
-#  Command: orchestration-runner.py --workflow full-local-sensemaking"
+#  Command: workflow-runtime.py --workflow full-local-sensemaking"
 
 # User can then:
 # A) Run the recommended command (guided_execution)

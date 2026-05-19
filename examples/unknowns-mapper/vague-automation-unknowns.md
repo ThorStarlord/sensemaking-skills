@@ -2,7 +2,7 @@
 
 ## 1. Knowns
 - The repo has a `repo-analysis-template.md`.
-- `workflow-orchestrator` has a `workflow-registry.yaml`.
+- `workflow-planner` has a `workflow-registry.yaml`.
 - The user wants more automation.
 
 ## 2. Unknowns
@@ -11,7 +11,7 @@
 
 ## 3. Assumptions
 - We assume that adding a YAML block to the brief won't break existing human-readability.
-- We assume that the `workflow-orchestrator` can reliably extract this block.
+- We assume that the `workflow-planner` can reliably extract this block.
 
 ## 4. Risks
 - Adding too much machine-readable "noise" to the brief might make it less useful for human review.

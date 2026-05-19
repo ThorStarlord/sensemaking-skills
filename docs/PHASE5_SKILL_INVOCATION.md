@@ -23,7 +23,7 @@ Phase 5 addresses this architectural gap by implementing a skill invocation fram
 - **Parallel execution** working across 2-5 concurrent workers
 
 ### Identified Gap
-The orchestrator layer (orchestration-runner.py) currently:
+The orchestrator layer (workflow-runtime.py) currently:
 - ✅ Reads workflow definitions
 - ✅ Manages execution gates and modes
 - ✅ Validates artifact contracts
@@ -56,7 +56,7 @@ All 5 required Level-3 validators are present and executable:
 
 | Validator | Purpose | Triggered By | Workflow(s) | Status | Coverage |
 |-----------|---------|-------------|-----------|--------|----------|
-| `validate-plan.py` | Validates orchestration execution plans | orchestration-runner.py planning phase | plan_only, prompt_chain, autonomous_execution | ✅ PROVEN | 3+ runs |
+| `validate-plan.py` | Validates orchestration execution plans | workflow-runtime.py planning phase | plan_only, prompt_chain, autonomous_execution | ✅ PROVEN | 3+ runs |
 | `validate-prompt-handoff.py` | Validates prompt handoff artifacts for downstream Claude invocation | handoff skill output validation | All 5 modes | ✅ PROVEN | 5+ runs (all modes) |
 | `validate-brief.py` | Validates brief artifacts (sensemaking, problem frames, personas, etc.) | repository_sensemaking_brief, problem_frame outputs | fast-local-diagnostic, full-local-sensemaking | ✅ PROVEN | 3+ runs |
 | `validate-skill-improvement-plan.py` | Validates skill improvement proposals | skill-maintenance-loop workflow output | skill-maintenance-loop | ✅ PROVEN | 2+ runs (Phase 5) |
@@ -79,7 +79,7 @@ All 5 required Level-3 validators are present and executable:
 
 3. **Coverage Architecture**
    - Validators are Python executables in scripts/ directory
-   - Each is triggered by orchestration-runner.py based on artifact type
+   - Each is triggered by workflow-runtime.py based on artifact type
    - Dispatcher pattern: validate-output.py routes to specialized Level-3 validators
    - All validators use artifact contract checking for type validation
    - Proven across 13 distinct workflow families
@@ -87,7 +87,7 @@ All 5 required Level-3 validators are present and executable:
 ## Validator Dispatcher Architecture
 
 ```
-orchestration-runner.py (validates all outputs)
+workflow-runtime.py (validates all outputs)
     ↓
 validate-output.py (generic dispatcher)
     ├─→ validate-artifact.py (Level 2: generic contract validation)
@@ -121,7 +121,7 @@ validate-output.py (generic dispatcher)
 5. Returns execution outcome
 
 ### Option 2: Orchestrator Skill Invocation
-**Approach**: Add direct skill invocation to orchestration-runner.py
+**Approach**: Add direct skill invocation to workflow-runtime.py
 
 **Advantages**:
 - Single code path for all execution
@@ -210,7 +210,7 @@ $ pytest tests/test_all_validators_coverage.py -v
 
 ### Decision: Artifact Contract Enforcement
 All validators enforce artifact contracts defined in:
-- `skills/workflow-orchestrator/references/artifact-contracts.yaml`
+- `skills/workflow-planner/references/artifact-contracts.yaml`
 
 **Benefits**:
 - Type safety across workflow steps
@@ -269,13 +269,13 @@ To run a workflow with manual gates in `guided_execution` mode:
 
 ```bash
 # Standard mode with interactive gate prompts (requires TTY)
-python scripts/orchestration-runner.py <workflow_id> --mode guided_execution
+python scripts/workflow-runtime.py <workflow_id> --mode guided_execution
 
 # Non-interactive testing with auto-approval
-python scripts/orchestration-runner.py <workflow_id> --mode guided_execution --gate-decision auto-approve
+python scripts/workflow-runtime.py <workflow_id> --mode guided_execution --gate-decision auto-approve
 
 # Non-interactive testing with auto-denial (tests gate denial path)
-python scripts/orchestration-runner.py <workflow_id> --mode guided_execution --gate-decision auto-deny
+python scripts/workflow-runtime.py <workflow_id> --mode guided_execution --gate-decision auto-deny
 ```
 
 ### Gate Prompt Interface

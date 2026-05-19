@@ -107,7 +107,7 @@ User Reviews Output
 $ python scripts/router.py project-description.md
 → Classification: SaaS (100% confidence)
 → Workflow: product-discovery-sprint (guided_execution)
-→ Command: python scripts/orchestration-runner.py product-discovery-sprint --mode guided_execution
+→ Command: python scripts/workflow-runtime.py product-discovery-sprint --mode guided_execution
 ```
 
 ### Multi-Project Portfolio

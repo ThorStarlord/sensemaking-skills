@@ -61,7 +61,7 @@ def get_skill_invocation_command(skill_id: str, repo_root: str) -> Optional[str]
 
     Returns the command string (e.g. "/docs-aligner") or None if not found.
     """
-    skill_registry_path = os.path.join(repo_root, "skills", "workflow-orchestrator", "references", "skill-registry.yaml")
+    skill_registry_path = os.path.join(repo_root, "skills", "workflow-planner", "references", "skill-registry.yaml")
     if not os.path.exists(skill_registry_path):
         return None
 

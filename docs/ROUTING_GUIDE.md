@@ -70,7 +70,7 @@ WORKFLOW SELECTION
   Supported Modes: plan_only, guided_execution, autonomous_execution
 
 NEXT STEP
-  $ python scripts/orchestration-runner.py product-discovery-sprint --mode guided_execution
+  $ python scripts/workflow-runtime.py product-discovery-sprint --mode guided_execution
 ```
 
 ## Flow: From Raw Idea to Execution
@@ -89,7 +89,7 @@ Your Project Description
   Mode Recommendation
    (plan_only → guided → autonomous)
         ↓
-orchestration-runner.py
+workflow-runtime.py
         ↓
   Skill Execution Pipeline
         ↓
