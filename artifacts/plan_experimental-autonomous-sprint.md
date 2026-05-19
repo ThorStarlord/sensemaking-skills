@@ -8,7 +8,7 @@
 
 ## Skills in Sequence
 
-### Step 1: grill-with-docs
+### Step 1: docs-aligner
 - **Type**: local_execution
 - **Gate**: review_domain_alignment
 - **Output**: domain_alignment_report
@@ -68,7 +68,7 @@ initial_inputs:
   repository_state: external_context
 steps:
   - id: 1
-    skill: grill-with-docs
+    skill: docs-aligner
     step_type: local_execution
     gate: review_domain_alignment
     output_artifact: domain_alignment_report

@@ -590,6 +590,97 @@ class OrchestrationRunner:
         result["status"] = "COMPLETED"
         return result
 
+    def _should_auto_invoke_next(self) -> tuple[bool, str | None]:
+        """Check if this workflow declares auto-invocation. Returns (should_invoke, source_artifact_id)."""
+        auto_invoke = self.workflow.get("auto_invoke_next_workflow", False)
+        source = self.workflow.get("auto_invoke_source")
+        if auto_invoke and source:
+            return True, source
+        return False, None
+
+    def _read_machine_readable_section(self, artifact_path: str) -> dict | None:
+        """Parse the YAML machine-readable section from a markdown artifact.
+
+        Looks for a code block like:
+        ```yaml
+        artifact_id: ...
+        ...
+        ```
+        """
+        if not os.path.exists(artifact_path):
+            return None
+
+        try:
+            with open(artifact_path, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            # Find the first YAML code block
+            yaml_match = re.search(r"```yaml\n(.*?)\n```", content, re.DOTALL)
+            if not yaml_match:
+                return None
+
+            yaml_content = yaml_match.group(1)
+            import yaml as yaml_lib
+            return yaml_lib.safe_load(yaml_content)
+        except Exception as e:
+            print(f"  ~ Failed to parse machine-readable section from {artifact_path}: {e}")
+            return None
+
+    def _extract_recommended_workflow(self, source_artifact_id: str) -> str | None:
+        """Extract the recommended_workflow_id from the source artifact.
+
+        Reads the artifact and parses its machine-readable section.
+        Returns the recommended_workflow_id or None if not found.
+        """
+        artifact_path = self._resolve_artifact_path(source_artifact_id)
+        if not os.path.exists(artifact_path):
+            print(f"  ~ Source artifact for auto-invocation not found: {artifact_path}")
+            return None
+
+        machine_data = self._read_machine_readable_section(artifact_path)
+        if not machine_data:
+            print(f"  ~ Could not parse machine-readable section from {source_artifact_id}")
+            return None
+
+        recommended = machine_data.get("recommended_workflow_id")
+        if recommended:
+            print(f"  [OK] Extracted recommended workflow: {recommended}")
+            return recommended
+        else:
+            print(f"  ~ No recommended_workflow_id found in {source_artifact_id}")
+            return None
+
+    def _invoke_next_workflow(self, next_workflow_id: str) -> int:
+        """Invoke the next workflow automatically using orchestration-runner.
+
+        Uses the same mode as the current execution.
+        Returns the exit code from the next workflow run.
+        """
+        print(f"\n{'='*60}")
+        print(f"AUTO-INVOCATION: Next Workflow")
+        print(f"{'='*60}")
+        print(f"  Current workflow: {self.workflow_id} ({self.mode})")
+        print(f"  Next workflow:    {next_workflow_id} ({self.mode})")
+        print(f"")
+
+        # Build the command
+        cmd = [
+            sys.executable,
+            os.path.join(self.repo_root, "scripts", "orchestration-runner.py"),
+            next_workflow_id,
+            "--mode", self.mode,
+            "--repo-root", self.repo_root,
+        ]
+
+        # If testing mode (auto-approve/deny), propagate it
+        if self.gate_decision:
+            cmd.extend(["--gate-decision", self.gate_decision])
+
+        print(f"  Running: {' '.join(cmd)}\n")
+
+        result = subprocess.run(cmd)
+        return result.returncode
+
     def _resolve_artifact_path(self, artifact_id: str) -> str:
         """Resolve the file path for an artifact."""
         # Known artifact paths
@@ -1195,8 +1286,23 @@ class OrchestrationRunner:
                 print(f"  [FAIL] Skill execution failed.")
                 return 2
             else:
-                print(f"  [OK] Execution completed successfully.")
-                return 0
+                # Phase 6: Check for auto-invocation of next workflow
+                should_invoke, source_artifact = self._should_auto_invoke_next()
+                if should_invoke:
+                    print(f"\n{'='*60}")
+                    print(f"PHASE 6: AUTO-INVOCATION CHECK")
+                    print(f"{'='*60}")
+                    next_workflow_id = self._extract_recommended_workflow(source_artifact)
+                    if next_workflow_id:
+                        next_exit_code = self._invoke_next_workflow(next_workflow_id)
+                        return next_exit_code
+                    else:
+                        print(f"  [SKIP] Auto-invocation enabled but no recommended workflow found.")
+                        print(f"  [OK] Execution completed successfully.")
+                        return 0
+                else:
+                    print(f"  [OK] Execution completed successfully.")
+                    return 0
 
         # Phase 3: Execute steps (for non-execution modes)
         print(f"\n{'='*60}")
@@ -1284,8 +1390,23 @@ class OrchestrationRunner:
             print(f"  [PAUSE]  Execution paused. Can resume.")
             return 3
         else:
-            print(f"  [OK] Execution completed successfully.")
-            return 0
+            # Phase 7: Check for auto-invocation of next workflow (only in execution modes)
+            should_invoke, source_artifact = self._should_auto_invoke_next()
+            if should_invoke and self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
+                print(f"\n{'='*60}")
+                print(f"PHASE 7: AUTO-INVOCATION CHECK")
+                print(f"{'='*60}")
+                next_workflow_id = self._extract_recommended_workflow(source_artifact)
+                if next_workflow_id:
+                    next_exit_code = self._invoke_next_workflow(next_workflow_id)
+                    return next_exit_code
+                else:
+                    print(f"  [SKIP] Auto-invocation enabled but no recommended workflow found.")
+                    print(f"  [OK] Execution completed successfully.")
+                    return 0
+            else:
+                print(f"  [OK] Execution completed successfully.")
+                return 0
 
 
 # ===============================================================================

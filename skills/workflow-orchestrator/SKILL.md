@@ -16,7 +16,7 @@ description: select and stage a workflow from a repository sensemaking brief. us
    - `guided_execution`: execute one eligible step, validate its output artifact, write/update the run log, then stop for approval.
    - `autonomous_execution`: execute eligible steps until the next approval gate, failed validation, non-executable skill, or stop condition. **After sensemaking completes**: if the orchestration-plan recommends external workflows, automatically invoke `implementation-workflow` with sensemaking artifacts and continue without stopping between steps.
     - `yolo_execution`: [STABLE] execute only eligible steps with no intermediate approval. **MANDATORY**: Run `Post-Step Verification` after each skill execution. Stop immediately on missing artifact, invalid handoff, failed verification (script or LLM), non-executable skill, dirty git state, or run-log failure. **After sensemaking completes**: if the orchestration-plan recommends external workflows, automatically invoke `implementation-workflow` with sensemaking artifacts and continue without stopping between steps.
-6. **Implementation Workflow (autonomous modes only)**: If mode is `autonomous_execution` or `yolo_execution` and the orchestration-plan recommends external workflows, automatically execute the `implementation-workflow` (grill-with-docs → to-prd → to-issues → triage → tdd → handoff) with `gate: none` between steps. Pass sensemaking artifacts as initial context. Do not pause between steps.
+6. **Implementation Workflow (autonomous modes only)**: If mode is `autonomous_execution` or `yolo_execution` and the orchestration-plan recommends external workflows, automatically execute the `implementation-workflow` (docs-aligner → to-prd → to-issues → triage → tdd → handoff) with `gate: none` between steps. Pass sensemaking artifacts as initial context. Do not pause between steps.
 
 ## Stage 2: Routing Audit
 
@@ -110,8 +110,8 @@ Use [Execution Modes](references/execution-modes.md) as the source of truth. The
 3. Routes to the appropriate workflow:
    - **`product-implementation-workflow`**: For product/feature fog (includes discovery, opportunity-tree)
    - **`ui-implementation-workflow`**: For UI/frontend fog (includes ui-flow, ui-screen-spec)
-   - **`implementation-workflow`**: For architecture/code design fog (default: grill-with-docs → prd → issues → tdd)
-   - **`docs-implementation-workflow`**: For documentation fog (default: grill-with-docs → docs spec)
+   - **`implementation-workflow`**: For architecture/code design fog (default: docs-aligner → prd → issues → tdd)
+   - **`docs-implementation-workflow`**: For documentation fog (default: docs-aligner → docs spec)
 4. Invokes the selected workflow with sensemaking artifacts as `context_artifacts` input
 5. All steps marked `gate: none` execute without pausing; only final `session_close` gate pauses for approval
 6. Artifacts flow between steps automatically; no user intervention required between steps

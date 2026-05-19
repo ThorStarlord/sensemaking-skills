@@ -1,7 +1,7 @@
 # Validator Ecosystem: Grill Session Output
 
 **Date:** 2026-05-16
-**Method:** grill-with-docs
+**Method:** docs-aligner
 **Repo:** sensemaking-skills
 
 ---

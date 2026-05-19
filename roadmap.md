@@ -34,7 +34,7 @@ The validator ecosystem is complete. Zero repeatable failures detected. All prod
 - Added `artifact-production-required` test to controlled failure suite (10 tests now pass)
 
 **2. Remove premature PRD step from docs-architecture workflow** ✅
-- docs-architecture streamlined to 2 steps: `grill-with-docs` → `handoff`
+- docs-architecture streamlined to 2 steps: `docs-aligner` → `handoff`
 - to-prd moved to product-to-issues workflow
 
 **3. Create product-to-issues workflow** ✅

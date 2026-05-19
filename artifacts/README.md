@@ -7,7 +7,7 @@ This directory contains sensemaking pipeline outputs, organized by run in a numb
 | # | Run | Date | Type | Status |
 |---|-----|------|------|--------|
 | 01 | [metamorfose-finance](01-metamorfose-finance/README.md) | 2026-05-17 | System sensemaking (9 unknowns) | Product-discovery-sprint recommended |
-| 02 | [metamorfose-classes](02-metamorfose-classes/README.md) | 2026-05-17 | System sensemaking (8 unknowns) | Validated via grill-with-docs |
+| 02 | [metamorfose-classes](02-metamorfose-classes/README.md) | 2026-05-17 | System sensemaking (8 unknowns) | Validated via docs-aligner |
 | Phase 2 | [operator-interviews](runs/2026-05-17-05-phase2-operator-interviews/README.md) | 2026-05-17 | Validation (3 operators) | ✅ GO for Phase 3 (discovery-sprint) |
 
 ### Adding a new run

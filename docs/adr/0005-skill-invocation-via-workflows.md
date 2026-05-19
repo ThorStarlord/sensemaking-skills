@@ -108,43 +108,65 @@ repo-sensemaker produces brief, then invokes workflow-orchestrator
 
 ---
 
-## Design Correction: Removing Orchestrator from Workflow Steps
+## Design Correction: Restored Orchestrator as Workflow Step (Phase 5b)
 
-**Initial Design (Incorrect)**
-```yaml
-fast-path-workflow:
-  steps:
-    - repo-sensemaker → brief
-    - workflow-orchestrator → plan  ❌ RECURSION RISK
-```
-
-**Issue**: `workflow-orchestrator` is the orchestrator itself, not a normal skill. Including it as a step creates a recursive scenario:
-- orchestration-runner invokes fast-path-workflow
-- fast-path-workflow step 2 invokes workflow-orchestrator (the skill)
-- workflow-orchestrator produces a plan and invokes the next workflow
-- Could loop back → recursion risk
-
-**Corrected Design (Final)**
+**Initial Design (Phase 5 Incomplete)**
 ```yaml
 fast-path-workflow:
   steps:
     - repo-sensemaker → brief  ✅
 
-Output brief contains:
-  - Section 12: Recommended workflow
-  - Section 13: Machine-readable handoff
-  - Section 14: Ready-to-copy prompts
+User then manually invokes workflow-orchestrator or implementation workflow
+```
 
-User then:
-  - Invokes recommended workflow manually, OR
-  - Runs orchestration-runner.py workflow-orchestrator to select workflow
+**Issue Discovered**: Manual invocation between diagnostic and implementation workflows breaks the automation requirement: "I want the entire process to be automated from the initial input."
+
+**Final Design (Phase 5b Complete)**
+```yaml
+fast-path-workflow:
+  steps:
+    - repo-sensemaker → repository_sensemaking_brief
+    - workflow-orchestrator → workflow_orchestration_plan  ✅
+
+full-fog-workflow:
+  steps:
+    - problem-framer → problem_frame
+    - unknowns-mapper → unknowns_map
+    - repo-sensemaker → repository_sensemaking_brief
+    - workflow-orchestrator → workflow_orchestration_plan  ✅
+
+Configuration (in workflow-registry.yaml):
+  auto_invoke_next_workflow: true
+  auto_invoke_source: workflow_orchestration_plan.recommended_workflow_id
 ```
 
 **Why This Works**:
-1. **No recursion**: The diagnostic workflow produces analysis; user/orchestrator decides next step
-2. **Cleaner separation**: Diagnosis (what's the problem?) vs. Orchestration (what do we do about it?)
-3. **Flexibility**: Same brief can be consumed by different workflows depending on user choice
-4. **Artifact-driven**: Handoff is the brief itself, not a workflow invocation
+1. **No recursion**: `orchestration-runner.py` is the ENGINE; `workflow-orchestrator` is a SKILL. Engine invokes skill, not itself
+2. **Cleaner separation**: Diagnosis workflow identifies the problem; orchestration workflow selects the implementation path
+3. **Full automation**: orchestration-runner detects auto_invoke_next_workflow flag after diagnostic workflow completes, reads recommended_workflow_id from the orchestration_plan, and automatically invokes the implementation workflow
+4. **Three-stage automation**: User provides initial input → diagnostic workflow → orchestration skill → auto-invocation → implementation workflow (all without manual intervention)
+5. **Flexibility**: Same diagnostic workflow works for both fast-path and full-fog; implementation routing is determined by fog_type classification in the orchestration_plan
+
+### Auto-Invocation Implementation
+
+When `auto_invoke_next_workflow: true` is set in a workflow definition:
+
+1. **After workflow completes successfully**, orchestration-runner.py:
+   - Checks `auto_invoke_next_workflow` and `auto_invoke_source` fields
+   - Reads the source artifact (e.g., `workflow_orchestration_plan`)
+   - Parses the YAML machine-readable section
+   - Extracts `recommended_workflow_id`
+
+2. **Automatically invokes next workflow**:
+   - Runs: `python scripts/orchestration-runner.py {next_workflow_id} --mode {same_mode}`
+   - Propagates execution mode (guided_execution → guided_execution, yolo_execution → yolo_execution, etc.)
+   - Returns the exit code from the invoked workflow
+
+3. **No manual intervention required**:
+   - In `guided_execution` mode: Final gate pauses before auto-invocation; user can approve/deny the implementation workflow
+   - In `autonomous_execution` and `yolo_execution` modes: Auto-invocation proceeds immediately without pausing
+
+See [scripts/orchestration-runner.py](scripts/orchestration-runner.py) for the implementation of `_should_auto_invoke_next()`, `_extract_recommended_workflow()`, and `_invoke_next_workflow()`.
 
 ## Consequences
 
@@ -308,16 +330,19 @@ When adding a new workflow:
 ## Acceptance Criteria
 
 This decision is accepted when:
-- ✓ fast-path-workflow registered (1 skill: repo-sensemaker)
-- ✓ full-fog-workflow registered (4 skills: problem-framer → unknowns-mapper → repo-sensemaker → prompt-handoff)
-- ✓ Both workflows produce briefs with recommendations (sections 12-14)
-- ✓ No workflow-orchestrator invocations inside diagnostic workflows (no recursion)
+- ✓ fast-path-workflow registered (2 skills: repo-sensemaker → workflow-orchestrator)
+- ✓ full-fog-workflow registered (4 skills: problem-framer → unknowns-mapper → repo-sensemaker → workflow-orchestrator)
+- ✓ Diagnostic workflows produce orchestration_plan with fog_type and recommended_workflow_id
+- ✓ Orchestration-runner.py implements auto-invocation (reads auto_invoke_next_workflow and auto_invoke_source from workflow registry)
+- ✓ Auto-invocation extracts recommended_workflow_id from orchestration_plan machine-readable section
+- ✓ Auto-invocation invokes next workflow with same execution mode
+- ✓ No recursion risk (orchestration-runner is engine; workflow-orchestrator is skill)
 - ✓ Artifact contracts validated between all steps
 - ✓ Approval gates work correctly in guided_execution mode
-- ✓ README documents two-step process: diagnostic workflow → implementation workflow
-- ✓ No skills directly invoke other skills
-- ✓ ADR documents design correction and rationale
-- ✓ Validation (validate-repo.py) passes for diagnostic workflows
+- ✓ README documents three-stage automation: diagnostic → orchestration → auto-invoked implementation
+- ✓ No skills directly invoke other skills (only orchestration-runner engine invokes workflows)
+- ✓ ADR documents design correction and auto-invocation implementation
+- ✓ Validation (validate-repo.py) passes for all workflows
 
 ---
 

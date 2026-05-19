@@ -39,7 +39,7 @@ Sensemaking produces a **fog_type** that determines which implementation workflo
 **Implementation workflow used**: `product-implementation-workflow`
 
 **Sequence**:
-1. grill-with-docs - align on domain
+1. docs-aligner - align on domain
 2. discovery - interview stakeholders
 3. opportunity-tree - map problems to solutions
 4. to-prd - create product specification
@@ -60,7 +60,7 @@ Sensemaking produces a **fog_type** that determines which implementation workflo
 **Implementation workflow used**: `ui-implementation-workflow`
 
 **Sequence**:
-1. grill-with-docs - align on domain
+1. docs-aligner - align on domain
 2. ui-flow - document user journeys
 3. ui-screen-spec - specify screens
 4. to-issues - decompose into issues
@@ -80,7 +80,7 @@ Sensemaking produces a **fog_type** that determines which implementation workflo
 **Implementation workflow used**: `docs-implementation-workflow`
 
 **Sequence**:
-1. grill-with-docs - align understanding
+1. docs-aligner - align understanding
 2. to-prd - create documentation spec
 3. handoff - complete
 
@@ -96,7 +96,7 @@ Sensemaking produces a **fog_type** that determines which implementation workflo
 **Implementation workflow used**: `implementation-workflow`
 
 **Sequence**:
-1. grill-with-docs - align on domain
+1. docs-aligner - align on domain
 2. to-prd - create specification
 3. to-issues - decompose into issues
 4. triage - prepare agent briefs
@@ -176,7 +176,7 @@ If a step fails during implementation:
 Implementation workflows use `gate: none` for steps between sensemaking and final completion:
 
 ```
-1. grill-with-docs (gate: none ✓ auto-continue)
+1. docs-aligner (gate: none ✓ auto-continue)
 2. discovery (gate: none ✓ auto-continue)
 3. to-prd (gate: none ✓ auto-continue)
 4. to-issues (gate: none ✓ auto-continue)
@@ -203,7 +203,7 @@ Artifacts flow automatically between steps:
 ```
 orchestration-plan (from sensemaking)
   ↓
-grill-with-docs ← consumes plan, produces ↓ context.md
+docs-aligner ← consumes plan, produces ↓ context.md
   ↓
 discovery ← consumes context, produces ↓ discovery_findings
   ↓
@@ -243,7 +243,7 @@ orchestrator sees fog_type: ui_fog
   ↓
 invokes ui-implementation-workflow
   ↓
-1. grill-with-docs → understand finance domain, create CONTEXT.md
+1. docs-aligner → understand finance domain, create CONTEXT.md
 2. ui-flow → document all finance UI journeys (capture→review→post→reconcile)
 3. ui-screen-spec → specify each finance screen (Dashboard, Inbox, Ledger, Reports)
 4. to-issues → break specs into implementation issues

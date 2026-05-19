@@ -15,7 +15,7 @@ During Phase 2 analysis, we discovered a critical design issue in the docs-archi
 ```yaml
 steps:
   - id: 1
-    skill: grill-with-docs          # Purpose: align domain understanding
+    skill: docs-aligner          # Purpose: align domain understanding
     output_artifact: domain_alignment_report
   
   - id: 2
@@ -55,7 +55,7 @@ steps:
   purpose: Align implementation with repository documentation through stakeholder interviews
   steps:
     - id: 1
-      skill: grill-with-docs
+      skill: docs-aligner
       output_artifact: domain_alignment_report
     
     - id: 2
@@ -206,7 +206,7 @@ When designing a new workflow:
 ## Acceptance Criteria
 
 This decision is accepted when:
-- ✓ docs-architecture has 2 steps (grill-with-docs, handoff) with clear domain alignment purpose
+- ✓ docs-architecture has 2 steps (docs-aligner, handoff) with clear domain alignment purpose
 - ✓ product-to-issues has 3 steps (to-prd, to-issues, triage) with clear PRD generation purpose
 - ✓ Each step's output is consumed by next step (no orphaned artifacts)
 - ✓ No other workflows mix multiple concerns

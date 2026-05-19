@@ -148,7 +148,7 @@ This decision was validated during Phase 3:
 **Result**: All 7 design validation tests pass; workflow is clear and maintainable
 
 ### Bad Composition (docs-architecture with mixed steps)
-- Step 1 (grill-with-docs): raw_fog → alignment_report ✓ (transforms: uncertainty → knowledge)
+- Step 1 (docs-aligner): raw_fog → alignment_report ✓ (transforms: uncertainty → knowledge)
 - Step 2 (to-prd): alignment_report → prd ✗ (mixing concerns; not part of alignment purpose)
 - Step 3 (handoff): prd → prompt_handoff ✗ (expects alignment_report, not prd)
 

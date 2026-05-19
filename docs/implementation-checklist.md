@@ -92,7 +92,7 @@ elif output_artifact and output_artifact != "N/A":
 - id: docs-architecture
   steps:
     - id: 1
-      skill: grill-with-docs
+      skill: docs-aligner
       output_artifact: domain_alignment_report
     - id: 2
       skill: to-prd
@@ -109,7 +109,7 @@ elif output_artifact and output_artifact != "N/A":
 - id: docs-architecture
   steps:
     - id: 1
-      skill: grill-with-docs
+      skill: docs-aligner
       output_artifact: domain_alignment_report
     - id: 2
       skill: handoff
@@ -146,7 +146,7 @@ python scripts/orchestration-runner.py docs-architecture --mode guided_execution
       - id: domain_alignment_report
         type: artifact
         required: true
-        description: Output from docs-architecture workflow (grill-with-docs step)
+        description: Output from docs-architecture workflow (docs-aligner step)
     allowed_execution_modes:
       - guided_execution
     steps:
@@ -320,7 +320,7 @@ Evidence: Zero repeatable failures, all artifacts validated through dispatcher
 All of these should be true after implementation:
 
 - ✅ orchestration-runner.py fails steps with ARTIFACT_NOT_FOUND when artifacts missing
-- ✅ docs-architecture workflow has 2 steps (grill-with-docs, handoff)
+- ✅ docs-architecture workflow has 2 steps (docs-aligner, handoff)
 - ✅ product-to-issues workflow exists with 3 steps (to-prd, to-issues, triage)
 - ✅ product-to-issues guided_execution run produces prd.md and validates it
 - ✅ validate-output.py dispatcher invoked for prd.md (not "none (no artifact to validate)")

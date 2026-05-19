@@ -3,7 +3,7 @@
 Test suite for Phase 2: docs-architecture Workflow Redesign
 
 Verifies that:
-1. docs-architecture workflow has exactly 2 steps (grill-with-docs, handoff)
+1. docs-architecture workflow has exactly 2 steps (docs-aligner, handoff)
 2. No to-prd step in docs-architecture (moved to product-to-issues)
 3. Artifact flow is correct: domain_alignment_report -> prompt_handoff
 4. product-to-issues workflow exists and has to-prd step
@@ -74,8 +74,8 @@ def test_docs_architecture_structure():
 
 
 def test_docs_architecture_step1():
-    """Test 3: Step 1 is grill-with-docs with correct artifacts."""
-    print("Test 3: Step 1 is grill-with-docs...", end=" ")
+    """Test 3: Step 1 is docs-aligner with correct artifacts."""
+    print("Test 3: Step 1 is docs-aligner...", end=" ")
 
     registry = load_workflow_registry()
     docs_arch = find_workflow(registry, "docs-architecture")
@@ -87,8 +87,8 @@ def test_docs_architecture_step1():
 
     step1 = steps[0]
 
-    if step1.get('skill') != 'grill-with-docs':
-        print(f"[FAIL]: Expected 'grill-with-docs', got '{step1.get('skill')}'")
+    if step1.get('skill') != 'docs-aligner':
+        print(f"[FAIL]: Expected 'docs-aligner', got '{step1.get('skill')}'")
         return False
 
     if step1.get('output_artifact') != 'domain_alignment_report':

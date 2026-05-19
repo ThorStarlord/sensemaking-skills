@@ -17,9 +17,9 @@ It leverages [Matt Pocock's Skills](https://github.com/mattpocock/skills) to ens
 Copy and paste the following prompt once you have achieved clarity via `repo-sensemaker`:
 
 ```markdown
-prompt 1: use grill-with-docs skill to extract the goal from the context. Answer each question by exploring the codebase and existing docs. If a decision is not documented, make the most conservative architectural recommendation consistent with the project's domain language (CONTEXT.md). Prepare the alignment report and STOP for my review.
+prompt 1: use docs-aligner skill to extract the goal from the context. Answer each question by exploring the codebase and existing docs. If a decision is not documented, make the most conservative architectural recommendation consistent with the project's domain language (CONTEXT.md). Prepare the alignment report and STOP for my review.
 
-prompt 2: use to-prd skill with the output of grill-with-docs skill. Synthesize the design using the updated CONTEXT.md and any new ADRs as the source of truth. Save the PRD to the `docs/` directory and STOP for my review.
+prompt 2: use to-prd skill with the output of docs-aligner skill. Synthesize the design using the updated CONTEXT.md and any new ADRs as the source of truth. Save the PRD to the `docs/` directory and STOP for my review.
 
 prompt 3: use to-issues skill with the output of the to-prd skill. Break the work into AFK-compatible vertical slices (tracer bullets). Prepare the issue list and STOP for my review.
 
@@ -34,7 +34,7 @@ prompt 6: use handoff skill to create a Feature Completion Summary of the chat s
 
 | Step | Skill | Role |
 | :--- | :--- | :--- |
-| **1. Align** | `/grill-with-docs` | Self-interviews using code/docs to reach shared understanding. |
+| **1. Align** | `/docs-aligner` | Self-interviews using code/docs to reach shared understanding. |
 | **2. Define** | `/to-prd` | Synthesizes a spec based on the new `CONTEXT.md`. |
 | **3. Decompose** | `/to-issues` | Breaks work into AFK-compatible vertical slices. |
 | **4. Brief** | `/triage` | Generates `AGENT-BRIEF.md` for each task. |

@@ -12,7 +12,7 @@
 
 **Evidence**:
 - docs-architecture guided_execution (2026-05-16) produced:
-  - `domain_alignment_report.md` (8.6 KB) — Alignment findings from grill-with-docs
+  - `domain_alignment_report.md` (8.6 KB) — Alignment findings from docs-aligner
   - `prompt_handoff.md` (2.7 KB) — Copy-paste prompts for downstream work
   - `prd.md` — Claimed but NOT produced (design gap, not system failure)
 - All 3 steps completed successfully

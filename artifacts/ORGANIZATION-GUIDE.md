@@ -63,7 +63,7 @@ Files within a run folder are numbered to show pipeline sequence:
 | 03 | `03-sensemaking-brief.md` | repo-sensemaker |
 | 04 | `04-orchestration-plan.md` | workflow-orchestrator |
 | 05 | `05-run-analysis.md` | Post-run analysis |
-| 06 | `06-grilled-findings.md` | grill-with-docs (optional) |
+| 06 | `06-grilled-findings.md` | docs-aligner (optional) |
 
 ### Future: After 10+ Runs
 

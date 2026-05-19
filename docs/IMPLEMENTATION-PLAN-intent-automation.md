@@ -73,7 +73,7 @@ python scripts/validate-plan.py artifacts/*/04-*.md
     - unknowns-mapper
     - repo-sensemaker
     - workflow-orchestrator
-    - grill-with-docs
+    - docs-aligner
     - to-prd
     - to-issues
     - triage

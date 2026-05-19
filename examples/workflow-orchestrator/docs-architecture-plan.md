@@ -12,25 +12,25 @@ Recommended Workflow: `docs-architecture`
 It specifically addresses documentation misalignment by aligning docs with domain language and producing copy-paste prompts for implementation.
 
 ## 4. Skills in sequence
-1. `grill-with-docs`
+1. `docs-aligner`
 2. `handoff`
 
 ## 5. Inputs and outputs
-- `grill-with-docs`: Receives Brief + Context. Produces Alignment Report.
+- `docs-aligner`: Receives Brief + Context. Produces Alignment Report.
 - `handoff`: Receives Alignment Report. Produces copy-paste Handoff Prompt.
 
 ## 6. Approval gates
-- **Gate 1**: Review Alignment Report (after `grill-with-docs`).
+- **Gate 1**: Review Alignment Report (after `docs-aligner`).
 - **Gate 2**: Review Handoff Prompt (after `handoff`).
 
 ## 7. Stop conditions
-- If `grill-with-docs` identifies a major architectural contradiction that requires a human decision.
+- If `docs-aligner` identifies a major architectural contradiction that requires a human decision.
 
 ## 8. Execution mode
 `guided_execution` (Defaulting from brief recommendation).
 
 ## 9. Prompt chain
-1. `/grill-with-docs: Align the system vocab in README with the new skill structure.`
+1. `/docs-aligner: Align the system vocab in README with the new skill structure.`
 2. `/handoff: Summarize the alignment findings and generate implementation prompts.`
 
 ## 10. Run log template
@@ -52,7 +52,7 @@ initial_inputs:
 
 steps:
   - id: 1
-    skill: grill-with-docs
+    skill: docs-aligner
     step_type: local_execution
     gate: review_alignment_report
     input_source: repository_state
@@ -80,7 +80,7 @@ stop_conditions:
 
 ## Expected Behavior Checklist
 - [x] Selects `docs-architecture` workflow (redesigned 2-step version).
-- [x] Correctly identifies skill sequence from registry: grill-with-docs → handoff.
+- [x] Correctly identifies skill sequence from registry: docs-aligner → handoff.
 - [x] Explicitly defines `guided_execution` mode.
 - [x] Lists 2 mandatory approval gates (review_alignment_report, review_handoff_prompt).
 - [x] Refuses to start execution until "Go" signal.

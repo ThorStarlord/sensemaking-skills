@@ -1,7 +1,7 @@
 # Domain Alignment Report: Mode Coverage & Hardening Threshold
 
 ## Source
-- **Session**: grill-with-docs (autonomous)
+- **Session**: docs-aligner (autonomous)
 - **Date**: 2026-05-16
 - **Goal**: "Evolve sensemaking-skills into a pressure-tested automation system where each workflow mode is proven by live runs, and validation hardening is added only when real execution exposes a repeatable failure boundary."
 - **Artifacts consumed**: CONTEXT.md, workflow-registry.yaml, skill-registry.yaml, artifact-contracts.yaml, run logs (guided + YOLO), Domain Alignment Report (previous), PRDs, validator ecosystem docs, execution-modes.md

@@ -21,7 +21,7 @@
 
 | Step | Skill | Artifact | Path | Size | Status |
 |------|-------|----------|------|------|--------|
-| 1 | grill-with-docs | domain_alignment_report | artifacts/domain_alignment_report.md | 8.6 KB | ✅ EXISTS |
+| 1 | docs-aligner | domain_alignment_report | artifacts/domain_alignment_report.md | 8.6 KB | ✅ EXISTS |
 | 2 | to-prd | prd | artifacts/prd.md | — | ⚠️ MISSING |
 | 3 | handoff | prompt_handoff | artifacts/prompt_handoff.md | 2.7 KB | ✅ EXISTS |
 

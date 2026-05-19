@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary
 
-**Workflow Executed**: grill-with-docs on Classes system to clarify storage strategy  
+**Workflow Executed**: docs-aligner on Classes system to clarify storage strategy  
 **Key Finding**: Classes system IS using Supabase (not alpha-db.json), but the documentation was scattered and the code had stale UI labels  
 **Outcome**: Added inline documentation and removed misleading UI text; misunderstanding resolved
 
@@ -13,7 +13,7 @@
 ### Initial Question
 The sensemaking brief identified that the classes system's storage strategy was "undocumented" — it appeared to use `.data/saas/alpha-db.json` instead of Supabase, but no explanation was provided.
 
-### Investigation Steps (via grill-with-docs codebase exploration)
+### Investigation Steps (via docs-aligner codebase exploration)
 1. **Found the store imports**: Classes imported from `lib/alpha-store`
 2. **Inspected alpha-store.ts**: Discovered it's a **re-export facade**, not the actual implementation
 3. **Traced the real implementations**: 
@@ -147,7 +147,7 @@ The routing heuristic should trigger research when:
 4. **TODO**: Audit other systems for similar documentation drift
 
 ### For Sensemaking System
-1. **Validate**: Run grill-with-docs on other systems to see if this pattern repeats
+1. **Validate**: Run docs-aligner on other systems to see if this pattern repeats
 2. **Refine**: Consider adding a "documentation clarity" signal in future unknowns-maps
 3. **Catalog**: Track whether "hidden knowledge" is as common as "missing knowledge"
 

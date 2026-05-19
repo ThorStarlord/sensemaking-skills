@@ -45,7 +45,7 @@ The foundation layer: diagnostic and orchestration skills that identify problems
 
 Transform diagnostic outputs into specifications and implementation plans.
 
-- **`grill-with-docs`** — Stress-test a plan against existing domain documentation. Sharpens terminology and updates docs inline.
+- **`docs-aligner`** — Stress-test a plan against existing domain documentation. Sharpens terminology and updates docs inline.
 - **`to-prd`** — Transform a domain alignment report into a PRD.
 - **`to-issues`** — Transform a PRD into specific, independently-grabbable implementation issues (tracer bullets).
 - **`triage`** — Assign issues to agent briefs and prepare work for implementation.

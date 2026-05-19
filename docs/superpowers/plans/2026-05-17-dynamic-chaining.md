@@ -863,7 +863,7 @@ Expected: Lists all workflows without errors.
 - research_needed: boolean (consistent)
 - Conditional step schema uses if_true/if_false with skill/next_step fields (consistent)
 
-**Gap check:** No gaps identified. All requirements from the grill-with-docs session are covered.
+**Gap check:** No gaps identified. All requirements from the docs-aligner session are covered.
 
 ---
 

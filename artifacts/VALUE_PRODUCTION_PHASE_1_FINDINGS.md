@@ -28,7 +28,7 @@ python scripts/orchestration-runner.py product-to-issues --mode guided_execution
 
 #### Gap 1: No Skill Invocation Mechanism
 **Problem**: The orchestration runner does not invoke skills. It only checks if output artifacts exist.
-- Step 1 executed `grill-with-docs` skill but the runner never actually invoked it
+- Step 1 executed `docs-aligner` skill but the runner never actually invoked it
 - The runner waited for the skill output but had no mechanism to trigger the skill's execution
 - Result: Artifact missing → FAILED
 

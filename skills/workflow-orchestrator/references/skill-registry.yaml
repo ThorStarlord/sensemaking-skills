@@ -42,11 +42,11 @@ ecosystems:
   drafting:
     name: Implementation Drafting
     skills:
-      - id: grill-with-docs
+      - id: docs-aligner
         purpose: align implementation with repository documentation
         artifact: domain_alignment_report
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
-        invocation: { runtime: claude_code, command: "/grill-with-docs" }
+        invocation: { runtime: claude_code, command: "/docs-aligner" }
       - id: to-prd
         purpose: transform alignment report into a PRD
         artifact: prd

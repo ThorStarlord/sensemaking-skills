@@ -236,7 +236,7 @@ Option D (Real Impact)
 
 ## Final Thought
 
-The system is **proven to work end-to-end** (we just demonstrated it with grill-with-docs). The question now is not "does it work?" but "how robust is it, and how much does it help?"
+The system is **proven to work end-to-end** (we just demonstrated it with docs-aligner). The question now is not "does it work?" but "how robust is it, and how much does it help?"
 
 Each option reduces uncertainty in a different dimension:
 - **A**: Reduces uncertainty about generalization

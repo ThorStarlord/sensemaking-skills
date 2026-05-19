@@ -122,7 +122,7 @@ This decision was validated during Phase 1 of the orchestration system implement
 - Plan mode (lenient) still works correctly
 
 ### Real-World Validation
-- docs-architecture workflow now fails clearly if grill-with-docs doesn't produce domain_alignment_report
+- docs-architecture workflow now fails clearly if docs-aligner doesn't produce domain_alignment_report
 - product-to-issues workflow now fails clearly if any step doesn't produce its claimed artifact
 - No silent failures detected in production runs (zero repeatable failure boundaries)
 

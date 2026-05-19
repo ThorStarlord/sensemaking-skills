@@ -10,7 +10,7 @@
 ## Root Cause Analysis
 
 ### What Happened
-1. **Step 1 (grill-with-docs)**: Produced domain_alignment_report.md ✅
+1. **Step 1 (docs-aligner)**: Produced domain_alignment_report.md ✅
 2. **Step 2 (to-prd)**: Claimed to complete with status COMPLETED, but:
    - No prd.md file exists on disk
    - Validator stack marked as "none (no artifact to validate)"
@@ -72,7 +72,7 @@ if mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
 **Current workflow**:
 ```
 docs-architecture workflow:
-  Step 1: grill-with-docs → domain_alignment_report
+  Step 1: docs-aligner → domain_alignment_report
   Step 2: to-prd → prd (but prd is not consumed in this workflow!)
   Step 3: handoff → prompt_handoff
 ```
@@ -80,7 +80,7 @@ docs-architecture workflow:
 **Proposed**:
 ```
 docs-architecture workflow:
-  Step 1: grill-with-docs → domain_alignment_report
+  Step 1: docs-aligner → domain_alignment_report
   Step 2: handoff → prompt_handoff
 
 product-to-issues workflow (NEW):
@@ -166,7 +166,7 @@ Remove step 2 (to-prd) entirely. Workflow becomes:
 - id: docs-architecture
   steps:
     - id: 1
-      skill: grill-with-docs
+      skill: docs-aligner
       output_artifact: domain_alignment_report
     - id: 2  # was step 3
       skill: handoff

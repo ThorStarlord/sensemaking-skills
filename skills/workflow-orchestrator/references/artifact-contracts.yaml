@@ -8,7 +8,7 @@ artifacts:
       - unknowns-mapper
       - repo-sensemaker
       - workflow-orchestrator
-      - grill-with-docs
+      - docs-aligner
       - to-prd
       - to-issues
       - triage
@@ -165,7 +165,7 @@ artifacts:
         - yolo_execution
 
   - id: domain_alignment_report
-    produced_by: grill-with-docs
+    produced_by: docs-aligner
     consumed_by:
       - to-prd
       - prompt-handoff

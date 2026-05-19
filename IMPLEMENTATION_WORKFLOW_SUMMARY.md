@@ -21,8 +21,8 @@ A complete end-to-end automation system has been implemented that routes from se
 3. **Four Specialized Implementation Workflows** created
    - `product-implementation-workflow`: discovery → opportunity-tree → prd → issues → tdd
    - `ui-implementation-workflow`: ui-flow → ui-screen-spec → issues → tdd
-   - `docs-implementation-workflow`: grill-with-docs → prd → handoff
-   - `implementation-workflow`: grill-with-docs → prd → issues → tdd (default)
+   - `docs-implementation-workflow`: docs-aligner → prd → handoff
+   - `implementation-workflow`: docs-aligner → prd → issues → tdd (default)
 
 4. **Test Case** documented
    - Metamorfose Finance example classified as ui_fog
@@ -175,7 +175,7 @@ Sensemaking identifies unclear user needs
 Orchestrator routes to: product-implementation-workflow
   ↓
 Automatic execution:
-  1. grill-with-docs (domain alignment)
+  1. docs-aligner (domain alignment)
   2. discovery (stakeholder interviews)
   3. opportunity-tree (problem→solution mapping)
   4. to-prd (specification)
@@ -199,7 +199,7 @@ User approves continuing to implementation
 Orchestrator routes to: ui-implementation-workflow
   ↓
 Automatic execution:
-  1. grill-with-docs
+  1. docs-aligner
   2. ui-flow (user journeys)
   3. ui-screen-spec (screen designs)
   4. to-issues

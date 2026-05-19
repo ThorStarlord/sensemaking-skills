@@ -105,7 +105,7 @@ phase_2_skills: [ui-flow, ui-screen-spec]
 ### Classes Recommended Workflow
 ```yaml
 workflow_id: docs-architecture
-phase_1_skill: grill-with-docs
+phase_1_skill: docs-aligner
 ```
 
 **Rationale**: Need to clarify design decisions; problem is incomplete, not implicit.
@@ -166,7 +166,7 @@ This second run provided:
 ```
 (LOW, high unknowns)     → discovery-based sprint
 (MEDIUM, high unknowns)  → discovery-based sprint + domain alignment
-(HIGH, moderate unknowns) → design-decision sprint (docs-architecture, grill-with-docs)
+(HIGH, moderate unknowns) → design-decision sprint (docs-architecture, docs-aligner)
 ```
 
 **Status**: Needs validation on 3-5 more runs to confirm
@@ -243,11 +243,11 @@ research_needed = (unknowns_count >= 5) OR (clarity_assessment == "low")
 research_needed = (unknowns_count >= 5) OR (clarity_assessment == "low")
 
 # Recommend workflow based on problem type:
-# - High clarity + moderate unknowns → Design-decision work (docs-architecture, grill-with-docs)
+# - High clarity + moderate unknowns → Design-decision work (docs-architecture, docs-aligner)
 # - Medium/Low clarity + high unknowns → Knowledge extraction work (discovery-sprint, interview-based)
 
 # Recommended workflows by clarity + unknowns:
-high_clarity_moderate_unknowns: [docs-architecture, grill-with-docs]
+high_clarity_moderate_unknowns: [docs-architecture, docs-aligner]
 medium_clarity_high_unknowns: [product-discovery-sprint, full-local-sensemaking]
 low_clarity_high_unknowns: [product-discovery-sprint, full-local-sensemaking]
 ```

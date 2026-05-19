@@ -54,7 +54,7 @@ Each workflow should have **one clear purpose**. Don't mix unrelated transformat
 ```yaml
 docs-architecture:
   steps:
-    - grill-with-docs        # Purpose: domain alignment
+    - docs-aligner        # Purpose: domain alignment
       → domain_alignment_report
     - to-prd                 # Purpose: PRD generation ❌ MIXING CONCERNS
       → prd
@@ -66,7 +66,7 @@ docs-architecture:
 ```yaml
 docs-architecture:
   steps:
-    - grill-with-docs        # Purpose: domain alignment
+    - docs-aligner        # Purpose: domain alignment
       → domain_alignment_report
     - handoff                # Purpose: prepare prompt
       → prompt_handoff

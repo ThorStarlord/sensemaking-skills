@@ -17,7 +17,7 @@
 
 ### Step 1
 - **step_id**: 1
-- **skill**: grill-with-docs
+- **skill**: docs-aligner
 - **runtime**: local_execution
 - **output_artifact**: domain_alignment_report
 - **artifact_path**: artifacts/domain_alignment_report.md

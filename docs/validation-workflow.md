@@ -159,7 +159,7 @@ When validation succeeds, you'll see output like:
 ✓ Repo structure is valid
 ✓ Git history is accessible
 
-[Step 1/3] Executing: grill-with-docs
+[Step 1/3] Executing: docs-aligner
   Status: COMPLETED
   → Generated domain_alignment_findings.md
 
@@ -256,8 +256,8 @@ Watch your terminal as the script runs. You'll see:
 ✓ Repo structure is valid
 ✓ Git history is accessible
 
-[Step 1/3] Executing: grill-with-docs
-  Skill: grill-with-docs
+[Step 1/3] Executing: docs-aligner
+  Skill: docs-aligner
   Input: domain_alignment_report.md
   → Generating domain_alignment_findings.md
 
@@ -516,7 +516,7 @@ python -c "import yaml; yaml.safe_load(open('skills/workflow-orchestrator/refere
 
 **Check if skill exists:**
 ```powershell
-grep -i "grill-with-docs" skills/workflow-orchestrator/references/skill-registry.yaml
+grep -i "docs-aligner" skills/workflow-orchestrator/references/skill-registry.yaml
 # Should list the skill definition
 ```
 
@@ -635,7 +635,7 @@ To change which validators run, edit `skills/workflow-orchestrator/references/wo
 ```yaml
 - id: docs-architecture
   steps:
-    - skill: grill-with-docs
+    - skill: docs-aligner
       validators:
         - validate-repo.py
         - validate-output.py  # Add/remove validators here
@@ -689,7 +689,7 @@ Factors that affect duration:
 **Yes, but:**
 - First run should be plan_only or guided_execution to understand the workflow
 - Subsequent runs can be autonomous if you trust the results
-- Recommend running no more than every 2-3 hours (enough time for meaningful changes)
+- Recommend running no more than every 2–3 hours (enough time for meaningful changes)
 
 **Scheduling:**
 ```powershell

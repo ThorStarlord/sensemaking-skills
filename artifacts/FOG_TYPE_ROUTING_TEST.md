@@ -30,7 +30,7 @@
 **Workflow Selected**: `ui-implementation-workflow`
 
 **Sequence**:
-1. grill-with-docs → align domain understanding, create CONTEXT.md (gate: none ✓)
+1. docs-aligner → align domain understanding, create CONTEXT.md (gate: none ✓)
 2. ui-flow → document user journeys and transitions (gate: none ✓)
 3. ui-screen-spec → specify each screen's content and interactions (gate: none ✓)
 4. to-issues → break into implementation issues (gate: none ✓)
@@ -55,19 +55,19 @@
 **Problem**: "Unclear what finance operators actually need; workflows are implicit knowledge"
 **Fog Type**: `product_fog`
 **Workflow**: `product-implementation-workflow`
-**Sequence**: grill-with-docs → discovery → opportunity-tree → to-prd → to-issues → triage → tdd → handoff
+**Sequence**: docs-aligner → discovery → opportunity-tree → to-prd → to-issues → triage → tdd → handoff
 
 ### Architecture Fog Example
 **Problem**: "Code structure is unclear; no domain types; state management is implicit"
 **Fog Type**: `architecture_fog`
 **Workflow**: `implementation-workflow` (default)
-**Sequence**: grill-with-docs → to-prd → to-issues → triage → tdd → handoff
+**Sequence**: docs-aligner → to-prd → to-issues → triage → tdd → handoff
 
 ### Docs Fog Example
 **Problem**: "Documentation is missing; no spec for what system does"
 **Fog Type**: `docs_fog`
 **Workflow**: `docs-implementation-workflow`
-**Sequence**: grill-with-docs → to-prd → handoff
+**Sequence**: docs-aligner → to-prd → handoff
 
 ---
 

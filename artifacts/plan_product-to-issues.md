@@ -25,7 +25,7 @@
 
 ## Inputs and Outputs
 
-- **domain_alignment_report** (artifact): Output from docs-architecture workflow (grill-with-docs step).
+- **domain_alignment_report** (artifact): Output from docs-architecture workflow (docs-aligner step).
 
 ## Approval Gates
 
