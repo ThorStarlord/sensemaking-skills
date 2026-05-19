@@ -2,7 +2,7 @@ workflows:
   - id: fast-path-workflow
     display_name: Fast Path - Repository Diagnosis
     purpose: Diagnose a repository to identify the weakest boundary and recommend corrective workflows.
-    description: Use this when you have a clear repo goal and need a quick diagnosis. Chains repo-sensemaker and workflow-orchestrator automatically with approval gates between steps.
+    description: Use this when you have a clear repo goal and need a quick diagnosis. Analyzes the repository and produces a diagnostic brief with recommendations. User then invokes workflow-orchestrator to select the next workflow.
     initial_inputs:
       - id: repository_state
         type: external_context
@@ -19,17 +19,11 @@ workflows:
         gate: review_diagnosis
         input_source: repository_state
         output_artifact: repository_sensemaking_brief
-      - id: 2
-        skill: workflow-orchestrator
-        step_type: local_execution
-        gate: review_orchestration_plan
-        input_artifact: repository_sensemaking_brief
-        output_artifact: workflow_orchestration_plan
 
   - id: full-fog-workflow
     display_name: Full Fog Path - Comprehensive Sensemaking
-    purpose: Comprehensively analyze ambiguous projects from raw fog to actionable implementation workflows.
-    description: Use this when the problem is vague or highly uncertain. Chains problem-framer, unknowns-mapper, repo-sensemaker, workflow-orchestrator, and prompt-handoff automatically with approval gates between steps.
+    purpose: Comprehensively analyze ambiguous projects from raw fog to actionable recommendations.
+    description: Use this when the problem is vague or highly uncertain. Chains problem-framer, unknowns-mapper, repo-sensemaker, and prompt-handoff automatically with approval gates between steps. Produces a comprehensive diagnostic brief with ready-to-copy prompts for next workflows.
     initial_inputs:
       - id: raw_fog
         type: external_context
@@ -63,16 +57,10 @@ workflows:
         input_source: repository_state
         output_artifact: repository_sensemaking_brief
       - id: 4
-        skill: workflow-orchestrator
-        step_type: local_execution
-        gate: review_orchestration_plan
-        input_artifact: repository_sensemaking_brief
-        output_artifact: workflow_orchestration_plan
-      - id: 5
         skill: prompt-handoff
         step_type: local_execution
         gate: review_final_handoff
-        input_artifact: workflow_orchestration_plan
+        input_artifact: repository_sensemaking_brief
         output_artifact: prompt_handoff
 
   - id: setup-sensemaking-repo
