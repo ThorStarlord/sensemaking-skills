@@ -65,12 +65,6 @@ workflows:
   - prompt_chain
   - guided_execution
   - autonomous_execution
-  - yolo_execution
-  requires_clean_worktree: true
-  requires_run_log: true
-  branch_policy:
-    required: true
-    pattern: yolo/{workflow_id}/{timestamp}
   steps:
   - id: 1
     skill: problem-framer

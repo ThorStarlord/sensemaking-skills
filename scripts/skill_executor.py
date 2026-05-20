@@ -197,13 +197,25 @@ class PromptChainSkillExecutor(SkillExecutor):
 # Unsupported / Future Executors
 # ============================================================================
 
-class ClaudeCodeSkillExecutor(SkillExecutor):
-    """Future: invoke skills via Claude Code slash-command or SDK.
+class ClaudeAgentSdkSkillExecutor(SkillExecutor):
+    """Invoke skills via Claude Agent SDK.
 
-    Not yet implemented. Returns UNSUPPORTED if selected.
+    Uses the Claude Agent SDK's query() API to invoke skills with autonomous
+    tool use. The SDK handles skill discovery from filesystem, tool loops,
+    file management, and permissions.
     """
 
     supports_real_execution: bool = True
+
+    def __init__(self, repo_root: str):
+        self.repo_root = repo_root
+        try:
+            from claude_agent_sdk import query, ClaudeAgentOptions
+            self.query = query
+            self.ClaudeAgentOptions = ClaudeAgentOptions
+        except ImportError:
+            self.query = None
+            self.ClaudeAgentOptions = None
 
     def invoke_skill(
         self,
@@ -213,16 +225,60 @@ class ClaudeCodeSkillExecutor(SkillExecutor):
         expected_output_artifact: str,
         context: dict,
     ) -> SkillExecutionResult:
-        return SkillExecutionResult(
-            skill_id=skill_id,
-            status=SkillExecutionStatus.UNSUPPORTED,
-            command=invocation_command,
-            output_artifact=expected_output_artifact,
-            error=(
-                f"ClaudeCodeSkillExecutor is declared but not implemented. "
-                f"Cannot invoke '{invocation_command}' for skill '{skill_id}'."
-            ),
+        if not self.query or not self.ClaudeAgentOptions:
+            return SkillExecutionResult(
+                skill_id=skill_id,
+                status=SkillExecutionStatus.FAILED,
+                command=invocation_command,
+                output_artifact=expected_output_artifact,
+                error="Claude Agent SDK not installed. Install with: pip install claude-agent-sdk",
+            )
+
+        # Build prompt that instructs Claude to run the skill
+        input_context = ""
+        if input_artifacts:
+            input_context = f"Input artifacts: {', '.join(input_artifacts)}\n"
+
+        prompt = (
+            f"Execute the '{skill_id}' skill.\n\n"
+            f"{input_context}"
+            f"Expected output artifact: {expected_output_artifact}\n"
+            f"Additional context:\n{json.dumps(context, indent=2)}\n\n"
+            f"Use the available skills and tools to complete this task. "
+            f"Ensure the output artifact is created at the expected path."
         )
+
+        try:
+            result = self.query(
+                prompt=prompt,
+                options=self.ClaudeAgentOptions(
+                    cwd=self.repo_root,
+                    setting_sources=["project", "user"],
+                    skills=[skill_id],
+                    allowed_tools=["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+                ),
+            )
+
+            # Interpret SDK result as executed
+            return SkillExecutionResult(
+                skill_id=skill_id,
+                status=SkillExecutionStatus.EXECUTED,
+                command=invocation_command,
+                output_artifact=expected_output_artifact,
+                message=result,
+            )
+        except Exception as e:
+            return SkillExecutionResult(
+                skill_id=skill_id,
+                status=SkillExecutionStatus.FAILED,
+                command=invocation_command,
+                output_artifact=expected_output_artifact,
+                error=f"Skill execution failed: {str(e)}",
+            )
+
+
+# Keep old name as alias for backwards compatibility
+ClaudeCodeSkillExecutor = ClaudeAgentSdkSkillExecutor
 
 
 class ApiSkillExecutor(SkillExecutor):
@@ -292,5 +348,8 @@ def create_executor(
     if executor_id == "prompt-chain":
         output_dir = prompt_output_dir or os.path.join(repo_root, "prompts")
         return executor_cls(output_dir=output_dir)
+
+    if executor_id == "claude-code":
+        return executor_cls(repo_root=repo_root)
 
     return executor_cls()
