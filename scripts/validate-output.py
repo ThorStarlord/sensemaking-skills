@@ -12,10 +12,9 @@ Exits 1 if any validator fails.
 
 import os
 import sys
-import subprocess
 import argparse
 
-from _validator_utils import format_error, load_artifact_contracts
+from _validator_utils import format_error, load_artifact_contracts, run_subprocess
 
 CONTRACTS_FILE_NOT_FOUND = "CONTRACTS_FILE_NOT_FOUND"
 CONTRACT_NOT_FOUND = "CONTRACT_NOT_FOUND"
@@ -27,24 +26,10 @@ def _resolve_validator_path(command: str) -> str | None:
     """Resolve a validator command like 'python scripts/validate-brief.py {artifact_path}'
     to the script path. Returns None if the script doesn't exist."""
     parts = command.split()
-    # Find the first token that looks like a path to a .py file
     for token in parts:
         if token.endswith(".py") and os.path.exists(token):
             return token
     return None
-
-
-def _run_validator(cmd: list[str], artifact_path: str, repo_root: str) -> tuple[int, str]:
-    """Run a validator command and return (exit_code, output)."""
-    # Replace {artifact_path} placeholder if present in any args
-    resolved = [arg.replace("{artifact_path}", artifact_path) for arg in cmd]
-    # Add --repo-root if not already present
-    if "--repo-root" not in resolved:
-        resolved.extend(["--repo-root", repo_root])
-
-    result = subprocess.run(resolved, capture_output=True, text=True)
-    output = (result.stdout + result.stderr).strip()
-    return result.returncode, output
 
 
 def validate_output(artifact_id: str, artifact_path: str, repo_root: str = ".") -> list[str]:
@@ -72,13 +57,13 @@ def validate_output(artifact_id: str, artifact_path: str, repo_root: str = ".") 
     # 1. Run generic validator
     generic_cmd = verification.get("generic_validator")
     if generic_cmd:
-        parts = generic_cmd.split()
+        parts = [p.replace("{artifact_path}", artifact_path) for p in generic_cmd.split()]
         script_path = _resolve_validator_path(generic_cmd)
         if script_path is None:
             errors.append(format_error(VALIDATOR_NOT_FOUND,
                                         f"Generic validator script not found: {generic_cmd}"))
         else:
-            code, output = _run_validator(parts, artifact_path, repo_root)
+            code, output, _elapsed = run_subprocess(parts, repo_root)
             if code != 0:
                 errors.append(format_error(VALIDATOR_FAILED,
                                             f"Generic validator failed:\n{output}"))
@@ -87,14 +72,14 @@ def validate_output(artifact_id: str, artifact_path: str, repo_root: str = ".") 
     if not any(VALIDATOR_FAILED in e for e in errors):
         specialized = verification.get("specialized_validators", [])
         for spec_cmd in specialized:
-            parts = spec_cmd.split()
+            parts = [p.replace("{artifact_path}", artifact_path) for p in spec_cmd.split()]
             script_path = _resolve_validator_path(spec_cmd)
             if script_path is None:
                 errors.append(format_error(VALIDATOR_NOT_FOUND,
                                             f"Specialized validator script not found: {spec_cmd}"))
                 continue
 
-            code, output = _run_validator(parts, artifact_path, repo_root)
+            code, output, _elapsed = run_subprocess(parts, repo_root)
             if code != 0:
                 errors.append(format_error(VALIDATOR_FAILED,
                                             f"Specialized validator failed ({os.path.basename(script_path)}):\n{output}"))

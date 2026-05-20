@@ -10,7 +10,14 @@ is kept as a backwards-compatible wrapper.
 Usage:
     python scripts/workflow-runtime.py <workflow-id> --mode <mode> [options]
     python scripts/workflow-runtime.py --list-workflows
+    python scripts/workflow-runtime.py --use-fixtures --mode guided_execution
     python scripts/workflow-runtime.py --help
+
+Testing with fixtures:
+    Use --use-fixtures to run orchestration tests without skill execution.
+    This allows testing the orchestration logic by using pre-created fixture
+    artifacts (in examples/<skill-dir>/<artifact-id>-fixture.md) instead of
+    requiring actual skill execution.
 """
 
 import os
@@ -200,12 +207,14 @@ class OrchestrationRunner:
         resume: bool = False,
         gate_decision: str | None = None,
         executor: str = "dry-run",
+        use_fixtures: bool = False,
     ):
         self.workflow_id = workflow_id
         self.mode = mode
         self.repo_root = os.path.abspath(repo_root)
         self.plan_out = plan_out or os.path.join(self.repo_root, "artifacts", f"plan_{workflow_id}.md")
         self.log_dir = log_dir or os.path.join(self.repo_root, "artifacts")
+        self.use_fixtures = use_fixtures
 
         self.session_id = _generate_session_id()
         self.workflow: dict = {}
@@ -576,6 +585,16 @@ class OrchestrationRunner:
         # -- Resolve artifact path (execution modes only) -----------------------
         artifact_path = ""
         if output_artifact:
+            # Check for fixture first if --use-fixtures is set
+            if self.use_fixtures:
+                fixture_path = self._get_fixture_artifact_path(output_artifact)
+                if fixture_path:
+                    artifact_path = fixture_path
+                    result["artifact_path"] = f"examples/{os.path.relpath(fixture_path, os.path.join(self.repo_root, 'examples')).replace(chr(92), '/')}"
+                    print(f"  [FIXTURE] Using fixture artifact: {os.path.relpath(fixture_path, self.repo_root)}")
+                    result["status"] = "EXECUTED"
+                    return result
+
             # Determine artifact path based on contracts
             contract_path = self._resolve_artifact_path(output_artifact)
             artifact_path = contract_path
@@ -602,9 +621,14 @@ class OrchestrationRunner:
         elif output_artifact and output_artifact != "N/A":
             if self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
                 # Execution modes: FAIL if artifact expected but not produced
+                # But suggest fixture if available
+                fixture_msg = ""
+                fixture_path = self._get_fixture_artifact_path(output_artifact) if self.use_fixtures else None
+                if fixture_path:
+                    fixture_msg = f"\n  Tip: Try running with --use-fixtures to use fixture artifacts for testing."
                 self.errors.append(
                     format_error(ARTIFACT_NOT_FOUND,
-                        f"Step {step_num} ({skill}): Expected artifact '{output_artifact}' not produced")
+                        f"Step {step_num} ({skill}): Expected artifact '{output_artifact}' not produced{fixture_msg}")
                 )
                 result["status"] = "FAILED"
                 result["validator_stack"] = [{"level": "Dispatcher", "command": f"validate-output.py {output_artifact}", "result": "SKIPPED (artifact missing)"}]
@@ -763,6 +787,30 @@ class OrchestrationRunner:
 
         result = subprocess.run(cmd)
         return result.returncode
+
+    def _get_fixture_artifact_path(self, artifact_id: str) -> str | None:
+        """Get path to fixture artifact if available. Returns None if not found."""
+        # Map artifact IDs to skill directories
+        skill_map = {
+            "problem_frame": "problem-framer",
+            "unknowns_map": "unknowns-mapper",
+            "repository_sensemaking_brief": "repo-sensemaker",
+        }
+
+        skill_dir = skill_map.get(artifact_id)
+        if not skill_dir:
+            return None
+
+        fixture_path = os.path.join(
+            self.repo_root,
+            "examples",
+            skill_dir,
+            f"{artifact_id}-fixture.md"
+        )
+
+        if os.path.exists(fixture_path):
+            return fixture_path
+        return None
 
     def _resolve_artifact_path(self, artifact_id: str) -> str:
         """Resolve the file path for an artifact."""
@@ -1731,6 +1779,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--gate-decision", default=None,
                         choices=["auto-approve", "auto-deny"],
                         help="Non-interactive gate decision for testing: auto-approve all gates or auto-deny the first gate")
+    parser.add_argument("--use-fixtures", action="store_true",
+                        help="Use fixture artifacts instead of validating actual artifacts (for testing orchestration without skill execution)")
 
     args = parser.parse_args(argv)
 
@@ -1760,6 +1810,7 @@ def main(argv: list[str] | None = None) -> int:
         resume=args.resume,
         gate_decision=args.gate_decision,
         executor=args.executor,
+        use_fixtures=args.use_fixtures,
     )
 
     if runner.errors:
