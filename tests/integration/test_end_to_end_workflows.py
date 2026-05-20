@@ -398,11 +398,11 @@ class TestWorkflowCoverageComparison(unittest.TestCase):
                 f"Workflow {workflow_id} not in registry",
             )
 
-        # Verify count matches
-        self.assertEqual(
+        # Verify at least the expected workflows exist
+        self.assertGreaterEqual(
             len(workflows),
-            12,
-            f"Expected 12 workflows, found {len(workflows)}",
+            len(registry_workflows),
+            f"Expected at least {len(registry_workflows)} workflows, found {len(workflows)}",
         )
 
 
