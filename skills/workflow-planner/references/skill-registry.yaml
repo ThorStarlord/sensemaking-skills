@@ -28,7 +28,7 @@ ecosystems:
         capabilities: [write_files]
       - id: handoff
         purpose: summarize a session and prepare the next handoff
-        artifact: prompt_handoff
+        artifact: session_summary
         availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
       - id: skill-maintainer
         purpose: translate usage research into auditable skill improvements
@@ -72,6 +72,16 @@ ecosystems:
         artifact: ui_specification
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/ui-brief", input_artifact: prd, output_artifact: ui_specification, can_write_files: false }
+      - id: ui-flow
+        purpose: document user journeys and interaction flows
+        artifact: ui_flows
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/ui-flow", input_artifact: domain_alignment_report, output_artifact: ui_flows }
+      - id: ui-screen-spec
+        purpose: specify individual screen content and interactions
+        artifact: screen_specs
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/ui-screen-spec", input_artifact: ui_flows, output_artifact: screen_specs }
 
   product:
     name: Product Management

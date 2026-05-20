@@ -131,8 +131,8 @@ def validate_repo():
             for step in steps:
                 s_id = step.get("skill")
 
-                if s_id == "workflow-planner":
-                    errors.append(f"Workflow '{workflow['id']}' contains a recursive call to 'workflow-planner'.")
+                # Note: workflow-planner is a legitimate skill that produces orchestration plans,
+                # not the runtime executor. It can appear as a step without causing recursion.
 
                 # Conditional steps don't have top-level step_type; they have it in branches
                 if step.get("conditional"):

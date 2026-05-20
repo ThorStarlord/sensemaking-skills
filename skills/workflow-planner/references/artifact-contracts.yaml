@@ -540,3 +540,40 @@ artifacts:
         - guided_execution
         - autonomous_execution
         - yolo_execution
+
+  - id: ui_flows
+    produced_by: ui-flow
+    consumed_by:
+      - ui-screen-spec
+    required_sections:
+      - user_journeys
+      - interaction_flows
+    verification:
+      generic_validator: "python scripts/validate-artifact.py ui_flows {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: screen_specs
+    produced_by: ui-screen-spec
+    consumed_by:
+      - to-issues
+      - tdd
+    required_sections:
+      - screen_inventory
+      - interactions
+      - states
+    verification:
+      generic_validator: "python scripts/validate-artifact.py screen_specs {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: ui_specification
+    produced_by: ui-brief
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-artifact.py ui_specification {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
