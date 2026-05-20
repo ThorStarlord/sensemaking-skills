@@ -1550,8 +1550,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("problem", nargs="?", default=None, help="Optional user problem statement or goal")
     parser.add_argument("--workflow", default=None, help="Explicit workflow ID (overrides default)")
-    parser.add_argument("--mode", default="plan_only", choices=list(KNOWN_MODES.keys()),
-                        help="Execution mode (default: plan_only)")
+    parser.add_argument("--mode", default="yolo_execution", choices=list(KNOWN_MODES.keys()),
+                        help="Execution mode (default: yolo_execution)")
     parser.add_argument("--scope", default="soft", choices=["soft", "hard", "advisory"],
                         help="How strictly the problem statement constrains analysis (default: soft)")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")

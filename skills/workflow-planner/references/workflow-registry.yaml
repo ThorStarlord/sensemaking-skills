@@ -65,6 +65,7 @@ workflows:
   - prompt_chain
   - guided_execution
   - autonomous_execution
+  - yolo_execution
   steps:
   - id: 1
     skill: problem-framer
