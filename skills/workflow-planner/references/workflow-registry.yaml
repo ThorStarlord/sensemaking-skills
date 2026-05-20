@@ -420,6 +420,7 @@ workflows:
     pattern: yolo/{workflow_id}/{timestamp}
   auto_invoke_next_workflow: true
   auto_invoke_source: repository_sensemaking_brief
+  auto_invoke_next_workflow_id: implementation-workflow
   steps:
   - id: 1
     skill: problem-framer

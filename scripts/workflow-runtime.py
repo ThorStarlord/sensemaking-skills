@@ -647,6 +647,10 @@ class OrchestrationRunner:
             return True, source
         return False, None
 
+    def _get_explicit_next_workflow(self) -> str | None:
+        """Check if workflow specifies an explicit next workflow ID (override). Returns workflow_id or None."""
+        return self.workflow.get("auto_invoke_next_workflow_id")
+
     def _get_artifact_state_from_source(self, source: str) -> str:
         """Extract the semantic state of the source artifact from step results.
 
@@ -1659,7 +1663,11 @@ class OrchestrationRunner:
                 print(f"\n{'='*60}")
                 print(f"PHASE 7: AUTO-INVOCATION CHECK")
                 print(f"{'='*60}")
-                next_workflow_id = self._extract_recommended_workflow(source_artifact)
+                # Check for explicit override first
+                next_workflow_id = self._get_explicit_next_workflow()
+                if not next_workflow_id:
+                    # Fall back to reading from source artifact
+                    next_workflow_id = self._extract_recommended_workflow(source_artifact)
                 if next_workflow_id:
                     next_exit_code = self._invoke_next_workflow(next_workflow_id)
                     return next_exit_code
