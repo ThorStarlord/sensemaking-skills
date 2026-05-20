@@ -1873,9 +1873,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--log-dir", default=None, help="Directory for run log output")
     parser.add_argument("--list-workflows", action="store_true", help="List all registered workflows")
     parser.add_argument("--resume", action="store_true", help="Resume a paused execution")
-    parser.add_argument("--executor", default="dry-run",
+    parser.add_argument("--executor", default="claude-code",
                         choices=["dry-run", "prompt-chain", "claude-code", "api"],
-                        help="Skill executor to use (default: dry-run). autonomous/yolo modes require a real executor.")
+                        help="Skill executor to use (default: claude-code). autonomous/yolo modes require a real executor.")
     parser.add_argument("--gate-decision", default=None,
                         choices=["auto-approve", "auto-deny"],
                         help="Non-interactive gate decision for testing: auto-approve all gates or auto-deny the first gate")

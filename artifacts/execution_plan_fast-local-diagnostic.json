@@ -1,7 +1,18 @@
 {
   "workflow_id": "fast-local-diagnostic",
-  "session_id": "orchestration-20260518-005557-d00da514",
+  "session_id": "orchestration-20260520-160318-bd2022ff",
   "mode": "yolo_execution",
+  "artifacts": {
+    "user_intent": "artifacts\\54-orchestration-run\\00-user-intent.md"
+  },
+  "external_context": {
+    "raw_fog": "scripts/workflow-runtime.py",
+    "repository_state": {
+      "type": "repo_root",
+      "path": ".",
+      "instruction": "Inspect repository files, README, docs, registries, and git state as needed to understand the codebase."
+    }
+  },
   "steps": [
     {
       "id": 1,
@@ -17,8 +28,8 @@
       "step_type": "local_execution",
       "gate": "review_handoff_prompt",
       "input_artifact": "repository_sensemaking_brief",
-      "output_artifact": "prompt_handoff"
+      "output_artifact": "session_summary"
     }
   ],
-  "generated_at": "2026-05-18T00:56:03.615714"
+  "generated_at": "2026-05-20T16:03:22.803959"
 }
