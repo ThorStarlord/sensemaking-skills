@@ -36,17 +36,17 @@ class SkillExecutionDispatcher:
         self.output = ""
         self.error_output = ""
 
-    def run_with_timeout(self, timeout_seconds: int = 3600) -> Tuple[bool, str]:
+    def run_with_timeout(self, timeout_seconds: int = 3600) -> Tuple[bool, str, dict]:
         """
         Run skill execution agent with timeout.
 
-        Returns (success: bool, combined_output: str)
+        Returns (success: bool, combined_output: str, parsed_results: dict)
         """
         if not os.path.exists(self.plan_path):
-            return False, format_error(DISPATCHER_FAILED, f"Plan file not found: {self.plan_path}")
+            return False, format_error(DISPATCHER_FAILED, f"Plan file not found: {self.plan_path}"), {}
 
         if not os.path.exists(self.agent_script):
-            return False, format_error(DISPATCHER_FAILED, f"Agent script not found: {self.agent_script}")
+            return False, format_error(DISPATCHER_FAILED, f"Agent script not found: {self.agent_script}"), {}
 
         cmd = [
             sys.executable,
@@ -71,23 +71,37 @@ class SkillExecutionDispatcher:
                 returncode = self.process.returncode
             except subprocess.TimeoutExpired:
                 self.process.kill()
-                return False, format_error(DISPATCHER_TIMEOUT, f"Skill execution exceeded {timeout_seconds}s timeout")
+                return False, format_error(DISPATCHER_TIMEOUT, f"Skill execution exceeded {timeout_seconds}s timeout"), {}
+
+            combined = f"{self.output}\n{self.error_output}"
+
+            # Try to parse JSON results from output
+            parsed_results = {}
+            try:
+                # Look for JSON in the output (skill-execution-agent outputs JSON at the end)
+                lines = self.output.split('\n')
+                for i, line in enumerate(lines):
+                    if line.strip().startswith('{'):
+                        json_str = '\n'.join(lines[i:])
+                        parsed_results = json.loads(json_str)
+                        break
+            except (json.JSONDecodeError, ValueError):
+                pass  # No valid JSON found, continue with empty results
 
             if returncode != 0:
-                combined = f"{self.output}\n{self.error_output}"
-                return False, format_error(SKILL_EXECUTION_FAILED, combined)
+                return False, format_error(SKILL_EXECUTION_FAILED, combined), parsed_results
 
-            return True, self.output
+            return True, self.output, parsed_results
 
         except Exception as e:
-            return False, format_error(DISPATCHER_FAILED, f"Subprocess error: {str(e)}")
+            return False, format_error(DISPATCHER_FAILED, f"Subprocess error: {str(e)}"), {}
 
 
-def dispatch_skill_execution(plan_path: str, repo_root: str, executor: str = "dry-run", timeout: int = 3600) -> Tuple[bool, str]:
+def dispatch_skill_execution(plan_path: str, repo_root: str, executor: str = "dry-run", timeout: int = 3600) -> Tuple[bool, str, dict]:
     """
     Convenience function for dispatching skill execution from workflow-runtime.
 
-    Returns (success: bool, output: str)
+    Returns (success: bool, output: str, parsed_results: dict)
     """
     dispatcher = SkillExecutionDispatcher(plan_path, repo_root, executor=executor)
     return dispatcher.run_with_timeout(timeout_seconds=timeout)

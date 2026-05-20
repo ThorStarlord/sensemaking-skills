@@ -37,7 +37,37 @@ Every response must follow the [Unknowns Map](references/unknowns-map-template.m
 artifacts/unknowns_map.md
 ```
 
-This is the standard artifact path for this skill's output. Include the routing signals (clarity_assessment, unknowns_count, assumptions_count, research_needed) in a machine-readable format at the end of the artifact.
+This is the standard artifact path for this skill's output.
+
+### Generating Routing Signals (REQUIRED)
+
+Before finalizing, you MUST:
+
+1. **Count unknowns**: Each `### Unknown:` section header = 1 unknown. Total count all sections under "Unknowns" categories.
+2. **Count assumptions**: Each distinct assumption or "Assumptions to Validate" item = 1 assumption.
+3. **Assess clarity**:
+   - `"critical"` = Problem statement is ambiguous or contested (0-3 knowns, >15 unknowns)
+   - `"low"` = Major gaps exist (4-6 knowns, 10-15 unknowns)
+   - `"medium"` = Some clarity but gaps remain (7-10 knowns, 5-9 unknowns)
+   - `"high"` = Clear problem space (10+ knowns, <5 unknowns)
+4. **Calculate research_needed**: `true` if `unknowns_count >= 5` OR `clarity_assessment in ("low", "critical")`, else `false`
+
+Then append this YAML block exactly at the end of the artifact:
+
+```
+---
+
+## Routing Signals
+
+```yaml
+clarity_assessment: "medium"
+unknowns_count: 12
+assumptions_count: 5
+research_needed: true
+```
+```
+
+Do not skip this section. Orchestration systems depend on these signals to route downstream work.
 
 ## Routing Signals
 The unknowns-mapper produces four machine-readable routing fields that guide downstream workflow execution:

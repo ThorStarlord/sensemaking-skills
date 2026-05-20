@@ -15,7 +15,12 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, List, Tuple
 
-from _validator_utils import format_error, load_yaml, resolve_repo_root
+from _validator_utils import (
+    format_error,
+    load_yaml,
+    resolve_repo_root,
+    load_artifact_contracts,
+)
 from skill_executor import (
     SkillExecutor,
     SkillExecutionResult,
@@ -86,6 +91,83 @@ class SkillExecutionAgent:
         self.execution_log: list[SkillExecutionResult] = []
         self.failed = False
         self.error_messages = []
+
+    def _run_validators(self, artifact_id: str, artifact_path: str) -> Tuple[bool, List[dict]]:
+        """Run validators on an artifact. Returns (all_passed, validator_results)."""
+        if not os.path.exists(artifact_path):
+            return False, [{"name": "file_exists", "result": "FAILED", "reason": "Artifact file not found"}]
+
+        # Load artifact contracts
+        contracts = load_artifact_contracts(self.repo_root)
+        if not contracts:
+            return False, [{"name": "contracts_load", "result": "FAILED", "reason": "Could not load artifact contracts"}]
+
+        # Find contract for this artifact
+        artifact_contract = None
+        for artifact in contracts.get("artifacts", []):
+            if artifact.get("id") == artifact_id:
+                artifact_contract = artifact
+                break
+
+        if not artifact_contract:
+            return True, [{"name": "contract_lookup", "result": "SKIPPED", "reason": f"No contract found for {artifact_id}"}]
+
+        # Get validation commands
+        verification = artifact_contract.get("verification", {})
+        if not verification:
+            return True, [{"name": "verification", "result": "SKIPPED", "reason": "No verification defined"}]
+
+        validator_results = []
+        all_passed = True
+
+        # Run generic validator
+        generic_cmd = verification.get("generic_validator")
+        if generic_cmd:
+            cmd = generic_cmd.format(artifact_path=artifact_path)
+            try:
+                exit_code = os.system(cmd + " > /dev/null 2>&1")
+                result = "PASSED" if exit_code == 0 else "FAILED"
+                if result == "FAILED":
+                    all_passed = False
+                validator_results.append({
+                    "name": "generic_validator",
+                    "command": generic_cmd,
+                    "result": result,
+                    "exit_code": exit_code,
+                })
+            except Exception as e:
+                validator_results.append({
+                    "name": "generic_validator",
+                    "command": generic_cmd,
+                    "result": "FAILED",
+                    "error": str(e),
+                })
+                all_passed = False
+
+        # Run specialized validators
+        for spec_cmd in verification.get("specialized_validators", []):
+            cmd = spec_cmd.format(artifact_path=artifact_path)
+            try:
+                exit_code = os.system(cmd + " > /dev/null 2>&1")
+                result = "PASSED" if exit_code == 0 else "FAILED"
+                if result == "FAILED":
+                    all_passed = False
+                validator_results.append({
+                    "name": spec_cmd.split("/")[-1].replace(".py", ""),
+                    "command": spec_cmd,
+                    "result": result,
+                    "exit_code": exit_code,
+                })
+            except Exception as e:
+                validator_results.append({
+                    "name": spec_cmd.split("/")[-1].replace(".py", ""),
+                    "command": spec_cmd,
+                    "result": "FAILED",
+                    "error": str(e),
+                })
+                all_passed = False
+
+        return all_passed, validator_results
 
     def _resolve_step_inputs(self, step: dict, step_index: int) -> dict:
         """Resolve a step's input_source/input_artifact into actual values/paths.
@@ -188,6 +270,29 @@ class SkillExecutionAgent:
 
             self.execution_log.append(result)
 
+            # If skill execution succeeded and artifact exists, run validators
+            if result.status == SkillExecutionStatus.EXECUTED and result.output_artifact:
+                artifact_path = os.path.join(self.repo_root, "artifacts", f"{result.output_artifact}.md")
+                if os.path.exists(artifact_path):
+                    validation_passed, validator_results = self._run_validators(
+                        result.output_artifact,
+                        artifact_path
+                    )
+
+                    # Store validator results in the execution result
+                    result.validator_results = validator_results
+                    result.validation_passed = validation_passed
+
+                    # Update status based on validation
+                    if not validation_passed:
+                        result.status = SkillExecutionStatus.FAILED
+                        result.error = f"Artifact validation failed: {len([v for v in validator_results if v.get('result') == 'FAILED'])} validator(s) failed"
+                        self.error_messages.append(f"Step {step_id}: Artifact validation failed")
+                        self.failed = True
+                        failures += 1
+                    else:
+                        result.status = SkillExecutionStatus.EXECUTED  # Mark as fully executed and validated
+
             if result.status == SkillExecutionStatus.FAILED:
                 self.error_messages.append(f"Step {step_id}: {result.error}")
                 self.failed = True
@@ -281,12 +386,42 @@ def main():
         print(f"  Step {i}: {result.skill_id} -> {result.status.value}")
         if result.message:
             print(f"    {result.message}")
+        if hasattr(result, 'validator_results') and result.validator_results:
+            print(f"    Validators:")
+            for v in result.validator_results:
+                v_result = v.get('result', 'UNKNOWN')
+                v_name = v.get('name', 'unknown')
+                print(f"      - {v_name}: {v_result}")
         if result.error:
             print(f"    ERROR: {result.error}")
 
+    # Output structured results as JSON for orchestrator parsing
+    results = {
+        "success": success,
+        "workflow_id": agent.workflow_id,
+        "session_id": agent.session_id,
+        "executor": args.executor,
+        "step_results": [
+            {
+                "skill": r.skill_id,
+                "status": r.status.value,
+                "output_artifact": r.output_artifact,
+                "message": r.message,
+                "error": r.error,
+                "validation_passed": r.validation_passed,
+                "validator_results": r.validator_results,
+            }
+            for r in agent.execution_log
+        ],
+        "errors": agent.error_messages,
+    }
+
+    # Output JSON to stdout (can be parsed by orchestrator)
+    print(f"\n{json.dumps(results, indent=2)}")
+
     if not success:
         for err in agent.error_messages:
-            print(err)
+            print(err, file=sys.stderr)
         sys.exit(1)
 
 

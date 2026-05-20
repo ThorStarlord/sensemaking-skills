@@ -1372,18 +1372,62 @@ class OrchestrationRunner:
 
             if self.final_state != "failed":
                 print(f"  -> Dispatching to skill execution agent...")
-                success, output = dispatch_skill_execution(
+                success, output, parsed_results = dispatch_skill_execution(
                     plan_json_path, self.repo_root,
                     executor=self.executor,
                     timeout=3600,
                 )
+
+                # Populate step_results from parsed execution results
+                if parsed_results and parsed_results.get("step_results"):
+                    steps = self.workflow.get("steps", [])
+                    for i, step_result in enumerate(parsed_results["step_results"]):
+                        if i < len(steps):
+                            step = steps[i]
+                            # Build run log entry for this step
+                            run_log_entry = {
+                                "step_id": str(i + 1),
+                                "skill": step.get("skill", "?"),
+                                "gate": step.get("gate", ""),
+                                "output_artifact": step.get("output_artifact", "N/A"),
+                                "artifact_path": "",
+                                "validator_stack": [],
+                                "gate_result": "not_applicable",
+                                "status": step_result.get("status", "FAILED"),
+                                "step_type": step.get("step_type", "local_execution"),
+                            }
+
+                            # Map validator results to validator_stack format
+                            if step_result.get("validator_results"):
+                                for v in step_result["validator_results"]:
+                                    run_log_entry["validator_stack"].append({
+                                        "level": v.get("name", "unknown"),
+                                        "command": v.get("command", ""),
+                                        "result": v.get("result", "UNKNOWN"),
+                                    })
+
+                            # Set artifact path if provided
+                            if step_result.get("output_artifact"):
+                                artifact_path = os.path.join(self.repo_root, "artifacts",
+                                                            f"{step_result['output_artifact']}.md")
+                                if os.path.exists(artifact_path):
+                                    run_log_entry["artifact_path"] = os.path.relpath(artifact_path, self.repo_root)
+
+                            self.step_results.append(run_log_entry)
+
             if not success:
                 self.errors.append(f"Skill execution failed: {output}")
                 self.final_state = "failed"
                 # Fall through to write run log and exit
             else:
                 print(f"  [OK] Skill execution completed")
-                self.final_state = "completed"
+                # Check if any steps failed - if so, overall state is failed not completed
+                failed_steps = [s for s in self.step_results if s.get("status") == "FAILED"]
+                if failed_steps:
+                    self.final_state = "failed"
+                    self.errors.append(f"Step execution: {len(failed_steps)} step(s) failed")
+                else:
+                    self.final_state = "completed"
 
             # For execution modes, we still need to write run log and update coverage
             # The step execution phase is replaced by skill execution dispatch

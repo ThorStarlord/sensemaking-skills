@@ -50,6 +50,8 @@ class SkillExecutionResult:
     output_artifact: Optional[str] = None
     message: str = ""
     error: str = ""
+    validator_results: Optional[list] = None
+    validation_passed: Optional[bool] = None
 
     def to_dict(self) -> dict:
         return {
@@ -60,6 +62,8 @@ class SkillExecutionResult:
             "output_artifact": self.output_artifact,
             "message": self.message,
             "error": self.error,
+            "validator_results": self.validator_results,
+            "validation_passed": self.validation_passed,
         }
 
 
