@@ -356,15 +356,14 @@ mode_coverage:
   workflow_id: full-fog-workflow
   last_run: '2026-05-19'
   run_log_path: artifacts/run_log_full-fog-workflow_prompt_chain.md
-  steps_completed: 2
+  steps_completed: 0
   steps_total: 4
   validators_exercised:
   - 'level_1: validate-repo.py'
-  - 'level_3: validate-output.py'
   gates_exercised: false
   gates_note: not_applicable_prompt_chain
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260519-213920-a2116acf.'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260519-215036-f87d073a.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
@@ -461,8 +460,9 @@ system_tools:
 - tool: orchestration-runner.py
   status: active
   last_run: '2026-05-19'
-  last_session: orchestration-20260519-213920-a2116acf
-  workflows_executed: 1
+  last_session: orchestration-20260519-215036-f87d073a
+  workflows_executed:
+  - full-fog-workflow (prompt_chain)
   modes_proven:
   - prompt_chain
 validator_live_coverage:

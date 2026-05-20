@@ -65,6 +65,19 @@ KNOWN_MODES = OrderedDict([
 
 GATE_RESULTS = ["approved_by_user", "denied_by_user", "automated_approval", "bypassed", "not_applicable"]
 
+# -- State ladder (semantic contract) ------------------------------------------
+# Each mode progresses only to its honest ceiling
+STATE_LADDER = ["PLANNED", "PROMPT_GENERATED", "AWAITING_MANUAL_EXECUTION", "EXECUTED", "VALIDATED", "APPROVED"]
+
+# Mode ceilings: the highest honest state each mode should reach
+MODE_CEILINGS = {
+    "plan_only": "PLANNED",
+    "prompt_chain": "PROMPT_GENERATED",
+    "guided_execution": "APPROVED",
+    "autonomous_execution": "VALIDATED",
+    "yolo_execution": "VALIDATED",
+}
+
 
 def _load_mode_coverage(repo_root: str) -> dict | None:
     """Load mode-coverage.yaml from docs/."""
@@ -512,7 +525,11 @@ class OrchestrationRunner:
 
     def execute_step(self, step: dict, step_num: int, total_steps: int) -> dict:
         """Execute a single workflow step: validate artifact, manage gate, record result.
-        Returns the step result dict."""
+        Returns the step result dict.
+
+        Respects mode ceilings: prompt_chain stops at PROMPT_GENERATED, plan_only at PLANNED.
+        This prevents modes from pretending they executed when they only planned/prompted.
+        """
         skill = step.get("skill", "?")
         gate_name = step.get("gate", "review")
         output_artifact = step.get("output_artifact", "")
@@ -534,7 +551,22 @@ class OrchestrationRunner:
         print(f"STEP {step_num}/{total_steps}  |  Skill: {skill}  |  Gate: {gate_name}")
         print(f"{'-'*50}")
 
-        # -- Resolve artifact path --------------------------------------
+        # -- Mode ceiling enforcement: don't validate artifacts in prompt_chain --
+        if self.mode == "prompt_chain":
+            # prompt_chain: generate prompts, not validate execution artifacts
+            result["status"] = "PROMPT_GENERATED"
+            result["gate_result"] = "not_applicable"
+            print(f"  [PROMPT_CHAIN] Step marked PROMPT_GENERATED (not executed)")
+            return result
+
+        if self.mode == "plan_only":
+            # plan_only: just record the planned step, no validation
+            result["status"] = "PLANNED"
+            result["gate_result"] = "not_applicable"
+            print(f"  [PLAN_ONLY] Step marked PLANNED")
+            return result
+
+        # -- Resolve artifact path (execution modes only) -----------------------
         artifact_path = ""
         if output_artifact:
             # Determine artifact path based on contracts
@@ -544,7 +576,7 @@ class OrchestrationRunner:
             rel = os.path.relpath(artifact_path, self.repo_root)
             result["artifact_path"] = rel.replace("\\", "/")
 
-        # -- Run validators if artifact exists --------------------------
+        # -- Run validators if artifact exists (execution modes only) -----------
         if artifact_path and os.path.exists(artifact_path):
             validator_stack = self._run_validator_stack(output_artifact, artifact_path)
             result["validator_stack"] = validator_stack
@@ -570,11 +602,8 @@ class OrchestrationRunner:
                 result["status"] = "FAILED"
                 result["validator_stack"] = [{"level": "Dispatcher", "command": f"validate-output.py {output_artifact}", "result": "SKIPPED (artifact missing)"}]
                 return result
-            else:
-                # Plan modes: artifacts don't exist yet, OK to skip
-                print(f"  ~ Artifact '{output_artifact}' not yet produced (plan mode, expected after actual execution)")
 
-        # -- Gate management --------------------------------------------
+        # -- Gate management (execution modes only) ----------------------------
         gate_result = self._manage_gate(gate_name, step_num, skill)
         result["gate_result"] = gate_result
 
@@ -592,16 +621,54 @@ class OrchestrationRunner:
             result["status"] = "FAILED"
             return result
 
-        result["status"] = "COMPLETED"
+        # For execution modes: artifact passed validators, gate approved
+        result["status"] = "EXECUTED" if self.mode in ("autonomous_execution", "yolo_execution") else "VALIDATED"
         return result
 
     def _should_auto_invoke_next(self) -> tuple[bool, str | None]:
-        """Check if this workflow declares auto-invocation. Returns (should_invoke, source_artifact_id)."""
+        """Check if this workflow declares auto-invocation. Returns (should_invoke, source_artifact_id).
+
+        CRITICAL INVARIANT: auto_invoke_next_workflow requires VALIDATED source artifact.
+        Never chain workflows on PROMPT_GENERATED or PLANNED artifacts.
+        """
         auto_invoke = self.workflow.get("auto_invoke_next_workflow", False)
         source = self.workflow.get("auto_invoke_source")
         if auto_invoke and source:
+            # Guard: check source artifact state
+            source_state = self._get_artifact_state_from_source(source)
+            if source_state not in ("VALIDATED", "EXECUTED", "APPROVED"):
+                print(f"  [AUTO-INVOKE GUARD] Source artifact '{source}' state is {source_state}, not VALIDATED. "
+                      f"Refusing to chain workflows on non-validated artifacts.")
+                return False, None
             return True, source
         return False, None
+
+    def _get_artifact_state_from_source(self, source: str) -> str:
+        """Extract the semantic state of the source artifact from step results.
+
+        If source is 'workflow_orchestration_plan.recommended_workflow_id', look at the
+        workflow-planner step's output artifact (workflow_orchestration_plan).
+        Returns the highest state that artifact reached.
+        """
+        # Parse source like "workflow_orchestration_plan.recommended_workflow_id"
+        artifact_id = source.split(".")[0] if "." in source else source
+
+        # Find the step that produces this artifact
+        for step_result in self.step_results:
+            if step_result.get("output_artifact") == artifact_id:
+                status = step_result.get("status", "UNKNOWN")
+                # Map step status to semantic state
+                state_map = {
+                    "PROMPT_GENERATED": "PROMPT_GENERATED",
+                    "PLANNED": "PLANNED",
+                    "EXECUTED": "EXECUTED",
+                    "VALIDATED": "VALIDATED",
+                    "COMPLETED": "VALIDATED",  # legacy status
+                    "APPROVED": "APPROVED",
+                }
+                return state_map.get(status, status)
+
+        return "UNKNOWN"
 
     def _read_machine_readable_section(self, artifact_path: str) -> dict | None:
         """Parse the YAML machine-readable section from a markdown artifact.
@@ -967,23 +1034,39 @@ class OrchestrationRunner:
         workflow_name = self.workflow.get("display_name", self.workflow_id)
         run_log_path = os.path.join(self.log_dir, f"run_log_{self.workflow_id}_{self.mode}.md")
 
-        # Determine final state
+        # Determine final state (respecting semantic contract: each mode has an honest ceiling)
         failures = [s for s in self.step_results if s["status"] in ("FAILED",)]
         pauses = [s for s in self.step_results if s["status"] in ("PAUSED",)]
-        completed = [s for s in self.step_results if s["status"] in ("COMPLETED",)]
 
-        if not failures and not pauses and len(completed) == len(steps):
-            self.final_state = "completed"
-            self.final_note = f"All {len(steps)} steps completed successfully in '{self.mode}' mode."
-        elif failures:
+        # Count steps at each state (semantic contract)
+        planned = [s for s in self.step_results if s["status"] == "PLANNED"]
+        prompted = [s for s in self.step_results if s["status"] == "PROMPT_GENERATED"]
+        executed = [s for s in self.step_results if s["status"] == "EXECUTED"]
+        validated = [s for s in self.step_results if s["status"] == "VALIDATED"]
+        completed = [s for s in self.step_results if s["status"] == "COMPLETED"]  # legacy
+
+        # Determine final state based on mode ceiling
+        mode_ceiling = MODE_CEILINGS.get(self.mode, "VALIDATED")
+
+        if failures:
             self.final_state = "failed"
             self.final_note = f"Step {failures[0]['step_id']} ({failures[0]['skill']}) failed. Run halted."
         elif pauses:
             self.final_state = "paused"
             self.final_note = f"Paused at step {pauses[0]['step_id']} gate '{pauses[0]['gate']}'."
+        elif self.mode == "prompt_chain" and len(prompted) == len(steps):
+            self.final_state = "prompt_chain_generated"
+            self.final_note = f"All {len(steps)} steps generated prompts successfully in '{self.mode}' mode."
+        elif self.mode == "plan_only" and len(planned) == len(steps):
+            self.final_state = "planned"
+            self.final_note = f"All {len(steps)} workflow steps planned successfully."
+        elif not failures and not pauses and (len(completed) == len(steps) or len(validated) == len(steps) or len(executed) == len(steps)):
+            self.final_state = "completed"
+            self.final_note = f"All {len(steps)} steps completed successfully in '{self.mode}' mode."
         else:
             self.final_state = "partial"
-            self.final_note = f"{len(completed)}/{len(steps)} steps completed."
+            success_steps = len(planned) + len(prompted) + len(executed) + len(validated) + len(completed)
+            self.final_note = f"{success_steps}/{len(steps)} steps completed."
 
         lines = [
             f"# Workflow Run Log: {workflow_name}",
@@ -1403,7 +1486,10 @@ class OrchestrationRunner:
         print(f"  Mode:         {self.mode}")
         print(f"  Session:      {self.session_id}")
         print(f"  Status:       {self.final_state}")
-        print(f"  Steps:        {len([s for s in self.step_results if s['status'] == 'COMPLETED'])}/{len(steps)}")
+        # Count steps at each semantic state (not just COMPLETED)
+        successful_steps = len([s for s in self.step_results
+                               if s['status'] in ('COMPLETED', 'EXECUTED', 'VALIDATED', 'APPROVED', 'PLANNED', 'PROMPT_GENERATED')])
+        print(f"  Steps:        {successful_steps}/{len(steps)}")
         print(f"  Gates:        {len(self.gate_decisions)}")
         print(f"  Errors:       {len(self.errors)}")
         print(f"  Run Log:      {run_log_path}")
