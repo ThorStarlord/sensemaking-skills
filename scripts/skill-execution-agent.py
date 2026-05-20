@@ -193,7 +193,8 @@ def main():
     )
 
     args = parser.parse_args()
-    repo_root = resolve_repo_root(args.repo_root)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = resolve_repo_root(args.repo_root, script_dir)
 
     # Load plan
     success, plan_data, error_msg = load_orchestration_plan(args.plan_path)
