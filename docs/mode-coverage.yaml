@@ -308,10 +308,7 @@ mode_coverage:
   gates_exercised: true
   gates_note: 2 approved, 0 denied
   hardening_triggered: none
-  notes: Redesigned docs-architecture workflow (2-step version). Removed to-prd step
-    (moved to product-to-issues workflow). Focused on alignment + handoff. All validators
-    invoked through canonical dispatcher. Proves redesigned workflow end-to-end. Phase 4
-    verified: evidence tracking complete.
+  notes: "Redesigned docs-architecture workflow (2-step version). Removed to-prd step (moved to product-to-issues workflow). Focused on alignment + handoff. All validators invoked through canonical dispatcher. Proves redesigned workflow end-to-end. Phase 4 verified: evidence tracking complete."
 - mode: guided_execution
   workflow_id: product-to-issues
   last_run: '2026-05-17'

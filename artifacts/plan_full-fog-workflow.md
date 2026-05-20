@@ -1,10 +1,10 @@
-# Orchestration Plan: Full Fog Path - Comprehensive Sensemaking
+# Orchestration Plan: Full Fog Path - Comprehensive Sensemaking & Orchestration
 
-- **Session ID**: orchestration-20260519-122924-65eaa742
+- **Session ID**: orchestration-20260519-212505-f981bfeb
 - **Date**: 2026-05-19
 - **Workflow**: full-fog-workflow
-- **Execution Mode**: plan_only
-- **Purpose**: Comprehensively analyze ambiguous projects from raw fog to actionable recommendations.
+- **Execution Mode**: prompt_chain
+- **Purpose**: Comprehensively analyze ambiguous projects from raw fog through diagnosis to automatic implementation workflow invocation.
 
 ## Skills in Sequence
 
@@ -23,20 +23,20 @@
 - **Gate**: review_diagnosis
 - **Output**: repository_sensemaking_brief
 
-### Step 4: prompt-handoff
+### Step 4: workflow-planner
 - **Type**: local_execution
-- **Gate**: review_final_handoff
-- **Output**: prompt_handoff
+- **Gate**: review_orchestration_plan
+- **Output**: workflow_orchestration_plan
 
 ## Inputs and Outputs
 
-- **user_intent** (artifact): User's problem statement and scope mode (created by orchestration-runner)
+- **user_intent** (artifact): User's problem statement and scope mode (created by workflow-runtime)
 - **raw_fog** (external_context): Vague problem statement, project goals, team context, and current state of confusion.
 - **repository_state** (external_context): Current repository files, folder structure, README, documentation, and git state.
 
 ## Approval Gates
 
-- **Mode**: plan_only
+- **Mode**: prompt_chain
 - **Gate Behavior**: none
 
 No gates required for this mode.
@@ -61,14 +61,14 @@ routing_decision_method: diagnosis_primary_soft_context
 escalation_recommended: false
 auto_escalation_allowed: false
 scope_expansion_requires_approval: true
-execution_mode: plan_only
+execution_mode: prompt_chain
 status: created
-session_id: orchestration-20260519-122924-65eaa742
+session_id: orchestration-20260519-212505-f981bfeb
 initial_inputs:
   - id: user_intent
     type: artifact
     required: true
-    description: User's problem statement and scope mode (created by orchestration-runner)
+    description: User's problem statement and scope mode (created by workflow-runtime)
   - id: raw_fog
     type: external_context
     required: true
@@ -94,10 +94,10 @@ steps:
     gate: review_diagnosis
     output_artifact: repository_sensemaking_brief
   - id: 4
-    skill: prompt-handoff
+    skill: workflow-planner
     step_type: local_execution
-    gate: review_final_handoff
-    output_artifact: prompt_handoff
+    gate: review_orchestration_plan
+    output_artifact: workflow_orchestration_plan
 approval_gates:
   behavior: none
 stop_conditions:
