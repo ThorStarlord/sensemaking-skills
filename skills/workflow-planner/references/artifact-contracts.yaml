@@ -2,6 +2,7 @@
 
 artifacts:
   - id: user_intent
+    path: "artifacts/user_intent.md"
     produced_by: workflow-runtime
     consumed_by:
       - problem-framer
@@ -39,6 +40,7 @@ artifacts:
         - yolo_execution
 
   - id: user_intent_amendment
+    path: "artifacts/user_intent_amendment.md"
     produced_by: orchestration-runner
     consumed_by:
       - workflow-planner
@@ -63,6 +65,7 @@ artifacts:
         - yolo_execution
 
   - id: problem_frame
+    path: "artifacts/problem_frame.md"
     produced_by: problem-framer
     consumed_by:
       - unknowns-mapper
@@ -85,6 +88,7 @@ artifacts:
         - yolo_execution
 
   - id: unknowns_map
+    path: "artifacts/unknowns_map.md"
     produced_by: unknowns-mapper
     consumed_by:
       - repo-sensemaker
@@ -111,6 +115,7 @@ artifacts:
         - yolo_execution
 
   - id: repository_sensemaking_brief
+    path: "artifacts/repository_sensemaking_brief.md"
     produced_by: repo-sensemaker
     consumed_by:
       - workflow-planner
@@ -155,6 +160,7 @@ artifacts:
         - yolo_execution
 
   - id: discovery_findings
+    path: "artifacts/discovery_findings.md"
     produced_by: discovery
     consumed_by:
       - opportunity-tree
@@ -167,6 +173,7 @@ artifacts:
         - yolo_execution
 
   - id: domain_alignment_report
+    path: "artifacts/domain_alignment_report.md"
     produced_by: docs-aligner
     consumed_by:
       - to-prd
@@ -179,6 +186,7 @@ artifacts:
         - yolo_execution
 
   - id: prd
+    path: "artifacts/prd.md"
     produced_by: to-prd
     consumed_by:
       - to-issues
@@ -211,6 +219,7 @@ artifacts:
         - yolo_execution
 
   - id: issue_list
+    path: "artifacts/issue_list.md"
     produced_by: to-issues
     consumed_by:
       - triage
@@ -231,6 +240,7 @@ artifacts:
         - yolo_execution
 
   - id: agent_brief
+    path: "artifacts/agent_brief.md"
     produced_by: triage
     consumed_by:
       - tdd
@@ -244,6 +254,7 @@ artifacts:
         - yolo_execution
 
   - id: code_patch
+    path: "artifacts/code_patch.md"
     produced_by: tdd
     consumed_by:
       - handoff
@@ -255,6 +266,7 @@ artifacts:
         - yolo_execution
 
   - id: session_summary
+    path: "artifacts/session_summary.md"
     produced_by: handoff
     consumed_by:
       - workflow-planner
@@ -268,6 +280,7 @@ artifacts:
         - yolo_execution
 
   - id: okr_list
+    path: "artifacts/okr_list.md"
     produced_by: okr
     consumed_by:
       - roadmap
@@ -279,6 +292,7 @@ artifacts:
         - yolo_execution
 
   - id: roadmap
+    path: "artifacts/roadmap.md"
     produced_by: roadmap
     consumed_by:
       - stakeholder-update
@@ -291,6 +305,7 @@ artifacts:
         - yolo_execution
 
   - id: stakeholder_update
+    path: "artifacts/stakeholder_update.md"
     produced_by: stakeholder-update
     consumed_by:
       - workflow-planner
@@ -302,6 +317,7 @@ artifacts:
         - yolo_execution
 
   - id: business_canvas
+    path: "artifacts/business_canvas.md"
     produced_by: lean-canvas
     consumed_by:
       - product-manager
@@ -313,6 +329,7 @@ artifacts:
         - yolo_execution
 
   - id: north_star_metric
+    path: "artifacts/north_star_metric.md"
     produced_by: north-star
     consumed_by:
       - okr
@@ -324,6 +341,7 @@ artifacts:
         - yolo_execution
 
   - id: persona_definition
+    path: "artifacts/persona_definition.md"
     produced_by: persona
     consumed_by:
       - discovery
@@ -336,6 +354,7 @@ artifacts:
         - yolo_execution
 
   - id: synthesis_report
+    path: "artifacts/synthesis_report.md"
     produced_by: interview-synthesis
     consumed_by:
       - opportunity-tree
@@ -347,6 +366,7 @@ artifacts:
         - yolo_execution
 
   - id: market_analysis
+    path: "artifacts/market_analysis.md"
     produced_by: competitive-analysis
     consumed_by:
       - pricing
@@ -359,6 +379,7 @@ artifacts:
         - yolo_execution
 
   - id: opportunity_map
+    path: "artifacts/opportunity_map.md"
     produced_by: opportunity-tree
     consumed_by:
       - hypothesis
@@ -370,6 +391,7 @@ artifacts:
         - yolo_execution
 
   - id: hypothesis_statement
+    path: "artifacts/hypothesis_statement.md"
     produced_by: hypothesis
     consumed_by:
       - experiment-design
@@ -382,6 +404,7 @@ artifacts:
         - yolo_execution
 
   - id: journey_map
+    path: "artifacts/journey_map.md"
     produced_by: customer-journey
     consumed_by:
       - product-manager
@@ -393,6 +416,7 @@ artifacts:
         - yolo_execution
 
   - id: story_list
+    path: "artifacts/story_list.md"
     produced_by: user-stories
     consumed_by:
       - acceptance-criteria
@@ -405,6 +429,7 @@ artifacts:
         - yolo_execution
 
   - id: criteria_list
+    path: "artifacts/criteria_list.md"
     produced_by: acceptance-criteria
     consumed_by:
       - prompt-handoff
@@ -416,6 +441,7 @@ artifacts:
         - yolo_execution
 
   - id: workflow_orchestration_plan
+    path: "artifacts/plan_{workflow_id}.md"
     produced_by: workflow-planner
     consumed_by:
       - user
@@ -464,6 +490,7 @@ artifacts:
       - excluded_steps
 
   - id: prompt_handoff
+    path: "artifacts/prompt_handoff.md"
     produced_by: 
       - prompt-handoff
       - handoff
@@ -488,6 +515,7 @@ artifacts:
         - yolo_execution
 
   - id: docs_contract_reconciliation_report
+    path: "artifacts/docs_contract_reconciliation_report.md"
     produced_by: sensemaking-docs-reconciler
     consumed_by:
       - prompt-handoff
@@ -513,6 +541,7 @@ artifacts:
         - yolo_execution
 
   - id: usage_research_report
+    path: "artifacts/usage_research_report.md"
     produced_by: user
     consumed_by:
       - workflow-planner
@@ -536,6 +565,7 @@ artifacts:
         - yolo_execution
 
   - id: skill_improvement_plan
+    path: "artifacts/skill_improvement_plan.md"
     produced_by: skill-maintainer
     consumed_by:
       - workflow-planner
@@ -555,6 +585,7 @@ artifacts:
         - yolo_execution
 
   - id: ui_flows
+    path: "artifacts/ui_flows.md"
     produced_by: ui-flow
     consumed_by:
       - ui-screen-spec
@@ -568,6 +599,7 @@ artifacts:
         - autonomous_execution
 
   - id: screen_specs
+    path: "artifacts/screen_specs.md"
     produced_by: ui-screen-spec
     consumed_by:
       - to-issues
@@ -583,6 +615,7 @@ artifacts:
         - autonomous_execution
 
   - id: ui_specification
+    path: "artifacts/ui_specification.md"
     produced_by: ui-brief
     consumed_by: []
     verification:

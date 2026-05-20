@@ -124,6 +124,18 @@ class TestDynamicPathResolution(unittest.TestCase):
         self.assertEqual(os.path.normpath(resolved), os.path.normpath(expected_abs))
         mock_load.assert_called_once_with(self.runner.repo_root)
 
+    @patch("workflow_runtime.load_artifact_contracts")
+    def test_resolve_fallback_for_workflow_orchestration_plan(self, mock_load):
+        """Test fallback for workflow_orchestration_plan when contract resolution is unavailable."""
+        self.runner.contracts = None
+        mock_load.side_effect = Exception("Load error")
+
+        resolved = self.runner._resolve_artifact_path("workflow_orchestration_plan")
+
+        expected_rel = os.path.join("artifacts", "plan_test-wf.md")
+        expected_abs = os.path.join(self.runner.repo_root, expected_rel)
+        self.assertEqual(os.path.normpath(resolved), os.path.normpath(expected_abs))
+
 
 if __name__ == "__main__":
     unittest.main()

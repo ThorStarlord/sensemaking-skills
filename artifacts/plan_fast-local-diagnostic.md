@@ -1,9 +1,9 @@
 # Orchestration Plan: Fast Local Diagnostic
 
-- **Session ID**: orchestration-20260520-160318-bd2022ff
+- **Session ID**: orchestration-20260520-170410-4294ed37
 - **Date**: 2026-05-20
 - **Workflow**: fast-local-diagnostic
-- **Execution Mode**: yolo_execution
+- **Execution Mode**: plan_only
 - **Purpose**: Quickly identify the weakest boundary and produce a handoff prompt.
 
 ## Skills in Sequence
@@ -24,11 +24,10 @@
 
 ## Approval Gates
 
-- **Mode**: yolo_execution
-- **Gate Behavior**: bypassed
+- **Mode**: plan_only
+- **Gate Behavior**: none
 
-- review_sensemaking_brief: BYPASSED
-- review_handoff_prompt: BYPASSED
+No gates required for this mode.
 
 ## Stop Conditions
 
@@ -50,9 +49,9 @@ routing_decision_method: diagnosis_primary_soft_context
 escalation_recommended: false
 auto_escalation_allowed: false
 scope_expansion_requires_approval: true
-execution_mode: yolo_execution
+execution_mode: plan_only
 status: created
-session_id: orchestration-20260520-160318-bd2022ff
+session_id: orchestration-20260520-170410-4294ed37
 initial_inputs:
   - id: repository_state
     type: external_context
@@ -70,7 +69,7 @@ steps:
     gate: review_handoff_prompt
     output_artifact: session_summary
 approval_gates:
-  behavior: bypassed
+  behavior: none
 stop_conditions:
   - validator_failure
   - gate_denial

@@ -239,6 +239,30 @@
       "unit": "s",
       "target": 15.0,
       "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-20T17:04:09.495532",
+      "name": "runner_startup",
+      "value": 0.37,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-20T17:04:09.839456",
+      "name": "single_workflow_execution",
+      "value": 0.34,
+      "unit": "s",
+      "target": 30.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-20T17:04:10.223290",
+      "name": "orchestration_overhead",
+      "value": 0.38,
+      "unit": "s",
+      "target": 15.0,
+      "status": "PASS"
     }
   ]
 }

@@ -784,37 +784,11 @@ class OrchestrationRunner:
                     resolved_path = path_template.replace("{workflow_id}", self.workflow_id).replace("{session_id}", self.session_id)
                 return os.path.join(self.repo_root, resolved_path)
 
-        # Fallback to default paths
-        # Known artifact paths
-        known_paths = {
-            "repository_sensemaking_brief": os.path.join("artifacts", "repository_sensemaking_brief.md"),
-            "prompt_handoff": os.path.join("artifacts", "prompt_handoff.md"),
-            "workflow_orchestration_plan": os.path.join("artifacts", f"plan_{self.workflow_id}.md"),
-            "problem_frame": os.path.join("artifacts", "problem_frame.md"),
-            "unknowns_map": os.path.join("artifacts", "unknowns_map.md"),
-            "docs_contract_reconciliation_report": os.path.join("artifacts", "docs_contract_reconciliation_report.md"),
-            "domain_alignment_report": os.path.join("artifacts", "domain_alignment_report.md"),
-            "usage_research_report": os.path.join("artifacts", "usage_research_report.md"),
-            "skill_improvement_plan": os.path.join("artifacts", "skill_improvement_plan.md"),
-            "prd": os.path.join("artifacts", "prd.md"),
-            "issue_list": os.path.join("artifacts", "issue_list.md"),
-            "agent_brief": os.path.join("artifacts", "agent_brief.md"),
-            "code_patch": os.path.join("artifacts", "code_patch.md"),
-            "persona_definition": os.path.join("artifacts", "persona_definition.md"),
-            "discovery_findings": os.path.join("artifacts", "discovery_findings.md"),
-            "synthesis_report": os.path.join("artifacts", "synthesis_report.md"),
-            "opportunity_map": os.path.join("artifacts", "opportunity_map.md"),
-            "hypothesis_statement": os.path.join("artifacts", "hypothesis_statement.md"),
-            "business_canvas": os.path.join("artifacts", "business_canvas.md"),
-            "north_star_metric": os.path.join("artifacts", "north_star_metric.md"),
-            "okr_list": os.path.join("artifacts", "okr_list.md"),
-            "roadmap": os.path.join("artifacts", "roadmap.md"),
-            "stakeholder_update": os.path.join("artifacts", "stakeholder_update.md"),
-            "story_list": os.path.join("artifacts", "story_list.md"),
-            "criteria_list": os.path.join("artifacts", "criteria_list.md"),
-            "session_summary": os.path.join("artifacts", "session_summary.md"),
-        }
-        rel = known_paths.get(artifact_id, os.path.join("artifacts", f"{artifact_id}.md"))
+        # Fallback to default paths if not found/specified in contracts
+        if artifact_id == "workflow_orchestration_plan":
+            rel = os.path.join("artifacts", f"plan_{self.workflow_id}.md")
+        else:
+            rel = os.path.join("artifacts", f"{artifact_id}.md")
         return os.path.join(self.repo_root, rel)
 
     def _run_validator_stack(self, artifact_id: str, artifact_path: str) -> list[dict]:
