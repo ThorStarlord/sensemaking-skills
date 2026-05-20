@@ -19,6 +19,13 @@ Converts vague fog into a structured **Problem Frame**. This skill sits at the v
 ## Output Format
 Every response must follow the [Problem Frame](references/problem-frame-template.md) structure.
 
+**CRITICAL**: When invoked as part of a workflow, write the final Problem Frame to:
+```
+artifacts/problem_frame.md
+```
+
+This is the standard artifact path for this skill's output.
+
 ## Boundary Rules
 - **Non-Implementation**: Do not propose specific technical solutions or implementations. Focus only on framing the problem and the desired outcome.
 - **Conditional Object Verification**:

@@ -32,6 +32,13 @@ Produces an **Unknowns Map** to separate what we know from what we are guessing.
 ## Output Format
 Every response must follow the [Unknowns Map](references/unknowns-map-template.md) structure.
 
+**CRITICAL**: When invoked as part of a workflow, write the final Unknowns Map to:
+```
+artifacts/unknowns_map.md
+```
+
+This is the standard artifact path for this skill's output. Include the routing signals (clarity_assessment, unknowns_count, assumptions_count, research_needed) in a machine-readable format at the end of the artifact.
+
 ## Routing Signals
 The unknowns-mapper produces four machine-readable routing fields that guide downstream workflow execution:
 

@@ -303,14 +303,19 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
 
         # Expected output path
         expected_output_path = os.path.join(self.repo_root, "artifacts", expected_output_artifact + ".md")
+        relative_output_path = os.path.relpath(expected_output_path, self.repo_root)
 
         prompt = (
-            f"Execute the '{skill_id}' skill.\n\n"
+            f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
             f"{input_section}"
-            f"## Output\n"
-            f"Write the output artifact to:\n{expected_output_path}\n\n"
-            f"Use the available skills and tools to complete this task. "
-            f"Ensure the output artifact is created at the expected path."
+            f"## Your Task\n"
+            f"Use the/{skill_id} slash command or the skill definition to produce the required output.\n\n"
+            f"## Output Artifact (REQUIRED)\n"
+            f"You MUST write the final artifact to this exact path:\n"
+            f"```\n{relative_output_path}\n```\n\n"
+            f"Use the Write tool to create this file. The artifact must be markdown format (.md) "
+            f"and must match the expected output format for this skill.\n\n"
+            f"Do not stop until the artifact file exists at the specified path."
         )
 
         messages = []
