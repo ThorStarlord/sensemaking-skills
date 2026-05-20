@@ -1316,8 +1316,8 @@ class OrchestrationRunner:
             print(f"\n[OK] Plan-only mode complete. Exiting.")
             return 0
 
-        # For autonomous_execution and yolo_execution modes, dispatch to skill executor
-        if self.mode in ("autonomous_execution", "yolo_execution"):
+        # For execution modes, dispatch to skill executor
+        if self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
             print(f"\n{'='*60}")
             print(f"PHASE 3: DISPATCH SKILL EXECUTION")
             print(f"{'='*60}")
