@@ -7,16 +7,23 @@ ecosystems:
       - id: problem-framer
         purpose: frame the problem behind the problem
         artifact: problem_frame
-        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/problem-framer" }
       - id: unknowns-mapper
         purpose: map knowns, unknowns, and assumptions
         artifact: unknowns_map
-        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/unknowns-mapper" }
       - id: repo-sensemaker
         purpose: diagnose repository shape and weakest boundary
         artifact: repository_sensemaking_brief
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/repo-sensemaker" }
+      - id: workflow-planner
+        purpose: select and configure the recommended workflow for execution
+        artifact: workflow_orchestration_plan
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/workflow-planner" }
       - id: prompt-handoff
         purpose: prepare a handoff prompt for the next agent
         artifact: prompt_handoff
