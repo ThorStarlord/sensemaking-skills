@@ -58,11 +58,20 @@ def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommen
 
     # 2. Check required sections
     required_sections = contract.get("required_sections", [])
+    missing_sections = []
     for section in required_sections:
         section_regex_part = re.escape(section).replace("_", r"[\s_\-]").replace(r"\_", r"[\s_\-]")
         pattern = rf"^##\s+(?:\d+\.\s+)?{section_regex_part}"
         if not re.search(pattern, content, re.MULTILINE | re.IGNORECASE):
-            errors.append(format_error(MISSING_REQUIRED_SECTION, f"Missing required section: {section}"))
+            missing_sections.append(section)
+
+    if missing_sections:
+        skill_name = contract.get("produced_by", "unknown")
+        template_path = f"skills/{skill_name}/references/{artifact_id}-template.md"
+        error_msg = f"Missing {len(missing_sections)} required section(s): {', '.join(missing_sections)}\n"
+        error_msg += f"Expected template: {template_path}\n"
+        error_msg += f"Artifact contract: skills/workflow-planner/references/artifact-contracts.yaml (id: {artifact_id})"
+        errors.append(format_error(MISSING_REQUIRED_SECTION, error_msg))
 
     # 3. Check machine fields in YAML block
     required_fields = contract.get("required_machine_fields", [])
@@ -88,10 +97,19 @@ def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommen
                     pass
 
             if not found_valid_block:
+                skill_name = contract.get("produced_by", "unknown")
+                template_path = f"skills/{skill_name}/references/{artifact_id}-template.md"
+                error_msg = f"Missing required machine-readable fields: {', '.join(required_fields)}\n"
+                error_msg += f"Add YAML block at end of artifact:\n"
+                error_msg += "```yaml\n"
+                for field in required_fields:
+                    error_msg += f"{field}: <value>\n"
+                error_msg += "```\n"
+                error_msg += f"See template: {template_path}"
                 errors.append(
                     format_error(
                         MISSING_MACHINE_FIELDS,
-                        f"Could not find a single YAML block containing all required machine fields: {required_fields}",
+                        error_msg,
                     )
                 )
 

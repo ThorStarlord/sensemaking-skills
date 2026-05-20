@@ -824,12 +824,16 @@ class OrchestrationRunner:
             "level": "Dispatcher",
             "command": f"validate-output.py {artifact_id}",
             "result": "PASSED" if passed else "FAILED",
-            "output": output[:300] if not passed else "",
+            "output": output[:500] if not passed else "",
             "elapsed_s": round(elapsed, 2),
         })
 
         if not passed:
-            print(f"    [FAIL] Dispatcher failed ({elapsed:.1f}s): {output[:150]}")
+            print(f"    [FAIL] Dispatcher failed ({elapsed:.1f}s)")
+            # Print full error for better diagnostics
+            for line in output.split("\n"):
+                if line.strip():
+                    print(f"      {line}")
         else:
             print(f"    [OK] Dispatcher passed ({elapsed:.1f}s)")
 
