@@ -152,6 +152,9 @@ def _validate_workflow(workflow: dict) -> list[str]:
     if not workflow.get("steps"):
         errors.append(format_error(WORKFLOW_INVALID, f"Workflow '{wid}' has no steps"))
     for i, step in enumerate(workflow.get("steps", [])):
+        # Skip validation for conditional steps - they have if_true/if_false branches with their own skill/gate
+        if step.get("conditional"):
+            continue
         if not step.get("skill"):
             errors.append(format_error(WORKFLOW_INVALID, f"Workflow '{wid}' step {i+1} missing 'skill'"))
         if not step.get("gate"):

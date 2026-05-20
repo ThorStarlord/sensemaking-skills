@@ -136,29 +136,78 @@ Guided Execution / Prompt Chain
 
 ## Usage
 
-The sensemaking system provides two automated diagnostic workflows that analyze your project and produce recommendations. You then choose which implementation workflow to run next.
+### Default Workflow Chain
 
-### Quick Start: Choose Your Diagnostic Workflow
+The system uses a **two-stage default workflow chain** for production use:
+
+```
+full-local-sensemaking (DEFAULT)
+  ↓ (auto-invokes on completion)
+implementation-workflow (AUTOMATIC)
+```
+
+Simply run:
+```bash
+python scripts/workflow-runtime.py
+```
+
+This will:
+1. Execute `full-local-sensemaking` (diagnoses your repository)
+2. Automatically chain to `implementation-workflow` (transforms diagnosis into implementation)
+3. Return exit code 0 on success, 2 on failure, 3 if paused
+
+To use a different execution mode (default is `yolo_execution`):
+```bash
+python scripts/workflow-runtime.py --mode guided_execution
+```
+
+To use a different workflow explicitly:
+```bash
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode guided_execution
+```
+
+---
+
+### Alternative: Choose Your Own Diagnostic Workflow
+
+For special cases, you can manually select a different diagnostic workflow. These do NOT auto-chain to implementation-workflow:
 
 **Fast Path** — When you have a clear repo goal:
 ```bash
-python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode guided_execution
 ```
 **Chains**: `repo-sensemaker`  
 **Output**: Repository Sensemaking Brief (identifies weakest boundary + recommended workflows)  
-**Time**: ~5 minutes
+**Time**: ~5 minutes  
+**Next**: You choose the implementation workflow manually
 
 **Full Fog Path** — When the problem is ambiguous:
 ```bash
-python scripts/workflow-runtime.py full-fog-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow full-fog-workflow --mode guided_execution
 ```
 **Chains**: `problem-framer` → `unknowns-mapper` → `repo-sensemaker` → `prompt-handoff`  
 **Output**: Problem Frame + Unknowns Map + Repository Brief + Ready-to-copy Prompts  
-**Time**: ~20 minutes
+**Time**: ~20 minutes  
+**Next**: You choose the implementation workflow manually
 
-### Execution Flow (Default: guided_execution mode)
+### Execution Flow (Default: yolo_execution mode)
 
-1. **Invoke diagnostic workflow** — `workflow-runtime.py <workflow-name>`
+The default execution mode is `yolo_execution` — full automation that bypasses approval gates for local skills. To use guided execution with approval pauses, add `--mode guided_execution` to the command.
+
+**With default mode (yolo_execution):**
+```bash
+python scripts/workflow-runtime.py full-local-sensemaking
+# Runs with full automation, no approval gates
+```
+
+**With guided mode (manual approvals):**
+```bash
+python scripts/workflow-runtime.py full-local-sensemaking --mode guided_execution
+```
+
+**Execution flow with guided mode:**
+
+1. **Invoke diagnostic workflow** — `workflow-runtime.py <workflow-name> --mode guided_execution`
 2. **Provide initial inputs** — vague problem (Full Fog Path) or repository context (Fast Path)
 3. **Skills chain automatically** with approval gates at each step:
    - Step 1 completes → Orchestrator pauses
@@ -170,23 +219,30 @@ python scripts/workflow-runtime.py full-fog-workflow --mode guided_execution
    - Section 13: Machine-readable handoff (workflow ID, execution mode, inputs)
    - Section 14: Ready-to-copy prompts for next skill
 
-### Next Steps: Run Implementation Workflow
+### Next Steps: Implementation Workflow
 
-After the diagnostic workflow completes, run the recommended workflow:
+**If using default workflow chain** (`full-local-sensemaking`):
+- The `implementation-workflow` is **automatically invoked** after diagnosis completes
+- No manual intervention needed
+- Both workflows run in the same execution mode
+
+**If using alternative diagnostic workflows** (fast-path-workflow, full-fog-workflow, etc.):
+- After the diagnostic workflow completes, manually run the recommended workflow:
 
 ```bash
 # Example: if brief recommends docs-architecture
-python scripts/workflow-runtime.py docs-architecture --mode guided_execution
+python scripts/workflow-runtime.py --workflow docs-architecture --mode guided_execution
 ```
 
-Or copy the ready-to-copy prompt from the brief and paste it directly into the next skill.
+- Or copy the ready-to-copy prompt from the brief and paste it directly into the next skill
 
 ### Advanced: Other Execution Modes
 
-- **`plan_only`**: See what WOULD happen without executing (safe for testing)
+- **`yolo_execution`** (DEFAULT): Full automation, bypasses approval gates. Validators enforce safety with zero-tolerance. Requires clean git worktree.
+- **`autonomous_execution`**: Automatic skill chaining with automated gate approvals (fewer pauses than guided mode)
+- **`guided_execution`**: Automatic skill chaining with mandatory user approval gates at each step
 - **`prompt_chain`**: Generate all prompts; user runs them manually
-- **`autonomous_execution`**: Automatic skill chaining with gates (but fewer pauses)
-- **`yolo_execution`**: Full automation, no gates (for trusted workflows only)
+- **`plan_only`**: See what WOULD happen without executing (safe for testing)
 
 See [Execution Modes Reference](docs/orchestration-patterns.md#execution-modes) for details.
 

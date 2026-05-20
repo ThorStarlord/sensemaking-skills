@@ -92,6 +92,24 @@ The workflow orchestration system follows four key design patterns, each proven 
 | `docs/philosophy/` | Engineering rationale and FMEA taxonomies |
 | `docs/mode-coverage.yaml` | Execution mode proving status and run log references |
 
+## Default Workflows
+
+The system uses a two-stage default workflow chain for production use:
+
+1. **`full-local-sensemaking`** (DEFAULT) — The primary entry point when running `python scripts/workflow-runtime.py`
+   - Converts raw fog into a repository diagnosis and handoff
+   - Executes locally without external API calls
+   - Supports all execution modes: `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, `yolo_execution`
+   - Produces: `repository_sensemaking_brief` (diagnostic output)
+
+2. **`implementation-workflow`** (AUTO-INVOKED) — Automatically invoked after `full-local-sensemaking` completes
+   - Transforms diagnostic output into specifications and implementation plans
+   - Aligns domain, creates spec, decomposes into issues, and implements via TDD
+   - Runs in the same execution mode as the triggering workflow
+   - Produces: `domain_alignment_report` → `prd` → `issue_list` → `agent_brief` → `code_patch` → `session_summary`
+
+**Auto-invocation mechanism**: When `full-local-sensemaking` completes successfully, `workflow-runtime.py` automatically detects `auto_invoke_next_workflow_id: implementation-workflow` and chains to it without manual intervention.
+
 ## Domain Language
 - **Fog**: The state of project uncertainty. Four primary types:
   - **product_fog**: Unclear user needs, vague feature requirements, undocumented workflows
@@ -113,8 +131,8 @@ The workflow orchestration system follows four key design patterns, each proven 
   - **docs-implementation-workflow**: to-prd → handoff (for docs_fog)
   - **implementation-workflow**: to-prd → to-issues → triage → tdd (default for architecture_fog)
 - **High-Velocity Gate Pattern** (`gate: none`): Steps execute immediately without approval pauses. Used in implementation workflows for automatic progression between steps
-- **Execution Modes**: The system supports `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, and `yolo_execution`.
-- **YOLO Execution**: High-velocity automation that bypasses approval gates for local skills. Requires explicit opt-in and feature branches.
+- **Execution Modes**: The system supports `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, and `yolo_execution`. **Default mode: `yolo_execution`**.
+- **YOLO Execution** (Default): High-velocity automation that bypasses approval gates for local skills. This is the default execution mode when `--mode` is not specified. Requires a clean git worktree and uses feature branches for mutations. In `yolo_execution`, validators function as the safety mechanism — gates are bypassed, but post-step validation is zero-tolerance.
 - **Skill Split**: Diagnosis (`repo-sensemaker`) is separated from Action (`workflow-planner`) to ensure human-in-the-loop validation.
 - **Object Under Pressure**: The specific artifact or system boundary that is most ambiguous.
 - **Weakest Boundary**: The most fragile or unenforced point in a repository. Diagnosed by repo-sensemaker via evidence-backed analysis of signal-gap boundaries.
