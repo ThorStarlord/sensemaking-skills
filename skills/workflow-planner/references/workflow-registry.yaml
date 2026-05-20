@@ -221,6 +221,7 @@ workflows:
     description: Output from docs-architecture workflow (docs-aligner step).
   allowed_execution_modes:
   - guided_execution
+  - yolo_execution
   steps:
   - id: 1
     skill: to-prd

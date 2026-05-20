@@ -1,9 +1,9 @@
 # Orchestration Plan: Fast Local Diagnostic
 
-- **Session ID**: orchestration-20260520-170410-4294ed37
+- **Session ID**: orchestration-20260520-174532-e19bae12
 - **Date**: 2026-05-20
 - **Workflow**: fast-local-diagnostic
-- **Execution Mode**: plan_only
+- **Execution Mode**: autonomous_execution
 - **Purpose**: Quickly identify the weakest boundary and produce a handoff prompt.
 
 ## Skills in Sequence
@@ -24,10 +24,11 @@
 
 ## Approval Gates
 
-- **Mode**: plan_only
-- **Gate Behavior**: none
+- **Mode**: autonomous_execution
+- **Gate Behavior**: automated
 
-No gates required for this mode.
+- review_sensemaking_brief: AUTOMATED_APPROVAL
+- review_handoff_prompt: AUTOMATED_APPROVAL
 
 ## Stop Conditions
 
@@ -49,9 +50,9 @@ routing_decision_method: diagnosis_primary_soft_context
 escalation_recommended: false
 auto_escalation_allowed: false
 scope_expansion_requires_approval: true
-execution_mode: plan_only
+execution_mode: autonomous_execution
 status: created
-session_id: orchestration-20260520-170410-4294ed37
+session_id: orchestration-20260520-174532-e19bae12
 initial_inputs:
   - id: repository_state
     type: external_context
@@ -69,7 +70,7 @@ steps:
     gate: review_handoff_prompt
     output_artifact: session_summary
 approval_gates:
-  behavior: none
+  behavior: automated
 stop_conditions:
   - validator_failure
   - gate_denial
