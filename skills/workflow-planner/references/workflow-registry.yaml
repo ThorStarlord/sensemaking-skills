@@ -222,6 +222,9 @@ workflows:
   allowed_execution_modes:
   - guided_execution
   - yolo_execution
+  branch_policy:
+    required: true
+    pattern: yolo/{workflow_id}/{timestamp}
   steps:
   - id: 1
     skill: to-prd
