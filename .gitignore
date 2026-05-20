@@ -21,3 +21,4 @@ env/
 # Validation artifacts and cache
 .validation-cache/
 outputs/validation-*/
+artifacts/
