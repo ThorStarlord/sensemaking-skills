@@ -5,7 +5,7 @@ Orchestration-runner delegates skill invocation to this dispatcher when
 running in autonomous_execution or yolo_execution modes.
 
 Usage (internal):
-    dispatcher = SkillExecutionDispatcher(plan_path, repo_root)
+    dispatcher = SkillExecutionDispatcher(plan_path, repo_root, executor=executor)
     success, output = dispatcher.run_with_timeout(timeout=3600)
 """
 
@@ -27,9 +27,10 @@ SKILL_EXECUTION_FAILED = "SKILL_EXECUTION_FAILED"
 class SkillExecutionDispatcher:
     """Manages skill execution subprocess with timeout and error handling."""
 
-    def __init__(self, plan_path: str, repo_root: str):
+    def __init__(self, plan_path: str, repo_root: str, executor: str = "dry-run"):
         self.plan_path = os.path.abspath(plan_path)
         self.repo_root = os.path.abspath(repo_root)
+        self.executor = executor
         self.agent_script = os.path.join(self.repo_root, "scripts", "skill-execution-agent.py")
         self.process = None
         self.output = ""
@@ -52,7 +53,8 @@ class SkillExecutionDispatcher:
             self.agent_script,
             self.plan_path,
             "--repo-root", self.repo_root,
-            "--timeout", str(timeout_seconds)
+            "--executor", self.executor,
+            "--timeout", str(timeout_seconds),
         ]
 
         try:
@@ -81,11 +83,11 @@ class SkillExecutionDispatcher:
             return False, format_error(DISPATCHER_FAILED, f"Subprocess error: {str(e)}")
 
 
-def dispatch_skill_execution(plan_path: str, repo_root: str, timeout: int = 3600) -> Tuple[bool, str]:
+def dispatch_skill_execution(plan_path: str, repo_root: str, executor: str = "dry-run", timeout: int = 3600) -> Tuple[bool, str]:
     """
     Convenience function for dispatching skill execution from workflow-runtime.
 
     Returns (success: bool, output: str)
     """
-    dispatcher = SkillExecutionDispatcher(plan_path, repo_root)
+    dispatcher = SkillExecutionDispatcher(plan_path, repo_root, executor=executor)
     return dispatcher.run_with_timeout(timeout_seconds=timeout)

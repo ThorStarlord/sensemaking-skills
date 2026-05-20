@@ -183,6 +183,7 @@ class OrchestrationRunner:
         log_dir: str | None = None,
         resume: bool = False,
         gate_decision: str | None = None,
+        executor: str = "dry-run",
     ):
         self.workflow_id = workflow_id
         self.mode = mode
@@ -198,6 +199,7 @@ class OrchestrationRunner:
         self.gate_decisions: list[dict] = []
         self.resume = resume
         self.gate_decision = gate_decision
+        self.executor = executor
 
         # Load registries
         self._load_registries()
@@ -1248,9 +1250,30 @@ class OrchestrationRunner:
 
             print(f"  -> Execution plan written to {os.path.relpath(plan_json_path, self.repo_root)}")
 
-            # Dispatch to skill execution agent
-            print(f"  -> Dispatching to skill execution agent...")
-            success, output = dispatch_skill_execution(plan_json_path, self.repo_root, timeout=3600)
+            # Validate executor mode compatibility
+            from skill_executor import create_executor
+            try:
+                executor_instance = create_executor(self.executor, self.repo_root)
+                mode_error = executor_instance.validate_mode(self.mode)
+                if mode_error:
+                    print(f"  [FAIL] {mode_error}")
+                    self.errors.append(mode_error)
+                    self.final_state = "failed"
+                    # Fall through to write run log and exit
+                else:
+                    print(f"  [OK] Executor {self.executor} validated for mode {self.mode}")
+            except ValueError as e:
+                print(f"  [FAIL] Executor error: {e}")
+                self.errors.append(str(e))
+                self.final_state = "failed"
+
+            if self.final_state != "failed":
+                print(f"  -> Dispatching to skill execution agent...")
+                success, output = dispatch_skill_execution(
+                    plan_json_path, self.repo_root,
+                    executor=self.executor,
+                    timeout=3600,
+                )
             if not success:
                 self.errors.append(f"Skill execution failed: {output}")
                 self.final_state = "failed"
@@ -1450,6 +1473,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--log-dir", default=None, help="Directory for run log output")
     parser.add_argument("--list-workflows", action="store_true", help="List all registered workflows")
     parser.add_argument("--resume", action="store_true", help="Resume a paused execution")
+    parser.add_argument("--executor", default="dry-run",
+                        choices=["dry-run", "prompt-chain", "claude-code", "api"],
+                        help="Skill executor to use (default: dry-run). autonomous/yolo modes require a real executor.")
     parser.add_argument("--gate-decision", default=None,
                         choices=["auto-approve", "auto-deny"],
                         help="Non-interactive gate decision for testing: auto-approve all gates or auto-deny the first gate")
@@ -1481,6 +1507,7 @@ def main(argv: list[str] | None = None) -> int:
         log_dir=args.log_dir,
         resume=args.resume,
         gate_decision=args.gate_decision,
+        executor=args.executor,
     )
 
     if runner.errors:
