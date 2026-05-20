@@ -1729,8 +1729,8 @@ def main(argv: list[str] | None = None) -> int:
         list_workflows(repo_root)
         return 0
 
-    # Determine workflow_id: explicit --workflow > default fast-local-diagnostic
-    workflow_id = args.workflow or "fast-local-diagnostic"
+    # Determine workflow_id: explicit --workflow > default full-local-sensemaking
+    workflow_id = args.workflow or "full-local-sensemaking"
 
     # Validate gate_decision compatibility
     if args.gate_decision and args.mode not in ("guided_execution", "autonomous_execution"):

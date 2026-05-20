@@ -418,6 +418,8 @@ workflows:
   branch_policy:
     required: true
     pattern: yolo/{workflow_id}/{timestamp}
+  auto_invoke_next_workflow: true
+  auto_invoke_source: repository_sensemaking_brief
   steps:
   - id: 1
     skill: problem-framer
