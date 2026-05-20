@@ -1281,6 +1281,152 @@ class OrchestrationRunner:
         _save_mode_coverage(coverage, self.repo_root)
         print(f"  [OK] Mode coverage updated")
 
+    def generate_diagnostic_report(self) -> str:
+        """Generate diagnostic report showing what WILL happen after plan generation."""
+        steps = self.workflow.get("steps", [])
+        workflow_name = self.workflow.get("display_name", self.workflow_id)
+        diagnostic_path = os.path.join(self.log_dir, f"diagnostic_{self.workflow_id}_{self.mode}.md")
+
+        lines = [
+            f"# Diagnostic Report: {workflow_name}",
+            f"",
+            f"- **Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            f"- **Workflow**: {self.workflow_id}",
+            f"- **Mode**: {self.mode}",
+            f"- **Session**: {self.session_id}",
+            f"",
+            f"## What Will Happen",
+            f"",
+            f"This report documents the execution plan for this workflow.",
+            f"",
+            f"## Steps in Sequence",
+            f"",
+        ]
+
+        # Document each step
+        for i, step in enumerate(steps, 1):
+            skill = step.get("skill", "?")
+            output = step.get("output_artifact", "N/A")
+            gate = step.get("gate", "?")
+
+            lines.extend([
+                f"### Step {i}: {skill}",
+                f"- **Output**: {output}",
+                f"- **Gate**: {gate}",
+                f"",
+            ])
+
+        # Validator summary from contracts
+        contracts = load_artifact_contracts(self.repo_root)
+        lines.extend([
+            f"## Validators Expected to Run",
+            f"",
+        ])
+
+        total_validators = 0
+        for step in steps:
+            output = step.get("output_artifact", "N/A")
+            if contracts and output != "N/A":
+                for artifact in contracts.get("artifacts", []):
+                    if artifact.get("id") == output:
+                        verification = artifact.get("verification", {})
+                        validators = len(verification.get("specialized_validators", []))
+                        if verification.get("generic_validator"):
+                            validators += 1
+                        if validators > 0:
+                            lines.append(f"- **{output}**: {validators} validators")
+                            total_validators += validators
+                        break
+
+        lines.extend([
+            f"",
+            f"**Total validators to run**: {total_validators}",
+            f"",
+            f"## Success Criteria",
+            f"",
+            f"- All {len(steps)} steps complete successfully",
+            f"- All artifacts produced",
+            f"- All validators pass",
+            f"",
+        ])
+
+        report = "\n".join(lines)
+        os.makedirs(os.path.dirname(diagnostic_path), exist_ok=True)
+        with open(diagnostic_path, "w", encoding="utf-8") as f:
+            f.write(report)
+
+        print(f"  [OK] Diagnostic report: {os.path.relpath(diagnostic_path, self.repo_root)}")
+        return diagnostic_path
+
+    def generate_implementation_report(self) -> str:
+        """Generate implementation report showing what ACTUALLY happened after execution."""
+        workflow_name = self.workflow.get("display_name", self.workflow_id)
+        impl_path = os.path.join(self.log_dir, f"implementation_{self.workflow_id}_{self.mode}.md")
+
+        # Count outcomes
+        executed = [s for s in self.step_results if s.get("status") in ("EXECUTED", "COMPLETED", "VALIDATED")]
+        failed = [s for s in self.step_results if s.get("status") == "FAILED"]
+
+        lines = [
+            f"# Implementation Report: {workflow_name}",
+            f"",
+            f"- **Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            f"- **Workflow**: {self.workflow_id}",
+            f"- **Mode**: {self.mode}",
+            f"- **Session**: {self.session_id}",
+            f"- **Status**: {self.final_state.upper()}",
+            f"",
+            f"## Execution Summary",
+            f"",
+            f"- **Steps Executed**: {len(executed)}/{len(self.step_results)}",
+            f"- **Steps Failed**: {len(failed)}/{len(self.step_results)}",
+            f"",
+            f"## What Actually Happened",
+            f"",
+        ]
+
+        # Document actual results
+        for sr in self.step_results:
+            step_id = sr.get("step_id", "?")
+            skill = sr.get("skill", "?")
+            status = sr.get("status", "UNKNOWN")
+            output = sr.get("output_artifact", "N/A")
+
+            lines.extend([
+                f"### Step {step_id}: {skill}",
+                f"- **Status**: {status}",
+                f"- **Output**: {output}",
+            ])
+
+            # Validator results
+            validators = sr.get("validator_stack", [])
+            if validators:
+                for v in validators:
+                    v_name = v.get("level", "?")
+                    v_result = v.get("result", "?")
+                    lines.append(f"  - {v_name}: {v_result}")
+            lines.append(f"")
+
+        lines.extend([
+            f"## Conclusion",
+            f"",
+        ])
+
+        if self.final_state == "completed":
+            lines.append(f"✓ Success: All steps executed and validated.")
+        elif self.final_state == "failed":
+            lines.append(f"✗ Failed: Execution halted due to validation failures.")
+        else:
+            lines.append(f"⚠ {self.final_state}: Partial execution.")
+
+        report = "\n".join(lines)
+        os.makedirs(os.path.dirname(impl_path), exist_ok=True)
+        with open(impl_path, "w", encoding="utf-8") as f:
+            f.write(report)
+
+        print(f"  [OK] Implementation report: {os.path.relpath(impl_path, self.repo_root)}")
+        return impl_path
+
     def rollback(self) -> None:
         """Recommend rollback on failure."""
         branch = _get_git_branch(self.repo_root)
@@ -1310,6 +1456,11 @@ class OrchestrationRunner:
         print(f"PHASE 2: GENERATE PLAN")
         print(f"{'='*60}")
         self.generate_plan()
+
+        # Generate diagnostic report (what WILL happen)
+        print(f"\nPHASE 2b: DIAGNOSTIC REPORT")
+        print(f"{'='*60}")
+        self.generate_diagnostic_report()
 
         # For plan_only mode, stop here
         if self.mode == "plan_only":
@@ -1437,6 +1588,11 @@ class OrchestrationRunner:
             print(f"{'='*60}")
             run_log_path = self.write_run_log()
 
+            # Generate implementation report (what ACTUALLY happened)
+            print(f"\nPHASE 4b: IMPLEMENTATION REPORT")
+            print(f"{'='*60}")
+            self.generate_implementation_report()
+
             # Phase 5: Update mode coverage
             print(f"\n{'='*60}")
             print(f"PHASE 5: UPDATE MODE COVERAGE")
@@ -1530,6 +1686,11 @@ class OrchestrationRunner:
         print(f"PHASE 4: WRITE RUN LOG")
         print(f"{'='*60}")
         run_log_path = self.write_run_log()
+
+        # Generate implementation report (what ACTUALLY happened)
+        print(f"\nPHASE 4b: IMPLEMENTATION REPORT")
+        print(f"{'='*60}")
+        self.generate_implementation_report()
 
         # Phase 5: Update mode coverage
         print(f"\n{'='*60}")
