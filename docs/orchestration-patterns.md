@@ -231,6 +231,81 @@ See ADR: [0004-evidence-tracking-for-trust.md](adr/0004-evidence-tracking-for-tr
 
 ---
 
+## Pattern 5: Intent-Conflict Escalation
+
+### The Pattern
+
+When the repository diagnosis diverges from the user's stated intent, the system must escalate to deeper analysis rather than silently routing to the wrong workflow.
+
+**Detection**: repo-sensemaker sets `diagnosis_conflict: true` and `escalation_recommended: true` in the brief when fog type classification conflicts with user-implied intent.
+
+**Routing rule**: If `escalation_recommended: true`, `system_recommended_workflow` MUST be `full-fog-workflow` (the escalation path). This is enforced by validate-plan.py (`CONFLICT_NOT_ESCALATED`).
+
+**User choice**: The user can accept the escalation (routing stays with full-fog-workflow) or reject it (routing diverges, user stays with narrower path). Either choice is valid — the requirement is that the escalation *recommendation* is made.
+
+### Why It Matters
+
+Without escalation enforcement:
+1. User says "UI redesign" (ui_fog)
+2. System detects "state management is broken" (architecture_fog)
+3. System routes to docs-architecture workflow anyway
+4. User receives refactoring recommendations instead of UI mockups
+5. Trust erodes; system feels unresponsive
+
+With escalation:
+1. System detects conflict
+2. System recommends full-fog-workflow (comprehensive analysis)
+3. User can accept (deep investigation) or reject (proceed with narrower scope)
+4. Decision is recorded in routing audit trail
+5. No silent misrouting
+
+### When to Use
+
+Use this pattern whenever:
+- The system has intent-aware analysis (repo-sensemaker can compare user intent vs. codebase reality)
+- Workflows can auto-invoke (the escalation decision happens before execution starts)
+- Multiple fog types compete for routing (which workflow to run?)
+
+### When NOT to Use
+
+Don't use this when:
+- There is no user intent to compare against (e.g., system-initiated maintenance runs)
+- The execution mode is `plan_only` (plans can't auto-invoke anyway)
+- The user explicitly passed `--workflow` to override all routing
+
+### Implementing the Check
+
+**In the plan validator** (`validate-plan.py`):
+```python
+if plan_data.get("escalation_recommended") and plan_data.get("system_recommended_workflow") != "full-fog-workflow":
+    errors.append(CONFLICT_NOT_ESCALATED)
+```
+
+**In the workflow** (`workflow-planner/SKILL.md`):
+- Read `escalation_recommended` from the brief
+- Set `system_recommended_workflow: full-fog-workflow` when escalation is needed
+- Record user choice via `routing_decision_method`: `escalation_recommended_accepted` or `escalation_recommended_rejected`
+
+### Escalation States
+
+| State | Conditions |
+|-------|------------|
+| **Not needed** | `diagnosis_conflict: false` — user intent aligns with codebase diagnosis |
+| **Recommended, accepted** | `escalation_recommended: true` + user chooses full-fog-workflow |
+| **Recommended, rejected** | `escalation_recommended: true` + user chooses narrower workflow with `routing_divergence: true` |
+
+### Trade-offs
+
+- **Soft escalation** (recommend only): Respects user agency, but users may ignore escalation and get wrong results
+- **Hard escalation** (auto-route): Prevents misrouting, but frustrates users who know what they want
+- **Current approach**: Soft escalation with explicit audit trail — system recommends, user decides, divergence is recorded
+
+### Reference
+
+See ADR: [0007-soft-context-routing.md](adr/0007-soft-context-routing.md) and [0008-routing-divergence-audit.md](adr/0008-routing-divergence-audit.md)
+
+---
+
 ## Applying These Patterns
 
 ### For Workflow Design
@@ -278,6 +353,7 @@ See ADR: [0004-evidence-tracking-for-trust.md](adr/0004-evidence-tracking-for-tr
 | No record of what was validated | Evidence | Update mode-coverage.yaml after each run |
 | Skill does too many things | Separation | Split into multiple skills or constrain to one purpose |
 | Validator runs in wrong mode | Strict vs. Lenient | Check mode before validating strictly |
+| Conflict detected but not escalated | Intent-Conflict Escalation | Set `system_recommended_workflow: full-fog-workflow` when `escalation_recommended: true` |
 
 ---
 

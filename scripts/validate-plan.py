@@ -28,6 +28,7 @@ ABSOLUTE_PATH_DETECTED = "ABSOLUTE_PATH_DETECTED"
 HALLUCINATED_SKILL = "HALLUCINATED_SKILL"
 MISSING_DECISION_FIELD = "MISSING_DECISION_FIELD"
 INVALID_CONDITIONAL_BRANCH = "INVALID_CONDITIONAL_BRANCH"
+CONFLICT_NOT_ESCALATED = "CONFLICT_NOT_ESCALATED"
 
 
 def _validate_conditional_step(step, workflow_id, repo_root="."):
@@ -159,6 +160,15 @@ def validate_plan(plan_path, repo_root="."):
     exec_mode = plan_data.get("execution_mode")
     if exec_mode not in workflow.get("allowed_execution_modes", []):
         errors.append(format_error(EXECUTION_MODE_DENIED, f"execution_mode '{exec_mode}' not allowed for workflow '{chosen_id}'"))
+
+    # 5b. Escalation Check
+    escalation_recommended = plan_data.get("escalation_recommended", False)
+    system_recommended = plan_data.get("system_recommended_workflow", "")
+    if escalation_recommended and system_recommended != "full-fog-workflow":
+        errors.append(
+            format_error(CONFLICT_NOT_ESCALATED,
+                f"escalation_recommended is true but system_recommended_workflow is '{system_recommended}', expected 'full-fog-workflow'")
+        )
 
     # 6. Initial Inputs Check
     plan_inputs = plan_data.get("initial_inputs", [])
@@ -336,6 +346,7 @@ def main(argv: list[str] | None = None) -> int:
             HALLUCINATED_SKILL,
             MISSING_DECISION_FIELD,
             INVALID_CONDITIONAL_BRANCH,
+            CONFLICT_NOT_ESCALATED,
         ]
         print("Stable error codes for plan validation:")
         for code in codes:

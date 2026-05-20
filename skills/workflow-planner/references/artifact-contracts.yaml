@@ -77,6 +77,8 @@ artifacts:
       - next_artifact
     verification:
       generic_validator: "python scripts/validate-artifact.py problem_frame {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-alignment.py {artifact_path}"
       required_for_modes:
         - guided_execution
         - autonomous_execution
@@ -181,6 +183,15 @@ artifacts:
     consumed_by:
       - to-issues
       - prompt-handoff
+    required_sections:
+      - executive_summary
+      - user_goal
+      - goal_preservation_and_expansion
+      - features
+      - out_of_scope
+      - acceptance_criteria
+      - non_functional_requirements
+      - machine_readable_handoff
     required_machine_fields:
       - source_intent_ref
       - user_goal_preserved_as
@@ -192,6 +203,8 @@ artifacts:
       - scope_expansion_approvals
     verification:
       generic_validator: "python scripts/validate-artifact.py prd {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-prd.py {artifact_path}"
       required_for_modes:
         - guided_execution
         - autonomous_execution

@@ -372,6 +372,35 @@ def validate_repo():
                                 if res.returncode != 0:
                                     errors.append(f"Example plan {f} failed validation:\n{res.stdout}{res.stderr}")
 
+    # 9. Cross-artifact alignment check on example pairs
+    for root, dirs, files in os.walk("examples"):
+        frames = {}
+        briefs = {}
+        for f in files:
+            if not f.endswith(".md"):
+                continue
+            path = os.path.join(root, f)
+            with open(path, encoding="utf-8", errors="replace") as fh:
+                content = fh.read()
+            if "## 3. Object Under Pressure" in content:
+                frames[path] = content
+            if "## 6. Weakest boundary" in content:
+                briefs[path] = content
+
+        # Check pairs in the same directory
+        for f_path in frames:
+            for b_path in briefs:
+                if os.path.dirname(f_path) == os.path.dirname(b_path):
+                    cmd = [sys.executable, "scripts/validate-alignment.py", f_path, "--brief", b_path, "--repo-root", "."]
+                    res = subprocess.run(cmd, capture_output=True, text=True)
+                    is_negative = "examples/negative" in root.replace("\\", "/")
+                    if is_negative:
+                        if res.returncode == 0:
+                            errors.append(f"Negative alignment pair {os.path.basename(f_path)} / {os.path.basename(b_path)} in {root} PASSED but should have FAILED")
+                    else:
+                        if res.returncode != 0 and not is_negative:
+                            errors.append(f"Alignment mismatch between {os.path.basename(f_path)} and {os.path.basename(b_path)} in {root}:\n{res.stdout}{res.stderr}")
+
     if errors:
         print("Validation failed:")
         for err in errors:
