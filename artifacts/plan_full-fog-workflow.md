@@ -1,9 +1,9 @@
 # Orchestration Plan: Full Fog Path - Comprehensive Sensemaking & Orchestration
 
-- **Session ID**: orchestration-20260519-223403-eb072a05
+- **Session ID**: orchestration-20260519-223416-8ef05f84
 - **Date**: 2026-05-19
 - **Workflow**: full-fog-workflow
-- **Execution Mode**: plan_only
+- **Execution Mode**: guided_execution
 - **Purpose**: Comprehensively analyze ambiguous projects from raw fog through diagnosis to automatic implementation workflow invocation.
 
 ## Skills in Sequence
@@ -36,10 +36,13 @@
 
 ## Approval Gates
 
-- **Mode**: plan_only
-- **Gate Behavior**: none
+- **Mode**: guided_execution
+- **Gate Behavior**: mandatory
 
-No gates required for this mode.
+- review_problem_frame: REQUIRED (user must approve)
+- review_unknowns_map: REQUIRED (user must approve)
+- review_diagnosis: REQUIRED (user must approve)
+- review_orchestration_plan: REQUIRED (user must approve)
 
 ## Stop Conditions
 
@@ -61,9 +64,9 @@ routing_decision_method: diagnosis_primary_soft_context
 escalation_recommended: false
 auto_escalation_allowed: false
 scope_expansion_requires_approval: true
-execution_mode: plan_only
+execution_mode: guided_execution
 status: created
-session_id: orchestration-20260519-223403-eb072a05
+session_id: orchestration-20260519-223416-8ef05f84
 initial_inputs:
   - id: user_intent
     type: artifact
@@ -99,7 +102,7 @@ steps:
     gate: review_orchestration_plan
     output_artifact: workflow_orchestration_plan
 approval_gates:
-  behavior: none
+  behavior: mandatory
 stop_conditions:
   - validator_failure
   - gate_denial

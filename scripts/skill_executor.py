@@ -203,19 +203,31 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
     Uses the Claude Agent SDK's query() API to invoke skills with autonomous
     tool use. The SDK handles skill discovery from filesystem, tool loops,
     file management, and permissions.
+
+    The executor bridges the synchronous SkillExecutor interface to the
+    async Claude Agent SDK using anyio.run().
     """
 
     supports_real_execution: bool = True
 
     def __init__(self, repo_root: str):
         self.repo_root = repo_root
+        self._check_dependencies()
+
+    def _check_dependencies(self) -> tuple[bool, str]:
+        """Check if required dependencies are installed."""
+        missing = []
+        try:
+            import anyio
+        except ImportError:
+            missing.append("anyio")
+
         try:
             from claude_agent_sdk import query, ClaudeAgentOptions
-            self.query = query
-            self.ClaudeAgentOptions = ClaudeAgentOptions
         except ImportError:
-            self.query = None
-            self.ClaudeAgentOptions = None
+            missing.append("claude-agent-sdk")
+
+        return len(missing) == 0, missing
 
     def invoke_skill(
         self,
@@ -225,14 +237,53 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         expected_output_artifact: str,
         context: dict,
     ) -> SkillExecutionResult:
-        if not self.query or not self.ClaudeAgentOptions:
+        """Invoke a skill via Claude Agent SDK.
+
+        Returns EXECUTED only if the expected artifact file exists after execution.
+        Returns UNSUPPORTED if dependencies are missing.
+        """
+        deps_ok, missing_deps = self._check_dependencies()
+        if not deps_ok:
+            return SkillExecutionResult(
+                skill_id=skill_id,
+                status=SkillExecutionStatus.UNSUPPORTED,
+                command=invocation_command,
+                output_artifact=expected_output_artifact,
+                error=f"Missing dependencies: {', '.join(missing_deps)}. "
+                      f"Install with: pip install {' '.join(missing_deps)}",
+            )
+
+        # Bridge to async SDK using anyio
+        try:
+            import anyio
+            result = anyio.run(
+                self._invoke_skill_async,
+                skill_id,
+                invocation_command,
+                input_artifacts,
+                expected_output_artifact,
+                context,
+            )
+            return result
+        except Exception as e:
             return SkillExecutionResult(
                 skill_id=skill_id,
                 status=SkillExecutionStatus.FAILED,
                 command=invocation_command,
                 output_artifact=expected_output_artifact,
-                error="Claude Agent SDK not installed. Install with: pip install claude-agent-sdk",
+                error=f"Skill execution failed: {str(e)}",
             )
+
+    async def _invoke_skill_async(
+        self,
+        skill_id: str,
+        invocation_command: str,
+        input_artifacts: list[str],
+        expected_output_artifact: str,
+        context: dict,
+    ) -> SkillExecutionResult:
+        """Async implementation of skill invocation via Claude Agent SDK."""
+        from claude_agent_sdk import query, ClaudeAgentOptions
 
         # Build prompt that instructs Claude to run the skill
         input_context = ""
@@ -248,32 +299,47 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
             f"Ensure the output artifact is created at the expected path."
         )
 
+        messages = []
         try:
-            result = self.query(
+            # Query the Claude Agent SDK
+            async for message in query(
                 prompt=prompt,
-                options=self.ClaudeAgentOptions(
+                options=ClaudeAgentOptions(
                     cwd=self.repo_root,
                     setting_sources=["project", "user"],
                     skills=[skill_id],
                     allowed_tools=["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
                 ),
-            )
+            ):
+                messages.append(str(message))
 
-            # Interpret SDK result as executed
-            return SkillExecutionResult(
-                skill_id=skill_id,
-                status=SkillExecutionStatus.EXECUTED,
-                command=invocation_command,
-                output_artifact=expected_output_artifact,
-                message=result,
-            )
+            # Check if the expected artifact was produced
+            artifact_path = os.path.join(self.repo_root, "artifacts", expected_output_artifact + ".md")
+            if os.path.exists(artifact_path):
+                return SkillExecutionResult(
+                    skill_id=skill_id,
+                    status=SkillExecutionStatus.EXECUTED,
+                    command=invocation_command,
+                    output_artifact=expected_output_artifact,
+                    message=f"Artifact produced at {artifact_path}",
+                )
+            else:
+                return SkillExecutionResult(
+                    skill_id=skill_id,
+                    status=SkillExecutionStatus.FAILED,
+                    command=invocation_command,
+                    output_artifact=expected_output_artifact,
+                    error=f"Expected artifact '{expected_output_artifact}' not produced. "
+                          f"SDK completed but artifact not found at {artifact_path}",
+                )
+
         except Exception as e:
             return SkillExecutionResult(
                 skill_id=skill_id,
                 status=SkillExecutionStatus.FAILED,
                 command=invocation_command,
                 output_artifact=expected_output_artifact,
-                error=f"Skill execution failed: {str(e)}",
+                error=f"SDK execution failed: {str(e)}",
             )
 
 
