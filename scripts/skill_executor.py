@@ -286,15 +286,29 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         from claude_agent_sdk import query, ClaudeAgentOptions
 
         # Build prompt that instructs Claude to run the skill
-        input_context = ""
-        if input_artifacts:
-            input_context = f"Input artifacts: {', '.join(input_artifacts)}\n"
+        resolved_inputs = context.get("resolved_inputs", {})
+
+        # Format input information for the prompt
+        input_section = ""
+        if resolved_inputs:
+            input_section = "## Input Data\n"
+            for input_name, input_data in resolved_inputs.items():
+                if input_data["type"] == "external_context":
+                    input_section += f"\n**{input_name}:**\n```\n{input_data['data']}\n```\n"
+                elif input_data["type"] == "artifact_path":
+                    input_section += f"\n**{input_name}** (artifact file):\n{input_data['path']}\n"
+                elif input_data["type"] == "repository_state":
+                    input_section += f"\n**{input_name}:**\nRepository root: {input_data['data'].get('path', '.')}\n"
+            input_section += "\n"
+
+        # Expected output path
+        expected_output_path = os.path.join(self.repo_root, "artifacts", expected_output_artifact + ".md")
 
         prompt = (
             f"Execute the '{skill_id}' skill.\n\n"
-            f"{input_context}"
-            f"Expected output artifact: {expected_output_artifact}\n"
-            f"Additional context:\n{json.dumps(context, indent=2)}\n\n"
+            f"{input_section}"
+            f"## Output\n"
+            f"Write the output artifact to:\n{expected_output_path}\n\n"
             f"Use the available skills and tools to complete this task. "
             f"Ensure the output artifact is created at the expected path."
         )

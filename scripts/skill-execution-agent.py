@@ -87,6 +87,45 @@ class SkillExecutionAgent:
         self.failed = False
         self.error_messages = []
 
+    def _resolve_step_inputs(self, step: dict, step_index: int) -> dict:
+        """Resolve a step's input_source/input_artifact into actual values/paths.
+
+        Returns a dict of resolved inputs.
+        """
+        resolved = {}
+        external_context = self.plan_data.get("external_context", {})
+
+        # Resolve input_artifact (produced by previous step)
+        if step.get("input_artifact"):
+            artifact_name = step["input_artifact"]
+            # For now, assume artifacts are in artifacts/ directory
+            artifact_path = os.path.join(self.repo_root, "artifacts", f"{artifact_name}.md")
+            resolved[artifact_name] = {
+                "type": "artifact_path",
+                "path": artifact_path,
+            }
+
+        # Resolve input_source (external context or repository)
+        if step.get("input_source"):
+            source_name = step["input_source"]
+            if source_name in external_context:
+                source_data = external_context[source_name]
+                resolved[source_name] = {
+                    "type": "external_context",
+                    "data": source_data,
+                }
+            else:
+                # Assume it's repository_state
+                resolved[source_name] = {
+                    "type": "repository_state",
+                    "data": {
+                        "type": "repo_root",
+                        "path": self.repo_root,
+                    },
+                }
+
+        return resolved
+
     def execute(self, timeout_per_skill: int = 600) -> Tuple[bool, str]:
         """Execute all steps in the plan sequentially using the configured executor.
 
@@ -120,7 +159,10 @@ class SkillExecutionAgent:
                 failures += 1
                 continue
 
-            # Gather input artifacts
+            # Resolve step inputs
+            resolved_inputs = self._resolve_step_inputs(step, i)
+
+            # Gather input artifacts (for backward compatibility)
             input_artifacts = []
             if step.get("input_artifact"):
                 input_artifacts.append(step["input_artifact"])
@@ -140,6 +182,7 @@ class SkillExecutionAgent:
                     "input_source": step.get("input_source"),
                     "output_artifact": step.get("output_artifact"),
                     "step_type": step.get("step_type", "local_execution"),
+                    "resolved_inputs": resolved_inputs,
                 },
             )
 

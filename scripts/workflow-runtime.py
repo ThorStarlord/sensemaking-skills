@@ -214,6 +214,10 @@ class OrchestrationRunner:
         self.gate_decision = gate_decision
         self.executor = executor
 
+        # Execution context (set by main before run())
+        self.problem_statement: str | None = None
+        self.intent_path: str | None = None
+
         # Load registries
         self._load_registries()
 
@@ -1320,10 +1324,26 @@ class OrchestrationRunner:
 
             # Generate orchestration plan JSON for skill executor
             plan_json_path = os.path.join(self.log_dir, f"execution_plan_{self.workflow_id}.json")
+
+            # Build execution context bundle
+            execution_context = {}
+            if self.problem_statement:
+                execution_context["raw_fog"] = self.problem_statement
+
+            execution_context["repository_state"] = {
+                "type": "repo_root",
+                "path": os.path.relpath(self.repo_root, self.repo_root) or ".",
+                "instruction": "Inspect repository files, README, docs, registries, and git state as needed to understand the codebase.",
+            }
+
             plan_data = {
                 "workflow_id": self.workflow_id,
                 "session_id": self.session_id,
                 "mode": self.mode,
+                "artifacts": {
+                    "user_intent": os.path.relpath(self.intent_path, self.repo_root) if self.intent_path else None,
+                },
+                "external_context": execution_context,
                 "steps": self.workflow.get("steps", []),
                 "generated_at": datetime.now().isoformat(),
             }
@@ -1608,6 +1628,10 @@ def main(argv: list[str] | None = None) -> int:
         for e in runner.errors:
             print(f"  - {e}")
         return 1
+
+    # Store execution context in runner
+    runner.problem_statement = args.problem
+    runner.intent_path = intent_path
 
     return runner.run()
 
