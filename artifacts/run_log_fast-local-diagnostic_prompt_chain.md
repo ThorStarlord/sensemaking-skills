@@ -1,15 +1,15 @@
 # Workflow Run Log: Fast Local Diagnostic
 
-- **Date**: 2026-05-16
-- **Session ID**: orchestration-20260516-203654-134a5e80
+- **Date**: 2026-05-20
+- **Session ID**: orchestration-20260520-152550-5a533382
 - **Workflow ID**: fast-local-diagnostic
 - **Orchestrator Mode**: prompt_chain
-- **Branch**: claude/happy-allen-badf59
-- **Status**: completed
+- **Branch**: main
+- **Status**: prompt_chain_generated
 
 ## Pre-flight
 
-- Branch: claude/happy-allen-badf59
+- Branch: main
 - validate-repo.py: PASSED
 - Orchestrator v2 engaged: PRODUCTION_RUNNER
 
@@ -20,36 +20,28 @@
 - **skill**: repo-sensemaker
 - **runtime**: local_execution
 - **output_artifact**: repository_sensemaking_brief
-- **artifact_path**: artifacts/repository_sensemaking_brief.md
-- **validator_stack**:
-    - level: Dispatcher
-      command: validate-output.py repository_sensemaking_brief
-      result: PASSED
+- **artifact_path**: 
+- **validator_stack**: none (no artifact to validate)
 - **gate**: review_sensemaking_brief
-- **status**: COMPLETED
+- **status**: PROMPT_GENERATED
 
 ### Step 2
 - **step_id**: 2
 - **skill**: handoff
 - **runtime**: local_execution
-- **output_artifact**: prompt_handoff
-- **artifact_path**: artifacts/prompt_handoff.md
-- **validator_stack**:
-    - level: Dispatcher
-      command: validate-output.py prompt_handoff
-      result: PASSED
+- **output_artifact**: session_summary
+- **artifact_path**: 
+- **validator_stack**: none (no artifact to validate)
 - **gate**: review_handoff_prompt
-- **status**: COMPLETED
+- **status**: PROMPT_GENERATED
 
 ## Decisions & Overrides
 
-- Gate 'review_sensemaking_brief' (step 1): not_applicable at 2026-05-16 20:36:59
-- Gate 'review_handoff_prompt' (step 2): not_applicable at 2026-05-16 20:36:59
 
 ## Final State
 
-- **Status**: completed
-- **Note**: All 2 steps completed successfully in 'prompt_chain' mode.
-- **Steps completed**: 2/2
-- **Gate decisions**: 2
+- **Status**: prompt_chain_generated
+- **Note**: All 2 steps generated prompts successfully in 'prompt_chain' mode.
+- **Steps completed**: 0/2
+- **Gate decisions**: 0
 - **Errors**: 0

@@ -1,7 +1,7 @@
 # Orchestration Plan: Fast Local Diagnostic
 
-- **Session ID**: orchestration-20260519-205916-22a5834d
-- **Date**: 2026-05-19
+- **Session ID**: orchestration-20260520-155347-3f834c88
+- **Date**: 2026-05-20
 - **Workflow**: fast-local-diagnostic
 - **Execution Mode**: plan_only
 - **Purpose**: Quickly identify the weakest boundary and produce a handoff prompt.
@@ -16,7 +16,7 @@
 ### Step 2: handoff
 - **Type**: local_execution
 - **Gate**: review_handoff_prompt
-- **Output**: prompt_handoff
+- **Output**: session_summary
 
 ## Inputs and Outputs
 
@@ -51,7 +51,7 @@ auto_escalation_allowed: false
 scope_expansion_requires_approval: true
 execution_mode: plan_only
 status: created
-session_id: orchestration-20260519-205916-22a5834d
+session_id: orchestration-20260520-155347-3f834c88
 initial_inputs:
   - id: repository_state
     type: external_context
@@ -67,7 +67,7 @@ steps:
     skill: handoff
     step_type: local_execution
     gate: review_handoff_prompt
-    output_artifact: prompt_handoff
+    output_artifact: session_summary
 approval_gates:
   behavior: none
 stop_conditions:

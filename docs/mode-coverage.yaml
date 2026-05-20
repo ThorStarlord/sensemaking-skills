@@ -60,17 +60,16 @@ mode_coverage:
   notes: 'Executed via production orchestration runner v2. Session: orchestration-20260517-233305-f5890abf.'
 - mode: prompt_chain
   workflow_id: fast-local-diagnostic
-  last_run: '2026-05-16'
+  last_run: '2026-05-20'
   run_log_path: artifacts/run_log_fast-local-diagnostic_prompt_chain.md
-  steps_completed: 2
+  steps_completed: 0
   steps_total: 2
   validators_exercised:
   - 'level_1: validate-repo.py'
-  - 'level_3: validate-output.py'
   gates_exercised: false
   gates_note: not_applicable_prompt_chain
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260516-203654-134a5e80.'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260520-152550-5a533382.'
 - mode: autonomous_execution
   workflow_id: fast-local-diagnostic
   last_run: '2026-05-16'
@@ -484,11 +483,12 @@ system_tools:
 - tool: orchestration-runner.py
   status: active
   last_run: '2026-05-20'
-  last_session: orchestration-20260520-000701-689cae3f
+  last_session: orchestration-20260520-152550-5a533382
   workflows_executed:
   - full-fog-workflow (prompt_chain)
   - full-fog-workflow (yolo_execution)
   - full-fog-workflow (guided_execution)
+  - fast-local-diagnostic (prompt_chain)
   modes_proven:
   - prompt_chain
 validator_live_coverage:

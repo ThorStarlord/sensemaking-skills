@@ -1357,6 +1357,90 @@ class OrchestrationRunner:
 
         print(f"  [OK] Diagnostic report: {os.path.relpath(diagnostic_path, self.repo_root)}")
         return diagnostic_path
+    def invoke_presentation_skill(self, summary_json_path: str) -> str | None:
+        """Auto-invoke workflow-presenter skill to generate beautiful summary markdown."""
+        print(f"\n{'='*60}")
+        print(f"INVOKING PRESENTATION SKILL: workflow-presenter")
+        print(f"{'='*60}")
+
+        skill_path = os.path.join(self.repo_root, "skills", "workflow-presenter", "workflow-presenter.py")
+        if not os.path.exists(skill_path):
+            print(f"  ~ workflow-presenter skill not found at {skill_path}")
+            print(f"    Presentation will be skipped; JSON summary available at {summary_json_path}")
+            return None
+
+        try:
+            result = subprocess.run(
+                [sys.executable, skill_path, summary_json_path, "--output-dir", self.log_dir],
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+            output = (result.stdout + result.stderr).strip()
+
+            if result.returncode == 0:
+                # Extract the output path from skill output
+                for line in output.split("\n"):
+                    if "EXECUTION_SUMMARY.md" in line or "Summary generated" in line:
+                        print(f"  [OK] {line}")
+                return output
+            else:
+                print(f"  ~ Presentation skill failed: {output[:200]}")
+                return None
+        except Exception as e:
+            print(f"  ~ Error invoking presentation skill: {e}")
+            return None
+
+    def generate_workflow_summary_json(self) -> str:
+        """Generate structured JSON summary of workflow execution for presentation layer."""
+        workflow_name = self.workflow.get("display_name", self.workflow_id)
+        summary_path = os.path.join(self.log_dir, "workflow_summary.json")
+
+        # Prepare step summaries
+        steps_summary = []
+        for sr in self.step_results:
+            step_summary = {
+                "step_id": sr.get("step_id"),
+                "skill": sr.get("skill"),
+                "status": sr.get("status"),
+                "output_artifact": sr.get("output_artifact", "N/A"),
+                "artifact_path": sr.get("artifact_path", ""),
+                "duration_seconds": sr.get("duration_seconds", 0),
+                "validators": []
+            }
+
+            # Include validator results
+            for v in sr.get("validator_stack", []):
+                step_summary["validators"].append({
+                    "level": v.get("level", "unknown"),
+                    "result": v.get("result", "UNKNOWN")
+                })
+
+            steps_summary.append(step_summary)
+
+        # Build summary object
+        summary = {
+            "workflow_id": self.workflow_id,
+            "workflow_name": workflow_name,
+            "session_id": self.session_id,
+            "mode": self.mode,
+            "status": self.final_state,
+            "final_note": self.final_note,
+            "branch": _get_git_branch(self.repo_root),
+            "executed_at": datetime.now().isoformat(),
+            "steps_completed": len([s for s in self.step_results if s["status"] in ("EXECUTED", "COMPLETED", "VALIDATED")]),
+            "steps_total": len(self.step_results),
+            "steps_failed": len([s for s in self.step_results if s["status"] == "FAILED"]),
+            "steps": steps_summary,
+            "errors": self.errors[-5:] if self.errors else [],  # Last 5 errors
+        }
+
+        os.makedirs(os.path.dirname(summary_path), exist_ok=True)
+        with open(summary_path, "w", encoding="utf-8") as f:
+            json.dump(summary, f, indent=2)
+
+        print(f"  [OK] Workflow summary JSON: {os.path.relpath(summary_path, self.repo_root)}")
+        return summary_path
 
     def generate_implementation_report(self) -> str:
         """Generate implementation report showing what ACTUALLY happened after execution."""
@@ -1588,11 +1672,6 @@ class OrchestrationRunner:
             print(f"{'='*60}")
             run_log_path = self.write_run_log()
 
-            # Generate implementation report (what ACTUALLY happened)
-            print(f"\nPHASE 4b: IMPLEMENTATION REPORT")
-            print(f"{'='*60}")
-            self.generate_implementation_report()
-
             # Phase 5: Update mode coverage
             print(f"\n{'='*60}")
             print(f"PHASE 5: UPDATE MODE COVERAGE")
@@ -1692,6 +1771,16 @@ class OrchestrationRunner:
         print(f"{'='*60}")
         self.generate_implementation_report()
 
+        # Generate workflow summary JSON
+        print(f"\nPHASE 4c: WORKFLOW SUMMARY (MACHINE-READABLE)")
+        print(f"{'='*60}")
+        summary_json_path = self.generate_workflow_summary_json()
+
+        # Invoke presentation skill to generate beautiful markdown
+        print(f"\nPHASE 4d: WORKFLOW PRESENTATION (HUMAN-READABLE)")
+        print(f"{'='*60}")
+        self.invoke_presentation_skill(summary_json_path)
+
         # Phase 5: Update mode coverage
         print(f"\n{'='*60}")
         print(f"PHASE 5: UPDATE MODE COVERAGE")
@@ -1775,8 +1864,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("problem", nargs="?", default=None, help="Optional user problem statement or goal")
     parser.add_argument("--workflow", default=None, help="Explicit workflow ID (overrides default)")
-    parser.add_argument("--mode", default="plan_only", choices=list(KNOWN_MODES.keys()),
-                        help="Execution mode (default: plan_only)")
+    parser.add_argument("--mode", default="yolo_execution", choices=list(KNOWN_MODES.keys()),
+                        help="Execution mode (default: yolo_execution)")
     parser.add_argument("--scope", default="soft", choices=["soft", "hard", "advisory"],
                         help="How strictly the problem statement constrains analysis (default: soft)")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
