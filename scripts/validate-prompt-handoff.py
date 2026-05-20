@@ -5,7 +5,7 @@ import sys
 import re
 import argparse
 
-from _validator_utils import format_error, load_skill_registry, load_artifact_contracts
+from _validator_utils import format_error, extract_sections, load_skill_registry, load_artifact_contracts
 
 # Stable error codes
 MISSING_SECTION = "MISSING_SECTION"
@@ -26,21 +26,6 @@ REQUIRED_SECTIONS = [
     "stop_condition",
     "ready_to_copy_prompt",
 ]
-
-HEADING_RE = re.compile(r"^##\s+(?:\d+\.\s*)?(?P<name>.+?)\s*$", re.MULTILINE)
-
-
-def _extract_sections(content: str) -> dict[str, str]:
-    """Split content by ## headings, returning {lowercase_name: body_text}."""
-    sections = {}
-    matches = list(HEADING_RE.finditer(content))
-    for idx, match in enumerate(matches):
-        start = match.end()
-        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(content)
-        # Normalize hyphens to spaces for consistent lookup
-        name = match.group("name").strip().lower().replace("-", " ")
-        sections[name] = content[start:end].strip()
-    return sections
 
 
 def _all_skill_ids(skill_reg: dict) -> set[str]:
@@ -68,7 +53,7 @@ def validate_prompt_handoff(artifact_path: str, repo_root: str = ".") -> list[st
     with open(artifact_path, encoding="utf-8") as f:
         content = f.read()
 
-    sections = _extract_sections(content)
+    sections = extract_sections(content)
 
     # 1. Check all required sections exist
     for section in REQUIRED_SECTIONS:

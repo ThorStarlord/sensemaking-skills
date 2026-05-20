@@ -2,19 +2,17 @@
 
 ## Automatic Project Classification & Workflow Selection
 
-The `router.py` script eliminates the need to manually select workflows. It automatically classifies your project type and recommends the optimal workflow.
+The router eliminates the need to manually select workflows. It automatically classifies your project type and recommends the optimal workflow. The canonical implementation lives at `skills/project-classifier/router.py`.
 
 ## Quick Start
 
 ```bash
 # Classify a project and get routing recommendation
-python scripts/router.py <path-to-project-description.md>
+python skills/project-classifier/router.py <path-to-project-description.md>
 
-# Override the recommended mode
-python scripts/router.py <path-to-project-description.md> --mode autonomous_execution
+python skills/project-classifier/router.py <path-to-project-description.md> --mode autonomous_execution
 
-# Get output as JSON
-python scripts/router.py <path-to-project-description.md> --json
+python skills/project-classifier/router.py <path-to-project-description.md> --json
 ```
 
 ## Supported Project Types
@@ -51,7 +49,7 @@ The router analyzes your project description to detect:
 ## Example: SaaS Project
 
 ```bash
-$ python scripts/router.py my-saas-idea.md
+$ python skills/project-classifier/router.py my-saas-idea.md
 
 ======================================================================
 PROJECT ROUTING ANALYSIS
@@ -102,7 +100,7 @@ workflow-runtime.py
 
 ```bash
 # Use autonomous execution even for new project types
-python scripts/router.py my-idea.md --mode autonomous_execution
+python skills/project-classifier/router.py my-idea.md --mode autonomous_execution
 ```
 
 ### Low Confidence Classification
@@ -128,7 +126,7 @@ The router can be integrated into pipelines:
 ```bash
 # Classify all projects in a directory and log results
 for project in projects/*.md; do
-    python scripts/router.py "$project" --json >> routing_results.jsonl
+    python skills/project-classifier/router.py "$project" --json >> routing_results.jsonl
 done
 
 # Parse routing results for automation
@@ -151,7 +149,7 @@ cat routing_results.jsonl | jq '.workflow_selection.command' | xargs -I {} bash 
 **Problem**: The router selected a workflow that doesn't fit your project.
 
 **Solution**:
-1. Override the mode: `python scripts/router.py your-idea.md --mode plan_only`
+1. Override the mode: `python skills/project-classifier/router.py your-idea.md --mode plan_only`
 2. Use `plan_only` to review the plan first
 3. Then select a different workflow manually once you confirm your project type
 4. File an issue if you think the classification logic needs improvement

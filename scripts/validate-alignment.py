@@ -14,7 +14,7 @@ import sys
 import re
 import argparse
 
-from _validator_utils import format_error
+from _validator_utils import format_error, extract_sections
 
 # Stable error codes
 MISSING_FILE = "MISSING_FILE"
@@ -23,19 +23,7 @@ NO_TERM_OVERLAP = "NO_TERM_OVERLAP"
 FILE_REF_MISMATCH = "FILE_REF_MISMATCH"
 BOUNDARY_DRIFT = "BOUNDARY_DRIFT"
 
-HEADING_RE = re.compile(r"^##\s+(?:\d+\.\s*)?(?P<name>.+?)\s*$", re.MULTILINE)
 FILE_REF_RE = re.compile(r"`?[\w./\\-]+\.(?:md|py|yaml|yml|toml|txt)`?", re.IGNORECASE)
-
-
-def _extract_sections(content: str) -> dict[str, str]:
-    sections = {}
-    matches = list(HEADING_RE.finditer(content))
-    for idx, match in enumerate(matches):
-        start = match.end()
-        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(content)
-        name = match.group("name").strip().lower().replace("-", " ")
-        sections[name] = content[start:end].strip()
-    return sections
 
 
 def _extract_nouns(text: str) -> set[str]:
@@ -58,7 +46,7 @@ def validate_alignment(frame_path: str, brief_path: str | None = None, repo_root
     with open(frame_path, encoding="utf-8") as f:
         frame_content = f.read()
 
-    frame_sections = _extract_sections(frame_content)
+    frame_sections = extract_sections(frame_content)
     object_under_pressure = frame_sections.get("object under pressure", "")
 
     if not object_under_pressure:
@@ -74,7 +62,7 @@ def validate_alignment(frame_path: str, brief_path: str | None = None, repo_root
     with open(brief_path, encoding="utf-8") as f:
         brief_content = f.read()
 
-    brief_sections = _extract_sections(brief_content)
+    brief_sections = extract_sections(brief_content)
     weakest_boundary = brief_sections.get("weakest boundary", "")
     evidence = brief_sections.get("evidence", "")
 

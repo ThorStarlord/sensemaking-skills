@@ -56,3 +56,26 @@ def load_artifact_contracts(repo_root: str) -> dict | None:
 def load_skill_registry(repo_root: str) -> dict | None:
     """Load skill-registry.yaml from the repo."""
     return load_yaml(_registry_path(repo_root, "skill-registry.yaml"))
+
+
+HEADING_RE = re.compile(r"^##\s+(?:\d+\.\s*)?(?P<name>.+?)\s*$", re.MULTILINE)
+
+
+def extract_sections(text: str, normalize_hyphens: bool = True) -> dict[str, str]:
+    """Split content by ## headings, returning {lowercase_name: body_text}.
+
+    Args:
+        text: The markdown content to split.
+        normalize_hyphens: If True, replace hyphens with spaces in section names
+            so 'machine-readable-handoff' matches 'machine readable handoff'.
+    """
+    sections = {}
+    matches = list(HEADING_RE.finditer(text))
+    for idx, match in enumerate(matches):
+        start = match.end()
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
+        name = match.group("name").strip().lower()
+        if normalize_hyphens:
+            name = name.replace("-", " ")
+        sections[name] = text[start:end].strip()
+    return sections

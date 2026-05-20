@@ -59,7 +59,7 @@ class PortfolioOrchestrator:
         return sorted(projects)
 
     def route_project(self, project_file: Path) -> ProjectRoutingResult:
-        """Route a single project using the router.py script."""
+        """Route a single project using the canonical router."""
         result = ProjectRoutingResult(
             project_name=project_file.stem,
             project_file=str(project_file),
@@ -73,7 +73,7 @@ class PortfolioOrchestrator:
         try:
             cmd = [
                 sys.executable,
-                str(self.repo_root / "scripts" / "router.py"),
+                str(self.repo_root / "skills" / "project-classifier" / "router.py"),
                 str(project_file.resolve()),  # Use absolute path
                 "--json",
                 "--mode", self.mode

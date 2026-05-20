@@ -257,7 +257,7 @@ done
 **Solution**:
 1. Add clearer terminology to project descriptions
 2. Explicitly mention project type: "SaaS", "mobile app", "tool", etc.
-3. Check against classification guide in `scripts/router.py`
+3. Check against classification guide in `skills/project-classifier/router.py`
 4. File issue if you think classification is wrong
 
 ### "Execution timeout / execution never completes"
@@ -393,6 +393,6 @@ A: Not in current version. Projects are processed in parallel, order is arbitrar
 
 For issues or questions:
 1. Check this guide
-2. Review project classification in `scripts/router.py`
-3. Test single project: `python scripts/router.py project.md`
+2. Review project classification in `skills/project-classifier/router.py`
+3. Test single project: `python skills/project-classifier/router.py project.md`
 4. File issue with: project description + expected workflow

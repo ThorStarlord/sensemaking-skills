@@ -4,7 +4,7 @@ import re
 import argparse
 import yaml
 
-from _validator_utils import format_error, load_weakness_types, load_workflow_registry
+from _validator_utils import format_error, extract_sections, load_weakness_types, load_workflow_registry
 
 # Stable error codes
 BRIEF_FILE_NOT_FOUND = "BRIEF_FILE_NOT_FOUND"
@@ -26,18 +26,6 @@ FILE_CITATION_RE = re.compile(
     re.IGNORECASE,
 )
 
-HEADING_RE = re.compile(r"^##\s+(?:\d+\.\s*)?(?P<name>.+?)\s*$", re.MULTILINE)
-
-
-def _extract_sections(text: str) -> dict[str, str]:
-    sections = {}
-    matches = list(HEADING_RE.finditer(text))
-    for idx, match in enumerate(matches):
-        start = match.end()
-        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
-        sections[match.group("name").strip().lower()] = text[start:end].strip()
-    return sections
-
 
 def validate_brief(artifact_path: str, repo_root: str = ".") -> list[str]:
     errors: list[str] = []
@@ -49,7 +37,7 @@ def validate_brief(artifact_path: str, repo_root: str = ".") -> list[str]:
     with open(artifact_path, encoding="utf-8") as f:
         content = f.read()
 
-    sections = _extract_sections(content)
+    sections = extract_sections(content, normalize_hyphens=False)
     weakness_types = load_weakness_types(repo_root)
 
     # --- Novel checks from auteur validator ---

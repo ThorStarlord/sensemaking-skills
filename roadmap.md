@@ -242,7 +242,7 @@ Automatic project classification and workflow routing now eliminates manual work
 - Created output template in `skills/project-classifier/references/project-classification-template.md`
 - Supports 7 project types: SaaS, Content, Tool, Consumer, Enterprise, Marketplace, Research
 
-**2. Implemented automatic router (`scripts/router.py`)** ✅
+**2. Implemented automatic router (`skills/project-classifier/router.py`)** ✅
 - Keyword-based classification with confidence scoring
 - Automatic workflow selection from registry
 - Mode recommendation based on confidence

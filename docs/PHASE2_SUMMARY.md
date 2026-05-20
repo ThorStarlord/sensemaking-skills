@@ -15,7 +15,7 @@ Eliminate the need for users to know which workflow to invoke. Instead, provide 
 - Defines the interface and logic for classifying project types
 
 ### 2. Automatic Router Implementation
-- **File**: `scripts/router.py`
+- **File**: `skills/project-classifier/router.py`
 - **Purpose**: Converts raw project description → classified type → recommended workflow
 - **Supports**: All 7 project type categories (SaaS, Content, Tool, Consumer, Enterprise, Marketplace, Research)
 
@@ -72,7 +72,7 @@ Tested on 5 diverse real-world project scenarios:
 
 ```bash
 # Auto-classify a project and get routing recommendation
-$ python scripts/router.py my-saas-project.md
+$ python skills/project-classifier/router.py my-saas-project.md
 
 ======================================================================
 PROJECT ROUTING ANALYSIS

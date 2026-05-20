@@ -2,7 +2,13 @@
 """
 Automatic workflow router: takes raw project description and selects optimal workflow.
 
-This script eliminates the need for users to know which workflow to invoke.
+This is the CANONICAL classification implementation. Companion to the
+project-classifier SKILL.md — the skill provides AI-driven classification guidance,
+while this module provides a deterministic keyword-based router that produces
+compatible output.
+
+All project type names, workflow mappings, and confidence thresholds here
+are the single source of truth. The SKILL.md mirrors them for AI usage.
 """
 
 import os

@@ -6,7 +6,7 @@ import re
 import yaml
 import argparse
 
-from _validator_utils import format_error, load_artifact_contracts
+from _validator_utils import format_error, extract_sections, load_artifact_contracts
 
 VALID_GOAL_PRESERVATIONS = {"exact_match", "core_with_expansion", "diverged"}
 VALID_EXPANSION_STATUSES = {"exact_match", "pending_user_approval", "approved_by_user", "diverged"}
@@ -22,8 +22,6 @@ REQUIRED_SECTIONS = [
     "machine readable handoff",
 ]
 
-HEADING_RE = re.compile(r"^##\s+(?:\d+\.\s*)?(?P<name>.+?)\s*$", re.MULTILINE)
-
 MISSING_SECTION = "MISSING_SECTION"
 MALFORMED_YAML = "MALFORMED_YAML"
 INVALID_GOAL_PRESERVATION = "INVALID_GOAL_PRESERVATION"
@@ -31,18 +29,6 @@ INVALID_SCOPE_EXPANSION_TYPE = "INVALID_SCOPE_EXPANSION_TYPE"
 EXPANSION_WITHOUT_APPROVAL = "EXPANSION_WITHOUT_APPROVAL"
 INVALID_EXPANSION_STATUS = "INVALID_EXPANSION_STATUS"
 ABSOLUTE_PATH_DETECTED = "ABSOLUTE_PATH_DETECTED"
-
-
-def _extract_sections(content: str) -> dict[str, str]:
-    sections = {}
-    matches = list(HEADING_RE.finditer(content))
-    for idx, match in enumerate(matches):
-        start = match.end()
-        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(content)
-        # Normalize: lowercase, hyphens to spaces
-        name = match.group("name").strip().lower().replace("-", " ")
-        sections[name] = content[start:end].strip()
-    return sections
 
 
 def validate_prd(artifact_path: str, repo_root: str = ".") -> list[str]:
@@ -55,7 +41,7 @@ def validate_prd(artifact_path: str, repo_root: str = ".") -> list[str]:
     with open(artifact_path, encoding="utf-8") as f:
         content = f.read()
 
-    sections = _extract_sections(content)
+    sections = extract_sections(content)
 
     # 1. Required sections
     for section in REQUIRED_SECTIONS:

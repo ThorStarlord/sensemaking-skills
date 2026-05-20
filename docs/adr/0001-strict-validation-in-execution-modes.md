@@ -159,6 +159,25 @@ A: No. The orchestration system requires materialized artifacts (files) so valid
 
 ---
 
+## Clarification: Gate Names vs. Gate Behavior (2026-05-20)
+
+This ADR governs **artifact validation** (file existence checks), not gate behavior.
+These are two independent mechanisms:
+
+| Mechanism | Controlled by | Effect |
+|:---|:---|:---|
+| Artifact validation | Execution mode | Fails step if artifact missing (execution modes) or warns (planning modes) |
+| Gate approval | Execution mode (`KNOWN_MODES`) | `plan_only`/`prompt_chain` → none; `guided_execution` → mandatory; `autonomous_execution` → automated; `yolo_execution` → bypassed |
+
+The step-level `gate` field in `workflow-registry.yaml` is a **label** that documents
+what kind of review is expected — it does NOT control whether gates fire. The execution
+mode always determines gate behavior.
+
+**History**: The implementation workflows previously used `gate: none` for build-up
+steps, implying validation was skipped. This was misleading. Artifact validation
+(per this ADR) fired independently. All `gate: none` instances have been replaced
+with `gate: review` to accurately reflect intent.
+
 ## Acceptance Criteria
 
 This decision is accepted when:
@@ -167,3 +186,4 @@ This decision is accepted when:
 - ✓ Error code ARTIFACT_NOT_FOUND is stable and reusable
 - ✓ All tests pass (9/9 controlled failure tests)
 - ✓ No silent failures detected in production workflows
+- ✓ No workflow step uses `gate: none` (replaced with descriptive names)
