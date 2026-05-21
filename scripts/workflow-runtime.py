@@ -910,7 +910,9 @@ class OrchestrationRunner:
             return resolved_path
         artifacts_base = os.path.join(self.repo_root, "artifacts")
         normalized = os.path.normpath(resolved_path)
-        if normalized.startswith(os.path.normpath(artifacts_base)):
+        artifacts_norm = os.path.normpath(artifacts_base)
+        # Check exact match or prefix match with separator to avoid false-positives
+        if normalized == artifacts_norm or normalized.startswith(artifacts_norm + os.sep):
             relative = os.path.relpath(normalized, artifacts_base)
             return os.path.join(self.artifact_session_dir, relative)
         return resolved_path
