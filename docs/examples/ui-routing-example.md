@@ -138,7 +138,7 @@ workflow_id: "ui-implementation-workflow"
 ### Fog Type Classification
 ✅ **Correctly detected**: `ui_fog`  
 Evidence cited:
-- 3+ Tier 1 signals from `ui-fog-signals.yaml`
+- 3+ Tier 1 signals from `ui-fog-signals.md`
 - User intent aligned with diagnosis
 - No conflicts escalated
 
@@ -168,7 +168,7 @@ Artifacts produced:
 
 ### 1. UI Fog Detection
 - Explicitly checks for UI signals (flows, components, routing, design system)
-- References `ui-fog-signals.yaml` for checkable indicators
+- References `ui-fog-signals.md` for checkable indicators
 - No longer vague classification
 
 ### 2. Fog Type Routing

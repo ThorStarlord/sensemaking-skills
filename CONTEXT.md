@@ -118,7 +118,7 @@ The system uses a multi-stage default workflow chain with fog-type-aware routing
      - Analyzes screen complexity, design system maturity, and interaction patterns
      - Produces `ui_specification` for review before implementation
      - Auto-chains to `ui-implementation-workflow`
-   - **`ui-fog-signals.yaml`** — Registry of checkable UI fog indicators (Tier 1/2/3 signals)
+   - **`ui-fog-signals.md`** — Registry of checkable UI fog indicators (Tier 1/2/3 signals)
    - **UI Fog Detection** — `repo-sensemaker` now explicitly evaluates UI signals when classifying fog type
 
 **Auto-invocation mechanism**: When a workflow completes successfully, `workflow-runtime.py` reads the fog type and recommended workflow from the orchestration plan and chains to it without manual intervention. Fog type alignment is validated to prevent silent misroutings.

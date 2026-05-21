@@ -269,22 +269,36 @@ The system supports five execution modes ranging from fully automatic to read-on
 
 ### UI-Specific Workflows
 
-For UI/frontend redesign projects, the system provides specialized workflows:
+For UI/frontend redesign projects, the system provides specialized workflows.
 
-**Automatic UI Routing** — System detects UI complexity and routes automatically:
+> **Prerequisite for direct UI workflows**: `ui-diagnostic-workflow` and
+> `ui-implementation-workflow` consume a `context_artifacts` bundle produced by a prior
+> sensemaking run (problem frame, unknowns map, sensemaking brief, orchestration plan).
+> Run them either **after** a diagnostic workflow in the same session, or let the
+> diagnostic workflow **auto-invoke** them. A direct cold-start with no context now
+> **fails fast at pre-flight** with guidance, rather than producing an empty run.
+
+**Automatic UI Routing (recommended)** — Diagnose first, then route automatically. Pass a
+problem statement so intent reinforces the codebase diagnosis:
 ```bash
-python scripts/workflow-runtime.py --mode guided_execution
-# If repo has UI fog signals, automatically routes to ui-implementation-workflow
+python scripts/workflow-runtime.py \
+  "Our frontend components are inconsistent and we need a coherent design system" \
+  --workflow full-local-sensemaking \
+  --mode guided_execution \
+  --executor claude-code
+# Diagnoses fog type, then auto-invokes ui-implementation-workflow if ui_fog is detected
 ```
 
-**UI Diagnostic Workflow** — Analyze UI scope before committing to implementation:
+**UI Diagnostic Workflow** — Analyze UI scope before committing to implementation
+*(requires context_artifacts — see prerequisite above)*:
 ```bash
 python scripts/workflow-runtime.py --workflow ui-diagnostic-workflow --mode guided_execution
 ```
 **Output**: `ui_specification` artifact with screen inventory, design system assessment, and interaction patterns  
 **Chains to**: `ui-implementation-workflow` (if you approve the scope)
 
-**UI Implementation Workflow** — Full redesign workflow with TDD:
+**UI Implementation Workflow** — Full redesign workflow with TDD
+*(requires context_artifacts — see prerequisite above)*:
 ```bash
 python scripts/workflow-runtime.py --workflow ui-implementation-workflow --mode guided_execution
 ```

@@ -410,6 +410,48 @@ class OrchestrationRunner:
         else:
             print(f"  [OK] LEVEL 1: validate-repo.py PASSED")
 
+        # 4. Required context_artifacts availability (implementation workflows).
+        # Implementation workflows (ui-*, product-*, docs-*) require a sensemaking
+        # context bundle. On a direct cold-start (not chained), missing context is a
+        # hard failure with actionable guidance rather than a silent empty run.
+        # Per ADR 0001, planning modes (plan_only, prompt_chain) use LENIENT validation:
+        # artifacts may not exist yet, so a missing bundle is a warning, not a failure.
+        # Only EXECUTION modes hard-fail on missing context.
+        needs_context = any(
+            inp.get("id") == "context_artifacts" and inp.get("required")
+            for inp in self.workflow.get("initial_inputs", [])
+        )
+        if needs_context:
+            available = self._resolve_context_artifacts()
+            # user_intent (00-user-intent.md) is created fresh for every run, so it does
+            # NOT count as prior sensemaking context. Real context means upstream
+            # diagnostic artifacts (problem_frame, brief, orchestration_plan, ...).
+            substantive = [(a, p) for a, p in available if a != "user_intent"]
+            is_execution_mode = self.mode in ("guided_execution", "autonomous_execution", "yolo_execution")
+            if substantive:
+                ids = ", ".join(art_id for art_id, _ in substantive)
+                print(f"  [OK] CONTEXT: {len(substantive)} context artifact(s) available ({ids})")
+            elif self.chained:
+                # Chained child: the parent workflow owns the context bundle. Warn but
+                # don't fail, since session/dir handling is the parent's responsibility.
+                print(f"  ~ CONTEXT: no context artifacts detected, but workflow is chained — "
+                      f"deferring to parent workflow's context bundle")
+            elif not is_execution_mode:
+                # Planning mode: lenient — artifacts may not exist yet.
+                print(f"  ~ CONTEXT: no context artifacts found (planning mode — continuing). "
+                      f"An execution-mode run would require a prior sensemaking run.")
+            else:
+                msg = (
+                    f"Workflow '{self.workflow_id}' requires 'context_artifacts' from a prior "
+                    f"sensemaking run, but none were found in this session.\n"
+                    f"  Run a diagnostic workflow first (e.g. 'full-local-sensemaking'), or let it "
+                    f"auto-invoke this workflow so the context bundle exists.\n"
+                    f"  Expected at least one of: {', '.join(self._CONTEXT_ARTIFACT_IDS)}"
+                )
+                self.errors.append(format_error(PREFLIGHT_FAILED, msg))
+                print(f"  [FAIL] CONTEXT: {msg}")
+                all_ok = False
+
         if all_ok:
             print(f"\n  [OK] All pre-flight checks passed.\n")
         else:
@@ -642,18 +684,24 @@ class OrchestrationRunner:
 
             # Try to execute skill if executor supports real execution
             if skill and skill != "?" and self.skill_executor and self.skill_executor.supports_real_execution:
-                # Build context for skill execution
+                # Resolve the step's declared inputs (input_artifact / input_source),
+                # expanding the aggregate context_artifacts bundle when present.
+                input_artifact_ids, resolved_inputs = self._resolve_step_inputs(step)
+
+                # Build context for skill execution. resolved_inputs is what the
+                # claude-code executor actually reads to populate the prompt.
                 context = {
                     "workflow_id": self.workflow_id,
                     "mode": self.mode,
                     "step_num": step_num,
+                    "resolved_inputs": resolved_inputs,
                 }
 
                 # Invoke the skill
                 exec_result = self.skill_executor.invoke_skill(
                     skill_id=skill,
                     invocation_command=f"/{skill}",
-                    input_artifacts=[],  # TODO: resolve input artifacts from step definition
+                    input_artifacts=input_artifact_ids,
                     expected_output_artifact=output_artifact,
                     context=context,
                 )
@@ -824,29 +872,85 @@ class OrchestrationRunner:
             print(f"  ~ Failed to parse machine-readable section from {artifact_path}: {e}")
             return None
 
-    def _extract_recommended_workflow(self, source_artifact_id: str) -> str | None:
-        """Extract the recommended_workflow_id from the source artifact.
+    # Candidate machine fields that may carry the next workflow id, in priority order.
+    # Different artifacts use different names:
+    #   - repository_sensemaking_brief   -> recommended_workflow_id
+    #   - workflow_orchestration_plan    -> chosen_workflow_id / selected_workflow
+    _WORKFLOW_ID_FIELDS = ("recommended_workflow_id", "chosen_workflow_id", "selected_workflow")
 
-        Reads the artifact and parses its machine-readable section.
-        Returns the recommended_workflow_id or None if not found.
+    # Candidate machine fields that may carry the fog type, in priority order.
+    _FOG_TYPE_FIELDS = ("fog_type", "primary_fog_type", "user_implied_fog_type")
+
+    def _extract_recommended_workflow(self, source_artifact_id: str) -> str | None:
+        """Extract the next workflow id from the source artifact.
+
+        Handles both the bare artifact id ('workflow_orchestration_plan') and the
+        dotted form ('workflow_orchestration_plan.recommended_workflow_id'). If a field
+        is named explicitly via the dotted form it is tried first; otherwise a set of
+        candidate field names is tried in priority order, since the brief and the plan
+        use different field names for the same concept.
         """
-        artifact_path = self._resolve_artifact_path(source_artifact_id)
+        artifact_id, explicit_field = self._split_source_field(source_artifact_id)
+        artifact_path = self._resolve_artifact_path(artifact_id)
         if not os.path.exists(artifact_path):
             print(f"  ~ Source artifact for auto-invocation not found: {artifact_path}")
             return None
 
         machine_data = self._read_machine_readable_section(artifact_path)
         if not machine_data:
-            print(f"  ~ Could not parse machine-readable section from {source_artifact_id}")
+            print(f"  ~ Could not parse machine-readable section from {artifact_id}")
             return None
 
-        recommended = machine_data.get("recommended_workflow_id")
-        if recommended:
-            print(f"  [OK] Extracted recommended workflow: {recommended}")
-            return recommended
-        else:
-            print(f"  ~ No recommended_workflow_id found in {source_artifact_id}")
-            return None
+        # Build the field lookup order: explicit field (if any) first, then candidates.
+        candidate_fields = []
+        if explicit_field:
+            candidate_fields.append(explicit_field)
+        candidate_fields.extend(f for f in self._WORKFLOW_ID_FIELDS if f not in candidate_fields)
+
+        for field in candidate_fields:
+            value = machine_data.get(field)
+            if value:
+                print(f"  [OK] Extracted next workflow '{value}' from field '{field}' in {artifact_id}")
+                return value
+
+        print(f"  ~ No workflow id found in {artifact_id} (tried: {', '.join(candidate_fields)})")
+        return None
+
+    @staticmethod
+    def _split_source_field(source: str) -> tuple[str, str | None]:
+        """Split an auto_invoke_source into (artifact_id, field_or_None).
+
+        'workflow_orchestration_plan.recommended_workflow_id'
+            -> ('workflow_orchestration_plan', 'recommended_workflow_id')
+        'workflow_orchestration_plan' -> ('workflow_orchestration_plan', None)
+        """
+        if source and "." in source:
+            artifact_id, field = source.split(".", 1)
+            return artifact_id, field
+        return source, None
+
+    def _resolve_fog_type(self, source_artifact_id: str) -> str | None:
+        """Resolve the diagnosed fog type for routing validation.
+
+        The fog field lives in the repository_sensemaking_brief (primary_fog_type) and
+        may not be present in the orchestration plan. This checks the source artifact
+        first, then falls back to the brief, trying multiple field names in each.
+        """
+        # 1. Try the source artifact (it may carry a fog field)
+        artifact_id, _ = self._split_source_field(source_artifact_id)
+        for candidate_artifact in (artifact_id, "repository_sensemaking_brief"):
+            path = self._resolve_artifact_path(candidate_artifact)
+            if not os.path.exists(path):
+                continue
+            machine_data = self._read_machine_readable_section(path) or {}
+            for field in self._FOG_TYPE_FIELDS:
+                value = machine_data.get(field)
+                if value:
+                    print(f"  [OK] Resolved fog type '{value}' from field '{field}' in {candidate_artifact}")
+                    return value
+
+        print(f"  ~ No fog type field found in source artifact or repository_sensemaking_brief")
+        return None
 
     def _validate_workflow_fog_alignment(self, fog_type: str | None, workflow_id: str, artifact_path: str) -> dict:
         """Validate that the selected workflow matches the diagnosed fog type.
@@ -904,7 +1008,7 @@ class OrchestrationRunner:
             print(f"    Workflow: {workflow_id}")
             print(f"    Reason:   {validation_result['mismatch_reason']}")
         else:
-            print(f"  [OK] Workflow fog alignment validated: {fog_type} → {workflow_id}")
+            print(f"  [OK] Workflow fog alignment validated: {fog_type} -> {workflow_id}")
 
         return validation_result
 
@@ -969,6 +1073,91 @@ class OrchestrationRunner:
         if os.path.exists(fixture_path):
             return fixture_path
         return None
+
+    # Artifacts that compose the aggregate `context_artifacts` input, in pipeline order.
+    # Implementation workflows (ui-*, product-*, docs-*) declare a single
+    # `context_artifacts` input that stands in for the whole sensemaking bundle.
+    _CONTEXT_ARTIFACT_IDS = (
+        "user_intent",
+        "problem_frame",
+        "unknowns_map",
+        "discovery_findings",
+        "repository_sensemaking_brief",
+        "workflow_orchestration_plan",
+    )
+
+    def _resolve_user_intent_path(self) -> str | None:
+        """Return the path to 00-user-intent.md in the current session, if it exists."""
+        if self.artifact_session_dir:
+            candidate = os.path.join(self.artifact_session_dir, "00-user-intent.md")
+            if os.path.exists(candidate):
+                return candidate
+        return None
+
+    def _resolve_context_artifacts(self) -> list[tuple[str, str]]:
+        """Expand the aggregate `context_artifacts` input into concrete session artifacts.
+
+        Returns a list of (artifact_id, path) for each canonical context artifact that
+        actually exists on disk in the current session. An empty list means no
+        sensemaking context is available (e.g. a cold-start of a direct UI workflow).
+        """
+        available: list[tuple[str, str]] = []
+        for art_id in self._CONTEXT_ARTIFACT_IDS:
+            if art_id == "user_intent":
+                path = self._resolve_user_intent_path()
+            else:
+                path = self._resolve_artifact_path(art_id)
+            if path and os.path.exists(path):
+                available.append((art_id, path))
+        return available
+
+    def _resolve_step_inputs(self, step: dict) -> tuple[list[str], dict]:
+        """Resolve a step's declared inputs into (input_artifact_ids, resolved_inputs).
+
+        - input_artifact_ids: flat list of artifact ids/sources (used by prompt_chain
+          executor to enumerate inputs in the generated prompt).
+        - resolved_inputs: rich dict keyed by input name for the claude-code executor,
+          each value being {type: artifact_path|external_context|repository_state, ...}.
+
+        Handles the aggregate `context_artifacts` input by expanding it into all
+        available session artifacts from the sensemaking pipeline.
+        """
+        input_artifact_ids: list[str] = []
+        resolved_inputs: dict = {}
+
+        input_artifact = step.get("input_artifact")
+        input_source = step.get("input_source")
+
+        if input_artifact:
+            if input_artifact == "context_artifacts":
+                for art_id, path in self._resolve_context_artifacts():
+                    input_artifact_ids.append(art_id)
+                    resolved_inputs[art_id] = {"type": "artifact_path", "path": path}
+            else:
+                path = self._resolve_artifact_path(input_artifact)
+                input_artifact_ids.append(input_artifact)
+                resolved_inputs[input_artifact] = {"type": "artifact_path", "path": path}
+
+        if input_source:
+            if input_source == "repository_state":
+                resolved_inputs["repository_state"] = {
+                    "type": "repository_state",
+                    "data": {"path": self.repo_root},
+                }
+            elif input_source == "raw_fog":
+                intent_path = self._resolve_user_intent_path()
+                if intent_path:
+                    resolved_inputs["raw_fog"] = {"type": "artifact_path", "path": intent_path}
+                else:
+                    resolved_inputs["raw_fog"] = {
+                        "type": "external_context",
+                        "data": self.problem_statement or "",
+                    }
+            else:
+                resolved_inputs[input_source] = {"type": "external_context", "data": ""}
+            input_artifact_ids.append(input_source)
+
+        return input_artifact_ids, resolved_inputs
 
     def _resolve_artifact_path(self, artifact_id: str) -> str:
         """Resolve the file path for an artifact, scoped to session directory if set."""
@@ -1897,10 +2086,11 @@ class OrchestrationRunner:
                     # Fall back to reading from source artifact
                     next_workflow_id = self._extract_recommended_workflow(source_artifact)
                 if next_workflow_id:
-                    # Validate fog type alignment (get fog_type from artifact)
+                    # Validate fog type alignment. The fog field lives in the
+                    # repository_sensemaking_brief (primary_fog_type), not always in
+                    # the orchestration plan, so resolve across artifacts + field names.
                     source_artifact_path = self._resolve_artifact_path(source_artifact)
-                    machine_data = self._read_machine_readable_section(source_artifact_path) or {}
-                    fog_type = machine_data.get("fog_type")
+                    fog_type = self._resolve_fog_type(source_artifact)
 
                     validation_result = self._validate_workflow_fog_alignment(fog_type, next_workflow_id, source_artifact_path)
                     if validation_result["is_valid"] is False:

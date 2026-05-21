@@ -22,7 +22,7 @@ This document describes how to validate the UI diagnostic and implementation rou
 3. Provide user intent: "We need to improve our dashboard UX and navigation"
 
 **Expected Outcome**:
-- ✅ `repo-sensemaker` detects `primary_fog_type: ui_fog` (cites Tier 1 signals from ui-fog-signals.yaml)
+- ✅ `repo-sensemaker` detects `primary_fog_type: ui_fog` (cites Tier 1 signals from ui-fog-signals.md)
 - ✅ `workflow-planner` recommends `recommended_workflow_id: ui-diagnostic-workflow`
 - ✅ Validation logs: `[OK] Workflow fog alignment validated: ui_fog → ui-diagnostic-workflow`
 - ✅ Auto-invocation chains to `ui-diagnostic-workflow`
@@ -137,7 +137,7 @@ For each test scenario, record:
 
 1. **Fog Type Classification**:
    - Did `repo-sensemaker` correctly identify the primary fog type?
-   - Did it cite Tier 1 signals from `ui-fog-signals.yaml`?
+   - Did it cite Tier 1 signals from `ui-fog-signals.md`?
 
 2. **Routing Decision**:
    - Did `workflow-planner` recommend the expected workflow?
