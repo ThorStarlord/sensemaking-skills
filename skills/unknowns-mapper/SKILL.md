@@ -52,7 +52,9 @@ Before finalizing, you MUST:
    - `"high"` = Clear problem space (10+ knowns, <5 unknowns)
 4. **Calculate research_needed**: `true` if `unknowns_count >= 5` OR `clarity_assessment in ("low", "critical")`, else `false`
 
-Then append this YAML block exactly at the end of the artifact:
+**CRITICAL FORMATTING REQUIREMENT:**
+
+Then append this YAML block **with the exact section heading** `## 7. Machine-readable routing` (do NOT use "Routing Signals" or any other heading):
 
 ```
 ## 7. Machine-readable routing
@@ -64,6 +66,8 @@ assumptions_count: 5
 research_needed: true
 ```
 ```
+
+**IMPORTANT**: The section must be numbered as section 7 and named "Machine-readable routing". Validators will REJECT "## Routing Signals" or any other heading format. The exact format above is required for orchestration systems to parse and route downstream work.
 
 Do not skip this section. Orchestration systems depend on these signals to route downstream work.
 
