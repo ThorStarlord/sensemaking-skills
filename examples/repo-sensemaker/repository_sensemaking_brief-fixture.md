@@ -41,89 +41,100 @@ Supporting infrastructure:
 5. **Testing**: Parametrized integration tests for each execution mode
 
 ## Weakest Boundary
-The **skill execution boundary** between workflow orchestration and skill invocation is the primary blocker preventing end-to-end workflow completion. The orchestration system is production-ready for planning, but cannot generate intermediate artifacts because skills have no execution mechanism.
+**Contract Mismatch** - The validation rules for repository_sensemaking_brief are unclear about line reference formatting and weakness type classifications. This creates a mismatch between skill expectations and validator requirements, preventing Step 4 completion despite successful skill execution.
 
 ### Why This Boundary Matters
-Without skill execution, workflows halt after Step 2, preventing:
-- Full end-to-end testing of the orchestration system
-- Real-world usage where artifacts must be generated
-- Validation of artifact contract enforcement across all steps
-- Discovery of integration issues between skills
+The strict validator is now catching real issues but the specification needs clarification:
+- Skills don't know exact format for line references (should be "L1-L50" not "1-50")
+- Weakness types list isn't accessible during skill execution
+- "Logic trace" requirement appears only in validator, not in artifact contract documentation
+- This creates a discovery gap that blocks successful artifact generation
 
 ## Evidence
-The orchestration system was tested with the full-local-sensemaking workflow in yolo_execution mode:
-- ✅ Pre-flight checks: PASSED (git validation, repository structure)
-- ✅ Plan generation: PASSED (5-step plan created successfully)
-- ✅ Step 1 (problem-framer): PASSED (fixture artifact validated)
-- ✅ Step 2 (unknowns-mapper): PASSED (fixture artifact validated)
-- ❌ Step 4 (repo-sensemaker): FAILED (no skill execution, no fixture)
+Execution logs show the progression from execution failure to validation failure:
+- ✅ Steps 1-2: Skills execute successfully (problem-framer, unknowns-mapper)
+- ✅ Step 4: Skill executes (repo-sensemaker) - artifact IS generated
+- ❌ Step 4: Specialized validator catches format issues (Contract Mismatch weakness type)
 
-This pattern demonstrates that the orchestration logic is correct but blocked by lack of artifact generation.
+File references:
+- `scripts/validate-brief.py:L128`: Line format validation rule (expects "Lx-Ly" format)
+- `skills/weakness-types.md:L1-L50`: Recognized weakness types list
+- `scripts/validate-brief.py:L46`: Logic trace requirement
+
+## Logic Trace
+The diagnostic logic identifying the weakest boundary:
+1. **Observation**: Skill execution infrastructure was recently implemented (skill_executor.py)
+2. **Analysis**: The problem-framer and unknowns-mapper skills now execute successfully
+3. **Connection**: Step 4 (repo-sensemaker) fails not due to execution, but artifact format validation
+4. **Inference**: The weak boundary has shifted from "skill execution" to "artifact format specification"
+5. **Conclusion**: Validators are correctly catching real format issues; the specification needs clarity
 
 ## Evidence Excerpts
 ```yaml
 evidence_excerpts:
-  - file: "scripts/workflow-runtime.py"
-    lines: "190-210"
-    quote: "Modified execute_step() to use fixture artifacts when --use-fixtures flag is set"
-    supports_claim: "Fixture infrastructure enables partial workflow testing"
+  - file: scripts/validate-brief.py
+    lines: L128-L134
+    quote: "Lines must match r'^L\\d+(?:-L\\d+)?$' format"
+    supports_claim: "Validator expects L-prefixed line numbers"
   
-  - file: "examples/problem-framer/problem_frame-fixture.md"
-    lines: "1-50"
-    quote: "Complete fixture artifact with all required sections validated against contract"
-    supports_claim: "Fixture artifacts can satisfy validator requirements"
+  - file: scripts/validate-brief.py
+    lines: L46-L49
+    quote: "Brief does not include a logic trace showing diagnostic reasoning"
+    supports_claim: "Logic trace is a hard requirement not documented in contract"
   
-  - file: "EXECUTION_IMPROVEMENTS.md"
-    lines: "30-45"
-    quote: "Step 2: unknowns-mapper | FAILED (missing artifact sections) | Root Cause: The unknowns-mapper skill is not being invoked/executed"
-    supports_claim: "Lack of skill execution is the primary blocker"
+  - file: skills/repo-sensemaker/references/weakness-types.md
+    lines: L1-L40
+    quote: "Recognized weakness types: Vocabulary Drift, Contract Mismatch, Ghost Features, Safety Gaps..."
+    supports_claim: "Weakness types are defined but not linked to artifact contract"
 ```
 
 ## Candidate Next Steps
-1. **Create repo-sensemaker fixture**: Would allow workflow to progress to Step 5
-2. **Implement skill_executor.py**: Design invocation mechanism for skills
-3. **Add parametrized tests**: Cover all 5 execution modes with fixtures
-4. **Complete remaining fixtures**: workflow-planner, prompt-handoff outputs
-5. **Profile execution time**: Measure orchestration overhead
-6. **Document skill contract**: Specify how skills should be invoked and validated
+1. **Update repo-sensemaker fixture**: Fix line format and weakness type to pass validators
+2. **Document artifact format**: Add exemplar artifacts to artifact-contracts.yaml
+3. **Link validator specs to contracts**: Make validator rules explicit in contracts
+4. **Create validator reference guide**: Document all format requirements
+5. **Add pre-execution formatter**: Help skills format artifacts correctly
 
 ## Recommended Next Step
-**Create skill_executor.py with support for fixture artifacts and Claude API invocation**
+**Update repository_sensemaking_brief fixture with correct format specifications and run validation loop**
 
-This addresses the critical blocker while maintaining testability. The architecture should:
-1. Accept skill name, input artifacts, and execution mode (fixture/live)
-2. Return output artifact or error with clear diagnostics
-3. Support both fixture mode (for testing) and Claude API mode (for production)
-4. Integrate seamlessly with execute_step() in workflow-runtime.py
+1. Change line references from "1-50" to "L1-L50" format
+2. Add "logic trace" section demonstrating diagnostic reasoning
+3. Use recognized weakness types from weakness-types.md
+4. Verify all citations point to real files that exist
+5. Re-run validation to confirm artifact passes
 
 ## Recommended Workflow
-For iterative development of the skill execution infrastructure:
-1. Use **fixture mode** with --use-fixtures flag for rapid orchestration testing
-2. Implement Claude API integration in skill_executor.py
-3. Gradually migrate from fixtures to live skill execution
-4. Add parametrized tests as new skills are executable
+For completing Step 4 execution:
+1. Fix fixture artifact format issues
+2. Re-run workflow with default executor
+3. Verify all 5 steps complete successfully
+4. Document exact format specs for future skill developers
+5. Create integration tests to prevent regression
 
 ## Machine-readable Handoff
 ```yaml
 source_intent_ref: "user_intent"
 recommended_workflow_id: "implementation-workflow"
 recommended_execution_mode: "guided_execution"
-weakest_boundary: "skill_execution"
+weakest_boundary: "Contract Mismatch"
 required_inputs:
   - problem_frame
   - unknowns_map
   - user_intent
 user_implied_fog_type: "unknown_unknowns"
-primary_fog_type: "architecture_fog"
+primary_fog_type: "specification_fog"
 diagnosis_conflict: false
 escalation_recommended: false
 ```
 
 ## Ready to Copy Prompt
-Use the identified weak boundary (skill execution) as the starting point for implementation:
+The artifact format requirements are now clear from validator analysis:
 
-**Problem Statement**: Skills exist as SKILL.md prompts but have no invocation mechanism, blocking end-to-end workflow execution.
+**Format Rules**:
+- Evidence line references: "L1" or "L1-L50" (L-prefixed)
+- Weakness types: Must match list in skills/weakness-types.md
+- Logic trace: Must appear as section or mentioned in text
+- File citations: Path relative to repo root, must exist
 
-**Artifact Context**: This brief is based on analysis of the sensemaking-skills repository and validated with fixture-based orchestration testing.
-
-**Next Action**: Design and implement skill_executor.py to invoke skills via Claude API or subprocess, starting with support for fixture artifacts in testing mode.
+**Next Step**: Update all generated artifacts to follow these rules and complete Step 4 validation successfully.
