@@ -814,6 +814,66 @@ class OrchestrationRunner:
             print(f"  ~ No recommended_workflow_id found in {source_artifact_id}")
             return None
 
+    def _validate_workflow_fog_alignment(self, fog_type: str | None, workflow_id: str, artifact_path: str) -> dict:
+        """Validate that the selected workflow matches the diagnosed fog type.
+
+        Returns a dict with validation results:
+        {
+            'is_valid': bool,
+            'fog_type': str,
+            'workflow_id': str,
+            'expected_pattern': str,
+            'mismatch_reason': str or None
+        }
+        """
+        # Mapping of fog types to expected workflow patterns
+        fog_type_patterns = {
+            "ui_fog": ["ui-", "ui_"],
+            "product_fog": ["product-", "product_"],
+            "docs_fog": ["docs-", "docs_"],
+            "architecture_fog": ["implementation-", "architecture-", "-architecture"],
+        }
+
+        validation_result = {
+            "is_valid": True,
+            "fog_type": fog_type or "unknown",
+            "workflow_id": workflow_id,
+            "expected_pattern": None,
+            "mismatch_reason": None,
+        }
+
+        # If no fog type, cannot validate
+        if not fog_type:
+            print(f"  [WARN] No fog_type found in artifact; skipping fog alignment validation")
+            validation_result["is_valid"] = None  # Unknown, not invalid
+            return validation_result
+
+        # Get expected patterns for this fog type
+        expected_patterns = fog_type_patterns.get(fog_type)
+        if not expected_patterns:
+            print(f"  [WARN] Unknown fog_type '{fog_type}'; skipping validation")
+            validation_result["is_valid"] = None
+            return validation_result
+
+        # Check if workflow matches expected pattern
+        matches_pattern = any(pattern in workflow_id for pattern in expected_patterns)
+
+        if not matches_pattern:
+            validation_result["is_valid"] = False
+            validation_result["expected_pattern"] = " or ".join(expected_patterns)
+            validation_result["mismatch_reason"] = (
+                f"Fog type '{fog_type}' suggests workflow matching '{validation_result['expected_pattern']}', "
+                f"but got '{workflow_id}'"
+            )
+            print(f"  [WARN] Workflow routing mismatch detected:")
+            print(f"    Fog type: {fog_type}")
+            print(f"    Workflow: {workflow_id}")
+            print(f"    Reason:   {validation_result['mismatch_reason']}")
+        else:
+            print(f"  [OK] Workflow fog alignment validated: {fog_type} → {workflow_id}")
+
+        return validation_result
+
     def _invoke_next_workflow(self, next_workflow_id: str) -> int:
         """Invoke the next workflow automatically, propagating mode, executor, and gate.
 
@@ -1803,6 +1863,15 @@ class OrchestrationRunner:
                     # Fall back to reading from source artifact
                     next_workflow_id = self._extract_recommended_workflow(source_artifact)
                 if next_workflow_id:
+                    # Validate fog type alignment (get fog_type from artifact)
+                    source_artifact_path = self._resolve_artifact_path(source_artifact)
+                    machine_data = self._read_machine_readable_section(source_artifact_path) or {}
+                    fog_type = machine_data.get("fog_type")
+
+                    validation_result = self._validate_workflow_fog_alignment(fog_type, next_workflow_id, source_artifact_path)
+                    if validation_result["is_valid"] is False:
+                        print(f"  [WARN] Workflow routing may be incorrect; proceeding with caution")
+
                     next_exit_code = self._invoke_next_workflow(next_workflow_id)
                     return next_exit_code
                 else:

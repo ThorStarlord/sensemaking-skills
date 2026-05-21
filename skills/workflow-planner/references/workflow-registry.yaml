@@ -119,11 +119,11 @@ workflows:
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
   - id: 3
-    skill: prompt-handoff
+    skill: handoff
     step_type: local_execution
     gate: review_handoff_prompt
     input_artifact: repository_sensemaking_brief
-    output_artifact: prompt_handoff
+    output_artifact: session_summary
 - id: docs-contract-reconciliation
   display_name: Docs & Contract Reconciliation
   purpose: Resolve drift between documentation, registries, artifact contracts, templates,
@@ -152,11 +152,11 @@ workflows:
     input_artifact: repository_sensemaking_brief
     output_artifact: docs_contract_reconciliation_report
   - id: 3
-    skill: prompt-handoff
+    skill: handoff
     step_type: local_execution
     gate: review_next_prompt
     input_artifact: docs_contract_reconciliation_report
-    output_artifact: prompt_handoff
+    output_artifact: session_summary
 - id: autonomous-sprint-preflight
   display_name: Autonomous Sprint Preflight
   purpose: Verify that a repository is ready for Autonomous Sprint before selecting
@@ -179,11 +179,11 @@ workflows:
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
   - id: 2
-    skill: prompt-handoff
+    skill: handoff
     step_type: local_execution
     gate: review_sprint_prompt
     input_artifact: repository_sensemaking_brief
-    output_artifact: prompt_handoff
+    output_artifact: session_summary
 - id: docs-architecture
   display_name: Docs & Architecture Alignment
   purpose: Align documentation with domain language and generate copy-paste prompts
@@ -422,8 +422,9 @@ workflows:
     required: true
     pattern: yolo/{workflow_id}/{timestamp}
   auto_invoke_next_workflow: true
-  auto_invoke_source: repository_sensemaking_brief
-  auto_invoke_next_workflow_id: implementation-workflow
+  auto_invoke_source: workflow_orchestration_plan
+  # NOTE: auto_invoke_next_workflow_id is read from workflow_orchestration_plan.recommended_workflow_id
+  # The workflow-planner skill determines which implementation workflow to invoke based on fog_type
   steps:
   - id: 1
     skill: problem-framer
@@ -461,10 +462,17 @@ workflows:
     input_source: repository_state
     output_artifact: repository_sensemaking_brief
   - id: 5
+    skill: workflow-planner
+    step_type: local_execution
+    gate: none
+    input_artifact: repository_sensemaking_brief
+    output_artifact: workflow_orchestration_plan
+    description: Orchestration planning - select implementation workflow based on fog type
+  - id: 6
     skill: handoff
     step_type: local_execution
     gate: review_final_prompt
-    input_artifact: repository_sensemaking_brief
+    input_artifact: workflow_orchestration_plan
     output_artifact: session_summary
 - id: fast-local-diagnostic
   display_name: Fast Local Diagnostic
@@ -704,6 +712,39 @@ workflows:
     input_artifact: code_patch
     output_artifact: session_summary
     description: Completion summary - document session
+- id: ui-diagnostic-workflow
+  display_name: UI Diagnostic Workflow
+  purpose: Analyze UI complexity, screen structure, and design patterns. Produces a high-fidelity UI assessment without implementation.
+  description: Use when you want to understand the scope and complexity of a UI redesign or refactor before committing to implementation. Aligns domain understanding with actual UI state, then produces a detailed UI specification. Auto-chains to ui-implementation-workflow if appropriate.
+  initial_inputs:
+  - id: context_artifacts
+    type: artifact
+    required: true
+    description: Artifacts from sensemaking pipeline (problem-frame, unknowns-map,
+      sensemaking-brief, orchestration-plan).
+  allowed_execution_modes:
+  - plan_only
+  - guided_execution
+  - autonomous_execution
+  requires_run_log: false
+  steps:
+  - id: 1
+    skill: docs-aligner
+    step_type: local_execution
+    gate: none
+    input_artifact: context_artifacts
+    output_artifact: domain_alignment_report
+    description: Domain alignment - refine understanding and validate domain model
+  - id: 2
+    skill: ui-brief
+    step_type: local_execution
+    gate: review
+    input_artifact: domain_alignment_report
+    output_artifact: ui_specification
+    description: UI assessment - analyze screens, flows, and design system maturity
+  auto_invoke_next_workflow: true
+  auto_invoke_source: ui_specification
+  auto_invoke_next_workflow_id: ui-implementation-workflow
 - id: ui-implementation-workflow
   display_name: UI Implementation Workflow
   purpose: For UI/frontend design problems. Aligns domain, specifies flows and screens,

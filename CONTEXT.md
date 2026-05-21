@@ -94,21 +94,34 @@ The workflow orchestration system follows four key design patterns, each proven 
 
 ## Default Workflows
 
-The system uses a two-stage default workflow chain for production use:
+The system uses a multi-stage default workflow chain with fog-type-aware routing:
 
 1. **`full-local-sensemaking`** (DEFAULT) — The primary entry point when running `python scripts/workflow-runtime.py`
-   - Converts raw fog into a repository diagnosis and handoff
+   - Converts raw fog into a repository diagnosis and orchestration plan
    - Executes locally without external API calls
    - Supports all execution modes: `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, `yolo_execution`
-   - Produces: `repository_sensemaking_brief` (diagnostic output)
+   - **Steps**: problem-framer → unknowns-mapper → (discovery?) → repo-sensemaker → workflow-planner → handoff
+   - **Produces**: `repository_sensemaking_brief` + `workflow_orchestration_plan` (with fog type classification and workflow recommendation)
 
-2. **`implementation-workflow`** (AUTO-INVOKED) — Automatically invoked after `full-local-sensemaking` completes
-   - Transforms diagnostic output into specifications and implementation plans
-   - Aligns domain, creates spec, decomposes into issues, and implements via TDD
+2. **Fog Type-Aware Auto-Invocation** (Phase 7) — Automatically routes to the appropriate implementation workflow
+   - `workflow-planner` classifies the fog type and recommends the best implementation workflow
+   - `workflow-runtime.py` validates fog type alignment with selected workflow (via `_validate_workflow_fog_alignment()`)
+   - Auto-chains to one of:
+     - **`ui-implementation-workflow`** — For UI/frontend design problems
+     - **`product-implementation-workflow`** — For product/feature problems  
+     - **`docs-implementation-workflow`** — For documentation/knowledge problems
+     - **`implementation-workflow`** — For architecture/code structure problems (default)
    - Runs in the same execution mode as the triggering workflow
-   - Produces: `domain_alignment_report` → `prd` → `issue_list` → `agent_brief` → `code_patch` → `session_summary`
 
-**Auto-invocation mechanism**: When `full-local-sensemaking` completes successfully, `workflow-runtime.py` automatically detects `auto_invoke_next_workflow_id: implementation-workflow` and chains to it without manual intervention.
+3. **UI-Specific Routing** (NEW) — Enhanced detection and routing for UI fog
+   - **`ui-diagnostic-workflow`** — Optional intermediate step for UI-heavy projects
+     - Analyzes screen complexity, design system maturity, and interaction patterns
+     - Produces `ui_specification` for review before implementation
+     - Auto-chains to `ui-implementation-workflow`
+   - **`ui-fog-signals.yaml`** — Registry of checkable UI fog indicators (Tier 1/2/3 signals)
+   - **UI Fog Detection** — `repo-sensemaker` now explicitly evaluates UI signals when classifying fog type
+
+**Auto-invocation mechanism**: When a workflow completes successfully, `workflow-runtime.py` reads the fog type and recommended workflow from the orchestration plan and chains to it without manual intervention. Fog type alignment is validated to prevent silent misroutings.
 
 ## Domain Language
 - **Fog**: The state of project uncertainty. Four primary types:
@@ -117,12 +130,12 @@ The system uses a two-stage default workflow chain for production use:
   - **docs_fog**: Missing documentation, unclear specifications, knowledge silos
   - **architecture_fog**: Code structure problems, design boundaries unclear, implicit contracts
 - **Fog Type Classification**: Sensemaking stage (via `repo-sensemaker`) classifies the primary fog type to enable routing
-- **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, and `prompt-handoff`.
+- **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, and `handoff`. The skill directory is `skills/handoff/` and produces a `session_summary` artifact. See ADR 0009 for the naming convention.
 - **Workflow**: An ordered sequence of Skill Steps that processes fog into actionable artifacts. Also referred to as **Skill Workflow** in user-facing documentation (README.md).
 - **Skill Step**: One skill invocation within a Workflow. Each Skill Step has inputs (artifacts or external context), a skill to execute, an output artifact, and an approval gate.
-- **Core Skills**: Skills that always execute in a Workflow (e.g., problem-framer, unknowns-mapper, repo-sensemaker). Define the backbone of the pipeline.
-- **Conditional Skills**: Skills inserted into a Workflow based on characteristics of the input or intermediate artifacts (e.g., discovery skill if raw_fog clarity is low).
-- **Dynamic Chaining**: The system of routing decisions that selects the next Skill Step based on analyzed input quality or artifact content. Primary decision point: raw_fog input clarity and specificity. Secondary decision points defer until recurrence validates their necessity (Harden Only Where Pressured).
+- **Core Skills**: Skills that define the backbone of a pipeline's fog-to-action path. Their presence varies by workflow: `full-local-sensemaking` uses problem-framer → unknowns-mapper → repo-sensemaker; `fast-path-workflow` starts directly at repo-sensemaker.
+- **Conditional Skills**: Skills inserted into a Workflow based on characteristics of the input or intermediate artifacts (e.g., discovery skill if unknowns_map.research_needed is true).
+- **Dynamic Chaining**: The system of routing decisions that selects the next Skill Step based on analyzed input quality or artifact content. Primary decision point: unknowns_map.research_needed (derived from unknowns count + clarity assessment). Secondary decision points defer until recurrence validates their necessity (Harden Only Where Pressured).
 - **Sensemaking Brief**: The primary diagnostic artifact (14 sections). It must identify the "weakest boundary" and provide file-level evidence and excerpts.
 - **Orchestration Plan**: The procedural artifact that includes fog type classification, recommended implementation workflow, and execution strategy
 - **Implementation Workflows**: Four specialized workflows that execute based on fog type classification:
@@ -159,6 +172,15 @@ The system uses a two-stage default workflow chain for production use:
 - **TDD Validator Cycle**: The red-green-refactor loop triggered when a Level 3 validator fails during a workflow run. Failure = RED, artifact data fix = GREEN, re-validation pass = REFACTOR. Demonstrated in the first YOLO run when validate-brief.py caught UNKNOWN_WEAKNESS_TYPE and NO_LOGIC_TRACE.
 - **Tracer Bullets**: AFK-compatible vertical slices of implementation.
 - **Validator Verification Suite**: A repeatable verification mechanism that checks validator behavior against positive and negative fixtures. It confirms that valid artifacts pass, invalid artifacts fail, and expected failures fail for the intended reason. Now enforces mandatory fixture coverage for all validator scripts.
+
+### Local Skills Status
+
+| Skill | Purpose | Status |
+|-------|---------|--------|
+| `data-access-layer-auditor` | Audits data access patterns and layer boundaries | Orphan — no workflow references, not in skill-registry |
+| `project-classifier` | Classifies projects by fog type, domain, and complexity | Orphan — no workflow references, not in skill-registry |
+| `usage-researcher` | Evaluates skill performance in realistic scenarios | Orphan — registered in skill-registry but has zero workflow step references |
+| `workflow-presenter` | Presents workflow results to humans or agents | Orphan — no workflow references, not in skill-registry |
 
 ## Artifact Run Organization
 

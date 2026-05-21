@@ -617,9 +617,16 @@ artifacts:
   - id: ui_specification
     path: "artifacts/ui_specification.md"
     produced_by: ui-brief
-    consumed_by: []
+    consumed_by:
+      - ui-flow
+    required_sections:
+      - overview
+      - screens
+      - design_system
+      - interactions
     verification:
       generic_validator: "python scripts/validate-artifact.py ui_specification {artifact_path}"
       required_for_modes:
         - guided_execution
         - autonomous_execution
+        - plan_only
