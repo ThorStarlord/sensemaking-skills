@@ -46,8 +46,7 @@ def validate_repo():
         "skills/skill-maintainer/references/improvement-plan-template.md",
         "skills/usage-researcher/SKILL.md",
         "skills/usage-researcher/agents/openai.yaml",
-        "skills/usage-researcher/references/usage-research-report-template.md",
-        "docs/mode-coverage.yaml"
+        "skills/usage-researcher/references/usage-research-report-template.md"
     ]
     
     for f in core_files:
