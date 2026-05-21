@@ -14,7 +14,8 @@ This workflow provides the end-to-end bridge (Framer -> Mapper -> Sensemaker -> 
 2. `unknowns-mapper`
 3. (Conditional) `discovery` - if `unknowns_map.research_needed == true`; otherwise skip
 4. `repo-sensemaker`
-5. `handoff`
+5. `workflow-planner`
+6. `handoff`
 
 ## 5. Inputs and outputs
 - **Step 1**: Input `raw_fog`, Output `problem_frame`.
@@ -23,14 +24,16 @@ This workflow provides the end-to-end bridge (Framer -> Mapper -> Sensemaker -> 
   - If true: Input `unknowns_map`, Output `discovery_findings`.
   - If false: Pass through `unknowns_map`.
 - **Step 4**: Input (from step 3 pass-through), Output `repository_sensemaking_brief`.
-- **Step 5**: Input `repository_sensemaking_brief`, Output `prompt_handoff`.
+- **Step 5**: Input `repository_sensemaking_brief`, Output `workflow_orchestration_plan`.
+- **Step 6**: Input `workflow_orchestration_plan`, Output `session_summary`.
 
 ## 6. Approval gates
 - **Gate 1**: `review_problem_frame` (Manual verification of framing accuracy).
 - **Gate 2**: `review_unknowns_map` (Verification of research path completeness).
 - **Gate 3**: `review_discovery` (Audit of discovery findings if needed).
 - **Gate 4**: `review_sensemaking_brief` (Audit of weakest boundary identification).
-- **Gate 5**: `review_final_prompt` (Confirmation of handoff readiness).
+- **Gate 5**: `none` (Automatic workflow planning).
+- **Gate 6**: `review_final_prompt` (Confirmation of handoff readiness).
 
 ## 7. Stop conditions
 - **Structural Failure**: Stop if any generated artifact fails Level 2 (Generic) validation.
@@ -53,7 +56,8 @@ N/A - mode is plan_only. No prompt chain generated.
 | 2 | unknowns-mapper | [ ] | [ ] | [ ] |
 | 3 | (conditional) discovery | [ ] | [ ] | [ ] |
 | 4 | repo-sensemaker | [ ] | [ ] | [ ] |
-| 5 | handoff | [ ] | [ ] | [ ] |
+| 5 | workflow-planner | [ ] | [ ] | [ ] |
+| 6 | handoff | [ ] | [ ] | [ ] |
 ```
 
 ## 11. Machine-readable plan
@@ -108,27 +112,36 @@ steps:
     output_artifact: repository_sensemaking_brief
     status: pending
   - id: 5
+    skill: workflow-planner
+    step_type: local_execution
+    gate: none
+    input_artifact: repository_sensemaking_brief
+    output_artifact: workflow_orchestration_plan
+    status: pending
+  - id: 6
     skill: handoff
     step_type: local_execution
     gate: review_final_prompt
-    input_artifact: repository_sensemaking_brief
-    output_artifact: prompt_handoff
+    input_artifact: workflow_orchestration_plan
+    output_artifact: session_summary
     status: pending
 approval_gates:
   - review_problem_frame
   - review_unknowns_map
   - review_sensemaking_brief
+  - none
   - review_final_prompt
 gate_behavior:
   review_problem_frame: mandatory
   review_unknowns_map: mandatory
   review_sensemaking_brief: mandatory
+  none: automatic
   review_final_prompt: mandatory
 stop_conditions:
   - id: validation_failure
   - id: ambiguous_oup
 subset_run: false
 subset_reason: null
-included_steps: []
+included_steps: [1, 2, '3-conditional', 4, 5, 6]
 excluded_steps: []
 ```

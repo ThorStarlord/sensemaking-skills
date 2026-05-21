@@ -33,9 +33,9 @@ def validate_repo():
         "skills/unknowns-mapper/SKILL.md",
         "skills/unknowns-mapper/agents/openai.yaml",
         "skills/unknowns-mapper/references/unknowns-map-template.md",
-        "skills/prompt-handoff/SKILL.md",
-        "skills/prompt-handoff/agents/openai.yaml",
-        "skills/prompt-handoff/references/prompt-handoff-template.md",
+        "skills/handoff/SKILL.md",
+        "skills/handoff/agents/openai.yaml",
+        "skills/handoff/references/prompt-handoff-template.md",
         "skills/setup-sensemaking-skills/SKILL.md",
         "skills/setup-sensemaking-skills/agents/openai.yaml",
         "skills/setup-sensemaking-skills/references/agent-block-template.md",
@@ -62,7 +62,7 @@ def validate_repo():
         "skills/workflow-planner/references/artifact-contracts.yaml",
         "skills/problem-framer/agents/openai.yaml",
         "skills/unknowns-mapper/agents/openai.yaml",
-        "skills/prompt-handoff/agents/openai.yaml",
+        "skills/handoff/agents/openai.yaml",
         "skills/setup-sensemaking-skills/agents/openai.yaml",
         "skills/sensemaking-docs-reconciler/agents/openai.yaml"
     ]

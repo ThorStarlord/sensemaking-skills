@@ -102,21 +102,30 @@ steps:
     output_artifact: repository_sensemaking_brief
     status: pending
   - id: 5
+    skill: workflow-planner
+    step_type: local_execution
+    gate: none
+    input_artifact: repository_sensemaking_brief
+    output_artifact: workflow_orchestration_plan
+    status: pending
+  - id: 6
     skill: handoff
     step_type: local_execution
     gate: review_final_prompt
-    input_artifact: repository_sensemaking_brief
-    output_artifact: prompt_handoff
+    input_artifact: workflow_orchestration_plan
+    output_artifact: session_summary
     status: pending
 approval_gates:
   - review_problem_frame
   - review_unknowns_map
   - review_sensemaking_brief
+  - none
   - review_final_prompt
 gate_behavior:
   review_problem_frame: manual_approval
   review_unknowns_map: manual_approval
   review_sensemaking_brief: manual_approval
+  none: automatic
   review_final_prompt: manual_approval
 stop_conditions:
   - id: validation_failure

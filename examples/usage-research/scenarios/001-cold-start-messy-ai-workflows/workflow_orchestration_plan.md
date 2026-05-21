@@ -73,6 +73,9 @@ excluded_steps:
     skill: repo-sensemaker
     reason: user_requested_stop_after_step_2
   - id: 5
+    skill: workflow-planner
+    reason: user_requested_stop_after_step_2
+  - id: 6
     skill: handoff
     reason: user_requested_stop_after_step_2
 
