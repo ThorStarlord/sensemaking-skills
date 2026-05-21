@@ -40,6 +40,13 @@ from _validator_utils import (
     resolve_repo_root,
     run_subprocess,
 )
+
+try:
+    from skill_executor import create_executor, SkillExecutionStatus
+except ImportError:
+    # Graceful fallback if skill_executor not available
+    create_executor = None
+    SkillExecutionStatus = None
 # -- Error codes --------------------------------------------------------------
 WORKFLOW_NOT_FOUND = "WORKFLOW_NOT_FOUND"
 WORKFLOW_INVALID = "WORKFLOW_INVALID"
@@ -99,30 +106,14 @@ def _save_mode_coverage(data: dict, repo_root: str) -> None:
         yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
 
-def _run_validator(cmd: list[str], artifact_path: str, repo_root: str) -> tuple[int, str, float]:
-    """Run a validator command. Returns (exit_code, output, elapsed_seconds)."""
-    resolved = [arg.replace("{artifact_path}", artifact_path) for arg in cmd]
-    if "--repo-root" not in resolved and repo_root:
-        resolved.extend(["--repo-root", repo_root])
-
-    start = datetime.now()
-    result = subprocess.run(resolved, capture_output=True, text=True, timeout=120)
-    elapsed = (datetime.now() - start).total_seconds()
-    output = (result.stdout + result.stderr).strip()
-    return result.returncode, output, elapsed
-
-
 def _run_level1_validator(repo_root: str) -> tuple[bool, str]:
     """Run Level 1 structural validator."""
     validator = os.path.join(repo_root, "scripts", "validate-repo.py")
     if not os.path.exists(validator):
         return False, "validate-repo.py not found"
-    result = subprocess.run(
-        [sys.executable, validator, "--repo-root", repo_root],
-        capture_output=True, text=True, timeout=120,
-    )
-    output = (result.stdout + result.stderr).strip()
-    return result.returncode == 0, output
+    cmd = [sys.executable, validator, "--repo-root", repo_root]
+    code, output, _elapsed = run_subprocess(cmd, repo_root, inject_repo_root=False)
+    return code == 0, output
 
 
 def _check_clean_git(repo_root: str) -> tuple[bool, str]:
@@ -212,6 +203,10 @@ class OrchestrationRunner:
     ):
         self.workflow_id = workflow_id
         self.mode = mode
+        self.executor_id = executor
+        self.skill_executor = None
+        if create_executor:
+            self.skill_executor = create_executor(executor, repo_root)
         self.repo_root = os.path.abspath(repo_root)
         self.plan_out = plan_out or os.path.join(self.repo_root, "artifacts", f"plan_{workflow_id}.md")
         self.log_dir = log_dir or os.path.join(self.repo_root, "artifacts")
@@ -596,6 +591,52 @@ class OrchestrationRunner:
                     result["status"] = "EXECUTED"
                     return result
 
+            # Try to execute skill if executor supports real execution
+            if skill and skill != "?" and self.skill_executor and self.skill_executor.supports_real_execution:
+                # Build context for skill execution
+                context = {
+                    "workflow_id": self.workflow_id,
+                    "mode": self.mode,
+                    "step_num": step_num,
+                }
+
+                # Invoke the skill
+                exec_result = self.skill_executor.invoke_skill(
+                    skill_id=skill,
+                    invocation_command=f"/{skill}",
+                    input_artifacts=[],  # TODO: resolve input artifacts from step definition
+                    expected_output_artifact=output_artifact,
+                    context=context,
+                )
+
+                # Log executor result
+                if exec_result.status == SkillExecutionStatus.EXECUTED:
+                    artifact_path = self._resolve_artifact_path(output_artifact)
+                    if os.path.exists(artifact_path):
+                        rel = os.path.relpath(artifact_path, self.repo_root)
+                        result["artifact_path"] = rel.replace("\\", "/")
+                        result["status"] = "EXECUTED"
+                        print(f"  [SKILL_EXECUTED] Skill '{skill}' executed and produced artifact")
+                        # Continue to validation
+                    else:
+                        # Executor said it succeeded but artifact not found
+                        self.errors.append(
+                            format_error(ARTIFACT_NOT_FOUND,
+                                f"Step {step_num} ({skill}): Executor reported success but artifact not found")
+                        )
+                        result["status"] = "FAILED"
+                        return result
+                elif exec_result.status in (SkillExecutionStatus.PROMPT_GENERATED,):
+                    result["status"] = "PROMPT_GENERATED"
+                    print(f"  [PROMPT_GENERATED] Skill prompt for '{skill}' generated")
+                    return result
+                else:
+                    # Executor returned failure or unsupported
+                    print(f"  [SKILL_EXEC_INFO] Skill executor status: {exec_result.status.value}")
+                    if exec_result.error:
+                        print(f"    {exec_result.error}")
+                    # Fall through to fixture/path resolution
+
             # Determine artifact path based on contracts
             contract_path = self._resolve_artifact_path(output_artifact)
             artifact_path = contract_path
@@ -759,9 +800,10 @@ class OrchestrationRunner:
             return None
 
     def _invoke_next_workflow(self, next_workflow_id: str) -> int:
-        """Invoke the next workflow automatically using orchestration-runner.
+        """Invoke the next workflow automatically, propagating mode, executor, and gate.
 
-        Uses the same mode as the current execution.
+        Uses the same mode as the current execution and passes the same executor
+        (so auto-invoked child workflows do not silently default to dry-run).
         Returns the exit code from the next workflow run.
         """
         print(f"\n{'='*60}")
@@ -771,23 +813,24 @@ class OrchestrationRunner:
         print(f"  Next workflow:    {next_workflow_id} ({self.mode})")
         print(f"")
 
-        # Build the command
         cmd = [
             sys.executable,
             os.path.join(self.repo_root, "scripts", "workflow-runtime.py"),
             next_workflow_id,
             "--mode", self.mode,
             "--repo-root", self.repo_root,
+            "--executor", self.executor or "claude-code",
         ]
 
-        # If testing mode (auto-approve/deny), propagate it
         if self.gate_decision:
             cmd.extend(["--gate-decision", self.gate_decision])
 
         print(f"  Running: {' '.join(cmd)}\n")
 
-        result = subprocess.run(cmd)
-        return result.returncode
+        code, _, _ = run_subprocess(cmd, self.repo_root,
+                                      inject_repo_root=False,
+                                      capture_output=False)
+        return code
 
     def _get_fixture_artifact_path(self, artifact_id: str) -> str | None:
         """Get path to fixture artifact if available. Returns None if not found."""
