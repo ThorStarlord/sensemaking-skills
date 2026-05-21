@@ -27,7 +27,7 @@ import json
 import uuid
 import argparse
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from collections import OrderedDict
 
@@ -200,6 +200,7 @@ class OrchestrationRunner:
         gate_decision: str | None = None,
         executor: str = "dry-run",
         use_fixtures: bool = False,
+        chained: bool = False,
     ):
         self.workflow_id = workflow_id
         self.mode = mode
@@ -211,6 +212,7 @@ class OrchestrationRunner:
         self.plan_out = plan_out or os.path.join(self.repo_root, "artifacts", f"plan_{workflow_id}.md")
         self.log_dir = log_dir or os.path.join(self.repo_root, "artifacts")
         self.use_fixtures = use_fixtures
+        self.chained = chained
 
         self.session_id = _generate_session_id()
         self.workflow: dict = {}
@@ -274,7 +276,7 @@ class OrchestrationRunner:
             "scope_mode": scope_mode,
             "raw_problem_statement": problem_statement,
             "immutable": True,
-            "created_at": datetime.utcnow().isoformat() + "Z",
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "created_by": "orchestration-runner",
             "repo_state_used": True,
             "constraints": [],
@@ -333,7 +335,7 @@ class OrchestrationRunner:
             "raw_clarification": clarification,
             "clarification_type": clarification_type,
             "requires_reroute": True,  # Conservative: amendments always require reroute check
-            "created_at": datetime.utcnow().isoformat() + "Z",
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "created_by": "user",
         }
 
@@ -371,18 +373,21 @@ class OrchestrationRunner:
 
         all_ok = True
 
-        # 1. Git state
-        clean, details = _check_clean_git(self.repo_root)
-        if not clean:
-            msg = f"Git working tree is not clean:\n{details}"
-            if self.mode in ("yolo_execution", "autonomous_execution", "guided_execution"):
-                self.errors.append(format_error(PREFLIGHT_FAILED, msg))
-                print(f"  [FAIL] GIT: {msg}")
-                all_ok = False
-            else:
-                print(f"  ~ GIT: not clean (non-mutating mode, continuing)")
+        # 1. Git state (skip in chained/auto-invoked workflows)
+        if self.chained:
+            print(f"  ~ GIT: chained workflow — skipping git clean check")
         else:
-            print(f"  [OK] GIT: clean worktree")
+            clean, details = _check_clean_git(self.repo_root)
+            if not clean:
+                msg = f"Git working tree is not clean:\n{details}"
+                if self.mode in ("yolo_execution", "autonomous_execution", "guided_execution"):
+                    self.errors.append(format_error(PREFLIGHT_FAILED, msg))
+                    print(f"  [FAIL] GIT: {msg}")
+                    all_ok = False
+                else:
+                    print(f"  ~ GIT: not clean (non-mutating mode, continuing)")
+            else:
+                print(f"  [OK] GIT: clean worktree")
 
         # 2. Branch
         branch = _get_git_branch(self.repo_root)
@@ -543,6 +548,8 @@ class OrchestrationRunner:
         This prevents modes from pretending they executed when they only planned/prompted.
         """
         skill = step.get("skill", "?")
+        if skill is None:
+            skill = "conditional-branch"
         gate_name = step.get("gate", "review")
         output_artifact = step.get("output_artifact", "")
         s_type = step.get("step_type", "local_execution")
@@ -820,7 +827,11 @@ class OrchestrationRunner:
             "--mode", self.mode,
             "--repo-root", self.repo_root,
             "--executor", self.executor or "claude-code",
+            "--chained",
         ]
+
+        if self.use_fixtures:
+            cmd.append("--use-fixtures")
 
         if self.gate_decision:
             cmd.extend(["--gate-decision", self.gate_decision])
