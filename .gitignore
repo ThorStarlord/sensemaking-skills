@@ -1,5 +1,6 @@
 # Claude Code worktrees and local environment
 .claude/worktrees/
+.worktrees/
 
 # Python cache
 __pycache__/
