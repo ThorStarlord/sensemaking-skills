@@ -312,6 +312,13 @@ class OrchestrationRunner:
                 f.write("---\n")
 
             self.artifact_session_dir = os.path.dirname(intent_path)
+
+            # Update default output paths to use session directory
+            if not self.plan_out or self.plan_out == os.path.join(self.repo_root, "artifacts", f"plan_{self.workflow_id}.md"):
+                self.plan_out = os.path.join(self.artifact_session_dir, f"plan_{self.workflow_id}.md")
+            if not self.log_dir or self.log_dir == os.path.join(self.repo_root, "artifacts"):
+                self.log_dir = self.artifact_session_dir
+
             print(f"[OK] Created user intent artifact: {os.path.relpath(intent_path, self.repo_root)}")
             return intent_path
         except Exception as e:
