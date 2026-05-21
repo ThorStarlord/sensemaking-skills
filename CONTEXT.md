@@ -118,7 +118,7 @@ The system uses a two-stage default workflow chain for production use:
   - **architecture_fog**: Code structure problems, design boundaries unclear, implicit contracts
 - **Fog Type Classification**: Sensemaking stage (via `repo-sensemaker`) classifies the primary fog type to enable routing
 - **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, and `prompt-handoff`.
-- **Workflow**: An ordered sequence of Skill Steps that processes fog into actionable artifacts.
+- **Workflow**: An ordered sequence of Skill Steps that processes fog into actionable artifacts. Also referred to as **Skill Workflow** in user-facing documentation (README.md).
 - **Skill Step**: One skill invocation within a Workflow. Each Skill Step has inputs (artifacts or external context), a skill to execute, an output artifact, and an approval gate.
 - **Core Skills**: Skills that always execute in a Workflow (e.g., problem-framer, unknowns-mapper, repo-sensemaker). Define the backbone of the pipeline.
 - **Conditional Skills**: Skills inserted into a Workflow based on characteristics of the input or intermediate artifacts (e.g., discovery skill if raw_fog clarity is low).

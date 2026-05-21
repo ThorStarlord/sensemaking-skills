@@ -125,6 +125,50 @@ Guided Execution / Prompt Chain
 - **Workflow Orchestration Plan**: A 10-section procedural plan naming the selected workflow, skill sequence, approval gates, and execution mode.
 - **Workflow Run Log**: Records all skill executions, gate decisions, artifact validations, and error handling for the workflow run.
 
+## Skill Workflows
+
+The repository registers 17 skill workflows in `workflow-planner/references/workflow-registry.yaml`. Each chains skills into an ordered sequence that processes fog into actionable artifacts.
+
+### Diagnostic Skill Workflows
+
+| Workflow ID | Skill Sequence | Default |
+|---|---|---|
+| `full-local-sensemaking` | problem-framer → unknowns-mapper → (discovery?) → repo-sensemaker → handoff | **DEFAULT** |
+| `full-fog-workflow` | problem-framer → unknowns-mapper → repo-sensemaker → workflow-planner | |
+| `fast-path-workflow` | repo-sensemaker → workflow-planner | |
+| `fast-local-diagnostic` | repo-sensemaker → handoff | |
+| `setup-sensemaking-repo` | setup-sensemaking-skills → repo-sensemaker → prompt-handoff | |
+| `docs-contract-reconciliation` | repo-sensemaker → sensemaking-docs-reconciler → prompt-handoff | |
+| `autonomous-sprint-preflight` | repo-sensemaker → prompt-handoff | |
+
+### Implementation Skill Workflows
+
+| Workflow ID | Skill Sequence | |
+|---|---|---|
+| `implementation-workflow` | docs-aligner → to-prd → to-issues → triage → tdd → handoff | (auto-invoked from default) |
+| `product-implementation-workflow` | docs-aligner → discovery → opportunity-tree → to-prd → to-issues → triage → tdd → handoff | |
+| `ui-implementation-workflow` | docs-aligner → ui-flow → ui-screen-spec → to-issues → triage → tdd → handoff | |
+| `docs-implementation-workflow` | docs-aligner → to-prd → handoff | |
+
+### Product Strategy Skill Workflows
+
+| Workflow ID | Skill Sequence | |
+|---|---|---|
+| `product-discovery-sprint` | persona → discovery → interview-synthesis → opportunity-tree → hypothesis | |
+| `product-strategy-sprint` | lean-canvas → north-star → okr → roadmap → stakeholder-update | |
+| `product-autonomous-sprint` | persona → discovery → opportunity-tree → hypothesis → prd → user-stories → acceptance-criteria → handoff | |
+| `product-to-issues` | to-prd → to-issues → triage | |
+
+### Specialized Skill Workflows
+
+| Workflow ID | Skill Sequence | |
+|---|---|---|
+| `experimental-autonomous-sprint` | docs-aligner → to-prd → to-issues → triage → tdd → handoff | |
+| `docs-architecture` | docs-aligner → handoff | |
+| `skill-maintenance-loop` | skill-maintainer → handoff | |
+
+---
+
 ## Repository Structure
 
 - `skills/`:
@@ -236,13 +280,17 @@ python scripts/workflow-runtime.py --workflow docs-architecture --mode guided_ex
 
 - Or copy the ready-to-copy prompt from the brief and paste it directly into the next skill
 
-### Advanced: Other Execution Modes
+### Execution Modes
 
-- **`yolo_execution`** (DEFAULT): Full automation, bypasses approval gates. Validators enforce safety with zero-tolerance. Requires clean git worktree.
-- **`autonomous_execution`**: Automatic skill chaining with automated gate approvals (fewer pauses than guided mode)
-- **`guided_execution`**: Automatic skill chaining with mandatory user approval gates at each step
-- **`prompt_chain`**: Generate all prompts; user runs them manually
-- **`plan_only`**: See what WOULD happen without executing (safe for testing)
+The system supports five execution modes ranging from fully automatic to read-only:
+
+| Mode | Execution | Approval Gates | Best For | Command |
+|------|-----------|---------------|----------|---------|
+| **`yolo_execution`** (DEFAULT) | **Automatic** | Bypassed (validators enforce safety) | Production, trusted repos | `python scripts/workflow-runtime.py` |
+| **`autonomous_execution`** | **Automatic** | Auto-approved | CI/CD, unattended runs | `--mode autonomous_execution` |
+| **`guided_execution`** | **Manual** | Required at each step | Learning the system, high-value decisions | `--mode guided_execution` |
+| **`prompt_chain`** | **Manual** | None (user runs prompts) | Air-gapped environments | `--mode prompt_chain` |
+| **`plan_only`** | Read-only | None (no execution) | Dry-run, what-if analysis | `--mode plan_only` |
 
 See [Execution Modes Reference](docs/orchestration-patterns.md#execution-modes) for details.
 
