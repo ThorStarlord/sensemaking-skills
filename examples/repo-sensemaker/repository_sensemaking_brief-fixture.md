@@ -112,7 +112,8 @@ For completing Step 4 execution:
 4. Document exact format specs for future skill developers
 5. Create integration tests to prevent regression
 
-## Machine-readable Handoff
+## 13. Machine-readable handoff
+
 ```yaml
 source_intent_ref: "user_intent"
 recommended_workflow_id: "implementation-workflow"
