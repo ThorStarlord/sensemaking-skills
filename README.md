@@ -294,6 +294,11 @@ The system supports five execution modes ranging from fully automatic to read-on
 
 See [Execution Modes Reference](docs/orchestration-patterns.md#execution-modes) for details.
 
+### How It Works: Automatic vs Manual
+
+- **Automatic** (default, `yolo_execution` / `autonomous_execution` / `guided_execution`): Run `python scripts/workflow-runtime.py` — the script reads the workflow from the registry, executes each skill step in sequence, validates artifacts, and chains to the next step automatically. No manual prompt invocation needed.
+- **Manual** (`prompt_chain`): Run `python scripts/workflow-runtime.py --mode prompt_chain` — the script generates ready-to-copy prompts for each skill step. You paste each prompt manually into the target agent and invoke the next step yourself.
+
 ## Skill Invocation & Downstream Workflows
 
 ### Automatic Skill Chaining (Phase 5 Complete)
