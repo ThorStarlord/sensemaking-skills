@@ -690,11 +690,15 @@ class OrchestrationRunner:
 
                 # Build context for skill execution. resolved_inputs is what the
                 # claude-code executor actually reads to populate the prompt.
+                # expected_output_path is the runtime-owned, session-scoped path the
+                # executor MUST write to so the producer and consumer agree on
+                # location (see ARTIFACT_NOT_FOUND regression).
                 context = {
                     "workflow_id": self.workflow_id,
                     "mode": self.mode,
                     "step_num": step_num,
                     "resolved_inputs": resolved_inputs,
+                    "expected_output_path": self._resolve_artifact_path(output_artifact),
                 }
 
                 # Invoke the skill

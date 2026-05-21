@@ -24,6 +24,28 @@ from typing import Optional
 
 
 # ============================================================================
+# Output path resolution (shared by real executors)
+# ============================================================================
+
+def resolve_output_path(repo_root: str, expected_output_artifact: str, context: Optional[dict]) -> str:
+    """Resolve the absolute path where a skill's output artifact must be written.
+
+    The runtime owns artifact path resolution (contracts + session scoping via
+    OrchestrationRunner._resolve_artifact_path). When it invokes a skill it passes
+    the already-resolved, session-scoped path as context['expected_output_path'].
+    Executors MUST honor that path so the producer (executor) and consumer
+    (runtime) agree on where the artifact lives.
+
+    Only when no path is provided (e.g. an executor used standalone, outside the
+    runtime) do we fall back to the flat artifacts/<id>.md path.
+    """
+    provided = (context or {}).get("expected_output_path")
+    if provided:
+        return provided
+    return os.path.join(repo_root, "artifacts", expected_output_artifact + ".md")
+
+
+# ============================================================================
 # Status Enum
 # ============================================================================
 
@@ -305,8 +327,9 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     input_section += f"\n**{input_name}:**\nRepository root: {input_data['data'].get('path', '.')}\n"
             input_section += "\n"
 
-        # Expected output path
-        expected_output_path = os.path.join(self.repo_root, "artifacts", expected_output_artifact + ".md")
+        # Expected output path — use the runtime-resolved (session-scoped) path so
+        # the artifact lands where the runtime will look for it.
+        expected_output_path = resolve_output_path(self.repo_root, expected_output_artifact, context)
         relative_output_path = os.path.relpath(expected_output_path, self.repo_root)
 
         prompt = (
@@ -336,15 +359,15 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
             ):
                 messages.append(str(message))
 
-            # Check if the expected artifact was produced
-            artifact_path = os.path.join(self.repo_root, "artifacts", expected_output_artifact + ".md")
-            if os.path.exists(artifact_path):
+            # Check if the expected artifact was produced — check the SAME path we
+            # instructed the skill to write to (the runtime-resolved path).
+            if os.path.exists(expected_output_path):
                 return SkillExecutionResult(
                     skill_id=skill_id,
                     status=SkillExecutionStatus.EXECUTED,
                     command=invocation_command,
                     output_artifact=expected_output_artifact,
-                    message=f"Artifact produced at {artifact_path}",
+                    message=f"Artifact produced at {expected_output_path}",
                 )
             else:
                 return SkillExecutionResult(
@@ -353,7 +376,7 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     command=invocation_command,
                     output_artifact=expected_output_artifact,
                     error=f"Expected artifact '{expected_output_artifact}' not produced. "
-                          f"SDK completed but artifact not found at {artifact_path}",
+                          f"SDK completed but artifact not found at {expected_output_path}",
                 )
 
         except Exception as e:
@@ -474,13 +497,14 @@ class ApiSkillExecutor(SkillExecutor):
                     prompt_parts.append(f"\n### {input_name}")
                     prompt_parts.append(f"```\n{input_data.get('content', '')}\n```")
 
-        # Add output instruction
-        expected_path = os.path.join(self.repo_root, "artifacts", f"{expected_output_artifact}.md")
+        # Add output instruction — use the runtime-resolved (session-scoped) path.
+        expected_path = resolve_output_path(self.repo_root, expected_output_artifact, context)
+        relative_expected_path = os.path.relpath(expected_path, self.repo_root).replace("\\", "/")
         prompt_parts.extend([
             "",
             "## Required Output",
             f"Write the final artifact to this path (relative to repo root):",
-            f"`artifacts/{expected_output_artifact}.md`",
+            f"`{relative_expected_path}`",
             "",
             "Produce valid markdown that matches the expected artifact format. "
             "Include all required sections and machine-readable fields.",
