@@ -19,7 +19,7 @@ When analyzing a repository, **always compare** what the user intends with what 
 
 2. **Diagnose Codebase**: Analyze the code structure to determine what fog type the *actual problems* require:
    - **product_fog signals**: Feature flags, user data, analytics tracking, roadmap docs, unclear user needs
-   - **ui_fog signals**: See [UI Fog Signals Registry](references/ui-fog-signals.yaml) for checkable indicators:
+   - **ui_fog signals**: See [UI Fog Signals Registry](references/ui-fog-signals.md) for checkable indicators:
      - Missing user flow documentation or interaction specs
      - Frontend components scattered without clear boundaries
      - Routing logic complex and undocumented
@@ -41,7 +41,7 @@ When analyzing a repository, **always compare** what the user intends with what 
 
 ## UI Fog Classification Guide (NEW)
 
-When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals Registry](references/ui-fog-signals.yaml):
+When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals Registry](references/ui-fog-signals.md):
 
 1. **Check for frontend code**: Does the codebase contain React/Vue/Angular/HTML/CSS?
    - If no → Not ui_fog; evaluate other fog types
@@ -79,7 +79,7 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
 5. **Boundary Stress Test**: Find the "Weakest Boundary" (e.g., mismatch between README and code, unsafe workflows, missing validation).
 6. **Intent Comparison** (Stage 1): Compare user intent with diagnosis. Detect conflicts. Recommend escalation if needed.
 7. **Problem Classification**: Classify the primary fog type based on the weakest boundary.
-   Use [UI Fog Signals Registry](references/ui-fog-signals.yaml) to evaluate `ui_fog` signals systematically:
+   Use [UI Fog Signals Registry](references/ui-fog-signals.md) to evaluate `ui_fog` signals systematically:
    - **product_fog**: Unclear user needs, missing feature specs, undocumented workflows → needs discovery/research
    - **ui_fog**: Screen/flow design problems (use UI Fog Signals Registry for checkable indicators):
      - Missing or unclear user flows/screen specs

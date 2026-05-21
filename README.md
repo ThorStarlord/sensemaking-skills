@@ -30,7 +30,7 @@ For a deep dive into our methodology, failure taxonomy, and the "Anti-Causal Con
 
 The repository provides a complete skill ecosystem for converting project uncertainty into action. Skills are organized by purpose and can be composed into workflows.
 
-### Core Sensemaking (5 skills)
+### Core Sensemaking (6 skills)
 
 The foundation layer: diagnostic and orchestration skills that identify problems and route work.
 
@@ -39,7 +39,7 @@ The foundation layer: diagnostic and orchestration skills that identify problems
 - **`repo-sensemaker`** — Produces a 14-section Repository Sensemaking Brief. Audits repository health, identifies the "weakest boundary," cites file-level evidence.
 - **`workflow-planner`** — Consumes a Brief and produces a Workflow Orchestration Plan. Selects execution mode and defines approval gates.
 - **`sensemaking-docs-reconciler`** — Aligns repository docs, registries, and artifact contracts to resolve drift.
-- **`prompt-handoff`** — Packages sensemaking context into a ready-to-copy Prompt for downstream skills.
+- **`handoff`** — Packages sensemaking context into a session summary with machine-readable fields for downstream skills.
 
 ### Drafting & Implementation (6 skills)
 
@@ -182,12 +182,15 @@ The repository registers 17 skill workflows in `workflow-planner/references/work
 
 ### Default Workflow Chain
 
-The system uses a **two-stage default workflow chain** for production use:
+The system uses a **multi-stage default workflow chain with fog-type-aware routing** for production use:
 
 ```
-full-local-sensemaking (DEFAULT)
-  ↓ (auto-invokes on completion)
-implementation-workflow (AUTOMATIC)
+full-local-sensemaking (DEFAULT) — Diagnose fog type
+  ↓ (auto-invokes based on detected fog type)
+  ├→ ui-implementation-workflow (if ui_fog detected)
+  ├→ product-implementation-workflow (if product_fog detected)
+  ├→ docs-implementation-workflow (if docs_fog detected)
+  └→ implementation-workflow (if architecture_fog detected)
 ```
 
 Simply run:
@@ -196,9 +199,12 @@ python scripts/workflow-runtime.py
 ```
 
 This will:
-1. Execute `full-local-sensemaking` (diagnoses your repository)
-2. Automatically chain to `implementation-workflow` (transforms diagnosis into implementation)
-3. Return exit code 0 on success, 2 on failure, 3 if paused
+1. Execute `full-local-sensemaking` (diagnoses your repository and classifies fog type)
+2. Automatically routes to the appropriate implementation workflow based on fog type
+3. Chains to the implementation workflow with automatic progression
+4. Return exit code 0 on success, 2 on failure, 3 if paused
+
+**What's new**: The system now intelligently detects whether your problem is UI-specific, product-focused, documentation-related, or architecture-focused, and routes to the specialized workflow accordingly.
 
 To use a different execution mode (default is `yolo_execution`):
 ```bash
@@ -261,19 +267,57 @@ The system supports five execution modes ranging from fully automatic to read-on
    - If denied → workflow halts
 4. Final artifact includes ready-to-copy prompts for the next skill
 
+### UI-Specific Workflows
+
+For UI/frontend redesign projects, the system provides specialized workflows:
+
+**Automatic UI Routing** — System detects UI complexity and routes automatically:
+```bash
+python scripts/workflow-runtime.py --mode guided_execution
+# If repo has UI fog signals, automatically routes to ui-implementation-workflow
+```
+
+**UI Diagnostic Workflow** — Analyze UI scope before committing to implementation:
+```bash
+python scripts/workflow-runtime.py --workflow ui-diagnostic-workflow --mode guided_execution
+```
+**Output**: `ui_specification` artifact with screen inventory, design system assessment, and interaction patterns  
+**Chains to**: `ui-implementation-workflow` (if you approve the scope)
+
+**UI Implementation Workflow** — Full redesign workflow with TDD:
+```bash
+python scripts/workflow-runtime.py --workflow ui-implementation-workflow --mode guided_execution
+```
+**Steps**: Domain alignment → UI flows → Screen specs → Decompose into issues → Triage → TDD implementation
+
+See [docs/examples/ui-routing-example.md](docs/examples/ui-routing-example.md) for a complete example of UI fog detection and implementation.
+
+### Fog Type Classification
+
+The system automatically classifies repository problems using **Fog Type Classification**:
+
+| Fog Type | Signals | Recommended Workflow | When to Use |
+|----------|---------|---------------------|-----------|
+| **`ui_fog`** | Missing flow docs, scattered components, routing complexity, design gaps | `ui-implementation-workflow` | Dashboard redesigns, UI consistency projects |
+| **`product_fog`** | Vague features, missing specs, unclear requirements | `product-implementation-workflow` | New feature development, unclear user needs |
+| **`docs_fog`** | Missing documentation, unclear specs, knowledge silos | `docs-implementation-workflow` | Architecture documentation, API docs |
+| **`architecture_fog`** | Code structure issues, high coupling, unclear boundaries | `implementation-workflow` | Refactoring, performance improvements |
+
+See [docs/CONTEXT.md](docs/CONTEXT.md) for detailed classification rules and [skills/repo-sensemaker/references/ui-fog-signals.md](skills/repo-sensemaker/references/ui-fog-signals.md) for UI-specific signal detection.
+
 ### Next Steps: Implementation Workflow
 
 **If using default workflow chain** (`full-local-sensemaking`):
-- The `implementation-workflow` is **automatically invoked** after diagnosis completes
+- The appropriate implementation workflow is **automatically invoked** after diagnosis completes
 - No manual intervention needed
 - Both workflows run in the same execution mode
 
-**If using alternative diagnostic workflows** (fast-path-workflow, full-fog-workflow, etc.):
+**If using alternative diagnostic workflows** (fast-path-workflow, full-fog-workflow, ui-diagnostic-workflow, etc.):
 - After the diagnostic workflow completes, manually run the recommended workflow:
 
 ```bash
-# Example: if brief recommends docs-architecture
-python scripts/workflow-runtime.py --workflow docs-architecture --mode guided_execution
+# Example: if brief recommends ui-diagnostic-workflow
+python scripts/workflow-runtime.py --workflow ui-diagnostic-workflow --mode guided_execution
 ```
 
 - Or copy the ready-to-copy prompt from the brief and paste it directly into the next skill
