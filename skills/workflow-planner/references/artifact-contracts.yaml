@@ -488,6 +488,12 @@ artifacts:
       - subset_reason
       - included_steps
       - excluded_steps
+    recommended_machine_fields:
+      # The plan may carry the diagnosed fog type so routing/validation can read it
+      # directly from the plan (ADR 0005). If absent, the runtime falls back to the
+      # repository_sensemaking_brief (primary_fog_type / user_implied_fog_type).
+      - fog_type
+      - primary_fog_type
 
   - id: prompt_handoff
     path: "artifacts/prompt_handoff.md"

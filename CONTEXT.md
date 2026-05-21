@@ -92,6 +92,22 @@ The workflow orchestration system follows four key design patterns, each proven 
 | `docs/philosophy/` | Engineering rationale and FMEA taxonomies |
 | `docs/mode-coverage.yaml` | Execution mode proving status and run log references |
 
+### Machine Field Source of Truth
+
+`skills/workflow-planner/references/artifact-contracts.yaml` (`required_machine_fields` /
+`recommended_machine_fields`) is the **single source of truth for machine field names**.
+A consumer must never read a field name that no producer declares — producers and
+consumers agree via the contract, not via memory. `tests/test_field_contract_agreement.py`
+enforces this for routing reads.
+
+**Tolerated routing-field aliases** (the runtime resolves these in order, since the brief
+and the plan name the same concept differently):
+
+| Concept | Fields the runtime reads (priority order) | Declared on |
+|---------|-------------------------------------------|-------------|
+| Next workflow id | `recommended_workflow_id` → `chosen_workflow_id` → `selected_workflow` | brief (`recommended_workflow_id`); plan (`chosen_workflow_id`, `selected_workflow`) |
+| Fog type | `fog_type` → `primary_fog_type` → `user_implied_fog_type` | plan (`fog_type`, recommended); brief (`primary_fog_type`, `user_implied_fog_type`) |
+
 ## Default Workflows
 
 The system uses a multi-stage default workflow chain with fog-type-aware routing:
