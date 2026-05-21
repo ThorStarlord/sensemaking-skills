@@ -111,9 +111,7 @@ Problem Frame
 Unknowns Map
   ↓ (repo-sensemaker)
 Repository Sensemaking Brief (14 sections)
-  ↓ (workflow-planner)
-Workflow Orchestration Plan (10 sections)
-  ↓ (prompt-handoff)
+  ↓ (handoff)
 Guided Execution / Prompt Chain
 ```
 
@@ -143,29 +141,31 @@ The repository registers 17 skill workflows in `workflow-planner/references/work
 
 ### Implementation Skill Workflows
 
-| Workflow ID | Skill Sequence | |
-|---|---|---|
-| `implementation-workflow` | docs-aligner → to-prd → to-issues → triage → tdd → handoff | (auto-invoked from default) |
-| `product-implementation-workflow` | docs-aligner → discovery → opportunity-tree → to-prd → to-issues → triage → tdd → handoff | |
-| `ui-implementation-workflow` | docs-aligner → ui-flow → ui-screen-spec → to-issues → triage → tdd → handoff | |
-| `docs-implementation-workflow` | docs-aligner → to-prd → handoff | |
+| Workflow ID | Skill Sequence |
+|---|---|
+| `implementation-workflow` | docs-aligner → to-prd → to-issues → triage → tdd → handoff |
+| `product-implementation-workflow` | docs-aligner → discovery → opportunity-tree → to-prd → to-issues → triage → tdd → handoff |
+| `ui-implementation-workflow` | docs-aligner → ui-flow → ui-screen-spec → to-issues → triage → tdd → handoff |
+| `docs-implementation-workflow` | docs-aligner → to-prd → handoff |
+
+*Note: `implementation-workflow` is auto-invoked from the default diagnostic workflow.*
 
 ### Product Strategy Skill Workflows
 
-| Workflow ID | Skill Sequence | |
-|---|---|---|
-| `product-discovery-sprint` | persona → discovery → interview-synthesis → opportunity-tree → hypothesis | |
-| `product-strategy-sprint` | lean-canvas → north-star → okr → roadmap → stakeholder-update | |
-| `product-autonomous-sprint` | persona → discovery → opportunity-tree → hypothesis → prd → user-stories → acceptance-criteria → handoff | |
-| `product-to-issues` | to-prd → to-issues → triage | |
+| Workflow ID | Skill Sequence |
+|---|---|
+| `product-discovery-sprint` | persona → discovery → interview-synthesis → opportunity-tree → hypothesis |
+| `product-strategy-sprint` | lean-canvas → north-star → okr → roadmap → stakeholder-update |
+| `product-autonomous-sprint` | persona → discovery → opportunity-tree → hypothesis → prd → user-stories → acceptance-criteria → handoff |
+| `product-to-issues` | to-prd → to-issues → triage |
 
 ### Specialized Skill Workflows
 
-| Workflow ID | Skill Sequence | |
-|---|---|---|
-| `experimental-autonomous-sprint` | docs-aligner → to-prd → to-issues → triage → tdd → handoff | |
-| `docs-architecture` | docs-aligner → handoff | |
-| `skill-maintenance-loop` | skill-maintainer → handoff | |
+| Workflow ID | Skill Sequence |
+|---|---|
+| `experimental-autonomous-sprint` | docs-aligner → to-prd → to-issues → triage → tdd → handoff |
+| `docs-architecture` | docs-aligner → handoff |
+| `skill-maintenance-loop` | skill-maintainer → handoff |
 
 ---
 
@@ -234,34 +234,32 @@ python scripts/workflow-runtime.py --workflow full-fog-workflow --mode guided_ex
 **Time**: ~20 minutes  
 **Next**: You choose the implementation workflow manually
 
-### Execution Flow (Default: yolo_execution mode)
+### Execution Modes
 
-The default execution mode is `yolo_execution` — full automation that bypasses approval gates for local skills. To use guided execution with approval pauses, add `--mode guided_execution` to the command.
+The system supports five execution modes ranging from fully automatic to read-only:
 
-**With default mode (yolo_execution):**
-```bash
-python scripts/workflow-runtime.py full-local-sensemaking
-# Runs with full automation, no approval gates
-```
+| Mode | Execution | Approval Gates | Best For | Command |
+|------|-----------|---------------|----------|---------|
+| **`yolo_execution`** (DEFAULT) | **Automatic** | Bypassed (validators enforce safety) | Production, trusted repos | `python scripts/workflow-runtime.py` |
+| **`autonomous_execution`** | **Automatic** | Auto-approved | CI/CD, unattended runs | `--mode autonomous_execution` |
+| **`guided_execution`** | **Manual** | Required at each step (pause + approve/deny) | Learning the system, high-value decisions | `--mode guided_execution` |
+| **`prompt_chain`** | **Manual** | None (user runs generated prompts) | Air-gapped environments | `--mode prompt_chain` |
+| **`plan_only`** | Read-only | None (no execution) | Dry-run, what-if analysis | `--mode plan_only` |
 
-**With guided mode (manual approvals):**
-```bash
-python scripts/workflow-runtime.py full-local-sensemaking --mode guided_execution
-```
+**How automation works:** The script reads the workflow from the registry, executes each skill step in sequence, validates artifacts, and chains to the next step automatically — no manual prompt invocation needed.
 
-**Execution flow with guided mode:**
+**How manual execution works:** Run with `--mode prompt_chain` — the script generates ready-to-copy prompts for each skill step. You paste each prompt into the target agent and invoke the next step yourself.
 
-1. **Invoke diagnostic workflow** — `workflow-runtime.py <workflow-name> --mode guided_execution`
-2. **Provide initial inputs** — vague problem (Full Fog Path) or repository context (Fast Path)
-3. **Skills chain automatically** with approval gates at each step:
-   - Step 1 completes → Orchestrator pauses
-   - You review the artifact → Approve/Deny
-   - If approved → continues to Step 2
+**Guided flow step by step:**
+
+1. `python scripts/workflow-runtime.py <workflow-name> --mode guided_execution`
+2. Provide initial inputs (vague problem or repository context)
+3. Skills chain automatically with approval gates:
+   - Step completes → orchestrator pauses
+   - Review the artifact → Approve/Deny
+   - If approved → continues to next step
    - If denied → workflow halts
-4. **Final artifact** is a brief with recommendations:
-   - Section 12: Recommended workflow (e.g., `docs-architecture`)
-   - Section 13: Machine-readable handoff (workflow ID, execution mode, inputs)
-   - Section 14: Ready-to-copy prompts for next skill
+4. Final artifact includes ready-to-copy prompts for the next skill
 
 ### Next Steps: Implementation Workflow
 
@@ -279,25 +277,6 @@ python scripts/workflow-runtime.py --workflow docs-architecture --mode guided_ex
 ```
 
 - Or copy the ready-to-copy prompt from the brief and paste it directly into the next skill
-
-### Execution Modes
-
-The system supports five execution modes ranging from fully automatic to read-only:
-
-| Mode | Execution | Approval Gates | Best For | Command |
-|------|-----------|---------------|----------|---------|
-| **`yolo_execution`** (DEFAULT) | **Automatic** | Bypassed (validators enforce safety) | Production, trusted repos | `python scripts/workflow-runtime.py` |
-| **`autonomous_execution`** | **Automatic** | Auto-approved | CI/CD, unattended runs | `--mode autonomous_execution` |
-| **`guided_execution`** | **Manual** | Required at each step | Learning the system, high-value decisions | `--mode guided_execution` |
-| **`prompt_chain`** | **Manual** | None (user runs prompts) | Air-gapped environments | `--mode prompt_chain` |
-| **`plan_only`** | Read-only | None (no execution) | Dry-run, what-if analysis | `--mode plan_only` |
-
-See [Execution Modes Reference](docs/orchestration-patterns.md#execution-modes) for details.
-
-### How It Works: Automatic vs Manual
-
-- **Automatic** (default, `yolo_execution` / `autonomous_execution` / `guided_execution`): Run `python scripts/workflow-runtime.py` — the script reads the workflow from the registry, executes each skill step in sequence, validates artifacts, and chains to the next step automatically. No manual prompt invocation needed.
-- **Manual** (`prompt_chain`): Run `python scripts/workflow-runtime.py --mode prompt_chain` — the script generates ready-to-copy prompts for each skill step. You paste each prompt manually into the target agent and invoke the next step yourself.
 
 ### CLI Reference
 
