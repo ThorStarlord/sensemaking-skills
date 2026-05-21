@@ -32,10 +32,12 @@ class TestDynamicPathResolution(unittest.TestCase):
         self.runner.workflow_id = "test-wf"
         self.runner.session_id = "session-123"
         self.runner.repo_root = "h:\\GithubRepositories\\sensemaking-skills"
+        self.runner.artifact_session_dir = None
 
-        # Explicitly bind _resolve_artifact_path to the mock instance
+        # Explicitly bind methods to the mock instance
         # so we can test the actual method logic
         self.runner._resolve_artifact_path = OrchestrationRunner._resolve_artifact_path.__get__(self.runner, OrchestrationRunner)
+        self.runner._scope_to_session_dir = OrchestrationRunner._scope_to_session_dir.__get__(self.runner, OrchestrationRunner)
 
     @patch("workflow_runtime.load_artifact_contracts")
     def test_resolve_from_contracts_with_path(self, mock_load):
