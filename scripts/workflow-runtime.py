@@ -832,7 +832,7 @@ class OrchestrationRunner:
         cmd = [
             sys.executable,
             os.path.join(self.repo_root, "scripts", "workflow-runtime.py"),
-            next_workflow_id,
+            "--workflow", next_workflow_id,
             "--mode", self.mode,
             "--repo-root", self.repo_root,
             "--executor", self.executor or "claude-code",
