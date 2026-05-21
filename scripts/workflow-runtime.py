@@ -312,6 +312,12 @@ class OrchestrationRunner:
                 f.write("---\n")
 
             self.artifact_session_dir = os.path.dirname(intent_path)
+
+            # Update default output paths to use session directory
+            if not self.plan_out or self.plan_out == os.path.join(self.repo_root, "artifacts", f"plan_{self.workflow_id}.md"):
+                self.plan_out = os.path.join(self.artifact_session_dir, f"plan_{self.workflow_id}.md")
+            if not self.log_dir or self.log_dir == os.path.join(self.repo_root, "artifacts"):
+                self.log_dir = self.artifact_session_dir
             print(f"[OK] Created user intent artifact: {os.path.relpath(intent_path, self.repo_root)}")
             return intent_path
         except Exception as e:
@@ -825,7 +831,7 @@ class OrchestrationRunner:
         cmd = [
             sys.executable,
             os.path.join(self.repo_root, "scripts", "workflow-runtime.py"),
-            next_workflow_id,
+            "--workflow", next_workflow_id,
             "--mode", self.mode,
             "--repo-root", self.repo_root,
             "--executor", self.executor or "claude-code",
@@ -871,7 +877,7 @@ class OrchestrationRunner:
         return None
 
     def _resolve_artifact_path(self, artifact_id: str) -> str:
-        """Resolve the file path for an artifact."""
+        """Resolve the file path for an artifact, scoped to session directory if set."""
         # Check/load contracts dynamically
         contracts = self.contracts
         if not contracts:
@@ -893,14 +899,29 @@ class OrchestrationRunner:
                     )
                 except Exception:
                     resolved_path = path_template.replace("{workflow_id}", self.workflow_id).replace("{session_id}", self.session_id)
-                return os.path.join(self.repo_root, resolved_path)
+                resolved = os.path.join(self.repo_root, resolved_path)
+                return self._scope_to_session_dir(resolved)
 
         # Fallback to default paths if not found/specified in contracts
         if artifact_id == "workflow_orchestration_plan":
             rel = os.path.join("artifacts", f"plan_{self.workflow_id}.md")
         else:
             rel = os.path.join("artifacts", f"{artifact_id}.md")
-        return os.path.join(self.repo_root, rel)
+        resolved = os.path.join(self.repo_root, rel)
+        return self._scope_to_session_dir(resolved)
+
+    def _scope_to_session_dir(self, resolved_path: str) -> str:
+        """If session dir is set and path is under artifacts/, scope it to the session dir."""
+        if not self.artifact_session_dir:
+            return resolved_path
+        artifacts_base = os.path.join(self.repo_root, "artifacts")
+        normalized = os.path.normpath(resolved_path)
+        artifacts_norm = os.path.normpath(artifacts_base)
+        # Check exact match or prefix match with separator to avoid false-positives
+        if normalized == artifacts_norm or normalized.startswith(artifacts_norm + os.sep):
+            relative = os.path.relpath(normalized, artifacts_base)
+            return os.path.join(self.artifact_session_dir, relative)
+        return resolved_path
 
     def _run_validator_stack(self, artifact_id: str, artifact_path: str) -> list[dict]:
         """Run the full validator stack via validate-output.py (canonical dispatcher).
