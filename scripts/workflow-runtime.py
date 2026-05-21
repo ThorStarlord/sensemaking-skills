@@ -1727,13 +1727,21 @@ class OrchestrationRunner:
         ]
 
         # Document each step
-        for i, step in enumerate(steps, 1):
+        for step in steps:
+            step_id = step.get("id", "?")
             skill = step.get("skill", "?")
             output = step.get("output_artifact", "N/A")
             gate = step.get("gate", "?")
 
+            # Handle conditional steps (skill is null at top level)
+            if step.get("conditional"):
+                branch = step.get("if_true", {})
+                skill = f"{branch.get('skill', '?')} (conditional)" if branch.get("skill") else "(conditional routing)"
+                output = f"{branch.get('output_artifact', '?')} or {step.get('if_false', {}).get('output_artifact', '?')}"
+                gate = branch.get("gate", gate)
+
             lines.extend([
-                f"### Step {i}: {skill}",
+                f"### Step {step_id}: {skill}",
                 f"- **Output**: {output}",
                 f"- **Gate**: {gate}",
                 f"",
