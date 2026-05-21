@@ -138,32 +138,37 @@ class TestDynamicPathResolution(unittest.TestCase):
         expected_abs = os.path.join(self.runner.repo_root, expected_rel)
         self.assertEqual(os.path.normpath(resolved), os.path.normpath(expected_abs))
 
-    def test_resolve_with_session_dir(self):
+    @patch("workflow_runtime.load_artifact_contracts")
+    def test_resolve_with_session_dir(self, mock_load):
         """Test that artifact path is scoped under session directory when set."""
         session_dir = os.path.join(self.runner.repo_root, "artifacts", "05-orchestration-run")
         self.runner.artifact_session_dir = session_dir
         self.runner.contracts = None
+        mock_load.return_value = {"artifacts": []}
 
         resolved = self.runner._resolve_artifact_path("prd")
 
         expected = os.path.join(session_dir, "prd.md")
         self.assertEqual(os.path.normpath(resolved), os.path.normpath(expected))
 
-    def test_resolve_with_session_dir_workflow_plan(self):
+    @patch("workflow_runtime.load_artifact_contracts")
+    def test_resolve_with_session_dir_workflow_plan(self, mock_load):
         """Test workflow_orchestration_plan path is scoped under session dir."""
         session_dir = os.path.join(self.runner.repo_root, "artifacts", "05-orchestration-run")
         self.runner.artifact_session_dir = session_dir
         self.runner.contracts = None
+        mock_load.return_value = {"artifacts": []}
 
         resolved = self.runner._resolve_artifact_path("workflow_orchestration_plan")
 
         expected = os.path.join(session_dir, "plan_test-wf.md")
         self.assertEqual(os.path.normpath(resolved), os.path.normpath(expected))
 
-    def test_resolve_without_session_dir(self):
+    @patch("workflow_runtime.load_artifact_contracts")
+    def test_resolve_without_session_dir(self, mock_load):
         """Test that path falls back to artifacts/ when no session dir is set."""
-        self.runner.artifact_session_dir = None
         self.runner.contracts = None
+        mock_load.return_value = {"artifacts": []}
 
         resolved = self.runner._resolve_artifact_path("prd")
 
