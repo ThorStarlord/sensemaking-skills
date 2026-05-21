@@ -136,6 +136,80 @@ def flatten_skill_registry(raw: dict) -> dict[str, dict]:
     return all_skills
 
 
+def validator_cli(
+    validate_fn,
+    *,
+    description: str = "",
+    error_codes: dict[str, str] | list[str] | None = None,
+    success_msg: str = "Validation passed!",
+    needs_artifact: bool = True,
+    repo_root_default: str = ".",
+    argv: list[str] | None = None,
+) -> int:
+    """Standard CLI entry point for artifact validators.
+
+    Handles argparse setup, --list-codes, --repo-root, error printing,
+    and exit code logic. Reduces each validator's ``main()`` from ~30
+    lines to ~3.
+
+    Args:
+        validate_fn: Callable ``(artifact_path, repo_root) -> list[str]``.
+            The list contains error messages (empty = pass).
+        description: Shown in ``--help``.
+        error_codes: Dict ``{code: description}`` or list of code strings.
+            If given, ``--list-codes`` prints them.
+        success_msg: Printed when validation passes.
+        needs_artifact: If True, requires ``artifact_path`` positional arg.
+            If False, only accepts ``--repo-root``.
+        repo_root_default: Default value for ``--repo-root``.
+        argv: Command-line arguments to parse. If None, uses sys.argv[1:].
+
+    Returns:
+        Exit code (0 = pass, 1 = fail).
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(description=description)
+    if needs_artifact:
+        parser.add_argument("artifact_path", nargs="?", help="Path to the artifact markdown file")
+    parser.add_argument("--repo-root", default=repo_root_default, help="Root directory of the repository")
+    parser.add_argument("--list-codes", action="store_true", help="List all error codes and exit")
+    args = parser.parse_args(argv)
+
+    if args.list_codes and error_codes is not None:
+        list_error_codes(error_codes)
+        return 0
+
+    if needs_artifact and not args.artifact_path:
+        parser.print_usage()
+        return 1
+
+    errs = validate_fn(getattr(args, "artifact_path", None), args.repo_root)
+    if errs:
+        for e in errs:
+            print(f"ERROR {e}")
+        return 1
+    print(success_msg)
+    return 0
+
+
+def list_error_codes(codes: dict[str, str] | list[str], *, prefix: str = "") -> None:
+    """Print error codes in the standard format.
+
+    Args:
+        codes: Either a dict of ``{code: description}`` or a list of code strings.
+        prefix: Optional heading line printed before the codes.
+    """
+    if prefix:
+        print(prefix)
+    if isinstance(codes, dict):
+        for code, desc in sorted(codes.items()):
+            print(f"  {code}: {desc}")
+    else:
+        for code in codes:
+            print(code)
+
+
 HEADING_RE = re.compile(r"^##\s+(?:\d+\.\s*)?(?P<name>.+?)\s*$", re.MULTILINE)
 
 
