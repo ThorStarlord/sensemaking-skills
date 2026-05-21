@@ -227,6 +227,7 @@ class OrchestrationRunner:
         # Execution context (set by main before run())
         self.problem_statement: str | None = None
         self.intent_path: str | None = None
+        self.artifact_session_dir: str | None = None
 
         # Load registries
         self._load_registries()
@@ -310,6 +311,7 @@ class OrchestrationRunner:
                 yaml.dump(intent_yaml, f, default_flow_style=False)
                 f.write("---\n")
 
+            self.artifact_session_dir = os.path.dirname(intent_path)
             print(f"[OK] Created user intent artifact: {os.path.relpath(intent_path, self.repo_root)}")
             return intent_path
         except Exception as e:
