@@ -1,5 +1,5 @@
 ---
-name: prompt-handoff
+name: handoff
 description: convert a sensemaking artifact into a ready-to-copy prompt for the next specialized skill. use to ensure context is preserved across skill transitions.
 ---
 

@@ -1,0 +1,13 @@
+fix: apply run-log-template patches and clean up stale brief entries
+
+The docs-contract-reconciliation handoff identified 3 patches for run-log-template.md
+that were proposed but never applied. This commit completes the remediation phase.
+
+Changes:
+- Add gate_result, approved_at, approved_by fields to run-log-template.md
+- Add Pre-flight section for mutating modes
+- Add TDD Cycle section (RED/GREEN/REFACTOR)
+- Remove stale appendix entries from repository_sensemaking_brief.md
+- Update docs_contract_reconciliation_report.md with patches_applied confirmation
+
+Co-authored-by: CommandCodeBot <noreply@commandcode.ai>

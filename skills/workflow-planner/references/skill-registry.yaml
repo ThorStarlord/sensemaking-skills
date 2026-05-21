@@ -24,10 +24,6 @@ ecosystems:
         artifact: workflow_orchestration_plan
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/workflow-planner" }
-      - id: prompt-handoff
-        purpose: prepare a handoff prompt for the next agent
-        artifact: prompt_handoff
-        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
       - id: sensemaking-docs-reconciler
         purpose: align repository docs, registries, and contracts
         artifact: docs_contract_reconciliation_report
