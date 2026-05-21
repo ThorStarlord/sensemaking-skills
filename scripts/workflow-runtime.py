@@ -437,13 +437,27 @@ class OrchestrationRunner:
             f"",
         ]
 
-        for i, step in enumerate(steps, 1):
+        for step in steps:
+            step_id = step.get("id", "?")
             skill = step.get("skill", "?")
+
+            # Handle conditional steps (they have skill: null at top level)
+            if step.get("conditional"):
+                if step.get("if_true", {}).get("skill"):
+                    skill = f"{step.get('if_true', {}).get('skill')} (conditional)"
+                else:
+                    skill = "(Conditional routing)"
+
             s_type = step.get("step_type", "local_execution")
-            gate = step.get("gate", "review")
+            gate = step.get("gate", "?")
             output = step.get("output_artifact", "N/A")
+
+            # For conditional steps, show pass-through output
+            if step.get("conditional"):
+                output = f"{step.get('if_true', {}).get('output_artifact', '?')} or {step.get('if_false', {}).get('output_artifact', '?')}"
+
             lines.extend([
-                f"### Step {i}: {skill}",
+                f"### Step {step_id}: {skill}",
                 f"- **Type**: {s_type}",
                 f"- **Gate**: {gate}",
                 f"- **Output**: {output}",
@@ -472,16 +486,34 @@ class OrchestrationRunner:
         if gate_behavior == "none":
             lines.append("No gates required for this mode.\n")
         elif gate_behavior == "mandatory":
+            seen_gates = set()
             for step in steps:
-                lines.append(f"- {step.get('gate', '?')}: REQUIRED (user must approve)")
+                gate = step.get('gate')
+                if gate and gate != 'none' and gate not in seen_gates:
+                    lines.append(f"- {gate}: REQUIRED (user must approve)")
+                    seen_gates.add(gate)
+                # For conditional steps, add if_true gate
+                if step.get('conditional') and step.get('if_true', {}).get('gate'):
+                    if_true_gate = step.get('if_true', {}).get('gate')
+                    if if_true_gate not in seen_gates:
+                        lines.append(f"- {if_true_gate}: REQUIRED (user must approve, conditional)")
+                        seen_gates.add(if_true_gate)
             lines.append("")
         elif gate_behavior == "automated":
+            seen_gates = set()
             for step in steps:
-                lines.append(f"- {step.get('gate', '?')}: AUTOMATED_APPROVAL")
+                gate = step.get('gate')
+                if gate and gate != 'none' and gate not in seen_gates:
+                    lines.append(f"- {gate}: AUTOMATED_APPROVAL")
+                    seen_gates.add(gate)
             lines.append("")
         elif gate_behavior == "bypassed":
+            seen_gates = set()
             for step in steps:
-                lines.append(f"- {step.get('gate', '?')}: BYPASSED")
+                gate = step.get('gate')
+                if gate and gate != 'none' and gate not in seen_gates:
+                    lines.append(f"- {gate}: BYPASSED")
+                    seen_gates.add(gate)
             lines.append("")
 
         # Stop conditions
@@ -522,10 +554,12 @@ class OrchestrationRunner:
             if inp.get('description'):
                 lines.append(f"    description: {inp.get('description', '')}")
         lines.append(f"steps:")
-        for i, step in enumerate(steps, 1):
-            gate = step.get("gate", "review")
-            lines.append(f"  - id: {i}")
-            lines.append(f"    skill: {step['skill']}")
+        for step in steps:
+            step_id = step.get("id", "?")
+            gate = step.get("gate", "none")
+            skill = step.get("skill")
+            lines.append(f"  - id: {step_id}")
+            lines.append(f"    skill: {skill}")
             lines.append(f"    step_type: {step.get('step_type', 'local_execution')}")
             lines.append(f"    gate: {gate}")
             lines.append(f"    output_artifact: {step.get('output_artifact', 'N/A')}")
@@ -1910,7 +1944,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Production-grade orchestration runner for sensemaking workflows."
     )
-    parser.add_argument("problem", nargs="?", default=None, help="Optional user problem statement or goal")
+    parser.add_argument("problem", nargs="?", default=None, help="User problem statement or goal (will prompt if not provided for full-local-sensemaking)")
     parser.add_argument("--workflow", default=None, help="Explicit workflow ID (overrides default)")
     parser.add_argument("--mode", default="yolo_execution", choices=list(KNOWN_MODES.keys()),
                         help="Execution mode (default: yolo_execution)")
@@ -1951,6 +1985,23 @@ def main(argv: list[str] | None = None) -> int:
     if args.gate_decision and args.mode not in ("guided_execution", "autonomous_execution"):
         print(f"Note: --gate-decision is only for guided/autonomous modes, ignoring for '{args.mode}'")
 
+    # Prompt for problem statement if not provided and workflow requires it
+    problem = args.problem
+    if not problem and workflow_id == "full-local-sensemaking" and args.mode != "plan_only":
+        print("\n" + "="*60)
+        print("Workflow Input Required")
+        print("="*60)
+        print(f"Workflow '{workflow_id}' requires a problem statement.")
+        print("This can be vague, strategic, or exploratory.\n")
+        print("Examples:")
+        print("  - 'My team needs a better way to manage async workflows'")
+        print("  - 'Should we refactor our authentication system?'")
+        print("  - 'Improve observability in our data pipeline'\n")
+        problem = input("Enter your problem statement (or press Ctrl+C to abort): ").strip()
+        if not problem:
+            print("ERROR: Problem statement cannot be empty")
+            return 1
+
     runner = OrchestrationRunner(
         workflow_id=workflow_id,
         mode=args.mode,
@@ -1970,7 +2021,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     # Create user intent artifact before running workflow
-    intent_path = runner._create_user_intent_artifact(args.problem, args.scope)
+    intent_path = runner._create_user_intent_artifact(problem, args.scope)
     if not intent_path:
         print("ERROR: Failed to create user_intent artifact")
         for e in runner.errors:
@@ -1978,7 +2029,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     # Store execution context in runner
-    runner.problem_statement = args.problem
+    runner.problem_statement = problem
     runner.intent_path = intent_path
 
     return runner.run()
