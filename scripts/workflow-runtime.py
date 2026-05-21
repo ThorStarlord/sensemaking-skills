@@ -1837,6 +1837,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="Non-interactive gate decision for testing: auto-approve all gates or auto-deny the first gate")
     parser.add_argument("--use-fixtures", action="store_true",
                         help="Use fixture artifacts instead of validating actual artifacts (for testing orchestration without skill execution)")
+    parser.add_argument("--chained", action="store_true", default=False,
+                        help="Internal: invoked as a chained/child workflow from another workflow run")
 
     args = parser.parse_args(argv)
 
@@ -1867,6 +1869,7 @@ def main(argv: list[str] | None = None) -> int:
         gate_decision=args.gate_decision,
         executor=args.executor,
         use_fixtures=args.use_fixtures,
+        chained=args.chained,
     )
 
     if runner.errors:

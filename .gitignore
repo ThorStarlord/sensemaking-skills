@@ -22,3 +22,6 @@ env/
 .validation-cache/
 outputs/validation-*/
 artifacts/
+
+# Runtime-generated docs (updated by workflow runs)
+docs/mode-coverage.yaml
