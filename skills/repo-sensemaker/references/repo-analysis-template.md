@@ -18,6 +18,13 @@ Useful refinements that are not urgent blockers.
 ## 6. Weakest boundary
 The most ambiguous, unproven, unsafe, or unenforced part of the repo.
 
+**You MUST classify the boundary using one of the recognized weakness types** (see
+[Weakness Types](weakness-types.md)): `Vocabulary Drift`, `Contract Mismatch`,
+`Ghost Features`, `Safety Gaps`, `Implicit Dependencies`, `Zero Validation`, or
+`Orphaned Examples`. State it explicitly on its own line:
+
+`**Weakness type:** <one of the recognized types>`
+
 ## 6.5. Problem classification (fog type)
 Classify the primary type of uncertainty or problem:
 - **product_fog**: Vague user needs, unclear feature requirements, undocumented workflows
@@ -28,9 +35,18 @@ Classify the primary type of uncertainty or problem:
 This classification determines which implementation workflow will be used downstream.
 
 ## 7. Evidence
-File-level evidence supporting the diagnosis (cites specific files and line ranges).
+File-level evidence supporting the diagnosis (cites specific files and line ranges,
+e.g. `scripts/validate-brief.py:46`).
+
+**Logic trace (required):** Show the diagnostic reasoning that connects the cited
+evidence to the weakest boundary — i.e., the chain from observed signals to your
+conclusion. Begin this paragraph with the literal words "Logic trace:".
 
 ## 8. Evidence excerpts
+The `lines` field MUST use the format `Lx` (single line) or `Lx-Ly` (range) —
+for example `L18` or `L25-L30`. Never use bare numbers like `18` or `25-30`.
+Every excerpt must include all four fields: `file`, `lines`, `quote`, `supports_claim`.
+
 ```yaml
 evidence_excerpts:
   - file: path/to/file.ext
