@@ -125,11 +125,17 @@ def validate_brief(artifact_path: str, repo_root: str = ".") -> list[str]:
                             )
 
                 lines = exc.get("lines")
-                if lines and not re.match(r"^L\d+(?:-L\d+)?$", str(lines)):
+                # Accept both the Lx / Lx-Ly form and bare line numbers (18, 25-30).
+                # Both are semantically complete line references and no downstream
+                # consumer depends on the 'L' prefix; the model reliably emits bare
+                # numbers, so rejecting them was a false failure. Genuinely malformed
+                # refs (text, comma lists, open ranges) are still caught.
+                if lines is not None and not re.match(r"^L?\d+(?:-L?\d+)?$", str(lines).strip()):
                     errors.append(
                         format_error(
                             INVALID_LINE_FORMAT,
-                            f"Excerpt[{i}] has invalid lines format: {lines} (Expected Lx or Lx-Ly)",
+                            f"Excerpt[{i}] has invalid lines format: {lines} "
+                            f"(expected a line number or range, e.g. L18, 18, L25-L30, or 25-30)",
                         )
                     )
         except Exception as e:

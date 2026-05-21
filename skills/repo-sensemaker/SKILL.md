@@ -75,7 +75,7 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
 1. **Analyze**: Inspect README, core files, folder structure, and existing documentation.
 2. **Signal Detection**: Identify what is working well (Strong Signals).
 3. **Gap Analysis**: Identify what is absent or incomplete (Missing Pieces).
-4. **Evidence Gathering**: Cite specific file paths and code snippets to back up signals and gaps. Evidence excerpts MUST use the line format `Lx` or `Lx-Ly` (e.g. `L18`, `L25-L30`) — never bare numbers. Include a **Logic trace** (begin the paragraph with the literal words "Logic trace:") that walks from the cited evidence to the weakest-boundary conclusion.
+4. **Evidence Gathering**: Cite specific file paths and code snippets to back up signals and gaps. Each evidence excerpt's `lines` field is a single line or range — `Lx`/`Lx-Ly` or bare numbers both work (e.g. `L18` or `18`). Include a **Logic trace** (begin the paragraph with the literal words "Logic trace:") that walks from the cited evidence to the weakest-boundary conclusion.
 5. **Boundary Stress Test**: Find the "Weakest Boundary" (e.g., mismatch between README and code, unsafe workflows, missing validation) and **classify it with one of the recognized [Weakness Types](references/weakness-types.md)** — `Vocabulary Drift`, `Contract Mismatch`, `Ghost Features`, `Safety Gaps`, `Implicit Dependencies`, `Zero Validation`, or `Orphaned Examples` — stated explicitly as `**Weakness type:** <type>`.
 6. **Intent Comparison** (Stage 1): Compare user intent with diagnosis. Detect conflicts. Recommend escalation if needed.
 7. **Problem Classification**: Classify the primary fog type based on the weakest boundary.

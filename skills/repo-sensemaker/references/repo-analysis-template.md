@@ -43,9 +43,10 @@ evidence to the weakest boundary — i.e., the chain from observed signals to yo
 conclusion. Begin this paragraph with the literal words "Logic trace:".
 
 ## 8. Evidence excerpts
-The `lines` field MUST use the format `Lx` (single line) or `Lx-Ly` (range) —
-for example `L18` or `L25-L30`. Never use bare numbers like `18` or `25-30`.
-Every excerpt must include all four fields: `file`, `lines`, `quote`, `supports_claim`.
+Each excerpt's `lines` field is a single line or a range. Use either the `Lx` /
+`Lx-Ly` form (e.g. `L18`, `L25-L30`) or bare numbers (e.g. `18`, `25-30`) — both
+are accepted. Every excerpt must include all four fields: `file`, `lines`,
+`quote`, `supports_claim`.
 
 ```yaml
 evidence_excerpts:
