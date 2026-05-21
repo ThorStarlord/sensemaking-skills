@@ -796,6 +796,7 @@ class OrchestrationRunner:
             "problem_frame": "problem-framer",
             "unknowns_map": "unknowns-mapper",
             "repository_sensemaking_brief": "repo-sensemaker",
+            "session_summary": "handoff",
         }
 
         skill_dir = skill_map.get(artifact_id)
