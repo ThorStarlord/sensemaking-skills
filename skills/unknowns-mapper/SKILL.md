@@ -55,9 +55,7 @@ Before finalizing, you MUST:
 Then append this YAML block exactly at the end of the artifact:
 
 ```
----
-
-## Routing Signals
+## 7. Machine-readable routing
 
 ```yaml
 clarity_assessment: "medium"
