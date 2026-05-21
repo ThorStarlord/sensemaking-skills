@@ -371,12 +371,54 @@ ClaudeCodeSkillExecutor = ClaudeAgentSdkSkillExecutor
 
 
 class ApiSkillExecutor(SkillExecutor):
-    """Future: invoke skills by calling an LLM API directly with skill instructions.
+    """Invoke skills by calling Claude API directly with skill instructions.
 
-    Not yet implemented. Returns UNSUPPORTED if selected.
+    Loads the skill definition from SKILL.md, builds a prompt with input artifacts,
+    calls Claude API, and saves the output to the expected artifact path.
+
+    Requires ANTHROPIC_API_KEY environment variable.
     """
 
     supports_real_execution: bool = True
+
+    def __init__(self, repo_root: str):
+        self.repo_root = repo_root
+        self._check_dependencies()
+
+    def _check_dependencies(self) -> tuple[bool, list[str]]:
+        """Check if required dependencies are installed."""
+        missing = []
+        try:
+            import anthropic
+        except ImportError:
+            missing.append("anthropic")
+
+        import os
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            missing.append("ANTHROPIC_API_KEY environment variable")
+
+        return len(missing) == 0, missing
+
+    def _load_skill_content(self, skill_id: str) -> str | None:
+        """Load skill definition from SKILL.md."""
+        skill_path = os.path.join(self.repo_root, "skills", skill_id, "SKILL.md")
+        if not os.path.exists(skill_path):
+            return None
+        try:
+            with open(skill_path, "r", encoding="utf-8") as f:
+                return f.read()
+        except Exception:
+            return None
+
+    def _read_artifact_content(self, artifact_path: str) -> str | None:
+        """Read artifact content if it exists."""
+        if not artifact_path or not os.path.exists(artifact_path):
+            return None
+        try:
+            with open(artifact_path, "r", encoding="utf-8") as f:
+                return f.read()
+        except Exception:
+            return None
 
     def invoke_skill(
         self,
@@ -386,16 +428,129 @@ class ApiSkillExecutor(SkillExecutor):
         expected_output_artifact: str,
         context: dict,
     ) -> SkillExecutionResult:
-        return SkillExecutionResult(
-            skill_id=skill_id,
-            status=SkillExecutionStatus.UNSUPPORTED,
-            command=invocation_command,
-            output_artifact=expected_output_artifact,
-            error=(
-                f"ApiSkillExecutor is declared but not implemented. "
-                f"Cannot invoke '{invocation_command}' for skill '{skill_id}'."
-            ),
-        )
+        """Invoke a skill via Claude API.
+
+        Returns EXECUTED if artifact is produced and saved.
+        Returns FAILED if API call fails or artifact not produced.
+        Returns UNSUPPORTED if dependencies missing.
+        """
+        deps_ok, missing = self._check_dependencies()
+        if not deps_ok:
+            return SkillExecutionResult(
+                skill_id=skill_id,
+                status=SkillExecutionStatus.UNSUPPORTED,
+                command=invocation_command,
+                output_artifact=expected_output_artifact,
+                error=f"Missing dependencies: {', '.join(missing)}. "
+                      f"Install with: pip install anthropic",
+            )
+
+        # Load skill definition
+        skill_content = self._load_skill_content(skill_id)
+        if not skill_content:
+            return SkillExecutionResult(
+                skill_id=skill_id,
+                status=SkillExecutionStatus.FAILED,
+                command=invocation_command,
+                output_artifact=expected_output_artifact,
+                error=f"Skill '{skill_id}' not found in skills/{skill_id}/SKILL.md",
+            )
+
+        # Build prompt with skill definition and context
+        prompt_parts = [
+            f"You are executing the '{skill_id}' skill as part of a structured workflow.",
+            "",
+            "## Skill Definition",
+            skill_content,
+            "",
+        ]
+
+        # Add input context if available
+        resolved_inputs = context.get("resolved_inputs", {})
+        if resolved_inputs:
+            prompt_parts.append("## Input Context")
+            for input_name, input_data in resolved_inputs.items():
+                if input_data.get("type") == "artifact_content":
+                    prompt_parts.append(f"\n### {input_name}")
+                    prompt_parts.append(f"```\n{input_data.get('content', '')}\n```")
+
+        # Add output instruction
+        expected_path = os.path.join(self.repo_root, "artifacts", f"{expected_output_artifact}.md")
+        prompt_parts.extend([
+            "",
+            "## Required Output",
+            f"Write the final artifact to this path (relative to repo root):",
+            f"`artifacts/{expected_output_artifact}.md`",
+            "",
+            "Produce valid markdown that matches the expected artifact format. "
+            "Include all required sections and machine-readable fields.",
+        ])
+
+        prompt = "\n".join(prompt_parts)
+
+        try:
+            from anthropic import Anthropic
+
+            client = Anthropic()
+
+            # Call Claude API
+            message = client.messages.create(
+                model="claude-opus-4-7",
+                max_tokens=4096,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+            )
+
+            artifact_content = message.content[0].text if message.content else ""
+
+            # Try to extract markdown artifact from response
+            # Claude might wrap it in code blocks or explain it
+            import re
+            match = re.search(r"^#\s+", artifact_content, re.MULTILINE)
+            if match:
+                # Response starts with markdown heading, use as-is
+                artifact_text = artifact_content
+            elif "```markdown" in artifact_content:
+                # Response has code block, extract it
+                m = re.search(r"```markdown\n(.*?)\n```", artifact_content, re.DOTALL)
+                artifact_text = m.group(1) if m else artifact_content
+            else:
+                artifact_text = artifact_content
+
+            # Create artifacts directory if needed
+            os.makedirs(os.path.dirname(expected_path), exist_ok=True)
+
+            # Write artifact to expected path
+            with open(expected_path, "w", encoding="utf-8") as f:
+                f.write(artifact_text)
+
+            # Verify artifact was created
+            if os.path.exists(expected_path):
+                return SkillExecutionResult(
+                    skill_id=skill_id,
+                    status=SkillExecutionStatus.EXECUTED,
+                    command=invocation_command,
+                    output_artifact=expected_output_artifact,
+                    message=f"Artifact produced at {expected_path} via Claude API",
+                )
+            else:
+                return SkillExecutionResult(
+                    skill_id=skill_id,
+                    status=SkillExecutionStatus.FAILED,
+                    command=invocation_command,
+                    output_artifact=expected_output_artifact,
+                    error=f"Artifact file not created at {expected_path}",
+                )
+
+        except Exception as e:
+            return SkillExecutionResult(
+                skill_id=skill_id,
+                status=SkillExecutionStatus.FAILED,
+                command=invocation_command,
+                output_artifact=expected_output_artifact,
+                error=f"API execution failed: {str(e)}",
+            )
 
 
 # ============================================================================
@@ -438,7 +593,7 @@ def create_executor(
         output_dir = prompt_output_dir or os.path.join(repo_root, "prompts")
         return executor_cls(output_dir=output_dir)
 
-    if executor_id == "claude-code":
+    if executor_id in ("claude-code", "api"):
         return executor_cls(repo_root=repo_root)
 
     return executor_cls()
