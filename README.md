@@ -299,6 +299,35 @@ See [Execution Modes Reference](docs/orchestration-patterns.md#execution-modes) 
 - **Automatic** (default, `yolo_execution` / `autonomous_execution` / `guided_execution`): Run `python scripts/workflow-runtime.py` — the script reads the workflow from the registry, executes each skill step in sequence, validates artifacts, and chains to the next step automatically. No manual prompt invocation needed.
 - **Manual** (`prompt_chain`): Run `python scripts/workflow-runtime.py --mode prompt_chain` — the script generates ready-to-copy prompts for each skill step. You paste each prompt manually into the target agent and invoke the next step yourself.
 
+### CLI Reference
+
+```
+usage: workflow-runtime.py [--workflow WORKFLOW] [--mode MODE]
+                           [--scope {soft,hard,advisory}]
+                           [--repo-root REPO_ROOT] [--plan-out PLAN_OUT]
+                           [--log-dir LOG_DIR] [--list-workflows]
+                           [--resume] [--executor EXECUTOR]
+                           [--gate-decision {auto-approve,auto-deny}]
+                           [--use-fixtures] [--chained]
+                           [problem]
+```
+
+| Argument | Description | Default |
+|---|---|---|
+| `problem` | Optional user problem statement or goal | — |
+| `--workflow` | Explicit workflow ID (overrides default chain) | `full-local-sensemaking` |
+| `--mode` | Execution mode | `yolo_execution` |
+| `--scope` | How strictly the problem constrains analysis: `soft`, `hard`, `advisory` | `soft` |
+| `--repo-root` | Repository root directory | `.` |
+| `--plan-out` | Output path for the orchestration plan | auto |
+| `--log-dir` | Directory for run log output | auto |
+| `--list-workflows` | List all registered workflow IDs | off |
+| `--resume` | Resume a paused execution | off |
+| `--executor` | Skill executor: `dry-run`, `prompt-chain`, `claude-code`, `api` | `claude-code` |
+| `--gate-decision` | Non-interactive gate decision for testing: `auto-approve`, `auto-deny` | — |
+| `--use-fixtures` | Use fixture artifacts instead of executing real skills | off |
+| `--chained` | (Internal) Invoked as a chained workflow from another run | off |
+
 ## Skill Invocation & Downstream Workflows
 
 ### Automatic Skill Chaining (Phase 5 Complete)
