@@ -802,6 +802,12 @@ class OrchestrationRunner:
             rel = os.path.relpath(artifact_path, self.repo_root)
             result["artifact_path"] = rel.replace("\\", "/")
 
+        # -- Guarantee deterministic machine fields before validating -----------
+        # source_intent_ref is the same for every artifact in the run; the runtime
+        # supplies it rather than trusting the producing skill to emit it (ADR 0010).
+        if artifact_path and os.path.exists(artifact_path):
+            self._ensure_intent_ref(output_artifact, artifact_path)
+
         # -- Run validators if artifact exists (execution modes only) -----------
         if artifact_path and os.path.exists(artifact_path):
             validator_stack = self._run_validator_stack(output_artifact, artifact_path)
@@ -1266,6 +1272,59 @@ class OrchestrationRunner:
             relative = os.path.relpath(normalized, artifacts_base)
             return os.path.join(self.artifact_session_dir, relative)
         return resolved_path
+
+    def _ensure_intent_ref(self, artifact_id: str, artifact_path: str) -> None:
+        """Guarantee the deterministic `source_intent_ref` machine field on a produced
+        artifact.
+
+        source_intent_ref always points to the run's immutable user-intent artifact
+        (ADR 0006). The runtime knows it precisely, so it must not depend on an
+        LLM-authored skill reliably emitting it — which it does not: the handoff skill
+        produced a session_summary with its own plausible machine fields but omitted the
+        one the contract requires (same non-compliance class as the Lx line format).
+        This extends the runtime-canonical principle (ADR 0010) from paths and the plan
+        to deterministic machine fields.
+
+        No-op unless the artifact's contract requires source_intent_ref AND no fenced
+        YAML block already supplies it.
+        """
+        contracts = self.contracts or {}
+        contract = next(
+            (a for a in contracts.get("artifacts", []) if a.get("id") == artifact_id),
+            None,
+        )
+        if not contract or "source_intent_ref" not in contract.get("required_machine_fields", []):
+            return
+        try:
+            with open(artifact_path, "r", encoding="utf-8") as f:
+                content = f.read()
+        except OSError:
+            return
+        # Producer already supplied it in a fenced yaml block? Then leave it alone.
+        for block in re.findall(r"```yaml\s+(.*?)\s+```", content, re.DOTALL):
+            try:
+                data = yaml.safe_load(block)
+            except Exception:
+                data = None
+            if isinstance(data, dict) and data.get("source_intent_ref"):
+                return
+        # The intent file lives at <session>/00-user-intent.md; use a relative ref so
+        # the artifact stays portable (matches generate_plan and the brief).
+        intent_ref = "00-user-intent.md"
+        match = re.search(r"```yaml[ \t]*\n", content)
+        if match:
+            insert_at = match.end()
+            content = content[:insert_at] + f"source_intent_ref: {intent_ref}\n" + content[insert_at:]
+        else:
+            content = content.rstrip("\n") + (
+                f"\n\n```yaml\nartifact_id: {artifact_id}\nsource_intent_ref: {intent_ref}\n```\n"
+            )
+        try:
+            with open(artifact_path, "w", encoding="utf-8") as f:
+                f.write(content)
+            print(f"  [INTENT_REF] Ensured source_intent_ref in {artifact_id} (runtime-guaranteed)")
+        except OSError:
+            pass
 
     def _run_validator_stack(self, artifact_id: str, artifact_path: str) -> list[dict]:
         """Run the full validator stack via validate-output.py (canonical dispatcher).
