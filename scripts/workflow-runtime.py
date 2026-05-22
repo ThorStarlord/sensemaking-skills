@@ -27,6 +27,7 @@ import json
 import uuid
 import argparse
 import subprocess
+import yaml
 from datetime import datetime, timezone
 from pathlib import Path
 from collections import OrderedDict
@@ -460,11 +461,89 @@ class OrchestrationRunner:
         return all_ok
 
     def generate_plan(self) -> str:
-        """Generate the orchestration plan document. Returns the plan text."""
+        """Generate the orchestration plan document. Returns the plan text.
+
+        The runtime is the canonical producer of workflow_orchestration_plan (ADR 0010
+        extends this from paths to the plan itself): all execution-state machine fields
+        (session_id, steps, gates, subset) are things only the runtime knows precisely,
+        so it authors a contract-conformant plan rather than letting an LLM guess them.
+        The output satisfies both validate-artifact.py (11 sections + 21 machine fields)
+        and validate-plan.py (steps mirror the registry; approval_gates == step gates).
+        The routing recommendation (recommended_workflow_id) is filled in later by the
+        workflow-planner step, once the step-4 brief's fog_type is known.
+        """
         steps = self.workflow.get("steps", [])
         workflow_name = self.workflow.get("display_name", self.workflow_id)
         purpose = self.workflow.get("purpose", "")
         initial_inputs = self.workflow.get("initial_inputs", [])
+
+        # -- Machine-readable steps: mirror the registry verbatim, add execution status.
+        # validate-plan.py compares plan steps field-by-field against the registry, so
+        # copying registry steps guarantees agreement; conditional steps keep their
+        # branch structure (validated separately).
+        machine_steps = []
+        for step in steps:
+            m_step = dict(step)
+            m_step["status"] = "pending"
+            machine_steps.append(m_step)
+
+        # approval_gates must equal [s.gate for s in steps if s.gate] (validate-plan).
+        # Conditional steps carry no top-level gate and are excluded; a literal
+        # gate: none (e.g. workflow-planner) IS included.
+        approval_gates = [s.get("gate") for s in machine_steps if s.get("gate")]
+        mode_info = KNOWN_MODES.get(self.mode, {})
+        mode_gate_behavior = mode_info.get("gates", "none")
+        gate_behavior = {
+            g: ("automatic" if g == "none" else mode_gate_behavior)
+            for g in approval_gates
+        }
+
+        machine = OrderedDict([
+            ("artifact_id", "workflow_orchestration_plan"),
+            ("source_intent_ref", "00-user-intent.md"),
+            ("chosen_workflow_id", self.workflow_id),
+            ("execution_mode", self.mode),
+            ("system_recommended_workflow", self.workflow_id),
+            ("selected_workflow", self.workflow_id),
+            ("routing_divergence", False),
+            ("routing_decision_method", "diagnosis_primary_soft_context"),
+            ("escalation_recommended", False),
+            ("auto_escalation_allowed", False),
+            ("scope_expansion_requires_approval", True),
+            ("status", "created"),
+            ("session_id", self.session_id),
+            ("initial_inputs", initial_inputs),
+            ("steps", machine_steps),
+            ("approval_gates", approval_gates),
+            ("gate_behavior", gate_behavior),
+            ("stop_conditions", [
+                {"id": "validation_failure"},
+                {"id": "gate_denial"},
+                {"id": "step_failure"},
+            ]),
+            ("subset_run", False),
+            ("subset_reason", None),
+            ("included_steps", [s.get("id") for s in machine_steps]),
+            ("excluded_steps", []),
+        ])
+        machine_yaml = yaml.dump(
+            {k: v for k, v in machine.items()},
+            sort_keys=False, default_flow_style=False, allow_unicode=True,
+        )
+
+        def _step_label(step: dict) -> tuple[str, str, str]:
+            """Return (skill_label, gate_label, output_label) for a (possibly conditional) step."""
+            if step.get("conditional"):
+                branch = step.get("if_true", {})
+                skill = f"{branch.get('skill', '?')} (conditional)" if branch.get("skill") else "(conditional routing)"
+                gate = branch.get("gate", "none")
+                output = f"{branch.get('output_artifact', '?')} or {step.get('if_false', {}).get('output_artifact', '?')}"
+                return skill, gate, output
+            return (
+                step.get("skill", "?"),
+                step.get("gate", "none"),
+                step.get("output_artifact", "N/A"),
+            )
 
         lines = [
             f"# Orchestration Plan: {workflow_name}",
@@ -473,31 +552,30 @@ class OrchestrationRunner:
             f"- **Date**: {datetime.now().strftime('%Y-%m-%d')}",
             f"- **Workflow**: {self.workflow_id}",
             f"- **Execution Mode**: {self.mode}",
-            f"- **Purpose**: {purpose}",
             f"",
-            f"## Skills in Sequence",
+            f"## 1. Brief consumed",
+            f"",
+            f"Runtime-authored execution plan for `{self.workflow_id}`. Consumes the run's "
+            f"initial inputs ({', '.join(i['id'] for i in initial_inputs) or 'none'}); the "
+            f"upstream diagnostic brief, when produced by an earlier step, informs the "
+            f"routing recommendation recorded in the machine-readable plan.",
+            f"",
+            f"## 2. Chosen workflow",
+            f"",
+            f"`{self.workflow_id}` — {workflow_name}",
+            f"",
+            f"## 3. Why this workflow",
+            f"",
+            purpose or "(no purpose declared in workflow-registry.yaml)",
+            f"",
+            f"## 4. Skills in sequence",
             f"",
         ]
 
         for step in steps:
             step_id = step.get("id", "?")
-            skill = step.get("skill", "?")
-
-            # Handle conditional steps (they have skill: null at top level)
-            if step.get("conditional"):
-                if step.get("if_true", {}).get("skill"):
-                    skill = f"{step.get('if_true', {}).get('skill')} (conditional)"
-                else:
-                    skill = "(Conditional routing)"
-
+            skill, gate, output = _step_label(step)
             s_type = step.get("step_type", "local_execution")
-            gate = step.get("gate", "?")
-            output = step.get("output_artifact", "N/A")
-
-            # For conditional steps, show pass-through output
-            if step.get("conditional"):
-                output = f"{step.get('if_true', {}).get('output_artifact', '?')} or {step.get('if_false', {}).get('output_artifact', '?')}"
-
             lines.extend([
                 f"### Step {step_id}: {skill}",
                 f"- **Type**: {s_type}",
@@ -506,61 +584,30 @@ class OrchestrationRunner:
                 f"",
             ])
 
-        # Inputs and outputs
-        lines.extend([
-            f"## Inputs and Outputs",
-            f"",
-        ])
+        # 5. Inputs and outputs
+        lines.extend([f"## 5. Inputs and outputs", f""])
         for inp in initial_inputs:
             lines.append(f"- **{inp['id']}** ({inp.get('type', '?')}): {inp.get('description', '')}")
         lines.append(f"")
 
-        # Approval gates per mode
-        mode_info = KNOWN_MODES.get(self.mode, {})
-        gate_behavior = mode_info.get("gates", "none")
+        # 6. Approval gates
         lines.extend([
-            f"## Approval Gates",
+            f"## 6. Approval gates",
             f"",
             f"- **Mode**: {self.mode}",
-            f"- **Gate Behavior**: {gate_behavior}",
+            f"- **Gate behavior**: {mode_gate_behavior}",
             f"",
         ])
-        if gate_behavior == "none":
-            lines.append("No gates required for this mode.\n")
-        elif gate_behavior == "mandatory":
-            seen_gates = set()
-            for step in steps:
-                gate = step.get('gate')
-                if gate and gate != 'none' and gate not in seen_gates:
-                    lines.append(f"- {gate}: REQUIRED (user must approve)")
-                    seen_gates.add(gate)
-                # For conditional steps, add if_true gate
-                if step.get('conditional') and step.get('if_true', {}).get('gate'):
-                    if_true_gate = step.get('if_true', {}).get('gate')
-                    if if_true_gate not in seen_gates:
-                        lines.append(f"- {if_true_gate}: REQUIRED (user must approve, conditional)")
-                        seen_gates.add(if_true_gate)
-            lines.append("")
-        elif gate_behavior == "automated":
-            seen_gates = set()
-            for step in steps:
-                gate = step.get('gate')
-                if gate and gate != 'none' and gate not in seen_gates:
-                    lines.append(f"- {gate}: AUTOMATED_APPROVAL")
-                    seen_gates.add(gate)
-            lines.append("")
-        elif gate_behavior == "bypassed":
-            seen_gates = set()
-            for step in steps:
-                gate = step.get('gate')
-                if gate and gate != 'none' and gate not in seen_gates:
-                    lines.append(f"- {gate}: BYPASSED")
-                    seen_gates.add(gate)
+        if not approval_gates:
+            lines.append("No gates for this workflow.\n")
+        else:
+            for g in approval_gates:
+                lines.append(f"- `{g}`: {gate_behavior.get(g, mode_gate_behavior)}")
             lines.append("")
 
-        # Stop conditions
+        # 7. Stop conditions
         lines.extend([
-            f"## Stop Conditions",
+            f"## 7. Stop conditions",
             f"",
             f"- Validator failure at any level -> HALT",
             f"- Gate denial -> HALT (rollback recommended for mutating modes)",
@@ -569,50 +616,48 @@ class OrchestrationRunner:
             f"",
         ])
 
-        # Machine-readable section
+        # 8. Execution mode
         lines.extend([
-            f"---",
+            f"## 8. Execution mode",
             f"",
-            f"```yaml",
-            f"artifact_id: workflow_orchestration_plan",
-            f"source_intent_ref: ../../00-user-intent.md",
-            f"chosen_workflow_id: {self.workflow_id}",
-            f"system_recommended_workflow: {self.workflow_id}",
-            f"selected_workflow: {self.workflow_id}",
-            f"routing_divergence: false",
-            f"routing_decision_method: diagnosis_primary_soft_context",
-            f"escalation_recommended: false",
-            f"auto_escalation_allowed: false",
-            f"scope_expansion_requires_approval: true",
-            f"execution_mode: {self.mode}",
-            f"status: created",
-            f"session_id: {self.session_id}",
-            f"initial_inputs:",
+            f"`{self.mode}` (gate behavior: {mode_gate_behavior}, "
+            f"mutates repo: {mode_info.get('mutation', False)}).",
+            f"",
         ])
-        for inp in initial_inputs:
-            lines.append(f"  - id: {inp['id']}")
-            lines.append(f"    type: {inp.get('type', '?')}")
-            lines.append(f"    required: {str(inp.get('required', False)).lower()}")
-            if inp.get('description'):
-                lines.append(f"    description: {inp.get('description', '')}")
-        lines.append(f"steps:")
+
+        # 9. Prompt chain
+        lines.extend([f"## 9. Prompt chain", f""])
+        if self.mode == "prompt_chain":
+            lines.append("Prompts are generated per step for manual/agent execution; see the run directory.")
+        else:
+            lines.append(f"N/A - mode is `{self.mode}`; the runtime executes steps directly.")
+        lines.append("")
+
+        # 10. Run log template
+        lines.extend([
+            f"## 10. Run log template",
+            f"",
+            f"```markdown",
+            f"# Run Log: {self.workflow_id}",
+            f"",
+            f"| Step | Skill | Status | Artifact | Validation |",
+            f"| :--- | :--- | :--- | :--- | :--- |",
+        ])
         for step in steps:
             step_id = step.get("id", "?")
-            gate = step.get("gate", "none")
-            skill = step.get("skill")
-            lines.append(f"  - id: {step_id}")
-            lines.append(f"    skill: {skill}")
-            lines.append(f"    step_type: {step.get('step_type', 'local_execution')}")
-            lines.append(f"    gate: {gate}")
-            lines.append(f"    output_artifact: {step.get('output_artifact', 'N/A')}")
-        lines.append(f"approval_gates:")
-        lines.append(f"  behavior: {gate_behavior}")
-        lines.append(f"stop_conditions:")
-        lines.append(f"  - validator_failure")
-        lines.append(f"  - gate_denial")
-        lines.append(f"  - step_failure")
-        lines.append(f"```")
-        lines.append(f"")
+            skill, _, _ = _step_label(step)
+            lines.append(f"| {step_id} | {skill} | [ ] | [ ] | [ ] |")
+        lines.extend([f"```", f""])
+
+        # 11. Machine-readable plan
+        lines.extend([
+            f"## 11. Machine-readable plan",
+            f"",
+            f"```yaml",
+            machine_yaml.rstrip("\n"),
+            f"```",
+            f"",
+        ])
 
         plan = "\n".join(lines)
 
@@ -682,8 +727,20 @@ class OrchestrationRunner:
                     result["status"] = "EXECUTED"
                     return result
 
+            # Runtime-canonical orchestration plan (ADR 0010): the runtime already
+            # authored workflow_orchestration_plan in Phase 2 (generate_plan) with the
+            # authoritative execution machine-fields (session_id, steps, gates, subset).
+            # The workflow-planner step must NOT re-author it via the executor — doing so
+            # clobbered the conformant runtime plan with non-conformant LLM output and
+            # made the machine fields a guess. Use the runtime's plan as this step's
+            # output and fall through to validation.
+            if output_artifact == "workflow_orchestration_plan" and \
+                    os.path.exists(self._resolve_artifact_path(output_artifact)):
+                print(f"  [RUNTIME_PLAN] Using runtime-authored orchestration plan "
+                      f"(skipping skill re-generation; ADR 0010)")
+
             # Try to execute skill if executor supports real execution
-            if skill and skill != "?" and self.skill_executor and self.skill_executor.supports_real_execution:
+            elif skill and skill != "?" and self.skill_executor and self.skill_executor.supports_real_execution:
                 # Resolve the step's declared inputs (input_artifact / input_source),
                 # expanding the aggregate context_artifacts bundle when present.
                 input_artifact_ids, resolved_inputs = self._resolve_step_inputs(step)
