@@ -716,6 +716,7 @@ class OrchestrationRunner:
 
         # -- Resolve artifact path (execution modes only) -----------------------
         artifact_path = ""
+        is_fixture = False
         if output_artifact:
             # Check for fixture first if --use-fixtures is set
             if self.use_fixtures:
@@ -725,8 +726,10 @@ class OrchestrationRunner:
                     result["artifact_path"] = f"examples/{os.path.relpath(fixture_path, os.path.join(self.repo_root, 'examples')).replace(chr(92), '/')}"
                     print(f"  [FIXTURE] Using fixture artifact: {os.path.relpath(fixture_path, self.repo_root)}")
                     result["status"] = "EXECUTED"
-                    return result
+                    is_fixture = True
 
+            if is_fixture:
+                pass
             # Runtime-canonical orchestration plan (ADR 0010): the runtime already
             # authored workflow_orchestration_plan in Phase 2 (generate_plan) with the
             # authoritative execution machine-fields (session_id, steps, gates, subset).
@@ -734,7 +737,7 @@ class OrchestrationRunner:
             # clobbered the conformant runtime plan with non-conformant LLM output and
             # made the machine fields a guess. Use the runtime's plan as this step's
             # output and fall through to validation.
-            if output_artifact == "workflow_orchestration_plan" and \
+            elif output_artifact == "workflow_orchestration_plan" and \
                     os.path.exists(self._resolve_artifact_path(output_artifact)):
                 print(f"  [RUNTIME_PLAN] Using runtime-authored orchestration plan "
                       f"(skipping skill re-generation; ADR 0010)")
@@ -795,17 +798,18 @@ class OrchestrationRunner:
                         print(f"    {exec_result.error}")
                     # Fall through to fixture/path resolution
 
-            # Determine artifact path based on contracts
-            contract_path = self._resolve_artifact_path(output_artifact)
-            artifact_path = contract_path
-            # Store repo-relative path in the run log for portability
-            rel = os.path.relpath(artifact_path, self.repo_root)
-            result["artifact_path"] = rel.replace("\\", "/")
+            if not is_fixture:
+                # Determine artifact path based on contracts
+                contract_path = self._resolve_artifact_path(output_artifact)
+                artifact_path = contract_path
+                # Store repo-relative path in the run log for portability
+                rel = os.path.relpath(artifact_path, self.repo_root)
+                result["artifact_path"] = rel.replace("\\", "/")
 
         # -- Guarantee deterministic machine fields before validating -----------
         # source_intent_ref is the same for every artifact in the run; the runtime
         # supplies it rather than trusting the producing skill to emit it (ADR 0010).
-        if artifact_path and os.path.exists(artifact_path):
+        if artifact_path and os.path.exists(artifact_path) and not self.use_fixtures:
             self._ensure_intent_ref(output_artifact, artifact_path)
 
         # -- Run validators if artifact exists (execution modes only) -----------
@@ -859,7 +863,10 @@ class OrchestrationRunner:
             return result
 
         # For execution modes: artifact passed validators, gate approved
-        result["status"] = "EXECUTED" if self.mode in ("autonomous_execution", "yolo_execution") else "VALIDATED"
+        if self.mode == "guided_execution":
+            result["status"] = "APPROVED"
+        elif self.mode in ("autonomous_execution", "yolo_execution"):
+            result["status"] = "VALIDATED"
         return result
 
     def _should_auto_invoke_next(self) -> tuple[bool, str | None]:
@@ -1586,6 +1593,7 @@ class OrchestrationRunner:
         prompted = [s for s in self.step_results if s["status"] == "PROMPT_GENERATED"]
         executed = [s for s in self.step_results if s["status"] == "EXECUTED"]
         validated = [s for s in self.step_results if s["status"] == "VALIDATED"]
+        approved = [s for s in self.step_results if s["status"] == "APPROVED"]
         completed = [s for s in self.step_results if s["status"] == "COMPLETED"]  # legacy
 
         # Determine final state based on mode ceiling
@@ -1603,12 +1611,12 @@ class OrchestrationRunner:
         elif self.mode == "plan_only" and len(planned) == len(steps):
             self.final_state = "planned"
             self.final_note = f"All {len(steps)} workflow steps planned successfully."
-        elif not failures and not pauses and (len(completed) == len(steps) or len(validated) == len(steps) or len(executed) == len(steps)):
+        elif not failures and not pauses and (len(completed) == len(steps) or len(validated) == len(steps) or len(executed) == len(steps) or len(approved) == len(steps)):
             self.final_state = "completed"
             self.final_note = f"All {len(steps)} steps completed successfully in '{self.mode}' mode."
         else:
             self.final_state = "partial"
-            success_steps = len(planned) + len(prompted) + len(executed) + len(validated) + len(completed)
+            success_steps = len(planned) + len(prompted) + len(executed) + len(validated) + len(approved) + len(completed)
             self.final_note = f"{success_steps}/{len(steps)} steps completed."
 
         lines = [
@@ -1632,12 +1640,27 @@ class OrchestrationRunner:
             f"",
         ]
 
+        # Determine the runtime name to write in the step sequence log
+        if self.use_fixtures:
+            runtime_str = "fixture"
+        elif self.mode == "prompt_chain":
+            runtime_str = "prompt_generation"
+        elif self.mode == "plan_only":
+            runtime_str = "planning"
+        else:
+            if self.executor == "claude-code":
+                runtime_str = "claude-agent-sdk"
+            elif self.executor == "api":
+                runtime_str = "claude-api"
+            else:
+                runtime_str = self.executor or "local_execution"
+
         for sr in self.step_results:
             lines.extend([
                 f"### Step {sr['step_id']}",
                 f"- **step_id**: {sr['step_id']}",
                 f"- **skill**: {sr['skill']}",
-                f"- **runtime**: local_execution",
+                f"- **runtime**: {runtime_str}",
                 f"- **output_artifact**: {sr.get('output_artifact', 'N/A')}",
                 f"- **artifact_path**: {sr.get('artifact_path', 'N/A')}",
             ])

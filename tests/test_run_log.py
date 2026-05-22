@@ -107,11 +107,10 @@ def test_run_log_prompt_chain_generated():
                 runner.write_run_log()
     assert runner.final_state == "prompt_chain_generated"
 
-
 def test_run_log_completed():
     runner = _make_runner("guided_execution", steps=[{"skill": "s1"}, {"skill": "s2"}], step_results=[
-        _step("VALIDATED", "1"),
-        _step("VALIDATED", "2"),
+        _step("APPROVED", "1"),
+        _step("APPROVED", "2"),
     ])
     with patch("os.makedirs"), patch("builtins.open", MagicMock()):
         with patch("workflow_runtime._get_git_branch", return_value="main"):
@@ -122,7 +121,7 @@ def test_run_log_completed():
 
 def test_run_log_partial():
     runner = _make_runner("guided_execution", steps=[{"skill": "s1"}, {"skill": "s2"}, {"skill": "s3"}], step_results=[
-        _step("VALIDATED", "1"),
+        _step("APPROVED", "1"),
         _step("EXECUTED", "2"),
     ])
     with patch("os.makedirs"), patch("builtins.open", MagicMock()):
@@ -143,3 +142,47 @@ def test_run_log_prefers_failed_over_paused():
             with patch("workflow_runtime._check_clean_git", return_value=(True, "")):
                 runner.write_run_log()
     assert runner.final_state == "failed"
+
+
+def test_run_log_runtime_strings():
+    # 1. use_fixtures should write "fixture"
+    runner = _make_runner("guided_execution", step_results=[_step("APPROVED", "1")])
+    runner.use_fixtures = True
+    runner.executor = "claude-code"
+    
+    mock_open = MagicMock()
+    with patch("os.makedirs"), patch("builtins.open", mock_open):
+        with patch("workflow_runtime._get_git_branch", return_value="main"):
+            with patch("workflow_runtime._check_clean_git", return_value=(True, "")):
+                runner.write_run_log()
+    
+    written_data = "".join(call.args[0] for call in mock_open.return_value.__enter__.return_value.write.call_args_list)
+    assert "- **runtime**: fixture" in written_data
+
+    # 2. plan_only should write "planning"
+    runner = _make_runner("plan_only", step_results=[_step("PLANNED", "1")])
+    runner.use_fixtures = False
+    runner.executor = "claude-code"
+    
+    mock_open = MagicMock()
+    with patch("os.makedirs"), patch("builtins.open", mock_open):
+        with patch("workflow_runtime._get_git_branch", return_value="main"):
+            with patch("workflow_runtime._check_clean_git", return_value=(True, "")):
+                runner.write_run_log()
+    
+    written_data = "".join(call.args[0] for call in mock_open.return_value.__enter__.return_value.write.call_args_list)
+    assert "- **runtime**: planning" in written_data
+
+    # 3. guided_execution with claude-code should write "claude-agent-sdk"
+    runner = _make_runner("guided_execution", step_results=[_step("APPROVED", "1")])
+    runner.use_fixtures = False
+    runner.executor = "claude-code"
+    
+    mock_open = MagicMock()
+    with patch("os.makedirs"), patch("builtins.open", mock_open):
+        with patch("workflow_runtime._get_git_branch", return_value="main"):
+            with patch("workflow_runtime._check_clean_git", return_value=(True, "")):
+                runner.write_run_log()
+    
+    written_data = "".join(call.args[0] for call in mock_open.return_value.__enter__.return_value.write.call_args_list)
+    assert "- **runtime**: claude-agent-sdk" in written_data

@@ -180,8 +180,8 @@ class TestRuntimeExecutorHandoff(unittest.TestCase):
             self.runner.errors, [],
             f"Unexpected errors during step execution: {self.runner.errors}",
         )
-        # guided_execution ends a clean step at VALIDATED.
-        self.assertEqual(result["status"], "VALIDATED")
+        # guided_execution ends a clean step at APPROVED.
+        self.assertEqual(result["status"], "APPROVED")
         # The artifact must exist at the session-scoped path the runtime owns.
         expected = os.path.join(self.session_dir, "problem_frame.md")
         self.assertTrue(
