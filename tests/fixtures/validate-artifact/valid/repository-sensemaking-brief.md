@@ -49,10 +49,17 @@ Workflow.
 
 ## 13. Machine-readable handoff
 ```yaml
+source_intent_ref: "00-user-intent.md"
 recommended_workflow_id: "test-workflow"
 recommended_execution_mode: "plan_only"
 weakest_boundary: "validation"
-required_inputs: []
+required_inputs:
+  - user_intent
+  - repository_state
+user_implied_fog_type: architecture_fog
+primary_fog_type: architecture_fog
+diagnosis_conflict: false
+escalation_recommended: false
 ```
 
 ## 14. Ready-to-copy prompt
