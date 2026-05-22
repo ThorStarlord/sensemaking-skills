@@ -94,8 +94,10 @@ def inject_yaml_block(content: str, artifact_id: str, intent_ref: str, required_
 def main() -> int:
     parser = argparse.ArgumentParser(description="Create a compliant artifact skeleton or template.")
     parser.add_argument("--artifact-id", required=True, help="ID of the artifact to create")
-    parser.add_argument("--path", required=True, help="Output path where the file should be written")
-    parser.add_argument("--intent-ref", required=True, help="Path or filename reference for source_intent_ref")
+    parser.add_argument("--path", help="Output path where the file should be written (optional if run-id and step-id provided)")
+    parser.add_argument("--intent-ref", help="Path or filename reference for source_intent_ref (optional)")
+    parser.add_argument("--run-id", help="Run ID of the active session (optional)")
+    parser.add_argument("--step-id", help="Step ID of the active step (optional)")
     parser.add_argument("--repo-root", default=".", help="Root directory of the repository")
 
     args = parser.parse_args()
@@ -110,6 +112,33 @@ def main() -> int:
     if not contract:
         print(f"[ERROR] Contract not found for artifact ID: {args.artifact_id}", file=sys.stderr)
         return 1
+
+    # Resolve output path
+    out_path = args.path
+    if not out_path:
+        if not args.run_id or not args.step_id:
+            print("[ERROR] Either --path or both --run-id and --step-id must be provided.", file=sys.stderr)
+            return 1
+        # Resolve standardized path: artifacts/<run_id>/<step_id>-<artifact_id>.md
+        # Keep path slash format consistent
+        out_path = os.path.join(repo_root, "artifacts", args.run_id, f"{args.step_id}-{args.artifact_id}.md")
+    
+    out_path = os.path.abspath(out_path)
+
+    # Resolve intent-ref
+    intent_ref = args.intent_ref
+    if not intent_ref:
+        if args.run_id:
+            candidate = os.path.join(repo_root, "artifacts", args.run_id, "00-user-intent.md")
+            if os.path.exists(candidate):
+                intent_ref = os.path.relpath(candidate, repo_root).replace("\\", "/")
+        if not intent_ref:
+            import glob
+            candidates = glob.glob(os.path.join(repo_root, "artifacts", "**", "00-user-intent.md"), recursive=True)
+            if candidates:
+                intent_ref = os.path.relpath(candidates[0], repo_root).replace("\\", "/")
+            else:
+                intent_ref = "artifacts/00-user-intent.md"
 
     produced_by = get_skill_name(contract)
     
@@ -139,18 +168,19 @@ def main() -> int:
 
     # Inject required machine fields into the YAML block
     required_fields = contract.get("required_machine_fields", [])
-    content = inject_yaml_block(content, args.artifact_id, args.intent_ref, required_fields)
+    content = inject_yaml_block(content, args.artifact_id, intent_ref, required_fields)
 
     # Write to target path
-    out_path = os.path.abspath(args.path)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     try:
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(content)
-        print(f"[OK] Compliant artifact created at: {args.path}")
+        # Print path relative to repo root using forward slashes for output verification
+        rel_out = os.path.relpath(out_path, repo_root).replace("\\", "/")
+        print(f"[OK] Compliant artifact created at: {rel_out}")
         return 0
     except Exception as e:
-        print(f"[ERROR] Failed to write artifact to {args.path}: {e}", file=sys.stderr)
+        print(f"[ERROR] Failed to write artifact to {out_path}: {e}", file=sys.stderr)
         return 1
 
 

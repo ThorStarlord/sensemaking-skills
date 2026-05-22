@@ -152,6 +152,9 @@ class TestRuntimeExecutorHandoff(unittest.TestCase):
             self.runner, OrchestrationRunner)
         self.runner._scope_to_session_dir = OrchestrationRunner._scope_to_session_dir.__get__(
             self.runner, OrchestrationRunner)
+        self.runner._finalize_step_result = OrchestrationRunner._finalize_step_result.__get__(
+            self.runner, OrchestrationRunner)
+        self.runner._log_ledger_event = MagicMock()
 
         # Stub the parts not under test.
         self.runner._resolve_step_inputs = MagicMock(return_value=([], {}))

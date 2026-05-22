@@ -12,6 +12,7 @@ import json
 import sys
 import os
 import subprocess
+import shutil
 from pathlib import Path
 from datetime import datetime
 
@@ -21,90 +22,79 @@ class TestAutonomousExecutionIntegration(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Set up test fixtures."""
+        """Set up test fixtures by running the workflow in autonomous_execution mode once."""
         # Resolve repo root
         test_dir = Path(__file__).parent
         cls.repo_root = test_dir.parent.parent
         cls.artifacts_dir = cls.repo_root / "artifacts"
         cls.scripts_dir = cls.repo_root / "scripts"
 
-        # Ensure artifacts directory exists
+        # Clean artifacts dir of stale runs
+        shutil.rmtree(cls.artifacts_dir, ignore_errors=True)
         cls.artifacts_dir.mkdir(exist_ok=True)
 
-    def test_autonomous_execution_completes_full_workflow(self):
-        """Verify that autonomous_execution mode completes full workflow with auto-approved gates.
+        # Set environment for autonomous execution
+        os.environ["SENSEMAKING_EXECUTION_MODE"] = "autonomous"
 
-        This is the main integration test that runs fast-local-diagnostic in
-        autonomous_execution mode and verifies completion.
-
-        The test verifies:
-        - Orchestration runner accepts autonomous_execution mode
-        - Execution plan is generated
-        - Mode is properly recorded in output
-        """
-        # Run workflow-runtime with fast-local-diagnostic in autonomous_execution mode
         cmd = [
             sys.executable,
-            str(self.scripts_dir / "workflow-runtime.py"),
-            "fast-local-diagnostic",
+            str(cls.scripts_dir / "workflow-runtime.py"),
+            "--workflow", "fast-local-diagnostic",
             "--mode", "autonomous_execution",
             "--gate-decision", "auto-approve",
-            "--repo-root", str(self.repo_root),
+            "--repo-root", str(cls.repo_root),
+            "--executor", "dry-run",
+            "--use-fixtures",
         ]
 
-        # Restore artifacts before running mutating modes to ensure git status is clean
-        subprocess.run(["git", "restore", "artifacts/"], cwd=str(self.repo_root), capture_output=True)
-        subprocess.run(["git", "clean", "-fd", "artifacts/"], cwd=str(self.repo_root), capture_output=True)
-
-        result = subprocess.run(
+        cls.result = subprocess.run(
             cmd,
-            cwd=str(self.repo_root),
+            cwd=str(cls.repo_root),
             capture_output=True,
             text=True,
             timeout=120,
         )
 
-        output = result.stdout + result.stderr
+        cls.output = cls.result.stdout + cls.result.stderr
 
-        # The command may fail due to git state or skill execution issues,
-        # but the key is that autonomous_execution mode was accepted and
-        # the execution plan was generated
+        # Locate the session directory
+        session_dirs = [d for d in cls.artifacts_dir.iterdir() if d.is_dir() and d.name.endswith("-orchestration-run")]
+        if session_dirs:
+            cls.session_dir = session_dirs[0]
+            cls.summary_path = cls.session_dir / "workflow_summary.json"
+        else:
+            cls.session_dir = None
+            cls.summary_path = None
+
+    def test_autonomous_execution_completes_full_workflow(self):
+        """Verify that autonomous_execution mode completes full workflow with auto-approved gates."""
+        self.assertIsNotNone(self.session_dir, "Session directory should have been created")
+        self.assertEqual(self.result.returncode, 0, f"Runtime execution failed: {self.output}")
 
         # Verify the output shows autonomous_execution mode was invoked
         self.assertIn(
             "autonomous_execution",
-            output,
+            self.output,
             "Output should mention autonomous_execution mode"
         )
 
-        # Verify either successful completion or graceful handling
-        # (the execution plan generation is what we're primarily testing)
+        # Verify the plan was written
         self.assertIn(
-            "Execution plan written",
-            output,
+            "Plan written",
+            self.output,
             "Output should show execution plan was created"
         )
 
     def test_execution_plan_json_is_valid(self):
-        """Verify that execution plan JSON has required fields and valid structure.
-
-        The execution plan JSON should contain:
-        - workflow_id: identifier of the workflow
-        - session_id: unique session identifier
-        - mode: execution mode (autonomous_execution)
-        - steps: list of workflow steps
-        - generated_at: ISO timestamp
-        """
-        plan_path = self.artifacts_dir / "execution_plan_fast-local-diagnostic.json"
-
-        # File should exist
+        """Verify that workflow summary JSON has required fields and valid structure."""
+        self.assertIsNotNone(self.summary_path, "Summary path should be set")
         self.assertTrue(
-            plan_path.exists(),
-            f"Execution plan file should exist at {plan_path}"
+            self.summary_path.exists(),
+            f"Execution summary file should exist at {self.summary_path}"
         )
 
         # Parse JSON
-        with open(plan_path, "r", encoding="utf-8") as f:
+        with open(self.summary_path, "r", encoding="utf-8") as f:
             plan = json.load(f)
 
         # Verify required top-level fields
@@ -112,7 +102,7 @@ class TestAutonomousExecutionIntegration(unittest.TestCase):
         self.assertIn("session_id", plan, "Plan must have session_id")
         self.assertIn("mode", plan, "Plan must have mode")
         self.assertIn("steps", plan, "Plan must have steps")
-        self.assertIn("generated_at", plan, "Plan must have generated_at timestamp")
+        self.assertIn("executed_at", plan, "Plan must have executed_at timestamp")
 
         # Verify values
         self.assertEqual(plan["workflow_id"], "fast-local-diagnostic")
@@ -121,30 +111,17 @@ class TestAutonomousExecutionIntegration(unittest.TestCase):
         self.assertGreater(len(plan["steps"]), 0, "Plan must have at least one step")
 
     def test_run_log_records_skill_execution(self):
-        """Verify that run log is created and records skill execution details.
-
-        The run log should:
-        - Exist at expected path pattern
-        - Contain valid markdown content
-        - Record workflow execution status
-        - Record gate decisions (should show automated_approval for autonomous mode)
-        """
-        run_log_path = self.artifacts_dir.parent / "artifacts" / f"run_log_fast-local-diagnostic_autonomous_execution.md"
-
-        # Alternative path in logs directory
-        alt_log_path = self.artifacts_dir.parent / "logs" / f"run_log_fast-local-diagnostic_autonomous_execution.md"
-
-        # File should exist at one of these locations
-        exists = run_log_path.exists() or alt_log_path.exists()
-        actual_path = run_log_path if run_log_path.exists() else alt_log_path
+        """Verify that run log is created and records skill execution details."""
+        self.assertIsNotNone(self.session_dir, "Session directory should have been created")
+        run_log_path = self.session_dir / "run_log_fast-local-diagnostic_autonomous_execution.md"
 
         self.assertTrue(
-            exists,
-            f"Run log should exist at {run_log_path} or {alt_log_path}"
+            run_log_path.exists(),
+            f"Run log should exist at {run_log_path}"
         )
 
         # Read and validate content
-        with open(actual_path, "r", encoding="utf-8") as f:
+        with open(run_log_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Should contain key sections
@@ -154,24 +131,12 @@ class TestAutonomousExecutionIntegration(unittest.TestCase):
 
         # Should contain status information
         self.assertIn("Status", content, "Run log should record status")
-
-        # For autonomous mode, should show automated gate approvals
-        # (may not be present if no gates were executed, but should show completed status)
         self.assertIn("completed", content.lower(), "Run log should indicate successful completion")
 
     def test_execution_plan_steps_have_required_fields(self):
-        """Verify that each step in the execution plan has required fields.
-
-        Each step should have:
-        - id: step identifier
-        - skill: skill name
-        - step_type: type of step execution
-        - gate: gate name for approval
-        - output_artifact: expected output artifact
-        """
-        plan_path = self.artifacts_dir / "execution_plan_fast-local-diagnostic.json"
-
-        with open(plan_path, "r", encoding="utf-8") as f:
+        """Verify that each step in the summary has required fields."""
+        self.assertIsNotNone(self.summary_path)
+        with open(self.summary_path, "r", encoding="utf-8") as f:
             plan = json.load(f)
 
         steps = plan.get("steps", [])
@@ -179,37 +144,35 @@ class TestAutonomousExecutionIntegration(unittest.TestCase):
 
         for step in steps:
             # Each step must have these fields
+            self.assertIn("step_id", step, f"Step {step} must have step_id field")
             self.assertIn("skill", step, f"Step {step} must have skill field")
-            self.assertIn("step_type", step, f"Step {step} must have step_type field")
-            self.assertIn("gate", step, f"Step {step} must have gate field")
+            self.assertIn("status", step, f"Step {step} must have status field")
             self.assertIn("output_artifact", step, f"Step {step} must have output_artifact field")
 
             # Verify types
+            self.assertIsInstance(step["step_id"], str, "step id must be string")
             self.assertIsInstance(step["skill"], str, "step skill must be string")
-            self.assertIsInstance(step["step_type"], str, "step step_type must be string")
 
     def test_execution_plan_timestamp_valid(self):
-        """Verify that generated_at timestamp in execution plan is valid ISO format."""
-        plan_path = self.artifacts_dir / "execution_plan_fast-local-diagnostic.json"
-
-        with open(plan_path, "r", encoding="utf-8") as f:
+        """Verify that executed_at timestamp in summary is valid ISO format."""
+        self.assertIsNotNone(self.summary_path)
+        with open(self.summary_path, "r", encoding="utf-8") as f:
             plan = json.load(f)
 
-        generated_at = plan.get("generated_at")
-        self.assertIsNotNone(generated_at, "Plan must have generated_at field")
+        executed_at = plan.get("executed_at")
+        self.assertIsNotNone(executed_at, "Plan must have executed_at field")
 
-        # Try to parse as ISO 8601 datetime
+        # Try to parse as ISO datetime
         try:
-            dt = datetime.fromisoformat(generated_at)
-            self.assertIsInstance(dt, datetime, "generated_at must be valid ISO datetime")
+            dt = datetime.fromisoformat(executed_at)
+            self.assertIsInstance(dt, datetime, "executed_at must be valid ISO datetime")
         except (ValueError, TypeError) as e:
-            self.fail(f"generated_at is not valid ISO 8601 format: {e}")
+            self.fail(f"executed_at is not valid ISO format: {e}")
 
     def test_execution_plan_session_id_format(self):
-        """Verify that session_id in execution plan has expected format."""
-        plan_path = self.artifacts_dir / "execution_plan_fast-local-diagnostic.json"
-
-        with open(plan_path, "r", encoding="utf-8") as f:
+        """Verify that session_id in summary has expected format."""
+        self.assertIsNotNone(self.summary_path)
+        with open(self.summary_path, "r", encoding="utf-8") as f:
             plan = json.load(f)
 
         session_id = plan.get("session_id")
@@ -220,6 +183,26 @@ class TestAutonomousExecutionIntegration(unittest.TestCase):
         self.assertTrue(
             session_id.startswith("orchestration-"),
             f"session_id should start with 'orchestration-', got: {session_id}"
+        )
+
+    def test_ledger_audit_passes(self):
+        """Verify that workflow-runtime.py audit-run passes successfully on the generated ledger."""
+        self.assertIsNotNone(self.session_dir)
+        ledger_path = self.session_dir / "run-ledger.jsonl"
+        self.assertTrue(ledger_path.exists(), f"Ledger file should exist at {ledger_path}")
+
+        cmd = [
+            sys.executable,
+            str(self.scripts_dir / "workflow-runtime.py"),
+            "audit-run",
+            "--ledger-path", str(ledger_path),
+            "--repo-root", str(self.repo_root)
+        ]
+        audit_res = subprocess.run(cmd, capture_output=True, text=True)
+        self.assertEqual(
+            audit_res.returncode,
+            0,
+            f"Ledger audit failed: {audit_res.stdout}\n{audit_res.stderr}"
         )
 
 

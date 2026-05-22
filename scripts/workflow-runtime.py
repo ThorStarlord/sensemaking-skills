@@ -25,6 +25,7 @@ import re
 import sys
 import json
 import uuid
+import hashlib
 import argparse
 import subprocess
 import yaml
@@ -236,6 +237,39 @@ class OrchestrationRunner:
         # State tracking
         self.final_state: str = "not_started"
         self.final_note: str = ""
+
+    # ------------------------------------------------------------------
+    # Ledger helpers
+    # ------------------------------------------------------------------
+
+    def _compute_file_hash(self, path: str) -> str | None:
+        """Return the SHA-256 hex digest of a file, or None if the file does not exist."""
+        try:
+            h = hashlib.sha256()
+            with open(path, "rb") as fh:
+                for chunk in iter(lambda: fh.read(65536), b""):
+                    h.update(chunk)
+            return h.hexdigest()
+        except OSError:
+            return None
+
+    def _log_ledger_event(self, event_data: dict) -> None:
+        """Append a single JSON event to the run-ledger.jsonl in the session directory.
+
+        Does nothing silently if artifact_session_dir has not been set yet
+        (i.e. before _create_user_intent_artifact was called).
+        """
+        if not self.artifact_session_dir:
+            return
+        ledger_path = os.path.join(self.artifact_session_dir, "run-ledger.jsonl")
+        ts = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        record = {"timestamp": ts, **event_data}
+        try:
+            with open(ledger_path, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+        except OSError as exc:
+            # Never crash the main workflow because of ledger I/O
+            print(f"  ~ [LEDGER] Warning: could not write ledger event: {exc}")
 
     def _load_registries(self) -> None:
         """Load all registry files."""
@@ -699,20 +733,28 @@ class OrchestrationRunner:
         print(f"STEP {step_num}/{total_steps}  |  Skill: {skill}  |  Gate: {gate_name}")
         print(f"{'-'*50}")
 
+        # -- Ledger: log step_started -----------------------------------------
+        self._log_ledger_event({
+            "event": "step_started",
+            "step_id": str(step_num),
+            "skill_id": skill,
+            "output_artifact": output_artifact or "N/A",
+        })
+
         # -- Mode ceiling enforcement: don't validate artifacts in prompt_chain --
         if self.mode == "prompt_chain":
             # prompt_chain: generate prompts, not validate execution artifacts
             result["status"] = "PROMPT_GENERATED"
             result["gate_result"] = "not_applicable"
             print(f"  [PROMPT_CHAIN] Step marked PROMPT_GENERATED (not executed)")
-            return result
+            return self._finalize_step_result(result, step_num)
 
         if self.mode == "plan_only":
             # plan_only: just record the planned step, no validation
             result["status"] = "PLANNED"
             result["gate_result"] = "not_applicable"
             print(f"  [PLAN_ONLY] Step marked PLANNED")
-            return result
+            return self._finalize_step_result(result, step_num)
 
         # -- Resolve artifact path (execution modes only) -----------------------
         artifact_path = ""
@@ -786,11 +828,11 @@ class OrchestrationRunner:
                                 f"Step {step_num} ({skill}): Executor reported success but artifact not found")
                         )
                         result["status"] = "FAILED"
-                        return result
+                        return self._finalize_step_result(result, step_num)
                 elif exec_result.status in (SkillExecutionStatus.PROMPT_GENERATED,):
                     result["status"] = "PROMPT_GENERATED"
                     print(f"  [PROMPT_GENERATED] Skill prompt for '{skill}' generated")
-                    return result
+                    return self._finalize_step_result(result, step_num)
                 else:
                     # Executor returned failure or unsupported
                     print(f"  [SKILL_EXEC_INFO] Skill executor status: {exec_result.status.value}")
@@ -812,10 +854,32 @@ class OrchestrationRunner:
         if artifact_path and os.path.exists(artifact_path) and not self.use_fixtures:
             self._ensure_intent_ref(output_artifact, artifact_path)
 
+        # -- Log artifact_created if the artifact file now exists ---------------
+        if artifact_path and os.path.exists(artifact_path):
+            rel_art = os.path.relpath(artifact_path, self.repo_root).replace("\\", "/")
+            self._log_ledger_event({
+                "event": "artifact_created",
+                "step_id": str(step_num),
+                "artifact_id": output_artifact or "N/A",
+                "path": rel_art,
+                "hash": self._compute_file_hash(artifact_path),
+            })
+
         # -- Run validators if artifact exists (execution modes only) -----------
         if artifact_path and os.path.exists(artifact_path):
             validator_stack = self._run_validator_stack(output_artifact, artifact_path)
             result["validator_stack"] = validator_stack
+
+            # -- Log validation_completed events --------------------------------
+            for v in validator_stack:
+                self._log_ledger_event({
+                    "event": "validation_completed",
+                    "step_id": str(step_num),
+                    "artifact_id": output_artifact or "N/A",
+                    "validator_command": v.get("command", ""),
+                    "exit_code": 0 if v.get("result") == "PASSED" else 1,
+                    "status": "passed" if v.get("result") == "PASSED" else "failed",
+                })
 
             # Check for validator failures
             v_failures = [v for v in validator_stack if v["result"] == "FAILED"]
@@ -827,7 +891,7 @@ class OrchestrationRunner:
                     )
                 )
                 result["status"] = "FAILED"
-                return result
+                return self._finalize_step_result(result, step_num)
         elif output_artifact and output_artifact != "N/A":
             if self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
                 # Execution modes: FAIL if artifact expected but not produced
@@ -842,7 +906,7 @@ class OrchestrationRunner:
                 )
                 result["status"] = "FAILED"
                 result["validator_stack"] = [{"level": "Dispatcher", "command": f"validate-output.py {output_artifact}", "result": "SKIPPED (artifact missing)"}]
-                return result
+                return self._finalize_step_result(result, step_num)
 
         # -- Gate management (execution modes only) ----------------------------
         gate_result = self._manage_gate(gate_name, step_num, skill)
@@ -853,20 +917,30 @@ class OrchestrationRunner:
                 format_error(GATE_DENIED, f"Step {step_num} ({skill}): Gate '{gate_name}' was denied")
             )
             result["status"] = "PAUSED"
-            return result
+            return self._finalize_step_result(result, step_num)
 
         if gate_result in ("failed",):
             self.errors.append(
                 format_error(GATE_AUTO_FAILED, f"Step {step_num} ({skill}): Gate '{gate_name}' auto-failed")
             )
             result["status"] = "FAILED"
-            return result
+            return self._finalize_step_result(result, step_num)
 
         # For execution modes: artifact passed validators, gate approved
         if self.mode == "guided_execution":
             result["status"] = "APPROVED"
         elif self.mode in ("autonomous_execution", "yolo_execution"):
             result["status"] = "VALIDATED"
+        return self._finalize_step_result(result, step_num)
+
+    def _finalize_step_result(self, result: dict, step_num: int) -> dict:
+        """Log step_completed ledger event and return result unchanged."""
+        self._log_ledger_event({
+            "event": "step_completed",
+            "step_id": str(step_num),
+            "status": result.get("status", "UNKNOWN").lower(),
+            "gate_status": result.get("gate_result", ""),
+        })
         return result
 
     def _should_auto_invoke_next(self) -> tuple[bool, str | None]:
@@ -1641,19 +1715,21 @@ class OrchestrationRunner:
         ]
 
         # Determine the runtime name to write in the step sequence log
-        if self.use_fixtures:
+        use_fixtures = getattr(self, "use_fixtures", False)
+        executor = getattr(self, "executor", "dry-run")
+        if use_fixtures:
             runtime_str = "fixture"
         elif self.mode == "prompt_chain":
             runtime_str = "prompt_generation"
         elif self.mode == "plan_only":
             runtime_str = "planning"
         else:
-            if self.executor == "claude-code":
+            if executor == "claude-code":
                 runtime_str = "claude-agent-sdk"
-            elif self.executor == "api":
+            elif executor == "api":
                 runtime_str = "claude-api"
             else:
-                runtime_str = self.executor or "local_execution"
+                runtime_str = executor or "local_execution"
 
         for sr in self.step_results:
             lines.extend([
@@ -2105,6 +2181,25 @@ class OrchestrationRunner:
             print(f"PHASE 1: PREFLIGHT (skipped for plan_only mode)")
             print(f"{'='*60}")
 
+        # -- Ledger: log run_started ------------------------------------------
+        _git_commit = None
+        try:
+            _gc_res = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                capture_output=True, text=True, cwd=self.repo_root
+            )
+            if _gc_res.returncode == 0:
+                _git_commit = _gc_res.stdout.strip()
+        except Exception:
+            pass
+        self._log_ledger_event({
+            "event": "run_started",
+            "run_id": self.session_id,
+            "workflow_id": self.workflow_id,
+            "mode": self.mode,
+            "git_commit": _git_commit,
+        })
+
         # Phase 2: Generate plan
         print(f"{'='*60}")
         print(f"PHASE 2: GENERATE PLAN")
@@ -2220,10 +2315,10 @@ class OrchestrationRunner:
 
         if has_failures:
             print(f"  [WARN]  Execution completed with failures.")
-            return 2
+            return self._finalize_run(2, "failed")
         elif any(sr["status"] == "PAUSED" for sr in self.step_results):
             print(f"  [PAUSE]  Execution paused. Can resume.")
-            return 3
+            return self._finalize_run(3, "paused")
         else:
             # Phase 7: Check for auto-invocation of next workflow (only in execution modes)
             should_invoke, source_artifact = self._should_auto_invoke_next()
@@ -2252,10 +2347,20 @@ class OrchestrationRunner:
                 else:
                     print(f"  [SKIP] Auto-invocation enabled but no recommended workflow found.")
                     print(f"  [OK] Execution completed successfully.")
-                    return 0
+                    return self._finalize_run(0, "completed")
             else:
                 print(f"  [OK] Execution completed successfully.")
-                return 0
+                return self._finalize_run(0, "completed")
+
+    def _finalize_run(self, exit_code: int, status: str) -> int:
+        """Log run_completed ledger event and return exit_code unchanged."""
+        self._log_ledger_event({
+            "event": "run_completed",
+            "run_id": self.session_id,
+            "status": status,
+            "exit_code": exit_code,
+        })
+        return exit_code
 
 
 # ===============================================================================
@@ -2281,7 +2386,241 @@ def list_workflows(repo_root: str) -> None:
         print()
 
 
+def _compute_file_hash(path: str) -> str:
+    """Compute the SHA-256 hash of a file."""
+    import hashlib
+    if not os.path.exists(path):
+        return "file_not_found"
+    sha256 = hashlib.sha256()
+    try:
+        with open(path, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256.update(byte_block)
+        return sha256.hexdigest()
+    except Exception:
+        return "hash_error"
+
+
+def handle_audit_run(args) -> int:
+    """Audit a run ledger JSONL file for causality, hash matches, and validations."""
+    ledger_path = os.path.abspath(args.ledger_path)
+    repo_root = os.path.abspath(args.repo_root)
+
+    if not os.path.exists(ledger_path):
+        print(f"[AUDIT FAIL] Ledger file not found: {ledger_path}", file=sys.stderr)
+        return 1
+
+    events = []
+    try:
+        with open(ledger_path, "r", encoding="utf-8") as f:
+            for line_idx, line in enumerate(f, 1):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    events.append(json.loads(line))
+                except json.JSONDecodeError as e:
+                    print(f"[AUDIT FAIL] Invalid JSON on line {line_idx}: {e}", file=sys.stderr)
+                    return 1
+    except Exception as e:
+        print(f"[AUDIT FAIL] Failed to read ledger file: {e}", file=sys.stderr)
+        return 1
+
+    if not events:
+        print("[AUDIT FAIL] Ledger file is empty", file=sys.stderr)
+        return 1
+
+    # 1. First event must be run_started
+    first_event = events[0]
+    if first_event.get("event") != "run_started":
+        print(f"[AUDIT FAIL] First event in ledger must be 'run_started', found: '{first_event.get('event')}'", file=sys.stderr)
+        return 1
+
+    # Verify git commit format
+    git_commit = first_event.get("git_commit")
+    if not git_commit:
+        print("[AUDIT FAIL] 'run_started' event missing 'git_commit'", file=sys.stderr)
+        return 1
+    
+    if git_commit != "unknown_commit" and not re.match(r"^[0-9a-f]{40}(-dirty)?$", git_commit):
+        print(f"[AUDIT FAIL] Invalid git commit format: '{git_commit}'", file=sys.stderr)
+        return 1
+
+    # Track state transitions and causality
+    steps_started = {}  # step_id -> event_data
+    steps_completed = set()
+    artifact_hashes = {}  # artifact_path -> hash
+
+    for event_idx, event in enumerate(events):
+        event_type = event.get("event")
+        if not event_type:
+            print(f"[AUDIT FAIL] Event at index {event_idx} missing 'event' field", file=sys.stderr)
+            return 1
+
+        timestamp = event.get("timestamp")
+        if not timestamp:
+            print(f"[AUDIT FAIL] Event at index {event_idx} missing 'timestamp'", file=sys.stderr)
+            return 1
+
+        if event_type == "run_started":
+            if event_idx != 0:
+                print(f"[AUDIT FAIL] Multiple 'run_started' events found or it is not first", file=sys.stderr)
+                return 1
+
+        elif event_type == "step_started":
+            step_id = event.get("step_id")
+            skill_id = event.get("skill_id")
+            if not step_id or not skill_id:
+                print(f"[AUDIT FAIL] 'step_started' event at index {event_idx} missing 'step_id' or 'skill_id'", file=sys.stderr)
+                return 1
+
+            if step_id in steps_started:
+                print(f"[AUDIT FAIL] Duplicate step_started for step '{step_id}'", file=sys.stderr)
+                return 1
+            
+            steps_started[step_id] = event
+
+            # Verify inputs exist and hashes match
+            inputs = event.get("inputs", [])
+            for inp in inputs:
+                inp_path = inp.get("path")
+                inp_hash = inp.get("hash")
+                if not inp_path or not inp_hash:
+                    print(f"[AUDIT FAIL] Invalid input structure in step '{step_id}': {inp}", file=sys.stderr)
+                    return 1
+
+                abs_inp_path = os.path.join(repo_root, inp_path)
+                if not os.path.exists(abs_inp_path):
+                    print(f"[AUDIT FAIL] Input file '{inp_path}' for step '{step_id}' does not exist on disk", file=sys.stderr)
+                    return 1
+
+                current_hash = _compute_file_hash(abs_inp_path)
+                if current_hash != inp_hash:
+                    print(f"[AUDIT FAIL] Hash mismatch for input '{inp_path}' in step '{step_id}': expected '{inp_hash}', got '{current_hash}'", file=sys.stderr)
+                    return 1
+
+        elif event_type == "artifact_created":
+            step_id = event.get("step_id")
+            artifact_id = event.get("artifact_id")
+            path = event.get("path")
+            art_hash = event.get("hash")
+
+            if not step_id or not artifact_id or not path or not art_hash:
+                print(f"[AUDIT FAIL] 'artifact_created' missing required fields", file=sys.stderr)
+                return 1
+
+            if step_id not in steps_started:
+                print(f"[AUDIT FAIL] 'artifact_created' for step '{step_id}' but step has not started", file=sys.stderr)
+                return 1
+
+            if step_id in steps_completed:
+                print(f"[AUDIT FAIL] 'artifact_created' for step '{step_id}' after step already completed", file=sys.stderr)
+                return 1
+
+            # Verify file exists on disk and hash matches
+            abs_path = os.path.join(repo_root, path)
+            if not os.path.exists(abs_path):
+                print(f"[AUDIT FAIL] Artifact file '{path}' does not exist on disk", file=sys.stderr)
+                return 1
+
+            current_hash = _compute_file_hash(abs_path)
+            if current_hash != art_hash:
+                print(f"[AUDIT FAIL] Hash mismatch for artifact '{path}': expected '{art_hash}', got '{current_hash}'", file=sys.stderr)
+                return 1
+
+            artifact_hashes[path] = art_hash
+
+        elif event_type == "validation_completed":
+            step_id = event.get("step_id")
+            artifact_id = event.get("artifact_id")
+            validator_command = event.get("validator_command")
+            exit_code = event.get("exit_code")
+            status = event.get("status")
+
+            if step_id not in steps_started:
+                print(f"[AUDIT FAIL] 'validation_completed' for step '{step_id}' but step has not started", file=sys.stderr)
+                return 1
+
+            if step_id in steps_completed:
+                print(f"[AUDIT FAIL] 'validation_completed' for step '{step_id}' after step already completed", file=sys.stderr)
+                return 1
+
+            # Locate corresponding artifact_created event to verify hash matches what was validated
+            art_created = next((e for e in events[:event_idx] if e.get("event") == "artifact_created" and e.get("step_id") == step_id and e.get("artifact_id") == artifact_id), None)
+            if not art_created:
+                print(f"[AUDIT FAIL] Validation completed for step '{step_id}' / '{artifact_id}', but no corresponding 'artifact_created' event found", file=sys.stderr)
+                return 1
+
+        elif event_type == "step_completed":
+            step_id = event.get("step_id")
+            status = event.get("status")
+            gate_status = event.get("gate_status")
+
+            if not step_id or not status or not gate_status:
+                print(f"[AUDIT FAIL] 'step_completed' event missing required fields", file=sys.stderr)
+                return 1
+
+            if step_id not in steps_started:
+                print(f"[AUDIT FAIL] Step completed '{step_id}' before start event", file=sys.stderr)
+                return 1
+
+            if step_id in steps_completed:
+                print(f"[AUDIT FAIL] Duplicate step_completed for step '{step_id}'", file=sys.stderr)
+                return 1
+
+            steps_completed.add(step_id)
+
+            # Chronological checks: start must have timestamp <= complete timestamp
+            start_event = steps_started[step_id]
+            if start_event["timestamp"] > timestamp:
+                print(f"[AUDIT FAIL] Chronological causality violation: step '{step_id}' start timestamp '{start_event['timestamp']}' is after completion timestamp '{timestamp}'", file=sys.stderr)
+                return 1
+
+            # If status is passed/completed, validation must have passed (exit_code == 0) unless it was skipped
+            if status in ("passed", "completed"):
+                val_event = next((e for e in events[:event_idx] if e.get("event") == "validation_completed" and e.get("step_id") == step_id), None)
+                if not val_event and gate_status != "bypassed":
+                    print(f"[AUDIT FAIL] Step '{step_id}' completed with status '{status}' but no validation event was recorded", file=sys.stderr)
+                    return 1
+                if val_event and val_event.get("exit_code") != 0:
+                    print(f"[AUDIT FAIL] Step '{step_id}' completed with status '{status}' but validator failed with exit code {val_event.get('exit_code')}", file=sys.stderr)
+                    return 1
+
+        elif event_type == "run_completed":
+            if event_idx != len(events) - 1:
+                print(f"[AUDIT FAIL] 'run_completed' event must be the last event in the ledger, found at index {event_idx}", file=sys.stderr)
+                return 1
+
+            run_status = event.get("status")
+            if run_status == "completed":
+                for step_id in steps_started:
+                    if step_id not in steps_completed:
+                        print(f"[AUDIT FAIL] Run completed but step '{step_id}' remains uncompleted", file=sys.stderr)
+                        return 1
+            elif run_status == "failed":
+                has_failure = any(e.get("status") == "failed" for e in events if e.get("event") == "step_completed")
+                if not has_failure:
+                    print(f"[AUDIT FAIL] Run marked as failed but no step completion recorded status 'failed'", file=sys.stderr)
+                    return 1
+
+    print("[AUDIT SUCCESS] Run ledger passes all causality, hash, and validation checks.")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
+
+    # Intercept audit-run mode
+    if argv and argv[0] == "audit-run":
+        audit_parser = argparse.ArgumentParser(
+            description="Audit a run ledger for causality, hashes, and validation status."
+        )
+        audit_parser.add_argument("--ledger-path", required=True, help="Path to the run ledger JSONL file")
+        audit_parser.add_argument("--repo-root", default=".", help="Repository root directory")
+        audit_args = audit_parser.parse_args(argv[1:])
+        return handle_audit_run(audit_args)
+
     parser = argparse.ArgumentParser(
         description="Production-grade orchestration runner for sensemaking workflows."
     )

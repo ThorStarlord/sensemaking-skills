@@ -102,3 +102,16 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 - [Repo Analysis Template](references/repo-analysis-template.md)
 - [Weakness Types](references/weakness-types.md)
 - [Evidence Rules](references/evidence-rules.md)
+
+## Execution Protocol
+
+When executing as part of a workflow run:
+
+1. Read the provided run_id, step_id, input artifacts, and expected artifact_id.
+2. Call `scripts/run-ledger.py start-step`.
+3. Call `scripts/create-artifact.py` to resolve the output path.
+4. Produce the artifact at that exact path.
+5. Call `scripts/validate-and-record.py`.
+6. Only report completion if validation passes.
+7. Never mark the next step complete yourself.
+
