@@ -81,6 +81,14 @@ The workflow orchestration system follows four key design patterns, each proven 
    - **Why**: Audit trail is complete; divergences never silent; scope creep requires intentional approval; intent changes are safely detected
    - See: [docs/adr/0008-routing-divergence-audit.md](docs/adr/0008-routing-divergence-audit.md)
 
+9. **Orchestration Ownership: Skills Act, Scripts Record**
+   - The system supports two valid orchestration shapes:
+     - **Runner-led orchestration**: `workflow-runtime.py` owns the control loop. It calls worker skills, validates artifacts, manages gates, and records run evidence. Best for repeatable, production-like workflows where the full sequence must be machine-auditable.
+     - **Skill-led orchestration**: An orchestrator skill owns the semantic control loop. Worker skills create artifacts. Deterministic helper scripts create, validate, normalize, and record artifacts. Best for exploratory or AI-native workflows where the next step depends on judgment.
+   - In both cases, proof does not come from the agent's memory. Proof comes from durable artifacts, validator results, and an append-only run ledger.
+   - **Artifacts prove outputs. Validators prove outputs satisfy contracts. Run ledgers prove the causal chain**: which skill ran, with which inputs, on which repo state, producing which artifact, validated by which command, with which result.
+   - Therefore, `workflow-runtime.py` is not required to be the only caller of skills. Its deeper responsibility is to provide a deterministic evidence model. If orchestration is skill-led, helper scripts must preserve the same evidence guarantees.
+
 **For designers**: See [docs/orchestration-patterns.md](docs/orchestration-patterns.md) for detailed patterns and [docs/workflow-design-guide.md](docs/workflow-design-guide.md) for step-by-step workflow design instructions.
 
 ## Routing Source of Truth

@@ -365,6 +365,16 @@ usage: workflow-runtime.py [--workflow WORKFLOW] [--mode MODE]
 | `--use-fixtures` | Use fixture artifacts instead of executing real skills | off |
 | `--chained` | (Internal) Invoked as a chained workflow from another run | off |
 
+## Execution Model
+
+This repository supports a hybrid execution model:
+
+- **Runner-led orchestration**: `workflow-runtime.py` owns the control loop, calling worker skills, validating artifacts, managing gates, and recording run evidence. Use this for repeatable, production-like workflows where the full sequence must be machine-auditable.
+- **Skill-led orchestration**: An orchestrator skill owns the semantic control loop. Worker skills create artifacts. Deterministic helper scripts (`validate-*.py`, `record-step.py`) create, validate, and record artifacts. Use this for exploratory or AI-native workflows where the next step depends on judgment.
+- In both models, proof comes from durable artifacts, validator results, and an append-only run ledger — not from agent memory.
+
+See [CONTEXT.md](CONTEXT.md) for the full principle under **Orchestration Principles → Orchestration Ownership: Skills Act, Scripts Record**.
+
 ## Skill Invocation & Downstream Workflows
 
 ### Automatic Skill Chaining (Phase 5 Complete)
