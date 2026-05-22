@@ -9,13 +9,18 @@ scripts_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scr
 if scripts_dir not in sys.path:
     sys.path.insert(0, scripts_dir)
 
-spec = importlib.util.spec_from_file_location(
-    "workflow_runtime",
-    os.path.join(scripts_dir, "workflow-runtime.py")
-)
-workflow_runtime = importlib.util.module_from_spec(spec)
-sys.modules["workflow_runtime"] = workflow_runtime
-spec.loader.exec_module(workflow_runtime)
+# Reuse the already-loaded module if another test file loaded it first, so all test
+# files share one module object (clobbering sys.modules breaks @patch in sibling files).
+if "workflow_runtime" in sys.modules:
+    workflow_runtime = sys.modules["workflow_runtime"]
+else:
+    spec = importlib.util.spec_from_file_location(
+        "workflow_runtime",
+        os.path.join(scripts_dir, "workflow-runtime.py")
+    )
+    workflow_runtime = importlib.util.module_from_spec(spec)
+    sys.modules["workflow_runtime"] = workflow_runtime
+    spec.loader.exec_module(workflow_runtime)
 
 OrchestrationRunner = workflow_runtime.OrchestrationRunner
 

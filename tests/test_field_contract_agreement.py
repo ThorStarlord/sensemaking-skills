@@ -28,12 +28,18 @@ if SCRIPTS_DIR not in sys.path:
 from _validator_utils import load_artifact_contracts  # noqa: E402
 
 # Load scripts/workflow-runtime.py dynamically due to the hyphen in the filename.
-_spec = importlib.util.spec_from_file_location(
-    "workflow_runtime", os.path.join(SCRIPTS_DIR, "workflow-runtime.py")
-)
-workflow_runtime = importlib.util.module_from_spec(_spec)
-sys.modules["workflow_runtime"] = workflow_runtime
-_spec.loader.exec_module(workflow_runtime)
+# Reuse the already-loaded module if a sibling test file loaded it first; clobbering
+# sys.modules["workflow_runtime"] gives test files divergent module objects and breaks
+# @patch("workflow_runtime.<x>") across files.
+if "workflow_runtime" in sys.modules:
+    workflow_runtime = sys.modules["workflow_runtime"]
+else:
+    _spec = importlib.util.spec_from_file_location(
+        "workflow_runtime", os.path.join(SCRIPTS_DIR, "workflow-runtime.py")
+    )
+    workflow_runtime = importlib.util.module_from_spec(_spec)
+    sys.modules["workflow_runtime"] = workflow_runtime
+    _spec.loader.exec_module(workflow_runtime)
 
 OrchestrationRunner = workflow_runtime.OrchestrationRunner
 
