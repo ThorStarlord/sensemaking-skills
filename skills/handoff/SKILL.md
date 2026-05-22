@@ -14,9 +14,13 @@ Produces a **Prompt Handoff** to ensure that the judgment reached in sensemaking
 4. **Task Formulation**: Write a clear, actionable task statement.
 5. **Constraint Mapping**: List all "must-haves" and "must-nots."
 6. **Stop Condition**: Define exactly when the next skill should stop for review.
+7. **Intent Carry-Forward**: Emit the machine-readable block (section 9) with a
+   REQUIRED `source_intent_ref`. Copy it from the input artifact's own
+   `source_intent_ref` so the intent audit trail stays unbroken (ADR 0006); if the
+   input has none, reference the run's `00-user-intent.md`.
 
 ## Output Format
-Every response must follow the [Prompt Handoff](references/prompt-handoff-template.md) structure.
+Every response must follow the [Prompt Handoff](references/prompt-handoff-template.md) structure, including the section 9 machine-readable block with `source_intent_ref`.
 
 ## Boundary Rule
 Do not execute the prompt yourself. Your job is to package the context for the user to copy/paste or for the orchestrator to pass.
