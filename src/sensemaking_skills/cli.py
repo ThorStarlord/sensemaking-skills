@@ -1,5 +1,6 @@
 """Command-line interface for Sensemaking Skills."""
 
+import os
 import sys
 from pathlib import Path
 from typing import Optional
@@ -51,46 +52,40 @@ def analyze(repo: Path, workflow: str, mode: str) -> None:
     try:
         click.echo(f"Loading configuration from {repo}...")
 
-        # Change to repo directory for config resolution
-        import os
-
-        original_cwd = os.getcwd()
-        os.chdir(repo)
-
         try:
             # Load configuration
-            config_manager = ConfigManager()
-            config = config_manager.config
+            config_manager = ConfigManager(str(repo))
+            config = config_manager.load()
 
-            click.echo(f"Configuration loaded successfully")
-            click.echo(f"  Project root: {config.project_root}")
-            click.echo(f"  Artifacts dir: {config.artifacts_dir}")
-            click.echo(f"  Skills dir: {config.skills_dir}")
-            click.echo(f"  Workflows dir: {config.workflows_dir}")
+            click.echo(f"✓ Configuration loaded")
+            click.echo(f"  Repository: {repo}")
+            click.echo(f"  Artifacts: {config.artifacts_dir}")
+            click.echo()
 
-            # Create orchestrator
-            orchestrator = SkillsOrchestrator(config=config)
-            click.echo(f"\nOrchestrator initialized: {orchestrator}")
+        except FileNotFoundError as e:
+            click.echo(f"✗ Configuration file not found: {repo}/sensemaking-config.yaml", err=True)
+            click.echo(f"  Hint: Run 'sensemaking-skills init --repo {repo}' to create one", err=True)
+            sys.exit(1)
+        except Exception as e:
+            click.echo(f"✗ Error loading configuration: {e}", err=True)
+            sys.exit(1)
 
-            # Show workflow info
-            click.echo(f"\nWorkflow: {workflow}")
-            click.echo(f"Mode: {mode}")
+        # Create orchestrator
+        orchestrator = SkillsOrchestrator(config=config)
+        click.echo(f"Orchestrator initialized")
 
-            click.echo(f"\nStarting analysis...")
-            click.echo("This feature is under development in Task 3 (Refactor Workflow Runtime)")
+        # Show workflow info
+        click.echo(f"\nWorkflow: {workflow}")
+        click.echo(f"Mode: {mode}")
 
-        finally:
-            os.chdir(original_cwd)
+        click.echo(f"\nStarting analysis of {repo}...")
+        click.echo("This feature is under development in Task 3 (Refactor Workflow Runtime)")
+        # TODO: orchestrator.run_workflow() will be implemented in Task 3
 
-    except FileNotFoundError as e:
-        click.echo(f"Error: {e}", err=True)
-        click.echo(
-            "Hint: Run 'sensemaking-skills init --repo <repo-path>' to initialize configuration",
-            err=True,
-        )
-        sys.exit(1)
+    except SystemExit:
+        raise
     except Exception as e:
-        click.echo(f"Error: {e}", err=True)
+        click.echo(f"✗ Unexpected error: {e}", err=True)
         sys.exit(1)
 
 
