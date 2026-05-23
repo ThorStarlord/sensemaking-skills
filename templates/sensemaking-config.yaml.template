@@ -1,0 +1,28 @@
+# Sensemaking Skills Configuration Template
+# Copy this file to your project root or .claude directory as sensemaking-config.yaml
+# and customize the paths for your repository structure.
+
+# Root directory of your project
+project_root: .
+
+# Directory where artifacts are stored
+# Artifacts are YAML/Markdown files that define plans, issues, and workflow state
+artifacts_dir: artifacts
+
+# Context file that documents the domain model and conventions
+context_file: CONTEXT.md
+
+# Directory containing skill implementations
+skills_dir: skills
+
+# Directory containing workflow definitions
+workflows_dir: workflows
+
+# Directory containing Architecture Decision Records
+adr_dir: docs/adr
+
+# Optional: Custom configuration for specific skills
+# skills:
+#   my-skill:
+#     enabled: true
+#     config_key: value
