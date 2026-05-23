@@ -1,16 +1,17 @@
 """Workflow orchestration runner for Sensemaking Skills.
 
 Delegates to the legacy workflow-runtime.py for orchestration execution
-while providing a modern, configurable interface.
+while providing a modern, configurable interface. Also manages skill execution.
 """
 
 import os
 import sys
 import subprocess
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from pathlib import Path
 from .config import ConfigManager, SkillsConfig
 from .paths import PathResolver
+from .skills import BaseSkill, RepoSensemakerSkill, WorkflowPlannerSkill
 
 
 class SkillsOrchestrator:
@@ -138,6 +139,69 @@ class SkillsOrchestrator:
 
         result = subprocess.run(cmd, cwd=project_root)
         return result.returncode
+
+    def run_skill(self, skill: BaseSkill, **kwargs) -> Dict[str, Any]:
+        """Execute a skill and return results.
+
+        Args:
+            skill: BaseSkill instance to execute
+            **kwargs: Arguments to pass to the skill's run method
+
+        Returns:
+            Dictionary containing skill execution results
+        """
+        try:
+            result = skill.run(**kwargs)
+            return result
+        except Exception as e:
+            return {
+                "artifact_id": None,
+                "success": False,
+                "message": f"Skill execution failed: {e}",
+            }
+
+    def run_repo_sensemaker_skill(self) -> Dict[str, Any]:
+        """Execute the RepoSensemakerSkill.
+
+        Returns:
+            Dictionary containing skill execution results
+        """
+        skill = RepoSensemakerSkill(self.config)
+        return self.run_skill(skill)
+
+    def run_workflow_planner_skill(
+        self, brief_artifact_id: str = "repository_sensemaking_brief"
+    ) -> Dict[str, Any]:
+        """Execute the WorkflowPlannerSkill.
+
+        Args:
+            brief_artifact_id: ID of the repository sensemaking brief artifact
+
+        Returns:
+            Dictionary containing skill execution results
+        """
+        skill = WorkflowPlannerSkill(self.config)
+        return self.run_skill(skill, brief_artifact_id=brief_artifact_id)
+
+    def instantiate_skill(self, skill_name: str) -> Optional[BaseSkill]:
+        """Instantiate a skill by name.
+
+        Args:
+            skill_name: Name of the skill class to instantiate
+
+        Returns:
+            Skill instance or None if not found
+        """
+        skill_map = {
+            "RepoSensemakerSkill": RepoSensemakerSkill,
+            "WorkflowPlannerSkill": WorkflowPlannerSkill,
+        }
+
+        skill_class = skill_map.get(skill_name)
+        if not skill_class:
+            return None
+
+        return skill_class(self.config)
 
     def _handle_auto_invocation(self, parent_session: Optional[str] = None) -> int:
         """Handle auto-invocation and chaining logic.
