@@ -1,0 +1,17 @@
+# Test repository configuration for integration tests
+# This config demonstrates default path usage
+
+# Artifacts directory for testing
+artifacts_dir: artifacts
+
+# Context file documentation
+context_file: CONTEXT.md
+
+# Skills directory
+skills_dir: skills
+
+# Workflows directory
+workflows_dir: workflows
+
+# Architecture decision records
+adr_dir: docs/adr
