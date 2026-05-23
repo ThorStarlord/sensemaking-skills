@@ -32,7 +32,9 @@ setup(
     ],
     python_requires=">=3.8",
     install_requires=[
-        "PyYAML>=5.4",
+        "PyYAML>=6.0",
+        "click>=8.0",
+        "anthropic>=0.7.0",
     ],
     extras_require={
         "dev": [

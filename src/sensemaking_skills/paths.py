@@ -68,6 +68,19 @@ class PathResolver:
         """
         return (self.artifacts_dir() / f"{artifact_id}.md").resolve()
 
+    def session_dir(self, session_id: str) -> Path:
+        """Get session directory for run artifacts.
+
+        Args:
+            session_id: Unique session identifier
+
+        Returns:
+            Path to session directory (created if doesn't exist)
+        """
+        session_dir = self.project_root / "artifacts" / session_id
+        session_dir.mkdir(parents=True, exist_ok=True)
+        return session_dir
+
     def skill_dir(self, skill_name: str) -> Path:
         """Get path to a specific skill directory.
 

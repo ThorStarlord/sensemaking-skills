@@ -84,6 +84,14 @@ class ConfigManager:
         # Return default path (may not exist yet)
         return Path.cwd() / "sensemaking-config.yaml"
 
+    def load(self) -> SkillsConfig:
+        """Load configuration for this project.
+
+        Returns:
+            SkillsConfig with paths and settings
+        """
+        return self._load_config()
+
     def _load_config(self) -> SkillsConfig:
         """Load configuration from file.
 
