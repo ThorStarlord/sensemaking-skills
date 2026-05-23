@@ -89,6 +89,15 @@ The workflow orchestration system follows four key design patterns, each proven 
    - **Artifacts prove outputs. Validators prove outputs satisfy contracts. Run ledgers prove the causal chain**: which skill ran, with which inputs, on which repo state, producing which artifact, validated by which command, with which result.
    - Therefore, `workflow-runtime.py` is not required to be the only caller of skills. Its deeper responsibility is to provide a deterministic evidence model. If orchestration is skill-led, helper scripts must preserve the same evidence guarantees.
 
+10. **Canonical Vocabulary Enforcement** (ADR 0011)
+   - **Single source of truth**: `docs/canonical-vocabulary.yaml` defines all enumerated values (fog_types, routing_fields, gates, execution_modes, workflow_ids, artifact_ids)
+   - **Compile-time validation**: Path drift tests prevent stale references; enum consistency tests verify routing fields match registries
+   - **Runtime validation**: `validate-artifact.py` enforces enum values at artifact creation time; producers must emit canonical forms
+   - **Fog type normalization**: Validators accept aliases (ui, product, docs) but normalize to canonical forms (ui_fog, product_fog, docs_fog) before artifact storage
+   - **Routing guarantee**: By the time workflow-planner reads an artifact, all enum fields are validated canonical — no aliasing, no unknowns
+   - **Why**: Prevents contract drift (the regression from PR #14); makes auto-invocation safe because recommended_workflow_id is guaranteed valid
+   - **See**: [docs/HARDENING_STATUS.md](docs/HARDENING_STATUS.md)
+
 **For designers**: See [docs/orchestration-patterns.md](docs/orchestration-patterns.md) for detailed patterns and [docs/workflow-design-guide.md](docs/workflow-design-guide.md) for step-by-step workflow design instructions.
 
 ## Routing Source of Truth
