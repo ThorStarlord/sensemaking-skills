@@ -1,7 +1,7 @@
 # Contract/Naming Drift Hardening Status
 
-**Last Updated**: 2026-05-22  
-**Status**: 3 of 5 steps complete (60%)
+**Last Updated**: 2026-05-22 (Phase 1B & Phase 2 complete)  
+**Status**: 4+ of 5 steps complete (80%+) - Vocabulary now executable
 
 ## Overview
 
@@ -47,21 +47,103 @@ Specific regressions prevented:
 - **Vocabulary Drift**: Inconsistent fog type references caught by test_fog_type_consistency_in_docs
 - **Ghost Features**: Path references verified to canonical locations
 
+## Phase 1B: Executable Vocabulary ✅ (NEW)
+**Status**: Complete and deployed
+
+This phase made the canonical vocabulary **executable** rather than documentation-only:
+
+### load_canonical_vocabulary() Function ✅
+**File**: `scripts/_validator_utils.py`
+
+Added runtime loader for canonical vocabulary:
+```python
+def load_canonical_vocabulary(repo_root: str) -> dict | None:
+    """Load canonical-vocabulary.yaml from the repo."""
+    path = os.path.join(repo_root, "docs", "canonical-vocabulary.yaml")
+    return load_yaml(path)
+```
+
+Now validators can access vocabulary the same way they load workflow-registry and artifact-contracts.
+
+### Fog Type Normalization Infrastructure ✅
+**File**: `scripts/_validator_utils.py`
+
+Added two new functions:
+- `build_fog_type_normalizer(vocab)`: Creates alias→canonical mapping from vocabulary
+- `normalize_fog_type(value, mapping)`: Validates and normalizes fog types
+
+Enables validators to:
+- Accept alias forms (product, ui, docs, architecture, integration)
+- Normalize to canonical forms (product_fog, ui_fog, etc.)
+- Reject unknown values with clear errors
+
+## Phase 2: Executable Fog Type Normalization ✅ (NEW)
+**Status**: Complete with validator and tests
+
+### validate-fog-type-normalization.py Validator ✅
+**File**: `scripts/validate-fog-type-normalization.py`
+
+Production validator that:
+- Accepts fog type aliases in artifact machine-readable sections
+- Normalizes to canonical forms before artifact storage
+- Rejects unknown fog types with `INVALID_FOG_TYPE` error code
+- Handles missing machine-readable sections gracefully
+- Parses markdown code fences correctly
+
+Error codes:
+- ARTIFACT_NOT_FOUND, YAML_PARSE_ERROR, VOCAB_NOT_FOUND
+- INVALID_FOG_TYPE, INVALID_SECONDARY_FOG_TYPE
+
+### Fog Type Normalization Tests ✅
+**File**: `tests/test_fog_type_normalization.py` (4 tests)
+
+Test coverage:
+- `test_normalizes_canonical_forms`: Canonical fog types pass validation
+- `test_normalizes_alias_forms`: Aliases (product, ui, docs) normalize correctly
+- `test_rejects_unknown_fog_types`: Unknown values are rejected
+- `test_handles_missing_machine_section`: Graceful handling of missing sections
+
+### Expanded Canonical Vocabulary ✅
+**File**: `docs/canonical-vocabulary.yaml` (100% registry coverage)
+
+**Before**: 5 workflows, 6 artifacts  
+**After**: 19 workflows, 33 artifacts (100% coverage of live registries)
+
+Each workflow/artifact now includes:
+- Canonical ID
+- Category (diagnostic, implementation, strategy, etc.)
+- Display name and description
+- Producer/consumer info
+- Typical fog types (for workflows)
+
+### Fixed workflow-planner Prose ✅
+**File**: `skills/workflow-planner/SKILL.md`
+
+Updated routing logic documentation:
+- Removed alias-based examples (`if fog_type == "product"`)
+- Updated to canonical comparisons (`if fog_type == "product_fog"`)
+- Added critical warning about canonical-only values downstream
+- Clarified that normalization happens in validators, not runtime
+
+### Strengthened Path Drift Tests ✅
+**File**: `tests/test_path_drift.py` (enhanced + 2 new tests)
+
+Enhanced tests:
+- `test_no_stale_paths_in_skill_code`: Now checks SKILL.md, validator.py, AND reference files (*.yaml, *.md)
+- `test_canonical_paths_used_in_docs`: Verifies canonical paths are referenced
+- `test_fog_type_consistency_in_docs`: Ensures skills reference vocabulary
+
+New auto-validation tests:
+- `test_vocabulary_covers_all_workflows`: Every workflow ID in registry is in vocabulary
+- `test_vocabulary_covers_all_artifacts`: Every artifact ID in contracts is in vocabulary
+- Tests auto-fail if registries contain unknown enums
+
 ## Pending Steps
 
-### Step 3: Normalize Fog Type Names Throughout Codebase ⏳
+### Step 3: Normalize Fog Type Names in repo-sensemaker Output ⏳
 **Status**: Awaiting implementation
 
-**What's needed**:
-- Validators normalize aliases to canonical forms (design documented in canonical-vocabulary.yaml section "Usage -> In Validators")
-- Repository sensemaker uses canonical fog types in output
-- Workflow planner reads and outputs canonical fog types
-- All downstream consumers use canonical values
-
-**Where normalization happens**: 
-- Input: Validators accept "product", "ui", "ux", "docs", "documentation", etc.
-- Output: All artifacts contain "product_fog", "ui_fog", "docs_fog", etc.
-- Reference: canonical-vocabulary.yaml section "Fog Types"
+Once repo-sensemaker uses the fog type normalizer, its output will always be canonical.
 
 ### Step 4: Tier-1/Tier-2 Validation Split ⏳
 **Status**: Awaiting implementation
@@ -143,7 +225,31 @@ Specific regressions prevented:
 
 | Category | Count |
 |----------|-------|
-| Canonical enumeration values defined | 25+ |
-| Regression test cases | 10 |
-| Full test suite passing | 116 |
-| Pending hardening steps | 2 |
+| Workflows in canonical vocabulary | 19 |
+| Artifacts in canonical vocabulary | 33 |
+| Fog type normalization tests | 4 |
+| Path drift regression tests | 11 |
+| Auto-validation coverage tests | 2 |
+| Full test suite passing | 122 |
+| Pending hardening steps | 1 |
+
+## Vocabulary Executability
+
+The vocabulary is now loaded and used at runtime:
+
+```python
+# In any validator
+from _validator_utils import load_canonical_vocabulary, build_fog_type_normalizer
+
+vocab = load_canonical_vocabulary(repo_root)
+normalizer = build_fog_type_normalizer(vocab)
+
+# Accept alias, emit canonical
+canonical = normalize_fog_type("ui", normalizer)  # Returns "ui_fog"
+```
+
+This ensures:
+- Single source of truth
+- Validation at artifact creation time
+- Guaranteed canonical values downstream
+- Clear error messages for unknowns
