@@ -187,16 +187,16 @@ Choose your path:
 ### Manual Path (Full Control)
 ```bash
 # Run diagnostic workflow
-python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode guided_execution
 
 # Read output, then manually invoke implementation workflow
-python scripts/workflow-runtime.py product-implementation-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow product-implementation-workflow --mode guided_execution
 ```
 
 ### Automation Path (Full Speed)
 ```bash
 # Single command: entire pipeline auto-chains based on fog_type
-python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode autonomous_execution
 ```
 
 ---
@@ -237,17 +237,18 @@ fast-path-workflow (DEFAULT) → Diagnose fog type
 |------|-------|-------|----------|
 | `guided_execution` | Pause at every gate (user approves) | Slowest | Development, exploration |
 | `autonomous_execution` | Auto-approve valid gates | Fast | Production, automation |
+| `prompt_chain` | Generate prompts for manual execution | Fast | Multi-step planning |
 | `plan_only` | No execution, show plan only | Instant | Validation, planning |
-| `yolo_execution` | No gates, full automation | Fastest | Experimental only |
+| `yolo_execution` | Bypass gates; validators still enforce | Fastest | Experimental only |
 
 ### Examples
 
 ```bash
 # Manual path with control
-python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode guided_execution
 
 # Automation path with auto-chaining
-python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode autonomous_execution
 
 # List all workflows
 python scripts/workflow-runtime.py --list-workflows
@@ -315,7 +316,7 @@ The system supports five execution modes ranging from fully automatic to read-on
 
 **Guided flow step by step:**
 
-1. `python scripts/workflow-runtime.py <workflow-name> --mode guided_execution`
+1. `python scripts/workflow-runtime.py --workflow <workflow-name> --mode guided_execution`
 2. Provide initial inputs (vague problem or repository context)
 3. Skills chain automatically with approval gates:
    - Step completes → orchestrator pauses

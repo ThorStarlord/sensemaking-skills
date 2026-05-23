@@ -112,7 +112,7 @@ $ python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execut
 → Output: Complete solution (brief, PRD, issues, code)
 ```
 
-### Four Execution Modes
+### Five Execution Modes
 
 Orthogonal to invocation paths; controls gate behavior and approval strategy.
 
@@ -120,21 +120,25 @@ Orthogonal to invocation paths; controls gate behavior and approval strategy.
 |------|---|---|---|---|
 | **guided_execution** | Pause at every gate, wait for user approval | Slowest | Explicit user approval at each gate | Development, learning, complex decisions |
 | **autonomous_execution** | Auto-approve gates if validation passes | Fast | Validation-based approval | Production, known workflows, trusted contexts |
+| **prompt_chain** | Generate full prompt chain, no execution | Fast | None (validation only) | Multi-step planning, orchestration |
 | **plan_only** | No execution, show plan only | Instant | Planning only | Validation, dry-run, exploring consequences |
-| **yolo_execution** | No gates, no validation, full automation | Fastest | No approval | Experimental, trusted context only |
+| **yolo_execution** | Bypass approval gates; validators still enforce artifact validity | Fastest | Validation-based only | Experimental, trusted context only |
 
 ### Invocation Path × Execution Mode Matrix
 
 ```
 Manual Path:
-  + guided_execution      = Step-by-step with user control
-  + plan_only             = Dry-run each workflow before committing
+  + guided_execution      = Step-by-step with user control at gates
   + autonomous_execution  = Run manually but with auto-approval (uncommon)
+  + plan_only             = Dry-run each workflow, inspect plan without execution
+  + prompt_chain          = Generate prompts for manual execution later
 
 Automation Path:
   + autonomous_execution  = Full pipeline with validation-based gates (RECOMMENDED)
-  + plan_only             = Show what full pipeline would do (good for validation)
-  + yolo_execution        = Full automation with no safety checks (experimental)
+  + yolo_execution        = Full automation with gates bypassed (experimental)
+
+NOTE: Auto-invocation only occurs in guided_execution, autonomous_execution, and yolo_execution.
+      plan_only and prompt_chain exit after plan generation; they do NOT auto-invoke next workflow.
 ```
 
 ---
@@ -254,7 +258,7 @@ We chose **dual-path architecture** (manual + automation) over single-path becau
 
 - **Implementation**: See [GETTING_STARTED.md](../../GETTING_STARTED.md) for user guide
 - **Automation Details**: See [ADR 0005](0005-skill-invocation-via-workflows.md) for auto-invocation mechanics
-- **Canonical Vocabulary**: See [ADR 0011](docs/adr/0011-canonical-vocabulary-enforcement.md) for enum validation
+- **Canonical Vocabulary**: See [ADR 0011](0011-canonical-vocabulary-enforcement.md) for enum validation
 - **Reference**: See [workflow-registry.yaml](../../skills/workflow-planner/references/workflow-registry.yaml)
 
 ---

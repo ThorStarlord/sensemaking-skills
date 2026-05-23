@@ -36,7 +36,7 @@ python scripts/workflow-runtime.py --list-workflows
 
 ```bash
 # Step 1: Run diagnostic workflow
-python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode guided_execution
 
 # Output will show:
 # - Repository analysis (fog_type: product_fog)
@@ -44,7 +44,7 @@ python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
 # - User must read and approve at gates
 
 # Step 2: User reads brief and manually invokes next workflow
-python scripts/workflow-runtime.py product-implementation-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow product-implementation-workflow --mode guided_execution
 
 # Step 3: Implementation workflow runs
 # - docs-aligner → discovery → opportunity-tree → to-prd → to-issues → triage → tdd
@@ -99,7 +99,7 @@ python scripts/workflow-runtime.py --list-workflows
 
 ```bash
 # Single invocation: entire pipeline runs automatically
-python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode autonomous_execution
 
 # System automatically:
 # Stage 1: repo-sensemaker analyzes repository
@@ -117,6 +117,7 @@ python scripts/workflow-runtime.py --mode autonomous_execution
 
 # Same as above - analyzes repository and automatically invokes appropriate
 # implementation workflow (product/ui/docs/architecture) based on detected fog type
+# Workflow defaults to full-local-sensemaking if not specified
 ```
 
 ---
@@ -129,31 +130,37 @@ Control user approval and automation with execution modes:
 |------|-------|-------|--------------|----------|
 | **guided_execution** | Pause at every gate (user approves each step) | Slowest | Full control | Development, exploration, learning |
 | **autonomous_execution** | Auto-approve if validation passes | Fast | Medium (rules-based) | Known workflows, production with guardrails |
+| **prompt_chain** | Generate full prompt chain for manual execution | Fast | None (planning only) | Multi-step planning, orchestration setup |
 | **plan_only** | No execution, just show plan | Instant | Planning only | Validation, seeing what would happen |
-| **yolo_execution** | No gates, no validation, full speed | Fastest | None (full automation) | Experimental, trusted contexts only |
+| **yolo_execution** | Bypass approval gates; validators still enforce artifact validity | Fastest | None (validation-based) | Experimental, trusted contexts only |
 
 ### Example: Same Workflow, Different Modes
 
 ```bash
-# Mode 1: Guided (default) - Pause at each step for user approval
-python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+# Mode 1: Guided - Pause at each step for user approval
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode guided_execution
 # -> Pauses after repo-sensemaker for user to review
 # -> Pauses after workflow-planner for user to approve routing
 # -> User must then manually invoke implementation workflow
 
 # Mode 2: Autonomous - Auto-approve and auto-chain
-python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode autonomous_execution
 # -> No pauses; automatically chains to implementation workflow
 # -> Returns complete solution (PRD, issues, code)
 
-# Mode 3: Plan Only - Just show the plan, don't execute
-python scripts/workflow-runtime.py fast-path-workflow --mode plan_only
+# Mode 3: Prompt Chain - Generate full prompt chain
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode prompt_chain
+# -> Generates prompts for manual execution of each step
+# -> No actual skill execution; good for understanding workflow
+
+# Mode 4: Plan Only - Just show the plan, don't execute
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode plan_only
 # -> Shows what WOULD happen, no actual skill execution
 # -> Fast validation before committing
 
-# Mode 4: YOLO - Maximum speed, no safety checks
-python scripts/workflow-runtime.py fast-path-workflow --mode yolo_execution
-# -> No gates, no validation, full automation
+# Mode 5: YOLO - Maximum speed with gates bypassed
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode yolo_execution
+# -> Bypasses approval gates; validators still enforce artifact validity
 # -> Use only in trusted, experimental contexts
 ```
 
@@ -165,7 +172,7 @@ python scripts/workflow-runtime.py fast-path-workflow --mode yolo_execution
 
 ```bash
 # Step 1: Understand the problem
-python scripts/workflow-runtime.py full-fog-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow full-fog-workflow --mode guided_execution
 # Pauses: "Approve problem frame? [Y/n]"
 # Pauses: "Approve unknowns map? [Y/n]"
 # Pauses: "Approve repository brief? [Y/n]"
@@ -173,7 +180,7 @@ python scripts/workflow-runtime.py full-fog-workflow --mode guided_execution
 # User reads brief, sees: "product_fog detected - recommend product-implementation-workflow"
 
 # Step 2: User decides to proceed with product workflow
-python scripts/workflow-runtime.py product-implementation-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow product-implementation-workflow --mode guided_execution
 # Executes: docs-aligner → discovery → opportunity-tree → to-prd → to-issues → triage → tdd
 # Pauses at each gate for user to review output and approve next step
 ```
@@ -182,7 +189,7 @@ python scripts/workflow-runtime.py product-implementation-workflow --mode guided
 
 ```bash
 # In GitHub Actions or Jenkins:
-python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode autonomous_execution
 # - Analyzes repository
 # - Automatically routes to appropriate implementation workflow
 # - Returns PRD + issues + code patches
@@ -204,10 +211,10 @@ done
 
 ```bash
 # Run fast-path to understand repository
-python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode guided_execution
 
 # Then manually invoke workflow-planner to debug routing
-python scripts/workflow-runtime.py full-fog-workflow --mode plan_only
+python scripts/workflow-runtime.py --workflow full-fog-workflow --mode plan_only
 # Shows plan without execution, so you can validate logic
 ```
 
@@ -221,30 +228,36 @@ python scripts/workflow-runtime.py full-fog-workflow --mode plan_only
 # List all available workflows
 python scripts/workflow-runtime.py --list-workflows
 
-# Run a workflow with default mode (guided_execution)
-python scripts/workflow-runtime.py <workflow-id>
+# Run a workflow (with optional problem statement)
+python scripts/workflow-runtime.py --workflow <workflow-id>
 
 # Run with explicit mode
-python scripts/workflow-runtime.py <workflow-id> --mode <mode>
+python scripts/workflow-runtime.py --workflow <workflow-id> --mode <mode>
+
+# Run with problem statement and custom mode
+python scripts/workflow-runtime.py "Your problem here" --workflow <workflow-id> --mode <mode>
 
 # Run with custom repo root
-python scripts/workflow-runtime.py <workflow-id> --repo-root /path/to/repo
+python scripts/workflow-runtime.py --workflow <workflow-id> --repo-root /path/to/repo
 ```
 
 ### Execution Mode Flags
 
 ```bash
 # Guided mode (user approves each gate)
-python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode guided_execution
 
 # Autonomous mode (auto-approve valid gates, auto-chain)
-python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execution
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode autonomous_execution
+
+# Prompt chain mode (generate prompts for manual execution)
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode prompt_chain
 
 # Plan only (show plan, don't execute)
-python scripts/workflow-runtime.py fast-path-workflow --mode plan_only
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode plan_only
 
-# YOLO mode (no gates, full automation, experimental only)
-python scripts/workflow-runtime.py fast-path-workflow --mode yolo_execution
+# YOLO mode (bypass gates, full automation, experimental only)
+python scripts/workflow-runtime.py --workflow fast-path-workflow --mode yolo_execution
 ```
 
 ---
