@@ -5,17 +5,24 @@ import yaml
 from typing import Optional, Dict, Any
 from pathlib import Path
 from .registry import WorkflowRegistry
+from .validation import CanonicalVocabulary
 
 
 class SkillsConfig:
     """Configuration data structure for Sensemaking Skills."""
 
-    def __init__(self, config_dict: Dict[str, Any], workflow_registry: Optional[WorkflowRegistry] = None):
+    def __init__(
+        self,
+        config_dict: Dict[str, Any],
+        workflow_registry: Optional[WorkflowRegistry] = None,
+        vocabulary: Optional[CanonicalVocabulary] = None,
+    ):
         """Initialize configuration from dictionary.
 
         Args:
             config_dict: Configuration dictionary loaded from YAML
             workflow_registry: WorkflowRegistry instance (created if not provided)
+            vocabulary: CanonicalVocabulary instance (created if not provided)
         """
         self._config = config_dict
         self.project_root = Path(config_dict.get("project_root", "."))
@@ -30,6 +37,12 @@ class SkillsConfig:
             self.workflow_registry = workflow_registry
         else:
             self.workflow_registry = WorkflowRegistry(self.project_root)
+
+        # Initialize canonical vocabulary
+        if vocabulary:
+            self.vocabulary = vocabulary
+        else:
+            self.vocabulary = CanonicalVocabulary(self.project_root)
 
     def get(self, key: str, default: Any = None) -> Any:
         """Get configuration value by key.
@@ -132,7 +145,10 @@ class ConfigManager:
         project_root = Path(config_dict["project_root"])
         workflow_registry = WorkflowRegistry(project_root)
 
-        return SkillsConfig(config_dict, workflow_registry)
+        # Create canonical vocabulary with project root
+        vocabulary = CanonicalVocabulary(project_root)
+
+        return SkillsConfig(config_dict, workflow_registry, vocabulary)
 
     def create_default_config(self, project_root: str = ".") -> SkillsConfig:
         """Create a default configuration.
@@ -154,7 +170,9 @@ class ConfigManager:
         }
         # Create workflow registry with project root
         workflow_registry = WorkflowRegistry(project_root_path)
-        return SkillsConfig(default_config, workflow_registry)
+        # Create canonical vocabulary with project root
+        vocabulary = CanonicalVocabulary(project_root_path)
+        return SkillsConfig(default_config, workflow_registry, vocabulary)
 
     def save_config(self, config: SkillsConfig, output_path: Optional[str] = None):
         """Save configuration to file.
