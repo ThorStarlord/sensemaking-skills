@@ -845,3 +845,41 @@ workflows:
     input_artifact: prd
     output_artifact: session_summary
     description: Completion summary - document session
+- id: skill-evaluation-workflow
+  display_name: Skill Evaluation & Maintenance Workflow
+  purpose: Evaluate skill performance in realistic scenarios and implement improvements.
+  description: Use this to run usage research on a skill in a specific scenario, then
+    translate findings into maintenance improvements. Chain usage-researcher → skill-maintainer
+    for the complete feedback loop.
+  initial_inputs:
+  - id: scenario_context
+    type: external_context
+    required: true
+    description: The target skill, scenario fixtures, and expected behavior definition.
+  allowed_execution_modes:
+  - guided_execution
+  - autonomous_execution
+  requires_run_log: true
+  steps:
+  - id: 1
+    skill: usage-researcher
+    step_type: local_execution
+    gate: review_findings
+    input_source: scenario_context
+    output_artifact: usage_research_report
+    description: Research phase - observe skill behavior and classify findings
+  - id: 2
+    skill: skill-maintainer
+    step_type: local_execution
+    gate: review_improvement_plan
+    input_artifact: usage_research_report
+    input_source: scenario_context
+    output_artifact: skill_improvement_plan
+    description: Maintenance phase - translate findings into auditable improvements
+  - id: 3
+    skill: handoff
+    step_type: local_execution
+    gate: session_close
+    input_artifact: skill_improvement_plan
+    output_artifact: session_summary
+    description: Completion summary - document changes and next steps

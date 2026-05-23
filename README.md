@@ -422,6 +422,7 @@ usage: workflow-runtime.py [--workflow WORKFLOW] [--mode MODE]
 | `--gate-decision` | Non-interactive gate decision for testing: `auto-approve`, `auto-deny` | — |
 | `--use-fixtures` | Use fixture artifacts instead of executing real skills | off |
 | `--chained` | (Internal) Invoked as a chained workflow from another run | off |
+| `--from-session` | Reuse parent session artifacts (manual invocation path) | — |
 
 ## Execution Model
 
@@ -447,13 +448,43 @@ When a sensemaking workflow routes to an implementation workflow (e.g., `product
 
 For product, UI, and implementation workflows, this repository assumes the following skill packs are optionally installed:
 
-- [Product Manager Skills](https://github.com/ThorStarlord/pm-skills)
-- [Matt Pocock Skills](https://github.com/mattpocock/skills)
-- [Interface Skills](https://github.com/ThorStarlord/interface-skills)
+- [Product Manager Skills](https://github.com/ThorStarlord/pm-skills) — For discovery, PRDs, strategy, and Go-To-Market
+- [Matt Pocock Skills](https://github.com/mattpocock/skills) — For engineering rigor, TDD, and docs alignment
+- [Interface Skills](https://github.com/ThorStarlord/interface-skills) — For UI flows, screen specs, and design systems
 
-If these are not installed:
-- **In `plan_only` mode**: The orchestrator produces copy-paste prompts for manual invocation
-- **In execution modes**: The orchestrator fails with a clear error indicating which skill pack is required
+**Graceful Degradation Strategy**:
+
+| Scenario | In `plan_only` Mode | In Execution Modes | Behavior |
+|----------|-------|----------|----------|
+| **All packs installed** | ✓ Full pipeline executes normally | ✓ Workflows run end-to-end | Recommended setup |
+| **One pack missing** | ✓ Generates copy-paste prompts for missing steps | ✗ Fails with clear error message and recovery instructions | Use `plan_only` to generate prompts you run manually |
+| **Multiple packs missing** | ✓ Generates prompts for all missing skills | ✗ Fails at first missing skill; tells you which pack to install | Install missing packs or use `plan_only` to continue |
+
+**Example: Missing Matt Pocock Skills**
+
+```bash
+# In plan_only mode: you get ready-to-copy prompts
+python scripts/workflow-runtime.py --workflow product-implementation-workflow --mode plan_only
+# → Generates prompts for: docs-aligner, discovery, opportunity-tree, to-prd, to-issues, triage, tdd
+# You can copy each prompt and run manually
+
+# In autonomous_execution mode: you get a clear error
+python scripts/workflow-runtime.py --workflow product-implementation-workflow --mode autonomous_execution
+# → ERROR: Missing skill pack 'matt-pocock-skills' required for 'tdd' step
+# → Install with: git clone https://github.com/mattpocock/skills
+```
+
+**Recommended Setup**:
+
+For full automation (no manual steps), install all three optional packs:
+
+```bash
+git clone https://github.com/ThorStarlord/pm-skills your-claude-code-dir/skills/
+git clone https://github.com/mattpocock/skills your-claude-code-dir/skills/
+git clone https://github.com/ThorStarlord/interface-skills your-claude-code-dir/skills/
+```
+
+For learning/exploration, use `plan_only` mode and manually run generated prompts—no additional skill packs required.
 
 ## License
 MIT
