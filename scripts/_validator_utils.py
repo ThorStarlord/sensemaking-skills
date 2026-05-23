@@ -115,6 +115,21 @@ def load_skill_registry(repo_root: str) -> dict | None:
     return load_yaml(_registry_path(repo_root, "skill-registry.yaml"))
 
 
+def load_canonical_vocabulary(repo_root: str) -> dict | None:
+    """Load canonical-vocabulary.yaml from the repo.
+
+    The canonical vocabulary defines authoritative enumerated values used
+    throughout the system: fog_types, routing_fields, gates, execution_modes,
+    artifact_ids, and workflow_ids.
+
+    Returns:
+        Dict with keys: fog_types, routing_fields, gates, execution_modes,
+        artifact_ids, workflow_ids, or None if file not found.
+    """
+    path = os.path.join(repo_root, "docs", "canonical-vocabulary.yaml")
+    return load_yaml(path)
+
+
 def flatten_skill_registry(raw: dict) -> dict[str, dict]:
     """Flatten skill-registry.yaml into ``{skill_id: skill_def}`` map.
 
@@ -231,3 +246,48 @@ def extract_sections(text: str, normalize_hyphens: bool = True) -> dict[str, str
             name = name.replace("-", " ")
         sections[name] = text[start:end].strip()
     return sections
+
+
+def build_fog_type_normalizer(vocab: dict) -> dict[str, str]:
+    """Build a fog type alias->canonical mapping from the vocabulary.
+
+    Args:
+        vocab: The canonical vocabulary dict from load_canonical_vocabulary().
+
+    Returns:
+        Dict mapping {alias: canonical_id} including canonical forms themselves
+        (e.g., {"product_fog": "product_fog", "product": "product_fog", ...}).
+    """
+    mapping = {}
+    if not vocab or "fog_types" not in vocab:
+        return mapping
+
+    for fog_type in vocab["fog_types"]:
+        canonical = fog_type["id"]
+        # Map canonical form to itself
+        mapping[canonical] = canonical
+        # Map all aliases to canonical form
+        for alias in fog_type.get("aliases", []):
+            mapping[alias] = canonical
+
+    return mapping
+
+
+def normalize_fog_type(value: str, mapping: dict[str, str]) -> str:
+    """Normalize a fog type to canonical form using the mapping.
+
+    Args:
+        value: The fog type value (may be canonical or alias).
+        mapping: The mapping returned by build_fog_type_normalizer().
+
+    Returns:
+        The canonical fog type form.
+
+    Raises:
+        ValueError: If the value is not recognized.
+    """
+    normalized = mapping.get(value.lower() if isinstance(value, str) else value)
+    if not normalized:
+        available = ", ".join(sorted(set(mapping.values())))
+        raise ValueError(f"Unknown fog type: {value!r}. Valid values: {available}")
+    return normalized

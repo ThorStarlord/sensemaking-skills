@@ -85,14 +85,19 @@ Always include `escalation_recommended` and `auto_escalation_allowed` from brief
 The plan must include a `recommended_workflow_id` field in its machine-readable section. The workflow runtime reads this field to determine which workflow to auto-invoke next.
 
 Workflow routing logic (documented here; executed by the runtime):
-- Parse orchestration plan's fog classification (`product_fog`, `architecture_fog`, `ui_fog`, `docs_fog`, or other)
-- If `fog_type == "product"`: use `product-implementation-workflow`
-- If `fog_type == "ui"` or `fog_type == "frontend"`: use `ui-implementation-workflow`
-- If `fog_type == "docs"` or `fog_type == "documentation"`: use `docs-implementation-workflow`
-- If `fog_type == "uncertain"` or unclassified: use default `implementation-workflow` (graceful degradation)
-- Can override with explicit `recommended_implementation_workflow` field
+- Read `primary_fog_type` from repository sensemaking brief (always canonical form per canonical-vocabulary.yaml)
+- If `fog_type == "product_fog"`: use `product-implementation-workflow`
+- If `fog_type == "ui_fog"`: use `ui-implementation-workflow`
+- If `fog_type == "docs_fog"`: use `docs-implementation-workflow`
+- If `fog_type == "architecture_fog"`: use `implementation-workflow` with architecture focus
+- If `fog_type == "integration_fog"`: use `implementation-workflow` with integration focus
+- If fog_type is unclassified: use default `implementation-workflow` (graceful degradation)
+- Can override with explicit `recommended_workflow_id` field if user provides alternative
 
-Include a `fog_type_confidence` field in the machine-readable section. If classification is uncertain, set `fog_type_confidence: low`.
+**CRITICAL**: All fog_type values MUST be in canonical form (`product_fog`, `ui_fog`, `docs_fog`, `architecture_fog`, `integration_fog`). 
+Validators normalize aliases (e.g., "ui" -> "ui_fog", "product" -> "product_fog") before artifact storage. 
+Downstream consumers (including this skill) always receive and must emit canonical values only.
+Reference `docs/canonical-vocabulary.yaml` for fog type definitions and aliases.
 
 ## Output Format
 

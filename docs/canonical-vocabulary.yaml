@@ -183,64 +183,331 @@ execution_modes:
     warning: "Use only in fully trusted, isolated environments"
 
 artifact_ids:
+  # Core Diagnostic Artifacts
   - id: user_intent
     description: "Raw user problem statement or request"
     produced_by: user
     consumed_by: [problem-framer, repo-sensemaker]
+    artifact_type: diagnostic
+
+  - id: user_intent_amendment
+    description: "User clarification or amendment to original intent"
+    produced_by: orchestration-runner
+    consumed_by: [workflow-planner, repo-sensemaker]
+    artifact_type: diagnostic
 
   - id: problem_frame
     description: "Structured problem statement (problem under the problem)"
     produced_by: problem-framer
-    consumed_by: [unknowns-mapper, workflow-planner]
+    consumed_by: [unknowns-mapper, repo-sensemaker]
+    artifact_type: diagnostic
 
   - id: unknowns_map
     description: "Map of unknowns blocking progress"
     produced_by: unknowns-mapper
-    consumed_by: [repo-sensemaker, workflow-planner]
+    consumed_by: [repo-sensemaker, prompt-handoff]
+    artifact_type: diagnostic
 
   - id: repository_sensemaking_brief
     description: "Fog diagnosis and routing decision"
     produced_by: repo-sensemaker
-    consumed_by: [workflow-planner, handoff]
+    consumed_by: [workflow-planner, prompt-handoff, sensemaking-docs-reconciler]
+    artifact_type: diagnostic
     routing_critical: true
 
-  - id: workflow_plan
-    description: "Step-by-step execution plan (no implementation)"
+  - id: workflow_orchestration_plan
+    description: "Step-by-step execution plan with decision points"
     produced_by: workflow-planner
-    consumed_by: [handoff, orchestrator-skill]
+    consumed_by: [user, agents]
+    artifact_type: plan
+
+  # Product Artifacts
+  - id: discovery_findings
+    description: "User research and discovery findings"
+    produced_by: discovery
+    consumed_by: [opportunity-tree, prompt-handoff]
+    artifact_type: product
+
+  - id: domain_alignment_report
+    description: "Alignment between domain concepts and code"
+    produced_by: docs-aligner
+    consumed_by: [to-prd, prompt-handoff]
+    artifact_type: product
+
+  - id: prd
+    description: "Product Requirements Document"
+    produced_by: to-prd
+    consumed_by: [to-issues, prompt-handoff]
+    artifact_type: product
+
+  - id: issue_list
+    description: "Prioritized list of implementation issues"
+    produced_by: to-issues
+    consumed_by: [triage]
+    artifact_type: product
+
+  - id: hypothesis_statement
+    description: "Testable hypothesis for discovery"
+    produced_by: hypothesis
+    consumed_by: [experiment-design, prd]
+    artifact_type: product
+
+  - id: opportunity_map
+    description: "Map of opportunities and trade-offs"
+    produced_by: opportunity-tree
+    consumed_by: [hypothesis]
+    artifact_type: product
+
+  - id: market_analysis
+    description: "Competitive analysis and market insights"
+    produced_by: competitive-analysis
+    consumed_by: [pricing, battlecard]
+    artifact_type: product
+
+  - id: north_star_metric
+    description: "North star metric definition"
+    produced_by: north-star
+    consumed_by: [okr]
+    artifact_type: product
+
+  - id: okr_list
+    description: "Objectives and Key Results"
+    produced_by: okr
+    consumed_by: [roadmap]
+    artifact_type: product
+
+  - id: roadmap
+    description: "Product roadmap"
+    produced_by: roadmap
+    consumed_by: [stakeholder-update, prompt-handoff]
+    artifact_type: product
+
+  - id: stakeholder_update
+    description: "Communication to stakeholders"
+    produced_by: stakeholder-update
+    consumed_by: [workflow-planner]
+    artifact_type: product
+
+  - id: business_canvas
+    description: "Lean Canvas or Business Model Canvas"
+    produced_by: lean-canvas
+    consumed_by: [product-manager]
+    artifact_type: product
+
+  # UX/UI Artifacts
+  - id: ui_specification
+    description: "UI specification and design system"
+    produced_by: ui-brief
+    consumed_by: [ui-flow]
+    artifact_type: ui
+
+  - id: ui_flows
+    description: "User journeys and interaction flows"
+    produced_by: ui-flow
+    consumed_by: [ui-screen-spec]
+    artifact_type: ui
+
+  - id: screen_specs
+    description: "Detailed screen specifications and mockups"
+    produced_by: ui-screen-spec
+    consumed_by: [to-issues, tdd]
+    artifact_type: ui
+
+  - id: journey_map
+    description: "Customer journey and touchpoint map"
+    produced_by: customer-journey
+    consumed_by: [product-manager]
+    artifact_type: ui
+
+  - id: persona_definition
+    description: "User persona definition"
+    produced_by: persona
+    consumed_by: [discovery, customer-journey]
+    artifact_type: product
+
+  # Implementation Artifacts
+  - id: agent_brief
+    description: "Brief for autonomous agent execution"
+    produced_by: triage
+    consumed_by: [tdd]
+    artifact_type: implementation
+
+  - id: code_patch
+    description: "Code changes and implementation"
+    produced_by: tdd
+    consumed_by: [handoff]
+    artifact_type: implementation
+
+  - id: story_list
+    description: "User stories with acceptance criteria"
+    produced_by: user-stories
+    consumed_by: [acceptance-criteria, prioritize]
+    artifact_type: implementation
+
+  - id: criteria_list
+    description: "Acceptance criteria checklist"
+    produced_by: acceptance-criteria
+    consumed_by: [prompt-handoff]
+    artifact_type: implementation
+
+  - id: skill_improvement_plan
+    description: "Plan to improve a skill's quality"
+    produced_by: skill-maintainer
+    consumed_by: [workflow-planner]
+    artifact_type: maintenance
+
+  - id: usage_research_report
+    description: "Report on using the system"
+    produced_by: user
+    consumed_by: [workflow-planner]
+    artifact_type: research
+
+  - id: docs_contract_reconciliation_report
+    description: "Report on docs vs code alignment gaps"
+    produced_by: sensemaking-docs-reconciler
+    consumed_by: [prompt-handoff]
+    artifact_type: research
+
+  - id: synthesis_report
+    description: "Synthesis of research interviews"
+    produced_by: interview-synthesis
+    consumed_by: [opportunity-tree]
+    artifact_type: research
+
+  # Handoff Artifacts
+  - id: prompt_handoff
+    description: "Copyable prompt for external agent or human"
+    produced_by: [prompt-handoff, handoff]
+    consumed_by: [external_agent]
+    artifact_type: handoff
+
+  - id: session_summary
+    description: "Summary of work performed in session"
+    produced_by: handoff
+    consumed_by: [workflow-planner]
+    artifact_type: handoff
 
   - id: execution_summary
-    description: "Final summary of work performed"
+    description: "Final execution summary"
     produced_by: handoff
-    consumed_by: user
+    consumed_by: [user]
+    artifact_type: handoff
 
 workflow_ids:
+  # Diagnostic & Orchestration Workflows
   - id: fast-path-workflow
     display_name: "Fast Path - Diagnostic & Orchestration"
     description: "Rapid fog diagnosis -> routing -> plan"
     steps: 4
+    category: diagnostic
     typical_fog_types: [product_fog, ui_fog, architecture_fog]
 
   - id: full-fog-workflow
     display_name: "Full Fog Path - Comprehensive Sensemaking"
     description: "Deep diagnosis with comprehensive research"
     steps: 6
+    category: diagnostic
     typical_fog_types: [all]
 
-  - id: setup-sensemaking-repo
-    display_name: "Setup Sensemaking Repository"
-    description: "Initialize sensemaking infrastructure"
-    steps: 3
-    typical_fog_types: []
+  - id: fast-local-diagnostic
+    display_name: "Fast Local Diagnostic"
+    description: "Lightweight repository analysis without external context"
+    steps: 2
+    category: diagnostic
 
-  - id: docs-contract-reconciliation
-    display_name: "Docs & Contract Reconciliation"
-    description: "Align documentation with codebase reality"
-    steps: 3
+  - id: full-local-sensemaking
+    display_name: "Full Local Sensemaking"
+    description: "Comprehensive local analysis"
+    steps: 4
+    category: diagnostic
+
+  # Implementation Workflows
+  - id: implementation-workflow
+    display_name: "Default Implementation Workflow"
+    description: "Generic implementation pathway"
+    steps: 5
+    category: implementation
+
+  - id: product-implementation-workflow
+    display_name: "Product Implementation"
+    description: "Product discovery, requirements, and delivery"
+    steps: 6
+    category: implementation
+    typical_fog_types: [product_fog]
+
+  - id: ui-implementation-workflow
+    display_name: "UI Implementation"
+    description: "UI/UX specification and implementation"
+    steps: 5
+    category: implementation
+    typical_fog_types: [ui_fog]
+
+  - id: docs-implementation-workflow
+    display_name: "Docs Implementation"
+    description: "Documentation specification and delivery"
+    steps: 4
+    category: implementation
     typical_fog_types: [docs_fog]
 
+  # Strategy & Discovery Workflows
+  - id: product-discovery-sprint
+    display_name: "Product Discovery Sprint"
+    description: "Deep product research and discovery"
+    category: strategy
+
+  - id: product-strategy-sprint
+    display_name: "Product Strategy Sprint"
+    description: "Strategic planning and roadmap"
+    category: strategy
+
+  - id: ui-diagnostic-workflow
+    display_name: "UI Diagnostic"
+    description: "Diagnose UI/UX problems"
+    category: diagnostic
+    typical_fog_types: [ui_fog]
+
+  # Autonomous & Preflight Workflows
   - id: autonomous-sprint-preflight
     display_name: "Autonomous Sprint Preflight"
     description: "Prepare codebase for autonomous agents"
     steps: 4
+    category: preflight
     typical_fog_types: [architecture_fog, docs_fog]
+
+  - id: product-autonomous-sprint
+    display_name: "Product Autonomous Sprint"
+    description: "Autonomous product work"
+    category: autonomous
+
+  - id: experimental-autonomous-sprint
+    display_name: "Experimental Autonomous Sprint"
+    description: "Experimental autonomous work"
+    category: autonomous
+
+  # Documentation & Maintenance
+  - id: docs-contract-reconciliation
+    display_name: "Docs & Contract Reconciliation"
+    description: "Align documentation with codebase reality"
+    steps: 3
+    category: documentation
+    typical_fog_types: [docs_fog]
+
+  - id: docs-architecture
+    display_name: "Docs Architecture"
+    description: "Architecture documentation"
+    category: documentation
+
+  - id: skill-maintenance-loop
+    display_name: "Skill Maintenance Loop"
+    description: "Maintain and improve skills"
+    category: maintenance
+
+  - id: product-to-issues
+    display_name: "Product to Issues"
+    description: "Convert product specifications to issues"
+    category: implementation
+
+  - id: setup-sensemaking-repo
+    display_name: "Setup Sensemaking Repository"
+    description: "Configure repository infrastructure for sensemaking"
+    category: setup

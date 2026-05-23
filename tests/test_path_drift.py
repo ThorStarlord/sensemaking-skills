@@ -77,8 +77,10 @@ class TestPathDrift(unittest.TestCase):
         The canonical skill path is `skills/workflow-planner/`, not
         `skills/workflow-orchestrator/`. References to the old path
         in skill code cause routing failures.
+
+        Checks SKILL.md, validator.py, and all reference files (*.yaml, *.md)
+        in skills/*/references/ directories.
         """
-        # Only check skill SKILL.md files and validators
         stale_patterns = [
             r"skills/workflow-orchestrator/",
         ]
@@ -87,12 +89,22 @@ class TestPathDrift(unittest.TestCase):
             matches = []
             skill_dirs = glob.glob(str(self.repo_root / "skills" / "*"))
             for skill_dir in skill_dirs:
+                # Check skill documentation and validators
                 for fname in ["SKILL.md", "validator.py"]:
                     fpath = Path(skill_dir) / fname
                     if fpath.exists():
                         content = fpath.read_text(encoding="utf-8", errors="ignore")
                         if re.search(pattern, content):
                             matches.append(str(fpath))
+
+                # Check reference files (templates, specs, registries)
+                references_dir = Path(skill_dir) / "references"
+                if references_dir.exists():
+                    for ref_file in references_dir.glob("*.*"):
+                        if ref_file.suffix in [".md", ".yaml", ".yml"]:
+                            content = ref_file.read_text(encoding="utf-8", errors="ignore")
+                            if re.search(pattern, content):
+                                matches.append(str(ref_file))
 
             self.assertFalse(
                 matches,
@@ -262,6 +274,54 @@ class TestCanonicalVocabularyUsage(unittest.TestCase):
                 content,
                 f"canonical-vocabulary.yaml missing section: {section}"
             )
+
+    def test_vocabulary_covers_all_workflows(self):
+        """Verify vocabulary includes all workflows from workflow-registry.yaml."""
+        vocab_path = self.repo_root / "docs" / "canonical-vocabulary.yaml"
+        registry_path = self.repo_root / "skills" / "workflow-planner" / "references" / "workflow-registry.yaml"
+
+        if not registry_path.exists():
+            self.skipTest("workflow-registry.yaml not found")
+
+        import yaml
+        with open(vocab_path) as f:
+            vocab = yaml.safe_load(f)
+        with open(registry_path) as f:
+            registry = yaml.safe_load(f)
+
+        vocab_workflow_ids = {w["id"] for w in vocab.get("workflow_ids", [])}
+        registry_workflow_ids = {w["id"] for w in registry.get("workflows", [])}
+
+        missing = registry_workflow_ids - vocab_workflow_ids
+        self.assertFalse(
+            missing,
+            f"workflow-registry.yaml contains workflows not in canonical vocabulary: {sorted(missing)}\n"
+            "Add missing workflows to docs/canonical-vocabulary.yaml workflow_ids section."
+        )
+
+    def test_vocabulary_covers_all_artifacts(self):
+        """Verify vocabulary includes all artifacts from artifact-contracts.yaml."""
+        vocab_path = self.repo_root / "docs" / "canonical-vocabulary.yaml"
+        contracts_path = self.repo_root / "skills" / "workflow-planner" / "references" / "artifact-contracts.yaml"
+
+        if not contracts_path.exists():
+            self.skipTest("artifact-contracts.yaml not found")
+
+        import yaml
+        with open(vocab_path) as f:
+            vocab = yaml.safe_load(f)
+        with open(contracts_path) as f:
+            contracts = yaml.safe_load(f)
+
+        vocab_artifact_ids = {a["id"] for a in vocab.get("artifact_ids", [])}
+        contract_artifact_ids = {a["id"] for a in contracts.get("artifacts", [])}
+
+        missing = contract_artifact_ids - vocab_artifact_ids
+        self.assertFalse(
+            missing,
+            f"artifact-contracts.yaml contains artifacts not in canonical vocabulary: {sorted(missing)}\n"
+            "Add missing artifacts to docs/canonical-vocabulary.yaml artifact_ids section."
+        )
 
 
 if __name__ == "__main__":
