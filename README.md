@@ -178,25 +178,82 @@ The repository registers 17 skill workflows in `workflow-planner/references/work
 - `examples/`: Validation fixtures for both skills.
 - `docs/`: Repository-level documentation (PRDs, Issues, ADRs).
 
+## Quick Start
+
+**👉 See [GETTING_STARTED.md](GETTING_STARTED.md) for detailed usage instructions**
+
+Choose your path:
+
+### Manual Path (Full Control)
+```bash
+# Run diagnostic workflow
+python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+
+# Read output, then manually invoke implementation workflow
+python scripts/workflow-runtime.py product-implementation-workflow --mode guided_execution
+```
+
+### Automation Path (Full Speed)
+```bash
+# Single command: entire pipeline auto-chains based on fog_type
+python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execution
+```
+
+---
+
 ## Usage
+
+The system supports two invocation paths with flexible execution modes:
 
 ### Default Workflow Chain
 
 The system uses a **multi-stage default workflow chain with fog-type-aware routing** for production use:
 
 ```
-full-local-sensemaking (DEFAULT) — Diagnose fog type
-  ↓ (auto-invokes based on detected fog type)
-  ├→ ui-implementation-workflow (if ui_fog detected)
+fast-path-workflow (DEFAULT) → Diagnose fog type
+  ↓ (auto-invokes in autonomous_execution mode)
   ├→ product-implementation-workflow (if product_fog detected)
+  ├→ ui-implementation-workflow (if ui_fog detected)
   ├→ docs-implementation-workflow (if docs_fog detected)
   └→ implementation-workflow (if architecture_fog detected)
 ```
 
-Simply run:
+### Two Invocation Paths
+
+1. **Manual Path**: Full control, inspect artifacts between stages
+   - User explicitly runs each workflow
+   - User reviews output and decides next step
+   - Best for debugging, exploration, complex decisions
+
+2. **Automation Path**: Full speed, deterministic routing
+   - Single invocation runs entire pipeline
+   - System auto-detects recommended workflow
+   - System auto-chains based on fog_type (in autonomous mode)
+   - Best for production, fast iteration, known workflows
+
+### Execution Modes
+
+| Mode | Gates | Speed | Use Case |
+|------|-------|-------|----------|
+| `guided_execution` | Pause at every gate (user approves) | Slowest | Development, exploration |
+| `autonomous_execution` | Auto-approve valid gates | Fast | Production, automation |
+| `plan_only` | No execution, show plan only | Instant | Validation, planning |
+| `yolo_execution` | No gates, full automation | Fastest | Experimental only |
+
+### Examples
+
 ```bash
-python scripts/workflow-runtime.py
+# Manual path with control
+python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+
+# Automation path with auto-chaining
+python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execution
+
+# List all workflows
+python scripts/workflow-runtime.py --list-workflows
 ```
+
+**👉 See [GETTING_STARTED.md](GETTING_STARTED.md) for complete documentation, real-world examples, and troubleshooting**
 
 This will:
 1. Execute `full-local-sensemaking` (diagnoses your repository and classifies fog type)
