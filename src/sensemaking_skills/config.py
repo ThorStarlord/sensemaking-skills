@@ -4,16 +4,18 @@ import os
 import yaml
 from typing import Optional, Dict, Any
 from pathlib import Path
+from .registry import WorkflowRegistry
 
 
 class SkillsConfig:
     """Configuration data structure for Sensemaking Skills."""
 
-    def __init__(self, config_dict: Dict[str, Any]):
+    def __init__(self, config_dict: Dict[str, Any], workflow_registry: Optional[WorkflowRegistry] = None):
         """Initialize configuration from dictionary.
 
         Args:
             config_dict: Configuration dictionary loaded from YAML
+            workflow_registry: WorkflowRegistry instance (created if not provided)
         """
         self._config = config_dict
         self.project_root = Path(config_dict.get("project_root", "."))
@@ -22,6 +24,12 @@ class SkillsConfig:
         self.skills_dir = Path(config_dict.get("skills_dir", "skills"))
         self.workflows_dir = Path(config_dict.get("workflows_dir", "workflows"))
         self.adr_dir = Path(config_dict.get("adr_dir", "docs/adr"))
+
+        # Initialize workflow registry
+        if workflow_registry:
+            self.workflow_registry = workflow_registry
+        else:
+            self.workflow_registry = WorkflowRegistry(self.project_root)
 
     def get(self, key: str, default: Any = None) -> Any:
         """Get configuration value by key.
@@ -120,7 +128,11 @@ class ConfigManager:
         if "project_root" not in config_dict:
             config_dict["project_root"] = str(self.config_path.parent)
 
-        return SkillsConfig(config_dict)
+        # Create workflow registry with project root
+        project_root = Path(config_dict["project_root"])
+        workflow_registry = WorkflowRegistry(project_root)
+
+        return SkillsConfig(config_dict, workflow_registry)
 
     def create_default_config(self, project_root: str = ".") -> SkillsConfig:
         """Create a default configuration.
@@ -131,6 +143,7 @@ class ConfigManager:
         Returns:
             SkillsConfig instance with default values
         """
+        project_root_path = Path(project_root)
         default_config = {
             "project_root": str(project_root),
             "artifacts_dir": "artifacts",
@@ -139,7 +152,9 @@ class ConfigManager:
             "workflows_dir": "workflows",
             "adr_dir": "docs/adr",
         }
-        return SkillsConfig(default_config)
+        # Create workflow registry with project root
+        workflow_registry = WorkflowRegistry(project_root_path)
+        return SkillsConfig(default_config, workflow_registry)
 
     def save_config(self, config: SkillsConfig, output_path: Optional[str] = None):
         """Save configuration to file.
