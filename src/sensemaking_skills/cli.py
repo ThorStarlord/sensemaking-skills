@@ -40,7 +40,13 @@ def main():
     default="guided_execution",
     help="Execution mode (default: guided_execution)",
 )
-def analyze(repo: Path, workflow: str, mode: str) -> None:
+@click.option(
+    "--from-session",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+    default=None,
+    help="Path to artifact session directory from a prior workflow run",
+)
+def analyze(repo: Path, workflow: str, mode: str, from_session: Optional[Path]) -> None:
     """Analyze a repository and generate diagnostic artifacts.
 
     This command runs the specified workflow against your repository
@@ -75,12 +81,67 @@ def analyze(repo: Path, workflow: str, mode: str) -> None:
         click.echo(f"Orchestrator initialized")
 
         # Show workflow info
-        click.echo(f"\nWorkflow: {workflow}")
+        click.echo(f"Workflow: {workflow}")
         click.echo(f"Mode: {mode}")
+        if from_session:
+            click.echo(f"Resuming from: {from_session}")
 
         click.echo(f"\nStarting analysis of {repo}...")
-        click.echo("This feature is under development in Task 3 (Refactor Workflow Runtime)")
-        # TODO: orchestrator.run_workflow() will be implemented in Task 3
+
+        # Run the workflow
+        exit_code = orchestrator.run_workflow(
+            workflow_id=workflow,
+            execution_mode=mode,
+            from_session=str(from_session) if from_session else None,
+        )
+
+        sys.exit(exit_code)
+
+    except SystemExit:
+        raise
+    except Exception as e:
+        click.echo(f"✗ Unexpected error: {e}", err=True)
+        sys.exit(1)
+
+
+@main.command()
+@click.option(
+    "--repo",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+    required=True,
+    help="Path to the target repository",
+)
+def list_workflows(repo: Path) -> None:
+    """List all registered workflows available for a repository.
+
+    Example:
+        sensemaking-skills list-workflows --repo /path/to/repo
+    """
+    try:
+        click.echo(f"Loading configuration from {repo}...")
+
+        try:
+            # Load configuration
+            config_manager = ConfigManager(str(repo))
+            config = config_manager.load()
+
+            click.echo()
+
+        except FileNotFoundError as e:
+            click.echo(f"✗ Configuration file not found: {repo}/sensemaking-config.yaml", err=True)
+            click.echo(f"  Hint: Run 'sensemaking-skills init --repo {repo}' to create one", err=True)
+            sys.exit(1)
+        except Exception as e:
+            click.echo(f"✗ Error loading configuration: {e}", err=True)
+            sys.exit(1)
+
+        # Create orchestrator
+        orchestrator = SkillsOrchestrator(config=config)
+
+        # List workflows
+        exit_code = orchestrator.list_workflows()
+
+        sys.exit(exit_code)
 
     except SystemExit:
         raise
