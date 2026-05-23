@@ -4,6 +4,54 @@ A collection of skills designed to turn vague project uncertainty into clear pro
 
 The repository is organized around a clean split: **Diagnosis** (`repo-sensemaker`) and **Orchestration** (`workflow-planner`).
 
+---
+
+## Quick Start
+
+### Install
+
+```bash
+pip install sensemaking-skills
+```
+
+### Analyze Your Repository
+
+```bash
+# Initialize (one-time setup)
+sensemaking-skills init --repo /path/to/your/repo
+
+# Run analysis
+sensemaking-skills analyze --repo /path/to/your/repo
+```
+
+### Check Results
+
+Your analysis artifacts are in `.sensemaking/artifacts/`:
+
+```bash
+# View the diagnostic brief
+cat /path/to/your/repo/.sensemaking/artifacts/repository_sensemaking_brief.md
+
+# View recommended workflows
+cat /path/to/your/repo/.sensemaking/artifacts/workflow_orchestration_plan.md
+```
+
+### Next Steps
+
+- **Manual Path** (inspect between steps): See [INSTALLATION.md](INSTALLATION.md#manual-path-full-control)
+- **Automation Path** (single command, full pipeline): See [INSTALLATION.md](INSTALLATION.md#automation-path-full-speed)
+- **Extend the System**: See [EXTENDING.md](EXTENDING.md) to add custom skills
+- **Python API**: See [API.md](API.md) to integrate into your code
+
+### Full Documentation
+
+- [INSTALLATION.md](INSTALLATION.md) — Complete setup and usage guide
+- [EXTENDING.md](EXTENDING.md) — Create custom skills and workflows
+- [API.md](API.md) — Python API reference and examples
+- [GETTING_STARTED.md](GETTING_STARTED.md) — Detailed walkthroughs and workflows
+
+---
+
 ## Engineering Philosophy: Artifact-Driven Agentic Engineering
 
 This repository is not just a collection of prompts; it is a **systems engineering** project built on the principle that **Artifacts are the API between skills**.
