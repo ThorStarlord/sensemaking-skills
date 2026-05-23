@@ -7,6 +7,8 @@ while providing a modern, configurable interface. Also manages skill execution.
 import os
 import sys
 import subprocess
+import shutil
+import yaml
 from typing import Optional, List, Dict, Any
 from pathlib import Path
 from .config import ConfigManager, SkillsConfig
@@ -203,17 +205,139 @@ class SkillsOrchestrator:
 
         return skill_class(self.config)
 
-    def _handle_auto_invocation(self, parent_session: Optional[str] = None) -> int:
-        """Handle auto-invocation and chaining logic.
+    def _handle_auto_invocation(self, current_workflow_id: str, parent_session: Optional[str] = None) -> int:
+        """Handle automatic chaining to next workflow.
 
-        This is a stub for Task 7 (Implement Auto-Invocation with Recursion Guard).
+        Reads recommended_workflow_id from orchestration plan artifact and auto-invokes.
+        Includes recursion guard and session passing.
 
         Args:
-            parent_session: Path to the parent session directory for recursive invocation
+            current_workflow_id: The ID of the currently executing workflow
+            parent_session: Path to the parent session directory (for chained invocation)
 
         Returns:
             Exit code (0 for success, non-zero for failure)
         """
-        raise NotImplementedError(
-            "Auto-invocation will be implemented in Task 7 (Implement Auto-Invocation with Recursion Guard)"
-        )
+        try:
+            # Determine which artifact to read based on session
+            if parent_session:
+                artifact_dir = Path(parent_session)
+            else:
+                artifact_dir = self.path_resolver.artifacts_dir()
+
+            # Find the orchestration plan artifact (plan_<workflow_id>.md pattern)
+            plan_file = artifact_dir / f"plan_{current_workflow_id}.md"
+
+            if not plan_file.exists():
+                print(f"[ERROR] Orchestration plan not found: {plan_file}")
+                return 1
+
+            # Read and parse the orchestration plan YAML
+            with open(plan_file, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            # Extract YAML front matter
+            if content.startswith("---"):
+                _, yaml_str, _ = content.split("---", 2)
+                try:
+                    plan_data = yaml.safe_load(yaml_str)
+                except yaml.YAMLError as e:
+                    print(f"[ERROR] Failed to parse orchestration plan YAML: {e}")
+                    return 1
+            else:
+                print(f"[ERROR] Orchestration plan missing YAML front matter: {plan_file}")
+                return 1
+
+            # Extract next workflow ID (check canonical field names per CONTEXT.md)
+            next_workflow_id = (
+                plan_data.get("recommended_workflow_id") or
+                plan_data.get("chosen_workflow_id") or
+                plan_data.get("selected_workflow")
+            )
+
+            if not next_workflow_id:
+                print(f"[INFO] No next workflow recommended in plan")
+                return 0
+
+            # RECURSION GUARD: Prevent self-routing
+            if next_workflow_id == current_workflow_id:
+                print(f"[ERROR] RECURSION DETECTED: Workflow '{current_workflow_id}' would invoke itself.")
+                print(f"[ERROR] recommended_workflow_id: {next_workflow_id}")
+                return 1
+
+            print(f"\n{'='*60}")
+            print(f"AUTO-INVOCATION: Next Workflow")
+            print(f"{'='*60}")
+            print(f"  Current workflow: {current_workflow_id}")
+            print(f"  Next workflow:    {next_workflow_id}")
+            print()
+
+            # Auto-invoke the next workflow with session passing
+            session_dir = parent_session or str(artifact_dir)
+            return self.run_workflow(
+                next_workflow_id,
+                execution_mode="yolo_execution",
+                from_session=session_dir
+            )
+
+        except Exception as e:
+            print(f"[ERROR] Auto-invocation failed: {e}")
+            import traceback
+            traceback.print_exc()
+            return 1
+
+    def _run_workflow_with_parent_session(
+        self,
+        workflow_id: str,
+        parent_session: Path,
+    ) -> int:
+        """Run workflow with parent artifacts available.
+
+        Used in manual path: diagnostic runs, user manually invokes implementation with
+        --from-session. Copies parent artifacts to current session so implementation can
+        access them.
+
+        Args:
+            workflow_id: The workflow to execute
+            parent_session: Path to parent session directory with artifacts
+
+        Returns:
+            Exit code (0 for success, non-zero for failure)
+        """
+        try:
+            parent_session = Path(parent_session).resolve()
+
+            if not parent_session.exists():
+                print(f"[ERROR] Parent session directory does not exist: {parent_session}")
+                return 1
+
+            # Find parent artifacts (particularly user_intent and orchestration plan)
+            parent_intent = parent_session / "00-user-intent.md"
+            if not parent_intent.exists():
+                print(f"[ERROR] Parent user intent not found: {parent_intent}")
+                return 1
+
+            # Get or create session directory for this workflow
+            session_id = parent_session.name
+            current_session = self.path_resolver.session_dir(session_id)
+
+            # Copy parent artifacts to current session
+            print(f"[INFO] Copying parent artifacts from {parent_session.name}")
+            for artifact_file in parent_session.glob("*.md"):
+                dest = current_session / artifact_file.name
+                if not dest.exists():
+                    shutil.copy2(artifact_file, dest)
+                    print(f"  ✓ Copied {artifact_file.name}")
+
+            # Run workflow with parent session artifacts available
+            return self.run_workflow(
+                workflow_id,
+                execution_mode="yolo_execution",
+                from_session=str(current_session)
+            )
+
+        except Exception as e:
+            print(f"[ERROR] Failed to run workflow with parent session: {e}")
+            import traceback
+            traceback.print_exc()
+            return 1
