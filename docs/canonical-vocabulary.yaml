@@ -90,17 +90,47 @@ routing_fields:
 
   - field: recommended_workflow_id
     type: enum
-    values: [fast-path-workflow, full-fog-workflow, setup-sensemaking-repo, docs-contract-reconciliation, autonomous-sprint-preflight]
+    values:
+      # Diagnostic & Orchestration
+      - fast-path-workflow
+      - full-fog-workflow
+      - fast-local-diagnostic
+      - full-local-sensemaking
+      # Implementation
+      - implementation-workflow
+      - product-implementation-workflow
+      - ui-implementation-workflow
+      - docs-implementation-workflow
+      # Strategy & Discovery
+      - product-discovery-sprint
+      - product-strategy-sprint
+      - ui-diagnostic-workflow
+      # Autonomous & Preflight
+      - autonomous-sprint-preflight
+      - product-autonomous-sprint
+      - experimental-autonomous-sprint
+      # Documentation & Maintenance
+      - docs-contract-reconciliation
+      - docs-architecture
+      - skill-maintenance-loop
+      - product-to-issues
+      # Setup
+      - setup-sensemaking-repo
     required: true
-    description: "The workflow best suited to address this fog"
+    description: "The workflow best suited to address this fog (must reference an existing workflow_id)"
     example: "fast-path-workflow"
 
   - field: routing_decision_method
     type: enum
-    values: [fog_match, severity, complexity, codebase_state, user_intent_alignment]
+    values:
+      - diagnosis_primary_soft_context
+      - diagnosis_mixed_tiebreak_to_user_intent
+      - user_explicit_override
+      - escalation_recommended_accepted
+      - escalation_recommended_rejected
     required: true
-    description: "How the routing decision was made"
-    example: "fog_match"
+    description: "How the routing decision was made (audit trail: what reasoning led to this workflow selection)"
+    example: "diagnosis_primary_soft_context"
 
   - field: selected_workflow
     type: string
@@ -121,37 +151,220 @@ routing_fields:
     example: false
 
 gates:
+  # Core diagnostic gates
   - gate_id: review_problem_frame
     name: "Review Problem Frame"
     description: "User reviews and approves the problem frame produced by problem-framer"
-    allowed_outcomes:
-      - approved: "User confirms the problem frame is accurate"
-      - denied: "User rejects the problem frame; ask for revision"
-      - needs_revision: "User requests specific changes before approval"
+    allowed_outcomes: [approved, denied, needs_revision]
 
   - gate_id: review_unknowns
     name: "Review Unknowns Map"
     description: "User reviews the unknowns identified by unknowns-mapper"
-    allowed_outcomes:
-      - approved: "User confirms the unknowns are correct and complete"
-      - denied: "User rejects the unknowns map; ask for revision"
-      - needs_revision: "User requests additions or removals"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_unknowns_map
+    name: "Review Unknowns Map (alternate)"
+    description: "User reviews the unknowns identified by unknowns-mapper"
+    allowed_outcomes: [approved, denied, needs_revision]
 
   - gate_id: review_repository_brief
     name: "Review Repository Sensemaking Brief"
-    description: "User reviews the routing decision and fog analysis"
-    allowed_outcomes:
-      - approved: "User confirms the routing decision and proceeds"
-      - denied: "User rejects the routing; stop and report"
-      - needs_revision: "User wants more analysis before routing"
+    description: "User reviews the repository sensemaking brief and fog diagnosis"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_repo_brief
+    name: "Review Repo Brief (alternate)"
+    description: "User reviews the repository sensemaking brief"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_sensemaking_brief
+    name: "Review Sensemaking Brief (alternate)"
+    description: "User reviews the sensemaking brief"
+    allowed_outcomes: [approved, denied, needs_revision]
 
   - gate_id: review_workflow_plan
     name: "Review Workflow Plan"
     description: "User reviews the execution plan produced by workflow-planner"
-    allowed_outcomes:
-      - approved: "User approves the plan for execution"
-      - denied: "User rejects the plan; ask for alternatives"
-      - needs_revision: "User requests modifications to the plan"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_orchestration_plan
+    name: "Review Orchestration Plan (alternate)"
+    description: "User reviews the orchestration plan"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_diagnosis
+    name: "Review Diagnosis"
+    description: "User reviews the diagnosis"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  # Product & Discovery gates
+  - gate_id: review_goals
+    name: "Review Goals"
+    description: "User reviews product goals"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_discovery
+    name: "Review Discovery"
+    description: "User reviews discovery findings"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_persona
+    name: "Review Persona"
+    description: "User reviews persona definitions"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_hypothesis
+    name: "Review Hypothesis"
+    description: "User reviews hypothesis statement"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_opportunity_tree
+    name: "Review Opportunity Tree"
+    description: "User reviews opportunity mapping"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_prd
+    name: "Review PRD"
+    description: "User reviews Product Requirements Document"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_issue_list
+    name: "Review Issue List"
+    description: "User reviews prioritized issue list"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_issues
+    name: "Review Issues (alternate)"
+    description: "User reviews issues"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_user_stories
+    name: "Review User Stories"
+    description: "User reviews user stories"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_acceptance_criteria
+    name: "Review Acceptance Criteria"
+    description: "User reviews acceptance criteria"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  # UI/Design gates
+  - gate_id: review_domain_alignment
+    name: "Review Domain Alignment"
+    description: "User reviews domain-code alignment report"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_alignment_report
+    name: "Review Alignment Report (alternate)"
+    description: "User reviews alignment report"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_canvas
+    name: "Review Canvas"
+    description: "User reviews business canvas"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_metric
+    name: "Review Metric"
+    description: "User reviews north star metric"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_roadmap
+    name: "Review Roadmap"
+    description: "User reviews product roadmap"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_stakeholder_update
+    name: "Review Stakeholder Update"
+    description: "User reviews stakeholder communication"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  # Implementation & Execution gates
+  - gate_id: review_agent_brief
+    name: "Review Agent Brief"
+    description: "User reviews agent brief for autonomous execution"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_agent_briefs
+    name: "Review Agent Briefs (alternate)"
+    description: "User reviews agent briefs"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_sprint_prompt
+    name: "Review Sprint Prompt"
+    description: "User reviews sprint execution prompt"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_improvement_plan
+    name: "Review Improvement Plan"
+    description: "User reviews skill improvement plan"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_setup_plan
+    name: "Review Setup Plan"
+    description: "User reviews repository setup plan"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_drift_diagnosis
+    name: "Review Drift Diagnosis"
+    description: "User reviews contract/documentation drift diagnosis"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_reconciliation_patch
+    name: "Review Reconciliation Patch"
+    description: "User reviews docs/contract reconciliation patch"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_patterns
+    name: "Review Patterns"
+    description: "User reviews patterns identified"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  # Handoff & Finalization gates
+  - gate_id: review_final_prompt
+    name: "Review Final Prompt"
+    description: "User reviews final handoff prompt"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_handoff_prompt
+    name: "Review Handoff Prompt (alternate)"
+    description: "User reviews handoff prompt"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_next_prompt
+    name: "Review Next Prompt"
+    description: "User reviews next step prompt"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: final_review
+    name: "Final Review"
+    description: "Final user review before completion"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review
+    name: "Generic Review"
+    description: "Generic review gate (use specific gate types where possible)"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: session_close
+    name: "Session Close"
+    description: "Close session and confirm final artifacts"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: verify_tests
+    name: "Verify Tests"
+    description: "Verify test suite passes"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_execution_readiness
+    name: "Review Execution Readiness"
+    description: "Verify readiness for execution"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: none
+    name: "No Gate (Sentinel)"
+    description: "Special value indicating no user approval gate required"
+    allowed_outcomes: [none]
 
 execution_modes:
   - id: plan_only

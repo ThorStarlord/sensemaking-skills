@@ -165,27 +165,37 @@ class TestPathDrift(unittest.TestCase):
                 )
 
     def test_gate_names_are_canonical(self):
-        """Verify gate names match the canonical registry."""
-        canonical_gates = [
-            "review_problem_frame",
-            "review_unknowns",
-            "review_repository_brief",
-            "review_workflow_plan",
-        ]
-
-        # Read workflow registry
+        """Verify all gates in workflow-registry are in canonical-vocabulary."""
+        vocab_path = self.repo_root / "docs" / "canonical-vocabulary.yaml"
         registry_path = self.repo_root / "skills" / "workflow-planner" / "references" / "workflow-registry.yaml"
+
         if not registry_path.exists():
             self.skipTest("workflow-registry.yaml not found")
 
-        registry_content = registry_path.read_text()
+        import yaml
 
-        # All gates mentioned in registry should use canonical names
-        for gate in canonical_gates:
-            # Just check that canonical gate names are used somewhere in the registry
-            if gate in registry_content:
-                # Good, it's mentioned
-                pass
+        with open(vocab_path) as f:
+            vocab = yaml.safe_load(f)
+        with open(registry_path) as f:
+            registry = yaml.safe_load(f)
+
+        # Extract all gate IDs from vocabulary
+        vocab_gate_ids = {gate["gate_id"] for gate in vocab.get("gates", [])}
+
+        # Extract all gates used in workflow-registry
+        registry_gates = set()
+        for workflow in registry.get("workflows", []):
+            for step in workflow.get("steps", []):
+                if "gate" in step:
+                    registry_gates.add(step["gate"])
+
+        # All gates in registry must be in vocabulary
+        unknown_gates = registry_gates - vocab_gate_ids
+        self.assertFalse(
+            unknown_gates,
+            f"workflow-registry.yaml contains non-canonical gates: {sorted(unknown_gates)}\n"
+            "All gates must be defined in canonical-vocabulary.yaml"
+        )
 
     def test_no_hardcoded_artifact_paths(self):
         """Regression test placeholder for artifact path hardcoding.
@@ -223,6 +233,74 @@ class TestPathDrift(unittest.TestCase):
                 content,
                 f"Validator {validator_path} references stale skill path"
             )
+
+
+class TestEnumFieldConsistency(unittest.TestCase):
+    """Test that enum fields in routing_fields match actual canonical sections."""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up repo root."""
+        cls.repo_root = Path(__file__).parent.parent
+
+    def test_recommended_workflow_id_matches_workflow_ids(self):
+        """Verify recommended_workflow_id.values includes all workflow_ids."""
+        vocab_path = self.repo_root / "docs" / "canonical-vocabulary.yaml"
+
+        import yaml
+
+        with open(vocab_path) as f:
+            vocab = yaml.safe_load(f)
+
+        # Get recommended_workflow_id.values from routing_fields
+        routing_fields = {f["field"]: f for f in vocab.get("routing_fields", [])}
+        recommended_field = routing_fields.get("recommended_workflow_id", {})
+        recommended_values = set(recommended_field.get("values", []))
+
+        # Get all workflow_ids
+        workflow_ids = {w["id"] for w in vocab.get("workflow_ids", [])}
+
+        # Recommended values must include all workflow IDs
+        missing = workflow_ids - recommended_values
+        extra = recommended_values - workflow_ids
+
+        self.assertFalse(
+            missing,
+            f"recommended_workflow_id missing workflows that exist: {sorted(missing)}"
+        )
+        self.assertFalse(
+            extra,
+            f"recommended_workflow_id contains workflows that don't exist: {sorted(extra)}"
+        )
+
+    def test_routing_decision_method_values_are_documented(self):
+        """Verify routing_decision_method values are audit-trail values, not abstract methods."""
+        vocab_path = self.repo_root / "docs" / "canonical-vocabulary.yaml"
+
+        import yaml
+
+        with open(vocab_path) as f:
+            vocab = yaml.safe_load(f)
+
+        routing_fields = {f["field"]: f for f in vocab.get("routing_fields", [])}
+        decision_field = routing_fields.get("routing_decision_method", {})
+        decision_values = set(decision_field.get("values", []))
+
+        # Expected audit-trail values from workflow-planner
+        expected_values = {
+            "diagnosis_primary_soft_context",
+            "diagnosis_mixed_tiebreak_to_user_intent",
+            "user_explicit_override",
+            "escalation_recommended_accepted",
+            "escalation_recommended_rejected",
+        }
+
+        self.assertEqual(
+            decision_values,
+            expected_values,
+            f"routing_decision_method values should be audit-trail values. "
+            f"Got: {decision_values}, Expected: {expected_values}"
+        )
 
 
 class TestCanonicalVocabularyUsage(unittest.TestCase):

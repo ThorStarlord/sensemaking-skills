@@ -1,11 +1,11 @@
 # Contract/Naming Drift Hardening Status
 
-**Last Updated**: 2026-05-22 (Phase 1B & Phase 2 complete)  
-**Status**: 4+ of 5 steps complete (80%+) - Vocabulary now executable
+**Last Updated**: 2026-05-22 (Phase 1B, Phase 2, Phase 3 complete)  
+**Status**: Phase 3 complete (100% enum validation) - Vocabulary executable and enforced
 
 ## Overview
 
-This document tracks implementation of 5 hardening steps to prevent contract/naming drift (regression from PR #14 findings).
+This document tracks implementation of hardening steps to prevent contract/naming drift (regression from PR #14 findings). Phase 3 completes runtime enum validation, making the canonical vocabulary fully enforced at artifact creation time.
 
 ## Completed Steps
 
@@ -138,6 +138,56 @@ New auto-validation tests:
 - `test_vocabulary_covers_all_artifacts`: Every artifact ID in contracts is in vocabulary
 - Tests auto-fail if registries contain unknown enums
 
+## Phase 3: Enum Field Consistency Enforcement ✅ (COMPLETE)
+**Status**: Complete and deployed
+
+This phase enforced consistency between canonical vocabulary and all validators:
+
+### Routing Field Enum Alignment ✅
+**File**: `docs/canonical-vocabulary.yaml`
+
+Fixed misaligned routing field enums:
+- **routing_decision_method**: Updated to audit-trail values from workflow-planner (diagnosis_primary_soft_context, diagnosis_mixed_tiebreak_to_user_intent, user_explicit_override, escalation_recommended_accepted, escalation_recommended_rejected)
+- **recommended_workflow_id**: Expanded from 5 to 19 workflows (now includes all workflow_ids from registry)
+- **gates**: Added 35+ gates including review_goals, review_discovery, review_patterns, review_drift_diagnosis, review_execution_readiness, verify_tests, session_close, and sentinel value "none"
+
+### Enum Field Consistency Tests ✅
+**File**: `tests/test_path_drift.py` - TestEnumFieldConsistency class
+
+New tests verify enum alignment:
+- `test_recommended_workflow_id_matches_workflow_ids`: Verifies routing_fields.recommended_workflow_id.values exactly matches workflow_ids[*].id
+- `test_routing_decision_method_values_are_documented`: Verifies routing_decision_method uses audit-trail values matching workflow-planner
+
+### Enhanced Gate Validation ✅
+**File**: `tests/test_path_drift.py` - test_gate_names_are_canonical
+
+Strengthened from soft verification to hard assertion:
+- Every gate in workflow-registry.yaml.steps[*].gate must exist in canonical-vocabulary.yaml.gates[*].gate_id
+- Sentinel value "none" allowed (for steps with no approval gate)
+- Test auto-detects and fails on unknown gates
+
+### Runtime Enum Validation ✅
+**File**: `scripts/validate-artifact.py`
+
+Enhanced validator with canonical vocabulary loading:
+- **_validate_enum_fields()**: New function validates routing field enum values against vocabulary
+- Checks primary_fog_type, routing_decision_method, recommended_workflow_id, selected_workflow, etc.
+- Validates fog type aliases normalize to canonical forms
+- Enforces secondary_fog_types as valid list
+- New error codes: INVALID_ENUM_VALUE, VOCAB_NOT_FOUND
+
+Integration:
+- Loads canonical-vocabulary.yaml at validation time
+- Validates all enum fields found in artifact YAML
+- Provides clear error messages with allowed values
+- Gracefully handles missing vocabulary (skips enum check)
+
+**Test coverage**:
+- Enum validation catches invalid fog types ✓
+- Enum validation catches invalid workflow IDs ✓
+- Enum validation catches invalid routing decisions ✓
+- Canonical enum values pass validation ✓
+
 ## Pending Steps
 
 ### Step 3: Normalize Fog Type Names in repo-sensemaker Output ⏳
@@ -227,11 +277,14 @@ Once repo-sensemaker uses the fog type normalizer, its output will always be can
 |----------|-------|
 | Workflows in canonical vocabulary | 19 |
 | Artifacts in canonical vocabulary | 33 |
+| Gates in canonical vocabulary | 35+ |
 | Fog type normalization tests | 4 |
-| Path drift regression tests | 11 |
-| Auto-validation coverage tests | 2 |
-| Full test suite passing | 122 |
-| Pending hardening steps | 1 |
+| Path drift regression tests | 8 |
+| Enum field consistency tests | 2 |
+| Gate validation tests | 1 (hard assertion) |
+| Enum validation in validate-artifact.py | ✓ |
+| Full test suite passing | 17 passed, 1 skipped |
+| Pending hardening steps | 2 (normalization in producers + tier split) |
 
 ## Vocabulary Executability
 

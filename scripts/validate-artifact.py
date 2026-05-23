@@ -11,7 +11,12 @@ import re
 import yaml
 import argparse
 
-from _validator_utils import format_error, load_artifact_contracts
+from _validator_utils import (
+    format_error,
+    load_artifact_contracts,
+    load_canonical_vocabulary,
+    build_fog_type_normalizer,
+)
 
 # Stable error codes
 ARTIFACT_FILE_NOT_FOUND = "ARTIFACT_FILE_NOT_FOUND"
@@ -25,8 +30,93 @@ MISSING_EVIDENCE_EXCERPTS = "MISSING_EVIDENCE_EXCERPTS"
 MISSING_EXCERPT_FIELD = "MISSING_EXCERPT_FIELD"
 ABSOLUTE_EXCERPT_PATH = "ABSOLUTE_EXCERPT_PATH"
 MISSING_RECOMMENDED_FIELD = "MISSING_RECOMMENDED_FIELD"
+INVALID_ENUM_VALUE = "INVALID_ENUM_VALUE"
+VOCAB_NOT_FOUND = "VOCAB_NOT_FOUND"
 
 warnings = []  # Collect warnings separately from errors
+
+
+def _validate_enum_fields(yaml_data, artifact_id, vocab, errors):
+    """Validate routing field enum values against canonical vocabulary.
+
+    Args:
+        yaml_data: Parsed YAML machine-readable section
+        artifact_id: The artifact ID
+        vocab: Loaded canonical vocabulary
+        errors: List to append errors to (modified in-place)
+    """
+    if not vocab or not yaml_data:
+        return
+
+    # Build enum validators from vocabulary routing_fields
+    routing_fields = {f["field"]: f for f in vocab.get("routing_fields", [])}
+
+    # Validate enum fields that exist in YAML
+    for field_name, field_spec in routing_fields.items():
+        if field_name not in yaml_data:
+            continue
+
+        value = yaml_data[field_name]
+        if value is None:
+            continue
+
+        allowed_values = field_spec.get("values", [])
+        if not allowed_values:
+            continue
+
+        # Handle list fields (e.g., secondary_fog_types)
+        if field_spec.get("type") == "list(enum)":
+            if isinstance(value, list):
+                for i, item in enumerate(value):
+                    if item not in allowed_values:
+                        errors.append(
+                            format_error(
+                                INVALID_ENUM_VALUE,
+                                f"Field '{field_name}[{i}]' has invalid value '{item}'. "
+                                f"Allowed: {', '.join(str(v) for v in allowed_values)}"
+                            )
+                        )
+        # Handle single enum fields
+        else:
+            if value not in allowed_values:
+                errors.append(
+                    format_error(
+                        INVALID_ENUM_VALUE,
+                        f"Field '{field_name}' has invalid value '{value}'. "
+                        f"Allowed: {', '.join(str(v) for v in allowed_values)}"
+                    )
+                )
+
+    # Validate fog type aliases are normalized
+    fog_type_normalizer = build_fog_type_normalizer(vocab)
+    if not fog_type_normalizer:
+        return
+
+    for field in ["primary_fog_type", "user_implied_fog_type"]:
+        if field in yaml_data:
+            value = yaml_data[field]
+            if value and value not in fog_type_normalizer:
+                errors.append(
+                    format_error(
+                        INVALID_ENUM_VALUE,
+                        f"Field '{field}' has unknown fog type '{value}'. "
+                        f"Must be one of: {', '.join(sorted(fog_type_normalizer.keys()))}"
+                    )
+                )
+
+    # Check secondary_fog_types
+    if "secondary_fog_types" in yaml_data:
+        secondary = yaml_data["secondary_fog_types"]
+        if secondary and isinstance(secondary, list):
+            for i, fog_type in enumerate(secondary):
+                if fog_type not in fog_type_normalizer:
+                    errors.append(
+                        format_error(
+                            INVALID_ENUM_VALUE,
+                            f"Field 'secondary_fog_types[{i}]' has unknown fog type '{fog_type}'. "
+                            f"Must be one of: {', '.join(sorted(fog_type_normalizer.keys()))}"
+                        )
+                    )
 
 
 def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommended=False):
@@ -180,6 +270,13 @@ def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommen
                 else:
                     warnings.append(msg)
 
+    # 3c. Validate enum field values against canonical vocabulary
+    if yaml_data:
+        vocab = load_canonical_vocabulary(repo_root)
+        if vocab:
+            _validate_enum_fields(yaml_data, artifact_id, vocab, errors)
+        # Note: if vocabulary not found, skip enum validation (not a fatal error)
+
     # 4. Specific validation for repository_sensemaking_brief
     if artifact_id == "repository_sensemaking_brief":
         evidence_match = re.search(r"evidence_excerpts:.*?```yaml\s+(.*?)\s+```", content, re.DOTALL | re.IGNORECASE)
@@ -241,6 +338,8 @@ def main(argv: list[str] | None = None) -> int:
             MISSING_EVIDENCE_EXCERPTS,
             MISSING_EXCERPT_FIELD,
             ABSOLUTE_EXCERPT_PATH,
+            INVALID_ENUM_VALUE,
+            VOCAB_NOT_FOUND,
         ]
         print("Stable error codes for artifact validation:")
         for code in codes:
