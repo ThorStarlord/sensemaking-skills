@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+include INSTALLATION.md
+include EXTENDING.md
+include API.md
+recursive-include src/sensemaking_skills/defaults *
+recursive-include templates *
+recursive-include skills *

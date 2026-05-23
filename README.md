@@ -1,5 +1,9 @@
 # Sensemaking Skills
 
+[![PyPI version](https://badge.fury.io/py/sensemaking-skills.svg)](https://badge.fury.io/py/sensemaking-skills)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+
 A collection of skills designed to turn vague project uncertainty into clear problem frames, research paths, decisions, and next-step prompts.
 
 The repository is organized around a clean split: **Diagnosis** (`repo-sensemaker`) and **Orchestration** (`workflow-planner`).
