@@ -98,6 +98,18 @@ The workflow orchestration system follows four key design patterns, each proven 
    - **Why**: Prevents contract drift (the regression from PR #14); makes auto-invocation safe because recommended_workflow_id is guaranteed valid
    - **See**: [docs/HARDENING_STATUS.md](docs/HARDENING_STATUS.md)
 
+11. **Manual vs Automation Invocation Paths** (ADR 0012)
+   - **Dual strategy**: System supports both manual path (full control) and automation path (full speed) using same workflows
+   - **Manual path**: User explicitly invokes each workflow, reviews artifacts, decides next step (best for learning, debugging, exploration)
+   - **Automation path**: User invokes once, system auto-chains based on registry config and recommended_workflow_id (best for production, speed, CI/CD)
+   - **Four execution modes**: guided_execution (user approval), autonomous_execution (validation-based), plan_only (dry-run), yolo_execution (no safety)
+   - **No code duplication**: Paths are orthogonal; decided at invocation time, not in workflow definitions
+   - **Phase 3 integration**: Both paths use same Phase 3 validation; automation path is safe because recommended_workflow_id is pre-validated
+   - **Why**: Control and speed are incompatible goals; supporting both paths serves learning, production, and experimentation use cases
+   - **See**: [docs/adr/0012-invocation-paths.md](docs/adr/0012-invocation-paths.md) and [GETTING_STARTED.md](GETTING_STARTED.md)
+
+**For users**: See [GETTING_STARTED.md](GETTING_STARTED.md) for complete usage guide with examples of both invocation paths.
+
 **For designers**: See [docs/orchestration-patterns.md](docs/orchestration-patterns.md) for detailed patterns and [docs/workflow-design-guide.md](docs/workflow-design-guide.md) for step-by-step workflow design instructions.
 
 ## Routing Source of Truth
