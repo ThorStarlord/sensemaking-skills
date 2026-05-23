@@ -159,7 +159,7 @@ python scripts/workflow-runtime.py --workflow fast-path-workflow --mode plan_onl
 # -> Fast validation before committing
 
 # Mode 5: YOLO - Maximum speed with gates bypassed
-python scripts/workflow-runtime.py --workflow fast-path-workflow --mode yolo_execution
+python scripts/workflow-runtime.py --workflow full-local-sensemaking --mode yolo_execution
 # -> Bypasses approval gates; validators still enforce artifact validity
 # -> Use only in trusted, experimental contexts
 ```
@@ -257,7 +257,7 @@ python scripts/workflow-runtime.py --workflow fast-path-workflow --mode prompt_c
 python scripts/workflow-runtime.py --workflow fast-path-workflow --mode plan_only
 
 # YOLO mode (bypass gates, full automation, experimental only)
-python scripts/workflow-runtime.py --workflow fast-path-workflow --mode yolo_execution
+python scripts/workflow-runtime.py --workflow full-local-sensemaking --mode yolo_execution
 ```
 
 ---

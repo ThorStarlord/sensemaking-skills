@@ -203,6 +203,7 @@ class OrchestrationRunner:
         executor: str = "dry-run",
         use_fixtures: bool = False,
         chained: bool = False,
+        from_session: str | None = None,
     ):
         self.workflow_id = workflow_id
         self.mode = mode
@@ -215,8 +216,14 @@ class OrchestrationRunner:
         self.log_dir = log_dir or os.path.join(self.repo_root, "artifacts")
         self.use_fixtures = use_fixtures
         self.chained = chained
+        self.from_session = from_session
 
-        self.session_id = _generate_session_id()
+        # If from_session is provided, reuse its session ID instead of generating new one
+        if from_session and os.path.isdir(from_session):
+            # Extract session ID from path like "artifacts/01-run-session-2026-05-23-123456"
+            self.session_id = os.path.basename(from_session)
+        else:
+            self.session_id = _generate_session_id()
         self.workflow: dict = {}
         self.contracts: dict | None = None
         self.errors: list[str] = []
@@ -1182,6 +1189,7 @@ class OrchestrationRunner:
             "--repo-root", self.repo_root,
             "--executor", self.executor or "claude-code",
             "--chained",
+            "--from-session", self.artifact_session_dir,
         ]
 
         if self.use_fixtures:
@@ -2332,6 +2340,13 @@ class OrchestrationRunner:
                     # Fall back to reading from source artifact
                     next_workflow_id = self._extract_recommended_workflow(source_artifact)
                 if next_workflow_id:
+                    # RECURSION GUARD: Prevent self-routing
+                    if next_workflow_id == self.workflow_id:
+                        print(f"  [ERROR] RECURSION DETECTED: Workflow '{self.workflow_id}' would invoke itself.")
+                        print(f"  [ERROR] This indicates a routing configuration error.")
+                        print(f"  [FATAL] Auto-invocation aborted to prevent infinite loop.")
+                        return self._finalize_run(1, "recursion_error")
+
                     # Validate fog type alignment. The fog field lives in the
                     # repository_sensemaking_brief (primary_fog_type), not always in
                     # the orchestration plan, so resolve across artifacts + field names.
@@ -2645,6 +2660,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="Use fixture artifacts instead of validating actual artifacts (for testing orchestration without skill execution)")
     parser.add_argument("--chained", action="store_true", default=False,
                         help="Internal: invoked as a chained/child workflow from another workflow run")
+    parser.add_argument("--from-session", default=None,
+                        help="Path to artifact session directory from a prior workflow run (for manual path or chained execution)")
 
     args = parser.parse_args(argv)
 
@@ -2693,6 +2710,7 @@ def main(argv: list[str] | None = None) -> int:
         executor=args.executor,
         use_fixtures=args.use_fixtures,
         chained=args.chained,
+        from_session=args.from_session,
     )
 
     if runner.errors:
@@ -2700,13 +2718,39 @@ def main(argv: list[str] | None = None) -> int:
             print(f"ERROR {e}")
         return 1
 
-    # Create user intent artifact before running workflow
-    intent_path = runner._create_user_intent_artifact(problem, args.scope)
-    if not intent_path:
-        print("ERROR: Failed to create user_intent artifact")
-        for e in runner.errors:
-            print(f"  - {e}")
-        return 1
+    # Handle --from-session: reuse session directory from prior run
+    if args.from_session:
+        from_session_path = os.path.abspath(args.from_session)
+        if not os.path.isdir(from_session_path):
+            print(f"ERROR: --from-session path does not exist: {from_session_path}")
+            return 1
+
+        # Check if prior run's user_intent exists
+        prior_intent = os.path.join(from_session_path, "00-user-intent.md")
+        if not os.path.exists(prior_intent):
+            print(f"ERROR: No user_intent artifact found in --from-session directory: {from_session_path}")
+            return 1
+
+        # Reuse the session directory and intent
+        runner.artifact_session_dir = from_session_path
+        runner.session_id = os.path.basename(from_session_path)
+        intent_path = prior_intent
+
+        # Update output paths to use session directory
+        if not args.plan_out:
+            runner.plan_out = os.path.join(from_session_path, f"plan_{workflow_id}.md")
+        if not args.log_dir:
+            runner.log_dir = from_session_path
+
+        print(f"[OK] Reusing session: {os.path.relpath(from_session_path, repo_root)}")
+    else:
+        # Create user intent artifact before running workflow
+        intent_path = runner._create_user_intent_artifact(problem, args.scope)
+        if not intent_path:
+            print("ERROR: Failed to create user_intent artifact")
+            for e in runner.errors:
+                print(f"  - {e}")
+            return 1
 
     # Store execution context in runner
     runner.problem_statement = problem

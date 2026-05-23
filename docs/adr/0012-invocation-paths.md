@@ -3,7 +3,7 @@
 **Status**: Accepted  
 **Date**: 2026-05-23  
 **Context**: Completing Phase 3 Hardening + Usage Documentation  
-**Decision**: System supports two invocation paths (manual for control, automation for speed) with four execution modes to handle different use cases.
+**Decision**: System supports two invocation paths (manual for control, automation for speed) with five execution modes to handle different use cases.
 
 ---
 
@@ -72,11 +72,11 @@ User explicitly invokes workflow C
 **Example**:
 ```bash
 # Step 1: Diagnostic analysis
-$ python scripts/workflow-runtime.py fast-path-workflow --mode guided_execution
+$ python scripts/workflow-runtime.py --workflow fast-path-workflow --mode guided_execution
 → Output: repository_sensemaking_brief with recommended_workflow_id
 
 # Step 2: User reads brief, decides to proceed
-$ python scripts/workflow-runtime.py product-implementation-workflow --mode guided_execution
+$ python scripts/workflow-runtime.py --workflow product-implementation-workflow --mode guided_execution --from-session artifacts/NN-orchestration-run
 → Output: PRD, issues, code patches
 ```
 
@@ -104,10 +104,10 @@ Complete output returned
 **Example**:
 ```bash
 # Single command: entire pipeline
-$ python scripts/workflow-runtime.py fast-path-workflow --mode autonomous_execution
+$ python scripts/workflow-runtime.py --workflow fast-path-workflow --mode autonomous_execution
 → Stage 1: Diagnostic (repo-sensemaker)
 → Stage 2: Orchestration (workflow-planner determines routing)
-→ Stage 3: Auto-invocation (orchestrator invokes product-implementation-workflow)
+→ Stage 3: Auto-invocation (orchestrator invokes product-implementation-workflow with --from-session)
 → Stage 4: Implementation (full workflow executes with auto-approval)
 → Output: Complete solution (brief, PRD, issues, code)
 ```
@@ -313,8 +313,8 @@ A: Yes. The same workflow works in both paths; only the invocation strategy diff
 **Q: Is automation path production-ready?**  
 A: Yes. Phase 3 hardening guarantees all routing fields are validated before auto-invocation.
 
-**Q: Why four execution modes?**  
-A: Different use cases need different gate strategies: guided_execution for control, autonomous_execution for speed, plan_only for validation, yolo_execution for experiments.
+**Q: Why five execution modes?**  
+A: Different use cases need different gate strategies: guided_execution for control, autonomous_execution for speed, prompt_chain for manual prompt generation, plan_only for validation, yolo_execution for experiments.
 
 **Q: What if auto-invocation fails?**  
 A: Phase 3 prevents this. All enum fields are validated at artifact creation time. If recommended_workflow_id is invalid, validate-artifact.py rejects the artifact before orchestrator tries auto-invocation.
