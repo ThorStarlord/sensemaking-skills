@@ -1,0 +1,246 @@
+# Canonical Vocabulary Registry
+#
+# This file defines the authoritative set of enumerated values used throughout the sensemaking system.
+# All skills, validators, and routing logic MUST use values from this registry.
+#
+# Validators accept aliases (e.g., `ui` for `ui_fog`) but normalize to the canonical form before
+# storing artifacts. Downstream consumers can always expect canonical forms.
+
+fog_types:
+  - id: product_fog
+    aliases: [product]
+    description: "Confusion about product vision, roadmap, requirements, or user value proposition"
+    examples:
+      - "I'm unsure what we're building"
+      - "The requirements are conflicting"
+      - "We don't know what users actually need"
+    routing_indicator: "Use when business logic, strategy, or requirements are unclear"
+
+  - id: ui_fog
+    aliases: [ui, ux]
+    description: "Confusion about user interfaces, user experience, or interaction design"
+    examples:
+      - "The UI doesn't feel right but I can't articulate why"
+      - "The information architecture is confusing"
+      - "Users are struggling to find features"
+    routing_indicator: "Use when visual, interaction, or information design is the core problem"
+
+  - id: architecture_fog
+    aliases: [architecture, system, infrastructure]
+    description: "Confusion about system architecture, design patterns, structure, or infrastructure"
+    examples:
+      - "The codebase is hard to navigate"
+      - "I don't understand the module boundaries"
+      - "The tech stack choices aren't clear"
+    routing_indicator: "Use when code organization, design patterns, or system structure are unclear"
+
+  - id: docs_fog
+    aliases: [docs, documentation]
+    description: "Confusion caused by missing, outdated, or unclear documentation"
+    examples:
+      - "There's no onboarding guide"
+      - "The API docs don't match the code"
+      - "Decision history isn't recorded"
+    routing_indicator: "Use when documentation gaps are the primary blocker"
+
+  - id: integration_fog
+    aliases: [integration, api, service]
+    description: "Confusion about integrations, external APIs, or service boundaries"
+    examples:
+      - "The API contract is unclear"
+      - "The webhook mechanism is poorly documented"
+      - "Third-party dependencies have surprising behavior"
+    routing_indicator: "Use when external systems or integration points are unclear"
+
+fog_type_decision_tree:
+  - step: 1
+    question: "Is the confusion about what to build or why?"
+    answer: "product_fog"
+
+  - step: 2
+    question: "Is the confusion about how it looks or how users interact with it?"
+    answer: "ui_fog"
+
+  - step: 3
+    question: "Is the confusion about code organization, design patterns, or architecture?"
+    answer: "architecture_fog"
+
+  - step: 4
+    question: "Is the confusion specifically caused by missing/wrong documentation?"
+    answer: "docs_fog"
+
+  - step: 5
+    question: "Is the confusion about external systems, APIs, or integrations?"
+    answer: "integration_fog"
+
+routing_fields:
+  - field: primary_fog_type
+    type: enum
+    values: [product_fog, ui_fog, architecture_fog, docs_fog, integration_fog]
+    required: true
+    description: "The dominant fog type identified in the repository"
+    example: "ui_fog"
+
+  - field: secondary_fog_types
+    type: list(enum)
+    values: [product_fog, ui_fog, architecture_fog, docs_fog, integration_fog]
+    required: false
+    description: "Other fog types present but less critical"
+    example: ["docs_fog", "architecture_fog"]
+
+  - field: recommended_workflow_id
+    type: enum
+    values: [fast-path-workflow, full-fog-workflow, setup-sensemaking-repo, docs-contract-reconciliation, autonomous-sprint-preflight]
+    required: true
+    description: "The workflow best suited to address this fog"
+    example: "fast-path-workflow"
+
+  - field: routing_decision_method
+    type: enum
+    values: [fog_match, severity, complexity, codebase_state, user_intent_alignment]
+    required: true
+    description: "How the routing decision was made"
+    example: "fog_match"
+
+  - field: selected_workflow
+    type: string
+    required: true
+    description: "Human-readable confirmation of which workflow to run"
+    example: "Use fast-path-workflow to diagnose UI fog"
+
+  - field: diagnosis_conflict
+    type: boolean
+    required: false
+    description: "True if codebase fog differs significantly from user-implied fog"
+    example: true
+
+  - field: escalation_recommended
+    type: boolean
+    required: false
+    description: "True if fog is complex enough to recommend human involvement"
+    example: false
+
+gates:
+  - gate_id: review_problem_frame
+    name: "Review Problem Frame"
+    description: "User reviews and approves the problem frame produced by problem-framer"
+    allowed_outcomes:
+      - approved: "User confirms the problem frame is accurate"
+      - denied: "User rejects the problem frame; ask for revision"
+      - needs_revision: "User requests specific changes before approval"
+
+  - gate_id: review_unknowns
+    name: "Review Unknowns Map"
+    description: "User reviews the unknowns identified by unknowns-mapper"
+    allowed_outcomes:
+      - approved: "User confirms the unknowns are correct and complete"
+      - denied: "User rejects the unknowns map; ask for revision"
+      - needs_revision: "User requests additions or removals"
+
+  - gate_id: review_repository_brief
+    name: "Review Repository Sensemaking Brief"
+    description: "User reviews the routing decision and fog analysis"
+    allowed_outcomes:
+      - approved: "User confirms the routing decision and proceeds"
+      - denied: "User rejects the routing; stop and report"
+      - needs_revision: "User wants more analysis before routing"
+
+  - gate_id: review_workflow_plan
+    name: "Review Workflow Plan"
+    description: "User reviews the execution plan produced by workflow-planner"
+    allowed_outcomes:
+      - approved: "User approves the plan for execution"
+      - denied: "User rejects the plan; ask for alternatives"
+      - needs_revision: "User requests modifications to the plan"
+
+execution_modes:
+  - id: plan_only
+    description: "Generate workflow plan, stop before execution"
+    user_interaction: "None; automated"
+    gates_honored: false
+
+  - id: prompt_chain
+    description: "Generate prompts for each step, stop before execution"
+    user_interaction: "None; automated"
+    gates_honored: false
+
+  - id: guided_execution
+    description: "Execute with user review at each gate"
+    user_interaction: "User reviews and approves at every gate"
+    gates_honored: true
+    default: true
+
+  - id: autonomous_execution
+    description: "Execute with auto-approval for passing validations"
+    user_interaction: "User reviews final artifacts only"
+    gates_honored: true
+    auto_approval_criteria: "validation_passed and no_severity_warnings"
+
+  - id: yolo_execution
+    description: "Execute without gates or user review"
+    user_interaction: "None; fully automated"
+    gates_honored: false
+    warning: "Use only in fully trusted, isolated environments"
+
+artifact_ids:
+  - id: user_intent
+    description: "Raw user problem statement or request"
+    produced_by: user
+    consumed_by: [problem-framer, repo-sensemaker]
+
+  - id: problem_frame
+    description: "Structured problem statement (problem under the problem)"
+    produced_by: problem-framer
+    consumed_by: [unknowns-mapper, workflow-planner]
+
+  - id: unknowns_map
+    description: "Map of unknowns blocking progress"
+    produced_by: unknowns-mapper
+    consumed_by: [repo-sensemaker, workflow-planner]
+
+  - id: repository_sensemaking_brief
+    description: "Fog diagnosis and routing decision"
+    produced_by: repo-sensemaker
+    consumed_by: [workflow-planner, handoff]
+    routing_critical: true
+
+  - id: workflow_plan
+    description: "Step-by-step execution plan (no implementation)"
+    produced_by: workflow-planner
+    consumed_by: [handoff, orchestrator-skill]
+
+  - id: execution_summary
+    description: "Final summary of work performed"
+    produced_by: handoff
+    consumed_by: user
+
+workflow_ids:
+  - id: fast-path-workflow
+    display_name: "Fast Path - Diagnostic & Orchestration"
+    description: "Rapid fog diagnosis -> routing -> plan"
+    steps: 4
+    typical_fog_types: [product_fog, ui_fog, architecture_fog]
+
+  - id: full-fog-workflow
+    display_name: "Full Fog Path - Comprehensive Sensemaking"
+    description: "Deep diagnosis with comprehensive research"
+    steps: 6
+    typical_fog_types: [all]
+
+  - id: setup-sensemaking-repo
+    display_name: "Setup Sensemaking Repository"
+    description: "Initialize sensemaking infrastructure"
+    steps: 3
+    typical_fog_types: []
+
+  - id: docs-contract-reconciliation
+    display_name: "Docs & Contract Reconciliation"
+    description: "Align documentation with codebase reality"
+    steps: 3
+    typical_fog_types: [docs_fog]
+
+  - id: autonomous-sprint-preflight
+    display_name: "Autonomous Sprint Preflight"
+    description: "Prepare codebase for autonomous agents"
+    steps: 4
+    typical_fog_types: [architecture_fog, docs_fog]

@@ -108,6 +108,7 @@ Every response must follow the [Workflow Orchestration Plan](references/workflow
 - **Path Normalization**: All artifact paths in the plan MUST use relative paths. Never use absolute `file:///` links.
 
 ## References
+- [Canonical Vocabulary Registry](../../docs/canonical-vocabulary.yaml) — Authoritative fog types and routing field definitions
 - [Workflow Orchestration Template](references/workflow-orchestration-template.md)
 - [Skill Registry](references/skill-registry.yaml)
 - [Workflow Registry](references/workflow-registry.yaml)

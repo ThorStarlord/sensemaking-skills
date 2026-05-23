@@ -99,9 +99,11 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 2. **Registry Grounding**: Every `recommended_workflow_id` MUST be verified against `skills/workflow-planner/references/workflow-registry.yaml`. Do not invent or "hallucinate" workflow IDs from semantic context. If no matching workflow exists, recommend a `plan_only` mode with the closest structural match or leave it blank with a note.
 
 ## References
+- [Canonical Vocabulary Registry](../../docs/canonical-vocabulary.yaml) — Authoritative fog type definitions and routing field enums
 - [Repo Analysis Template](references/repo-analysis-template.md)
 - [Weakness Types](references/weakness-types.md)
 - [Evidence Rules](references/evidence-rules.md)
+- [UI Fog Signals Registry](references/ui-fog-signals.md)
 
 ## Execution Protocol
 
