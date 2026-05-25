@@ -1,14 +1,14 @@
 # Getting Started with Sensemaking Skills
 
-This guide shows how to actually use the system in its current state (agent/Claude Code invocation).
+This guide shows how to use the system. There are two paths: agent-native (recommended for diagnostics) and CLI utilities.
 
 ---
 
 ## Prerequisites
 
 - Python 3.11+
-- Claude Code (for skill invocation), OR
-- Command-line access to Python scripts
+- Claude Code (for agent-native skill invocation), OR
+- sensemaking-skills CLI (for validation and utilities)
 
 ---
 
@@ -62,9 +62,28 @@ Restart Claude Code. If skill invocation works in your environment, you may be a
 
 ---
 
+### Via CLI (New in 0.2.1)
+
+If you've installed sensemaking-skills via `pip install -e .`:
+
+```bash
+# Prepare a repository for diagnosis
+sensemaking-skills analyze --repo /path/to/your/repo
+
+# Then open the repository in Claude Code and follow the agent-native path above
+
+# After the agent creates artifacts, validate them:
+sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
+
+# Run the test suite:
+sensemaking-skills test
+```
+
+**Note:** The CLI provides utilities for setup and validation. The actual diagnosis requires Claude Code and the agent-native skills.
+
 ### Validate Artifacts with Python Scripts
 
-To validate artifacts after they're created:
+You can also validate directly without the CLI:
 
 **Validate a brief:**
 ```bash

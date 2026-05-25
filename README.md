@@ -6,8 +6,8 @@
 An agent-native framework for repository diagnosis and workflow orchestration. Turns repository uncertainty into clear problem frames, research paths, and actionable next-step prompts.
 
 **Status**: Beta (Scenario 5 tested and proven)  
-**Current Use**: Agent/Claude Code invocation (not a standalone CLI)  
-**Maturity**: Production-ready for agent-based use, user-facing features in development
+**Current Use**: Agent/Claude Code invocation + CLI utilities (v0.2.1)  
+**Maturity**: Production-ready for agent-based use, CLI beta-ready
 
 ---
 
@@ -30,10 +30,10 @@ An agent-native framework for repository diagnosis and workflow orchestration. T
 
 ## What This Is NOT
 
-❌ **Not a CLI tool** — No `sensemaking-skills` command (yet)  
-❌ **Not a PyPI-installable package** — Can't `pip install` (yet)  
-❌ **Not a black-box service** — Requires agent/Claude Code invocation  
+❌ **Not a PyPI-installable package** — Can't `pip install` yet (publishing after real-world CLI testing)  
+❌ **Not a black-box service** — Requires agent/Claude Code for diagnostics  
 ❌ **Not a replacement for specialized tools** — Complements PM skills, UI skills, TDD tools  
+❌ **Not standalone** — CLI is for validation and utilities, agent-native for diagnosis  
 
 ---
 
@@ -59,9 +59,25 @@ For testing and automation.
 
 ## How to Use Today
 
-Sensemaking Skills is currently agent-native. The primary use case is opening this repository in Claude Code or another coding agent and having the agent read the skill instructions.
+Sensemaking Skills has two interfaces:
 
-It is not yet a standalone CLI and is not yet installable from PyPI.
+1. **Agent-native** (primary) — Claude Code + skill reading for full diagnostics
+2. **CLI** (utilities) — Validation, testing, and environment setup
+
+### New in 0.2.1: CLI Interface
+
+```bash
+# Install (development mode)
+pip install -e .
+
+# Or use the installed command
+sensemaking-skills --version
+sensemaking-skills analyze --repo /path/to/my/repo
+sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
+sensemaking-skills test --repos 100
+```
+
+**Important:** The CLI provides validation and testing utilities. For full repository diagnosis, use Claude Code with the agent-native skills.
 
 ### Option 1: Use Locally with Claude Code or Another Agent
 
