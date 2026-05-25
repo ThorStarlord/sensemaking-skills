@@ -23,6 +23,18 @@ class ShadowModeRunner:
         """Run diagnostic on a sample repository."""
         test_start = time.time()
 
+        # Validate that the script exists before attempting execution
+        script_path = os.path.join(self.repo_root, "scripts/validate-and-report.py")
+        if not os.path.exists(script_path):
+            return {
+                "repository": os.path.basename(repo_path),
+                "size": self._classify_repo_size(repo_path),
+                "success": False,
+                "error": "validation script not found",
+                "execution_time": time.time() - test_start,
+                "timestamp": datetime.now().isoformat()
+            }
+
         # Run workflow-planner validation
         try:
             result = subprocess.run(
@@ -42,20 +54,23 @@ class ShadowModeRunner:
                 "timestamp": datetime.now().isoformat()
             }
         except subprocess.TimeoutExpired:
+            execution_time = time.time() - test_start
             return {
                 "repository": os.path.basename(repo_path),
                 "size": self._classify_repo_size(repo_path),
                 "success": False,
                 "error": "timeout",
-                "execution_time": 30.0,
+                "execution_time": execution_time,
                 "timestamp": datetime.now().isoformat()
             }
-        except Exception as e:
+        except (subprocess.CalledProcessError, OSError) as e:
+            execution_time = time.time() - test_start
             return {
                 "repository": os.path.basename(repo_path),
                 "size": self._classify_repo_size(repo_path),
                 "success": False,
                 "error": str(e),
+                "execution_time": execution_time,
                 "timestamp": datetime.now().isoformat()
             }
 
@@ -77,7 +92,7 @@ class ShadowModeRunner:
                 return "large"
             else:
                 return "very_large"
-        except:
+        except (subprocess.CalledProcessError, FileNotFoundError, OSError):
             return "unknown"
 
     def run_batch(self, repo_list: List[str]) -> Dict[str, Any]:
@@ -98,9 +113,21 @@ class ShadowModeRunner:
         total = len(self.results)
         times = [r.get("execution_time", 0) for r in self.results if r.get("execution_time")]
 
+        # Guard against empty times list
+        if not times:
+            return {
+                "total_tests": total,
+                "successes": successes,
+                "success_rate": successes / total if total > 0 else 0,
+                "execution_time_avg": 0,
+                "execution_time_p95": 0,
+                "execution_time_max": 0,
+                "results": self.results
+            }
+
         times.sort()
         p95_idx = int(len(times) * 0.95)
-        p95_time = times[p95_idx] if p95_idx < len(times) else max(times)
+        p95_time = times[p95_idx] if p95_idx < len(times) else times[-1]
 
         return {
             "total_tests": total,
