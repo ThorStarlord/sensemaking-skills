@@ -1,0 +1,80 @@
+{
+  "phase": "Phase 3",
+  "test_type": "Autonomous Comprehensive",
+  "timestamp": "2026-05-25T20:34:04.726002",
+  "tests": [
+    {
+      "name": "CLI Version",
+      "success": true,
+      "time": 0.2179877758026123,
+      "exit_code": 0,
+      "output": "python -m sensemaking_skills.cli, version 0.2.1\n",
+      "error": ""
+    },
+    {
+      "name": "CLI Help",
+      "success": true,
+      "time": 0.23392724990844727,
+      "exit_code": 0,
+      "output": "Usage: python -m sensemaking_skills.cli [OPTIONS] COMMAND [ARGS]...\n\n  Sensemaking Skills: Agent-nat",
+      "error": ""
+    },
+    {
+      "name": "Analyze Help",
+      "success": true,
+      "time": 0.22088074684143066,
+      "exit_code": 0,
+      "output": "Usage: python -m sensemaking_skills.cli analyze [OPTIONS]\n\n  Analyze a repository for fog type and w",
+      "error": ""
+    },
+    {
+      "name": "Validate Help",
+      "success": true,
+      "time": 0.22371745109558105,
+      "exit_code": 0,
+      "output": "Usage: python -m sensemaking_skills.cli validate [OPTIONS]\n\n  Validate a repository sensemaking brie",
+      "error": ""
+    },
+    {
+      "name": "Analyze This Repository",
+      "success": true,
+      "time": 0.20300984382629395,
+      "exit_code": 0,
+      "output": "Repository: H:\\GithubRepositories\\sensemaking-skills\nOutput: H:\\GithubRepositories\\sensemaking-skill",
+      "error": ""
+    },
+    {
+      "name": "Validate Brief",
+      "success": true,
+      "time": 0.20614266395568848,
+      "exit_code": 0,
+      "output": "Validating: H:\\GithubRepositories\\sensemaking-skills\\artifacts\\repository_sensemaking_brief.md\n\nTo v",
+      "error": ""
+    },
+    {
+      "name": "Validate Plan",
+      "success": true,
+      "time": 0.20549583435058594,
+      "exit_code": 0,
+      "output": "Validating: H:\\GithubRepositories\\sensemaking-skills\\artifacts\\workflow_orchestration_plan.md\n\nTo va",
+      "error": ""
+    },
+    {
+      "name": "Python API",
+      "success": true,
+      "time": 0.2233436107635498,
+      "exit_code": 0,
+      "output": "API test passed\n",
+      "error": ""
+    }
+  ],
+  "verdict": "PASS",
+  "summary": {
+    "total_tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "pass_rate": "100.0%",
+    "avg_time_seconds": 0.21681314706802368,
+    "verdict": "PASS"
+  }
+}
