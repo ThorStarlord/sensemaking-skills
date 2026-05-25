@@ -1,0 +1,32 @@
+{
+  "workflow_id": "fast-local-diagnostic",
+  "workflow_name": "Fast Local Diagnostic",
+  "session_id": "orchestration-20260523-181501-af0261dc",
+  "mode": "yolo_execution",
+  "status": "failed",
+  "final_note": "Step 1 (repo-sensemaker) failed. Run halted.",
+  "branch": "main",
+  "executed_at": "2026-05-23T18:15:07.073236",
+  "steps_completed": 0,
+  "steps_total": 1,
+  "steps_failed": 1,
+  "steps": [
+    {
+      "step_id": "1",
+      "skill": "repo-sensemaker",
+      "status": "FAILED",
+      "output_artifact": "repository_sensemaking_brief",
+      "artifact_path": "examples/repo-sensemaker/repository_sensemaking_brief-fixture.md",
+      "duration_seconds": 0,
+      "validators": [
+        {
+          "level": "Dispatcher",
+          "result": "FAILED"
+        }
+      ]
+    }
+  ],
+  "errors": [
+    "VALIDATOR_FAILED: Step 1 (repo-sensemaker): 1 validator(s) failed"
+  ]
+}

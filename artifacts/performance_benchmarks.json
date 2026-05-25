@@ -1,0 +1,28 @@
+{
+  "results": [
+    {
+      "timestamp": "2026-05-23T18:15:07.979523",
+      "name": "runner_startup",
+      "value": 0.26,
+      "unit": "s",
+      "target": 5.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-23T18:15:09.532507",
+      "name": "single_workflow_execution",
+      "value": 1.55,
+      "unit": "s",
+      "target": 30.0,
+      "status": "PASS"
+    },
+    {
+      "timestamp": "2026-05-23T18:15:11.089419",
+      "name": "orchestration_overhead",
+      "value": 1.55,
+      "unit": "s",
+      "target": 15.0,
+      "status": "PASS"
+    }
+  ]
+}

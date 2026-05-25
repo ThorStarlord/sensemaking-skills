@@ -1,0 +1,6 @@
+{"timestamp": "2026-05-23T21:15:06.411869Z", "event": "run_started", "run_id": "orchestration-20260523-181501-af0261dc", "workflow_id": "fast-local-diagnostic", "mode": "yolo_execution", "git_commit": "fbc4dad12916aa46ad93f6691b7a0c6b6e187870"}
+{"timestamp": "2026-05-23T21:15:06.444518Z", "event": "step_started", "step_id": "1", "skill_id": "repo-sensemaker", "output_artifact": "repository_sensemaking_brief"}
+{"timestamp": "2026-05-23T21:15:06.445324Z", "event": "artifact_created", "step_id": "1", "artifact_id": "repository_sensemaking_brief", "path": "examples/repo-sensemaker/repository_sensemaking_brief-fixture.md", "hash": "95399964f12381db246e348463f26f9c03e864c40543752994055f0f18da6dec"}
+{"timestamp": "2026-05-23T21:15:06.886706Z", "event": "validation_completed", "step_id": "1", "artifact_id": "repository_sensemaking_brief", "validator_command": "validate-output.py repository_sensemaking_brief", "exit_code": 1, "status": "failed"}
+{"timestamp": "2026-05-23T21:15:06.887384Z", "event": "step_completed", "step_id": "1", "status": "failed", "gate_status": ""}
+{"timestamp": "2026-05-23T21:15:07.202825Z", "event": "run_completed", "run_id": "orchestration-20260523-181501-af0261dc", "status": "failed", "exit_code": 2}
