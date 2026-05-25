@@ -1,0 +1,96 @@
+{
+  "execution_date": "2026-05-25T16:52:33.970126",
+  "test_phase": "Week 1 Shadow Mode",
+  "repository_count": 10,
+  "metrics": {
+    "total_tests": 10,
+    "successes": 0,
+    "success_rate": 0.0,
+    "execution_time_avg": 0.13108680248260499,
+    "execution_time_p95": 0.13779091835021973,
+    "execution_time_max": 0.13779091835021973,
+    "results": [
+      {
+        "repository": "small-repo-001",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.13043665885925293,
+        "timestamp": "2026-05-25T16:52:32.425527"
+      },
+      {
+        "repository": "small-repo-002",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.1352694034576416,
+        "timestamp": "2026-05-25T16:52:32.606138"
+      },
+      {
+        "repository": "small-repo-003",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.13325142860412598,
+        "timestamp": "2026-05-25T16:52:32.782052"
+      },
+      {
+        "repository": "small-repo-004",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.13779091835021973,
+        "timestamp": "2026-05-25T16:52:32.959604"
+      },
+      {
+        "repository": "small-repo-005",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.13094687461853027,
+        "timestamp": "2026-05-25T16:52:33.130741"
+      },
+      {
+        "repository": "medium-repo-001",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.12901902198791504,
+        "timestamp": "2026-05-25T16:52:33.298342"
+      },
+      {
+        "repository": "medium-repo-002",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.12873554229736328,
+        "timestamp": "2026-05-25T16:52:33.466898"
+      },
+      {
+        "repository": "medium-repo-003",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.12712645530700684,
+        "timestamp": "2026-05-25T16:52:33.633439"
+      },
+      {
+        "repository": "large-repo-001",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.12867093086242676,
+        "timestamp": "2026-05-25T16:52:33.800792"
+      },
+      {
+        "repository": "large-repo-002",
+        "size": "small",
+        "success": false,
+        "error": "validation returned code 2",
+        "execution_time": 0.12962079048156738,
+        "timestamp": "2026-05-25T16:52:33.970052"
+      }
+    ]
+  },
+  "conclusion": "Real execution completed with actual repositories and measured times"
+}
