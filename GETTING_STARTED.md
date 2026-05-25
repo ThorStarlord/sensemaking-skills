@@ -14,52 +14,69 @@ This guide shows how to actually use the system in its current state (agent/Clau
 
 ## Quick Start (5 minutes)
 
-### Via Claude Code (Recommended)
+### Via Claude Code or Agent (Recommended)
 
-1. **Clone and set up:**
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/ThorStarlord/sensemaking-skills.git
    cd sensemaking-skills
-   # Copy skills to Claude Code
-   cp -r skills/* ~/.claude/skills/
    ```
 
-2. **In Claude Code, invoke the diagnostic skill:**
+2. **Open the repository in Claude Code or your agent environment.**
+
+3. **Ask the agent to read the bootstrap skill:**
    ```
-   /skill repo-sensemaker --repo /path/to/your/repository
+   Read the file `skills/using-sensemaking/SKILL.md` and follow its instructions.
    ```
 
-3. **The skill will:**
-   - Analyze your repository structure
-   - Identify the "weakest boundary" (architecture/product/UI/docs issue)
-   - Produce a 14-section diagnostic brief
-   - Recommend implementation workflows
-
-4. **Next, invoke workflow planning:**
+4. **Ask the agent to run the diagnostic:**
    ```
-   /skill workflow-planner
+   Use `skills/repo-sensemaker/SKILL.md` to analyze my repository at `/path/to/my/repo`.
+   Produce a `repository_sensemaking_brief` artifact and save it to `artifacts/`.
+   Then validate it by running `python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md`.
    ```
 
-5. **Review the orchestration plan** that specifies:
-   - Which workflow to run
-   - What skills to invoke in sequence
-   - What approval gates are needed
+5. **Ask the agent to create the workflow plan:**
+   ```
+   Use `skills/workflow-planner/SKILL.md` to convert the brief into a `workflow_orchestration_plan`.
+   Validate it by running `python scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md`.
+   ```
+
+#### Optional: Install Skills into Claude Code
+
+If your Claude Code environment supports local skill installation:
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R skills/* ~/.claude/skills/
+```
+
+Restart Claude Code. If skill invocation works in your environment, you may be able to use:
+
+```
+/skill repo-sensemaker
+/skill workflow-planner
+```
+
+**If those commands don't work**, use the method above: ask the agent to read the SKILL.md files directly. Both methods work equally well.
 
 ---
 
-### Via Python Scripts (Direct)
+### Validate Artifacts with Python Scripts
 
-**Validate a repository brief artifact:**
+To validate artifacts after they're created:
+
+**Validate a brief:**
 ```bash
-python scripts/validate-brief.py artifacts/repository_sensemaking_brief.md --json
+python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md
 ```
 
-**Validate a workflow plan artifact:**
+**Validate a plan:**
 ```bash
-python scripts/validate-plan.py artifacts/workflow_orchestration_plan.md --json
+python scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md
 ```
 
-**Run the test suite (10 real repositories):**
+**Run tests:**
 ```bash
 python scripts/shadow-mode-runner.py
 ```

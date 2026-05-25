@@ -88,27 +88,64 @@ python3 scripts/shadow-mode-runner.py --help
 
 ## Invocation Paths
 
-### Path 1: Claude Code (Recommended)
+### Path 1: Claude Code / Agent (Recommended)
 
-1. Open this repository in Claude Code
-2. Use the `/skill using-sensemaking` command to load the bootstrap skill
-3. Invoke agent-native workflows through the skill
+This is the primary use case. The agent reads skill instruction files and executes workflows.
+
+**Setup:**
+1. Open this repository in Claude Code or your agent environment
+2. Ask the agent to read `skills/using-sensemaking/SKILL.md`
+
+**Usage:**
+Ask the agent to use the skills. Example:
+```
+Read skills/repo-sensemaker/SKILL.md and diagnose /path/to/my/repo.
+Then read skills/workflow-planner/SKILL.md to create a plan.
+Validate both artifacts using scripts/validate-and-report.py.
+```
+
+**Optional: Install Skills into Claude Code**
+
+If your Claude Code environment supports local skill installation, you can copy skills:
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R skills/* ~/.claude/skills/
+```
+
+Restart Claude Code if needed. Depending on your setup, you may be able to invoke:
+```
+/skill repo-sensemaker
+/skill workflow-planner
+```
+
+**If those commands don't work**, use the method above: ask the agent to read the SKILL.md files directly. Both work equally well.
 
 See **GETTING_STARTED.md** for detailed examples.
 
-### Path 2: Direct Python Script
+### Path 2: Validate Artifacts with Python Scripts
 
-Run validation scripts directly:
+Python scripts validate artifacts produced by agents. They do not run diagnostics—the agent does that.
 
+**Validate a brief:**
 ```bash
-# Validate a repository sensemaking brief
-python3 scripts/validate-brief.py artifacts/repository_sensemaking_brief.md
+python3 scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md
+```
 
-# Validate a workflow orchestration plan
-python3 scripts/validate-plan.py artifacts/workflow_orchestration_plan.md
+**Validate a plan:**
+```bash
+python3 scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md
+```
 
-# Run shadow mode tests against sample repositories
-python3 scripts/shadow-mode-runner.py --days 3 --repos 100
+**Run individual validators:**
+```bash
+python3 scripts/validate-brief.py artifacts/repository_sensemaking_brief.md --json
+python3 scripts/validate-plan.py artifacts/workflow_orchestration_plan.md --json
+```
+
+**Run tests:**
+```bash
+python3 scripts/shadow-mode-runner.py
 ```
 
 ---
@@ -138,29 +175,33 @@ sensemaking-skills/
 
 ### Quick Diagnosis (5 minutes)
 
-```bash
-# In Claude Code terminal:
-/skill using-sensemaking
+In Claude Code, ask the agent:
 
-# Then in chat:
-Diagnose this repository: /path/to/repo
+```
+Read skills/using-sensemaking/SKILL.md.
+Then use skills/repo-sensemaker/SKILL.md to diagnose /path/to/my/repo.
+Save the brief to artifacts/ and validate it with:
+python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md
 ```
 
-Expected output: `repository_sensemaking_brief.md`
+Expected output: `artifacts/repository_sensemaking_brief.md`
 
 ### Full Analysis with Workflow Plan
 
-```bash
-# In Claude Code:
-/skill using-sensemaking
+In Claude Code, ask the agent:
 
-# In chat:
-Diagnose and plan this repository: /path/to/repo
+```
+Read skills/using-sensemaking/SKILL.md.
+Use skills/repo-sensemaker/SKILL.md to analyze /path/to/my/repo.
+Use skills/workflow-planner/SKILL.md to create a plan based on the brief.
+Validate both artifacts:
+  python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md
+  python scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md
 ```
 
 Expected outputs:
-- `repository_sensemaking_brief.md`
-- `workflow_orchestration_plan.md`
+- `artifacts/repository_sensemaking_brief.md`
+- `artifacts/workflow_orchestration_plan.md`
 
 ### Running Tests
 
@@ -253,15 +294,19 @@ python3 scripts/validate-brief.py artifacts/brief.md
    ```
 4. Check validation rules in `scripts/validate-brief.py` for detailed error messages
 
-### Claude Code Skill Not Found
+### Skills Not Loading
 
-**Error:** `/skill using-sensemaking` returns "Skill not found"
+**Issue:** Skill invocation (`/skill using-sensemaking`) doesn't work or skills don't appear
 
 **Solution:**
 1. Ensure repository is open in Claude Code
 2. Check `.claude/hooks/sessionstart.md` exists
 3. Restart Claude Code session
-4. Verify skill path: `skills/using-sensemaking/SKILL.md`
+4. **Fallback:** Ask the agent to read the skill files directly:
+   ```
+   Read the file skills/using-sensemaking/SKILL.md and follow its instructions.
+   ```
+   This method works in all environments, regardless of skill registration setup.
 
 ---
 
