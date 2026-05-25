@@ -121,35 +121,29 @@ artifacts:
       - workflow-planner
       - prompt-handoff
       - sensemaking-docs-reconciler
+    description: "Phase 1 diagnostic artifact: fog type classification and handoff to workflow-planner"
     required_sections:
-      - repository_goal
-      - current_shape
-      - strong_signals
-      - missing_pieces
-      - improvement_opportunities
-      - weakest_boundary
       - evidence
-      - evidence_excerpts
-      - why_this_boundary_matters
-      - candidate_next_steps
-      - recommended_next_step
       - recommended_workflow
-      - machine_readable_handoff
-      - ready_to_copy_prompt
     required_machine_fields:
-      - source_intent_ref
-      - recommended_workflow_id
-      - recommended_execution_mode
-      - weakest_boundary
-      - required_inputs
-      - user_implied_fog_type
+      - artifact_id
       - primary_fog_type
+      - evidence
+      - recommended_workflow_id
+      - created_at
+      - immutable
+    recommended_machine_fields:
+      - source_intent_ref
+      - user_implied_fog_type
       - diagnosis_conflict
       - escalation_recommended
-    recommended_machine_fields:
       - escalation_target
       - escalation_reason
       - auto_escalation_allowed
+    notes:
+      - "Validation results are NOT stored in this artifact. See validators/run_log.md for validation output."
+      - "PATH B (transient validation): validation_status field is NOT present."
+      - "Phase 1 diagnostic scope: brief prepares handoff to workflow-planner for Phase 2 implementation."
     verification:
       generic_validator: "python scripts/validate-artifact.py repository_sensemaking_brief {artifact_path}"
       specialized_validators:
@@ -446,18 +440,43 @@ artifacts:
     consumed_by:
       - user
       - agents (autonomous_execution)
+    description: "Phase 1 diagnostic plan: workflow routing and step definition for agent execution"
     required_sections:
       - brief_consumed
       - chosen_workflow
       - why_this_workflow
-      - skills_in_sequence
-      - inputs_and_outputs
-      - approval_gates
-      - stop_conditions
-      - execution_mode
-      - prompt_chain
-      - run_log_template
+      - workflow_steps_definition
       - machine_readable_plan
+    required_machine_fields:
+      - artifact_id
+      - primary_fog_type
+      - chosen_workflow_id
+      - routing_decision_method
+      - workflow_steps
+      - created_at
+    recommended_machine_fields:
+      # The plan may carry the diagnosed fog type so routing/validation can read it
+      # directly from the plan (ADR 0005). If absent, the runtime falls back to the
+      # repository_sensemaking_brief (primary_fog_type / user_implied_fog_type).
+      - source_intent_ref
+      - execution_mode
+      - system_recommended_workflow
+      - selected_workflow
+      - routing_divergence
+      - escalation_recommended
+      - auto_escalation_allowed
+      - approval_gates
+      - gate_behavior
+      - stop_conditions
+      - subset_run
+      - subset_reason
+      - included_steps
+      - excluded_steps
+    notes:
+      - "Validation results are NOT stored in this artifact. See validators/run_log.md for validation output."
+      - "PATH B (transient validation): validation_status field is NOT present."
+      - "Phase 1 diagnostic scope: plan prepares agent for Phase 2 implementation workflow execution."
+      - "workflow_steps is a structured array defining skill sequence: [{step_id, skill, input_artifact, output_artifact, gate, description}, ...]"
     verification:
       generic_validator: "python scripts/validate-artifact.py workflow_orchestration_plan {artifact_path}"
       specialized_validators:
@@ -466,34 +485,6 @@ artifacts:
         - guided_execution
         - autonomous_execution
         - yolo_execution
-    required_machine_fields:
-      - artifact_id
-      - source_intent_ref
-      - chosen_workflow_id
-      - execution_mode
-      - system_recommended_workflow
-      - selected_workflow
-      - routing_divergence
-      - routing_decision_method
-      - escalation_recommended
-      - auto_escalation_allowed
-      - scope_expansion_requires_approval
-      - status
-      - initial_inputs
-      - steps
-      - approval_gates
-      - gate_behavior
-      - stop_conditions
-      - subset_run
-      - subset_reason
-      - included_steps
-      - excluded_steps
-    recommended_machine_fields:
-      # The plan may carry the diagnosed fog type so routing/validation can read it
-      # directly from the plan (ADR 0005). If absent, the runtime falls back to the
-      # repository_sensemaking_brief (primary_fog_type / user_implied_fog_type).
-      - fog_type
-      - primary_fog_type
 
   - id: prompt_handoff
     path: "artifacts/prompt_handoff.md"

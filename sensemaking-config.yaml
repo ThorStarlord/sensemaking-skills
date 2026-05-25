@@ -1,0 +1,6 @@
+project_root: .
+artifacts_dir: artifacts
+context_file: CONTEXT.md
+skills_dir: skills
+workflows_dir: workflows
+adr_dir: docs/adr

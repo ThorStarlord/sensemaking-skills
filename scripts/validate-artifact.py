@@ -8,8 +8,12 @@ exception to the standard single-positional CLI.
 import os
 import sys
 import re
-import yaml
+import json
 import argparse
+from datetime import datetime, timezone
+from typing import TypedDict, Any
+
+import yaml
 
 from _validator_utils import (
     format_error,
@@ -33,287 +37,207 @@ MISSING_RECOMMENDED_FIELD = "MISSING_RECOMMENDED_FIELD"
 INVALID_ENUM_VALUE = "INVALID_ENUM_VALUE"
 VOCAB_NOT_FOUND = "VOCAB_NOT_FOUND"
 
-warnings = []  # Collect warnings separately from errors
+
+class ValidationError(TypedDict, total=False):
+    """Structured validation error with all metadata for JSON output."""
+    error_id: str  # e.g., <artifact_id>.<field>.<error_type>
+    error_type: str  # missing_field, unknown_value, type_error, logic_error, semantic_conflict
+    field: str | None
+    current_value: Any
+    message: str
+    suggested_fixes: list[str]
+    reference: str
 
 
-def _validate_enum_fields(yaml_data, artifact_id, vocab, errors):
-    """Validate routing field enum values against canonical vocabulary.
+class ValidationResult(TypedDict):
+    """Complete validation result with metadata."""
+    valid: bool
+    artifact_id: str
+    artifact_path: str
+    validator: str
+    errors: list[ValidationError]
+    validation_timestamp: str
 
-    Args:
-        yaml_data: Parsed YAML machine-readable section
-        artifact_id: The artifact ID
-        vocab: Loaded canonical vocabulary
-        errors: List to append errors to (modified in-place)
+
+
+def validate_artifact(artifact_id: str, artifact_path: str, repo_root: str = ".") -> list[ValidationError]:
+    """Validate an artifact against its contract and return structured errors.
+
+    Returns a list of ValidationError dicts. Empty list means validation passed.
+
+    Phase 1 scope: Validate artifact existence, contract match, and required fields.
     """
-    if not vocab or not yaml_data:
-        return
+    errors: list[ValidationError] = []
 
-    # Build enum validators from vocabulary routing_fields
-    routing_fields = {f["field"]: f for f in vocab.get("routing_fields", [])}
-
-    # Validate enum fields that exist in YAML
-    for field_name, field_spec in routing_fields.items():
-        if field_name not in yaml_data:
-            continue
-
-        value = yaml_data[field_name]
-        if value is None:
-            continue
-
-        allowed_values = field_spec.get("values", [])
-        if not allowed_values:
-            continue
-
-        # Handle list fields (e.g., secondary_fog_types)
-        if field_spec.get("type") == "list(enum)":
-            if isinstance(value, list):
-                for i, item in enumerate(value):
-                    if item not in allowed_values:
-                        errors.append(
-                            format_error(
-                                INVALID_ENUM_VALUE,
-                                f"Field '{field_name}[{i}]' has invalid value '{item}'. "
-                                f"Allowed: {', '.join(str(v) for v in allowed_values)}"
-                            )
-                        )
-        # Handle single enum fields
-        else:
-            if value not in allowed_values:
-                errors.append(
-                    format_error(
-                        INVALID_ENUM_VALUE,
-                        f"Field '{field_name}' has invalid value '{value}'. "
-                        f"Allowed: {', '.join(str(v) for v in allowed_values)}"
-                    )
-                )
-
-    # Validate fog type aliases are normalized
-    fog_type_normalizer = build_fog_type_normalizer(vocab)
-    if not fog_type_normalizer:
-        return
-
-    for field in ["primary_fog_type", "user_implied_fog_type"]:
-        if field in yaml_data:
-            value = yaml_data[field]
-            if value and value not in fog_type_normalizer:
-                errors.append(
-                    format_error(
-                        INVALID_ENUM_VALUE,
-                        f"Field '{field}' has unknown fog type '{value}'. "
-                        f"Must be one of: {', '.join(sorted(fog_type_normalizer.keys()))}"
-                    )
-                )
-
-    # Check secondary_fog_types
-    if "secondary_fog_types" in yaml_data:
-        secondary = yaml_data["secondary_fog_types"]
-        if secondary and isinstance(secondary, list):
-            for i, fog_type in enumerate(secondary):
-                if fog_type not in fog_type_normalizer:
-                    errors.append(
-                        format_error(
-                            INVALID_ENUM_VALUE,
-                            f"Field 'secondary_fog_types[{i}]' has unknown fog type '{fog_type}'. "
-                            f"Must be one of: {', '.join(sorted(fog_type_normalizer.keys()))}"
-                        )
-                    )
-
-
-def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommended=False):
-    errors = []
-
+    # Check file exists
     if not os.path.exists(artifact_path):
-        errors.append(format_error(ARTIFACT_FILE_NOT_FOUND, f"Artifact file not found: {artifact_path}"))
+        errors.append({
+            "error_type": "missing_field",
+            "field": "artifact",
+            "current_value": None,
+            "message": f"Artifact file not found: {artifact_path}",
+            "suggested_fixes": [f"Ensure artifact exists at: {artifact_path}"],
+            "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
+        })
         return errors
 
-    # Load contracts using shared utility
+    # Load contracts
     contracts_data = load_artifact_contracts(repo_root)
     if contracts_data is None:
-        errors.append(format_error(CONTRACTS_FILE_NOT_FOUND, "artifact-contracts.yaml not found in workflow-planner references."))
+        errors.append({
+            "error_type": "missing_field",
+            "field": "artifact_contracts",
+            "current_value": None,
+            "message": "artifact-contracts.yaml not found in workflow-planner references.",
+            "suggested_fixes": [
+                "Ensure artifact-contracts.yaml exists at skills/workflow-planner/references/artifact-contracts.yaml"
+            ],
+            "reference": "skills/workflow-planner/references/"
+        })
         return errors
 
-    # Find specific contract
+    # Find contract for this artifact_id
     contract = next((a for a in contracts_data.get("artifacts", []) if a["id"] == artifact_id), None)
     if not contract:
-        errors.append(format_error(CONTRACT_NOT_FOUND, f"Contract for artifact_id '{artifact_id}' not found in artifact-contracts.yaml"))
+        errors.append({
+            "error_id": f"{artifact_id}.artifact_id.unknown_value",
+            "error_type": "unknown_value",
+            "field": "artifact_id",
+            "current_value": artifact_id,
+            "message": f"Artifact ID '{artifact_id}' not found in artifact-contracts.yaml",
+            "suggested_fixes": [
+                "Check artifact ID matches a contract in artifact-contracts.yaml",
+                "Ensure artifact_id field in YAML matches contract definition"
+            ],
+            "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
+        })
         return errors
 
     # Read artifact content
-    with open(artifact_path, "r", encoding="utf-8") as f:
+    with open(artifact_path, encoding="utf-8") as f:
         content = f.read()
 
-    line_count = content.count("\n") + 1
+    # Extract machine-readable handoff YAML
+    handoff_match = re.search(
+        r"## 13\. Machine-readable handoff\s+```yaml\s+(.*?)\s+```",
+        content,
+        re.DOTALL | re.IGNORECASE,
+    )
 
-    # 1. Ban file:/// links
-    if "file:///" in content:
-        errors.append(format_error(ABSOLUTE_FILE_LINK, "Absolute 'file:///' links are banned in generated artifacts. Use relative paths."))
-
-    # 2. Check required sections
-    # For large artifacts (>=100 lines), missing sections are demoted to warnings.
-    # The model reliably produces all substantive content for complex artifacts, but
-    # organizes it under its own headings rather than the rigid contract section names.
-    # The content is there (and validated by downstream consumers semantically) — the
-    # contract's section-name check is a formatting guide, not a content gate.
-    required_sections = contract.get("required_sections", [])
-    missing_sections = []
-    for section in required_sections:
-        section_regex_part = re.escape(section).replace("_", r"[\s_\-]").replace(r"\_", r"[\s_\-]")
-        pattern = rf"^##\s+(?:\d+\.\s+)?{section_regex_part}"
-        if not re.search(pattern, content, re.MULTILINE | re.IGNORECASE):
-            missing_sections.append(section)
-
-    if missing_sections and line_count < 100:
-        skill_name = contract.get("produced_by", "unknown")
-        template_path = f"skills/{skill_name}/references/{artifact_id}-template.md"
-        error_msg = f"Missing {len(missing_sections)} required section(s): {', '.join(missing_sections)}\n"
-        error_msg += f"Expected template: {template_path}\n"
-        error_msg += f"Artifact contract: skills/workflow-planner/references/artifact-contracts.yaml (id: {artifact_id})"
-        errors.append(format_error(MISSING_REQUIRED_SECTION, error_msg))
-    elif missing_sections and line_count >= 100:
-        warnings.append(
-            format_error(MISSING_REQUIRED_SECTION,
-                         f"Large artifact ({line_count} lines) missing {len(missing_sections)} "
-                         f"required section heading(s): {', '.join(missing_sections)}. "
-                         f"Content is likely present under alternative headings.")
+    if not handoff_match:
+        # Try Section 11 as fallback
+        handoff_match = re.search(
+            r"## 11\. Machine-readable plan\s+```yaml\s+(.*?)\s+```",
+            content,
+            re.DOTALL | re.IGNORECASE,
         )
 
-    # 3. Check machine fields in YAML block
+    # Try generic YAML block if neither section found
+    if not handoff_match:
+        yaml_blocks = re.findall(r"```yaml\s+(.*?)\s+```", content, re.DOTALL)
+        if yaml_blocks:
+            handoff_match = type('obj', (object,), {'group': lambda self, i: yaml_blocks[-1]})()
+
+    if not handoff_match:
+        errors.append({
+            "error_type": "missing_field",
+            "field": "machine_readable_handoff",
+            "current_value": None,
+            "message": "Machine-readable handoff YAML block not found in artifact.",
+            "suggested_fixes": [
+                "Add Section 13: Machine-readable handoff with YAML block",
+                "Or add Section 11: Machine-readable plan with YAML block"
+            ],
+            "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
+        })
+        return errors
+
+    # Parse YAML
+    try:
+        artifact_data = yaml.safe_load(handoff_match.group(1))
+    except Exception as e:
+        errors.append({
+            "error_type": "type_error",
+            "field": "machine_readable_handoff",
+            "current_value": None,
+            "message": f"Failed to parse YAML block: {str(e)}",
+            "suggested_fixes": ["Ensure YAML syntax is correct", "Check indentation and formatting"],
+            "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
+        })
+        return errors
+
+    if not isinstance(artifact_data, dict):
+        errors.append({
+            "error_type": "type_error",
+            "field": "machine_readable_handoff",
+            "current_value": type(artifact_data).__name__,
+            "message": f"YAML block should be a dictionary, got {type(artifact_data).__name__}",
+            "suggested_fixes": ["Ensure YAML block contains key-value pairs, not a list"],
+            "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
+        })
+        return errors
+
+    # --- PHASE 1 REQUIRED FIELD CHECKS ---
+    # Check artifact_id field
+    if "artifact_id" not in artifact_data:
+        errors.append({
+            "error_id": f"{artifact_id}.artifact_id.missing_field",
+            "error_type": "missing_field",
+            "field": "artifact_id",
+            "current_value": None,
+            "message": f"Required field 'artifact_id' is missing.",
+            "suggested_fixes": [f"Add artifact_id: {artifact_id}"],
+            "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
+        })
+    elif artifact_data.get("artifact_id") != artifact_id:
+        errors.append({
+            "error_id": f"{artifact_id}.artifact_id.unknown_value",
+            "error_type": "unknown_value",
+            "field": "artifact_id",
+            "current_value": artifact_data.get("artifact_id"),
+            "message": f"Field 'artifact_id' has value '{artifact_data.get('artifact_id')}', expected '{artifact_id}'.",
+            "suggested_fixes": [f"Change artifact_id to: {artifact_id}"],
+            "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
+        })
+
+    # Check required machine fields from contract (skip artifact_id since we already checked it)
     required_fields = contract.get("required_machine_fields", [])
-    recommended_fields = contract.get("recommended_machine_fields", [])
-    yaml_data = None
-
-    if required_fields or recommended_fields:
-        # Collect ALL YAML blocks: fenced ```yaml and non-fenced YAML sections
-        yaml_blocks = re.findall(r"---\s+(.*?)\s+---", content, re.DOTALL)
-        yaml_blocks += re.findall(r"```yaml\s+(.*?)\s+```", content, re.DOTALL)
-
-        if not yaml_blocks:
-            errors.append(format_error(MISSING_YAML_BLOCK, "Missing machine-readable YAML block"))
-        else:
-            found_valid_block = False
-            for yaml_text in yaml_blocks:
-                try:
-                    data = yaml.safe_load(yaml_text)
-                    if isinstance(data, dict):
-                        missing = [f for f in required_fields if f not in data]
-                        if not missing:
-                            found_valid_block = True
-                            yaml_data = data
-                            break
-                except Exception:
-                    pass
-
-            if not found_valid_block:
-                # --- RELAXED CHECK: for large artifacts, require only source_intent_ref ---
-                # The model reliably produces the diagnostic values in prose but often
-                # omits them from the YAML block (which is a formatting concern, not a
-                # content concern). The runtime guarantees source_intent_ref via injection.
-                # All other required fields are best-effort from the producer.
-                has_any_yaml = False
-                has_source_ref = False
-                for yaml_text in yaml_blocks:
-                    try:
-                        data = yaml.safe_load(yaml_text)
-                        if isinstance(data, dict):
-                            has_any_yaml = True
-                            if "source_intent_ref" in data:
-                                has_source_ref = True
-                                yaml_data = data
-                                break
-                    except Exception:
-                        pass
-
-                if not has_any_yaml:
-                    errors.append(format_error(MISSING_YAML_BLOCK, "Missing machine-readable YAML block"))
-                elif not has_source_ref:
-                    # This shouldn't happen in practice since _ensure_source_intent_ref runs
-                    # before validation, but keep the guard for robustness.
-                    skill_name = contract.get("produced_by", "unknown")
-                    template_path = f"skills/{skill_name}/references/{artifact_id}-template.md"
-                    error_msg = f"Missing required machine-readable fields: {', '.join(required_fields)}\n"
-                    error_msg += f"Add YAML block at end of artifact:\n"
-                    error_msg += "```yaml\n"
-                    for field in required_fields:
-                        error_msg += f"{field}: <value>\n"
-                    error_msg += "```\n"
-                    error_msg += f"See template: {template_path}"
-                    errors.append(format_error(MISSING_MACHINE_FIELDS, error_msg))
-                elif line_count >= 100:
-                    # Large artifact has at least source_intent_ref; demote remaining
-                    # missing fields to warnings. The diagnostic values ARE in the prose.
-                    missing = [f for f in required_fields if f not in yaml_data]
-                    for f in missing:
-                        warnings.append(
-                            format_error(MISSING_MACHINE_FIELDS,
-                                         f"Required machine field '{f}' not in YAML block "
-                                         f"(large artifact; value likely in prose content)")
-                        )
-                else:
-                    skill_name = contract.get("produced_by", "unknown")
-                    template_path = f"skills/{skill_name}/references/{artifact_id}-template.md"
-                    error_msg = f"Missing required machine-readable fields: {', '.join(required_fields)}\n"
-                    error_msg += f"Add YAML block at end of artifact:\n"
-                    error_msg += "```yaml\n"
-                    for field in required_fields:
-                        error_msg += f"{field}: <value>\n"
-                    error_msg += "```\n"
-                    error_msg += f"See template: {template_path}"
-                    errors.append(format_error(MISSING_MACHINE_FIELDS, error_msg))
-
-    # 3b. Check recommended fields (warnings only, unless --strict-recommended)
-    if yaml_data and recommended_fields:
-        for field in recommended_fields:
-            if field not in yaml_data:
-                msg = format_error(MISSING_RECOMMENDED_FIELD, f"Recommended field missing: {field}")
-                if strict_recommended:
-                    errors.append(msg)
-                else:
-                    warnings.append(msg)
-
-    # 3c. Validate enum field values against canonical vocabulary
-    if yaml_data:
-        vocab = load_canonical_vocabulary(repo_root)
-        if vocab:
-            _validate_enum_fields(yaml_data, artifact_id, vocab, errors)
-        # Note: if vocabulary not found, skip enum validation (not a fatal error)
-
-    # 4. Specific validation for repository_sensemaking_brief
-    if artifact_id == "repository_sensemaking_brief":
-        evidence_match = re.search(r"evidence_excerpts:.*?```yaml\s+(.*?)\s+```", content, re.DOTALL | re.IGNORECASE)
-        if not evidence_match:
-            evidence_match = re.search(r"```yaml\s+(evidence_excerpts:.*?)\s+```", content, re.DOTALL)
-
-        if not evidence_match and line_count >= 100:
-            # Large artifact: evidence is likely in a markdown table or prose, which
-            # is substantively correct but not in the structured YAML format. Warn, don't
-            # error — the information is accessible to human readers and downstream
-            # validators like validate-brief.py already check excerpt content.
-            warnings.append(
-                format_error(MISSING_EVIDENCE_EXCERPTS,
-                             "No structured evidence_excerpts YAML block found "
-                             "(large artifact; evidence likely present in markdown table or prose)")
-            )
-        elif not evidence_match:
-            errors.append(format_error(MISSING_EVIDENCE_EXCERPTS, "Missing or malformed YAML block for evidence_excerpts"))
-        elif evidence_match:
-            try:
-                evidence_data = yaml.safe_load(evidence_match.group(1))
-                excerpts = evidence_data.get("evidence_excerpts", [])
-                if not isinstance(excerpts, list):
-                    errors.append(format_error(MISSING_EVIDENCE_EXCERPTS, "evidence_excerpts must be a list of excerpts"))
-                else:
-                    for i, exc in enumerate(excerpts):
-                        for f in ["file", "lines", "quote", "supports_claim"]:
-                            if f not in exc:
-                                errors.append(format_error(MISSING_EXCERPT_FIELD, f"evidence_excerpt[{i}] missing field: {f}"))
-                        if "file" in exc and exc["file"].startswith("file:///"):
-                            errors.append(
-                                format_error(ABSOLUTE_EXCERPT_PATH, f"evidence_excerpt[{i}] file path must be relative, got: {exc['file']}")
-                            )
-            except Exception as e:
-                errors.append(format_error(MISSING_EVIDENCE_EXCERPTS, f"Failed to parse evidence_excerpts YAML: {e}"))
+    for field in required_fields:
+        if field == "artifact_id":
+            continue  # Already checked above
+        if field not in artifact_data:
+            errors.append({
+                "error_id": f"{artifact_id}.{field}.missing_field",
+                "error_type": "missing_field",
+                "field": field,
+                "current_value": None,
+                "message": f"Required field '{field}' is missing.",
+                "suggested_fixes": [
+                    f"Add {field} to the machine-readable handoff YAML block",
+                    f"See artifact contract: skills/workflow-planner/references/artifact-contracts.yaml"
+                ],
+                "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
+            })
 
     return errors
+
+
+def validation_result_to_json(
+    artifact_id: str,
+    artifact_path: str,
+    errors: list[ValidationError],
+) -> str:
+    """Convert validation result to JSON format with multi-error schema."""
+    result: ValidationResult = {
+        "valid": len(errors) == 0,
+        "artifact_id": artifact_id,
+        "artifact_path": os.path.abspath(artifact_path),
+        "validator": "validate-artifact.py",
+        "errors": errors,
+        "validation_timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    }
+
+    return json.dumps(result, indent=2, default=str)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -321,8 +245,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("artifact_id", help="The ID of the artifact (e.g., repository_sensemaking_brief)")
     parser.add_argument("artifact_path", nargs="?", help="Path to the artifact markdown file")
     parser.add_argument("--repo-root", default=".", help="Root directory of the repository")
+    parser.add_argument("--json", action="store_true", help="Output JSON format")
     parser.add_argument("--list-codes", action="store_true", help="List all error codes and exit")
-    parser.add_argument("--strict-recommended", action="store_true", help="Treat missing recommended fields as errors")
     args = parser.parse_args(argv)
 
     if args.list_codes:
@@ -350,29 +274,23 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_usage()
         return 1
 
-    global warnings
-    warnings = []  # Reset warnings for this run
-    errs = validate_artifact(args.artifact_id, args.artifact_path, args.repo_root, args.strict_recommended)
+    errors = validate_artifact(args.artifact_id, args.artifact_path, args.repo_root)
 
-    # Print results with clear formatting
-    if errs:
-        print(f"[FAIL] Artifact validation failed:")
-        for e in errs:
-            print(f"  ERROR {e}")
-        return 1
-
-    # All required fields present
-    print(f"[PASS] Required fields present")
-
-    # Print warnings if any
-    if warnings:
-        for w in warnings:
-            print(f"[WARN] {w}")
-        print(f"\n  • {len(warnings)} warning(s)")
-        return 0
+    if args.json:
+        print(validation_result_to_json(args.artifact_id, args.artifact_path, errors))
+        return 0 if len(errors) == 0 else 1
     else:
-        print(f"[OK] All fields (required + recommended) present")
-        return 0
+        # Legacy prose output for backward compatibility
+        if errors:
+            for error in errors:
+                error_type = error.get("error_type", "unknown")
+                field = error.get("field", "")
+                message = error.get("message", "")
+                print(f"ERROR [{error_type}] {field}: {message}")
+            return 1
+        else:
+            print("Artifact validation passed! All required fields are present and valid.")
+            return 0
 
 
 if __name__ == "__main__":

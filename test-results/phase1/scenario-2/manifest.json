@@ -1,0 +1,7 @@
+{
+  "scenario": 2,
+  "name": "Auto-Fix Path (Missing Field)",
+  "description": "Agent produces brief with missing evidence, retries with fix",
+  "timestamp": "2026-05-24T23:57:42.852079",
+  "status": "pending"
+}

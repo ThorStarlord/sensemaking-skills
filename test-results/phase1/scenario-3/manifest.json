@@ -1,0 +1,7 @@
+{
+  "scenario": 3,
+  "name": "Escalation Path (Repeated Error)",
+  "description": "Agent encounters same error twice, escalates instead of retrying",
+  "timestamp": "2026-05-24T23:57:42.852079",
+  "status": "pending"
+}

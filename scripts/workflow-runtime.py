@@ -1416,23 +1416,141 @@ class OrchestrationRunner:
             pass
 
     def _run_validator_stack(self, artifact_id: str, artifact_path: str) -> list[dict]:
-        """Run the full validator stack via validate-output.py (canonical dispatcher).
+        """Run validation via validate-and-report.py and log results via record-validation.py.
 
-        Delegates to validate-output.py which reads artifact-contracts.yaml and runs
-        the full generic + specialized validator chain. This makes validate-output.py
-        the single canonical validator dispatch path.
+        New Phase 1 validation pipeline:
+        1. Call validate-and-report.py with artifact_path (extracts artifact_id automatically)
+        2. Parse unified JSON schema output
+        3. Pipe results to record-validation.py for durable audit trail
+        4. Return stack in legacy format for backward compatibility
         """
         stack = []
 
-        validator_script = os.path.join(self.repo_root, "scripts", "validate-output.py")
-        if not os.path.exists(validator_script):
-            print(f"  ~ validate-output.py not found, skipping validator dispatch")
+        # Determine which validator to use based on what exists
+        validate_and_report = os.path.join(self.repo_root, "scripts", "validate-and-report.py")
+        validate_output = os.path.join(self.repo_root, "scripts", "validate-output.py")
+
+        # Prefer new unified validator if available (Phase 1)
+        if os.path.exists(validate_and_report):
+            return self._run_validate_and_report(artifact_id, artifact_path, stack)
+        elif os.path.exists(validate_output):
+            # Fallback to legacy dispatcher for Phase 2+ artifacts
+            return self._run_validate_output(artifact_id, artifact_path, stack)
+        else:
+            print(f"  ~ No validators found, skipping validation")
             return stack
+
+    def _run_validate_and_report(self, artifact_id: str, artifact_path: str, stack: list) -> list:
+        """Run unified Phase 1 validation pipeline.
+
+        Uses validate-and-report.py (unified dispatcher) + record-validation.py (durable logging).
+        """
+        validator_script = os.path.join(self.repo_root, "scripts", "validate-and-report.py")
+        record_script = os.path.join(self.repo_root, "scripts", "record-validation.py")
+
+        if not os.path.exists(validator_script):
+            print(f"  ~ validate-and-report.py not found, skipping validation")
+            return stack
+
+        # Set up run log path (same session as orchestrator log)
+        run_log_path = os.path.join(
+            os.path.dirname(self.run_log_path or "."),
+            "validation_run_log.md"
+        )
+
+        print(f"  -> Running unified validator: validate-and-report.py")
+        start = datetime.now()
+
+        try:
+            # Phase 1: Call validate-and-report.py
+            validate_cmd = [sys.executable, validator_script, artifact_path,
+                           "--repo-root", self.repo_root]
+
+            result = subprocess.run(validate_cmd, capture_output=True, text=True, timeout=120)
+            elapsed = (datetime.now() - start).total_seconds()
+
+            # Phase 2: Parse JSON response
+            validation_json = None
+            try:
+                validation_json = json.loads(result.stdout)
+            except json.JSONDecodeError:
+                # Validator output was not JSON (e.g., execution error)
+                error_output = result.stdout + result.stderr
+                print(f"    [WARN] Validator returned non-JSON output ({elapsed:.1f}s)")
+                stack.append({
+                    "level": "Phase 1 Unified Validator",
+                    "command": "validate-and-report.py",
+                    "result": "FAILED",
+                    "output": error_output[:500],
+                    "elapsed_s": round(elapsed, 2),
+                })
+                return stack
+
+            # Phase 3: Log to durable run log if record-validation.py exists
+            if os.path.exists(record_script):
+                try:
+                    record_cmd = [sys.executable, record_script, "--run-log", run_log_path]
+                    subprocess.run(record_cmd, input=json.dumps(validation_json),
+                                  text=True, timeout=30, capture_output=True)
+                except Exception as e:
+                    print(f"    [WARN] Failed to record validation to run log: {e}")
+                    # Non-fatal: continue even if logging fails
+
+            # Phase 4: Report result
+            passed = validation_json.get("valid", False)
+            stack.append({
+                "level": "Phase 1 Unified Validator",
+                "command": "validate-and-report.py",
+                "result": "PASSED" if passed else "FAILED",
+                "output": "" if passed else json.dumps(validation_json.get("errors", []))[:500],
+                "elapsed_s": round(elapsed, 2),
+            })
+
+            if not passed:
+                print(f"    [FAIL] Validation failed ({elapsed:.1f}s)")
+                # Print error summary
+                errors = validation_json.get("errors", [])
+                for error in errors[:3]:  # Show first 3 errors
+                    error_id = error.get("error_id", "?")
+                    message = error.get("message", "")
+                    print(f"      - {error_id}: {message[:80]}")
+                if len(errors) > 3:
+                    print(f"      ... and {len(errors) - 3} more errors")
+            else:
+                print(f"    [OK] Validation passed ({elapsed:.1f}s)")
+
+        except subprocess.TimeoutExpired:
+            print(f"    [FAIL] Validator timeout (>120s)")
+            stack.append({
+                "level": "Phase 1 Unified Validator",
+                "command": "validate-and-report.py",
+                "result": "FAILED",
+                "output": "Validator timed out after 120 seconds",
+                "elapsed_s": 120.0,
+            })
+        except Exception as e:
+            print(f"    [FAIL] Validator execution error: {e}")
+            stack.append({
+                "level": "Phase 1 Unified Validator",
+                "command": "validate-and-report.py",
+                "result": "FAILED",
+                "output": str(e)[:500],
+                "elapsed_s": round((datetime.now() - start).total_seconds(), 2),
+            })
+
+        return stack
+
+    def _run_validate_output(self, artifact_id: str, artifact_path: str, stack: list) -> list:
+        """Run legacy Phase 2+ validation via validate-output.py.
+
+        Fallback for artifacts not yet converted to Phase 1 unified schema.
+        """
+        validator_script = os.path.join(self.repo_root, "scripts", "validate-output.py")
 
         cmd = [sys.executable, validator_script, artifact_id, artifact_path,
                "--repo-root", self.repo_root]
 
-        print(f"  -> Running dispatcher: validate-output.py {artifact_id}")
+        print(f"  -> Running legacy validator: validate-output.py {artifact_id}")
         start = datetime.now()
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
         elapsed = (datetime.now() - start).total_seconds()
@@ -1440,7 +1558,7 @@ class OrchestrationRunner:
 
         passed = result.returncode == 0
         stack.append({
-            "level": "Dispatcher",
+            "level": "Phase 2+ Legacy Validator",
             "command": f"validate-output.py {artifact_id}",
             "result": "PASSED" if passed else "FAILED",
             "output": output[:500] if not passed else "",
@@ -1448,13 +1566,12 @@ class OrchestrationRunner:
         })
 
         if not passed:
-            print(f"    [FAIL] Dispatcher failed ({elapsed:.1f}s)")
-            # Print full error for better diagnostics
+            print(f"    [FAIL] Validator failed ({elapsed:.1f}s)")
             for line in output.split("\n"):
                 if line.strip():
                     print(f"      {line}")
         else:
-            print(f"    [OK] Dispatcher passed ({elapsed:.1f}s)")
+            print(f"    [OK] Validator passed ({elapsed:.1f}s)")
 
         return stack
 

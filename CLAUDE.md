@@ -1,3 +1,29 @@
+## SessionStart hook
+
+At session start, the **using-sensemaking** bootstrap skill is available to agents.
+
+This skill teaches agents:
+- Fog classification (4 types)
+- 3-step diagnosis pattern (repo-sensemaker → validate → complete)
+- How to read artifact outputs
+- How to interpret validator errors (JSON format)
+- Bounded retry logic (3 attempts with graceful escalation)
+- When to auto-fix vs. when to escalate
+
+**Agents invoke this skill** via the Skill tool: `/skill using-sensemaking`
+
+**The hook does NOT**:
+- Inspect your repository
+- Classify fog type
+- Invoke workflows
+- Validate artifacts
+
+Those are agent responsibilities, taught by the skill.
+
+See `.claude/hooks/sessionstart.md` for full hook documentation and testing guide.
+
+---
+
 ## Agent skills
 
 ### Issue tracker

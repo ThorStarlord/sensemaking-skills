@@ -1,0 +1,7 @@
+{
+  "scenario": 5,
+  "name": "Budget Exhaustion (3-Attempt Limit)",
+  "description": "Agent exhausts 3-attempt budget, escalates with summary",
+  "timestamp": "2026-05-24T23:57:42.852079",
+  "status": "pending"
+}

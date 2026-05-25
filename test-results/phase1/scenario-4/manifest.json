@@ -1,0 +1,7 @@
+{
+  "scenario": 4,
+  "name": "Semantic Conflict (Workflow Routing)",
+  "description": "Agent detects semantic conflict in workflow routing, corrects it",
+  "timestamp": "2026-05-24T23:57:42.852079",
+  "status": "pending"
+}

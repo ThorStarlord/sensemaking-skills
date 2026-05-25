@@ -845,6 +845,63 @@ workflows:
     input_artifact: prd
     output_artifact: session_summary
     description: Completion summary - document session
+- id: architecture-implementation-workflow
+  display_name: Architecture Implementation Workflow
+  purpose: For architecture/refactoring problems. Aligns domain, creates refactoring spec,
+    decomposes into issues, and implements via TDD.
+  initial_inputs:
+  - id: context_artifacts
+    type: artifact
+    required: true
+    description: Artifacts from sensemaking pipeline (problem-frame, unknowns-map,
+      sensemaking-brief, orchestration-plan).
+  allowed_execution_modes:
+  - guided_execution
+  - autonomous_execution
+  requires_run_log: true
+  steps:
+  - id: 1
+    skill: docs-aligner
+    step_type: local_execution
+    gate: review
+    input_artifact: context_artifacts
+    output_artifact: domain_alignment_report
+    description: Domain alignment - refine understanding and create CONTEXT.md
+  - id: 2
+    skill: to-prd
+    step_type: local_execution
+    gate: review
+    input_artifact: domain_alignment_report
+    output_artifact: prd
+    description: Architecture spec - define refactoring strategy and module boundaries
+  - id: 3
+    skill: to-issues
+    step_type: local_execution
+    gate: review
+    input_artifact: prd
+    output_artifact: issue_list
+    description: Implementation decomposition - break into issues
+  - id: 4
+    skill: triage
+    step_type: local_execution
+    gate: review
+    input_artifact: issue_list
+    output_artifact: agent_brief
+    description: Issue preparation - create agent briefs
+  - id: 5
+    skill: tdd
+    step_type: local_execution
+    gate: review
+    input_artifact: agent_brief
+    output_artifact: code_patch
+    description: Implementation - execute TDD cycles
+  - id: 6
+    skill: handoff
+    step_type: local_execution
+    gate: session_close
+    input_artifact: code_patch
+    output_artifact: session_summary
+    description: Completion summary - document session
 - id: skill-evaluation-workflow
   display_name: Skill Evaluation & Maintenance Workflow
   purpose: Evaluate skill performance in realistic scenarios and implement improvements.

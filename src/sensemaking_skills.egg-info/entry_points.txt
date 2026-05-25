@@ -1,0 +1,2 @@
+[console_scripts]
+sensemaking-skills = sensemaking_skills.cli:main

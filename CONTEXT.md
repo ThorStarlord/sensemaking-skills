@@ -81,13 +81,24 @@ The workflow orchestration system follows four key design patterns, each proven 
    - **Why**: Audit trail is complete; divergences never silent; scope creep requires intentional approval; intent changes are safely detected
    - See: [docs/adr/0008-routing-divergence-audit.md](docs/adr/0008-routing-divergence-audit.md)
 
-9. **Orchestration Ownership: Skills Act, Scripts Record**
-   - The system supports two valid orchestration shapes:
-     - **Runner-led orchestration**: `workflow-runtime.py` owns the control loop. It calls worker skills, validates artifacts, manages gates, and records run evidence. Best for repeatable, production-like workflows where the full sequence must be machine-auditable.
-     - **Skill-led orchestration**: An orchestrator skill owns the semantic control loop. Worker skills create artifacts. Deterministic helper scripts create, validate, normalize, and record artifacts. Best for exploratory or AI-native workflows where the next step depends on judgment.
-   - In both cases, proof does not come from the agent's memory. Proof comes from durable artifacts, validator results, and an append-only run ledger.
-   - **Artifacts prove outputs. Validators prove outputs satisfy contracts. Run ledgers prove the causal chain**: which skill ran, with which inputs, on which repo state, producing which artifact, validated by which command, with which result.
-   - Therefore, `workflow-runtime.py` is not required to be the only caller of skills. Its deeper responsibility is to provide a deterministic evidence model. If orchestration is skill-led, helper scripts must preserve the same evidence guarantees.
+9. **Orchestration Ownership: Skills Act, Scripts Record** (ADR 0013)
+   - **PRIMARY model (Phase 1+): Skill-led orchestration**
+     - **Agents own the control loop** (in Claude Code, Cursor, OpenCode)
+     - Agents read bootstrap skill (using-sensemaking), understand fog classification and workflow routing
+     - Agents invoke skills (via Skill tool), read artifacts, parse structured validator errors, decide next step
+     - Agent reasoning is conversational: "I found product fog, invoking product-implementation-workflow"
+     - Helper scripts (not agents) handle validation + run logging
+     - **Why**: Conversational UX, agent agency, context-aware decisions
+   - **LEGACY model (Phase 1, for backwards compatibility): Runner-led orchestration**
+     - `workflow-runtime.py` owns the control loop (CLI invocation)
+     - Transitioned to compatibility layer (CLI can invoke skills, but doesn't orchestrate)
+     - **Why**: Existing CI/CD, testing, automation can reuse validators + skills
+   - **Skills are platform-agnostic**: Same skill works whether called by agent (Skill tool) or CLI (Python import)
+   - **Evidence model unchanged**: Proof comes from durable artifacts, validator results (JSON structured), and run ledgers
+   - **Artifacts prove outputs. Validators prove outputs satisfy contracts. Run ledgers prove the causal chain**: which skill ran, with which inputs, on which repo state, producing which artifact, validated by which command (JSON result).
+   - **Validators output structured JSON**: Agents parse reliably; no human prose needed
+   - **Bootstrap skill teaches fog classification** (~2000-2500 words): Agents become guided researchers, referencing CONTEXT.md, ADRs, ui-fog-signals.md
+   - **Skills self-document** (in SKILL.md): Each skill describes outputs, fields, error handling; agents reference during execution
 
 10. **Canonical Vocabulary Enforcement** (ADR 0011)
    - **Single source of truth**: `docs/canonical-vocabulary.yaml` defines all enumerated values (fog_types, routing_fields, gates, execution_modes, workflow_ids, artifact_ids)
@@ -137,11 +148,35 @@ and the plan name the same concept differently):
 | Next workflow id | `recommended_workflow_id` → `chosen_workflow_id` → `selected_workflow` | brief (`recommended_workflow_id`); plan (`chosen_workflow_id`, `selected_workflow`) |
 | Fog type | `fog_type` → `primary_fog_type` → `user_implied_fog_type` | plan (`fog_type`, recommended); brief (`primary_fog_type`, `user_implied_fog_type`) |
 
+## Phase 1 Bootstrap: Agent-Native Entry Point
+
+**New (Phase 1)**: Agents in Claude Code, Cursor, OpenCode invoke skills conversationally.
+
+1. **SessionStart hook** injects `using-sensemaking` bootstrap skill
+   - Teaches agents fog classification, workflow routing, structured error parsing, retry logic
+   - Links to CONTEXT.md, ADRs, external docs (ui-fog-signals.md)
+   - ~2000-2500 words
+
+2. **Agent invokes skills** via Skill tool:
+   ```
+   User: "Diagnose my codebase"
+   Agent: (reads bootstrap skill, understands decision framework)
+   Agent: "I'll run repo-sensemaker to analyze your repository"
+   Agent: (invokes repo-sensemaker skill)
+   Agent: (reads artifact, parses fog_type, decides next workflow)
+   Agent: "I detected product fog. Invoking product-implementation-workflow"
+   ```
+
+3. **Skills are platform-agnostic**: Can also be invoked by CLI for backwards compatibility
+
+---
+
 ## Default Workflows
 
 The system uses a multi-stage default workflow chain with fog-type-aware routing:
 
-1. **`full-local-sensemaking`** (DEFAULT) — The primary entry point when running `python scripts/workflow-runtime.py`
+1. **`full-local-sensemaking`** (DEFAULT) — The primary entry point when running `python scripts/workflow-runtime.py` (legacy CLI path)
+   - **Note**: Phase 1 shifts primary entry point to agent-native (bootstrap skill in Claude Code). CLI becomes compatibility layer.
    - Converts raw fog into a repository diagnosis and orchestration plan
    - Executes locally without external API calls
    - Supports all execution modes: `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, `yolo_execution`

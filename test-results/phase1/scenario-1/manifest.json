@@ -1,0 +1,7 @@
+{
+  "scenario": 1,
+  "name": "Happy Path (Valid Diagnosis)",
+  "description": "Agent diagnoses repo, produces valid brief, validation passes",
+  "timestamp": "2026-05-24T23:57:42.852079",
+  "status": "pending"
+}
