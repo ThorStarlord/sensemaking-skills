@@ -1,55 +1,41 @@
-"""Setup configuration for Sensemaking Skills package."""
+#!/usr/bin/env python3
+"""Setup configuration for sensemaking-skills package."""
 
 from setuptools import setup, find_packages
 from pathlib import Path
 
-# Read the contents of README file
-this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text(encoding="utf-8")
+# Read the long description from README
+readme_file = Path(__file__).parent / "README.md"
+long_description = readme_file.read_text(encoding="utf-8") if readme_file.exists() else ""
 
 setup(
     name="sensemaking-skills",
-    version="1.0.0",
-    author="Dimmi Andreus",
-    author_email="dimmi.andreus1@gmail.com",
-    description="Artifact-driven diagnostic and orchestration skills for any repository",
+    version="0.2.0",
+    description="Agent-native framework for repository diagnosis and workflow orchestration",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/dimmi-andreus/sensemaking-skills",
+    author="Dimmi Andreus",
+    author_email="dimmi.andreus1@gmail.com",
+    url="https://github.com/ThorStarlord/sensemaking-skills",
+    license="MIT",
+    python_requires=">=3.11",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    py_modules=["scripts.validate_brief", "scripts.validate_plan", "scripts.shadow_mode_runner"],
+    include_package_data=True,
     classifiers=[
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        "Topic :: Software Development :: Libraries :: Application Frameworks",
+        "Topic :: Software Development :: Libraries",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
-    python_requires=">=3.8",
-    install_requires=[
-        "PyYAML>=6.0",
-        "click>=8.0",
-        "anthropic>=0.7.0",
-    ],
-    extras_require={
-        "dev": [
-            "pytest>=6.0",
-            "pytest-cov>=2.10",
-            "black>=21.0",
-            "flake8>=3.9",
-            "mypy>=0.910",
-        ],
+    keywords="agent ai diagnosis workflow orchestration repository analysis",
+    project_urls={
+        "Bug Reports": "https://github.com/ThorStarlord/sensemaking-skills/issues",
+        "Source": "https://github.com/ThorStarlord/sensemaking-skills",
+        "Documentation": "https://github.com/ThorStarlord/sensemaking-skills#readme",
     },
-    entry_points={
-        "console_scripts": [
-            "sensemaking-skills=sensemaking_skills.cli:main",
-        ],
-    },
-    include_package_data=True,
-    zip_safe=False,
 )

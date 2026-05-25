@@ -1,316 +1,339 @@
-# Installation Guide
+# Installation & Setup Guide
 
-Get up and running with sensemaking-skills in minutes. Choose your installation path and follow the quickstart to analyze your repository.
+This guide covers setting up **sensemaking-skills** for development and use with Claude Code.
 
 ---
 
-## Installation
+## Current State
 
-### Option 1: Install from PyPI (Recommended)
+**What this is:**
+- ✅ Agent-native framework (Claude Code + Python scripts)
+- ✅ Artifact-driven diagnostic system
+- ✅ Proven in production testing (Scenario 5, Week 1 shadow mode)
 
+**What this is NOT (yet):**
+- ❌ CLI tool (`sensemaking-skills` command)
+- ❌ PyPI package (`pip install sensemaking-skills`)
+- ❌ Standalone service
+
+---
+
+## Prerequisites
+
+- **Python 3.11+** (required)
+- **Git** (for cloning repository)
+- **Claude Code** (recommended for agent-native invocation)
+- ~500 MB disk space (including sample test artifacts)
+
+Verify Python version:
 ```bash
-pip install sensemaking-skills
+python3 --version
 ```
 
-Verify installation:
+Expected output: `Python 3.11.x` or higher
+
+---
+
+## Installation Steps
+
+### Step 1: Clone the Repository
+
 ```bash
-sensemaking-skills --help
-```
-
-### Option 2: Install from GitHub
-
-Clone the repository and install in development mode:
-
-```bash
-git clone https://github.com/dimmi-andreus/sensemaking-skills.git
+git clone https://github.com/ThorStarlord/sensemaking-skills.git
 cd sensemaking-skills
+```
+
+### Step 2: Create Virtual Environment (Recommended)
+
+```bash
+python3 -m venv venv
+```
+
+Activate it:
+- **Windows (PowerShell):**
+  ```powershell
+  .\venv\Scripts\Activate.ps1
+  ```
+- **Windows (cmd):**
+  ```cmd
+  venv\Scripts\activate.bat
+  ```
+- **macOS/Linux:**
+  ```bash
+  source venv/bin/activate
+  ```
+
+### Step 3: Install in Development Mode
+
+```bash
 pip install -e .
 ```
 
-For development (includes testing tools):
+This installs the package in editable mode, allowing you to modify source files without reinstalling.
+
+### Step 4: Verify Installation
+
 ```bash
-pip install -e ".[dev]"
+python3 -c "import sys; print('Python path:', sys.executable); print('Version:', sys.version)"
+```
+
+Test the validation scripts:
+```bash
+python3 scripts/validate-brief.py --help
+python3 scripts/validate-plan.py --help
+python3 scripts/shadow-mode-runner.py --help
 ```
 
 ---
 
-## Quickstart: Analyze Your Repository
+## Invocation Paths
 
-### 1. Initialize Configuration
+### Path 1: Claude Code (Recommended)
 
-Create a sensemaking configuration file in your repository:
+1. Open this repository in Claude Code
+2. Use the `/skill using-sensemaking` command to load the bootstrap skill
+3. Invoke agent-native workflows through the skill
 
-```bash
-sensemaking-skills init --repo /path/to/your/repo
-```
+See **GETTING_STARTED.md** for detailed examples.
 
-This creates `sensemaking-config.yaml` with default analysis settings.
+### Path 2: Direct Python Script
 
-### 2. Run Analysis Workflow
-
-Execute the default diagnostic workflow:
+Run validation scripts directly:
 
 ```bash
-sensemaking-skills analyze --repo /path/to/your/repo
-```
+# Validate a repository sensemaking brief
+python3 scripts/validate-brief.py artifacts/repository_sensemaking_brief.md
 
-This performs:
-- **Repository Structure Analysis**: Maps code organization, imports, and dependencies
-- **Fog Type Detection**: Classifies the problem as product_fog, ui_fog, docs_fog, or architecture_fog
-- **Weakness Identification**: Locates the weakest boundary in the codebase
-- **Workflow Recommendation**: Suggests the best implementation workflow
+# Validate a workflow orchestration plan
+python3 scripts/validate-plan.py artifacts/workflow_orchestration_plan.md
 
-### 3. Check Results
-
-Find the generated artifacts in the `.sensemaking/artifacts/` directory:
-
-```bash
-# View the diagnostic brief
-cat /path/to/your/repo/.sensemaking/artifacts/repository_sensemaking_brief.md
-
-# View recommended workflow
-cat /path/to/your/repo/.sensemaking/artifacts/workflow_orchestration_plan.md
+# Run shadow mode tests against sample repositories
+python3 scripts/shadow-mode-runner.py --days 3 --repos 100
 ```
 
 ---
 
-## Manual Path: Full Control
-
-Use the **manual path** when you want to inspect artifacts between stages and make explicit decisions at each step.
-
-### Flow
+## Project Structure
 
 ```
-1. Run diagnostic workflow
-2. Review output artifacts
-3. Decide next step
-4. Run implementation workflow
-5. Review and approve changes
-```
-
-### Example: Analyze Then Implement
-
-```bash
-# Step 1: Run diagnostic workflow with explicit pauses
-sensemaking-skills analyze --repo /path/to/repo \
-  --workflow fast-path-workflow \
-  --mode guided_execution
-
-# Output: Repository Sensemaking Brief (with fog_type and recommended workflow)
-
-# Step 2: Read the brief and results
-cat .sensemaking/artifacts/repository_sensemaking_brief.md
-
-# Step 3: Manually invoke the recommended implementation workflow
-sensemaking-skills run-workflow \
-  --repo /path/to/repo \
-  --workflow product-implementation-workflow \
-  --mode guided_execution \
-  --from-session .sensemaking/artifacts
-
-# Output: PRD, issues, code patches (with gates for approval)
-```
-
-### Manual Invocation with `--from-session`
-
-When running a follow-up workflow, use `--from-session` to reuse artifacts from the prior diagnostic run:
-
-```bash
-sensemaking-skills run-workflow \
-  --repo /path/to/repo \
-  --workflow product-implementation-workflow \
-  --mode guided_execution \
-  --from-session .sensemaking/artifacts
-```
-
-This passes the problem statement, fog type, and repository context from the diagnostic phase, so the implementation workflow doesn't need to re-analyze.
-
----
-
-## Automation Path: Full Speed
-
-Use the **automation path** for end-to-end runs with automatic progression through all stages.
-
-### Flow
-
-```
-1. Single command invocation
-2. System auto-chains all workflows
-3. Final output includes everything: diagnosis + plan + PRD + issues + code
-```
-
-### Example: Single Command, Complete Analysis & Implementation
-
-```bash
-# Single command: everything runs automatically
-sensemaking-skills analyze --repo /path/to/repo \
-  --workflow full-local-sensemaking \
-  --mode autonomous_execution
-
-# Output: Full pipeline completes with:
-# - Repository Sensemaking Brief
-# - Workflow Orchestration Plan
-# - PRD (if product_fog detected)
-# - Implementation Issues (if appropriate workflow invoked)
-# - Code patches (if TDD workflow included)
-```
-
-### Benefits
-
-- **No manual steps**: System auto-chains based on fog type
-- **Deterministic routing**: Uses machine-readable workflow registry
-- **Production-ready**: Exit code 0 on success, 2 on failure, 3 if paused
-- **Audit trail**: Run log records all decisions and approvals
-
----
-
-## Execution Modes
-
-| Mode | Gates | Speed | Best For | When to Use |
-|------|-------|-------|----------|-------------|
-| `guided_execution` | Pause at every gate (user approves) | Slowest | Development, exploration | Learning the system, high-value decisions |
-| `autonomous_execution` | Auto-approve all valid gates | Fast | Production, CI/CD | Unattended runs, automation |
-| `plan_only` | No execution, show plan only | Instant | Validation, dry-run | What-if analysis, planning |
-
-### Execution Mode Examples
-
-**Guided Mode** - Pause at each step for approval:
-```bash
-sensemaking-skills analyze --repo /path/to/repo --mode guided_execution
-```
-
-**Autonomous Mode** - Full automation with auto-approval:
-```bash
-sensemaking-skills analyze --repo /path/to/repo --mode autonomous_execution
-```
-
-**Plan Only** - See the plan without executing:
-```bash
-sensemaking-skills analyze --repo /path/to/repo --mode plan_only
+sensemaking-skills/
+├── skills/                    # Agent-executable skills
+│   ├── using-sensemaking/     # Bootstrap skill (load this first)
+│   ├── repo-sensemaker/       # Repository diagnosis
+│   └── workflow-planner/      # Workflow orchestration
+├── scripts/                   # Standalone Python tools
+│   ├── validate-brief.py      # Brief validation
+│   ├── validate-plan.py       # Plan validation
+│   └── shadow-mode-runner.py  # Test runner
+├── artifacts/                 # Output artifacts (generated)
+├── logs/                      # Execution logs
+├── tests/                     # Test suite
+├── docs/                      # Documentation
+└── setup.py                   # Package metadata (enables pip install -e .)
 ```
 
 ---
 
-## Customization
+## Common Workflows
 
-### Using Custom Skills
+### Quick Diagnosis (5 minutes)
 
-To use custom diagnostic or implementation skills alongside built-in ones, see [EXTENDING.md](EXTENDING.md) for:
-- Creating custom skills
-- Defining custom workflows
-- Overriding canonical vocabulary
-- Composing mixed skill chains
+```bash
+# In Claude Code terminal:
+/skill using-sensemaking
 
-### Configuration Options
-
-Edit `sensemaking-config.yaml` to customize:
-
-```yaml
-# Repository root for analysis
-repo_root: /path/to/repo
-
-# Output directory for artifacts
-artifacts_dir: .sensemaking/artifacts
-
-# Execution mode
-execution_mode: guided_execution
-
-# Skills to load
-skills:
-  enabled:
-    - repo-sensemaker
-    - workflow-planner
-  disabled: []
-
-# Custom vocabulary overrides
-vocabulary:
-  fog_types:
-    - product_fog
-    - ui_fog
-    - docs_fog
-    - architecture_fog
+# Then in chat:
+Diagnose this repository: /path/to/repo
 ```
 
-See [docs/configuration.md](docs/configuration.md) for full configuration reference.
+Expected output: `repository_sensemaking_brief.md`
+
+### Full Analysis with Workflow Plan
+
+```bash
+# In Claude Code:
+/skill using-sensemaking
+
+# In chat:
+Diagnose and plan this repository: /path/to/repo
+```
+
+Expected outputs:
+- `repository_sensemaking_brief.md`
+- `workflow_orchestration_plan.md`
+
+### Running Tests
+
+```bash
+# Run all tests
+python3 -m pytest tests/ -v
+
+# Run specific test
+python3 -m pytest tests/test_validate_brief.py::test_valid_brief -v
+
+# Run with coverage
+python3 -m pytest tests/ --cov=scripts --cov-report=html
+```
+
+---
+
+## Configuration
+
+### Environment Variables
+
+Optional configuration (not required for basic use):
+
+```bash
+# Logging level (DEBUG, INFO, WARNING, ERROR)
+export SENSEMAKING_LOG_LEVEL=INFO
+
+# Artifact output directory (default: artifacts/)
+export SENSEMAKING_ARTIFACTS_DIR=./artifacts
+
+# Timeout for diagnostic operations (seconds, default: 300)
+export SENSEMAKING_TIMEOUT=300
+```
 
 ---
 
 ## Troubleshooting
 
-### "Configuration file not found"
+### Python Version Error
 
-**Error**: `Configuration file not found: repo/sensemaking-config.yaml`
+**Error:** `python3: command not found` or wrong version
 
-**Solution**: Initialize the repository first:
+**Solution:**
 ```bash
-sensemaking-skills init --repo /path/to/repo
+# Check installed Python versions
+python --version
+python3 --version
+
+# Use the correct version
+python3.11 -m venv venv  # explicit version
 ```
 
-### "Workflow not found"
+### Import Errors
 
-**Error**: `Workflow not found: xyz-workflow`
+**Error:** `ModuleNotFoundError: No module named 'sensemaking'`
 
-**Solution**: List all available workflows:
+**Solution:**
 ```bash
-sensemaking-skills list-workflows
+# Ensure virtual environment is activated
+source venv/bin/activate  # macOS/Linux
+# or
+venv\Scripts\activate.ps1  # Windows PowerShell
+
+# Reinstall in editable mode
+pip install -e .
 ```
 
-Then use a workflow ID from the list.
+### Script Execution Permission Denied
 
-### "Skill executor failed"
+**Error:** `Permission denied: scripts/validate-brief.py`
 
-**Error**: `Skill executor failed: Claude API returned error`
-
-**Solutions**:
-1. Verify your Anthropic API key is set: `echo $ANTHROPIC_API_KEY`
-2. Check your API quota and usage at https://console.anthropic.com
-3. Try again with `--mode plan_only` to skip execution
-4. Check the run log: `cat .sensemaking/logs/latest.log`
-
-### "Artifacts directory not found"
-
-**Error**: `Artifacts directory not found: .sensemaking/artifacts`
-
-**Solution**: Ensure the diagnostic workflow completed successfully:
+**Solution:**
 ```bash
-# Verify artifacts exist
-ls -la .sensemaking/artifacts/
+# Make scripts executable
+chmod +x scripts/*.py
 
-# Or re-run the workflow
-sensemaking-skills analyze --repo /path/to/repo --mode guided_execution
+# Or run with python3
+python3 scripts/validate-brief.py artifacts/brief.md
 ```
 
-### Increasing Verbosity
+### Artifact Validation Fails
 
-To see detailed logs and debug output:
+**Error:** Validation script reports invalid artifact
+
+**Solution:**
+1. Check artifact format matches contract (see `CONTEXT.md`)
+2. Verify required fields are present
+3. Run with verbose output:
+   ```bash
+   python3 scripts/validate-brief.py artifacts/brief.md --verbose
+   ```
+4. Check validation rules in `scripts/validate-brief.py` for detailed error messages
+
+### Claude Code Skill Not Found
+
+**Error:** `/skill using-sensemaking` returns "Skill not found"
+
+**Solution:**
+1. Ensure repository is open in Claude Code
+2. Check `.claude/hooks/sessionstart.md` exists
+3. Restart Claude Code session
+4. Verify skill path: `skills/using-sensemaking/SKILL.md`
+
+---
+
+## Development Setup
+
+### Creating a Feature Branch
 
 ```bash
-# Set environment variable
-export DEBUG=true
+git checkout -b feature/your-feature-name
+```
 
-# Then run your command
-sensemaking-skills analyze --repo /path/to/repo
+### Running Tests Before Commit
+
+```bash
+# Run full test suite
+python3 -m pytest tests/ -v
+
+# Run with coverage report
+python3 -m pytest tests/ --cov=scripts --cov-report=term-missing
+```
+
+### Committing Changes
+
+```bash
+git add scripts/ skills/ tests/ docs/
+git commit -m "feat: description of changes"
+git push origin feature/your-feature-name
+```
+
+Then create a pull request.
+
+---
+
+## Updating the Package
+
+To get the latest changes:
+
+```bash
+git pull origin main
+```
+
+If you have local changes:
+```bash
+git stash
+git pull origin main
+git stash pop
 ```
 
 ---
 
 ## Next Steps
 
-- **Learn by Example**: See [GETTING_STARTED.md](GETTING_STARTED.md) for step-by-step walkthroughs
-- **Extend the System**: See [EXTENDING.md](EXTENDING.md) to add custom skills and workflows
-- **API Integration**: See [API.md](API.md) to use sensemaking-skills in Python code
-- **Full Reference**: See [README.md](README.md) for complete feature overview
+1. **Read GETTING_STARTED.md** for real usage examples
+2. **Read CONTEXT.md** for domain knowledge (fog types, artifact contracts)
+3. **Explore skills/** directory to understand skill structure
+4. **Run tests** to verify everything works: `python3 -m pytest tests/ -v`
 
 ---
 
-## Support
+## Getting Help
 
-- **Issues**: Report bugs at https://github.com/dimmi-andreus/sensemaking-skills/issues
-- **Discussions**: Ask questions at https://github.com/dimmi-andreus/sensemaking-skills/discussions
-- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) to contribute improvements
+- **Technical issues:** Check logs/ directory for execution logs
+- **Validation errors:** Run with `--verbose` flag
+- **Questions about fog types:** See CONTEXT.md Sections 2-3
+- **Artifact format questions:** See `skills/workflow-planner/references/artifact-contracts.yaml`
 
 ---
 
-## License
+## Version Info
 
-MIT License - See [LICENSE](LICENSE) for details.
+- **Package:** sensemaking-skills
+- **Version:** 0.2.0
+- **Python:** 3.11+
+- **Status:** Beta (Production-ready, agent-native)
+- **Last Updated:** 2026-05-25
