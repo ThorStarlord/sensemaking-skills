@@ -37,7 +37,10 @@ Repository = "https://github.com/ThorStarlord/sensemaking-skills"
 sensemaking-skills = "sensemaking_skills.cli:main"
 
 [tool.setuptools]
-packages = ["src"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools.package-data]
-sensemaking = ["skills/**/*", "examples/**/*", "docs/**/*"]
+sensemaking_skills = ["skills/**/*", "examples/**/*", "docs/**/*"]

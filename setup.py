@@ -19,9 +19,8 @@ setup(
     url="https://github.com/ThorStarlord/sensemaking-skills",
     license="MIT",
     python_requires=">=3.11",
-    packages=find_packages(where="src"),
+    packages=find_packages(where="src", include=["sensemaking_skills", "sensemaking_skills.*"]),
     package_dir={"": "src"},
-    py_modules=["scripts.validate_brief", "scripts.validate_plan", "scripts.shadow_mode_runner"],
     include_package_data=True,
     install_requires=[
         "click>=8.1.0",
