@@ -1,0 +1,36 @@
+=== TEST 1: Brief validation ===
+Result: PASS (valid: true)
+
+=== TEST 2: Workflow planning ===
+Result: PASS (plan created)
+
+=== TEST 3: Escalation handling ===
+Result: PASS (full-fog-workflow selected)
+
+=== TEST 4: Semantic conflict detection ===
+Result: PASS (semantic_conflict detected)
+
+=== TEST 5: Error recovery ===
+Attempt 1 (fail): Missing evidence and recommended_workflow_id fields
+Attempt 2 (pass): After adding required fields, validation succeeds
+Result: PASS (recovery loop works)
+
+
+=== MANUAL TEST EXECUTION SUMMARY ===
+Date: 2026-05-25
+Phase: Week 1 Shadow Mode Deployment (Day 1-2)
+Test Suite: Manual Validation Tests
+
+RESULTS:
+- TEST 1: Brief validation (validate-brief.py) ........... PASS
+- TEST 2: Workflow planning (workflow-planner.py) ....... PASS
+- TEST 3: Escalation handling (recommended_workflow_id) . PASS
+- TEST 4: Semantic conflict detection (validate-plan.py) PASS
+- TEST 5: Error recovery (retry loop) ................... PASS
+
+TOTAL: 5/5 PASS
+
+All manual validation tests completed successfully.
+System is ready for Day 3-5 sample repository testing phase.
+
+Status: READY FOR NEXT PHASE
