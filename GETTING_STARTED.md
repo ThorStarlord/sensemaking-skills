@@ -102,18 +102,27 @@ python scripts/shadow-mode-runner.py
 
 ---
 
-## Real-World Example
+## Real-World Workflow
 
-### Scenario: Analyze a New Repository
+### Scenario: Diagnose a Complex Monorepo
 
-**Your problem:** You inherited a complex monorepo. You don't know where to start.
+**Your problem:** You inherited a complex monorepo with unclear architecture. You need to understand the core issue.
 
-**Step 1: Run diagnostic**
+**Step 1: Prepare the repository**
+```bash
+sensemaking-skills analyze --repo /path/to/your/monorepo
 ```
-/skill repo-sensemaker --repo /path/to/your/monorepo
+
+Output: Instructions for the agent-led diagnosis workflow.
+
+**Step 2: Open in Claude Code and ask the agent to diagnose**
+```text
+Read `skills/using-sensemaking/SKILL.md`.
+Then use `skills/repo-sensemaker/SKILL.md` to analyze /path/to/your/monorepo.
+Produce a `repository_sensemaking_brief` and save to `artifacts/`.
 ```
 
-**Output:** A brief that says:
+**Agent produces a brief that says:**
 ```
 Fog Type: ARCHITECTURE_FOG
 Weakest Boundary: Tight coupling between services
@@ -124,12 +133,17 @@ Evidence:
   - Pattern: Circular dependencies detected
 ```
 
-**Step 2: Route to implementation workflow**
-```
-/skill workflow-planner
+**Step 3: Validate the brief**
+```bash
+sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
 ```
 
-**Output:** An orchestration plan that says:
+**Step 4: Ask the agent to create an orchestration plan**
+```text
+Use `skills/workflow-planner/SKILL.md` to convert the brief into a `workflow_orchestration_plan`.
+```
+
+**Agent produces a plan that specifies:**
 ```
 Selected Workflow: architecture-implementation-workflow
 Workflow Steps:
@@ -140,8 +154,13 @@ Workflow Steps:
   5. tdd → Implement with tests
 ```
 
-**Step 3: Execute the workflow**
-Follow the prompt instructions to invoke each skill in sequence.
+**Step 5: Validate the plan**
+```bash
+sensemaking-skills validate --artifact artifacts/workflow_orchestration_plan.md
+```
+
+**Step 6: Follow the workflow**
+Ask the agent to execute each step in the orchestration plan.
 
 ---
 
