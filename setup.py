@@ -10,7 +10,7 @@ long_description = readme_file.read_text(encoding="utf-8") if readme_file.exists
 
 setup(
     name="sensemaking-skills",
-    version="0.2.0",
+    version="0.2.1",
     description="Agent-native framework for repository diagnosis and workflow orchestration",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -23,8 +23,17 @@ setup(
     package_dir={"": "src"},
     py_modules=["scripts.validate_brief", "scripts.validate_plan", "scripts.shadow_mode_runner"],
     include_package_data=True,
+    install_requires=[
+        "click>=8.1.0",
+    ],
+    entry_points={
+        "console_scripts": [
+            "sensemaking-skills=sensemaking_skills.cli:main",
+        ],
+    },
     classifiers=[
         "Development Status :: 4 - Beta",
+        "Environment :: Console",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries",
         "License :: OSI Approved :: MIT License",

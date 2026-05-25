@@ -4,10 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sensemaking-skills"
-version = "0.2.0"
+version = "0.2.1"
 description = "Agent-native framework for repository diagnosis and workflow orchestration"
 readme = "README.md"
 requires-python = ">=3.11"
+dependencies = [
+    "click>=8.1.0",
+]
 license = {text = "MIT"}
 authors = [
     {name = "Dimmi Andreus", email = "dimmi.andreus1@gmail.com"}
@@ -15,6 +18,7 @@ authors = [
 keywords = ["agent", "ai", "diagnosis", "workflow", "orchestration", "repository"]
 classifiers = [
     "Development Status :: 4 - Beta",
+    "Environment :: Console",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
     "License :: OSI Approved :: MIT License",
@@ -28,6 +32,9 @@ Homepage = "https://github.com/ThorStarlord/sensemaking-skills"
 Documentation = "https://github.com/ThorStarlord/sensemaking-skills#readme"
 Repository = "https://github.com/ThorStarlord/sensemaking-skills"
 "Bug Tracker" = "https://github.com/ThorStarlord/sensemaking-skills/issues"
+
+[project.scripts]
+sensemaking-skills = "sensemaking_skills.cli:main"
 
 [tool.setuptools]
 packages = ["src"]

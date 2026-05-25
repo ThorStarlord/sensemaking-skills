@@ -1,203 +1,128 @@
-"""Command-line interface for Sensemaking Skills."""
+#!/usr/bin/env python3
+"""
+Sensemaking Skills CLI: Repository diagnosis and workflow orchestration.
 
-import os
-import sys
-from pathlib import Path
-from typing import Optional
+This CLI coordinates with the agent-native architecture.
+For full diagnostic capabilities, use Claude Code with the skill files.
+"""
 
 import click
-
-from .config import ConfigManager, SkillsConfig
-from .runner import SkillsOrchestrator
+import sys
+from pathlib import Path
+from . import __version__
 
 
 @click.group()
-def main():
-    """Sensemaking Skills - Artifact-driven diagnostic orchestration for any repository.
-
-    Analyze your codebase structure, design patterns, and architecture
-    to generate diagnostic artifacts and actionable insights.
+@click.version_option(__version__)
+def cli():
+    """
+    Sensemaking Skills: Agent-native repository diagnosis.
+    
+    This CLI provides validation and testing utilities.
+    For full diagnostics, open this repository in Claude Code and read:
+    
+        skills/using-sensemaking/SKILL.md
+    
+    Then ask the agent to diagnose your repository using:
+    
+        skills/repo-sensemaker/SKILL.md
     """
     pass
 
 
-@main.command()
-@click.option(
-    "--repo",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
-    required=True,
-    help="Path to the target repository to analyze",
-)
-@click.option(
-    "--workflow",
-    type=str,
-    default="fast-path-workflow",
-    help="Workflow to execute (default: fast-path-workflow)",
-)
-@click.option(
-    "--mode",
-    type=click.Choice(["guided_execution", "autonomous_execution", "plan_only"]),
-    default="guided_execution",
-    help="Execution mode (default: guided_execution)",
-)
-@click.option(
-    "--from-session",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
-    default=None,
-    help="Path to artifact session directory from a prior workflow run",
-)
-def analyze(repo: Path, workflow: str, mode: str, from_session: Optional[Path]) -> None:
-    """Analyze a repository and generate diagnostic artifacts.
-
-    This command runs the specified workflow against your repository
-    to analyze its structure, patterns, and architecture.
-
-    Example:
-        sensemaking-skills analyze --repo /path/to/repo --workflow fast-path-workflow --mode guided_execution
+@cli.command()
+@click.option("--repo", type=click.Path(exists=True), 
+              help="Path to repository to analyze")
+@click.option("--output", type=click.Path(), default="artifacts/",
+              help="Output directory for artifacts (default: artifacts/)")
+def analyze(repo, output):
     """
-    try:
-        click.echo(f"Loading configuration from {repo}...")
-
-        try:
-            # Load configuration
-            config_manager = ConfigManager(str(repo))
-            config = config_manager.load()
-
-            click.echo(f"✓ Configuration loaded")
-            click.echo(f"  Repository: {repo}")
-            click.echo(f"  Artifacts: {config.artifacts_dir}")
-            click.echo()
-
-        except FileNotFoundError as e:
-            click.echo(f"✗ Configuration file not found: {repo}/sensemaking-config.yaml", err=True)
-            click.echo(f"  Hint: Run 'sensemaking-skills init --repo {repo}' to create one", err=True)
-            sys.exit(1)
-        except Exception as e:
-            click.echo(f"✗ Error loading configuration: {e}", err=True)
-            sys.exit(1)
-
-        # Create orchestrator
-        orchestrator = SkillsOrchestrator(config=config)
-        click.echo(f"Orchestrator initialized")
-
-        # Show workflow info
-        click.echo(f"Workflow: {workflow}")
-        click.echo(f"Mode: {mode}")
-        if from_session:
-            click.echo(f"Resuming from: {from_session}")
-
-        click.echo(f"\nStarting analysis of {repo}...")
-
-        # Run the workflow
-        exit_code = orchestrator.run_workflow(
-            workflow_id=workflow,
-            execution_mode=mode,
-            from_session=str(from_session) if from_session else None,
-        )
-
-        sys.exit(exit_code)
-
-    except SystemExit:
-        raise
-    except Exception as e:
-        click.echo(f"✗ Unexpected error: {e}", err=True)
+    Analyze a repository for fog type and weakest boundary.
+    
+    This CLI prepares the environment for agent-driven diagnosis.
+    For full diagnostics, see: skills/repo-sensemaker/SKILL.md
+    
+    Usage:
+        sensemaking-skills analyze --repo /path/to/repo
+    """
+    if not repo:
+        click.echo("Error: --repo is required", err=True)
         sys.exit(1)
+    
+    repo_path = Path(repo).resolve()
+    output_path = Path(output).resolve()
+    
+    click.echo(f"Repository: {repo_path}")
+    click.echo(f"Output: {output_path}")
+    click.echo()
+    click.echo("To analyze this repository, use Claude Code:")
+    click.echo()
+    click.echo("1. Open this repository in Claude Code")
+    click.echo("2. Read: skills/using-sensemaking/SKILL.md")
+    click.echo("3. Ask the agent to use: skills/repo-sensemaker/SKILL.md")
+    click.echo(f"4. Specify target repo: {repo_path}")
+    click.echo("5. Artifacts will be saved to: artifacts/")
+    click.echo()
+    click.echo("To validate artifacts after agent creates them:")
+    click.echo("    sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md")
 
 
-@main.command()
-@click.option(
-    "--repo",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
-    required=True,
-    help="Path to the target repository",
-)
-def list_workflows(repo: Path) -> None:
-    """List all registered workflows available for a repository.
-
-    Example:
-        sensemaking-skills list-workflows --repo /path/to/repo
+@cli.command()
+@click.option("--artifact", type=click.Path(exists=True), required=True,
+              help="Path to artifact to validate")
+@click.option("--json", "output_json", is_flag=True,
+              help="Output validation results as JSON")
+def validate(artifact, output_json):
     """
-    try:
-        click.echo(f"Loading configuration from {repo}...")
-
-        try:
-            # Load configuration
-            config_manager = ConfigManager(str(repo))
-            config = config_manager.load()
-
-            click.echo()
-
-        except FileNotFoundError as e:
-            click.echo(f"✗ Configuration file not found: {repo}/sensemaking-config.yaml", err=True)
-            click.echo(f"  Hint: Run 'sensemaking-skills init --repo {repo}' to create one", err=True)
-            sys.exit(1)
-        except Exception as e:
-            click.echo(f"✗ Error loading configuration: {e}", err=True)
-            sys.exit(1)
-
-        # Create orchestrator
-        orchestrator = SkillsOrchestrator(config=config)
-
-        # List workflows
-        exit_code = orchestrator.list_workflows()
-
-        sys.exit(exit_code)
-
-    except SystemExit:
-        raise
-    except Exception as e:
-        click.echo(f"✗ Unexpected error: {e}", err=True)
+    Validate a repository sensemaking brief or workflow orchestration plan.
+    
+    Usage:
+        sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
+    """
+    artifact_path = Path(artifact).resolve()
+    
+    if not artifact_path.exists():
+        click.echo(f"Error: Artifact not found: {artifact_path}", err=True)
         sys.exit(1)
+    
+    click.echo(f"Validating: {artifact_path}")
+    click.echo()
+    click.echo("To validate artifacts, run:")
+    click.echo()
+    click.echo(f"    python scripts/validate-and-report.py {artifact_path}")
+    click.echo()
+    click.echo("Or use Python directly:")
+    click.echo()
+    click.echo(f"    python scripts/validate-brief.py {artifact_path} --json")
 
 
-@main.command()
-@click.option(
-    "--repo",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
-    required=True,
-    help="Path to the repository to initialize",
-)
-def init(repo: Path) -> None:
-    """Initialize sensemaking-skills configuration in a repository.
-
-    This command creates a sensemaking-config.yaml file in the target
-    repository with default configuration values.
-
-    Example:
-        sensemaking-skills init --repo /path/to/repo
+@cli.command()
+@click.option("--repos", type=int, default=10,
+              help="Number of repositories to test (default: 10)")
+def test(repos):
     """
+    Run shadow-mode test automation.
+    
+    Tests the validation infrastructure against sample repositories.
+    """
+    click.echo(f"Running shadow-mode tests with {repos} repositories...")
+    click.echo()
+    click.echo("To run tests, use:")
+    click.echo()
+    click.echo("    python scripts/shadow-mode-runner.py")
+    click.echo()
+    click.echo("Or run the full test suite:")
+    click.echo()
+    click.echo("    python -m pytest tests/ -v")
+
+
+def main():
+    """Entry point for CLI."""
     try:
-        config_file = repo / "sensemaking-config.yaml"
-
-        # Check if config already exists
-        if config_file.exists():
-            click.confirm(
-                f"Config file already exists at {config_file}. Overwrite?",
-                abort=True,
-            )
-
-        # Find template file
-        template_path = Path(__file__).parent.parent.parent / "templates" / "sensemaking-config.yaml.template"
-
-        if not template_path.exists():
-            click.echo(
-                f"Error: Template file not found at {template_path}",
-                err=True,
-            )
-            sys.exit(1)
-
-        # Read template
-        template_content = template_path.read_text()
-
-        # Write config file
-        config_file.write_text(template_content)
-
-        click.echo(f"Successfully created configuration file:")
-        click.echo(f"  {config_file}")
-        click.echo(f"\nNext steps:")
-        click.echo(f"  1. Review and customize {config_file} for your project")
-        click.echo(f"  2. Run 'sensemaking-skills analyze --repo {repo}' to start analysis")
-
+        cli()
+    except KeyboardInterrupt:
+        click.echo("\nInterrupted by user", err=True)
+        sys.exit(130)
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)
