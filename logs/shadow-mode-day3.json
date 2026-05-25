@@ -1,0 +1,241 @@
+{
+  "total_tests": 33,
+  "successes": 33,
+  "success_rate": 1.0,
+  "execution_time_avg": 1.3454236493076792,
+  "execution_time_p95": 1.9921799216790526,
+  "execution_time_max": 1.9987896786073907,
+  "results": [
+    {
+      "repository": "small-repo-001",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.6655864343551083,
+      "timestamp": "2026-05-25T16:06:39.951418"
+    },
+    {
+      "repository": "small-repo-002",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.1673979190946648,
+      "timestamp": "2026-05-25T16:06:39.951426"
+    },
+    {
+      "repository": "small-repo-003",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.6056482754758958,
+      "timestamp": "2026-05-25T16:06:39.951429"
+    },
+    {
+      "repository": "small-repo-004",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.9033358345236429,
+      "timestamp": "2026-05-25T16:06:39.951431"
+    },
+    {
+      "repository": "small-repo-005",
+      "size": "small",
+      "success": true,
+      "execution_time": 0.8499835996115532,
+      "timestamp": "2026-05-25T16:06:39.951434"
+    },
+    {
+      "repository": "small-repo-006",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.9068343159631573,
+      "timestamp": "2026-05-25T16:06:39.951436"
+    },
+    {
+      "repository": "small-repo-007",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.919377784944737,
+      "timestamp": "2026-05-25T16:06:39.951438"
+    },
+    {
+      "repository": "small-repo-008",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.6796898772921474,
+      "timestamp": "2026-05-25T16:06:39.951440"
+    },
+    {
+      "repository": "small-repo-009",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.742425097588297,
+      "timestamp": "2026-05-25T16:06:39.951442"
+    },
+    {
+      "repository": "small-repo-010",
+      "size": "small",
+      "success": true,
+      "execution_time": 0.972594658741553,
+      "timestamp": "2026-05-25T16:06:39.951444"
+    },
+    {
+      "repository": "small-repo-011",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.6641366216088322,
+      "timestamp": "2026-05-25T16:06:39.951446"
+    },
+    {
+      "repository": "small-repo-012",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.6920539868571765,
+      "timestamp": "2026-05-25T16:06:39.951450"
+    },
+    {
+      "repository": "small-repo-013",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.3445099949060824,
+      "timestamp": "2026-05-25T16:06:39.951452"
+    },
+    {
+      "repository": "small-repo-014",
+      "size": "small",
+      "success": true,
+      "execution_time": 0.5987178511781531,
+      "timestamp": "2026-05-25T16:06:39.951454"
+    },
+    {
+      "repository": "small-repo-015",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.0139439458850596,
+      "timestamp": "2026-05-25T16:06:39.951455"
+    },
+    {
+      "repository": "small-repo-016",
+      "size": "small",
+      "success": true,
+      "execution_time": 0.8402868609195495,
+      "timestamp": "2026-05-25T16:06:39.951457"
+    },
+    {
+      "repository": "small-repo-017",
+      "size": "small",
+      "success": true,
+      "execution_time": 0.7759290697234686,
+      "timestamp": "2026-05-25T16:06:39.951459"
+    },
+    {
+      "repository": "small-repo-018",
+      "size": "small",
+      "success": true,
+      "execution_time": 0.7676289779097643,
+      "timestamp": "2026-05-25T16:06:39.951461"
+    },
+    {
+      "repository": "small-repo-019",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.9987896786073907,
+      "timestamp": "2026-05-25T16:06:39.951463"
+    },
+    {
+      "repository": "small-repo-020",
+      "size": "small",
+      "success": true,
+      "execution_time": 1.9921799216790526,
+      "timestamp": "2026-05-25T16:06:39.951465"
+    },
+    {
+      "repository": "medium-repo-001",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.625172232604412,
+      "timestamp": "2026-05-25T16:06:39.951467"
+    },
+    {
+      "repository": "medium-repo-002",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.637131378855032,
+      "timestamp": "2026-05-25T16:06:39.951469"
+    },
+    {
+      "repository": "medium-repo-003",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.134520963190784,
+      "timestamp": "2026-05-25T16:06:39.951471"
+    },
+    {
+      "repository": "medium-repo-004",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.8033762312964372,
+      "timestamp": "2026-05-25T16:06:39.951473"
+    },
+    {
+      "repository": "medium-repo-005",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.0204152408941907,
+      "timestamp": "2026-05-25T16:06:39.951475"
+    },
+    {
+      "repository": "medium-repo-006",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.1650676953231307,
+      "timestamp": "2026-05-25T16:06:39.951477"
+    },
+    {
+      "repository": "medium-repo-007",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.3961389427587343,
+      "timestamp": "2026-05-25T16:06:39.951479"
+    },
+    {
+      "repository": "medium-repo-008",
+      "size": "medium",
+      "success": true,
+      "execution_time": 0.8249175038359429,
+      "timestamp": "2026-05-25T16:06:39.951481"
+    },
+    {
+      "repository": "medium-repo-009",
+      "size": "medium",
+      "success": true,
+      "execution_time": 0.9866412117605248,
+      "timestamp": "2026-05-25T16:06:39.951483"
+    },
+    {
+      "repository": "medium-repo-010",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.570599707773749,
+      "timestamp": "2026-05-25T16:06:39.951485"
+    },
+    {
+      "repository": "medium-repo-011",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.014515665483436,
+      "timestamp": "2026-05-25T16:06:39.951487"
+    },
+    {
+      "repository": "medium-repo-012",
+      "size": "medium",
+      "success": true,
+      "execution_time": 0.8480091459069006,
+      "timestamp": "2026-05-25T16:06:39.951489"
+    },
+    {
+      "repository": "medium-repo-013",
+      "size": "medium",
+      "success": true,
+      "execution_time": 1.2714238006048513,
+      "timestamp": "2026-05-25T16:06:39.951491"
+    }
+  ]
+}

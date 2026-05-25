@@ -139,6 +139,17 @@ class ShadowModeRunner:
             "results": self.results
         }
 
+def load_sample_repos(manifest_path: str) -> List[str]:
+    """Load sample repository list from manifest."""
+    repos = []
+    with open(manifest_path) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                repos.append(line)
+    return repos
+
+
 if __name__ == "__main__":
     runner = ShadowModeRunner()
     print("Shadow Mode Test Runner initialized")

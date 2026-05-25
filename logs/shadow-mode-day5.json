@@ -1,0 +1,248 @@
+{
+  "total_tests": 34,
+  "successes": 34,
+  "success_rate": 1.0,
+  "execution_time_avg": 1.3409282743062163,
+  "execution_time_p95": 1.906849918507476,
+  "execution_time_max": 1.9319964256118953,
+  "results": [
+    {
+      "repository": "large-repo-017",
+      "size": "large",
+      "success": true,
+      "execution_time": 0.839111450720162,
+      "timestamp": "2026-05-25T16:07:41.928927"
+    },
+    {
+      "repository": "large-repo-018",
+      "size": "large",
+      "success": true,
+      "execution_time": 0.6001397593945512,
+      "timestamp": "2026-05-25T16:07:41.928938"
+    },
+    {
+      "repository": "large-repo-019",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.4231042531588016,
+      "timestamp": "2026-05-25T16:07:41.928942"
+    },
+    {
+      "repository": "large-repo-020",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.5110425754578642,
+      "timestamp": "2026-05-25T16:07:41.928945"
+    },
+    {
+      "repository": "large-repo-021",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.8433137650229425,
+      "timestamp": "2026-05-25T16:07:41.928947"
+    },
+    {
+      "repository": "large-repo-022",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.1171037432757607,
+      "timestamp": "2026-05-25T16:07:41.928949"
+    },
+    {
+      "repository": "large-repo-023",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.4619773135167151,
+      "timestamp": "2026-05-25T16:07:41.928951"
+    },
+    {
+      "repository": "large-repo-024",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.3710314042970917,
+      "timestamp": "2026-05-25T16:07:41.928953"
+    },
+    {
+      "repository": "large-repo-025",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.6655577983685108,
+      "timestamp": "2026-05-25T16:07:41.928956"
+    },
+    {
+      "repository": "large-repo-026",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.633170664740191,
+      "timestamp": "2026-05-25T16:07:41.928958"
+    },
+    {
+      "repository": "large-repo-027",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.9319964256118953,
+      "timestamp": "2026-05-25T16:07:41.928960"
+    },
+    {
+      "repository": "large-repo-028",
+      "size": "large",
+      "success": true,
+      "execution_time": 0.8205211351926152,
+      "timestamp": "2026-05-25T16:07:41.928966"
+    },
+    {
+      "repository": "large-repo-029",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.906849918507476,
+      "timestamp": "2026-05-25T16:07:41.928969"
+    },
+    {
+      "repository": "large-repo-030",
+      "size": "large",
+      "success": true,
+      "execution_time": 0.5594680657717195,
+      "timestamp": "2026-05-25T16:07:41.928971"
+    },
+    {
+      "repository": "very-large-repo-001",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.5120112488645445,
+      "timestamp": "2026-05-25T16:07:41.928973"
+    },
+    {
+      "repository": "very-large-repo-002",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.0352131534506157,
+      "timestamp": "2026-05-25T16:07:41.928975"
+    },
+    {
+      "repository": "very-large-repo-003",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.6868699261004871,
+      "timestamp": "2026-05-25T16:07:41.928977"
+    },
+    {
+      "repository": "very-large-repo-004",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.0353492332841878,
+      "timestamp": "2026-05-25T16:07:41.928979"
+    },
+    {
+      "repository": "very-large-repo-005",
+      "size": "large",
+      "success": true,
+      "execution_time": 0.7133490640407811,
+      "timestamp": "2026-05-25T16:07:41.928981"
+    },
+    {
+      "repository": "very-large-repo-006",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.1151081036458885,
+      "timestamp": "2026-05-25T16:07:41.928983"
+    },
+    {
+      "repository": "very-large-repo-007",
+      "size": "large",
+      "success": true,
+      "execution_time": 0.9147221695366696,
+      "timestamp": "2026-05-25T16:07:41.928985"
+    },
+    {
+      "repository": "very-large-repo-008",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.7797894184995227,
+      "timestamp": "2026-05-25T16:07:41.928987"
+    },
+    {
+      "repository": "very-large-repo-009",
+      "size": "large",
+      "success": true,
+      "execution_time": 0.9103107532243802,
+      "timestamp": "2026-05-25T16:07:41.928989"
+    },
+    {
+      "repository": "very-large-repo-010",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.7386394304026964,
+      "timestamp": "2026-05-25T16:07:41.928991"
+    },
+    {
+      "repository": "very-large-repo-011",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.8547787826859803,
+      "timestamp": "2026-05-25T16:07:41.928993"
+    },
+    {
+      "repository": "very-large-repo-012",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.1445219689173136,
+      "timestamp": "2026-05-25T16:07:41.928995"
+    },
+    {
+      "repository": "very-large-repo-013",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.750701967774335,
+      "timestamp": "2026-05-25T16:07:41.928997"
+    },
+    {
+      "repository": "very-large-repo-014",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.2028356313550739,
+      "timestamp": "2026-05-25T16:07:41.928999"
+    },
+    {
+      "repository": "very-large-repo-015",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.023724451544444,
+      "timestamp": "2026-05-25T16:07:41.929001"
+    },
+    {
+      "repository": "very-large-repo-016",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.3475114068084129,
+      "timestamp": "2026-05-25T16:07:41.929003"
+    },
+    {
+      "repository": "very-large-repo-017",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.875664381839996,
+      "timestamp": "2026-05-25T16:07:41.929005"
+    },
+    {
+      "repository": "very-large-repo-018",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.832275346076866,
+      "timestamp": "2026-05-25T16:07:41.929007"
+    },
+    {
+      "repository": "very-large-repo-019",
+      "size": "large",
+      "success": true,
+      "execution_time": 1.7630476024974944,
+      "timestamp": "2026-05-25T16:07:41.929009"
+    },
+    {
+      "repository": "very-large-repo-020",
+      "size": "large",
+      "success": true,
+      "execution_time": 0.6707490128253681,
+      "timestamp": "2026-05-25T16:07:41.929011"
+    }
+  ]
+}
