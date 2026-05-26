@@ -14,6 +14,21 @@ This repository is built on **Artifact-Driven Agentic Engineering**. We treat ar
 4. **Anti-Causal Confusion**: Classify defect source (Skill vs. Fixture) before any repair.
 5. **Human in the Loop**: Skills provide judgment, but humans approve usefulness.
 
+## Dependency Philosophy: Local-First Design
+
+**sensemaking-skills is a local-first Python utility.**
+
+The package itself makes no external API calls and requires no credentials:
+- Reads local repository files and artifacts
+- Validates artifacts locally using Python validators
+- Runs local orchestration scripts
+- Writes Markdown and JSON outputs to local disk
+- Works entirely offline (once installed via pip)
+
+**Agent-driven diagnostics may require an external agent harness** such as Claude Code. Any LLM/API access required for reasoning or decision-making is handled by that harness, not by sensemaking-skills itself. The tool is intentionally self-contained to keep it lightweight, portable, and simple to integrate.
+
+**Why this matters:** You can use sensemaking-skills in environments with strict privacy requirements, airgapped networks, or CI/CD pipelines without special credential setup. The CLI utilities work standalone; agent-skill integration is optional and modular.
+
 ## Orchestration Principles
 
 The workflow orchestration system follows four key design patterns, each proven through implementation and testing:

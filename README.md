@@ -31,22 +31,32 @@ An agent-native framework for repository diagnosis and workflow orchestration. T
 ## What This Is NOT
 
 ❌ **Not a fully autonomous CLI diagnosis engine** — Repository diagnosis is agent-led, CLI provides utilities  
-❌ **Not published to PyPI yet** — Install from source with `pip install -e .`, publishing after real-world CLI testing  
-❌ **Not a black-box service** — Requires Claude Code or agent invocation for actual diagnostics  
+❌ **Not a service** — No external API calls, no server, no cloud dependency. Entirely local.  
 ❌ **Not a replacement for specialized tools** — Complements PM skills, UI skills, TDD tools  
+❌ **Agent-driven diagnostics require Claude Code** — The CLI utilities (validate, test, analyze) work standalone; full diagnosis requires an agent harness  
 
 ---
 
+## What You Need to Use This
+
+- Python 3.11+
+- A local repository to analyze
+- No API keys or external credentials required for the CLI itself
+
+**sensemaking-skills is a local-first Python utility.** The package itself reads repository files, validates artifacts, runs local scripts, and produces diagnostic Markdown outputs. It makes no external API calls and requires no credentials.
+
+For full agent-driven diagnostics, use the included SKILL.md files with an agent harness such as Claude Code. Any LLM/API access is handled by that harness, not by sensemaking-skills.
+
 ## Installation
 
-Sensemaking Skills currently supports two working usage modes:
+### Option 1: From PyPI (Recommended)
 
-1. **Agent-native workflow** — Recommended for actual repository diagnosis
-2. **Local CLI utilities** — Available for validation, testing, and environment prep
+```bash
+pip install sensemaking-skills
+sensemaking-skills --version
+```
 
-PyPI publication is prepared, but the package is not yet released to production PyPI. For now, install from source.
-
-### Quick Start
+### Option 2: From Source
 
 ```bash
 # Clone the repository

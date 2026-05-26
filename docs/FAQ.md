@@ -39,7 +39,14 @@ A: Four types of repository confusion:
 A: Typically < 10 minutes for most repositories. Agent-driven, so it depends on your repository size and complexity.
 
 ### Q: Can I use this without Claude Code?
-A: The CLI utilities (`analyze`, `validate`) work standalone. But the diagnosis itself requires Claude Code or another agent that can read skills and execute workflows.
+A: Yes. The CLI utilities (`analyze`, `validate`, `test`) can be used standalone for local validation, testing, and artifact workflows.
+
+For full agent-guided diagnostics, use the included skill files with an agent-capable environment such as Claude Code.
+
+### Q: Does sensemaking-skills require API keys or external services?
+A: No. The sensemaking-skills package itself is local-only. It reads files from your repository, validates artifacts, runs local scripts, and writes Markdown or JSON outputs. It does not make external API calls and does not require credentials.
+
+If you use the skills with an agent harness such as Claude Code, that harness may call an LLM API. Those calls are handled by the harness, not by sensemaking-skills.
 
 ### Q: Do I need to share my code?
 A: No! Everything runs locally. Your repository never leaves your machine.

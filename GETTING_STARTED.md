@@ -7,8 +7,11 @@ This guide shows how to use the system. There are two paths: agent-native (recom
 ## Prerequisites
 
 - Python 3.11+
-- Claude Code (for agent-native skill invocation), OR
-- sensemaking-skills CLI (for validation and utilities)
+- No API keys or external credentials required for the CLI itself
+
+**sensemaking-skills is a local-first Python utility.** The package itself is self-contained, reads files from your repository, validates artifacts, runs local scripts, and writes Markdown or JSON outputs. It does not make external API calls and does not require credentials.
+
+For full agent-driven diagnostics, use the included skill files with an agent-capable environment such as Claude Code.
 
 ---
 
