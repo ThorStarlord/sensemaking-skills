@@ -89,6 +89,34 @@ sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
 sensemaking-skills test
 ```
 
+### Make Skills Available to Your Agents
+
+After installation, install skills to your agent-discoverable locations:
+
+```bash
+# Install to ~/.agents/skills (default for OpenCode, local agents)
+sensemaking-skills setup-skills
+
+# Install to Claude Code / Superpowers plugin cache
+sensemaking-skills setup-skills --target claude-superpowers
+
+# Install to both locations
+sensemaking-skills setup-skills --target all
+
+# Preview what would be installed without actually installing
+sensemaking-skills setup-skills --dry-run
+
+# Overwrite existing skills
+sensemaking-skills setup-skills --force
+```
+
+Once installed, agents can invoke the skills:
+```
+/skill using-sensemaking       # Bootstrap: teaches fog classification
+/skill repo-sensemaker         # Diagnostic: analyzes repositories
+/skill workflow-planner        # Planning: creates orchestration plans
+```
+
 ---
 
 ## Current Architecture

@@ -15,6 +15,26 @@ For full agent-driven diagnostics, use the included skill files with an agent-ca
 
 ---
 
+## Setup: Make Skills Available to Agents
+
+After installing the Python package, make the skills discoverable to your agents:
+
+```bash
+pip install sensemaking-skills
+sensemaking-skills setup-skills
+```
+
+This installs skill files to `~/.agents/skills` (or `C:\Users\*\.agents\skills` on Windows).
+
+Then agents can invoke:
+```
+/skill using-sensemaking
+/skill repo-sensemaker
+/skill workflow-planner
+```
+
+---
+
 ## Quick Start (5 minutes)
 
 ### Via Claude Code or Agent (Recommended)
