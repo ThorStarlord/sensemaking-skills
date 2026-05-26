@@ -10,6 +10,7 @@ import click
 import sys
 from pathlib import Path
 from . import __version__
+from .setup_skills import setup_skills as run_setup_skills
 
 
 @click.group()
@@ -102,7 +103,7 @@ def validate(artifact, output_json):
 def test(repos):
     """
     Run shadow-mode test automation.
-    
+
     Tests the validation infrastructure against sample repositories.
     """
     click.echo(f"Running shadow-mode tests with {repos} repositories...")
@@ -114,6 +115,55 @@ def test(repos):
     click.echo("Or run the full test suite:")
     click.echo()
     click.echo("    python -m pytest tests/ -v")
+
+
+@cli.command(name="setup-skills")
+@click.option("--target",
+              type=click.Choice(["agents", "claude-superpowers", "all", "custom"]),
+              default="agents",
+              help="Installation target: agents (default), claude-superpowers, all, or custom")
+@click.option("--skills-dir",
+              type=click.Path(),
+              default=None,
+              help="Custom skills directory (required if --target=custom)")
+@click.option("--dry-run",
+              is_flag=True,
+              help="Show what would be done without actually installing")
+@click.option("--force",
+              is_flag=True,
+              help="Overwrite existing skills")
+@click.option("--verbose", "-v",
+              is_flag=True,
+              help="Print detailed output")
+def setup_skills(target, skills_dir, dry_run, force, verbose):
+    r"""
+    Install sensemaking-skills SKILL.md files to agent-discoverable locations.
+
+    Makes skills available to Claude Code, OpenCode, and other agents.
+
+    Default target is ~/.agents/skills (or C:\Users\*\.agents\skills on Windows).
+
+    After installation, agents can invoke:
+        /skill using-sensemaking
+        /skill repo-sensemaker
+        /skill workflow-planner
+
+    Examples:
+        sensemaking-skills setup-skills
+        sensemaking-skills setup-skills --target all
+        sensemaking-skills setup-skills --target custom --skills-dir /path/to/skills
+        sensemaking-skills setup-skills --dry-run
+    """
+    success = run_setup_skills(
+        target=target,
+        skills_dir=skills_dir,
+        dry_run=dry_run,
+        force=force,
+        verbose=verbose
+    )
+
+    if not success:
+        sys.exit(1)
 
 
 def main():
