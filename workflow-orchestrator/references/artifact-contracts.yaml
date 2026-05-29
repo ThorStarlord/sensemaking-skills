@@ -1,0 +1,358 @@
+# Artifact Contracts: Sensemaking Pipeline
+# Machine-readable contracts for all artifact types produced/consumed by skills
+
+artifacts:
+  # ============================================================================
+  # SPECIFICATION PIPELINE (problem → discovery → prd)
+  # ============================================================================
+
+  - id: problem_frame
+    produced_by: problem-framer
+    consumed_by:
+      - unknowns-mapper
+      - repo-sensemaker
+    required_sections:
+      - raw_fog
+      - problem_under_the_problem
+      - object_under_pressure
+      - failure_mode
+      - success_condition
+      - what_must_be_true
+      - next_artifact
+    verification:
+      generic_validator: "python scripts/validate-artifact.py problem_frame {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: unknowns_map
+    produced_by: unknowns-mapper
+    consumed_by:
+      - repo-sensemaker
+      - prompt-handoff
+    required_sections:
+      - knowns
+      - unknowns
+      - assumptions
+      - risks
+      - research_paths
+      - stopping_rule
+    verification:
+      generic_validator: "python scripts/validate-artifact.py unknowns_map {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: repository_sensemaking_brief
+    produced_by: repo-sensemaker
+    consumed_by:
+      - workflow-orchestrator
+      - prompt-handoff
+      - sensemaking-docs-reconciler
+    required_sections:
+      - repository_goal
+      - current_shape
+      - strong_signals
+      - missing_pieces
+      - improvement_opportunities
+      - weakest_boundary
+      - evidence
+      - evidence_excerpts
+      - why_this_boundary_matters
+      - candidate_next_steps
+      - recommended_next_step
+      - recommended_workflow
+      - machine_readable_handoff
+      - ready_to_copy_prompt
+    required_machine_fields:
+      - recommended_workflow_id
+      - recommended_execution_mode
+      - weakest_boundary
+      - required_inputs
+    verification:
+      generic_validator: "python scripts/validate-artifact.py repository_sensemaking_brief {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-brief.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: discovery_findings
+    produced_by: discovery
+    consumed_by:
+      - opportunity-tree
+      - prompt-handoff
+    verification:
+      generic_validator: "python scripts/validate-artifact.py discovery_findings {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: domain_alignment_report
+    produced_by: grill-with-docs
+    consumed_by:
+      - to-prd
+      - prompt-handoff
+    verification:
+      generic_validator: "python scripts/validate-artifact.py domain_alignment_report {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  # ============================================================================
+  # PM/ENGINEERING PIPELINE (prd → issues → brief → code)
+  # Enhanced with detailed required_sections and required_machine_fields per INFRA-004
+  # ============================================================================
+
+  - id: prd
+    produced_by: to-prd
+    consumed_by:
+      - to-issues
+      - prompt-handoff
+      - sensemaking-docs-reconciler
+    required_sections:
+      - executive_summary
+      - user_goal
+      - goal_preservation_and_expansion
+      - features
+      - out_of_scope
+      - acceptance_criteria
+      - non_functional_requirements
+      - machine_readable_handoff
+    required_machine_fields:
+      - prd_id
+      - date
+      - status
+      - source_intent_ref
+      - user_goal_preserved_as
+      - scope_expansion_proposed
+      - scope_expansion_status
+    verification:
+      generic_validator: "python scripts/validate-artifact.py prd {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: issue_list
+    produced_by: to-issues
+    consumed_by:
+      - triage
+      - workflow-orchestrator
+    required_sections:
+      - prd_consumed
+      - scope_status
+      - issues_generated
+      - release_scope
+      - out_of_scope
+      - machine_readable_handoff
+    per_issue:
+      - issue_id
+      - type
+      - title
+      - description
+      - acceptance_criteria
+      - effort
+      - priority
+      - scope
+      - dependencies
+      - parallelizable
+    required_machine_fields:
+      - parent_prd_id
+      - total_issues
+      - total_effort_estimate_days
+      - created_date
+      - user_goal_preserved_as
+      - escalation_required
+    verification:
+      generic_validator: "python scripts/validate-artifact.py issue_list {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: agent_brief
+    produced_by: triage
+    consumed_by:
+      - tdd
+      - workflow-orchestrator
+      - prompt-handoff
+    required_sections:
+      - agent_brief_id
+      - task
+      - context
+      - instructions
+      - acceptance_criteria
+      - expected_output
+      - machine_readable_handoff
+    required_machine_fields:
+      - parent_issue_id
+      - effort_estimate
+      - required_skills
+      - created_date
+      - source_intent_ref
+    verification:
+      generic_validator: "python scripts/validate-artifact.py agent_brief {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: code_patch
+    produced_by: tdd
+    consumed_by:
+      - verification-loop
+      - workflow-orchestrator
+      - handoff
+    required_sections:
+      - files_created
+      - files_modified
+      - test_summary
+      - machine_readable_handoff
+    required_machine_fields:
+      - parent_brief_id
+      - test_count
+      - test_pass_count
+      - test_fail_count
+      - created_date
+    verification:
+      generic_validator: "python scripts/validate-artifact.py code_patch {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  # ============================================================================
+  # UI/DESIGN PIPELINE
+  # ============================================================================
+
+  - id: visual_calibration
+    produced_by: ui-visual-calibration
+    consumed_by:
+      - ui-blueprint
+    verification:
+      generic_validator: "python scripts/validate-artifact.py visual_calibration {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: blueprint
+    produced_by: ui-blueprint
+    consumed_by:
+      - design-system
+      - screen-spec
+    verification:
+      generic_validator: "python scripts/validate-artifact.py blueprint {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: design_system
+    produced_by: design-system-builder
+    consumed_by:
+      - screen-spec
+      - component-spec
+    verification:
+      generic_validator: "python scripts/validate-artifact.py design_system {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: screen_spec
+    produced_by: ui-screen-spec
+    consumed_by:
+      - component-spec
+      - ui-spec-linter
+    verification:
+      generic_validator: "python scripts/validate-artifact.py screen_spec {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: component_spec
+    produced_by: ui-component-spec
+    consumed_by:
+      - component-code
+      - ui-spec-linter
+    verification:
+      generic_validator: "python scripts/validate-artifact.py component_spec {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: microcopy
+    produced_by: ui-microcopy
+    consumed_by:
+      - component-spec
+      - component-code
+    verification:
+      generic_validator: "python scripts/validate-artifact.py microcopy {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: acceptance_criteria
+    produced_by: acceptance-criteria
+    consumed_by:
+      - component-code
+      - qa
+    verification:
+      generic_validator: "python scripts/validate-artifact.py acceptance_criteria {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: spec_linter_report
+    produced_by: ui-spec-linter
+    consumed_by:
+      - designer
+      - engineer
+    verification:
+      generic_validator: "python scripts/validate-artifact.py spec_linter_report {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: component_code
+    produced_by: component-builder
+    consumed_by:
+      - component-tester
+      - integration-tester
+    verification:
+      generic_validator: "python scripts/validate-artifact.py component_code {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  # ============================================================================
+  # HANDOFF & SUMMARY
+  # ============================================================================
+
+  - id: prompt_handoff
+    produced_by: prompt-handoff
+    consumed_by:
+      - next-skill
+      - workflow-orchestrator
+    verification:
+      generic_validator: "python scripts/validate-artifact.py prompt_handoff {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: session_summary
+    produced_by: handoff
+    consumed_by:
+      - workflow-orchestrator
+      - reporting
+    verification:
+      generic_validator: "python scripts/validate-artifact.py session_summary {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution

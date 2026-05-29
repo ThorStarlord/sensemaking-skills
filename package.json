@@ -1,0 +1,25 @@
+{
+  "name": "sensemaking-skills",
+  "version": "4.1.0",
+  "description": "Autonomous diagnostic framework for complex sensemaking tasks",
+  "type": "module",
+  "scripts": {
+    "validate:skills": "python scripts/validate-skill-hygiene.py",
+    "test": "pytest tests/ -v",
+    "test:unit": "pytest tests/ -v -k 'not integration'",
+    "test:contracts": "pytest tests/test_artifact_contracts_pm_engineering.py tests/test_skill_hygiene_validator.py -v"
+  },
+  "keywords": [
+    "sensemaking",
+    "diagnostic",
+    "autonomous",
+    "skills",
+    "workflow"
+  ],
+  "author": "Anthropic",
+  "license": "MIT",
+  "devDependencies": {
+    "pytest": "^9.0.0",
+    "pyyaml": "^6.0"
+  }
+}
