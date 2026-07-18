@@ -627,3 +627,46 @@ artifacts:
         - guided_execution
         - autonomous_execution
         - plan_only
+
+  - id: architectural_review_recommendation
+    path: "artifacts/architectural_review_recommendation.md"
+    produced_by: architectural-review
+    consumed_by:
+      - workflow-planner
+    required_sections:
+      - summary
+      - analysis
+      - recommendation
+      - machine_readable_decision
+    required_machine_fields:
+      - artifact_id
+      - decision
+      - confidence
+      - created_at
+      - created_by
+    verification:
+      generic_validator: "python scripts/validate-artifact.py architectural_review_recommendation {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-architectural-review-recommendation.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: proposed_direction
+    path: "artifacts/proposed_direction.md"
+    produced_by: user
+    consumed_by:
+      - architectural-review
+    required_sections:
+      - summary
+      - proposed_response
+      - success_criteria
+    required_machine_fields:
+      - artifact_id
+      - created_at
+      - created_by
+    verification:
+      generic_validator: "python scripts/validate-artifact.py proposed_direction {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution

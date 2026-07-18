@@ -24,6 +24,11 @@ ecosystems:
         artifact: workflow_orchestration_plan
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/workflow-planner" }
+      - id: architectural-review
+        purpose: evaluate proposed architectural responses against principal-engineer judgment
+        artifact: architectural_review_recommendation
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/architectural-review", input_artifact: repository_sensemaking_brief, input_source: proposed_direction, output_artifact: architectural_review_recommendation }
       - id: sensemaking-docs-reconciler
         purpose: align repository docs, registries, and contracts
         artifact: docs_contract_reconciliation_report

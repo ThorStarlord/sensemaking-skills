@@ -797,6 +797,19 @@ class OrchestrationRunner:
                 # expanding the aggregate context_artifacts bundle when present.
                 input_artifact_ids, resolved_inputs = self._resolve_step_inputs(step)
 
+                # Hard-fail on a named input that resolved but has no real content
+                # (e.g. proposed_direction). self.errors alone does not stop execution
+                # once preflight has passed, so this must produce a real FAILED status.
+                if "proposed_direction" in resolved_inputs and not resolved_inputs["proposed_direction"].get("present"):
+                    self.errors.append(
+                        format_error(ARTIFACT_NOT_FOUND,
+                            f"Step {step_num} ({skill}) requires 'proposed_direction' but no content "
+                            f"was found at {resolved_inputs['proposed_direction']['path']}. Supply it "
+                            f"as a prewritten artifact before invoking this workflow (see --from-session).")
+                    )
+                    result["status"] = "FAILED"
+                    return self._finalize_step_result(result, step_num)
+
                 # Build context for skill execution. resolved_inputs is what the
                 # claude-code executor actually reads to populate the prompt.
                 # expected_output_path is the runtime-owned, session-scoped path the
@@ -1309,6 +1322,19 @@ class OrchestrationRunner:
                         "type": "external_context",
                         "data": self.problem_statement or "",
                     }
+            elif input_source == "proposed_direction":
+                path = self._resolve_artifact_path("proposed_direction")
+                try:
+                    content_present = os.path.exists(path) and bool(
+                        open(path, encoding="utf-8").read().strip()
+                    )
+                except OSError:
+                    content_present = False
+                resolved_inputs["proposed_direction"] = {
+                    "type": "artifact_path",
+                    "path": path,
+                    "present": content_present,
+                }
             else:
                 resolved_inputs[input_source] = {"type": "external_context", "data": ""}
             input_artifact_ids.append(input_source)
@@ -2126,7 +2152,11 @@ class OrchestrationRunner:
         with open(diagnostic_path, "w", encoding="utf-8") as f:
             f.write(report)
 
-        print(f"  [OK] Diagnostic report: {os.path.relpath(diagnostic_path, self.repo_root)}")
+        try:
+            rel_path = os.path.relpath(diagnostic_path, self.repo_root)
+        except ValueError:
+            rel_path = diagnostic_path
+        print(f"  [OK] Diagnostic report: {rel_path}")
         return diagnostic_path
     def invoke_presentation_skill(self, summary_json_path: str) -> str | None:
         """Auto-invoke workflow-presenter skill to generate beautiful summary markdown."""
@@ -2859,7 +2889,11 @@ def main(argv: list[str] | None = None) -> int:
         if not args.log_dir:
             runner.log_dir = from_session_path
 
-        print(f"[OK] Reusing session: {os.path.relpath(from_session_path, repo_root)}")
+        try:
+            rel_path = os.path.relpath(from_session_path, repo_root)
+        except ValueError:
+            rel_path = from_session_path
+        print(f"[OK] Reusing session: {rel_path}")
     else:
         # Create user intent artifact before running workflow
         intent_path = runner._create_user_intent_artifact(problem, args.scope)
