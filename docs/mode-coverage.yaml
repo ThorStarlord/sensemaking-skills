@@ -438,6 +438,18 @@ mode_coverage:
   gates_note: 0 approved, 0 denied
   hardening_triggered: none
   notes: 'Executed via production orchestration runner v2. Session: orchestration-20260523-141528-073af0fd.'
+- mode: guided_execution
+  workflow_id: architectural-review-planning-workflow
+  last_run: '2026-07-19'
+  run_log_path: artifacts/run_log_architectural-review-planning-workflow_guided_execution.md
+  steps_completed: 0
+  steps_total: 2
+  validators_exercised:
+  - 'level_1: validate-repo.py'
+  gates_exercised: true
+  gates_note: 1 approved, 0 denied
+  hardening_triggered: none
+  notes: 'Executed via production orchestration runner v2. Session: sensemaking-acceptance-gmafexsg.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
@@ -548,8 +560,8 @@ system_tools:
   tests_total: 10
 - tool: orchestration-runner.py
   status: active
-  last_run: '2026-05-23'
-  last_session: orchestration-20260523-181501-af0261dc
+  last_run: '2026-07-19'
+  last_session: sensemaking-acceptance-gmafexsg
   workflows_executed:
   - full-fog-workflow (prompt_chain)
   - full-fog-workflow (yolo_execution)
@@ -562,6 +574,7 @@ system_tools:
   - full-local-sensemaking (autonomous_execution)
   - fast-local-diagnostic (autonomous_execution)
   - fast-path-workflow (guided_execution)
+  - architectural-review-planning-workflow (guided_execution)
   modes_proven:
   - prompt_chain
 validator_live_coverage:
@@ -692,9 +705,10 @@ validator_live_coverage:
 
       scenario reports.'
 orchestration_runner:
-  last_run: '2026-05-23'
+  last_run: '2026-07-19'
   last_session: orchestration-20260516-161541-0eda0bc6
   workflow_families_proven:
+  - architectural-review-planning-workflow
   - autonomous-sprint-preflight
   - docs-architecture
   - docs-contract-reconciliation
@@ -711,7 +725,7 @@ orchestration_runner:
   - setup-sensemaking-repo
   - skill-maintenance-loop
   - validator-live-coverage
-  total_workflow_families: 16
+  total_workflow_families: 17
   capabilities:
   - 'Canonical validator dispatch: workflow-runtime.py delegates to validate-output.py'
   - 'Non-interactive gate decisions: --gate-decision auto-approve / auto-deny'

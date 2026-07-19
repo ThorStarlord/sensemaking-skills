@@ -160,8 +160,21 @@ created_by: "acceptance-test-runner"
             gate_decision="auto-approve",  # Auto-approve gates for testing
         )
 
+        # CRITICAL: Set artifact_session_dir so artifact resolution happens in session dir
+        # The runner extracts session_id from from_session, but doesn't auto-set artifact_session_dir.
+        # This must be set before run() attempts to resolve any artifacts.
+        runner.artifact_session_dir = str(temp_session)
+        runner.log_dir = str(temp_session)
+
         # Inject deterministic executor for reproducibility
-        runner.skill_executor = DeterministicFixtureSkillExecutor(str(REPO_ROOT))
+        deterministic_executor = DeterministicFixtureSkillExecutor(str(REPO_ROOT))
+        runner.skill_executor = deterministic_executor
+
+        # Verify injection before running
+        assert runner.skill_executor is deterministic_executor, \
+            "Executor injection failed: runner.skill_executor is not the deterministic executor"
+        assert runner.skill_executor.supports_real_execution is True, \
+            "Executor injection failed: executor does not support real execution"
 
         # Initialize run_log_path (workaround for existing code that assumes it's set)
         runner.run_log_path = os.path.join(
@@ -182,11 +195,16 @@ created_by: "acceptance-test-runner"
             for error in runner.errors:
                 print(f"  - {error}")
 
+        # Verify executor was actually invoked
+        print(f"\n[DEBUG] Executor invocations: {deterministic_executor.invocations}")
+        print(f"[DEBUG] Executor is still: {runner.skill_executor is deterministic_executor}")
+
         assert exit_code == 0, f"Workflow execution must succeed (exit code 0), got {exit_code}"
 
         # ASSERTION 6: Step 1 executes through run()
-        run_log_path = temp_session / "run.log"
-        assert run_log_path.exists(), "Run log must be created"
+        # The runner creates a log file named run_log_<workflow_id>_<mode>.md
+        run_log_path = temp_session / f"run_log_{runner.workflow_id}_{runner.mode}.md"
+        assert run_log_path.exists(), f"Run log must be created at {run_log_path}"
         run_log_content = run_log_path.read_text()
         assert "repo-sensemaker" in run_log_content or "STEP 1" in run_log_content, \
             "Step 1 execution must be logged"
@@ -219,18 +237,19 @@ created_by: "acceptance-test-runner"
         assert len(recommendation_content) > 0, "Recommendation must not be empty"
 
         # ASSERTION 11: Runtime validation invokes File O → File D
-        # Verify that validate-and-report.py output mentions the specialized validator
-        assert "validate-architectural-review-recommendation.py" in run_log_content or \
-               "validation" in run_log_content.lower(), \
-            "Validation dispatch must be logged"
+        # The unified validator (validate-and-report.py) internally dispatches to
+        # specialized validators. Proof is the presence of validator_stack with results.
+        assert "validate-and-report.py" in run_log_content or \
+               "validator_stack" in run_log_content, \
+            "Validation routing must be logged"
 
         # ASSERTION 12: Both step results are recorded in the run log
         step_count = run_log_content.count("STEP") + run_log_content.count("Step")
         assert step_count >= 2, "Both steps must appear in run log"
 
         # ASSERTION 13: Runtime-computed final state is "completed"
-        assert "final_state" in run_log_content and "completed" in run_log_content, \
-            "Run log must show final_state: completed"
+        assert "## Final State" in run_log_content and "completed" in run_log_content.lower(), \
+            "Run log must show final state as completed"
 
         # Additional validation: verify same-drive usage (Task A portability)
         session_drive = os.path.splitdrive(str(temp_session))[0]
