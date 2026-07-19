@@ -90,6 +90,16 @@ def test_fixture_authority_fragmentation_scenario():
     print("[PASS] Fixture L (authority-fragmentation-scenario): Validator correctly passes valid reject decision")
 
 
+def test_fixture_valid_defer():
+    """Fixture M: Valid defer decision with reversal_conditions should pass validation."""
+    fixture_path = os.path.join(FIXTURES_DIR, "fixture-valid-defer.md")
+    result = run_validator(fixture_path)
+
+    assert result["valid"] is True, f"Fixture M should pass validation, got errors: {result.get('errors')}"
+    assert len(result["errors"]) == 0
+    print("[PASS] Fixture M (valid-defer): Validator correctly passes valid defer decision with reversal_conditions")
+
+
 def test_validator_dispatches_through_validate_and_report():
     """Prove File O dispatcher correctly routes to File D."""
     fixture_path = os.path.join(FIXTURES_DIR, "fixture-valid-pursue.md")
@@ -122,6 +132,7 @@ if __name__ == "__main__":
         ("Fixture J: invalid-missing-evidence", test_fixture_invalid_missing_evidence),
         ("Fixture K: invalid-inconsistent-scope", test_fixture_invalid_inconsistent_scope),
         ("Fixture L: authority-fragmentation-scenario", test_fixture_authority_fragmentation_scenario),
+        ("Fixture M: valid-defer", test_fixture_valid_defer),
         ("File O dispatcher routing", test_validator_dispatches_through_validate_and_report),
     ]
 
