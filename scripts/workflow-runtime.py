@@ -2152,11 +2152,7 @@ class OrchestrationRunner:
         with open(diagnostic_path, "w", encoding="utf-8") as f:
             f.write(report)
 
-        try:
-            rel_path = os.path.relpath(diagnostic_path, self.repo_root)
-        except ValueError:
-            rel_path = diagnostic_path
-        print(f"  [OK] Diagnostic report: {rel_path}")
+        print(f"  [OK] Diagnostic report: {os.path.relpath(diagnostic_path, self.repo_root)}")
         return diagnostic_path
     def invoke_presentation_skill(self, summary_json_path: str) -> str | None:
         """Auto-invoke workflow-presenter skill to generate beautiful summary markdown."""
@@ -2889,11 +2885,7 @@ def main(argv: list[str] | None = None) -> int:
         if not args.log_dir:
             runner.log_dir = from_session_path
 
-        try:
-            rel_path = os.path.relpath(from_session_path, repo_root)
-        except ValueError:
-            rel_path = from_session_path
-        print(f"[OK] Reusing session: {rel_path}")
+        print(f"[OK] Reusing session: {os.path.relpath(from_session_path, repo_root)}")
     else:
         # Create user intent artifact before running workflow
         intent_path = runner._create_user_intent_artifact(problem, args.scope)
