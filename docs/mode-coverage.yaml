@@ -441,15 +441,16 @@ mode_coverage:
 - mode: guided_execution
   workflow_id: architectural-review-planning-workflow
   last_run: '2026-07-19'
-  run_log_path: artifacts/run_log_architectural-review-planning-workflow_guided_execution.md
+  run_log_path: ../arch-review-real-fail-e2e-v0d569oy/run_log_architectural-review-planning-workflow_guided_execution.md
   steps_completed: 0
   steps_total: 2
   validators_exercised:
   - 'level_1: validate-repo.py'
-  gates_exercised: true
-  gates_note: 1 approved, 0 denied
+  - 'level_3: validate-output.py'
+  gates_exercised: false
+  gates_note: 0 approved, 0 denied
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: sensemaking-acceptance-gmafexsg.'
+  notes: 'Executed via production orchestration runner v2. Session: arch-review-real-fail-e2e-v0d569oy.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
@@ -561,7 +562,7 @@ system_tools:
 - tool: orchestration-runner.py
   status: active
   last_run: '2026-07-19'
-  last_session: sensemaking-acceptance-gmafexsg
+  last_session: arch-review-real-fail-e2e-v0d569oy
   workflows_executed:
   - full-fog-workflow (prompt_chain)
   - full-fog-workflow (yolo_execution)

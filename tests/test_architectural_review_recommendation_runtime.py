@@ -530,7 +530,7 @@ created_by: "acceptance-test-runner"
         runner.artifact_session_dir = session_dir
 
         # Inject deterministic executor (Python-level injection seam)
-        runner.skill_executor = DeterministicFixtureSkillExecutor()
+        runner.skill_executor = DeterministicFixtureSkillExecutor(repo_root)
 
         # Initialize log_dir to session for run log output
         runner.log_dir = session_dir
