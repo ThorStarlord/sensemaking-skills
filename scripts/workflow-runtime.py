@@ -245,6 +245,51 @@ class OrchestrationRunner:
         self.final_state: str = "not_started"
         self.final_note: str = ""
 
+    def initialize_from_session(self) -> bool:
+        """Initialize artifact session directory from from_session parameter.
+
+        This method encapsulates the production --from-session initialization logic
+        so both CLI and tests can use the same path.
+
+        Returns True if initialization succeeds, False otherwise.
+        Caller should check self.errors if False is returned.
+        """
+        if not self.from_session:
+            return True  # from_session not provided; nothing to initialize
+
+        from_session_path = os.path.abspath(self.from_session)
+
+        # Validate session directory exists
+        if not os.path.isdir(from_session_path):
+            self.errors.append(format_error(
+                "INVALID_SESSION",
+                f"--from-session path does not exist: {from_session_path}"
+            ))
+            return False
+
+        # Check for prior intent artifact (proof of valid session)
+        prior_intent = os.path.join(from_session_path, "00-user-intent.md")
+        if not os.path.exists(prior_intent):
+            self.errors.append(format_error(
+                "MISSING_INTENT",
+                f"No user_intent artifact found in --from-session directory: {from_session_path}"
+            ))
+            return False
+
+        # Apply production initialization (matches CLI code lines 2878-2886)
+        self.artifact_session_dir = from_session_path
+        self.session_id = os.path.basename(from_session_path)
+
+        # Update output paths to use session directory (matches CLI code)
+        if not self.plan_out or self.plan_out == os.path.join(
+            self.repo_root, "artifacts", f"plan_{self.workflow_id}.md"
+        ):
+            self.plan_out = os.path.join(from_session_path, f"plan_{self.workflow_id}.md")
+        if not self.log_dir or self.log_dir == os.path.join(self.repo_root, "artifacts"):
+            self.log_dir = from_session_path
+
+        return True
+
     # ------------------------------------------------------------------
     # Ledger helpers
     # ------------------------------------------------------------------

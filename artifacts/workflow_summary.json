@@ -1,0 +1,41 @@
+{
+  "workflow_id": "architectural-review-planning-workflow",
+  "workflow_name": "Architectural Review Planning",
+  "session_id": "sensemaking-acceptance-tnhl0gbn",
+  "mode": "guided_execution",
+  "status": "failed",
+  "final_note": "Step 2 (architectural-review) failed. Run halted.",
+  "branch": "impl/architectural-review-acceptance-infrastructure",
+  "executed_at": "2026-07-19T10:28:46.733090",
+  "steps_completed": 0,
+  "steps_total": 2,
+  "steps_failed": 1,
+  "steps": [
+    {
+      "step_id": "1",
+      "skill": "repo-sensemaker",
+      "status": "APPROVED",
+      "output_artifact": "repository_sensemaking_brief",
+      "artifact_path": "artifacts/repository_sensemaking_brief.md",
+      "duration_seconds": 0,
+      "validators": [
+        {
+          "level": "Phase 1 Unified Validator",
+          "result": "PASSED"
+        }
+      ]
+    },
+    {
+      "step_id": "2",
+      "skill": "architectural-review",
+      "status": "FAILED",
+      "output_artifact": "architectural_review_recommendation",
+      "artifact_path": "",
+      "duration_seconds": 0,
+      "validators": []
+    }
+  ],
+  "errors": [
+    "ARTIFACT_NOT_FOUND: Step 2 (architectural-review) requires 'proposed_direction' but no content was found at H:\\GithubRepositories\\sensemaking-skills-acceptance\\artifacts/proposed_direction.md. Supply it as a prewritten artifact before invoking this workflow (see --from-session)."
+  ]
+}

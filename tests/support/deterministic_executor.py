@@ -46,6 +46,7 @@ class DeterministicFixtureSkillExecutor(SkillExecutor):
     def __init__(self, repo_root: str):
         self.repo_root = repo_root
         self.invocations = []  # Track all skill invocations for testing
+        self.contexts = []  # Track runtime context for each invocation (assertion 9 evidence)
 
     def invoke_skill(
         self,
@@ -69,10 +70,15 @@ class DeterministicFixtureSkillExecutor(SkillExecutor):
             SkillExecutionResult with status=EXECUTED and output written
         """
 
-        # Track invocation for test verification
+        # Track invocation and context for test verification (assertion 9 evidence)
+        # NOTE: Runtime passes resolved_inputs directly in context, not nested in step_context
         self.invocations.append({
             "skill_id": skill_id,
             "output_artifact": expected_output_artifact,
+        })
+        self.contexts.append({
+            "skill_id": skill_id,
+            "resolved_inputs": context.get("resolved_inputs", {}),
         })
 
         # Resolve output path via the runtime-provided location
@@ -86,6 +92,7 @@ class DeterministicFixtureSkillExecutor(SkillExecutor):
             )
 
         print(f"[EXECUTOR] {skill_id}: Writing artifact to {output_path}")
+        print(f"[EXECUTOR] {skill_id}: step_context keys = {list(context.get('step_context', {}).keys())}")
 
         # Ensure output directory exists
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -171,13 +178,48 @@ immutable: false
         input_artifacts: list[str],
         context: dict,
     ) -> SkillExecutionResult:
-        """Step 2: Produce a valid architectural_review_recommendation fixture."""
+        """Step 2: Produce a valid architectural_review_recommendation fixture.
 
-        # For deterministic testing: Assume inputs are present if we get here.
-        # The runtime's preflight validation has already checked input availability,
-        # so the executor should proceed to generate the artifact.
-        # (The runtime may not always populate step_context in the context dict,
-        #  especially for test executors.)
+        Validates that the runtime passed both required inputs (ASSERTION 9 EVIDENCE).
+        """
+
+        # Extract resolved inputs passed by runtime (ASSERTION 9)
+        # NOTE: Runtime passes resolved_inputs directly in context, not nested in step_context
+        resolved_inputs = context.get("resolved_inputs", {})
+
+        # Log what we received for debugging
+        print(f"[EXECUTOR] architectural-review resolved_inputs keys: {list(resolved_inputs.keys())}")
+
+        # Validate that both required inputs were passed by the runtime
+        # For regular artifacts (repository_sensemaking_brief), check if the path exists
+        # For proposed_direction, also check the "present" field that the runtime computes
+        brief_data = resolved_inputs.get("repository_sensemaking_brief", {})
+        proposal_data = resolved_inputs.get("proposed_direction", {})
+
+        brief_path = brief_data.get("path")
+        brief_exists = brief_path and os.path.exists(brief_path)
+
+        proposal_present = proposal_data.get("present", False)
+        proposal_path = proposal_data.get("path")
+
+        print(f"[EXECUTOR] architectural-review: brief_path={brief_path}, brief_exists={brief_exists}, proposal_present={proposal_present}")
+
+        # Both inputs must be present (this failure would indicate runtime bug)
+        if not brief_exists:
+            return SkillExecutionResult(
+                skill_id="architectural-review",
+                status=SkillExecutionStatus.FAILED,
+                command="python skills/architectural-review/architectural-review.py",
+                error=f"ASSERTION 9 FAILED: repository_sensemaking_brief not found at {brief_path}. resolved_inputs={list(resolved_inputs.keys())}",
+            )
+
+        if not proposal_present:
+            return SkillExecutionResult(
+                skill_id="architectural-review",
+                status=SkillExecutionStatus.FAILED,
+                command="python skills/architectural-review/architectural-review.py",
+                error=f"ASSERTION 9 FAILED: proposed_direction not present. path={proposal_path}, present={proposal_present}",
+            )
 
         recommendation_content = """# Architectural Review Recommendation
 
