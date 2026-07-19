@@ -1,6 +1,6 @@
 # Architectural-Review Skill: Acceptance Blocker & Handoff
 
-**Status**: IMPLEMENTATION COMPLETE → ACCEPTANCE BLOCKED  
+**Status**: IMPLEMENTATION SUBSTANTIALLY COMPLETE → ACCEPTANCE BLOCKED  
 **Blocker**: Pre-existing validate-repo.py preflight failure + execution-capable executor needed  
 **Action Required**: Fix preflight AND resolve cross-drive isolation AND use correct executor  
 
@@ -229,8 +229,8 @@ The handoff document is committed to the repository, making it part of the branc
    - [ ] Add tests and explicitly approve as scope addition to File P
 
 2. **Confirm preflight fixture path**
-   - [ ] Verify exact stale fixture path: `examples/skill-tests/workflow-orchestrator/workflow_orchestration_plan.md` (and others)
-   - [ ] Schedule separate task to repair
+   - [ ] Verify exact stale fixture paths in examples/ tree
+   - [ ] Schedule separate task to repair, or approve validation policy change
 
 3. **Correct acceptance test command**
    - [ ] Replace `--executor dry-run` with execution-capable executor
@@ -239,7 +239,7 @@ The handoff document is committed to the repository, making it part of the branc
 
 ### Phase 2: Fix Preflight (Separate Task, Must Complete Before Acceptance)
 
-Someone must fix or bypass the validate-repo.py defect:
+Someone must repair the validate-repo.py defect, or approve a production-representative validation policy change:
 
 1. **Option A**: Repair stale fixtures
    - Add missing YAML fields to example workflow_orchestration_plan.md files in examples/ tree
@@ -297,13 +297,8 @@ python scripts/workflow-runtime.py \
 ## Correct Next Status
 
 ```
-IMPLEMENTATION FILES:       PRESENT (17 files)
-UNIT AND COMPONENT TESTS:   PASSING (19/19)
 NEW ARCHITECTURAL-REVIEW TESTS: PASSING (19/19)
 BASELINE REGRESSION:        NO NEW FAILURES; ONE PRE-EXISTING FAILURE REMAINS
-REAL FAILURE PATH:          PROVEN
-REAL SUCCESSFUL EXECUTION:  BLOCKED
-PRODUCTION READINESS:       NOT ESTABLISHED
 
 NEXT STEP: Fix validation preflight defect, isolate cross-drive changes,
 correct executor in acceptance test, then rerun full workflow.
