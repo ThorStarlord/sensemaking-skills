@@ -2908,29 +2908,15 @@ def main(argv: list[str] | None = None) -> int:
 
     # Handle --from-session: reuse session directory from prior run
     if args.from_session:
-        from_session_path = os.path.abspath(args.from_session)
-        if not os.path.isdir(from_session_path):
-            print(f"ERROR: --from-session path does not exist: {from_session_path}")
+        # Use the centralized initialization logic (ensures test and CLI use same path)
+        if not runner.initialize_from_session():
+            # Errors already added to runner.errors by initialize_from_session()
+            for err in runner.errors:
+                print(f"ERROR: {err}")
             return 1
 
-        # Check if prior run's user_intent exists
-        prior_intent = os.path.join(from_session_path, "00-user-intent.md")
-        if not os.path.exists(prior_intent):
-            print(f"ERROR: No user_intent artifact found in --from-session directory: {from_session_path}")
-            return 1
-
-        # Reuse the session directory and intent
-        runner.artifact_session_dir = from_session_path
-        runner.session_id = os.path.basename(from_session_path)
-        intent_path = prior_intent
-
-        # Update output paths to use session directory
-        if not args.plan_out:
-            runner.plan_out = os.path.join(from_session_path, f"plan_{workflow_id}.md")
-        if not args.log_dir:
-            runner.log_dir = from_session_path
-
-        print(f"[OK] Reusing session: {os.path.relpath(from_session_path, repo_root)}")
+        intent_path = os.path.join(runner.artifact_session_dir, "00-user-intent.md")
+        print(f"[OK] Reusing session: {os.path.relpath(runner.artifact_session_dir, repo_root)}")
     else:
         # Create user intent artifact before running workflow
         intent_path = runner._create_user_intent_artifact(problem, args.scope)
