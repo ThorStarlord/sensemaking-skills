@@ -1370,10 +1370,12 @@ class OrchestrationRunner:
             elif input_source == "proposed_direction":
                 path = self._resolve_artifact_path("proposed_direction")
                 try:
-                    content_present = os.path.exists(path) and bool(
-                        open(path, encoding="utf-8").read().strip()
-                    )
-                except OSError:
+                    if os.path.exists(path):
+                        with open(path, encoding="utf-8") as f:
+                            content_present = bool(f.read().strip())
+                    else:
+                        content_present = False
+                except (OSError, UnicodeDecodeError):
                     content_present = False
                 resolved_inputs["proposed_direction"] = {
                     "type": "artifact_path",
