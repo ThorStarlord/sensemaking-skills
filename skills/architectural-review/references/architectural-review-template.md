@@ -67,21 +67,44 @@ Use this template when the architectural-review skill executes. Replace all brac
 
 ## Machine-readable Decision
 
-```yaml
+~~~yaml
 artifact_id: architectural_review_recommendation
 decision: [pursue | pursue_narrowed | investigate_first | defer | reject]
 confidence: [high | medium | low]
+created_at: "[ISO timestamp]"
+created_by: "[skill name or agent identifier]"
+
+# Recommended for all outcomes
 risks_identified:
   - "Risk 1: description"
   - "Risk 2: description"
+
+# Required when decision is pursue OR pursue_narrowed
 success_measures:
-  metric: "[if pursue: what metric]"
-  baseline_status: "[if pursue: current value]"
-  target: "[if pursue: target value]"
-  measurement_method: "[if pursue: how to measure]"
-created_at: "[ISO timestamp]"
-created_by: "[skill name or agent identifier]"
-```
+  metric: "[what will be measured]"
+  baseline_status: "[current state]"
+  target: "[desired outcome]"
+  measurement_method: "[how measurement will be performed]"
+
+# Required when decision is pursue_narrowed
+approved_scope:
+  - "[explicitly approved aspect]"
+excluded_scope:
+  - "[explicitly excluded aspect]"
+
+# Required when decision is investigate_first
+investigation_steps:
+  - "[step 1]"
+  - "[step 2]"
+
+# Required when decision is defer OR reject
+reversal_conditions:
+  - "[condition 1]"
+
+# Optional (commonly useful) when decision is reject
+kill_conditions:
+  - "[condition that makes proposal untenable]"
+~~~
 
 ---
 
