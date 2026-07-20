@@ -44,6 +44,16 @@ This workflow is the canonical path for transforming "raw fog" into a structured
 ## 10. Run log template
 - [Run Log Template](../../skills/workflow-orchestrator/references/run-log-template.md)
 
+## 10.5. Routing Decision Rationale
+
+This fixture demonstrates a **diagnostic-stage scenario** where the problem domain is architectural (vague ideas about AI workflow orchestration patterns) but the workflow chosen is `full-local-sensemaking` (a diagnostic workflow, not an implementation workflow).
+
+**Why this routing**: The repository is at a cold-start stage with messy, unstructured ideas about workflow architecture. The recommended approach is to apply structured sensemaking (problem-framing + unknowns-mapping) before attempting architectural implementation. This requires an intentional override from the canonical architecture-fog → architecture-implementation-workflow mapping to allow a diagnostic-phase workflow to execute first.
+
+**Routing Decision Method**: `manual_override` — explicitly allows this workflow to execute despite the fog-to-workflow mismatch.
+
+**Audit Trail**: The `routing_divergence: true` field records that this plan deviates from the system's default recommendation based on fog type alone.
+
 ## 11. Machine-readable plan
 ```yaml
 artifact_id: workflow_orchestration_plan
@@ -52,6 +62,10 @@ execution_mode: guided_execution
 status: COMPLETED
 subset_run: true
 subset_reason: user_requested_first_two_steps_only
+primary_fog_type: architecture_fog
+routing_decision_method: manual_override
+routing_divergence: true
+created_at: "2026-05-14T16:20:15Z"
 
 initial_inputs:
   - id: raw_fog
@@ -79,7 +93,7 @@ excluded_steps:
     skill: handoff
     reason: user_requested_stop_after_step_2
 
-steps:
+workflow_steps:
   - id: 1
     skill: problem-framer
     step_type: local_execution

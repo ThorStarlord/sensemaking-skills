@@ -101,6 +101,8 @@ def select_validator(artifact_id: str | None) -> str:
         return "scripts/validate-brief.py"
     elif artifact_id == "workflow_orchestration_plan":
         return "scripts/validate-plan.py"
+    elif artifact_id == "architectural_review_recommendation":
+        return "scripts/validate-architectural-review-recommendation.py"
     else:
         # Generic fallback (requires both artifact_id and path)
         return "scripts/validate-artifact.py"

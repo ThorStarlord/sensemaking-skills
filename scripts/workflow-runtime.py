@@ -245,6 +245,51 @@ class OrchestrationRunner:
         self.final_state: str = "not_started"
         self.final_note: str = ""
 
+    def initialize_from_session(self) -> bool:
+        """Initialize artifact session directory from from_session parameter.
+
+        This method encapsulates the production --from-session initialization logic
+        so both CLI and tests can use the same path.
+
+        Returns True if initialization succeeds, False otherwise.
+        Caller should check self.errors if False is returned.
+        """
+        if not self.from_session:
+            return True  # from_session not provided; nothing to initialize
+
+        from_session_path = os.path.abspath(self.from_session)
+
+        # Validate session directory exists
+        if not os.path.isdir(from_session_path):
+            self.errors.append(format_error(
+                "INVALID_SESSION",
+                f"--from-session path does not exist: {from_session_path}"
+            ))
+            return False
+
+        # Check for prior intent artifact (proof of valid session)
+        prior_intent = os.path.join(from_session_path, "00-user-intent.md")
+        if not os.path.exists(prior_intent):
+            self.errors.append(format_error(
+                "MISSING_INTENT",
+                f"No user_intent artifact found in --from-session directory: {from_session_path}"
+            ))
+            return False
+
+        # Apply production initialization (matches CLI code lines 2878-2886)
+        self.artifact_session_dir = from_session_path
+        self.session_id = os.path.basename(from_session_path)
+
+        # Update output paths to use session directory (matches CLI code)
+        if not self.plan_out or self.plan_out == os.path.join(
+            self.repo_root, "artifacts", f"plan_{self.workflow_id}.md"
+        ):
+            self.plan_out = os.path.join(from_session_path, f"plan_{self.workflow_id}.md")
+        if not self.log_dir or self.log_dir == os.path.join(self.repo_root, "artifacts"):
+            self.log_dir = from_session_path
+
+        return True
+
     # ------------------------------------------------------------------
     # Ledger helpers
     # ------------------------------------------------------------------
@@ -797,6 +842,19 @@ class OrchestrationRunner:
                 # expanding the aggregate context_artifacts bundle when present.
                 input_artifact_ids, resolved_inputs = self._resolve_step_inputs(step)
 
+                # Hard-fail on a named input that resolved but has no real content
+                # (e.g. proposed_direction). self.errors alone does not stop execution
+                # once preflight has passed, so this must produce a real FAILED status.
+                if "proposed_direction" in resolved_inputs and not resolved_inputs["proposed_direction"].get("present"):
+                    self.errors.append(
+                        format_error(ARTIFACT_NOT_FOUND,
+                            f"Step {step_num} ({skill}) requires 'proposed_direction' but no content "
+                            f"was found at {resolved_inputs['proposed_direction']['path']}. Supply it "
+                            f"as a prewritten artifact before invoking this workflow (see --from-session).")
+                    )
+                    result["status"] = "FAILED"
+                    return self._finalize_step_result(result, step_num)
+
                 # Build context for skill execution. resolved_inputs is what the
                 # claude-code executor actually reads to populate the prompt.
                 # expected_output_path is the runtime-owned, session-scoped path the
@@ -1309,6 +1367,21 @@ class OrchestrationRunner:
                         "type": "external_context",
                         "data": self.problem_statement or "",
                     }
+            elif input_source == "proposed_direction":
+                path = self._resolve_artifact_path("proposed_direction")
+                try:
+                    if os.path.exists(path):
+                        with open(path, encoding="utf-8") as f:
+                            content_present = bool(f.read().strip())
+                    else:
+                        content_present = False
+                except (OSError, UnicodeDecodeError):
+                    content_present = False
+                resolved_inputs["proposed_direction"] = {
+                    "type": "artifact_path",
+                    "path": path,
+                    "present": content_present,
+                }
             else:
                 resolved_inputs[input_source] = {"type": "external_context", "data": ""}
             input_artifact_ids.append(input_source)
@@ -2837,29 +2910,15 @@ def main(argv: list[str] | None = None) -> int:
 
     # Handle --from-session: reuse session directory from prior run
     if args.from_session:
-        from_session_path = os.path.abspath(args.from_session)
-        if not os.path.isdir(from_session_path):
-            print(f"ERROR: --from-session path does not exist: {from_session_path}")
+        # Use the centralized initialization logic (ensures test and CLI use same path)
+        if not runner.initialize_from_session():
+            # Errors already added to runner.errors by initialize_from_session()
+            for err in runner.errors:
+                print(f"ERROR: {err}")
             return 1
 
-        # Check if prior run's user_intent exists
-        prior_intent = os.path.join(from_session_path, "00-user-intent.md")
-        if not os.path.exists(prior_intent):
-            print(f"ERROR: No user_intent artifact found in --from-session directory: {from_session_path}")
-            return 1
-
-        # Reuse the session directory and intent
-        runner.artifact_session_dir = from_session_path
-        runner.session_id = os.path.basename(from_session_path)
-        intent_path = prior_intent
-
-        # Update output paths to use session directory
-        if not args.plan_out:
-            runner.plan_out = os.path.join(from_session_path, f"plan_{workflow_id}.md")
-        if not args.log_dir:
-            runner.log_dir = from_session_path
-
-        print(f"[OK] Reusing session: {os.path.relpath(from_session_path, repo_root)}")
+        intent_path = os.path.join(runner.artifact_session_dir, "00-user-intent.md")
+        print(f"[OK] Reusing session: {os.path.relpath(runner.artifact_session_dir, repo_root)}")
     else:
         # Create user intent artifact before running workflow
         intent_path = runner._create_user_intent_artifact(problem, args.scope)
