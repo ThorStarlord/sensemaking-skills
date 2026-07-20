@@ -59,11 +59,12 @@ class TestArchitecturalReviewAcceptance:
 
     @pytest.fixture
     def validator_spy(self):
-        """Spy on subprocess calls globally to capture child validators (ASSERTION 11 evidence).
+        """Spy on subprocess calls in this pytest process (ASSERTION 11 evidence).
 
-        Patches subprocess.run at module level to see:
+        Patches subprocess.run at module level to observe:
         - Direct runtime calls to validate-and-report.py
-        - Child calls FROM validate-and-report.py to specialized validators
+
+        Note: this does not trace subprocesses spawned inside validate-and-report.py itself.
         """
         captured_validators = []
         original_run = subprocess.run
