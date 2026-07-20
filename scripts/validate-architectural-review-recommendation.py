@@ -106,6 +106,47 @@ def validate_architectural_review_recommendation(artifact_path: str, repo_root: 
         })
         return errors
 
+    if not isinstance(artifact_data, dict):
+        errors.append({
+            "error_id": "architectural_review_recommendation.artifact_data.type_error",
+            "error_type": "type_error",
+            "field": "artifact_data",
+            "current_value": type(artifact_data).__name__,
+            "message": "Machine-readable YAML must be a mapping/object (key-value pairs).",
+            "suggested_fixes": [
+                "Ensure the fenced ```yaml block contains key: value pairs (not a list)",
+            ],
+            "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+        })
+        return errors
+
+    # Required machine fields per artifact-contracts.yaml
+    for field_name in ("artifact_id", "created_at", "created_by"):
+        if field_name not in artifact_data or not artifact_data.get(field_name):
+            errors.append({
+                "error_id": f"architectural_review_recommendation.{field_name}.missing_field",
+                "error_type": "missing_field",
+                "field": field_name,
+                "current_value": None,
+                "message": f"Required field '{field_name}' is missing.",
+                "suggested_fixes": [f"Add {field_name}: ..."],
+                "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+            })
+
+    if (
+        artifact_data.get("artifact_id")
+        and artifact_data.get("artifact_id") != "architectural_review_recommendation"
+    ):
+        errors.append({
+            "error_id": "architectural_review_recommendation.artifact_id.unknown_value",
+            "error_type": "unknown_value",
+            "field": "artifact_id",
+            "current_value": artifact_data.get("artifact_id"),
+            "message": "Field 'artifact_id' must be 'architectural_review_recommendation'.",
+            "suggested_fixes": ["Change to: artifact_id: architectural_review_recommendation"],
+            "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+        })
+
     # Required field: decision
     if "decision" not in artifact_data:
         errors.append({
