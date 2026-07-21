@@ -74,10 +74,14 @@ def test_run_validate_and_report_uses_log_dir():
             return result
 
         # Mock os.path.exists to pretend validator scripts exist
+        # Preserve the real os.path.exists to avoid recursive mock calls
+        real_exists = os.path.exists
+
         def mock_exists(path):
-            if "validate-and-report.py" in path or "record-validation.py" in path:
+            path_text = str(path)
+            if "validate-and-report.py" in path_text or "record-validation.py" in path_text:
                 return True
-            return os.path.exists(path)
+            return real_exists(path)
 
         with patch("subprocess.run", side_effect=mock_run):
             with patch("os.path.exists", side_effect=mock_exists):
@@ -97,10 +101,12 @@ def test_run_validate_and_report_uses_log_dir():
                         )
                     raise
 
-        # Verify that record-validation.py received the correct run_log_path
-        if captured_record_cmd:
-            assert captured_record_cmd["path"] == expected_run_log_path, \
-                f"Expected {expected_run_log_path}, got {captured_record_cmd['path']}"
+        # Verify that record-validation.py was called with the correct run_log_path
+        assert "path" in captured_record_cmd, (
+            "record-validation.py was not called with --run-log argument"
+        )
+        assert captured_record_cmd["path"] == expected_run_log_path, \
+            f"Expected {expected_run_log_path}, got {captured_record_cmd['path']}"
 
 
 def test_log_dir_initialization():
