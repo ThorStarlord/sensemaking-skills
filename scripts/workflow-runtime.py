@@ -1527,7 +1527,7 @@ class OrchestrationRunner:
 
         # Set up run log path (same session as orchestrator log)
         run_log_path = os.path.join(
-            os.path.dirname(self.run_log_path or "."),
+            self.log_dir or ".",
             "validation_run_log.md"
         )
 
