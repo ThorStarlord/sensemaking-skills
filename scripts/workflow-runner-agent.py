@@ -119,15 +119,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"ERROR {e}")
         return 1
 
-    intent_path = runner._create_user_intent_artifact(problem, args.scope)
-    if not intent_path:
-        print("ERROR: Failed to create user_intent artifact")
-        for e in runner.errors:
-            print(f"  - {e}")
-        return 1
-
+    # Enable artifact creation in run() AFTER preflight (ADR 0011)
+    # This matches the pattern in main() to ensure clean-tree check precedes mutation
+    runner.create_intent_artifact = True
+    runner.problem_for_intent = problem
+    runner.scope_for_intent = args.scope
     runner.problem_statement = problem
-    runner.intent_path = intent_path
 
     return runner.run()
 

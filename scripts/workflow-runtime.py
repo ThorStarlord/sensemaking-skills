@@ -237,6 +237,9 @@ class OrchestrationRunner:
         self.problem_statement: str | None = None
         self.intent_path: str | None = None
         self.artifact_session_dir: str | None = None
+        self.create_intent_artifact: bool = False  # Explicit flag: should run() create new artifact?
+        self.problem_for_intent: str | None = None  # Problem statement for artifact (can be None for repo-inferred)
+        self.scope_for_intent: str = "soft"  # Scope mode for artifact creation
 
         # Load registries
         self._load_registries()
@@ -2379,6 +2382,21 @@ class OrchestrationRunner:
             print(f"PHASE 1: PREFLIGHT (skipped for plan_only mode)")
             print(f"{'='*60}")
 
+        # Phase 1b: Create user-intent artifact (AFTER preflight guarantees clean tree)
+        # Only if create_intent_artifact flag is set AND not using --from-session
+        # Plan-only mode skips user-intent artifact (but still generates plans/diagnostics)
+        if self.create_intent_artifact and self.mode != "plan_only" and not self.artifact_session_dir:
+            intent_path = self._create_user_intent_artifact(self.problem_for_intent, self.scope_for_intent)
+            if not intent_path:
+                print(f"\n  [FAIL] Failed to create user_intent artifact.")
+                for e in self.errors:
+                    print(f"    - {e}")
+                return 1
+            self.intent_path = intent_path
+        elif self.artifact_session_dir:
+            # Using --from-session: artifact already exists from prior run
+            self.intent_path = os.path.join(self.artifact_session_dir, "00-user-intent.md")
+
         # -- Ledger: log run_started ------------------------------------------
         _git_commit = None
         try:
@@ -2916,22 +2934,20 @@ def main(argv: list[str] | None = None) -> int:
             for err in runner.errors:
                 print(f"ERROR: {err}")
             return 1
-
-        intent_path = os.path.join(runner.artifact_session_dir, "00-user-intent.md")
         print(f"[OK] Reusing session: {os.path.relpath(runner.artifact_session_dir, repo_root)}")
     else:
-        # Create user intent artifact before running workflow
-        intent_path = runner._create_user_intent_artifact(problem, args.scope)
-        if not intent_path:
-            print("ERROR: Failed to create user_intent artifact")
-            for e in runner.errors:
-                print(f"  - {e}")
-            return 1
+        # New session: enable artifact creation AFTER preflight (ADR 0011)
+        runner.create_intent_artifact = True
+        runner.problem_for_intent = problem
+        runner.scope_for_intent = args.scope
 
     # Store execution context in runner
     runner.problem_statement = problem
-    runner.intent_path = intent_path
 
+    # run() will handle:
+    # 1. Preflight check (before any repository mutations)
+    # 2. Artifact creation (only if preflight passes and not --from-session)
+    # 3. Workflow execution
     return runner.run()
 
 
