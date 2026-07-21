@@ -2384,7 +2384,7 @@ class OrchestrationRunner:
 
         # Phase 1b: Create user-intent artifact (AFTER preflight guarantees clean tree)
         # Only if create_intent_artifact flag is set AND not using --from-session
-        # Plan-only mode skips artifact creation (analysis-only, non-mutating)
+        # Plan-only mode skips user-intent artifact (but still generates plans/diagnostics)
         if self.create_intent_artifact and self.mode != "plan_only" and not self.artifact_session_dir:
             intent_path = self._create_user_intent_artifact(self.problem_for_intent, self.scope_for_intent)
             if not intent_path:

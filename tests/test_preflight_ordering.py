@@ -173,32 +173,36 @@ def test_repo_inferred_none_problem_creates_artifact(runner_module):
             f"artifact should be called with None problem and soft scope. Calls: {artifact_calls}"
 
 
-def test_plan_only_skips_artifact_creation(runner_module):
-    """Plan-only mode should skip artifact creation (analysis-only)."""
+def test_plan_only_skips_user_intent_artifact(runner_module):
+    """Plan-only mode skips user-intent artifact creation.
+
+    Note: Plan-only still generates plans and diagnostic reports;
+    this test only verifies that 00-user-intent.md is not created.
+    """
     artifact_called = []
     repo_root = Path(__file__).parent.parent
-    
+
     def track_artifact(*args):
         artifact_called.append(True)
         return "path"
-    
+
     with patch.object(runner_module.OrchestrationRunner, '_create_user_intent_artifact', side_effect=track_artifact), \
          patch.object(runner_module.OrchestrationRunner, '_load_registries'):
-        
+
         runner = runner_module.OrchestrationRunner(
             workflow_id='test',
-            mode='plan_only',  # Analysis-only, non-mutating
+            mode='plan_only',
             repo_root=str(repo_root),
             executor='dry-run',
         )
-        
+
         runner.create_intent_artifact = True  # Flag set, but plan_only overrides
         runner.problem_for_intent = "test"
         runner.scope_for_intent = "soft"
-        
+
         # Invoke run()
         result = runner.run()
-        
-        # ASSERTION: plan_only should not create artifacts
+
+        # ASSERTION: user-intent artifact must NOT be created in plan_only
         assert not artifact_called, \
-            "plan_only mode should not create artifacts (analysis-only, non-mutating)"
+            "plan_only mode should not create 00-user-intent.md artifact"
