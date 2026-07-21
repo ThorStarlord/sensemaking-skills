@@ -204,6 +204,7 @@ class OrchestrationRunner:
         use_fixtures: bool = False,
         chained: bool = False,
         from_session: str | None = None,
+        target_repo: str | None = None,
     ):
         self.workflow_id = workflow_id
         self.mode = mode
@@ -212,6 +213,7 @@ class OrchestrationRunner:
         if create_executor:
             self.skill_executor = create_executor(executor, repo_root)
         self.repo_root = os.path.abspath(repo_root)
+        self.target_repo = os.path.abspath(target_repo) if target_repo else self.repo_root
         self.plan_out = plan_out or os.path.join(self.repo_root, "artifacts", f"plan_{workflow_id}.md")
         self.log_dir = log_dir or os.path.join(self.repo_root, "artifacts")
         self.use_fixtures = use_fixtures
@@ -1359,7 +1361,7 @@ class OrchestrationRunner:
             if input_source == "repository_state":
                 resolved_inputs["repository_state"] = {
                     "type": "repository_state",
-                    "data": {"path": self.repo_root},
+                    "data": {"path": self.target_repo},
                 }
             elif input_source == "raw_fog":
                 intent_path = self._resolve_user_intent_path()
@@ -2853,7 +2855,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="Execution mode (default: yolo_execution)")
     parser.add_argument("--scope", default="soft", choices=["soft", "hard", "advisory"],
                         help="How strictly the problem statement constrains analysis (default: soft)")
-    parser.add_argument("--repo-root", default=".", help="Repository root directory")
+    parser.add_argument("--repo-root", default=".", help="Framework root directory (where skills/registries live)")
+    parser.add_argument("--target-repo", default=None, help="Target repository to analyze (if different from repo-root)")
     parser.add_argument("--plan-out", default=None, help="Output path for the orchestration plan")
     parser.add_argument("--log-dir", default=None, help="Directory for run log output")
     parser.add_argument("--list-workflows", action="store_true", help="List all registered workflows")
@@ -2919,6 +2922,7 @@ def main(argv: list[str] | None = None) -> int:
         use_fixtures=args.use_fixtures,
         chained=args.chained,
         from_session=args.from_session,
+        target_repo=args.target_repo,
     )
 
     if runner.errors:
