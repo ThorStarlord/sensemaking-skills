@@ -74,6 +74,28 @@ class TestTargetRepoDefaults:
         assert runner.target_repo != runner.repo_root, \
             "target_repo and repo_root should be different when explicitly provided"
 
+    def test_repository_state_input_uses_target_repo(self, tmp_path):
+        """repository_state.path should resolve to target_repo when provided."""
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("workflow_runtime", str(SCRIPTS_DIR / "workflow-runtime.py"))
+        workflow_runtime = importlib.util.module_from_spec(spec)
+        sys.modules["workflow_runtime"] = workflow_runtime
+        spec.loader.exec_module(workflow_runtime)
+
+        framework_root = str(tmp_path / "framework")
+        target_root = str(tmp_path / "target")
+        Path(framework_root).mkdir()
+        Path(target_root).mkdir()
+
+        runner = workflow_runtime.OrchestrationRunner(
+            workflow_id="test-workflow",
+            mode="plan_only",
+            repo_root=framework_root,
+            target_repo=target_root,
+        )
+
+        _ids, resolved = runner._resolve_step_inputs({"input_source": "repository_state"})
+        assert resolved["repository_state"]["data"]["path"] == runner.target_repo
 
 class TestFrameworkResourceResolution:
     """Test that framework resources load from repo_root, not target_repo."""
