@@ -9,12 +9,8 @@ These tests verify that repo_root and target_repo have distinct, coherent semant
 Tests do NOT invoke Claude Code or real executors. They verify path resolution only.
 """
 
-import os
 import sys
-import tempfile
 from pathlib import Path
-
-import pytest
 
 # Setup paths
 REPO_ROOT = Path(__file__).resolve().parents[1]
