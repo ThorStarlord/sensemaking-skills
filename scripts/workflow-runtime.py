@@ -213,7 +213,10 @@ class OrchestrationRunner:
         if create_executor:
             self.skill_executor = create_executor(executor, repo_root)
         self.repo_root = os.path.abspath(repo_root)
-        self.target_repo = os.path.abspath(target_repo) if target_repo else self.repo_root
+        if target_repo is None:
+            self.target_repo = self.repo_root
+        else:
+            self.target_repo = os.path.abspath(target_repo) if target_repo else target_repo
         self.plan_out = plan_out or os.path.join(self.repo_root, "artifacts", f"plan_{workflow_id}.md")
         self.log_dir = log_dir or os.path.join(self.repo_root, "artifacts")
         self.use_fixtures = use_fixtures
