@@ -47,7 +47,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--scope", default="soft", choices=["soft", "hard", "advisory"],
                         help="How strictly the problem constrains analysis (default: soft)")
     parser.add_argument("--repo-root", default=".",
-                        help="Repository root directory (default: .)")
+                        help="Framework root directory (where skills/registries live)")
+    parser.add_argument("--target-repo", default=None,
+                        help="Target repository to analyze (if different from repo-root)")
     parser.add_argument("--gate-decision", default=None,
                         choices=["auto-approve", "auto-deny"],
                         help="Non-interactive gate decision for automated runs")
@@ -112,6 +114,7 @@ def main(argv: list[str] | None = None) -> int:
         executor="claude-code",
         use_fixtures=args.use_fixtures,
         chained=args.chained,
+        target_repo=args.target_repo,
     )
 
     if runner.errors:
