@@ -22,6 +22,9 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
+# SDK type imports for error classification
+from claude_agent_sdk import ResultMessage
+
 
 # ============================================================================
 # Output path resolution (shared by real executors)
@@ -345,7 +348,9 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
             f"Do not stop until the artifact file exists at the specified path."
         )
 
-        messages = []
+        # Capture SDK result and error info for diagnostic classification
+        sdk_last_result_info: str | None = None
+
         try:
             # Query the Claude Agent SDK
             async for message in query(
@@ -357,10 +362,13 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     allowed_tools=["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
                 ),
             ):
-                messages.append(str(message))
+                # Capture ResultMessage error info for classification
+                if isinstance(message, ResultMessage):
+                    if message.is_error:
+                        errors_text = "; ".join(str(e) for e in (message.errors or []))
+                        sdk_last_result_info = errors_text or str(message.subtype)
 
-            # Check if the expected artifact was produced — check the SAME path we
-            # instructed the skill to write to (the runtime-resolved path).
+            # Check if the expected artifact was produced
             if os.path.exists(expected_output_path):
                 return SkillExecutionResult(
                     skill_id=skill_id,
@@ -370,24 +378,31 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     message=f"Artifact produced at {expected_output_path}",
                 )
             else:
+                # Build categorized error: include SDK error info if available
+                category = "sdk_result_error" if sdk_last_result_info else "no_artifact"
+                detail = ""
+                if sdk_last_result_info:
+                    detail = f" SDK reported: {sdk_last_result_info}."
                 return SkillExecutionResult(
                     skill_id=skill_id,
                     status=SkillExecutionStatus.FAILED,
                     command=invocation_command,
                     output_artifact=expected_output_artifact,
-                    error=f"Expected artifact '{expected_output_artifact}' not produced. "
-                          f"SDK completed but artifact not found at {expected_output_path}",
+                    error=f"[{category}] Expected artifact '{expected_output_artifact}' not produced.{detail} "
+                          f"Artifact not found at {expected_output_path}",
                 )
 
         except Exception as e:
+            detail = ""
+            if sdk_last_result_info:
+                detail = f" SDK result: {sdk_last_result_info}."
             return SkillExecutionResult(
                 skill_id=skill_id,
                 status=SkillExecutionStatus.FAILED,
                 command=invocation_command,
                 output_artifact=expected_output_artifact,
-                error=f"SDK execution failed: {str(e)}",
+                error=f"SDK execution failed: {e}.{detail}",
             )
-
 
 # Keep old name as alias for backwards compatibility
 ClaudeCodeSkillExecutor = ClaudeAgentSdkSkillExecutor
