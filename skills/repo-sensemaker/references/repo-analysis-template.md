@@ -70,7 +70,9 @@ One workflow candidate from the official `workflow-registry.yaml`. Do not invent
 
 ## 13. Machine-readable handoff
 
-### Stage 1: Intent-Aware Fields (Required)
+**IMPORTANT:** The YAML block below is parsed by automated validators. It is
+separate from the `evidence_excerpts` in Section 8. The `evidence` field here
+is a flat list of citation strings — NOT the structured excerpts above.
 ```yaml
 artifact_id: repository_sensemaking_brief
 source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
