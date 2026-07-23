@@ -93,6 +93,8 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
 
 ## Output Format
 Every response must follow the [Repository Sensemaking Brief](references/repo-analysis-template.md) structure.
+The machine-readable YAML block MUST include an `evidence` field: a non-empty list of file-level
+citations (e.g. `- "README.md: no user stories"`) that support the diagnosis.
 
 ## Boundary Rules
 1. **No Implementation**: Do not execute workflows or implement changes. The output of this skill is a diagnostic artifact.

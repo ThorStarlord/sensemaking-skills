@@ -85,6 +85,9 @@ escalation_recommended: true | false
 recommended_workflow_id: # MUST match an ID in workflow-registry.yaml
 recommended_execution_mode: plan_only | guided_execution
 weakest_boundary: 
+evidence:  # list of file-level citations supporting the diagnosis
+  - "README.md (lines 5-12): vague feature requirements"
+  - "src/main.py: unclear module boundary"
 required_inputs:
   - user_intent
   - repository_state
@@ -98,6 +101,9 @@ source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
 recommended_workflow_id: product-implementation-workflow
 recommended_execution_mode: guided_execution
 weakest_boundary: analytics_feedback_gap
+evidence:
+  - "README.md: no feature requirements listed"
+  - "src/analytics.py: feedback loop doesn't validate input"
 required_inputs:
   - user_intent
   - repository_state
