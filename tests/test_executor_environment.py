@@ -67,12 +67,15 @@ class TestResultMessageErrorCapture(unittest.TestCase):
     """Executor captures SDK ResultMessage error info for classification."""
 
     def setUp(self):
-        self.executor = ClaudeAgentSdkSkillExecutor(repo_root="/tmp/fake-root")
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmpdir.cleanup)
+
+        self.executor = ClaudeAgentSdkSkillExecutor(repo_root=self.tmpdir.name)
         self.context = {
             "resolved_inputs": {
                 "repository_state": {
                     "type": "repository_state",
-                    "data": {"path": "/tmp/target"},
+                    "data": {"path": self.tmpdir.name},
                 }
             }
         }
