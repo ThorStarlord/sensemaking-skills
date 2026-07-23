@@ -70,42 +70,58 @@ One workflow candidate from the official `workflow-registry.yaml`. Do not invent
 
 ## 13. Machine-readable handoff
 
-### Stage 1: Intent-Aware Fields (Required)
 ```yaml
 artifact_id: repository_sensemaking_brief
+schema_version: 1
 source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
 user_implied_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | unknown
 primary_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | mixed | unknown
 diagnosis_conflict: true | false
 escalation_recommended: true | false
-```
-
-### Standard Fields
-```yaml
+evidence:
+  - "path/to/file.ext (lines L10-L15): short citation supporting the diagnosis"
+  - "path/to/other_file.ext: short citation supporting the diagnosis"
 recommended_workflow_id: # MUST match an ID in workflow-registry.yaml
 recommended_execution_mode: plan_only | guided_execution
-weakest_boundary: 
+weakest_boundary:
 required_inputs:
   - user_intent
   - repository_state
+created_at: "2026-05-19T16:00:00Z"
+immutable: true
 ```
+
+All required fields (Stage 1 intent-aware fields, standard routing fields, and
+top-level fields required by `artifact-contracts.yaml`) MUST appear in that
+**single** fenced yaml block above. Do not split them across multiple yaml
+blocks — only the first yaml fence immediately following this heading is
+parsed by `validate-brief.py`.
+
+`evidence` is a required field: a list of short file-level citation strings
+(the machine-readable counterpart to the prose in Section 7 / the excerpts in
+Section 8). It is distinct from `evidence_excerpts` (structured excerpt
+objects) — both are expected, under their own names.
 
 ### Complete Example
 ```yaml
 artifact_id: repository_sensemaking_brief
 schema_version: 1
 source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
+user_implied_fog_type: product_fog
+primary_fog_type: product_fog
+diagnosis_conflict: false
+escalation_recommended: false
+evidence:
+  - "README.md (lines 5-12): feature requirements are vague, no user context"
+  - "docs/ARCHITECTURE.md: does not exist"
 recommended_workflow_id: product-implementation-workflow
 recommended_execution_mode: guided_execution
 weakest_boundary: analytics_feedback_gap
 required_inputs:
   - user_intent
   - repository_state
-user_implied_fog_type: product_fog
-primary_fog_type: product_fog
-diagnosis_conflict: false
-escalation_recommended: false
 created_at: "2026-05-19T16:00:00Z"
+immutable: true
 ```
 
 ## 14. Ready-to-copy prompt
