@@ -22,6 +22,9 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
+# SDK type imports for error classification
+from claude_agent_sdk import ResultMessage
+
 
 # ============================================================================
 # Output path resolution (shared by real executors)
@@ -347,7 +350,6 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
 
         # Capture SDK result and error info for diagnostic classification
         sdk_last_result_info: str | None = None
-        sdk_exception_message: str | None = None
 
         try:
             # Query the Claude Agent SDK
@@ -360,14 +362,11 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     allowed_tools=["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
                 ),
             ):
-                # Capture ResultMessage error info when available
-                from claude_agent_sdk import ResultMessage
+                # Capture ResultMessage error info for classification
                 if isinstance(message, ResultMessage):
                     if message.is_error:
                         errors_text = "; ".join(str(e) for e in (message.errors or []))
                         sdk_last_result_info = errors_text or str(message.subtype)
-                    elif message.result and "error" in (message.result or "").lower():
-                        sdk_last_result_info = str(message.result)
 
             # Check if the expected artifact was produced
             if os.path.exists(expected_output_path):
@@ -394,8 +393,6 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                 )
 
         except Exception as e:
-            sdk_exception_message = str(e)
-            # Build categorized error: include SDK exception info
             detail = ""
             if sdk_last_result_info:
                 detail = f" SDK result: {sdk_last_result_info}."
@@ -404,7 +401,7 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                 status=SkillExecutionStatus.FAILED,
                 command=invocation_command,
                 output_artifact=expected_output_artifact,
-                error=f"SDK execution failed: {sdk_exception_message}.{detail}",
+                error=f"SDK execution failed: {e}.{detail}",
             )
 
 # Keep old name as alias for backwards compatibility

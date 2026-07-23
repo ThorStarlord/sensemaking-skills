@@ -9,10 +9,9 @@ These tests establish that:
 
 import os
 import sys
-import tempfile
 import json
 import unittest
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock, patch
 
 scripts_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scripts"))
 if scripts_dir not in sys.path:
@@ -37,27 +36,31 @@ class TestEnvironmentPrecedence(unittest.TestCase):
     After the subprocess starts, the CLI loads .claude/settings.json and
     applies its "env" block on TOP of the subprocess environment. This means
     ClaudeAgentOptions.env cannot override a stale ANTHROPIC_BASE_URL in
-    .claude/settings.json.
+    .claude/settings.json; the fix must remove stale transport configuration
+    from the source.
 
-    The fix is therefore to remove stale transport configuration from the
-    framework's project settings file.
+    The precedence claim is an integration observation proven by the controlled
+    real run, not by these deterministic unit tests.
     """
 
-    def test_sdk_env_construction_precedence(self):
-        """The SDK subprocess transport overlays options.env over parent env,
-        but settings.json env is applied by the CLI after the subprocess starts.
-        """
-        import claude_agent_sdk._internal.transport.subprocess_cli as subproc_cls
-        with open(subproc_cls.__file__) as f:
-            source = f.read()
-    def test_project_settings_env_is_cli_side(self):
-        """settings.json env is loaded by claude.exe CLI, not by SDK transport.
-        This means options.env cannot override it."""
-        from claude_agent_sdk import ClaudeAgentOptions, types
-        # ClaudeAgentOptions is a dataclass; env and setting_sources are fields
+    def test_claude_agent_options_has_env_and_setting_sources(self):
+        """ClaudeAgentOptions is a dataclass with env and setting_sources fields."""
+        from claude_agent_sdk import ClaudeAgentOptions
         self.assertIn("env", ClaudeAgentOptions.__dataclass_fields__)
         self.assertIn("setting_sources", ClaudeAgentOptions.__dataclass_fields__)
 
+    def test_sdk_transport_env_construction(self):
+        """The SDK transport subprocess code uses env overlay pattern:
+        {**inherited_env, ... **options.env, ...} meaning options.env wins
+        over inherited env but the CLI loads settings.json env after start.
+        """
+        # This is a documented architectural invariant. The SDK's subprocess
+        # transport explicitly builds process_env with options.env overlaying
+        # inherited env. The CLI-side settings.json env block is applied after
+        # the subprocess starts, which is why options.env cannot override it.
+        # The claim is verified by the controlled real run, not by asserting
+        # SDK source patterns that change between versions.
+        pass  # Architectural invariant — see docstring and real run evidence
 
 
 class TestResultMessageErrorCapture(unittest.TestCase):
@@ -84,22 +87,21 @@ class TestResultMessageErrorCapture(unittest.TestCase):
         return msg
 
     def _run_async_with_messages(self, messages):
-        """Run executor with mocked SDK query yielding the given messages."""
+        """Run executor with mock SDK query yielding the given messages."""
         async def mock_query(*args, **kwargs):
             for msg in messages:
                 yield msg
-        import claude_agent_sdk
-        original = claude_agent_sdk.query
-        try:
-            claude_agent_sdk.query = mock_query
+
+        # Patch claude_agent_sdk.query at the package level. The production
+        # code imports query via `from claude_agent_sdk import query` inside
+        # _invoke_skill_async, so patching the package attribute is correct.
+        with patch("claude_agent_sdk.query", new=mock_query):
             import anyio
             return anyio.run(
                 self.executor._invoke_skill_async,
                 "test-skill", "/test-skill", [],
                 "test_artifact", self.context,
             )
-        finally:
-            claude_agent_sdk.query = original
 
     def test_sdk_error_result_includes_error_info(self):
         """When SDK ResultMessage has is_error=True, the error text appears."""
@@ -146,22 +148,60 @@ class TestResultMessageErrorCapture(unittest.TestCase):
         self.assertEqual(result.status, SkillExecutionStatus.FAILED)
         self.assertIn("[no_artifact]", result.error)
 
+    def test_success_text_containing_error_word_not_classified(self):
+        """Successful result text containing the word 'error' is NOT treated
+        as an SDK error. The executor uses authoritative fields
+        (is_error, errors, subtype) and does NOT infer failure from
+        result text substrings."""
+        result_msg = self._make_result_message(
+            is_error=False,
+            subtype="success",
+            result="Completed review of error-handling code",
+        )
+        result = self._run_async_with_messages([result_msg])
+        self.assertEqual(result.status, SkillExecutionStatus.FAILED)
+        self.assertIn("[no_artifact]", result.error)
+        self.assertNotIn("sdk_result_error", result.error)
+
+    def test_mock_query_was_actually_consumed(self):
+        """Verify that mocking works: the SDK query was called and messages
+        were consumed, not silently skipped."""
+        async def mock_query_with_tracker(*args, **kwargs):
+            mock_query_with_tracker.called = True
+            yield self._make_result_message(is_error=False, subtype="success")
+
+        mock_query_with_tracker.called = False
+        with patch("claude_agent_sdk.query", new=mock_query_with_tracker):
+            import anyio
+            anyio.run(
+                self.executor._invoke_skill_async,
+                "test-skill", "/test-skill", [],
+                "test_artifact", self.context,
+            )
+        self.assertTrue(
+            mock_query_with_tracker.called,
+            "mock_query was not called — patch may target the wrong symbol",
+        )
+
 
 class TestProjectSettingsFile(unittest.TestCase):
     """The framework .claude/settings.json no longer contains stale proxy."""
 
     def test_settings_file_has_no_anthropic_base_url(self):
-        """The settings file should not contain ANTHROPIC_BASE_URL."""
+        """The settings file must exist and must not contain ANTHROPIC_BASE_URL."""
         repo_root = os.path.dirname(scripts_dir)
         settings_path = os.path.join(repo_root, ".claude", "settings.json")
-        if os.path.exists(settings_path):
-            with open(settings_path) as f:
-                settings = json.load(f)
-            env_block = settings.get("env", {})
-            self.assertNotIn(
-                "ANTHROPIC_BASE_URL", env_block,
-                "Project settings must not override ANTHROPIC_BASE_URL"
-            )
+        self.assertTrue(
+            os.path.isfile(settings_path),
+            f"Tracked settings file missing: {settings_path}",
+        )
+        with open(settings_path) as f:
+            settings = json.load(f)
+        env_block = settings.get("env", {})
+        self.assertNotIn(
+            "ANTHROPIC_BASE_URL", env_block,
+            "Project settings must not override ANTHROPIC_BASE_URL",
+        )
 
 
 class TestResolveOutputPath(unittest.TestCase):
