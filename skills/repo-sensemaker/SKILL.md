@@ -36,8 +36,12 @@ When analyzing a repository, **always compare** what the user intends with what 
    - `source_intent_ref`: Reference to 00-user-intent.md
    - `user_implied_fog_type`: What the user's problem statement suggests
    - `primary_fog_type`: What the codebase actually signals
+   - `evidence`: Non-empty list of file-level citations supporting the diagnosis
+     (e.g. `- "scripts/validate-brief.py (L15-L30): evidence validation logic"`)
    - `diagnosis_conflict`: Boolean (user_implied != primary?)
    - `escalation_recommended`: Boolean (true if high uncertainty or conflict)
+
+---
 
 ## UI Fog Classification Guide (NEW)
 
