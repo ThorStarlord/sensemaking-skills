@@ -42,12 +42,14 @@ class TestSkillMdDoesNotRecomputePath(unittest.TestCase):
     """Ensure no skill's Execution Protocol instructs recomputing the output path."""
 
     def test_no_skill_instructs_create_artifact_for_path_resolution(self):
-        conflicting_phrase = "to resolve the output path"
+        runtime_marker = "When executing as part of a workflow run:"
+        forbidden_step = "Call `scripts/create-artifact.py`"
         offenders = []
         for skill_md in glob.glob(os.path.join(REPO_ROOT, "skills", "*", "SKILL.md")):
             with open(skill_md, "r", encoding="utf-8") as f:
                 content = f.read()
-            if "create-artifact.py" in content and conflicting_phrase in content:
+            runtime_section = content.split(runtime_marker, 1)[1] if runtime_marker in content else ""
+            if forbidden_step in runtime_section:
                 offenders.append(skill_md)
         self.assertEqual(
             offenders, [],
