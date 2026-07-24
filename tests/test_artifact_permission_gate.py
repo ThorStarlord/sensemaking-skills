@@ -13,6 +13,16 @@ scripts/skill_executor.py), NOT `can_use_tool`: the SDK's own contract states
 A `PreToolUse` hook with `matcher=None` is documented to observe/gate every
 tool call regardless of `allowed_tools`/`permission_mode`.
 
+Correction: equality with expected_output_path alone is not sufficient
+authorization. If an ancestor directory of expected_output_path is a
+symlink/junction redirecting outside the session root, both the requested
+path and the "authorized" expected_output_path canonicalize to the same
+(relocated) location -- an equality-only check passes while the write lands
+outside the session. The gate now additionally proves expected_output_path
+resolves inside an independently-trusted artifact_session_dir (runtime-owned,
+never inferred from expected_output_path itself) via is_within_root(). See
+TestSessionRootContainment below for the containment-specific cases.
+
 These tests exercise the hook function directly (no live SDK query) and prove
 it returns the correct allow/deny decision for every case in the confinement
 matrix. They do NOT by themselves prove the CLI subprocess honors a "deny"
@@ -36,7 +46,7 @@ scripts_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scr
 if scripts_dir not in sys.path:
     sys.path.insert(0, scripts_dir)
 
-from skill_executor import canonicalize_path, build_artifact_permission_gate
+from skill_executor import canonicalize_path, is_within_root, build_artifact_permission_gate
 
 
 def run_gate(gate, tool_name, tool_input):
@@ -125,9 +135,10 @@ class TestCanonicalizePath(unittest.TestCase):
 class TestArtifactPermissionGate(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
-        self.authorized = os.path.join(self.tmp, "artifacts", "100-run", "problem_frame.md")
-        os.makedirs(os.path.dirname(self.authorized), exist_ok=True)
-        self.gate = build_artifact_permission_gate(self.authorized)
+        self.session_root = os.path.join(self.tmp, "artifacts", "100-run")
+        self.authorized = os.path.join(self.session_root, "problem_frame.md")
+        os.makedirs(self.session_root, exist_ok=True)
+        self.gate = build_artifact_permission_gate(self.authorized, self.session_root)
 
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
@@ -246,6 +257,153 @@ class TestArtifactPermissionGate(unittest.TestCase):
         ):
             run_gate(self.gate, "Write", {"file_path": candidate, "content": "x"})
             self.assertFalse(os.path.exists(os.path.normpath(candidate)))
+
+    def test_missing_session_root_fails_closed_even_with_valid_expected_path(self):
+        """expected_output_path alone, with no session root to prove containment
+        in, must not be trusted -- this is the case the equality-only check
+        used to accept silently."""
+        gate_no_root = build_artifact_permission_gate(self.authorized, None)
+        result = run_gate(gate_no_root, "Write", {"file_path": self.authorized, "content": "x"})
+        self.assertEqual(decision(result), "deny")
+
+
+class TestIsWithinRoot(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_root_itself_is_within_root(self):
+        self.assertTrue(is_within_root(self.tmp, self.tmp))
+
+    def test_child_is_within_root(self):
+        child = os.path.join(self.tmp, "sub", "file.md")
+        self.assertTrue(is_within_root(child, self.tmp))
+
+    def test_sibling_is_not_within_root(self):
+        root = os.path.join(self.tmp, "run-1")
+        sibling = os.path.join(self.tmp, "run-1-evil", "file.md")
+        self.assertFalse(is_within_root(sibling, root))
+
+    def test_different_drive_is_not_within_root(self):
+        if os.name != "nt":
+            self.skipTest("drive-letter case only applies on Windows")
+        root = os.path.join(self.tmp, "run-1")
+        other_drive = "Z:\\some\\other\\place\\file.md"
+        self.assertFalse(is_within_root(other_drive, root))
+
+
+class TestSessionRootContainment(unittest.TestCase):
+    """Required cases for the authorized-path-escape correction: equality with
+    expected_output_path is not sufficient authorization by itself -- a
+    symlinked/junctioned ancestor of expected_output_path could redirect the
+    "authorized" path itself outside the session root, so the requested and
+    authorized paths would canonicalize equal to each other while the write
+    still lands outside the session. The gate must additionally prove
+    expected_output_path resolves inside an independently-trusted session
+    root (never inferred from expected_output_path itself)."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.session_root = os.path.join(self.tmp, "artifacts", "run-1")
+        os.makedirs(self.session_root, exist_ok=True)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    # 1. Normal expected path under the canonical session root succeeds.
+    def test_expected_path_normally_inside_root_allowed(self):
+        expected = os.path.join(self.session_root, "brief.md")
+        gate = build_artifact_permission_gate(expected, self.session_root)
+        result = run_gate(gate, "Write", {"file_path": expected, "content": "x"})
+        self.assertEqual(decision(result), "allow")
+
+    # 2. Expected path with a symlinked ancestor escaping the root fails closed.
+    @unittest.skipUnless(hasattr(os, "symlink"), "symlinks not supported")
+    def test_expected_path_symlinked_ancestor_escaping_root_denied(self):
+        outside = os.path.join(self.tmp, "outside-real")
+        os.makedirs(outside, exist_ok=True)
+        escape_link = os.path.join(self.session_root, "escape-link")
+        try:
+            os.symlink(outside, escape_link, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlink creation not permitted in this environment")
+
+        # Both "expected" and "requested" go through the same escaping ancestor,
+        # so they canonicalize equal to EACH OTHER -- this is exactly the case
+        # an equality-only check would have wrongly allowed.
+        expected = os.path.join(escape_link, "brief.md")
+        gate = build_artifact_permission_gate(expected, self.session_root)
+        result = run_gate(gate, "Write", {"file_path": expected, "content": "x"})
+        self.assertEqual(decision(result), "deny")
+        self.assertFalse(os.path.exists(os.path.join(outside, "brief.md")))
+
+    # 3. Windows junction ancestor escaping the root fails where supported.
+    @unittest.skipUnless(os.name == "nt", "junctions are a Windows-specific mechanism")
+    def test_expected_path_junction_ancestor_escaping_root_denied(self):
+        outside = os.path.join(self.tmp, "outside-real-junction")
+        os.makedirs(outside, exist_ok=True)
+        junction_link = os.path.join(self.session_root, "escape-junction")
+        # mklink /J does not require the elevated privilege symlinks do on
+        # Windows, so this should run in ordinary CI/dev environments; if the
+        # platform still refuses it, skip rather than fail the suite.
+        rc = os.system(
+            f'mklink /J "{junction_link}" "{outside}" > NUL 2>&1'
+        )
+        if rc != 0 or not os.path.exists(junction_link):
+            self.skipTest("could not create a junction in this environment")
+
+        expected = os.path.join(junction_link, "brief.md")
+        gate = build_artifact_permission_gate(expected, self.session_root)
+        result = run_gate(gate, "Write", {"file_path": expected, "content": "x"})
+        self.assertEqual(decision(result), "deny")
+        self.assertFalse(os.path.exists(os.path.join(outside, "brief.md")))
+
+    # 4. Expected path on another drive fails.
+    def test_expected_path_on_another_drive_denied(self):
+        if os.name != "nt":
+            self.skipTest("drive-letter case only applies on Windows")
+        expected = "Z:\\completely\\different\\drive\\brief.md"
+        gate = build_artifact_permission_gate(expected, self.session_root)
+        result = run_gate(gate, "Write", {"file_path": expected, "content": "x"})
+        self.assertEqual(decision(result), "deny")
+
+    # 5. Missing session-root authority fails closed.
+    def test_missing_session_root_fails_closed(self):
+        expected = os.path.join(self.session_root, "brief.md")
+        gate = build_artifact_permission_gate(expected, None)
+        result = run_gate(gate, "Write", {"file_path": expected, "content": "x"})
+        self.assertEqual(decision(result), "deny")
+
+    # 6. Requested == expected still fails when expected itself resolves
+    #    outside the authorized root (the core equality-is-not-enough case).
+    @unittest.skipUnless(hasattr(os, "symlink"), "symlinks not supported")
+    def test_requested_equals_expected_but_both_resolve_outside_root_denied(self):
+        outside = os.path.join(self.tmp, "outside-real-2")
+        os.makedirs(outside, exist_ok=True)
+        escape_link = os.path.join(self.session_root, "escape-link-2")
+        try:
+            os.symlink(outside, escape_link, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlink creation not permitted in this environment")
+
+        expected = os.path.join(escape_link, "brief.md")
+        requested = os.path.join(escape_link, "brief.md")
+        self.assertEqual(canonicalize_path(expected), canonicalize_path(requested))
+
+        gate = build_artifact_permission_gate(expected, self.session_root)
+        result = run_gate(gate, "Write", {"file_path": requested, "content": "x"})
+        self.assertEqual(decision(result), "deny")
+
+    # 7. A normal nonexistent final component under the root remains allowed.
+    def test_nonexistent_final_component_under_root_allowed(self):
+        expected = os.path.join(self.session_root, "brand-new-not-yet-created.md")
+        self.assertFalse(os.path.exists(expected))
+        gate = build_artifact_permission_gate(expected, self.session_root)
+        result = run_gate(gate, "Write", {"file_path": expected, "content": "x"})
+        self.assertEqual(decision(result), "allow")
+        self.assertFalse(os.path.exists(expected))  # gate decision alone doesn't write
 
 
 if __name__ == "__main__":

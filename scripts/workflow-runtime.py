@@ -874,6 +874,12 @@ class OrchestrationRunner:
                     "step_num": step_num,
                     "resolved_inputs": resolved_inputs,
                     "expected_output_path": self._resolve_artifact_path(output_artifact),
+                    # Runtime-owned session root (issue #43): the executor's
+                    # PreToolUse gate must prove expected_output_path is contained
+                    # in this root, not just equal to itself, so a symlinked/
+                    # junctioned ancestor of expected_output_path can't silently
+                    # relocate the "authorized" destination outside the session.
+                    "artifact_session_dir": self.artifact_session_dir,
                 }
 
                 # Invoke the skill

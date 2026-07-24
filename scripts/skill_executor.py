@@ -94,6 +94,25 @@ def canonicalize_path(path: str) -> str:
     return os.path.normcase(resolved)
 
 
+def is_within_root(path: str, root: str) -> bool:
+    """True iff canonicalized `path` is `root` itself or strictly beneath it.
+
+    Uses os.path.commonpath on already-canonicalized inputs, not a string
+    prefix check: a prefix check would treat "...\\run-1-evil" as inside
+    "...\\run-1" and would not catch a symlinked/junctioned ancestor that
+    canonicalizes both the "authorized" path and a rogue path to the same
+    place outside the intended root (the exact gap this closes -- an
+    ancestor of expected_output_path that has been redirected relocates the
+    entire "authorized" destination, so equality-with-itself proves nothing;
+    only independent containment in a separately-trusted root does).
+    """
+    try:
+        return os.path.commonpath([path, root]) == root
+    except ValueError:
+        # Different drives on Windows, or otherwise not comparable.
+        return False
+
+
 # Tools this executor ever grants to the model. Anything not read-only or not
 # the single artifact-writing tool is denied by the hook below, whether or
 # not it is also excluded from allowed_tools -- the hook is the authority,
@@ -121,18 +140,41 @@ def _allow() -> dict:
     }
 
 
-def build_artifact_permission_gate(expected_output_path: Optional[str]):
+def build_artifact_permission_gate(
+    expected_output_path: Optional[str],
+    artifact_session_dir: Optional[str] = None,
+):
     """Build a PreToolUse hook callback confining writes to expected_output_path.
 
-    Closed over the runtime-resolved expected_output_path for one invocation
-    (never supplied by the model). Missing/empty expected_output_path fails
-    closed: every mutating tool call is denied, since there is nothing to
-    authorize against.
+    Closed over two runtime-owned values for one invocation (neither ever
+    supplied by the model):
+      - expected_output_path: the exact file the write must target.
+      - artifact_session_dir: the session root expected_output_path must be
+        contained in.
+
+    Equality with expected_output_path alone is NOT sufficient authorization:
+    if an ancestor directory of expected_output_path is a symlink/junction
+    that redirects outside the session root, the requested path and the
+    "authorized" path canonicalize to the same (relocated) place and would
+    pass an equality-only check while actually writing outside the session.
+    Proving containment in an independently-trusted root closes that gap --
+    the root must come from runtime state, never be inferred from
+    expected_output_path itself.
+
+    Missing/empty expected_output_path, OR missing/empty artifact_session_dir,
+    OR an expected_output_path that does not canonically resolve inside the
+    canonical session root, all fail closed: every mutating tool call is
+    denied, since there is nothing trustworthy to authorize against.
 
     Returned callable matches the SDK's HookCallback signature:
     (input_data: dict, tool_use_id: str | None, context: HookContext) -> Awaitable[dict]
     """
-    authorized_canonical = canonicalize_path(expected_output_path) if expected_output_path else None
+    authorized_canonical: Optional[str] = None
+    if expected_output_path and artifact_session_dir:
+        expected_canonical = canonicalize_path(expected_output_path)
+        root_canonical = canonicalize_path(artifact_session_dir)
+        if is_within_root(expected_canonical, root_canonical):
+            authorized_canonical = expected_canonical
 
     async def artifact_permission_gate(input_data, tool_use_id, context):
         tool_name = input_data.get("tool_name")
@@ -144,8 +186,10 @@ def build_artifact_permission_gate(expected_output_path: Optional[str]):
         if tool_name == _ARTIFACT_WRITE_TOOL:
             if authorized_canonical is None:
                 return _deny(
-                    "No expected_output_path was authorized for this invocation; "
-                    "refusing all writes (fail-closed)."
+                    "No authorized artifact destination for this invocation "
+                    "(expected_output_path/artifact_session_dir missing, or "
+                    "expected_output_path does not resolve inside the session "
+                    "root); refusing all writes (fail-closed)."
                 )
             file_path = tool_input.get("file_path")
             if not isinstance(file_path, str) or not file_path.strip():
@@ -455,6 +499,21 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         expected_output_path = resolve_output_path(self.repo_root, expected_output_artifact, context)
         relative_output_path = os.path.relpath(expected_output_path, self.repo_root)
 
+        # Session root the expected_output_path must be contained in (issue #43
+        # follow-up): equality with expected_output_path alone doesn't prove the
+        # write lands inside the session, because a symlinked/junctioned ancestor
+        # of expected_output_path could redirect the "authorized" path itself
+        # outside the session root -- both the requested and authorized paths
+        # would then canonicalize equal to each other while landing elsewhere.
+        # artifact_session_dir is runtime-owned state (OrchestrationRunner sets
+        # it, never the model); when the runtime is not driving this invocation
+        # (e.g. standalone/manual executor use with no session), fall back to
+        # this executor's own repo_root/artifacts, which is likewise never
+        # model-supplied.
+        artifact_session_dir = context.get("artifact_session_dir") or os.path.join(
+            self.repo_root, "artifacts"
+        )
+
         prompt = (
             f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
             f"{input_section}"
@@ -476,7 +535,9 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         # allowed_tools is narrowed too, as defense-in-depth on top of the hook, not
         # as the enforcement mechanism itself -- can_use_tool would have been a fake
         # gate here since Write/Bash would already be pre-permitted by allowed_tools.
-        artifact_permission_gate = build_artifact_permission_gate(expected_output_path)
+        artifact_permission_gate = build_artifact_permission_gate(
+            expected_output_path, artifact_session_dir
+        )
 
         try:
             # Query the Claude Agent SDK
