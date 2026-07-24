@@ -134,9 +134,11 @@ def main() -> int:
     
     out_path = os.path.abspath(out_path)
 
-    # Refuse to clobber an existing file unless explicitly forced. A runtime-owned
-    # session-scoped path is always fresh (new run directory), so this only ever
-    # blocks the failure mode where a skill ignores the runtime-provided
+    # Refuse to clobber an existing file unless explicitly forced. For a new runtime
+    # session this path is typically fresh (new session directory). When reusing a
+    # session (e.g. via --from-session), the file may already exist and callers should
+    # pass --force if an overwrite is truly intended.
+    # This also blocks the failure mode where a skill ignores the runtime-provided
     # expected_output_path and recomputes a path that collides with an existing,
     # already-tracked framework artifact (see ADR 0010 / issue #40).
     if os.path.exists(out_path) and not args.force:
