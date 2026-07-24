@@ -99,6 +99,15 @@ def main() -> int:
     parser.add_argument("--run-id", help="Run ID of the active session (optional)")
     parser.add_argument("--step-id", help="Step ID of the active step (optional)")
     parser.add_argument("--repo-root", default=".", help="Root directory of the repository")
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite the target path even if it already exists. Without this flag, "
+             "an existing file at the resolved path aborts the write — this is what "
+             "stops a skill that independently recomputes its output path (instead of "
+             "using the runtime-provided expected_output_path) from silently clobbering "
+             "an already-existing tracked framework artifact.",
+    )
 
     args = parser.parse_args()
 
@@ -124,6 +133,20 @@ def main() -> int:
         out_path = os.path.join(repo_root, "artifacts", args.run_id, f"{args.step_id}-{args.artifact_id}.md")
     
     out_path = os.path.abspath(out_path)
+
+    # Refuse to clobber an existing file unless explicitly forced. A runtime-owned
+    # session-scoped path is always fresh (new run directory), so this only ever
+    # blocks the failure mode where a skill ignores the runtime-provided
+    # expected_output_path and recomputes a path that collides with an existing,
+    # already-tracked framework artifact (see ADR 0010 / issue #40).
+    if os.path.exists(out_path) and not args.force:
+        print(
+            f"[ERROR] Refusing to overwrite existing file at {out_path} without --force. "
+            f"If this is a runtime-driven run, write to the session-scoped "
+            f"expected_output_path provided in context instead of recomputing a path here.",
+            file=sys.stderr,
+        )
+        return 1
 
     # Resolve intent-ref
     intent_ref = args.intent_ref
