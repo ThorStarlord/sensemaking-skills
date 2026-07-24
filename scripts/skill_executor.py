@@ -49,6 +49,170 @@ def resolve_output_path(repo_root: str, expected_output_artifact: str, context: 
 
 
 # ============================================================================
+# Session-root artifact-write confinement (issue #43)
+# ============================================================================
+#
+# create-artifact.py's own overwrite guard (PR #41 / issue #40) only stops a
+# collision with an EXISTING tracked file. A fresh path outside the active
+# session is not caught by anything: nothing checks WHERE expected_output_path
+# is honored, only whether it exists once written. This section closes that
+# gap for the Claude Agent SDK executor by making runtime artifact writes
+# structurally confined, not just contract-conformant.
+#
+# Mechanism: a `PreToolUse` hook, not `can_use_tool`. The SDK's own contract
+# (claude_agent_sdk.types.ClaudeAgentOptions.can_use_tool docstring) states
+# can_use_tool is only invoked for tool calls that would otherwise prompt the
+# user -- it is never invoked for a tool already permitted by allowed_tools.
+# Since Write/Bash/etc. are named in allowed_tools below, can_use_tool would
+# never fire for them and would be a fake gate. A PreToolUse hook with
+# matcher=None is documented to observe/gate every tool call regardless of
+# allowed_tools/permission_mode, which is what "structural confinement"
+# requires.
+
+
+def canonicalize_path(path: str) -> str:
+    """Canonicalize a path for authorization comparison.
+
+    Resolves to an absolute, symlink/junction-resolved, case-normalized form
+    so that two different spellings of the same on-disk location (relative
+    vs. absolute, mixed drive-letter case, a symlinked ancestor, a `..`
+    traversal) compare equal, while genuinely different locations never do.
+
+    Deliberately NOT a string-prefix check: a prefix match would treat
+    "artifacts/100-run-2" as inside "artifacts/100-run" and is defeated by
+    ".." components without normalization first.
+
+    `os.path.realpath` resolves symlinks/junctions for whatever prefix of the
+    path currently exists on disk; for a not-yet-created final path
+    component (the common case -- the artifact doesn't exist yet) there is
+    nothing to resolve for that component, so it is carried through
+    unchanged. That is correct here: authorization is about *where* the
+    write will land, and only existing ancestor directories can be
+    symlinked into another location.
+    """
+    resolved = os.path.realpath(os.path.abspath(os.path.normpath(path)))
+    return os.path.normcase(resolved)
+
+
+def is_within_root(path: str, root: str) -> bool:
+    """True iff canonicalized `path` is `root` itself or strictly beneath it.
+
+    Uses os.path.commonpath on already-canonicalized inputs, not a string
+    prefix check: a prefix check would treat "...\\run-1-evil" as inside
+    "...\\run-1" and would not catch a symlinked/junctioned ancestor that
+    canonicalizes both the "authorized" path and a rogue path to the same
+    place outside the intended root (the exact gap this closes -- an
+    ancestor of expected_output_path that has been redirected relocates the
+    entire "authorized" destination, so equality-with-itself proves nothing;
+    only independent containment in a separately-trusted root does).
+    """
+    try:
+        return os.path.commonpath([path, root]) == root
+    except ValueError:
+        # Different drives on Windows, or otherwise not comparable.
+        return False
+
+
+# Tools this executor ever grants to the model. Anything not read-only or not
+# the single artifact-writing tool is denied by the hook below, whether or
+# not it is also excluded from allowed_tools -- the hook is the authority,
+# allowed_tools is defense-in-depth on top of it.
+_READ_ONLY_TOOLS = frozenset({"Read", "Glob", "Grep"})
+_ARTIFACT_WRITE_TOOL = "Write"
+
+
+def _deny(message: str) -> dict:
+    return {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "deny",
+            "permissionDecisionReason": message,
+        }
+    }
+
+
+def _allow() -> dict:
+    return {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "allow",
+        }
+    }
+
+
+def build_artifact_permission_gate(
+    expected_output_path: Optional[str],
+    artifact_session_dir: Optional[str] = None,
+):
+    """Build a PreToolUse hook callback confining writes to expected_output_path.
+
+    Closed over two runtime-owned values for one invocation (neither ever
+    supplied by the model):
+      - expected_output_path: the exact file the write must target.
+      - artifact_session_dir: the session root expected_output_path must be
+        contained in.
+
+    Equality with expected_output_path alone is NOT sufficient authorization:
+    if an ancestor directory of expected_output_path is a symlink/junction
+    that redirects outside the session root, the requested path and the
+    "authorized" path canonicalize to the same (relocated) place and would
+    pass an equality-only check while actually writing outside the session.
+    Proving containment in an independently-trusted root closes that gap --
+    the root must come from runtime state, never be inferred from
+    expected_output_path itself.
+
+    Missing/empty expected_output_path, OR missing/empty artifact_session_dir,
+    OR an expected_output_path that does not canonically resolve inside the
+    canonical session root, all fail closed: every mutating tool call is
+    denied, since there is nothing trustworthy to authorize against.
+
+    Returned callable matches the SDK's HookCallback signature:
+    (input_data: dict, tool_use_id: str | None, context: HookContext) -> Awaitable[dict]
+    """
+    authorized_canonical: Optional[str] = None
+    if expected_output_path and artifact_session_dir:
+        expected_canonical = canonicalize_path(expected_output_path)
+        root_canonical = canonicalize_path(artifact_session_dir)
+        if is_within_root(expected_canonical, root_canonical):
+            authorized_canonical = expected_canonical
+
+    async def artifact_permission_gate(input_data, tool_use_id, context):
+        tool_name = input_data.get("tool_name")
+        tool_input = input_data.get("tool_input") or {}
+
+        if tool_name in _READ_ONLY_TOOLS:
+            return _allow()
+
+        if tool_name == _ARTIFACT_WRITE_TOOL:
+            if authorized_canonical is None:
+                return _deny(
+                    "No authorized artifact destination for this invocation "
+                    "(expected_output_path/artifact_session_dir missing, or "
+                    "expected_output_path does not resolve inside the session "
+                    "root); refusing all writes (fail-closed)."
+                )
+            file_path = tool_input.get("file_path")
+            if not isinstance(file_path, str) or not file_path.strip():
+                return _deny(
+                    "Write call is missing a valid file_path; refusing (fail-closed)."
+                )
+            if canonicalize_path(file_path) != authorized_canonical:
+                return _deny(
+                    f"Write to '{file_path}' is not the runtime-authorized artifact "
+                    f"path. This invocation may only write to: {expected_output_path}"
+                )
+            return _allow()
+
+        return _deny(
+            f"Tool '{tool_name}' is not permitted during runtime-owned artifact "
+            f"writes. Only {sorted(_READ_ONLY_TOOLS)} and "
+            f"'{_ARTIFACT_WRITE_TOOL}' (to the authorized path) are allowed."
+        )
+
+    return artifact_permission_gate
+
+
+# ============================================================================
 # Status Enum
 # ============================================================================
 
@@ -312,7 +476,7 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         context: dict,
     ) -> SkillExecutionResult:
         """Async implementation of skill invocation via Claude Agent SDK."""
-        from claude_agent_sdk import query, ClaudeAgentOptions
+        from claude_agent_sdk import query, ClaudeAgentOptions, HookMatcher
 
         # Build prompt that instructs Claude to run the skill
         resolved_inputs = context.get("resolved_inputs", {})
@@ -335,6 +499,21 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         expected_output_path = resolve_output_path(self.repo_root, expected_output_artifact, context)
         relative_output_path = os.path.relpath(expected_output_path, self.repo_root)
 
+        # Session root the expected_output_path must be contained in (issue #43
+        # follow-up): equality with expected_output_path alone doesn't prove the
+        # write lands inside the session, because a symlinked/junctioned ancestor
+        # of expected_output_path could redirect the "authorized" path itself
+        # outside the session root -- both the requested and authorized paths
+        # would then canonicalize equal to each other while landing elsewhere.
+        # artifact_session_dir is runtime-owned state (OrchestrationRunner sets
+        # it, never the model); when the runtime is not driving this invocation
+        # (e.g. standalone/manual executor use with no session), fall back to
+        # this executor's own repo_root/artifacts, which is likewise never
+        # model-supplied.
+        artifact_session_dir = context.get("artifact_session_dir") or os.path.join(
+            self.repo_root, "artifacts"
+        )
+
         prompt = (
             f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
             f"{input_section}"
@@ -351,6 +530,15 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         # Capture SDK result and error info for diagnostic classification
         sdk_last_result_info: str | None = None
 
+        # Runtime artifact-write confinement (issue #43): the PreToolUse hook below
+        # is the authoritative enforcement point (see build_artifact_permission_gate).
+        # allowed_tools is narrowed too, as defense-in-depth on top of the hook, not
+        # as the enforcement mechanism itself -- can_use_tool would have been a fake
+        # gate here since Write/Bash would already be pre-permitted by allowed_tools.
+        artifact_permission_gate = build_artifact_permission_gate(
+            expected_output_path, artifact_session_dir
+        )
+
         try:
             # Query the Claude Agent SDK
             async for message in query(
@@ -359,7 +547,12 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     cwd=self.repo_root,
                     setting_sources=["project", "user"],
                     skills=[skill_id],
-                    allowed_tools=["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+                    allowed_tools=["Read", "Write", "Glob", "Grep"],
+                    hooks={
+                        "PreToolUse": [
+                            HookMatcher(matcher=None, hooks=[artifact_permission_gate]),
+                        ],
+                    },
                 ),
             ):
                 # Capture ResultMessage error info for classification
