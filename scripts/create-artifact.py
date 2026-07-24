@@ -103,7 +103,7 @@ def main() -> int:
         "--force",
         action="store_true",
         help="Overwrite the target path even if it already exists. Without this flag, "
-             "an existing file at the resolved path aborts the write — this is what "
+             "an existing file at the resolved path aborts the write; this is what "
              "stops a skill that independently recomputes its output path (instead of "
              "using the runtime-provided expected_output_path) from silently clobbering "
              "an already-existing tracked framework artifact.",
