@@ -34,7 +34,7 @@ When executing as part of a workflow run:
 
 1. Read the provided run_id, step_id, input artifacts, and expected artifact_id.
 2. Call `scripts/run-ledger.py start-step`.
-3. Call `scripts/create-artifact.py` to resolve the output path.
+3. The runtime already resolved the output path and passed it as `expected_output_path` in context — use that path verbatim. Never call `scripts/create-artifact.py` (or otherwise recompute a path) during a runtime-invoked run; that path-recomputation is what caused a prior run to overwrite a tracked framework artifact (see ADR 0010, issue #40).
 4. Produce the artifact at that exact path.
 5. Call `scripts/validate-and-record.py`.
 6. Only report completion if validation passes.
