@@ -2124,7 +2124,12 @@ class OrchestrationRunner:
                 "modes_proven": [self.mode],
             })
 
-        # Aggregate workflow families
+        # Aggregate workflow families. Union the families visible in the
+        # current mode_coverage: list with whatever was already recorded as
+        # proven historically -- do not replace the historical ledger with
+        # only what the (possibly trimmed) per-entry list currently shows.
+        # See issue #56: a run that only touches 2 families must not shrink
+        # a 17-family workflow_families_proven list down to those 2.
         workflows_run = set()
         for entry in mode_entries:
             wf = entry.get("workflow_id", "")
@@ -2132,9 +2137,11 @@ class OrchestrationRunner:
                 workflows_run.add(wf)
 
         coverage.setdefault("orchestration_runner", {})
+        previously_proven = set(coverage["orchestration_runner"].get("workflow_families_proven", []) or [])
+        workflow_families_proven = previously_proven | workflows_run
         coverage["orchestration_runner"]["last_run"] = datetime.now().strftime("%Y-%m-%d")
-        coverage["orchestration_runner"]["workflow_families_proven"] = sorted(workflows_run)
-        coverage["orchestration_runner"]["total_workflow_families"] = len(workflows_run)
+        coverage["orchestration_runner"]["workflow_families_proven"] = sorted(workflow_families_proven)
+        coverage["orchestration_runner"]["total_workflow_families"] = len(workflow_families_proven)
 
         _save_mode_coverage(coverage, self.repo_root)
         print(f"  [OK] Mode coverage updated")
