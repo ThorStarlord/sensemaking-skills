@@ -10,6 +10,7 @@ import json
 import sys
 import os
 import subprocess
+import tempfile
 import shutil
 from pathlib import Path
 from datetime import datetime
@@ -24,12 +25,31 @@ class TestYoloExecutionWithSkills(unittest.TestCase):
         # Resolve repo root
         test_dir = Path(__file__).parent
         cls.repo_root = test_dir.parent.parent
-        cls.artifacts_dir = cls.repo_root / "artifacts"
         cls.scripts_dir = cls.repo_root / "scripts"
 
-        # Clean artifacts dir of stale runs
-        shutil.rmtree(cls.artifacts_dir, ignore_errors=True)
-        cls.artifacts_dir.mkdir(exist_ok=True)
+        # Session artifacts must never land in the real, committed artifacts/
+        # tree (see issue #42) — use --from-session with an isolated tempdir,
+        # the same confinement mechanism ADR 0010 established, instead of
+        # letting the runtime create its own numbered folder under repo_root.
+        cls._session_tempdir = tempfile.mkdtemp(
+            prefix="orchestration-yolo-execution-with-skills-", dir=str(cls.repo_root.parent)
+        )
+        cls.session_dir = Path(cls._session_tempdir)
+        intent_path = cls.session_dir / "00-user-intent.md"
+        intent_path.write_text(
+            '# User Intent\n\n'
+            '## Machine-readable intent\n\n'
+            '```yaml\n'
+            'artifact_id: user_intent\n'
+            'intent_source: integration-test\n'
+            'scope_mode: focused\n'
+            'raw_problem_statement: "Test yolo_execution mode integration"\n'
+            'created_at: "2026-07-25T00:00:00Z"\n'
+            'created_by: "yolo-execution-integration-test"\n'
+            'immutable: false\n'
+            '```\n',
+            encoding="utf-8",
+        )
 
         # Set environment for yolo execution
         os.environ["SENSEMAKING_EXECUTION_MODE"] = "yolo"
@@ -39,6 +59,8 @@ class TestYoloExecutionWithSkills(unittest.TestCase):
             str(cls.scripts_dir / "workflow-runtime.py"),
             "--workflow", "fast-local-diagnostic",
             "--mode", "yolo_execution",
+            "--repo-root", str(cls.repo_root),
+            "--from-session", str(cls.session_dir),
             "--executor", "dry-run",
             "--use-fixtures",
         ]
@@ -52,15 +74,11 @@ class TestYoloExecutionWithSkills(unittest.TestCase):
         )
 
         cls.output = cls.result.stdout + cls.result.stderr
+        cls.summary_path = cls.session_dir / "workflow_summary.json"
 
-        # Locate the session directory
-        session_dirs = [d for d in cls.artifacts_dir.iterdir() if d.is_dir() and d.name.endswith("-orchestration-run")]
-        if session_dirs:
-            cls.session_dir = session_dirs[0]
-            cls.summary_path = cls.session_dir / "workflow_summary.json"
-        else:
-            cls.session_dir = None
-            cls.summary_path = None
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls._session_tempdir, ignore_errors=True)
 
     def test_execution_plan_created_by_yolo_mode(self):
         """Verify that yolo_execution mode creates a plan and summary."""
