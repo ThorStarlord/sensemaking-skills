@@ -1,0 +1,11 @@
+Stage 1 command exit code: 1 (SUMMARY line: "Status: failed", "Steps: 0/2", "Errors: 1")
+Step 1 (repo-sensemaker) executed live and produced repository_sensemaking_brief.md,
+but validate-and-report.py rejected it (7 errors: HALLUCINATED_WORKFLOW_ID for
+recommended_workflow_id='docs-aligner' not in workflow-registry.yaml, plus 6
+INVALID_LINE_FORMAT errors on excerpt citations). Execution halted before Step 2
+(architectural-review) was ever attempted, so no recommendation was produced and
+Stage 2 was not run.
+Target repository status after run: clean (git status --short empty in target-0002).
+Framework repository status after run: only the new session directory
+(artifacts/05-orchestration-run/) and docs/mode-coverage.yaml (run-tracking file,
+updated by design) changed -- no other framework pollution.

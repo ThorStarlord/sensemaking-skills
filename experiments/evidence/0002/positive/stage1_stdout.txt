@@ -1,0 +1,90 @@
+
+============================================================
+PRE-FLIGHT CHECK  |  Workflow: architectural-review-planning-workflow  Mode: guided_execution
+Session: orchestration-20260725-101913-76791b95
+============================================================
+
+  [OK] GIT: clean worktree
+  ~ Branch: experiments/0002-live-golden-path-proof
+  [OK] LEVEL 1: validate-repo.py PASSED
+
+  [OK] All pre-flight checks passed.
+
+[OK] Created user intent artifact: artifacts\05-orchestration-run\00-user-intent.md
+============================================================
+PHASE 2: GENERATE PLAN
+============================================================
+  [OK] Plan written to H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a71d0c50e38cec9fe\artifacts\05-orchestration-run\plan_architectural-review-planning-workflow.md
+
+PHASE 2b: DIAGNOSTIC REPORT
+============================================================
+  [OK] Diagnostic report: artifacts\05-orchestration-run\diagnostic_architectural-review-planning-workflow_guided_execution.md
+
+============================================================
+PHASE 3: EXECUTE STEPS  (2 total)
+============================================================
+
+--------------------------------------------------
+STEP 1/2  |  Skill: repo-sensemaker  |  Gate: review_diagnosis
+--------------------------------------------------
+  [SKILL_EXECUTED] Skill 'repo-sensemaker' executed and produced artifact
+  -> Running unified validator: validate-and-report.py
+    [FAIL] Validation failed (1.1s)
+      - repository_sensemaking_brief.recommended_workflow_id.unknown_value: HALLUCINATED_WORKFLOW_ID: Recommended workflow ID 'docs-aligner' not found in re
+      - ?: INVALID_LINE_FORMAT: Excerpt[0] has invalid lines format: See `escalation_recomm
+      - ?: INVALID_LINE_FORMAT: Excerpt[1] has invalid lines format: Entire skill file (exp
+      ... and 4 more errors
+
+  [FAIL] Step 1 FAILED. Halting execution.
+
+============================================================
+PHASE 4: WRITE RUN LOG
+============================================================
+
+  [OK] Run log written to H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a71d0c50e38cec9fe\artifacts\05-orchestration-run\run_log_architectural-review-planning-workflow_guided_execution.md
+
+PHASE 4b: IMPLEMENTATION REPORT
+============================================================
+  [OK] Implementation report: artifacts\05-orchestration-run\implementation_architectural-review-planning-workflow_guided_execution.md
+
+PHASE 4c: WORKFLOW SUMMARY (MACHINE-READABLE)
+============================================================
+  [OK] Workflow summary JSON: artifacts\05-orchestration-run\workflow_summary.json
+
+PHASE 4d: WORKFLOW PRESENTATION (HUMAN-READABLE)
+============================================================
+
+============================================================
+INVOKING PRESENTATION SKILL: workflow-presenter
+============================================================
+  ~ workflow-presenter skill not found at H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a71d0c50e38cec9fe\skills\workflow-presenter\workflow-presenter.py
+    Presentation will be skipped; JSON summary available at H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a71d0c50e38cec9fe\artifacts\05-orchestration-run\workflow_summary.json
+
+============================================================
+PHASE 5: UPDATE MODE COVERAGE
+============================================================
+  [OK] Mode coverage updated
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ROLLBACK RECOMMENDED
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Branch: experiments/0002-live-golden-path-proof
+To revert all changes, run:
+  git reset --hard HEAD
+  git clean -fd
+(Review changes first with 'git diff')
+
+
+============================================================
+SUMMARY
+============================================================
+  Workflow:     architectural-review-planning-workflow
+  Mode:         guided_execution
+  Session:      orchestration-20260725-101913-76791b95
+  Status:       failed
+  Steps:        0/2
+  Gates:        0
+  Errors:       1
+  Run Log:      H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a71d0c50e38cec9fe\artifacts\05-orchestration-run\run_log_architectural-review-planning-workflow_guided_execution.md
+
+  [WARN]  Execution completed with failures.
