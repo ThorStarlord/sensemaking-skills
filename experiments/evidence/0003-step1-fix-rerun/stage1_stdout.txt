@@ -1,0 +1,87 @@
+
+============================================================
+PRE-FLIGHT CHECK  |  Workflow: architectural-review-planning-workflow  Mode: guided_execution
+Session: orchestration-20260725-135900-10e86c0c
+============================================================
+
+  [OK] GIT: clean worktree
+  ~ Branch: fix/repo-sensemaker-live-contract
+  [OK] LEVEL 1: validate-repo.py PASSED
+
+  [OK] All pre-flight checks passed.
+
+[OK] Created user intent artifact: artifacts\05-orchestration-run\00-user-intent.md
+============================================================
+PHASE 2: GENERATE PLAN
+============================================================
+  [OK] Plan written to H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a786fdc51936f4e90\artifacts\05-orchestration-run\plan_architectural-review-planning-workflow.md
+
+PHASE 2b: DIAGNOSTIC REPORT
+============================================================
+  [OK] Diagnostic report: _tmp_evidence_0003\diagnostic_architectural-review-planning-workflow_guided_execution.md
+
+============================================================
+PHASE 3: EXECUTE STEPS  (2 total)
+============================================================
+
+--------------------------------------------------
+STEP 1/2  |  Skill: repo-sensemaker  |  Gate: review_diagnosis
+--------------------------------------------------
+  [SKILL_EXECUTED] Skill 'repo-sensemaker' executed and produced artifact
+  -> Running unified validator: validate-and-report.py
+    [FAIL] Validation failed (0.2s)
+      - unknown.artifact_id.missing_field: Cannot determine artifact_id from file. Generic validator requires artifact_id t
+
+  [FAIL] Step 1 FAILED. Halting execution.
+
+============================================================
+PHASE 4: WRITE RUN LOG
+============================================================
+
+  [OK] Run log written to H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a786fdc51936f4e90\_tmp_evidence_0003\run_log_architectural-review-planning-workflow_guided_execution.md
+
+PHASE 4b: IMPLEMENTATION REPORT
+============================================================
+  [OK] Implementation report: _tmp_evidence_0003\implementation_architectural-review-planning-workflow_guided_execution.md
+
+PHASE 4c: WORKFLOW SUMMARY (MACHINE-READABLE)
+============================================================
+  [OK] Workflow summary JSON: _tmp_evidence_0003\workflow_summary.json
+
+PHASE 4d: WORKFLOW PRESENTATION (HUMAN-READABLE)
+============================================================
+
+============================================================
+INVOKING PRESENTATION SKILL: workflow-presenter
+============================================================
+  ~ workflow-presenter skill not found at H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a786fdc51936f4e90\skills\workflow-presenter\workflow-presenter.py
+    Presentation will be skipped; JSON summary available at H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a786fdc51936f4e90\_tmp_evidence_0003\workflow_summary.json
+
+============================================================
+PHASE 5: UPDATE MODE COVERAGE
+============================================================
+  [OK] Mode coverage updated
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ROLLBACK RECOMMENDED
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Branch: fix/repo-sensemaker-live-contract
+To revert all changes, run:
+  git reset --hard HEAD
+  git clean -fd
+(Review changes first with 'git diff')
+
+
+============================================================
+SUMMARY
+============================================================
+  Workflow:     architectural-review-planning-workflow
+  Mode:         guided_execution
+  Session:      orchestration-20260725-135900-10e86c0c
+  Status:       failed
+  Steps:        0/2
+  Gates:        0
+  Errors:       1
+  Run Log:      H:\GithubRepositories\sensemaking-skills\.claude\worktrees\agent-a786fdc51936f4e90\_tmp_evidence_0003\run_log_architectural-review-planning-workflow_guided_execution.md
+
+  [WARN]  Execution completed with failures.
