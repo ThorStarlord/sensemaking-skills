@@ -1,6 +1,6 @@
 # Weakness Types in Repositories
 
-When identifying the **Weakest Boundary**, look for these common types:
+When identifying the Weakest Boundary, look for these common types:
 
 1. **Vocabulary Drift**: Terms used in the README don't match the code or directory structure.
 2. **Contract Mismatch**: Files claim to be one format (e.g., `.yaml`) but are actually another (e.g., Markdown).

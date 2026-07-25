@@ -1,0 +1,2 @@
+{"timestamp": "2026-07-25T21:04:41.605192Z", "event": "run_started", "run_id": "orchestration-20260725-180432-e787fc41", "workflow_id": "architectural-review-planning-workflow", "mode": "guided_execution", "git_commit": "a3ea1e0440ce7eb68e2a3bdffe273c294cd1c5db"}
+{"timestamp": "2026-07-25T21:04:41.666722Z", "event": "step_started", "step_id": "1", "skill_id": "repo-sensemaker", "output_artifact": "repository_sensemaking_brief"}

@@ -25,6 +25,15 @@ The most ambiguous, unproven, unsafe, or unenforced part of the repo.
 
 `**Weakness type:** <one of the recognized types>`
 
+Example: `**Weakness type:** Zero Validation`
+
+**This weakness-type enum is a completely different vocabulary from the
+fog-type classification in Section 6.5 below.** Do not answer this question
+with a fog-type value (e.g. `architecture_fog`) -- only the seven weakness
+types listed above are valid here.
+
+---
+
 ## 6.5. Problem classification (fog type)
 Classify the primary type of uncertainty or problem:
 - **product_fog**: Vague user needs, unclear feature requirements, undocumented workflows
@@ -37,6 +46,19 @@ This classification determines which implementation workflow will be used downst
 ## 7. Evidence
 File-level evidence supporting the diagnosis (cites specific files and line ranges,
 e.g. `scripts/validate-brief.py:46`).
+
+**This section's own prose must contain at least one literal file-path
+citation** (e.g. `scripts/validate-brief.py:46`), even though Section 8
+(evidence excerpts) and Section 13 (machine-readable `evidence:` list) also
+carry structured citations. The validator checks Section 7's prose
+independently -- citations that appear only in Sections 8/13 do not satisfy
+this requirement.
+
+Minimal valid example:
+
+> `scripts/validate-brief.py:259` shows the Evidence-section check runs
+> independently of the evidence_excerpts block in Section 8, which is why a
+> citation must also appear here in Section 7's own prose.
 
 **Logic trace (required):** Show the diagnostic reasoning that connects the cited
 evidence to the weakest boundary — i.e., the chain from observed signals to your
@@ -114,9 +136,9 @@ escalation_recommended: false
 evidence:
   - "README.md (lines 5-12): feature requirements are vague, no user context"
   - "docs/ARCHITECTURE.md: does not exist"
-recommended_workflow_id: product-implementation-workflow
+recommended_workflow_id: product-implementation-workflow  # must be a top-level id from workflow-registry.yaml
 recommended_execution_mode: guided_execution
-weakest_boundary: analytics_feedback_gap
+weakest_boundary: Zero Validation  # must be one of the 7 weakness types (weakness-types.md), NOT a fog-type value
 required_inputs:
   - user_intent
   - repository_state
