@@ -25,6 +25,9 @@ from typing import Optional
 # SDK type imports for error classification
 from claude_agent_sdk import ResultMessage
 
+# Runtime-owned skeleton for repository_sensemaking_brief (issue #55).
+import brief_skeleton
+
 
 # ============================================================================
 # Output path resolution (shared by real executors)
@@ -210,6 +213,83 @@ def build_artifact_permission_gate(
         )
 
     return artifact_permission_gate
+
+
+# ============================================================================
+# Tool-call trace logging (Phase 4, issue #55)
+# ============================================================================
+#
+# Live runs (like PR #54's) had no transcript to inspect after the fact --
+# only the final artifact (or its absence). These hooks record every tool
+# call the model makes during a skill invocation to a session-scoped JSONL
+# file so a failed run can be diagnosed from evidence instead of guesswork.
+#
+# Deliberately NOT logged: tool_input contents beyond the file path (so a
+# Read/Write/Edit's actual file *content* is never captured), environment
+# variables, or anything from input_data outside tool_name/tool_input/path.
+
+def _trace_event(event: str, tool_name: str, file_path: Optional[str], decision: str, extra: Optional[dict] = None) -> dict:
+    entry = {
+        "timestamp": datetime.now().isoformat(),
+        "event": event,  # PreToolUse | PostToolUse
+        "tool_name": tool_name,
+        "file_path": file_path,
+        "decision": decision,  # allow | deny | ok | error
+    }
+    if extra:
+        entry.update(extra)
+    return entry
+
+
+def build_tool_trace_hooks(trace_log: list, expected_output_path: Optional[str] = None):
+    """Build PreToolUse/PostToolUse hook callbacks that append to `trace_log`.
+
+    `trace_log` is a plain list the caller owns and writes to disk after the
+    invocation completes -- these hooks never touch disk themselves so a
+    crash mid-run still leaves the caller with whatever was appended so far.
+    """
+
+    async def pre_trace(input_data, tool_use_id, context):
+        tool_name = input_data.get("tool_name")
+        tool_input = input_data.get("tool_input") or {}
+        file_path = tool_input.get("file_path") if isinstance(tool_input, dict) else None
+        is_expected_write = bool(
+            expected_output_path and file_path and tool_name in ("Write", "Edit")
+            and os.path.abspath(file_path) == os.path.abspath(expected_output_path)
+        )
+        trace_log.append(_trace_event(
+            "PreToolUse", tool_name, file_path, "observed",
+            extra={"targets_expected_artifact": is_expected_write} if file_path else None,
+        ))
+        # This hook only observes; build_artifact_permission_gate is the
+        # authoritative allow/deny decision. Returning {} lets that other
+        # PreToolUse hook (registered alongside this one) make the call.
+        return {}
+
+    async def post_trace(input_data, tool_use_id, context):
+        tool_name = input_data.get("tool_name")
+        tool_input = input_data.get("tool_input") or {}
+        file_path = tool_input.get("file_path") if isinstance(tool_input, dict) else None
+        trace_log.append(_trace_event("PostToolUse", tool_name, file_path, "completed"))
+        return {}
+
+    return pre_trace, post_trace
+
+
+def write_tool_trace(trace_log: list, session_dir: Optional[str], repo_root: str) -> Optional[str]:
+    """Write the accumulated trace to a session-scoped JSONL file. Returns the path written, or None."""
+    if not trace_log:
+        return None
+    target_dir = session_dir or os.path.join(repo_root, "artifacts")
+    try:
+        os.makedirs(target_dir, exist_ok=True)
+        trace_path = os.path.join(target_dir, "tool-call-trace.jsonl")
+        with open(trace_path, "a", encoding="utf-8") as f:
+            for entry in trace_log:
+                f.write(json.dumps(entry, default=str) + "\n")
+        return trace_path
+    except OSError:
+        return None
 
 
 # ============================================================================
@@ -514,18 +594,62 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
             self.repo_root, "artifacts"
         )
 
-        prompt = (
-            f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
-            f"{input_section}"
-            f"## Your Task\n"
-            f"Use the/{skill_id} slash command or the skill definition to produce the required output.\n\n"
-            f"## Output Artifact (REQUIRED)\n"
-            f"You MUST write the final artifact to this exact path:\n"
-            f"```\n{relative_output_path}\n```\n\n"
-            f"Use the Write tool to create this file. The artifact must be markdown format (.md) "
-            f"and must match the expected output format for this skill.\n\n"
-            f"Do not stop until the artifact file exists at the specified path."
-        )
+        # --- Runtime-owned skeleton (issue #55) ---------------------------------
+        # For repository_sensemaking_brief specifically, the runtime pre-creates
+        # the canonical artifact envelope at expected_output_path *before* the
+        # model ever runs, and reconciles whatever the model produced back into
+        # that envelope afterward. See scripts/brief_skeleton.py for why: PR #54
+        # showed a free-form model cannot reliably reproduce deterministic
+        # artifact grammar (the YAML fence was omitted entirely in that run).
+        # Other artifact types are unaffected -- this is scoped to the one
+        # artifact issue #55 targets, not a general renderer (Architecture 3).
+        uses_runtime_skeleton = expected_output_artifact == brief_skeleton.ARTIFACT_ID
+        skeleton_ctx = None
+        if uses_runtime_skeleton:
+            skeleton_ctx = brief_skeleton.SkeletonContext(
+                source_intent_ref=context.get("source_intent_ref", brief_skeleton.SkeletonContext().source_intent_ref),
+            )
+            os.makedirs(os.path.dirname(expected_output_path), exist_ok=True)
+            with open(expected_output_path, "w", encoding="utf-8") as f:
+                f.write(brief_skeleton.build_skeleton(skeleton_ctx))
+
+        if uses_runtime_skeleton:
+            prompt = (
+                f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
+                f"{input_section}"
+                f"## Your Task\n"
+                f"A runtime-owned artifact skeleton already exists at:\n"
+                f"```\n{relative_output_path}\n```\n\n"
+                f"Read it first. It already contains the required headings and the "
+                f"machine-readable YAML fence with runtime-owned fields "
+                f"(artifact_id, schema_version, source_intent_ref, created_at, "
+                f"immutable) filled in -- do NOT try to recreate or reorder those.\n\n"
+                f"## Your only job\n"
+                f"Fill in the content between each `<!-- MODEL_SECTION:<name>:BEGIN -->` "
+                f"/ `<!-- MODEL_SECTION:<name>:END -->` marker pair with your analysis, "
+                f"and fill in the placeholder YAML fields in Section 13 "
+                f"(user_implied_fog_type, primary_fog_type, diagnosis_conflict, "
+                f"escalation_recommended, evidence, recommended_workflow_id, "
+                f"recommended_execution_mode, weakest_boundary) and the "
+                f"evidence_excerpts YAML block under Section 8.\n\n"
+                f"Use the Write tool, writing the FULL file content back to the exact "
+                f"path above (with your filled-in sections/fields, keeping the marker "
+                f"comments and the existing headings/fence in place). Do not invent a "
+                f"different structure. Do not stop until you have written that file."
+            )
+        else:
+            prompt = (
+                f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
+                f"{input_section}"
+                f"## Your Task\n"
+                f"Use the/{skill_id} slash command or the skill definition to produce the required output.\n\n"
+                f"## Output Artifact (REQUIRED)\n"
+                f"You MUST write the final artifact to this exact path:\n"
+                f"```\n{relative_output_path}\n```\n\n"
+                f"Use the Write tool to create this file. The artifact must be markdown format (.md) "
+                f"and must match the expected output format for this skill.\n\n"
+                f"Do not stop until the artifact file exists at the specified path."
+            )
 
         # Capture SDK result and error info for diagnostic classification
         sdk_last_result_info: str | None = None
@@ -539,6 +663,15 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
             expected_output_path, artifact_session_dir
         )
 
+        # Tool-call trace (Phase 4, issue #55): observes every tool call this
+        # invocation makes without changing any allow/deny decision.
+        trace_log: list = []
+        pre_trace, post_trace = build_tool_trace_hooks(trace_log, expected_output_path)
+        trace_log.append(_trace_event(
+            "SkillInvocation", skill_id, expected_output_path, "started",
+            extra={"uses_runtime_skeleton": uses_runtime_skeleton},
+        ))
+
         try:
             # Query the Claude Agent SDK
             async for message in query(
@@ -550,7 +683,10 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     allowed_tools=["Read", "Write", "Glob", "Grep"],
                     hooks={
                         "PreToolUse": [
-                            HookMatcher(matcher=None, hooks=[artifact_permission_gate]),
+                            HookMatcher(matcher=None, hooks=[artifact_permission_gate, pre_trace]),
+                        ],
+                        "PostToolUse": [
+                            HookMatcher(matcher=None, hooks=[post_trace]),
                         ],
                     },
                 ),
@@ -561,6 +697,26 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                         errors_text = "; ".join(str(e) for e in (message.errors or []))
                         sdk_last_result_info = errors_text or str(message.subtype)
 
+            # For the runtime-skeleton path, reconcile whatever the model wrote
+            # (if anything) back into the canonical envelope. This is the
+            # enforcement point described in brief_skeleton.reconcile(): the
+            # envelope survives even if the model wrote nothing, malformed
+            # content, or attempted a full-file replacement.
+            if uses_runtime_skeleton:
+                model_raw = ""
+                if os.path.exists(expected_output_path):
+                    with open(expected_output_path, encoding="utf-8") as f:
+                        model_raw = f.read()
+                reconciled = brief_skeleton.reconcile(model_raw, skeleton_ctx)
+                with open(expected_output_path, "w", encoding="utf-8") as f:
+                    f.write(reconciled)
+                trace_log.append(_trace_event(
+                    "Reconciliation", "brief_skeleton.reconcile", expected_output_path, "ok",
+                    extra={"integrity_ok": brief_skeleton.skeleton_integrity_ok(reconciled)},
+                ))
+
+            trace_path = write_tool_trace(trace_log, artifact_session_dir, self.repo_root)
+
             # Check if the expected artifact was produced
             if os.path.exists(expected_output_path):
                 return SkillExecutionResult(
@@ -568,7 +724,8 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     status=SkillExecutionStatus.EXECUTED,
                     command=invocation_command,
                     output_artifact=expected_output_artifact,
-                    message=f"Artifact produced at {expected_output_path}",
+                    message=f"Artifact produced at {expected_output_path}"
+                            + (f" (tool trace: {trace_path})" if trace_path else ""),
                 )
             else:
                 # Build categorized error: include SDK error info if available
@@ -586,6 +743,7 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                 )
 
         except Exception as e:
+            write_tool_trace(trace_log, artifact_session_dir, self.repo_root)
             detail = ""
             if sdk_last_result_info:
                 detail = f" SDK result: {sdk_last_result_info}."

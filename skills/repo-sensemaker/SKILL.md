@@ -117,3 +117,48 @@ When executing as part of a workflow run:
 6. Only report completion if validation passes.
 7. Never mark the next step complete yourself.
 
+## Runtime-owned artifact skeleton (issue #55)
+
+When this skill is invoked through the runtime (`ClaudeAgentSdkSkillExecutor`),
+`expected_output_path` already contains a **runtime-generated skeleton** by
+the time you read it — see `scripts/brief_skeleton.py`. This exists because
+prompt guidance alone was proven insufficient to guarantee the artifact's
+deterministic grammar (PR #54: the model omitted the YAML fence entirely).
+
+**Do not recreate the envelope.** These are already filled in by the runtime
+and must not be re-authored or reordered:
+- `artifact_id`, `schema_version`, `source_intent_ref`, `created_at`, `immutable`
+- The heading structure and the single `## 13. Machine-readable handoff` YAML fence
+- `<!-- MODEL_SECTION:<name>:BEGIN/END -->` marker comments — do not delete them
+
+**Your job is only to fill in:**
+- The prose between each `MODEL_SECTION` marker pair (repository goal, current
+  shape, strong signals, missing pieces, improvement opportunities, weakest
+  boundary prose, evidence prose, why-it-matters, candidate next steps,
+  recommended next step, ready-to-copy prompt).
+- The `evidence_excerpts` YAML block under Section 8.
+- The placeholder YAML fields in Section 13: `user_implied_fog_type`,
+  `primary_fog_type`, `diagnosis_conflict`, `escalation_recommended`,
+  `evidence`, `recommended_workflow_id`, `recommended_execution_mode`,
+  `weakest_boundary`.
+
+**Workflow IDs vs. skill IDs**: `recommended_workflow_id` must be an id from
+`workflow-registry.yaml` (e.g. `architecture-implementation-workflow`), never
+a skill id (e.g. `docs-aligner`). If uncertain which workflow applies, prefer
+escalation (`escalation_recommended: true`) over guessing — the runtime will
+preserve your value verbatim, valid or not, and the validator (not the
+runtime) is what rejects an invalid one.
+
+**Evidence-authority hierarchy and grammar** (unchanged from prior guidance,
+still your responsibility): cite specific files and line ranges you actually
+read (`Lx`/`Lx-Ly` or bare numbers both work, e.g. `L18` or `18`); never cite
+a file you have not opened; prefer direct code/config over comments over
+external docs when they conflict; include a **Logic trace** paragraph
+(beginning literally with "Logic trace:") connecting evidence to your
+weakest-boundary conclusion.
+
+The runtime writes a **tool-call trace** (`tool-call-trace.jsonl` in the
+session artifact directory) recording every tool call you make during this
+invocation — this is for debugging failed runs, not something you need to
+produce yourself.
+

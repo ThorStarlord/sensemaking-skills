@@ -1,0 +1,79 @@
+# Validator Verification Suite Report
+Generated: 2026-07-25 16:26:31
+
+## Summary
+- Total Cases: 66
+- Passed: 66 ✅
+- Failed: 0 ❌
+- Missing Required Regressions: 0
+- Coverage Failures: 0
+
+## Details
+| Validator | Fixture | Case | Result | Detail |
+| :--- | :--- | :--- | :--- | :--- |
+| `validate-alignment.py` | `valid-companion-frame.md` | positive | ✅ PASS |  |
+| `validate-alignment.py` | `no-overlap-frame.md` | negative | ✅ PASS |  |
+| `validate-and-report.py` | `dispatches-to-validate-plan.md` | positive | ✅ PASS |  |
+| `validate-and-report.py` | `dispatches-to-failing-plan.md` | negative | ✅ PASS |  |
+| `validate-architectural-review-recommendation.py` | `valid-pursue.md` | positive | ✅ PASS |  |
+| `validate-architectural-review-recommendation.py` | `missing-decision.md` | negative | ✅ PASS |  |
+| `validate-artifact.py` | `repository-sensemaking-brief.md` | positive | ✅ PASS |  |
+| `validate-artifact.py` | `file-uri-path-hygiene.md` | negative | ✅ PASS |  |
+| `validate-artifact.py` | `malformed-evidence-excerpts.md` | negative | ✅ PASS |  |
+| `validate-artifact.py` | `missing-machine-field.md` | negative | ✅ PASS |  |
+| `validate-artifact.py` | `missing-required-section.md` | negative | ✅ PASS |  |
+| `validate-brief.py` | `valid-brief-bare-lines.md` | positive | ✅ PASS |  |
+| `validate-brief.py` | `valid-brief.md` | positive | ✅ PASS |  |
+| `validate-brief.py` | `malformed-lines.md` | negative | ✅ PASS |  |
+| `validate-brief.py` | `no-file-citations.md` | negative | ✅ PASS |  |
+| `validate-brief.py` | `no-logic-trace.md` | negative | ✅ PASS |  |
+| `validate-brief.py` | `repo-sensemaker-id-hallucination.md` | negative | ✅ PASS |  |
+| `validate-brief.py` | `unknown-weakness-type.md` | negative | ✅ PASS |  |
+| `validate-fog-type-normalization.py` | `alias-normalizes.md` | positive | ✅ PASS |  |
+| `validate-fog-type-normalization.py` | `unknown-fog-type.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `docs-contract-reconciliation.md` | positive | ✅ PASS |  |
+| `validate-plan.py` | `valid-escalation-path.md` | positive | ✅ PASS |  |
+| `validate-plan.py` | `fail-approval-gates-mismatch.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-disallowed-mode.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-empty-stop-conditions.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-escalation-not-escalated.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-json-section-11.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-missing-artifact-id.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-missing-initial-input.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-unknown-artifact.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-workflow-id-field.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-wrong-gate.md` | negative | ✅ PASS |  |
+| `validate-plan.py` | `fail-wrong-handoff.md` | negative | ✅ PASS |  |
+| `validate-prd.py` | `valid-task-list-prd.md` | positive | ✅ PASS |  |
+| `validate-prd.py` | `invalid-expansion-no-approval.md` | negative | ✅ PASS |  |
+| `validate-prd.py` | `invalid-goal-preservation.md` | negative | ✅ PASS |  |
+| `validate-prompt-handoff.py` | `valid-handoff.md` | positive | ✅ PASS |  |
+| `validate-prompt-handoff.py` | `absolute-path-detected.md` | negative | ✅ PASS |  |
+| `validate-prompt-handoff.py` | `empty-expected-output.md` | negative | ✅ PASS |  |
+| `validate-prompt-handoff.py` | `empty-stop-condition.md` | negative | ✅ PASS |  |
+| `validate-prompt-handoff.py` | `hallucinated-artifact-ref.md` | negative | ✅ PASS |  |
+| `validate-prompt-handoff.py` | `missing-ready-prompt.md` | negative | ✅ PASS |  |
+| `validate-prompt-handoff.py` | `missing-section.md` | negative | ✅ PASS |  |
+| `validate-prompt-handoff.py` | `unknown-target-skill.md` | negative | ✅ PASS |  |
+| `validate-skill-improvement-plan.py` | `class-6-hallucinated-evidence.md` | positive | ✅ PASS |  |
+| `validate-skill-improvement-plan.py` | `class-8-over-maintenance.md` | positive | ✅ PASS |  |
+| `validate-skill-improvement-plan.py` | `valid_fixture_edit.md` | positive | ✅ PASS |  |
+| `validate-skill-improvement-plan.py` | `valid_no_skill_change.md` | positive | ✅ PASS |  |
+| `validate-skill-improvement-plan.py` | `invalid-defect-source.md` | negative | ✅ PASS |  |
+| `validate-skill-improvement-plan.py` | `invalid_missing_defect_source.md` | negative | ✅ PASS |  |
+| `validate-skill-improvement-plan.py` | `invalid_missing_failure_mode_class.md` | negative | ✅ PASS |  |
+| `validate-skill-improvement-plan.py` | `invalid_overloaded_class_label.md` | negative | ✅ PASS |  |
+| `validate-skill-improvement-plan.py` | `malformed-failure-class-label.md` | negative | ✅ PASS |  |
+| `validate-unknowns-map.py` | `valid-high-clarity.md` | positive | ✅ PASS |  |
+| `validate-unknowns-map.py` | `valid-low-clarity.md` | positive | ✅ PASS |  |
+| `validate-unknowns-map.py` | `invalid-clarity-value.md` | negative | ✅ PASS |  |
+| `validate-unknowns-map.py` | `invalid-missing-fields.md` | negative | ✅ PASS |  |
+| `validate-unknowns-map.py` | `invalid-missing-routing-block.md` | negative | ✅ PASS |  |
+| `validate-usage-research-report.py` | `baseline-report.md` | positive | ✅ PASS |  |
+| `validate-usage-research-report.py` | `invalid-semantic-score.md` | negative | ✅ PASS |  |
+| `validate-usage-research-report.py` | `missing-required-section.md` | negative | ✅ PASS |  |
+| `validate-usage-research-report.py` | `role-boundary-violation.md` | negative | ✅ PASS |  |
+| `validate-user-intent.py` | `repo-inferred-intent.md` | positive | ✅ PASS |  |
+| `validate-user-intent.py` | `not-immutable.md` | negative | ✅ PASS |  |
+| `validate-user-intent-amendment.py` | `scope-refinement.md` | positive | ✅ PASS |  |
+| `validate-user-intent-amendment.py` | `ref-mismatch.md` | negative | ✅ PASS |  |
