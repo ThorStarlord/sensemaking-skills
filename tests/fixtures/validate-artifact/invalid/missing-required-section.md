@@ -42,15 +42,17 @@ Steps.
 ## 11. Recommended Next Step
 Step.
 
-## 12. Recommended Workflow
-Workflow.
-
 ## 13. Machine-readable handoff
 ```yaml
-recommended_workflow_id: "test-workflow"
+artifact_id: repository_sensemaking_brief
+recommended_workflow_id: "docs-contract-reconciliation"
 recommended_execution_mode: "plan_only"
 weakest_boundary: "validation"
 required_inputs: []
+primary_fog_type: architecture_fog
+evidence: "Evidence."
+created_at: "2026-05-19T16:00:00Z"
+immutable: true
 ```
 
 ## 14. Ready-to-copy prompt

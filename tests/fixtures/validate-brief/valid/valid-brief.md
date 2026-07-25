@@ -53,11 +53,17 @@ full-local-sensemaking
 
 ## 13. Machine-readable handoff
 ```yaml
+artifact_id: repository_sensemaking_brief
+primary_fog_type: architecture_fog
+evidence:
+  - "skills/repo-sensemaker/SKILL.md: Mentions the handoff but lacks a hard schema check."
 recommended_workflow_id: full-local-sensemaking
 recommended_execution_mode: guided_execution
 weakest_boundary: manual-handoff
 required_inputs:
   - repository_sensemaking_brief
+created_at: "2026-05-19T16:00:00Z"
+immutable: true
 ```
 
 ## 14. Ready-to-copy prompt

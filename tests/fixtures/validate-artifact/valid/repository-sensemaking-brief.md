@@ -49,8 +49,9 @@ Workflow.
 
 ## 13. Machine-readable handoff
 ```yaml
+artifact_id: repository_sensemaking_brief
 source_intent_ref: "00-user-intent.md"
-recommended_workflow_id: "test-workflow"
+recommended_workflow_id: "docs-contract-reconciliation"
 recommended_execution_mode: "plan_only"
 weakest_boundary: "validation"
 required_inputs:
@@ -58,8 +59,11 @@ required_inputs:
   - repository_state
 user_implied_fog_type: architecture_fog
 primary_fog_type: architecture_fog
+evidence: "Evidence."
 diagnosis_conflict: false
 escalation_recommended: false
+created_at: "2026-05-19T16:00:00Z"
+immutable: true
 ```
 
 ## 14. Ready-to-copy prompt

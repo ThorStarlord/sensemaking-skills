@@ -10,11 +10,14 @@ artifact_id: workflow_orchestration_plan
 chosen_workflow_id: docs-contract-reconciliation
 execution_mode: plan_only
 status: READY
+primary_fog_type: architecture_fog
+routing_decision_method: manual_override
+created_at: \"2026-05-19T16:00:00Z\"
 initial_inputs:
   - id: repository_state
     type: external_context
     source: repository
-steps:
+workflow_steps:
   - id: 1
     skill: repo-sensemaker
     step_type: local_execution

@@ -20,4 +20,28 @@ excluded_validators:
     reason: Mode coverage meta-validator; validates docs/mode-coverage.yaml against live run logs and failure ledger. Cannot be fixture-tested because its checks are dynamic (existence, consistency across actual run logs).
   - validator: analyze-run-failures
     reason: Failure ledger meta-validator; scans live run logs to build a failure ledger and detect repeatable failure boundaries. Cannot be fixture-tested because it operates on dynamic session data.
+  - validator: validate-and-record
+    reason: >-
+      CLI wrapper with no artifact-schema logic of its own; shells out to
+      run-ledger.py (record-artifact) and validate-output.py (the dispatcher,
+      already exempt above) and writes ledger events. Its --ledger-path/--step-id
+      CLI shape is also incompatible with the single-artifact-path fixture
+      harness in test-validators.py. Covered by tests/test_run_ledger.py, which
+      exercises it as a subprocess caller against a real ledger.
+    owner: workflow-runtime maintainers
+    removal_condition: If validate-and-record grows artifact-schema validation
+      logic of its own (beyond delegation + ledger recording), give it a real
+      fixture directory instead of this exemption.
+  - validator: validate-skill-hygiene
+    reason: >-
+      Whole-repository lint tool (npm script refs in AGENTS.md vs package.json,
+      skill-registry cross-refs, artifact-contract resolution). Its CLI takes no
+      artifact_path argument at all, so it cannot be run against a single-file
+      fixture the way test-validators.py's harness expects (one artifact in,
+      pass/fail). Covered by tests/test_skill_hygiene_validator.py, which
+      exercises it against constructed repo-state fixtures.
+    owner: workflow-runtime maintainers
+    removal_condition: If validate-skill-hygiene is ever changed to accept a
+      single artifact_path and validate one file (rather than whole-repo
+      state), give it a real fixture directory instead of this exemption.
 

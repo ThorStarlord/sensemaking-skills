@@ -138,9 +138,23 @@ problem-domain identification and domain-specific implementation workflows.
 - File: skills/workflow-planner/references/workflow-registry.yaml (complete)
 - File: scripts/validate-plan.py (alignment enforcement works)
 
+## Evidence excerpts
+
+```yaml
+evidence_excerpts:
+  - file: "skills/workflow-planner/references/workflow-registry.yaml"
+    lines: "1-10"
+    quote: "workflows: [...]"
+    supports_claim: "Workflow registry defined with 30+ workflows"
+```
+
 ## Recommended Next Step
-Implement the architectural-review skill to handle routing decisions when
-proposed architectural changes need validation against principal-engineer judgment.
+Logic trace: the workflow registry and validation framework are in place but
+no skill exists to validate architectural decisions against them, so the
+weakest boundary is the missing architectural-review routing step; this
+points to architecture_fog. Implement the architectural-review skill to
+handle routing decisions when proposed architectural changes need validation
+against principal-engineer judgment.
 
 ## Machine-readable metadata
 

@@ -12,7 +12,9 @@ status: READY
 system_recommended_workflow: full-fog-workflow
 selected_workflow: full-fog-workflow
 routing_divergence: false
+primary_fog_type: architecture_fog
 routing_decision_method: escalation_recommended_accepted
+created_at: "2026-05-19T16:00:00Z"
 escalation_recommended: true
 auto_escalation_allowed: false
 scope_expansion_requires_approval: true
@@ -29,7 +31,7 @@ initial_inputs:
     type: external_context
     required: true
     source: repository
-steps:
+workflow_steps:
   - id: 1
     skill: problem-framer
     status: PENDING

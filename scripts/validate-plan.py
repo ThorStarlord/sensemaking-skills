@@ -56,6 +56,246 @@ class ValidationResult(TypedDict):
     validation_timestamp: str
 
 
+def _code_error(code: str, message: str, field: str | None = None) -> ValidationError:
+    """Build a ValidationError whose message is prefixed with a stable error code.
+
+    Kept as a distinct helper (rather than reusing the Phase-1 field-check dict
+    literals above) because these checks report a fixed vocabulary of codes
+    (WORKFLOW_NOT_FOUND, GATE_MISMATCH, ...) cross-referenced against the
+    workflow/skill/artifact registries, not simple field presence.
+    """
+    return {
+        "error_type": "logic_error",
+        "field": field,
+        "current_value": None,
+        "message": f"{code}: {message}",
+        "suggested_fixes": [],
+        "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+    }
+
+
+def _validate_conditional_step(step, repo_root=".") -> list[ValidationError]:
+    """Validate a conditional workflow step (decision_field + if_true/if_false branches)."""
+    errors: list[ValidationError] = []
+
+    decision_field = step.get("decision_field")
+    if not decision_field:
+        errors.append(_code_error(MISSING_DECISION_FIELD, f"Step {step.get('id')} missing 'decision_field'"))
+        return errors
+
+    skill_reg = load_skill_registry(repo_root)
+    if skill_reg is None:
+        errors.append(_code_error(WORKFLOW_NOT_FOUND, "Failed to load skill-registry.yaml"))
+        return errors
+
+    valid_skills = set()
+    for ecosystem in skill_reg.get("ecosystems", {}).values():
+        for skill in ecosystem.get("skills", []):
+            valid_skills.add(skill["id"])
+
+    for branch_name in ("if_true", "if_false"):
+        branch = step.get(branch_name)
+        if not branch:
+            continue
+        branch_skill = branch.get("skill")
+        if branch_skill and branch_skill not in valid_skills:
+            errors.append(
+                _code_error(HALLUCINATED_SKILL, f"Step {step.get('id')} {branch_name} branch references non-existent skill '{branch_skill}'")
+            )
+        if not (branch_skill or branch.get("next_step")):
+            errors.append(
+                _code_error(INVALID_CONDITIONAL_BRANCH, f"Step {step.get('id')} {branch_name} branch must have either 'skill' or 'next_step'")
+            )
+
+    return errors
+
+
+def _validate_plan_against_registries(plan_data: dict, repo_root: str = ".") -> list[ValidationError]:
+    """Cross-reference plan machine fields against the workflow/skill/artifact registries.
+
+    Ported from the pre-Phase-1 validator so that registry-grounded checks
+    (workflow existence, step/gate/artifact alignment, escalation, stop
+    conditions, etc.) still run in addition to the Phase-1 required-field
+    checks in validate_plan(). Uses 'workflow_steps' (current contract field
+    name) with a fallback to the legacy 'steps' key.
+    """
+    errors: list[ValidationError] = []
+
+    workflow_reg = load_workflow_registry(repo_root)
+    artifact_con = load_artifact_contracts(repo_root)
+    skill_reg = load_skill_registry(repo_root)
+
+    if workflow_reg is None or artifact_con is None or skill_reg is None:
+        errors.append(_code_error(WORKFLOW_NOT_FOUND, "Failed to load one or more registries from workflow-planner references."))
+        return errors
+
+    chosen_id = plan_data.get("chosen_workflow_id")
+    if not chosen_id:
+        return errors  # Already reported as a missing_field by the Phase-1 check
+
+    workflow = next((w for w in workflow_reg.get("workflows", []) if w["id"] == chosen_id), None)
+    if not workflow:
+        errors.append(_code_error(WORKFLOW_NOT_FOUND, f"chosen_workflow_id '{chosen_id}' not found in workflow-registry.yaml"))
+        return errors
+
+    # Path hygiene: no absolute paths anywhere in the machine-readable block
+    yaml_dump = yaml.dump(plan_data)
+    for pattern in (r"[a-zA-Z]:\\", r"/[Uu]sers/", r"/[Hh]ome/"):
+        if re.search(pattern, yaml_dump):
+            errors.append(_code_error(ABSOLUTE_PATH_DETECTED, f"Absolute path detected in YAML block (pattern: {pattern}). All paths must be relative."))
+
+    # Execution mode
+    exec_mode = plan_data.get("execution_mode")
+    if exec_mode is not None and exec_mode not in workflow.get("allowed_execution_modes", []):
+        errors.append(_code_error(EXECUTION_MODE_DENIED, f"execution_mode '{exec_mode}' not allowed for workflow '{chosen_id}'"))
+
+    # Escalation
+    escalation_recommended = plan_data.get("escalation_recommended", False)
+    system_recommended = plan_data.get("system_recommended_workflow", "")
+    if escalation_recommended and system_recommended != "full-fog-workflow":
+        errors.append(
+            _code_error(CONFLICT_NOT_ESCALATED,
+                        f"escalation_recommended is true but system_recommended_workflow is '{system_recommended}', expected 'full-fog-workflow'")
+        )
+
+    # Initial inputs
+    plan_inputs = plan_data.get("initial_inputs", [])
+    reg_inputs = workflow.get("initial_inputs", [])
+    if plan_inputs or reg_inputs:
+        plan_input_ids = {i["id"] for i in plan_inputs}
+        reg_input_ids = {i["id"] for i in reg_inputs}
+        if plan_input_ids != reg_input_ids:
+            errors.append(_code_error(INPUT_MISMATCH, f"initial_inputs mismatch: plan has {plan_input_ids}, registry expects {reg_input_ids}"))
+        for i in plan_inputs:
+            if "type" not in i or "required" not in i:
+                errors.append(_code_error(INPUT_MISMATCH, f"Initial input '{i.get('id')}' missing 'type' or 'required' fields"))
+
+    # Steps ('workflow_steps' is the current field name; 'steps' kept for back-compat)
+    plan_steps = plan_data.get("workflow_steps")
+    if plan_steps is None:
+        plan_steps = plan_data.get("steps", [])
+    if not isinstance(plan_steps, list):
+        return errors  # Already reported as a type_error by the Phase-1 check
+
+    reg_steps = workflow.get("steps", [])
+    subset_run = plan_data.get("subset_run", False)
+
+    if subset_run:
+        if not plan_data.get("subset_reason"):
+            errors.append(_code_error(SUBSET_NOT_CONTIGUOUS, "Missing 'subset_reason' for subset_run"))
+
+        included_ids = plan_data.get("included_steps", [])
+        excluded_data = plan_data.get("excluded_steps", [])
+        excluded_ids = [s.get("id") for s in excluded_data]
+
+        all_reg_ids = [s["id"] for s in reg_steps]
+        all_plan_ids = set(included_ids) | set(excluded_ids)
+
+        if set(all_reg_ids) != all_plan_ids:
+            errors.append(_code_error(SUBSET_NOT_CONTIGUOUS, f"Subset mismatch: registry steps {all_reg_ids} not fully accounted for in plan ({all_plan_ids})"))
+
+        if included_ids:
+            try:
+                first_idx = all_reg_ids.index(included_ids[0])
+                last_idx = all_reg_ids.index(included_ids[-1])
+                expected_subsequence = all_reg_ids[first_idx: last_idx + 1]
+                if included_ids != expected_subsequence:
+                    errors.append(_code_error(SUBSET_NOT_CONTIGUOUS, f"Non-contiguous subset: included_steps {included_ids} is not a contiguous sequence in workflow registry"))
+            except ValueError as e:
+                errors.append(_code_error(SUBSET_NOT_CONTIGUOUS, f"Step ID in included_steps not found in registry: {e}"))
+
+        steps_to_validate = []
+        for s_id in included_ids:
+            p_step = next((s for s in plan_steps if s["id"] == s_id), None)
+            r_step = next((s for s in reg_steps if s["id"] == s_id), None)
+            if not p_step:
+                errors.append(_code_error(SUBSET_NOT_CONTIGUOUS, f"Included step {s_id} missing from step list"))
+            elif not r_step:
+                errors.append(_code_error(WORKFLOW_NOT_FOUND, f"Included step {s_id} not found in registry"))
+            else:
+                steps_to_validate.append((p_step, r_step))
+    else:
+        if len(plan_steps) != len(reg_steps):
+            errors.append(_code_error(STEP_COUNT_MISMATCH, f"Step count mismatch: plan has {len(plan_steps)}, registry expects {len(reg_steps)}"))
+        steps_to_validate = list(zip(plan_steps, reg_steps))
+
+    for p_step, r_step in steps_to_validate:
+        s_id = p_step.get("id")
+        if "status" not in p_step:
+            errors.append(_code_error(SECTION_11_MALFORMED, f"Step {s_id} missing 'status'"))
+
+        if p_step.get("conditional") and r_step.get("conditional"):
+            errors.extend(_validate_conditional_step(p_step, repo_root))
+            continue
+
+        skill = p_step.get("skill")
+        if skill != r_step.get("skill"):
+            errors.append(_code_error(STEP_SKILL_MISMATCH, f"Step {s_id} skill mismatch: plan='{skill}', reg='{r_step.get('skill')}'"))
+
+        s_type = p_step.get("step_type")
+        if s_type != r_step.get("step_type"):
+            errors.append(_code_error(STEP_TYPE_MISMATCH, f"Step {s_id} step_type mismatch: plan='{s_type}', reg='{r_step.get('step_type')}'"))
+
+        gate = p_step.get("gate")
+        if gate != r_step.get("gate"):
+            errors.append(_code_error(GATE_MISMATCH, f"Step {s_id} gate mismatch: plan='{gate}', reg='{r_step.get('gate')}'"))
+
+        p_in_src = p_step.get("input_source")
+        r_in_src = r_step.get("input_source")
+        if p_in_src != r_in_src:
+            errors.append(_code_error(INPUT_ARTIFACT_MISMATCH, f"Step {s_id} input_source mismatch: plan='{p_in_src}', reg='{r_in_src}'"))
+
+        p_in_art = p_step.get("input_artifact")
+        r_in_art = r_step.get("input_artifact")
+        if p_in_art != r_in_art:
+            errors.append(_code_error(INPUT_ARTIFACT_MISMATCH, f"Step {s_id} input_artifact mismatch: plan='{p_in_art}', reg='{r_in_art}'"))
+
+        p_out_art = p_step.get("output_artifact")
+        r_out_art = r_step.get("output_artifact")
+        if p_out_art != r_out_art:
+            errors.append(_code_error(OUTPUT_ARTIFACT_MISMATCH, f"Step {s_id} output_artifact mismatch: plan='{p_out_art}', reg='{r_out_art}'"))
+
+        if p_out_art:
+            contract = next((a for a in artifact_con.get("artifacts", []) if a["id"] == p_out_art), None)
+            if not contract:
+                errors.append(_code_error(ARTIFACT_NOT_CONTRACTED, f"Step {s_id} output_artifact '{p_out_art}' not found in artifact-contracts.yaml"))
+            else:
+                skill_meta = None
+                for ecosystem in skill_reg.get("ecosystems", {}).values():
+                    skill_meta = next((s for s in ecosystem.get("skills", []) if s["id"] == skill), None)
+                    if skill_meta:
+                        break
+
+                actual_producer = None
+                if skill_meta and skill_meta.get("artifact") == p_out_art:
+                    actual_producer = skill
+                elif contract.get("produced_by") == skill:
+                    actual_producer = skill
+
+                if not actual_producer:
+                    errors.append(_code_error(ARTIFACT_NOT_CONTRACTED, f"Step {s_id} skill '{skill}' is not contracted to produce '{p_out_art}'"))
+
+    # Approval gates & behavior
+    plan_gates = plan_data.get("approval_gates", [])
+    step_gates = [s.get("gate") for s in plan_steps if s.get("gate")]
+    if plan_gates != step_gates:
+        errors.append(_code_error(GATE_MISMATCH, f"approval_gates mismatch: plan has {plan_gates}, steps have {step_gates}"))
+
+    gate_behavior = plan_data.get("gate_behavior", {})
+    for g in plan_gates:
+        if g not in gate_behavior:
+            errors.append(_code_error(GATE_BEHAVIOR_MISSING, f"Missing gate_behavior for gate '{g}'"))
+        elif gate_behavior[g] == "simulated_for_research":
+            for s in plan_steps:
+                if s.get("gate") == g and s.get("approved_by_user") is True:
+                    errors.append(_code_error(SIMULATED_GATE_CLASH, f"Gate clash: step {s.get('id')} claims 'approved_by_user: true' but gate '{g}' is simulated"))
+
+    # Stop conditions
+    stop_conds = plan_data.get("stop_conditions", [])
+    if not stop_conds or not isinstance(stop_conds, list) or len(stop_conds) == 0:
+        errors.append(_code_error(STOP_CONDITIONS_EMPTY, "stop_conditions missing or empty in Section 11/13"))
+
+    return errors
 
 
 def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]:
@@ -108,10 +348,11 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
             "error_type": "missing_field",
             "field": "machine_readable_handoff",
             "current_value": None,
-            "message": "Machine-readable handoff YAML block not found in plan artifact.",
+            "message": "SECTION_11_MALFORMED: Machine-readable handoff YAML block not found in plan artifact "
+                        "(expected a ```yaml fence under Section 13 or Section 11).",
             "suggested_fixes": [
-                "Add Section 13 with YAML block containing plan metadata",
-                "Or add Section 11 with YAML block for backward compatibility"
+                "Add Section 13 with a ```yaml block containing plan metadata",
+                "Or add Section 11 with a ```yaml block for backward compatibility"
             ],
             "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
         })
@@ -124,7 +365,7 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
             "error_type": "type_error",
             "field": "machine_readable_handoff",
             "current_value": None,
-            "message": f"Failed to parse YAML block: {str(e)}",
+            "message": f"SECTION_11_MALFORMED: Failed to parse YAML block: {str(e)}",
             "suggested_fixes": ["Ensure YAML syntax is correct", "Check indentation and formatting"],
             "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
         })
@@ -135,11 +376,23 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
             "error_type": "type_error",
             "field": "machine_readable_handoff",
             "current_value": type(plan_data).__name__,
-            "message": f"YAML block should be a dictionary, got {type(plan_data).__name__}",
+            "message": f"SECTION_11_MALFORMED: YAML block should be a dictionary, got {type(plan_data).__name__}",
             "suggested_fixes": ["Ensure YAML block contains key-value pairs, not a list"],
             "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
         })
         return errors
+
+    # --- artifact_id / status sanity (registry-era checks, kept alongside Phase 1 fields) ---
+    if plan_data.get("artifact_id") not in (None, "workflow_orchestration_plan"):
+        errors.append(_code_error(
+            SECTION_11_MALFORMED,
+            f"artifact_id mismatch: expected 'workflow_orchestration_plan', got '{plan_data.get('artifact_id')}'",
+            field="artifact_id",
+        ))
+    if "artifact_id" not in plan_data:
+        errors.append(_code_error(SECTION_11_MALFORMED, "Missing 'artifact_id' in machine-readable block", field="artifact_id"))
+    if "status" not in plan_data:
+        errors.append(_code_error(SECTION_11_MALFORMED, "Missing 'status' in machine-readable block", field="status"))
 
     # --- PHASE 1 REQUIRED FIELD CHECKS ---
     # Check primary_fog_type
@@ -179,7 +432,7 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
             "error_type": "missing_field",
             "field": "chosen_workflow_id",
             "current_value": None,
-            "message": "Required field 'chosen_workflow_id' is missing.",
+            "message": "WORKFLOW_NOT_FOUND: Required field 'chosen_workflow_id' is missing.",
             "suggested_fixes": [
                 "Add chosen_workflow_id: product-implementation-workflow",
                 "Add chosen_workflow_id: ui-implementation-workflow",
@@ -199,7 +452,7 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
                     "error_type": "unknown_value",
                     "field": "chosen_workflow_id",
                     "current_value": workflow_id,
-                    "message": f"Workflow ID '{workflow_id}' not found in registry.",
+                    "message": f"WORKFLOW_NOT_FOUND: Workflow ID '{workflow_id}' not found in registry.",
                     "suggested_fixes": [
                         "Check available workflows in workflow-registry.yaml",
                         "Ensure workflow ID matches exactly (case-sensitive)"
@@ -293,7 +546,8 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
     # Only check alignment if both fields are present and valid
     if fog_type in fog_to_workflow and workflow_id:
         expected_workflow = fog_to_workflow[fog_type]
-        if workflow_id != expected_workflow and routing_method != "manual_override":
+        escalation_override = isinstance(routing_method, str) and routing_method.startswith("escalation_recommended")
+        if workflow_id != expected_workflow and routing_method != "manual_override" and not escalation_override:
             errors.append({
                 "error_id": "workflow_orchestration_plan.chosen_workflow_id.semantic_conflict",
                 "error_type": "semantic_conflict",
@@ -306,6 +560,12 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
                 ],
                 "reference": "docs/adr/0007-soft-context-routing.md"
             })
+
+    # --- REGISTRY CROSS-REFERENCE CHECKS ---
+    # Only run once artifact_id/chosen_workflow_id survived the Phase-1 checks above,
+    # otherwise these would just re-report the same missing-field errors differently.
+    if plan_data.get("chosen_workflow_id"):
+        errors.extend(_validate_plan_against_registries(plan_data, repo_root))
 
     return errors
 

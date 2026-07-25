@@ -6,7 +6,21 @@
 - docs/ARCHITECTURE.md: Does not exist
 - Issues: 30+ marked 'needs-clarification', no acceptance criteria
 
+## Evidence excerpts
+
+```yaml
+evidence_excerpts:
+  - file: "README.md"
+    lines: "5-12"
+    quote: "Feature requirements are vague, no user context"
+    supports_claim: "product_fog: feature scope is undefined"
+```
+
 ## Recommended Workflow
+
+Logic trace: the evidence shows feature requirements are unwritten and issues
+lack acceptance criteria, so the fog is centered on undefined product scope
+rather than UI, docs, or architecture concerns; this points to product_fog.
 
 Based on the evidence, the primary fog type is **product_fog**. The system lacks clear user needs and feature scope definition.
 

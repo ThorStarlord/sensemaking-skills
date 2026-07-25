@@ -22,7 +22,7 @@ initial_inputs:
     type: artifact
     required: true
     source: user
-steps:
+workflow_steps:
   - id: 1
     skill: repo-sensemaker
     status: PENDING
