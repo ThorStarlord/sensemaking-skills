@@ -52,6 +52,24 @@ class ValidationResult(TypedDict):
     validation_timestamp: str
 
 
+def _code_error(code: str, message: str, field: str | None = None) -> "ValidationError":
+    """Build a ValidationError whose message is prefixed with a stable error code.
+
+    Used for the structural/content checks below (logic trace, evidence
+    citations, weakness type, excerpt fields, hallucinated files/workflow
+    IDs) which report a fixed vocabulary of codes rather than simple field
+    presence.
+    """
+    return {
+        "error_type": "logic_error",
+        "field": field,
+        "current_value": None,
+        "message": f"{code}: {message}",
+        "suggested_fixes": [],
+        "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+    }
+
+
 def _is_large_artifact(content: str) -> bool:
     """Heuristic: artifacts >= 100 lines are 'large' and get relaxed validation.
 
@@ -222,7 +240,7 @@ def validate_brief(artifact_path: str, repo_root: str = ".") -> list[ValidationE
                         "error_type": "unknown_value",
                         "field": "recommended_workflow_id",
                         "current_value": workflow_id,
-                        "message": f"Recommended workflow ID '{workflow_id}' not found in registry.",
+                        "message": f"HALLUCINATED_WORKFLOW_ID: Recommended workflow ID '{workflow_id}' not found in registry.",
                         "suggested_fixes": [
                             "Check available workflows in workflow-registry.yaml",
                             "Ensure workflow ID matches exactly (case-sensitive)"
@@ -230,21 +248,84 @@ def validate_brief(artifact_path: str, repo_root: str = ".") -> list[ValidationE
                         "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
                     })
 
-    # --- EXISTING STRUCTURAL CHECKS (PROSE ERRORS FOR NOW) ---
+    # --- STRUCTURAL / CONTENT CHECKS ---
 
     # 1. Logic trace reasoning marker
     if "logic trace" not in content.lower():
-        # This is guidance, not a hard error; skip for now in Phase 1
-        pass
+        errors.append(_code_error(NO_LOGIC_TRACE, "Brief does not include a logic trace showing diagnostic reasoning."))
 
     # 2. File-level citations in the Evidence section
     evidence_section = sections.get("evidence", "")
     if evidence_section and not FILE_CITATION_RE.search(evidence_section):
-        # Guidance; skip for Phase 1
-        pass
+        errors.append(_code_error(NO_EVIDENCE_FILE_CITATIONS, "Evidence section has no file-level citations (e.g., path/to/file.py:42)."))
 
     # 3. Recognized weakness type in the Weakest boundary section
-    # (Skip for Phase 1 focus)
+    weakest_boundary = sections.get("weakest boundary", "")
+    if weakest_boundary and weakness_types:
+        if not any(kind.lower() in weakest_boundary.lower() for kind in weakness_types):
+            types_list = ", ".join(weakness_types)
+            errors.append(_code_error(
+                UNKNOWN_WEAKNESS_TYPE,
+                f"Weakest boundary does not include a recognized weakness type. Known types: {types_list}",
+            ))
+
+    # 4. evidence_excerpts YAML block: presence + per-excerpt field checks
+    evidence_match = re.search(r"```yaml\s+(evidence_excerpts:.*?)\s+```", content, re.DOTALL | re.IGNORECASE)
+    if not evidence_match:
+        evidence_match = re.search(r"```yaml\s+(- file:.*?)\s+```", content, re.DOTALL)
+
+    if not evidence_match and large:
+        pass  # Large briefs often present evidence in a markdown table instead.
+    elif not evidence_match:
+        errors.append(_code_error(MISSING_EVIDENCE_EXCERPTS, "Missing or malformed YAML block for evidence_excerpts."))
+    else:
+        try:
+            data = yaml.safe_load(evidence_match.group(1))
+            if isinstance(data, dict):
+                excerpts = data.get("evidence_excerpts", [])
+            elif isinstance(data, list):
+                excerpts = data
+            else:
+                errors.append(_code_error(PARSING_ERROR, "evidence_excerpts block must be a list or dict containing 'evidence_excerpts'."))
+                excerpts = []
+
+            if not excerpts:
+                errors.append(_code_error(EVIDENCE_EXCERPT_FIELD, "Evidence excerpts list is empty."))
+
+            for i, exc in enumerate(excerpts):
+                for field in ["file", "lines", "quote", "supports_claim"]:
+                    if field not in exc:
+                        errors.append(_code_error(EVIDENCE_EXCERPT_FIELD, f"Excerpt[{i}] missing required field: {field}"))
+
+                file_path = exc.get("file")
+                if file_path:
+                    if file_path.startswith("file:///"):
+                        errors.append(_code_error(HALLUCINATED_FILE, f"Excerpt[{i}] uses absolute file:/// path: {file_path}"))
+                    else:
+                        full_path = os.path.join(repo_root, file_path)
+                        if not os.path.exists(full_path):
+                            errors.append(_code_error(HALLUCINATED_FILE, f"Excerpt[{i}] references non-existent file: {file_path}"))
+
+                lines = exc.get("lines")
+                # Accept both the Lx / Lx-Ly form and bare line numbers (18, 25-30).
+                if lines is not None and not re.match(r"^L?\d+(?:-L?\d+)?$", str(lines).strip()):
+                    errors.append(_code_error(
+                        INVALID_LINE_FORMAT,
+                        f"Excerpt[{i}] has invalid lines format: {lines} "
+                        f"(expected a line number or range, e.g. L18, 18, L25-L30, or 25-30)",
+                    ))
+        except Exception as e:
+            errors.append(_code_error(PARSING_ERROR, f"Failed to parse evidence YAML: {e}"))
+
+    # 5. handoff / workflow ID (legacy Section 13 block; artifact_data already covers
+    # the Phase-1 recommended_workflow_id check above for the current schema, this
+    # covers the large-artifact fallback path and hallucinated-ID detection)
+    if artifact_data is not None:
+        workflow_id = artifact_data.get("recommended_workflow_id")
+        if not workflow_id and not large:
+            errors.append(_code_error(MISSING_WORKFLOW_ID, "Handoff missing 'recommended_workflow_id'."))
+    elif not large:
+        errors.append(_code_error(MISSING_HANDOFF_BLOCK, "Missing 'Machine-readable handoff' YAML block."))
 
     return errors
 

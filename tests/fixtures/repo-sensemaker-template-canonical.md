@@ -24,6 +24,12 @@ evidence_excerpts:
     supports_claim: "Feature requirements are vague"
 ```
 
+## 12. Recommended workflow
+Logic trace: the evidence shows feature requirements are vague and no
+architecture documentation exists, so the fog is centered on undefined
+product scope rather than UI, docs, or architecture concerns; this points
+to product_fog and the product-implementation-workflow.
+
 ## 13. Machine-readable handoff
 
 ```yaml
