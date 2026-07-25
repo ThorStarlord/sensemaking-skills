@@ -2023,6 +2023,14 @@ class OrchestrationRunner:
 
     def update_mode_coverage(self, run_log_path: str) -> None:
         """Update mode-coverage.yaml with results from this run."""
+        # Tests that invoke this CLI end-to-end (e.g. via subprocess with
+        # cwd=repo_root and no --repo-root override) would otherwise write
+        # ephemeral test session paths into the committed docs/mode-coverage.yaml
+        # (see issue #42). Matches the _check_clean_git guard below.
+        if "PYTEST_CURRENT_TEST" in os.environ:
+            print("  ~ Skipping mode coverage update (running under pytest)")
+            return
+
         coverage = _load_mode_coverage(self.repo_root)
         if not coverage:
             print(f"  ~ Cannot update mode coverage: mode-coverage.yaml not found")

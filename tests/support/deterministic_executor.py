@@ -84,11 +84,17 @@ class DeterministicFixtureSkillExecutor(SkillExecutor):
         # Resolve output path via the runtime-provided location
         output_path = context.get("expected_output_path")
         if not output_path:
-            # Fallback only if called outside runtime
-            output_path = os.path.join(
-                self.repo_root,
-                "artifacts",
-                f"{expected_output_artifact}.md"
+            # No runtime-confined path was supplied. Do NOT fall back to
+            # writing into self.repo_root/artifacts: self.repo_root is
+            # frequently the real repository (tests construct this executor
+            # with REPO_ROOT for skill/registry lookups), and that fallback
+            # previously overwrote the tracked artifacts/*.md fixtures on
+            # every test run (see issue #42).
+            raise RuntimeError(
+                f"DeterministicFixtureSkillExecutor.invoke_skill for '{skill_id}' "
+                "received no context['expected_output_path']. This executor must "
+                "be driven through the runtime's session-confined artifact "
+                "resolution (ADR 0010); it will not guess a path under repo_root."
             )
 
         print(f"[EXECUTOR] {skill_id}: Writing artifact to {output_path}")

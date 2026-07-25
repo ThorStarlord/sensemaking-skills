@@ -1,4 +1,4 @@
-"""Regression tests for preflight ordering defect fix (ADR 0011).
+﻿"""Regression tests for preflight ordering defect fix (ADR 0011).
 
 Tests verify that runner.run() calls preflight_check() BEFORE
 _create_user_intent_artifact(), that failed preflight prevents artifact 
@@ -8,10 +8,31 @@ Tests use mocking to verify call ordering - NO DESTRUCTIVE OPERATIONS.
 """
 
 import sys
+import tempfile
+import shutil
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+
+
+@pytest.fixture
+def same_drive_tmp_path():
+    """A tempdir on the same drive as the repo.
+
+    pytest's built-in tmp_path lives under the OS temp dir, which on
+    Windows CI/dev machines can be on a different drive than the repo
+    checkout (e.g. C: vs H:) -- os.path.relpath() raises ValueError across
+    drives. These tests run the real OrchestrationRunner.run(), which calls
+    os.path.relpath(path, self.repo_root) while writing Phase 2/4 reports,
+    so the confinement dir must be same-drive.
+    """
+    repo_root = Path(__file__).parent.parent
+    d = tempfile.mkdtemp(prefix="preflight-ordering-", dir=str(repo_root.parent))
+    try:
+        yield Path(d)
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
 
 
 @pytest.fixture
@@ -29,7 +50,7 @@ def runner_module():
     return wfrt
 
 
-def test_run_calls_preflight_before_artifact(runner_module):
+def test_run_calls_preflight_before_artifact(runner_module, same_drive_tmp_path):
     """run() must call preflight_check() BEFORE _create_user_intent_artifact()."""
     call_order = []
     repo_root = Path(__file__).parent.parent
@@ -51,14 +72,16 @@ def test_run_calls_preflight_before_artifact(runner_module):
             mode='guided_execution',  # Mutating mode, not plan_only
             repo_root=str(repo_root),
             executor='dry-run',
+            log_dir=str(same_drive_tmp_path),
+            plan_out=str(same_drive_tmp_path / "plan_test.md"),
         )
         runner.create_intent_artifact = True
         runner.problem_for_intent = "test"
         runner.scope_for_intent = "soft"
-        
+
         # Invoke run()
         result = runner.run()
-        
+
         # ASSERTIONS: preflight must come FIRST, then artifact, in exact order
         assert len(call_order) >= 2, \
             f"Expected at least preflight and artifact calls. Order: {call_order}"
@@ -68,7 +91,7 @@ def test_run_calls_preflight_before_artifact(runner_module):
             f"Second call must be artifact. Order: {call_order}"
 
 
-def test_failed_preflight_prevents_artifact_creation(runner_module):
+def test_failed_preflight_prevents_artifact_creation(runner_module, same_drive_tmp_path):
     """Failed preflight must prevent artifact creation - artifact never called."""
     artifact_called = []
     repo_root = Path(__file__).parent.parent
@@ -86,14 +109,16 @@ def test_failed_preflight_prevents_artifact_creation(runner_module):
             mode='guided_execution',
             repo_root=str(repo_root),
             executor='dry-run',
+            log_dir=str(same_drive_tmp_path),
+            plan_out=str(same_drive_tmp_path / "plan_test.md"),
         )
         runner.create_intent_artifact = True
         runner.problem_for_intent = "test"
         runner.scope_for_intent = "soft"
-        
+
         # Invoke run()
         result = runner.run()
-        
+
         # ASSERTIONS: artifact must NOT be called when preflight fails
         assert not artifact_called, \
             f"artifact should not be created when preflight_check() returns False"
@@ -101,7 +126,7 @@ def test_failed_preflight_prevents_artifact_creation(runner_module):
             f"run() should return 1 when preflight fails"
 
 
-def test_from_session_skips_artifact_creation(runner_module):
+def test_from_session_skips_artifact_creation(runner_module, same_drive_tmp_path):
     """Existing artifact_session_dir must prevent artifact creation."""
     artifact_called = []
     repo_root = Path(__file__).parent.parent
@@ -119,8 +144,10 @@ def test_from_session_skips_artifact_creation(runner_module):
             mode='guided_execution',
             repo_root=str(repo_root),
             executor='dry-run',
+            log_dir=str(same_drive_tmp_path),
+            plan_out=str(same_drive_tmp_path / "plan_test.md"),
         )
-        
+
         # Simulate --from-session: set artifact_session_dir
         runner.artifact_session_dir = str(repo_root / "artifacts" / "session")
         runner.create_intent_artifact = True  # Flag is set, but session dir exists
@@ -138,7 +165,7 @@ def test_from_session_skips_artifact_creation(runner_module):
             f"intent_path should point to existing session artifact"
 
 
-def test_repo_inferred_none_problem_creates_artifact(runner_module):
+def test_repo_inferred_none_problem_creates_artifact(runner_module, same_drive_tmp_path):
     """Repo-inferred flows with problem=None should still create artifact."""
     artifact_calls = []
     repo_root = Path(__file__).parent.parent
@@ -156,8 +183,10 @@ def test_repo_inferred_none_problem_creates_artifact(runner_module):
             mode='guided_execution',
             repo_root=str(repo_root),
             executor='dry-run',
+            log_dir=str(same_drive_tmp_path),
+            plan_out=str(same_drive_tmp_path / "plan_test.md"),
         )
-        
+
         # Repo-inferred flow: problem can be None
         runner.create_intent_artifact = True
         runner.problem_for_intent = None  # Explicitly None
@@ -173,7 +202,7 @@ def test_repo_inferred_none_problem_creates_artifact(runner_module):
             f"artifact should be called with None problem and soft scope. Calls: {artifact_calls}"
 
 
-def test_plan_only_skips_user_intent_artifact(runner_module):
+def test_plan_only_skips_user_intent_artifact(runner_module, same_drive_tmp_path):
     """Plan-only mode skips user-intent artifact creation.
 
     Note: Plan-only still generates plans and diagnostic reports;
@@ -194,6 +223,8 @@ def test_plan_only_skips_user_intent_artifact(runner_module):
             mode='plan_only',
             repo_root=str(repo_root),
             executor='dry-run',
+            log_dir=str(same_drive_tmp_path),
+            plan_out=str(same_drive_tmp_path / "plan_test.md"),
         )
 
         runner.create_intent_artifact = True  # Flag set, but plan_only overrides
@@ -206,3 +237,4 @@ def test_plan_only_skips_user_intent_artifact(runner_module):
         # ASSERTION: user-intent artifact must NOT be created in plan_only
         assert not artifact_called, \
             "plan_only mode should not create 00-user-intent.md artifact"
+

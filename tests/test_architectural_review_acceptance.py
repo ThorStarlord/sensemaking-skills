@@ -447,6 +447,14 @@ immutable: false
             gate_decision="auto-approve",  # Auto-approve gates for testing
         )
 
+        # Initialize artifact_session_dir/log_dir/plan_out from from_session
+        # (matches the CLI's main() flow). Without this call they stay at
+        # their repo_root/artifacts defaults, and run() writes plan/log/
+        # diagnostic/summary files straight into the tracked artifacts/
+        # directory instead of the isolated temp_session (see issue #42).
+        init_ok = runner.initialize_from_session()
+        assert init_ok, f"from_session initialization failed: {runner.errors}"
+
         # Initialize run_log_path (workaround for existing code that assumes it's set)
         runner.run_log_path = os.path.join(
             runner.log_dir,

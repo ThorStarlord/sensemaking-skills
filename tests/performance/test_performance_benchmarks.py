@@ -15,6 +15,7 @@ import time
 import unittest
 import subprocess
 import tempfile
+import shutil
 import json
 from pathlib import Path
 from datetime import datetime
@@ -34,6 +35,18 @@ class TestPerformanceBenchmarks(unittest.TestCase):
         # Verify runner exists
         if not os.path.exists(cls.runner_script):
             raise RuntimeError(f"workflow-runtime.py not found at {cls.runner_script}")
+
+    def setUp(self):
+        # Subprocess invocations below run the real workflow-runtime.py
+        # against repo_root; without --log-dir/--plan-out confinement its
+        # plan/diagnostic output defaults into the tracked artifacts/
+        # directory (see issue #42).
+        self._bench_tmp_dir = tempfile.mkdtemp(
+            prefix="perf-bench-", dir=os.path.dirname(self.repo_root)
+        )
+
+    def tearDown(self):
+        shutil.rmtree(self._bench_tmp_dir, ignore_errors=True)
 
     @staticmethod
     def _find_repo_root():
@@ -64,8 +77,11 @@ class TestPerformanceBenchmarks(unittest.TestCase):
                 [
                     sys.executable,
                     self.runner_script,
-                    workflow_id,
+                    "--workflow", workflow_id,
                     "--mode", "plan_only",
+                    "--repo-root", self.repo_root,
+                    "--log-dir", self._bench_tmp_dir,
+                    "--plan-out", os.path.join(self._bench_tmp_dir, f"plan_{workflow_id}.md"),
                 ],
                 capture_output=True,
                 text=True,
@@ -187,8 +203,11 @@ class TestPerformanceBenchmarks(unittest.TestCase):
                 [
                     sys.executable,
                     self.runner_script,
-                    workflow_id,
+                    "--workflow", workflow_id,
                     "--mode", "plan_only",
+                    "--repo-root", self.repo_root,
+                    "--log-dir", self._bench_tmp_dir,
+                    "--plan-out", os.path.join(self._bench_tmp_dir, f"plan_{workflow_id}.md"),
                 ],
                 capture_output=True,
                 text=True,
@@ -244,12 +263,12 @@ class TestPerformanceBenchmarks(unittest.TestCase):
         unit = "%" if is_percent else "s"
         status = "PASS" if value < target else "FAIL"
 
-        # Try to log to a benchmarks file
-        repo_root = TestPerformanceBenchmarks._find_repo_root()
+        # Try to log to a benchmarks file. Written outside the repo (see
+        # issue #42) so running this suite never mutates the tracked
+        # artifacts/performance_benchmarks.json.
         benchmark_log = os.path.join(
-            repo_root,
-            "artifacts",
-            "performance_benchmarks.json"
+            tempfile.gettempdir(),
+            "sensemaking-skills-performance_benchmarks.json"
         )
 
         try:

@@ -94,6 +94,12 @@ def runner():
             executor="dry-run",
         )
         r.artifact_session_dir = tmp_dir
+        # log_dir/plan_out default to repo_root/artifacts (the real, tracked
+        # tree) unless explicitly confined here too. This fixture only drives
+        # execute_step() today, not run(), so it isn't currently exercised,
+        # but leaving the defaults live is exactly the trap issue #42 hit.
+        r.log_dir = tmp_dir
+        r.plan_out = os.path.join(tmp_dir, f"plan_{r.workflow_id}.md")
         yield r
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
