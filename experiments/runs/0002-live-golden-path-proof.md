@@ -1,3 +1,42 @@
+# Run 0002 — live golden-path proof
+
+## POST-EXECUTION RESULT (added after both attempts)
+
+**Verdict: STEP 1 FAILED.** The live `claude-code` executor genuinely invoked
+the `repo-sensemaker` skill in both the positive-path attempt (session
+`artifacts/05-orchestration-run/`) and the negative-path attempt (session
+`artifacts/06-orchestration-run/`). In both cases the live-generated
+`repository_sensemaking_brief.md` was rejected by `validate-and-report.py`
+before Step 2 (`architectural-review`) was ever invoked:
+- Positive-path attempt: `HALLUCINATED_WORKFLOW_ID` (recommended
+  `docs-aligner`, not in `workflow-registry.yaml`) + 6x `INVALID_LINE_FORMAT`
+  errors on excerpt citations. Exit code 1.
+- Negative-path attempt: `unknown.artifact_id.missing_field` (validator
+  could not determine `artifact_id` from the produced file). Exit code 1.
+
+Because Step 1 failed validation both times, Step 2 was never reached in
+either attempt, so:
+- Stage 2 (`--from-session`, consuming a pre-placed `proposed_direction.md`)
+  was never executed — the positive path could not proceed past Step 1.
+- The intended negative-path proof (explicit failure specifically at
+  `proposed_direction` input resolution, per Phase 5) was NOT demonstrated —
+  the negative-path run failed at Step 1 for an unrelated reason before ever
+  reaching Step 2's input-resolution check.
+
+What WAS proven live: the `claude-code` executor performs real skill
+invocation (not a stub); the unified validator inspects live output and
+genuinely rejects non-conformant artifacts; the disposable target
+repositories were left unmodified in both attempts (`git status --short`
+empty in `target-0002` and `target-0002-negative` after each run); framework
+pollution was confined to the new session directories and
+`docs/mode-coverage.yaml`.
+
+See `experiments/evidence/0002/` for full preserved evidence (session
+artifacts, stdout, run logs, validator output) and
+`experiments/evidence/0002/validation-summary.md` for Phase 6 results.
+
+---
+
 # Run 0002 — live golden-path proof (pre-execution record)
 
 Written BEFORE execution, per remediation protocol for the follow-up to

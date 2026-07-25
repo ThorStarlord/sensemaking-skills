@@ -15,7 +15,7 @@ mode_coverage:
 - mode: guided_execution
   workflow_id: architectural-review-planning-workflow
   last_run: '2026-07-25'
-  run_log_path: artifacts/05-orchestration-run/run_log_architectural-review-planning-workflow_guided_execution.md
+  run_log_path: artifacts/06-orchestration-run/run_log_architectural-review-planning-workflow_guided_execution.md
   steps_completed: 0
   steps_total: 2
   validators_exercised:
@@ -23,7 +23,7 @@ mode_coverage:
   gates_exercised: false
   gates_note: 0 approved, 0 denied
   hardening_triggered: none
-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260725-101913-76791b95.'
+  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260725-102634-a5005b79.'
 system_tools:
 - tool: validate-run-log.py
   status: proven
@@ -118,7 +118,7 @@ system_tools:
 - tool: orchestration-runner.py
   status: active
   last_run: '2026-07-25'
-  last_session: orchestration-20260725-101913-76791b95
+  last_session: orchestration-20260725-102634-a5005b79
   workflows_executed:
   - full-fog-workflow (prompt_chain)
   - full-fog-workflow (yolo_execution)
