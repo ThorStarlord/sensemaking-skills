@@ -28,6 +28,132 @@ from claude_agent_sdk import ResultMessage
 # Runtime-owned skeleton for repository_sensemaking_brief (issue #55).
 import brief_skeleton
 
+# Canonical semantic authorities (issue #58): the workflow-ID registry and the
+# weakness-type enum are parsed with the SAME loader functions the validator
+# itself uses (_validator_utils.load_workflow_registry /
+# load_weakness_types), so the list injected into the model's execution
+# instruction can never drift from what scripts/validate-brief.py actually
+# checks. Do not re-parse these files independently.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _validator_utils import load_workflow_registry, load_weakness_types  # noqa: E402
+
+
+# ============================================================================
+# Semantic authorities (issue #58)
+# ============================================================================
+
+def get_allowed_workflow_ids(repo_root: str) -> list[str]:
+    """Return the current top-level workflow IDs from workflow-registry.yaml.
+
+    Uses the same loader (_validator_utils.load_workflow_registry) that
+    scripts/validate-brief.py uses to validate recommended_workflow_id, so
+    this list cannot drift from what the validator actually accepts. These
+    are top-level `workflows: - id:` entries only -- NOT skill IDs and NOT
+    step IDs (both of which also appear as `id:` keys elsewhere in the same
+    YAML file, but are not valid values for recommended_workflow_id).
+
+    Raises RuntimeError (fails loudly, no silent empty/stale fallback) if the
+    registry file is missing, unparseable, or has no workflows.
+    """
+    registry = load_workflow_registry(repo_root)
+    if registry is None:
+        raise RuntimeError(
+            "Cannot build execution instruction: workflow-registry.yaml could not "
+            "be loaded (missing or invalid YAML) at "
+            "skills/workflow-planner/references/workflow-registry.yaml. "
+            "Refusing to fall back to an empty/stale workflow-ID list."
+        )
+    workflows = registry.get("workflows")
+    if not workflows:
+        raise RuntimeError(
+            "Cannot build execution instruction: workflow-registry.yaml parsed "
+            "but contains no top-level 'workflows' entries."
+        )
+    ids = [w["id"] for w in workflows if isinstance(w, dict) and "id" in w]
+    if not ids:
+        raise RuntimeError(
+            "Cannot build execution instruction: workflow-registry.yaml has a "
+            "'workflows' list but no entries with an 'id' field."
+        )
+    return ids
+
+
+def get_allowed_weakness_types(repo_root: str) -> list[str]:
+    """Return the current weakness-type enum from weakness-types.md.
+
+    Uses the same loader (_validator_utils.load_weakness_types) that
+    scripts/validate-brief.py uses to validate the Weakest boundary section,
+    so this list cannot drift from what the validator actually accepts.
+
+    Raises RuntimeError (fails loudly, no silent empty/stale fallback) if the
+    reference file is missing or yields no types.
+    """
+    types = load_weakness_types(repo_root)
+    if not types:
+        raise RuntimeError(
+            "Cannot build execution instruction: weakness-types.md could not be "
+            "loaded or parsed (expected 7 bolded terms) at "
+            "skills/repo-sensemaker/references/weakness-types.md. Refusing to "
+            "fall back to an empty/stale weakness-type list."
+        )
+    return types
+
+
+def build_semantic_authorities_block(repo_root: str) -> str:
+    """Build the execution-instruction section that injects canonical
+    semantic authorities (issue #58).
+
+    This addresses three semantic failures observed in a live run
+    (experiments/evidence/0005-runtime-skeleton-live-step1/) that passed
+    structural validation but failed downstream: an invented composite
+    workflow ID, a fog-type value used where a weakness-type value was
+    required, and evidence citations placed only in Sections 8/13 instead of
+    also in Section 7's prose.
+
+    The lists below are generated dynamically from the authoritative files
+    at call time -- they are never hardcoded here. If the registry or the
+    enum file changes, the injected list changes automatically on the next
+    call. Raises loudly (does not degrade silently) if either source cannot
+    be loaded -- see get_allowed_workflow_ids / get_allowed_weakness_types.
+    """
+    workflow_ids = get_allowed_workflow_ids(repo_root)
+    weakness_types = get_allowed_weakness_types(repo_root)
+
+    workflow_list = "\n".join(f"  - {wid}" for wid in workflow_ids)
+    weakness_list = "\n".join(f"  - {wt}" for wt in weakness_types)
+
+    return (
+        "## Canonical Semantic Authorities (do not deviate from these)\n\n"
+        "**recommended_workflow_id**: choose exactly one ID from this list "
+        "(the current top-level workflow IDs in "
+        "skills/workflow-planner/references/workflow-registry.yaml):\n"
+        f"{workflow_list}\n\n"
+        "Never invent an ID and never use a skill ID or a step ID -- only "
+        "the top-level workflow IDs above are valid. If uncertain, use the "
+        "contract's escalation behavior (escalation_recommended: true) "
+        "instead of guessing.\n\n"
+        "**weakest_boundary.type / Section 6's 'Weakness type:' line**: "
+        "choose exactly one value from this list (the current weakness-type "
+        "enum in skills/repo-sensemaker/references/weakness-types.md):\n"
+        f"{weakness_list}\n\n"
+        "This is NOT the same vocabulary as primary_fog_type (Section 6.5's "
+        "product_fog / ui_fog / docs_fog / architecture_fog / mixed / "
+        "unknown) -- do not answer the weakness-type question with a "
+        "fog-type value, and do not answer the fog-type question with a "
+        "weakness-type value. These are three separate fields with three "
+        "separate vocabularies: `primary_fog_type` (fog-type enum), "
+        "`weakest_boundary`'s type / Section 6's weakness-type line "
+        "(weakness-type enum above), and `recommended_workflow_id` "
+        "(workflow-ID list above). Do not conflate them.\n\n"
+        "**Section 7 (Evidence) file citations**: Section 7's prose itself "
+        "must contain at least one literal file-path citation (e.g. "
+        "`path/to/file.py:42` or `path/to/file.py` with a line range), even "
+        "when Sections 8 and 13 already contain structured evidence "
+        "citations. A citation only in Section 8's evidence_excerpts block "
+        "or Section 13's evidence: list does NOT satisfy this -- Section 7's "
+        "own prose is checked independently.\n"
+    )
+
 
 # ============================================================================
 # Output path resolution (shared by real executors)
@@ -502,6 +628,45 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
 
         return len(missing) == 0, missing
 
+    def build_skeleton_prompt(
+        self, skill_id: str, input_section: str, relative_output_path: str
+    ) -> str:
+        """Build the execution instruction sent to the model for the
+        runtime-owned-skeleton path (repository_sensemaking_brief only).
+
+        Extracted to its own method so tests can inspect the exact prompt
+        string this executor constructs (including the dynamically-injected
+        semantic-authorities block, issue #58) without invoking the async
+        Claude Agent SDK call. This proves what is BUILT, not that it was
+        DELIVERED over the wire to the SDK -- the actual query() call is
+        exercised only by the live Step 1 rerun, tracked separately.
+        """
+        semantic_authorities_block = build_semantic_authorities_block(self.repo_root)
+        return (
+            f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
+            f"{input_section}"
+            f"## Your Task\n"
+            f"A runtime-owned artifact skeleton already exists at:\n"
+            f"```\n{relative_output_path}\n```\n\n"
+            f"Read it first. It already contains the required headings and the "
+            f"machine-readable YAML fence with runtime-owned fields "
+            f"(artifact_id, schema_version, source_intent_ref, created_at, "
+            f"immutable) filled in -- do NOT try to recreate or reorder those.\n\n"
+            f"## Your only job\n"
+            f"Fill in the content between each `<!-- MODEL_SECTION:<name>:BEGIN -->` "
+            f"/ `<!-- MODEL_SECTION:<name>:END -->` marker pair with your analysis, "
+            f"and fill in the placeholder YAML fields in Section 13 "
+            f"(user_implied_fog_type, primary_fog_type, diagnosis_conflict, "
+            f"escalation_recommended, evidence, recommended_workflow_id, "
+            f"recommended_execution_mode, weakest_boundary) and the "
+            f"evidence_excerpts YAML block under Section 8.\n\n"
+            f"{semantic_authorities_block}\n"
+            f"Use the Write tool, writing the FULL file content back to the exact "
+            f"path above (with your filled-in sections/fields, keeping the marker "
+            f"comments and the existing headings/fence in place). Do not invent a "
+            f"different structure. Do not stop until you have written that file."
+        )
+
     def invoke_skill(
         self,
         skill_id: str,
@@ -614,29 +779,7 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                 f.write(brief_skeleton.build_skeleton(skeleton_ctx))
 
         if uses_runtime_skeleton:
-            prompt = (
-                f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
-                f"{input_section}"
-                f"## Your Task\n"
-                f"A runtime-owned artifact skeleton already exists at:\n"
-                f"```\n{relative_output_path}\n```\n\n"
-                f"Read it first. It already contains the required headings and the "
-                f"machine-readable YAML fence with runtime-owned fields "
-                f"(artifact_id, schema_version, source_intent_ref, created_at, "
-                f"immutable) filled in -- do NOT try to recreate or reorder those.\n\n"
-                f"## Your only job\n"
-                f"Fill in the content between each `<!-- MODEL_SECTION:<name>:BEGIN -->` "
-                f"/ `<!-- MODEL_SECTION:<name>:END -->` marker pair with your analysis, "
-                f"and fill in the placeholder YAML fields in Section 13 "
-                f"(user_implied_fog_type, primary_fog_type, diagnosis_conflict, "
-                f"escalation_recommended, evidence, recommended_workflow_id, "
-                f"recommended_execution_mode, weakest_boundary) and the "
-                f"evidence_excerpts YAML block under Section 8.\n\n"
-                f"Use the Write tool, writing the FULL file content back to the exact "
-                f"path above (with your filled-in sections/fields, keeping the marker "
-                f"comments and the existing headings/fence in place). Do not invent a "
-                f"different structure. Do not stop until you have written that file."
-            )
+            prompt = self.build_skeleton_prompt(skill_id, input_section, relative_output_path)
         else:
             prompt = (
                 f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
