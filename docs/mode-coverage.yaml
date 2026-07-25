@@ -15,8 +15,8 @@ mode_coverage:
 - mode: guided_execution
   workflow_id: architectural-review-planning-workflow
   last_run: '2026-07-25'
-  run_log_path: _tmp_evidence_0005/log-0005/run_log_architectural-review-planning-workflow_guided_execution.md
-  steps_completed: 0
+  run_log_path: experiments/evidence/0005-runtime-skeleton-live-step1/run_log.md
+  steps_completed: 1
   steps_total: 2
   validators_exercised:
   - 'level_1: validate-repo.py'
