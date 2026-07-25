@@ -1,0 +1,15 @@
+
+============================================================
+PRE-FLIGHT CHECK  |  Workflow: architectural-review-planning-workflow  Mode: guided_execution
+Session: orchestration-20260725-180724-730f3bc3
+============================================================
+
+  [FAIL] GIT: Git working tree is not clean:
+?? artifacts/05-orchestration-run/
+  ~ Branch: HEAD
+  [OK] LEVEL 1: validate-repo.py PASSED
+
+  [FAIL] Pre-flight checks failed. See errors above.
+
+
+  [FAIL] Pre-flight failed. Aborting.
