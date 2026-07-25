@@ -94,8 +94,33 @@ immutable: true
 All required fields (Stage 1 intent-aware fields, standard routing fields, and
 top-level fields required by `artifact-contracts.yaml`) MUST appear in that
 **single** fenced yaml block above. Do not split them across multiple yaml
-blocks — only the first yaml fence immediately following this heading is
-parsed by `validate-brief.py`.
+blocks — only the fenced yaml block found under the literal heading
+`## 13. Machine-readable handoff` is parsed by `validate-brief.py`
+(`_parse_artifact_data`). This is the **authoritative machine-readable block**
+for the entire artifact:
+
+- This block MUST appear exactly once, under this exact heading, with
+  unambiguous fence markers (```` ```yaml ```` ... ```` ``` ````).
+- Nothing may replace it with prose. Do not summarize, restate, or
+  "explain instead of emit" this block — a missing or malformed block here is
+  a validation failure (`MISSING_HANDOFF_BLOCK`), not a stylistic choice.
+- Do not let unrelated narrative (e.g. long historical-context prose, restated
+  status-document content) get inserted between the `## 13.` heading and its
+  yaml fence, or after the closing fence but before the next heading, in a way
+  that could cause the block to be truncated, duplicated, or visually
+  displaced. Keep the heading immediately followed by the fenced block.
+- Every field listed in the schema below MUST be present with a real value
+  (not a placeholder token) before the artifact is considered complete.
+  Fields are either **model-authored** (you must determine the value from
+  analysis: `source_intent_ref`, `user_implied_fog_type`, `primary_fog_type`,
+  `diagnosis_conflict`, `escalation_recommended`, `evidence`,
+  `recommended_workflow_id`, `recommended_execution_mode`, `weakest_boundary`,
+  `required_inputs`) or **runtime-owned** (the orchestration runtime sets
+  these deterministically when it executes this skill as a workflow step —
+  `artifact_id`, `created_at`, `immutable` — but you MUST still emit a
+  placeholder/current value for them here so the block parses as complete
+  standalone markdown when run outside the runtime, e.g. via the live
+  `claude-code` executor path).
 
 `evidence` is a required field: a list of short file-level citation strings
 (the machine-readable counterpart to the prose in Section 7 / the excerpts in

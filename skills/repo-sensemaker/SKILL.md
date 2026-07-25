@@ -98,6 +98,73 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 1. **No Implementation**: Do not execute workflows or implement changes. The output of this skill is a diagnostic artifact.
 2. **Registry Grounding**: Every `recommended_workflow_id` MUST be verified against `skills/workflow-planner/references/workflow-registry.yaml`. Do not invent or "hallucinate" workflow IDs from semantic context. If no matching workflow exists, recommend a `plan_only` mode with the closest structural match or leave it blank with a note.
 
+## Identifier Rules (read before filling in Section 12/13)
+
+There are two distinct kinds of identifier in this repository. Confusing them
+produces a `HALLUCINATED_WORKFLOW_ID` validation failure:
+
+- **Workflow IDs**: the only values that may ever be written into
+  `recommended_workflow_id`. The complete and current set of valid values is
+  the top-level `workflows: - id: <value>` entries in
+  `skills/workflow-planner/references/workflow-registry.yaml` — **read that
+  file and use only an `id` you found there.** Do not guess, abbreviate, or
+  reconstruct a workflow ID from memory or from a skill's name.
+- **Skill IDs**: names of individual skills under `skills/<skill-id>/`
+  (for example `docs-aligner`, `architectural-review`, `workflow-planner`,
+  `sensemaking-docs-reconciler`). A skill ID is a real, valid identifier —
+  but only when it appears describing a **workflow step** (e.g. "step 2 runs
+  the `docs-aligner` skill") or a skill-level capability in prose. **A skill ID
+  must never be written into `recommended_workflow_id`.** A workflow is a
+  named sequence of steps, each of which may invoke a skill; the workflow's
+  own `id` field (from workflow-registry.yaml) is a different string than any
+  of its steps' skill names, and `docs-aligner` in particular is a skill that
+  appears as a *step* inside larger workflows — it is never itself a
+  top-level workflow ID.
+- **Uncertain routing**: if, after reading workflow-registry.yaml, no
+  workflow ID is confidently supported by the evidence, do **not** invent one
+  and do **not** substitute a skill ID as a stand-in. Instead set
+  `escalation_recommended: true`, leave `recommended_workflow_id` blank (with
+  a note in prose explaining the uncertainty), and describe the ambiguity in
+  Section 6/9. Escalating honestly is always preferred over a confident
+  guess.
+
+## Evidence Authority Hierarchy
+
+When multiple sources make claims about the repository's current state, they
+do not carry equal weight. Apply this precedence, highest first, and never let
+a lower-authority source override a higher one:
+
+1. Current executable code and current tests (the ground truth of what the
+   system actually does today).
+2. Current contracts and registries (e.g. `artifact-contracts.yaml`,
+   `workflow-registry.yaml`, validator source).
+3. Accepted ADRs (`docs/adr/`, status: Accepted).
+4. Current canonical documentation (e.g. `CONTEXT.md`, current README).
+5. Open issues and PROPOSED ADRs (signal intent, not settled fact).
+6. Historical milestone/status/rollout documents (e.g. `PHASE-*`,
+   `PRODUCTION-DEPLOYMENT-READY-*`, `GA-LAUNCH-ANNOUNCEMENT.md`, and similar
+   dated self-reported status files).
+7. Untracked drafts and archival material.
+
+Required behavior:
+- A lower-authority source must never override or be presented as equal to a
+  higher-authority source it contradicts.
+- Any claim sourced from tier 6 or 7 (historical status/milestone documents,
+  drafts) MUST be explicitly labeled **historical** in the brief — never
+  restated as a current fact.
+- A "production ready" / "complete" / "shipped" style claim requires current
+  corroboration (tier 1-4). Without it, do not assert it as true; state that
+  it is an unverified historical claim.
+- If sources genuinely contradict each other, surface the contradiction as an
+  explicit uncertainty in the brief rather than silently picking one.
+- Absence of current corroboration is not evidence of current fact either
+  way — do not convert "nothing current confirms this" into "so it's true"
+  or "so it's false." State the absence.
+- When historical documents would be the only support for a load-bearing
+  claim (e.g. a routing decision or a "done" status), prefer escalation
+  (`escalation_recommended: true`) over confidently synthesizing from stale
+  sources.
+
 ## References
 - [Canonical Vocabulary Registry](../../docs/canonical-vocabulary.yaml) — Authoritative fog type definitions and routing field enums
 - [Repo Analysis Template](references/repo-analysis-template.md)
