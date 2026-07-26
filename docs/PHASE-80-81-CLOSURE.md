@@ -231,9 +231,15 @@ Externally exercised**.
 | A. Remain experimental | No readiness claim advances beyond internal use | None beyond today | Low cost; stalls external credibility |
 | B. Internally proven | Internal test/validator suite is the bar | Suite green (already true) | Low cost; weak external signal |
 | C. Externally exercised (current) | At least one real external repo run through the pipeline | `auteur` campaign (PR #67/#70/#73/#78) | Already met; known gap: diagnosis never substantively audited |
-| D. Externally validated | Clean external Stage A + Step 2 pass, substantively audited | A fresh or corrected external run that completes Step 2 without structural rejection, then human-audited | Requires an actual experiment (E1-E4 below); moderate cost |
+| D. Externally validated | External repository-sensemaking briefs satisfy the ratified D8 evidence bar | Successful, repeatable Stage A brief validation on at least two structurally different repositories, with substantive audit, no target mutation, and human usefulness review on at least one target | Requires an actual experiment (E1-E4 below); moderate cost |
 | E. Limited production pilot | 10-20 real users | D plus pilot infrastructure/support | High cost; review flags this as premature (skips D) |
 | F. General production readiness | All teams | E plus scale evidence | Highest cost; far beyond current evidence |
+
+This option table has been updated to reflect the later ratified D7/D8
+definition (§5 below). Earlier draft wording that required workflow Step 2
+is superseded and no longer applies — D7's ratified target is limited to
+`repo-sensemaker` Stage A brief validation and explicitly excludes
+architectural-review and workflow Step 2.
 
 Recommendation on file (`OWNER-DECISION-PACKAGE-2026-07-26.md` Part 2/4): D,
 explicitly not skipping to E. This is a recommendation, not a decision.
