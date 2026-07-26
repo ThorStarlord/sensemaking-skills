@@ -171,21 +171,55 @@ Per `docs/PRODUCT-CONTRACT-REVIEW-2026-07-26.md` Part 5 and
 readiness level remains **"Externally exercised"** (Level C). PR #81 fixes
 an internal contract defect surfaced by the auteur campaign; it does not
 itself constitute new external evidence, so it does not advance the
-readiness level. Reaching "Externally validated" (Level D) still requires a
-clean external Stage A + Step 2 pass, which has not occurred.
+readiness level. Reaching "Externally validated" (Level D) still requires
+satisfying the ratified D8 evidence bar for external repository-sensemaking
+briefs, which has not occurred. This refers to `repo-sensemaker` Stage A
+brief validation, not architectural-review or workflow Step 2.
+
+**This remains true after the D7/D8/E4 ratification recorded in §5 below.**
+Ratifying a *target* and an evidence bar does not itself satisfy that bar —
+the achieved readiness level stays **"Externally exercised"** until the
+staged evidence plan (E4) actually produces the D8 evidence. No experiment
+has run as of this document.
 
 ## 5. Open owner decisions
 
 Per commit `1ad42ca` ("apply explicit owner ratification of D1-D6, D9, D10"):
-D1-D6, D9, D10 are ratified. **D7 (next readiness target) and D8
-(external-validation bar) remain explicitly UNDECIDED by owner instruction**,
-recorded in `docs/OWNER-DECISION-PACKAGE-2026-07-26.md` Part 2/Part 4. This
-document does not resolve, default, or recommend ratifying either. The full
-option analysis and recommendation lives in that file (Parts 2, 4, 7); the
-tables below are a compact pointer, not a replacement, so the owner can
-answer inline here if preferred. ADR 0021 (production readiness) stays
-PROPOSED pending D7/D8 and its other named
-owner-decision items.
+D1-D6, D9, D10 are ratified.
+
+**2026-07-26 update (later same day): D7, D8, and experiment authorization
+have now been explicitly ratified by the owner**, per
+`docs/OWNER-DECISION-PACKAGE-2026-07-26.md` Part 7 (updated). The ratified
+values:
+
+```text
+D7 = Externally validated
+D8 = Success on at least two structurally different external repositories,
+     including real human usefulness evaluation on at least one target.
+Experiment authorization = E4 -- staged combination
+  Stage 1: controlled auteur rerun
+  Stage 2: second structurally different repository (conditional on Stage 1)
+  Stage 3: real-maintainer usefulness evaluation (conditional on Stage 2)
+```
+
+Ratifying D7/D8/E4 is a governance and evidence-planning act only. It does
+**not** itself advance the currently achieved readiness level (§4, below,
+remains unchanged), does not authorize running any experiment stage, and
+does not constitute a production-readiness claim. Only Stage 1 **planning**
+is currently authorized (a single planning issue, #83); **Stage 1 execution
+is not yet authorized** and requires a separate, explicit owner instruction
+issued after review of the final pinned revisions, model/provider
+configuration, environment, and exact command. Stages 2 and 3 remain
+conditional on owner review of the prior stage's evidence and are not
+authorized now. This planning-only boundary is a deliberate choice: an
+earlier informal draft of this decision used the phrase "Stage 1 is
+authorized for execution now" — that phrasing is explicitly superseded and
+does not apply; the authorized boundary is planning only, as stated here.
+ADR 0021 (production readiness) stays PROPOSED pending its other named
+owner-decision items (see that ADR). D7's ratified target does not require,
+and does not introduce, any architectural-review or workflow "Step 2" pass —
+see ADR 0021's D7 note for the exact wording (issue #83 tests only the
+`repo-sensemaker` Stage A brief).
 
 ### D7 — next readiness target
 
@@ -197,9 +231,15 @@ Externally exercised**.
 | A. Remain experimental | No readiness claim advances beyond internal use | None beyond today | Low cost; stalls external credibility |
 | B. Internally proven | Internal test/validator suite is the bar | Suite green (already true) | Low cost; weak external signal |
 | C. Externally exercised (current) | At least one real external repo run through the pipeline | `auteur` campaign (PR #67/#70/#73/#78) | Already met; known gap: diagnosis never substantively audited |
-| D. Externally validated | Clean external Stage A + Step 2 pass, substantively audited | A fresh or corrected external run that completes Step 2 without structural rejection, then human-audited | Requires an actual experiment (E1-E4 below); moderate cost |
+| D. Externally validated | External repository-sensemaking briefs satisfy the ratified D8 evidence bar | Successful, repeatable Stage A brief validation on at least two structurally different repositories, with substantive audit, no target mutation, and human usefulness review on at least one target | Requires an actual experiment (E1-E4 below); moderate cost |
 | E. Limited production pilot | 10-20 real users | D plus pilot infrastructure/support | High cost; review flags this as premature (skips D) |
 | F. General production readiness | All teams | E plus scale evidence | Highest cost; far beyond current evidence |
+
+This option table has been updated to reflect the later ratified D7/D8
+definition (§5 below). Earlier draft wording that required workflow Step 2
+is superseded and no longer applies — D7's ratified target is limited to
+`repo-sensemaker` Stage A brief validation and explicitly excludes
+architectural-review and workflow Step 2.
 
 Recommendation on file (`OWNER-DECISION-PACKAGE-2026-07-26.md` Part 2/4): D,
 explicitly not skipping to E. This is a recommendation, not a decision.

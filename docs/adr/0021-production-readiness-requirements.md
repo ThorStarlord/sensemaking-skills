@@ -8,23 +8,58 @@ explicitly deferred D7/D8; **no implementation or GA claim authorized**.
 
 **2026-07-26 update**: following the 2026-07-26 product-contract review and
 owner decision round (`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`), the
-owner explicitly left this ADR's two readiness sub-items open rather than
-deciding them now:
-- **D7 (readiness target)**: **UNDECIDED by explicit owner instruction** —
-  the review's recommendation was "externally validated," but the owner
-  chose to leave this open pending the contract-redesign phase (D10)
-  landing first, rather than pre-committing to a target now.
-- **D8 (external-validation bar)**: **UNDECIDED by explicit owner
-  instruction** — same reasoning; the review's recommendation was "at least
-  two structurally different external repositories," not yet ratified.
+owner initially left this ADR's two readiness sub-items open. Later the same
+day, following PR #81's merge and phase closure
+(`docs/PHASE-80-81-CLOSURE.md`), the owner explicitly ratified both:
 
-This ADR's status does not change — it remains **Proposed**. Even once
-D7/D8 are ratified, this ADR's three other named "requires explicit owner
-decision" items (model-cost budgets and concurrency/rate-limiting policy;
+- **D7 (readiness target)**: **RATIFIED — "Externally validated."** The next
+  readiness target is externally validated repository-sensemaking briefs
+  (the `repo-sensemaker` Stage A brief only — see issue #83), under the
+  ratified D8 evidence bar: clean external repository-sensemaking brief
+  validation, deterministic evidence grounding, required substantive audit,
+  no target mutation, repeatability, two structurally different
+  repositories, and human usefulness review on at least one target. **This
+  does not require, and does not introduce, any architectural-review or
+  workflow "Step 2" pass** — that is a different concept from "Stage 2" of
+  the E4 experiment plan below (the second-repository experiment).
+  Architectural-review remains outside this decision and outside issue #83's
+  scope; the product boundary ratified separately (D1 = A, brief production
+  only) is unchanged by this ratification. This does **not** itself change
+  the currently *achieved* readiness level, which remains "Externally
+  exercised" (see "Decision" section below) until the D8 evidence bar is
+  actually satisfied.
+- **D8 (external-validation bar)**: **RATIFIED.** Success on at least two
+  structurally different external repositories, including: clean structural
+  Stage A validation; deterministic evidence grounding; substantive audit of
+  every high-risk claim; no target-repository mutation; pinned framework and
+  target revisions; repeatability evidence; and real human usefulness
+  evaluation on at least one target. A single successful auteur run does not
+  satisfy D8.
+- **Experiment authorization: RATIFIED — E4, staged plan.** Only **Stage 1
+  planning** (one tracking issue, #83) is authorized now. **Stage 1
+  execution is not yet authorized** and requires a separate, explicit owner
+  instruction issued after the owner reviews the final pinned revisions,
+  model/provider configuration, environment, and exact command. Stage 2
+  (second structurally different repository — not workflow "Step 2"; see the
+  D7 note above) is conditional and unauthorized, gated on owner review of
+  successful Stage 1 evidence. Stage 3 (real-maintainer usefulness
+  evaluation) is conditional and unauthorized, gated on owner review of
+  successful Stage 2 evidence. Any failed stage stops the sequence and
+  returns to the owner; no automatic repair-and-rerun is authorized. *This
+  planning-only boundary is a deliberate, explicit choice — an earlier
+  informal draft of this decision used the phrase "Stage 1 is authorized for
+  execution now"; that phrasing is superseded and does not apply. The
+  authorized boundary is planning only, as stated here.*
+
+This ADR's status does not change — it remains **Proposed**. Ratifying
+D7/D8/E4 resolves two of this ADR's named owner-decision items but not all
+of them: this ADR's three other named "requires explicit owner decision"
+items (model-cost budgets and concurrency/rate-limiting policy;
 supported-coding-agents commitment beyond Claude Code; supported
-platforms/environments beyond Windows + CI Ubuntu) remain outstanding
-regardless — per this ADR's own "Consequences" section, GA sign-off requires
-*all* owner-decision items answered, not a subset.
+platforms/environments beyond Windows + CI Ubuntu) **remain outstanding and
+unresolved** — per this ADR's own "Consequences" section, GA sign-off
+requires *all* owner-decision items answered, not a subset, so this ADR
+cannot be promoted to Accepted on D7/D8 alone.
 
 ---
 
@@ -109,11 +144,16 @@ Product-direction decision, and three items above require your explicit
 input (cost/concurrency policy, supported-agent commitments, platform
 support scope) that cannot be derived from the repository alone.
 
-**Status as of 2026-07-26**: D7/D8 explicitly left UNDECIDED by owner
-instruction (see the update note at the top of this ADR), not merely
-unaddressed. The three items listed above (cost/concurrency, supported
-agents, platform scope) remain outstanding regardless. This ADR stays
-Proposed until the owner ratifies D7/D8 and answers the three items above.
+**Status as of 2026-07-26 (later same day)**: D7/D8 and experiment
+authorization (E4, staged) are now explicitly RATIFIED by owner instruction
+(see the update note at the top of this ADR). The three other items listed
+above (cost/concurrency, supported agents, platform scope) remain
+outstanding and unresolved regardless — they are independent of D7/D8/E4.
+This ADR stays Proposed until the owner also answers those three remaining
+items; ratifying D7/D8/E4 alone does not promote this ADR to Accepted, and
+does not itself constitute a production-readiness claim (the achieved
+readiness level remains "Externally exercised" per the Decision section
+below, unchanged by this ratification).
 
 ---
 

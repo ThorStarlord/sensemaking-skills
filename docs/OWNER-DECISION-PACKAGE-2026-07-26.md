@@ -79,7 +79,7 @@ No edits were made to the review document.
 | **D4** | Handling an unknown/unmatched weakness type | A. Hard validation failure / B. Valid artifact + warning + human review / C. Runtime auto-assigns nearest type / D. Allow `Other` with explanation | Review does **not** clearly pick one — it recommends `Other` as an enum option (leaning D) but also says the field should be "recommended," i.e., its absence produces at most a warning (leaning B). **This is an unresolved design choice, not a clear recommendation** — do not treat B or D as ratified. | Depends on which is chosen; B and D are not mutually exclusive (could do both) | If C is chosen instead: reintroduces the same classifier-brittleness risk flagged for D3-Option C | **Weak / genuinely open** — the review's own text hedges between B and D without picking one |
 | **D5** | Substantive evidence audit policy | A. Mandatory for every brief / B. Mandatory for absence/unreachability/dead-code/safety/high-risk claims / C. Optional human review / D. Second-model audit for every brief / E. No formal audit | **B** | Audit triggers only on the highest-risk claim class; routine claims skip it | If A: audit cost applies to every brief regardless of risk, unproven whether that's sustainable; if C or E: PR #73's exact failure mode (unsupported ghost-feature claim passing structurally) could recur uncaught | **Strong** — PR #73 is direct, specific evidence that skipping the audit on an absence claim let a real defect through; no evidence bears on whether *non*-high-risk claims need the same audit |
 | **D6** | Human review depth | A. Human approves every final brief / B. Human reviews only high-risk claims / C. Human reviews only validator warnings / D. Fully autonomous output | **Explicitly left unresolved by the review** (Part 9, item 5) — preserved as unresolved here, not defaulted | N/A until chosen | N/A until chosen | **None** — the review states plainly that no repo evidence favors one answer |
-| **D7** | Next readiness target | A. Remain experimental / B. Internally proven / C. Externally exercised / D. Externally validated / E. Limited production pilot / F. General production readiness | Review recommends **D** as the next target, explicitly **not** skipping to E. Current justified level is **C** (already met) — stated separately per instruction, not inferred as "next = C+1" | Next phase (Part 8/D10) targets clearing a clean external Stage A + Step 2 pass before any pilot claim | If E is chosen as the next target: a pilot would run before the taxonomy-brittleness defect (D3) is fixed, risking a 5th failure in the same bug family | **Moderate** — D is a reasoned next step, not something the campaign proves is the *only* valid next target; skipping to E is not shown to be wrong, just judged premature |
+| **D7** | Next readiness target | A. Remain experimental / B. Internally proven / C. Externally exercised / D. Externally validated / E. Limited production pilot / F. General production readiness | Review recommends **D** as the next target, explicitly **not** skipping to E. Current justified level is **C** (already met) — stated separately per instruction, not inferred as "next = C+1" | Next phase (Part 8/D10) targets clearing the ratified D8 evidence bar for external `repo-sensemaker` Stage A brief validation before any pilot claim (this does not require architectural-review or workflow Step 2 — see the 2026-07-26 ratification note below) | If E is chosen as the next target: a pilot would run before the taxonomy-brittleness defect (D3) is fixed, risking a 5th failure in the same bug family | **Moderate** — D is a reasoned next step, not something the campaign proves is the *only* valid next target; skipping to E is not shown to be wrong, just judged premature |
 | **D8** | External-validation bar | A. One external repo, repeatable success / B. Two+ structurally different repos / C. Real maintainer use on one repo / D. Multiple repos + real maintainer use | **Explicitly left unresolved by the review** (Part 9, item 7) — preserved as unresolved here | N/A until chosen | N/A until chosen | **None** — only one external repo (`auteur`) has ever been tried; no evidence distinguishes these bars |
 | **D9** | PR #78 interpretation | A. Legitimate product failure, taxonomy must remain blocking / B. Legitimate under current contract but evidence the contract is overly brittle / C. Model-compliance failure only / D. Successful external validation despite validator rejection | **B** | PR #78 is read as contract-defect evidence, motivating D3/D2 fixes, not as proof the model failed or that the run succeeded | If A: no contract change is warranted, campaign would need a 5th rerun on an unchanged validator; if D (must be explicitly rejected regardless): would misrepresent the campaign's result to any future reader of the record | **Strong** — the trace shows completed, genuine contradiction-search Grep/Read activity and a specific cited claim; the review's own text states this directly. **D is explicitly rejected**, not merely deprioritized — no reading of the evidence supports D. |
 | **D10** | Next phase | A. Contract redesign, brief + validators only / B. Another auteur rerun / C. Second external repository / D. Human-reviewed pilot / E. Broader workflow development / F. Documentation consolidation only | **A** | Scoped, bounded implementation work (Part 8's phase definition) begins only after D1/D2/D3/D9 are ratified | If B or C chosen instead: risks repeating the same diagnosed bug family before it's fixed (per Part 8's own rationale); if E chosen: contradicts issue #27's "fix the spine before adding breadth" principle with zero new supporting evidence for doing so | **Strong for rejecting B/C before D3 lands** (direct, stated reasoning); **moderate for A over D/F** (reasoned trade-off, not an evidenced necessity) |
@@ -195,9 +195,10 @@ If the default package (Part 4) is approved as-is:
   using the phrase "production ready"** for anything beyond what Part 5 of
   the source review calls "externally exercised" (the currently justified
   level) until D7's next target ("externally validated") is actually met by
-  a clean external Stage A + Step 2 pass — this is a standing constraint on
-  language, not merely a recommendation, per CLAUDE.md's existing
-  verification-discipline rule.
+  satisfying the ratified D8 evidence bar for external repository-sensemaking
+  briefs (not a workflow Step 2 / architectural-review pass) — this is a
+  standing constraint on language, not merely a recommendation, per
+  CLAUDE.md's existing verification-discipline rule.
 
 None of the above has been implemented. This is a statement of what
 *would* follow, for your review before any of it happens.
@@ -291,10 +292,38 @@ treating an assistant-authored example as sign-off.
   phase.
 
 - D7 Next readiness target:
-  **UNDECIDED** — remains open per owner instruction.
+  D — Externally validated. **RATIFIED 2026-07-26 (later same day, following
+  PR #81 closure)**, superseding the earlier UNDECIDED status recorded
+  above. This does not itself advance the achieved readiness level, which
+  remains "Externally exercised" until the D8 evidence bar is actually met.
 
 - D8 External-validation bar:
-  **UNDECIDED** — remains open per owner instruction.
+  Success on at least two structurally different external repositories,
+  including: clean structural Stage A validation; deterministic evidence
+  grounding; substantive audit of every high-risk claim; no target-repository
+  mutation; pinned framework and target revisions; repeatability evidence;
+  and real human usefulness evaluation on at least one target. **RATIFIED
+  2026-07-26 (later same day)**, superseding the earlier UNDECIDED status
+  recorded above.
+
+- Experiment authorization:
+  E4 — staged plan. **RATIFIED 2026-07-26.** Only **Stage 1 planning**
+  (controlled auteur rerun) is authorized now, via one GitHub issue (#83).
+  **Stage 1 execution is not yet authorized** and requires a separate,
+  explicit owner instruction issued after the owner reviews the final
+  pinned revisions, model/provider configuration, environment, and exact
+  command. Stage 2 (second structurally different repository — not workflow
+  "Step 2"; that is an unrelated concept, see ADR 0021's D7 note) is
+  conditional and unauthorized, gated on the owner reviewing successful
+  Stage 1 evidence. Stage 3 (real-maintainer usefulness evaluation) is
+  conditional and unauthorized, gated on the owner reviewing successful
+  Stage 2 evidence. Any failed stage stops the sequence — the failure is
+  preserved as evidence and returned to the owner; no automatic
+  repair-and-rerun is authorized. **This planning-only boundary is a
+  deliberate, explicit revision**: an earlier informal draft of this
+  decision used the phrase "Stage 1 is authorized for execution now"; that
+  phrasing is superseded and does not apply. The authorized boundary is
+  planning only, as stated here.
 
 - D9 PR #78 interpretation:
   B — PR #78 was a legitimate rejection under the current contract, but it
@@ -315,14 +344,25 @@ treating an assistant-authored example as sign-off.
   conditions are unresolved.
 ```
 
+**2026-07-26 update (later same day)**: D7 and D8 above, and experiment
+authorization (E4, staged), have since been explicitly ratified by the
+owner — see the updated D7/D8/Experiment-authorization entries above. This
+supersedes the "Modifications or constraints" bullet "Do not rerun auteur
+during this phase" only to the extent of authorizing *planning* for a Stage
+1 controlled rerun (one GitHub issue); it does not authorize executing that
+rerun, which still requires separate explicit owner instruction. All other
+modifications/constraints above remain in force unchanged (no routing/
+Wayfinder/broader-orchestration expansion, historical evidence PRs
+untouched, no weakened evidence integrity or target-write confinement).
+
 **Effect on Part 6's ADR/issue mapping**: D1 (ADR 0014's condition) is
 ratified — promotable. D2/D3/D4 (ADR 0015's condition) are ratified —
 promotable. D5 (ADR 0016's condition) is ratified — promotable; D9 is
 recorded there too as ratified interpretive precedent, though it isn't
 itself part of ADR 0016's promotion condition. D6 is ratified but has no
 existing ADR home (Part 6 flagged this gap already) — recorded here, not
-retrofitted into an ADR that doesn't cover it. D7/D8 remain UNDECIDED by
-explicit owner instruction, so ADR 0021's promotion condition is not met —
-it stays Proposed, and its three other named owner-decision items
-(cost/concurrency, supported-agent commitments, platform scope) remain
-untouched regardless.
+retrofitted into an ADR that doesn't cover it. **D7/D8 are now ratified**
+(see the 2026-07-26 update above), but ADR 0021's promotion condition is
+still not fully met — it stays Proposed, because its three other named
+owner-decision items (cost/concurrency, supported-agent commitments,
+platform scope) remain outstanding regardless of D7/D8's ratification.
