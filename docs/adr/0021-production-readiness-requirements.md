@@ -13,10 +13,21 @@ day, following PR #81's merge and phase closure
 (`docs/PHASE-80-81-CLOSURE.md`), the owner explicitly ratified both:
 
 - **D7 (readiness target)**: **RATIFIED — "Externally validated."** The next
-  readiness target is a clean external Stage A + Step 2 pass, substantively
-  audited. This does **not** itself change the currently *achieved*
-  readiness level, which remains "Externally exercised" (see "Decision"
-  section below) until the D8 evidence bar is actually satisfied.
+  readiness target is externally validated repository-sensemaking briefs
+  (the `repo-sensemaker` Stage A brief only — see issue #83), under the
+  ratified D8 evidence bar: clean external repository-sensemaking brief
+  validation, deterministic evidence grounding, required substantive audit,
+  no target mutation, repeatability, two structurally different
+  repositories, and human usefulness review on at least one target. **This
+  does not require, and does not introduce, any architectural-review or
+  workflow "Step 2" pass** — that is a different concept from "Stage 2" of
+  the E4 experiment plan below (the second-repository experiment).
+  Architectural-review remains outside this decision and outside issue #83's
+  scope; the product boundary ratified separately (D1 = A, brief production
+  only) is unchanged by this ratification. This does **not** itself change
+  the currently *achieved* readiness level, which remains "Externally
+  exercised" (see "Decision" section below) until the D8 evidence bar is
+  actually satisfied.
 - **D8 (external-validation bar)**: **RATIFIED.** Success on at least two
   structurally different external repositories, including: clean structural
   Stage A validation; deterministic evidence grounding; substantive audit of
@@ -24,14 +35,21 @@ day, following PR #81's merge and phase closure
   target revisions; repeatability evidence; and real human usefulness
   evaluation on at least one target. A single successful auteur run does not
   satisfy D8.
-- **Experiment authorization: RATIFIED — E4, staged combination.** Stage 1
-  (controlled auteur rerun) may be *planned* now (one tracking issue); Stage
-  2 (second structurally different repository) is conditional on owner
-  review of successful Stage 1 evidence; Stage 3 (real-maintainer usefulness
-  evaluation) is conditional on owner review of successful Stage 2 evidence.
-  Any failed stage stops the sequence and returns to the owner; no automatic
-  repair-and-rerun is authorized. Planning Stage 1 does not authorize
-  *executing* it — that requires a separate, explicit owner instruction.
+- **Experiment authorization: RATIFIED — E4, staged plan.** Only **Stage 1
+  planning** (one tracking issue, #83) is authorized now. **Stage 1
+  execution is not yet authorized** and requires a separate, explicit owner
+  instruction issued after the owner reviews the final pinned revisions,
+  model/provider configuration, environment, and exact command. Stage 2
+  (second structurally different repository — not workflow "Step 2"; see the
+  D7 note above) is conditional and unauthorized, gated on owner review of
+  successful Stage 1 evidence. Stage 3 (real-maintainer usefulness
+  evaluation) is conditional and unauthorized, gated on owner review of
+  successful Stage 2 evidence. Any failed stage stops the sequence and
+  returns to the owner; no automatic repair-and-rerun is authorized. *This
+  planning-only boundary is a deliberate, explicit choice — an earlier
+  informal draft of this decision used the phrase "Stage 1 is authorized for
+  execution now"; that phrasing is superseded and does not apply. The
+  authorized boundary is planning only, as stated here.*
 
 This ADR's status does not change — it remains **Proposed**. Ratifying
 D7/D8/E4 resolves two of this ADR's named owner-decision items but not all

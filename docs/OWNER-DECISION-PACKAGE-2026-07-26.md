@@ -306,16 +306,23 @@ treating an assistant-authored example as sign-off.
   recorded above.
 
 - Experiment authorization:
-  E4 — staged combination. **RATIFIED 2026-07-26.** Authorized sequence:
-  Stage 1 (controlled auteur rerun) is authorized for *planning* now via one
-  GitHub issue; Stage 2 (second structurally different repository) is
-  conditional on the owner reviewing successful Stage 1 evidence; Stage 3
-  (real-maintainer usefulness evaluation) is conditional on the owner
-  reviewing successful Stage 2 evidence. Any failed stage stops the
-  sequence — the failure is preserved as evidence and returned to the owner;
-  no automatic repair-and-rerun is authorized. Creating the Stage 1 planning
-  issue does not itself authorize *executing* Stage 1 — that requires a
-  separate, explicit owner instruction.
+  E4 — staged plan. **RATIFIED 2026-07-26.** Only **Stage 1 planning**
+  (controlled auteur rerun) is authorized now, via one GitHub issue (#83).
+  **Stage 1 execution is not yet authorized** and requires a separate,
+  explicit owner instruction issued after the owner reviews the final
+  pinned revisions, model/provider configuration, environment, and exact
+  command. Stage 2 (second structurally different repository — not workflow
+  "Step 2"; that is an unrelated concept, see ADR 0021's D7 note) is
+  conditional and unauthorized, gated on the owner reviewing successful
+  Stage 1 evidence. Stage 3 (real-maintainer usefulness evaluation) is
+  conditional and unauthorized, gated on the owner reviewing successful
+  Stage 2 evidence. Any failed stage stops the sequence — the failure is
+  preserved as evidence and returned to the owner; no automatic
+  repair-and-rerun is authorized. **This planning-only boundary is a
+  deliberate, explicit revision**: an earlier informal draft of this
+  decision used the phrase "Stage 1 is authorized for execution now"; that
+  phrasing is superseded and does not apply. The authorized boundary is
+  planning only, as stated here.
 
 - D9 PR #78 interpretation:
   B — PR #78 was a legitimate rejection under the current contract, but it

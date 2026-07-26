@@ -203,12 +203,21 @@ Experiment authorization = E4 -- staged combination
 Ratifying D7/D8/E4 is a governance and evidence-planning act only. It does
 **not** itself advance the currently achieved readiness level (§4, below,
 remains unchanged), does not authorize running any experiment stage, and
-does not constitute a production-readiness claim. Only Stage 1 is currently
-authorized for planning (a single planning issue); executing Stage 1
-requires a separate, explicit owner instruction. Stages 2 and 3 remain
+does not constitute a production-readiness claim. Only Stage 1 **planning**
+is currently authorized (a single planning issue, #83); **Stage 1 execution
+is not yet authorized** and requires a separate, explicit owner instruction
+issued after review of the final pinned revisions, model/provider
+configuration, environment, and exact command. Stages 2 and 3 remain
 conditional on owner review of the prior stage's evidence and are not
-authorized now. ADR 0021 (production readiness) stays PROPOSED pending its
-other named owner-decision items (see that ADR).
+authorized now. This planning-only boundary is a deliberate choice: an
+earlier informal draft of this decision used the phrase "Stage 1 is
+authorized for execution now" — that phrasing is explicitly superseded and
+does not apply; the authorized boundary is planning only, as stated here.
+ADR 0021 (production readiness) stays PROPOSED pending its other named
+owner-decision items (see that ADR). D7's ratified target does not require,
+and does not introduce, any architectural-review or workflow "Step 2" pass —
+see ADR 0021's D7 note for the exact wording (issue #83 tests only the
+`repo-sensemaker` Stage A brief).
 
 ### D7 — next readiness target
 
