@@ -110,12 +110,28 @@ def _parse_artifact_data(content: str) -> dict[str, Any] | None:
         return None
 
 
-def validate_brief(artifact_path: str, repo_root: str = ".") -> list[ValidationError]:
+def validate_brief(
+    artifact_path: str,
+    repo_root: str = ".",
+    target_repo: str | None = None,
+) -> list[ValidationError]:
     """Validate a repository sensemaking brief and return structured errors.
+
+    Args:
+        artifact_path: Path to the brief .md file.
+        repo_root: Root of the sensemaking-skills framework repo (used for
+            resolving artifact-contracts, weakness-types, and workflow registry).
+        target_repo: Root of the repository the brief is ABOUT. Cited evidence
+            files are resolved against this root when provided. Falls back to
+            repo_root when not given (preserves single-repo behavior exactly).
 
     Returns a list of ValidationError dicts. Empty list means validation passed.
     """
     errors: list[ValidationError] = []
+    # Citation existence checks resolve against target_repo (the repo the brief
+    # is about) when supplied; otherwise fall back to repo_root, preserving
+    # existing single-repo/internal-proof behavior byte-for-byte.
+    citation_root = target_repo if target_repo else repo_root
 
     if not os.path.exists(artifact_path):
         errors.append({
@@ -302,7 +318,7 @@ def validate_brief(artifact_path: str, repo_root: str = ".") -> list[ValidationE
                     if file_path.startswith("file:///"):
                         errors.append(_code_error(HALLUCINATED_FILE, f"Excerpt[{i}] uses absolute file:/// path: {file_path}"))
                     else:
-                        full_path = os.path.join(repo_root, file_path)
+                        full_path = os.path.join(citation_root, file_path)
                         if not os.path.exists(full_path):
                             errors.append(_code_error(HALLUCINATED_FILE, f"Excerpt[{i}] references non-existent file: {file_path}"))
 
@@ -351,6 +367,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Specialized validator for repository sensemaking brief.")
     parser.add_argument("artifact_path", nargs="?", help="Path to the brief .md file")
     parser.add_argument("--repo-root", default=".", help="Root of the repository for file checks")
+    parser.add_argument(
+        "--target-repo",
+        default=None,
+        help=(
+            "Root of the repository the brief is ABOUT, if different from "
+            "--repo-root (external-repository runs). Evidence citations are "
+            "resolved against this root when provided; falls back to --repo-root."
+        ),
+    )
     parser.add_argument("--json", action="store_true", help="Output JSON format")
     parser.add_argument("--list-codes", action="store_true", help="List all error codes and exit")
     args = parser.parse_args(argv)
@@ -380,7 +405,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_usage()
         return 1
 
-    errors = validate_brief(args.artifact_path, args.repo_root)
+    errors = validate_brief(args.artifact_path, args.repo_root, args.target_repo)
 
     if args.json:
         print(validation_result_to_json(args.artifact_path, errors))
