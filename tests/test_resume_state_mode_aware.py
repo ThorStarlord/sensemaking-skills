@@ -377,3 +377,16 @@ def test_no_resume_flag_no_steps_skipped(wfrt, tmp_log_dir):
         runner.run()
 
     assert executed_steps == [1, 2]
+
+
+def test_unrecognized_mode_fails_closed_not_silently(wfrt, tmp_log_dir):
+    """An unrecognized mode must never silently fall back to a guessed
+    resumable status (e.g. "VALIDATED"). CLI invocation already constrains
+    --mode via argparse choices=list(KNOWN_MODES.keys()), so this can only
+    happen via direct construction -- but _resumable_terminal_statuses()
+    must still fail loudly rather than make an unproven resume decision."""
+    _write_run_log(tmp_log_dir, "test-workflow", "not_a_real_mode", GUIDED_APPROVED_LOG)
+    runner = _make_bare_runner(wfrt, "not_a_real_mode", tmp_log_dir)
+
+    with pytest.raises(ValueError, match="not_a_real_mode"):
+        runner._find_resume_state()

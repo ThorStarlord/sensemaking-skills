@@ -1842,8 +1842,23 @@ class OrchestrationRunner:
         step reconstructions this runner itself writes for already-resumed
         steps, see the "COMPLETED" literal near the resume-skip loop) where
         that literal genuinely represents the terminal success state.
+
+        Fails closed for an unrecognized mode: CLI invocation already
+        constrains --mode to MODE_CEILINGS' own keys (argparse choices=
+        list(KNOWN_MODES.keys()), and KNOWN_MODES/MODE_CEILINGS share the
+        same key set), but this runner can also be constructed directly
+        without going through argparse. Silently falling back to a guessed
+        status (e.g. "VALIDATED") for a mode this mapping doesn't recognize
+        would let a resume decision be made on unproven grounds. Raise
+        instead, so an unrecognized mode is a loud error, not a silent
+        false-positive resume.
         """
-        return {MODE_CEILINGS.get(self.mode, "VALIDATED"), "COMPLETED"}
+        if self.mode not in MODE_CEILINGS:
+            raise ValueError(
+                f"Cannot determine resumable terminal status for unrecognized "
+                f"mode {self.mode!r}. Known modes: {sorted(MODE_CEILINGS.keys())}"
+            )
+        return {MODE_CEILINGS[self.mode], "COMPLETED"}
 
     def _find_resume_state(self) -> dict | None:
         """Parse existing run log to find resume state.
