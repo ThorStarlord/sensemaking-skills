@@ -1,0 +1,47 @@
+diff --git a/docs/mode-coverage.yaml b/docs/mode-coverage.yaml
+index 48a4854..a619f6c 100644
+--- a/docs/mode-coverage.yaml
++++ b/docs/mode-coverage.yaml
+@@ -14,16 +14,16 @@ mode_coverage:
+   notes: 'Executed via production orchestration runner v2. Session: orchestration-20260523-181501-af0261dc.'
+ - mode: guided_execution
+   workflow_id: architectural-review-planning-workflow
+-  last_run: '2026-07-25'
+-  run_log_path: experiments/evidence/0005-runtime-skeleton-live-step1/run_log.md
+-  steps_completed: 1
++  last_run: '2026-07-26'
++  run_log_path: exp3-logs-stageA/run_log_architectural-review-planning-workflow_guided_execution.md
++  steps_completed: 0
+   steps_total: 2
+   validators_exercised:
+   - 'level_1: validate-repo.py'
+-  gates_exercised: false
+-  gates_note: 0 approved, 0 denied
++  gates_exercised: true
++  gates_note: 1 approved, 0 denied
+   hardening_triggered: none
+-  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260725-161841-c45d882a.'
++  notes: 'Executed via production orchestration runner v2. Session: orchestration-20260726-084748-e26480bc.'
+ system_tools:
+ - tool: validate-run-log.py
+   status: proven
+@@ -117,8 +117,8 @@ system_tools:
+   tests_total: 10
+ - tool: orchestration-runner.py
+   status: active
+-  last_run: '2026-07-25'
+-  last_session: orchestration-20260725-161841-c45d882a
++  last_run: '2026-07-26'
++  last_session: orchestration-20260726-084748-e26480bc
+   workflows_executed:
+   - full-fog-workflow (prompt_chain)
+   - full-fog-workflow (yolo_execution)
+@@ -262,7 +262,7 @@ validator_live_coverage:
+ 
+       scenario reports.'
+ orchestration_runner:
+-  last_run: '2026-07-25'
++  last_run: '2026-07-26'
+   last_session: orchestration-20260516-161541-0eda0bc6
+   workflow_families_proven:
+   - architectural-review-planning-workflow
