@@ -1,8 +1,22 @@
 # ADR 0014: Product Boundary of Sensemaking Skills
 
-**Status**: PROPOSED — draft for owner review, not yet accepted
-**Date**: 2026-07-25
+**Status**: ACCEPTED (revised, narrowed) — ratified 2026-07-26 by explicit
+owner decision (D1) recorded in `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`
+**Date**: 2026-07-25 (revised 2026-07-26)
 **Proposes resolution for**: Issue #29
+
+**2026-07-26 revision, owner-ratified**: following closure of the auteur
+external-validation campaign (PR #67/#69/#70/#72/#73/#75/#77/#78) and the
+resulting product-contract review
+(`docs/PRODUCT-CONTRACT-REVIEW-2026-07-26.md`), the owner explicitly
+approved interpretation **A** — a human-reviewed repository-analysis
+assistant producing an evidence-grounded brief — narrower than this ADR's
+original draft, which already included routing as in-scope. The "In scope"
+section below reflects that ratified revision. Routing, tracker-sync, and
+deployment remain out of scope, as originally drafted; the change is that
+this ADR no longer treats "diagnosis + routing" as a single settled unit —
+routing is deferred pending its own external proof (see the "Consequences"
+section, unchanged).
 
 ---
 
@@ -51,15 +65,26 @@ recommendation artifact — it does not own deployment, PR review, or
 production operations, and it has not been run against an external
 repository (see ADR 0017).
 
-### In scope
+### In scope (revised 2026-07-26, ratified — D1)
 - Fog classification and repository diagnosis (`repo-sensemaker`)
-- Routing to the correct downstream workflow (`workflow-planner`)
-- Producing validated, machine-readable handoff artifacts
-- The proven golden path (narrowly, for `architectural-review-planning-workflow`
-  only): intent -> brief -> architectural-review -> recommendation -> run log
-  -> exit 0, with both the positive and missing-input negative path proven
-  live (PR #57, #59, #60, #62, #64, #65; issue #28 historical scope decision,
-  issue #51 evidence remediation)
+- Producing a validated, human-reviewed `repository_sensemaking_brief`
+  artifact — this is the settled core of the product boundary as of this
+  revision
+- The proven golden path, narrowly, up to and including brief production
+  (PR #57, #59, #60, #62, #64, #65 for the internal proof; PR #67/#70/#73/#78
+  for the external-exercise evidence, none of which yet cleared Stage A
+  cleanly — see ADR 0021)
+
+### Deferred, not yet ratified as in-scope
+- Routing to a downstream workflow (`workflow-planner`) and the rest of the
+  previously-drafted golden path (architectural-review -> recommendation ->
+  run log -> exit 0) remain **proven internally** (PR #57/#59/#60/#62/#64/#65)
+  but are not folded into this ADR's ratified "in scope" boundary yet — no
+  external evidence exists that routing or a second workflow step works
+  outside this repository. Promoting routing to in-scope requires its own
+  external proof, per the product-contract review's Part 1 finding that every
+  campaign failure occurred inside brief production, before routing was ever
+  reached.
 
 ### Out of scope (left to downstream consumers)
 - Actually writing/reviewing/merging code
@@ -82,8 +107,14 @@ repository (see ADR 0017).
 
 ## Owner sign-off required
 
-This is a product-direction decision. Before treating this as Accepted,
-the repo owner should confirm or amend the boundary above.
+~~This is a product-direction decision. Before treating this as Accepted,
+the repo owner should confirm or amend the boundary above.~~
+
+**Given, 2026-07-26**: the owner ratified interpretation A as D1 in
+`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`. Promoted to Accepted for that
+narrowed scope. Re-opening routing/pipeline scope (interpretations B/D)
+requires a new external proof and a new owner decision, not a
+reinterpretation of this ADR.
 
 ---
 
@@ -123,8 +154,16 @@ here, not a reinterpretation of this one).
 
 ## Status rationale
 
-Remains **Proposed**. This is a product-direction decision (which of five
-scope options the product commits to), not something evidence can settle by
-itself — the golden path shows the product *can* work within option 4/2, but
-does not prove the owner has committed to excluding options 3 and 5 going
-forward. Owner sign-off is still required.
+**2026-07-26 update — promoted to Accepted (narrowed).** The owner
+explicitly ratified interpretation A as D1 in
+`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`. This is narrower than the
+original draft's option 4/2 framing (which already included routing).
+Options B/C/D/E remain excluded. Original rationale, preserved for record:
+
+Prior to 2026-07-26, this ADR remained **Proposed** because a product-
+direction decision (which of five scope options the product commits to) is
+not something evidence can settle by itself — the golden path showed the
+product *can* work within option 4/2, but did not prove the owner had
+committed to excluding options 3 and 5 going forward. That gap is now closed
+by explicit owner sign-off, narrowed further to option A (brief production
+only) rather than the broader 4/2 framing originally drafted.

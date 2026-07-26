@@ -1,9 +1,30 @@
 # ADR 0021: Production-Readiness Requirements
 
-**Status**: PROPOSED — draft for owner review, not yet accepted
-**Date**: 2026-07-25
+**Status**: PROPOSED — draft for owner review, not yet accepted. Owner has
+explicitly deferred D7/D8; **no implementation or GA claim authorized**.
+**Date**: 2026-07-25 (updated 2026-07-26)
 **Proposes resolution for**: Issue #36 (was blocked by #28 [closed], #32,
 #30 — proposed in ADR 0017, provisionally addressed in ADR 0015)
+
+**2026-07-26 update**: following the 2026-07-26 product-contract review and
+owner decision round (`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`), the
+owner explicitly left this ADR's two readiness sub-items open rather than
+deciding them now:
+- **D7 (readiness target)**: **UNDECIDED by explicit owner instruction** —
+  the review's recommendation was "externally validated," but the owner
+  chose to leave this open pending the contract-redesign phase (D10)
+  landing first, rather than pre-committing to a target now.
+- **D8 (external-validation bar)**: **UNDECIDED by explicit owner
+  instruction** — same reasoning; the review's recommendation was "at least
+  two structurally different external repositories," not yet ratified.
+
+This ADR's status does not change — it remains **Proposed**. Even once
+D7/D8 are ratified, this ADR's three other named "requires explicit owner
+decision" items (model-cost budgets and concurrency/rate-limiting policy;
+supported-coding-agents commitment beyond Claude Code; supported
+platforms/environments beyond Windows + CI Ubuntu) remain outstanding
+regardless — per this ADR's own "Consequences" section, GA sign-off requires
+*all* owner-decision items answered, not a subset.
 
 ---
 
@@ -87,6 +108,12 @@ per-item narrowing below.
 Product-direction decision, and three items above require your explicit
 input (cost/concurrency policy, supported-agent commitments, platform
 support scope) that cannot be derived from the repository alone.
+
+**Status as of 2026-07-26**: D7/D8 explicitly left UNDECIDED by owner
+instruction (see the update note at the top of this ADR), not merely
+unaddressed. The three items listed above (cost/concurrency, supported
+agents, platform scope) remain outstanding regardless. This ADR stays
+Proposed until the owner ratifies D7/D8 and answers the three items above.
 
 ---
 

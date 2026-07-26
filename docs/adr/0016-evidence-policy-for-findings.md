@@ -1,10 +1,36 @@
 # ADR 0016: Evidence Policy for Repository Findings
 
-**Status**: PROVISIONAL — the citation-format and evidence-attachment
-mechanics are already implemented and exercised live; the "which claims
-require evidence" threshold is still a policy choice pending owner sign-off
-**Date**: 2026-07-25
+**Status**: ACCEPTED (with a ratified addendum) — 2026-07-26 by explicit
+owner decision (D5, D9) recorded in
+`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`
+**Date**: 2026-07-25 (revised 2026-07-26)
 **Provisionally addresses**: Issue #31
+
+**2026-07-26 addendum, owner-ratified**: the auteur campaign (PR #73, #75,
+#77, #78) directly exercised this ADR's mechanics live. The owner explicitly
+approved:
+- **D5**: the independent substantive evidence audit is **mandatory only for
+  absence/unreachability/dead-code/safety/ghost-feature and other high-risk
+  claims**, not for every brief — this resolves the "which claims require
+  evidence" threshold this ADR's promotion condition named explicitly.
+- **D9**: PR #78's `UNKNOWN_WEAKNESS_TYPE` failure is legitimate under the
+  current (brittle) contract, not a model-reasoning failure, and not a
+  successful external validation either. The trace evidence (completed
+  Grep/Read contradiction searches against real `auteur` symbols) confirms
+  PR #75's contradiction-search discipline held live, independent of the
+  unrelated taxonomy failure that stopped the run.
+
+The owner's approval also separately ratified **D6** (human review depth:
+approval required for every final brief during the next phase) — recorded
+here because D6 has no other existing ADR home (see the product-contract
+review's Part 6 issue mapping), though it is not itself part of this ADR's
+promotion condition.
+
+The product-contract review (`docs/PRODUCT-CONTRACT-REVIEW-2026-07-26.md`,
+Part 4) additionally identifies one new, currently-unimplemented deterministic
+check worth considering — verifying a cited `quote` is actually a substring
+of the target file at/near the cited line range — as a candidate direction,
+**not itself ratified** and not implemented by this revision.
 
 ---
 
@@ -55,15 +81,12 @@ regress to a single strict format.
   deterministic field; the `quote`/narrative text inside it is not.
 
 ## Owner sign-off required
-The mechanics below are already implemented and evidence-backed; owner
+~~The mechanics below are already implemented and evidence-backed; owner
 should confirm the "which claims require evidence" threshold before
-promoting to Accepted.
+promoting to Accepted.~~
 
-**Promotion condition**: this ADR promotes from Provisional to Accepted once
-the owner explicitly ratifies the "which claims require evidence" threshold
-(a single sign-off), or once a validator is shown correctly rejecting a
-routing-relevant claim that lacks an evidence excerpt — whichever comes
-first.
+**Given, 2026-07-26**: the owner ratified the threshold as D5 in
+`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`. Promoted to Accepted.
 
 ---
 
@@ -109,11 +132,14 @@ evidence-excerpts schema needs to change to support a new artifact type.
 
 ## Status rationale
 
+**2026-07-26 update — promoted to Accepted.** Owner sign-off on the
+enforcement threshold (D5) is now given, which was this ADR's stated
+promotion condition. Preserved for record, the prior rationale:
+
 **Provisional**: the shape (`evidence_excerpts` YAML block, dual citation
 format, placement) is implemented and was exercised against live model
 output in PR #59 and #65, going beyond a bare proposal. Held short of
 Accepted because the enforcement boundary (which claims strictly require
-evidence) has not been tested by a validator actually rejecting a
-non-compliant claim, and owner sign-off on the threshold itself is
-outstanding — promotes to Accepted once that sign-off is given or the
-missing negative-path evidence lands (see "Owner sign-off required" above).
+evidence) had not been tested by a validator actually rejecting a
+non-compliant claim, and owner sign-off on the threshold itself was
+outstanding.
