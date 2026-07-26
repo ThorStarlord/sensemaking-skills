@@ -185,6 +185,97 @@ def build_semantic_authorities_block(repo_root: str) -> str:
         '    quote: "for field in [\\"file\\", \\"lines\\", \\"quote\\", \\"supports_claim\\"]:"\n'
         '    supports_claim: "Confirms the validator requires all four named fields per excerpt."\n'
         "```\n"
+        "\n"
+        f"{build_evidence_discipline_block()}"
+    )
+
+
+def build_evidence_discipline_block() -> str:
+    """Build the execution-instruction section requiring a contradiction
+    search before any absence/negative claim (issue #74).
+
+    Background: an independent forensic/evidence audit of a live
+    repo-sensemaker run (see experiments/evidence/0011-external-repo-auteur-rerun2/
+    EVIDENCE.md) found the model asserted a "ghost feature" (a capability
+    with "no active diagnostic rules") based on a stale docstring comment,
+    while the function body it was citing -- a few hundred lines further
+    down, in the SAME function -- already implemented exactly the capability
+    the model claimed was absent. The model never searched for evidence that
+    would have falsified its own claim, and it treated a comment as more
+    authoritative than the executable code it summarized.
+
+    `build_semantic_authorities_block` (issue #58) already governs
+    vocabulary (workflow IDs, weakness types) and evidence-excerpt shape
+    (issue #71/PR #72), but said nothing about *how thoroughly* an absence
+    claim must be investigated before it is written down. This block closes
+    that gap. It is intentionally generic -- no repository, project, or
+    symbol name is hardcoded here; it applies to any claim of this shape in
+    any target repository.
+
+    Deliberately does NOT introduce a new literal marker phrase for
+    validate-brief.py (or any other validator) to scan for. PR #72 already
+    caught and reverted exactly that trap once (a skeleton comment
+    containing the literal "Logic trace:" phrase would have trivially
+    satisfied NO_LOGIC_TRACE regardless of what the model wrote) -- adding
+    another such trivially-satisfiable marker here would repeat that
+    mistake. Instead this instruction is enforced only through prompt
+    guidance and the mandatory independent evidence-quality audit; no new
+    validator rule is added or required by this fix.
+    """
+    return (
+        "## Evidence Discipline for Absence / Negative Claims (do not skip)\n\n"
+        "This applies whenever you are about to write a claim that something "
+        "is absent, unimplemented, unreachable, dead, unvalidated, unused, a "
+        "\"ghost feature,\" or otherwise does not exist or does not run -- in "
+        "any file, function, enum, or module of the target repository. Before "
+        "writing such a claim, you must do ALL of the following:\n\n"
+        "1. Search for direct implementations of the capability you are about "
+        "to claim is missing (not just the one location you already looked "
+        "at).\n"
+        "2. Search for other usages of the relevant symbol, enum value, "
+        "method, or member across the repository -- a member can be "
+        "referenced, and implemented, somewhere other than where you first "
+        "looked.\n"
+        "3. Inspect the callees actually reachable from the entry point you "
+        "are citing -- if you are citing a function that calls other "
+        "functions, read what those callees do before concluding the entry "
+        "point does nothing relevant. You do not need to read every line of "
+        "every large file for this -- targeted searches and call-chain "
+        "inspection of what is actually reachable from your cited entry "
+        "point are sufficient; exhaustive line-by-line reading is not "
+        "required.\n"
+        "4. Deliberately search for evidence that would prove your claim "
+        "wrong, not only evidence that supports it. If you cannot articulate "
+        "what such falsifying evidence would look like and confirm you "
+        "looked for it, you have not done this step.\n"
+        "5. Apply this authority ordering when sources disagree: executable "
+        "code and configuration outrank executable tests; executable tests "
+        "outrank current documentation; current documentation outranks "
+        "comments and docstrings; comments and docstrings outrank plans, "
+        "status files, and historical/changelog notes. A comment, docstring, "
+        "README line, or status document that says a capability is missing "
+        "is the WEAKEST evidence available and must never be the sole basis "
+        "for an absence claim.\n"
+        "6. Never treat a comment or docstring as conclusive when the "
+        "executable code it describes can be directly read and can confirm "
+        "or contradict it. If a docstring and the function body it "
+        "summarizes disagree, the function body wins.\n"
+        "7. If, after reasonable-bounded searching, you cannot complete this "
+        "contradiction search (e.g. the reachable call graph is too large or "
+        "genuinely ambiguous), you must downgrade your conclusion to stated "
+        "uncertainty (e.g. \"appears absent based on X; a full contradiction "
+        "search of Y was not completed\") rather than asserting the absence "
+        "as settled fact.\n"
+        "8. Record what you searched for and what you did or did not find "
+        "that could have falsified your claim as part of your evidence "
+        "reasoning -- this disconfirmation work is part of the diagnostic "
+        "reasoning chain the artifact requires, not a separate optional "
+        "step.\n\n"
+        "This evidence-discipline requirement does not replace or weaken the "
+        "quote/supports_claim/logic-trace requirements above -- it governs "
+        "the standard of care that must be met before an absence claim is "
+        "written into evidence at all, whatever workflow, repository, or "
+        "vocabulary is in play.\n"
     )
 
 
