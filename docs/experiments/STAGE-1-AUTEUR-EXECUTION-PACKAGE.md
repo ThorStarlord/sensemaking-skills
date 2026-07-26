@@ -1,11 +1,31 @@
 # Stage 1 Auteur Execution Package
 
-**Date**: 2026-07-26
+**Date**: 2026-07-26 (revised same day: model-enforcement blocking prerequisite added)
 **Nature of this document**: planning and documentation only. It resolves and
 records the exact configuration a Stage 1 controlled `auteur` rerun *would*
 use. **No experiment was run to produce this document. No auteur rerun
 occurred. No code, test, validator, prompt, contract, or runtime file was
 changed. No historical evidence was modified.**
+
+```text
+Stage 1 execution authorization status = BLOCKED
+
+Blocking prerequisite:
+explicit model selection and executor enforcement (see revised Part 3 /
+Section 3 below, and implementation-planning issue #86)
+
+Owner model decision = UNDECIDED
+```
+
+This revision does not weaken anything §1-§13 already established below; it
+adds a further, independent blocking condition. Both the pre-existing
+governance gate (§1) and this model-enforcement gate must clear before Stage
+1 execution is authorized. Observing and recording the ambient default model
+immediately before execution — the approach originally described in §3 below
+— is **not sufficient**. The executor must be changed to accept and enforce
+an explicit `model=` value, and that change does not exist in code yet (see
+issue #86, planning-only, not authorized for implementation by this
+document).
 
 ## 1. Governance boundary
 
@@ -69,6 +89,26 @@ and is the only historical campaign evidence located for the final rerun —
 but the owner should know its container PR is unmerged before treating it as
 a permanent record.
 
+**Historical evidence permanence rules (this revision, explicit)**:
+
+- PR #78 remains **open and unmerged**. This document does not merge it,
+  does not modify its artifacts, and does not authorize doing so.
+- The historical comparison source is pinned to the **exact evidence commit
+  `a328c80`** (`origin/evidence/auteur-campaign-final-rerun`) and PR #78 —
+  not to the branch name, not to "whatever PR #78 currently contains."
+- Stage 1 must not depend on a moving branch ref. Any execution plan must
+  re-verify `a328c80` by exact SHA (`git show a328c80:...` /
+  `git merge-base --is-ancestor a328c80 origin/evidence/auteur-campaign-final-rerun`),
+  not by re-reading the branch tip.
+- Before Stage 1 execution, the exact evidence commit `a328c80` must still
+  be retrievable (the remote ref must still exist and still resolve to a
+  commit containing it). This is a **preflight check**, to be added to §6's
+  step 2/4 verification alongside the framework/target SHA checks.
+- Disappearance or mutation of that reference (branch deleted, force-pushed,
+  rebased such that `a328c80` is no longer reachable, or PR #78 closed in a
+  way that removes the branch) is a **preflight hard stop** — add this
+  condition to §11's hard stop matrix.
+
 ## 2. Pinned revisions
 
 ### Framework revision
@@ -115,6 +155,15 @@ record (git show against a read-only remote ref) and is not independently
 re-verified against a live target clone.
 
 ## 3. Model/provider configuration
+
+**Revision note**: the sub-sections below (as originally written) correctly
+diagnosed the gap but treated "confirm the ambient default and record it at
+execution time" as an adequate remedy. It is not: an observed-and-recorded
+ambient default can still differ from run to run depending on CLI/SDK
+defaults at the moment of invocation, and nothing in the executor enforces
+that the observed value is what actually ran. The subsections immediately
+below are kept for their historical/diagnostic accuracy; §3a supersedes their
+"owner action required" conclusion.
 
 ```text
 Provider: Anthropic, via the Claude Agent SDK (claude_agent_sdk.query()),
@@ -179,11 +228,168 @@ path with the same unpinned-model characteristic. This package does not
 introduce a new model/provider risk relative to history; it inherits and
 discloses a pre-existing one (no explicit model pin in code).
 
-**Owner action required before authorizing execution**: confirm the ambient
-Claude Agent SDK / Claude Code CLI default model at the moment of execution
-and record it explicitly in the authorization block (§16) so the run is not
-silently subject to a future default-model change between authorization and
-execution.
+**Superseded**: the line above ("Owner action required... confirm the
+ambient... default... and record it") was this document's original
+conclusion and is now superseded by §3a. Recording an observed ambient
+default is not sufficient; see §3a for the required enforcement mechanism
+(not yet implemented) and the blocking-prerequisite status declared at the
+top of this document. The authorization block is §13, not §16 (numbering
+corrected in this revision).
+
+## 3a. Model enforcement (revision — supersedes §3's "owner action required" conclusion)
+
+### Part 1 — confirmed installed SDK API
+
+Verified against the actually-installed package in this environment (not
+assumed): `pip show claude-agent-sdk` reports **version 0.2.82**, installed
+at `.../site-packages/claude_agent_sdk`.
+
+```text
+ClaudeAgentOptions.model: str | None                    (types.py:1673-1677)
+  Docstring: "Claude model to use. Defaults to the CLI default model.
+  Examples: claude-sonnet-4-5, claude-opus-4-5."
+  Confirmed plumbing: _internal/transport/subprocess_cli.py:271-272 --
+    `if self._options.model: cmd.extend(["--model", self._options.model])`
+  -- i.e. an explicit string is passed straight through as a CLI flag; no
+  validation/allow-list of identifiers happens in the SDK itself.
+
+ClaudeAgentOptions.fallback_model: str | None            (types.py:1679-1680)
+  Plumbed to `--fallback-model` (subprocess_cli.py:274-275). This is a
+  fallback mechanism and must NOT be set for a controlled experiment (task
+  boundary explicitly prohibits introducing fallback behavior).
+
+Actual resolved model exposure:
+  AssistantMessage.model: str                            (types.py:1029)
+    -- reported per assistant message; this is the only per-invocation
+    "actual model used" field found.
+  ResultMessage.model_usage: dict[str, Any] | None        (types.py:1159)
+    -- a cost/usage breakdown, keyed by model name if multiple models were
+    used; usable as a cross-check, not a single canonical "the model" field.
+  ClaudeAgentOptions itself has no field reporting the resolved model (it is
+  request-only).
+
+Environment-variable / CLI-setting override risk:
+  subprocess_cli.py's transport builds `process_env` by merging the calling
+  process's full inherited environment (`inherited_env = {k: v for k, v in
+  os.environ.items() if k != "CLAUDECODE"}`) with `self._options.env`
+  (explicit `ClaudeAgentOptions.env` always wins over inherited/ambient
+  values per that file's own comments). Whether an inherited ambient
+  variable (e.g. an ANTHROPIC_MODEL-style variable, if the installed CLI
+  recognizes one) could override an explicit `--model` flag at the
+  underlying `claude` CLI's own argument-parsing layer was NOT verified in
+  this task (that layer is the bundled `claude.exe`, opaque without running
+  it, which this task does not authorize). This is exactly why hard
+  mismatch-detection (comparing `AssistantMessage.model` against the
+  requested value, not just trusting the flag was honored) is required
+  rather than optional -- see the implementation plan below.
+
+Temperature / max_tokens / reasoning-effort support:
+  No `temperature` or `max_tokens` field exists on `ClaudeAgentOptions` for
+  this CLI-subprocess executor path (confirmed by full-file inspection of
+  the dataclass; the only sampling-adjacent controls found are
+  `max_thinking_tokens: int | None` and `thinking: ThinkingConfig | None`,
+  types.py:1851-1870, which govern extended-thinking token budget, not
+  sampling temperature or output-length caps). Confirms the doc's original
+  claim that these are "not set / SDK default applies" -- refined to "not
+  exposed by this executor path at all for temperature/max_tokens", vs.
+  thinking budget which IS exposed but is a different axis.
+```
+
+### Part 2 — proposed model (not authorized)
+
+```text
+Proposed provider: Anthropic, via the same claude_agent_sdk.query() /
+  ClaudeAgentOptions path already used by --executor claude-code (no change
+  of provider or executor path is proposed).
+Proposed model identifier: claude-sonnet-4-5
+Immutable or alias: this is the bare model-family alias documented as the
+  primary example in the installed SDK's own docstring
+  (types.py:1676). It is NOT a dated/immutable snapshot identifier. For
+  strict reproducibility the owner should substitute the exact dated
+  snapshot ID Anthropic publishes for this family at authorization time
+  (this task did not verify a live, current dated snapshot string against
+  an external source, and will not guess one); whichever exact string is
+  chosen must be recorded verbatim in §13's authorization block before
+  Stage 1 executes.
+Why selected: (a) it is the model family the installed SDK's own
+  documentation uses as its primary example for this exact field, (b)
+  cost/capability appropriate for repository-sensemaking-style analysis
+  (the historical campaign's task shape -- read-heavy repo analysis,
+  bounded tool set, no need for extended agentic tool chains beyond
+  Read/Write/Glob/Grep), (c) available through the currently configured,
+  already-installed Claude Agent SDK without any additional provider
+  configuration, (d) nameable and recordable explicitly and reproducibly
+  once pinned to a dated snapshot ID.
+Historical model known: NO. Read-only inspection of the historical
+  evidence (`git show origin/evidence/auteur-campaign-final-rerun:
+  experiments/evidence/0012-external-repo-auteur-final-rerun/EVIDENCE.md`)
+  contains no recorded model identifier, alias, or version string anywhere
+  in that document. `scripts/skill_executor.py`'s claude-code path has never
+  set `model=` in any commit reachable from the pinned framework SHA, so
+  no historical run -- including the one PR #78 documents -- pinned or
+  recorded which model actually executed it.
+Historical comparability limitation: because the historical campaign's
+  actual model is unrecoverable, Stage 1 CANNOT be a controlled
+  before/after comparison on the model axis -- only on the framework-SHA
+  (PR #81 contract redesign) axis, which was always the intended controlled
+  variable per §2. This is a permanent, disclosed limitation of Stage 1,
+  not something the proposed pin fixes; it only prevents the *additional*
+  uncontrolled variable of "we don't even know what we're using this time."
+```
+
+### Part 3 — bounded implementation plan (NOT implemented by this document)
+
+Code changes are **not authorized by this task**. A bounded
+implementation-planning issue has been filed instead:
+**https://github.com/ThorStarlord/sensemaking-skills/issues/86**
+("Enforce explicit model pin in claude-code executor path (blocking
+prerequisite for Stage 1)"). It is planning-only and does not authorize
+implementation, merge, or execution of anything.
+
+Summary of the smallest safe change proposed there (full detail in the
+issue):
+
+```text
+Files touched (proposed, not yet changed):
+- scripts/workflow-runtime.py   -- add --model (optional) and
+    --controlled-experiment (optional bool) CLI arguments near the existing
+    --executor/--gate-decision arguments (workflow-runtime.py:2930-2936);
+    plumb through to create_executor(...).
+- scripts/skill_executor.py     -- accept a model value in
+    ClaudeAgentSdkSkillExecutor.__init__ / create_executor (currently
+    skill_executor.py:1006-1023, 1508); pass it into the existing
+    ClaudeAgentOptions(...) construction at skill_executor.py:1229 as
+    model=...; add an AssistantMessage branch to the message loop at
+    skill_executor.py:1227 to capture message.model as the actual model;
+    hard-fail (new "model_mismatch" error category, following the existing
+    pattern at skill_executor.py:1281-1293) if requested != actual; hard-fail
+    before invoking query() at all if controlled-experiment mode has no
+    model supplied; never set fallback_model.
+```
+
+### Part 4 — test plan (to accompany the implementation, not run now)
+
+1. Explicit `--model` value reaches `ClaudeAgentOptions(model=...)`.
+2. `--controlled-experiment` with no `--model` fails before any
+   `query()`/SDK call is made (assert the call never happens, not just a
+   nonzero exit).
+3. Requested model value is recorded in trace/run-log output.
+4. Actual model (`AssistantMessage.model`) is recorded in trace/run-log
+   output whenever the SDK returns at least one `AssistantMessage`.
+5. A mocked requested-vs-actual mismatch produces a FAILED result in the
+   `model_mismatch` category, not a retry.
+6. No fallback: `fallback_model` is never set by this code path in any test
+   case.
+7. No retry: `query()`/the transport is invoked at most once per
+   `invoke_skill` call, mismatch or not.
+8. `allowed_tools=["Read", "Write", "Glob", "Grep"]` and the
+   `artifact_permission_gate`/`pre_trace`/`post_trace` hooks are unchanged
+   by this diff (regression-diff all `ClaudeAgentOptions` fields other than
+   `model`).
+9. Target-write confinement (`build_artifact_permission_gate`,
+   `is_within_root`) and its existing tests are unaffected.
+10. Normal (non-`--controlled-experiment`, no `--model`) invocations keep
+    working exactly as today -- this change is additive only.
 
 ## 4. Execution environment
 
@@ -560,6 +766,9 @@ Rationale: ___________________________________________
 | Provider/model mismatch | Recorded model at execution time differs from what was authorized in §16 | Stop before invocation, or stop and flag if discovered after | Preserve authorization block + actual observed config |
 | Automatic fallback or retry | Any retry/fallback logic observed in logs (none should exist per §3) | Stop; treat as a process violation | Preserve logs |
 | Output written into target repository | §8 manifest/status diff shows a new file under `target-auteur\` | Stop | Preserve manifests, diff |
+| Model not explicitly pinned/enforced | No code-enforced `model=` on `ClaudeAgentOptions` exists yet (see §3a, issue #86) | Stop before invocation — this alone blocks Stage 1 regardless of all other conditions | Preserve this package + issue #86 |
+| Requested-vs-actual model mismatch | `AssistantMessage.model` (once enforcement exists) differs from the requested/authorized model | Stop; do not retry, do not fall back | Preserve trace showing requested vs. actual |
+| Historical evidence commit `a328c80` unreachable or mutated | `git show a328c80:...` / ancestor check against `origin/evidence/auteur-campaign-final-rerun` fails at preflight | Stop before invocation | Preserve the failing verification output |
 
 For every hard stop: stop immediately; preserve all evidence; do not patch;
 do not edit the generated brief; do not rerun; return to the owner.
@@ -603,14 +812,26 @@ the required review.
 ## 13. Owner authorization block
 
 ```text
+Stage 1 execution authorization status = BLOCKED
+
+Blocking prerequisite:
+explicit model selection and executor enforcement (§3a; issue #86)
+
+Owner model decision = UNDECIDED
+
 Owner authorization:
 - Decision: UNDECIDED
 - Authorized framework SHA:
 - Authorized target SHA:
-- Authorized provider/model:
+- Authorized provider/model (must be a dated/immutable identifier, not a
+  bare alias, and must be enforced by code per §3a before this field can be
+  meaningfully filled in):
 - Authorized environment:
 - Authorized command:
 - Authorization date:
 ```
 
-This block is intentionally blank. No approval is pre-filled.
+This block is intentionally blank. No approval is pre-filled. Confirming
+the ambient default model at execution time does **not** satisfy the model
+prerequisite above — §3a requires code-level enforcement (issue #86),
+not an observational note.
