@@ -88,12 +88,23 @@ Session ID: `orchestration-20260726-084748-e26480bc`.
   path, gate counts) modified, plus new untracked `artifacts/05-...` and
   `exp3-logs-stageA/` directories. No tracked file outside
   `docs/mode-coverage.yaml` changed. See `mode-coverage.diff`.
-- **Denied-write near-miss (PR #67 concern) did not recur** in this run: no
-  PreToolUse event was observed targeting a path inside the target clone at
-  all (the allowed_tools set for the executor subagent is Read/Write/Glob/Grep,
-  and the only Write activity landed inside the framework session directory,
-  consistent with `expected_output_path` confinement). No mutation occurred
-  in the target clone at any point.
+- **A target-directed Write attempt recurred at PreToolUse, but no matching
+  PostToolUse completion exists and no target mutation was observed.**
+  `tool-call-trace.jsonl` line 73 records a `PreToolUse`/`Write` event with
+  `file_path` inside `auteur-target-readonly-3` (the target clone) and
+  `targets_expected_artifact: false`. No corresponding `PostToolUse` event
+  for that path appears anywhere else in the trace — unlike every other
+  Read/Write in this run, which are cleanly paired. The target clone's
+  `git status --short` remained empty and its HEAD unchanged at every poll
+  tick, but that filesystem/Git-cleanliness observation only shows no
+  *mutation landed*; it does not, by itself, establish that no write
+  *attempt* occurred — the PreToolUse event is direct evidence that one did.
+  (The target clone's `/artifacts/` path is `.gitignore`-covered, so a write
+  landing there would not necessarily show up as a tracked-file change even
+  if one had completed — git cleanliness alone cannot rule that in or out.)
+  This is NOT the same finding as "did not recur" (PreToolUse evidence
+  exists) and it is NOT evidence of a target mutation (no PostToolUse, no
+  observed filesystem change).
 
 **Stage A classification: EXTERNAL LIVE STEP 1 PROVEN** (structurally —
 see evidence-quality audit below for the substantive caveat that stops the
@@ -157,8 +168,15 @@ case rather than manually repairing or reinterpreting the brief.
 
 ## Denied-write near-miss
 
-No write attempt targeting the target clone was observed in this run at
-all (not even a denied one) — the near-miss noted in PR #67 did not recur.
+A target-directed Write attempt recurred at PreToolUse, but no matching
+PostToolUse completion exists and no target mutation was observed. See the
+Stage A result section above for the full trace citation (line 73) and the
+reasoning for why Git cleanliness alone does not establish that no write
+attempt occurred.
+
+**Evidence rule:** Target immutability must be established using permission
+decisions, PreToolUse/PostToolUse pairing, filesystem checks, and Git
+state — not Git cleanliness alone.
 
 ## Target and framework integrity
 
