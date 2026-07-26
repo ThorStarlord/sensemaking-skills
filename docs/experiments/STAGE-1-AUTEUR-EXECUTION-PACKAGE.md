@@ -1,41 +1,62 @@
 # Stage 1 Auteur Execution Package
 
-**Date**: 2026-07-26 (revised same day: model-enforcement blocking prerequisite added)
+**Date**: 2026-07-26 (revised same day: model-enforcement implementation
+merged via PR #87; package updated to reflect the merged code and rebased
+onto the new framework baseline)
 **Nature of this document**: planning and documentation only. It resolves and
 records the exact configuration a Stage 1 controlled `auteur` rerun *would*
 use. **No experiment was run to produce this document. No auteur rerun
 occurred. No code, test, validator, prompt, contract, or runtime file was
-changed. No historical evidence was modified.**
+changed by this document. No historical evidence was modified.**
 
 ```text
-Stage 1 execution authorization status = BLOCKED
+Stage 1 execution authorization status = NOT AUTHORIZED
 
-Blocking prerequisite:
-explicit model selection and executor enforcement (see revised Part 3 /
-Section 3 below, and implementation-planning issue #86)
+Former blocking prerequisite:
+explicit model selection and executor enforcement = RESOLVED by PR #87
 
-Owner model decision = UNDECIDED
+Owner model decision:
+Provider = Anthropic via Claude Agent SDK
+Model identifier = claude-sonnet-5
+Historical model identity = unknown and unrecoverable
+Purpose = reproducible new controlled-experiment baseline
 ```
 
-This revision does not weaken anything §1-§13 already established below; it
-adds a further, independent blocking condition. Both the pre-existing
-governance gate (§1) and this model-enforcement gate must clear before Stage
-1 execution is authorized. Observing and recording the ambient default model
-immediately before execution — the approach originally described in §3 below
-— is **not sufficient**. The executor must be changed to accept and enforce
-an explicit `model=` value, and that change does not exist in code yet (see
-issue #86, planning-only, not authorized for implementation by this
-document).
+The technical blocker (no code-level way to pin and enforce an explicit
+model) is now resolved: PR #87 ("fix: enforce explicit model for controlled
+experiments", merged, issue #86) added `--model` and
+`--controlled-experiment` to `scripts/workflow-runtime.py`, threaded an
+explicit `model=` value through `create_executor(...)` into
+`ClaudeAgentOptions(model=...)` in `scripts/skill_executor.py`, and added
+hard-stop enforcement (requested-vs-reported mismatch, multiple distinct
+reported models, missing model in controlled-experiment mode) with no
+fallback and no retry. §3/§3a below describe the merged behavior in detail.
+
+**This resolves the technical blocker only. It does not authorize Stage 1
+execution.** Execution authorization is a separate owner decision, recorded
+(still blank) in §13. Merging PR #85 would approve this documentation package
+as accurate and complete — it would not itself authorize running Stage 1.
 
 ## 1. Governance boundary
 
-- Baseline: `main@ac5de55c700cd1b15f2eea1ca2726e83cd8d3284` (verified: this is
-  the exact `origin/main` HEAD at the time this package was prepared — merge
-  commit for PR #84, "docs: ratify external-validation target and staged
-  evidence plan").
+- Baseline: `main@68b44835be43b86ee7c0d7eb968e67efcd368443` (verified: this is
+  the exact `origin/main` HEAD used to update this package; it is a fixed,
+  pinned commit, not a moving branch reference). This SHA contains:
+  - PR #81 (brief-contract redesign — `weakness_type` structured field);
+  - PR #84 (governance ratification — D7/D8/E4 staged-validation record);
+  - PR #87 (explicit model-selection and executor enforcement — issue #86).
+- The previously pinned framework SHA
+  `ac5de55c700cd1b15f2eea1ca2726e83cd8d3284` (PR #84's merge commit) is
+  **superseded** by `68b44835be43b86ee7c0d7eb968e67efcd368443` throughout this
+  document. `ac5de55` remains an ancestor of the new pin; nothing about the
+  PR #81/#84 content it recorded has changed, it has simply been carried
+  forward to include PR #87.
 - PR #84: merged, `main`, docs-only (`docs/PHASE-80-81-CLOSURE.md`,
   `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`,
   `docs/adr/0021-production-readiness-requirements.md`).
+- PR #87: merged, `main`, code (`scripts/workflow-runtime.py`,
+  `scripts/skill_executor.py`, `tests/test_model_enforcement.py`) — adds
+  explicit `--model` / `--controlled-experiment` enforcement. See §3/§3a.
 - Issue #83 ("Run controlled auteur validation after brief-contract
   redesign"): **OPEN, planning-only**. Its own text states: "Creating this
   issue does not itself execute the experiment. A separate, explicit owner
@@ -115,15 +136,18 @@ a permanent record.
 
 ```text
 Framework repository: ThorStarlord/sensemaking-skills
-Framework SHA: ac5de55c700cd1b15f2eea1ca2726e83cd8d3284
-Why this SHA: exact origin/main HEAD, the merge commit for PR #84. Confirmed
-  via `git log origin/main -1` and `git merge-base --is-ancestor
-  ac5de55c700cd1b15f2eea1ca2726e83cd8d3284 origin/main`. Using this exact
-  commit avoids a moving branch at execution time and requires no advance
-  past the caller-supplied baseline.
-Contains PR #81 contract redesign: yes (PR #81 merged at 9a7d7d5, an
-  ancestor of ac5de55)
-Contains PR #84 governance record: yes (ac5de55 is PR #84's own merge commit)
+Framework SHA: 68b44835be43b86ee7c0d7eb968e67efcd368443
+Why this SHA: exact origin/main HEAD at the time this package was updated,
+  and the current owner-supplied authoritative baseline. Confirmed via
+  `git rev-parse origin/main` and `git merge-base --is-ancestor
+  68b44835be43b86ee7c0d7eb968e67efcd368443 origin/main`. A fixed commit, not
+  a moving branch reference, is recorded here deliberately.
+Contains PR #81 contract redesign: yes (ancestor of 68b4483)
+Contains PR #84 governance record: yes (ancestor of 68b4483)
+Contains PR #87 explicit model-selection enforcement: yes (ancestor of
+  68b4483; adds --model / --controlled-experiment, ClaudeAgentOptions(model=),
+  requested/reported-model evidence, and hard-stop-on-mismatch behavior --
+  see §3/§3a)
 ```
 
 ### Auteur (target) revision
@@ -156,87 +180,77 @@ re-verified against a live target clone.
 
 ## 3. Model/provider configuration
 
-**Revision note**: the sub-sections below (as originally written) correctly
-diagnosed the gap but treated "confirm the ambient default and record it at
-execution time" as an adequate remedy. It is not: an observed-and-recorded
-ambient default can still differ from run to run depending on CLI/SDK
-defaults at the moment of invocation, and nothing in the executor enforces
-that the observed value is what actually ran. The subsections immediately
-below are kept for their historical/diagnostic accuracy; §3a supersedes their
-"owner action required" conclusion.
+**Revision note**: the sub-sections below originally described a
+pre-enforcement gap (no way to pin a model in code, only an "observe and
+record the ambient default" workaround). PR #87 (merged) closed that gap.
+This section now describes the merged behavior directly; §3a records the
+implementation detail and verification trail that led to it.
 
 ```text
 Provider: Anthropic, via the Claude Agent SDK (claude_agent_sdk.query()),
   not the raw Anthropic Python SDK client. Confirmed at
-  scripts/skill_executor.py — the executor path actually used in the
-  historical campaign (`--executor claude-code`) constructs
-  ClaudeAgentOptions and calls `query()`; a separate, unused code path in the
-  same file (an `AnthropicSkillExecutor`-style fallback, ~line 1432-1443)
-  calls `Anthropic().messages.create(model="claude-opus-4-7", ...)` directly,
-  but that is NOT the path the historical campaign used and is NOT what
-  --executor claude-code invokes.
-Model: NOT explicitly pinned in code for the claude-code executor path.
-  scripts/skill_executor.py's ClaudeAgentOptions construction (around line
-  1229) sets cwd, setting_sources, skills, allowed_tools, and hooks, but does
-  NOT set a `model` field. The model actually used is therefore whatever the
-  ambient Claude Agent SDK / Claude Code CLI installation resolves as its
-  default at invocation time — this is a genuine, pre-existing gap, not
-  something this package can respecify without a code change (which is out
-  of scope for this planning task).
-Model version or immutable identifier, if available: none pinned in code;
-  this package cannot supply one without either (a) a runtime code change to
-  pass an explicit `model=` to ClaudeAgentOptions, out of scope here, or (b)
-  the owner confirming the ambient CLI/SDK default at actual execution time
-  and recording it in the authorization block below before running.
+  scripts/skill_executor.py — the executor path used (`--executor
+  claude-code`) constructs ClaudeAgentOptions and calls `query()`.
+Model: explicitly pinned via CLI flag, enforced in code. Requested model
+  string:
+
+    Requested model: claude-sonnet-5
+
+  Enforcement path (merged, PR #87):
+    scripts/workflow-runtime.py --model claude-sonnet-5
+      --> OrchestrationRunner
+      --> create_executor(..., model=<value>)
+      --> ClaudeAgentSdkSkillExecutor
+      --> ClaudeAgentOptions(model=<value>)
+
+  Controlled-mode requirement: --controlled-experiment requires --model to
+  be set; scripts/workflow-runtime.py hard-fails before any SDK/model call
+  is made if --controlled-experiment is passed without --model (see
+  workflow-runtime.py around line 228 and the CLI-arg guard around line
+  3005).
+Model version or immutable identifier: `claude-sonnet-5` is the owner-
+  approved identifier for this experiment's controlled baseline (see §3a
+  Part 2 for why a new baseline, not a historical match, is being
+  established).
 Temperature: not set anywhere in scripts/skill_executor.py's
-  ClaudeAgentOptions construction; SDK default applies.
-Max tokens: not set in the claude-code executor path (ClaudeAgentOptions has
-  no max_tokens field set); SDK default applies. (The separate, unused
-  Anthropic-direct fallback path hardcodes max_tokens=4096, but is not
-  invoked by --executor claude-code.)
+  ClaudeAgentOptions construction; SDK default applies. Unaffected by PR #87.
+Max tokens: not set in the claude-code executor path; SDK default applies.
+  Unaffected by PR #87.
 Reasoning mode: not configured/exposed by this executor path.
 Tool permissions: allowed_tools=["Read", "Write", "Glob", "Grep"] only.
   Bash/PowerShell/Agent (subagent spawn) are NOT in allowed_tools; the
   historical evidence (PR #78) confirms PowerShell and Agent invocation
   attempts were denied (PreToolUse only, no PostToolUse completion).
+  Unaffected by PR #87 (regression-tested in tests/test_model_enforcement.py).
 Filesystem permissions: PreToolUse hook `artifact_permission_gate` +
   `pre_trace`; PostToolUse hook `post_trace`. Historical evidence shows this
   gate denied both target-directed Write attempts in the PR #78 rerun.
 Network permissions: none granted by allowed_tools; no network-capable tool
   is in the allowed set.
-Any fallback model: NONE documented or configured anywhere in the executor.
-  No fallback, no retry, no escalation logic exists in
-  scripts/skill_executor.py's claude-code path for a failed/errored SDK call
-  — a ResultMessage error is captured and classified, not retried.
+Fallback model: NONE. `fallback_model` is never set by the merged code path;
+  the plan explicitly prohibits introducing one for a controlled experiment.
+Retry: NONE. A requested-vs-reported mismatch, a missing model, or multiple
+  distinct reported models is a hard stop, not a retry.
 ```
 
-Requirements restated and confirmed against the actual code:
+Requirements restated and confirmed against the merged code:
 
-- No model fallback exists in code — none should be introduced for Stage 1.
+- No model fallback exists in code — confirmed absent in the merged diff.
 - No silent provider substitution — the executor path is single, fixed
   (`claude_agent_sdk.query()`), not switchable at runtime by the model.
 - No automatic retry — confirmed absent in `scripts/skill_executor.py`.
 - No automatic model escalation — confirmed absent.
-- No second run after failure — this is an owner/process rule for Stage 1,
-  not currently enforced by code; the exact command plan in §6 is a single
-  invocation, and the hard-stop matrix (§11) requires stopping, not rerunning,
-  on failure.
+- No second run after failure — enforced as a process rule in §11's hard-stop
+  matrix; the exact command plan in §6 is a single invocation.
 
-**Difference from the historical campaign**: none identified — the
-historical campaign (PR #78) used the identical `--executor claude-code`
-path with the same unpinned-model characteristic. This package does not
-introduce a new model/provider risk relative to history; it inherits and
-discloses a pre-existing one (no explicit model pin in code).
+**Difference from the historical campaign**: the historical campaign (PR
+#78) used the identical `--executor claude-code` path but with no explicit
+model pin — its actual model is unknown and unrecoverable (see §3a Part 2).
+This experiment therefore establishes a new, reproducible controlled-
+experiment baseline on the model axis; it is not a historical model
+equivalence claim.
 
-**Superseded**: the line above ("Owner action required... confirm the
-ambient... default... and record it") was this document's original
-conclusion and is now superseded by §3a. Recording an observed ambient
-default is not sufficient; see §3a for the required enforcement mechanism
-(not yet implemented) and the blocking-prerequisite status declared at the
-top of this document. The authorization block is §13, not §16 (numbering
-corrected in this revision).
-
-## 3a. Model enforcement (revision — supersedes §3's "owner action required" conclusion)
+## 3a. Model enforcement (implemented — PR #87, merged)
 
 ### Part 1 — confirmed installed SDK API
 
@@ -295,101 +309,90 @@ Temperature / max_tokens / reasoning-effort support:
   thinking budget which IS exposed but is a different axis.
 ```
 
-### Part 2 — proposed model (not authorized)
+### Part 2 — owner-approved model (resolved, not a historical match)
 
 ```text
-Proposed provider: Anthropic, via the same claude_agent_sdk.query() /
+Provider: Anthropic, via the same claude_agent_sdk.query() /
   ClaudeAgentOptions path already used by --executor claude-code (no change
-  of provider or executor path is proposed).
-Proposed model identifier: claude-sonnet-4-5
-Immutable or alias: this is the bare model-family alias documented as the
-  primary example in the installed SDK's own docstring
-  (types.py:1676). It is NOT a dated/immutable snapshot identifier. For
-  strict reproducibility the owner should substitute the exact dated
-  snapshot ID Anthropic publishes for this family at authorization time
-  (this task did not verify a live, current dated snapshot string against
-  an external source, and will not guess one); whichever exact string is
-  chosen must be recorded verbatim in §13's authorization block before
-  Stage 1 executes.
-Why selected: (a) it is the model family the installed SDK's own
-  documentation uses as its primary example for this exact field, (b)
-  cost/capability appropriate for repository-sensemaking-style analysis
-  (the historical campaign's task shape -- read-heavy repo analysis,
-  bounded tool set, no need for extended agentic tool chains beyond
-  Read/Write/Glob/Grep), (c) available through the currently configured,
-  already-installed Claude Agent SDK without any additional provider
-  configuration, (d) nameable and recordable explicitly and reproducibly
-  once pinned to a dated snapshot ID.
+  of provider or executor path).
+Owner-approved model identifier: claude-sonnet-5
 Historical model known: NO. Read-only inspection of the historical
   evidence (`git show origin/evidence/auteur-campaign-final-rerun:
   experiments/evidence/0012-external-repo-auteur-final-rerun/EVIDENCE.md`)
   contains no recorded model identifier, alias, or version string anywhere
-  in that document. `scripts/skill_executor.py`'s claude-code path has never
-  set `model=` in any commit reachable from the pinned framework SHA, so
-  no historical run -- including the one PR #78 documents -- pinned or
-  recorded which model actually executed it.
+  in that document. Before PR #87, `scripts/skill_executor.py`'s
+  claude-code path had never set `model=` in any commit reachable from the
+  framework history, so no historical run -- including the one PR #78
+  documents -- pinned or recorded which model actually executed it. This
+  fact is permanent and unaffected by PR #87: PR #87 gives Stage 1 a way to
+  pin and enforce a model going forward, it does not retroactively recover
+  what model ran historically.
 Historical comparability limitation: because the historical campaign's
   actual model is unrecoverable, Stage 1 CANNOT be a controlled
   before/after comparison on the model axis -- only on the framework-SHA
   (PR #81 contract redesign) axis, which was always the intended controlled
-  variable per §2. This is a permanent, disclosed limitation of Stage 1,
-  not something the proposed pin fixes; it only prevents the *additional*
+  variable per §2. `claude-sonnet-5` is therefore selected to establish a
+  new, reproducible controlled-experiment baseline, not to reproduce
+  historical model behavior. This is a permanent, disclosed limitation of
+  Stage 1, not something the pin fixes; it only prevents the *additional*
   uncontrolled variable of "we don't even know what we're using this time."
 ```
 
-### Part 3 — bounded implementation plan (NOT implemented by this document)
+### Part 3 — implemented enforcement (PR #87, merged)
 
-Code changes are **not authorized by this task**. A bounded
-implementation-planning issue has been filed instead:
-**https://github.com/ThorStarlord/sensemaking-skills/issues/86**
-("Enforce explicit model pin in claude-code executor path (blocking
-prerequisite for Stage 1)"). It is planning-only and does not authorize
-implementation, merge, or execution of anything.
-
-Summary of the smallest safe change proposed there (full detail in the
-issue):
+Code changes were made and merged in
+**https://github.com/ThorStarlord/sensemaking-skills/pull/87**
+("fix: enforce explicit model for controlled experiments", closes issue #86).
+This package does not itself authorize or perform further implementation,
+merge, or execution of anything; it only reflects the already-merged state.
 
 ```text
-Files touched (proposed, not yet changed):
-- scripts/workflow-runtime.py   -- add --model (optional) and
-    --controlled-experiment (optional bool) CLI arguments near the existing
-    --executor/--gate-decision arguments (workflow-runtime.py:2930-2936);
-    plumb through to create_executor(...).
-- scripts/skill_executor.py     -- accept a model value in
-    ClaudeAgentSdkSkillExecutor.__init__ / create_executor (currently
-    skill_executor.py:1006-1023, 1508); pass it into the existing
-    ClaudeAgentOptions(...) construction at skill_executor.py:1229 as
-    model=...; add an AssistantMessage branch to the message loop at
-    skill_executor.py:1227 to capture message.model as the actual model;
-    hard-fail (new "model_mismatch" error category, following the existing
-    pattern at skill_executor.py:1281-1293) if requested != actual; hard-fail
-    before invoking query() at all if controlled-experiment mode has no
-    model supplied; never set fallback_model.
+Files touched (merged):
+- scripts/workflow-runtime.py   -- added --model (optional str) and
+    --controlled-experiment (store_true) CLI arguments (around line 2985);
+    hard-fails with a clear error before any SDK/model call if
+    --controlled-experiment is set without --model (around line 3005);
+    plumbed through create_executor(..., model=self.model) (around line 243)
+    and into the constructed executor's CLI invocation (--model /
+    --controlled-experiment flags added to the subprocess command around
+    line 1312-1314).
+- scripts/skill_executor.py     -- ClaudeAgentSdkSkillExecutor accepts a
+    model value and passes it into ClaudeAgentOptions(model=...); the
+    message loop captures every distinct AssistantMessage.model value into
+    reported_models (around line 1281-1344); requested_model,
+    reported_models, and model_match are recorded as first-class evidence
+    fields on the result (around line 871-894); a "model_mismatch" hard-stop
+    error is raised (around line 1408-1418) when model_match is False;
+    fallback_model is never set; no retry path exists.
+- tests/test_model_enforcement.py (new) -- covers the enforcement paths in
+    Part 4 below.
 ```
 
-### Part 4 — test plan (to accompany the implementation, not run now)
+### Part 4 — test plan (implemented, in tests/test_model_enforcement.py)
 
 1. Explicit `--model` value reaches `ClaudeAgentOptions(model=...)`.
 2. `--controlled-experiment` with no `--model` fails before any
-   `query()`/SDK call is made (assert the call never happens, not just a
+   `query()`/SDK call is made (asserts the call never happens, not just a
    nonzero exit).
-3. Requested model value is recorded in trace/run-log output.
-4. Actual model (`AssistantMessage.model`) is recorded in trace/run-log
-   output whenever the SDK returns at least one `AssistantMessage`.
+3. Requested model value is recorded in trace/run-log output
+   (`requested_model`).
+4. Actual model(s) (`AssistantMessage.model`) are recorded in trace/run-log
+   output as `reported_models` whenever the SDK returns at least one
+   `AssistantMessage`.
 5. A mocked requested-vs-actual mismatch produces a FAILED result in the
-   `model_mismatch` category, not a retry.
+   `model_mismatch` category, not a retry (`model_match: False`).
 6. No fallback: `fallback_model` is never set by this code path in any test
    case.
 7. No retry: `query()`/the transport is invoked at most once per
    `invoke_skill` call, mismatch or not.
 8. `allowed_tools=["Read", "Write", "Glob", "Grep"]` and the
    `artifact_permission_gate`/`pre_trace`/`post_trace` hooks are unchanged
-   by this diff (regression-diff all `ClaudeAgentOptions` fields other than
-   `model`).
+   by this diff (regression-diffed against all `ClaudeAgentOptions` fields
+   other than `model`).
 9. Target-write confinement (`build_artifact_permission_gate`,
    `is_within_root`) and its existing tests are unaffected.
 10. Normal (non-`--controlled-experiment`, no `--model`) invocations keep
-    working exactly as today -- this change is additive only.
+    working exactly as before -- this change is additive only.
 
 ## 4. Execution environment
 
@@ -433,13 +436,15 @@ Working-directory layout: see §5.
 Fixed vs. inherited vs. unknown, summarized:
 
 - **Fixed by this package**: framework SHA, target SHA, tool-permission set,
-  workspace layout (§5), command sequence (§6).
+  workspace layout (§5), command sequence (§6), requested model
+  (`claude-sonnet-5`, explicitly passed via `--model` and enforced — see §3).
 - **Inherited from the runner/executor environment at execution time**:
   Python/Node/git patch versions beyond what's recorded above, locale,
-  timezone, Claude Agent SDK package version, authentication mechanism,
-  resolved default model (see §3).
-- **Unknown until execution**: exact ambient default model identifier;
-  exact Claude Agent SDK version; exact wall-clock start time.
+  timezone, Claude Agent SDK package version, authentication mechanism.
+- **Unknown until execution**: exact Claude Agent SDK version; exact
+  wall-clock start time. (The model itself is no longer an ambient unknown —
+  it is explicitly requested and enforced; only the reported/confirmed value
+  from the run is captured at execution time as evidence, per §3a.)
 
 ## 5. Disposable workspace layout
 
@@ -450,7 +455,7 @@ standalone, disposable set of clones is proposed for Stage 1:
 ```text
 H:\scratch\stage1-auteur-rerun\
   framework\        <- fresh clone of ThorStarlord/sensemaking-skills,
-                       checked out to ac5de55c700cd1b15f2eea1ca2726e83cd8d3284
+                       checked out to 68b44835be43b86ee7c0d7eb968e67efcd368443
   target-auteur\    <- fresh clone of the auteur target repository,
                        checked out to b40db654e0df9e90074f7ad85b40d7362378e07d
                        (treated as strictly read-only)
@@ -490,7 +495,7 @@ explicit owner authorization.
 # 1. Clone / checkout commands
 git clone https://github.com/ThorStarlord/sensemaking-skills.git H:\scratch\stage1-auteur-rerun\framework
 cd H:\scratch\stage1-auteur-rerun\framework
-git checkout ac5de55c700cd1b15f2eea1ca2726e83cd8d3284
+git checkout 68b44835be43b86ee7c0d7eb968e67efcd368443
 
 git clone <auteur-repo-source> H:\scratch\stage1-auteur-rerun\target-auteur
 cd H:\scratch\stage1-auteur-rerun\target-auteur
@@ -499,7 +504,7 @@ git checkout b40db654e0df9e90074f7ad85b40d7362378e07d
 # 2. SHA verification
 cd H:\scratch\stage1-auteur-rerun\framework
 git rev-parse HEAD
-# expect: ac5de55c700cd1b15f2eea1ca2726e83cd8d3284
+# expect: 68b44835be43b86ee7c0d7eb968e67efcd368443
 
 cd H:\scratch\stage1-auteur-rerun\target-auteur
 git rev-parse HEAD
@@ -519,7 +524,7 @@ git diff --exit-code
 git diff --cached --exit-code
 
 # ============================================================
-# EXECUTION BOUNDARY -- DO NOT RUN WITHOUT OWNER AUTHORIZATION
+# EXECUTION BOUNDARY — DO NOT RUN WITHOUT SEPARATE OWNER AUTHORIZATION
 # ============================================================
 
 # 5. Experiment invocation (INVOKES THE MODEL -- gated)
@@ -528,10 +533,17 @@ python scripts\workflow-runtime.py \
   --workflow architectural-review-planning-workflow \
   --mode guided_execution \
   --executor claude-code \
+  --controlled-experiment \
+  --model claude-sonnet-5 \
   --gate-decision auto-approve \
   --repo-root "H:/scratch/stage1-auteur-rerun/framework" \
   --target-repo "H:/scratch/stage1-auteur-rerun/target-auteur" \
   --log-dir "H:/scratch/stage1-auteur-rerun/logs"
+
+# NOTE: --repo-root and --target-repo above are pinned by preceding
+# checkout to 68b44835be43b86ee7c0d7eb968e67efcd368443 (framework) and
+# b40db654e0df9e90074f7ad85b40d7362378e07d (target); this command has no
+# moving branch reference of its own.
 
 # 6. Brief validation
 python scripts\validate-and-report.py H:\scratch\stage1-auteur-rerun\framework\artifacts\...\repository_sensemaking_brief.md
@@ -763,11 +775,16 @@ Rationale: ___________________________________________
 | Substantive review rejection | §10 reviewer overall rejects | Stop | Preserve brief + review form |
 | Substantive review inconclusive | §10 reviewer marks Inconclusive overall | Stop; treat as non-pass | Preserve brief + review form |
 | Environmental contamination | Unexpected process/tool errors, unrecorded environment drift | Stop; mark structural result INCONCLUSIVE | Preserve logs, environment snapshot |
-| Provider/model mismatch | Recorded model at execution time differs from what was authorized in §16 | Stop before invocation, or stop and flag if discovered after | Preserve authorization block + actual observed config |
-| Automatic fallback or retry | Any retry/fallback logic observed in logs (none should exist per §3) | Stop; treat as a process violation | Preserve logs |
+| Automatic fallback or retry | Any retry/fallback logic observed in logs (none exists per §3/§3a; `fallback_model` never set) | Stop; treat as a process violation | Preserve logs |
 | Output written into target repository | §8 manifest/status diff shows a new file under `target-auteur\` | Stop | Preserve manifests, diff |
-| Model not explicitly pinned/enforced | No code-enforced `model=` on `ClaudeAgentOptions` exists yet (see §3a, issue #86) | Stop before invocation — this alone blocks Stage 1 regardless of all other conditions | Preserve this package + issue #86 |
-| Requested-vs-actual model mismatch | `AssistantMessage.model` (once enforcement exists) differs from the requested/authorized model | Stop; do not retry, do not fall back | Preserve trace showing requested vs. actual |
+| Missing `--model` | `--controlled-experiment` set without `--model`; `workflow-runtime.py` hard-fails before any SDK call (see §3a Part 3) | Stop before invocation | Preserve the CLI error output |
+| Missing `--controlled-experiment` | The command in §6 omits `--controlled-experiment`; this is itself a plan deviation for Stage 1 | Stop before invocation | Preserve the command actually issued |
+| Requested model not `claude-sonnet-5` | `requested_model` in the result/trace evidence differs from `claude-sonnet-5` | Stop before invocation, or stop and flag if discovered after | Preserve authorization block + `requested_model` evidence |
+| No reported model | `reported_models` empty (no `AssistantMessage` observed) while a model was requested | Stop; do not retry | Preserve trace showing empty `reported_models` |
+| Reported/requested mismatch | `model_match == false` in the recorded evidence | Stop; do not retry, do not fall back | Preserve trace showing `requested_model` vs. `reported_models` |
+| Multiple reported models | `reported_models` (after de-duplication) contains more than one distinct value | Stop; treat as a hard mismatch | Preserve full `reported_models` list |
+| Framework SHA mismatch | `git rev-parse HEAD` on `framework\` != `68b44835be43b86ee7c0d7eb968e67efcd368443` | Stop before invocation | Record observed vs. expected SHA |
+| Target SHA mismatch | `git rev-parse HEAD` on `target-auteur\` != `b40db654e0df9e90074f7ad85b40d7362378e07d` | Stop before invocation | Record observed vs. expected SHA |
 | Historical evidence commit `a328c80` unreachable or mutated | `git show a328c80:...` / ancestor check against `origin/evidence/auteur-campaign-final-rerun` fails at preflight | Stop before invocation | Preserve the failing verification output |
 
 For every hard stop: stop immediately; preserve all evidence; do not patch;
@@ -777,61 +794,78 @@ do not edit the generated brief; do not rerun; return to the owner.
 
 Stage 1 succeeds only if **all** of the following hold:
 
-1. Exact pinned revisions used (framework `ac5de55c700cd1b15f2eea1ca2726e83cd8d3284`,
-   target `b40db654e0df9e90074f7ad85b40d7362378e07d`).
-2. Expected model/provider used (as recorded and confirmed in the
-   authorization block at execution time — see §3's disclosed gap).
-3. No automatic retry or fallback.
-4. Structural Stage A completion (§9 = PASS).
-5. No blocking validator error.
-6. No duplicate `weakness_type` key (§7 script exit 0).
-7. Deterministic quote grounding (no `EVIDENCE_QUOTE_NOT_FOUND`).
-8. No target mutation (§8 all checks clean).
-9. Complete trace and logs present.
-10. Substantive review passes (§10 all sections satisfactory).
-11. Every high-risk claim is Confirmed (none Rejected or Inconclusive).
-12. Brief judged useful enough to justify considering Stage 2.
+1. Framework SHA exactly `68b44835be43b86ee7c0d7eb968e67efcd368443`.
+2. Target SHA exactly `b40db654e0df9e90074f7ad85b40d7362378e07d`.
+3. Requested model exactly `claude-sonnet-5` (`requested_model ==
+   "claude-sonnet-5"`).
+4. Reported model exactly matches (`reported_models == ["claude-sonnet-5"]`,
+   `model_match == true`; repeated identical reported values may be
+   de-duplicated, but no other value may appear).
+5. No fallback (`fallback_model` never set; none observed in logs).
+6. No retry (`query()`/the transport invoked at most once).
+7. Structural Stage A validation passes (§9 = PASS).
+8. No duplicate `weakness_type` key (§7 script exit 0).
+9. Deterministic quote grounding (no `EVIDENCE_QUOTE_NOT_FOUND`).
+10. No target mutation (§8 all checks clean).
+11. Complete logs and trace present (`tool-call-trace.jsonl`, `run_log_*.md`,
+    `workflow_summary.json`, `validation_run_log.md`).
+12. Substantive review passes (§10 all sections satisfactory).
+13. Every high-risk claim is Confirmed (none Rejected or Inconclusive).
+14. Human reviewer judges the brief useful enough to justify considering
+    Stage 2.
 
 **Stage 1 success proves only** that the redesigned contract (PR #81) cleared
 the historical `auteur` target under the pinned configuration and survived
-the required review.
+the required review, using a reproducible, explicitly-pinned model baseline
+(PR #87 enforcement).
 
-**Stage 1 success explicitly does NOT prove**:
+**Stage 1 success does not satisfy D8 by itself.** It also does not prove:
 
-- D8 is satisfied (D8 requires at least two structurally different
-  repositories plus human usefulness review — this experiment covers
-  neither by itself).
-- Cross-repository generality.
-- Production readiness.
-- Autonomous trustworthiness.
-- Maintainer usefulness (beyond this one reviewer's judgment on this one
-  target).
+- cross-repository generality;
+- production readiness;
+- autonomous trustworthiness;
+- real-maintainer usefulness (beyond this one reviewer's judgment on this
+  one target);
 - Stage 2 authorization (Stage 2 remains conditional on separate, explicit
   owner review of Stage 1's actual evidence after it runs).
 
 ## 13. Owner authorization block
 
+### Proposed configuration (reviewed values, not an approval)
+
 ```text
-Stage 1 execution authorization status = BLOCKED
+Stage 1 execution authorization status = NOT AUTHORIZED
 
-Blocking prerequisite:
-explicit model selection and executor enforcement (§3a; issue #86)
+Former blocking prerequisite: explicit model selection and executor
+  enforcement = RESOLVED by PR #87 (§3a)
 
-Owner model decision = UNDECIDED
+Proposed framework SHA: 68b44835be43b86ee7c0d7eb968e67efcd368443
+Proposed target SHA: b40db654e0df9e90074f7ad85b40d7362378e07d
+Proposed provider/model: Anthropic via Claude Agent SDK, claude-sonnet-5
+Proposed environment: see §4 (fixed/inherited/unknown breakdown)
+Proposed command: see §6, step 5 (below the execution boundary)
+```
 
+This "proposed configuration" block reflects the values reviewed and
+recorded elsewhere in this package. It is not an authorization. Only the
+block below, filled in and dated by the owner, authorizes execution.
+
+### Owner authorization (blank — no approval pre-filled)
+
+```text
 Owner authorization:
 - Decision: UNDECIDED
 - Authorized framework SHA:
 - Authorized target SHA:
-- Authorized provider/model (must be a dated/immutable identifier, not a
-  bare alias, and must be enforced by code per §3a before this field can be
-  meaningfully filled in):
+- Authorized provider/model:
 - Authorized environment:
 - Authorized command:
 - Authorization date:
 ```
 
-This block is intentionally blank. No approval is pre-filled. Confirming
-the ambient default model at execution time does **not** satisfy the model
-prerequisite above — §3a requires code-level enforcement (issue #86),
-not an observational note.
+This block is intentionally blank. No approval is pre-filled. The technical
+model-enforcement prerequisite is resolved (§3a, PR #87), but Stage 1
+execution still requires a separate, explicit owner instruction filling in
+and dating the block above. Merging PR #85 approves this documentation
+package as an accurate planning artifact; it does not fill in this block and
+does not authorize execution.
