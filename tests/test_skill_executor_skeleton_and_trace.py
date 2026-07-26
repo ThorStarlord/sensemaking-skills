@@ -87,10 +87,17 @@ class TestToolTraceHooks(unittest.TestCase):
             self.assertEqual(lines[0]["tool_name"], "Read")
 
     def test_write_tool_trace_no_secrets_only_path_and_decision(self):
+        # schema_version 2 (trace-observability v2) adds `schema_version`
+        # and `invocation_id` (a correlation id) to every event on top of
+        # the original schema_version 1 fields asserted here -- see
+        # tests/test_trace_observability_v2.py for the new fields.
         entry = se._trace_event("PreToolUse", "Write", "/x/y.md", "allow", extra={"targets_expected_artifact": True})
         self.assertEqual(
             set(entry.keys()),
-            {"timestamp", "event", "tool_name", "file_path", "decision", "targets_expected_artifact"},
+            {
+                "schema_version", "timestamp", "event", "tool_name", "file_path",
+                "decision", "invocation_id", "targets_expected_artifact",
+            },
         )
         # No raw tool_input/content field ever present.
         self.assertNotIn("tool_input", entry)
