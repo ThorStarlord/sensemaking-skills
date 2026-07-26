@@ -1,0 +1,36 @@
+{
+  "workflow_id": "architectural-review-planning-workflow",
+  "workflow_name": "Architectural Review Planning",
+  "session_id": "step2-negative-session",
+  "mode": "guided_execution",
+  "status": "failed",
+  "final_note": "Step 2 (architectural-review) failed. Run halted.",
+  "branch": "main",
+  "executed_at": "2026-07-25T22:55:42.456624",
+  "steps_completed": 1,
+  "steps_total": 2,
+  "steps_failed": 1,
+  "steps": [
+    {
+      "step_id": "1",
+      "skill": "repo-sensemaker",
+      "status": "COMPLETED",
+      "output_artifact": "repository_sensemaking_brief",
+      "artifact_path": "",
+      "duration_seconds": 0,
+      "validators": []
+    },
+    {
+      "step_id": "2",
+      "skill": "architectural-review",
+      "status": "FAILED",
+      "output_artifact": "architectural_review_recommendation",
+      "artifact_path": "",
+      "duration_seconds": 0,
+      "validators": []
+    }
+  ],
+  "errors": [
+    "ARTIFACT_NOT_FOUND: Step 2 (architectural-review) requires 'proposed_direction' but no content was found at H:\\scratch\\step2-negative-session\\proposed_direction.md. Supply it as a prewritten artifact before invoking this workflow (see --from-session)."
+  ]
+}
