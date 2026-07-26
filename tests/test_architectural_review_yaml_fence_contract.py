@@ -1,9 +1,9 @@
 """Tests for the exact-triple-backtick YAML fence requirement injected into
 the architectural-review execution instruction.
 
-Background: a live architectural-review run (evidence preserved under
-H:/scratch-step2-positive/session/architectural_review_recommendation.md)
-produced an otherwise substantive, on-topic recommendation, but fenced its
+Background: a live architectural-review run (evidence preserved in a local
+scratch session directory used during proof work) produced an otherwise
+substantive, on-topic recommendation, but fenced its
 authoritative machine-readable YAML block with `~~~yaml` / `~~~` instead of
 the exact ```` ```yaml ```` / ```` ``` ```` triple-backtick fence that
 scripts/validate-architectural-review-recommendation.py's _parse_artifact_data
