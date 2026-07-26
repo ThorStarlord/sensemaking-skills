@@ -4,7 +4,7 @@
 mechanics are already implemented and exercised live; the "which claims
 require evidence" threshold is still a policy choice pending owner sign-off
 **Date**: 2026-07-25
-**Resolves**: Issue #31
+**Provisionally addresses**: Issue #31
 
 ---
 
@@ -59,6 +59,12 @@ The mechanics below are already implemented and evidence-backed; owner
 should confirm the "which claims require evidence" threshold before
 promoting to Accepted.
 
+**Promotion condition**: this ADR promotes from Provisional to Accepted once
+the owner explicitly ratifies the "which claims require evidence" threshold
+(a single sign-off), or once a validator is shown correctly rejecting a
+routing-relevant claim that lacks an evidence excerpt — whichever comes
+first.
+
 ---
 
 ## Hypothesis
@@ -109,4 +115,5 @@ output in PR #59 and #65, going beyond a bare proposal. Held short of
 Accepted because the enforcement boundary (which claims strictly require
 evidence) has not been tested by a validator actually rejecting a
 non-compliant claim, and owner sign-off on the threshold itself is
-outstanding.
+outstanding — promotes to Accepted once that sign-off is given or the
+missing negative-path evidence lands (see "Owner sign-off required" above).

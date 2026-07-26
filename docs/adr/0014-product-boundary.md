@@ -2,7 +2,7 @@
 
 **Status**: PROPOSED — draft for owner review, not yet accepted
 **Date**: 2026-07-25
-**Resolves**: Issue #29
+**Proposes resolution for**: Issue #29
 
 ---
 
@@ -15,10 +15,10 @@ Five possible scope definitions were on the table:
 4. A decision-navigation system choosing between research, prototyping, review, planning, and execution
 5. A complete agent-native software-development workflow
 
-Issue #29 itself already stated a preferred definition. This ADR promotes that
-preference to a decision, since #33, #34, #35, and #36 are all blocked on the
-product boundary being settled and it is the single highest-leverage
-unresolved question in the backlog.
+Issue #29 itself already stated a preferred definition. This ADR formalizes
+that preference as the proposed product boundary for owner review, since
+#33, #34, #35, and #36 are all blocked on the product boundary being settled
+and it is the single highest-leverage unresolved question in the backlog.
 
 ## Decision
 
@@ -69,11 +69,14 @@ repository (see ADR 0017).
 
 ## Consequences
 
-- #33 (workflow-routing policy) can now proceed: routing decisions are
-  scoped to the workflows this product owns, not arbitrary external tools.
-- #34 (findings → tracker tasks) is **in scope only as artifact production**
-  (e.g. `issue_list.md`), not as automatic third-party tracker writes —
-  that crosses into "downstream consumer" territory per this boundary.
+- #33 (workflow-routing policy) can be drafted against a stable scope once
+  this boundary is proposed: routing decisions are scoped to the workflows
+  this product owns, not arbitrary external tools (see ADR 0018, itself
+  Proposed pending this ADR's acceptance).
+- #34 (findings → tracker tasks), if this boundary is accepted, would be
+  **in scope only as artifact production** (e.g. `issue_list.md`), not as
+  automatic third-party tracker writes — that crosses into "downstream
+  consumer" territory per this boundary.
 - #35 (Wayfinder/prototypes) needs its own scope call informed by this
   boundary — see ADR 0020.
 

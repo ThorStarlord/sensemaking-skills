@@ -2,7 +2,7 @@
 
 **Status**: PROPOSED — draft for owner review, not yet accepted
 **Date**: 2026-07-25
-**Resolves**: Issue #32
+**Proposes resolution for**: Issue #32
 
 ---
 

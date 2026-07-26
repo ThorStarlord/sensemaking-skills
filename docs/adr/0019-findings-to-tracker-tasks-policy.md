@@ -2,17 +2,19 @@
 
 **Status**: PROPOSED — draft for owner review, not yet accepted
 **Date**: 2026-07-25
-**Resolves**: Issue #34 (was blocked by #29, #33 — both drafted in ADR 0014, ADR 0018)
+**Proposes resolution for**: Issue #34 (was blocked by #29, #33 — both
+proposed, not yet accepted, in ADR 0014, ADR 0018)
 
 ---
 
 ## Context
 
 Per ADR 0014's product boundary, third-party issue-tracker writes are
-explicitly **out of scope** for this product — the handoff artifact is the
-integration point, actual sync is a downstream consumer's job. This
-resolves most of #34's open questions by removing the "automatic tracker
-write" option from consideration.
+proposed as explicitly **out of scope** for this product — the handoff
+artifact is the integration point, actual sync is a downstream consumer's
+job. If ADR 0014 is accepted, this would resolve most of #34's open
+questions by removing the "automatic tracker write" option from
+consideration.
 
 ## Decision
 

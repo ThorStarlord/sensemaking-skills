@@ -3,7 +3,7 @@
 **Status**: PROVISIONAL — codifies existing, implemented behavior; owner
 sign-off still requested to promote to Accepted
 **Date**: 2026-07-25
-**Resolves**: Issue #30
+**Provisionally addresses**: Issue #30
 
 ---
 
@@ -61,6 +61,11 @@ per CLAUDE.md's verification-discipline notes.
 Largely descriptive of existing behavior; owner should confirm no untested
 normative choice is being smuggled in before promoting to Accepted.
 
+**Promotion condition**: this ADR promotes from Provisional to Accepted once
+the owner explicitly ratifies the deterministic/model-variable classification
+taxonomy above (a single sign-off, not additional evidence-gathering) — the
+underlying mechanics are already implemented and exercised live.
+
 ---
 
 ## Hypothesis
@@ -111,4 +116,6 @@ describes contracts and validator behavior that already exist and were
 exercised live in PR #59 and #65, not a first-time policy choice. It is not
 moved all the way to Accepted because the "any new field must be classified
 at proposal time" process commitment has not yet been exercised, and formal
-owner sign-off on the classification taxonomy itself is still pending.
+owner sign-off on the classification taxonomy itself is still pending —
+promotes to Accepted once that sign-off is given (see "Owner sign-off
+required" above for the exact condition).

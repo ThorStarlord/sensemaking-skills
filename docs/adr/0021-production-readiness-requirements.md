@@ -2,7 +2,8 @@
 
 **Status**: PROPOSED — draft for owner review, not yet accepted
 **Date**: 2026-07-25
-**Resolves**: Issue #36 (was blocked by #28 [closed], #32, #30 — both drafted in ADR 0017, ADR 0015)
+**Proposes resolution for**: Issue #36 (was blocked by #28 [closed], #32,
+#30 — proposed in ADR 0017, provisionally addressed in ADR 0015)
 
 ---
 
