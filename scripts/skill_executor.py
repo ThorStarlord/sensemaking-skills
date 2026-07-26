@@ -25,7 +25,34 @@ from enum import Enum
 from typing import Optional
 
 # SDK type imports for error classification
-from claude_agent_sdk import ResultMessage
+from claude_agent_sdk import ResultMessage, AssistantMessage
+
+
+def validate_model_identifier(model: str) -> None:
+    """Validate an explicitly-supplied model identifier before it can reach
+    ClaudeAgentOptions/the SDK (issue #86).
+
+    Rules (deliberately minimal -- this is generic controlled-run
+    infrastructure, not a hardcoded allowlist):
+      - must not be empty
+      - must not have surrounding whitespace
+
+    Does NOT restrict the value to any specific model name. Stage 1's
+    documented command and tests are expected to always pass exactly
+    "claude-sonnet-5", but that is an experiment-configuration convention
+    enforced by the caller/tests, not a runtime restriction -- this function
+    must not silently normalize or reject a different owner-approved model
+    string for some other controlled run.
+
+    Raises:
+        ValueError: if model is empty or has leading/trailing whitespace.
+    """
+    if model == "":
+        raise ValueError("Explicit model identifier must not be empty.")
+    if model != model.strip():
+        raise ValueError(
+            f"Explicit model identifier must not have surrounding whitespace: {model!r}"
+        )
 
 # Runtime-owned skeleton for repository_sensemaking_brief (issue #55).
 import brief_skeleton
@@ -841,6 +868,15 @@ class SkillExecutionResult:
     error: str = ""
     validator_results: Optional[list] = None
     validation_passed: Optional[bool] = None
+    # Model-enforcement evidence (issue #86). requested_model is the model
+    # explicitly supplied to the executor (None for ambient/default runs).
+    # reported_models is every distinct AssistantMessage.model value observed
+    # from the SDK during this invocation. model_match is True/False when
+    # requested_model was set (None when no model was requested, since there
+    # is nothing to match against).
+    requested_model: Optional[str] = None
+    reported_models: Optional[list] = None
+    model_match: Optional[bool] = None
 
     def to_dict(self) -> dict:
         return {
@@ -853,6 +889,9 @@ class SkillExecutionResult:
             "error": self.error,
             "validator_results": self.validator_results,
             "validation_passed": self.validation_passed,
+            "requested_model": self.requested_model,
+            "reported_models": self.reported_models,
+            "model_match": self.model_match,
         }
 
 
@@ -1003,9 +1042,39 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
 
     supports_real_execution: bool = True
 
-    def __init__(self, repo_root: str):
+    def __init__(
+        self,
+        repo_root: str,
+        model: Optional[str] = None,
+        controlled_experiment: bool = False,
+    ):
+        """
+        Args:
+            repo_root: Repository root path.
+            model: Explicit model identifier passed straight through as
+                ClaudeAgentOptions(model=...) (issue #86). None preserves
+                today's ambient/default-model behavior.
+            controlled_experiment: When True, `model` is required -- this
+                constructor raises ValueError immediately (before any SDK
+                call, before even a query() is built) if model is missing.
+                This is the innermost enforcement layer; workflow-runtime.py
+                also checks this before constructing the executor at all.
+        """
         self.repo_root = repo_root
         self._check_dependencies()
+
+        if controlled_experiment and not model:
+            raise ValueError(
+                "controlled_experiment=True requires an explicit model "
+                "identifier (issue #86): no model was supplied. Refusing to "
+                "construct an executor that could invoke the SDK with an "
+                "ambient/default model in a controlled-experiment run."
+            )
+        if model is not None:
+            validate_model_identifier(model)
+
+        self.model = model
+        self.controlled_experiment = controlled_experiment
 
     def _check_dependencies(self) -> tuple[bool, str]:
         """Check if required dependencies are installed."""
@@ -1204,6 +1273,13 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         # Capture SDK result and error info for diagnostic classification
         sdk_last_result_info: str | None = None
 
+        # Model-enforcement evidence (issue #86): every distinct
+        # AssistantMessage.model value observed during this invocation, in
+        # first-seen order. Populated regardless of whether a model was
+        # requested, so ambient/default runs also get a durable record of
+        # what actually ran.
+        reported_models: list[str] = []
+
         # Runtime artifact-write confinement (issue #43): the PreToolUse hook below
         # is the authoritative enforcement point (see build_artifact_permission_gate).
         # allowed_tools is narrowed too, as defense-in-depth on top of the hook, not
@@ -1231,6 +1307,13 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     setting_sources=["project", "user"],
                     skills=[skill_id],
                     allowed_tools=["Read", "Write", "Glob", "Grep"],
+                    # Explicit model pin (issue #86). None (the default)
+                    # preserves today's ambient/default-model behavior --
+                    # this is never a hidden global default, only whatever
+                    # the caller explicitly supplied. fallback_model is
+                    # deliberately never set anywhere in this executor: no
+                    # fallback, retry, or escalation is introduced.
+                    model=self.model,
                     hooks={
                         "PreToolUse": [
                             HookMatcher(matcher=None, hooks=[artifact_permission_gate, pre_trace]),
@@ -1246,6 +1329,19 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     if message.is_error:
                         errors_text = "; ".join(str(e) for e in (message.errors or []))
                         sdk_last_result_info = errors_text or str(message.subtype)
+
+                # Record every AssistantMessage.model value observed (issue
+                # #86 requirement 7): this is the SDK's only per-message
+                # report of which model actually ran (ClaudeAgentOptions and
+                # ResultMessage do not carry a single "the model used" field).
+                if isinstance(message, AssistantMessage):
+                    reported_model = getattr(message, "model", None)
+                    trace_log.append(_trace_event(
+                        "AssistantMessage", None, None, "observed",
+                        extra={"reported_model": reported_model},
+                    ))
+                    if reported_model:
+                        reported_models.append(reported_model)
 
             # For the runtime-skeleton path, reconcile whatever the model wrote
             # (if anything) back into the canonical envelope. This is the
@@ -1265,7 +1361,62 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     extra={"integrity_ok": brief_skeleton.skeleton_integrity_ok(reconciled)},
                 ))
 
+            # Model-enforcement decision (issue #86). Computed unconditionally
+            # so ambient (model=None) runs still get reported_models recorded,
+            # but the hard-stop only applies when a model was requested --
+            # there is nothing to "match" for an ambient run.
+            distinct_reported = list(dict.fromkeys(reported_models))  # de-dup, preserve order
+            model_match: Optional[bool] = None
+            model_enforcement_detail = ""
+            if self.model:
+                if not distinct_reported:
+                    model_match = False
+                    model_enforcement_detail = (
+                        "no AssistantMessage.model was observed; cannot confirm the "
+                        "requested model was honored"
+                    )
+                elif len(distinct_reported) > 1:
+                    model_match = False
+                    model_enforcement_detail = (
+                        f"multiple distinct reported models: {distinct_reported}"
+                    )
+                elif distinct_reported[0] != self.model:
+                    model_match = False
+                    model_enforcement_detail = (
+                        f"reported model '{distinct_reported[0]}' != "
+                        f"requested model '{self.model}'"
+                    )
+                else:
+                    model_match = True
+
+            trace_log.append(_trace_event(
+                "ModelEnforcement", None, None,
+                "hard_stop" if model_match is False else "ok" if model_match else "not_applicable",
+                extra={
+                    "requested_model": self.model,
+                    "reported_models": distinct_reported,
+                    "model_match": model_match,
+                },
+            ))
+
             trace_path = write_tool_trace(trace_log, artifact_session_dir, self.repo_root)
+
+            # Hard-stop takes precedence over artifact success (issue #86,
+            # requirements 8-9): a produced artifact does not excuse a model
+            # mismatch or an unobservable model in a run that required one.
+            # No fallback, no retry -- return control to the caller.
+            if self.model and model_match is False:
+                return SkillExecutionResult(
+                    skill_id=skill_id,
+                    status=SkillExecutionStatus.FAILED,
+                    command=invocation_command,
+                    output_artifact=expected_output_artifact,
+                    error=f"[model_mismatch] {model_enforcement_detail}. "
+                          f"requested_model={self.model} reported_models={distinct_reported}",
+                    requested_model=self.model,
+                    reported_models=distinct_reported,
+                    model_match=False,
+                )
 
             # Check if the expected artifact was produced
             if os.path.exists(expected_output_path):
@@ -1276,6 +1427,9 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     output_artifact=expected_output_artifact,
                     message=f"Artifact produced at {expected_output_path}"
                             + (f" (tool trace: {trace_path})" if trace_path else ""),
+                    requested_model=self.model,
+                    reported_models=distinct_reported,
+                    model_match=model_match,
                 )
             else:
                 # Build categorized error: include SDK error info if available
@@ -1290,6 +1444,9 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     output_artifact=expected_output_artifact,
                     error=f"[{category}] Expected artifact '{expected_output_artifact}' not produced.{detail} "
                           f"Artifact not found at {expected_output_path}",
+                    requested_model=self.model,
+                    reported_models=distinct_reported,
+                    model_match=model_match,
                 )
 
         except Exception as e:
@@ -1303,6 +1460,8 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                 command=invocation_command,
                 output_artifact=expected_output_artifact,
                 error=f"SDK execution failed: {e}.{detail}",
+                requested_model=self.model,
+                reported_models=list(dict.fromkeys(reported_models)),
             )
 
 # Keep old name as alias for backwards compatibility
@@ -1509,6 +1668,8 @@ def create_executor(
     executor_id: str,
     repo_root: str,
     prompt_output_dir: Optional[str] = None,
+    model: Optional[str] = None,
+    controlled_experiment: bool = False,
 ) -> SkillExecutor:
     """Create a SkillExecutor instance by id.
 
@@ -1516,12 +1677,22 @@ def create_executor(
         executor_id: One of "dry-run", "prompt-chain", "claude-code", "api".
         repo_root: Repository root path.
         prompt_output_dir: Directory for prompt files (prompt-chain only).
+        model: Explicit model identifier (issue #86). Only meaningful for
+            "claude-code" -- threaded into ClaudeAgentSdkSkillExecutor, which
+            passes it to ClaudeAgentOptions(model=...). Ignored for other
+            executor ids (dry-run/prompt-chain never invoke the SDK; "api"
+            uses its own separate Anthropic-client model configuration, out
+            of scope for this issue).
+        controlled_experiment: When True and executor_id == "claude-code",
+            requires `model` to be set -- raises ValueError otherwise, before
+            any SDK object is constructed.
 
     Returns:
         A SkillExecutor instance.
 
     Raises:
-        ValueError: If executor_id is unknown.
+        ValueError: If executor_id is unknown, or if controlled_experiment
+            is set for "claude-code" with no model.
     """
     if executor_id not in EXECUTOR_REGISTRY:
         known = ", ".join(EXECUTOR_REGISTRY.keys())
@@ -1533,7 +1704,12 @@ def create_executor(
         output_dir = prompt_output_dir or os.path.join(repo_root, "prompts")
         return executor_cls(output_dir=output_dir)
 
-    if executor_id in ("claude-code", "api"):
+    if executor_id == "claude-code":
+        return executor_cls(
+            repo_root=repo_root, model=model, controlled_experiment=controlled_experiment,
+        )
+
+    if executor_id == "api":
         return executor_cls(repo_root=repo_root)
 
     return executor_cls()
