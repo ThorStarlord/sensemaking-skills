@@ -1,0 +1,19 @@
+H:/GithubRepositories/sensemaking-skills                                                 4470d00 [experiments/0008-standalone-clone-step2-proof]
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/agent-a077edc736728d584       1fa1c57 [pr57-local-0005]
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/agent-a275c3f0845cca2f4       60ecd99 [fix/issue-56-mode-coverage-family-merge]
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/agent-a35996823143808ef       2ee8431 (detached HEAD)
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/agent-a4ded2c075308af82       146ff13 [fix/runtime-owned-brief-skeleton]
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/agent-a4ef63153802a179c       a50c7f9 [fix/issue-61-resume-state-mode-aware]
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/agent-a7165432b267a4bec       2702f13 [worktree-agent-a7165432b267a4bec]
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/agent-a71d0c50e38cec9fe       e66dc1c [experiments/0002-live-golden-path-proof]
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/agent-a786fdc51936f4e90       0ca3365 [fix/repo-sensemaker-live-contract]
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/agent-afc6346e4e407e5ae       fbe53c4 [fix/architectural-review-yaml-fence-contract]
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/compassionate-greider-6415b1  eb8b6d1 (detached HEAD)
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/pedantic-buck-8edff2          f7280f7 [claude/pedantic-buck-8edff2] prunable
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/tender-pare-ad5bca            95b2962 (detached HEAD)
+H:/GithubRepositories/sensemaking-skills/.claude/worktrees/upbeat-jepsen-fdfca7          95b2962 (detached HEAD)
+H:/GithubRepositories/sensemaking-skills/final-exec-claude-code                          adbf705 (detached HEAD) prunable
+H:/GithubRepositories/sensemaking-skills-acceptance                                      944e752 [impl/architectural-review-acceptance-infrastructure]
+H:/investigation-worktree                                                                adbf705 (detached HEAD)
+H:/scratch-step2-negative/target                                                         087cf85 (detached HEAD)
+H:/scratch-step2-positive/target                                                         087cf85 (detached HEAD)
