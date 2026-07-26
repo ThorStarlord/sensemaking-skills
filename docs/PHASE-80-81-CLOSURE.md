@@ -171,8 +171,10 @@ Per `docs/PRODUCT-CONTRACT-REVIEW-2026-07-26.md` Part 5 and
 readiness level remains **"Externally exercised"** (Level C). PR #81 fixes
 an internal contract defect surfaced by the auteur campaign; it does not
 itself constitute new external evidence, so it does not advance the
-readiness level. Reaching "Externally validated" (Level D) still requires a
-clean external Stage A + Step 2 pass, which has not occurred.
+readiness level. Reaching "Externally validated" (Level D) still requires
+satisfying the ratified D8 evidence bar for external repository-sensemaking
+briefs, which has not occurred. This refers to `repo-sensemaker` Stage A
+brief validation, not architectural-review or workflow Step 2.
 
 **This remains true after the D7/D8/E4 ratification recorded in §5 below.**
 Ratifying a *target* and an evidence bar does not itself satisfy that bar —
