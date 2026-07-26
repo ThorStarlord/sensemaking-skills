@@ -155,6 +155,50 @@ def build_semantic_authorities_block(repo_root: str) -> str:
     )
 
 
+def build_yaml_fence_contract_block() -> str:
+    """Build the execution-instruction section enforcing the exact YAML fence
+    syntax for the architectural_review_recommendation artifact (issue: exact
+    triple-backtick YAML fence in architectural-review recommendation).
+
+    A live architectural-review run produced an otherwise substantive
+    recommendation but fenced its authoritative machine-readable YAML block
+    with `~~~yaml` instead of the required ```` ```yaml ```` triple-backtick
+    fence. scripts/validate-architectural-review-recommendation.py's
+    _parse_artifact_data (see that file) only recognizes the exact regex
+    ``` ```yaml\\s+(.*?)\\s+``` ``` -- a tilde fence does not match, so the
+    validator reports PARSING_ERROR even though the recommendation content
+    itself was on-topic and substantive. This block makes the required exact
+    syntax unambiguous to the model so it cannot silently substitute an
+    equally-valid-looking Markdown fence style that this validator does not
+    accept.
+
+    This is a producer-side instruction only -- it does not change what the
+    validator accepts.
+    """
+    return (
+        "## Machine-readable YAML Block: Exact Fence Syntax (do not deviate)\n\n"
+        "The artifact must contain EXACTLY ONE authoritative machine-readable "
+        "YAML block, fenced with the EXACT syntax below:\n\n"
+        "- Opening fence: exactly three backticks immediately followed by "
+        "`yaml`, i.e. ` ```yaml ` (NOT `~~~yaml`, NOT `~~~`, NOT four or more "
+        "backticks, NOT a language other than `yaml`).\n"
+        "- Closing fence: exactly three backticks, i.e. ` ``` ` (NOT `~~~`).\n"
+        "- Do NOT use tilde fences (`~~~yaml` / `~~~`) anywhere in this "
+        "artifact -- the validator's parser only recognizes the triple-"
+        "backtick form and treats a tilde-fenced block as if no YAML block "
+        "were present at all, which fails the artifact with a parsing error.\n"
+        "- Do NOT emit the machine-readable data as plain (unfenced) YAML, "
+        "as JSON, or as more than one fenced machine-readable block. Exactly "
+        "one ```yaml ... ``` block is required, and it is the only block "
+        "the validator reads.\n\n"
+        "Example of the ONLY acceptable fence syntax:\n"
+        "```yaml\n"
+        "decision: pursue\n"
+        "confidence: high\n"
+        "```\n"
+    )
+
+
 # ============================================================================
 # Output path resolution (shared by real executors)
 # ============================================================================
@@ -781,6 +825,18 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         if uses_runtime_skeleton:
             prompt = self.build_skeleton_prompt(skill_id, input_section, relative_output_path)
         else:
+            # architectural-review's authoritative output (architectural_review_
+            # recommendation) is validated by
+            # scripts/validate-architectural-review-recommendation.py, which
+            # requires an exact triple-backtick ```yaml fence (see
+            # build_yaml_fence_contract_block's docstring for the live-run
+            # failure this addresses). Inject that exact-syntax requirement
+            # for this skill specifically, the same pattern
+            # build_semantic_authorities_block uses for repo-sensemaker.
+            fence_contract_block = ""
+            if skill_id == "architectural-review":
+                fence_contract_block = "\n" + build_yaml_fence_contract_block() + "\n"
+
             prompt = (
                 f"You are executing the '{skill_id}' skill as part of a structured workflow.\n\n"
                 f"{input_section}"
@@ -790,8 +846,9 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                 f"You MUST write the final artifact to this exact path:\n"
                 f"```\n{relative_output_path}\n```\n\n"
                 f"Use the Write tool to create this file. The artifact must be markdown format (.md) "
-                f"and must match the expected output format for this skill.\n\n"
-                f"Do not stop until the artifact file exists at the specified path."
+                f"and must match the expected output format for this skill.\n"
+                f"{fence_contract_block}"
+                f"\nDo not stop until the artifact file exists at the specified path."
             )
 
         # Capture SDK result and error info for diagnostic classification
