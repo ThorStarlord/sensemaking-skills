@@ -1,0 +1,91 @@
+# ADR 0020: Whether Wayfinder and Prototypes Belong in the Core
+
+**Status**: PROPOSED — draft for owner review, not yet accepted
+**Date**: 2026-07-25
+**Proposes resolution for**: Issue #35 (was blocked by #29, #33 — both
+proposed, not yet accepted, in ADR 0014, ADR 0018)
+
+---
+
+## Context
+
+Wayfinder-style decision maps (this very issue map, #27) and prototype
+tickets raise the question of whether decision-mapping and
+throwaway-branch prototyping should be first-class runtime concepts.
+
+## Decision
+
+**Remain optional, not core**, per the ADR 0014 product boundary: the
+product's job is diagnosis → routing → validated artifact production for
+one proven fog type at a time (ADR 0018). Decision-mapping across many
+open strategic questions (what Wayfinder is doing right now, in this issue
+map) is a *planning-time* activity for the repo owner, not a *runtime*
+capability the orchestrator needs to own.
+
+- Issue-tracker maps (like #27) relate to runtime artifacts only loosely:
+  they group related ADRs/issues for human tracking, they are not consumed
+  by any validator or workflow step.
+- Prototype findings do **not** automatically become validated evidence —
+  a prototype branch's findings must go through the same evidence policy
+  (ADR 0016) and be captured in a real `repository_sensemaking_brief.md`
+  before they count as evidence.
+- Uncertainty threshold for "prototype instead of ordinary planning" is
+  deliberately left as a human judgment call, not a formula — this avoids
+  over-specifying a rarely-exercised path per ADR 0017's "don't build
+  infrastructure without proven need."
+- Throwaway branches are disposed via ordinary git branch deletion; no
+  special runtime lifecycle management is needed (matches the
+  `git reset --hard` / `git clean -fd` rollback pattern already proven in
+  `scripts/test-controlled-failures.py`).
+
+## Consequences
+- No Wayfinder-specific runtime code is in scope.
+- If prototype→evidence promotion becomes a recurring need, that's a
+  future ADR revision with its own proven producer→consumer path (ADR
+  0017), not a default assumption.
+
+## Owner sign-off required
+Product-direction decision; confirm or amend before treating as Accepted.
+
+---
+
+## Hypothesis
+
+Wayfinder-style decision maps and throwaway prototype branches remain
+optional, planning-time human activities, not first-class runtime concepts
+the orchestrator must own.
+
+## Supporting evidence
+
+- The proven golden path (PR #57, #59, #60, #62, #64, #65) never invokes,
+  references, or depends on Wayfinder or any prototype-branch mechanism —
+  the entire proof chain runs through `repo-sensemaker` and
+  `architectural-review` only, consistent with Wayfinder being outside the
+  core runtime.
+- `git reset --hard` / `git clean -fd` rollback discipline is exercised in
+  `scripts/test-controlled-failures.py` (pre-existing) and echoed in PR
+  #65's own disposable-worktree/clone teardown discipline, supporting the
+  claim that no special lifecycle tooling is needed for throwaway branches.
+
+## Missing evidence
+
+- Nothing in the merged campaign touches issue #27 (Wayfinder) or any
+  prototype-promotion path; this ADR is a scope decision by omission
+  ("nothing needed it, so it isn't in scope") rather than a decision tested
+  by an attempt to bring Wayfinder in-scope and observing it fail.
+- Per the task instructions for this revision, issue #27 / Wayfinder itself
+  was read-only reference material and was not modified or re-evaluated in
+  depth here.
+
+## Experiment or review trigger
+
+Revisit if a future feature needs prototype findings to become validated
+evidence without a full `repository_sensemaking_brief.md` round-trip — that
+would be the first real pressure-test of this boundary.
+
+## Status rationale
+
+Remains **Proposed**. Pure product-boundary decision; the merged campaign
+neither touched nor was blocked by Wayfinder, so there is no new evidence
+pushing this toward Provisional or Accepted — owner sign-off is required to
+settle it either way.
