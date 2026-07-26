@@ -174,18 +174,41 @@ itself constitute new external evidence, so it does not advance the
 readiness level. Reaching "Externally validated" (Level D) still requires a
 clean external Stage A + Step 2 pass, which has not occurred.
 
+**This remains true after the D7/D8/E4 ratification recorded in §5 below.**
+Ratifying a *target* and an evidence bar does not itself satisfy that bar —
+the achieved readiness level stays **"Externally exercised"** until the
+staged evidence plan (E4) actually produces the D8 evidence. No experiment
+has run as of this document.
+
 ## 5. Open owner decisions
 
 Per commit `1ad42ca` ("apply explicit owner ratification of D1-D6, D9, D10"):
-D1-D6, D9, D10 are ratified. **D7 (next readiness target) and D8
-(external-validation bar) remain explicitly UNDECIDED by owner instruction**,
-recorded in `docs/OWNER-DECISION-PACKAGE-2026-07-26.md` Part 2/Part 4. This
-document does not resolve, default, or recommend ratifying either. The full
-option analysis and recommendation lives in that file (Parts 2, 4, 7); the
-tables below are a compact pointer, not a replacement, so the owner can
-answer inline here if preferred. ADR 0021 (production readiness) stays
-PROPOSED pending D7/D8 and its other named
-owner-decision items.
+D1-D6, D9, D10 are ratified.
+
+**2026-07-26 update (later same day): D7, D8, and experiment authorization
+have now been explicitly ratified by the owner**, per
+`docs/OWNER-DECISION-PACKAGE-2026-07-26.md` Part 7 (updated). The ratified
+values:
+
+```text
+D7 = Externally validated
+D8 = Success on at least two structurally different external repositories,
+     including real human usefulness evaluation on at least one target.
+Experiment authorization = E4 -- staged combination
+  Stage 1: controlled auteur rerun
+  Stage 2: second structurally different repository (conditional on Stage 1)
+  Stage 3: real-maintainer usefulness evaluation (conditional on Stage 2)
+```
+
+Ratifying D7/D8/E4 is a governance and evidence-planning act only. It does
+**not** itself advance the currently achieved readiness level (§4, below,
+remains unchanged), does not authorize running any experiment stage, and
+does not constitute a production-readiness claim. Only Stage 1 is currently
+authorized for planning (a single planning issue); executing Stage 1
+requires a separate, explicit owner instruction. Stages 2 and 3 remain
+conditional on owner review of the prior stage's evidence and are not
+authorized now. ADR 0021 (production readiness) stays PROPOSED pending its
+other named owner-decision items (see that ADR).
 
 ### D7 — next readiness target
 

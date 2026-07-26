@@ -291,10 +291,31 @@ treating an assistant-authored example as sign-off.
   phase.
 
 - D7 Next readiness target:
-  **UNDECIDED** — remains open per owner instruction.
+  D — Externally validated. **RATIFIED 2026-07-26 (later same day, following
+  PR #81 closure)**, superseding the earlier UNDECIDED status recorded
+  above. This does not itself advance the achieved readiness level, which
+  remains "Externally exercised" until the D8 evidence bar is actually met.
 
 - D8 External-validation bar:
-  **UNDECIDED** — remains open per owner instruction.
+  Success on at least two structurally different external repositories,
+  including: clean structural Stage A validation; deterministic evidence
+  grounding; substantive audit of every high-risk claim; no target-repository
+  mutation; pinned framework and target revisions; repeatability evidence;
+  and real human usefulness evaluation on at least one target. **RATIFIED
+  2026-07-26 (later same day)**, superseding the earlier UNDECIDED status
+  recorded above.
+
+- Experiment authorization:
+  E4 — staged combination. **RATIFIED 2026-07-26.** Authorized sequence:
+  Stage 1 (controlled auteur rerun) is authorized for *planning* now via one
+  GitHub issue; Stage 2 (second structurally different repository) is
+  conditional on the owner reviewing successful Stage 1 evidence; Stage 3
+  (real-maintainer usefulness evaluation) is conditional on the owner
+  reviewing successful Stage 2 evidence. Any failed stage stops the
+  sequence — the failure is preserved as evidence and returned to the owner;
+  no automatic repair-and-rerun is authorized. Creating the Stage 1 planning
+  issue does not itself authorize *executing* Stage 1 — that requires a
+  separate, explicit owner instruction.
 
 - D9 PR #78 interpretation:
   B — PR #78 was a legitimate rejection under the current contract, but it
@@ -315,14 +336,25 @@ treating an assistant-authored example as sign-off.
   conditions are unresolved.
 ```
 
+**2026-07-26 update (later same day)**: D7 and D8 above, and experiment
+authorization (E4, staged), have since been explicitly ratified by the
+owner — see the updated D7/D8/Experiment-authorization entries above. This
+supersedes the "Modifications or constraints" bullet "Do not rerun auteur
+during this phase" only to the extent of authorizing *planning* for a Stage
+1 controlled rerun (one GitHub issue); it does not authorize executing that
+rerun, which still requires separate explicit owner instruction. All other
+modifications/constraints above remain in force unchanged (no routing/
+Wayfinder/broader-orchestration expansion, historical evidence PRs
+untouched, no weakened evidence integrity or target-write confinement).
+
 **Effect on Part 6's ADR/issue mapping**: D1 (ADR 0014's condition) is
 ratified — promotable. D2/D3/D4 (ADR 0015's condition) are ratified —
 promotable. D5 (ADR 0016's condition) is ratified — promotable; D9 is
 recorded there too as ratified interpretive precedent, though it isn't
 itself part of ADR 0016's promotion condition. D6 is ratified but has no
 existing ADR home (Part 6 flagged this gap already) — recorded here, not
-retrofitted into an ADR that doesn't cover it. D7/D8 remain UNDECIDED by
-explicit owner instruction, so ADR 0021's promotion condition is not met —
-it stays Proposed, and its three other named owner-decision items
-(cost/concurrency, supported-agent commitments, platform scope) remain
-untouched regardless.
+retrofitted into an ADR that doesn't cover it. **D7/D8 are now ratified**
+(see the 2026-07-26 update above), but ADR 0021's promotion condition is
+still not fully met — it stays Proposed, because its three other named
+owner-decision items (cost/concurrency, supported-agent commitments,
+platform scope) remain outstanding regardless of D7/D8's ratification.
