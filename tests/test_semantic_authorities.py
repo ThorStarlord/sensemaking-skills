@@ -253,9 +253,26 @@ class TestNegativeRegressions(unittest.TestCase):
         errors = self._validate("repo-sensemaker-id-hallucination.md")
         self.assertTrue(any("HALLUCINATED_WORKFLOW_ID" in e["message"] for e in errors))
 
-    def test_unknown_weakness_type_fixture_still_fails(self):
-        errors = self._validate("unknown-weakness-type.md")
-        self.assertTrue(any("UNKNOWN_WEAKNESS_TYPE" in e["message"] for e in errors))
+    def test_unknown_weakness_type_is_now_a_nonblocking_warning(self):
+        """issue #80: UNKNOWN_WEAKNESS_TYPE (the old blocking prose-substring
+        check) is retired. PR #78 was correctly rejected under that
+        then-current structural contract; the rejection exposed the
+        brittleness of prose-substring taxonomy validation (the substantive
+        diagnosis in PR #78 was never audited and remains neither confirmed
+        nor disproven). An unrecognized weakness_type is now
+        WEAKNESS_TYPE_UNKNOWN, a non-blocking warning -- it must never
+        invalidate the brief. See
+        tests/fixtures/validate-brief/valid/unrecognized-weakness-type-warning.md
+        (the repurposed former invalid/unknown-weakness-type.md fixture)."""
+        path = os.path.join(
+            REPO_ROOT, "tests", "fixtures", "validate-brief", "valid",
+            "unrecognized-weakness-type-warning.md",
+        )
+        errors = validate_brief(path, repo_root=REPO_ROOT)
+        self.assertFalse(any("UNKNOWN_WEAKNESS_TYPE" in e["message"] for e in errors))
+        self.assertTrue(any("WEAKNESS_TYPE_UNKNOWN" in e["message"] for e in errors))
+        blocking = [e for e in errors if e.get("severity", "error") == "error"]
+        self.assertEqual(blocking, [], f"unrecognized weakness_type must not block: {blocking}")
 
     def test_no_file_citations_fixture_still_fails(self):
         errors = self._validate("no-file-citations.md")

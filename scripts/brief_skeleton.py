@@ -67,6 +67,8 @@ SCHEMA_VERSION = 1
 # | recommended_execution_mode  | model, constrained     |
 # | evidence                    | model, constrained     |
 # | weakest_boundary            | model, constrained     |
+# | weakness_type                | model, constrained (issue #80) |
+# | weakness_type_explanation    | model, constrained (required only if weakness_type == Other) |
 # | repository goal (sec 1)     | model, prose           |
 # | strong signals (sec 3)      | model, prose           |
 # | missing pieces (sec 4)      | model, prose           |
@@ -101,6 +103,8 @@ MODEL_YAML_FIELDS = (
     "recommended_workflow_id",
     "recommended_execution_mode",
     "weakest_boundary",
+    "weakness_type",
+    "weakness_type_explanation",
     "required_inputs",
 )
 
@@ -234,6 +238,14 @@ def build_skeleton(ctx: SkeletonContext | None = None) -> str:
     lines.append("recommended_workflow_id:  # model fills: MUST match an id in workflow-registry.yaml")
     lines.append("recommended_execution_mode:  # model fills: plan_only | guided_execution")
     lines.append("weakest_boundary:  # model fills: short slug")
+    lines.append(
+        "weakness_type:  # model fills: one of the registered types in "
+        "skills/repo-sensemaker/references/weakness-types.md, or 'Other'"
+    )
+    lines.append(
+        "weakness_type_explanation: null  # model fills with a non-empty string ONLY "
+        "if weakness_type is 'Other'; otherwise leave null"
+    )
     lines.append("required_inputs:")
     lines.append("  - user_intent")
     lines.append("  - repository_state")

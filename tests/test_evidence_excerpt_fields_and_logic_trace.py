@@ -141,17 +141,17 @@ This repo builds sensemaking skills for repository diagnosis.
 <!-- MODEL_SECTION:weakest_boundary_prose:END -->
 
 <!-- MODEL_SECTION:evidence_prose:BEGIN -->
-Logic trace: scripts/validate-brief.py:312 requires quote and supports_claim
-on every excerpt, which is the chain from that check to the weakest-boundary
-conclusion here.
+Logic trace: skills/repo-sensemaker/references/weakness-types.md:1 requires
+quote and supports_claim on every excerpt, which is the chain from that
+check to the weakest-boundary conclusion here.
 <!-- MODEL_SECTION:evidence_prose:END -->
 
 <!-- MODEL_SECTION:evidence_excerpts:BEGIN -->
 ```yaml
 evidence_excerpts:
-  - file: scripts/validate-brief.py
-    lines: L312-L314
-    quote: "for field in [\\"file\\", \\"lines\\", \\"quote\\", \\"supports_claim\\"]:"
+  - file: skills/repo-sensemaker/references/weakness-types.md
+    lines: L1
+    quote: "# Weakness Types in Repositories"
     supports_claim: "Confirms the validator requires all four named fields per excerpt."
 ```
 <!-- MODEL_SECTION:evidence_excerpts:END -->
@@ -160,8 +160,9 @@ evidence_excerpts:
 primary_fog_type: architecture_fog
 recommended_workflow_id: architecture-implementation-workflow
 escalation_recommended: false
+weakness_type: Zero Validation
 evidence:
-  - "scripts/validate-brief.py (lines L312-L314): weak boundary"
+  - "skills/repo-sensemaker/references/weakness-types.md (lines L1): weak boundary"
 ```
 """
 
@@ -170,7 +171,7 @@ class TestReconciliationPreservesFields(unittest.TestCase):
     def test_reconcile_preserves_quote_and_supports_claim_unchanged(self):
         reconciled = bs.reconcile(VALID_MODEL_OUTPUT)
         self.assertIn(
-            'quote: "for field in [\\"file\\", \\"lines\\", \\"quote\\", \\"supports_claim\\"]:"',
+            'quote: "# Weakness Types in Repositories"',
             reconciled,
         )
         self.assertIn(
@@ -188,7 +189,7 @@ class TestValidatorNegativeRegressions(unittest.TestCase):
 
     def test_missing_quote_and_supports_claim_still_fails(self):
         broken = VALID_MODEL_OUTPUT.replace(
-            '    quote: "for field in [\\"file\\", \\"lines\\", \\"quote\\", \\"supports_claim\\"]:"\n'
+            '    quote: "# Weakness Types in Repositories"\n'
             '    supports_claim: "Confirms the validator requires all four named fields per excerpt."\n',
             '    citation: "wrong field name, like the PR #70 reproduction"\n',
         )
@@ -206,10 +207,11 @@ class TestValidatorNegativeRegressions(unittest.TestCase):
 
     def test_missing_logic_trace_still_fails(self):
         broken = VALID_MODEL_OUTPUT.replace(
-            "Logic trace: scripts/validate-brief.py:312 requires quote and supports_claim\n"
-            "on every excerpt, which is the chain from that check to the weakest-boundary\n"
-            "conclusion here.",
-            "This paragraph cites scripts/validate-brief.py:312 but never states its reasoning chain.",
+            "Logic trace: skills/repo-sensemaker/references/weakness-types.md:1 requires\n"
+            "quote and supports_claim on every excerpt, which is the chain from that\n"
+            "check to the weakest-boundary conclusion here.",
+            "This paragraph cites skills/repo-sensemaker/references/weakness-types.md:1 "
+            "but never states its reasoning chain.",
         )
         reconciled = bs.reconcile(broken)
         # bs.build_skeleton() itself also carries the reminder text

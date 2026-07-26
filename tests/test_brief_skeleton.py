@@ -54,16 +54,17 @@ This repo builds sensemaking skills for repository diagnosis.
 <!-- MODEL_SECTION:weakest_boundary_prose:END -->
 
 <!-- MODEL_SECTION:evidence_prose:BEGIN -->
-Logic trace: scripts/validate-brief.py:46 shows the field is unchecked, which
-is the chain from evidence to the weakest-boundary conclusion.
+Logic trace: skills/repo-sensemaker/references/weakness-types.md:5 shows the
+taxonomy is unchecked structurally, which is the chain from evidence to the
+weakest-boundary conclusion.
 <!-- MODEL_SECTION:evidence_prose:END -->
 
 <!-- MODEL_SECTION:evidence_excerpts:BEGIN -->
 ```yaml
 evidence_excerpts:
-  - file: scripts/validate-brief.py
-    lines: L46
-    quote: "some quote"
+  - file: skills/repo-sensemaker/references/weakness-types.md
+    lines: L5
+    quote: "1. **Vocabulary Drift**: Terms used in the README don't match the code or directory structure."
     supports_claim: "supports the diagnosis"
 ```
 <!-- MODEL_SECTION:evidence_excerpts:END -->
@@ -72,8 +73,9 @@ evidence_excerpts:
 primary_fog_type: architecture_fog
 recommended_workflow_id: architecture-implementation-workflow
 escalation_recommended: false
+weakness_type: Zero Validation
 evidence:
-  - "scripts/validate-brief.py (lines L46): weak boundary"
+  - "skills/repo-sensemaker/references/weakness-types.md (lines L5): weak boundary"
 ```
 """
 

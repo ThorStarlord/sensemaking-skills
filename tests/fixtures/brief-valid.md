@@ -12,7 +12,7 @@
 evidence_excerpts:
   - file: "README.md"
     lines: "5-12"
-    quote: "Feature requirements are vague, no user context"
+    quote: "An agent-native framework for repository diagnosis and workflow orchestration."
     supports_claim: "product_fog: feature scope is undefined"
 ```
 

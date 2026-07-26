@@ -32,10 +32,10 @@ Contract Mismatch: The linkage between `repo-sensemaker` output and `workflow-pl
 ## 8. Evidence excerpts
 ```yaml
 evidence_excerpts:
-  - file: skills/repo-sensemaker/SKILL.md
-    lines: L21-L23
-    quote: "The output of this skill is a diagnostic artifact"
-    supports_claim: "Diagnosis/Action boundary exists."
+  - file: skills/repo-sensemaker/references/weakness-types.md
+    lines: L6
+    quote: "2. **Contract Mismatch**: Files claim to be one format (e.g., `.yaml`) but are actually another (e.g., Markdown)."
+    supports_claim: "Confirms Contract Mismatch is a registered weakness type."
 ```
 
 ## 9. Why this boundary matters
@@ -60,6 +60,8 @@ evidence:
 recommended_workflow_id: full-local-sensemaking
 recommended_execution_mode: guided_execution
 weakest_boundary: manual-handoff
+weakness_type: Contract Mismatch
+weakness_type_explanation: null
 required_inputs:
   - repository_sensemaking_brief
 created_at: "2026-05-19T16:00:00Z"

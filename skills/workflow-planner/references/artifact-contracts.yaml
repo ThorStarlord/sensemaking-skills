@@ -140,10 +140,13 @@ artifacts:
       - escalation_target
       - escalation_reason
       - auto_escalation_allowed
+      - weakness_type
+      - weakness_type_explanation
     notes:
       - "Validation results are NOT stored in this artifact. See validators/run_log.md for validation output."
       - "PATH B (transient validation): validation_status field is NOT present."
       - "Phase 1 diagnostic scope: brief prepares handoff to workflow-planner for Phase 2 implementation."
+      - "weakness_type (issue #80): structured taxonomy field in Section 13. Allowed values are the 7 registered types in skills/repo-sensemaker/references/weakness-types.md plus 'Other'. Required metadata but non-blocking (D2) -- missing/unrecognized values are validator warnings, never errors. weakness_type_explanation is required only when weakness_type is 'Other' (D4); its absence there is also a non-blocking warning that must be resolved before human final-approval."
     verification:
       generic_validator: "python scripts/validate-artifact.py repository_sensemaking_brief {artifact_path}"
       specialized_validators:

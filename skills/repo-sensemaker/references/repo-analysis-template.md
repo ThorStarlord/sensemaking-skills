@@ -106,12 +106,22 @@ evidence:
 recommended_workflow_id: # MUST match an ID in workflow-registry.yaml
 recommended_execution_mode: plan_only | guided_execution
 weakest_boundary:
+weakness_type: # one of the 7 registered types in weakness-types.md, or "Other"
+weakness_type_explanation: null # required non-empty string ONLY when weakness_type is "Other"; otherwise null
 required_inputs:
   - user_intent
   - repository_state
 created_at: "2026-05-19T16:00:00Z"
 immutable: true
 ```
+
+`weakness_type` is required metadata but non-blocking (D2): a missing or
+unrecognized value is a validator warning, not an error, and never
+invalidates the brief. It must match the `**Weakness type:**` line stated in
+Section 6's prose. If none of the 7 registered types fit, use `Other` and
+give a non-empty `weakness_type_explanation` — omitting the explanation for
+`Other` is also a non-blocking warning, but it must be resolved before a
+human grants final approval.
 
 All required fields (Stage 1 intent-aware fields, standard routing fields, and
 top-level fields required by `artifact-contracts.yaml`) MUST appear in that
@@ -138,7 +148,9 @@ evidence:
   - "docs/ARCHITECTURE.md: does not exist"
 recommended_workflow_id: product-implementation-workflow  # must be a top-level id from workflow-registry.yaml
 recommended_execution_mode: guided_execution
-weakest_boundary: Zero Validation  # must be one of the 7 weakness types (weakness-types.md), NOT a fog-type value
+weakest_boundary: Zero Validation
+weakness_type: Zero Validation  # must be one of the 7 weakness types (weakness-types.md) or "Other", NOT a fog-type value
+weakness_type_explanation: null
 required_inputs:
   - user_intent
   - repository_state
