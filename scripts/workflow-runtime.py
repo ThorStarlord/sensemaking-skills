@@ -44,11 +44,12 @@ from _validator_utils import (
 )
 
 try:
-    from skill_executor import create_executor, SkillExecutionStatus
+    from skill_executor import create_executor, SkillExecutionStatus, validate_model_identifier
 except ImportError:
     # Graceful fallback if skill_executor not available
     create_executor = None
     SkillExecutionStatus = None
+    validate_model_identifier = None
 # -- Error codes --------------------------------------------------------------
 WORKFLOW_NOT_FOUND = "WORKFLOW_NOT_FOUND"
 WORKFLOW_INVALID = "WORKFLOW_INVALID"
@@ -205,13 +206,45 @@ class OrchestrationRunner:
         chained: bool = False,
         from_session: str | None = None,
         target_repo: str | None = None,
+        model: str | None = None,
+        controlled_experiment: bool = False,
     ):
         self.workflow_id = workflow_id
         self.mode = mode
         self.executor_id = executor
+        self.model = model
+        self.controlled_experiment = controlled_experiment
+        self.errors: list[str] = []
+
+        # Bounded explicit-model enforcement (issue #86): a controlled
+        # experiment with no explicit model must fail before any
+        # executor/SDK object is even constructed -- not after. This is
+        # defense-in-depth alongside the CLI-level check in main(); it also
+        # covers any caller that constructs OrchestrationRunner directly
+        # (tests, other entry points) without going through main()'s argparse.
+        if self.controlled_experiment and not self.model:
+            self.errors.append(format_error(
+                "MODEL_REQUIRED",
+                "--controlled-experiment requires an explicit --model (e.g. "
+                "claude-sonnet-5). Refusing to construct a skill executor that "
+                "would invoke the SDK with an ambient/default model in a "
+                "controlled-experiment run (issue #86).",
+            ))
+        elif self.model is not None and validate_model_identifier is not None:
+            try:
+                validate_model_identifier(self.model)
+            except ValueError as e:
+                self.errors.append(format_error("MODEL_INVALID", str(e)))
+
         self.skill_executor = None
-        if create_executor:
-            self.skill_executor = create_executor(executor, repo_root)
+        if create_executor and not self.errors:
+            try:
+                self.skill_executor = create_executor(
+                    executor, repo_root, model=self.model,
+                    controlled_experiment=self.controlled_experiment,
+                )
+            except ValueError as e:
+                self.errors.append(format_error("MODEL_REQUIRED", str(e)))
         self.repo_root = os.path.abspath(repo_root)
         if target_repo is None:
             self.target_repo = self.repo_root
@@ -231,7 +264,9 @@ class OrchestrationRunner:
             self.session_id = _generate_session_id()
         self.workflow: dict = {}
         self.contracts: dict | None = None
-        self.errors: list[str] = []
+        # self.errors was already initialized above (before executor
+        # construction) so the model-enforcement checks could append to it;
+        # do NOT reassign it here or those errors would be silently dropped.
         self.step_results: list[dict] = []
         self.gate_decisions: list[dict] = []
         self.resume = resume
@@ -1269,6 +1304,14 @@ class OrchestrationRunner:
 
         if self.gate_decision:
             cmd.extend(["--gate-decision", self.gate_decision])
+
+        # Propagate model enforcement (issue #86) to auto-invoked child
+        # workflows -- a controlled experiment must stay pinned across the
+        # whole chain, not just the first workflow invoked.
+        if self.model:
+            cmd.extend(["--model", self.model])
+        if self.controlled_experiment:
+            cmd.append("--controlled-experiment")
 
         print(f"  Running: {' '.join(cmd)}\n")
 
@@ -2939,8 +2982,36 @@ def main(argv: list[str] | None = None) -> int:
                         help="Internal: invoked as a chained/child workflow from another workflow run")
     parser.add_argument("--from-session", default=None,
                         help="Path to artifact session directory from a prior workflow run (for manual path or chained execution)")
+    parser.add_argument("--model", default=None,
+                        help="Explicit model identifier to pin for the claude-code executor "
+                             "(e.g. claude-sonnet-5), passed as ClaudeAgentOptions(model=...). "
+                             "Required when --controlled-experiment is set; optional otherwise "
+                             "(omitting it preserves today's ambient/default-model behavior).")
+    parser.add_argument("--controlled-experiment", action="store_true", default=False,
+                        help="Require an explicit --model and hard-fail before any SDK/model "
+                             "invocation if it is missing (issue #86). Also hard-fails the run "
+                             "if any AssistantMessage.model reported by the SDK does not exactly "
+                             "match --model, if multiple distinct models are reported, or if no "
+                             "model can be observed where one is expected. Introduces no "
+                             "fallback or retry.")
 
     args = parser.parse_args(argv)
+
+    # Bounded explicit-model enforcement (issue #86): fail before constructing
+    # anything that could reach the SDK. This is the primary gate; the same
+    # check is repeated (defense-in-depth) inside OrchestrationRunner.__init__
+    # for callers that construct it directly without going through this CLI.
+    if args.controlled_experiment and not args.model:
+        print("ERROR: --controlled-experiment requires an explicit --model "
+              "(e.g. --model claude-sonnet-5). Refusing to invoke the SDK with "
+              "an ambient/default model in a controlled experiment.")
+        return 1
+    if args.model is not None and validate_model_identifier is not None:
+        try:
+            validate_model_identifier(args.model)
+        except ValueError as e:
+            print(f"ERROR: invalid --model value: {e}")
+            return 1
 
     # Resolve repo root: if relative, treat as relative to cwd (same as other validators)
     if os.path.isabs(args.repo_root):
@@ -2989,6 +3060,8 @@ def main(argv: list[str] | None = None) -> int:
         chained=args.chained,
         from_session=args.from_session,
         target_repo=args.target_repo,
+        model=args.model,
+        controlled_experiment=args.controlled_experiment,
     )
 
     if runner.errors:
