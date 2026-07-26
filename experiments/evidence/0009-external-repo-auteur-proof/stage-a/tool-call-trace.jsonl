@@ -1,0 +1,54 @@
+{"timestamp": "2026-07-26T00:17:04.167144", "event": "SkillInvocation", "tool_name": "repo-sensemaker", "file_path": "H:\\scratch\\sensemaking-external-exp-framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "started", "uses_runtime_skeleton": true}
+{"timestamp": "2026-07-26T00:17:14.574216", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:17:14.828001", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:17:17.386049", "event": "PreToolUse", "tool_name": "Glob", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:17:17.763510", "event": "PostToolUse", "tool_name": "Glob", "file_path": null, "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:20.259330", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\artifacts\\repository_sensemaking_brief.md", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:17:20.278301", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\artifacts\\repository_sensemaking_brief.md", "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:26.968393", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:17:30.285124", "event": "PreToolUse", "tool_name": "Glob", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:17:30.612396", "event": "PostToolUse", "tool_name": "Glob", "file_path": null, "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:32.821378", "event": "PreToolUse", "tool_name": "PowerShell", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:17:34.917781", "event": "PreToolUse", "tool_name": "Glob", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:17:35.295181", "event": "PostToolUse", "tool_name": "Glob", "file_path": null, "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:40.654040", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\README.md", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:17:40.665962", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\README.md", "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:41.077642", "event": "PreToolUse", "tool_name": "Glob", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:17:41.487517", "event": "PostToolUse", "tool_name": "Glob", "file_path": null, "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:43.928543", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\state.py", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:17:43.940997", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\state.py", "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:44.363869", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\analyzer.py", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:17:44.376454", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\analyzer.py", "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:48.372705", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\bible_audit.py", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:17:48.394682", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\bible_audit.py", "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:48.706659", "event": "PreToolUse", "tool_name": "Glob", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:17:49.025293", "event": "PostToolUse", "tool_name": "Glob", "file_path": null, "decision": "completed"}
+{"timestamp": "2026-07-26T00:17:51.100014", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\outline_audit.py", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:17:51.109210", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\outline_audit.py", "decision": "completed"}
+{"timestamp": "2026-07-26T00:18:03.715401", "event": "PreToolUse", "tool_name": "Glob", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:18:04.044199", "event": "PostToolUse", "tool_name": "Glob", "file_path": null, "decision": "completed"}
+{"timestamp": "2026-07-26T00:18:09.930839", "event": "PreToolUse", "tool_name": "Grep", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:18:10.297585", "event": "PostToolUse", "tool_name": "Grep", "file_path": null, "decision": "completed"}
+{"timestamp": "2026-07-26T00:18:12.019636", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\scripts\\validate-artifact.py", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:18:12.040092", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\scripts\\validate-artifact.py", "decision": "completed"}
+{"timestamp": "2026-07-26T00:18:14.211298", "event": "PreToolUse", "tool_name": "Glob", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:18:14.487680", "event": "PostToolUse", "tool_name": "Glob", "file_path": null, "decision": "completed"}
+{"timestamp": "2026-07-26T00:18:16.267043", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\skills\\workflow-orchestrator\\references\\artifact-contracts.yaml", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:18:16.280719", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\skills\\workflow-orchestrator\\references\\artifact-contracts.yaml", "decision": "completed"}
+{"timestamp": "2026-07-26T00:18:24.997679", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\CONTEXT.md", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:18:25.045599", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\CONTEXT.md", "decision": "completed"}
+{"timestamp": "2026-07-26T00:18:35.856491", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\diagnostics.py", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:18:36.785651", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\diagnostics.py", "decision": "completed"}
+{"timestamp": "2026-07-26T00:18:46.916714", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\skills\\repo-sensemaker\\references\\weakness-types.md", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:18:47.140984", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\skills\\repo-sensemaker\\references\\weakness-types.md", "decision": "completed"}
+{"timestamp": "2026-07-26T00:18:56.828057", "event": "PreToolUse", "tool_name": "Glob", "file_path": null, "decision": "observed"}
+{"timestamp": "2026-07-26T00:18:58.296784", "event": "PostToolUse", "tool_name": "Glob", "file_path": null, "decision": "completed"}
+{"timestamp": "2026-07-26T00:19:01.422559", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\cartographer_audit.py", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:19:01.553420", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\auteur-target-readonly\\src\\auteur\\structure\\cartographer_audit.py", "decision": "completed"}
+{"timestamp": "2026-07-26T00:19:53.716431", "event": "PreToolUse", "tool_name": "Write", "file_path": "H:\\scratch\\auteur-target-readonly\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:20:33.489059", "event": "PreToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\sensemaking-external-exp-framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "observed", "targets_expected_artifact": false}
+{"timestamp": "2026-07-26T00:20:34.102443", "event": "PostToolUse", "tool_name": "Read", "file_path": "H:\\scratch\\sensemaking-external-exp-framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "completed"}
+{"timestamp": "2026-07-26T00:20:41.322555", "event": "PreToolUse", "tool_name": "Edit", "file_path": "H:\\scratch\\sensemaking-external-exp-framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "observed", "targets_expected_artifact": true}
+{"timestamp": "2026-07-26T00:21:27.405721", "event": "PreToolUse", "tool_name": "Write", "file_path": "H:\\scratch\\sensemaking-external-exp-framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "observed", "targets_expected_artifact": true}
+{"timestamp": "2026-07-26T00:21:30.097473", "event": "PostToolUse", "tool_name": "Write", "file_path": "H:\\scratch\\sensemaking-external-exp-framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "completed"}
+{"timestamp": "2026-07-26T00:21:45.617481", "event": "Reconciliation", "tool_name": "brief_skeleton.reconcile", "file_path": "H:\\scratch\\sensemaking-external-exp-framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md", "decision": "ok", "integrity_ok": true}
