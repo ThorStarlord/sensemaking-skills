@@ -16,6 +16,8 @@ Usage:
 import os
 import sys
 import json
+import re
+import hashlib
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -510,7 +512,8 @@ def build_artifact_permission_gate(
 
 
 # ============================================================================
-# Tool-call trace logging (Phase 4, issue #55)
+# Tool-call trace logging (Phase 4, issue #55; extended for observability v2,
+# issue tracked separately -- see docs/adr and the trace-observability issue)
 # ============================================================================
 #
 # Live runs (like PR #54's) had no transcript to inspect after the fact --
@@ -518,17 +521,173 @@ def build_artifact_permission_gate(
 # call the model makes during a skill invocation to a session-scoped JSONL
 # file so a failed run can be diagnosed from evidence instead of guesswork.
 #
-# Deliberately NOT logged: tool_input contents beyond the file path (so a
-# Read/Write/Edit's actual file *content* is never captured), environment
-# variables, or anything from input_data outside tool_name/tool_input/path.
+# v1 (PR #57) recorded only: timestamp, event, tool_name, file_path,
+# decision. A forensic review of PR #73's evidence
+# (experiments/evidence/0011-external-repo-auteur-rerun2/EVIDENCE.md) needed
+# to answer "did a write attempt targeting the target clone recur, and did
+# it complete" -- v1's fields were *just* barely sufficient to answer that
+# one question by manually diffing Pre/PostToolUse pairs, but could not
+# answer: what Grep query was used, what Read range was requested, whether
+# a result was truncated, or whether contradicting evidence was ever shown
+# to the model. This section (schema_version 2) closes that gap.
+#
+# Deliberately NOT logged: credentials or environment-variable values,
+# unrestricted model prompts, entire tool outputs by default, or full
+# private repository contents. Values that look secret-like are redacted;
+# everything else is bounded metadata (paths, ranges, patterns, sizes) or a
+# hash, never a full file/result body.
 
-def _trace_event(event: str, tool_name: str, file_path: Optional[str], decision: str, extra: Optional[dict] = None) -> dict:
+TRACE_SCHEMA_VERSION = 2
+
+# Bound any single string field written to the trace (query text, patterns,
+# etc.) so a single call can never balloon the trace file or leak an entire
+# file body through, say, an oversized Grep pattern.
+_MAX_TRACE_STRING = 200
+
+# Values that look like secrets/credentials are redacted rather than logged,
+# even though tool_input in general is not logged verbatim -- this guards
+# the bounded fields we DO extract (e.g. a Grep pattern) against
+# accidentally containing an embedded secret-like token.
+_SECRET_LIKE_RE = re.compile(
+    r"(?i)(api[_-]?key|secret|token|password|bearer\s+[a-z0-9._-]+|"
+    r"sk-[a-z0-9]{16,}|ghp_[a-z0-9]{20,}|aws_[a-z0-9_]{16,})"
+)
+
+
+def _redact(value: str) -> str:
+    """Return value unchanged unless it looks secret-like, in which case
+    return a fixed redaction marker instead of the raw text."""
+    if _SECRET_LIKE_RE.search(value):
+        return "[REDACTED:secret-like-value]"
+    return value
+
+
+def _bounded_str(value, max_len: int = _MAX_TRACE_STRING) -> Optional[dict]:
+    """Convert an arbitrary tool_input value to a bounded, redacted,
+    truncation-flagged representation safe to embed in the trace.
+
+    Returns None for values that aren't a plain string (so callers can
+    decide whether to omit the field entirely rather than log a confusing
+    non-string placeholder).
+    """
+    if not isinstance(value, str):
+        return None
+    redacted = _redact(value)
+    truncated = len(redacted) > max_len
+    return {
+        "value": redacted[:max_len],
+        "truncated": truncated,
+    }
+
+
+def _hash_str(value: str) -> str:
+    """Stable, non-reversible fingerprint for a string field, used when the
+    caller wants correlation/dedup without ever writing the raw text (e.g.
+    an especially sensitive-looking Grep pattern)."""
+    return hashlib.sha256(value.encode("utf-8", errors="replace")).hexdigest()[:16]
+
+
+def _result_metadata(tool_response) -> dict:
+    """Derive bounded, safe metadata about a tool's result for PostToolUse --
+    never the full result content itself.
+
+    Handles the SDK's tool_response shapes defensively: a plain string, a
+    dict with a "content" key (text or list-of-blocks), or anything else
+    (falls back to a type name only).
+    """
+    text: Optional[str] = None
+    if isinstance(tool_response, str):
+        text = tool_response
+    elif isinstance(tool_response, dict):
+        content = tool_response.get("content")
+        if isinstance(content, str):
+            text = content
+        elif isinstance(content, list):
+            parts = []
+            for block in content:
+                if isinstance(block, dict) and isinstance(block.get("text"), str):
+                    parts.append(block["text"])
+            if parts:
+                text = "\n".join(parts)
+        is_error = tool_response.get("is_error")
+        if is_error:
+            return {"result_status": "error", "result_size": 0, "result_truncated": False}
+
+    if text is None:
+        return {"result_status": "unknown", "result_size": None, "result_truncated": False}
+
+    return {
+        "result_status": "ok",
+        "result_size": len(text),
+        "result_line_count": text.count("\n") + 1 if text else 0,
+        # A heuristic, not a guarantee: the SDK/CLI truncates some tool
+        # outputs and commonly signals it with a trailing marker string;
+        # absence of the marker does not prove the result is complete, but
+        # presence is a strong positive signal worth recording.
+        "result_truncated": "..." in text[-40:] or "[truncated]" in text.lower(),
+    }
+
+
+def _tool_metadata(tool_name: Optional[str], tool_input: dict) -> dict:
+    """Extract bounded, tool-specific structured metadata for the trace.
+
+    Only ever derives metadata (paths, ranges, patterns, bounded/redacted
+    strings) -- never logs a full file body or full tool output.
+    """
+    meta: dict = {}
+    file_path = tool_input.get("file_path") if isinstance(tool_input, dict) else None
+    if isinstance(file_path, str) and file_path:
+        meta["target_path"] = os.path.normcase(os.path.normpath(file_path))
+
+    if tool_name == "Read":
+        offset = tool_input.get("offset")
+        limit = tool_input.get("limit")
+        if offset is not None:
+            meta["read_offset"] = offset
+        if limit is not None:
+            meta["read_limit"] = limit
+
+    elif tool_name == "Grep":
+        pattern = tool_input.get("pattern")
+        if isinstance(pattern, str):
+            bounded = _bounded_str(pattern)
+            if bounded is not None:
+                meta["grep_pattern"] = bounded["value"]
+                meta["grep_pattern_truncated"] = bounded["truncated"]
+                meta["grep_pattern_hash"] = _hash_str(pattern)
+        glob_filter = tool_input.get("glob")
+        if isinstance(glob_filter, str):
+            meta["grep_glob_filter"] = glob_filter[:_MAX_TRACE_STRING]
+
+    elif tool_name == "Glob":
+        pattern = tool_input.get("pattern")
+        if isinstance(pattern, str):
+            meta["glob_pattern"] = pattern[:_MAX_TRACE_STRING]
+
+    elif tool_name == "Write":
+        # target_path (above) already captures the destination; nothing
+        # additional to add here beyond what every event gets.
+        pass
+
+    return meta
+
+
+def _trace_event(
+    event: str,
+    tool_name: Optional[str],
+    file_path: Optional[str],
+    decision: str,
+    invocation_id: Optional[str] = None,
+    extra: Optional[dict] = None,
+) -> dict:
     entry = {
+        "schema_version": TRACE_SCHEMA_VERSION,
         "timestamp": datetime.now().isoformat(),
         "event": event,  # PreToolUse | PostToolUse
         "tool_name": tool_name,
         "file_path": file_path,
-        "decision": decision,  # allow | deny | ok | error
+        "decision": decision,  # observed | allow | deny | completed | error
+        "invocation_id": invocation_id,  # correlates a PreToolUse with its PostToolUse
     }
     if extra:
         entry.update(extra)
@@ -541,6 +700,14 @@ def build_tool_trace_hooks(trace_log: list, expected_output_path: Optional[str] 
     `trace_log` is a plain list the caller owns and writes to disk after the
     invocation completes -- these hooks never touch disk themselves so a
     crash mid-run still leaves the caller with whatever was appended so far.
+
+    Each PreToolUse/PostToolUse pair for the same tool call shares
+    `invocation_id` (the SDK-provided `tool_use_id`), so a consumer can
+    reconstruct exactly which PostToolUse (if any) completed a given
+    PreToolUse -- and, just as importantly, detect when a PreToolUse has NO
+    matching PostToolUse at all (the exact PR #73 near-miss shape: a
+    target-directed Write observed at PreToolUse with nothing completing
+    it).
     """
 
     async def pre_trace(input_data, tool_use_id, context):
@@ -551,9 +718,13 @@ def build_tool_trace_hooks(trace_log: list, expected_output_path: Optional[str] 
             expected_output_path and file_path and tool_name in ("Write", "Edit")
             and os.path.abspath(file_path) == os.path.abspath(expected_output_path)
         )
+        extra = dict(_tool_metadata(tool_name, tool_input if isinstance(tool_input, dict) else {}))
+        if file_path:
+            extra["targets_expected_artifact"] = is_expected_write
         trace_log.append(_trace_event(
             "PreToolUse", tool_name, file_path, "observed",
-            extra={"targets_expected_artifact": is_expected_write} if file_path else None,
+            invocation_id=tool_use_id,
+            extra=extra or None,
         ))
         # This hook only observes; build_artifact_permission_gate is the
         # authoritative allow/deny decision. Returning {} lets that other
@@ -564,10 +735,52 @@ def build_tool_trace_hooks(trace_log: list, expected_output_path: Optional[str] 
         tool_name = input_data.get("tool_name")
         tool_input = input_data.get("tool_input") or {}
         file_path = tool_input.get("file_path") if isinstance(tool_input, dict) else None
-        trace_log.append(_trace_event("PostToolUse", tool_name, file_path, "completed"))
+        tool_response = input_data.get("tool_response")
+        extra = dict(_tool_metadata(tool_name, tool_input if isinstance(tool_input, dict) else {}))
+        extra.update(_result_metadata(tool_response))
+        trace_log.append(_trace_event(
+            "PostToolUse", tool_name, file_path, "completed",
+            invocation_id=tool_use_id,
+            extra=extra or None,
+        ))
         return {}
 
     return pre_trace, post_trace
+
+
+def find_unpaired_pretooluse_events(trace_log: list) -> list[dict]:
+    """Return every PreToolUse event in trace_log that has no matching
+    PostToolUse event with the same invocation_id.
+
+    This is the detector for exactly the PR #73 near-miss shape: a
+    target-directed Write (or any tool) observed at PreToolUse with no
+    completion recorded anywhere in the trace, whether because it was
+    denied, because the process crashed mid-call, or for any other reason.
+    Falls back to matching by (tool_name, file_path) when invocation_id is
+    absent (e.g. hand-authored/older-schema fixtures), since schema_version
+    1 traces predate invocation_id and may still need auditing.
+    """
+    posts_by_id = set()
+    posts_by_shape = set()
+    for entry in trace_log:
+        if entry.get("event") == "PostToolUse":
+            inv_id = entry.get("invocation_id")
+            if inv_id:
+                posts_by_id.add(inv_id)
+            posts_by_shape.add((entry.get("tool_name"), entry.get("file_path")))
+
+    unpaired = []
+    for entry in trace_log:
+        if entry.get("event") != "PreToolUse":
+            continue
+        inv_id = entry.get("invocation_id")
+        if inv_id:
+            if inv_id not in posts_by_id:
+                unpaired.append(entry)
+        else:
+            if (entry.get("tool_name"), entry.get("file_path")) not in posts_by_shape:
+                unpaired.append(entry)
+    return unpaired
 
 
 def write_tool_trace(trace_log: list, session_dir: Optional[str], repo_root: str) -> Optional[str]:
