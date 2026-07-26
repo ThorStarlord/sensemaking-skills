@@ -1552,6 +1552,12 @@ class OrchestrationRunner:
             # Phase 1: Call validate-and-report.py
             validate_cmd = [sys.executable, validator_script, artifact_path,
                            "--repo-root", self.repo_root]
+            # Pass target_repo through when it differs from repo_root
+            # (external-repository runs) so validators that are target_repo-
+            # aware (e.g. validate-brief.py) resolve evidence citations
+            # against the repo the artifact is actually about.
+            if self.target_repo and self.target_repo != self.repo_root:
+                validate_cmd.extend(["--target-repo", self.target_repo])
 
             result = subprocess.run(validate_cmd, capture_output=True, text=True, timeout=120)
             elapsed = (datetime.now() - start).total_seconds()

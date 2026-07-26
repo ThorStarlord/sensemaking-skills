@@ -113,6 +113,7 @@ def invoke_validator(
     artifact_id: str | None,
     artifact_path: str,
     repo_root: str = ".",
+    target_repo: str | None = None,
 ) -> ValidationResult:
     """Invoke a specific validator with --json and return the result.
 
@@ -121,6 +122,9 @@ def invoke_validator(
         artifact_id: The artifact ID (may be None for generic validator)
         artifact_path: Path to the artifact to validate
         repo_root: Repository root for relative path resolution
+        target_repo: Root of the repository the artifact is ABOUT, if different
+            from repo_root (external-repository runs). Passed through to
+            validators that support it (currently validate-brief.py).
 
     Returns:
         ValidationResult with all errors and metadata
@@ -169,6 +173,11 @@ def invoke_validator(
                 "--repo-root", repo_root,
                 "--json"
             ]
+            # validate-brief.py is target_repo-aware: pass the target repo
+            # through when it differs from repo_root (external-repo runs) so
+            # evidence citations resolve against the repo the brief is about.
+            if target_repo and validator_path.endswith("validate-brief.py"):
+                cmd.extend(["--target-repo", target_repo])
 
         # Run validator
         result = subprocess.run(
@@ -253,7 +262,11 @@ def invoke_validator(
         }
 
 
-def validate_and_report(artifact_path: str, repo_root: str = ".") -> ValidationResult:
+def validate_and_report(
+    artifact_path: str,
+    repo_root: str = ".",
+    target_repo: str | None = None,
+) -> ValidationResult:
     """Validate an artifact and return unified structured JSON.
 
     This is the main agent-facing function. It:
@@ -265,6 +278,8 @@ def validate_and_report(artifact_path: str, repo_root: str = ".") -> ValidationR
     Args:
         artifact_path: Path to the artifact to validate
         repo_root: Repository root for relative path resolution
+        target_repo: Root of the repository the artifact is ABOUT, if
+            different from repo_root (external-repository runs).
 
     Returns:
         ValidationResult with all errors in unified schema
@@ -296,7 +311,7 @@ def validate_and_report(artifact_path: str, repo_root: str = ".") -> ValidationR
     validator_path = select_validator(artifact_id)
 
     # Invoke validator and return result
-    return invoke_validator(validator_path, artifact_id, artifact_path, repo_root)
+    return invoke_validator(validator_path, artifact_id, artifact_path, repo_root, target_repo)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -305,9 +320,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("artifact_path", help="Path to the artifact markdown file")
     parser.add_argument("--repo-root", default=".", help="Root directory of the repository")
+    parser.add_argument(
+        "--target-repo",
+        default=None,
+        help="Root of the repository the artifact is ABOUT, if different from --repo-root",
+    )
     args = parser.parse_args(argv)
 
-    result = validate_and_report(args.artifact_path, args.repo_root)
+    result = validate_and_report(args.artifact_path, args.repo_root, args.target_repo)
 
     # Always output JSON
     print(json.dumps(result, indent=2, default=str))
