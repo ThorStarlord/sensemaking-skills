@@ -1825,6 +1825,41 @@ class OrchestrationRunner:
 
         return "unknown"
 
+    def _resumable_terminal_statuses(self) -> set[str]:
+        """The set of logged step statuses that count as terminally successful
+        (and therefore resumable/skippable) for this runner's mode.
+
+        This must NOT be a second, independently maintained vocabulary. The
+        canonical source of truth for what a successfully-completed step's
+        status string looks like in a given mode is MODE_CEILINGS, the same
+        mapping execute_step() uses to WRITE that status (see execute_step:
+        "APPROVED" for guided_execution, "VALIDATED" for
+        autonomous_execution/yolo_execution, "PLANNED" for plan_only,
+        "PROMPT_GENERATED" for prompt_chain).
+
+        "COMPLETED" is additionally accepted across all modes for backward
+        compatibility with historical/legacy run logs (and with the synthetic
+        step reconstructions this runner itself writes for already-resumed
+        steps, see the "COMPLETED" literal near the resume-skip loop) where
+        that literal genuinely represents the terminal success state.
+
+        Fails closed for an unrecognized mode: CLI invocation already
+        constrains --mode to MODE_CEILINGS' own keys (argparse choices=
+        list(KNOWN_MODES.keys()), and KNOWN_MODES/MODE_CEILINGS share the
+        same key set), but this runner can also be constructed directly
+        without going through argparse. Silently falling back to a guessed
+        status (e.g. "VALIDATED") for a mode this mapping doesn't recognize
+        would let a resume decision be made on unproven grounds. Raise
+        instead, so an unrecognized mode is a loud error, not a silent
+        false-positive resume.
+        """
+        if self.mode not in MODE_CEILINGS:
+            raise ValueError(
+                f"Cannot determine resumable terminal status for unrecognized "
+                f"mode {self.mode!r}. Known modes: {sorted(MODE_CEILINGS.keys())}"
+            )
+        return {MODE_CEILINGS[self.mode], "COMPLETED"}
+
     def _find_resume_state(self) -> dict | None:
         """Parse existing run log to find resume state.
 
@@ -1840,6 +1875,7 @@ class OrchestrationRunner:
 
         completed_steps: list[int] = []
         paused_step: int | None = None
+        resumable_statuses = self._resumable_terminal_statuses()
 
         # Extract step statuses from the run log
         step_blocks = re.findall(
@@ -1848,7 +1884,7 @@ class OrchestrationRunner:
         )
         for step_id_str, status in step_blocks:
             step_id = int(step_id_str)
-            if status == "COMPLETED":
+            if status in resumable_statuses:
                 completed_steps.append(step_id)
             elif status == "PAUSED":
                 paused_step = step_id
