@@ -35,14 +35,14 @@ Logic trace: the template defines the handoff shape but no automated check enfor
 ## 8. Evidence excerpts
 ```yaml
 evidence_excerpts:
-  - file: skills/repo-sensemaker/SKILL.md
-    lines: 18
-    quote: "The output of this skill is a diagnostic artifact"
-    supports_claim: "Diagnosis/Action boundary exists."
-  - file: skills/repo-sensemaker/SKILL.md
-    lines: 25-30
-    quote: "Diagnose Codebase: Analyze the code structure to determine what fog type the actual problems require"
-    supports_claim: "The skill performs codebase diagnosis."
+  - file: skills/repo-sensemaker/references/weakness-types.md
+    lines: 5
+    quote: "1. **Vocabulary Drift**: Terms used in the README don't match the code or directory structure."
+    supports_claim: "Confirms Vocabulary Drift is a registered weakness type."
+  - file: skills/repo-sensemaker/references/weakness-types.md
+    lines: 6-7
+    quote: "2. **Contract Mismatch**: Files claim to be one format (e.g., `.yaml`) but are actually another (e.g., Markdown)."
+    supports_claim: "Confirms Contract Mismatch is a registered weakness type."
 ```
 
 ## 9. Why this boundary matters
@@ -67,6 +67,8 @@ evidence:
 recommended_workflow_id: full-local-sensemaking
 recommended_execution_mode: guided_execution
 weakest_boundary: manual-handoff
+weakness_type: Contract Mismatch
+weakness_type_explanation: null
 required_inputs:
   - repository_sensemaking_brief
 created_at: "2026-05-19T16:00:00Z"

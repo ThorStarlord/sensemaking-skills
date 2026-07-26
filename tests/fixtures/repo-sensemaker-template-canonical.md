@@ -20,7 +20,7 @@ Example repository goal text.
 evidence_excerpts:
   - file: README.md
     lines: L5-L12
-    quote: "..."
+    quote: "An agent-native framework for repository diagnosis and workflow orchestration."
     supports_claim: "Feature requirements are vague"
 ```
 
@@ -46,6 +46,8 @@ evidence:
 recommended_workflow_id: product-implementation-workflow
 recommended_execution_mode: guided_execution
 weakest_boundary: analytics_feedback_gap
+weakness_type: Contract Mismatch
+weakness_type_explanation: null
 required_inputs:
   - user_intent
   - repository_state

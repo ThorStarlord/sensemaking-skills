@@ -42,8 +42,8 @@ See excerpts below, e.g. `{cited_file}:10`.
 ```yaml
 evidence_excerpts:
   - file: {cited_file}
-    lines: "10"
-    quote: "example"
+    lines: "1"
+    quote: "real file"
     supports_claim: "demonstrates the weak boundary"
 ```
 

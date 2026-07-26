@@ -23,12 +23,35 @@ MISSING_HANDOFF_BLOCK = "MISSING_HANDOFF_BLOCK"
 REGISTRY_NOT_FOUND = "REGISTRY_NOT_FOUND"
 NO_LOGIC_TRACE = "NO_LOGIC_TRACE"
 NO_EVIDENCE_FILE_CITATIONS = "NO_EVIDENCE_FILE_CITATIONS"
-UNKNOWN_WEAKNESS_TYPE = "UNKNOWN_WEAKNESS_TYPE"
+
+# Structured weakness-type contract (issue #80). UNKNOWN_WEAKNESS_TYPE (the old
+# blocking case-insensitive prose-substring check) is retired -- it wrongly
+# rejected a legitimate brief in PR #78 because taxonomy is required metadata,
+# not a structural blocker (D2/D3/D4 in the ratified owner decision package).
+WEAKNESS_TYPE_MISSING = "WEAKNESS_TYPE_MISSING"
+WEAKNESS_TYPE_UNKNOWN = "WEAKNESS_TYPE_UNKNOWN"
+WEAKNESS_TYPE_OTHER_NO_EXPLANATION = "WEAKNESS_TYPE_OTHER_NO_EXPLANATION"
+WEAKNESS_TYPE_MALFORMED = "WEAKNESS_TYPE_MALFORMED"
+WEAKNESS_TYPE_PROSE_MISMATCH = "WEAKNESS_TYPE_PROSE_MISMATCH"
+HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT = "HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT"
+
+# Deterministic evidence-quote grounding (issue #80).
+EVIDENCE_QUOTE_NOT_FOUND = "EVIDENCE_QUOTE_NOT_FOUND"
 
 FILE_CITATION_RE = re.compile(
     r"`?[\w./\\-]+\.(?:md|py|yaml|yml|toml|txt)(?::\d+)?`?",
     re.IGNORECASE,
 )
+
+# High-risk weakness-type categories requiring a substantive human audit
+# before final approval (D5). This warning never proves an audit happened
+# and never judges correctness -- it only flags that one is required.
+HIGH_RISK_WEAKNESS_TYPES = {"Safety Gaps", "Ghost Features"}
+
+# Fixed, documented window (in lines) searched around a cited line range when
+# grounding an evidence_excerpts quote. Narrow and deterministic by design --
+# no semantic/paraphrase matching, no whole-repo fallback search.
+QUOTE_GROUNDING_WINDOW = 3
 
 
 class ValidationError(TypedDict, total=False):
@@ -40,6 +63,7 @@ class ValidationError(TypedDict, total=False):
     message: str
     suggested_fixes: list[str]
     reference: str
+    severity: str  # "error" (blocking, default) or "warning" (non-blocking)
 
 
 class ValidationResult(TypedDict):
@@ -52,13 +76,23 @@ class ValidationResult(TypedDict):
     validation_timestamp: str
 
 
-def _code_error(code: str, message: str, field: str | None = None) -> "ValidationError":
+def _code_error(
+    code: str,
+    message: str,
+    field: str | None = None,
+    severity: str = "error",
+) -> "ValidationError":
     """Build a ValidationError whose message is prefixed with a stable error code.
 
     Used for the structural/content checks below (logic trace, evidence
     citations, weakness type, excerpt fields, hallucinated files/workflow
     IDs) which report a fixed vocabulary of codes rather than simple field
     presence.
+
+    ``severity`` defaults to "error" (blocking, invalidates the artifact).
+    Pass ``severity="warning"`` for required-but-non-blocking metadata (e.g.
+    the weakness-type taxonomy, per D2) -- warnings never flip ``valid`` to
+    False and never cause a non-zero validator exit code.
     """
     return {
         "error_type": "logic_error",
@@ -67,7 +101,17 @@ def _code_error(code: str, message: str, field: str | None = None) -> "Validatio
         "message": f"{code}: {message}",
         "suggested_fixes": [],
         "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+        "severity": severity,
     }
+
+
+def _is_blocking(error: "ValidationError") -> bool:
+    """True if this error should invalidate the artifact / cause non-zero exit.
+
+    Missing ``severity`` (e.g. the Phase-1 required-field checks below, which
+    predate this field) defaults to "error" -- fully backward compatible.
+    """
+    return error.get("severity", "error") == "error"
 
 
 def _is_large_artifact(content: str) -> bool:
@@ -108,6 +152,70 @@ def _parse_artifact_data(content: str) -> dict[str, Any] | None:
         return yaml.safe_load(handoff_match.group(1))
     except Exception:
         return None
+
+
+def _normalize_for_grounding(text: str) -> str:
+    """Narrow, documented normalization for quote grounding.
+
+    Only two transforms, both deliberately conservative to avoid false
+    positives: (1) normalize line endings, (2) collapse runs of horizontal
+    whitespace to a single space. No paraphrase/semantic matching.
+    """
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"[^\S\n]+", " ", text)
+    return text.strip()
+
+
+def _parse_line_range(lines_value: str) -> tuple[int, int] | None:
+    """Parse an 'Lx', 'Lx-Ly', '18', or '25-30' style lines value."""
+    match = re.match(r"^L?(\d+)(?:-L?(\d+))?$", lines_value.strip())
+    if not match:
+        return None
+    start = int(match.group(1))
+    end = int(match.group(2)) if match.group(2) else start
+    if end < start:
+        start, end = end, start
+    return start, end
+
+
+def _quote_found_near(file_path: str, lines_value: str, quote: str) -> tuple[bool, str]:
+    """Check whether ``quote`` exists within a fixed window around the cited
+    line range in ``file_path``.
+
+    Deterministic only: exact (post-normalization) substring match within a
+    documented +/- QUOTE_GROUNDING_WINDOW-line window around the cited range.
+    No semantic/paraphrase matching, no whole-repository fallback search.
+
+    Returns (found, detail_message). ``detail_message`` always states the
+    actual window searched so a human can verify the match location.
+    """
+    rng = _parse_line_range(lines_value)
+    try:
+        with open(file_path, encoding="utf-8") as f:
+            file_lines = f.read().replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    except Exception as e:
+        return False, f"(could not read file: {e})"
+
+    if rng is None:
+        return False, "(cited line range could not be parsed)"
+
+    start, end = rng
+    total = len(file_lines)
+    win_start = max(1, start - QUOTE_GROUNDING_WINDOW)
+    win_end = min(total, end + QUOTE_GROUNDING_WINDOW)
+    if win_start > total:
+        return False, f"(cited line range {start}-{end} is out of bounds; file has {total} lines)"
+
+    window_text = "\n".join(file_lines[win_start - 1:win_end])
+    norm_window = _normalize_for_grounding(window_text)
+    norm_quote = _normalize_for_grounding(quote)
+
+    if not norm_quote:
+        return False, "(quote is empty after normalization)"
+
+    if norm_quote in norm_window:
+        return True, f"(matched within lines {win_start}-{win_end})"
+    return False, f"(searched lines {win_start}-{win_end}, no match)"
 
 
 def validate_brief(
@@ -275,15 +383,84 @@ def validate_brief(
     if evidence_section and not FILE_CITATION_RE.search(evidence_section):
         errors.append(_code_error(NO_EVIDENCE_FILE_CITATIONS, "Evidence section has no file-level citations (e.g., path/to/file.py:42)."))
 
-    # 3. Recognized weakness type in the Weakest boundary section
+    # 3. Structured weakness_type field (Section 13 machine YAML). Taxonomy is
+    #    required metadata but non-blocking (D2): missing/unrecognized/prose-
+    #    mismatched values are warnings only, never invalidate the brief.
+    #    Only a malformed field (wrong YAML type) is blocking, since that is a
+    #    structural defect rather than a taxonomy-completeness gap. Enum is
+    #    sourced from weakness_types (load_weakness_types()), the same loader
+    #    scripts/skill_executor.py's get_allowed_weakness_types() uses, so the
+    #    two can never independently drift.
     weakest_boundary = sections.get("weakest boundary", "")
-    if weakest_boundary and weakness_types:
-        if not any(kind.lower() in weakest_boundary.lower() for kind in weakness_types):
-            types_list = ", ".join(weakness_types)
+    if artifact_data is not None:
+        # A present-but-empty key (e.g. an untouched "weakness_type:  # ..."
+        # skeleton placeholder, which YAML parses as None) is treated the
+        # same as an absent key -- both are "not yet supplied", a warning,
+        # not a structural defect. Only a genuinely wrong YAML *type* (list,
+        # int, bool, ...) is WEAKNESS_TYPE_MALFORMED.
+        if "weakness_type" not in artifact_data or artifact_data.get("weakness_type") is None:
             errors.append(_code_error(
-                UNKNOWN_WEAKNESS_TYPE,
-                f"Weakest boundary does not include a recognized weakness type. Known types: {types_list}",
+                WEAKNESS_TYPE_MISSING,
+                "Section 13 has no structured 'weakness_type' field. This does not "
+                "invalidate the brief, but the taxonomy is required metadata -- "
+                f"add one. Known types: {', '.join(weakness_types)}, Other.",
+                field="weakness_type",
+                severity="warning",
             ))
+        else:
+            weakness_type = artifact_data.get("weakness_type")
+            if not isinstance(weakness_type, str):
+                errors.append(_code_error(
+                    WEAKNESS_TYPE_MALFORMED,
+                    f"'weakness_type' must be a string, got {type(weakness_type).__name__}: {weakness_type!r}",
+                    field="weakness_type",
+                    severity="error",
+                ))
+            else:
+                allowed_weakness_types = set(weakness_types) | {"Other"}
+                if weakness_type == "Other":
+                    explanation = artifact_data.get("weakness_type_explanation")
+                    if not explanation or not str(explanation).strip():
+                        errors.append(_code_error(
+                            WEAKNESS_TYPE_OTHER_NO_EXPLANATION,
+                            "weakness_type is 'Other' but 'weakness_type_explanation' is "
+                            "missing or empty (D4). This does not invalidate the brief "
+                            "structurally, but final human approval must not be granted "
+                            "until an explanation is added.",
+                            field="weakness_type_explanation",
+                            severity="warning",
+                        ))
+                elif weakness_type not in allowed_weakness_types:
+                    errors.append(_code_error(
+                        WEAKNESS_TYPE_UNKNOWN,
+                        f"'weakness_type' value '{weakness_type}' is not a recognized "
+                        f"taxonomy term. Known types: {', '.join(weakness_types)}, Other.",
+                        field="weakness_type",
+                        severity="warning",
+                    ))
+
+                if weakness_type in HIGH_RISK_WEAKNESS_TYPES:
+                    errors.append(_code_error(
+                        HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT,
+                        f"weakness_type is '{weakness_type}', a high-risk claim category "
+                        "(D5) requiring a substantive human audit before final approval. "
+                        "This warning does not confirm an audit occurred and does not "
+                        "judge correctness -- it only flags that one is required.",
+                        field="weakness_type",
+                        severity="warning",
+                    ))
+
+                if weakest_boundary and weakness_type.lower() not in weakest_boundary.lower():
+                    errors.append(_code_error(
+                        WEAKNESS_TYPE_PROSE_MISMATCH,
+                        f"Structured weakness_type ('{weakness_type}') does not appear in "
+                        "the Section 6 'Weakest boundary' prose. Prose may legitimately "
+                        "add nuance or name an additional term -- the structured field is "
+                        "authoritative for anything machine-facing; this is informational "
+                        "only.",
+                        field="weakness_type",
+                        severity="warning",
+                    ))
 
     # 4. evidence_excerpts YAML block: presence + per-excerpt field checks
     evidence_match = re.search(r"```yaml\s+(evidence_excerpts:.*?)\s+```", content, re.DOTALL | re.IGNORECASE)
@@ -324,12 +501,38 @@ def validate_brief(
 
                 lines = exc.get("lines")
                 # Accept both the Lx / Lx-Ly form and bare line numbers (18, 25-30).
-                if lines is not None and not re.match(r"^L?\d+(?:-L?\d+)?$", str(lines).strip()):
+                lines_valid = lines is not None and re.match(r"^L?\d+(?:-L?\d+)?$", str(lines).strip())
+                if lines is not None and not lines_valid:
                     errors.append(_code_error(
                         INVALID_LINE_FORMAT,
                         f"Excerpt[{i}] has invalid lines format: {lines} "
                         f"(expected a line number or range, e.g. L18, 18, L25-L30, or 25-30)",
                     ))
+
+                # Deterministic quote grounding (issue #80): the cited quote
+                # must actually exist at (or within a small fixed window
+                # around) the cited file/line location. Only runs when the
+                # file exists and the line syntax is valid, so this never
+                # duplicates HALLUCINATED_FILE / INVALID_LINE_FORMAT.
+                quote = exc.get("quote")
+                if (
+                    file_path
+                    and not file_path.startswith("file:///")
+                    and lines_valid
+                    and quote
+                ):
+                    full_path = os.path.join(citation_root, file_path)
+                    if os.path.exists(full_path):
+                        found, detail = _quote_found_near(full_path, str(lines), str(quote))
+                        if not found:
+                            errors.append(_code_error(
+                                EVIDENCE_QUOTE_NOT_FOUND,
+                                f"Excerpt[{i}] quote not found in {file_path} {detail}. "
+                                "The quote must exist verbatim (after line-ending "
+                                "normalization and optional horizontal-whitespace "
+                                f"collapsing) within {QUOTE_GROUNDING_WINDOW} lines of "
+                                f"the cited range '{lines}'.",
+                            ))
         except Exception as e:
             errors.append(_code_error(PARSING_ERROR, f"Failed to parse evidence YAML: {e}"))
 
@@ -350,9 +553,14 @@ def validation_result_to_json(
     artifact_path: str,
     errors: list[ValidationError],
 ) -> str:
-    """Convert validation result to JSON format with multi-error schema."""
+    """Convert validation result to JSON format with multi-error schema.
+
+    ``valid`` is False only if a blocking (severity="error", the default)
+    entry is present. Non-blocking warnings (e.g. WEAKNESS_TYPE_* taxonomy
+    codes) never flip ``valid`` to False (D2).
+    """
     result: ValidationResult = {
-        "valid": len(errors) == 0,
+        "valid": not any(_is_blocking(e) for e in errors),
         "artifact_id": "repository_sensemaking_brief",
         "artifact_path": os.path.abspath(artifact_path),
         "validator": "validate-brief.py",
@@ -394,7 +602,13 @@ def main(argv: list[str] | None = None) -> int:
             REGISTRY_NOT_FOUND,
             NO_LOGIC_TRACE,
             NO_EVIDENCE_FILE_CITATIONS,
-            UNKNOWN_WEAKNESS_TYPE,
+            WEAKNESS_TYPE_MISSING,
+            WEAKNESS_TYPE_UNKNOWN,
+            WEAKNESS_TYPE_OTHER_NO_EXPLANATION,
+            WEAKNESS_TYPE_MALFORMED,
+            WEAKNESS_TYPE_PROSE_MISMATCH,
+            HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT,
+            EVIDENCE_QUOTE_NOT_FOUND,
         ]
         print("Stable error codes for brief validation:")
         for code in codes:
@@ -406,10 +620,11 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     errors = validate_brief(args.artifact_path, args.repo_root, args.target_repo)
+    blocking = [e for e in errors if _is_blocking(e)]
 
     if args.json:
         print(validation_result_to_json(args.artifact_path, errors))
-        return 0 if len(errors) == 0 else 1
+        return 0 if not blocking else 1
     else:
         # Legacy prose output for backward compatibility
         if errors:
@@ -417,11 +632,12 @@ def main(argv: list[str] | None = None) -> int:
                 error_type = error.get("error_type", "unknown")
                 field = error.get("field", "")
                 message = error.get("message", "")
-                print(f"ERROR [{error_type}] {field}: {message}")
+                label = "ERROR" if _is_blocking(error) else "WARNING"
+                print(f"{label} [{error_type}] {field}: {message}")
+        if blocking:
             return 1
-        else:
-            print("Brief verification passed! All required fields are present and valid.")
-            return 0
+        print("Brief verification passed! All required fields are present and valid.")
+        return 0
 
 
 if __name__ == "__main__":
