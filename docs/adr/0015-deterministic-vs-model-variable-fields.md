@@ -1,9 +1,34 @@
 # ADR 0015: Deterministic versus Model-Variable Artifact Fields
 
-**Status**: PROVISIONAL — codifies existing, implemented behavior; owner
-sign-off still requested to promote to Accepted
-**Date**: 2026-07-25
+**Status**: ACCEPTED (with a ratified addendum) — 2026-07-26 by explicit
+owner decision (D2, D3, D4) recorded in
+`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`
+**Date**: 2026-07-25 (revised 2026-07-26)
 **Provisionally addresses**: Issue #30
+
+**2026-07-26 addendum, owner-ratified**: the auteur campaign's final rerun
+(PR #78) failed on `UNKNOWN_WEAKNESS_TYPE` — the classification taxonomy (7
+registered weakness types) had no dedicated field, only a substring-match
+check against free prose (`scripts/validate-brief.py:279-286`), which the
+2026-07-26 product-contract review
+(`docs/PRODUCT-CONTRACT-REVIEW-2026-07-26.md`, Part 3) identified as the
+same class of over-strict, prose-brittle validation this ADR's Consequences
+section already warns against. The owner explicitly approved:
+- **D2**: `weakness_type` is required metadata but **non-blocking** — its
+  absence or an unrecognized value must not, by itself, invalidate a brief.
+- **D3**: `weakness_type` becomes a **dedicated controlled-vocabulary
+  deterministic field** (the classification class already defined below),
+  separate from and not overriding the free-form weakest-boundary prose.
+- **D4**: the enum includes `Other`, which requires a companion explanation
+  field; an unmatched/unmappable weakness type resolves to `Other` plus
+  explanation, not to a hard failure.
+
+This is a new instance of the existing "controlled-vocabulary deterministic"
+field class defined below (same class as `primary_fog_type`), not a new
+class. **This ADR ratifies the field's classification, not its
+implementation** — the contract entry, skeleton, prompt, and validator
+changes are tracked separately under D10's contract-redesign phase and are
+not authorized by this revision alone.
 
 ---
 
@@ -58,13 +83,13 @@ per CLAUDE.md's verification-discipline notes.
   (production-readiness — "is the artifact contract stable").
 
 ## Owner sign-off required
-Largely descriptive of existing behavior; owner should confirm no untested
-normative choice is being smuggled in before promoting to Accepted.
+~~Largely descriptive of existing behavior; owner should confirm no untested
+normative choice is being smuggled in before promoting to Accepted.~~
 
-**Promotion condition**: this ADR promotes from Provisional to Accepted once
-the owner explicitly ratifies the deterministic/model-variable classification
-taxonomy above (a single sign-off, not additional evidence-gathering) — the
-underlying mechanics are already implemented and exercised live.
+**Given, 2026-07-26**: the owner ratified the `weakness_type` addendum
+(D2/D3/D4) in `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`. Promoted to
+Accepted, with the `weakness_type` addendum noted as a ratified
+classification, implementation tracked separately (D10).
 
 ---
 
@@ -111,11 +136,19 @@ for prose-level variation" consequence).
 
 ## Status rationale
 
+**2026-07-26 update — promoted to Accepted.** Formal owner sign-off on the
+classification taxonomy was the sole blocking condition, and it has now been
+given, extended explicitly to cover the `weakness_type` field gap surfaced
+by PR #78 (D2/D3/D4). Preserved for record, the prior rationale:
+
 **Provisional** rather than Proposed: unlike ADR 0014, this ADR mostly
 describes contracts and validator behavior that already exist and were
-exercised live in PR #59 and #65, not a first-time policy choice. It is not
+exercised live in PR #59 and #65, not a first-time policy choice. It was not
 moved all the way to Accepted because the "any new field must be classified
-at proposal time" process commitment has not yet been exercised, and formal
-owner sign-off on the classification taxonomy itself is still pending —
-promotes to Accepted once that sign-off is given (see "Owner sign-off
-required" above for the exact condition).
+at proposal time" process commitment had not yet been exercised, and formal
+owner sign-off on the classification taxonomy itself was pending. The
+`weakness_type` field is itself the first live exercise of that "any new
+field must be classified at proposal time" process commitment — it was
+classified (as controlled-vocabulary deterministic, per D3) at the point of
+proposal, before implementation, which is exactly what this ADR's
+Consequences section committed to.
