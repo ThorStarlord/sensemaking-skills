@@ -67,7 +67,12 @@ Use this template when the architectural-review skill executes. Replace all brac
 
 ## Machine-readable Decision
 
-~~~yaml
+<!-- REQUIRED EXACT FENCE: the opening fence below must be exactly three
+     backticks followed by "yaml" (```yaml) and the closing fence exactly
+     three backticks (```). Do NOT use tilde fences (~~~yaml / ~~~) --
+     scripts/validate-architectural-review-recommendation.py only recognizes
+     the triple-backtick form and will report a parsing error otherwise. -->
+```yaml
 artifact_id: architectural_review_recommendation
 decision: [pursue | pursue_narrowed | investigate_first | defer | reject]
 confidence: [high | medium | low]
@@ -104,7 +109,7 @@ reversal_conditions:
 # Optional (commonly useful) when decision is reject
 kill_conditions:
   - "[condition that makes proposal untenable]"
-~~~
+```
 
 ---
 
