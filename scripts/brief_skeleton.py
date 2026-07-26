@@ -174,9 +174,36 @@ def build_skeleton(ctx: SkeletonContext | None = None) -> str:
             )
             lines.append("")
         if section_id == "evidence_prose":
+            # Deliberately does NOT spell out the two-word marker phrase
+            # validate-brief.py's NO_LOGIC_TRACE check scans for (see the
+            # execution-instruction prompt in scripts/skill_executor.py's
+            # build_semantic_authorities_block for the literal phrase and
+            # full explanation) -- if this reminder said the phrase itself,
+            # every skeleton would trivially satisfy that check even when
+            # the model never wrote the required reasoning paragraph,
+            # silently defeating the validator.
+            lines.append(
+                "<!-- REQUIRED: this section's prose must include a "
+                "paragraph giving the diagnostic reasoning chain that "
+                "connects the cited evidence to the weakest-boundary "
+                "conclusion, starting with the exact two-word marker phrase "
+                "specified in your execution instructions followed by a "
+                "colon. validate-brief.py fails the whole artifact "
+                "(error code NO_LOGIC_TRACE) if that reasoning paragraph is "
+                "absent. -->"
+            )
+            lines.append("")
             lines.append("## 8. Evidence excerpts")
             lines.append("")
             lines.append(_marker("evidence_excerpts", "BEGIN"))
+            lines.append("")
+            lines.append(
+                "<!-- REQUIRED: every item below must include all four "
+                "fields file, lines, quote, supports_claim (exact key "
+                "names -- `citation` or similar does NOT satisfy this). "
+                "validate-brief.py raises EVIDENCE_EXCERPT_FIELD per "
+                "missing/misnamed key, per excerpt. -->"
+            )
             lines.append("")
             lines.append("```yaml")
             lines.append("evidence_excerpts: []")
