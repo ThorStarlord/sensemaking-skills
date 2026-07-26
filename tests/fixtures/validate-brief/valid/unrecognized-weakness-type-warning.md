@@ -4,12 +4,15 @@ validator_case: positive
 # Repository Sensemaking Brief (Unrecognized Weakness Type -- Warning Only)
 
 This fixture used to be `invalid/unknown-weakness-type.md`, which asserted that
-an unregistered weakness type was a BLOCKING `UNKNOWN_WEAKNESS_TYPE` error. That
-prose-substring check was retired (issue #80) after it wrongly rejected a
-legitimate brief in PR #78. Under the redesigned contract (D2/D3), an
-unrecognized `weakness_type` value is non-blocking metadata: the validator
-emits a `WEAKNESS_TYPE_UNKNOWN` warning but the artifact stays valid=true and
-the validator exits 0. This fixture proves that.
+an unregistered weakness type was a BLOCKING `UNKNOWN_WEAKNESS_TYPE` error.
+PR #78 was correctly rejected under that then-current structural contract;
+the rejection exposed the brittleness of prose-substring taxonomy validation
+(the substantive diagnosis in PR #78 was never audited and remains neither
+confirmed nor disproven). That blocking check is retired (issue #80). Under
+the redesigned contract (D2/D3), an unrecognized `weakness_type` value is
+non-blocking metadata: the validator emits a `WEAKNESS_TYPE_UNKNOWN` warning
+but the artifact stays valid=true and the validator exits 0. This fixture
+proves that.
 
 ## 1. Repository goal
 Test that an unrecognized structured weakness_type value produces a non-blocking warning, not a validation failure.

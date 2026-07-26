@@ -141,7 +141,7 @@ This repo builds sensemaking skills for repository diagnosis.
 <!-- MODEL_SECTION:weakest_boundary_prose:END -->
 
 <!-- MODEL_SECTION:evidence_prose:BEGIN -->
-Logic trace: scripts/validate-brief.py:489 requires quote and supports_claim
+Logic trace: scripts/validate-brief.py:570 requires quote and supports_claim
 on every excerpt, which is the chain from that check to the weakest-boundary
 conclusion here.
 <!-- MODEL_SECTION:evidence_prose:END -->
@@ -150,7 +150,7 @@ conclusion here.
 ```yaml
 evidence_excerpts:
   - file: scripts/validate-brief.py
-    lines: L489
+    lines: L570
     quote: "for field in [\\"file\\", \\"lines\\", \\"quote\\", \\"supports_claim\\"]:"
     supports_claim: "Confirms the validator requires all four named fields per excerpt."
 ```
@@ -162,7 +162,7 @@ recommended_workflow_id: architecture-implementation-workflow
 escalation_recommended: false
 weakness_type: Zero Validation
 evidence:
-  - "scripts/validate-brief.py (lines L489): weak boundary"
+  - "scripts/validate-brief.py (lines L570): weak boundary"
 ```
 """
 
@@ -207,10 +207,10 @@ class TestValidatorNegativeRegressions(unittest.TestCase):
 
     def test_missing_logic_trace_still_fails(self):
         broken = VALID_MODEL_OUTPUT.replace(
-            "Logic trace: scripts/validate-brief.py:489 requires quote and supports_claim\n"
+            "Logic trace: scripts/validate-brief.py:570 requires quote and supports_claim\n"
             "on every excerpt, which is the chain from that check to the weakest-boundary\n"
             "conclusion here.",
-            "This paragraph cites scripts/validate-brief.py:489 but never states its reasoning chain.",
+            "This paragraph cites scripts/validate-brief.py:570 but never states its reasoning chain.",
         )
         reconciled = bs.reconcile(broken)
         # bs.build_skeleton() itself also carries the reminder text

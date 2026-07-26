@@ -255,9 +255,13 @@ class TestNegativeRegressions(unittest.TestCase):
 
     def test_unknown_weakness_type_is_now_a_nonblocking_warning(self):
         """issue #80: UNKNOWN_WEAKNESS_TYPE (the old blocking prose-substring
-        check that wrongly rejected PR #78) is retired. An unrecognized
-        weakness_type is now WEAKNESS_TYPE_UNKNOWN, a non-blocking warning --
-        it must never invalidate the brief. See
+        check) is retired. PR #78 was correctly rejected under that
+        then-current structural contract; the rejection exposed the
+        brittleness of prose-substring taxonomy validation (the substantive
+        diagnosis in PR #78 was never audited and remains neither confirmed
+        nor disproven). An unrecognized weakness_type is now
+        WEAKNESS_TYPE_UNKNOWN, a non-blocking warning -- it must never
+        invalidate the brief. See
         tests/fixtures/validate-brief/valid/unrecognized-weakness-type-warning.md
         (the repurposed former invalid/unknown-weakness-type.md fixture)."""
         path = os.path.join(

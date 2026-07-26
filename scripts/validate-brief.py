@@ -25,9 +25,12 @@ NO_LOGIC_TRACE = "NO_LOGIC_TRACE"
 NO_EVIDENCE_FILE_CITATIONS = "NO_EVIDENCE_FILE_CITATIONS"
 
 # Structured weakness-type contract (issue #80). UNKNOWN_WEAKNESS_TYPE (the old
-# blocking case-insensitive prose-substring check) is retired -- it wrongly
-# rejected a legitimate brief in PR #78 because taxonomy is required metadata,
-# not a structural blocker (D2/D3/D4 in the ratified owner decision package).
+# blocking case-insensitive prose-substring check) is retired. PR #78 was
+# correctly rejected under the then-current structural contract; that
+# rejection exposed the brittleness of prose-substring taxonomy validation.
+# The substantive diagnosis in PR #78 was not audited and remains neither
+# confirmed nor disproven. Taxonomy is required metadata, not a structural
+# blocker (D2/D3/D4 in the ratified owner decision package).
 WEAKNESS_TYPE_MISSING = "WEAKNESS_TYPE_MISSING"
 WEAKNESS_TYPE_UNKNOWN = "WEAKNESS_TYPE_UNKNOWN"
 WEAKNESS_TYPE_OTHER_NO_EXPLANATION = "WEAKNESS_TYPE_OTHER_NO_EXPLANATION"
@@ -37,6 +40,12 @@ HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT = "HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUD
 
 # Deterministic evidence-quote grounding (issue #80).
 EVIDENCE_QUOTE_NOT_FOUND = "EVIDENCE_QUOTE_NOT_FOUND"
+# Non-blocking: the quote was found, but only within the +/-QUOTE_GROUNDING_WINDOW
+# window, not at the exact cited line range (or it matched more than once within
+# that window). Surfaced so a human can verify the match wasn't coincidental --
+# never blocking on its own, since EVIDENCE_QUOTE_NOT_FOUND already covers the
+# "not grounded at all" case.
+EVIDENCE_QUOTE_WINDOW_MATCH = "EVIDENCE_QUOTE_WINDOW_MATCH"
 
 FILE_CITATION_RE = re.compile(
     r"`?[\w./\\-]+\.(?:md|py|yaml|yml|toml|txt)(?::\d+)?`?",
@@ -178,44 +187,116 @@ def _parse_line_range(lines_value: str) -> tuple[int, int] | None:
     return start, end
 
 
-def _quote_found_near(file_path: str, lines_value: str, quote: str) -> tuple[bool, str]:
+class QuoteGroundingResult:
+    """Result of a quote-grounding search. ``matched_line`` and
+    ``all_matched_lines`` are always the exact source line(s) where the
+    quote's normalized text starts -- never just the searched window bounds
+    -- so a human (or the JSON report) can verify the match wasn't
+    coincidental.
+    """
+
+    __slots__ = ("found", "exact_range_match", "ambiguous", "matched_line", "all_matched_lines", "detail")
+
+    def __init__(self, found, exact_range_match, ambiguous, matched_line, all_matched_lines, detail):
+        self.found = found
+        self.exact_range_match = exact_range_match
+        self.ambiguous = ambiguous
+        self.matched_line = matched_line
+        self.all_matched_lines = all_matched_lines
+        self.detail = detail
+
+
+def _quote_found_near(file_path: str, lines_value: str, quote: str) -> QuoteGroundingResult:
     """Check whether ``quote`` exists within a fixed window around the cited
-    line range in ``file_path``.
+    line range in ``file_path``, and report exactly where it was found.
 
-    Deterministic only: exact (post-normalization) substring match within a
-    documented +/- QUOTE_GROUNDING_WINDOW-line window around the cited range.
-    No semantic/paraphrase matching, no whole-repository fallback search.
+    Why a window and not exact-range-only matching: models frequently cite a
+    line number that is off by a few lines from the quoted text's true
+    location (e.g. counting from a slightly different anchor, or the file
+    having shifted a few lines since the citation was written). An exact-only
+    match would reject those as fabricated even though the quote is
+    genuinely present nearby. A small, fixed, documented window absorbs that
+    without allowing semantic drift -- QUOTE_GROUNDING_WINDOW=3 lines on
+    each side, still exact-text matching, never fuzzy/semantic.
 
-    Returns (found, detail_message). ``detail_message`` always states the
-    actual window searched so a human can verify the match location.
+    Matching is deterministic only: exact (post line-ending-normalization,
+    whitespace-collapsed) substring match, searched line-by-line so the
+    matched line number can always be recovered -- never a blob search that
+    only proves "somewhere in the window." No semantic/paraphrase matching,
+    no whole-repository fallback search.
+
+    If the quote occurs more than once within the window (a duplicate),
+    this applies an explicit, deterministic tie-break: the occurrence whose
+    line is closest to the cited range's start line wins; ties are broken
+    by the lowest (earliest) line number. All other matched lines are still
+    reported in ``all_matched_lines`` and surfaced in ``detail`` so a human
+    can see the ambiguity was real, not silently resolved.
     """
     rng = _parse_line_range(lines_value)
     try:
         with open(file_path, encoding="utf-8") as f:
             file_lines = f.read().replace("\r\n", "\n").replace("\r", "\n").split("\n")
     except Exception as e:
-        return False, f"(could not read file: {e})"
+        return QuoteGroundingResult(False, False, False, None, [], f"(could not read file: {e})")
 
     if rng is None:
-        return False, "(cited line range could not be parsed)"
+        return QuoteGroundingResult(False, False, False, None, [], "(cited line range could not be parsed)")
 
     start, end = rng
     total = len(file_lines)
+    if start > total:
+        return QuoteGroundingResult(
+            False, False, False, None, [],
+            f"(cited line range {start}-{end} is out of bounds; file has {total} lines)",
+        )
+
     win_start = max(1, start - QUOTE_GROUNDING_WINDOW)
     win_end = min(total, end + QUOTE_GROUNDING_WINDOW)
-    if win_start > total:
-        return False, f"(cited line range {start}-{end} is out of bounds; file has {total} lines)"
 
-    window_text = "\n".join(file_lines[win_start - 1:win_end])
-    norm_window = _normalize_for_grounding(window_text)
     norm_quote = _normalize_for_grounding(quote)
-
     if not norm_quote:
-        return False, "(quote is empty after normalization)"
+        return QuoteGroundingResult(False, False, False, None, [], "(quote is empty after normalization)")
 
-    if norm_quote in norm_window:
-        return True, f"(matched within lines {win_start}-{win_end})"
-    return False, f"(searched lines {win_start}-{win_end}, no match)"
+    # Normalize each line individually (not the joined blob) so a match's
+    # character offset can be mapped back to an exact source line number.
+    norm_lines = [_normalize_for_grounding(file_lines[i - 1]) for i in range(win_start, win_end + 1)]
+    window_text = "\n".join(norm_lines)
+
+    matched_lines: list[int] = []
+    search_from = 0
+    while True:
+        idx = window_text.find(norm_quote, search_from)
+        if idx == -1:
+            break
+        line_offset = window_text.count("\n", 0, idx)
+        matched_lines.append(win_start + line_offset)
+        search_from = idx + 1
+
+    if not matched_lines:
+        return QuoteGroundingResult(
+            False, False, False, None, [],
+            f"(searched lines {win_start}-{win_end}, no match)",
+        )
+
+    ambiguous = len(matched_lines) > 1
+    matched_line = min(matched_lines, key=lambda ln: (abs(ln - start), ln)) if ambiguous else matched_lines[0]
+    exact_range_match = start <= matched_line <= end
+
+    if exact_range_match:
+        detail = f"(matched at line {matched_line}, within the cited range {start}-{end})"
+    else:
+        detail = (
+            f"(matched at line {matched_line}, OUTSIDE the cited range {start}-{end} but "
+            f"within the +/-{QUOTE_GROUNDING_WINDOW}-line grounding window {win_start}-{win_end})"
+        )
+    if ambiguous:
+        others = ", ".join(str(ln) for ln in matched_lines if ln != matched_line)
+        detail += (
+            f"; AMBIGUOUS: also matched at line(s) {others} within the searched window -- "
+            f"deterministic tie-break selected the occurrence closest to cited start line {start}"
+        )
+
+    return QuoteGroundingResult(True, exact_range_match, ambiguous, matched_line, matched_lines, detail)
 
 
 def validate_brief(
@@ -450,7 +531,19 @@ def validate_brief(
                         severity="warning",
                     ))
 
-                if weakest_boundary and weakness_type.lower() not in weakest_boundary.lower():
+                # "Other" is deliberately exempt: the word "other" is common
+                # in ordinary English prose (e.g. "other files", "other
+                # components"), so a substring check against it would be
+                # unpredictable -- frequent false negatives (real
+                # disagreement not caught because "other" appears elsewhere
+                # incidentally) without ever being a reliable signal either
+                # way. Skipping it keeps this check's behavior predictable
+                # instead of leaving a noisy, low-value heuristic in place.
+                if (
+                    weakest_boundary
+                    and weakness_type != "Other"
+                    and weakness_type.lower() not in weakest_boundary.lower()
+                ):
                     errors.append(_code_error(
                         WEAKNESS_TYPE_PROSE_MISMATCH,
                         f"Structured weakness_type ('{weakness_type}') does not appear in "
@@ -523,15 +616,26 @@ def validate_brief(
                 ):
                     full_path = os.path.join(citation_root, file_path)
                     if os.path.exists(full_path):
-                        found, detail = _quote_found_near(full_path, str(lines), str(quote))
-                        if not found:
+                        result = _quote_found_near(full_path, str(lines), str(quote))
+                        if not result.found:
                             errors.append(_code_error(
                                 EVIDENCE_QUOTE_NOT_FOUND,
-                                f"Excerpt[{i}] quote not found in {file_path} {detail}. "
+                                f"Excerpt[{i}] quote not found in {file_path} {result.detail}. "
                                 "The quote must exist verbatim (after line-ending "
                                 "normalization and optional horizontal-whitespace "
                                 f"collapsing) within {QUOTE_GROUNDING_WINDOW} lines of "
                                 f"the cited range '{lines}'.",
+                            ))
+                        elif not result.exact_range_match or result.ambiguous:
+                            # Grounded, but only via the +/-window (not the
+                            # exact cited range) and/or matched more than
+                            # once -- non-blocking, but always surfaced with
+                            # the exact matched location so a human can
+                            # verify it wasn't a coincidental match.
+                            errors.append(_code_error(
+                                EVIDENCE_QUOTE_WINDOW_MATCH,
+                                f"Excerpt[{i}] quote in {file_path} {result.detail}.",
+                                severity="warning",
                             ))
         except Exception as e:
             errors.append(_code_error(PARSING_ERROR, f"Failed to parse evidence YAML: {e}"))
@@ -609,6 +713,7 @@ def main(argv: list[str] | None = None) -> int:
             WEAKNESS_TYPE_PROSE_MISMATCH,
             HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT,
             EVIDENCE_QUOTE_NOT_FOUND,
+            EVIDENCE_QUOTE_WINDOW_MATCH,
         ]
         print("Stable error codes for brief validation:")
         for code in codes:
