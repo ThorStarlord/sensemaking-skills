@@ -1,0 +1,72 @@
+{
+  "valid": false,
+  "artifact_id": "repository_sensemaking_brief",
+  "artifact_path": "H:\\scratch\\stage1-auteur-rerun\\framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md",
+  "validator": "validate-brief.py",
+  "errors": [
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[0] quote not found in CONTEXT.md (searched lines 1-6, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L1-L3'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[1] quote not found in docs/agents/domain.md (searched lines 16-29, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L19-L26'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "HALLUCINATED_FILE: Excerpt[2] references non-existent file: src/auteur/decision/service.py",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "HALLUCINATED_FILE: Excerpt[3] references non-existent file: src/auteur/cli_parser.py",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[4] quote not found in CHANGELOG.md (cited line range 349-362 is out of bounds; file has 76 lines). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L349-L362'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "HALLUCINATED_FILE: Excerpt[5] references non-existent file: src/auteur/structure/state.py",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[6] quote not found in scripts/validate-repo.py (searched lines 377-383, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L380'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    }
+  ],
+  "validation_timestamp": "2026-07-27T00:54:59.035727Z"
+}
