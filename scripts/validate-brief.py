@@ -231,13 +231,32 @@ def _parse_artifact_data(content: str) -> dict[str, Any] | None:
 def _normalize_for_grounding(text: str) -> str:
     """Narrow, documented normalization for quote grounding.
 
-    Only two transforms, both deliberately conservative to avoid false
+    Applied identically to BOTH the cited quote and the source window it is
+    checked against -- this is the invariant the caller relies on. A quote
+    is normalized as a whole (possibly multiline) string; the source window
+    is normalized one line at a time and rejoined with "\\n". For the two
+    to agree, this function must normalize each line the same way
+    regardless of which side calls it, including when called on a single
+    line.
+
+    Three transforms, all deliberately conservative to avoid false
     positives: (1) normalize line endings, (2) collapse runs of horizontal
-    whitespace to a single space. No paraphrase/semantic matching.
+    whitespace to a single space on each line, (3) strip each line
+    individually (removing leading/trailing horizontal whitespace,
+    including indentation on multiline continuation lines) before
+    rejoining with "\\n". No paraphrase/semantic matching.
+
+    Rationale: a multiline quote's continuation lines are frequently
+    reproduced with different leading indentation than the source (e.g.
+    copied out of a rendered view, or re-wrapped by an intermediate
+    producer). Stripping each line -- on both sides -- makes indentation
+    differences a non-issue while still requiring the non-whitespace
+    content of every line to match exactly.
     """
     text = text.replace("\r\n", "\n").replace("\r", "\n")
-    text = re.sub(r"[^\S\n]+", " ", text)
-    return text.strip()
+    lines = text.split("\n")
+    norm_lines = [re.sub(r"[^\S\n]+", " ", line).strip() for line in lines]
+    return "\n".join(norm_lines).strip()
 
 
 def _parse_line_range(lines_value: str) -> tuple[int, int] | None:

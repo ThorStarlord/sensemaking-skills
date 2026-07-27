@@ -443,12 +443,23 @@ class TestRealEvidence0013IntegratedValidation(unittest.TestCase):
 
         quote_errors = _by_code(errors, vb.EVIDENCE_QUOTE_NOT_FOUND)
         self.assertEqual(
-            len(quote_errors), 3,
-            "Evidence 0013's authoritative, correctly-configured result is "
-            "exactly 3 EVIDENCE_QUOTE_NOT_FOUND errors (per "
-            "validator-output-corrected.txt); got a different count, which "
+            len(quote_errors), 2,
+            "Evidence 0013's result is 2 EVIDENCE_QUOTE_NOT_FOUND errors "
+            "(src/auteur/decision/service.py L1, CHANGELOG.md L349-L362) "
+            "under the current validator. Historically (per "
+            "validator-output-corrected.txt, predating the symmetric-"
+            "multiline-quote-normalization fix) this was 3: the third, "
+            "src/auteur/cli_parser.py L419-L420, was a false negative "
+            "caused by the same asymmetric quote/source normalization bug "
+            "fixed for Evidence 0015 (its quote's second line carries "
+            "leading indentation the old validator stripped from the "
+            "source but not from the quote) -- not a distinct Evidence "
+            "0013 producer-transcription defect. That excerpt now "
+            "correctly matches; Evidence 0013 is not reclassified or "
+            "rewritten by this -- it still fails overall on the 2 "
+            "remaining genuine mismatches. A different count than 2 here "
             "means either the citation root or the brief's grounding "
-            "defects have drifted from the documented baseline.",
+            "defects have drifted from this documented baseline.",
         )
 
         blocking = [e for e in errors if vb._is_blocking(e)]
