@@ -375,14 +375,51 @@ class TestRealEvidence0013IntegratedValidation(unittest.TestCase):
     outcome is clean (no DUPLICATE/MALFORMED/MISSING blocking error) but the
     overall validate_brief() result is still FAIL due to Evidence 0013's
     pre-existing, unrelated failures (this integration must not paper over
-    those or claim the brief is newly valid)."""
+    those or claim the brief is newly valid).
+
+    Evidence 0013's citations are about an EXTERNAL target repository
+    (`src/auteur/...`, `CHANGELOG.md`), not this repo. Evidence 0013's own
+    EVIDENCE.md documents that running the validator without `--target-repo`
+    is a known misconfiguration that produces false `HALLUCINATED_FILE`
+    errors (see `validator-output.txt`, superseded by
+    `validator-output-corrected.txt`, which was run with both `--repo-root`
+    and `--target-repo` set to the external auteur checkout and reports only
+    3x EVIDENCE_QUOTE_NOT_FOUND, zero HALLUCINATED_FILE). This test must not
+    repeat that same misconfiguration and present a wrongly-rooted result as
+    authoritative -- it resolves the target repo the same way EVIDENCE.md's
+    corrected invocation did, and skips (rather than asserting a false
+    result) when that external checkout isn't present in the current
+    environment."""
+
+    def _resolve_target_auteur_repo(self):
+        """Locate the external auteur checkout the brief's citations are
+        about. Checked, in order: TARGET_AUTEUR_REPO env var (for CI/other
+        machines), then the path documented in this evidence run's own
+        EVIDENCE.md (H:/scratch/stage1-auteur-rerun/target-auteur)."""
+        candidates = []
+        env_path = os.environ.get("TARGET_AUTEUR_REPO")
+        if env_path:
+            candidates.append(env_path)
+        candidates.append("H:/scratch/stage1-auteur-rerun/target-auteur")
+        for candidate in candidates:
+            if os.path.isdir(candidate):
+                return candidate
+        return None
 
     def test_evidence_0013_safeguard_clean_but_overall_result_still_fails(self):
         self.assertTrue(
             os.path.isfile(EVIDENCE_0013_BRIEF),
             f"expected evidence file at {EVIDENCE_0013_BRIEF}",
         )
-        errors = vb.validate_brief(EVIDENCE_0013_BRIEF, REPO_ROOT)
+        target_repo = self._resolve_target_auteur_repo()
+        if target_repo is None:
+            self.skipTest(
+                "external target-auteur checkout not available in this "
+                "environment; set TARGET_AUTEUR_REPO to run this check "
+                "against the correct citation root instead of skipping"
+            )
+
+        errors = vb.validate_brief(EVIDENCE_0013_BRIEF, REPO_ROOT, target_repo=target_repo)
 
         for code in (
             vb.DUPLICATE_WEAKNESS_TYPE_KEYS,
@@ -396,6 +433,23 @@ class TestRealEvidence0013IntegratedValidation(unittest.TestCase):
                 _by_code(errors, code), [],
                 f"Evidence 0013's real Section 13 should be structurally clean; got {code}",
             )
+
+        self.assertEqual(
+            _by_code(errors, vb.HALLUCINATED_FILE), [],
+            "With the correct --target-repo set, Evidence 0013's cited target "
+            "files genuinely exist; any HALLUCINATED_FILE here would indicate "
+            "the validator was invoked against the wrong citation root.",
+        )
+
+        quote_errors = _by_code(errors, vb.EVIDENCE_QUOTE_NOT_FOUND)
+        self.assertEqual(
+            len(quote_errors), 3,
+            "Evidence 0013's authoritative, correctly-configured result is "
+            "exactly 3 EVIDENCE_QUOTE_NOT_FOUND errors (per "
+            "validator-output-corrected.txt); got a different count, which "
+            "means either the citation root or the brief's grounding "
+            "defects have drifted from the documented baseline.",
+        )
 
         blocking = [e for e in errors if vb._is_blocking(e)]
         self.assertTrue(
