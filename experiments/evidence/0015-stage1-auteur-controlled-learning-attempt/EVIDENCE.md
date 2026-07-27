@@ -74,6 +74,16 @@ been corrected to describe the hashes of what is actually committed for
 these two files, rather than left pointing at pre-staging hashes that no
 longer describe any file in the repository.
 
+**Scope correction (found during a later documentation-accuracy pass):** the
+same CRLF-normalization pattern was subsequently found to also affect
+`raw/00-user-intent.md`, `raw/plan.md`, `raw/run-ledger.jsonl`, and
+`raw/workflow-stdout.txt` — this was not caught in the pass described above,
+only in a later review of the "Raw evidence preservation status" section's
+claims. See that section, below, for the complete, current classification
+of every raw file into byte-exact-preserved vs. content-preserved-but-
+normalized. No further content restoration was performed for these four;
+only the documentation's claims about them were corrected.
+
 **Not affected:** `raw/invocation-ledger.txt` was LF in its original,
 pre-staging form (it was authored directly as LF text), so its committed
 blob hash (`b80f9ee6ee5995bbabfc076c0ee07a8c452fc6a61f40f4615af8103baa432bd0`)
@@ -91,21 +101,79 @@ document. Stage 1 result remains FAIL; invocation count remains 1; retry
 and fallback counts remain 0; target writes remain 0; the CRLF
 quote-grounding hypothesis discussed below remains unconfirmed.
 
-## Raw immutable evidence (unmodified, as produced by the run)
+## Raw evidence preservation status
 
-- `raw/repository_sensemaking_brief.md` — the generated artifact. **Not edited,
-  normalized, or repaired.**
+None of these files were semantically edited, hand-authored in place of the
+run's actual output, or repaired. But "unmodified" and "byte-exact" are not
+the same claim, and the evidence-preservation incident above showed the two
+had been conflated. This section separates them, verified per-file against
+each file's original pre-staging bytes (recovered from the untouched
+framework clone / evidence-staging directory where available).
+
+### Byte-exact preserved artifacts
+
+Independently re-verified: committed blob hash equals the original,
+pre-staging, on-disk hash.
+
+- `raw/repository_sensemaking_brief.md` — restored to its original bytes
+  after the incident above; committed hash `b8f28ba75e32fc53732348b54cf1af73f5963aae86ffef4cd35083d6ebb7dbad`,
+  matching the pre-staging original exactly.
+- `raw/workflow-stderr.txt` — empty (0 bytes) in both original and committed
+  form; a zero-length file has no line-ending bytes for `core.autocrlf` to
+  alter, so byte-identity here is not meaningfully affected by the same
+  mechanism.
+- `raw/target-manifest-pre.txt`, `raw/target-manifest-post.txt` — these were
+  authored via LF-only shell heredocs/redirection rather than by a
+  Windows-side generator, so `core.autocrlf` had no CRLF to normalize;
+  committed hashes match their original on-disk hashes.
+
+### Content-preserved but line-ending-normalized artifacts
+
+**Not byte-identical** to the original run output — `core.autocrlf=true`
+converted CRLF to LF during the original `git add`, and (unlike the brief)
+these were **not** restored to their pre-staging bytes, because line-ending
+normalization does not change parsed JSON/JSONL/Markdown content and these
+were not the artifact singled out by the package for byte-level historical
+fidelity. Git changed only line-ending bytes; no line, field, token, or
+character of actual content was added, removed, or reordered. Their
+committed hashes are the hashes now recorded in `file-hashes-sha256.txt`,
+and they must not be described as byte-identical to the original run
+output:
+
 - `raw/tool-call-trace.jsonl` — 254 lines; 114 `AssistantMessage` events, all
-  `reported_model: claude-sonnet-5`.
-- `raw/run-ledger.jsonl`
-- `raw/00-user-intent.md`, `raw/plan.md`
-- `raw/workflow_summary.json`
-- `raw/workflow-stdout.txt`, `raw/workflow-stderr.txt` (stderr is empty — 0 bytes,
-  preserved as-is, not omitted)
-- `raw/invocation-ledger.txt` — append-only ledger; both the pre-invocation and
-  post-invocation entries are preserved in one file, in the order written.
-- `raw/target-manifest-pre.txt`, `raw/target-manifest-post.txt`
-- `raw/file-hashes-sha256.txt` — sha256 of the brief, trace, ledger, and summary
+  `reported_model: claude-sonnet-5`. Committed hash:
+  `e65bbcf9e93229aaa197b6bb1a2d965613cb1abc244cf6b4bf4b6e0c6ecb559e`.
+- `raw/workflow_summary.json` — committed hash:
+  `4c77df8d2153e2bc42081d77c562766f2c16e53b8d5726ab76f0de321b20c6b7`.
+- `raw/00-user-intent.md` — committed hash:
+  `ead80ebb9c007704d500b32c0a18aaba00c38d3ccea28eccc8a6b1e15c068e86`.
+- `raw/plan.md` — committed hash:
+  `c5f58dbd1718821af91ee600ba7ad318ea47c10003a6b10d9a36828732aa79d7`.
+- `raw/run-ledger.jsonl` — committed hash:
+  `e76bf9f1d9099e30f8ebe94e223c4264e65fd9368dd02547a546f637ef0ca864`.
+- `raw/workflow-stdout.txt` — committed hash:
+  `f03d9605ecd25fa5337ac7e662cf2dde6234a07977e1312ed75ce66bfb067689`.
+
+These four (`00-user-intent.md`, `plan.md`, `run-ledger.jsonl`,
+`workflow-stdout.txt`) were identified during this documentation-correction
+pass, not the earlier incident-correction pass; the earlier pass covered
+only the brief, `tool-call-trace.jsonl`, and `workflow_summary.json`. No
+content was restored or altered for any of the six files in this list — this
+is a documentation correction, not a further content-preservation action.
+
+### Not run-output artifacts (authored/maintained during evidence assembly)
+
+- `raw/invocation-ledger.txt` — append-only ledger, hand-appended by the
+  operator (not model-generated); its committed hash
+  (`b80f9ee6ee5995bbabfc076c0ee07a8c452fc6a61f40f4615af8103baa432bd0`) does
+  equal its original pre-staging bytes (it was authored as LF from the
+  start), but it is listed here rather than above because it was never
+  "produced by the run" in the first place.
+- `raw/file-hashes-sha256.txt` — a hash manifest maintained (and, across
+  this review, corrected twice) by the evidence-assembly process. It is not
+  run output and was never claimed or intended to be immutable in the way
+  the brief is; it is expected to change if and when the hashes it records
+  need correcting, as happened here.
 
 ## Derived / diagnostic evidence (produced by validators, not by the model)
 
