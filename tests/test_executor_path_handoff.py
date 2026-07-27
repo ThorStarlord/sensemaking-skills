@@ -134,6 +134,7 @@ class TestRuntimeExecutorHandoff(unittest.TestCase):
         self.runner.workflow_id = "full-local-sensemaking"
         self.runner.session_id = "session-xyz"
         self.runner.repo_root = self.repo_root
+        self.runner.target_repo = self.repo_root
         self.runner.artifact_session_dir = self.session_dir
         self.runner.use_fixtures = False
         self.runner.mode = "guided_execution"

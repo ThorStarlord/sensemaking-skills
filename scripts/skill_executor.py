@@ -1353,7 +1353,13 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                 if os.path.exists(expected_output_path):
                     with open(expected_output_path, encoding="utf-8") as f:
                         model_raw = f.read()
-                reconciled = brief_skeleton.reconcile(model_raw, skeleton_ctx)
+                target_repo_root = context.get("target_repo") or self.repo_root
+                reconciled = brief_skeleton.reconcile(
+                    model_raw,
+                    skeleton_ctx,
+                    target_root=target_repo_root,
+                    framework_root=self.repo_root,
+                )
                 with open(expected_output_path, "w", encoding="utf-8") as f:
                     f.write(reconciled)
                 trace_log.append(_trace_event(

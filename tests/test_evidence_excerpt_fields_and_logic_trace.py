@@ -169,13 +169,25 @@ evidence:
 
 class TestReconciliationPreservesFields(unittest.TestCase):
     def test_reconcile_preserves_quote_and_supports_claim_unchanged(self):
-        reconciled = bs.reconcile(VALID_MODEL_OUTPUT)
+        # Issue #89: `quote` is no longer copied verbatim from the model --
+        # the runtime deterministically re-derives it from file/lines and
+        # overwrites whatever the model wrote (see
+        # tests/test_brief_skeleton_quote_reconciliation.py for that
+        # contract). This model's `quote` happens to already match the real
+        # source line 1 of weakness-types.md, so it still appears in the
+        # output -- not because it was "preserved", but because deterministic
+        # extraction produced the same text. `supports_claim` is untouched
+        # content-wise but is re-serialized through YAML alongside `quote`
+        # (both fields live in the same reconciled excerpt list), so its
+        # exact quoting *style* (quoted vs. plain scalar) is no longer
+        # guaranteed -- assert on content, not on a specific YAML style.
+        reconciled = bs.reconcile(VALID_MODEL_OUTPUT, framework_root=REPO_ROOT)
         self.assertIn(
             'quote: "# Weakness Types in Repositories"',
             reconciled,
         )
         self.assertIn(
-            'supports_claim: "Confirms the validator requires all four named fields per excerpt."',
+            "supports_claim: Confirms the validator requires all four named fields per excerpt.",
             reconciled,
         )
 
