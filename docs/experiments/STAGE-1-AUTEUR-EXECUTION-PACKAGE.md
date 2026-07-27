@@ -337,10 +337,18 @@ framework SHA even after this PR merges.
 ### Auteur (target) revision
 
 ```text
-Target repository: auteur (local path referenced in historical evidence as
-  H:\GithubRepositories\auteur; no GitHub remote was queried or contacted as
-  part of preparing this package — no clone or network access to the target
-  was performed)
+Target repository: auteur
+Canonical clone URL (resolved for issue #98, verified — not guessed):
+  https://github.com/ThorStarlord/auteur.git
+  Verified by: read-only inspection of a local auteur repository's `origin`
+  remote (`git -C <local-auteur-path> remote -v`); confirmation the
+  repository is public (`gh repo view ThorStarlord/auteur --json
+  visibility` => PUBLIC); confirmation the pinned target SHA is reachable
+  from that remote's `main` branch (`git -C <local-auteur-path> branch -r
+  --contains b40db654e0df9e90074f7ad85b40d7362378e07d` includes
+  `origin/main`). No credentials are embedded in this URL; safe to commit.
+  See §6a for the full source-resolution procedure, the local-source
+  fallback, hard stops, and the source/execution-clone distinction.
 Target SHA: b40db654e0df9e90074f7ad85b40d7362378e07d
 Historical comparison source: PR #78 / evidence directory
   experiments/evidence/0012-external-repo-auteur-final-rerun/EVIDENCE.md,
@@ -356,13 +364,29 @@ Why this SHA (unchanged for a second run): this is the exact commit pinned
   axis: the remediated framework (PR #91/#92/#94). Changing the target SHA
   for a second run would introduce a second, uncontrolled variable and make
   it impossible to attribute a different outcome to the remediation.
-Moving branch avoided: yes — an exact SHA, not a branch name, is recorded.
+Moving branch avoided: yes — an exact SHA, not a branch name, is recorded;
+  §6a's hard stops explicitly prohibit a source branch, remote HEAD, or
+  local checked-out branch ever substituting for this pinned SHA.
 ```
 
-No clone of, or write to, the target repository was performed to prepare this
-package. The SHA above was obtained entirely from the historical evidence
-record (git show against a read-only remote ref) and is not independently
-re-verified against a live target clone.
+No clone of, or write to, the target repository was performed to prepare
+this or the prior revision of this package. Resolving issue #98 involved only
+read-only inspection of a pre-existing local auteur repository's Git
+configuration (`git remote -v`, `git branch -r --contains ...`) and a
+read-only GitHub API query for repository visibility — no clone, no write,
+no network access to the target's contents. The target SHA above is
+independently confirmed reachable from the canonical remote's `main` branch
+by that inspection (see §6a); it was not merely repeated from the historical
+evidence record.
+
+Historical note (Evidence 0014, PR #96): the prior revision of this package
+left the clone-source command as a literal, unresolved placeholder
+(`<auteur-repo-source>`). That gap forced the Evidence 0014 operator to
+improvise, using a clean local working copy at `H:\GithubRepositories\auteur`
+as an undisclosed deviation. Issue #98 tracked closing that gap. §6a below
+resolves it; the local path above is retained only as that historical example
+and as the fallback procedure's documented example value — it is not a
+universal or hard-coded path for future runs.
 
 ## 3. Model/provider configuration
 
@@ -691,9 +715,19 @@ git clone https://github.com/ThorStarlord/sensemaking-skills.git H:\scratch\stag
 cd H:\scratch\stage1-auteur-rerun-2\framework
 git checkout 1098acfd614e497bdf551040d3b1dee30afb9834
 
-git clone <auteur-repo-source> H:\scratch\stage1-auteur-rerun-2\target-auteur
+# Auteur (target) clone -- see §6a for the full source-resolution
+# procedure, preflight checks, and hard stops. Primary source: the
+# canonical remote (requires network access at execution time). Fallback:
+# a preflight-checked local AUTEUR_SOURCE_REPO (offline). Do not improvise
+# outside these two documented alternatives.
+git clone https://github.com/ThorStarlord/auteur.git H:\scratch\stage1-auteur-rerun-2\target-auteur
+# -- OR, only if the canonical remote is unavailable (fallback; the
+#    AUTEUR_SOURCE_REPO variable must be set explicitly by the operator and
+#    must pass every §6a local-source preflight check before this is run):
+# git clone "$AUTEUR_SOURCE_REPO" H:\scratch\stage1-auteur-rerun-2\target-auteur
+
 cd H:\scratch\stage1-auteur-rerun-2\target-auteur
-git checkout b40db654e0df9e90074f7ad85b40d7362378e07d
+git checkout --detach b40db654e0df9e90074f7ad85b40d7362378e07d
 
 # 2. SHA verification
 cd H:\scratch\stage1-auteur-rerun-2\framework
@@ -788,6 +822,186 @@ git rev-parse HEAD
 # 10. Final status reporting
 #   summarize PASS/FAIL/INCONCLUSIVE per Part 9 below; return to owner
 ```
+
+## 6a. Auteur clone-source procedure (resolves issue #98)
+
+This section replaces the prior revision's literal, unresolved
+`<auteur-repo-source>` placeholder (§6 step 1) with a deterministic,
+reviewable procedure. It authorizes nothing beyond documentation review —
+see §16/§13; no Stage 1 run is authorized by this revision.
+
+```text
+The clone source is transport. The exact target SHA is authority.
+```
+
+Changing the source never changes the target. A source branch, the
+canonical remote's default branch, its remote `HEAD`, or a local checked-out
+branch must never be substituted for
+`b40db654e0df9e90074f7ad85b40d7362378e07d`.
+
+### Source repository vs. execution clone (required distinction)
+
+```text
+source repository: an existing, trusted repository used only as the
+  object/ref source for cloning. It is never passed to the runtime as
+  --target-repo.
+execution clone: a fresh, disposable clone created from the source
+  repository and checked out at the exact target SHA. This is the only
+  path ever supplied as --target-repo.
+
+Required invariant:
+  trusted source -> fresh disposable clone -> checkout exact target SHA
+  -> verify clean detached state -> use disposable clone as --target-repo
+```
+
+### Primary source: canonical remote (verified for this revision)
+
+```text
+Canonical clone URL: https://github.com/ThorStarlord/auteur.git
+Verified: public GitHub repository (`gh repo view ThorStarlord/auteur
+  --json visibility` => PUBLIC); the pinned target SHA
+  (b40db654e0df9e90074f7ad85b40d7362378e07d) is reachable from this
+  remote's `main` branch, confirmed via read-only inspection of a
+  pre-existing local auteur repository's `origin` remote-tracking refs
+  (`git branch -r --contains b40db654e0df9e90074f7ad85b40d7362378e07d`
+  lists `origin/main`). No credentials are embedded in this URL.
+Requires network access to github.com at execution time.
+```
+
+Clone command (primary):
+
+```text
+git clone https://github.com/ThorStarlord/auteur.git <fresh-execution-clone-path>
+cd <fresh-execution-clone-path>
+git checkout --detach b40db654e0df9e90074f7ad85b40d7362378e07d
+```
+
+### Fallback source: approved local-source procedure (offline / no network)
+
+Use this only when the canonical remote above is unavailable at execution
+time.
+
+```text
+Required variable (the operator must set this explicitly before execution;
+it must never be hard-coded in this package as a universal path):
+  AUTEUR_SOURCE_REPO=<absolute path to an existing, trusted local auteur
+    repository>
+
+Historical example only (Evidence 0014, PR #96) -- not a universal value
+and not a default:
+  AUTEUR_SOURCE_REPO=H:\GithubRepositories\auteur
+```
+
+Local-source preflight — PowerShell (primary shell in this environment):
+
+```powershell
+Test-Path "$env:AUTEUR_SOURCE_REPO\.git"
+git -C $env:AUTEUR_SOURCE_REPO rev-parse --is-inside-work-tree
+git -C $env:AUTEUR_SOURCE_REPO cat-file -e b40db654e0df9e90074f7ad85b40d7362378e07d^{commit}
+git -C $env:AUTEUR_SOURCE_REPO status --porcelain
+```
+
+Local-source preflight — POSIX/bash equivalent (label clearly; not directly
+runnable under plain Windows PowerShell without a bash-style shell):
+
+```bash
+test -d "$AUTEUR_SOURCE_REPO/.git"
+git -C "$AUTEUR_SOURCE_REPO" rev-parse --is-inside-work-tree
+git -C "$AUTEUR_SOURCE_REPO" cat-file -e \
+  b40db654e0df9e90074f7ad85b40d7362378e07d^{commit}
+git -C "$AUTEUR_SOURCE_REPO" status --porcelain
+```
+
+All checks must succeed, and the final `status --porcelain` must report an
+empty (clean) working tree, before cloning from the local source. A dirty
+`AUTEUR_SOURCE_REPO` working tree is a hard stop (§11). This clean-source
+requirement is retained as an operational safety invariant even though
+cloning from a repository's object database does not itself depend on
+working-tree state.
+
+Clone command (fallback):
+
+```text
+git clone "$AUTEUR_SOURCE_REPO" <fresh-execution-clone-path>
+cd <fresh-execution-clone-path>
+git checkout --detach b40db654e0df9e90074f7ad85b40d7362378e07d
+```
+
+### Post-checkout verification (both source models)
+
+```text
+git -C <fresh-execution-clone-path> rev-parse HEAD
+  # expect: b40db654e0df9e90074f7ad85b40d7362378e07d
+git -C <fresh-execution-clone-path> status --porcelain
+  # expect: empty
+git -C <fresh-execution-clone-path> diff --exit-code
+git -C <fresh-execution-clone-path> diff --cached --exit-code
+```
+
+Also confirm, before use:
+
+```text
+<fresh-execution-clone-path> is a fresh path (did not already exist / was
+  not non-empty before the clone).
+<fresh-execution-clone-path> is outside .claude/worktrees/.
+<fresh-execution-clone-path> does not resolve to the same repository as the
+  source (AUTEUR_SOURCE_REPO, or a local working copy of the canonical
+  remote) -- e.g. compare `git -C <fresh-execution-clone-path>
+  rev-parse --show-toplevel` against the resolved source path.
+```
+
+### Offline and network behavior
+
+```text
+Local/offline source: a clean, existing local auteur repository that
+  contains the exact target commit may be used as the clone source (the
+  fallback procedure above). No network lookup of the target commit is
+  required once the local preflight checks above pass.
+Canonical remote source: if used, requires that the exact target commit
+  (b40db654e0df9e90074f7ad85b40d7362378e07d) is retrievable from
+  https://github.com/ThorStarlord/auteur.git before authorization is
+  consumed. Do not rely on the remote's default/moving branch name --
+  the pinned SHA remains authoritative regardless of which source is used.
+```
+
+### Evidence fields required for a future run (in addition to §8/§9)
+
+```text
+source type: canonical remote | local repository
+source value (sanitized -- the canonical URL may be recorded in full; a
+  local path may be recorded in full only in private, non-published
+  evidence -- see the privacy note below)
+source repository HEAD (for a local source), or the canonical remote's
+  `main` branch tip at time of use (for the canonical remote)
+source target-commit existence check: PASS/FAIL
+clone command issued (sanitized -- never record credentials)
+execution clone path
+execution clone HEAD
+execution clone status (`git status --porcelain` output)
+source/execution path non-equivalence check: PASS/FAIL
+```
+
+Privacy/portability note: a local `AUTEUR_SOURCE_REPO` path may reveal an
+operator's local filesystem layout. This package permits recording the full
+local path in private, non-published evidence, but operators should weigh
+that before including it anywhere shared more broadly.
+
+### Hard stops specific to source resolution
+
+The consolidated hard-stop matrix in §11 includes the following
+source-resolution rows: source variable unset, source path absent, source
+not a Git repository, canonical remote unavailable, target commit absent
+from the source, source URL containing credentials, source and execution
+paths resolving to the same repository, destination already existing or
+non-empty, clone failure, checkout failure, execution clone `HEAD`
+mismatch, dirty execution clone, execution clone under
+`.claude/worktrees/`, inability to prove which source was used, and
+operator improvisation outside the two documented alternatives above. Every
+source-resolution hard stop occurs before any model invocation; because no
+`query()`/SDK call has been made at that point, it does not consume a model
+invocation under this package's existing authorization semantics (§3,
+§13) — corrected preflight configuration remains part of the same
+not-yet-consumed attempt.
 
 ## 7. Duplicate-`weakness_type` safeguard
 
@@ -980,6 +1194,20 @@ Rationale: ___________________________________________
 | Historical evidence commit `a328c80` unreachable or mutated | `git show a328c80:...` / ancestor check against `origin/evidence/auteur-campaign-final-rerun` fails at preflight | Stop before invocation | Preserve the failing verification output |
 | PR #91/#92/#94 not ancestors of framework HEAD | §6 step 2b `git merge-base --is-ancestor` fails for any of the three merge SHAs | Stop before invocation | Preserve the failing verification output |
 | PR #78 touched or modified | `gh pr view 78` shows a state/head change from open/unmerged, or its evidence branch is force-pushed | Stop; do not proceed | Preserve `gh pr view 78` output |
+| Auteur source variable unset (fallback path) | `AUTEUR_SOURCE_REPO` not set when the canonical remote is unavailable | Stop before invocation | Preserve the CLI error output |
+| Auteur source path absent | `Test-Path "$env:AUTEUR_SOURCE_REPO\.git"` (or `test -d`) fails | Stop before invocation | Preserve the check output |
+| Auteur source not a Git repository | `git -C $env:AUTEUR_SOURCE_REPO rev-parse --is-inside-work-tree` fails | Stop before invocation | Preserve the check output |
+| Canonical auteur remote unavailable | `git clone https://github.com/ThorStarlord/auteur.git ...` fails (network/DNS/auth error) | Stop; fall back to the documented local-source procedure (§6a) or stop entirely if that is also unavailable | Preserve the clone error output |
+| Target commit absent from auteur source | `git -C <source> cat-file -e b40db654e0df9e90074f7ad85b40d7362378e07d^{commit}` fails | Stop before invocation | Preserve the check output |
+| Auteur source URL contains credentials | Clone URL/path contains an embedded token, username:password, or other credential material | Stop; do not commit or log the URL as-is | Preserve a redacted description only |
+| Auteur source and execution clone are the same repository | `git -C <execution-clone> rev-parse --show-toplevel` resolves to the same path as the resolved source | Stop before use | Preserve both resolved paths |
+| Execution clone destination already exists or is non-empty | Pre-clone check on `<fresh-execution-clone-path>` | Stop before cloning | Preserve the directory listing |
+| Auteur clone or checkout failure | `git clone` / `git checkout --detach` returns non-zero | Stop before invocation | Preserve the command output |
+| Execution clone `HEAD` mismatch | `git -C <execution-clone> rev-parse HEAD` != `b40db654e0df9e90074f7ad85b40d7362378e07d` | Stop before invocation | Record observed vs. expected SHA |
+| Dirty execution clone | `git -C <execution-clone> status --porcelain` non-empty immediately after checkout | Stop before invocation | Preserve `git status`/`git diff` output |
+| Execution clone under `.claude/worktrees/` | Path check on `<fresh-execution-clone-path>` | Stop before invocation | Preserve the resolved path |
+| Cannot prove which auteur source was used | Evidence fields in §6a ("Evidence fields required for a future run") cannot be completed | Stop; do not proceed on an unverifiable source | Preserve whatever partial evidence exists |
+| Operator improvisation outside §6a's two documented alternatives | Any clone-source procedure other than the canonical URL or the preflight-checked `AUTEUR_SOURCE_REPO` fallback | Stop before invocation | Preserve the command actually proposed/issued |
 | Missing required metadata under experiment success policy | Generated brief lacks `weakness_type` even though the validator treats it as non-blocking under D2 | Treat as Stage 1 non-success under this package's own success bar (§12), even though the validator itself does not block | Preserve brief + validator output |
 | Owner authorization block incomplete | §13's "Owner authorization" subsection contains any blank required field | Stop before invocation | N/A -- execution never begins |
 
