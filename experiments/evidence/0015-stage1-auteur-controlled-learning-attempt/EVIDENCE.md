@@ -17,6 +17,80 @@ attempt and governed by
 - Target execution clone: `C:\scratch\stage1-auteur-attempt-20260727-164125\target-auteur`
 - Both clones fresh, outside `.claude/worktrees/`, distinct repositories (verified).
 
+## Evidence-preservation incident (disclosed, corrected before merge)
+
+**What happened:** this repository has `core.autocrlf=true`. The generated
+brief (`raw/repository_sensemaking_brief.md`) was produced by the run with
+CRLF line endings. When the evidence branch was first staged and committed
+(`git add`), Git silently normalized the brief's line endings from CRLF to
+LF before storing the blob. The hash recorded in the first version of
+`file-hashes-sha256.txt` (`b8f28ba75e32fc53732348b54cf1af73f5963aae86ffef4cd35083d6ebb7dbad`)
+was computed *before* that staging step, from the file on disk in the
+still-untouched framework clone — so the first committed PR revision
+actually contained a normalized copy whose real blob hash was
+`cf9b2ec354dbdac59de9a69adefe107efe03179089d03d9e07005fc0ea0a2589`, silently
+different from what was recorded and reported. This was **detected before
+merge**, during an explicit pre-merge verification pass that compared the
+committed blob's hash (via `git cat-file`) against the recorded hash rather
+than trusting the recorded hash alone.
+
+**Correction applied:**
+- The original CRLF byte sequence was recovered from the still-untouched,
+  isolated framework clone
+  (`C:\scratch\stage1-auteur-attempt-20260727-164125\framework\artifacts\05-orchestration-run\repository_sensemaking_brief.md`),
+  independently re-hashed from disk, and confirmed to equal
+  `b8f28ba75e32fc53732348b54cf1af73f5963aae86ffef4cd35083d6ebb7dbad` (21922
+  bytes, CRLF) before being used.
+- Those exact bytes were copied over the normalized copy in this evidence
+  directory and re-staged. The re-staged, committed blob was independently
+  re-verified via `git cat-file -p :<path> | sha256sum` and confirmed to
+  equal `b8f28ba75e32fc53732348b54cf1af73f5963aae86ffef4cd35083d6ebb7dbad`
+  again — i.e. the committed blob, not just the working-tree file, now
+  matches the original.
+- A scoped `.gitattributes` file was added at
+  `experiments/evidence/0015-stage1-auteur-controlled-learning-attempt/.gitattributes`
+  containing `raw/repository_sensemaking_brief.md -text`, confined to this
+  evidence directory only, to prevent Git from normalizing this specific
+  raw artifact again. Repository-wide line-ending policy is unchanged.
+- The transient, incorrect hash `cf9b2ec354dbdac59de9a69adefe107efe03179089d03d9e07005fc0ea0a2589`
+  is preserved here, in this incident record, for auditability — it is not
+  erased from history.
+
+**Secondary finding, same class, lower stakes:** the same pre-staging/
+post-commit hash mismatch was also present for `raw/tool-call-trace.jsonl`
+(pre-staging: `e097b5c6943045e14c066ad23b2dd65f3e2a72258f19f85e5a6b93f5cb6d2d3e`;
+actual committed: `e65bbcf9e93229aaa197b6bb1a2d965613cb1abc244cf6b4bf4b6e0c6ecb559e`)
+and `raw/workflow_summary.json` (pre-staging:
+`f93ebc0104b55aa535ea9f5fb58570c5aa1a53d357b0ec7e90bf7bc9add7aa3d`; actual
+committed: `4c77df8d2153e2bc42081d77c562766f2c16e53b8d5726ab76f0de321b20c6b7`).
+Unlike the brief, these files' **content was not restored to their original
+bytes** — line-ending normalization does not change the parsed meaning of
+JSON/JSONL, and they were not singled out as artifacts requiring
+byte-for-byte historical fidelity the way the generated brief is (package
+§8: "preserve byte-level hashes where practical," and specifically "the
+first generated artifact is historical evidence... preserve byte-level
+hashes where practical" refers to the brief). `file-hashes-sha256.txt` has
+been corrected to describe the hashes of what is actually committed for
+these two files, rather than left pointing at pre-staging hashes that no
+longer describe any file in the repository.
+
+**Not affected:** `raw/invocation-ledger.txt` was LF in its original,
+pre-staging form (it was authored directly as LF text), so its committed
+blob hash (`b80f9ee6ee5995bbabfc076c0ee07a8c452fc6a61f40f4615af8103baa432bd0`)
+was correct from the first commit and required no correction. (A working-tree
+read of this file after checkout can show a different, CRLF-converted hash
+due to the same `core.autocrlf` behavior acting on checkout rather than on
+commit — that is a working-tree artifact, not a change to the committed
+blob, and does not affect the recorded hash.)
+
+**What this incident is, and is not:** this is an evidence-preservation
+process defect in how this evidence record was assembled, caught and fixed
+before merge. It is not a change to the Stage 1 result, the brief's content,
+the invocation count, the validator outcome, or any conclusion in this
+document. Stage 1 result remains FAIL; invocation count remains 1; retry
+and fallback counts remain 0; target writes remain 0; the CRLF
+quote-grounding hypothesis discussed below remains unconfirmed.
+
 ## Raw immutable evidence (unmodified, as produced by the run)
 
 - `raw/repository_sensemaking_brief.md` — the generated artifact. **Not edited,
