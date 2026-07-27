@@ -1,0 +1,36 @@
+{
+  "valid": false,
+  "artifact_id": "repository_sensemaking_brief",
+  "artifact_path": "H:\\scratch\\stage1-auteur-rerun\\framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md",
+  "validator": "validate-brief.py",
+  "errors": [
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[2] quote not found in src/auteur/decision/service.py (searched lines 1-4, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L1'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[3] quote not found in src/auteur/cli_parser.py (searched lines 416-423, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L419-L420'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[4] quote not found in CHANGELOG.md (searched lines 346-365, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L349-L362'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    }
+  ],
+  "validation_timestamp": "2026-07-27T00:55:45.500614Z"
+}

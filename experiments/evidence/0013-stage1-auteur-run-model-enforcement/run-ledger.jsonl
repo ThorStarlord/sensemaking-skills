@@ -1,0 +1,6 @@
+{"timestamp": "2026-07-27T00:38:53.816631Z", "event": "run_started", "run_id": "orchestration-20260726-213847-3401754c", "workflow_id": "architectural-review-planning-workflow", "mode": "guided_execution", "git_commit": "68b44835be43b86ee7c0d7eb968e67efcd368443"}
+{"timestamp": "2026-07-27T00:38:53.851319Z", "event": "step_started", "step_id": "1", "skill_id": "repo-sensemaker", "output_artifact": "repository_sensemaking_brief"}
+{"timestamp": "2026-07-27T00:52:27.469450Z", "event": "artifact_created", "step_id": "1", "artifact_id": "repository_sensemaking_brief", "path": "artifacts/05-orchestration-run/repository_sensemaking_brief.md", "hash": "259475a8ef95ba4b9ec8fa885381b7c6cc95fc97d86f9f749ba5dcfcb725c34a"}
+{"timestamp": "2026-07-27T00:52:28.776135Z", "event": "validation_completed", "step_id": "1", "artifact_id": "repository_sensemaking_brief", "validator_command": "validate-and-report.py", "exit_code": 1, "status": "failed"}
+{"timestamp": "2026-07-27T00:52:28.776515Z", "event": "step_completed", "step_id": "1", "status": "failed", "gate_status": ""}
+{"timestamp": "2026-07-27T00:52:29.319597Z", "event": "run_completed", "run_id": "orchestration-20260726-213847-3401754c", "status": "failed", "exit_code": 2}
