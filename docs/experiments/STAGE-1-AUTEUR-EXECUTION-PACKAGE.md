@@ -1,35 +1,50 @@
 # Stage 1 Auteur Execution Package
 
 **Date**: 2026-07-27 (revised: this revision is a documentation-only refresh
-prepared for possible owner consideration of a **second** controlled Stage 1
-run, after the first authorized run — Evidence 0013 — completed with result
-`STAGE 1 FAIL`, and after the remediation that followed it (PR #91, PR #92,
-PR #94) merged to `main`.)
+that proposes a **new** framework execution pin for a possible future
+controlled Stage 1 attempt, after PR #99 (generic `artifact_id` routing and
+error taxonomy) and PR #101 (YAML-safe authoritative handoff serialization
+and round-trip hard stop) merged to `main`, and after PR #102 (canonical
+auteur source procedure, documentation-only) merged on top of them without
+updating the previously-proposed pin. This revision does not itself
+authorize, invoke, or run anything — it only proposes a new pin and refreshes
+the surrounding package narrative.)
 **Nature of this document**: planning and documentation only. It resolves and
-records the exact configuration a **second**, new Stage 1 controlled `auteur`
-run *would* use. **No experiment was run to produce this revision. No auteur
-rerun occurred. No code, test, validator, prompt, contract, or runtime file
-was changed by this document. No historical evidence was modified.**
+records the exact configuration a future, new Stage 1 controlled `auteur`
+attempt *would* use, if separately authorized. **No experiment was run to
+produce this revision. No auteur rerun occurred. No code, test, validator,
+prompt, contract, or runtime file was changed by this document. No
+historical evidence was modified.**
 
 ```text
-Stage 1 second-run execution authorization status = NOT AUTHORIZED
+Stage 1 next-attempt execution authorization status = NOT AUTHORIZED
 
 Planning-package preparation: authorized (this revision).
 Execution: NOT authorized by this revision or by merging its PR.
 Merging the documentation PR that carries this revision does not authorize
   execution. A separate, explicit owner instruction — issued after this
   package revision is merged and reviewed — is required.
+Merging this package refresh does not authorize a model invocation or a
+  Stage 1 attempt.
 At most one future invocation could be authorized by such an instruction.
 No automatic retry, repair, or rerun would be permitted even then.
 
-Proposed second-run framework baseline:
+Historical Evidence 0014 framework pin (superseded, retained for
+comparison):
 1098acfd614e497bdf551040d3b1dee30afb9834
 
-Historical first-run framework baseline:
+Proposed future controlled-attempt framework pin (this revision):
+bfe84571d782cd4cf4308536fba8213e8d85149c
+  (PR #101's merge commit — see §2 for why this exact commit, not
+  PR #102's docs-only merge commit or `origin/main`, is proposed.)
+
+Historical first-run framework baseline (Evidence 0013):
 68b44835be43b86ee7c0d7eb968e67efcd368443
 
-Historical Stage 1 result:
-FAIL (Evidence 0013 — see new §1a)
+Historical Stage 1 results:
+Evidence 0013 — FAIL (see §1a)
+Evidence 0014 — historically reported FAIL, corrected post-hoc diagnosis
+  (see §1c)
 
 Historical model:
 claude-sonnet-5
@@ -47,20 +62,29 @@ Purpose = controlled comparison baseline — same target, same model,
 
 The technical blocker addressed by PR #87 (no code-level way to pin and
 enforce an explicit model) remains resolved and unaffected by this revision.
-This revision's purpose is different: the first authorized run under that
-enforcement (Evidence 0013, PR #88) reached structural validation and
-**failed** with three blocking `EVIDENCE_QUOTE_NOT_FOUND` errors. Issues
-#89, #90, and #93 were opened, remediated, and closed; the fixes (PR #91,
-PR #92, PR #94) are now on `main` at the pinned SHA above. This package
-proposes pinning a **second, new controlled run** to that remediated SHA —
-it is **not** a claim that the first run's failure is now proven fixed, only
-that the specific failure mechanisms it exposed have been addressed in code.
+This revision's purpose is different from both prior revisions: Evidence
+0013 (the first authorized run, PR #88) reached structural validation and
+**failed** with three blocking `EVIDENCE_QUOTE_NOT_FOUND` errors; that was
+remediated by PR #91/#92/#94 and became the historical Evidence 0014
+framework pin `1098acfd614e497bdf551040d3b1dee30afb9834`. Evidence 0014 (the
+second authorized run, PR #96) was then historically reported as a
+structural failure (`unknown.artifact_id.missing_field`); post-hoc diagnosis
+(§1c) found the real causes were (1) generic routing swallowing a YAML
+parser exception, fixed by PR #99, and (2) the runtime's own manual Section
+13 YAML serialization being malformed, fixed by PR #101. This package
+proposes a **new** framework execution pin, `bfe84571d782cd4cf4308536fba8213e8d85149c`,
+that includes both fixes. It is **not** a claim that a future attempt under
+this pin has been proven to pass — only that the specific failure
+mechanisms already identified across Evidence 0013 and Evidence 0014 have
+been addressed in code, and internally regression-tested; external
+controlled-run effectiveness remains unproven.
 
-**This is a new proposed baseline, not a historical-equivalence claim.** The
-proposed framework intentionally differs from the first run's framework
-because it includes the three remediation PRs above. Retaining the same
-target SHA and the same model identifier is a deliberate controlled-
-comparison choice (see §1a/§1b), not an oversight.
+**This is a new proposed pin, not a historical-equivalence claim.** The
+proposed framework intentionally differs from both historical run pins
+because it includes the PR #99 and PR #101 remediation on top of the
+existing PR #91/#92/#94 remediation. Retaining the same target SHA and the
+same model identifier is a deliberate controlled-comparison choice (see
+§1a/§1b/§1c), not an oversight.
 
 **Nothing in this revision authorizes Stage 1 execution.** Execution
 authorization is a separate owner decision, recorded (still blank) in §13.
@@ -72,10 +96,16 @@ ever be authorized by such an instruction.
 
 ## 1. Governance boundary
 
-- Proposed second-run baseline: `main@1098acfd614e497bdf551040d3b1dee30afb9834`
+- Package revision (this document's own base): `main@ba27a3f7a9bca2e88a26c65fdf5d4f131ba43c07`
   (verified: this is the exact `origin/main` HEAD used to prepare this
-  revision; a fixed, pinned commit, not a moving branch reference). This SHA
-  contains, in addition to everything the first-run pin contained:
+  revision — confirmed via `git rev-parse origin/main`). This is the
+  reviewed main-line commit containing PR #102's canonical auteur source
+  procedure; it is **not** used as the proposed framework execution pin
+  (see §2 for the distinction and rationale).
+- Proposed framework execution pin (this revision):
+  `bfe84571d782cd4cf4308536fba8213e8d85149c` (PR #101's merge commit). This
+  SHA contains, in addition to everything the historical Evidence 0014 pin
+  contained:
   - PR #81 (brief-contract redesign — `weakness_type` structured field);
   - PR #84 (governance ratification — D7/D8/E4 staged-validation record);
   - PR #87 (explicit model-selection and executor enforcement — issue #86);
@@ -83,12 +113,32 @@ ever be authorized by such an instruction.
   - PR #91 (deterministic evidence-quote extraction — issue #89);
   - PR #92 (section-aware duplicate-key safeguard foundation — issue #90);
   - PR #94 (safeguard integrated into authoritative brief validation —
-    issue #93).
+    issue #93);
+  - PR #96 (Evidence 0014 — the second authorized Stage 1 run, historically
+    reported FAIL — see §1c);
+  - PR #99 (generic `artifact_id` routing and error taxonomy — see §1c);
+  - PR #101 (YAML-safe authoritative handoff serialization and round-trip
+    hard stop — see §1c).
+  It does **not** contain PR #102 (canonical auteur source procedure,
+  documentation-only — confirmed by `git diff --stat` between this pin and
+  `main`, which shows exactly one changed file,
+  `docs/experiments/STAGE-1-AUTEUR-EXECUTION-PACKAGE.md`, i.e. no runtime
+  code difference). PR #102's absence from the execution pin is deliberate:
+  it changes no executable behavior, so pinning to it instead of PR #101's
+  merge commit would not change what code actually runs — see §2 for the
+  full package-revision-vs-execution-pin distinction.
+- The historical Evidence 0014 framework pin
+  `1098acfd614e497bdf551040d3b1dee30afb9834` (PR #94's merge commit) is
+  **historical**: it is the exact commit Evidence 0014 was executed against
+  (PR #96). It is **superseded** by
+  `bfe84571d782cd4cf4308536fba8213e8d85149c` as the active proposed pin
+  throughout this revision. `1098acfd...` remains an ancestor of the new
+  pin (confirmed: `git merge-base --is-ancestor
+  1098acfd614e497bdf551040d3b1dee30afb9834
+  bfe84571d782cd4cf4308536fba8213e8d85149c` → exit 0).
 - The first-run framework SHA `68b44835be43b86ee7c0d7eb968e67efcd368443` is
-  **historical**: it is the exact commit Evidence 0013 was executed against
-  (PR #88). It is **superseded** by `1098acfd614e497bdf551040d3b1dee30afb9834`
-  as the active proposed pin throughout this revision. `68b44835...` remains
-  an ancestor of the new pin.
+  also historical (Evidence 0013, PR #88) and remains an ancestor of the new
+  pin.
 - PR #84: merged, `main`, docs-only (`docs/PHASE-80-81-CLOSURE.md`,
   `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`,
   `docs/adr/0021-production-readiness-requirements.md`).
@@ -101,6 +151,23 @@ ever be authorized by such an instruction.
   errors; substantive review not reached). See new §1a for full detail.
 - PR #91, PR #92, PR #94: merged, `main` — remediation of the three failure
   mechanisms Evidence 0013 exposed. See new §1b for full detail.
+- PR #96: merged, `main` — Evidence 0014, the second authorized Stage 1
+  controlled run, executed under the historical `1098acfd...` pin. Result as
+  historically recorded: **STAGE 1 FAIL**
+  (`unknown.artifact_id.missing_field`). See §1c for the post-hoc corrected
+  diagnosis and remediation chain (PR #99, PR #101).
+- PR #99 (merge commit `5cddd9cde5383a4a54b602f24d04ba8bf75d7c24`): merged,
+  `main` — generic `artifact_id` routing and error taxonomy fix. See §1c.
+- PR #101 (merge commit `bfe84571d782cd4cf4308536fba8213e8d85149c`): merged,
+  `main` — YAML-safe authoritative handoff serialization and round-trip hard
+  stop. See §1c. This is also the proposed framework execution pin for this
+  revision (see above and §2).
+- PR #102 (merge commit `ba27a3f7a9bca2e88a26c65fdf5d4f131ba43c07` ==
+  current `origin/main`): merged, `main`, documentation-only — canonical
+  auteur source procedure and offline fallback (§6a). Confirmed docs-only by
+  `git diff --stat` against PR #101's merge commit (one file changed, this
+  package document). Did not update the previously-proposed pin; that gap is
+  what this revision (post-#102) closes.
 - Issue #83 ("Run controlled auteur validation after brief-contract
   redesign"): **CLOSED as completed-with-failure**. The single authorized
   Stage 1 run it scoped occurred (PR #88 / Evidence 0013) and produced a
@@ -110,6 +177,10 @@ ever be authorized by such an instruction.
   #83.
 - Issues #89, #90, #93: **CLOSED**, each after its corresponding remediation
   PR (#91, #92, #94 respectively) merged. See §1b.
+- Issues #97, #98, #100: **CLOSED** (confirmed via `gh issue view`). This
+  revision does not reopen any of them. Issue #98 (auteur clone-source
+  resolution) remains resolved by PR #102's §6a procedure, unchanged by this
+  revision (see §6a and §10 below in this list).
 - D7 = Externally validated (ratified). D8 = success on at least two
   structurally different external repositories, including clean structural
   validation, substantive audit, no target mutation, pinned revisions,
@@ -187,12 +258,16 @@ written so that no new verification procedure repeats the missing-
 Evidence 0013, PR #78, and this document's historical narrative are not
 modified by this revision.
 
-### 1b. Remediation now included in the proposed framework pin
+### 1b. Remediation included in the historical Evidence 0014 pin
 
-The proposed pin `1098acfd614e497bdf551040d3b1dee30afb9834` includes three
-merged fixes targeting the specific failure mechanisms Evidence 0013
-exposed. This does **not** guarantee a passing second run — it removes the
-known failure mechanisms that produced the first run's `STAGE 1 FAIL`.
+The historical Evidence 0014 pin `1098acfd614e497bdf551040d3b1dee30afb9834`
+(and, transitively, the new proposed pin `bfe84571d782cd4cf4308536fba8213e8d85149c`,
+which contains it as an ancestor) includes three merged fixes targeting the
+specific failure mechanisms Evidence 0013 exposed. This did **not** guarantee
+a passing second run — it removed the known failure mechanisms that produced
+the first run's `STAGE 1 FAIL`. (Evidence 0014, run under this pin,
+subsequently reported a *different* failure, which §1c diagnoses and PR #99/
+PR #101 address.)
 
 **PR #91 (issue #89) — deterministic evidence-quote extraction**:
 - The model identifies a source path, line/char range, and rationale only;
@@ -241,6 +316,64 @@ known failure mechanisms that produced the first run's `STAGE 1 FAIL`.
   treated as authoritative for a second run.
 
 **This document authorizes nothing.** It is input to the owner's decision.
+
+### 1c. Evidence 0014 (PR #96) — historical reported failure and corrected diagnosis
+
+Evidence 0014 was the second authorized Stage 1 controlled run, executed
+under the then-current pin `1098acfd614e497bdf551040d3b1dee30afb9834`
+(historical Evidence 0014 framework pin, retained above). Its historically
+reported result was:
+
+```text
+Reported error: unknown.artifact_id.missing_field
+Historical classification: STAGE 1 FAIL
+```
+
+**This revision does not rewrite Evidence 0014's historical classification.**
+`experiments/evidence/0014-*/` still records `STAGE 1 FAIL` and is not
+modified by this document. What follows is a post-hoc corrected diagnosis
+of *why* that failure occurred, recorded in this package's narrative only —
+not a retroactive edit of the historical evidence record.
+
+Post-hoc corrected diagnosis (six-part remediation chain):
+
+1. `artifact_id` was, in fact, present in the generated brief's authoritative
+   handoff block — the reported `missing_field` diagnosis was misleading.
+2. The routing layer that dispatches a brief to its artifact-specific
+   validator was too generic: it caught the real underlying error (a YAML
+   parser exception raised while parsing the authoritative Section 13
+   handoff block) and collapsed it into the same undifferentiated
+   `unknown.artifact_id.missing_field` error code used for an actually-
+   missing `artifact_id`, obscuring the real cause.
+3. **PR #99** fixed the generic routing and error taxonomy: routing now
+   distinguishes a parse failure from a genuinely missing `artifact_id`, and
+   the preserved Evidence 0014 artifact routes correctly to
+   `validate-brief.py` when re-validated under the fixed code.
+4. Once routing was fixed, it exposed the real underlying defect: the
+   authoritative Section 13 YAML block, as emitted by the runtime, was
+   malformed — the runtime's own manual string-based serialization of that
+   section introduced invalid quoting/escaping, not the model's output.
+5. **PR #101** replaced that manual serialization with deterministic,
+   YAML-safe serialization (see `scripts/brief_skeleton.py`'s
+   `handoff_yaml_round_trips()`), and proved (by test) that the malformed
+   quoting was a runtime defect, not a model-transcription defect.
+6. **PR #101** also added a hard stop: new handoffs are now round-trip
+   parsed (`handoff_yaml_round_trips()`) as part of skeleton reconciliation
+   (`scripts/skill_executor.py`); if the emitted Section 13 block cannot be
+   parsed back as valid YAML, the run stops rather than producing a
+   silently-corrupt authoritative handoff.
+
+**This narrative does not claim any of these fixes have passed a new
+external controlled run.** PR #99 and PR #101 are implemented and internally
+regression-tested (see `tests/test_artifact_id_routing.py` and
+`tests/test_brief_skeleton_yaml_safe_handoff.py`, both passing on this
+revision's proposed pin); external controlled-run effectiveness under a real
+Stage 1 attempt remains unproven. Evidence 0014 remains, and will always
+remain, a historical `STAGE 1 FAIL` under framework pin
+`1098acfd614e497bdf551040d3b1dee30afb9834`. Any future package using pin
+`bfe84571d782cd4cf4308536fba8213e8d85149c` would be a **new** attempt, not a
+rerun of Evidence 0014, and would require separate owner authorization (§13)
+before any invocation.
 
 ### Governance discrepancy found and disclosed
 
@@ -294,16 +427,40 @@ a permanent record.
 
 ## 2. Pinned revisions
 
+### Pin semantics (three distinct pins — do not conflate)
+
+```text
+Package revision: the main-line commit containing the reviewed execution
+  instructions (this document). Baseline for this revision:
+  ba27a3f7a9bca2e88a26c65fdf5d4f131ba43c07 (== origin/main at preparation
+  time); after this revision's own documentation PR merges, the package
+  revision becomes that PR's merge commit -- but that merge commit is
+  documentation-only and is NEVER substituted for the execution pin below.
+Proposed framework execution pin: the exact framework code checkout to be
+  used for a future controlled Stage 1 attempt, if separately authorized.
+  bfe84571d782cd4cf4308536fba8213e8d85149c (PR #101's merge commit).
+Target pin: the exact external (auteur) repository commit analyzed.
+  Unchanged: b40db654e0df9e90074f7ad85b40d7362378e07d.
+```
+
 ### Framework revision
 
 ```text
 Framework repository: ThorStarlord/sensemaking-skills
-Framework SHA (proposed second-run baseline): 1098acfd614e497bdf551040d3b1dee30afb9834
-Why this SHA: exact origin/main HEAD at the time this revision was prepared,
-  and the current owner-supplied authoritative baseline. Confirmed via
-  `git rev-parse origin/main` and `git merge-base --is-ancestor
-  1098acfd614e497bdf551040d3b1dee30afb9834 origin/main`. A fixed commit, not
-  a moving branch reference, is recorded here deliberately.
+Framework SHA (proposed framework execution pin, this revision):
+  bfe84571d782cd4cf4308536fba8213e8d85149c
+Why this SHA and not `origin/main`/PR #102's merge commit: it is the
+  smallest exact commit that contains every runtime behavior required for a
+  next controlled attempt (PR #91/#92/#94/#99/#101) while excluding PR #102,
+  which changes no runtime code (confirmed: `git diff --stat
+  bfe84571d782cd4cf4308536fba8213e8d85149c
+  ba27a3f7a9bca2e88a26c65fdf5d4f131ba43c07` shows exactly one file changed,
+  this package document -- zero script/test/runtime diff). Pinning to
+  `origin/main`/PR #102's merge commit instead would not change what code
+  actually executes, and would incorrectly suggest a documentation commit is
+  itself an execution artifact. `ba27a3f...` (the package-document baseline)
+  is used as the base this revision was prepared against, not automatically
+  as the execution pin -- see the "Pin semantics" block above.
 Contains PR #81 contract redesign: yes (ancestor)
 Contains PR #84 governance record: yes (ancestor)
 Contains PR #87 explicit model-selection enforcement: yes (ancestor; adds
@@ -313,26 +470,45 @@ Contains PR #87 explicit model-selection enforcement: yes (ancestor; adds
 Contains PR #88 (Evidence 0013, first Stage 1 run, result FAIL): yes
   (ancestor) -- see §1a
 Contains PR #91 (deterministic evidence-quote extraction, issue #89): yes
-  (ancestor; confirmed `git merge-base --is-ancestor <PR-91-merge-sha>
-  1098acfd614e497bdf551040d3b1dee30afb9834`) -- see §1b
+  (ancestor; confirmed `git merge-base --is-ancestor
+  e65da78b3e519768d09568dcf64d5a1dc8526d6b
+  bfe84571d782cd4cf4308536fba8213e8d85149c` -> exit 0) -- see §1b
 Contains PR #92 (section-aware duplicate-key safeguard, issue #90): yes
-  (ancestor, same verification method) -- see §1b
-Contains PR #94 (safeguard pipeline integration, issue #93): yes (ancestor,
-  same verification method) -- see §1b
+  (ancestor; confirmed `git merge-base --is-ancestor
+  f8c40fd6e79d961ad14d83df586430177d4012d2
+  bfe84571d782cd4cf4308536fba8213e8d85149c` -> exit 0) -- see §1b
+Contains PR #94 (safeguard pipeline integration, issue #93): yes (ancestor;
+  confirmed `git merge-base --is-ancestor
+  1098acfd614e497bdf551040d3b1dee30afb9834
+  bfe84571d782cd4cf4308536fba8213e8d85149c` -> exit 0) -- see §1b
+Contains PR #99 (generic artifact_id routing/error taxonomy, issue #100):
+  yes (ancestor; confirmed `git merge-base --is-ancestor
+  5cddd9cde5383a4a54b602f24d04ba8bf75d7c24
+  bfe84571d782cd4cf4308536fba8213e8d85149c` -> exit 0) -- see §1c
+Contains PR #101 (YAML-safe authoritative handoff serialization and
+  round-trip hard stop): yes -- this SHA IS PR #101's merge commit
+  (`git merge-base --is-ancestor bfe84571d782cd4cf4308536fba8213e8d85149c
+  bfe84571d782cd4cf4308536fba8213e8d85149c` -> exit 0) -- see §1c
+Does NOT contain PR #102 (canonical auteur source procedure,
+  documentation-only): correct and deliberate -- see "Why this SHA" above.
 
+Historical Evidence 0014 framework pin (superseded, retained for
+comparison): 1098acfd614e497bdf551040d3b1dee30afb9834 -- pinned in the prior
+  revision of this package and used to produce Evidence 0014 (PR #96,
+  historically reported STAGE 1 FAIL; see §1c for the corrected diagnosis).
 Historical first-run framework SHA (superseded, retained for comparison):
-  68b44835be43b86ee7c0d7eb968e67efcd368443 -- pinned in the prior revision
-  of this package and used to produce Evidence 0013 (PR #88, STAGE 1 FAIL).
+  68b44835be43b86ee7c0d7eb968e67efcd368443 -- used to produce Evidence 0013
+  (PR #88, STAGE 1 FAIL).
 ```
 
 Note on the documentation PR's own merge commit: the eventual merge commit
 that lands this revision's documentation PR is **not** a new runtime
-baseline and must not be treated as one. The proposed framework pin for a
-second run remains exactly `1098acfd614e497bdf551040d3b1dee30afb9834` — the
-precise code baseline being reviewed, prior to and independent of this
-docs-only PR. A docs-only merge commit is control-plane documentation, not
-an execution pin; it would not be substituted in as the second run's
-framework SHA even after this PR merges.
+baseline and must not be treated as one. The proposed framework execution
+pin remains exactly `bfe84571d782cd4cf4308536fba8213e8d85149c` — the precise
+code baseline being reviewed, prior to and independent of this docs-only PR.
+A docs-only merge commit is control-plane documentation, not an execution
+pin; it would not be substituted in as the framework SHA even after this PR
+merges.
 
 ### Auteur (target) revision
 
@@ -669,9 +845,9 @@ outside both the primary checkout and `.claude/worktrees/`), a fresh,
 standalone, disposable set of clones is proposed for Stage 1:
 
 ```text
-H:\scratch\stage1-auteur-rerun-2\
+H:\scratch\stage1-auteur-rerun-3\
   framework\        <- fresh clone of ThorStarlord/sensemaking-skills,
-                       checked out to 1098acfd614e497bdf551040d3b1dee30afb9834
+                       checked out to bfe84571d782cd4cf4308536fba8213e8d85149c
   target-auteur\    <- fresh clone of the auteur target repository,
                        checked out to b40db654e0df9e90074f7ad85b40d7362378e07d
                        (treated as strictly read-only)
@@ -688,9 +864,10 @@ H:\scratch\stage1-auteur-rerun-2\
 Requirements confirmed satisfied by this layout:
 
 - No `.claude/worktrees/` involved.
-- No reuse of any previous output directory (a new `stage1-auteur-rerun-2`
-  root, distinct both from the first run's `stage1-auteur-rerun\` directory,
-  which produced Evidence 0013, and from the older historical
+- No reuse of any previous output directory (a new `stage1-auteur-rerun-3`
+  root, distinct from the Evidence 0013 run directory
+  (`stage1-auteur-rerun\`), the Evidence 0014 run directory
+  (`stage1-auteur-rerun-2\`), and the older historical
   `auteur-campaign-final\`).
 - No output written inside the target repository (`target-auteur\` receives
   no writes; the runtime's `--target-repo` flag points there but
@@ -711,30 +888,30 @@ explicit owner authorization.
 
 ```text
 # 1. Clone / checkout commands
-git clone https://github.com/ThorStarlord/sensemaking-skills.git H:\scratch\stage1-auteur-rerun-2\framework
-cd H:\scratch\stage1-auteur-rerun-2\framework
-git checkout 1098acfd614e497bdf551040d3b1dee30afb9834
+git clone https://github.com/ThorStarlord/sensemaking-skills.git H:\scratch\stage1-auteur-rerun-3\framework
+cd H:\scratch\stage1-auteur-rerun-3\framework
+git checkout bfe84571d782cd4cf4308536fba8213e8d85149c
 
 # Auteur (target) clone -- see §6a for the full source-resolution
 # procedure, preflight checks, and hard stops. Primary source: the
 # canonical remote (requires network access at execution time). Fallback:
 # a preflight-checked local AUTEUR_SOURCE_REPO (offline). Do not improvise
 # outside these two documented alternatives.
-git clone https://github.com/ThorStarlord/auteur.git H:\scratch\stage1-auteur-rerun-2\target-auteur
+git clone https://github.com/ThorStarlord/auteur.git H:\scratch\stage1-auteur-rerun-3\target-auteur
 # -- OR, only if the canonical remote is unavailable (fallback; the
 #    AUTEUR_SOURCE_REPO variable must be set explicitly by the operator and
 #    must pass every §6a local-source preflight check before this is run):
-# git clone "$AUTEUR_SOURCE_REPO" H:\scratch\stage1-auteur-rerun-2\target-auteur
+# git clone "$AUTEUR_SOURCE_REPO" H:\scratch\stage1-auteur-rerun-3\target-auteur
 
-cd H:\scratch\stage1-auteur-rerun-2\target-auteur
+cd H:\scratch\stage1-auteur-rerun-3\target-auteur
 git checkout --detach b40db654e0df9e90074f7ad85b40d7362378e07d
 
 # 2. SHA verification
-cd H:\scratch\stage1-auteur-rerun-2\framework
+cd H:\scratch\stage1-auteur-rerun-3\framework
 git rev-parse HEAD
-# expect: 1098acfd614e497bdf551040d3b1dee30afb9834
+# expect: bfe84571d782cd4cf4308536fba8213e8d85149c
 
-cd H:\scratch\stage1-auteur-rerun-2\target-auteur
+cd H:\scratch\stage1-auteur-rerun-3\target-auteur
 git rev-parse HEAD
 # expect: b40db654e0df9e90074f7ad85b40d7362378e07d
 
@@ -749,26 +926,44 @@ git merge-base --is-ancestor a328c80 FETCH_HEAD
 # resolve and must still be reachable from the evidence branch tip. Failure
 # here is a preflight hard stop (see §11) -- stop before proceeding to step 3.
 
-# 2b. Remediation-ancestor check (new for this revision): PR #91, #92, #94
+# 2b. Remediation-ancestor check (this revision): PR #91, #92, #94, #99, #101
 #     merge commits must each be an ancestor of the checked-out framework
 #     HEAD. (Merge SHAs as recorded when this revision was prepared:
 #     PR #91 = e65da78b3e519768d09568dcf64d5a1dc8526d6b,
 #     PR #92 = f8c40fd6e79d961ad14d83df586430177d4012d2,
-#     PR #94 = 1098acfd614e497bdf551040d3b1dee30afb9834 (== framework HEAD).)
+#     PR #94 = 1098acfd614e497bdf551040d3b1dee30afb9834,
+#     PR #99 = 5cddd9cde5383a4a54b602f24d04ba8bf75d7c24,
+#     PR #101 = bfe84571d782cd4cf4308536fba8213e8d85149c (== framework HEAD).)
 git merge-base --is-ancestor e65da78b3e519768d09568dcf64d5a1dc8526d6b HEAD
 git merge-base --is-ancestor f8c40fd6e79d961ad14d83df586430177d4012d2 HEAD
 git merge-base --is-ancestor 1098acfd614e497bdf551040d3b1dee30afb9834 HEAD
-# expect: exit 0 for all three. Failure is a preflight hard stop (see §11).
+git merge-base --is-ancestor 5cddd9cde5383a4a54b602f24d04ba8bf75d7c24 HEAD
+git merge-base --is-ancestor bfe84571d782cd4cf4308536fba8213e8d85149c HEAD
+# expect: exit 0 for all five. Failure is a preflight hard stop (see §11).
+
+# 2c. Framework preflight -- deterministic proof the checked-out framework
+#     actually contains each required behavior (prefer ancestry + focused
+#     tests over grep-only checks; see §9 for the full expected progression).
+cd H:\scratch\stage1-auteur-rerun-3\framework
+python -m pytest tests\test_model_enforcement.py -q
+python -m pytest tests\test_artifact_id_routing.py -q
+python -m pytest tests\test_brief_skeleton_yaml_safe_handoff.py -q
+python -m pytest tests\test_weakness_type_safeguard.py -q
+python -m pytest tests\test_weakness_type_safeguard_integration.py -q
+python -m pytest tests\test_validate_brief_target_repo.py -q
+# expect: all pass. A failure here is a preflight hard stop (see §11); it
+# means the checked-out pin does not actually behave as this package
+# describes, regardless of what the ancestry checks above report.
 
 # 3. Dependency setup
-cd H:\scratch\stage1-auteur-rerun-2\framework
+cd H:\scratch\stage1-auteur-rerun-3\framework
 python -m pip install -r requirements.txt   # if present; record exact versions installed
 
 # 4. Preflight validation (framework repo only, no target touched)
 python scripts\validate-repo.py
 python scripts\test-validators.py
 git status --short                          # expect: clean
-cd H:\scratch\stage1-auteur-rerun-2\target-auteur
+cd H:\scratch\stage1-auteur-rerun-3\target-auteur
 git status --short                          # expect: clean
 git diff --exit-code
 git diff --cached --exit-code
@@ -786,12 +981,12 @@ python scripts\workflow-runtime.py \
   --controlled-experiment \
   --model claude-sonnet-5 \
   --gate-decision auto-approve \
-  --repo-root "H:/scratch/stage1-auteur-rerun-2/framework" \
-  --target-repo "H:/scratch/stage1-auteur-rerun-2/target-auteur" \
-  --log-dir "H:/scratch/stage1-auteur-rerun-2/logs"
+  --repo-root "H:/scratch/stage1-auteur-rerun-3/framework" \
+  --target-repo "H:/scratch/stage1-auteur-rerun-3/target-auteur" \
+  --log-dir "H:/scratch/stage1-auteur-rerun-3/logs"
 
 # NOTE: --repo-root and --target-repo above are pinned by preceding
-# checkout to 1098acfd614e497bdf551040d3b1dee30afb9834 (framework) and
+# checkout to bfe84571d782cd4cf4308536fba8213e8d85149c (framework) and
 # b40db654e0df9e90074f7ad85b40d7362378e07d (target); this command has no
 # moving branch reference of its own.
 
@@ -799,17 +994,19 @@ python scripts\workflow-runtime.py \
 #    --target-repo (see §1a's historical-transparency note: the first run's
 #    initial validator invocation omitted --target-repo and produced
 #    spurious HALLUCINATED_FILE errors as a result; this command must not
-#    repeat that mistake). This automatically runs the section-aware,
-#    duplicate-key-safe weakness_type safeguard as part of validate_brief()
-#    -- see §1b / Part 7 below.
-python scripts\validate-and-report.py H:\scratch\stage1-auteur-rerun-2\framework\artifacts\...\repository_sensemaking_brief.md --repo-root H:\scratch\stage1-auteur-rerun-2\framework --target-repo H:\scratch\stage1-auteur-rerun-2\target-auteur
+#    repeat that mistake). This automatically runs: skeleton reconciliation
+#    and the YAML round-trip hard stop (PR #101), generic artifact_id
+#    routing (PR #99), and the section-aware, duplicate-key-safe
+#    weakness_type safeguard (PR #92/#94) as part of validate_brief() --
+#    see §1b/§1c and §9 below.
+python scripts\validate-and-report.py H:\scratch\stage1-auteur-rerun-3\framework\artifacts\...\repository_sensemaking_brief.md --repo-root H:\scratch\stage1-auteur-rerun-3\framework --target-repo H:\scratch\stage1-auteur-rerun-3\target-auteur
 
 # 7. (Optional, diagnostic-only) standalone safeguard re-check -- NOT
 #    authoritative on its own and must not replace step 6; see Part 7 below.
-python scripts\weakness_type_safeguard.py H:\scratch\stage1-auteur-rerun-2\framework\artifacts\...\repository_sensemaking_brief.md
+python scripts\weakness_type_safeguard.py H:\scratch\stage1-auteur-rerun-3\framework\artifacts\...\repository_sensemaking_brief.md
 
 # 8. Target-mutation check
-cd H:\scratch\stage1-auteur-rerun-2\target-auteur
+cd H:\scratch\stage1-auteur-rerun-3\target-auteur
 git status --porcelain
 git diff --exit-code
 git diff --cached --exit-code
@@ -817,7 +1014,7 @@ git rev-parse HEAD
 # compare HEAD before/after; expect identical to b40db654e0df9e90074f7ad85b40d7362378e07d
 
 # 9. Evidence collection
-#   copy brief, logs, trace, manifests into H:\scratch\stage1-auteur-rerun-2\evidence\
+#   copy brief, logs, trace, manifests into H:\scratch\stage1-auteur-rerun-3\evidence\
 
 # 10. Final status reporting
 #   summarize PASS/FAIL/INCONCLUSIVE per Part 9 below; return to owner
@@ -1079,6 +1276,38 @@ divergence, is a hard stop regardless of brief quality.
 
 ## 9. Structural validation protocol
 
+### Expected validation progression (structural sequence, not a pass claim)
+
+The following is the expected order in which structural checks occur for a
+future attempt under the proposed pin. This is a description of the
+sequence the code follows, not a claim that any of these stages has been
+exercised end-to-end in a real controlled run:
+
+```text
+1. Model output (brief content + Section 13 handoff, as authored by the
+   model during the single authorized invocation)
+2. Runtime skeleton reconciliation (scripts/brief_skeleton.py,
+   scripts/skill_executor.py)
+3. YAML-safe Section 13 serialization (PR #101 -- deterministic,
+   replaces the prior manual serialization)
+4. Handoff YAML round-trip hard stop (handoff_yaml_round_trips(); PR #101
+   -- stops the run if the emitted Section 13 block cannot be parsed back)
+5. Generic artifact_id routing (PR #99 -- dispatches the brief to its
+   artifact-specific validator; distinguishes a parse failure from a
+   genuinely missing artifact_id)
+6. weakness_type safeguard (PR #92/#94 -- section-aware, duplicate-key-safe,
+   runs automatically inside validate_brief())
+7. Artifact-specific brief validation (scripts/validate-brief.py, invoked
+   via scripts/validate-and-report.py with --repo-root and --target-repo)
+8. Quote-grounding validation (deterministic extraction, PR #91; strict
+   grounding check against source)
+9. Substantive audit (§10, human reviewer)
+10. Usefulness review (§10, human reviewer)
+```
+
+A failure at any numbered stage stops the campaign at that stage per §11;
+later stages are not reached.
+
 Required checks after generation, all against the fresh, framework-generated
 brief:
 
@@ -1107,6 +1336,46 @@ brief:
   non-empty.
 - Complete run log: `run_log_*.md`, `workflow_summary.json`,
   `validation_run_log.md` all present.
+- Handoff YAML round-trip: `handoff_yaml_round_trips()` returns `True`
+  (PR #101); a `False` result is a hard stop (§11), not a repair-and-retry.
+- Generic routing result: the brief dispatches to `validate-brief.py`
+  without an `unknown.artifact_id.*` misdiagnosis (PR #99).
+
+### Evidence manifest for a future attempt
+
+In addition to the artifacts already listed in §8/§9 above, a future
+attempt's evidence record must capture the following fields (verified
+against current runtime output paths, not aspirational):
+
+```text
+package revision (this document's commit SHA)
+framework execution pin (bfe84571d782cd4cf4308536fba8213e8d85149c, or the
+  observed HEAD if different -- see the Framework SHA mismatch hard stop)
+target pin (b40db654e0df9e90074f7ad85b40d7362378e07d, or observed HEAD)
+source type: canonical remote | local repository (see §6a)
+source value (sanitized per §6a's privacy note)
+requested model (requested_model, per §3a)
+reported models (reported_models, per §3a)
+model match (model_match boolean, per §3a)
+invocation count (must be exactly 1)
+fallback/retry status (must both be "none")
+integrity_ok (target-mutation check result, §8: HEAD unchanged, manifest
+  unchanged, no completed target write)
+handoff_yaml_valid (handoff_yaml_round_trips() result, PR #101)
+generic routing result (dispatch outcome, PR #99)
+selected validator (expected: validate-brief.py, via validate-and-report.py)
+weakness-type safeguard result (PR #92/#94 error codes, or none)
+quote-grounding result (PR #91; presence/absence of EVIDENCE_QUOTE_NOT_FOUND)
+target-safety pre/post state (§8's before/after HEAD and manifest)
+final classification (PASS | FAIL | INCONCLUSIVE, per §9's structural result
+  and §10's substantive result)
+```
+
+Each of these fields is already produced or preservable by the current
+runtime (`scripts/skill_executor.py`'s result/evidence fields, §3a;
+`scripts/validate-and-report.py`'s JSON output; §6a's clone-source evidence
+fields; §8's target-mutation check output) — this list does not require any
+new file the runtime does not already produce.
 
 Structural result, one of:
 
@@ -1189,10 +1458,16 @@ Rationale: ___________________________________________
 | No reported model | `reported_models` empty (no `AssistantMessage` observed) while a model was requested | Stop; do not retry | Preserve trace showing empty `reported_models` |
 | Reported/requested mismatch | `model_match == false` in the recorded evidence | Stop; do not retry, do not fall back | Preserve trace showing `requested_model` vs. `reported_models` |
 | Multiple reported models | `reported_models` (after de-duplication) contains more than one distinct value | Stop; treat as a hard mismatch | Preserve full `reported_models` list |
-| Framework SHA mismatch | `git rev-parse HEAD` on `framework\` != `1098acfd614e497bdf551040d3b1dee30afb9834` | Stop before invocation | Record observed vs. expected SHA |
+| Framework SHA mismatch | `git rev-parse HEAD` on `framework\` != `bfe84571d782cd4cf4308536fba8213e8d85149c` | Stop before invocation | Record observed vs. expected SHA |
 | Target SHA mismatch | `git rev-parse HEAD` on `target-auteur\` != `b40db654e0df9e90074f7ad85b40d7362378e07d` | Stop before invocation | Record observed vs. expected SHA |
+| Model mismatch | `model_match == false`, `requested_model` unset, or `reported_models` empty/multi-valued (see the three dedicated model rows above); listed again here for cross-reference with the pin-mismatch rows | Stop; do not retry, do not fall back | Preserve trace showing `requested_model` vs. `reported_models` |
 | Historical evidence commit `a328c80` unreachable or mutated | `git show a328c80:...` / ancestor check against `origin/evidence/auteur-campaign-final-rerun` fails at preflight | Stop before invocation | Preserve the failing verification output |
-| PR #91/#92/#94 not ancestors of framework HEAD | §6 step 2b `git merge-base --is-ancestor` fails for any of the three merge SHAs | Stop before invocation | Preserve the failing verification output |
+| PR #91/#92/#94/#99/#101 not ancestors of framework HEAD | §6 step 2b `git merge-base --is-ancestor` fails for any of the five merge SHAs | Stop before invocation | Preserve the failing verification output |
+| Framework preflight test failure | §6 step 2c focused test set (`test_model_enforcement.py`, `test_artifact_id_routing.py`, `test_brief_skeleton_yaml_safe_handoff.py`, `test_weakness_type_safeguard.py`, `test_weakness_type_safeguard_integration.py`, `test_validate_brief_target_repo.py`) reports any failure | Stop before invocation | Preserve pytest output |
+| Handoff YAML round-trip failure | `handoff_yaml_round_trips()` (invoked inside `skill_executor.py`'s skeleton reconciliation, PR #101) returns `False` for the generated authoritative Section 13 handoff | Stop; do not patch or hand-repair the YAML | Preserve the unparseable handoff text and the reported reason |
+| Malformed authoritative handoff | `validate-brief.py` reports `HANDOFF_YAML_PARSE_ERROR`, `MALFORMED_HANDOFF_FENCE`, `MISSING_HANDOFF_SECTION`, or `MISSING_HANDOFF_BLOCK` | Stop; do not repair-and-rerun | Preserve validator output, brief |
+| Generic routing failure | Routing dispatch (PR #99) fails to select `validate-brief.py` for a brief artifact, or reports an `unknown.artifact_id.*` error where a specific error taxonomy code should have been produced | Stop; treat as a routing defect, not a brief defect | Preserve routing/dispatch output and the artifact as-is |
+| Duplicate or conflicting `artifact_id` | More than one distinct `artifact_id` value is recoverable from the authoritative handoff, or routing and the handoff's own declared `artifact_id` disagree | Stop; do not guess which value is authoritative | Preserve the handoff block and routing output |
 | PR #78 touched or modified | `gh pr view 78` shows a state/head change from open/unmerged, or its evidence branch is force-pushed | Stop; do not proceed | Preserve `gh pr view 78` output |
 | Auteur source variable unset (fallback path) | `AUTEUR_SOURCE_REPO` not set when the canonical remote is unavailable | Stop before invocation | Preserve the CLI error output |
 | Auteur source path absent | `Test-Path "$env:AUTEUR_SOURCE_REPO\.git"` (or `test -d`) fails | Stop before invocation | Preserve the check output |
@@ -1216,9 +1491,9 @@ do not edit the generated brief; do not rerun; return to the owner.
 
 ## 12. Success definition
 
-This second run succeeds only if **all** of the following hold:
+This next attempt succeeds only if **all** of the following hold:
 
-1. Framework SHA exactly `1098acfd614e497bdf551040d3b1dee30afb9834`.
+1. Framework SHA exactly `bfe84571d782cd4cf4308536fba8213e8d85149c`.
 2. Target SHA exactly `b40db654e0df9e90074f7ad85b40d7362378e07d`.
 3. Requested model exactly `claude-sonnet-5` (`requested_model ==
    "claude-sonnet-5"`).
@@ -1230,20 +1505,25 @@ This second run succeeds only if **all** of the following hold:
 7. Structural Stage A validation passes (§9 = PASS) via the authoritative
    `validate-and-report.py` invocation with both `--repo-root` and
    `--target-repo` set.
-8. No duplicate `weakness_type` key (integrated safeguard reports no
+8. Handoff YAML round-trips (`handoff_yaml_round_trips()` returns `True` for
+   the generated authoritative Section 13 handoff; PR #101) and generic
+   `artifact_id` routing correctly dispatches the brief to
+   `validate-brief.py` (PR #99) — the exact structural failure class
+   Evidence 0014 hit.
+9. No duplicate `weakness_type` key (integrated safeguard reports no
    `DUPLICATE_WEAKNESS_TYPE_KEYS`, `MALFORMED_HANDOFF_FENCE`,
    `MISSING_HANDOFF_SECTION`, `MISSING_HANDOFF_BLOCK`, or
    `HANDOFF_YAML_PARSE_ERROR`).
-9. Deterministic quote grounding (no `EVIDENCE_QUOTE_NOT_FOUND`) — the exact
-   structural failure class Evidence 0013 hit.
-10. No target mutation (§8 all checks clean).
-11. Complete logs and trace present (`tool-call-trace.jsonl`, `run_log_*.md`,
+10. Deterministic quote grounding (no `EVIDENCE_QUOTE_NOT_FOUND`) — the exact
+    structural failure class Evidence 0013 hit.
+11. No target mutation (§8 all checks clean).
+12. Complete logs and trace present (`tool-call-trace.jsonl`, `run_log_*.md`,
     `workflow_summary.json`, `validation_run_log.md`).
-12. Substantive review passes (§10 all sections satisfactory).
-13. Every high-risk claim is Confirmed (none Rejected or Inconclusive).
-14. Human reviewer judges the brief useful enough to justify considering
+13. Substantive review passes (§10 all sections satisfactory).
+14. Every high-risk claim is Confirmed (none Rejected or Inconclusive).
+15. Human reviewer judges the brief useful enough to justify considering
     Stage 2.
-15. **Required metadata present under this package's experiment success
+16. **Required metadata present under this package's experiment success
     policy**: the generated brief contains a `weakness_type` key. Note the
     distinction from validator policy: `validate-brief.py` treats a missing
     `weakness_type` as **non-blocking** under ratified D2 (a validator
@@ -1279,14 +1559,17 @@ new evidence justifies a later, separate owner decision to change it.
 ### Proposed configuration (reviewed values, not an approval)
 
 ```text
-Stage 1 second-run execution authorization status = NOT AUTHORIZED
+Stage 1 next-attempt execution authorization status = NOT AUTHORIZED
 
 Former blocking prerequisite: explicit model selection and executor
   enforcement = RESOLVED by PR #87 (§3a)
-First-run result: STAGE 1 FAIL (Evidence 0013, PR #88) -- see §1a
-Remediation applied since first run: PR #91, PR #92, PR #94 -- see §1b
+Evidence 0013 result: STAGE 1 FAIL (PR #88) -- see §1a
+Remediation applied after Evidence 0013: PR #91, PR #92, PR #94 -- see §1b
+Evidence 0014 result: historically reported STAGE 1 FAIL
+  (unknown.artifact_id.missing_field, PR #96) -- see §1c
+Remediation applied after Evidence 0014: PR #99, PR #101 -- see §1c
 
-Proposed framework SHA: 1098acfd614e497bdf551040d3b1dee30afb9834
+Proposed framework execution pin: bfe84571d782cd4cf4308536fba8213e8d85149c
 Proposed target SHA: b40db654e0df9e90074f7ad85b40d7362378e07d
 Proposed provider/model: Anthropic via Claude Agent SDK, claude-sonnet-5
 Proposed environment: see §4 (fixed/inherited/unknown breakdown)
@@ -1296,6 +1579,8 @@ Proposed command: see §6, step 5 (below the execution boundary)
 This "proposed configuration" block reflects the values reviewed and
 recorded elsewhere in this package. It is not an authorization. Only the
 block below, filled in and dated by the owner, authorizes execution.
+**Merging this package refresh does not authorize a model invocation or a
+Stage 1 attempt.**
 
 **DO NOT EXECUTE unless this block has been completed through a separate,
 explicit owner instruction after this package revision is merged and
