@@ -510,6 +510,17 @@ cd H:\scratch\stage1-auteur-rerun\target-auteur
 git rev-parse HEAD
 # expect: b40db654e0df9e90074f7ad85b40d7362378e07d
 
+# 2a. Historical evidence commit availability check (see §1's governance
+#     discrepancy note and §11's hard-stop matrix; verifies the exact commit,
+#     not merely that the branch name still exists)
+git ls-remote https://github.com/ThorStarlord/sensemaking-skills.git origin/evidence/auteur-campaign-final-rerun
+git fetch https://github.com/ThorStarlord/sensemaking-skills.git evidence/auteur-campaign-final-rerun
+git show a328c80:experiments/evidence/0012-external-repo-auteur-final-rerun/EVIDENCE.md > NUL
+git merge-base --is-ancestor a328c80 FETCH_HEAD
+# expect: exit 0 for both the `git show` and the ancestor check; a328c80 must
+# resolve and must still be reachable from the evidence branch tip. Failure
+# here is a preflight hard stop (see §11) -- stop before proceeding to step 3.
+
 # 3. Dependency setup
 cd H:\scratch\stage1-auteur-rerun\framework
 python -m pip install -r requirements.txt   # if present; record exact versions installed
