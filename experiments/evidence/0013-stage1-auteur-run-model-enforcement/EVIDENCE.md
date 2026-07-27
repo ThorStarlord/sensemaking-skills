@@ -95,8 +95,12 @@ this evidence record.
 
 - `repository_sensemaking_brief.md` — the generated brief, unedited.
 - `tool-call-trace.jsonl`, `run-ledger.jsonl` — complete trace/ledger.
-- `stdout.log` — full run stdout (stderr was empty).
 - `run_log.md`, `workflow_summary.json`, `plan.md` — run log / machine summary / plan.
+  (Correction, post-merge documentation review: this list originally also
+  claimed a `stdout.log` file was preserved in this directory. No such file
+  exists in this PR/commit; `run_log.md` and `workflow_summary.json` are the
+  preserved run-record artifacts. This is a documentation correction only —
+  no evidence content, classification, or generated brief was altered.)
 - `validator-output.txt` — first (incorrectly-invoked) validator run, kept for transparency.
 - `validator-output-corrected.txt` — corrected validator run (authoritative structural result).
 - `check_duplicate_weakness_type.py` — the package's Part 7 script, and its output above.
