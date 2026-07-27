@@ -1,66 +1,115 @@
 # Stage 1 Auteur Execution Package
 
-**Date**: 2026-07-26 (revised same day: model-enforcement implementation
-merged via PR #87; package updated to reflect the merged code and rebased
-onto the new framework baseline)
+**Date**: 2026-07-27 (revised: this revision is a documentation-only refresh
+prepared for possible owner consideration of a **second** controlled Stage 1
+run, after the first authorized run — Evidence 0013 — completed with result
+`STAGE 1 FAIL`, and after the remediation that followed it (PR #91, PR #92,
+PR #94) merged to `main`.)
 **Nature of this document**: planning and documentation only. It resolves and
-records the exact configuration a Stage 1 controlled `auteur` rerun *would*
-use. **No experiment was run to produce this document. No auteur rerun
-occurred. No code, test, validator, prompt, contract, or runtime file was
-changed by this document. No historical evidence was modified.**
+records the exact configuration a **second**, new Stage 1 controlled `auteur`
+run *would* use. **No experiment was run to produce this revision. No auteur
+rerun occurred. No code, test, validator, prompt, contract, or runtime file
+was changed by this document. No historical evidence was modified.**
 
 ```text
-Stage 1 execution authorization status = NOT AUTHORIZED
+Stage 1 second-run execution authorization status = NOT AUTHORIZED
 
-Former blocking prerequisite:
-explicit model selection and executor enforcement = RESOLVED by PR #87
+Planning-package preparation: authorized (this revision).
+Execution: NOT authorized by this revision or by merging its PR.
+Merging the documentation PR that carries this revision does not authorize
+  execution. A separate, explicit owner instruction — issued after this
+  package revision is merged and reviewed — is required.
+At most one future invocation could be authorized by such an instruction.
+No automatic retry, repair, or rerun would be permitted even then.
 
-Owner model decision:
+Proposed second-run framework baseline:
+1098acfd614e497bdf551040d3b1dee30afb9834
+
+Historical first-run framework baseline:
+68b44835be43b86ee7c0d7eb968e67efcd368443
+
+Historical Stage 1 result:
+FAIL (Evidence 0013 — see new §1a)
+
+Historical model:
+claude-sonnet-5
+
+Historical target:
+b40db654e0df9e90074f7ad85b40d7362378e07d
+
+Owner model decision (unchanged from the first run):
 Provider = Anthropic via Claude Agent SDK
 Model identifier = claude-sonnet-5
-Historical model identity = unknown and unrecoverable
-Purpose = reproducible new controlled-experiment baseline
+Historical model identity (pre-PR #87 runs) = unknown and unrecoverable
+Purpose = controlled comparison baseline — same target, same model,
+  remediated framework
 ```
 
-The technical blocker (no code-level way to pin and enforce an explicit
-model) is now resolved: PR #87 ("fix: enforce explicit model for controlled
-experiments", merged, issue #86) added `--model` and
-`--controlled-experiment` to `scripts/workflow-runtime.py`, threaded an
-explicit `model=` value through `create_executor(...)` into
-`ClaudeAgentOptions(model=...)` in `scripts/skill_executor.py`, and added
-hard-stop enforcement (requested-vs-reported mismatch, multiple distinct
-reported models, missing model in controlled-experiment mode) with no
-fallback and no retry. §3/§3a below describe the merged behavior in detail.
+The technical blocker addressed by PR #87 (no code-level way to pin and
+enforce an explicit model) remains resolved and unaffected by this revision.
+This revision's purpose is different: the first authorized run under that
+enforcement (Evidence 0013, PR #88) reached structural validation and
+**failed** with three blocking `EVIDENCE_QUOTE_NOT_FOUND` errors. Issues
+#89, #90, and #93 were opened, remediated, and closed; the fixes (PR #91,
+PR #92, PR #94) are now on `main` at the pinned SHA above. This package
+proposes pinning a **second, new controlled run** to that remediated SHA —
+it is **not** a claim that the first run's failure is now proven fixed, only
+that the specific failure mechanisms it exposed have been addressed in code.
 
-**This resolves the technical blocker only. It does not authorize Stage 1
-execution.** Execution authorization is a separate owner decision, recorded
-(still blank) in §13. Merging PR #85 would approve this documentation package
-as accurate and complete — it would not itself authorize running Stage 1.
+**This is a new proposed baseline, not a historical-equivalence claim.** The
+proposed framework intentionally differs from the first run's framework
+because it includes the three remediation PRs above. Retaining the same
+target SHA and the same model identifier is a deliberate controlled-
+comparison choice (see §1a/§1b), not an oversight.
+
+**Nothing in this revision authorizes Stage 1 execution.** Execution
+authorization is a separate owner decision, recorded (still blank) in §13.
+Merging the documentation PR that carries this revision approves this
+package as an accurate, current planning artifact — it does not itself
+authorize running Stage 1, and no automatic retry, repair, or rerun would be
+permitted even after a future authorization; at most one invocation could
+ever be authorized by such an instruction.
 
 ## 1. Governance boundary
 
-- Baseline: `main@68b44835be43b86ee7c0d7eb968e67efcd368443` (verified: this is
-  the exact `origin/main` HEAD used to update this package; it is a fixed,
-  pinned commit, not a moving branch reference). This SHA contains:
+- Proposed second-run baseline: `main@1098acfd614e497bdf551040d3b1dee30afb9834`
+  (verified: this is the exact `origin/main` HEAD used to prepare this
+  revision; a fixed, pinned commit, not a moving branch reference). This SHA
+  contains, in addition to everything the first-run pin contained:
   - PR #81 (brief-contract redesign — `weakness_type` structured field);
   - PR #84 (governance ratification — D7/D8/E4 staged-validation record);
-  - PR #87 (explicit model-selection and executor enforcement — issue #86).
-- The previously pinned framework SHA
-  `ac5de55c700cd1b15f2eea1ca2726e83cd8d3284` (PR #84's merge commit) is
-  **superseded** by `68b44835be43b86ee7c0d7eb968e67efcd368443` throughout this
-  document. `ac5de55` remains an ancestor of the new pin; nothing about the
-  PR #81/#84 content it recorded has changed, it has simply been carried
-  forward to include PR #87.
+  - PR #87 (explicit model-selection and executor enforcement — issue #86);
+  - PR #88 (Evidence 0013 — the first authorized Stage 1 run, result FAIL);
+  - PR #91 (deterministic evidence-quote extraction — issue #89);
+  - PR #92 (section-aware duplicate-key safeguard foundation — issue #90);
+  - PR #94 (safeguard integrated into authoritative brief validation —
+    issue #93).
+- The first-run framework SHA `68b44835be43b86ee7c0d7eb968e67efcd368443` is
+  **historical**: it is the exact commit Evidence 0013 was executed against
+  (PR #88). It is **superseded** by `1098acfd614e497bdf551040d3b1dee30afb9834`
+  as the active proposed pin throughout this revision. `68b44835...` remains
+  an ancestor of the new pin.
 - PR #84: merged, `main`, docs-only (`docs/PHASE-80-81-CLOSURE.md`,
   `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`,
   `docs/adr/0021-production-readiness-requirements.md`).
 - PR #87: merged, `main`, code (`scripts/workflow-runtime.py`,
   `scripts/skill_executor.py`, `tests/test_model_enforcement.py`) — adds
   explicit `--model` / `--controlled-experiment` enforcement. See §3/§3a.
+- PR #88: merged, `main` — Evidence 0013, the first authorized Stage 1
+  controlled run under PR #87's enforcement. Result: **STAGE 1 FAIL**
+  (structural validation failed; three blocking `EVIDENCE_QUOTE_NOT_FOUND`
+  errors; substantive review not reached). See new §1a for full detail.
+- PR #91, PR #92, PR #94: merged, `main` — remediation of the three failure
+  mechanisms Evidence 0013 exposed. See new §1b for full detail.
 - Issue #83 ("Run controlled auteur validation after brief-contract
-  redesign"): **OPEN, planning-only**. Its own text states: "Creating this
-  issue does not itself execute the experiment. A separate, explicit owner
-  instruction is required to run Stage 1."
+  redesign"): **CLOSED as completed-with-failure**. The single authorized
+  Stage 1 run it scoped occurred (PR #88 / Evidence 0013) and produced a
+  definitive `STAGE 1 FAIL` result; the issue was closed on that basis, not
+  reopened, and this revision does not reopen it. A **second** run is a new,
+  separately-scoped proposal — this package — not a continuation of issue
+  #83.
+- Issues #89, #90, #93: **CLOSED**, each after its corresponding remediation
+  PR (#91, #92, #94 respectively) merged. See §1b.
 - D7 = Externally validated (ratified). D8 = success on at least two
   structurally different external repositories, including clean structural
   validation, substantive audit, no target mutation, pinned revisions,
@@ -69,15 +118,127 @@ as accurate and complete — it would not itself authorize running Stage 1.
 - E4 = staged plan (ratified): Stage 1 = controlled auteur rerun; Stage 2 =
   second structurally different repository (conditional, unauthorized);
   Stage 3 = real-maintainer usefulness evaluation (conditional,
-  unauthorized).
-- **Stage 1 planning is authorized. Stage 1 execution is NOT authorized** and
-  requires a separate, explicit owner instruction after reviewing this
-  package.
+  unauthorized). The first Stage 1 attempt (Evidence 0013) failed
+  structurally; Stage 2/3 remain unauthorized and are unaffected by this
+  revision.
+- **Preparation of this second-run planning package is authorized. Stage 1
+  second-run execution is NOT authorized** and requires a separate, explicit
+  owner instruction after reviewing this package. Merging the documentation
+  PR that carries this revision does not supply that instruction.
 - ADR 0021 remains **Proposed** (three other named owner-decision items —
   cost/concurrency policy, supported-agent commitments, platform scope —
-  remain outstanding regardless of D7/D8 ratification).
+  remain outstanding regardless of D7/D8 ratification). This revision does
+  not change ADR 0021's status.
 - Current achieved readiness remains **"Externally exercised"** (Level C).
-  Ratifying D7/D8/E4 does not itself advance this level.
+  Neither the first run's failure nor this planning revision changes this
+  level. Ratifying D7/D8/E4 does not itself advance this level.
+
+### 1a. Historical result: Evidence 0013 (PR #88) — STAGE 1 FAIL
+
+The first authorized Stage 1 run executed under this package's prior
+revision, pinned to `main@68b44835be43b86ee7c0d7eb968e67efcd368443`, target
+`b40db654e0df9e90074f7ad85b40d7362378e07d`, model `claude-sonnet-5`. Full
+record: `experiments/evidence/0013-stage1-auteur-run-model-enforcement/`.
+
+```text
+Invocations: exactly one (model/workflow invocation count = 1)
+Model requested: claude-sonnet-5
+Model reported (all AssistantMessage events): claude-sonnet-5 (uniform)
+model_match: true
+Fallback: none
+Retry: none
+Target mutation: none (target-directed Write attempt observed, denied by
+  the framework's target-confinement gate before completion; zero completed
+  target writes)
+Structural validation: FAIL — three blocking EVIDENCE_QUOTE_NOT_FOUND errors
+Substantive review: NOT reached (gated on structural PASS, which did not
+  occur)
+Final result: STAGE 1 FAIL
+```
+
+The three blocking quote-fidelity defects, by class (these are citation
+**quote-fidelity** defects — paraphrasing/normalization introduced while
+transcribing an otherwise-real, otherwise-correctly-cited excerpt — not
+hallucinated files; all three cited files and line ranges exist in the
+target at the pinned SHA):
+
+1. **Em-dash normalization** — `src/auteur/decision/service.py` L1: the
+   generated brief's quote used `--` where the actual source uses an em dash
+   (`—`).
+2. **Omitted indentation** — `src/auteur/cli_parser.py` L419-L420: the
+   brief's quote dropped the actual file's leading 4-space indentation on
+   the first quoted line.
+3. **Lost Markdown/backtick formatting** — `CHANGELOG.md` L349-L362: the
+   brief's quote dropped bold/backtick formatting present in the source and
+   normalized an em dash in the heading.
+
+**Historical transparency note on validator invocation**: the first
+validator pass in that run (`validator-output.txt`) was invoked without
+`--target-repo` and incorrectly reported `HALLUCINATED_FILE` errors as a
+result of that missing flag — a mistake in how the validator was invoked
+that run, not a defect in the brief or the validator itself. The corrected
+invocation (`validator-output-corrected.txt`, run with both `--repo-root`
+and `--target-repo` set) is the authoritative historical result: **zero**
+`HALLUCINATED_FILE` errors; the three `EVIDENCE_QUOTE_NOT_FOUND` errors above
+are the real, blocking structural result. §6 and §9 of this revision are
+written so that no new verification procedure repeats the missing-
+`--target-repo` mistake.
+
+Evidence 0013, PR #78, and this document's historical narrative are not
+modified by this revision.
+
+### 1b. Remediation now included in the proposed framework pin
+
+The proposed pin `1098acfd614e497bdf551040d3b1dee30afb9834` includes three
+merged fixes targeting the specific failure mechanisms Evidence 0013
+exposed. This does **not** guarantee a passing second run — it removes the
+known failure mechanisms that produced the first run's `STAGE 1 FAIL`.
+
+**PR #91 (issue #89) — deterministic evidence-quote extraction**:
+- The model identifies a source path, line/char range, and rationale only;
+  it is no longer treated as the authoritative source of the quoted text.
+- The runtime extracts the exact quote text from the source file at the
+  identified range itself; model transcription is not authoritative.
+- Unicode normalization, indentation preservation, Markdown/backtick
+  formatting, and newline handling are governed by deterministic,
+  code-level policy rather than model transcription fidelity.
+- Path containment and target-root authority are enforced (the extraction
+  path cannot escape the declared target root).
+- The strict quote-grounding validator itself is unchanged; it validates the
+  now-deterministically-extracted quote against source, same as before.
+
+**PR #92 (issue #90) — section-aware duplicate-key safeguard foundation**:
+- The authoritative Section 13 handoff block is located structurally (by
+  heading), not by a document-wide first-fence regex — this directly fixes
+  the mechanism Evidence 0013's manual-inspection note flagged (a malformed
+  doubled fence in Section 8 defeating a naive single-fence regex).
+- Duplicate-key-safe YAML loading replaces `safe_load`'s silent
+  last-value-wins behavior for the handoff block.
+- The standalone diagnostic CLI (`scripts/weakness_type_safeguard.py`)
+  remains available for manual, non-authoritative use.
+
+**PR #94 (issue #93) — pipeline integration**:
+- The safeguard from PR #92 now executes automatically inside
+  `validate_brief()` — it is no longer a separate script a human must
+  remember to run.
+- It runs before ordinary YAML parsing can collapse duplicate keys, so a
+  duplicate-key defect surfaces as a validator error rather than being
+  silently resolved by last-value-wins.
+- Its outcomes surface as first-class blocking/non-blocking error codes in
+  standard `validate-and-report.py` output: `DUPLICATE_WEAKNESS_TYPE_KEYS`,
+  `MALFORMED_HANDOFF_FENCE`, `MISSING_HANDOFF_SECTION`,
+  `MISSING_HANDOFF_BLOCK`, `HANDOFF_YAML_PARSE_ERROR`.
+- A normal `validate-and-report.py` invocation (with `--repo-root` and
+  `--target-repo` both set) is the authoritative validation path; no
+  separate script invocation is required or authoritative.
+- Missing `weakness_type` remains non-blocking under ratified D2 (a
+  validator-policy fact) — this is distinct from this package's own
+  **experiment success policy**, which still requires the required
+  metadata to be present for the run to count as Stage 1 success. See §12.
+- The obsolete experiment-local regex script
+  (`check_duplicate_weakness_type.py`, preserved only inside the Evidence
+  0013 directory for historical transparency) is superseded and must not be
+  treated as authoritative for a second run.
 
 **This document authorizes nothing.** It is input to the owner's decision.
 
@@ -96,8 +257,9 @@ exist on `main` — it exists only on the unmerged branch
 `git merge-base --is-ancestor a328c80 origin/main` → not an ancestor).
 
 This does not contradict anything in the confirmed governance baseline (PR
-#84 merged, issue #83 open/planning-only, and ADR 0021 status are all
-independently confirmed correct above) — it is a separate fact surfaced by
+#84 merged, issue #83 closed as completed-with-failure, and ADR 0021 status
+are all independently confirmed correct above) — it is a separate fact
+surfaced by
 Part 2's own research requirement. It is recorded here rather than silently
 treated as settled, because `docs/PHASE-80-81-CLOSURE.md` and
 `docs/OWNER-DECISION-PACKAGE-2026-07-26.md` both refer to "Historical PR
@@ -136,19 +298,41 @@ a permanent record.
 
 ```text
 Framework repository: ThorStarlord/sensemaking-skills
-Framework SHA: 68b44835be43b86ee7c0d7eb968e67efcd368443
-Why this SHA: exact origin/main HEAD at the time this package was updated,
+Framework SHA (proposed second-run baseline): 1098acfd614e497bdf551040d3b1dee30afb9834
+Why this SHA: exact origin/main HEAD at the time this revision was prepared,
   and the current owner-supplied authoritative baseline. Confirmed via
   `git rev-parse origin/main` and `git merge-base --is-ancestor
-  68b44835be43b86ee7c0d7eb968e67efcd368443 origin/main`. A fixed commit, not
+  1098acfd614e497bdf551040d3b1dee30afb9834 origin/main`. A fixed commit, not
   a moving branch reference, is recorded here deliberately.
-Contains PR #81 contract redesign: yes (ancestor of 68b4483)
-Contains PR #84 governance record: yes (ancestor of 68b4483)
-Contains PR #87 explicit model-selection enforcement: yes (ancestor of
-  68b4483; adds --model / --controlled-experiment, ClaudeAgentOptions(model=),
+Contains PR #81 contract redesign: yes (ancestor)
+Contains PR #84 governance record: yes (ancestor)
+Contains PR #87 explicit model-selection enforcement: yes (ancestor; adds
+  --model / --controlled-experiment, ClaudeAgentOptions(model=),
   requested/reported-model evidence, and hard-stop-on-mismatch behavior --
   see §3/§3a)
+Contains PR #88 (Evidence 0013, first Stage 1 run, result FAIL): yes
+  (ancestor) -- see §1a
+Contains PR #91 (deterministic evidence-quote extraction, issue #89): yes
+  (ancestor; confirmed `git merge-base --is-ancestor <PR-91-merge-sha>
+  1098acfd614e497bdf551040d3b1dee30afb9834`) -- see §1b
+Contains PR #92 (section-aware duplicate-key safeguard, issue #90): yes
+  (ancestor, same verification method) -- see §1b
+Contains PR #94 (safeguard pipeline integration, issue #93): yes (ancestor,
+  same verification method) -- see §1b
+
+Historical first-run framework SHA (superseded, retained for comparison):
+  68b44835be43b86ee7c0d7eb968e67efcd368443 -- pinned in the prior revision
+  of this package and used to produce Evidence 0013 (PR #88, STAGE 1 FAIL).
 ```
+
+Note on the documentation PR's own merge commit: the eventual merge commit
+that lands this revision's documentation PR is **not** a new runtime
+baseline and must not be treated as one. The proposed framework pin for a
+second run remains exactly `1098acfd614e497bdf551040d3b1dee30afb9834` — the
+precise code baseline being reviewed, prior to and independent of this
+docs-only PR. A docs-only merge commit is control-plane documentation, not
+an execution pin; it would not be substituted in as the second run's
+framework SHA even after this PR merges.
 
 ### Auteur (target) revision
 
@@ -163,13 +347,15 @@ Historical comparison source: PR #78 / evidence directory
   read via `git show origin/evidence/auteur-campaign-final-rerun:...`
   (read-only; that branch is NOT merged to main — see the governance
   discrepancy note in §1).
-Why this SHA: this is the exact commit pinned in the final, most recent
-  historical campaign rerun (PR #78), the same commit that previously
-  produced the PR #73 "ghost feature" false-positive finding — using the same
-  pinned commit again keeps this a controlled before/after comparison of the
-  PR #81 contract redesign against a known, previously-exercised target
-  state, rather than introducing a second uncontrolled variable (a different
-  target commit).
+Why this SHA (unchanged for a second run): this is the exact commit pinned
+  in the final, most recent historical campaign rerun (PR #78), the same
+  commit that previously produced the PR #73 "ghost feature" false-positive
+  finding, and the same commit the first authorized Stage 1 run (Evidence
+  0013, PR #88) used. Holding the target SHA fixed across the first and
+  proposed second run preserves before/after comparability on exactly one
+  axis: the remediated framework (PR #91/#92/#94). Changing the target SHA
+  for a second run would introduce a second, uncontrolled variable and make
+  it impossible to attribute a different outcome to the remediation.
 Moving branch avoided: yes — an exact SHA, not a branch name, is recorded.
 ```
 
@@ -240,15 +426,21 @@ Requirements restated and confirmed against the merged code:
   (`claude_agent_sdk.query()`), not switchable at runtime by the model.
 - No automatic retry — confirmed absent in `scripts/skill_executor.py`.
 - No automatic model escalation — confirmed absent.
-- No second run after failure — enforced as a process rule in §11's hard-stop
-  matrix; the exact command plan in §6 is a single invocation.
+- No automatic or self-authorized second run — a deliberate second run is
+  exactly what this package proposes, but only under a separate, explicit
+  owner instruction (§13); the exact command plan in §6 is, once authorized,
+  a single invocation, with no automatic retry/repair/rerun even then (see
+  §16-style hard stops in §11).
 
-**Difference from the historical campaign**: the historical campaign (PR
-#78) used the identical `--executor claude-code` path but with no explicit
-model pin — its actual model is unknown and unrecoverable (see §3a Part 2).
-This experiment therefore establishes a new, reproducible controlled-
-experiment baseline on the model axis; it is not a historical model
-equivalence claim.
+**Difference from the historical (pre-PR #87) campaign**: the historical
+campaign (PR #78) used the identical `--executor claude-code` path but with
+no explicit model pin — its actual model is unknown and unrecoverable (see
+§3a Part 2). The first authorized Stage 1 run under PR #87's enforcement
+(Evidence 0013, PR #88) did pin and confirm `claude-sonnet-5`
+(`model_match: true`); this proposed second run retains that same pinned
+model. It is not a claim of equivalence with the pre-PR #87 historical
+campaign's (unknown) model — it is a controlled repeat of the model axis
+that Evidence 0013 already established and confirmed.
 
 ## 3a. Model enforcement (implemented — PR #87, merged)
 
@@ -453,9 +645,9 @@ outside both the primary checkout and `.claude/worktrees/`), a fresh,
 standalone, disposable set of clones is proposed for Stage 1:
 
 ```text
-H:\scratch\stage1-auteur-rerun\
+H:\scratch\stage1-auteur-rerun-2\
   framework\        <- fresh clone of ThorStarlord/sensemaking-skills,
-                       checked out to 68b44835be43b86ee7c0d7eb968e67efcd368443
+                       checked out to 1098acfd614e497bdf551040d3b1dee30afb9834
   target-auteur\    <- fresh clone of the auteur target repository,
                        checked out to b40db654e0df9e90074f7ad85b40d7362378e07d
                        (treated as strictly read-only)
@@ -472,8 +664,10 @@ H:\scratch\stage1-auteur-rerun\
 Requirements confirmed satisfied by this layout:
 
 - No `.claude/worktrees/` involved.
-- No reuse of historical experiment directories (a new `stage1-auteur-rerun`
-  root, not `auteur-campaign-final`).
+- No reuse of any previous output directory (a new `stage1-auteur-rerun-2`
+  root, distinct both from the first run's `stage1-auteur-rerun\` directory,
+  which produced Evidence 0013, and from the older historical
+  `auteur-campaign-final\`).
 - No output written inside the target repository (`target-auteur\` receives
   no writes; the runtime's `--target-repo` flag points there but
   `--repo-root`/`--log-dir` point into `framework\` / `logs\`).
@@ -493,20 +687,20 @@ explicit owner authorization.
 
 ```text
 # 1. Clone / checkout commands
-git clone https://github.com/ThorStarlord/sensemaking-skills.git H:\scratch\stage1-auteur-rerun\framework
-cd H:\scratch\stage1-auteur-rerun\framework
-git checkout 68b44835be43b86ee7c0d7eb968e67efcd368443
+git clone https://github.com/ThorStarlord/sensemaking-skills.git H:\scratch\stage1-auteur-rerun-2\framework
+cd H:\scratch\stage1-auteur-rerun-2\framework
+git checkout 1098acfd614e497bdf551040d3b1dee30afb9834
 
-git clone <auteur-repo-source> H:\scratch\stage1-auteur-rerun\target-auteur
-cd H:\scratch\stage1-auteur-rerun\target-auteur
+git clone <auteur-repo-source> H:\scratch\stage1-auteur-rerun-2\target-auteur
+cd H:\scratch\stage1-auteur-rerun-2\target-auteur
 git checkout b40db654e0df9e90074f7ad85b40d7362378e07d
 
 # 2. SHA verification
-cd H:\scratch\stage1-auteur-rerun\framework
+cd H:\scratch\stage1-auteur-rerun-2\framework
 git rev-parse HEAD
-# expect: 68b44835be43b86ee7c0d7eb968e67efcd368443
+# expect: 1098acfd614e497bdf551040d3b1dee30afb9834
 
-cd H:\scratch\stage1-auteur-rerun\target-auteur
+cd H:\scratch\stage1-auteur-rerun-2\target-auteur
 git rev-parse HEAD
 # expect: b40db654e0df9e90074f7ad85b40d7362378e07d
 
@@ -521,15 +715,26 @@ git merge-base --is-ancestor a328c80 FETCH_HEAD
 # resolve and must still be reachable from the evidence branch tip. Failure
 # here is a preflight hard stop (see §11) -- stop before proceeding to step 3.
 
+# 2b. Remediation-ancestor check (new for this revision): PR #91, #92, #94
+#     merge commits must each be an ancestor of the checked-out framework
+#     HEAD. (Merge SHAs as recorded when this revision was prepared:
+#     PR #91 = e65da78b3e519768d09568dcf64d5a1dc8526d6b,
+#     PR #92 = f8c40fd6e79d961ad14d83df586430177d4012d2,
+#     PR #94 = 1098acfd614e497bdf551040d3b1dee30afb9834 (== framework HEAD).)
+git merge-base --is-ancestor e65da78b3e519768d09568dcf64d5a1dc8526d6b HEAD
+git merge-base --is-ancestor f8c40fd6e79d961ad14d83df586430177d4012d2 HEAD
+git merge-base --is-ancestor 1098acfd614e497bdf551040d3b1dee30afb9834 HEAD
+# expect: exit 0 for all three. Failure is a preflight hard stop (see §11).
+
 # 3. Dependency setup
-cd H:\scratch\stage1-auteur-rerun\framework
+cd H:\scratch\stage1-auteur-rerun-2\framework
 python -m pip install -r requirements.txt   # if present; record exact versions installed
 
 # 4. Preflight validation (framework repo only, no target touched)
 python scripts\validate-repo.py
 python scripts\test-validators.py
 git status --short                          # expect: clean
-cd H:\scratch\stage1-auteur-rerun\target-auteur
+cd H:\scratch\stage1-auteur-rerun-2\target-auteur
 git status --short                          # expect: clean
 git diff --exit-code
 git diff --cached --exit-code
@@ -547,25 +752,30 @@ python scripts\workflow-runtime.py \
   --controlled-experiment \
   --model claude-sonnet-5 \
   --gate-decision auto-approve \
-  --repo-root "H:/scratch/stage1-auteur-rerun/framework" \
-  --target-repo "H:/scratch/stage1-auteur-rerun/target-auteur" \
-  --log-dir "H:/scratch/stage1-auteur-rerun/logs"
+  --repo-root "H:/scratch/stage1-auteur-rerun-2/framework" \
+  --target-repo "H:/scratch/stage1-auteur-rerun-2/target-auteur" \
+  --log-dir "H:/scratch/stage1-auteur-rerun-2/logs"
 
 # NOTE: --repo-root and --target-repo above are pinned by preceding
-# checkout to 68b44835be43b86ee7c0d7eb968e67efcd368443 (framework) and
+# checkout to 1098acfd614e497bdf551040d3b1dee30afb9834 (framework) and
 # b40db654e0df9e90074f7ad85b40d7362378e07d (target); this command has no
 # moving branch reference of its own.
 
-# 6. Brief validation (this automatically runs the section-aware,
-#    duplicate-key-safe weakness_type safeguard -- see Part 7 below)
-python scripts\validate-and-report.py H:\scratch\stage1-auteur-rerun\framework\artifacts\...\repository_sensemaking_brief.md
+# 6. Brief validation -- AUTHORITATIVE. Must include both --repo-root and
+#    --target-repo (see §1a's historical-transparency note: the first run's
+#    initial validator invocation omitted --target-repo and produced
+#    spurious HALLUCINATED_FILE errors as a result; this command must not
+#    repeat that mistake). This automatically runs the section-aware,
+#    duplicate-key-safe weakness_type safeguard as part of validate_brief()
+#    -- see §1b / Part 7 below.
+python scripts\validate-and-report.py H:\scratch\stage1-auteur-rerun-2\framework\artifacts\...\repository_sensemaking_brief.md --repo-root H:\scratch\stage1-auteur-rerun-2\framework --target-repo H:\scratch\stage1-auteur-rerun-2\target-auteur
 
-# 7. (Optional, diagnostic-only) standalone safeguard re-check -- not
-#    authoritative on its own; see Part 7 below for why.
-python scripts\weakness_type_safeguard.py H:\scratch\stage1-auteur-rerun\framework\artifacts\...\repository_sensemaking_brief.md
+# 7. (Optional, diagnostic-only) standalone safeguard re-check -- NOT
+#    authoritative on its own and must not replace step 6; see Part 7 below.
+python scripts\weakness_type_safeguard.py H:\scratch\stage1-auteur-rerun-2\framework\artifacts\...\repository_sensemaking_brief.md
 
 # 8. Target-mutation check
-cd H:\scratch\stage1-auteur-rerun\target-auteur
+cd H:\scratch\stage1-auteur-rerun-2\target-auteur
 git status --porcelain
 git diff --exit-code
 git diff --cached --exit-code
@@ -573,7 +783,7 @@ git rev-parse HEAD
 # compare HEAD before/after; expect identical to b40db654e0df9e90074f7ad85b40d7362378e07d
 
 # 9. Evidence collection
-#   copy brief, logs, trace, manifests into H:\scratch\stage1-auteur-rerun\evidence\
+#   copy brief, logs, trace, manifests into H:\scratch\stage1-auteur-rerun-2\evidence\
 
 # 10. Final status reporting
 #   summarize PASS/FAIL/INCONCLUSIVE per Part 9 below; return to owner
@@ -765,18 +975,22 @@ Rationale: ___________________________________________
 | No reported model | `reported_models` empty (no `AssistantMessage` observed) while a model was requested | Stop; do not retry | Preserve trace showing empty `reported_models` |
 | Reported/requested mismatch | `model_match == false` in the recorded evidence | Stop; do not retry, do not fall back | Preserve trace showing `requested_model` vs. `reported_models` |
 | Multiple reported models | `reported_models` (after de-duplication) contains more than one distinct value | Stop; treat as a hard mismatch | Preserve full `reported_models` list |
-| Framework SHA mismatch | `git rev-parse HEAD` on `framework\` != `68b44835be43b86ee7c0d7eb968e67efcd368443` | Stop before invocation | Record observed vs. expected SHA |
+| Framework SHA mismatch | `git rev-parse HEAD` on `framework\` != `1098acfd614e497bdf551040d3b1dee30afb9834` | Stop before invocation | Record observed vs. expected SHA |
 | Target SHA mismatch | `git rev-parse HEAD` on `target-auteur\` != `b40db654e0df9e90074f7ad85b40d7362378e07d` | Stop before invocation | Record observed vs. expected SHA |
 | Historical evidence commit `a328c80` unreachable or mutated | `git show a328c80:...` / ancestor check against `origin/evidence/auteur-campaign-final-rerun` fails at preflight | Stop before invocation | Preserve the failing verification output |
+| PR #91/#92/#94 not ancestors of framework HEAD | §6 step 2b `git merge-base --is-ancestor` fails for any of the three merge SHAs | Stop before invocation | Preserve the failing verification output |
+| PR #78 touched or modified | `gh pr view 78` shows a state/head change from open/unmerged, or its evidence branch is force-pushed | Stop; do not proceed | Preserve `gh pr view 78` output |
+| Missing required metadata under experiment success policy | Generated brief lacks `weakness_type` even though the validator treats it as non-blocking under D2 | Treat as Stage 1 non-success under this package's own success bar (§12), even though the validator itself does not block | Preserve brief + validator output |
+| Owner authorization block incomplete | §13's "Owner authorization" subsection contains any blank required field | Stop before invocation | N/A -- execution never begins |
 
 For every hard stop: stop immediately; preserve all evidence; do not patch;
 do not edit the generated brief; do not rerun; return to the owner.
 
 ## 12. Success definition
 
-Stage 1 succeeds only if **all** of the following hold:
+This second run succeeds only if **all** of the following hold:
 
-1. Framework SHA exactly `68b44835be43b86ee7c0d7eb968e67efcd368443`.
+1. Framework SHA exactly `1098acfd614e497bdf551040d3b1dee30afb9834`.
 2. Target SHA exactly `b40db654e0df9e90074f7ad85b40d7362378e07d`.
 3. Requested model exactly `claude-sonnet-5` (`requested_model ==
    "claude-sonnet-5"`).
@@ -785,9 +999,15 @@ Stage 1 succeeds only if **all** of the following hold:
    de-duplicated, but no other value may appear).
 5. No fallback (`fallback_model` never set; none observed in logs).
 6. No retry (`query()`/the transport invoked at most once).
-7. Structural Stage A validation passes (§9 = PASS).
-8. No duplicate `weakness_type` key (§7 script exit 0).
-9. Deterministic quote grounding (no `EVIDENCE_QUOTE_NOT_FOUND`).
+7. Structural Stage A validation passes (§9 = PASS) via the authoritative
+   `validate-and-report.py` invocation with both `--repo-root` and
+   `--target-repo` set.
+8. No duplicate `weakness_type` key (integrated safeguard reports no
+   `DUPLICATE_WEAKNESS_TYPE_KEYS`, `MALFORMED_HANDOFF_FENCE`,
+   `MISSING_HANDOFF_SECTION`, `MISSING_HANDOFF_BLOCK`, or
+   `HANDOFF_YAML_PARSE_ERROR`).
+9. Deterministic quote grounding (no `EVIDENCE_QUOTE_NOT_FOUND`) — the exact
+   structural failure class Evidence 0013 hit.
 10. No target mutation (§8 all checks clean).
 11. Complete logs and trace present (`tool-call-trace.jsonl`, `run_log_*.md`,
     `workflow_summary.json`, `validation_run_log.md`).
@@ -795,33 +1015,50 @@ Stage 1 succeeds only if **all** of the following hold:
 13. Every high-risk claim is Confirmed (none Rejected or Inconclusive).
 14. Human reviewer judges the brief useful enough to justify considering
     Stage 2.
+15. **Required metadata present under this package's experiment success
+    policy**: the generated brief contains a `weakness_type` key. Note the
+    distinction from validator policy: `validate-brief.py` treats a missing
+    `weakness_type` as **non-blocking** under ratified D2 (a validator
+    exits clean without it) — but this package's own experiment success bar
+    is stricter than the validator's minimum: a brief missing that metadata
+    does not count as Stage 1 success for this experiment, even though the
+    validator alone would not have blocked it. This preserves D2 while
+    keeping the experiment's own evidence bar high.
 
-**Stage 1 success proves only** that the redesigned contract (PR #81) cleared
-the historical `auteur` target under the pinned configuration and survived
-the required review, using a reproducible, explicitly-pinned model baseline
-(PR #87 enforcement).
+**Success would prove only** that this pinned Stage A repository-sensemaking
+brief, on this pinned `auteur` revision, with this exact remediated
+framework and model, passed structural validation, passed the high-risk
+substantive audit, preserved target safety, and was judged useful under this
+package's review standard.
 
-**Stage 1 success does not satisfy D8 by itself.** It also does not prove:
+**It would not, by itself, prove**:
 
-- cross-repository generality;
+- D8 satisfaction;
+- cross-repository generality (positive or negative);
 - production readiness;
 - autonomous trustworthiness;
-- real-maintainer usefulness (beyond this one reviewer's judgment on this
-  one target);
+- architectural-review workflow Step 2;
 - Stage 2 authorization (Stage 2 remains conditional on separate, explicit
-  owner review of Stage 1's actual evidence after it runs).
+  owner review of this run's actual evidence after it runs);
+- real-maintainer usefulness beyond this one reviewer's judgment on this one
+  target.
+
+Current achieved readiness remains **"Externally exercised"** until actual
+new evidence justifies a later, separate owner decision to change it.
 
 ## 13. Owner authorization block
 
 ### Proposed configuration (reviewed values, not an approval)
 
 ```text
-Stage 1 execution authorization status = NOT AUTHORIZED
+Stage 1 second-run execution authorization status = NOT AUTHORIZED
 
 Former blocking prerequisite: explicit model selection and executor
   enforcement = RESOLVED by PR #87 (§3a)
+First-run result: STAGE 1 FAIL (Evidence 0013, PR #88) -- see §1a
+Remediation applied since first run: PR #91, PR #92, PR #94 -- see §1b
 
-Proposed framework SHA: 68b44835be43b86ee7c0d7eb968e67efcd368443
+Proposed framework SHA: 1098acfd614e497bdf551040d3b1dee30afb9834
 Proposed target SHA: b40db654e0df9e90074f7ad85b40d7362378e07d
 Proposed provider/model: Anthropic via Claude Agent SDK, claude-sonnet-5
 Proposed environment: see §4 (fixed/inherited/unknown breakdown)
@@ -832,22 +1069,32 @@ This "proposed configuration" block reflects the values reviewed and
 recorded elsewhere in this package. It is not an authorization. Only the
 block below, filled in and dated by the owner, authorizes execution.
 
+**DO NOT EXECUTE unless this block has been completed through a separate,
+explicit owner instruction after this package revision is merged and
+reviewed.** Do not infer authorization from chat history surrounding the
+first run: the authorization that covered Evidence 0013's single invocation
+was consumed by that run and does not carry forward to a second run. Any
+future authorization covers exactly one invocation; no automatic retry,
+repair, or rerun would be permitted even after it is granted.
+
 ### Owner authorization (blank — no approval pre-filled)
 
 ```text
-Owner authorization:
-- Decision: UNDECIDED
-- Authorized framework SHA:
-- Authorized target SHA:
-- Authorized provider/model:
-- Authorized environment:
-- Authorized command:
-- Authorization date:
+Owner authorization decision:
+Authorized by:
+Authorization date/time:
+Authorized framework SHA:
+Authorized target SHA:
+Authorized model:
+Authorized invocation count:
+Special conditions:
 ```
 
-This block is intentionally blank. No approval is pre-filled. The technical
-model-enforcement prerequisite is resolved (§3a, PR #87), but Stage 1
-execution still requires a separate, explicit owner instruction filling in
-and dating the block above. Merging PR #85 approves this documentation
-package as an accurate planning artifact; it does not fill in this block and
-does not authorize execution.
+This block is intentionally blank. No signature, date, approval token,
+checkmark, or wording that could be read as authorization has been added.
+The technical model-enforcement prerequisite is resolved (§3a, PR #87), but
+Stage 1 second-run execution still requires a separate, explicit owner
+instruction filling in and dating the block above. Merging the documentation
+PR that carries this revision approves this package as an accurate,
+up-to-date planning artifact; it does not fill in this block and does not
+authorize execution.
