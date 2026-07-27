@@ -121,19 +121,38 @@ preflight stop; execution integrity (Gate A) passed.
 ## Learning classification
 
 - Primary category: **INFRASTRUCTURE**
-- Novelty: Moderate. A distinct failure mode from Evidence 0013 (which failed
-  on `weakness_type` safeguard behavior) — this run passed the weakness-type
-  safeguard (it correctly flagged, not blocked, the high-risk claim) but
-  failed on evidence-quote grounding against a CRLF-checked-out target, a
-  combination not previously evidenced in 0013/0014.
+- Novelty: Moderate. Evidence 0013 also failed structural validation with
+  quote-grounding errors (three `EVIDENCE_QUOTE_NOT_FOUND`, per
+  `experiments/evidence/0013-stage1-auteur-run-model-enforcement/EVIDENCE.md`
+  line 59) — this run does **not** introduce an entirely new failure
+  category. The weakness-type safeguard passed cleanly in this run (it
+  correctly flagged, not blocked, the high-risk claim); in 0013,
+  weakness-type-adjacent ambiguity was a secondary, script-limitation note
+  (a malformed nested fence defeating a duplicate-key checker), not that
+  run's primary recorded failure, so it should not be used to distinguish
+  0013 from 0015. What may distinguish this run is the *mechanism*: 0013's
+  quote mismatches have not been independently re-examined for a CRLF
+  cause, while this run's flagged excerpts appear content-identical to
+  their cited source ranges except for CRLF line endings. Whether 0013 and
+  0015 share the same underlying mechanism, or represent two distinct
+  causes within the same quote-grounding boundary, is **not yet
+  adjudicated**.
 - Materiality: Moderate-to-high if the CRLF hypothesis is confirmed — quote
   grounding is a core structural gate (per this repo's own verification-
   discipline rule: "a validator rule must trace to a real consumer"), and a
   systematic CRLF blind spot would affect any Windows-checked-out target,
   not just `auteur`.
-- Transferability: High — if confirmed, this is a general property of the
-  quote-grounding validator, not specific to this target repository or this
-  invocation.
+- Transferability: Potentially high if confirmed — not simply "high." Before
+  that claim is warranted, a read-only investigation should establish: (1)
+  what exact normalization the validator performs; (2) whether it
+  normalizes both the source text and the supplied quote; (3) whether line
+  slicing happens before or after normalization; (4) whether indentation,
+  Markdown escaping, Unicode punctuation, or whitespace differs between the
+  quote and source; (5) whether all four of this run's failures share the
+  same mechanism; (6) whether a minimal CRLF/LF fixture reproduces the
+  failure without a model run. None of this has been done. This
+  investigation is a candidate next step, not authorized or performed by
+  this evidence record.
 - Cost: One controlled invocation (~10 minutes wall-clock), no target
   mutation, no repeat runs.
 - Product proximity: Low-to-moderate for this specific run — Gate C/D
@@ -147,10 +166,16 @@ preflight stop; execution integrity (Gate A) passed.
 **PAUSE.** The CRLF-grounding hypothesis above is plausible but unconfirmed
 and is exactly the kind of finding this package's own governance requires
 routing back through the owner rather than acting on autonomously (see
-package §17, "No remediation in this task"). A follow-up investigation
-(read-only) into whether `validate-brief.py`'s quote-normalization handles
-CRLF-terminated source files is a reasonable next step, but is explicitly
-**not authorized by this run** and is not implemented here.
+package §17, "No remediation in this task"). This run establishes that
+routing, YAML handoff, and artifact-id dispatch — the mechanisms Evidence
+0014 could not reliably reach — now work; the live boundary has moved back
+to evidence-quote grounding, consistent with (not distinct from) Evidence
+0013's failure mode, though the underlying cause may differ. A read-only
+investigation (see the six open questions under Transferability above) into
+whether `validate-brief.py`'s quote-normalization handles CRLF-terminated
+source files, and whether it explains 0013 as well as 0015, is a reasonable
+next step, but is explicitly **not authorized by this run** and is not
+implemented here.
 
 ## No further run authorized
 
