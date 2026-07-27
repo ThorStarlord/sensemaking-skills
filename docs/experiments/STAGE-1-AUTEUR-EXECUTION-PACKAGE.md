@@ -556,11 +556,13 @@ python scripts\workflow-runtime.py \
 # b40db654e0df9e90074f7ad85b40d7362378e07d (target); this command has no
 # moving branch reference of its own.
 
-# 6. Brief validation
+# 6. Brief validation (this automatically runs the section-aware,
+#    duplicate-key-safe weakness_type safeguard -- see Part 7 below)
 python scripts\validate-and-report.py H:\scratch\stage1-auteur-rerun\framework\artifacts\...\repository_sensemaking_brief.md
 
-# 7. Duplicate-key check (see Part 7 script below)
-python H:\scratch\stage1-auteur-rerun\evidence\check_duplicate_weakness_type.py H:\scratch\stage1-auteur-rerun\framework\artifacts\...\repository_sensemaking_brief.md
+# 7. (Optional, diagnostic-only) standalone safeguard re-check -- not
+#    authoritative on its own; see Part 7 below for why.
+python scripts\weakness_type_safeguard.py H:\scratch\stage1-auteur-rerun\framework\artifacts\...\repository_sensemaking_brief.md
 
 # 8. Target-mutation check
 cd H:\scratch\stage1-auteur-rerun\target-auteur
@@ -579,67 +581,36 @@ git rev-parse HEAD
 
 ## 7. Duplicate-`weakness_type` safeguard
 
-Issue #83 records this as a known, undetected residual gap
+**Superseded (issue #93, merged into `scripts/validate-brief.py`).** Issue
+#83 originally recorded this as a known, undetected residual gap
 (`docs/PHASE-80-81-CLOSURE.md` §1a/§2): PyYAML's `safe_load` silently keeps
-the last value on a duplicate mapping key, and no code in
-`scripts/validate-brief.py` / `_validator_utils.py` currently detects this.
+the last value on a duplicate mapping key. Issue #90 then found the
+document-wide-regex script previously proposed here also grabbed the *wrong*
+`yaml` fence when an earlier section (e.g. Section 8) had a malformed doubled
+fence -- see Evidence 0013
+(`experiments/evidence/0013-stage1-auteur-run-model-enforcement/`).
 
-Proposed script (to be placed in the experiment's own `evidence\` directory,
-NOT committed to production code as part of this task):
+The corrected, section-aware, duplicate-key-safe implementation is
+`scripts/weakness_type_safeguard.py` (PR #92), and the normal brief-validation
+command (`scripts/validate-and-report.py` / `scripts/validate-brief.py`)
+**automatically runs it as part of `validate_brief()`** (issue #93). Its
+outcomes surface as their own stable error codes
+(`DUPLICATE_WEAKNESS_TYPE_KEYS`, `MALFORMED_HANDOFF_FENCE`,
+`MISSING_HANDOFF_SECTION`, `MISSING_HANDOFF_BLOCK`, `MISSING_WEAKNESS_TYPE`,
+`HANDOFF_YAML_PARSE_ERROR`) in `validate-brief.py`'s standard error list. No
+separate regex-based duplicate-key command (the `check_duplicate_weakness_type.py`
+script formerly proposed in this section) is authoritative, and none should
+be written or run for a Stage 1 rerun.
 
-```python
-# H:\scratch\stage1-auteur-rerun\evidence\check_duplicate_weakness_type.py
-"""Deterministic check: Section 13 YAML fence contains exactly one
-top-level `weakness_type` key. Uses raw YAML parsing (not safe_load) so
-duplicate keys are actually detected rather than silently resolved."""
-import re
-import sys
-import yaml
+`python scripts/weakness_type_safeguard.py <brief-path>` remains available as
+a manual diagnostic tool only -- **diagnostic only; not authoritative; the
+validator this brief must pass is `scripts/validate-brief.py`** (invoked via
+`scripts/validate-and-report.py`).
 
-def check(brief_path: str) -> int:
-    with open(brief_path, encoding="utf-8") as f:
-        text = f.read()
-    m = re.search(r"```yaml\n(.*?)\n```", text, re.DOTALL)
-    if not m:
-        print("FAIL: no ```yaml fence found in brief")
-        return 2
-    yaml_block = m.group(1)
-
-    # Count raw top-level `weakness_type:` key occurrences textually,
-    # independent of PyYAML's last-value-wins behavior.
-    key_lines = [
-        line for line in yaml_block.splitlines()
-        if re.match(r"^weakness_type\s*:", line.strip())
-    ]
-    count = len(key_lines)
-
-    if count == 0:
-        print("FAIL: no weakness_type key found")
-        return 2
-    if count > 1:
-        print(f"FAIL: duplicate weakness_type key found ({count} occurrences) -- HARD STOP")
-        for i, line in enumerate(key_lines, 1):
-            print(f"  occurrence {i}: {line.strip()}")
-        return 1
-    print(f"PASS: exactly one weakness_type key found: {key_lines[0].strip()}")
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(check(sys.argv[1]))
-```
-
-```text
-Exact command: python check_duplicate_weakness_type.py <brief_path>
-Expected success output: "PASS: exactly one weakness_type key found: weakness_type: <value>"
-  -> exit code 0
-Expected failure output: "FAIL: duplicate weakness_type key found (N occurrences) -- HARD STOP"
-  followed by each occurrence line -> exit code 1
-Expected no-key-found output: "FAIL: no weakness_type key found" -> exit code 2
-```
-
-Requirements honored: duplicate key = hard stop (exit 1, non-zero); the
-artifact is never edited to repair it; it is preserved as-is in
-`evidence\`; no automatic rerun follows a duplicate-key failure.
+Requirements honored: duplicate key = hard stop (a blocking
+`DUPLICATE_WEAKNESS_TYPE_KEYS` validation error, non-zero validator exit
+code); the artifact is never auto-edited to repair it; no automatic rerun
+follows a duplicate-key failure.
 
 ## 8. Target-mutation safeguard
 

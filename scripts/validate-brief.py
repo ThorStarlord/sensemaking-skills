@@ -9,6 +9,7 @@ from typing import TypedDict, Any
 import yaml
 
 from _validator_utils import format_error, extract_sections, load_weakness_types, load_workflow_registry
+import weakness_type_safeguard
 
 # Stable error codes
 BRIEF_FILE_NOT_FOUND = "BRIEF_FILE_NOT_FOUND"
@@ -46,6 +47,62 @@ EVIDENCE_QUOTE_NOT_FOUND = "EVIDENCE_QUOTE_NOT_FOUND"
 # never blocking on its own, since EVIDENCE_QUOTE_NOT_FOUND already covers the
 # "not grounded at all" case.
 EVIDENCE_QUOTE_WINDOW_MATCH = "EVIDENCE_QUOTE_WINDOW_MATCH"
+
+# Section-aware, duplicate-key-safe weakness_type safeguard (issue #90,
+# integrated per issue #93). These trace 1:1 to weakness_type_safeguard's
+# outcome taxonomy and run BEFORE any plain yaml.safe_load() touches the
+# Section 13 handoff block, so a duplicate top-level weakness_type key can
+# never be silently collapsed to "last value wins" before it is observed.
+# EXACTLY_ONE_WEAKNESS_TYPE_KEY has no corresponding error code -- it is the
+# passing case.
+DUPLICATE_WEAKNESS_TYPE_KEYS = "DUPLICATE_WEAKNESS_TYPE_KEYS"
+MALFORMED_HANDOFF_FENCE = "MALFORMED_HANDOFF_FENCE"
+MISSING_HANDOFF_SECTION = "MISSING_HANDOFF_SECTION"
+MISSING_WEAKNESS_TYPE = "MISSING_WEAKNESS_TYPE"
+HANDOFF_YAML_PARSE_ERROR = "HANDOFF_YAML_PARSE_ERROR"
+
+# Maps weakness_type_safeguard outcomes to this validator's own stable error
+# codes. EXACTLY_ONE_WEAKNESS_TYPE_KEY is intentionally absent -- it is the
+# passing case and produces no error/warning.
+_SAFEGUARD_OUTCOME_TO_CODE = {
+    weakness_type_safeguard.DUPLICATE_WEAKNESS_TYPE_KEYS: DUPLICATE_WEAKNESS_TYPE_KEYS,
+    weakness_type_safeguard.MALFORMED_FENCE: MALFORMED_HANDOFF_FENCE,
+    weakness_type_safeguard.NO_AUTHORITATIVE_SECTION: MISSING_HANDOFF_SECTION,
+    weakness_type_safeguard.NO_AUTHORITATIVE_BLOCK: MISSING_HANDOFF_BLOCK,
+    weakness_type_safeguard.ZERO_WEAKNESS_TYPE_KEYS: MISSING_WEAKNESS_TYPE,
+    weakness_type_safeguard.YAML_PARSE_ERROR: HANDOFF_YAML_PARSE_ERROR,
+}
+
+# The canonical heading (per artifact-contracts.yaml / brief_skeleton.py) is
+# "## 13. Machine-readable handoff", and is weakness_type_safeguard's own
+# default. But some existing, already-accepted briefs (e.g.
+# tests/fixtures/brief-valid.md) predate the numbered-section convention and
+# spell the same section "## Machine-readable Handoff" with no number --
+# _parse_artifact_data()'s legacy fallback already tolerates this. Trying
+# each candidate in turn (still entirely via weakness_type_safeguard.check(),
+# never reimplementing its section-scoping) keeps the safeguard from
+# reporting a false MISSING_HANDOFF_SECTION against briefs the rest of this
+# validator already accepts.
+_HANDOFF_HEADING_CANDIDATES = [
+    weakness_type_safeguard.DEFAULT_SECTION_HEADING_PREFIX,  # "## 13."
+    "## Machine-readable Handoff",
+    "## Machine-readable handoff",
+    "## machine-readable handoff",
+]
+
+
+def _run_weakness_type_safeguard(content: str) -> weakness_type_safeguard.SafeguardResult:
+    """Call weakness_type_safeguard.check() against each known handoff
+    heading spelling, returning the first result that actually finds a
+    section. Falls back to the last (canonical-prefix) result if none do,
+    so the reported outcome/detail always mentions the canonical heading.
+    """
+    result = None
+    for prefix in _HANDOFF_HEADING_CANDIDATES:
+        result = weakness_type_safeguard.check(content, prefix)
+        if result.outcome != weakness_type_safeguard.NO_AUTHORITATIVE_SECTION:
+            return result
+    return result
 
 FILE_CITATION_RE = re.compile(
     r"`?[\w./\\-]+\.(?:md|py|yaml|yml|toml|txt)(?::\d+)?`?",
@@ -152,15 +209,23 @@ def _parse_artifact_data(content: str) -> dict[str, Any] | None:
         yaml_blocks = re.findall(r"```yaml\s+(.*?)\s+```", content, re.DOTALL)
         if yaml_blocks:
             try:
-                return yaml.safe_load(yaml_blocks[-1])
+                data = yaml.safe_load(yaml_blocks[-1])
             except Exception:
                 return None
+            # Only a mapping is usable as "artifact data" downstream (every
+            # caller does dict-style lookups). A malformed/partial fence
+            # match (e.g. the doubled-fence case weakness_type_safeguard's
+            # MALFORMED_FENCE outcome already reports) can parse to a bare
+            # scalar or list -- treat that the same as "no data", not a
+            # crash later when callers do artifact_data.get(...).
+            return data if isinstance(data, dict) else None
         return None
 
     try:
-        return yaml.safe_load(handoff_match.group(1))
+        data = yaml.safe_load(handoff_match.group(1))
     except Exception:
         return None
+    return data if isinstance(data, dict) else None
 
 
 def _normalize_for_grounding(text: str) -> str:
@@ -336,6 +401,17 @@ def validate_brief(
     with open(artifact_path, encoding="utf-8") as f:
         content = f.read()
 
+    # --- STRUCTURAL WEAKNESS_TYPE SAFEGUARD (issue #90 / #93) ---
+    # Computed FIRST, before any plain yaml.safe_load() touches Section 13
+    # (see _parse_artifact_data() below and the legacy Section 13 regex
+    # parsing further down) -- a document-wide/last-value-wins parse can
+    # silently erase a duplicate top-level weakness_type key, so this
+    # section-scoped, duplicate-key-safe check must observe the raw
+    # structure before that can happen. The resulting error/warning (if any)
+    # is appended later, alongside the other weakness_type checks below, so
+    # error ordering in the returned list stays grouped by field as before.
+    safeguard_result = _run_weakness_type_safeguard(content)
+
     sections = extract_sections(content, normalize_hyphens=False)
     weakness_types = load_weakness_types(repo_root)
     large = _is_large_artifact(content)
@@ -472,6 +548,34 @@ def validate_brief(
     #    sourced from weakness_types (load_weakness_types()), the same loader
     #    scripts/skill_executor.py's get_allowed_weakness_types() uses, so the
     #    two can never independently drift.
+    # 2b. Structural weakness_type safeguard result (issue #90 / #93),
+    #     computed above. This is purely structural (is there exactly one
+    #     authoritative top-level weakness_type key, is the block
+    #     parseable) and never duplicates the "is the VALUE valid" checks
+    #     below.
+    if safeguard_result.outcome != weakness_type_safeguard.EXACTLY_ONE_WEAKNESS_TYPE_KEY:
+        _sg_code = _SAFEGUARD_OUTCOME_TO_CODE[safeguard_result.outcome]
+        _sg_message = (
+            f"{safeguard_result.outcome}: {safeguard_result.detail} "
+            f"(expected authoritative section: Section 13 / '## 13.')"
+        )
+        if safeguard_result.duplicate_count:
+            _sg_message += f" [duplicate_count={safeguard_result.duplicate_count}]"
+        # ZERO_WEAKNESS_TYPE_KEYS (no weakness_type key at all) is a
+        # "missing metadata" case, not a structural defect -- deliberately
+        # non-blocking to preserve the ratified D2 decision (weakness
+        # taxonomy is required metadata but never invalidates the brief on
+        # its own; see WEAKNESS_TYPE_MISSING below, which this pairs with).
+        # Every other outcome here (duplicate keys, malformed/missing fence
+        # or section, general YAML parse failure) is a genuine structural
+        # defect and stays blocking.
+        _sg_severity = (
+            "warning"
+            if safeguard_result.outcome == weakness_type_safeguard.ZERO_WEAKNESS_TYPE_KEYS
+            else "error"
+        )
+        errors.append(_code_error(_sg_code, _sg_message, field="weakness_type", severity=_sg_severity))
+
     weakest_boundary = sections.get("weakest boundary", "")
     if artifact_data is not None:
         # A present-but-empty key (e.g. an untouched "weakness_type:  # ..."
@@ -714,6 +818,11 @@ def main(argv: list[str] | None = None) -> int:
             HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT,
             EVIDENCE_QUOTE_NOT_FOUND,
             EVIDENCE_QUOTE_WINDOW_MATCH,
+            DUPLICATE_WEAKNESS_TYPE_KEYS,
+            MALFORMED_HANDOFF_FENCE,
+            MISSING_HANDOFF_SECTION,
+            MISSING_WEAKNESS_TYPE,
+            HANDOFF_YAML_PARSE_ERROR,
         ]
         print("Stable error codes for brief validation:")
         for code in codes:
