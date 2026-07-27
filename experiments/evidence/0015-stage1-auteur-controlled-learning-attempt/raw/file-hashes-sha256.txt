@@ -1,0 +1,4 @@
+b8f28ba75e32fc53732348b54cf1af73f5963aae86ffef4cd35083d6ebb7dbad *experiments/evidence/0015-stage1-auteur-controlled-learning-attempt/raw/repository_sensemaking_brief.md
+e097b5c6943045e14c066ad23b2dd65f3e2a72258f19f85e5a6b93f5cb6d2d3e *experiments/evidence/0015-stage1-auteur-controlled-learning-attempt/raw/tool-call-trace.jsonl
+b80f9ee6ee5995bbabfc076c0ee07a8c452fc6a61f40f4615af8103baa432bd0 *experiments/evidence/0015-stage1-auteur-controlled-learning-attempt/raw/invocation-ledger.txt
+f93ebc0104b55aa535ea9f5fb58570c5aa1a53d357b0ec7e90bf7bc9add7aa3d *experiments/evidence/0015-stage1-auteur-controlled-learning-attempt/raw/workflow_summary.json

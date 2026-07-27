@@ -1,0 +1,30 @@
+=== PRE-RUN TARGET SAFETY STATE ===
+target path: /c/scratch/stage1-auteur-attempt-20260727-164125/target-auteur
+HEAD: b40db654e0df9e90074f7ad85b40d7362378e07d
+--- status --porcelain ---
+--- diff (should be empty) ---
+--- diff --cached (should be empty) ---
+--- file manifest (first 20 + count) ---
+1044
+.claude/launch.json
+.claude/settings.json
+.claude/settings.local.json
+.commandcode/taste/taste.md
+.github/workflows/validation.yml
+.gitignore
+.pre-commit-config.yaml
+AGENTS.md
+CHANGELOG.md
+CLAUDE.md
+CONTEXT.md
+CONTRIBUTING.md
+"C\357\200\272UsersAdminAppDataLocalTempclaudeH--GithubRepositories-auteur62865e61-062c-4434-9de4-6f441dc6a9bascratchpadtest_validate_choices.py"
+"C\357\200\272UsersAdminAppDataLocalTempclaudeH--GithubRepositories-auteurd6aadb61-c0c3-4308-a4ab-6bfad899251cscratchpadtest_output.txt"
+HANDOFF.md
+"H\357\200\272GithubRepositoriesauteurAGENTS.md"
+LICENSE
+README.md
+artifacts/01-orchestration-run/00-user-intent.md
+artifacts/02-orchestration-run/00-user-intent.md
+--- tree hash ---
+1ffa0ac4397f193758a4525a362c83a915753145

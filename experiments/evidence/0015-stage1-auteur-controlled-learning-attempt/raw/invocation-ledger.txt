@@ -1,0 +1,19 @@
+authorized invocation count: 1
+invocations begun: 0
+invocations completed: 0
+retry count: 0
+fallback count: 0
+authorization status: available
+
+authorization consumed: yes
+invocations begun: 1
+timestamp: 2026-07-27T19:42:34Z
+framework pin: bfe84571d782cd4cf4308536fba8213e8d85149c
+target pin: b40db654e0df9e90074f7ad85b40d7362378e07d
+requested model: claude-sonnet-5
+exact command: python scripts/workflow-runtime.py "Analyze this external repository, identify the weakest architectural boundary affecting reliable development or operation, and produce an evidence-grounded repository sensemaking brief. Do not modify the target repository." --workflow architectural-review-planning-workflow --mode guided_execution --executor claude-code --controlled-experiment --model claude-sonnet-5 --repo-root /c/scratch/stage1-auteur-attempt-20260727-164125/framework --target-repo /c/scratch/stage1-auteur-attempt-20260727-164125/target-auteur --gate-decision auto-approve --log-dir /c/scratch/stage1-auteur-attempt-20260727-164125/evidence-staging/run-logs
+
+invocations completed: 1
+exit_code: 2
+completion_timestamp: 2026-07-27T19:52:36Z
+result: workflow reported status=failed, 0/2 steps, validator FAIL

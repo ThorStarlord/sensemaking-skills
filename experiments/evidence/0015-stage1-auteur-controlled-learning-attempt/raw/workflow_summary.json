@@ -1,0 +1,32 @@
+{
+  "workflow_id": "architectural-review-planning-workflow",
+  "workflow_name": "Architectural Review Planning",
+  "session_id": "orchestration-20260727-164244-efe401c8",
+  "mode": "guided_execution",
+  "status": "failed",
+  "final_note": "Step 1 (repo-sensemaker) failed. Run halted.",
+  "branch": "HEAD",
+  "executed_at": "2026-07-27T16:52:19.517005",
+  "steps_completed": 0,
+  "steps_total": 1,
+  "steps_failed": 1,
+  "steps": [
+    {
+      "step_id": "1",
+      "skill": "repo-sensemaker",
+      "status": "FAILED",
+      "output_artifact": "repository_sensemaking_brief",
+      "artifact_path": "artifacts/05-orchestration-run/repository_sensemaking_brief.md",
+      "duration_seconds": 0,
+      "validators": [
+        {
+          "level": "Phase 1 Unified Validator",
+          "result": "FAILED"
+        }
+      ]
+    }
+  ],
+  "errors": [
+    "VALIDATOR_FAILED: Step 1 (repo-sensemaker): 1 validator(s) failed"
+  ]
+}

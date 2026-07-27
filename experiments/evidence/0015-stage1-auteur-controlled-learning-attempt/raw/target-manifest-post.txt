@@ -1,0 +1,9 @@
+=== POST-RUN TARGET SAFETY STATE ===
+HEAD: b40db654e0df9e90074f7ad85b40d7362378e07d
+--- status --porcelain ---
+--- diff --stat ---
+--- diff --cached --stat ---
+--- file count ---
+1044
+--- tree hash ---
+1ffa0ac4397f193758a4525a362c83a915753145
