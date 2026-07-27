@@ -1,0 +1,20 @@
+{
+  "valid": false,
+  "artifact_id": "unknown",
+  "artifact_path": "H:\\scratch\\stage1-auteur-rerun-2\\framework\\artifacts\\05-orchestration-run\\repository_sensemaking_brief.md",
+  "validator": "validate-and-report.py",
+  "errors": [
+    {
+      "error_id": "unknown.artifact_id.missing_field",
+      "error_type": "missing_field",
+      "field": "artifact_id",
+      "current_value": null,
+      "message": "Cannot determine artifact_id from file. Generic validator requires artifact_id to be present in YAML block.",
+      "suggested_fixes": [
+        "Add artifact_id field to machine-readable handoff YAML block"
+      ],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
+    }
+  ],
+  "validation_timestamp": "2026-07-27T15:56:06.904049Z"
+}
