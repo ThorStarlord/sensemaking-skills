@@ -915,6 +915,13 @@ class OrchestrationRunner:
                     # junctioned ancestor of expected_output_path can't silently
                     # relocate the "authorized" destination outside the session.
                     "artifact_session_dir": self.artifact_session_dir,
+                    # Issue #89: the repo the brief is ABOUT, used by the
+                    # runtime-owned-skeleton reconciliation path to
+                    # deterministically extract evidence_excerpts[].quote
+                    # from source. Falls back to repo_root when not an
+                    # external-repository run (self.target_repo already
+                    # defaults to self.repo_root -- see __init__).
+                    "target_repo": self.target_repo,
                 }
 
                 # Invoke the skill

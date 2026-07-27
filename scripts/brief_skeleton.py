@@ -45,6 +45,10 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
+import yaml
+
+import evidence_quote_extractor as _qe
+
 ARTIFACT_ID = "repository_sensemaking_brief"
 SCHEMA_VERSION = 1
 
@@ -202,11 +206,18 @@ def build_skeleton(ctx: SkeletonContext | None = None) -> str:
             lines.append(_marker("evidence_excerpts", "BEGIN"))
             lines.append("")
             lines.append(
-                "<!-- REQUIRED: every item below must include all four "
-                "fields file, lines, quote, supports_claim (exact key "
-                "names -- `citation` or similar does NOT satisfy this). "
-                "validate-brief.py raises EVIDENCE_EXCERPT_FIELD per "
-                "missing/misnamed key, per excerpt. -->"
+                "<!-- REQUIRED: every item below must include file, lines, "
+                "supports_claim (exact key names -- `citation` or similar "
+                "does NOT satisfy this). Give the SMALLEST sufficient line "
+                "range that contains the cited text -- do not invent paths. "
+                "A `quote` key is also required by the schema, but its "
+                "text does not matter: the runtime OVERWRITES it with the "
+                "exact verbatim text read from file/lines before "
+                "validation (issue #89) -- write a short placeholder like "
+                "'see file/lines' rather than trying to retype the source "
+                "text yourself. validate-brief.py raises "
+                "EVIDENCE_EXCERPT_FIELD per missing/misnamed key, per "
+                "excerpt. -->"
             )
             lines.append("")
             lines.append("```yaml")
@@ -260,6 +271,119 @@ def build_skeleton(ctx: SkeletonContext | None = None) -> str:
 # --- Reconciliation ----------------------------------------------------------
 
 _YAML_BLOCK_RE = re.compile(r"```yaml\s*(.*?)\s*```", re.DOTALL)
+
+# Sentinel written into `quote` when deterministic extraction cannot complete
+# (issue #89). Deliberately cannot match any real source line, so
+# validate-brief.py's EVIDENCE_QUOTE_NOT_FOUND check -- the real downstream
+# consumer -- always rejects it. This is the "fail loudly, never keep an
+# unverified model quote" behavior: the reconciled artifact is still written
+# (so the run doesn't crash uncleanly), but it is structurally guaranteed to
+# fail brief validation rather than silently pass with an unverified quote.
+QUOTE_EXTRACTION_FAILED_SENTINEL = "[[QUOTE_EXTRACTION_FAILED: {reason}]]"
+
+
+class _QuotedStr(str):
+    """Marker subclass: dumped as a double-quoted YAML scalar so the exact
+    extracted text (Unicode code points, leading indentation, trailing
+    spaces, embedded newlines, Markdown bold/backtick characters) survives
+    YAML round-tripping byte-for-byte -- double-quoted scalars are the one
+    YAML string style that never depends on re-indentation rules the way
+    block-literal ('|') scalars do, which matters because extracted quotes
+    can have inconsistent internal indentation.
+    """
+
+
+class _EvidenceExcerptDumper(yaml.SafeDumper):
+    pass
+
+
+def _quoted_str_representer(dumper: yaml.SafeDumper, data: "_QuotedStr"):
+    return dumper.represent_scalar("tag:yaml.org,2002:str", str(data), style='"')
+
+
+_EvidenceExcerptDumper.add_representer(_QuotedStr, _quoted_str_representer)
+
+
+def _strip_yaml_fence(text: str) -> str:
+    """If `text` is wrapped in a ```yaml ... ``` fence, return the inner
+    content; otherwise return `text` unchanged. Extraction must tolerate
+    the model either following instructions literally (leaving the fence
+    marks in place between the markers) or replacing only the inner list.
+    """
+    m = _YAML_BLOCK_RE.search(text)
+    if m and m.group(0).strip() == text.strip():
+        return m.group(1)
+    return text
+
+
+def reconcile_evidence_excerpt_quotes(raw_block_text: str, target_root: str) -> tuple[str, list[str]]:
+    """Deterministically overwrite every evidence_excerpts[].quote with text
+    read from the source file at `target_root`/file, lines `lines` (issue
+    #89). The model's own `quote` value, if any, is discarded and never
+    trusted -- this function is the sole verbatim-copy boundary.
+
+    Returns (bare_yaml_text, warnings). `bare_yaml_text` has no ```yaml
+    fence wrapper (the caller adds one). `warnings` is a list of
+    human-readable extraction failures, one per excerpt where extraction
+    could not complete; each such excerpt's `quote` is replaced with
+    QUOTE_EXTRACTION_FAILED_SENTINEL, which is guaranteed to fail
+    validate-brief.py's EVIDENCE_QUOTE_NOT_FOUND check rather than silently
+    keeping an unverified value.
+    """
+    inner = _strip_yaml_fence(raw_block_text).strip()
+    try:
+        data = yaml.safe_load(inner)
+    except Exception as e:
+        # Cannot parse at all -- leave the raw text untouched; validate-brief.py
+        # already reports PARSING_ERROR / MISSING_EVIDENCE_EXCERPTS for this
+        # case, which is the real downstream consumer for malformed YAML.
+        return raw_block_text, [f"could not parse evidence_excerpts YAML: {e}"]
+
+    if isinstance(data, dict):
+        excerpts = data.get("evidence_excerpts")
+        wrap_key = True
+    elif isinstance(data, list):
+        excerpts = data
+        wrap_key = False
+    else:
+        return raw_block_text, ["evidence_excerpts block is not a list or a dict containing one"]
+
+    if not isinstance(excerpts, list):
+        return raw_block_text, ["evidence_excerpts value is not a list"]
+
+    warnings: list[str] = []
+    new_excerpts: list[dict] = []
+    for i, exc in enumerate(excerpts):
+        if not isinstance(exc, dict):
+            new_excerpts.append(exc)
+            continue
+        item = dict(exc)
+        file_path = item.get("file")
+        lines_value = item.get("lines")
+        if file_path and lines_value is not None:
+            try:
+                start, end = _qe.parse_lines_value(str(lines_value))
+                extracted = _qe.extract_quote(str(file_path), start, end, target_root)
+                item["quote"] = _QuotedStr(extracted.quote)
+            except _qe.QuoteExtractionError as e:
+                reason = str(e)
+                warnings.append(f"excerpt[{i}] ({file_path!r} lines={lines_value!r}): {reason}")
+                item["quote"] = _QuotedStr(QUOTE_EXTRACTION_FAILED_SENTINEL.format(reason=reason))
+        # If file/lines are missing entirely, leave whatever quote (if any)
+        # the model supplied -- validate-brief.py's EVIDENCE_EXCERPT_FIELD /
+        # HALLUCINATED_FILE / INVALID_LINE_FORMAT checks already cover that
+        # case; this function's job is quote fidelity, not field presence.
+        new_excerpts.append(item)
+
+    payload: Any = {"evidence_excerpts": new_excerpts} if wrap_key else new_excerpts
+    dumped = yaml.dump(
+        payload,
+        Dumper=_EvidenceExcerptDumper,
+        sort_keys=False,
+        allow_unicode=True,
+        default_flow_style=False,
+    )
+    return dumped.rstrip("\n"), warnings
 
 
 def _extract_last_yaml_mapping(text: str) -> dict[str, Any]:
@@ -315,7 +439,12 @@ def _extract_model_sections(text: str) -> dict[str, str]:
     return found
 
 
-def reconcile(model_output_text: str, ctx: SkeletonContext | None = None) -> str:
+def reconcile(
+    model_output_text: str,
+    ctx: SkeletonContext | None = None,
+    target_root: str | None = None,
+    framework_root: str | None = None,
+) -> str:
     """Merge whatever the model produced back into a fresh canonical skeleton.
 
     This is the enforcement point: regardless of what `model_output_text`
@@ -325,9 +454,23 @@ def reconcile(model_output_text: str, ctx: SkeletonContext | None = None) -> str
     envelope intact. Model-authored fields are copied verbatim (including
     invalid values like a skill id used as a workflow id); the runtime
     never invents a valid-looking substitute for an invalid model value.
+
+    Issue #89: the one exception to "copied verbatim" is
+    `evidence_excerpts[].quote`. The model is no longer the verbatim-copy
+    boundary for quote text -- it only supplies `file` + `lines` (+
+    rationale/supports_claim). This function deterministically re-derives
+    `quote` from the source file at `target_root` (the repository the brief
+    is ABOUT) and overwrites whatever the model wrote there, discarding it
+    unread. `target_root` falls back to `framework_root` when not supplied,
+    mirroring scripts/validate-brief.py's `citation_root` fallback so
+    internal (single-repo) runs behave identically to before. `quote`
+    extraction never reads from or writes to anywhere outside
+    `target_root`/`framework_root` -- see evidence_quote_extractor.py for
+    the path-authority proof.
     """
     ctx = ctx or SkeletonContext()
     skeleton = build_skeleton(ctx)
+    extraction_root = target_root or framework_root or "."
 
     harvested_yaml = _extract_last_yaml_mapping(model_output_text)
     harvested_sections = _extract_model_sections(model_output_text)
@@ -369,6 +512,17 @@ def reconcile(model_output_text: str, ctx: SkeletonContext | None = None) -> str
 
     if "evidence_excerpts" in harvested_sections:
         content = harvested_sections["evidence_excerpts"]
+        # Issue #89: deterministically overwrite quote text before splicing.
+        # This never raises -- extraction failures are converted into a
+        # guaranteed-to-fail sentinel per excerpt (see
+        # reconcile_evidence_excerpt_quotes docstring) so a single bad
+        # citation never crashes the whole run; validate-brief.py is still
+        # the authority that rejects the resulting artifact.
+        content, extraction_warnings = reconcile_evidence_excerpt_quotes(content, extraction_root)
+        for warning in extraction_warnings:
+            # ASCII-only (CLAUDE.md console-output rule); this repo runs on
+            # Windows cp1252 and non-ASCII stdout crashes the process.
+            print(f"WARNING [brief_skeleton.reconcile] quote extraction failed: {warning}")
         begin = _marker("evidence_excerpts", "BEGIN")
         end = _marker("evidence_excerpts", "END")
         replacement = f"{begin}\n\n```yaml\n{content}\n```\n\n{end}"

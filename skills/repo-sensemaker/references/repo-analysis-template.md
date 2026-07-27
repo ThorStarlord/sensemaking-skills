@@ -70,11 +70,22 @@ Each excerpt's `lines` field is a single line or a range. Use either the `Lx` /
 are accepted. Every excerpt must include all four fields: `file`, `lines`,
 `quote`, `supports_claim`.
 
+`file` and `lines` are what matter — give the exact path and the smallest
+line range that contains the cited text. Do not invent a path or a range you
+have not actually read. **Do not hand-transcribe the `quote` text yourself:**
+the runtime overwrites `quote` with the exact verbatim text it reads from
+`file`/`lines` before validation runs (issue #89) — the model is no longer
+the verbatim-copy boundary, because hand-transcription has been observed to
+silently mangle Unicode punctuation (e.g. em dashes), drop leading
+indentation, and alter Markdown formatting (bold/backticks). Write a short
+placeholder for `quote` (e.g. `"see file/lines"`) rather than retyping the
+source text.
+
 ```yaml
 evidence_excerpts:
   - file: path/to/file.ext
     lines: L10-L15
-    quote: "..."
+    quote: "see file/lines"
     supports_claim: "..."
 ```
 
