@@ -1,0 +1,90 @@
+
+============================================================
+PRE-FLIGHT CHECK  |  Workflow: architectural-review-planning-workflow  Mode: guided_execution
+Session: orchestration-20260727-164244-efe401c8
+============================================================
+
+  [OK] GIT: clean worktree
+  ~ Branch: HEAD
+  [OK] LEVEL 1: validate-repo.py PASSED
+
+  [OK] All pre-flight checks passed.
+
+[OK] Created user intent artifact: artifacts\05-orchestration-run\00-user-intent.md
+============================================================
+PHASE 2: GENERATE PLAN
+============================================================
+  [OK] Plan written to C:\scratch\stage1-auteur-attempt-20260727-164125\framework\artifacts\05-orchestration-run\plan_architectural-review-planning-workflow.md
+
+PHASE 2b: DIAGNOSTIC REPORT
+============================================================
+  [OK] Diagnostic report: ..\evidence-staging\run-logs\diagnostic_architectural-review-planning-workflow_guided_execution.md
+
+============================================================
+PHASE 3: EXECUTE STEPS  (2 total)
+============================================================
+
+--------------------------------------------------
+STEP 1/2  |  Skill: repo-sensemaker  |  Gate: review_diagnosis
+--------------------------------------------------
+  [SKILL_EXECUTED] Skill 'repo-sensemaker' executed and produced artifact
+  -> Running unified validator: validate-and-report.py
+    [FAIL] Validation failed (2.0s)
+      - ?: HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is 'Ghost Features', a hi
+      - ?: EVIDENCE_QUOTE_NOT_FOUND: Excerpt[0] quote not found in docs/adr/ADR-013-Univers
+      - ?: EVIDENCE_QUOTE_NOT_FOUND: Excerpt[1] quote not found in src/auteur/universe/mode
+      ... and 2 more errors
+
+  [FAIL] Step 1 FAILED. Halting execution.
+
+============================================================
+PHASE 4: WRITE RUN LOG
+============================================================
+
+  [OK] Run log written to C:/scratch/stage1-auteur-attempt-20260727-164125/evidence-staging/run-logs\run_log_architectural-review-planning-workflow_guided_execution.md
+
+PHASE 4b: IMPLEMENTATION REPORT
+============================================================
+  [OK] Implementation report: ..\evidence-staging\run-logs\implementation_architectural-review-planning-workflow_guided_execution.md
+
+PHASE 4c: WORKFLOW SUMMARY (MACHINE-READABLE)
+============================================================
+  [OK] Workflow summary JSON: ..\evidence-staging\run-logs\workflow_summary.json
+
+PHASE 4d: WORKFLOW PRESENTATION (HUMAN-READABLE)
+============================================================
+
+============================================================
+INVOKING PRESENTATION SKILL: workflow-presenter
+============================================================
+  ~ workflow-presenter skill not found at C:\scratch\stage1-auteur-attempt-20260727-164125\framework\skills\workflow-presenter\workflow-presenter.py
+    Presentation will be skipped; JSON summary available at C:/scratch/stage1-auteur-attempt-20260727-164125/evidence-staging/run-logs\workflow_summary.json
+
+============================================================
+PHASE 5: UPDATE MODE COVERAGE
+============================================================
+  [OK] Mode coverage updated
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ROLLBACK RECOMMENDED
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Branch: HEAD
+To revert all changes, run:
+  git reset --hard HEAD
+  git clean -fd
+(Review changes first with 'git diff')
+
+
+============================================================
+SUMMARY
+============================================================
+  Workflow:     architectural-review-planning-workflow
+  Mode:         guided_execution
+  Session:      orchestration-20260727-164244-efe401c8
+  Status:       failed
+  Steps:        0/2
+  Gates:        0
+  Errors:       1
+  Run Log:      C:/scratch/stage1-auteur-attempt-20260727-164125/evidence-staging/run-logs\run_log_architectural-review-planning-workflow_guided_execution.md
+
+  [WARN]  Execution completed with failures.
