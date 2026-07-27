@@ -96,8 +96,12 @@ python scripts/workflow-runtime.py \
 ```
 
 Invoked exactly once. Exit code 0 (runtime completed and reported a FAILED
-workflow status; the process itself did not crash). See `raw/stdout.log`,
-`raw/stderr.log`.
+workflow status; the process itself did not crash). `raw/stdout.log` and
+`raw/stderr.log` were not preserved in this evidence package; the invocation,
+model-enforcement, target-safety, and validator-result claims in this
+document are independently corroborated by `raw/tool-call-trace.jsonl`,
+`raw/run-ledger.jsonl`, `raw/workflow_summary.json`, and
+`raw/validator-output-authoritative.json` instead.
 
 ## Runtime enforcement result
 
@@ -124,9 +128,11 @@ git diff --exit-code (after): exit 0, no output
 git diff --cached --exit-code (after): exit 0, no output
 target-manifest-pre.txt vs target-manifest-post.txt: no diff (1044 files, identical)
 Write-tool attempts observed against target-auteur in trace: 0
-  (35 tool_name="Write" entries in trace overall, none targeting
-  target-auteur; 17 Read "completed" + 18 Read "observed" entries reference
-  target-auteur paths -- read-only access only)
+  (2 tool_name="Write" entries in trace overall, both targeting the
+  framework artifact path (artifacts/05-orchestration-run/
+  repository_sensemaking_brief.md under the framework clone), none
+  targeting target-auteur; 17 Read "completed" + 18 Read "observed"
+  entries reference target-auteur paths -- read-only access only)
 Target mutation = none
 Completed target writes = 0
 ```
@@ -194,12 +200,16 @@ by this run.
 
 - `AUTHORIZATION.md`
 - `EVIDENCE.md` (this file)
-- `raw/stdout.log`, `raw/stderr.log`
 - `raw/run_log.md`, `raw/implementation_report.md`, `raw/workflow_summary.json`
 - `raw/repository_sensemaking_brief.md` (raw generated artifact, unedited)
 - `raw/tool-call-trace.jsonl`, `raw/run-ledger.jsonl`
 - `raw/target-manifest-pre.txt`, `raw/target-manifest-post.txt`
-- `raw/validator-output-authoritative.json`, `raw/validator-stderr.log`
+- `raw/validator-output-authoritative.json`
+
+Not preserved in this evidence package: `raw/stdout.log`, `raw/stderr.log`,
+`raw/validator-stderr.log`. Their absence does not affect the conclusions
+above, which are independently corroborated by the files that are
+preserved (see "Exact invocation" above).
 
 ## Explicit no-rerun statement
 
