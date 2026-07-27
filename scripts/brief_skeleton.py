@@ -382,6 +382,15 @@ def reconcile_evidence_excerpt_quotes(raw_block_text: str, target_root: str) -> 
         sort_keys=False,
         allow_unicode=True,
         default_flow_style=False,
+        # Without an explicit width, PyYAML wraps long double-quoted
+        # scalars at ~80 columns using a literal line break rather than an
+        # escaped "\n" -- and a literal line break inside a double-quoted
+        # scalar folds back to a single space on the next parse (YAML line
+        # folding), silently corrupting any extracted quote/evidence string
+        # that contains a real newline or is simply long. A very large
+        # width keeps every scalar on one physical line so embedded
+        # newlines stay as explicit "\n" escapes and round-trip exactly.
+        width=1_000_000,
     )
     return dumped.rstrip("\n"), warnings
 
@@ -483,19 +492,67 @@ def reconcile(
             continue
         value = harvested_yaml[key]
         if key == "evidence":
+            # Issue: this used to build the YAML line by hand
+            # (f'  - "{v}"') and simply wrapped whatever verbatim string
+            # the model/harvest step produced in a fresh pair of double
+            # quotes. Any embedded, unescaped double quote in that string
+            # (e.g. `__version__ = "0.35.0"`) then produced a syntactically
+            # invalid YAML document -- Evidence 0014's
+            # HANDOFF_YAML_PARSE_ERROR. The runtime, not the model, owns
+            # serialization: build the value as structured data and hand
+            # it to a real YAML dumper so every escaping rule (quotes,
+            # colons, `#`, backslashes, Unicode, control characters, ...)
+            # is handled by pyyaml rather than reimplemented ad hoc here.
             if isinstance(value, list) and value:
-                block = "evidence:\n" + "\n".join(f'  - "{v}"' for v in value)
+                block = yaml.dump(
+                    {"evidence": [_QuotedStr(v) if isinstance(v, str) else v for v in value]},
+                    Dumper=_EvidenceExcerptDumper,
+                    sort_keys=False,
+                    allow_unicode=True,
+                    default_flow_style=False,
+                    # See reconcile_evidence_excerpt_quotes' width= comment:
+                    # without this, embedded newlines fold to a space on
+                    # the next parse.
+                    width=1_000_000,
+                ).rstrip("\n")
             else:
                 continue
-            out = re.sub(r"evidence: \[\].*", block, out)
+            # A lambda replacement, not a plain string, is required here:
+            # re.sub() treats a *string* repl specially and resolves its
+            # own backslash escapes (\n, \t, \g<...>, ...) before
+            # substitution -- so a literal backslash-n produced by yaml.dump
+            # to represent an escaped newline INSIDE a double-quoted YAML
+            # scalar would silently be re-interpreted by re.sub as an
+            # actual newline character, corrupting the very escaping this
+            # function exists to get right. A callable repl is inserted
+            # verbatim with no backslash processing.
+            out = re.sub(r"evidence: \[\].*", lambda _m, b=block: b, out)
         elif key == "required_inputs":
             # Runtime already ships a safe default (user_intent,
             # repository_state); only override if the model gave a
-            # non-empty list, preserved verbatim.
+            # non-empty list, preserved verbatim. Same YAML-safe
+            # serialization boundary as `evidence` above -- a model-
+            # supplied required_inputs value is still an arbitrary string
+            # and must not be spliced in via string interpolation.
             if isinstance(value, list) and value:
-                block = "required_inputs:\n" + "\n".join(f"  - {v}" for v in value)
+                block = yaml.dump(
+                    {"required_inputs": [_QuotedStr(v) if isinstance(v, str) else v for v in value]},
+                    Dumper=_EvidenceExcerptDumper,
+                    sort_keys=False,
+                    allow_unicode=True,
+                    default_flow_style=False,
+                    # See reconcile_evidence_excerpt_quotes' width= comment:
+                    # without this, embedded newlines fold to a space on
+                    # the next parse.
+                    width=1_000_000,
+                ).rstrip("\n")
+                # See the `evidence` branch above: repl must be a callable,
+                # not a string, or re.sub reinterprets backslash escapes
+                # (e.g. an escaped "\n" inside a double-quoted YAML scalar)
+                # and corrupts them.
+                replacement = block + "\n"
                 out = re.sub(
-                    r"required_inputs:\n(?:  - .*\n)*", block + "\n", out
+                    r"required_inputs:\n(?:  - .*\n)*", lambda _m, r=replacement: r, out
                 )
         else:
             placeholder_re = re.compile(rf"^{re.escape(key)}:.*$", re.MULTILINE)
@@ -540,8 +597,14 @@ def reconcile(
 def skeleton_integrity_ok(text: str) -> bool:
     """True iff every runtime-owned marker/field is present and unaltered enough
     for validate-brief.py to at least find the YAML fence and required headings.
-    Used by tests, not by the reconciliation path itself (reconcile() always
-    rebuilds from a fresh skeleton, so this should always be True on its output).
+
+    NOTE: this is a purely structural (string-presence) check. It does NOT
+    parse or validate any YAML content -- a document that has every marker
+    and heading in place but a syntactically invalid Section 13 YAML block
+    (e.g. Evidence 0014's unescaped-quote HANDOFF_YAML_PARSE_ERROR) still
+    returns True here. Use `handoff_yaml_round_trips()` for the YAML-
+    parseability guarantee; do not read "integrity_ok: true" as "the
+    authoritative handoff parses."
     """
     if text.count("```yaml") < 1:
         return False
@@ -553,3 +616,44 @@ def skeleton_integrity_ok(text: str) -> bool:
         if heading not in text:
             return False
     return True
+
+
+def extract_handoff_yaml_block(text: str) -> str | None:
+    """Return the raw text inside Section 13's ```yaml fence, or None if the
+    section/fence cannot be located at all (a structural problem, not a YAML
+    syntax problem -- see `skeleton_integrity_ok` for that check).
+    """
+    marker = "## 13. Machine-readable handoff"
+    idx = text.find(marker)
+    if idx == -1:
+        return None
+    m = _YAML_BLOCK_RE.search(text, idx)
+    if not m:
+        return None
+    return m.group(1)
+
+
+def handoff_yaml_round_trips(text: str) -> tuple[bool, str | None]:
+    """The authoritative-handoff parseability guarantee (issue: Evidence
+    0014's HANDOFF_YAML_PARSE_ERROR shipped with `integrity_ok: true`
+    because integrity checking never actually parsed the YAML it claimed
+    was intact).
+
+    Returns (True, None) iff Section 13's YAML fence exists, is valid YAML
+    per `yaml.safe_load`, and parses to a mapping. Returns (False, reason)
+    otherwise. This is deliberately independent of validate-brief.py's own
+    semantic checks (field values, evidence grounding, etc.) -- it only
+    proves the block is syntactically well-formed YAML, which is the
+    precondition validate-brief.py itself needs before it can even begin
+    semantic validation.
+    """
+    block = extract_handoff_yaml_block(text)
+    if block is None:
+        return False, "Section 13 YAML fence not found"
+    try:
+        data = yaml.safe_load(block)
+    except yaml.YAMLError as e:
+        return False, f"YAML_PARSE_ERROR: {e}"
+    if not isinstance(data, dict):
+        return False, "Section 13 YAML did not parse to a mapping"
+    return True, None

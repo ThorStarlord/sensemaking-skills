@@ -1348,6 +1348,8 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
             # enforcement point described in brief_skeleton.reconcile(): the
             # envelope survives even if the model wrote nothing, malformed
             # content, or attempted a full-file replacement.
+            handoff_yaml_valid = True
+            handoff_yaml_invalid_reason: Optional[str] = None
             if uses_runtime_skeleton:
                 model_raw = ""
                 if os.path.exists(expected_output_path):
@@ -1362,9 +1364,24 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                 )
                 with open(expected_output_path, "w", encoding="utf-8") as f:
                     f.write(reconciled)
+                # `integrity_ok` here is a structural check ONLY (markers,
+                # headings, artifact_id present as text) -- see
+                # brief_skeleton.skeleton_integrity_ok's docstring. It does
+                # NOT prove Section 13's YAML is parseable, which is exactly
+                # how Evidence 0014 shipped a HANDOFF_YAML_PARSE_ERROR
+                # artifact alongside `integrity_ok: true`. The separate
+                # `handoff_yaml_valid` field is the actual round-trip
+                # parseability guarantee and is what gates artifact
+                # acceptance below.
+                handoff_yaml_valid, handoff_yaml_invalid_reason = brief_skeleton.handoff_yaml_round_trips(reconciled)
                 trace_log.append(_trace_event(
-                    "Reconciliation", "brief_skeleton.reconcile", expected_output_path, "ok",
-                    extra={"integrity_ok": brief_skeleton.skeleton_integrity_ok(reconciled)},
+                    "Reconciliation", "brief_skeleton.reconcile", expected_output_path,
+                    "ok" if handoff_yaml_valid else "hard_stop",
+                    extra={
+                        "integrity_ok": brief_skeleton.skeleton_integrity_ok(reconciled),
+                        "handoff_yaml_valid": handoff_yaml_valid,
+                        "handoff_yaml_invalid_reason": handoff_yaml_invalid_reason,
+                    },
                 ))
 
             # Model-enforcement decision (issue #86). Computed unconditionally
@@ -1422,6 +1439,27 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
                     requested_model=self.model,
                     reported_models=distinct_reported,
                     model_match=False,
+                )
+
+            # Runtime-skeleton hard-stop (companion to the model-enforcement
+            # hard-stop above): if reconciliation produced an authoritative
+            # handoff whose Section 13 YAML cannot be parsed, this is a
+            # runtime serialization defect, not a model content problem --
+            # validate-brief.py's HANDOFF_YAML_PARSE_ERROR would reject it
+            # anyway, but the runtime must not silently report artifact
+            # success (or a misleadingly-true integrity_ok) on top of a
+            # handoff it already knows cannot parse.
+            if uses_runtime_skeleton and not handoff_yaml_valid:
+                return SkillExecutionResult(
+                    skill_id=skill_id,
+                    status=SkillExecutionStatus.FAILED,
+                    command=invocation_command,
+                    output_artifact=expected_output_artifact,
+                    error=f"[handoff_yaml_invalid] Section 13 machine-readable handoff did not "
+                          f"produce parseable YAML after reconciliation: {handoff_yaml_invalid_reason}",
+                    requested_model=self.model,
+                    reported_models=distinct_reported,
+                    model_match=model_match,
                 )
 
             # Check if the expected artifact was produced
