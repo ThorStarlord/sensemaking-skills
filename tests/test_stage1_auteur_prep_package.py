@@ -560,7 +560,8 @@ class FinalizedPinFixture(unittest.TestCase):
 # self-recorded digest. Branch one is impossible (the record is authored after
 # the revision it pins); branch two authenticated nothing. Both are gone. The
 # tests below pin the single mandatory owner-approved mechanism that replaced
-# them, and the Gate A verification that enforces it before invocation.
+# them, and the Gate A verification that a future consumer must perform before
+# invocation (no such consumer exists today).
 # ---------------------------------------------------------------------------
 
 RUN_CONTROL_DIR = (
@@ -1322,22 +1323,216 @@ PROHIBITED_ENFORCEMENT_PHRASES = (
     "is runtime-enforced",
 )
 
-# A line is exempt if it clearly marks itself as a negative example, a
-# prohibition, or a quotation of language being removed.
-NEGATIVE_CONTEXT_MARKERS = (
-    "must not",
-    "must never",
-    "does not claim",
-    "did not",
-    "not current runtime behavior",
-    "prohibited",
-    "negative example",
-    "no longer",
-    "pr_107_does_not_prove",
-    "- gate a is runtime-enforced",
+CHANGED_DOCS = (PACKAGE_PATH, CHECKLIST_PATH, EXEC_PACKAGE_PATH)
+
+# ---------------------------------------------------------------------------
+# Prose honesty guard
+#
+# Design note (round 5 remediation):
+#
+# The previous implementation exempted an ENTIRE LINE whenever that line
+# contained any "negative context" word such as "prohibited", "did not" or
+# "must not". That was empirically bypassable: a line may carry a genuine
+# present-tense enforcement overclaim *and* an unrelated negative word, e.g.
+#
+#     Gate A verifies the authorization digest; unauthorized runs are prohibited.
+#
+# The word "prohibited" wrongly exempted the false claim "Gate A verifies".
+#
+# The line-level exemption is deleted. There is now exactly one way to exempt
+# text: enclose it in an explicitly marked quotation region delimited by
+# BEGIN_QUOTED_OLD_WORDING / END_QUOTED_OLD_WORDING lines. Everything else is
+# scanned clause by clause, so a negative word in one clause can never exempt
+# another clause. Proximity to words like "example", "quoted", "future" or
+# "required" grants nothing.
+# ---------------------------------------------------------------------------
+
+QUOTED_REGION_BEGIN = "BEGIN_QUOTED_OLD_WORDING"
+QUOTED_REGION_END = "END_QUOTED_OLD_WORDING"
+
+# Subject nouns that, in this repository's prose, denote the runtime.
+_OVERCLAIM_SUBJECT = (
+    r"(?:gate\s+a|runner|runtime|system|consumer|"
+    r"(?:scripts/)?workflow-runtime\.py)"
+)
+# Present-tense third-person verbs asserting that enforcement happens NOW.
+# Bare infinitives ("must verify", "will recompute", "to compare") are absent
+# on purpose: those are the truthful future-tense forms and must stay legal.
+_OVERCLAIM_VERB = (
+    r"(?:verifies|recomputes|compares|validates|blocks|checks|enforces|"
+    r"performs|rejects|refuses|halts)"
+)
+_OVERCLAIM_ADVERB = r"(?:currently|already|now|automatically|itself|always)"
+
+# The ONLY inline denial accepted, and only when it directly governs the claim:
+# the denial must sit immediately before the subject in the same clause, e.g.
+# "It does not claim that `workflow-runtime.py` performs ...". A denial anywhere
+# else -- another clause, elsewhere on the line, merely nearby -- exempts
+# nothing. This is a syntactic adjacency rule, not a proximity heuristic.
+_GOVERNING_DENIAL_RE = re.compile(
+    r"\b(?:does|do|did)\s+not\s+(?:claim|assert|say|state)\s+that\s+$"
+    r"|\bnever\s+(?:claimed|asserted|said|stated)\s+that\s+$",
+    re.IGNORECASE,
 )
 
-CHANGED_DOCS = (PACKAGE_PATH, CHECKLIST_PATH, EXEC_PACKAGE_PATH)
+# An optional negator IMMEDIATELY attached to the subject noun phrase makes the
+# claim truthful ("no current runner verifies"). A negator anywhere else in the
+# clause grants nothing.
+_OVERCLAIM_RE = re.compile(
+    r"(?P<neg>\b(?:no|neither)\s+(?:\w+\s+){0,2})?"
+    r"\b(?P<subject>" + _OVERCLAIM_SUBJECT + r")"
+    r"(?:\s+" + _OVERCLAIM_ADVERB + r"){0,2}"
+    r"\s+(?P<verb>" + _OVERCLAIM_VERB + r")\b",
+    re.IGNORECASE,
+)
+
+# Literal phrases that are overclaims regardless of subject/verb shape.
+_OVERCLAIM_LITERALS = (
+    "is runtime-enforced",
+    "is currently enforced",
+    "comparisons happen in",
+    "the live runner",
+)
+
+# A period only ends a clause at a word boundary, so filenames such as
+# `workflow-runtime.py` survive clause splitting intact.
+_CLAUSE_SPLIT_RE = re.compile(r"\.(?=\s|$)|[;:!?|—–]|,")
+
+
+def _normalize_markdown(text):
+    """Strip Markdown emphasis/decoration so formatting cannot hide a claim."""
+    text = text.replace("**", " ").replace("__", " ")
+    # Emphasis underscores only: intra-word underscores belong to snake_case
+    # identifiers (YAML keys) and must not be split into prose words.
+    text = re.sub(r"(?<![A-Za-z0-9])_+|_+(?![A-Za-z0-9])", " ", text)
+    text = re.sub(r"[`*>#]", " ", text)
+    text = re.sub(r"^\s*[-+]\s+", " ", text)
+    return re.sub(r"\s+", " ", text)
+
+
+def _is_region_marker(raw_line, marker):
+    """True only for a standalone marker line.
+
+    A marker must be the whole line (optionally wrapped in an HTML comment or
+    prefixed by a YAML '#'). Markers inside inline code, or embedded in
+    user-facing prose, are NOT markers -- otherwise the region mechanism could
+    be created dynamically from ordinary text.
+    """
+    if "`" in raw_line:
+        return False
+    stripped = raw_line.strip()
+    stripped = re.sub(r"^<!--\s*", "", stripped)
+    stripped = re.sub(r"\s*-->$", "", stripped)
+    stripped = stripped.lstrip("#-").strip()
+    return stripped == marker
+
+
+def _resolve_quoted_regions(lines):
+    """Return (exempt_line_numbers, structural_violations).
+
+    Fail-closed: a malformed region exempts nothing.
+    """
+    exempt = set()
+    violations = []
+    open_at = None
+    for lineno, raw in enumerate(lines, start=1):
+        if _is_region_marker(raw, QUOTED_REGION_BEGIN):
+            if open_at is not None:
+                violations.append(
+                    f"line {lineno}: nested {QUOTED_REGION_BEGIN} "
+                    f"(already open at line {open_at})"
+                )
+                continue
+            open_at = lineno
+        elif _is_region_marker(raw, QUOTED_REGION_END):
+            if open_at is None:
+                violations.append(
+                    f"line {lineno}: {QUOTED_REGION_END} without a matching "
+                    f"{QUOTED_REGION_BEGIN}"
+                )
+                continue
+            # Exempt only the text strictly between the markers.
+            exempt.update(range(open_at + 1, lineno))
+            open_at = None
+    if open_at is not None:
+        violations.append(
+            f"line {open_at}: {QUOTED_REGION_BEGIN} was never closed; "
+            "the region exempts nothing"
+        )
+    non_blank = [
+        i
+        for i, raw in enumerate(lines, start=1)
+        if raw.strip()
+        and not _is_region_marker(raw, QUOTED_REGION_BEGIN)
+        and not _is_region_marker(raw, QUOTED_REGION_END)
+    ]
+    exempt_non_blank = [i for i in non_blank if i in exempt]
+    if non_blank and len(exempt_non_blank) * 2 > len(non_blank):
+        violations.append(
+            "quoted-old-wording regions cover more than half the document; "
+            "an exemption region may not swallow the document"
+        )
+    if violations:
+        return set(), violations
+    return exempt, violations
+
+
+def find_enforcement_overclaims(text, name="<text>"):
+    """Return a list of human-readable overclaim findings for `text`.
+
+    Multi-line claims are caught by joining consecutive non-blank lines into a
+    logical block before clause splitting.
+    """
+    lines = text.splitlines()
+    exempt, findings = _resolve_quoted_regions(lines)
+    findings = [f"{name}: {v}" for v in findings]
+
+    blocks = []  # (start_lineno, joined_text)
+    current, start = [], None
+    for lineno, raw in enumerate(lines, start=1):
+        if lineno in exempt or not raw.strip():
+            if current:
+                blocks.append((start, " ".join(current)))
+                current, start = [], None
+            continue
+        if _is_region_marker(raw, QUOTED_REGION_BEGIN) or _is_region_marker(
+            raw, QUOTED_REGION_END
+        ):
+            if current:
+                blocks.append((start, " ".join(current)))
+                current, start = [], None
+            continue
+        if start is None:
+            start = lineno
+        current.append(raw)
+    if current:
+        blocks.append((start, " ".join(current)))
+
+    for start_lineno, block in blocks:
+        normalized = _normalize_markdown(block)
+        for clause in _CLAUSE_SPLIT_RE.split(normalized):
+            clause = clause.strip()
+            if not clause:
+                continue
+            low = clause.lower()
+            match = _OVERCLAIM_RE.search(clause)
+            governed = bool(
+                match and _GOVERNING_DENIAL_RE.search(clause[: match.start()])
+            )
+            if match and not match.group("neg") and not governed:
+                findings.append(
+                    f"{name}:{start_lineno}: present-tense enforcement claim "
+                    f"{match.group(0).strip()!r} in clause {clause.strip()!r}"
+                )
+                continue
+            for literal in _OVERCLAIM_LITERALS:
+                if literal in low:
+                    findings.append(
+                        f"{name}:{start_lineno}: present-tense enforcement claim "
+                        f"{literal!r} in clause {clause.strip()!r}"
+                    )
+                    break
+    return findings
 
 
 class GateAConsumerStatusFields(unittest.TestCase):
@@ -1628,15 +1823,11 @@ class NoPresentTenseEnforcementClaims(unittest.TestCase):
         offenders = []
         for path in CHANGED_DOCS:
             self.assertTrue(path.is_file(), f"changed doc missing: {path}")
-            for lineno, line in enumerate(
-                path.read_text(encoding="utf-8").splitlines(), start=1
-            ):
-                low = line.lower()
-                if any(m in low for m in NEGATIVE_CONTEXT_MARKERS):
-                    continue  # clearly marked prohibition / negative example
-                for phrase in PROHIBITED_ENFORCEMENT_PHRASES:
-                    if phrase in low:
-                        offenders.append(f"{path.name}:{lineno}: {phrase!r} :: {line.strip()}")
+            offenders.extend(
+                find_enforcement_overclaims(
+                    path.read_text(encoding="utf-8"), name=path.name
+                )
+            )
         self.assertEqual(
             offenders,
             [],
@@ -1782,6 +1973,353 @@ class NoConsumerImplementedByThisPR(unittest.TestCase):
         )
         # And the run-control artifacts still do not exist.
         self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
+
+
+# ---------------------------------------------------------------------------
+# Round 5: stale authority path + prose-guard bypass regressions
+# ---------------------------------------------------------------------------
+
+STALE_AUTH_RECORD_PATH = (
+    "docs/experiments/STAGE-1-AUTEUR-EVIDENCE-0016-AUTHORIZATION-RECORD.md"
+)
+STALE_AUTH_RECORD_STEM = "STAGE-1-AUTEUR-EVIDENCE-0016-AUTHORIZATION-RECORD"
+
+# The five bypasses an independent reviewer demonstrated against the old
+# line-level exemption. Every one must now be rejected.
+KNOWN_BYPASS_STRINGS = (
+    "Gate A verifies the authorization digest; unauthorized runs are prohibited.",
+    "The runner recomputes SHA-256, but it must not accept a mismatch.",
+    "The runtime blocks unauthorized invocation; this wording did not exist before.",
+    "Gate A compares the approved digest - an unimplemented consumer must not "
+    "be bypassed.",
+    "workflow-runtime.py performs authorization checks; manual approval is "
+    "prohibited.",
+)
+
+TRUTHFUL_STRINGS = (
+    "The future Gate A consumer must verify the authorization digest.",
+    "The required consumer will recompute SHA-256 before invocation.",
+    "No current runner verifies the authorization record.",
+    "Gate A verification is not implemented.",
+    "The contract requires the future consumer to compare the approved digest.",
+    "No runtime component checks the authorization record today.",
+    "Gate A authorization verification is a future contract, not current behavior.",
+)
+
+
+def _quoted_region(body):
+    return f"{QUOTED_REGION_BEGIN}\n{body}\n{QUOTED_REGION_END}\n"
+
+
+class StaleAuthorizationPathIsGone(unittest.TestCase):
+    """80-83: exactly one canonical planned run-control location."""
+
+    def _repo_text_files(self):
+        skip = {".git", "node_modules", "__pycache__", ".pytest_cache", ".venv"}
+        for path in REPO_ROOT.rglob("*"):
+            if not path.is_file():
+                continue
+            if any(part in skip for part in path.parts):
+                continue
+            if path.resolve() == Path(__file__).resolve():
+                continue  # this module names the stale path to forbid it
+            if path.suffix.lower() not in (
+                ".md",
+                ".py",
+                ".yaml",
+                ".yml",
+                ".json",
+                ".txt",
+                ".sh",
+            ):
+                continue
+            yield path
+
+    # 80
+    def test_stale_authorization_record_path_absent_repository_wide(self):
+        offenders = []
+        for path in self._repo_text_files():
+            body = path.read_text(encoding="utf-8", errors="replace")
+            for lineno, line in enumerate(body.splitlines(), start=1):
+                if STALE_AUTH_RECORD_STEM in line:
+                    offenders.append(f"{path.relative_to(REPO_ROOT)}:{lineno}")
+        self.assertEqual(
+            offenders,
+            [],
+            "the obsolete authorization-record path must not appear in any "
+            "checked-in file:\n" + "\n".join(offenders),
+        )
+
+    # 81
+    def test_stale_path_absent_from_each_changed_document(self):
+        for path in CHANGED_DOCS:
+            self.assertNotIn(
+                STALE_AUTH_RECORD_PATH,
+                path.read_text(encoding="utf-8"),
+                f"stale authorization-record path present in {path.name}",
+            )
+            self.assertNotIn(
+                STALE_AUTH_RECORD_STEM, path.read_text(encoding="utf-8")
+            )
+
+    # 82
+    def test_exactly_one_canonical_authorization_location(self):
+        """Every authorization artifact reference resolves under RUN_CONTROL_DIR."""
+        pattern = re.compile(
+            r"[\w./-]*(?:authorization-record\.(?:yaml|sha256)|owner-approval\.md)"
+        )
+        bases = set()
+        for path in CHANGED_DOCS:
+            for match in pattern.findall(path.read_text(encoding="utf-8")):
+                if "/" not in match:
+                    continue  # bare filename, base supplied by surrounding prose
+                bases.add(match.rsplit("/", 1)[0])
+        self.assertTrue(bases, "no authorization artifact paths found at all")
+        self.assertEqual(
+            bases,
+            {RUN_CONTROL_DIR},
+            f"authorization artifacts must live under exactly one base; "
+            f"found: {sorted(bases)}",
+        )
+
+    # 83
+    def test_no_docs_experiments_authorization_record_reference(self):
+        for path in CHANGED_DOCS:
+            body = path.read_text(encoding="utf-8")
+            self.assertNotIn("docs/experiments/STAGE-1-AUTEUR-EVIDENCE-0016", body)
+
+
+class ProseGuardRejectsKnownBypasses(unittest.TestCase):
+    """84: the five demonstrated bypasses."""
+
+    # 84
+    def test_five_known_bypass_strings_are_rejected(self):
+        for text in KNOWN_BYPASS_STRINGS:
+            with self.subTest(text=text):
+                self.assertNotEqual(
+                    find_enforcement_overclaims(text),
+                    [],
+                    f"known bypass slipped through the guard: {text!r}",
+                )
+
+
+class ProseGuardAdversarialVariants(unittest.TestCase):
+    """85-95: formatting and placement must not evade detection."""
+
+    def assertRejected(self, text):
+        self.assertNotEqual(
+            find_enforcement_overclaims(text), [], f"not detected: {text!r}"
+        )
+
+    def assertAccepted(self, text):
+        self.assertEqual(
+            find_enforcement_overclaims(text), [], f"false positive: {text!r}"
+        )
+
+    # 85
+    def test_negative_token_before_the_false_claim(self):
+        self.assertRejected(
+            "Unauthorized runs are prohibited; Gate A verifies the digest."
+        )
+        self.assertRejected("This must not happen, but the runtime blocks it.")
+
+    # 86
+    def test_markdown_bold_does_not_evade(self):
+        self.assertRejected("**Gate A verifies** the authorization digest.")
+        self.assertRejected("_the runner recomputes_ the digest.")
+        self.assertRejected("`Gate A` verifies the authorization digest.")
+
+    # 87
+    def test_claim_spanning_two_lines_does_not_evade(self):
+        self.assertRejected("The runtime\nblocks unauthorized invocation.")
+        self.assertRejected("Gate A\nverifies the authorization digest.")
+
+    # 88
+    def test_table_cell_does_not_evade(self):
+        self.assertRejected(
+            "| Gate | Behavior |\n| --- | --- |\n"
+            "| A | Gate A verifies the digest; bypass is prohibited |\n"
+        )
+
+    # 89
+    def test_bullet_does_not_evade(self):
+        self.assertRejected("- Gate A validates the approved digest.")
+        self.assertRejected("  * the runtime checks the authorization record.")
+
+    # 90
+    def test_proximity_to_example_or_quoted_grants_nothing(self):
+        self.assertRejected("For example, Gate A verifies the digest.")
+        self.assertRejected("Quoted below: Gate A verifies the digest.")
+        self.assertRejected("Old wording, quoted: the runner recomputes the digest.")
+        self.assertRejected("Example (future): the runtime blocks invocation.")
+
+    # 91
+    def test_claim_after_a_colon_does_not_evade(self):
+        self.assertRejected("Gate A behavior: Gate A verifies the digest.")
+
+    # 92
+    def test_two_clauses_on_one_line_are_evaluated_independently(self):
+        self.assertRejected("Gate A verifies the digest; this wording is prohibited.")
+        self.assertRejected("This wording is prohibited; Gate A verifies the digest.")
+
+    # 93
+    def test_truthful_future_tense_on_the_same_line_stays_allowed(self):
+        self.assertAccepted(
+            "The future Gate A consumer must verify the digest, and no current "
+            "runner verifies anything."
+        )
+        self.assertRejected(
+            "The future Gate A consumer must verify the digest, but Gate A "
+            "verifies it today."
+        )
+
+    # 94
+    def test_all_truthful_forms_are_accepted(self):
+        for text in TRUTHFUL_STRINGS:
+            with self.subTest(text=text):
+                self.assertAccepted(text)
+
+    # 95a
+    def test_governing_denial_must_be_adjacent(self):
+        # Truthful: the denial directly governs the claim.
+        self.assertAccepted(
+            "It does not claim that workflow-runtime.py performs any preflight."
+        )
+        self.assertAccepted("This does not assert that Gate A verifies the digest.")
+        # Not truthful: the same words in a different clause exempt nothing.
+        self.assertRejected(
+            "It does not claim that much; Gate A verifies the digest."
+        )
+        self.assertRejected(
+            "Gate A verifies the digest, though it does not claim that."
+        )
+        self.assertRejected(
+            "It does not claim that, in general, Gate A verifies the digest."
+        )
+
+    # 95
+    def test_literal_enforcement_phrases_still_rejected(self):
+        self.assertRejected("Gate A is runtime-enforced.")
+        self.assertRejected("The authorization contract is currently enforced.")
+
+
+class ProseGuardExemptionBoundaries(unittest.TestCase):
+    """96-104: exemptions come only from well-formed explicit regions."""
+
+    def assertRejected(self, text):
+        self.assertNotEqual(
+            find_enforcement_overclaims(text), [], f"not detected: {text!r}"
+        )
+
+    # 96
+    def test_no_whole_line_exemption_remains(self):
+        """Proximity words alone must never exempt a real overclaim."""
+        for token in (
+            "not",
+            "did not",
+            "must not",
+            "prohibited",
+            "example",
+            "quoted",
+            "old wording",
+            "future",
+            "required",
+        ):
+            with self.subTest(token=token):
+                self.assertRejected(f"Gate A verifies the digest ({token}).")
+                self.assertRejected(f"({token}) Gate A verifies the digest.")
+
+    # 97
+    def test_negative_context_marker_constant_is_gone(self):
+        # The unsafe line-level exemption constant no longer exists.
+        self.assertFalse(
+            "NEGATIVE_CONTEXT_MARKERS" in globals(),
+            "the unsafe line-level exemption constant must be deleted",
+        )
+
+    # 98
+    def test_well_formed_region_exempts_only_enclosed_text(self):
+        text = (
+            "Truthful intro.\n"
+            + _quoted_region("Gate A verifies the digest.")
+            + "Truthful outro.\n"
+        )
+        self.assertEqual(find_enforcement_overclaims(text), [])
+
+    # 99
+    def test_region_requires_both_markers(self):
+        opened_only = QUOTED_REGION_BEGIN + "\nGate A verifies the digest.\n"
+        self.assertNotEqual(find_enforcement_overclaims(opened_only), [])
+        closed_only = "Gate A verifies the digest.\n" + QUOTED_REGION_END + "\n"
+        self.assertNotEqual(find_enforcement_overclaims(closed_only), [])
+
+    # 100
+    def test_unclosed_region_exempts_nothing(self):
+        findings = find_enforcement_overclaims(
+            QUOTED_REGION_BEGIN + "\nGate A verifies the digest.\n"
+        )
+        self.assertTrue(any("never closed" in f for f in findings), findings)
+        self.assertTrue(any("Gate A verifies" in f for f in findings), findings)
+
+    # 101
+    def test_nested_regions_are_rejected(self):
+        text = (
+            f"{QUOTED_REGION_BEGIN}\n{QUOTED_REGION_BEGIN}\n"
+            "Gate A verifies the digest.\n"
+            f"{QUOTED_REGION_END}\n{QUOTED_REGION_END}\n"
+        )
+        findings = find_enforcement_overclaims(text)
+        self.assertTrue(any("nested" in f for f in findings), findings)
+
+    # 102
+    def test_region_cannot_cover_the_whole_document(self):
+        text = _quoted_region(
+            "Gate A verifies the digest.\nThe runtime blocks invocation."
+        )
+        findings = find_enforcement_overclaims(text)
+        self.assertTrue(any("more than half" in f for f in findings), findings)
+
+    # 103
+    def test_text_after_closing_marker_is_not_exempt(self):
+        text = (
+            "Truthful intro line one.\nTruthful intro line two.\n"
+            "Truthful intro line three.\nTruthful intro line four.\n"
+            + _quoted_region("Old wording lived here.")
+            + "Gate A verifies the digest.\n"
+        )
+        findings = find_enforcement_overclaims(text)
+        self.assertTrue(any("Gate A verifies" in f for f in findings), findings)
+
+    # 104
+    def test_marker_in_inline_code_or_prose_is_not_a_marker(self):
+        inline_code = (
+            f"We use `{QUOTED_REGION_BEGIN}` here.\n"
+            "Gate A verifies the digest.\n"
+            f"We use `{QUOTED_REGION_END}` here.\n"
+        )
+        findings = find_enforcement_overclaims(inline_code)
+        self.assertTrue(any("Gate A verifies" in f for f in findings), findings)
+
+        dynamic_prose = (
+            f"Authors may add {QUOTED_REGION_BEGIN} to quote old text.\n"
+            "Gate A verifies the digest.\n"
+            f"Authors then add {QUOTED_REGION_END} to close it.\n"
+        )
+        findings = find_enforcement_overclaims(dynamic_prose)
+        self.assertTrue(any("Gate A verifies" in f for f in findings), findings)
+
+
+class ProseGuardFailureMessages(unittest.TestCase):
+    """105: findings must name file, line, and matched phrase."""
+
+    # 105
+    def test_findings_include_name_line_and_phrase(self):
+        findings = find_enforcement_overclaims(
+            "Intro line.\nGate A verifies the digest.\n", name="DOC.md"
+        )
+        self.assertEqual(len(findings), 1, findings)
+        self.assertIn("DOC.md:1", findings[0])
+        self.assertIn("Gate A verifies", findings[0])
 
 
 if __name__ == "__main__":

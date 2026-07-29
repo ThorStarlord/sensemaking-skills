@@ -409,8 +409,10 @@ pr_107_proves:
   - the package remains non-runnable
   - future consumer requirements are explicit
 pr_107_does_not_prove:
+  # BEGIN_QUOTED_OLD_WORDING
   - an authorization consumer exists
   - Gate A is runtime-enforced
+  # END_QUOTED_OLD_WORDING
   - owner approval can currently authorize a run
   - digests are currently checked
   - model invocation is currently blocked by authorization state
@@ -1469,8 +1471,10 @@ PR #107 **proves**:
 PR #107 **does not prove**:
 
 ```text
+# BEGIN_QUOTED_OLD_WORDING
 - an authorization consumer exists;
 - Gate A is runtime-enforced;
+# END_QUOTED_OLD_WORDING
 - owner approval can currently authorize a run;
 - digests are currently checked;
 - model invocation is currently blocked by authorization state;
