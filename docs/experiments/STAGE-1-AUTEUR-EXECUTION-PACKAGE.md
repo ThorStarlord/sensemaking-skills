@@ -21,6 +21,18 @@
 > package, so it must never be used as the execution pin. Neither merge status
 > nor preparation status authorizes a run; a separate owner run-authorization
 > decision is required after pin finalization.
+>
+> **Evidence 0016 remains unexecutable** without a later authenticated
+> authorization record. That record must be created after PR #107 merges, stored
+> in the immutable run-control location
+> `experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/`,
+> and hashed with SHA-256. The **owner-approved digest is a distinct artifact**
+> from the authorization record itself (`owner-approval.md`): a record may not
+> approve itself, and any digest carried inside the record is informational
+> only. Gate A recomputes the record's digest and compares it to the
+> owner-approved value before any model invocation; a mismatch, a missing
+> record, or a missing owner approval is a hard stop. No such record or approval
+> exists today. The historical Evidence 0013-0015 narrative below is untouched.
 
 **Date**: 2026-07-27 (revised: this revision is a documentation-only refresh
 that proposes a **new** framework execution pin for a possible future

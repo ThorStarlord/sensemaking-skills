@@ -552,5 +552,717 @@ class FinalizedPinFixture(unittest.TestCase):
             self.assertIn(path, missing)
 
 
+# ---------------------------------------------------------------------------
+# Authorization-record integrity
+#
+# The package previously offered a FORK: the authorization record could either
+# exist at the pinned framework revision, or be copied somewhere with a
+# self-recorded digest. Branch one is impossible (the record is authored after
+# the revision it pins); branch two authenticated nothing. Both are gone. The
+# tests below pin the single mandatory owner-approved mechanism that replaced
+# them, and the Gate A verification that enforces it before invocation.
+# ---------------------------------------------------------------------------
+
+RUN_CONTROL_DIR = (
+    "experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt"
+)
+AUTH_RECORD_PATH = f"{RUN_CONTROL_DIR}/authorization-record.yaml"
+AUTH_DIGEST_PATH = f"{RUN_CONTROL_DIR}/authorization-record.sha256"
+OWNER_APPROVAL_PATH = f"{RUN_CONTROL_DIR}/owner-approval.md"
+
+RUN_CONTROL_SENTINEL = "PENDING_AUTHORIZATION_RECORD_CREATION"
+OWNER_APPROVAL_SENTINEL = "PENDING_OWNER_APPROVAL"
+ALL_SENTINELS = [SENTINEL, RUN_CONTROL_SENTINEL, OWNER_APPROVAL_SENTINEL]
+
+AUTH_STATUS = "AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION"
+HEX64 = re.compile(r"^[0-9a-f]{64}$")
+
+CANONICAL_PACKAGE_PATH = "docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md"
+CANONICAL_CHECKLIST_PATH = "docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md"
+
+AUTH_RECORD_REQUIRED_FIELDS = [
+    "schema_version",
+    "authorization_status",
+    "authorization_scope",
+    "evidence_number",
+    "evidence_slug",
+    "execution_framework_sha",
+    "target_repository",
+    "target_sha",
+    "exact_model",
+    "artifact_type",
+    "preparation_package_path",
+    "preparation_package_sha256",
+    "gate_d_checklist_path",
+    "gate_d_checklist_sha256",
+    "authorization_record_created_at",
+    "authorization_record_created_by",
+    "owner_approval_reference",
+    "one_invocation_only",
+    "no_retry",
+    "no_fallback",
+    "no_model_substitution",
+    "no_artifact_repair",
+    "no_target_mutation",
+    "stop_on_first_failed_gate",
+]
+
+AUTH_RECORD_TRUE_FLAGS = [
+    "one_invocation_only",
+    "no_retry",
+    "no_fallback",
+    "no_model_substitution",
+    "no_artifact_repair",
+    "no_target_mutation",
+    "stop_on_first_failed_gate",
+]
+
+OWNER_APPROVAL_REQUIRED_FIELDS = [
+    "approver_github_identity",
+    "approval_timestamp",
+    "authorization_record_sha256",
+    "execution_framework_sha",
+    "target_sha",
+    "evidence_number",
+    "evidence_slug",
+    "exact_model",
+    "authorization_decision",
+    "no_retry_statement",
+    "owner_decision_reference",
+]
+
+# Phrases that would reintroduce an optional/forked authorization provenance.
+FORK_PHRASES = [
+    "must itself exist at the pinned framework revision",
+    "may exist at the pinned revision",
+    "may be copied",
+    "one of the following",
+]
+
+
+def validate_future_authorization_record(record, expected):
+    """Validator for a FUTURE Evidence 0016 authorization record.
+
+    Returns a list of error strings; empty means the record would be accepted.
+    Used only against synthetic in-test fixtures -- the real record does not
+    exist and must not be created by this PR.
+    """
+    errors = []
+    if not isinstance(record, dict):
+        return ["record is not a mapping"]
+
+    for field in AUTH_RECORD_REQUIRED_FIELDS:
+        if field not in record:
+            errors.append(f"missing field: {field}")
+        elif record[field] is None or record[field] == "":
+            errors.append(f"blank field: {field}")
+
+    if record.get("authorization_status") != AUTH_STATUS:
+        errors.append("authorization_status is not the exact required string")
+
+    for field in ("execution_framework_sha", "target_sha"):
+        if field in record and not FULL_SHA.match(str(record[field])):
+            errors.append(f"{field} is not a full 40-character lowercase SHA")
+
+    for field in ("preparation_package_sha256", "gate_d_checklist_sha256"):
+        if field in record and not HEX64.match(str(record[field])):
+            errors.append(f"{field} is not 64 lowercase hex characters")
+
+    for flag in AUTH_RECORD_TRUE_FLAGS:
+        if record.get(flag) is not True:
+            errors.append(f"safety flag not true: {flag}")
+
+    if record.get("preparation_package_path") != CANONICAL_PACKAGE_PATH:
+        errors.append("preparation_package_path is not the canonical path")
+    if record.get("gate_d_checklist_path") != CANONICAL_CHECKLIST_PATH:
+        errors.append("gate_d_checklist_path is not the canonical path")
+
+    for field in (
+        "execution_framework_sha",
+        "target_sha",
+        "target_repository",
+        "evidence_number",
+        "evidence_slug",
+        "exact_model",
+        "artifact_type",
+    ):
+        if field in expected and str(record.get(field)) != str(expected[field]):
+            errors.append(f"{field} does not match the expected authorized value")
+
+    # A record may never be its own authority.
+    if not record.get("owner_approval_reference"):
+        errors.append("owner_approval_reference missing: record cannot self-approve")
+
+    return errors
+
+
+EXPECTED_AUTHORIZED_INPUTS = {
+    "execution_framework_sha": "a" * 40,
+    "target_sha": "0653defb05625f2fcde0ac32eac6e59ccf7eeb90",
+    "target_repository": "https://github.com/ThorStarlord/auteur.git",
+    "evidence_number": "0016",
+    "evidence_slug": "0016-stage1-auteur-post-remediation-controlled-attempt",
+    "exact_model": "claude-sonnet-5",
+    "artifact_type": "repository_sensemaking_brief",
+}
+
+
+def valid_future_authorization_record():
+    """A synthetic, obviously-fake but structurally valid future record."""
+    return {
+        "schema_version": "1",
+        "authorization_status": AUTH_STATUS,
+        "authorization_scope": "single controlled Stage 1 invocation, Evidence 0016",
+        "evidence_number": "0016",
+        "evidence_slug": "0016-stage1-auteur-post-remediation-controlled-attempt",
+        "execution_framework_sha": "a" * 40,
+        "target_repository": "https://github.com/ThorStarlord/auteur.git",
+        "target_sha": "0653defb05625f2fcde0ac32eac6e59ccf7eeb90",
+        "exact_model": "claude-sonnet-5",
+        "artifact_type": "repository_sensemaking_brief",
+        "preparation_package_path": CANONICAL_PACKAGE_PATH,
+        "preparation_package_sha256": "b" * 64,
+        "gate_d_checklist_path": CANONICAL_CHECKLIST_PATH,
+        "gate_d_checklist_sha256": "c" * 64,
+        "authorization_record_created_at": "2026-01-01T00:00:00Z",
+        "authorization_record_created_by": "synthetic-fixture-author",
+        "owner_approval_reference": OWNER_APPROVAL_PATH,
+        "one_invocation_only": True,
+        "no_retry": True,
+        "no_fallback": True,
+        "no_model_substitution": True,
+        "no_artifact_repair": True,
+        "no_target_mutation": True,
+        "stop_on_first_failed_gate": True,
+    }
+
+
+class AuthorizationMechanismIsSingular(unittest.TestCase):
+    """1-6, 45: exactly one mechanism, explicit paths, no fork."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 1
+    def test_no_authorization_mechanism_fork_remains(self):
+        self.assertFalse(self.contract["authorization_mechanism_alternatives_allowed"])
+        self.assertEqual(self.contract["authorization_mechanism_count"], 1)
+        self.assertEqual(
+            self.contract["authorization_mechanism"],
+            "owner_approved_external_immutable_authorization_record",
+        )
+        self.assertEqual(
+            self.contract["pin_finalization_mechanism"],
+            self.contract["authorization_mechanism"],
+        )
+
+    # 2
+    def test_record_at_pinned_framework_revision_option_is_absent(self):
+        self.assertFalse(
+            self.contract["authorization_record_may_exist_at_pinned_framework_revision"]
+        )
+        for phrase in FORK_PHRASES:
+            self.assertNotIn(
+                phrase,
+                self.text,
+                f"forked authorization provenance wording resurfaced: {phrase!r}",
+            )
+        self.assertIn("That fork is deleted.", self.text)
+        self.assertIn("There is no second mechanism.", self.text)
+
+    # 3
+    def test_immutable_run_control_path_is_explicit(self):
+        self.assertEqual(self.contract["run_control_directory"], RUN_CONTROL_DIR)
+        self.assertEqual(
+            self.contract["authorization_record_location_type"],
+            "immutable_run_control_commit",
+        )
+        self.assertIn(RUN_CONTROL_DIR, self.text)
+        self.assertFalse(RUN_CONTROL_DIR.startswith("experiments/evidence/"))
+
+    # 4
+    def test_authorization_record_path_is_explicit(self):
+        path = self.contract["execution_authorization_record_path"]
+        self.assertEqual(path, AUTH_RECORD_PATH)
+        self.assertTrue(path.startswith(RUN_CONTROL_DIR + "/"))
+        self.assertNotIn("0015", path)
+        self.assertNotIn("experiments/evidence/", path)
+
+    # 5
+    def test_owner_approval_artifact_path_is_explicit(self):
+        path = self.contract["owner_approval_artifact_path"]
+        self.assertEqual(path, OWNER_APPROVAL_PATH)
+        self.assertTrue(path.startswith(RUN_CONTROL_DIR + "/"))
+
+    # 6
+    def test_authorization_record_digest_path_is_explicit(self):
+        path = self.contract["execution_authorization_record_digest_path"]
+        self.assertEqual(path, AUTH_DIGEST_PATH)
+        self.assertNotEqual(path, self.contract["execution_authorization_record_path"])
+
+    # 45
+    def test_floating_refs_remain_prohibited(self):
+        prohibited = self.contract["floating_refs_prohibited_as_execution_pin"]
+        for ref in ("main", "origin/main", "HEAD", "refs/heads/main"):
+            self.assertIn(ref, prohibited)
+        self.assertIn(
+            "mutable or floating path used as authority",
+            self.contract["authorization_hard_stop_conditions"],
+        )
+
+
+class AuthorizationSentinels(unittest.TestCase):
+    """7-10: three pending sentinels, all execution-blocking."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 7
+    def test_execution_framework_sha_sentinel_is_pending(self):
+        self.assertEqual(self.contract["execution_framework_sha"], SENTINEL)
+        self.assertEqual(self.contract["execution_framework_sha_sentinel"], SENTINEL)
+        self.assertFalse(_is_executable_pin(self.contract["execution_framework_sha"]))
+
+    # 8
+    def test_run_control_commit_sha_sentinel_is_pending(self):
+        self.assertEqual(self.contract["run_control_commit_sha"], RUN_CONTROL_SENTINEL)
+        self.assertEqual(
+            self.contract["run_control_commit_sha_sentinel"], RUN_CONTROL_SENTINEL
+        )
+        self.assertFalse(_is_executable_pin(self.contract["run_control_commit_sha"]))
+
+    # 9
+    def test_authorization_record_digest_sentinel_is_pending(self):
+        self.assertEqual(
+            self.contract["authorization_record_sha256"], OWNER_APPROVAL_SENTINEL
+        )
+        self.assertEqual(
+            self.contract["authorization_record_sha256_sentinel"],
+            OWNER_APPROVAL_SENTINEL,
+        )
+        self.assertFalse(HEX64.match(str(self.contract["authorization_record_sha256"])))
+
+    # 10
+    def test_all_pending_sentinels_block_execution(self):
+        self.assertTrue(self.contract["pending_sentinels_block_execution"])
+        self.assertEqual(self.contract["pending_sentinels"], ALL_SENTINELS)
+        for sentinel in ALL_SENTINELS:
+            self.assertIn(sentinel, self.text)
+            self.assertIn(f"blocked while", self.text)
+        self.assertFalse(self.contract["package_runnable"])
+        self.assertEqual(
+            self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
+        )
+        # The three sentinels are distinct values, not one reused placeholder.
+        self.assertEqual(len(set(ALL_SENTINELS)), 3)
+
+
+class OwnerApprovalIsSeparateAndAuthoritative(unittest.TestCase):
+    """11-14: digest authority lives outside the record; identity required."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 11
+    def test_owner_approved_digest_stored_separately_from_the_record(self):
+        self.assertEqual(
+            self.contract["authoritative_digest_source"], "owner_approval_artifact"
+        )
+        self.assertNotEqual(
+            self.contract["owner_approval_artifact_path"],
+            self.contract["execution_authorization_record_path"],
+        )
+        self.assertIn("authorization_record_sha256", self.contract["owner_approval_required_fields"])
+
+    # 12
+    def test_authorization_record_cannot_self_approve(self):
+        self.assertFalse(self.contract["authorization_record_self_approval_allowed"])
+        self.assertTrue(self.contract["digest_inside_authorization_record_is_informational"])
+        self.assertIn("must not approve itself", self.text)
+        # And the validator enforces it structurally.
+        record = valid_future_authorization_record()
+        record["owner_approval_reference"] = ""
+        self.assertTrue(
+            any("self-approve" in e for e in validate_future_authorization_record(
+                record, EXPECTED_AUTHORIZED_INPUTS))
+        )
+
+    # 13
+    def test_approver_identity_is_required(self):
+        self.assertIn(
+            "approver_github_identity", self.contract["owner_approval_required_fields"]
+        )
+        self.assertTrue(self.contract["approval_identity_verification_required"])
+        self.assertFalse(self.contract["operator_self_approval_allowed"])
+        self.assertEqual(
+            self.contract["approving_authority"],
+            "repository_owner_or_explicitly_delegated_campaign_owner",
+        )
+
+    # 14
+    def test_approval_timestamp_is_required(self):
+        self.assertIn(
+            "approval_timestamp", self.contract["owner_approval_required_fields"]
+        )
+        self.assertEqual(
+            self.contract["owner_approval_required_fields"],
+            OWNER_APPROVAL_REQUIRED_FIELDS,
+        )
+
+
+class AuthorizationRecordRequiredFields(unittest.TestCase):
+    """15-29: the full required-record contract, field by field."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+        self.declared = self.contract["authorization_record_required_fields"]
+
+    def _requires(self, *fields):
+        for field in fields:
+            self.assertIn(field, self.declared, f"{field} must be a required field")
+            self.assertIn(field, AUTH_RECORD_REQUIRED_FIELDS)
+            record = valid_future_authorization_record()
+            del record[field]
+            errors = validate_future_authorization_record(
+                record, EXPECTED_AUTHORIZED_INPUTS
+            )
+            self.assertTrue(errors, f"removing {field} must be rejected")
+
+    # 15
+    def test_exact_authorization_status_string_required(self):
+        self._requires("authorization_status")
+        self.assertEqual(
+            self.contract["required_authorization_status_string"], AUTH_STATUS
+        )
+        record = valid_future_authorization_record()
+        record["authorization_status"] = "AUTHORIZED"
+        self.assertTrue(
+            validate_future_authorization_record(record, EXPECTED_AUTHORIZED_INPUTS)
+        )
+
+    # 16
+    def test_framework_sha_field_required(self):
+        self._requires("execution_framework_sha")
+
+    # 17
+    def test_target_repository_and_sha_required(self):
+        self._requires("target_repository", "target_sha")
+
+    # 18
+    def test_evidence_number_and_slug_required(self):
+        self._requires("evidence_number", "evidence_slug")
+
+    # 19
+    def test_exact_model_required(self):
+        self._requires("exact_model")
+
+    # 20
+    def test_artifact_type_required(self):
+        self._requires("artifact_type")
+
+    # 21
+    def test_package_path_and_sha256_required(self):
+        self._requires("preparation_package_path", "preparation_package_sha256")
+        self.assertEqual(
+            self.contract["canonical_preparation_package_path"], CANONICAL_PACKAGE_PATH
+        )
+
+    # 22
+    def test_checklist_path_and_sha256_required(self):
+        self._requires("gate_d_checklist_path", "gate_d_checklist_sha256")
+        self.assertEqual(
+            self.contract["canonical_gate_d_checklist_path"], CANONICAL_CHECKLIST_PATH
+        )
+
+    # 23
+    def test_one_invocation_only_required(self):
+        self._requires("one_invocation_only")
+
+    # 24
+    def test_no_retry_required(self):
+        self._requires("no_retry")
+
+    # 25
+    def test_no_fallback_required(self):
+        self._requires("no_fallback")
+
+    # 26
+    def test_no_model_substitution_required(self):
+        self._requires("no_model_substitution")
+
+    # 27
+    def test_no_artifact_repair_required(self):
+        self._requires("no_artifact_repair")
+
+    # 28
+    def test_no_target_mutation_required(self):
+        self._requires("no_target_mutation")
+
+    # 29
+    def test_stop_on_first_failure_required(self):
+        self._requires("stop_on_first_failed_gate")
+        self.assertEqual(
+            self.contract["authorization_record_boolean_fields_must_be_true"],
+            AUTH_RECORD_TRUE_FLAGS,
+        )
+        self.assertEqual(self.declared, AUTH_RECORD_REQUIRED_FIELDS)
+
+
+class GateAAuthorizationVerification(unittest.TestCase):
+    """30-36: Gate A actually performs digest verification, in order."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+        self.steps = self.contract["gate_a_authorization_verification_steps"]
+
+    def _step(self, number):
+        prefix = f"{number} "
+        matches = [s for s in self.steps if s.startswith(prefix)]
+        self.assertEqual(len(matches), 1, f"exactly one Gate A step {number} expected")
+        return matches[0]
+
+    def test_fifteen_ordered_steps_declared(self):
+        self.assertEqual(len(self.steps), 15)
+        for index in range(1, 16):
+            self._step(index)
+
+    # 30
+    def test_gate_a_contains_explicit_sha256_recomputation_step(self):
+        self.assertIn("RECOMPUTED", self.text)
+        self.assertIn("recomputed", self._step(3).lower())
+        self.assertIn("SHA-256", self._step(3))
+
+    # 31
+    def test_gate_a_compares_against_owner_approved_digest(self):
+        self.assertIn("owner-approved digest", self._step(4))
+        self.assertTrue(self.contract["gate_a_digest_verification_precedes_invocation"])
+        self.assertIn(
+            "Digest verification occurs BEFORE model invocation.", self.text
+        )
+
+    # 32
+    def test_gate_a_verifies_approver_identity(self):
+        self.assertIn("identity", self._step(5))
+        self.assertIn("AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION", self._step(6))
+
+    # 33
+    def test_gate_a_verifies_framework_head(self):
+        self.assertIn("framework HEAD", self._step(8))
+
+    # 34
+    def test_gate_a_verifies_target_head(self):
+        self.assertIn("Auteur HEAD", self._step(9))
+
+    # 35
+    def test_gate_a_verifies_package_digest(self):
+        self.assertIn("preparation-package path and digest", self._step(12))
+        self.assertIn(
+            "SHA-256(preparation package bytes) == authorization record "
+            "preparation_package_sha256",
+            self.text,
+        )
+        self.assertFalse(self.contract["external_package_or_checklist_copy_allowed"])
+        self.assertTrue(self.contract["package_and_checklist_loaded_from_framework_root"])
+
+    # 36
+    def test_gate_a_verifies_checklist_digest(self):
+        self.assertIn("Gate D checklist path and digest", self._step(13))
+        self.assertIn(
+            "SHA-256(Gate D checklist bytes)    == authorization record "
+            "gate_d_checklist_sha256",
+            self.text,
+        )
+        checklist = CHECKLIST_PATH.read_text(encoding="utf-8")
+        self.assertIn("Gate A fails before Gate D begins", checklist)
+
+
+class AuthorizationHardStops(unittest.TestCase):
+    """37-44: every authorization defect blocks invocation."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+        self.stops = self.contract["authorization_hard_stop_conditions"]
+
+    def _stop(self, phrase):
+        self.assertIn(phrase, self.stops, f"missing hard-stop condition: {phrase}")
+
+    def test_all_twentythree_hard_stops_declared(self):
+        self.assertEqual(len(self.stops), 23)
+        self.assertEqual(len(set(self.stops)), 23)
+        self.assertTrue(self.contract["authorization_failure_is_gate_a_failure"])
+        self.assertFalse(self.contract["authorization_failure_permits_retry"])
+
+    # 37
+    def test_missing_record_blocks_invocation(self):
+        self._stop("authorization record absent")
+        self.assertFalse(self.contract["execution_authorization_record_exists"])
+
+    # 38
+    def test_missing_approval_blocks_invocation(self):
+        self._stop("approval artifact absent")
+        self._stop("owner-approved digest absent")
+        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+
+    # 39
+    def test_digest_mismatch_blocks_invocation(self):
+        self._stop("digest mismatch")
+        self._stop("digest malformed")
+        self._stop("record changed after approval")
+
+    # 40
+    def test_unauthorized_approver_blocks_invocation(self):
+        self._stop("approval identity unauthorized")
+
+    # 41
+    def test_malformed_record_blocks_invocation(self):
+        self._stop("authorization status not exact")
+        record = valid_future_authorization_record()
+        record["preparation_package_sha256"] = "NOTAHEXDIGEST"
+        self.assertTrue(
+            validate_future_authorization_record(record, EXPECTED_AUTHORIZED_INPUTS)
+        )
+
+    # 42
+    def test_inconsistent_record_blocks_invocation(self):
+        for phrase in (
+            "execution framework SHA mismatch",
+            "target SHA mismatch",
+            "evidence number mismatch",
+            "evidence slug mismatch",
+            "model mismatch",
+            "package path mismatch",
+            "package digest mismatch",
+            "checklist path mismatch",
+            "checklist digest mismatch",
+        ):
+            self._stop(phrase)
+
+    # 43
+    def test_duplicate_records_block_invocation(self):
+        self._stop("conflicting duplicate records")
+        self._stop("more than one approval artifact")
+
+    # 44
+    def test_preexisting_evidence_0016_output_blocks_invocation(self):
+        self._stop("pre-existing Evidence 0016 output")
+        self.assertIn(
+            "15 no existing Evidence 0016 output is present",
+            self.contract["gate_a_authorization_verification_steps"],
+        )
+
+
+class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
+    """46-50: nothing was actually created, and nothing became runnable."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 46
+    def test_no_authorization_record_exists_in_this_pr(self):
+        self.assertFalse(
+            (REPO_ROOT / self.contract["execution_authorization_record_path"]).exists()
+        )
+        self.assertFalse(
+            (REPO_ROOT / self.contract["execution_authorization_record_digest_path"]).exists()
+        )
+        self.assertFalse(self.contract["execution_authorization_record_exists"])
+        self.assertFalse(self.contract["execution_authorization_record_digest_exists"])
+
+    # 47
+    def test_no_owner_approval_artifact_exists_in_this_pr(self):
+        self.assertFalse(
+            (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
+        )
+        self.assertFalse((REPO_ROOT / self.contract["run_control_directory"]).exists())
+        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["run_control_directory_exists"])
+
+    # 48
+    def test_package_remains_prepared_not_run(self):
+        self.assertEqual(self.contract["package_status"], "PREPARED_NOT_RUN")
+        self.assertIn("PREPARED_NOT_RUN", CHECKLIST_PATH.read_text(encoding="utf-8"))
+
+    # 49
+    def test_package_remains_not_authorized(self):
+        self.assertEqual(
+            self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
+        )
+        collapsed = " ".join(self.text.split())
+        self.assertIn(
+            "no authorization record exists. No owner approval exists.", collapsed
+        )
+        self.assertIn("There is no alternative mechanism.", collapsed)
+
+    # 50
+    def test_package_remains_non_runnable(self):
+        self.assertFalse(self.contract["package_runnable"])
+        self.assertFalse(self.contract["merging_this_pr_authorizes_execution"])
+        self.assertFalse(self.contract["merging_this_pr_finalizes_pin"])
+        self.assertIn("The package is not runnable.", self.text)
+
+
+class FutureAuthorizationRecordFixture(unittest.TestCase):
+    """Synthetic fixtures only. The real Evidence 0016 record is NOT created."""
+
+    def test_valid_fixture_is_accepted(self):
+        errors = validate_future_authorization_record(
+            valid_future_authorization_record(), EXPECTED_AUTHORIZED_INPUTS
+        )
+        self.assertEqual(errors, [], f"valid fixture rejected: {errors}")
+
+    def test_every_required_field_is_individually_load_bearing(self):
+        for field in AUTH_RECORD_REQUIRED_FIELDS:
+            record = valid_future_authorization_record()
+            del record[field]
+            self.assertTrue(
+                validate_future_authorization_record(record, EXPECTED_AUTHORIZED_INPUTS),
+                f"removing {field} was wrongly accepted",
+            )
+
+    def test_invalid_fixtures_are_all_rejected(self):
+        cases = {
+            "missing field": lambda r: r.pop("exact_model"),
+            "malformed digest": lambda r: r.update(preparation_package_sha256="ZZ" * 32),
+            "uppercase digest": lambda r: r.update(gate_d_checklist_sha256="C" * 64),
+            "short framework sha": lambda r: r.update(execution_framework_sha="a" * 12),
+            "mismatched framework sha": lambda r: r.update(execution_framework_sha="d" * 40),
+            "mismatched target sha": lambda r: r.update(
+                target_sha="b40db654e0df9e90074f7ad85b40d7362378e07d"
+            ),
+            "wrong evidence number": lambda r: r.update(evidence_number="0015"),
+            "wrong evidence slug": lambda r: r.update(evidence_slug="0015-stage1-auteur"),
+            "wrong model": lambda r: r.update(exact_model="claude-haiku-4"),
+            "false no_retry": lambda r: r.update(no_retry=False),
+            "false no_target_mutation": lambda r: r.update(no_target_mutation=False),
+            "unauthorized status": lambda r: r.update(authorization_status="AUTHORIZED"),
+            "non-canonical package path": lambda r: r.update(
+                preparation_package_path="docs/copied-package.md"
+            ),
+            "non-canonical checklist path": lambda r: r.update(
+                gate_d_checklist_path="/tmp/checklist.md"
+            ),
+            "self-approving record": lambda r: r.update(owner_approval_reference=""),
+        }
+        for name, mutate in cases.items():
+            with self.subTest(case=name):
+                record = valid_future_authorization_record()
+                mutate(record)
+                self.assertTrue(
+                    validate_future_authorization_record(
+                        record, EXPECTED_AUTHORIZED_INPUTS
+                    ),
+                    f"invalid fixture wrongly accepted: {name}",
+                )
+
+    def test_fixture_never_touches_the_filesystem(self):
+        """The fixture is in-memory only; no run-control artifact is written."""
+        validate_future_authorization_record(
+            valid_future_authorization_record(), EXPECTED_AUTHORIZED_INPUTS
+        )
+        self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
+        self.assertFalse((REPO_ROOT / AUTH_RECORD_PATH).exists())
+        self.assertFalse((REPO_ROOT / OWNER_APPROVAL_PATH).exists())
+
+
 if __name__ == "__main__":
     unittest.main()

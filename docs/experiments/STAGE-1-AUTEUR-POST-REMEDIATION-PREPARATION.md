@@ -53,11 +53,142 @@ runtime_baseline_contains_package_validation_tests: false
 execution_framework_sha: PENDING_POST_MERGE_PIN_FINALIZATION
 execution_framework_sha_sentinel: PENDING_POST_MERGE_PIN_FINALIZATION
 pin_finalization_required: true
-pin_finalization_mechanism: external_authorization_record
+pin_finalization_mechanism: owner_approved_external_immutable_authorization_record
 execution_authorization_status: NOT_AUTHORIZED
-execution_authorization_record_path: docs/experiments/STAGE-1-AUTEUR-EVIDENCE-0016-AUTHORIZATION-RECORD.md
-execution_authorization_record_exists: false
 package_runnable: false
+
+# --- Authorization-record integrity (single mandatory mechanism; sections 2b-2h) ---
+# Exactly one mechanism is permitted. There is no fork, no alternative, and no
+# optional branch. See section 2b.
+authorization_mechanism: owner_approved_external_immutable_authorization_record
+authorization_mechanism_alternatives_allowed: false
+authorization_mechanism_count: 1
+authorization_record_may_exist_at_pinned_framework_revision: false
+authorization_record_location_type: immutable_run_control_commit
+run_control_directory: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt
+execution_authorization_record_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.yaml
+execution_authorization_record_digest_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.sha256
+owner_approval_artifact_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/owner-approval.md
+run_control_directory_exists: false
+execution_authorization_record_exists: false
+execution_authorization_record_digest_exists: false
+owner_approval_artifact_exists: false
+# Pending sentinels. All three block execution while unset.
+run_control_commit_sha: PENDING_AUTHORIZATION_RECORD_CREATION
+run_control_commit_sha_sentinel: PENDING_AUTHORIZATION_RECORD_CREATION
+authorization_record_sha256: PENDING_OWNER_APPROVAL
+authorization_record_sha256_sentinel: PENDING_OWNER_APPROVAL
+pending_sentinels_block_execution: true
+pending_sentinels:
+  - PENDING_POST_MERGE_PIN_FINALIZATION
+  - PENDING_AUTHORIZATION_RECORD_CREATION
+  - PENDING_OWNER_APPROVAL
+# Provenance of authority.
+authoritative_digest_source: owner_approval_artifact
+digest_inside_authorization_record_is_informational: true
+authorization_record_self_approval_allowed: false
+approving_authority: repository_owner_or_explicitly_delegated_campaign_owner
+operator_self_approval_allowed: false
+approval_identity_verification_required: true
+required_authorization_status_string: AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION
+authorization_digest_algorithm: sha256
+authorization_digest_format: 64_lowercase_hex
+# Required fields of the FUTURE authorization record. None of these exist yet.
+authorization_record_required_fields:
+  - schema_version
+  - authorization_status
+  - authorization_scope
+  - evidence_number
+  - evidence_slug
+  - execution_framework_sha
+  - target_repository
+  - target_sha
+  - exact_model
+  - artifact_type
+  - preparation_package_path
+  - preparation_package_sha256
+  - gate_d_checklist_path
+  - gate_d_checklist_sha256
+  - authorization_record_created_at
+  - authorization_record_created_by
+  - owner_approval_reference
+  - one_invocation_only
+  - no_retry
+  - no_fallback
+  - no_model_substitution
+  - no_artifact_repair
+  - no_target_mutation
+  - stop_on_first_failed_gate
+authorization_record_boolean_fields_must_be_true:
+  - one_invocation_only
+  - no_retry
+  - no_fallback
+  - no_model_substitution
+  - no_artifact_repair
+  - no_target_mutation
+  - stop_on_first_failed_gate
+# Required fields of the FUTURE owner-approval artifact. It does not exist yet.
+owner_approval_required_fields:
+  - approver_github_identity
+  - approval_timestamp
+  - authorization_record_sha256
+  - execution_framework_sha
+  - target_sha
+  - evidence_number
+  - evidence_slug
+  - exact_model
+  - authorization_decision
+  - no_retry_statement
+  - owner_decision_reference
+canonical_preparation_package_path: docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md
+canonical_gate_d_checklist_path: docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
+package_and_checklist_loaded_from_framework_root: true
+external_package_or_checklist_copy_allowed: false
+# Gate A authorization verification, in order. See section 2g.
+gate_a_authorization_verification_steps:
+  - 1 authorization record exists at the exact planned run-control path
+  - 2 owner approval artifact exists
+  - 3 authorization record SHA-256 is recomputed over its exact bytes
+  - 4 recomputed digest matches the owner-approved digest
+  - 5 approval identity is valid
+  - 6 approval status is exactly AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION
+  - 7 authorization record required fields are complete
+  - 8 authorization record framework SHA matches checked-out framework HEAD
+  - 9 target SHA matches checked-out Auteur HEAD
+  - 10 evidence number and slug match the planned attempt
+  - 11 exact model matches the enforced model
+  - 12 preparation-package path and digest match
+  - 13 Gate D checklist path and digest match
+  - 14 one-invocation/no-retry/no-fallback rules are true
+  - 15 no existing Evidence 0016 output is present
+gate_a_digest_verification_precedes_invocation: true
+# Every condition below is a hard stop BEFORE model invocation. See section 2h.
+authorization_hard_stop_conditions:
+  - authorization record absent
+  - approval artifact absent
+  - owner-approved digest absent
+  - digest malformed
+  - digest mismatch
+  - approval identity unauthorized
+  - record changed after approval
+  - execution framework SHA mismatch
+  - target SHA mismatch
+  - evidence number mismatch
+  - evidence slug mismatch
+  - model mismatch
+  - package path mismatch
+  - package digest mismatch
+  - checklist path mismatch
+  - checklist digest mismatch
+  - authorization status not exact
+  - one-invocation flag false or absent
+  - no-retry flag false or absent
+  - conflicting duplicate records
+  - more than one approval artifact
+  - pre-existing Evidence 0016 output
+  - mutable or floating path used as authority
+authorization_failure_is_gate_a_failure: true
+authorization_failure_permits_retry: false
 merging_this_pr_finalizes_pin: false
 merging_this_pr_authorizes_execution: false
 separate_run_authorization_task_required: true
@@ -263,7 +394,7 @@ After PR #107 merges, and only then:
 6. Only then may a separate owner-level task decide whether to authorize the
    live attempt. Pin finalization is not authorization.
 
-### Chosen mechanism: external authorization record
+### Chosen mechanism: owner-approved external immutable authorization record
 
 The final executable pin should normally be the merge commit of the
 pin-finalization PR itself, since that is the first immutable commit
@@ -275,23 +406,331 @@ SHA, so this package does **not** attempt to. Instead:
   The preparation package remains the **governing contract**, not the pin
   carrier.
 - A separate immutable **authorization record**, created only after this
-  preparation PR merges, at
-  `docs/experiments/STAGE-1-AUTEUR-EVIDENCE-0016-AUTHORIZATION-RECORD.md`,
-  carries the **execution pin**. It must pin: the exact full execution
-  framework SHA; the target SHA; the evidence number; the model; and the
-  authorization status.
+  preparation PR merges, carries the **execution pin**.
 - The live runner consumes the authorization record as the authoritative
   execution pin, while continuing to obey this package as the governing
   contract.
-- The authorization record must itself exist at the pinned framework revision,
-  or be copied into an immutable run-control location whose SHA-256 digest is
-  recorded before invocation.
 
 This avoids the circular requirement that a commit contain its own SHA: the
 record is authored *after* the revision it pins is already immutable, and the
 governing contract never mutates to carry a pin at all.
 
-That record does **not** exist yet. It must not be created by this PR.
+That record does **not** exist yet. It must not be created by this PR. No
+owner approval exists yet either. The package remains non-runnable.
+
+---
+
+## 2b. The single mandatory authorization mechanism
+
+An earlier revision of this package offered the authorization record two
+possible homes: it could "exist at the pinned framework revision, **or** be
+copied into an immutable run-control location whose SHA-256 digest is
+recorded". **That fork is deleted.** It was unsafe in both branches:
+
+- The first branch is **logically impossible** under this package's own
+  ordering. The authorization record is authored *after* the execution
+  framework revision it pins already exists and is immutable. A commit cannot
+  retroactively contain a file written after it. Offering that branch invited
+  an operator to satisfy it by amending, rewriting, or re-pinning history.
+- The second branch was offered as **optional**, named **no approving
+  authority**, and let the operator record the digest of whatever bytes they
+  happened to be holding. Self-recording a digest of your own file proves
+  only that the file hashes to its own hash. It authenticates nothing.
+
+Exactly one mechanism is permitted, with no alternative:
+
+```text
+MECHANISM (mandatory, sole, non-optional):
+  Owner-approved external immutable authorization record.
+
+The future authorization record MUST:
+  1. be created only after PR #107 has merged;
+  2. pin an already-existing immutable execution framework SHA;
+  3. live OUTSIDE the pinned framework commit;
+  4. be stored in the explicit immutable run-control location named below;
+  5. have its exact bytes hashed with SHA-256;
+  6. have that SHA-256 digest approved by the repository owner, in a
+     DISTINCT approval artifact, before any invocation;
+  7. be verified by Gate A before any model invocation;
+  8. remain immutable for the life of Evidence 0016.
+
+There is no second mechanism. There is no fallback. There is no
+operator-chosen variant. The authorization record must NOT exist at the
+pinned framework revision, and no copy-with-self-recorded-digest is
+acceptable as authority.
+```
+
+The contract field `authorization_mechanism_alternatives_allowed` is `false`
+and `authorization_mechanism_count` is `1`. Any document, script, or operator
+procedure that presents a choice of authorization provenance is in violation
+of this package and is a Gate A hard stop.
+
+---
+
+## 2c. Immutable run-control location
+
+The authorization artifacts live in a dedicated run-control directory that is
+unique to Evidence 0016, outside all historical evidence directories, and
+clearly distinguishable from generated evidence output:
+
+```text
+experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/
+```
+
+Planned future paths (none of these exist, and none may be created by this
+PR):
+
+```text
+experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.yaml
+experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.sha256
+experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/owner-approval.md
+```
+
+Properties this location must satisfy:
+
+- **explicit** — the exact paths are named here, in advance, not chosen at
+  run time;
+- **unique to Evidence 0016** — no other attempt shares the directory;
+- **outside historical evidence directories** — it is not under
+  `experiments/evidence/`, and in particular never under
+  `experiments/evidence/0015-...`;
+- **distinguishable from generated evidence** — run-control artifacts are
+  authored governance inputs, never model output;
+- **immutable after owner approval** — see section 2f;
+- **unavailable before the later authorization task** — the directory does
+  not exist today (`run_control_directory_exists: false`).
+
+---
+
+## 2d. Owner-approved digest chain
+
+The approval chain is deterministic and ordered. No step may be reordered,
+merged, or skipped.
+
+```text
+ 1. PR #107 merges as PREPARATION ONLY.
+ 2. A later task selects an immutable execution framework SHA that contains:
+      - this preparation package;
+      - the Gate D checklist;
+      - the package-validation tests;
+      - the runtime validator;
+      - model enforcement;
+      - target-safety controls.
+ 3. A DRAFT authorization record is created OUTSIDE that pinned revision,
+    in the run-control location of section 2c.
+ 4. Its exact bytes are finalized. No further edit is permitted after this
+    point without restarting the chain from step 3.
+ 5. SHA-256 is computed over the exact finalized record bytes.
+ 6. The repository owner approves THAT EXACT DIGEST in a DISTINCT approval
+    artifact (owner-approval.md).
+ 7. The approval artifact records: authorization-record digest; execution
+    framework SHA; Auteur target SHA; evidence number; exact model; and an
+    explicit authorization decision.
+ 8. Before invocation, Gate A RECOMPUTES the authorization-record SHA-256
+    from the bytes on disk.
+ 9. Gate A compares the recomputed digest to the OWNER-APPROVED digest from
+    the approval artifact.
+10. Any mismatch, absence, malformed record, or conflicting field is a HARD
+    STOP before model invocation.
+```
+
+**The authorization record must not approve itself.** If the record contains a
+digest field describing itself, that value is **informational only** and must
+never be treated as authoritative — a record can trivially be edited to carry
+a digest matching its own edited bytes. The authoritative digest comes solely
+from the distinct owner-approval artifact
+(`authoritative_digest_source: owner_approval_artifact`).
+
+---
+
+## 2e. Approving authority and identity verification
+
+The approving authority is the **repository owner**, or an **explicitly
+delegated campaign owner** named by the owner.
+
+The owner-approval artifact must include:
+
+```text
+approver_github_identity        (the approving GitHub account)
+approval_timestamp              (ISO-8601, UTC)
+authorization_record_sha256     (exact 64 lowercase hex characters)
+execution_framework_sha         (exact full 40-character SHA)
+target_sha                      (exact full 40-character SHA)
+evidence_number                 ("0016")
+evidence_slug                   (0016-stage1-auteur-post-remediation-controlled-attempt)
+exact_model                     (claude-sonnet-5)
+authorization_decision          AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION
+no_retry_statement              (explicit: no retry, no rerun, no repair)
+owner_decision_reference        (the owner decision authorizing the run)
+```
+
+**The operator executing the run must not self-approve.** An operator may
+supply the approval only if that operator is also the recorded owner or the
+recorded delegate *and* the approval identity is explicitly verified
+(`operator_self_approval_allowed: false`).
+
+Approval identity is verified by, at minimum, all of:
+
+1. the approval artifact is committed to (or otherwise stored immutably in)
+   the run-control location of section 2c;
+2. Git history or platform identity shows **who** authored/approved it —
+   commit author/committer identity, or the merging reviewer identity on the
+   run-control PR;
+3. that identity matches the owner/delegate named in this authorization
+   contract.
+
+If any of the three cannot be demonstrated, approval identity is
+**unauthorized** and Gate A fails.
+
+---
+
+## 2f. Immutability of the run-control artifacts
+
+"Immutable run-control location" is **not** a filesystem convention. A
+directory path is not an immutability guarantee — files at a path can be
+rewritten silently.
+
+The approved artifacts must be fixed by at least one **immutable content
+identity**:
+
+- a committed Git blob/commit SHA **plus** the owner-approved SHA-256 digest;
+  or
+- an immutable artifact-store object ID **plus** the owner-approved SHA-256
+  digest.
+
+For this repository, the preferred form is a **dedicated Git commit or merged
+PR containing the run-control artifacts**, combined with the owner-approved
+SHA-256 digest of the authorization record.
+
+No circular self-reference is created, because the two commits are distinct:
+
+```text
+- the authorization record pins an EARLIER framework execution SHA;
+- the LATER run-control commit contains the authorization and approval
+  artifacts;
+- the runner verifies BOTH the framework SHA and the authorization digest;
+- the run-control commit does NOT need to equal the framework execution SHA,
+  and must not be assumed to.
+```
+
+The future execution package therefore distinguishes three separate values:
+
+```yaml
+execution_framework_sha: PENDING_POST_MERGE_PIN_FINALIZATION
+run_control_commit_sha: PENDING_AUTHORIZATION_RECORD_CREATION
+authorization_record_sha256: PENDING_OWNER_APPROVAL
+```
+
+All three are unset in PR #107 and hold sentinels. **Every pending sentinel
+blocks execution** (`pending_sentinels_block_execution: true`). A sentinel is
+not a SHA, not a digest, and must never be replaced by a guessed,
+abbreviated, anticipated, or branch-derived value.
+
+---
+
+## 2g. Required contents of the future authorization record
+
+The future authorization record must contain at least the following fields.
+This is the complete required contract; a record missing any of them is
+rejected.
+
+```yaml
+schema_version:                  # e.g. "1"
+authorization_status:            # exactly AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION
+authorization_scope:             # single controlled Stage 1 invocation, Evidence 0016
+evidence_number:                 # "0016"
+evidence_slug:                   # 0016-stage1-auteur-post-remediation-controlled-attempt
+execution_framework_sha:         # full 40-char SHA, already immutable
+target_repository:               # https://github.com/ThorStarlord/auteur.git
+target_sha:                      # 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
+exact_model:                     # claude-sonnet-5
+artifact_type:                   # repository_sensemaking_brief
+preparation_package_path:        # canonical path, see below
+preparation_package_sha256:      # 64 lowercase hex
+gate_d_checklist_path:           # canonical path, see below
+gate_d_checklist_sha256:         # 64 lowercase hex
+authorization_record_created_at: # ISO-8601 UTC
+authorization_record_created_by: # authoring identity (NOT the approver)
+owner_approval_reference:        # pointer to the distinct approval artifact
+one_invocation_only:             true
+no_retry:                        true
+no_fallback:                     true
+no_model_substitution:           true
+no_artifact_repair:              true
+no_target_mutation:              true
+stop_on_first_failed_gate:       true
+```
+
+The record binds together, in one signed-off object: the framework revision;
+the target revision; the evidence identity; the model identity; the governing
+package; the Gate D checklist; the authorization scope; the
+one-invocation/no-retry constraints; and the owner approval.
+
+The record is **rejected** if any required field is absent, blank, malformed,
+or inconsistent with this preparation package. `authorization_record_created_by`
+is the *author*, never the *approver*; approval lives only in the separate
+artifact.
+
+### Package and checklist provenance
+
+The record carries SHA-256 digests for the two governing documents, and Gate A
+verifies them:
+
+```text
+SHA-256(preparation package bytes) == authorization record preparation_package_sha256
+SHA-256(Gate D checklist bytes)    == authorization record gate_d_checklist_sha256
+```
+
+Both files must be loaded from `framework_root` at the finalized
+`execution_framework_sha`. External or copied package/checklist files are
+prohibited (`external_package_or_checklist_copy_allowed: false`). The declared
+paths must match the canonical paths declared in PR #107:
+
+```text
+docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md
+docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
+```
+
+Any digest mismatch is a hard stop before model invocation.
+
+---
+
+## 2h. Authorization-record failure modes (all hard stops)
+
+Every condition below **stops the run before model invocation**. None permits
+retry, repair, substitution, or "proceeding with a note".
+
+| # | Hard-stop condition |
+|---|---|
+| 1 | authorization record absent |
+| 2 | approval artifact absent |
+| 3 | owner-approved digest absent |
+| 4 | digest malformed (not 64 lowercase hex) |
+| 5 | digest mismatch (recomputed != owner-approved) |
+| 6 | approval identity unauthorized |
+| 7 | record changed after approval |
+| 8 | execution framework SHA mismatch |
+| 9 | target SHA mismatch |
+| 10 | evidence number mismatch |
+| 11 | evidence slug mismatch |
+| 12 | model mismatch |
+| 13 | package path mismatch |
+| 14 | package digest mismatch |
+| 15 | checklist path mismatch |
+| 16 | checklist digest mismatch |
+| 17 | authorization status not exactly `AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION` |
+| 18 | one-invocation flag false or absent |
+| 19 | no-retry flag false or absent |
+| 20 | conflicting duplicate records |
+| 21 | more than one approval artifact |
+| 22 | pre-existing Evidence 0016 output |
+| 23 | mutable or floating path used as authority |
+
+Each classifies **Gate A as failed**, stops before model invocation, produces
+**no retry**, and preserves the failed preflight record.
+
+**Current state: no authorization record exists. No owner approval exists. The
+package is not runnable.**
 
 ### Preflight rule (mandatory, before any invocation)
 
@@ -402,6 +841,50 @@ later gate is evaluated, filled in, or guessed. Every gate below is
 - A separate run-authorization decision exists, distinct from pin
   finalization.
 - Target checkout SHA is exactly the pinned `target_sha`.
+
+#### Gate A authorization verification (mandatory, in order)
+
+**Digest verification occurs BEFORE model invocation.** Gate A recomputes the
+authorization-record SHA-256 and compares it against the owner-approved digest
+*before* any model is invoked. No invocation may occur until all fifteen steps
+below have passed, in this order:
+
+```text
+ 1. Authorization record exists at the EXACT planned run-control path:
+    experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.yaml
+ 2. Owner approval artifact exists:
+    experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/owner-approval.md
+ 3. Authorization record SHA-256 is RECOMPUTED over its exact bytes on disk.
+ 4. The recomputed digest MATCHES the owner-approved digest taken from the
+    approval artifact (never from the record itself).
+ 5. Approval identity is valid: approver is the repository owner or the
+    explicitly delegated campaign owner, verified per section 2e.
+ 6. Approval status is exactly AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION.
+ 7. Authorization record required fields are complete, non-blank, well-formed.
+ 8. Authorization record execution_framework_sha == framework checkout HEAD.
+ 9. Authorization record target_sha == Auteur target checkout HEAD.
+10. Evidence number "0016" and slug match the planned attempt exactly.
+11. exact_model matches the enforced model (claude-sonnet-5).
+12. preparation_package_path matches the canonical path AND
+    SHA-256(preparation package bytes at framework_root) == preparation_package_sha256.
+13. gate_d_checklist_path matches the canonical path AND
+    SHA-256(Gate D checklist bytes at framework_root) == gate_d_checklist_sha256.
+14. one_invocation_only, no_retry, no_fallback, no_model_substitution,
+    no_artifact_repair, no_target_mutation, stop_on_first_failed_gate are all true.
+15. No existing Evidence 0016 output is present anywhere.
+```
+
+Any failure of any step:
+
+- classifies **Gate A as failed**;
+- **stops before model invocation**;
+- produces **no retry**;
+- **preserves the failed preflight record**.
+
+The full hard-stop condition list is section 2h. The three pending sentinels
+(`PENDING_POST_MERGE_PIN_FINALIZATION`,
+`PENDING_AUTHORIZATION_RECORD_CREATION`, `PENDING_OWNER_APPROVAL`) each block
+execution on their own.
 - Framework root and target root are separate directories and separate
   repositories.
 - Both clones are fresh and clean.
@@ -520,6 +1003,16 @@ Merging PR #107 does not finalize execution_framework_sha either. Two separate
   (2) a separate run-authorization decision. Neither is implied by the other.
 The run is blocked while execution_framework_sha is
   PENDING_POST_MERGE_PIN_FINALIZATION.
+The run is blocked while run_control_commit_sha is
+  PENDING_AUTHORIZATION_RECORD_CREATION.
+The run is blocked while authorization_record_sha256 is
+  PENDING_OWNER_APPROVAL.
+No authorization record exists. No owner-approval artifact exists. No
+  run-control directory exists. The package is not runnable.
+Authorization requires the sole mandatory mechanism of section 2b: an
+  owner-approved external immutable authorization record whose SHA-256 digest
+  the repository owner approved in a distinct artifact, verified by Gate A
+  before invocation. There is no alternative mechanism.
 A separate, explicit owner instruction is required.
 At most one invocation could ever be authorized by such an instruction.
 No automatic retry, repair, or rerun is permitted even then.

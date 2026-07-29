@@ -34,6 +34,17 @@ evidence only and must never be used as the execution pin. While
 `execution_framework_sha` is `PENDING_POST_MERGE_PIN_FINALIZATION`, the run is
 blocked and this checklist governs nothing live.
 
+**Digest provenance.** This checklist's SHA-256 digest, computed over its exact
+bytes as read from `framework_root` at the authorized execution SHA, must match
+`gate_d_checklist_sha256` in the future authorization record. That
+authorization record's own SHA-256 must in turn match the digest approved by
+the repository owner in the distinct owner-approval artifact. Both comparisons
+happen in **Gate A, before any model invocation**. If either fails — checklist
+digest mismatch, authorization-record digest mismatch, missing record, or
+missing owner approval — **Gate A fails before Gate D begins**, and no
+substantive review takes place. Gate D never runs on an unauthenticated
+checklist.
+
 ---
 
 ## 1. Why this checklist exists
