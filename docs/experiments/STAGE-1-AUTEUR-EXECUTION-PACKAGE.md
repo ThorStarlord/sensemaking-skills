@@ -1,5 +1,15 @@
 # Stage 1 Auteur Execution Package
 
+> **Superseded for the next proposed attempt.** This document remains the
+> authoritative historical record for Evidence 0013, 0014, and 0015, and its
+> §3a (model enforcement), §6a (clone-source procedure), §8 (target-mutation
+> safeguard), §9 (structural validation), §10 (substantive rubric), and §11
+> (hard-stop matrix) remain in force. The pins, evidence number, gates, and
+> stopping rules for the **next** proposed attempt (Evidence 0016, against
+> the remediated auteur target) live in
+> `docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md`, status
+> `PREPARED_NOT_RUN`. Nothing in either document authorizes execution.
+
 **Date**: 2026-07-27 (revised: this revision is a documentation-only refresh
 that proposes a **new** framework execution pin for a possible future
 controlled Stage 1 attempt, after PR #99 (generic `artifact_id` routing and
