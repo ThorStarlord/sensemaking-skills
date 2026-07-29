@@ -207,7 +207,7 @@ gate_a_authorization_verification_steps_are_future_contract: true
 gate_a_authorization_verification_steps:
   - 1 authorization record exists at the exact planned run-control path
   - 2 owner approval artifact exists
-  - 3 authorization record SHA-256 is recomputed over its exact bytes
+  - 3 authorization record SHA-256 must be recomputed over its exact bytes
   - 4 recomputed digest matches the owner-approved digest
   - 5 approval identity is valid
   - 6 approval status is exactly AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION
@@ -412,11 +412,11 @@ pr_107_does_not_prove:
   # BEGIN_QUOTED_OLD_WORDING
   - an authorization consumer exists
   - Gate A is runtime-enforced
-  # END_QUOTED_OLD_WORDING
   - owner approval can currently authorize a run
   - digests are currently checked
   - model invocation is currently blocked by authorization state
   - Evidence 0016 is executable
+  # END_QUOTED_OLD_WORDING
 readiness_classification_before: Externally exercised
 readiness_auto_promotion_allowed: false
 second_structurally_different_target_required: true
@@ -488,6 +488,49 @@ The tests in PR #107 do NOT prove runtime enforcement, and must never be
   cited as evidence of it.
 ```
 
+### Scope of the prose-honesty guard
+
+The package tests include a deterministic prose guard that scans this document,
+the Gate D checklist, and the execution package for sentences asserting that
+authorization enforcement happens *now*. It exists because the authorization
+contract below is specified but has no runtime consumer, so any present-tense
+enforcement sentence in these files would be false.
+
+**Declared scope.** This deterministic guard covers the enumerated
+active-simple-present, emphatic-do, present-progressive, and affirmative-passive
+enforcement forms used by this package. It is not a general English semantic
+analyzer.
+
+Concretely, it matches a closed lexicon of enforcement verbs in four shapes:
+
+```text
+# BEGIN_QUOTED_OLD_WORDING
+active simple present   Gate A verifies the digest.
+emphatic do             Gate A does verify the digest.
+present progressive     Gate A is checking the digest.   (also "Gate A's checking")
+affirmative passive     The digest is verified by Gate A. / is verified before execution.
+# END_QUOTED_OLD_WORDING
+```
+
+What it deliberately does **not** do: parse arbitrary English, resolve
+coreference, model tense beyond the auxiliaries `is/are/was/were` and
+`do/does/did`, or detect paraphrase. Modal and future forms (`must verify`,
+`will recompute`, `would be verified`) are legal by design, because those are
+the truthful ways to describe a contract whose consumer does not exist.
+
+Negation counts only in the auxiliary slot of the matched construction
+(`is not verified`, `does not verify`, `is not checking`) or bound to the
+subject (`no current runner verifies`). Proximity to `not`, `prohibited`,
+`must not`, `example`, `old wording`, `future` or `required` exempts nothing.
+The only exemption is an exactly paired
+`BEGIN_QUOTED_OLD_WORDING` / `END_QUOTED_OLD_WORDING` region, which fails
+closed: a malformed, nested, unclosed or inline-code marker exempts nothing,
+and a region may not cover more than half a document.
+
+Because the guard's scope is bounded and enumerated, it is a regression fence
+for the wordings reviewers have actually demonstrated -- not proof that no
+dishonest sentence can ever be written. Reviewer judgement remains required.
+
 ### What cannot make this package runnable
 
 This is the point of the section. Three plausible-looking paths to a "runnable"
@@ -558,7 +601,7 @@ Runtime baseline SHA: 1761e42f6786af422e05e128bb6608d33854f1f3
 
 Execution framework SHA: PENDING_POST_MERGE_PIN_FINALIZATION
   Authoritative for the live attempt. Deliberately unset in this PR, because
-  it cannot be known until PR #107 merges. The run is BLOCKED while it holds
+  it cannot be known until PR #107 merges. The run is blocked procedurally while it holds
   the sentinel value. See section 2a.
 
 Target SHA: 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
@@ -611,7 +654,7 @@ runtime_baseline_sha does NOT contain the Gate D checklist.
 runtime_baseline_sha does NOT contain the package-validation tests.
 execution_framework_sha is authoritative for the live attempt.
 execution_framework_sha must contain the governing preparation artifacts.
-The run is BLOCKED while execution_framework_sha is unset.
+The run is blocked procedurally while execution_framework_sha is unset.
 Merging PR #107 does NOT fill execution_framework_sha.
 Merging PR #107 does NOT authorize execution.
 A separate pin-finalization task AND a separate run-authorization task are
@@ -853,10 +896,10 @@ owner_decision_reference        (the owner decision authorizing the run)
 
 **The operator executing the run must not self-approve.** An operator may
 supply the approval only if that operator is also the recorded owner or the
-recorded delegate *and* the approval identity is explicitly verified
+recorded delegate *and* the approval identity must be explicitly verified
 (`operator_self_approval_allowed: false`).
 
-Approval identity is verified by, at minimum, all of:
+Approval identity must be verified by, at minimum, all of:
 
 1. the approval artifact is committed to (or otherwise stored immutably in)
    the run-control location of section 2c;
@@ -919,8 +962,8 @@ abbreviated, anticipated, or branch-derived value.
 ## 2g. Required contents of the future authorization record
 
 The future authorization record must contain at least the following fields.
-This is the complete required contract; a record missing any of them is
-rejected.
+This is the complete required contract; a record missing any of them
+must be rejected.
 
 ```yaml
 schema_version:                  # e.g. "1"
@@ -954,7 +997,7 @@ the target revision; the evidence identity; the model identity; the governing
 package; the Gate D checklist; the authorization scope; the
 one-invocation/no-retry constraints; and the owner approval.
 
-The record is **rejected** if any required field is absent, blank, malformed,
+The record must be **rejected** if any required field is absent, blank, malformed,
 or inconsistent with this preparation package. `authorization_record_created_by`
 is the *author*, never the *approver*; approval lives only in the separate
 artifact.
@@ -1283,7 +1326,8 @@ steps below successfully, in this order:
     experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.yaml
  2. Owner approval artifact exists:
     experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/owner-approval.md
- 3. Authorization record SHA-256 is RECOMPUTED over its exact bytes on disk.
+ 3. Authorization record SHA-256 must be RECOMPUTED over its exact bytes
+    on disk.
  4. The recomputed digest MATCHES the owner-approved digest taken from the
     approval artifact (never from the record itself).
  5. Approval identity is valid: approver is the repository owner or the
@@ -1437,13 +1481,13 @@ Merging the PR that carries this package approves it as an accurate planning
 Merging PR #107 does not finalize execution_framework_sha either. Two separate
   steps follow, in order: (1) a post-merge pin-finalization task, then
   (2) a separate run-authorization decision. Neither is implied by the other.
-The run is blocked while execution_framework_sha is
+The run is blocked procedurally while execution_framework_sha is
   PENDING_POST_MERGE_PIN_FINALIZATION.
-The run is blocked while run_control_commit_sha is
+The run is blocked procedurally while run_control_commit_sha is
   PENDING_AUTHORIZATION_RECORD_CREATION.
-The run is blocked while authorization_record_sha256 is
+The run is blocked procedurally while authorization_record_sha256 is
   PENDING_OWNER_APPROVAL.
-The run is blocked because no Gate A authorization consumer exists. This block
+The run is blocked procedurally because no Gate A authorization consumer exists. This block
   is independent of the three sentinels and is NOT cleared by filling them.
 No authorization record exists. No owner-approval artifact exists. No
   run-control directory exists. The package is not runnable.
@@ -1474,11 +1518,11 @@ PR #107 **does not prove**:
 # BEGIN_QUOTED_OLD_WORDING
 - an authorization consumer exists;
 - Gate A is runtime-enforced;
-# END_QUOTED_OLD_WORDING
 - owner approval can currently authorize a run;
 - digests are currently checked;
 - model invocation is currently blocked by authorization state;
 - Evidence 0016 is executable.
+# END_QUOTED_OLD_WORDING
 ```
 
 PR #107 is a **preparation-contract PR**. It implements no security

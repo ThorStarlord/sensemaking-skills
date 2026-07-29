@@ -32,7 +32,7 @@ undocumented copy. It does not exist at `runtime_baseline_sha`
 (`1761e42f6786af422e05e128bb6608d33854f1f3`), which is historical preparation
 evidence only and must never be used as the execution pin. While
 `execution_framework_sha` is `PENDING_POST_MERGE_PIN_FINALIZATION`, the run is
-blocked and this checklist governs nothing live.
+blocked procedurally and this checklist governs nothing live.
 
 **Digest provenance.** This checklist's SHA-256 digest, computed over its exact
 bytes as read from `framework_root` at the authorized execution SHA, must match

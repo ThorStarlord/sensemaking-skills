@@ -357,7 +357,13 @@ class FrameworkPinLifecycle(unittest.TestCase):
     def test_pending_execution_pin_blocks_authorization(self):
         self.assertEqual(self.contract["execution_authorization_status"], "NOT_AUTHORIZED")
         self.assertFalse(self.contract["package_runnable"])
-        self.assertIn("BLOCKED while execution_framework_sha is unset", self.text)
+        # Round 6: the procedural nature of the block is now stated
+        # explicitly, because a bare "is blocked" passive reads as a claim
+        # that a live runtime is doing the blocking.
+        self.assertIn(
+            "blocked procedurally while execution_framework_sha is unset",
+            self.text,
+        )
 
     # 4
     def test_runtime_baseline_is_not_treated_as_execution_pin(self):
@@ -849,7 +855,7 @@ class AuthorizationSentinels(unittest.TestCase):
         self.assertEqual(self.contract["pending_sentinels"], ALL_SENTINELS)
         for sentinel in ALL_SENTINELS:
             self.assertIn(sentinel, self.text)
-            self.assertIn(f"blocked while", self.text)
+            self.assertIn("blocked procedurally while", self.text)
         self.assertFalse(self.contract["package_runnable"])
         self.assertEqual(
             self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
@@ -1386,6 +1392,133 @@ _OVERCLAIM_RE = re.compile(
     re.IGNORECASE,
 )
 
+# ---------------------------------------------------------------------------
+# Round 6 remediation: passive, emphatic and progressive enforcement claims.
+#
+# The round-5 guard only understood ACTIVE SIMPLE PRESENT ("Gate A verifies
+# ..."). The reviewer demonstrated that the same false assertion survives when
+# rephrased, because none of these shapes contain a third-person present verb
+# immediately after a runtime subject:
+#
+#   passive       "The authorization digest is verified by Gate A."
+#   agentless     "The target SHA is verified before execution."
+#   emphatic-do   "Gate A does verify the digest."
+#   progressive   "The runner is validating the approval."
+#   contracted    "Gate A's checking the digest now."
+#
+# Three additional deterministic matchers are added below. Declared scope:
+# ENUMERATED active-simple-present, emphatic-do, present-progressive and
+# affirmative-passive forms. This is not a general English parser; it is a
+# closed verb lexicon applied to normalized clauses.
+#
+# Negation rule (identical in spirit to the active matcher): a negator only
+# counts when it sits in the AUXILIARY slot of the very construction being
+# matched ("is not verified", "does not verify", "is not checking") or is bound
+# to the subject noun phrase ("no current runner"). A negator, "prohibited",
+# "must not", "example", "old wording", "future" or "required" appearing
+# elsewhere in the clause, on the line, or nearby exempts nothing.
+#
+# Modal/future auxiliaries ("would be verified", "will be recomputed",
+# "must verify") never match: the auxiliary lexicon is exactly
+# is/are/was/were and do/does/did, so truthful future-tense prose stays legal.
+#
+# Procedural-mechanism carve-out: an affirmative agentless passive whose manner
+# adverb explicitly names a NON-runtime mechanism ("is blocked procedurally",
+# "is enforced manually") is allowed, because that wording asserts the opposite
+# of runtime enforcement. The carve-out is a closed adverb list, and it does
+# NOT apply when a runtime agent is named ("is blocked procedurally by Gate A"
+# is still rejected).
+# ---------------------------------------------------------------------------
+
+# Past participles of the enforcement verb lexicon.
+_PASSIVE_PARTICIPLE = (
+    r"(?:verified|recomputed|compared|validated|blocked|checked|enforced|"
+    r"performed|prevented|rejected|refused|halted|loaded|gated)"
+)
+# Bare infinitives, for the emphatic "does <verb>" construction only.
+_EMPHATIC_VERB = (
+    r"(?:verify|recompute|compare|validate|block|check|enforce|perform|"
+    r"reject|refuse|halt|load|gate)"
+)
+# Present participles, for the progressive construction.
+_PROGRESSIVE_VERB = (
+    r"(?:verifying|recomputing|comparing|validating|blocking|checking|"
+    r"enforcing|performing|preventing|rejecting|refusing|halting|loading|"
+    r"gating)"
+)
+# The ONLY auxiliaries these matchers accept. Modals are deliberately absent.
+_BE_AUX = r"(?:is|are|was|were)"
+_DO_AUX = r"(?:do|does|did)"
+# Negators valid ONLY in the auxiliary slot of the matched construction.
+_AUX_NEGATOR = r"(?:not|never|no\s+longer|n't)"
+# Adverbs that may sit between auxiliary and verb without changing polarity.
+_INNER_ADVERB = (
+    r"(?:currently|already|now|automatically|always|actually|explicitly|"
+    r"deterministically|first|then|also)"
+)
+# Manner adverbs that explicitly name a non-runtime mechanism.
+_NONRUNTIME_MANNER = (
+    r"(?:procedurally|manually|administratively|editorially|"
+    r"by\s+(?:policy|review|convention|hand|this\s+document))"
+)
+
+# Affirmative passive: "<object> is|are|was|were [adv] <participle> [and
+# <participle>] [by <agent>]". Rejected unless negated in the auxiliary slot
+# or marked with a non-runtime manner adverb and carrying no runtime agent.
+_PASSIVE_RE = re.compile(
+    r"\b" + _BE_AUX + r"\s+"
+    r"(?P<neg1>" + _AUX_NEGATOR + r"\s+)?"
+    r"(?:" + _INNER_ADVERB + r"\s+)*"
+    r"(?P<neg2>" + _AUX_NEGATOR + r"\s+)?"
+    r"(?P<part>" + _PASSIVE_PARTICIPLE + r")"
+    r"(?:\s+(?:and|or)\s+" + _PASSIVE_PARTICIPLE + r")?"
+    r"(?P<manner>\s+" + _NONRUNTIME_MANNER + r")?"
+    r"(?P<agent>\s+by\s+(?:the\s+|a\s+|an\s+|any\s+|its\s+|"
+    r"(?:\w+\s+){0,2})?" + _OVERCLAIM_SUBJECT + r")?",
+    re.IGNORECASE,
+)
+
+# Emphatic: "<runtime subject> does <bare verb>".
+_EMPHATIC_RE = re.compile(
+    r"(?P<neg>\b(?:no|neither)\s+(?:\w+\s+){0,2})?"
+    r"\b(?P<subject>" + _OVERCLAIM_SUBJECT + r")\s+"
+    r"(?:" + _DO_AUX + r")\s+"
+    r"(?P<dneg>" + _AUX_NEGATOR + r"\s+)?"
+    r"(?:" + _INNER_ADVERB + r"\s+)*"
+    r"(?P<verb>" + _EMPHATIC_VERB + r")\b",
+    re.IGNORECASE,
+)
+
+# Present progressive: "<runtime subject> is <verb>ing".
+_PROGRESSIVE_RE = re.compile(
+    r"(?P<neg>\b(?:no|neither)\s+(?:\w+\s+){0,2})?"
+    r"\b(?P<subject>" + _OVERCLAIM_SUBJECT + r")\s+"
+    r"(?:" + _BE_AUX + r")\s+"
+    r"(?P<pneg>" + _AUX_NEGATOR + r"\s+)?"
+    r"(?:" + _INNER_ADVERB + r"\s+)*"
+    r"(?P<verb>" + _PROGRESSIVE_VERB + r")\b",
+    re.IGNORECASE,
+)
+
+# "Gate A's checking ..." is the contraction of "Gate A is checking ...".
+# Expanded ONLY when the following word is an enforcement present participle
+# and is NOT a possessive gerund ("Gate A's checking OF the digest" and
+# "Gate A's checking procedure" stay possessive noun phrases).
+_PROGRESSIVE_CONTRACTION_RE = re.compile(
+    r"\b(?P<subject>" + _OVERCLAIM_SUBJECT + r")(?:'|’)s\s+"
+    r"(?=" + _PROGRESSIVE_VERB + r"\b(?!\s+(?:of|procedure|procedures|step|"
+    r"steps|logic|rule|rules)\b))",
+    re.IGNORECASE,
+)
+
+
+def _expand_progressive_contractions(text):
+    """Rewrite "<subject>'s <verb>ing" as "<subject> is <verb>ing"."""
+    return _PROGRESSIVE_CONTRACTION_RE.sub(
+        lambda m: m.group("subject") + " is ", text
+    )
+
+
 # Literal phrases that are overclaims regardless of subject/verb shape.
 _OVERCLAIM_LITERALS = (
     "is runtime-enforced",
@@ -1405,8 +1538,15 @@ def _normalize_markdown(text):
     # Emphasis underscores only: intra-word underscores belong to snake_case
     # identifiers (YAML keys) and must not be split into prose words.
     text = re.sub(r"(?<![A-Za-z0-9])_+|_+(?![A-Za-z0-9])", " ", text)
-    text = re.sub(r"[`*>#]", " ", text)
+    # HTML emphasis and any other inline tag becomes nothing, so <b>Gate A</b>
+    # reads as "Gate A" rather than an unparsable token.
+    text = re.sub(r"</?[A-Za-z][^>]*>", " ", text)
+    # Markdown links: keep the link TEXT, drop the target. Done before bracket
+    # stripping so a claim written as [Gate A](#anchor) verifies ... is seen.
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
+    text = re.sub(r"[`*>#\[\]()]", " ", text)
     text = re.sub(r"^\s*[-+]\s+", " ", text)
+    text = _expand_progressive_contractions(text)
     return re.sub(r"\s+", " ", text)
 
 
@@ -1525,6 +1665,41 @@ def find_enforcement_overclaims(text, name="<text>"):
                     f"{match.group(0).strip()!r} in clause {clause.strip()!r}"
                 )
                 continue
+            emphatic = _EMPHATIC_RE.search(clause)
+            if emphatic and not emphatic.group("neg") and not emphatic.group(
+                "dneg"
+            ):
+                findings.append(
+                    f"{name}:{start_lineno}: emphatic enforcement claim "
+                    f"{emphatic.group(0).strip()!r} in clause {clause.strip()!r}"
+                )
+                continue
+
+            progressive = _PROGRESSIVE_RE.search(clause)
+            if (
+                progressive
+                and not progressive.group("neg")
+                and not progressive.group("pneg")
+            ):
+                findings.append(
+                    f"{name}:{start_lineno}: progressive enforcement claim "
+                    f"{progressive.group(0).strip()!r} in clause "
+                    f"{clause.strip()!r}"
+                )
+                continue
+
+            passive = _PASSIVE_RE.search(clause)
+            if passive and not passive.group("neg1") and not passive.group("neg2"):
+                # A non-runtime manner adverb only excuses the claim when no
+                # runtime agent is named.
+                if not (passive.group("manner") and not passive.group("agent")):
+                    findings.append(
+                        f"{name}:{start_lineno}: passive enforcement claim "
+                        f"{passive.group(0).strip()!r} in clause "
+                        f"{clause.strip()!r}"
+                    )
+                    continue
+
             for literal in _OVERCLAIM_LITERALS:
                 if literal in low:
                     findings.append(
@@ -2320,6 +2495,554 @@ class ProseGuardFailureMessages(unittest.TestCase):
         self.assertEqual(len(findings), 1, findings)
         self.assertIn("DOC.md:1", findings[0])
         self.assertIn("Gate A verifies", findings[0])
+
+
+# ---------------------------------------------------------------------------
+# Round 6: passive / emphatic / progressive bypass regressions
+#
+# An independent reviewer demonstrated that the round-5 guard understood only
+# ACTIVE SIMPLE PRESENT claims. Rewriting the same false assertion as a passive
+# ("The authorization digest is verified by Gate A"), as an emphatic
+# ("Gate A does verify the digest") or as a progressive ("The runner is
+# validating the approval") walked straight through it. Every string below is
+# quoted verbatim from that review.
+# ---------------------------------------------------------------------------
+
+# All ten passive bypasses. Six name a runtime agent with "by ..."; four are
+# agentless. All ten must be rejected outside a quoted-old-wording region.
+PASSIVE_BYPASS_STRINGS = (
+    "The authorization digest is verified by Gate A.",
+    "SHA-256 is recomputed by the runner before invocation.",
+    "Unauthorized model calls are blocked by the runtime.",
+    "The approval identity is validated by workflow-runtime.py.",
+    "The authorization record is checked before the model runs.",
+    "The package and checklist digests are compared by Gate A.",
+    "Owner approval is enforced by the current runner.",
+    "Invocation is prevented when authorization fails.",
+    "The target SHA is verified before execution.",
+    "The record is loaded and validated by the system.",
+)
+
+# All seven emphatic-do and present-progressive bypasses.
+AUXILIARY_BYPASS_STRINGS = (
+    "Gate A does verify the digest.",
+    "The runner does recompute SHA-256.",
+    "The runtime does block unauthorized calls.",
+    "Gate A's checking the digest now.",
+    "Gate A is checking the digest now.",
+    "The runner is validating the approval.",
+    "workflow-runtime.py is performing authorization checks.",
+)
+
+# Truthful phrasings that MUST remain legal. If the guard rejected any of these
+# it would be unusable: the package could not describe its own honest state.
+ROUND6_TRUTHFUL_STRINGS = (
+    "No current runner verifies the authorization digest.",
+    "The authorization digest is not currently verified by any runtime consumer.",
+    "The future Gate A consumer must verify the digest.",
+    "The consumer will verify the digest only after implementation and review.",
+    "The contract requires the future consumer to recompute SHA-256.",
+    "Digest verification is not implemented.",
+    "The package is blocked procedurally because no consumer exists.",
+    "The authorization digest would be verified by a future consumer after merge.",
+)
+
+# Words the DELETED line-level exemption used to treat as absolving. None of
+# them may exempt an affirmative passive, emphatic or progressive claim.
+NON_EXEMPTING_CONTEXT_WORDS = (
+    "not",
+    "prohibited",
+    "must not",
+    "example",
+    "old wording",
+    "future",
+    "required",
+)
+
+
+class ProseGuardScopeIsDeclared(unittest.TestCase):
+    """106-107: the guard states its real, bounded scope -- no universal claim."""
+
+    # 106
+    def test_scope_statement_present_and_bounded(self):
+        for path in (PACKAGE_PATH, EXEC_PACKAGE_PATH):
+            collapsed = " ".join(path.read_text(encoding="utf-8").split())
+            self.assertIn(
+                "This deterministic guard covers the enumerated "
+                "active-simple-present, emphatic-do, present-progressive, and "
+                "affirmative-passive enforcement forms used by this package. It "
+                "is not a general English semantic analyzer.",
+                collapsed,
+                f"{path.name} must declare the guard's bounded scope",
+            )
+
+    # 107
+    def test_scope_statement_makes_no_universal_claim(self):
+        for path in (PACKAGE_PATH, EXEC_PACKAGE_PATH):
+            low = path.read_text(encoding="utf-8").lower()
+            for overclaim in (
+                "detects all enforcement claims",
+                "catches every",
+                "universal detection",
+                "general english parser",
+                "semantically complete",
+            ):
+                self.assertNotIn(overclaim, low, f"{path.name}: {overclaim!r}")
+
+
+class ProseGuardPassiveVoice(unittest.TestCase):
+    """108-112: affirmative passive enforcement claims are rejected."""
+
+    def assertRejected(self, text):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(findings, f"NOT rejected: {text!r}")
+
+    def assertAccepted(self, text):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertEqual(findings, [], f"wrongly rejected: {text!r}")
+
+    # 108
+    def test_all_ten_passive_bypasses_are_rejected(self):
+        self.assertEqual(len(PASSIVE_BYPASS_STRINGS), 10)
+        for text in PASSIVE_BYPASS_STRINGS:
+            with self.subTest(text=text):
+                self.assertRejected(text)
+
+    # 109
+    def test_agentless_passive_is_rejected(self):
+        # No "by <runtime>" agent at all: the claim still asserts the check
+        # happens now, so it must not survive.
+        for text in (
+            "The authorization record is checked before the model runs.",
+            "Invocation is prevented when authorization fails.",
+            "The target SHA is verified before execution.",
+        ):
+            with self.subTest(text=text):
+                self.assertRejected(text)
+
+    # 110
+    def test_negated_passive_is_allowed(self):
+        for text in (
+            "The authorization digest is not verified by any runtime consumer.",
+            "The authorization digest is not currently verified by Gate A.",
+            "SHA-256 is never recomputed by the current runner.",
+            "The record is no longer checked by anything.",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text)
+
+    # 111
+    def test_modal_and_future_passive_is_allowed(self):
+        for text in (
+            "The authorization digest would be verified by a future consumer "
+            "after merge.",
+            "SHA-256 must be recomputed by the future consumer.",
+            "The digest will be compared by the consumer once it exists.",
+            "The record should be validated by the implemented consumer.",
+            "The identity may be verified by a later reviewer.",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text)
+
+    # 112
+    def test_procedural_manner_adverb_does_not_launder_a_named_agent(self):
+        # "blocked procedurally" is honest; "blocked procedurally BY GATE A"
+        # smuggles a runtime agent back in and must still be rejected.
+        self.assertAccepted(
+            "The package is blocked procedurally because no consumer exists."
+        )
+        self.assertRejected("The package is blocked procedurally by Gate A.")
+
+
+class ProseGuardAuxiliaryAndProgressive(unittest.TestCase):
+    """113-117: emphatic-do and present-progressive claims are rejected."""
+
+    def assertRejected(self, text):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(findings, f"NOT rejected: {text!r}")
+
+    def assertAccepted(self, text):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertEqual(findings, [], f"wrongly rejected: {text!r}")
+
+    # 113
+    def test_all_seven_auxiliary_bypasses_are_rejected(self):
+        self.assertEqual(len(AUXILIARY_BYPASS_STRINGS), 7)
+        for text in AUXILIARY_BYPASS_STRINGS:
+            with self.subTest(text=text):
+                self.assertRejected(text)
+
+    # 114
+    def test_negated_emphatic_is_allowed(self):
+        for text in (
+            "Gate A does not verify the digest.",
+            "The runner does not recompute SHA-256.",
+            "No runner does verify the digest.",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text)
+
+    # 115
+    def test_negated_progressive_is_allowed(self):
+        for text in (
+            "Gate A is not checking the digest.",
+            "The runner is never validating the approval.",
+            "workflow-runtime.py is not performing authorization checks.",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text)
+
+    # 116
+    def test_contraction_is_expanded_to_progressive(self):
+        self.assertRejected("Gate A's checking the digest now.")
+        self.assertRejected("The runner's validating the approval.")
+        # A curly apostrophe must behave identically to a straight one.
+        self.assertRejected("Gate A’s checking the digest now.")
+
+    # 117
+    def test_ordinary_possessives_are_not_treated_as_progressive(self):
+        # A possessive followed by a gerund NOUN, or by a plain noun, is not a
+        # verb phrase and must not be rewritten into one.
+        for text in (
+            "Gate A's checking of the digest is not implemented.",
+            "Gate A's checking procedure is documented only.",
+            "Gate A's checking steps are enumerated below.",
+            "Gate A's digest field is pending.",
+            "The runner's validating logic does not exist.",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text)
+
+
+class ProseGuardExemptionGaming(unittest.TestCase):
+    """118-120: nearby words never exempt an affirmative claim."""
+
+    def assertRejected(self, text):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(findings, f"NOT rejected: {text!r}")
+
+    # 118
+    def test_negative_context_words_do_not_exempt_claims(self):
+        for word in NON_EXEMPTING_CONTEXT_WORDS:
+            for claim in (
+                "The authorization digest is verified by Gate A.",
+                "The target SHA is verified before execution.",
+                "Gate A does verify the digest.",
+                "The runner is validating the approval.",
+            ):
+                for text in (
+                    f"{word}: {claim}",
+                    f"{claim} This is {word}.",
+                    f"Note ({word}) -- {claim}",
+                ):
+                    with self.subTest(word=word, text=text):
+                        self.assertRejected(text)
+
+    # 119
+    def test_truthful_clause_on_the_same_line_does_not_exempt_a_false_one(self):
+        self.assertRejected(
+            "No consumer exists yet; the authorization digest is verified by "
+            "Gate A."
+        )
+        self.assertRejected(
+            "Digest verification is not implemented, and SHA-256 is recomputed "
+            "by the runner."
+        )
+
+    # 120
+    def test_all_round6_truthful_forms_are_accepted(self):
+        self.assertEqual(len(ROUND6_TRUTHFUL_STRINGS), 8)
+        for text in ROUND6_TRUTHFUL_STRINGS:
+            with self.subTest(text=text):
+                self.assertEqual(
+                    find_enforcement_overclaims(text, name="T.md"),
+                    [],
+                    f"wrongly rejected truthful form: {text!r}",
+                )
+
+
+class ProseGuardFormattingCoverage(unittest.TestCase):
+    """121-134: formatting cannot hide a passive or auxiliary claim."""
+
+    def assertRejected(self, text, label=""):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(findings, f"NOT rejected ({label}): {text!r}")
+
+    # 121
+    def test_bold(self):
+        self.assertRejected(
+            "**The authorization digest is verified by Gate A.**", "bold"
+        )
+        self.assertRejected("__Gate A does verify the digest.__", "bold-underscore")
+
+    # 122
+    def test_italics(self):
+        self.assertRejected(
+            "*The authorization digest is verified by Gate A.*", "italic"
+        )
+        self.assertRejected("_The runner is validating the approval._", "italic-us")
+
+    # 123
+    def test_inline_code(self):
+        self.assertRejected("The digest `is verified by` `Gate A`.", "inline-code")
+        self.assertRejected(
+            "`workflow-runtime.py` is performing authorization checks.",
+            "inline-code-subject",
+        )
+
+    # 124
+    def test_links(self):
+        self.assertRejected(
+            "The digest is verified by [Gate A](#gate-a).", "link-agent"
+        )
+        self.assertRejected(
+            "[Gate A](#gate-a) does verify the digest.", "link-subject"
+        )
+
+    # 125
+    def test_headings(self):
+        self.assertRejected(
+            "### The authorization digest is verified by Gate A", "heading"
+        )
+        self.assertRejected("# Gate A is checking the digest now", "heading-prog")
+
+    # 126
+    def test_tables(self):
+        self.assertRejected(
+            "| step | note |\n| 3 | SHA-256 is recomputed by the runner |\n",
+            "table",
+        )
+        self.assertRejected(
+            "| a | Gate A does verify the digest | b |\n", "table-emphatic"
+        )
+
+    # 127
+    def test_bullets(self):
+        self.assertRejected(
+            "- The target SHA is verified before execution.\n", "bullet-dash"
+        )
+        self.assertRejected(
+            "+ The runner is validating the approval.\n", "bullet-plus"
+        )
+        self.assertRejected(
+            "1. Owner approval is enforced by the current runner.\n",
+            "bullet-ordered",
+        )
+
+    # 128
+    def test_blockquotes(self):
+        self.assertRejected(
+            "> The authorization record is checked before the model runs.\n",
+            "blockquote",
+        )
+        self.assertRejected(">> Gate A does verify the digest.\n", "nested-blockquote")
+
+    # 129
+    def test_html_emphasis(self):
+        self.assertRejected(
+            "<b>The authorization digest is verified by Gate A.</b>", "html-b"
+        )
+        self.assertRejected(
+            "<em>Gate A</em> does verify the digest.", "html-em-subject"
+        )
+        self.assertRejected(
+            "<strong>The runner is validating the approval.</strong>", "html-strong"
+        )
+
+    # 130
+    def test_parentheses(self):
+        self.assertRejected(
+            "See section 2 (the target SHA is verified before execution).", "parens"
+        )
+        self.assertRejected(
+            "Note (Gate A does verify the digest) here.", "parens-emphatic"
+        )
+
+    # 131
+    def test_em_dash_clauses(self):
+        self.assertRejected(
+            "Preflight runs -- the authorization digest is verified by Gate A.",
+            "em-dash-ascii",
+        )
+        self.assertRejected(
+            "Preflight runs — SHA-256 is recomputed by the runner.", "em-dash"
+        )
+        self.assertRejected(
+            "Preflight runs – the runner is validating the approval.", "en-dash"
+        )
+
+    # 132
+    def test_hard_wrapped_lines(self):
+        self.assertRejected(
+            "The authorization digest is verified by Gate A before any model\n"
+            "invocation may proceed.\n",
+            "hard-wrap",
+        )
+
+    # 133
+    def test_subject_and_verb_split_across_adjacent_lines(self):
+        for text in (
+            "The authorization digest\nis verified by Gate A.\n",
+            "The authorization digest is\nverified by Gate A.\n",
+            "Gate A\ndoes verify the digest.\n",
+            "Gate A does\nverify the digest.\n",
+            "The runner is\nvalidating the approval.\n",
+            "Gate A's\nchecking the digest now.\n",
+        ):
+            with self.subTest(text=text):
+                self.assertRejected(text, "line-split")
+
+    # 134
+    def test_a_blank_line_still_separates_logical_blocks(self):
+        # Truthful text on either side of a blank line must not be fused into a
+        # false claim. Counterpart to 133: the line-joining rule must not
+        # invent claims nobody wrote.
+        findings = find_enforcement_overclaims(
+            "Digest verification is not implemented.\n"
+            "\n"
+            "By Gate A, we mean the future consumer.\n",
+            name="T.md",
+        )
+        self.assertEqual(findings, [], findings)
+
+
+class ProseGuardRound6MarkerInteractions(unittest.TestCase):
+    """135-139: only exact paired markers exempt passive/auxiliary claims."""
+
+    def assertRejected(self, text, label=""):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(findings, f"NOT rejected ({label}): {text!r}")
+
+    # 135
+    def test_well_formed_region_exempts_passive_and_auxiliary_claims(self):
+        text = (
+            "Honest intro: digest verification is not implemented.\n"
+            "More honest framing so the region stays a minority of the text.\n"
+            "No consumer exists, and none is wired into the invocation path.\n"
+            f"{QUOTED_REGION_BEGIN}\n"
+            "The authorization digest is verified by Gate A.\n"
+            "Gate A does verify the digest.\n"
+            f"{QUOTED_REGION_END}\n"
+            "Honest outro: no consumer exists.\n"
+        )
+        self.assertEqual(find_enforcement_overclaims(text, name="T.md"), [])
+
+    # 136
+    def test_claims_after_marker_closure_are_not_exempt(self):
+        text = (
+            "Honest framing line one.\n"
+            "Honest framing line two.\n"
+            "Honest framing line three.\n"
+            f"{QUOTED_REGION_BEGIN}\n"
+            "Gate A is runtime-enforced.\n"
+            f"{QUOTED_REGION_END}\n"
+            "The authorization digest is verified by Gate A.\n"
+            "Gate A does verify the digest.\n"
+        )
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(any("passive" in f for f in findings), findings)
+        self.assertTrue(any("emphatic" in f for f in findings), findings)
+
+    # 137
+    def test_claims_before_marker_opening_are_not_exempt(self):
+        text = (
+            "The runner is validating the approval.\n"
+            "Honest framing line one.\n"
+            "Honest framing line two.\n"
+            f"{QUOTED_REGION_BEGIN}\n"
+            "Gate A is runtime-enforced.\n"
+            f"{QUOTED_REGION_END}\n"
+        )
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(any("progressive" in f for f in findings), findings)
+
+    # 138
+    def test_malformed_markers_exempt_nothing(self):
+        # Unclosed, unopened, nested, misspelled and inline-code markers all
+        # fail closed.
+        cases = (
+            f"{QUOTED_REGION_BEGIN}\n"
+            "The authorization digest is verified by Gate A.\n",
+            "The authorization digest is verified by Gate A.\n"
+            f"{QUOTED_REGION_END}\n",
+            f"{QUOTED_REGION_BEGIN}\n"
+            f"{QUOTED_REGION_BEGIN}\n"
+            "Gate A does verify the digest.\n"
+            f"{QUOTED_REGION_END}\n",
+            "BEGIN_QUOTED_OLD_WORDINGS\n"
+            "The runner is validating the approval.\n"
+            "END_QUOTED_OLD_WORDINGS\n",
+            f"`{QUOTED_REGION_BEGIN}`\n"
+            "Gate A does verify the digest.\n"
+            f"`{QUOTED_REGION_END}`\n",
+        )
+        for text in cases:
+            with self.subTest(text=text):
+                self.assertRejected(text, "malformed marker")
+
+    # 139
+    def test_region_may_not_swallow_a_passive_heavy_document(self):
+        text = (
+            f"{QUOTED_REGION_BEGIN}\n"
+            "The authorization digest is verified by Gate A.\n"
+            "Gate A does verify the digest.\n"
+            "The runner is validating the approval.\n"
+            f"{QUOTED_REGION_END}\n"
+            "One honest line.\n"
+        )
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(
+            any("more than half the document" in f for f in findings), findings
+        )
+
+
+class ProseGuardRound6RealDocuments(unittest.TestCase):
+    """140: the extended guard passes on the actual changed documents."""
+
+    # 140
+    def test_changed_documents_have_no_passive_or_auxiliary_overclaims(self):
+        for path in CHANGED_DOCS:
+            with self.subTest(doc=path.name):
+                findings = find_enforcement_overclaims(
+                    path.read_text(encoding="utf-8"), name=path.name
+                )
+                self.assertEqual(findings, [], "\n".join(findings))
+
+
+class ConsumerHardStopUnchangedByRound6(unittest.TestCase):
+    """141-143: the round-6 prose work changed no safety semantics."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 141
+    def test_consumer_hard_stop_semantics_unchanged(self):
+        self.assertIn(CONSUMER_HARD_STOP, self.text)
+        self.assertEqual(
+            self.contract["gate_a_authorization_consumer_status"], "NOT_IMPLEMENTED"
+        )
+        self.assertTrue(self.contract["consumer_absence_blocks_preflight"])
+        self.assertFalse(self.contract["package_runnable"])
+        self.assertEqual(
+            self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
+        )
+        self.assertEqual(self.contract["package_status"], "PREPARED_NOT_RUN")
+
+    # 142
+    def test_readiness_classification_unchanged(self):
+        self.assertEqual(
+            self.contract["readiness_classification_before"], "Externally exercised"
+        )
+
+    # 143
+    def test_no_authorization_artifacts_created_by_round6(self):
+        self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
+        self.assertFalse(
+            (REPO_ROOT / self.contract["execution_authorization_record_path"]).exists()
+        )
+        self.assertFalse(
+            (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
+        )
 
 
 if __name__ == "__main__":

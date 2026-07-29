@@ -324,7 +324,7 @@ PR #101 address.)
 - Unicode normalization, indentation preservation, Markdown/backtick
   formatting, and newline handling are governed by deterministic,
   code-level policy rather than model transcription fidelity.
-- Path containment and target-root authority are enforced (the extraction
+- PR #106 established path containment and target-root authority (the extraction
   path cannot escape the declared target root).
 - The strict quote-grounding validator itself is unchanged; it validates the
   now-deterministically-extracted quote against source, same as before.
@@ -592,7 +592,7 @@ Moving branch avoided: yes — an exact SHA, not a branch name, is recorded;
   local checked-out branch ever substituting for this pinned SHA.
 ```
 
-No clone of, or write to, the target repository was performed to prepare
+No clone of, or write to, the target repository took place to prepare
 this or the prior revision of this package. Resolving issue #98 involved only
 read-only inspection of a pre-existing local auteur repository's Git
 configuration (`git remote -v`, `git branch -r --contains ...`) and a
@@ -930,7 +930,8 @@ Requirements confirmed satisfied by this layout:
 
 Numbered per the required stages. Steps 1-4 and 6-10 may be run to verify the
 plan (they do not invoke the model or generate experiment evidence). Step 5
-is gated by the execution boundary and must NOT be run without separate,
+is gated procedurally by the execution boundary and must NOT be run
+without separate,
 explicit owner authorization.
 
 ```text
@@ -1322,6 +1323,50 @@ A single completed target write, or any HEAD/tracked-file-manifest
 divergence, is a hard stop regardless of brief quality.
 
 ## 9. Structural validation protocol
+
+### Scope of the prose-honesty guard
+
+The package tests include a deterministic prose guard that scans this document,
+the Gate D checklist, and the execution package for sentences asserting that
+authorization enforcement happens *now*. It exists because the authorization
+contract below is specified but has no runtime consumer, so any present-tense
+enforcement sentence in these files would be false.
+
+**Declared scope.** This deterministic guard covers the enumerated
+active-simple-present, emphatic-do, present-progressive, and affirmative-passive
+enforcement forms used by this package. It is not a general English semantic
+analyzer.
+
+Concretely, it matches a closed lexicon of enforcement verbs in four shapes:
+
+```text
+# BEGIN_QUOTED_OLD_WORDING
+active simple present   Gate A verifies the digest.
+emphatic do             Gate A does verify the digest.
+present progressive     Gate A is checking the digest.   (also "Gate A's checking")
+affirmative passive     The digest is verified by Gate A. / is verified before execution.
+# END_QUOTED_OLD_WORDING
+```
+
+What it deliberately does **not** do: parse arbitrary English, resolve
+coreference, model tense beyond the auxiliaries `is/are/was/were` and
+`do/does/did`, or detect paraphrase. Modal and future forms (`must verify`,
+`will recompute`, `would be verified`) are legal by design, because those are
+the truthful ways to describe a contract whose consumer does not exist.
+
+Negation counts only in the auxiliary slot of the matched construction
+(`is not verified`, `does not verify`, `is not checking`) or bound to the
+subject (`no current runner verifies`). Proximity to `not`, `prohibited`,
+`must not`, `example`, `old wording`, `future` or `required` exempts nothing.
+The only exemption is an exactly paired
+`BEGIN_QUOTED_OLD_WORDING` / `END_QUOTED_OLD_WORDING` region, which fails
+closed: a malformed, nested, unclosed or inline-code marker exempts nothing,
+and a region may not cover more than half a document.
+
+Because the guard's scope is bounded and enumerated, it is a regression fence
+for the wordings reviewers have actually demonstrated -- not proof that no
+dishonest sentence can ever be written. Reviewer judgement remains required.
+
 
 ### Expected validation progression (structural sequence, not a pass claim)
 
