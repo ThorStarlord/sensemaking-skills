@@ -9,6 +9,18 @@
 > the remediated auteur target) live in
 > `docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md`, status
 > `PREPARED_NOT_RUN`. Nothing in either document authorizes execution.
+>
+> Scope split, stated precisely: this historical document remains
+> authoritative for Evidence 0013, 0014, and 0015; the new preparation package
+> governs the proposed **Evidence 0016** contract. The current preparation
+> package is **not executable**: its `execution_framework_sha` is
+> `PENDING_POST_MERGE_PIN_FINALIZATION` and stays unset until a separate
+> post-merge pin-finalization task supplies the exact full SHA. Its
+> `runtime_baseline_sha` (`1761e42f6786af422e05e128bb6608d33854f1f3`) is
+> historical preparation evidence only and does not contain the preparation
+> package, so it must never be used as the execution pin. Neither merge status
+> nor preparation status authorizes a run; a separate owner run-authorization
+> decision is required after pin finalization.
 
 **Date**: 2026-07-27 (revised: this revision is a documentation-only refresh
 that proposes a **new** framework execution pin for a possible future

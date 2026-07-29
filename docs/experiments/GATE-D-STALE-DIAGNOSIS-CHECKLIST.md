@@ -20,6 +20,20 @@ Target pinned for that attempt:
 ThorStarlord/auteur @ 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
 ```
 
+Auteur main has moved beyond the selected target pin (main now resolves to
+`d3d12b8dfb501a5e553c3b366df2f349d4438e59`). The intervening change was
+inspected and is documentation-only; it does not modify the pinned advisory
+implementation or test surface. Evidence 0016 deliberately remains pinned to
+`0653def...` for comparability with the completed #38 audit.
+
+**Provenance of this checklist.** This file must be read from `framework_root`
+at the finalized `execution_framework_sha`, not from an external or
+undocumented copy. It does not exist at `runtime_baseline_sha`
+(`1761e42f6786af422e05e128bb6608d33854f1f3`), which is historical preparation
+evidence only and must never be used as the execution pin. While
+`execution_framework_sha` is `PENDING_POST_MERGE_PIN_FINALIZATION`, the run is
+blocked and this checklist governs nothing live.
+
 ---
 
 ## 1. Why this checklist exists

@@ -59,8 +59,13 @@ class PreparationPackageStructure(unittest.TestCase):
         self.assertEqual(self.contract["package_status"], "PREPARED_NOT_RUN")
         self.assertIn("PREPARED_NOT_RUN", self.text)
 
-    def test_framework_sha_present_and_full_length(self):
-        self.assertTrue(FULL_SHA.match(str(self.contract["framework_sha"])))
+    def test_no_ambiguous_single_framework_sha_field(self):
+        """The ambiguous single pin was split; it must not come back."""
+        self.assertNotIn(
+            "framework_sha",
+            [k for k in self.contract if k == "framework_sha"],
+            "framework_sha is ambiguous; use runtime_baseline_sha + execution_framework_sha",
+        )
 
     def test_target_sha_present_and_full_length(self):
         self.assertTrue(FULL_SHA.match(str(self.contract["target_sha"])))
@@ -269,6 +274,282 @@ class NoFabricatedRunOutput(unittest.TestCase):
                 (PACKAGE_PATH.parent / name).exists(),
                 f"preparation must not emit {name}",
             )
+
+
+SENTINEL = "PENDING_POST_MERGE_PIN_FINALIZATION"
+RUNTIME_BASELINE_SHA = "1761e42f6786af422e05e128bb6608d33854f1f3"
+
+# Paths that must exist at whatever commit is eventually chosen as the
+# execution pin. Used both as a contract assertion and by the finalized-pin
+# fixture below.
+REQUIRED_PATHS_AT_EXECUTION_PIN = [
+    "docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md",
+    "docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md",
+    "tests/test_stage1_auteur_prep_package.py",
+    "scripts/validate-brief.py",
+]
+
+# Preparation artifacts that provably do NOT exist at the runtime baseline.
+PREP_ARTIFACTS = [
+    "docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md",
+    "docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md",
+    "tests/test_stage1_auteur_prep_package.py",
+]
+
+
+def _git_ls_tree(sha):
+    """List tracked paths at `sha` using ONLY local history. No network.
+
+    Returns None when the object is not present locally (e.g. a shallow CI
+    clone), so callers can skip rather than fail or reach for the network.
+    """
+    import subprocess
+
+    try:
+        result = subprocess.run(
+            ["git", "ls-tree", "-r", "--name-only", sha],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    return set(result.stdout.splitlines())
+
+
+def paths_missing_at_revision(sha, required_paths):
+    """Validator helper: which required paths are absent at `sha`.
+
+    A future pin-finalization task supplies a real finalized SHA here; every
+    required path must come back present, otherwise the pin is unusable and
+    preflight must stop before the model is invoked.
+    """
+    tree = _git_ls_tree(sha)
+    if tree is None:
+        return None
+    return [p for p in required_paths if p not in tree]
+
+
+class FrameworkPinLifecycle(unittest.TestCase):
+    """The two-phase pin lifecycle: runtime baseline vs execution pin."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 1
+    def test_runtime_baseline_sha_is_full_sha(self):
+        self.assertTrue(FULL_SHA.match(str(self.contract["runtime_baseline_sha"])))
+        self.assertEqual(self.contract["runtime_baseline_sha"], RUNTIME_BASELINE_SHA)
+
+    # 2
+    def test_execution_framework_sha_is_explicitly_pending(self):
+        self.assertEqual(self.contract["execution_framework_sha"], SENTINEL)
+        self.assertFalse(
+            FULL_SHA.match(str(self.contract["execution_framework_sha"])),
+            "the sentinel must not look like a SHA",
+        )
+        self.assertTrue(self.contract["pin_finalization_required"])
+
+    # 3
+    def test_pending_execution_pin_blocks_authorization(self):
+        self.assertEqual(self.contract["execution_authorization_status"], "NOT_AUTHORIZED")
+        self.assertFalse(self.contract["package_runnable"])
+        self.assertIn("BLOCKED while execution_framework_sha is unset", self.text)
+
+    # 4
+    def test_runtime_baseline_is_not_treated_as_execution_pin(self):
+        self.assertFalse(self.contract["runtime_baseline_is_execution_pin"])
+        self.assertEqual(self.contract["framework_root_checkout_pin"], "execution_framework_sha")
+
+    # 5
+    def test_package_states_baseline_lacks_preparation_artifacts(self):
+        self.assertFalse(self.contract["runtime_baseline_contains_preparation_package"])
+        self.assertFalse(self.contract["runtime_baseline_contains_gate_d_checklist"])
+        self.assertFalse(self.contract["runtime_baseline_contains_package_validation_tests"])
+        self.assertIn("does NOT contain the preparation package", self.text)
+
+    # 6
+    def test_post_merge_pin_finalization_step_required(self):
+        self.assertFalse(self.contract["merging_this_pr_finalizes_pin"])
+        self.assertIn("Post-merge pin-finalization procedure", self.text)
+
+    # 7
+    def test_separate_run_authorization_step_required(self):
+        self.assertTrue(self.contract["separate_run_authorization_task_required"])
+        self.assertIn("Pin finalization is not authorization.", self.text)
+
+    # 8
+    def test_merging_pr_107_does_not_authorize_execution(self):
+        self.assertFalse(self.contract["merging_this_pr_authorizes_execution"])
+        self.assertIn("Merging PR #107 does NOT authorize execution.", self.text)
+
+    # 9
+    def test_framework_root_must_use_finalized_execution_pin(self):
+        self.assertIn(
+            "fresh disposable clone of the framework at the finalized execution_framework_sha, detached",
+            self.contract["isolation_requirements"],
+        )
+
+    # 10
+    def test_required_paths_declared_for_execution_pin(self):
+        declared = self.contract["required_paths_at_execution_framework_sha"]
+        for path in REQUIRED_PATHS_AT_EXECUTION_PIN:
+            self.assertIn(path, declared)
+
+    # 11
+    def test_missing_paths_cause_preflight_failure_before_invocation(self):
+        self.assertTrue(self.contract["missing_required_path_is_gate_a_failure"])
+        self.assertIn("Otherwise stop without invoking the model.", self.text)
+        self.assertIn("A missing required path is a **Gate A failure**", self.text)
+
+    # 12
+    def test_floating_branch_refs_are_prohibited(self):
+        prohibited = self.contract["floating_refs_prohibited_as_execution_pin"]
+        for ref in ("main", "origin/main", "HEAD"):
+            self.assertIn(ref, prohibited)
+        self.assertNotIn(str(self.contract["execution_framework_sha"]), prohibited)
+
+    # 13
+    def test_authorization_block_remains_unfilled(self):
+        self.assertIn("Authorized execution framework SHA:\n", self.text)
+        self.assertIn("Authorized by:\n", self.text)
+        self.assertFalse(self.contract["execution_authorization_record_exists"])
+
+    # 14
+    def test_sentinel_cannot_pass_executable_package_validator(self):
+        """A sentinel must fail any check that demands a real immutable pin."""
+        self.assertFalse(_is_executable_pin(self.contract["execution_framework_sha"]))
+        self.assertTrue(_is_executable_pin(RUNTIME_BASELINE_SHA))
+
+    # 15
+    def test_package_cannot_be_runnable_while_sentinel_present(self):
+        if self.contract["execution_framework_sha"] == SENTINEL:
+            self.assertFalse(self.contract["package_runnable"])
+            self.assertEqual(self.contract["execution_authorization_status"], "NOT_AUTHORIZED")
+
+    # 16
+    def test_gate_d_checklist_cannot_come_from_undocumented_external_path(self):
+        self.assertFalse(self.contract["external_checklist_copy_allowed"])
+        self.assertIn(
+            "docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md",
+            self.contract["required_paths_at_execution_framework_sha"],
+        )
+        checklist = CHECKLIST_PATH.read_text(encoding="utf-8")
+        self.assertIn("not from an external or", checklist)
+
+    # 17
+    def test_lifecycle_fields_agree_across_both_documents(self):
+        checklist = CHECKLIST_PATH.read_text(encoding="utf-8")
+        pointer = (
+            REPO_ROOT / "docs" / "experiments" / "STAGE-1-AUTEUR-EXECUTION-PACKAGE.md"
+        ).read_text(encoding="utf-8")
+        for document in (checklist, pointer):
+            self.assertIn(SENTINEL, document)
+            self.assertIn(RUNTIME_BASELINE_SHA, document)
+        self.assertIn(str(self.contract["target_sha"]), checklist)
+        self.assertIn(str(self.contract["target_main_sha_observed"]), checklist)
+
+
+class AuteurTargetMovement(unittest.TestCase):
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 18
+    def test_movement_wording_does_not_claim_main_unchanged(self):
+        for document in (self.text, CHECKLIST_PATH.read_text(encoding="utf-8")):
+            self.assertNotIn("has NOT moved", document)
+            self.assertNotIn("has not moved", document)
+            self.assertIn("Auteur main has moved beyond the selected target pin", document)
+        self.assertTrue(self.contract["target_main_has_moved_beyond_target_sha"])
+
+    # 19
+    def test_selected_target_remains_immutable_full_sha(self):
+        self.assertTrue(FULL_SHA.match(str(self.contract["target_sha"])))
+        self.assertEqual(
+            self.contract["target_sha"], "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
+        )
+        self.assertTrue(self.contract["target_pin_deliberately_retained"])
+
+    # 20
+    def test_newer_main_sha_and_retention_rationale_documented(self):
+        observed = str(self.contract["target_main_sha_observed"])
+        self.assertTrue(FULL_SHA.match(observed))
+        self.assertNotEqual(observed, self.contract["target_sha"])
+        commits = self.contract["target_intervening_commits"]
+        self.assertEqual(len(commits), 1)
+        entry = commits[0]
+        self.assertEqual(entry["sha"], observed)
+        self.assertTrue(entry["documentation_only"])
+        self.assertFalse(entry["touches_pinned_advisory_implementation"])
+        self.assertFalse(entry["touches_pinned_test_surface"])
+        self.assertIn("comparability with the completed #38 audit", self.text)
+
+
+def _is_executable_pin(value):
+    """Only a full 40-hex SHA may serve as an execution pin."""
+    return bool(FULL_SHA.match(str(value)))
+
+
+class RuntimeBaselineProvablyLacksPreparationArtifacts(unittest.TestCase):
+    """Pin the precise reason the baseline cannot be the execution revision.
+
+    Uses local git history only -- never the network. Skips when the object is
+    unavailable locally (shallow clone) rather than failing spuriously.
+    """
+
+    def test_preparation_files_absent_at_runtime_baseline(self):
+        tree = _git_ls_tree(RUNTIME_BASELINE_SHA)
+        if tree is None:
+            self.skipTest(
+                f"runtime baseline {RUNTIME_BASELINE_SHA} not present in local history"
+            )
+        for path in PREP_ARTIFACTS:
+            self.assertNotIn(
+                path,
+                tree,
+                f"{path} unexpectedly exists at the runtime baseline; "
+                "the package's justification for splitting the pin would be false",
+            )
+
+    def test_runtime_fix_surface_present_at_runtime_baseline(self):
+        tree = _git_ls_tree(RUNTIME_BASELINE_SHA)
+        if tree is None:
+            self.skipTest("runtime baseline not present in local history")
+        self.assertIn("scripts/validate-brief.py", tree)
+
+
+class FinalizedPinFixture(unittest.TestCase):
+    """Proves the check a future pin-finalization task must satisfy.
+
+    Once a finalized SHA is supplied, every required path must exist at that
+    commit. HEAD stands in here as a commit that already carries the
+    preparation package, demonstrating the helper accepts a valid pin and
+    rejects one missing the artifacts.
+    """
+
+    def test_helper_accepts_a_revision_containing_all_required_paths(self):
+        missing = paths_missing_at_revision("HEAD", REQUIRED_PATHS_AT_EXECUTION_PIN)
+        if missing is None:
+            self.skipTest("git history unavailable")
+        self.assertEqual(
+            missing, [], f"required paths missing at HEAD: {missing}"
+        )
+
+    def test_helper_rejects_the_runtime_baseline_as_a_finalized_pin(self):
+        missing = paths_missing_at_revision(
+            RUNTIME_BASELINE_SHA, REQUIRED_PATHS_AT_EXECUTION_PIN
+        )
+        if missing is None:
+            self.skipTest("runtime baseline not present in local history")
+        self.assertTrue(
+            missing,
+            "the runtime baseline must NOT satisfy the finalized-pin path check",
+        )
+        for path in PREP_ARTIFACTS:
+            self.assertIn(path, missing)
 
 
 if __name__ == "__main__":

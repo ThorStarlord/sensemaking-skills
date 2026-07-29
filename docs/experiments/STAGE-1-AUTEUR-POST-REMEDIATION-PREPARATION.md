@@ -41,9 +41,52 @@ evidence_slug: 0016-stage1-auteur-post-remediation-controlled-attempt
 evidence_directory_planned: experiments/evidence/0016-stage1-auteur-post-remediation-controlled-attempt
 evidence_directory_created: false
 framework_repository: https://github.com/ThorStarlord/sensemaking-skills.git
-framework_sha: 1761e42f6786af422e05e128bb6608d33854f1f3
+
+# --- Framework pin lifecycle (two phases; see section 2a) ---
+# Phase 1 (this PR): historical evidence only. NOT an execution pin.
+runtime_baseline_sha: 1761e42f6786af422e05e128bb6608d33854f1f3
+runtime_baseline_is_execution_pin: false
+runtime_baseline_contains_preparation_package: false
+runtime_baseline_contains_gate_d_checklist: false
+runtime_baseline_contains_package_validation_tests: false
+# Phase 2 (separate post-merge task): the authoritative execution pin.
+execution_framework_sha: PENDING_POST_MERGE_PIN_FINALIZATION
+execution_framework_sha_sentinel: PENDING_POST_MERGE_PIN_FINALIZATION
+pin_finalization_required: true
+pin_finalization_mechanism: external_authorization_record
+execution_authorization_status: NOT_AUTHORIZED
+execution_authorization_record_path: docs/experiments/STAGE-1-AUTEUR-EVIDENCE-0016-AUTHORIZATION-RECORD.md
+execution_authorization_record_exists: false
+package_runnable: false
+merging_this_pr_finalizes_pin: false
+merging_this_pr_authorizes_execution: false
+separate_run_authorization_task_required: true
+floating_refs_prohibited_as_execution_pin:
+  - main
+  - origin/main
+  - HEAD
+  - refs/heads/main
+required_paths_at_execution_framework_sha:
+  - docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md
+  - docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
+  - tests/test_stage1_auteur_prep_package.py
+  - scripts/validate-brief.py
+  - scripts/validate-and-report.py
+  - scripts/workflow-runtime.py
+missing_required_path_is_gate_a_failure: true
+external_checklist_copy_allowed: false
+
 target_repository: https://github.com/ThorStarlord/auteur.git
 target_sha: 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
+target_main_sha_observed: d3d12b8dfb501a5e553c3b366df2f349d4438e59
+target_main_has_moved_beyond_target_sha: true
+target_intervening_commits:
+  - sha: d3d12b8dfb501a5e553c3b366df2f349d4438e59
+    summary: "docs(spec): define agent-native Cartographer pilot protocol"
+    documentation_only: true
+    touches_pinned_advisory_implementation: false
+    touches_pinned_test_surface: false
+target_pin_deliberately_retained: true
 exact_model: claude-sonnet-5
 model_fallback_allowed: false
 model_substitution_allowed: false
@@ -60,11 +103,15 @@ structural_validator_command: >-
   --repo-root <framework_root> --target-repo <target_root>
 substantive_audit_package: docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
 framework_root: H:/scratch/stage1-auteur-post-remediation/framework
+framework_root_checkout_pin: execution_framework_sha
 target_root: H:/scratch/stage1-auteur-post-remediation/target-auteur
+target_root_checkout_pin: target_sha
 expected_output_path: H:/scratch/stage1-auteur-post-remediation/framework/artifacts/05-orchestration-run/repository_sensemaking_brief.md
 expected_run_log_path: H:/scratch/stage1-auteur-post-remediation/logs/run_log.md
 isolation_requirements:
-  - fresh disposable clone of the framework at the pinned framework_sha
+  - fresh disposable clone of the framework at the finalized execution_framework_sha, detached
+  - framework clone must NOT use runtime_baseline_sha, main, or origin/main
+  - every path in required_paths_at_execution_framework_sha must exist in the framework clone
   - fresh disposable clone of the target at the pinned target_sha, detached
   - framework_root and target_root are distinct repositories
   - neither root is under .claude/worktrees/
@@ -119,31 +166,150 @@ contradiction_search_paths:
 ## 2. Pinned revisions and why
 
 ```text
-Framework SHA: 1761e42f6786af422e05e128bb6608d33854f1f3
-  This is PR #106's merge commit and the current origin/main tip of
+Runtime baseline SHA: 1761e42f6786af422e05e128bb6608d33854f1f3
+  HISTORICAL PREPARATION EVIDENCE ONLY. THIS IS NOT THE EXECUTION PIN.
+  This is PR #106's merge commit and the origin/main tip of
   ThorStarlord/sensemaking-skills as re-fetched during preparation. It is the
   smallest exact commit containing the asymmetric multiline quote
   normalization fix, which is the specific defect that produced Evidence
-  0015's structural quote-grounding failure. Unlike prior revisions of the
-  older package, this pin equals origin/main because the newest merged commit
-  IS the required runtime fix, not a documentation commit.
+  0015's structural quote-grounding failure. Its only role in this package is
+  to prove that the required runtime behavior already existed before this
+  preparation work began.
+  It is NOT sufficient to execute Evidence 0016, because it does NOT contain
+  this preparation package, the Gate D checklist, or the package-validation
+  tests. Cloning it as framework_root would give the operator a framework
+  revision that does not contain the contract governing their own run.
+
+Execution framework SHA: PENDING_POST_MERGE_PIN_FINALIZATION
+  Authoritative for the live attempt. Deliberately unset in this PR, because
+  it cannot be known until PR #107 merges. The run is BLOCKED while it holds
+  the sentinel value. See section 2a.
 
 Target SHA: 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
   Re-fetched from https://github.com/ThorStarlord/auteur.git during
-  preparation. auteur main resolves to exactly this commit; it has NOT moved
-  beyond the audited post-remediation completion SHA, so there are no
-  intervening commits to assess and no choice between "current main" and "the
-  audited SHA" -- they are the same commit. It contains the completed
+  preparation. Auteur main has moved beyond the selected target pin; main now
+  resolves to d3d12b8dfb501a5e553c3b366df2f349d4438e59. The single
+  intervening commit ("docs(spec): define agent-native Cartographer pilot
+  protocol", a direct child of 0653def) was inspected and is
+  documentation-only: it adds five files, all under docs/, with zero
+  deletions, and does not modify the pinned advisory implementation or test
+  surface -- it touches none of src/auteur/series/universe_advisory.py,
+  src/auteur/series/handlers.py, src/auteur/universe/models.py, the focused
+  advisory tests, tests/test_series_universe_integration.py, or issue #38
+  contract semantics. Evidence 0016 deliberately remains pinned to 0653def...
+  for comparability with the completed #38 audit. The pin is NOT updated
+  merely because main moved. It contains the completed
   Universe-to-Series advisory remediation: PR #40 (Phase 1
   characterization), PR #44 (forbidden_elements enforcement), PR #46
   (required_elements enforcement), PR #48 (cross_story_constraints
   human-review notices), with parent contract issue #38 closed after an
   independent completion audit.
 
-Never substitute a branch name. `main` on either repository is transport, not
-authority. Both pins above must be re-verified by exact SHA at execution
-time; a mismatch is a preflight hard stop.
+Never substitute a branch name. `main`, `origin/main`, and `HEAD` on either
+repository are transport, not authority, and are prohibited as the execution
+pin. The finalized execution_framework_sha and the target_sha must both be
+re-verified by exact full SHA at execution time; a mismatch is a preflight
+hard stop.
 ```
+
+---
+
+## 2a. Framework pin lifecycle — two phases
+
+The framework revision is split into two distinct fields because they answer
+two different questions. Conflating them into a single `framework_sha` was the
+defect this section exists to remove.
+
+| Field | Question it answers | Status |
+|---|---|---|
+| `runtime_baseline_sha` | Did the required runtime fix exist before preparation? | Known: `1761e42f...` |
+| `execution_framework_sha` | Which immutable revision does the live run actually clone? | `PENDING_POST_MERGE_PIN_FINALIZATION` |
+
+Stated explicitly:
+
+```text
+runtime_baseline_sha is historical preparation evidence only.
+runtime_baseline_sha is NOT sufficient to execute Evidence 0016.
+runtime_baseline_sha does NOT contain the preparation package.
+runtime_baseline_sha does NOT contain the Gate D checklist.
+runtime_baseline_sha does NOT contain the package-validation tests.
+execution_framework_sha is authoritative for the live attempt.
+execution_framework_sha must contain the governing preparation artifacts.
+The run is BLOCKED while execution_framework_sha is unset.
+Merging PR #107 does NOT fill execution_framework_sha.
+Merging PR #107 does NOT authorize execution.
+A separate pin-finalization task AND a separate run-authorization task are
+  both required, in that order.
+```
+
+This package is **not runnable** while `execution_framework_sha` holds the
+sentinel. The sentinel is not a SHA, cannot pass an executable-package
+validator, and must never be replaced by a guessed, abbreviated, anticipated,
+or branch-derived value.
+
+### Post-merge pin-finalization procedure
+
+After PR #107 merges, and only then:
+
+1. A separate owner-authorized pin-finalization task fetches the resulting
+   canonical `main` SHA of ThorStarlord/sensemaking-skills.
+2. That task verifies the merged SHA contains: this preparation package; the
+   Gate D checklist; the package-validation tests; the PR #106 runtime fix;
+   current model enforcement; current validators and safety controls.
+3. It records that exact full 40-character SHA — never abbreviated, never a
+   branch ref — in a separate focused PR.
+4. It runs package validation.
+5. That pin-finalization PR is merged.
+6. Only then may a separate owner-level task decide whether to authorize the
+   live attempt. Pin finalization is not authorization.
+
+### Chosen mechanism: external authorization record
+
+The final executable pin should normally be the merge commit of the
+pin-finalization PR itself, since that is the first immutable commit
+containing the finalized field. A document cannot contain its own future merge
+SHA, so this package does **not** attempt to. Instead:
+
+- This package's machine-readable contract keeps
+  `execution_framework_sha: PENDING_POST_MERGE_PIN_FINALIZATION` permanently.
+  The preparation package remains the **governing contract**, not the pin
+  carrier.
+- A separate immutable **authorization record**, created only after this
+  preparation PR merges, at
+  `docs/experiments/STAGE-1-AUTEUR-EVIDENCE-0016-AUTHORIZATION-RECORD.md`,
+  carries the **execution pin**. It must pin: the exact full execution
+  framework SHA; the target SHA; the evidence number; the model; and the
+  authorization status.
+- The live runner consumes the authorization record as the authoritative
+  execution pin, while continuing to obey this package as the governing
+  contract.
+- The authorization record must itself exist at the pinned framework revision,
+  or be copied into an immutable run-control location whose SHA-256 digest is
+  recorded before invocation.
+
+This avoids the circular requirement that a commit contain its own SHA: the
+record is authored *after* the revision it pins is already immutable, and the
+governing contract never mutates to carry a pin at all.
+
+That record does **not** exist yet. It must not be created by this PR.
+
+### Preflight rule (mandatory, before any invocation)
+
+```text
+Before invocation, verify that git rev-parse HEAD equals the finalized
+execution_framework_sha and that every required preparation/runtime path exists
+at that exact revision. Otherwise stop without invoking the model.
+```
+
+Required paths at that revision:
+`docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md`,
+`docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md`,
+`tests/test_stage1_auteur_prep_package.py`, `scripts/validate-brief.py`,
+`scripts/validate-and-report.py`, `scripts/workflow-runtime.py`.
+
+A missing required path is a **Gate A failure**, detected before the model is
+invoked. The Gate D checklist must be read from `framework_root` at the
+execution pin; supplying it from an external, undocumented copy is prohibited.
 
 The target SHA deliberately **differs** from the Evidence 0013/0014/0015
 target pin `b40db654e0df9e90074f7ad85b40d7362378e07d`. That is the entire
@@ -223,7 +389,18 @@ later gate is evaluated, filled in, or guessed. Every gate below is
 - Exact approved model `claude-sonnet-5` (`requested_model`, `reported_models`
   de-duplicated to exactly that one value, `model_match == true`).
 - No fallback (`fallback_model` never set).
-- Framework checkout SHA is exactly the pinned `framework_sha`.
+- `execution_framework_sha` is finalized — it is a full 40-character SHA and
+  no longer `PENDING_POST_MERGE_PIN_FINALIZATION`. If the sentinel is still
+  present, Gate A fails and the model is not invoked.
+- Framework checkout SHA (`git rev-parse HEAD` under `framework_root`) is
+  exactly the finalized `execution_framework_sha` — never
+  `runtime_baseline_sha`, never `main` or `origin/main`.
+- Every path in `required_paths_at_execution_framework_sha` exists at that
+  exact revision. A missing required path is a Gate A failure.
+- The Gate D checklist is read from `framework_root`, not from an external
+  undocumented copy.
+- A separate run-authorization decision exists, distinct from pin
+  finalization.
 - Target checkout SHA is exactly the pinned `target_sha`.
 - Framework root and target root are separate directories and separate
   repositories.
@@ -338,6 +515,11 @@ Preparation of this package: authorized.
 Execution: NOT authorized by this package or by merging its PR.
 Merging the PR that carries this package approves it as an accurate planning
   artifact. It does not authorize a model invocation or a Stage 1 attempt.
+Merging PR #107 does not finalize execution_framework_sha either. Two separate
+  steps follow, in order: (1) a post-merge pin-finalization task, then
+  (2) a separate run-authorization decision. Neither is implied by the other.
+The run is blocked while execution_framework_sha is
+  PENDING_POST_MERGE_PIN_FINALIZATION.
 A separate, explicit owner instruction is required.
 At most one invocation could ever be authorized by such an instruction.
 No automatic retry, repair, or rerun is permitted even then.
@@ -349,7 +531,7 @@ No automatic retry, repair, or rerun is permitted even then.
 Owner authorization decision:
 Authorized by:
 Authorization date/time:
-Authorized framework SHA:
+Authorized execution framework SHA:
 Authorized target SHA:
 Authorized model:
 Authorized invocation count:
