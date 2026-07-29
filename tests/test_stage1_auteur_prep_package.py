@@ -1036,9 +1036,12 @@ class GateAAuthorizationVerification(unittest.TestCase):
     def test_gate_a_compares_against_owner_approved_digest(self):
         self.assertIn("owner-approved digest", self._step(4))
         self.assertTrue(self.contract["gate_a_digest_verification_precedes_invocation"])
+        # Truthful future-tense phrasing: the consumer that would do this does
+        # not exist yet, so the package must not say verification "occurs".
         self.assertIn(
-            "Digest verification occurs BEFORE model invocation.", self.text
+            "Digest verification must occur BEFORE model invocation.", self.text
         )
+        self.assertNotIn("Digest verification occurs BEFORE", self.text)
 
     # 32
     def test_gate_a_verifies_approver_identity(self):
@@ -1086,9 +1089,11 @@ class AuthorizationHardStops(unittest.TestCase):
     def _stop(self, phrase):
         self.assertIn(phrase, self.stops, f"missing hard-stop condition: {phrase}")
 
-    def test_all_twentythree_hard_stops_declared(self):
-        self.assertEqual(len(self.stops), 23)
-        self.assertEqual(len(set(self.stops)), 23)
+    def test_all_twentyfour_hard_stops_declared(self):
+        # 23 authorization-content stops, plus the consumer stop added after the
+        # third review found the contract specified but entirely unenforced.
+        self.assertEqual(len(self.stops), 24)
+        self.assertEqual(len(set(self.stops)), 24)
         self.assertTrue(self.contract["authorization_failure_is_gate_a_failure"])
         self.assertFalse(self.contract["authorization_failure_permits_retry"])
 
@@ -1189,7 +1194,10 @@ class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
         )
         collapsed = " ".join(self.text.split())
         self.assertIn(
-            "no authorization record exists. No owner approval exists.", collapsed
+            "no Gate A authorization consumer exists, so no authorization state "
+            "is enforceable. No authorization record exists. No owner approval "
+            "exists.",
+            collapsed,
         )
         self.assertIn("There is no alternative mechanism.", collapsed)
 
@@ -1262,6 +1270,518 @@ class FutureAuthorizationRecordFixture(unittest.TestCase):
         self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
         self.assertFalse((REPO_ROOT / AUTH_RECORD_PATH).exists())
         self.assertFalse((REPO_ROOT / OWNER_APPROVAL_PATH).exists())
+
+
+# ---------------------------------------------------------------------------
+# Gate A authorization CONSUMER status (51-80).
+#
+# These tests exist because a third independent review found that this package
+# specified an elaborate Gate A authorization preflight in present tense, while
+# a repository-wide search found ZERO runtime code that loads, parses, or
+# verifies any of it. The contract was fully specified and entirely unenforced.
+#
+# The tests below are CONTRACT-CONSISTENCY tests. They deliberately do NOT
+# prove runtime enforcement -- that is the whole point. They enforce that the
+# package keeps SAYING it is unenforced for exactly as long as it is.
+# ---------------------------------------------------------------------------
+
+EXEC_PACKAGE_PATH = (
+    REPO_ROOT / "docs" / "experiments" / "STAGE-1-AUTEUR-EXECUTION-PACKAGE.md"
+)
+
+CONSUMER_HARD_STOP = "GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED"
+
+# Directories that would hold a real consumer implementation.
+RUNTIME_SOURCE_DIRS = ("scripts", "src", "sensemaking_skills")
+
+# Markers that would indicate a real authorization consumer had been added.
+CONSUMER_IMPLEMENTATION_MARKERS = (
+    "authorization_record_sha256",
+    "authorization-record.yaml",
+    "owner-approval.md",
+    "AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION",
+)
+
+# Phrases that assert CURRENT runtime enforcement. Prohibited in changed docs.
+PROHIBITED_ENFORCEMENT_PHRASES = (
+    "the runner verifies",
+    "the live runner",
+    "gate a recomputes",
+    "gate a compares",
+    "gate a verifies",
+    "gate a checks",
+    "the runtime blocks",
+    "the runtime verifies",
+    "before invocation, the system checks",
+    "the system verifies",
+    "workflow-runtime.py performs",
+    "workflow-runtime.py verifies",
+    "workflow-runtime.py enforces",
+    "comparisons happen in",
+    "is currently enforced",
+    "is runtime-enforced",
+)
+
+# A line is exempt if it clearly marks itself as a negative example, a
+# prohibition, or a quotation of language being removed.
+NEGATIVE_CONTEXT_MARKERS = (
+    "must not",
+    "must never",
+    "does not claim",
+    "did not",
+    "not current runtime behavior",
+    "prohibited",
+    "negative example",
+    "no longer",
+    "pr_107_does_not_prove",
+    "- gate a is runtime-enforced",
+)
+
+CHANGED_DOCS = (PACKAGE_PATH, CHECKLIST_PATH, EXEC_PACKAGE_PATH)
+
+
+class GateAConsumerStatusFields(unittest.TestCase):
+    """51-57: the machine-readable truth about the missing consumer."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 51
+    def test_consumer_status_is_not_implemented(self):
+        self.assertEqual(
+            self.contract["gate_a_authorization_consumer_status"], "NOT_IMPLEMENTED"
+        )
+        self.assertFalse(self.contract["gate_a_runtime_enforcement_exists"])
+
+    # 52
+    def test_consumer_is_marked_required(self):
+        self.assertTrue(self.contract["gate_a_authorization_consumer_required"])
+
+    # 53
+    def test_consumer_path_is_pending(self):
+        self.assertEqual(
+            self.contract["gate_a_authorization_consumer_path"],
+            "PENDING_IMPLEMENTATION",
+        )
+        self.assertEqual(
+            self.contract["gate_a_consumer_integration_point"],
+            "PENDING_ARCHITECTURAL_DECISION",
+        )
+        # A pending path must never be mistaken for a real one.
+        self.assertFalse(
+            (REPO_ROOT / "PENDING_IMPLEMENTATION").exists()
+        )
+
+    # 54
+    def test_consumer_is_not_wired_to_stage1(self):
+        self.assertFalse(
+            self.contract["gate_a_authorization_consumer_wired_to_stage1"]
+        )
+
+    # 55
+    def test_consumer_tests_are_not_implemented(self):
+        self.assertEqual(
+            self.contract["gate_a_authorization_consumer_tests_status"],
+            "NOT_IMPLEMENTED",
+        )
+        self.assertFalse(
+            self.contract[
+                "gate_a_consumer_required_test_categories_implemented_in_this_pr"
+            ]
+        )
+
+    # 56
+    def test_document_tests_are_not_runtime_enforcement_tests(self):
+        self.assertFalse(
+            self.contract["contract_tests_are_runtime_enforcement_tests"],
+            "this suite must never claim to prove runtime enforcement",
+        )
+        self.assertFalse(
+            self.contract[
+                "gate_a_authorization_verification_steps_are_current_runtime_behavior"
+            ]
+        )
+        self.assertTrue(
+            self.contract["gate_a_authorization_verification_steps_are_future_contract"]
+        )
+
+    # 57
+    def test_authorization_without_consumer_is_invalid(self):
+        self.assertFalse(self.contract["authorization_without_consumer_is_valid"])
+
+
+class AuthorizationCannotOutrunTheConsumer(unittest.TestCase):
+    """58-61: no shortcut makes the package runnable."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 58
+    def test_owner_approval_without_consumer_is_invalid(self):
+        self.assertFalse(self.contract["owner_approval_without_consumer_is_valid"])
+        self.assertFalse(
+            self.contract[
+                "owner_approval_created_before_consumer_implementation_is_valid"
+            ]
+        )
+
+    # 59
+    def test_filling_sentinels_without_consumer_does_not_make_package_runnable(self):
+        self.assertFalse(
+            self.contract[
+                "filling_sentinels_without_consumer_makes_package_runnable"
+            ]
+        )
+        self.assertFalse(
+            self.contract[
+                "creating_authorization_files_without_consumer_makes_package_runnable"
+            ]
+        )
+        # And the package still says so in prose.
+        collapsed = " ".join(self.text.split())
+        self.assertIn("Still not runnable.", collapsed)
+
+    # 60
+    def test_effective_authorization_before_consumer_is_prohibited(self):
+        self.assertFalse(
+            self.contract[
+                "effective_authorization_before_consumer_steps_complete_allowed"
+            ]
+        )
+
+    # 61
+    def test_consumer_hard_stop_is_not_waivable(self):
+        self.assertFalse(
+            self.contract["gate_a_authorization_consumer_hard_stop_waivable"]
+        )
+        self.assertTrue(
+            self.contract["gate_a_authorization_consumer_not_implemented_is_active"]
+        )
+
+
+class ConsumerHardStop(unittest.TestCase):
+    """62-63: the new hard stop exists and the count is consistent."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+        self.stops = self.contract["authorization_hard_stop_conditions"]
+
+    # 62
+    def test_consumer_hard_stop_exists(self):
+        self.assertIn(CONSUMER_HARD_STOP, self.stops)
+        self.assertEqual(
+            self.contract["first_evaluated_hard_stop"], CONSUMER_HARD_STOP
+        )
+        # It is documented in the hard-stop table too, not only in YAML.
+        self.assertIn(CONSUMER_HARD_STOP, self.text)
+
+    # 63
+    def test_hard_stop_count_updated_consistently(self):
+        self.assertEqual(len(self.stops), 24)
+        self.assertEqual(len(set(self.stops)), 24, "hard stops must be unique")
+        self.assertEqual(self.contract["authorization_hard_stop_count"], 24)
+        # The markdown table must carry a row 24 as well.
+        self.assertRegex(self.text, r"\|\s*24\s*\|")
+        # The old count must not survive anywhere as a total.
+        self.assertNotIn("all 23 hard stops", self.text)
+
+
+class ConsumerPrecedesAuthorizationLifecycle(unittest.TestCase):
+    """64-67: ordering constraints put implementation before authorization."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+        self.order = self.contract["authorization_lifecycle_order"]
+
+    def _index_of(self, needle):
+        for i, step in enumerate(self.order):
+            if needle in step:
+                return i
+        raise AssertionError(f"lifecycle step not found: {needle}")
+
+    # 64
+    def test_consumer_implementation_precedes_record_creation(self):
+        self.assertTrue(
+            self.contract[
+                "consumer_implementation_precedes_authorization_record_creation"
+            ]
+        )
+        self.assertLess(
+            self._index_of("implement the real Gate A authorization consumer"),
+            self._index_of("create the external authorization record"),
+        )
+
+    # 65
+    def test_consumer_merge_precedes_owner_approval(self):
+        self.assertTrue(self.contract["consumer_merge_precedes_owner_approval"])
+        self.assertTrue(
+            self.contract["consumer_merge_required_before_authorization"]
+        )
+        self.assertLess(
+            self._index_of("independently review and merge the consumer"),
+            self._index_of("owner approves the exact digest"),
+        )
+
+    # 66
+    def test_execution_framework_sha_selected_after_consumer_merge(self):
+        self.assertTrue(
+            self.contract["execution_framework_sha_selected_after_consumer_merge"]
+        )
+        self.assertLess(
+            self._index_of("independently review and merge the consumer"),
+            self._index_of(
+                "select a new immutable execution framework SHA containing the consumer"
+            ),
+        )
+
+    # 67
+    def test_consumer_must_gate_the_model_invocation_path(self):
+        self.assertTrue(self.contract["consumer_must_gate_model_invocation_path"])
+        self.assertLess(
+            self._index_of(
+                "wire the consumer into the actual Stage 1 invocation path"
+            ),
+            self._index_of("only after preflight passes"),
+        )
+        self.assertIn(
+            "be tested through the actual invocation boundary, not only as an isolated helper",
+            self.contract["gate_a_consumer_acceptance_criteria"],
+        )
+
+
+class ConsumerIntegrationProof(unittest.TestCase):
+    """68-71: the proof a future review must demand."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+        self.proof = self.contract["proof_required_before_authorization"]
+
+    # 68
+    def test_negative_zero_invocation_proof_required(self):
+        self.assertTrue(self.contract["negative_zero_invocation_test_required"])
+        self.assertTrue(
+            any("remains zero when preflight fails" in p for p in self.proof)
+        )
+        self.assertIn(
+            "consumer absent blocks execution",
+            self.contract["gate_a_consumer_required_test_categories"],
+        )
+
+    # 69
+    def test_positive_single_invocation_proof_required(self):
+        self.assertTrue(self.contract["positive_single_invocation_test_required"])
+        self.assertTrue(
+            any(
+                "exactly one invocation can occur only after successful preflight" in p
+                for p in self.proof
+            )
+        )
+        self.assertTrue(self.contract["consumer_integration_proof_required"])
+
+    # 70
+    def test_consumer_emits_deterministic_preflight_output(self):
+        self.assertTrue(
+            self.contract["consumer_deterministic_preflight_output_required"]
+        )
+        self.assertIn(
+            "emit a deterministic structured preflight result",
+            self.contract["gate_a_consumer_acceptance_criteria"],
+        )
+
+    # 71
+    def test_stable_consumer_failure_codes_required(self):
+        self.assertTrue(self.contract["consumer_stable_failure_codes_required"])
+        self.assertIn(
+            "include stable failure codes",
+            self.contract["gate_a_consumer_acceptance_criteria"],
+        )
+
+
+class ConsumerAbsenceBlocksPreflight(unittest.TestCase):
+    """72-73: absence and non-wiring each independently block."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 72
+    def test_consumer_absence_blocks_preflight(self):
+        self.assertTrue(self.contract["consumer_absence_blocks_preflight"])
+        self.assertIn(
+            "consumer absent blocks execution",
+            self.contract["gate_a_consumer_required_test_categories"],
+        )
+
+    # 73
+    def test_consumer_not_wired_blocks_preflight(self):
+        self.assertTrue(self.contract["consumer_not_wired_blocks_preflight"])
+        self.assertIn(
+            "consumer not wired into invocation path blocks execution",
+            self.contract["gate_a_consumer_required_test_categories"],
+        )
+
+
+class NoPresentTenseEnforcementClaims(unittest.TestCase):
+    """74-75: repository-wide prose guard over the changed documents."""
+
+    # 74
+    def test_no_present_tense_runtime_enforcement_claims_in_changed_docs(self):
+        offenders = []
+        for path in CHANGED_DOCS:
+            self.assertTrue(path.is_file(), f"changed doc missing: {path}")
+            for lineno, line in enumerate(
+                path.read_text(encoding="utf-8").splitlines(), start=1
+            ):
+                low = line.lower()
+                if any(m in low for m in NEGATIVE_CONTEXT_MARKERS):
+                    continue  # clearly marked prohibition / negative example
+                for phrase in PROHIBITED_ENFORCEMENT_PHRASES:
+                    if phrase in low:
+                        offenders.append(f"{path.name}:{lineno}: {phrase!r} :: {line.strip()}")
+        self.assertEqual(
+            offenders,
+            [],
+            "present-tense runtime-enforcement claims found:\n" + "\n".join(offenders),
+        )
+
+    # 75
+    def test_workflow_runtime_not_described_as_enforcing_authorization(self):
+        contract, text = _load_contract()
+        self.assertEqual(contract["stage1_entrypoint"], "scripts/workflow-runtime.py")
+        self.assertFalse(
+            contract["stage1_entrypoint_performs_authorization_preflight"]
+        )
+        self.assertFalse(contract["workflow_runtime_enforces_authorization"])
+        collapsed = " ".join(text.split())
+        self.assertIn(
+            "It does **not** claim that `scripts/workflow-runtime.py` performs, "
+            "or has ever performed, any authorization preflight.",
+            collapsed,
+        )
+        # And the real runtime file must genuinely contain no consumer.
+        runtime = REPO_ROOT / "scripts" / "workflow-runtime.py"
+        if runtime.is_file():
+            body = runtime.read_text(encoding="utf-8", errors="replace")
+            for marker in CONSUMER_IMPLEMENTATION_MARKERS:
+                self.assertNotIn(
+                    marker,
+                    body,
+                    f"{marker} appeared in workflow-runtime.py; the contract now "
+                    "understates reality and must be updated",
+                )
+
+
+class Pr107ClaimsAreBounded(unittest.TestCase):
+    """76-79: PR #107 is labeled for what it is."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 76
+    def test_pr107_tests_are_labeled_contract_consistency_tests(self):
+        self.assertTrue(self.contract["pr_107_tests_are_contract_consistency_tests"])
+        self.assertIn("CONTRACT CONSISTENCY ONLY", self.text)
+
+    # 77
+    def test_pr107_does_not_claim_runtime_enforcement(self):
+        self.assertFalse(self.contract["pr_107_implements_runtime_enforcement"])
+        for claim in (
+            "an authorization consumer exists",
+            "Gate A is runtime-enforced",
+            "owner approval can currently authorize a run",
+            "digests are currently checked",
+            "model invocation is currently blocked by authorization state",
+            "Evidence 0016 is executable",
+        ):
+            self.assertIn(claim, self.contract["pr_107_does_not_prove"])
+        for claim in (
+            "the future authorization contract is fully specified",
+            "the package remains non-runnable",
+            "future consumer requirements are explicit",
+        ):
+            self.assertIn(claim, self.contract["pr_107_proves"])
+
+    # 78
+    def test_future_consumer_test_categories_are_enumerated(self):
+        categories = self.contract["gate_a_consumer_required_test_categories"]
+        self.assertGreaterEqual(len(categories), 17)
+        self.assertEqual(len(set(categories)), len(categories))
+        for required in (
+            "valid authorization accepted",
+            "missing record rejected",
+            "missing approval rejected",
+            "digest mismatch rejected",
+            "unauthorized approver rejected",
+            "framework mismatch rejected",
+            "target mismatch rejected",
+            "model mismatch rejected",
+            "package digest mismatch rejected",
+            "checklist digest mismatch rejected",
+            "false safety flag rejected",
+            "duplicate record rejected",
+            "duplicate approval rejected",
+            "pre-existing evidence output rejected",
+            "positive proof that the model invocation cannot occur before preflight success",
+        ):
+            self.assertIn(required, categories)
+        criteria = self.contract["gate_a_consumer_acceptance_criteria"]
+        self.assertGreaterEqual(len(criteria), 24)
+        self.assertIn("load exactly one authorization record", criteria)
+        self.assertIn("load exactly one owner-approval artifact", criteria)
+        self.assertIn("permit no retry", criteria)
+        self.assertIn("perform no target writes", criteria)
+
+    # 79
+    def test_gate_d_cannot_begin_before_gate_a_consumer_passes(self):
+        self.assertTrue(self.contract["gate_d_requires_gate_a_consumer_pass"])
+        checklist = CHECKLIST_PATH.read_text(encoding="utf-8")
+        collapsed = " ".join(checklist.split())
+        self.assertIn(
+            "No current runtime verifies this checklist's digest.", collapsed
+        )
+        self.assertIn(
+            "Gate D must not begin unless the future Gate A consumer exists and "
+            "has passed.",
+            collapsed,
+        )
+        self.assertIn("this checklist governs no live run", collapsed)
+        # The eight tripwires are untouched by this change.
+        self.assertEqual(len(self.contract["stale_diagnosis_tripwires"]), 8)
+
+
+class NoConsumerImplementedByThisPR(unittest.TestCase):
+    """80: this PR adds no consumer, and the repo still contains none."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 80
+    def test_no_consumer_implementation_file_is_added_by_this_pr(self):
+        self.assertFalse(
+            self.contract["consumer_implementation_file_added_by_this_pr"]
+        )
+        offenders = []
+        for directory in RUNTIME_SOURCE_DIRS:
+            root = REPO_ROOT / directory
+            if not root.is_dir():
+                continue
+            for path in root.rglob("*"):
+                if not path.is_file():
+                    continue
+                if path.suffix.lower() not in (".py", ".sh", ".yaml", ".yml", ".json"):
+                    continue
+                body = path.read_text(encoding="utf-8", errors="replace")
+                for marker in CONSUMER_IMPLEMENTATION_MARKERS:
+                    if marker in body:
+                        offenders.append(f"{path.relative_to(REPO_ROOT)}: {marker}")
+        self.assertEqual(
+            offenders,
+            [],
+            "a Gate A authorization consumer appears to exist in runtime "
+            "sources; the package's NOT_IMPLEMENTED claim would then be false "
+            "and must be corrected:\n" + "\n".join(offenders),
+        )
+        # And the run-control artifacts still do not exist.
+        self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
 
 
 if __name__ == "__main__":

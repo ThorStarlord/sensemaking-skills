@@ -4,6 +4,26 @@
 PREPARED_NOT_RUN
 ```
 
+> **READ THIS FIRST — the authorization contract in this document is SPECIFIED
+> but NOT ENFORCED.**
+>
+> ```text
+> Authorization contract:     specified
+> Authorization consumer:     not implemented
+> Runtime enforcement:        absent
+> Owner approval:             not yet meaningful
+> Package runnable:           false
+> Evidence 0016 execution:    prohibited
+> ```
+>
+> No component in this repository loads the authorization record, validates the
+> owner approval, recomputes any digest, or blocks a model invocation on
+> authorization state. Every "Gate A" check described below is a **ratified
+> future contract**, not current runtime behavior. Filling in the pending
+> sentinels, creating the authorization files, and obtaining owner approval
+> would **still** leave this package non-runnable, because the component that
+> would act on any of it does not exist. See section 1a.
+
 **Nature of this document**: preparation and governance only. It resolves and
 records the exact configuration that exactly one future, separately
 authorized Stage 1 controlled attempt against the remediated `auteur`
@@ -56,6 +76,42 @@ pin_finalization_required: true
 pin_finalization_mechanism: owner_approved_external_immutable_authorization_record
 execution_authorization_status: NOT_AUTHORIZED
 package_runnable: false
+
+# --- Gate A runtime consumer status (see section 2i) ---
+# THE DECISIVE FIELDS. The authorization contract below is fully SPECIFIED but
+# entirely UNENFORCED: no code in this repository reads any of it. Everything
+# from `authorization_mechanism` down is a ratified FUTURE contract describing
+# behavior that a not-yet-written component must implement.
+gate_a_authorization_consumer_status: NOT_IMPLEMENTED
+gate_a_authorization_consumer_required: true
+gate_a_authorization_consumer_path: PENDING_IMPLEMENTATION
+gate_a_authorization_consumer_wired_to_stage1: false
+gate_a_authorization_consumer_tests_status: NOT_IMPLEMENTED
+gate_a_consumer_integration_point: PENDING_ARCHITECTURAL_DECISION
+gate_a_runtime_enforcement_exists: false
+contract_tests_are_runtime_enforcement_tests: false
+authorization_without_consumer_is_valid: false
+owner_approval_without_consumer_is_valid: false
+filling_sentinels_without_consumer_makes_package_runnable: false
+creating_authorization_files_without_consumer_makes_package_runnable: false
+pr_107_implements_runtime_enforcement: false
+pr_107_tests_are_contract_consistency_tests: true
+# Proof required before any future authorization may take effect (section 2k).
+consumer_merge_required_before_authorization: true
+consumer_integration_proof_required: true
+negative_zero_invocation_test_required: true
+positive_single_invocation_test_required: true
+consumer_deterministic_preflight_output_required: true
+consumer_stable_failure_codes_required: true
+consumer_must_gate_model_invocation_path: true
+consumer_absence_blocks_preflight: true
+consumer_not_wired_blocks_preflight: true
+gate_d_requires_gate_a_consumer_pass: true
+# Ordering constraints (section 2d). Violating any of these voids authorization.
+consumer_implementation_precedes_authorization_record_creation: true
+consumer_merge_precedes_owner_approval: true
+execution_framework_sha_selected_after_consumer_merge: true
+consumer_implementation_file_added_by_this_pr: false
 
 # --- Authorization-record integrity (single mandatory mechanism; sections 2b-2h) ---
 # Exactly one mechanism is permitted. There is no fork, no alternative, and no
@@ -144,7 +200,10 @@ canonical_preparation_package_path: docs/experiments/STAGE-1-AUTEUR-POST-REMEDIA
 canonical_gate_d_checklist_path: docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
 package_and_checklist_loaded_from_framework_root: true
 external_package_or_checklist_copy_allowed: false
-# Gate A authorization verification, in order. See section 2g.
+# Required behavior of the FUTURE Gate A authorization consumer, in order.
+# NOT current runtime behavior. Nothing executes these steps today. See section 2g.
+gate_a_authorization_verification_steps_are_current_runtime_behavior: false
+gate_a_authorization_verification_steps_are_future_contract: true
 gate_a_authorization_verification_steps:
   - 1 authorization record exists at the exact planned run-control path
   - 2 owner approval artifact exists
@@ -187,6 +246,13 @@ authorization_hard_stop_conditions:
   - more than one approval artifact
   - pre-existing Evidence 0016 output
   - mutable or floating path used as authority
+  - GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED
+authorization_hard_stop_count: 24
+# The consumer hard stop is evaluated FIRST; while it fires, none of the other
+# 23 conditions can even be reached, because nothing evaluates them.
+first_evaluated_hard_stop: GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED
+gate_a_authorization_consumer_not_implemented_is_active: true
+gate_a_authorization_consumer_hard_stop_waivable: false
 authorization_failure_is_gate_a_failure: true
 authorization_failure_permits_retry: false
 merging_this_pr_finalizes_pin: false
@@ -206,6 +272,82 @@ required_paths_at_execution_framework_sha:
   - scripts/workflow-runtime.py
 missing_required_path_is_gate_a_failure: true
 external_checklist_copy_allowed: false
+
+# --- Acceptance criteria for the FUTURE Gate A consumer (section 2j) ---
+# None of these are satisfied today. This is a specification of work not done.
+gate_a_consumer_acceptance_criteria:
+  - accept the immutable run-control location or exact paths as input
+  - load exactly one authorization record
+  - load exactly one owner-approval artifact
+  - parse the 24-field authorization record schema
+  - reject missing or duplicate records
+  - reject missing or duplicate approvals
+  - recompute authorization-record SHA-256 from exact bytes
+  - compare the recomputed digest to the owner-approved digest
+  - verify approval identity
+  - verify authorization status
+  - verify framework HEAD
+  - verify target HEAD
+  - verify evidence number and slug
+  - verify exact model
+  - verify preparation-package path and digest
+  - verify Gate D checklist path and digest
+  - verify all safety booleans
+  - verify no pre-existing Evidence 0016 output
+  - emit a deterministic structured preflight result
+  - include stable failure codes
+  - stop the execution path before any model call on failure
+  - leave an auditable preflight record
+  - perform no target writes
+  - permit no retry
+  - be tested through the actual invocation boundary, not only as an isolated helper
+gate_a_consumer_required_test_categories:
+  - valid authorization accepted
+  - missing record rejected
+  - missing approval rejected
+  - digest mismatch rejected
+  - unauthorized approver rejected
+  - framework mismatch rejected
+  - target mismatch rejected
+  - model mismatch rejected
+  - package digest mismatch rejected
+  - checklist digest mismatch rejected
+  - false safety flag rejected
+  - duplicate record rejected
+  - duplicate approval rejected
+  - pre-existing evidence output rejected
+  - consumer absent blocks execution
+  - consumer not wired into invocation path blocks execution
+  - positive proof that the model invocation cannot occur before preflight success
+gate_a_consumer_required_test_categories_implemented_in_this_pr: false
+# Proof a LATER independent review must demonstrate before authorization (section 2k).
+proof_required_before_authorization:
+  - real consumer source code exists
+  - consumer source is merged
+  - consumer tests pass
+  - actual invocation path calls the consumer
+  - a negative integration test proves model invocation count remains zero when preflight fails
+  - a positive integration test proves exactly one invocation can occur only after successful preflight
+  - the selected execution framework SHA contains the consumer
+  - all preparation artifacts remain present at that SHA
+# Ordered authorization lifecycle (section 2d). Steps 3-7 are the new prerequisite.
+authorization_lifecycle_order:
+  - 1 PR #107 merges as preparation contract only
+  - 2 select the immutable execution framework revision containing the preparation contract
+  - 3 implement the real Gate A authorization consumer
+  - 4 add positive and negative consumer tests
+  - 5 wire the consumer into the actual Stage 1 invocation path before any model invocation
+  - 6 independently review and merge the consumer
+  - 7 select a new immutable execution framework SHA containing the consumer
+  - 8 create the external authorization record against that SHA
+  - 9 finalize its bytes and compute SHA-256
+  - 10 create the separate owner-approval artifact
+  - 11 owner approves the exact digest
+  - 12 pin the immutable run-control commit
+  - 13 perform a dry preflight with no model invocation
+  - 14 only after preflight passes may a separate owner decision authorize exactly one live invocation
+effective_authorization_before_consumer_steps_complete_allowed: false
+owner_approval_created_before_consumer_implementation_is_valid: false
 
 target_repository: https://github.com/ThorStarlord/auteur.git
 target_sha: 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
@@ -228,6 +370,10 @@ manual_artifact_repair_allowed: false
 target_mutation_allowed: false
 second_attempt_requires_new_owner_decision: true
 stage1_entrypoint: scripts/workflow-runtime.py
+# scripts/workflow-runtime.py is named ONLY as the Stage 1 entrypoint. It does
+# NOT perform authorization preflight, and this package does not claim it does.
+stage1_entrypoint_performs_authorization_preflight: false
+workflow_runtime_enforces_authorization: false
 stage1_workflow: architectural-review-planning-workflow
 structural_validator_command: >-
   python scripts/validate-and-report.py <brief_path>
@@ -255,6 +401,20 @@ historical_evidence_0015:
   usable_as_new_output_path: false
   usable_as_input_artifact: false
   reclassified_by_this_package: false
+# What PR #107 does and does not prove (section 10).
+pr_107_proves:
+  - the future authorization contract is fully specified
+  - lifecycle values are internally consistent
+  - historical evidence is protected
+  - the package remains non-runnable
+  - future consumer requirements are explicit
+pr_107_does_not_prove:
+  - an authorization consumer exists
+  - Gate A is runtime-enforced
+  - owner approval can currently authorize a run
+  - digests are currently checked
+  - model invocation is currently blocked by authorization state
+  - Evidence 0016 is executable
 readiness_classification_before: Externally exercised
 readiness_auto_promotion_allowed: false
 second_structurally_different_target_required: true
@@ -291,6 +451,89 @@ contradiction_search_paths:
   - tests/test_series_universe_integration.py
   - "issue #38 completion audit (ThorStarlord/auteur)"
 ```
+
+---
+
+## 1a. Gate A runtime consumer status
+
+```text
+gate_a_authorization_consumer_status: NOT_IMPLEMENTED
+```
+
+A repository-wide search of every `*.py`, `*.sh`, `*.yaml`, `*.yml`, and
+`*.json` source file for `authorization[-_ ]record`, `owner[-_ ]approval`,
+`run[-_ ]control`, and `authorization_record_sha256` returns matches in exactly
+one file: `tests/test_stage1_auteur_prep_package.py`, which is the
+contract-consistency test suite for this document. **No runtime source matches
+at all.**
+
+Stated plainly, and without hedging:
+
+```text
+No Gate A authorization consumer exists in this repository today.
+No current runtime component loads the authorization record.
+No current runtime component loads or validates the owner-approval artifact.
+No current runtime component recomputes the authorization-record SHA-256.
+No current runtime component verifies owner identity.
+No current runtime component verifies the preparation-package digest.
+No current runtime component verifies the Gate D checklist digest.
+No current runtime component binds an authorization result to the Stage 1
+  model invocation.
+The 15-step sequence in section 5 is a ratified FUTURE contract. It is not
+  current runtime behavior. Nothing executes it.
+The tests in PR #107 validate CONTRACT CONSISTENCY ONLY.
+The tests in PR #107 do NOT prove runtime enforcement, and must never be
+  cited as evidence of it.
+```
+
+### What cannot make this package runnable
+
+This is the point of the section. Three plausible-looking paths to a "runnable"
+state are each explicitly insufficient:
+
+| Attempted path | Result |
+|---|---|
+| Fill in all three pending sentinels with real SHAs and digests | **Still not runnable.** Nothing reads them. |
+| Create the run-control directory, the authorization record, and the digest file | **Still not runnable.** Nothing loads them. |
+| Obtain a genuine repository-owner approval of the exact digest | **Still not runnable, and the approval is non-operative.** Nothing verifies it. |
+
+The missing consumer is not a formality that owner approval can substitute for.
+An approval is a decision *about* an enforcement mechanism; it is not the
+mechanism. Approving a check that no code performs authorizes nothing.
+
+Before this package can become runnable, the actual consumer must be:
+
+1. **implemented** as real source code;
+2. **tested**, with the positive and negative categories of section 2j;
+3. **reviewed** independently;
+4. **merged**;
+5. **wired into the real Stage 1 invocation path**, ahead of the first model
+   call, and proven so by integration test.
+
+Until all five are true, `GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`
+(hard stop 24, section 2h) fires, and no authorization state of any kind is
+effective.
+
+### Where the consumer will live
+
+```yaml
+gate_a_authorization_consumer_path: PENDING_IMPLEMENTATION
+gate_a_consumer_integration_point: PENDING_ARCHITECTURAL_DECISION
+```
+
+This package deliberately does **not** invent an implementation path. The
+contract requires that the consumer ultimately gate the real Stage 1 execution
+path — which today enters through `scripts/workflow-runtime.py` — before the
+first model call. It does **not** claim that `scripts/workflow-runtime.py`
+performs, or has ever performed, any authorization preflight. It does not.
+`scripts/workflow-runtime.py` is named in this package solely as
+`stage1_entrypoint`
+(`stage1_entrypoint_performs_authorization_preflight: false`).
+
+Selecting the exact module, and the exact call site ahead of the first model
+invocation, is a decision for the separately scoped consumer-implementation
+task, which must justify it against the repository's actual runtime
+architecture rather than against a location guessed here in advance.
 
 ---
 
@@ -407,9 +650,10 @@ SHA, so this package does **not** attempt to. Instead:
   carrier.
 - A separate immutable **authorization record**, created only after this
   preparation PR merges, carries the **execution pin**.
-- The live runner consumes the authorization record as the authoritative
-  execution pin, while continuing to obey this package as the governing
-  contract.
+- The future Gate A consumer must consume the authorization record as the
+  authoritative execution pin, while continuing to obey this package as the
+  governing contract. No such consumer exists; this is a contract requirement,
+  not current runtime behavior.
 
 This avoids the circular requirement that a commit contain its own SHA: the
 record is authored *after* the revision it pins is already immutable, and the
@@ -451,7 +695,8 @@ The future authorization record MUST:
   5. have its exact bytes hashed with SHA-256;
   6. have that SHA-256 digest approved by the repository owner, in a
      DISTINCT approval artifact, before any invocation;
-  7. be verified by Gate A before any model invocation;
+  7. be verified by the FUTURE Gate A consumer before any model invocation
+     (that consumer does not exist yet; see section 1a);
   8. remain immutable for the life of Evidence 0016.
 
 There is no second mechanism. There is no fallback. There is no
@@ -526,13 +771,53 @@ merged, or skipped.
  7. The approval artifact records: authorization-record digest; execution
     framework SHA; Auteur target SHA; evidence number; exact model; and an
     explicit authorization decision.
- 8. Before invocation, Gate A RECOMPUTES the authorization-record SHA-256
-    from the bytes on disk.
- 9. Gate A compares the recomputed digest to the OWNER-APPROVED digest from
-    the approval artifact.
-10. Any mismatch, absence, malformed record, or conflicting field is a HARD
-    STOP before model invocation.
+ 8. Before invocation, the required Gate A consumer must RECOMPUTE the
+    authorization-record SHA-256 from the bytes on disk.
+ 9. That consumer must COMPARE the recomputed digest to the OWNER-APPROVED
+    digest from the approval artifact.
+10. Any mismatch, absence, malformed record, or conflicting field must be a
+    HARD STOP before model invocation.
 ```
+
+**Steps 8-10 describe required behavior of a component that does not exist.**
+No code performs them today. See section 1a. The full ordered lifecycle,
+including the consumer-implementation steps that must precede step 3 above, is
+restated in `authorization_lifecycle_order` and immediately below.
+
+### Ordered lifecycle including consumer implementation
+
+The chain above cannot begin at "create a draft authorization record". The
+consumer must exist first, or the record it is written for governs nothing:
+
+```text
+ 1. PR #107 merges as a PREPARATION CONTRACT ONLY.
+ 2. Select the immutable execution framework revision containing that contract.
+ 3. IMPLEMENT the real Gate A authorization consumer.
+ 4. Add positive and negative consumer tests.
+ 5. WIRE the consumer into the actual Stage 1 invocation path, ahead of any
+    model invocation.
+ 6. Independently review and merge the consumer.
+ 7. Select a NEW immutable execution framework SHA that contains the consumer.
+ 8. Create the external authorization record against THAT SHA.
+ 9. Finalize its bytes and compute SHA-256.
+10. Create the separate owner-approval artifact.
+11. The owner approves that exact digest.
+12. Pin the immutable run-control commit.
+13. Perform a DRY PREFLIGHT with no model invocation.
+14. Only after preflight passes may a separate owner decision authorize
+    exactly one live invocation.
+```
+
+Creating effective authorization before steps 3-7 are complete is
+**prohibited** (`effective_authorization_before_consumer_steps_complete_allowed:
+false`). An owner approval created before the consumer is implemented and
+merged is **invalid and non-operative**
+(`owner_approval_created_before_consumer_implementation_is_valid: false`) — it
+approves an enforcement step that nothing performs, and it must not be
+carried forward or reused once the consumer later exists. The framework SHA
+used for authorization must be selected *after* consumer merge
+(`execution_framework_sha_selected_after_consumer_merge: true`), because a
+revision predating the consumer cannot enforce the contract it carries.
 
 **The authorization record must not approve itself.** If the record contains a
 digest field describing itself, that value is **informational only** and must
@@ -608,7 +893,8 @@ No circular self-reference is created, because the two commits are distinct:
 - the authorization record pins an EARLIER framework execution SHA;
 - the LATER run-control commit contains the authorization and approval
   artifacts;
-- the runner verifies BOTH the framework SHA and the authorization digest;
+- the future consumer must verify BOTH the framework SHA and the
+  authorization digest;
 - the run-control commit does NOT need to equal the framework execution SHA,
   and must not be assumed to.
 ```
@@ -673,8 +959,9 @@ artifact.
 
 ### Package and checklist provenance
 
-The record carries SHA-256 digests for the two governing documents, and Gate A
-verifies them:
+The record carries SHA-256 digests for the two governing documents, and the
+future Gate A consumer must verify them (this is a contract requirement, not
+current runtime behavior — nothing checks these digests today):
 
 ```text
 SHA-256(preparation package bytes) == authorization record preparation_package_sha256
@@ -725,12 +1012,42 @@ retry, repair, substitution, or "proceeding with a note".
 | 21 | more than one approval artifact |
 | 22 | pre-existing Evidence 0016 output |
 | 23 | mutable or floating path used as authority |
+| 24 | `GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED` |
 
 Each classifies **Gate A as failed**, stops before model invocation, produces
 **no retry**, and preserves the failed preflight record.
 
-**Current state: no authorization record exists. No owner approval exists. The
-package is not runnable.**
+### Hard stop 24 — `GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`
+
+This is the **only hard stop currently firing**, and it is evaluated **first**
+(`first_evaluated_hard_stop`). While it fires, conditions 1-23 are not merely
+unmet — they are *unreachable*, because no component evaluates them.
+
+Semantics:
+
+```text
+TRIGGERED whenever no reviewed and merged Gate A authorization consumer exists.
+TRIGGERED whenever the consumer is not wired into the real Stage 1 invocation
+  path, ahead of the first model call.
+TRIGGERED whenever only document-consistency tests exist, and no test exercises
+  the actual invocation boundary.
+
+EFFECT:
+  - BLOCKS creation of a runnable authorization state;
+  - BLOCKS any owner authorization from taking effect;
+  - STOPS before model invocation;
+  - PERMITS NO RETRY;
+  - CANNOT be waived, and specifically cannot be satisfied by filling
+    authorization-record fields, digest fields, or sentinel values by hand.
+```
+
+Its current value is `gate_a_authorization_consumer_not_implemented_is_active:
+true` and it is not waivable
+(`gate_a_authorization_consumer_hard_stop_waivable: false`).
+
+**Current state: no Gate A authorization consumer exists, so no authorization
+state is enforceable. No authorization record exists. No owner approval exists.
+The package is not runnable.**
 
 ### Preflight rule (mandatory, before any invocation)
 
@@ -755,6 +1072,110 @@ target pin `b40db654e0df9e90074f7ad85b40d7362378e07d`. That is the entire
 point of this attempt: the target has been materially remediated, and the
 learning question is about the *current* repository. This is a new attempt,
 not a controlled rerun of the earlier ones, and it must not be reported as
+one.
+
+---
+
+## 2j. Acceptance criteria for the future Gate A authorization consumer
+
+None of the criteria below are satisfied today. This section specifies work
+that has **not been done**, and that a separately scoped implementation PR must
+do. It is not a description of anything that currently runs.
+
+The future Gate A authorization consumer must:
+
+1. accept the immutable run-control location, or the exact paths, as input;
+2. load exactly one authorization record;
+3. load exactly one owner-approval artifact;
+4. parse the 24-field authorization-record schema of section 2g;
+5. reject missing or duplicate records;
+6. reject missing or duplicate approvals;
+7. recompute the authorization-record SHA-256 from its exact bytes;
+8. compare that recomputed digest to the owner-approved digest;
+9. verify approval identity;
+10. verify authorization status;
+11. verify framework HEAD;
+12. verify target HEAD;
+13. verify evidence number and slug;
+14. verify the exact model;
+15. verify the preparation-package path and digest;
+16. verify the Gate D checklist path and digest;
+17. verify all safety booleans;
+18. verify that no pre-existing Evidence 0016 output is present;
+19. emit a deterministic structured preflight result;
+20. include stable failure codes;
+21. stop the execution path before any model call on failure;
+22. leave an auditable preflight record;
+23. perform no target writes;
+24. permit no retry;
+25. **be tested through the actual invocation boundary**, not only as an
+    isolated helper.
+
+Criterion 25 is load-bearing. A consumer that passes unit tests in isolation but
+is never called by the real Stage 1 path enforces nothing, and reproduces
+exactly the defect this section exists to prevent: a specification that looks
+enforced and is not.
+
+### Required future test categories
+
+The consumer implementation PR must supply at least these categories. **None of
+them are implemented in PR #107**
+(`gate_a_consumer_required_test_categories_implemented_in_this_pr: false`);
+PR #107 asserts only, at contract level, that they are mandatory future work.
+
+```text
+valid authorization accepted
+missing record rejected
+missing approval rejected
+digest mismatch rejected
+unauthorized approver rejected
+framework mismatch rejected
+target mismatch rejected
+model mismatch rejected
+package digest mismatch rejected
+checklist digest mismatch rejected
+false safety flag rejected
+duplicate record rejected
+duplicate approval rejected
+pre-existing evidence output rejected
+consumer absent blocks execution
+consumer not wired into invocation path blocks execution
+positive proof that the model invocation cannot occur before preflight success
+```
+
+---
+
+## 2k. Proof required before any future authorization
+
+Future authorization must not proceed until a later independent review
+demonstrates **all** of the following. Each is an observable fact about merged
+code, not a claim in a document:
+
+```text
+1. real consumer source code exists;
+2. consumer source is merged;
+3. consumer tests pass;
+4. the actual invocation path calls the consumer;
+5. a NEGATIVE integration test proves the model invocation count remains ZERO
+   when preflight fails;
+6. a POSITIVE integration test proves exactly ONE invocation can occur, and
+   only after successful preflight;
+7. the selected execution framework SHA contains the consumer;
+8. all preparation artifacts remain present at that SHA.
+```
+
+Machine-readable form:
+
+```yaml
+consumer_merge_required_before_authorization: true
+consumer_integration_proof_required: true
+negative_zero_invocation_test_required: true
+positive_single_invocation_test_required: true
+```
+
+Items 5 and 6 are the substantive proof. Everything else can be satisfied by
+code that exists but is never reached; only an integration test taken across
+the real invocation boundary distinguishes an enforced gate from a decorative
 one.
 
 ---
@@ -842,12 +1263,18 @@ later gate is evaluated, filled in, or guessed. Every gate below is
   finalization.
 - Target checkout SHA is exactly the pinned `target_sha`.
 
-#### Gate A authorization verification (mandatory, in order)
+#### Required behavior of the future Gate A authorization consumer
 
-**Digest verification occurs BEFORE model invocation.** Gate A recomputes the
-authorization-record SHA-256 and compares it against the owner-approved digest
-*before* any model is invoked. No invocation may occur until all fifteen steps
-below have passed, in this order:
+> **This subsection specifies a component that does not exist.** It is a
+> ratified contract requirement, not a description of current runtime
+> behavior. No code in this repository performs any of the fifteen steps
+> below. See section 1a.
+
+**Digest verification must occur BEFORE model invocation.** The required Gate A
+consumer must recompute the authorization-record SHA-256 and compare it against
+the owner-approved digest *before* any model is invoked. Before any live
+attempt may be authorized, an implemented consumer must complete all fifteen
+steps below successfully, in this order:
 
 ```text
  1. Authorization record exists at the EXACT planned run-control path:
@@ -884,7 +1311,14 @@ Any failure of any step:
 The full hard-stop condition list is section 2h. The three pending sentinels
 (`PENDING_POST_MERGE_PIN_FINALIZATION`,
 `PENDING_AUTHORIZATION_RECORD_CREATION`, `PENDING_OWNER_APPROVAL`) each block
-execution on their own.
+execution on their own — and hard stop 24,
+`GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`, blocks execution regardless of
+all three, because clearing the sentinels does not create the component that
+would read them.
+
+- A reviewed, merged Gate A authorization consumer exists, and is wired into
+  the real Stage 1 invocation path ahead of the first model call. Absent this,
+  Gate A fails at hard stop 24 and none of the fifteen steps above can run.
 - Framework root and target root are separate directories and separate
   repositories.
 - Both clones are fresh and clean.
@@ -1007,6 +1441,8 @@ The run is blocked while run_control_commit_sha is
   PENDING_AUTHORIZATION_RECORD_CREATION.
 The run is blocked while authorization_record_sha256 is
   PENDING_OWNER_APPROVAL.
+The run is blocked because no Gate A authorization consumer exists. This block
+  is independent of the three sentinels and is NOT cleared by filling them.
 No authorization record exists. No owner-approval artifact exists. No
   run-control directory exists. The package is not runnable.
 Authorization requires the sole mandatory mechanism of section 2b: an
@@ -1018,7 +1454,42 @@ At most one invocation could ever be authorized by such an instruction.
 No automatic retry, repair, or rerun is permitted even then.
 ```
 
-### Owner authorization (blank — no approval pre-filled)
+### What PR #107 proves, and what it does not
+
+PR #107 **proves**:
+
+```text
+- the future authorization contract is fully specified;
+- lifecycle values are internally consistent;
+- historical evidence is protected;
+- the package remains non-runnable;
+- future consumer requirements are explicit.
+```
+
+PR #107 **does not prove**:
+
+```text
+- an authorization consumer exists;
+- Gate A is runtime-enforced;
+- owner approval can currently authorize a run;
+- digests are currently checked;
+- model invocation is currently blocked by authorization state;
+- Evidence 0016 is executable.
+```
+
+PR #107 is a **preparation-contract PR**. It implements no security
+enforcement. Its tests are contract-consistency tests
+(`pr_107_tests_are_contract_consistency_tests: true`) and must never be cited
+as evidence that runtime enforcement exists
+(`pr_107_implements_runtime_enforcement: false`).
+
+### Owner authorization (blank — no approval pre-filled, and not yet meaningful)
+
+**An approval entered below today would be invalid and non-operative**, because
+no consumer exists to act on it (section 1a,
+`owner_approval_created_before_consumer_implementation_is_valid: false`). This
+block must remain blank until the consumer is implemented, tested, reviewed,
+merged, and wired into the Stage 1 invocation path.
 
 ```text
 Owner authorization decision:

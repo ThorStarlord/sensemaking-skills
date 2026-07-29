@@ -39,7 +39,16 @@ bytes as read from `framework_root` at the authorized execution SHA, must match
 `gate_d_checklist_sha256` in the future authorization record. That
 authorization record's own SHA-256 must in turn match the digest approved by
 the repository owner in the distinct owner-approval artifact. Both comparisons
-happen in **Gate A, before any model invocation**. If either fails — checklist
+belong to the **future Gate A authorization consumer contract**, and must occur
+before any model invocation.
+
+**No current runtime verifies this checklist's digest.** That consumer is not
+implemented (see section 1a of the preparation package); this digest
+requirement is a contract requirement, not current runtime behavior. **Gate D
+must not begin unless the future Gate A consumer exists and has passed.** While
+the consumer is absent, this checklist governs no live run at all.
+
+If either comparison fails — checklist
 digest mismatch, authorization-record digest mismatch, missing record, or
 missing owner approval — **Gate A fails before Gate D begins**, and no
 substantive review takes place. Gate D never runs on an unauthenticated

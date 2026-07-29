@@ -29,10 +29,23 @@
 > and hashed with SHA-256. The **owner-approved digest is a distinct artifact**
 > from the authorization record itself (`owner-approval.md`): a record may not
 > approve itself, and any digest carried inside the record is informational
-> only. Gate A recomputes the record's digest and compares it to the
-> owner-approved value before any model invocation; a mismatch, a missing
-> record, or a missing owner approval is a hard stop. No such record or approval
-> exists today. The historical Evidence 0013-0015 narrative below is untouched.
+> only. The future Gate A consumer must recompute the record's digest and compare
+> it to the owner-approved value before any model invocation; a mismatch, a
+> missing record, or a missing owner approval must be a hard stop. No such
+> record or approval exists today.
+>
+> **Runtime enforcement of that contract does not exist.** No Gate A
+> authorization consumer is implemented anywhere in this repository: nothing
+> loads the authorization record, validates the owner approval, recomputes any
+> digest, or blocks a model invocation on authorization state. The Evidence 0016
+> preparation contract is therefore **not executable**, and cannot be made
+> executable by filling its pending sentinels, by creating the authorization
+> files, or by obtaining owner approval. Implementing, testing, reviewing,
+> merging, and wiring that consumer into the real Stage 1 invocation path is
+> **mandatory future work** and a hard prerequisite
+> (`GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`, hard stop 24 of the
+> preparation package). The historical Evidence 0013-0015 narrative below is
+> untouched by all of this.
 
 **Date**: 2026-07-27 (revised: this revision is a documentation-only refresh
 that proposes a **new** framework execution pin for a possible future
