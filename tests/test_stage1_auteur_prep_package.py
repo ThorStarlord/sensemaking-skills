@@ -1382,11 +1382,56 @@ CHANGED_DOCS = (PACKAGE_PATH, CHECKLIST_PATH, EXEC_PACKAGE_PATH)
 # half a document, a marker inside inline code, or a near-miss spelling all
 # exempt NOTHING.
 #
-# Deliberate limit, stated rather than hidden: the guard enforces that the
-# reason is one of the closed set, not that the reason accurately characterizes
-# the region. Whether "truthful denial list" is an honest label for a given
-# region is reviewer judgement -- it is not lexically decidable, and this suite
-# does not pretend to decide it.
+# Round 8 remediation: a reason is a CONTRACT, not a label.
+#
+# Rounds 6-7 validated the marker STRUCTURE and the reason VOCABULARY, then
+# deleted the region body before scanning. The seventh review demonstrated the
+# consequence directly: a structurally perfect region labeled
+#
+#     reason="truthful denial list"
+#
+# containing the single sentence
+#
+#     Gate A verifies the authorization digest before every invocation.
+#
+# was ACCEPTED. A closed vocabulary of reasons bought nothing, because nothing
+# ever compared the region's content to the reason it declared. Any false
+# affirmative current-enforcement claim could be hidden behind a legal label.
+#
+# The architecture is therefore no longer:
+#
+#     parse markers -> delete exempt content -> scan remainder
+#
+# It is:
+#
+#     parse markers
+#     validate marker structure and reason vocabulary
+#     validate EACH region's content against its declared reason
+#     scan all non-exempt governing prose
+#
+# Every reason now carries its own mechanical content contract (see
+# _validate_denial_region / _validate_obsolete_region /
+# _validate_example_region). A region whose content does not satisfy its
+# declared reason is a violation and exempts NOTHING.
+#
+# The reason-content validators reuse the SAME enforcement lexicon and the SAME
+# active/emphatic/progressive/passive matchers as ordinary prose scanning. There
+# are deliberately not two diverging enforcement lexicons.
+#
+# Honest scope statement, stated rather than hidden. This is still a
+# deterministic lexical/structural guard, not a semantic analyzer:
+#   - it DOES mechanically reject an obvious semantic mismatch, including any
+#     affirmative current-enforcement claim under any allowed reason;
+#   - it does NOT decide whether a well-formed, plainly negative denial list is
+#     factually true, nor whether a quotation is genuinely historical. Reason
+#     ACCURACY still receives manual review.
+# It does not claim natural-language understanding.
+#
+# Preferred remedy is always elimination, not a cleverer exemption. Both real
+# `truthful denial list` regions were removed in round 8 by rewriting their
+# items into explicitly negative grammar the guard parses directly, taking the
+# real region count from 6 to 4. Fewer exemption regions is safer than more
+# sophisticated exemption validation.
 # ---------------------------------------------------------------------------
 
 PROSE_GUARD_EXEMPTION_BEGIN = "BEGIN_PROSE_GUARD_EXEMPTION"
@@ -1713,14 +1758,209 @@ def _is_any_marker_line(raw_line):
     return _match_exemption_begin(raw_line) is not None or _is_exemption_end(raw_line)
 
 
-def _resolve_exemption_regions(lines):
-    """Return (exempt_line_numbers, structural_violations).
+# ---------------------------------------------------------------------------
+# Reason-specific content contracts (round 8).
+#
+# Each allowed reason declares what its region may contain. The contract is
+# checked BEFORE the region is exempted from ordinary scanning.
+# ---------------------------------------------------------------------------
 
-    Fail-closed: any malformed region exempts nothing at all.
+# A region must be introduced by the line IMMEDIATELY preceding it -- the
+# nearest preceding line that is neither blank, nor a marker, nor a code fence.
+# Only that one line counts, so an introducer "further up" grants nothing and an
+# introducer appearing only AFTER the opening marker grants nothing.
+_CODE_FENCE_RE = re.compile(r"^\s*(?:```|~~~)")
+
+# Denial-oriented introducers.
+_DENIAL_INTRODUCER_RE = re.compile(
+    r"\b(?:does\s+not\s+prove|do\s+not\s+prove|does\s+not|do\s+not|did\s+not|"
+    r"cannot|can\s+not|is\s+not|are\s+not|absence|absences|denial|denials|"
+    r"not\s+proven|no\s+\w+)\b",
+    re.IGNORECASE,
+)
+
+# Historical/obsolete-quotation introducers.
+_OBSOLETE_INTRODUCER_RE = re.compile(
+    r"\b(?:previous|previously|obsolete|superseded|supersedes|former|formerly|"
+    r"historical|historic|old\s+wording|incorrect\s+wording|"
+    r"no\s+longer\s+accurate|quoted\s+historical|was\s+worded)\b",
+    re.IGNORECASE,
+)
+
+# Illustrative-example introducers.
+_EXAMPLE_INTRODUCER_RE = re.compile(
+    r"\b(?:example|examples|invalid\s+example|rejected\s+example|"
+    r"illustrative|illustration|illustrates|for\s+instance)\b",
+    re.IGNORECASE,
+)
+
+# Explicitly negative / absence / non-implementation / non-proof vocabulary. A
+# `truthful denial list` item must contain at least one of these.
+_DENIAL_ITEM_MARKERS = (
+    "no ",
+    "not ",
+    "n't ",
+    "never",
+    "cannot",
+    "can not",
+    "non-",
+    "without",
+    "absent",
+    "absence",
+    "nothing",
+    "neither",
+    "nor ",
+    "unimplemented",
+    "not_implemented",
+    "pending",
+    "lacks",
+    "lacking",
+    "fails to",
+    "unproven",
+)
+
+
+def _region_introducer(lines, open_at):
+    """Return (lineno, text) of the region's immediate introducer, or None."""
+    for lineno in range(open_at - 1, 0, -1):
+        raw = lines[lineno - 1]
+        if not raw.strip():
+            continue
+        if _is_any_marker_line(raw) or _CODE_FENCE_RE.match(raw):
+            continue
+        return (lineno, raw)
+    return None
+
+
+def _is_blockquoted(raw):
+    return raw.strip().startswith(">")
+
+
+def _has_quoted_span(raw):
+    return bool(re.search(r'"[^"]+"', raw) or re.search(r"[“][^”]+[”]", raw))
+
+
+_LABEL_COLUMN_RE = re.compile(r"^\s*[A-Za-z][A-Za-z\-' ]{2,30}?\s{2,}\S")
+
+
+def _is_label_column(raw):
+    """A two-column illustrative table row: `<shape label>   <example text>`."""
+    return bool(_LABEL_COLUMN_RE.match(raw))
+
+
+def _region_body_lines(lines, open_at, close_at):
+    return [
+        (lineno, lines[lineno - 1])
+        for lineno in range(open_at + 1, close_at)
+        if lines[lineno - 1].strip()
+    ]
+
+
+def _validate_denial_region(body, introducer, name, open_at):
+    """`truthful denial list`: plainly negative, no affirmative current claim."""
+    problems = []
+    if introducer is None or not _DENIAL_INTRODUCER_RE.search(
+        _normalize_markdown(introducer[1].replace("_", " "))
+    ):
+        problems.append(
+            f"line {open_at}: reason=\"truthful denial list\" region is not "
+            "immediately introduced by denial-oriented text"
+        )
+    for lineno, raw in body:
+        low = " " + _normalize_markdown(raw).lower() + " "
+        if not any(marker in low for marker in _DENIAL_ITEM_MARKERS):
+            problems.append(
+                f"line {lineno}: item in a \"truthful denial list\" region is "
+                "not explicitly negative, absence, non-implementation or "
+                "non-proof language"
+            )
+    # Reuse the ordinary enforcement lexicon: a denial list is only truthful if
+    # it survives the same active/emphatic/progressive/passive scanning that
+    # governing prose does. This also catches a denial clause followed by an
+    # affirmative current claim in the same sentence.
+    for lineno, raw in body:
+        problems.extend(
+            f"{f} [inside reason=\"truthful denial list\" region]"
+            for f in _scan_clauses(_normalize_markdown(raw), name, lineno)
+        )
+    return problems
+
+
+def _validate_obsolete_region(body, introducer, name, open_at):
+    """`quoted obsolete wording`: small, explicitly historical, fully quoted."""
+    problems = []
+    if introducer is None or not _OBSOLETE_INTRODUCER_RE.search(
+        _normalize_markdown(introducer[1].replace("_", " "))
+    ):
+        problems.append(
+            f"line {open_at}: reason=\"quoted obsolete wording\" region is not "
+            "immediately introduced by text identifying it as old, obsolete, "
+            "superseded or quoted historical wording"
+        )
+    if len(body) > MAX_OBSOLETE_REGION_LINES:
+        problems.append(
+            f"line {open_at}: reason=\"quoted obsolete wording\" region spans "
+            f"{len(body)} content lines, more than the "
+            f"{MAX_OBSOLETE_REGION_LINES}-line maximum for a bounded quotation"
+        )
+    for lineno, raw in body:
+        if not (_is_blockquoted(raw) or _has_quoted_span(raw)):
+            problems.append(
+                f"line {lineno}: line in a \"quoted obsolete wording\" region "
+                "is not quoted or blockquoted; a current authoritative "
+                "statement may not sit beside the quotation"
+            )
+    return problems
+
+
+def _validate_example_region(body, introducer, name, open_at):
+    """`non-authoritative example`: explicitly labeled, visibly illustrative."""
+    problems = []
+    if introducer is None or not _EXAMPLE_INTRODUCER_RE.search(
+        _normalize_markdown(introducer[1].replace("_", " "))
+    ):
+        problems.append(
+            f"line {open_at}: reason=\"non-authoritative example\" region is "
+            "not immediately introduced by an Example / Invalid example / "
+            "Rejected example / illustrative introducer"
+        )
+    for lineno, raw in body:
+        if not (
+            _is_blockquoted(raw) or _has_quoted_span(raw) or _is_label_column(raw)
+        ):
+            problems.append(
+                f"line {lineno}: line in a \"non-authoritative example\" region "
+                "is not marked as illustrative (blockquote, quotation, or "
+                "labeled example row); an example region may not carry "
+                "production contract prose"
+            )
+    return problems
+
+
+# Bounded quotation: smaller than the general region cap.
+MAX_OBSOLETE_REGION_LINES = 6
+
+REASON_CONTENT_VALIDATORS = {
+    "truthful denial list": _validate_denial_region,
+    "quoted obsolete wording": _validate_obsolete_region,
+    "non-authoritative example": _validate_example_region,
+}
+
+
+def _resolve_exemption_regions(lines, name="<text>"):
+    """Return (exempt_line_numbers, violations).
+
+    Two layers, in this order:
+      1. marker structure and reason vocabulary;
+      2. region CONTENT against its declared reason.
+    Fail-closed: any malformed or contract-violating region exempts nothing at
+    all -- content is never removed before the relevant safety checks run.
     """
     exempt = set()
     violations = []
+    regions = []
     open_at = None
+    open_reason = None
     for lineno, raw in enumerate(lines, start=1):
         begin = _match_exemption_begin(raw)
         if begin is not None:
@@ -1735,6 +1975,7 @@ def _resolve_exemption_regions(lines):
                 )
                 continue
             open_at = lineno
+            open_reason = payload
         elif _is_exemption_end(raw):
             if open_at is None:
                 violations.append(
@@ -1749,6 +1990,7 @@ def _resolve_exemption_regions(lines):
                     f"more than the {MAX_EXEMPTION_REGION_LINES}-line maximum"
                 )
                 open_at = None
+                open_reason = None
                 continue
             for inner in body:
                 if _AUTHORITATIVE_REQUIREMENT_RE.search(lines[inner - 1]):
@@ -1757,8 +1999,22 @@ def _resolve_exemption_regions(lines):
                         "inside an exemption region; requirements must be "
                         "stated in scanned, authoritative prose"
                     )
+            regions.append((open_at, lineno, open_reason))
             exempt.update(body)
             open_at = None
+            open_reason = None
+    # Layer 2: the declared reason must constrain the region's content.
+    for region_open, region_close, reason in regions:
+        validator = REASON_CONTENT_VALIDATORS[reason]
+        violations.extend(
+            f"{v} (reason-content contract)"
+            for v in validator(
+                _region_body_lines(lines, region_open, region_close),
+                _region_introducer(lines, region_open),
+                name,
+                region_open,
+            )
+        )
     if open_at is not None:
         violations.append(
             f"line {open_at}: {PROSE_GUARD_EXEMPTION_BEGIN} was never closed; "
@@ -1787,7 +2043,7 @@ def find_enforcement_overclaims(text, name="<text>"):
     logical block before clause splitting.
     """
     lines = text.splitlines()
-    exempt, findings = _resolve_exemption_regions(lines)
+    exempt, findings = _resolve_exemption_regions(lines, name)
     findings = [f"{name}: {v}" for v in findings]
 
     blocks = []  # (start_lineno, joined_text)
@@ -1810,7 +2066,19 @@ def find_enforcement_overclaims(text, name="<text>"):
         blocks.append((start, " ".join(current)))
 
     for start_lineno, block in blocks:
-        normalized = _normalize_markdown(block)
+        findings.extend(_scan_clauses(_normalize_markdown(block), name, start_lineno))
+    return findings
+
+
+def _scan_clauses(normalized, name, start_lineno):
+    """Scan one normalized block for enforcement overclaims.
+
+    The single shared implementation of the enforcement lexicon. Ordinary prose
+    scanning and reason-specific region validation both call it, so there is one
+    lexicon rather than two that can drift apart.
+    """
+    findings = []
+    if True:
         for clause in _CLAUSE_SPLIT_RE.split(normalized):
             clause = clause.strip()
             if not clause:
@@ -2211,14 +2479,17 @@ class Pr107ClaimsAreBounded(unittest.TestCase):
     def test_pr107_does_not_claim_runtime_enforcement(self):
         self.assertFalse(self.contract["pr_107_implements_runtime_enforcement"])
         for claim in (
-            "an authorization consumer exists",
-            "Gate A is runtime-enforced",
-            "owner approval can currently authorize a run",
-            "digests are currently checked",
-            "model invocation is currently blocked by authorization state",
-            "Evidence 0016 is executable",
+            # Round 8: stated as scanned negative facts, not inside a prose-guard
+            # exemption region. The key is renamed accordingly.
+            "no authorization consumer exists",
+            "Gate A is not runtime-enforced",
+            "owner approval cannot currently authorize a run",
+            "digests are not currently checked",
+            "model invocation is not currently blocked by authorization state",
+            "Evidence 0016 is not executable",
         ):
-            self.assertIn(claim, self.contract["pr_107_does_not_prove"])
+            self.assertIn(claim, self.contract["pr_107_absence_facts"])
+        self.assertNotIn("pr_107_does_not_prove", self.contract)
         for claim in (
             "the future authorization contract is fully specified",
             "the package remains non-runnable",
@@ -2347,8 +2618,61 @@ def _exempt_begin(reason="quoted obsolete wording"):
     return f'{PROSE_GUARD_EXEMPTION_BEGIN} reason="{reason}"'
 
 
-def _exemption_region(body, reason="quoted obsolete wording"):
-    return f"{_exempt_begin(reason)}\n{body}\n{PROSE_GUARD_EXEMPTION_END}\n"
+# Round 8: a region is only exempt if its CONTENT satisfies its reason, so the
+# test helper must build a contract-valid region -- an introducer the reason
+# accepts, and content marked as non-authoritative. Helpers that used to emit a
+# bare marker plus a raw affirmative claim were encoding the very bypass the
+# seventh review demonstrated.
+_REASON_INTRODUCERS = {
+    "quoted obsolete wording": "Previous obsolete wording:",
+    "truthful denial list": "Does not prove:",
+    "non-authoritative example": "Invalid example:",
+}
+
+
+def _exemption_region(body, reason="quoted obsolete wording", introducer=None,
+                      mark=True):
+    """Build a reason-content-valid exemption region around `body`."""
+    intro = _REASON_INTRODUCERS[reason] if introducer is None else introducer
+    lines = body.splitlines() or [""]
+    if mark:
+        lines = [
+            raw if (not raw.strip() or raw.strip().startswith(">")) else "> " + raw
+            for raw in lines
+        ]
+    intro_block = f"{intro}\n" if intro else ""
+    return (
+        f"{intro_block}{_exempt_begin(reason)}\n"
+        + "\n".join(lines)
+        + f"\n{PROSE_GUARD_EXEMPTION_END}\n"
+    )
+
+
+# Narrowly valid, legitimate region fixtures -- one per reason (section 8).
+LEGITIMATE_REGION_FIXTURES = {
+    "truthful denial list": (
+        "Does not prove:",
+        "- No authorization consumer exists.\n"
+        "- Gate A is not runtime-enforced.\n"
+        "- Owner approval cannot currently authorize a run.",
+    ),
+    "quoted obsolete wording": (
+        "Previous obsolete wording:",
+        "> Gate A verifies the authorization digest.",
+    ),
+    "non-authoritative example": (
+        "Invalid example:",
+        "> Gate A verifies the authorization digest.",
+    ),
+}
+
+
+def _legitimate_region(reason):
+    intro, body = LEGITIMATE_REGION_FIXTURES[reason]
+    return (
+        f"{intro}\n{_exempt_begin(reason)}\n{body}\n"
+        f"{PROSE_GUARD_EXEMPTION_END}\n"
+    )
 
 
 class StaleAuthorizationPathIsGone(unittest.TestCase):
@@ -3103,9 +3427,10 @@ class ProseGuardRound6MarkerInteractions(unittest.TestCase):
             "Honest intro: digest verification is not implemented.\n"
             "More honest framing so the region stays a minority of the text.\n"
             "No consumer exists, and none is wired into the invocation path.\n"
+            "Previous obsolete wording:\n"
             f"{_exempt_begin()}\n"
-            "The authorization digest is verified by Gate A.\n"
-            "Gate A does verify the digest.\n"
+            "> The authorization digest is verified by Gate A.\n"
+            "> Gate A does verify the digest.\n"
             f"{PROSE_GUARD_EXEMPTION_END}\n"
             "Honest outro: no consumer exists.\n"
         )
@@ -3493,13 +3818,20 @@ class ExemptionMarkerReasonSemantics(unittest.TestCase):
 
     # 148
     def test_well_formed_reason_exempts(self):
+        # Round 8: a well-formed reason exempts only content that satisfies that
+        # reason's content contract, so each reason needs its own valid body.
         for reason in ALLOWED_EXEMPTION_REASONS:
             with self.subTest(reason=reason):
+                text = (
+                    "Honest framing line one.\n"
+                    "Honest framing line two.\n"
+                    "Honest framing line three.\n"
+                    "Honest framing line four.\n"
+                    + _legitimate_region(reason)
+                    + "Honest closing line.\n"
+                )
                 self.assertEqual(
-                    find_enforcement_overclaims(
-                        self._doc(_exempt_begin(reason)), name="T.md"
-                    ),
-                    [],
+                    find_enforcement_overclaims(text, name="T.md"), []
                 )
 
     def test_missing_reason_fails(self):
@@ -3648,6 +3980,508 @@ class Round7ChangedNoSafetySemantics(unittest.TestCase):
             (REPO_ROOT / self.contract["execution_authorization_record_digest_path"])
             .exists()
         )
+
+
+# ---------------------------------------------------------------------------
+# Round 8: reason-content contracts.
+#
+# The seventh review demonstrated a complete bypass: a structurally perfect
+# region labeled reason="truthful denial list" containing the single sentence
+#
+#     Gate A verifies the authorization digest before every invocation.
+#
+# was ACCEPTED, hiding a real enforcement overclaim. Every case below is a
+# direct regression test for that class of bypass.
+#
+# All fixtures embed the region in surrounding honest prose on purpose. A bare
+# one-line document is rejected by the unrelated "region may not cover more than
+# half the document" rule, which would have made these tests pass for the wrong
+# reason and proved nothing about reason-content validation.
+# ---------------------------------------------------------------------------
+
+ROUND8_HONEST_PADDING = (
+    "Preparation framing line one: no consumer exists.\n"
+    "Preparation framing line two: digest verification is not implemented.\n"
+    "Preparation framing line three: the package remains non-runnable.\n"
+    "Preparation framing line four: owner approval cannot authorize a run.\n"
+    "Preparation framing line five: this package proves no runtime behavior.\n"
+)
+
+# The exact string the seventh review used to defeat the round-7 guard.
+DEMONSTRATED_BYPASS_CLAIM = (
+    "Gate A verifies the authorization digest before every invocation."
+)
+
+
+def _round8_doc(reason, body, introducer=None):
+    """Embed a raw (unmarked) region body in honest surrounding prose."""
+    intro_block = f"{introducer}\n" if introducer else ""
+    return (
+        ROUND8_HONEST_PADDING
+        + intro_block
+        + f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="{reason}" -->\n'
+        + body.rstrip("\n")
+        + "\n"
+        + f"<!-- {PROSE_GUARD_EXEMPTION_END} -->\n"
+        + "Closing framing line: no runtime enforcement exists in this package.\n"
+    )
+
+
+class Round8DemonstratedBypassIsClosed(unittest.TestCase):
+    """The five section-6 strings the seventh review demonstrated."""
+
+    def assertRejected(self, text, label):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(findings, f"BYPASS still accepted ({label}): {text!r}")
+        return findings
+
+    def test_denial_reason_cannot_hide_the_demonstrated_claim(self):
+        findings = self.assertRejected(
+            _round8_doc("truthful denial list", DEMONSTRATED_BYPASS_CLAIM),
+            "review-demonstrated bypass",
+        )
+        # It must be caught as an enforcement claim, not merely as a missing
+        # introducer, so the fix is substantive rather than incidental.
+        self.assertTrue(
+            any("enforcement claim" in f for f in findings), findings
+        )
+
+    def test_denial_reason_cannot_hide_a_mixed_clause_claim(self):
+        findings = self.assertRejected(
+            _round8_doc(
+                "truthful denial list",
+                "Does not prove runtime enforcement, but Gate A verifies the digest.",
+            ),
+            "denial clause followed by affirmative claim",
+        )
+        self.assertTrue(any("enforcement claim" in f for f in findings), findings)
+
+    def test_obsolete_reason_cannot_hide_an_unquoted_claim(self):
+        self.assertRejected(
+            _round8_doc(
+                "quoted obsolete wording",
+                "Gate A verifies the authorization digest.",
+            ),
+            "unquoted claim under quoted obsolete wording",
+        )
+
+    def test_example_reason_cannot_hide_an_unlabeled_claim(self):
+        self.assertRejected(
+            _round8_doc(
+                "non-authoritative example",
+                "Gate A verifies the authorization digest.",
+            ),
+            "unlabeled claim under non-authoritative example",
+        )
+
+    def test_valid_denial_followed_by_affirmative_line_is_rejected(self):
+        findings = self.assertRejected(
+            _round8_doc(
+                "truthful denial list",
+                "No current runner verifies the record.\n"
+                "The runtime blocks unauthorized invocation.",
+                introducer="Does not prove:",
+            ),
+            "valid denial line followed by an affirmative current claim",
+        )
+        self.assertTrue(any("enforcement claim" in f for f in findings), findings)
+        # The truthful first line must not itself be flagged.
+        self.assertFalse(
+            any("No current runner verifies" in f for f in findings), findings
+        )
+
+    def test_a_failing_region_exempts_nothing_at_all(self):
+        """Fail-closed: a contract-violating region does not shield its body."""
+        exempt, violations = _resolve_exemption_regions(
+            _round8_doc(
+                "truthful denial list", DEMONSTRATED_BYPASS_CLAIM
+            ).splitlines(),
+            "T.md",
+        )
+        self.assertEqual(exempt, set())
+        self.assertTrue(violations)
+
+
+class Round8ReasonMismatchIsRejected(unittest.TestCase):
+    """Section 7: an allowed reason that mislabels its region grants nothing."""
+
+    def assertRejected(self, text, label):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(findings, f"wrongly exempted ({label}): {text!r}")
+        return findings
+
+    def test_denial_content_labeled_obsolete_without_a_quote_is_rejected(self):
+        findings = self.assertRejected(
+            _round8_doc(
+                "quoted obsolete wording",
+                "- No authorization consumer exists.\n"
+                "- Gate A is not runtime-enforced.",
+                introducer="Does not prove:",
+            ),
+            "denial list mislabeled as quoted obsolete wording",
+        )
+        self.assertTrue(any("not quoted or blockquoted" in f for f in findings)
+                        or any("obsolete" in f for f in findings), findings)
+
+    def test_quoted_obsolete_wording_labeled_denial_is_rejected(self):
+        self.assertRejected(
+            _round8_doc(
+                "truthful denial list",
+                '> "Gate A verifies the authorization digest."',
+                introducer="Previous obsolete wording:",
+            ),
+            "obsolete quotation mislabeled as truthful denial list",
+        )
+
+    def test_ordinary_prose_labeled_example_without_introducer_is_rejected(self):
+        self.assertRejected(
+            _round8_doc(
+                "non-authoritative example",
+                "The digest is verified by Gate A.",
+                introducer="This section documents the contract.",
+            ),
+            "ordinary prose labeled as example with no example introducer",
+        )
+
+    def test_current_enforcement_claim_under_every_allowed_reason_is_rejected(self):
+        for reason in ALLOWED_EXEMPTION_REASONS:
+            with self.subTest(reason=reason):
+                self.assertRejected(
+                    _round8_doc(reason, DEMONSTRATED_BYPASS_CLAIM),
+                    f"claim under reason={reason}",
+                )
+
+    def test_authoritative_requirement_under_every_allowed_reason_is_rejected(self):
+        for reason in ALLOWED_EXEMPTION_REASONS:
+            with self.subTest(reason=reason):
+                findings = self.assertRejected(
+                    _round8_doc(
+                        reason,
+                        "> The runner must verify the authorization digest.",
+                        introducer=_REASON_INTRODUCERS[reason],
+                    ),
+                    f"requirement under reason={reason}",
+                )
+                self.assertTrue(
+                    any("authoritative requirement" in f for f in findings), findings
+                )
+
+    def test_mixed_valid_denial_and_false_current_assertion_is_rejected(self):
+        self.assertRejected(
+            _round8_doc(
+                "truthful denial list",
+                "- No authorization consumer exists.\n"
+                "- Gate A is not runtime-enforced.\n"
+                "- The digest is checked by Gate A.",
+                introducer="Does not prove:",
+            ),
+            "mixed denial list with one false current assertion",
+        )
+
+    def test_valid_first_line_then_unrelated_authoritative_prose_is_rejected(self):
+        self.assertRejected(
+            _round8_doc(
+                "non-authoritative example",
+                "> Gate A verifies the authorization digest.\n"
+                "Gate A rejects any unapproved digest.",
+                introducer="Invalid example:",
+            ),
+            "example followed by current authoritative prose",
+        )
+
+    def test_introducer_too_far_away_is_rejected(self):
+        text = (
+            ROUND8_HONEST_PADDING
+            + "Does not prove:\n"
+            + "An unrelated intervening sentence about the checklist.\n"
+            + "Another unrelated intervening sentence about the package.\n"
+            + f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="truthful denial list" -->\n'
+            + DEMONSTRATED_BYPASS_CLAIM
+            + f"\n<!-- {PROSE_GUARD_EXEMPTION_END} -->\n"
+            + "Closing framing line: no runtime enforcement exists in this package.\n"
+        )
+        self.assertRejected(text, "introducer separated by unrelated prose")
+
+    def test_introducer_only_after_the_opening_marker_is_rejected(self):
+        text = (
+            ROUND8_HONEST_PADDING
+            + f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="non-authoritative example" -->\n'
+            + "Invalid example:\n"
+            + "Gate A verifies the authorization digest.\n"
+            + f"<!-- {PROSE_GUARD_EXEMPTION_END} -->\n"
+            + "Closing framing line: no runtime enforcement exists in this package.\n"
+        )
+        self.assertRejected(text, "introducer inside the region rather than before")
+
+    def test_misleading_reason_used_solely_to_suppress_the_guard(self):
+        """Every allowed reason, applied to the same false claim, fails."""
+        for reason in ALLOWED_EXEMPTION_REASONS:
+            for introducer in (None,) + tuple(_REASON_INTRODUCERS.values()):
+                with self.subTest(reason=reason, introducer=introducer):
+                    self.assertRejected(
+                        _round8_doc(
+                            reason, DEMONSTRATED_BYPASS_CLAIM, introducer=introducer
+                        ),
+                        f"reason={reason} introducer={introducer}",
+                    )
+
+
+class Round8LegitimateRegionsStillWork(unittest.TestCase):
+    """Section 8: narrowly valid regions of each reason remain accepted."""
+
+    def assertAccepted(self, text, label):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertEqual(findings, [], f"wrongly rejected ({label})")
+
+    def test_legitimate_region_of_each_reason_is_accepted(self):
+        for reason in ALLOWED_EXEMPTION_REASONS:
+            with self.subTest(reason=reason):
+                self.assertAccepted(
+                    ROUND8_HONEST_PADDING
+                    + _legitimate_region(reason)
+                    + "Closing framing line: no runtime enforcement exists in this package.\n",
+                    f"legitimate {reason}",
+                )
+
+    def test_legitimate_truthful_denial_list_is_accepted(self):
+        self.assertAccepted(
+            ROUND8_HONEST_PADDING
+            + "Does not prove:\n"
+            + f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="truthful denial list" -->\n'
+            + "- No authorization consumer exists.\n"
+            + "- Gate A is not runtime-enforced.\n"
+            + "- Owner approval cannot currently authorize a run.\n"
+            + f"<!-- {PROSE_GUARD_EXEMPTION_END} -->\n"
+            + "Closing framing line: no runtime enforcement exists in this package.\n",
+            "section-8 denial list",
+        )
+
+    def test_legitimate_quoted_obsolete_wording_is_accepted(self):
+        self.assertAccepted(
+            ROUND8_HONEST_PADDING
+            + "Previous obsolete wording:\n"
+            + f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="quoted obsolete wording" -->\n'
+            + "> Gate A verifies the authorization digest.\n"
+            + f"<!-- {PROSE_GUARD_EXEMPTION_END} -->\n"
+            + "Closing framing line: no runtime enforcement exists in this package.\n",
+            "section-8 obsolete quotation",
+        )
+
+    def test_legitimate_non_authoritative_example_is_accepted(self):
+        self.assertAccepted(
+            ROUND8_HONEST_PADDING
+            + "Invalid example:\n"
+            + f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="non-authoritative example" -->\n'
+            + "> Gate A verifies the authorization digest.\n"
+            + f"<!-- {PROSE_GUARD_EXEMPTION_END} -->\n"
+            + "Closing framing line: no runtime enforcement exists in this package.\n",
+            "section-8 invalid example",
+        )
+
+    def test_truthful_denial_forms_need_no_exemption_at_all(self):
+        """The preferred remedy: negative grammar the guard parses directly."""
+        for item in (
+            "no authorization consumer exists",
+            "Gate A is not runtime-enforced",
+            "owner approval cannot currently authorize a run",
+            "digests are not currently checked",
+            "model invocation is not currently blocked by authorization state",
+            "Evidence 0016 is not executable",
+            "No current runner verifies the record.",
+            "Digest verification is not implemented.",
+            "The package does not demonstrate runtime authorization.",
+        ):
+            with self.subTest(item=item):
+                self.assertEqual(
+                    find_enforcement_overclaims(f"- {item}\n", name="T.md"), []
+                )
+
+    def test_text_after_the_closing_marker_is_still_scanned(self):
+        text = (
+            ROUND8_HONEST_PADDING
+            + _legitimate_region("non-authoritative example")
+            + DEMONSTRATED_BYPASS_CLAIM
+            + "\n"
+        )
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(any("Gate A verifies" in f for f in findings), findings)
+
+    def test_region_boundaries_remain_fail_closed(self):
+        base = ROUND8_HONEST_PADDING
+        begin = f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="non-authoritative example" -->'
+        end = f"<!-- {PROSE_GUARD_EXEMPTION_END} -->"
+        claim = "> " + DEMONSTRATED_BYPASS_CLAIM
+        cases = {
+            "unclosed": f"{base}Invalid example:\n{begin}\n{claim}\n",
+            "unopened": f"{base}{claim}\n{end}\n",
+            "nested": (
+                f"{base}Invalid example:\n{begin}\n{begin}\n{claim}\n{end}\n{end}\n"
+            ),
+            "oversized": (
+                f"{base}Invalid example:\n{begin}\n"
+                + "\n".join([claim] * (MAX_EXEMPTION_REGION_LINES + 1))
+                + f"\n{end}\n"
+            ),
+            "inline-code marker": (
+                f"{base}Invalid example:\nWe write `{begin}` in docs.\n"
+                f"{claim}\n`{end}`\n"
+            ),
+            "near-miss spelling": (
+                f"{base}Invalid example:\n"
+                "BEGIN_PROSE_GUARD_EXEMPTIONS\n"
+                f"{claim}\nEND_PROSE_GUARD_EXEMPTIONS\n"
+            ),
+        }
+        for label, text in cases.items():
+            with self.subTest(case=label):
+                self.assertTrue(
+                    find_enforcement_overclaims(text, name="T.md"),
+                    f"boundary case not fail-closed: {label}",
+                )
+
+
+# ---------------------------------------------------------------------------
+# Section 10: reviewer-visible exemption inventory.
+#
+# Deterministic, auditable, and derived from the live files -- not a hand-kept
+# table that can drift. This is test output only: it creates no evidence file
+# and no runtime artifact.
+# ---------------------------------------------------------------------------
+
+# Every real exemption region expected in the governing files after round 8.
+EXPECTED_REAL_EXEMPTION_REGIONS = 4
+EXPECTED_REAL_EXEMPTION_REASONS = {"non-authoritative example": 4}
+
+
+def build_exemption_inventory():
+    """Return one auditable record per real exemption region."""
+    inventory = []
+    for path in GOVERNING_FILES:
+        lines = path.read_text(encoding="utf-8").splitlines()
+        open_at = None
+        reason = None
+        for lineno, raw in enumerate(lines, start=1):
+            begin = _match_exemption_begin(raw)
+            if begin is not None and begin[0] == "ok":
+                open_at, reason = lineno, begin[1]
+            elif _is_exemption_end(raw) and open_at is not None:
+                body = _region_body_lines(lines, open_at, lineno)
+                introducer = _region_introducer(lines, open_at)
+                problems = REASON_CONTENT_VALIDATORS[reason](
+                    body, introducer, path.name, open_at
+                )
+                inventory.append(
+                    {
+                        "file": path.name,
+                        "opening_line": open_at,
+                        "closing_line": lineno,
+                        "reason": reason,
+                        "introducer": introducer[1].strip() if introducer else None,
+                        "introducer_line": introducer[0] if introducer else None,
+                        "region_size_lines": lineno - open_at - 1,
+                        "content_lines": len(body),
+                        "validator_result": "PASS" if not problems else "FAIL",
+                        "validator_problems": problems,
+                    }
+                )
+                open_at, reason = None, None
+    return inventory
+
+
+class Round8ExemptionInventory(unittest.TestCase):
+    """A reviewer must be able to audit every real exemption in one place."""
+
+    def setUp(self):
+        self.inventory = build_exemption_inventory()
+
+    def test_real_region_count_dropped_from_six_to_four(self):
+        self.assertEqual(len(self.inventory), EXPECTED_REAL_EXEMPTION_REGIONS)
+
+    def test_no_real_truthful_denial_list_region_remains(self):
+        """Both were eliminated by rewriting into scanned negative grammar."""
+        self.assertEqual(
+            [r for r in self.inventory if r["reason"] == "truthful denial list"], []
+        )
+
+    def test_every_real_region_passes_its_reason_content_contract(self):
+        for record in self.inventory:
+            with self.subTest(file=record["file"], line=record["opening_line"]):
+                self.assertEqual(
+                    record["validator_result"],
+                    "PASS",
+                    record["validator_problems"],
+                )
+
+    def test_every_real_region_has_a_recorded_introducer_and_size(self):
+        for record in self.inventory:
+            with self.subTest(file=record["file"], line=record["opening_line"]):
+                self.assertIsNotNone(record["introducer"])
+                self.assertLess(record["introducer_line"], record["opening_line"])
+                self.assertGreater(record["region_size_lines"], 0)
+                self.assertLessEqual(
+                    record["region_size_lines"], MAX_EXEMPTION_REGION_LINES
+                )
+
+    def test_reason_distribution_is_exactly_as_documented(self):
+        counts = {}
+        for record in self.inventory:
+            counts[record["reason"]] = counts.get(record["reason"], 0) + 1
+        self.assertEqual(counts, EXPECTED_REAL_EXEMPTION_REASONS)
+
+    def test_inventory_is_deterministic(self):
+        self.assertEqual(self.inventory, build_exemption_inventory())
+
+    def test_inventory_renders_as_an_ascii_table(self):
+        """ASCII-only: this repository's console is cp1252."""
+        rows = [
+            "| file | open | close | reason | introducer | lines | result |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+        ]
+        for r in self.inventory:
+            rows.append(
+                f"| {r['file']} | {r['opening_line']} | {r['closing_line']} "
+                f"| {r['reason']} | {r['introducer']} | "
+                f"{r['region_size_lines']} | {r['validator_result']} |"
+            )
+        table = "\n".join(rows)
+        self.assertTrue(table.isascii(), "inventory table must be ASCII-only")
+        self.assertEqual(
+            len(rows), EXPECTED_REAL_EXEMPTION_REGIONS + 2, table
+        )
+
+
+class Round8GuardScopeLanguageIsHonest(unittest.TestCase):
+    """The docs must describe the two-layer guard without overclaiming."""
+
+    def test_package_states_reasons_are_validated_contracts(self):
+        # Normalized: the required statements are prose, so line wrapping and
+        # Markdown emphasis must not decide whether they are present.
+        text = re.sub(
+            r"\s+", " ", PACKAGE_PATH.read_text(encoding="utf-8").replace("*", "")
+        )
+        for phrase in (
+            "not merely vocabulary labels",
+            "mechanically validated content contract",
+            "cannot hide an affirmative current-enforcement claim",
+            "obvious semantic mismatch mechanically fails its reason contract",
+            "deterministic lexical/structural guard",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
+    def test_package_does_not_claim_semantic_understanding(self):
+        text = PACKAGE_PATH.read_text(encoding="utf-8").lower()
+        for forbidden in (
+            "perfect natural-language understanding",
+            "general semantic analyzer of english",
+            "fully understands english",
+        ):
+            with self.subTest(forbidden=forbidden):
+                self.assertNotIn(forbidden, text)
+
+    def test_reason_accuracy_still_requires_manual_review(self):
+        text = PACKAGE_PATH.read_text(encoding="utf-8")
+        self.assertIn("manual review", text)
 
 
 if __name__ == "__main__":

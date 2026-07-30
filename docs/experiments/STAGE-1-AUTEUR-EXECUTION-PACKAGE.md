@@ -1337,7 +1337,8 @@ enforcement forms used by this package, with manner adverbs recognized in four
 positions drawn from a closed nine-word set. It is not a general English
 semantic analyzer.
 
-Concretely, it matches a closed lexicon of enforcement verbs in four shapes:
+Concretely, it matches a closed lexicon of enforcement verbs in four shapes.
+Rejected examples, one per shape (illustrative, non-authoritative):
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
@@ -1349,7 +1350,8 @@ affirmative passive     The digest is verified by Gate A. / is verified before e
 ```
 
 **Adverb positions covered.** The passive grammar accepts a bounded manner
-adverb in four slots. The guard rejects all four when the claim is affirmative:
+adverb in four slots. The guard rejects all four of these when the claim
+is affirmative. Rejected examples (illustrative, non-authoritative):
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
@@ -1396,11 +1398,36 @@ document, a marker inside inline code, and a near-miss spelling all exempt
 nothing. Text after a closing marker is scanned normally.
 
 These markers previously carried a name implying they enclosed only historical
-quotations. They were renamed because they also enclose current truthful denial
+quotations. They were renamed because they also enclosed current truthful denial
 lists, so that name misdescribed their own function -- unacceptable in a package
-whose subject is documentation honesty. The guard enforces that a reason belongs
-to the closed set; whether a chosen reason honestly characterizes its region is
-reviewer judgement, and is not claimed to be mechanically decided.
+whose subject is documentation honesty.
+
+**Reason-content contracts (round 8).** Marker reasons are **not merely
+vocabulary labels**. Validating only marker structure and reason vocabulary was
+shown to buy nothing: a structurally perfect region carrying an allowed reason
+but containing an affirmative simple-present sentence naming Gate A and the
+authorization digest was accepted, hiding a real overclaim. Each reason now
+carries its own **mechanically validated content contract**, checked *before*
+the region is exempted from ordinary scanning:
+
+- `truthful denial list` -- denial-oriented introducer immediately before the
+  region; every item in explicitly negative, absence, non-implementation or
+  non-proof language; the region is additionally scanned with the ordinary
+  enforcement lexicon.
+- `quoted obsolete wording` -- historical/obsolete introducer; every line quoted
+  or blockquoted; bounded to six content lines.
+- `non-authoritative example` -- explicit `Example` / `Invalid example` /
+  `Rejected example` / illustrative introducer; every line visibly illustrative.
+
+Region validation reuses the same enforcement lexicon as ordinary prose, so a
+valid reason **cannot hide an affirmative current-enforcement claim**, and a
+region failing its contract exempts nothing. Reason *accuracy* still receives
+manual review; an obvious semantic mismatch mechanically fails its contract.
+This remains a **deterministic lexical/structural guard**, not a general
+semantic analyzer. Both real `truthful denial list` regions were eliminated by
+rewriting them into scanned negative grammar, taking the real region count from
+six to four; `tests/test_stage1_auteur_prep_package.py` publishes a
+deterministic inventory of the remaining four.
 
 Because the guard's scope is bounded and enumerated, it is a regression fence
 for the wordings reviewers have actually demonstrated -- not proof that no

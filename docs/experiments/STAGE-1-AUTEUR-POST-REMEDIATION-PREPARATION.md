@@ -408,15 +408,18 @@ pr_107_proves:
   - historical evidence is protected
   - the package remains non-runnable
   - future consumer requirements are explicit
-pr_107_does_not_prove:
-  # BEGIN_PROSE_GUARD_EXEMPTION reason="truthful denial list"
-  - an authorization consumer exists
-  - Gate A is runtime-enforced
-  - owner approval can currently authorize a run
-  - digests are currently checked
-  - model invocation is currently blocked by authorization state
-  - Evidence 0016 is executable
-  # END_PROSE_GUARD_EXEMPTION
+# Round 8: this list no longer needs a prose-guard exemption region. Each item
+# is written in explicitly negative grammar the guard parses directly, so the
+# facts are SCANNED rather than exempted. The key is renamed because the items
+# are now negative statements -- keeping `does_not_prove` would have made every
+# item a double negative.
+pr_107_absence_facts:
+  - no authorization consumer exists
+  - Gate A is not runtime-enforced
+  - owner approval cannot currently authorize a run
+  - digests are not currently checked
+  - model invocation is not currently blocked by authorization state
+  - Evidence 0016 is not executable
 readiness_classification_before: Externally exercised
 readiness_auto_promotion_allowed: false
 second_structurally_different_target_required: true
@@ -502,7 +505,8 @@ enforcement forms used by this package, with manner adverbs recognized in four
 positions drawn from a closed nine-word set. It is not a general English
 semantic analyzer.
 
-Concretely, it matches a closed lexicon of enforcement verbs in four shapes:
+Concretely, it matches a closed lexicon of enforcement verbs in four shapes.
+Rejected examples, one per shape (illustrative, non-authoritative):
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
@@ -514,7 +518,8 @@ affirmative passive     The digest is verified by Gate A. / is verified before e
 ```
 
 **Adverb positions covered.** The passive grammar accepts a bounded manner
-adverb in four slots. The guard rejects all four when the claim is affirmative:
+adverb in four slots. The guard rejects all four of these when the claim
+is affirmative. Rejected examples (illustrative, non-authoritative):
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
@@ -561,15 +566,108 @@ document, a marker inside inline code, and a near-miss spelling all exempt
 nothing. Text after a closing marker is scanned normally.
 
 These markers previously carried a name implying they enclosed only historical
-quotations. They were renamed because they also enclose current truthful denial
+quotations. They were renamed because they also enclosed current truthful denial
 lists, so that name misdescribed their own function -- unacceptable in a package
-whose subject is documentation honesty. The guard enforces that a reason belongs
-to the closed set; whether a chosen reason honestly characterizes its region is
-reviewer judgement, and is not claimed to be mechanically decided.
+whose subject is documentation honesty.
+
+**Reason-content contracts (round 8).** Marker reasons are **not merely
+vocabulary labels**. The seventh review demonstrated that validating only the
+marker structure and the reason vocabulary bought nothing: a structurally
+perfect region labelled `reason="truthful denial list"` containing one
+affirmative simple-present sentence naming Gate A, the authorization digest and
+every invocation was accepted, hiding a real enforcement overclaim. (The exact
+string is not reproduced here, because reproducing it would itself be an
+overclaim; it is held only as a test fixture, `DEMONSTRATED_BYPASS_CLAIM`, in
+`tests/test_stage1_auteur_prep_package.py`.) A reason must constrain what
+its region may contain; it may never be a label that switches inspection off.
+
+Each of the three reasons now carries its own **mechanically validated content
+contract**, checked *before* the region is exempted from ordinary scanning:
+
+| Reason | Content contract the guard enforces |
+|---|---|
+| `truthful denial list` | Immediately introduced by denial-oriented text; every item carries explicit negative, absence, non-implementation or non-proof language; the whole region is additionally scanned with the ordinary enforcement lexicon, so no active, emphatic, progressive or passive current claim -- including a denial clause followed by an affirmative one -- can survive. |
+| `quoted obsolete wording` | Immediately introduced by text identifying the content as old, obsolete, superseded or quoted historical wording; every line is quoted or blockquoted; bounded to six content lines; no current authoritative statement may sit beside the quotation. |
+| `non-authoritative example` | Immediately introduced by an `Example` / `Invalid example` / `Rejected example` / illustrative introducer; every line is visibly illustrative (blockquote, quotation, or labelled example row); production contract prose may not be hidden as an example. |
+
+The architecture is no longer "parse markers, delete exempt content, scan the
+remainder". It is: parse markers, validate marker structure and reason
+vocabulary, validate each region's content against its declared reason, then
+scan all non-exempt governing prose. Region validation reuses the **same**
+enforcement lexicon and the same active/emphatic/progressive/passive matchers as
+ordinary prose; there are deliberately not two lexicons that could drift apart.
+A region that fails its contract exempts nothing at all.
+
+Consequently a valid reason **cannot hide an affirmative current-enforcement
+claim**. Reason *accuracy* still receives manual review -- the guard does not
+decide whether a well-formed negative denial list is factually true, or whether
+a quotation is genuinely historical -- but an **obvious semantic mismatch
+mechanically fails its reason contract**. (Phrased without an enforcement
+participle on purpose: the guard applies its own lexicon to this document, and
+no carve-out exists for prose describing the guard itself.)
+
+This remains a **deterministic lexical/structural guard**, not a general
+semantic analyzer, and it claims no natural-language understanding.
+
+**Preferred remedy is elimination, not a cleverer exemption.** Both real
+`truthful denial list` regions were removed in round 8 by rewriting their items
+into explicitly negative grammar the guard parses directly, taking the real
+region count from six to four. Fewer exemption regions is safer than more
+sophisticated exemption validation. The four remaining regions are all
+`non-authoritative example` regions holding deliberately-rejected illustrative
+strings, and `tests/test_stage1_auteur_prep_package.py` builds a deterministic
+inventory of every one of them (file, opening line, closing line, reason,
+introducer, size, and reason-specific validator result) so they can be audited
+in one place.
 
 Because the guard's scope is bounded and enumerated, it is a regression fence
 for the wordings reviewers have actually demonstrated -- not proof that no
 dishonest sentence can ever be written. Reviewer judgement remains required.
+
+### Measured results (round 8)
+
+Recorded here, in the versioned package, so the numbers are not held only in a
+PR description. All figures below were observed, not carried forward.
+
+Canonical environment: Python 3.12.8 (`pyproject` requires >=3.11 and classifies
+3.11/3.12; CI pins 3.11, which is not installed on this machine, so the other
+classified version was used -- recorded, not assumed), `pip install -e .`,
+`pytest` 9.1.1, PyYAML 6.0.3, click 8.4.2, `claude-agent-sdk==0.2.82`, and
+`--basetemp` on Windows.
+
+```text
+package tests   python -m pytest tests/test_stage1_auteur_prep_package.py -q
+                272 passed, 338 subtests passed, exit 0   (was 239 / 286)
+
+focused suite   clean main (1761e42f) : 236 passed, 5 skipped,   7 subtests, exit 0 (11 files)
+                proposed merge        : 508 passed, 5 skipped, 345 subtests, exit 0 (12 files)
+                delta +272 passing, +338 subtests; 236+272=508, 7+338=345
+
+broader suite   python -m pytest tests -q --continue-on-collection-errors
+                clean main (1761e42f) : 23 failed, 587 passed, 6 skipped, 3 errors,
+                                        25 warnings,  74 subtests, exit 1
+                proposed merge        : 23 failed, 859 passed, 6 skipped, 3 errors,
+                                        25 warnings, 412 subtests, exit 1
+                delta +272 passing, +338 subtests; 587+272=859, 74+338=412
+```
+
+Failure and collection-error node IDs were captured and diffed: the two sets are
+byte-identical (26 lines -- 23 `FAILED` plus 3 `ERROR`, identical MD5). No
+existing pass became a failure, and the entire passing delta corresponds exactly
+to the new preparation-package tests, which do not exist on `main`.
+
+**Correction to the previously published focused-suite absolutes.** The figures
+carried in the PR description before round 8 (`249 passed / 10 subtests` on
+`main`) were overstated by 13 passed and 3 subtests. The observed clean-`main`
+figures are `236 passed / 7 subtests`. The published *delta* was never wrong;
+only the absolute totals were. They are corrected here and in the PR body.
+
+**The three collection errors have three independent causes, not two.** They are
+enumerated separately in the PR description; the two `ImportError` modules are
+not one duplicated fault -- `test_auto_invocation_target_repo.py` imports one
+name that the package does not export, while `test_integration_external_repo.py`
+imports two (`SkillsOrchestrator` *and* `ConfigManager`). All three reproduce
+identically on clean `main` and are unrelated to this PR.
 
 ### What cannot make this package runnable
 
@@ -1553,18 +1651,15 @@ PR #107 **proves**:
 - future consumer requirements are explicit.
 ```
 
-PR #107 **does not prove**:
+PR #107 **does not prove** runtime enforcement. Stated as scanned negative
+facts rather than inside a prose-guard exemption region:
 
-```text
-# BEGIN_PROSE_GUARD_EXEMPTION reason="truthful denial list"
-- an authorization consumer exists;
-- Gate A is runtime-enforced;
-- owner approval can currently authorize a run;
-- digests are currently checked;
-- model invocation is currently blocked by authorization state;
-- Evidence 0016 is executable.
-# END_PROSE_GUARD_EXEMPTION
-```
+- no authorization consumer exists;
+- Gate A is not runtime-enforced;
+- owner approval cannot currently authorize a run;
+- digests are not currently checked;
+- model invocation is not currently blocked by authorization state;
+- Evidence 0016 is not executable.
 
 PR #107 is a **preparation-contract PR**. It implements no security
 enforcement. Its tests are contract-consistency tests
