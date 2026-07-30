@@ -78,17 +78,18 @@ execution_authorization_status: NOT_AUTHORIZED
 package_runnable: false
 
 # --- Gate A runtime consumer status (see section 2i) ---
-# THE DECISIVE FIELDS. The authorization contract below is fully SPECIFIED but
-# entirely UNENFORCED: no code in this repository reads any of it. Everything
-# from `authorization_mechanism` down is a ratified FUTURE contract describing
-# behavior that a not-yet-written component must implement.
-gate_a_authorization_consumer_status: NOT_IMPLEMENTED
+# THE DECISIVE FIELDS. As of the Gate A consumer PR, the authorization contract
+# below is SPECIFIED and ENFORCED: `scripts/gate_a_authorization.py` reads it,
+# and `scripts/skill_executor.py` requires the typed capability it mints before
+# any provider SDK call. Implementing the consumer does NOT authorize a run --
+# see `execution_authorization_status` and `package_runnable`, both unchanged.
+gate_a_authorization_consumer_status: IMPLEMENTED
 gate_a_authorization_consumer_required: true
-gate_a_authorization_consumer_path: PENDING_IMPLEMENTATION
-gate_a_authorization_consumer_wired_to_stage1: false
-gate_a_authorization_consumer_tests_status: NOT_IMPLEMENTED
-gate_a_consumer_integration_point: PENDING_ARCHITECTURAL_DECISION
-gate_a_runtime_enforcement_exists: false
+gate_a_authorization_consumer_path: scripts/gate_a_authorization.py
+gate_a_authorization_consumer_wired_to_stage1: true
+gate_a_authorization_consumer_tests_status: IMPLEMENTED
+gate_a_consumer_integration_point: scripts/skill_executor.py::ClaudeAgentSdkSkillExecutor
+gate_a_runtime_enforcement_exists: true
 contract_tests_are_runtime_enforcement_tests: false
 authorization_without_consumer_is_valid: false
 owner_approval_without_consumer_is_valid: false
@@ -111,7 +112,9 @@ gate_d_requires_gate_a_consumer_pass: true
 consumer_implementation_precedes_authorization_record_creation: true
 consumer_merge_precedes_owner_approval: true
 execution_framework_sha_selected_after_consumer_merge: true
-consumer_implementation_file_added_by_this_pr: false
+# "this pr" means the PR that most recently updated this document. PR #107
+# added no consumer; the Gate A consumer PR did.
+consumer_implementation_file_added_by_this_pr: true
 
 # --- Authorization-record integrity (single mandatory mechanism; sections 2b-2h) ---
 # Exactly one mechanism is permitted. There is no fork, no alternative, and no
@@ -202,8 +205,8 @@ package_and_checklist_loaded_from_framework_root: true
 external_package_or_checklist_copy_allowed: false
 # Required behavior of the FUTURE Gate A authorization consumer, in order.
 # NOT current runtime behavior. Nothing executes these steps today. See section 2g.
-gate_a_authorization_verification_steps_are_current_runtime_behavior: false
-gate_a_authorization_verification_steps_are_future_contract: true
+gate_a_authorization_verification_steps_are_current_runtime_behavior: true
+gate_a_authorization_verification_steps_are_future_contract: false
 gate_a_authorization_verification_steps:
   - 1 authorization record exists at the exact planned run-control path
   - 2 owner approval artifact exists
@@ -248,10 +251,13 @@ authorization_hard_stop_conditions:
   - mutable or floating path used as authority
   - GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED
 authorization_hard_stop_count: 24
-# The consumer hard stop is evaluated FIRST; while it fires, none of the other
-# 23 conditions can even be reached, because nothing evaluates them.
-first_evaluated_hard_stop: GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED
-gate_a_authorization_consumer_not_implemented_is_active: true
+# Hard stop 24 is RETIRED: the consumer exists, is wired ahead of the first
+# model call, and is proven at the invocation boundary. Conditions 1-23 are now
+# reachable and evaluated. The first hard stop that still fires is the pending
+# execution pin -- and the missing record and approval fire immediately after.
+# No hard stop was removed; one stopped firing because its condition was fixed.
+first_evaluated_hard_stop: GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING
+gate_a_authorization_consumer_not_implemented_is_active: false
 gate_a_authorization_consumer_hard_stop_waivable: false
 authorization_failure_is_gate_a_failure: true
 authorization_failure_permits_retry: false
@@ -319,7 +325,7 @@ gate_a_consumer_required_test_categories:
   - consumer absent blocks execution
   - consumer not wired into invocation path blocks execution
   - positive proof that the model invocation cannot occur before preflight success
-gate_a_consumer_required_test_categories_implemented_in_this_pr: false
+gate_a_consumer_required_test_categories_implemented_in_this_pr: true
 # Proof a LATER independent review must demonstrate before authorization (section 2k).
 proof_required_before_authorization:
   - real consumer source code exists
@@ -462,34 +468,58 @@ contradiction_search_paths:
 ## 1a. Gate A runtime consumer status
 
 ```text
-gate_a_authorization_consumer_status: NOT_IMPLEMENTED
+gate_a_authorization_consumer_status: IMPLEMENTED
 ```
 
-A repository-wide search of every `*.py`, `*.sh`, `*.yaml`, `*.yml`, and
-`*.json` source file for `authorization[-_ ]record`, `owner[-_ ]approval`,
-`run[-_ ]control`, and `authorization_record_sha256` returns matches in exactly
-one file: `tests/test_stage1_auteur_prep_package.py`, which is the
-contract-consistency test suite for this document. **No runtime source matches
-at all.**
+The Gate A authorization consumer now exists as runtime source at
+`scripts/gate_a_authorization.py`, and it is wired into the real Stage 1
+invocation path in `scripts/skill_executor.py` ahead of the first model call.
 
 Stated plainly, and without hedging:
 
 ```text
-No Gate A authorization consumer exists in this repository today.
-No current runtime component loads the authorization record.
-No current runtime component loads or validates the owner-approval artifact.
-No current runtime component recomputes the authorization-record SHA-256.
-No current runtime component verifies owner identity.
-No current runtime component verifies the preparation-package digest.
-No current runtime component verifies the Gate D checklist digest.
-No current runtime component binds an authorization result to the Stage 1
-  model invocation.
-The 15-step sequence in section 5 is a ratified FUTURE contract. It is not
-  current runtime behavior. Nothing executes it.
+A Gate A authorization consumer exists in this repository.
+The runtime loads the authorization record.
+The runtime loads and validates the owner-approval artifact.
+The runtime recomputes the authorization-record SHA-256 over exact bytes.
+The runtime verifies owner identity.
+The runtime verifies the preparation-package digest.
+The runtime verifies the Gate D checklist digest.
+The runtime binds a validated authorization result to the Stage 1 model
+  invocation, as a typed single-use capability object.
+The 15-step sequence in section 5 is current runtime behavior. It executes.
 The tests in PR #107 validate CONTRACT CONSISTENCY ONLY.
 The tests in PR #107 do NOT prove runtime enforcement, and must never be
   cited as evidence of it.
+The invocation-boundary proofs live in
+  tests/test_gate_a_invocation_boundary.py, which exercises the real
+  executors with a spy provider.
 ```
+
+### What implementing the consumer did NOT do
+
+The mechanism now exists. Nothing is authorized by it. Every one of these
+remains true and blocking:
+
+```text
+No authorization record exists.
+No authorization-record digest file exists.
+No owner-approval artifact exists.
+No run-control directory exists.
+No run-control commit is pinned.
+The execution framework SHA is still PENDING_POST_MERGE_PIN_FINALIZATION.
+execution_authorization_status is still NOT_AUTHORIZED.
+package_runnable is still false.
+package_status is still PREPARED_NOT_RUN.
+Evidence 0016 is still unused.
+```
+
+An enforcement mechanism with nothing to enforce denies every request. That is
+the intended state: with no record, no digest, and no approval on disk, the
+consumer returns `GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING` and then
+`GATE_A_AUTHORIZATION_RECORD_MISSING`, and mints no capability. Merging the
+consumer therefore moves the package *closer* to being auditable, and not one
+step closer to being authorized.
 
 ### Scope of the prose-honesty guard
 
@@ -1245,11 +1275,18 @@ retry, repair, substitution, or "proceeding with a note".
 Each classifies **Gate A as failed**, stops before model invocation, produces
 **no retry**, and preserves the failed preflight record.
 
-### Hard stop 24 — `GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`
+### Hard stop 24 — `GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED` (RETIRED)
 
-This is the **only hard stop currently firing**, and it is evaluated **first**
-(`first_evaluated_hard_stop`). While it fires, conditions 1-23 are not merely
-unmet — they are *unreachable*, because no component evaluates them.
+This hard stop **no longer fires**, because its condition was fixed rather than
+waived: a reviewed Gate A consumer now exists and is wired into the real
+invocation path ahead of the first model call. It is deliberately **kept in the
+list of 24 and kept non-waivable**, so that deleting or unwiring the consumer
+would make it fire again.
+
+Conditions 1-23 are now *reachable* and are evaluated by
+`scripts/gate_a_authorization.py`. The first hard stop that still fires is the
+pending execution pin (`GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING`), immediately
+followed by the missing authorization record and the missing owner approval.
 
 Semantics:
 
@@ -1270,12 +1307,13 @@ EFFECT:
 ```
 
 Its current value is `gate_a_authorization_consumer_not_implemented_is_active:
-true` and it is not waivable
+false` and it remains not waivable
 (`gate_a_authorization_consumer_hard_stop_waivable: false`).
 
-**Current state: no Gate A authorization consumer exists, so no authorization
-state is enforceable. No authorization record exists. No owner approval exists.
-The package is not runnable.**
+**Current state: a Gate A authorization consumer exists and is enforcing, so
+authorization state is now enforceable. No authorization record exists. No
+owner approval exists. No execution pin is finalized. The package is not
+runnable.**
 
 ### Preflight rule (mandatory, before any invocation)
 
