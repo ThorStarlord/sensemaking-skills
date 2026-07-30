@@ -1887,15 +1887,236 @@ def _has_quoted_span(raw):
 # quotation, which is a positive, visible marker rather than a layout accident.
 
 
-def _quoted_spans(raw):
-    """Return the quoted substrings of a line (straight or curly quotes)."""
-    return re.findall(r'"[^"]*"', raw) + re.findall(r"[“][^”]*[”]", raw)
+# Round 10: strip-and-scan is DELETED, not narrowed.
+#
+# The round-9 helper was:
+#
+#     text = re.sub(r'"[^"]*"', " ", raw)
+#     return re.sub(r"[“][^”]*[”]", " ", text)
+#
+# i.e. "remove every substring matching a quote pair, then scan whatever
+# fragments remain". That is compositionally bypassable: a single sentence can
+# be split across a quoted fragment and an unquoted fragment so that neither
+# leftover fragment is a grammatically complete clause, and the shared scanner
+# -- which looks for subject + enforcement verb -- sees nothing to match.
+# `Gate A "verifies the authorization digest."` leaves only `Gate A `;
+# `"Gate A verifies" the authorization digest.` leaves only
+# ` the authorization digest.`. Both were ACCEPTED. The identical fully
+# unquoted sentence was REJECTED, so the defect was quote SEGMENTATION, not
+# lexicon coverage.
+#
+# The fix is not a better remainder scanner. Trying to infer whether leftover
+# fragments outside the quotes happen to reconstitute a claim is exactly the
+# guess-the-grammar approach that failed nine rounds running. Instead the
+# quoted-example contract becomes very narrow and fail-closed:
+#
+#     one line, one balanced quoted exhibit, no meaningful unquoted remainder.
+#
+# A partial-span bypass is then impossible by construction: there is nowhere
+# outside the quotation marks to put the other half of the sentence.
+
+# Structural prefixes that may precede the exhibit: blockquote markers, list
+# bullets, and indentation. These carry no propositional content.
+_EXHIBIT_PREFIX_RE = re.compile(r"^(?:\s|>|[-+*]\s|\d+[.)]\s)*")
+
+# Punctuation that may structurally follow the closing quotation mark.
+_EXHIBIT_TRAILER_RE = re.compile(r"^[.,;:!?\s]*$")
+
+# A *paired* single-quote span, i.e. a nested quotation. The boundary
+# conditions deliberately exclude word-internal apostrophes so that possessives
+# and contractions inside an exhibit are not misread as nesting.
+_NESTED_QUOTE_RE = re.compile(r"(?<![A-Za-z])'[^']*'(?![A-Za-z])|‘[^’]*’")
+
+# Quotation marks this contract deliberately does NOT support. Listing them
+# explicitly is the point: the parser supports a small, named set rather than
+# every Unicode quotation mark.
+_UNSUPPORTED_QUOTE_CHARS = "„‟”‹›«»「」『』〝〞‚"
+
+QUOTE_STYLE_STRAIGHT_DOUBLE = "straight-double"
+QUOTE_STYLE_SMART_DOUBLE = "smart-double"
+
+SUPPORTED_QUOTE_STYLES = (
+    QUOTE_STYLE_STRAIGHT_DOUBLE,
+    QUOTE_STYLE_SMART_DOUBLE,
+)
+
+# Structured, reviewer-visible parse-failure reasons.
+QUOTE_FAIL_NO_EXHIBIT = "NO_QUOTED_EXHIBIT"
+QUOTE_FAIL_UNBALANCED = "UNBALANCED_QUOTES"
+QUOTE_FAIL_MISMATCHED = "MISMATCHED_QUOTES"
+QUOTE_FAIL_MULTIPLE = "MULTIPLE_QUOTED_SPANS"
+QUOTE_FAIL_LEADING = "UNQUOTED_LEADING_TEXT"
+QUOTE_FAIL_TRAILING = "UNQUOTED_TRAILING_TEXT"
+QUOTE_FAIL_MULTILINE = "MULTILINE_QUOTE_UNSUPPORTED"
+QUOTE_FAIL_UNSUPPORTED_STYLE = "UNSUPPORTED_QUOTE_STYLE"
+QUOTE_FAIL_INLINE_CODE = "INLINE_CODE_NOT_QUOTATION"
+
+QUOTE_PARSE_FAILURE_REASONS = (
+    QUOTE_FAIL_NO_EXHIBIT,
+    QUOTE_FAIL_UNBALANCED,
+    QUOTE_FAIL_MISMATCHED,
+    QUOTE_FAIL_MULTIPLE,
+    QUOTE_FAIL_LEADING,
+    QUOTE_FAIL_TRAILING,
+    QUOTE_FAIL_MULTILINE,
+    QUOTE_FAIL_UNSUPPORTED_STYLE,
+    QUOTE_FAIL_INLINE_CODE,
+)
 
 
-def _strip_quoted_spans(raw):
-    """Remove quoted spans, leaving the line's own unquoted assertions."""
-    text = re.sub(r'"[^"]*"', " ", raw)
-    return re.sub(r"[“][^”]*[”]", " ", text)
+class QuoteParseResult(object):
+    """Structured result of parsing one example-region content line.
+
+    `valid` is True only for the narrow accepted shape. Otherwise `reason` is
+    one of `QUOTE_PARSE_FAILURE_REASONS` and is surfaced verbatim in the
+    validator's finding so a reviewer can see *why* a line failed closed.
+    """
+
+    __slots__ = ("valid", "quote_style", "exhibit", "unquoted_remainder", "reason")
+
+    def __init__(
+        self,
+        valid,
+        quote_style=None,
+        exhibit=None,
+        unquoted_remainder="",
+        reason=None,
+    ):
+        self.valid = valid
+        self.quote_style = quote_style
+        self.exhibit = exhibit
+        self.unquoted_remainder = unquoted_remainder
+        self.reason = reason
+
+    def __repr__(self):  # pragma: no cover - diagnostic aid
+        return (
+            "QuoteParseResult(valid={0!r}, quote_style={1!r}, exhibit={2!r}, "
+            "unquoted_remainder={3!r}, reason={4!r})".format(
+                self.valid,
+                self.quote_style,
+                self.exhibit,
+                self.unquoted_remainder,
+                self.reason,
+            )
+        )
+
+
+def _fail(reason, remainder=""):
+    return QuoteParseResult(False, reason=reason, unquoted_remainder=remainder)
+
+
+def parse_quoted_exhibit(raw):
+    """Parse one line as at most one complete, balanced quoted exhibit.
+
+    Accepted shape, and nothing else:
+
+        [blockquote markers] [list bullet / indentation]
+        <one balanced quoted exhibit>
+        [terminal punctuation] [whitespace]
+
+    Supported quote styles: straight double (`"`) and smart double
+    (U+201C/U+201D). Everything else fails closed:
+
+      * nested quotation (a paired single-quote span inside the exhibit) is
+        NOT supported -- rejected as UNSUPPORTED_QUOTE_STYLE rather than
+        silently misparsed;
+      * escaped quotation marks (`\\"`) are NOT supported -- the contract has
+        no use for them, so they fail closed as UNSUPPORTED_QUOTE_STYLE
+        instead of motivating a stateful un-escaping parser;
+      * multi-line quote spans are NOT supported -- a quote must open and
+        close on the same line;
+      * inline code spans (backticks) are NOT quotation and never grant the
+        exemption.
+    """
+    line = raw.rstrip("\n")
+
+    # Backticks are Markdown code formatting, not natural-language quotation.
+    # Inline code must never confer the illustrative exemption.
+    if "`" in line:
+        return _fail(QUOTE_FAIL_INLINE_CODE)
+
+    # Escaped quotation marks are not supported; fail closed rather than
+    # attempting to un-escape with a non-greedy regex that cannot see escapes.
+    if "\\\"" in line or "\\'" in line:
+        return _fail(QUOTE_FAIL_UNSUPPORTED_STYLE)
+
+    prefix = _EXHIBIT_PREFIX_RE.match(line).group(0)
+    body = line[len(prefix):]
+
+    if not body.strip():
+        return _fail(QUOTE_FAIL_NO_EXHIBIT)
+
+    # Explicitly unsupported quotation marks (guillemets, low-9, CJK brackets,
+    # a bare closing smart quote used as an opener, ...).
+    if any(ch in body for ch in _UNSUPPORTED_QUOTE_CHARS if ch != "”"):
+        return _fail(QUOTE_FAIL_UNSUPPORTED_STYLE)
+
+    straight = body.count('"')
+    smart_open = body.count("“")
+    smart_close = body.count("”")
+
+    if straight == 0 and smart_open == 0 and smart_close == 0:
+        return _fail(QUOTE_FAIL_NO_EXHIBIT, remainder=body)
+
+    # Never mix styles on one line: `“...\"` and `"...”` are misparses waiting
+    # to happen, so they are named as such.
+    if straight and (smart_open or smart_close):
+        return _fail(QUOTE_FAIL_MISMATCHED)
+
+    if straight:
+        style = QUOTE_STYLE_STRAIGHT_DOUBLE
+        if straight % 2 == 1:
+            # One lone straight quote is genuinely ambiguous between an
+            # unterminated opener and a stray closer, so it is reported as
+            # unbalanced rather than guessed at.
+            return _fail(QUOTE_FAIL_UNBALANCED)
+        if straight > 2:
+            return _fail(QUOTE_FAIL_MULTIPLE)
+        open_idx = body.index('"')
+        close_idx = body.index('"', open_idx + 1)
+    else:
+        style = QUOTE_STYLE_SMART_DOUBLE
+        if smart_open and not smart_close:
+            # A smart quote is directional, so an unclosed opener is
+            # unambiguously an attempted multi-line span.
+            return _fail(QUOTE_FAIL_MULTILINE)
+        if smart_close and not smart_open:
+            return _fail(QUOTE_FAIL_UNBALANCED)
+        if smart_open > 1 or smart_close > 1:
+            return _fail(QUOTE_FAIL_MULTIPLE)
+        open_idx = body.index("“")
+        close_idx = body.index("”")
+        if close_idx < open_idx:
+            return _fail(QUOTE_FAIL_UNBALANCED)
+
+    exhibit = body[open_idx + 1:close_idx]
+    leading = body[:open_idx]
+    trailing = body[close_idx + 1:]
+
+    # Nested quotation is not supported. Reject clearly and consistently
+    # instead of silently misparsing the inner span.
+    if _NESTED_QUOTE_RE.search(exhibit):
+        return _fail(QUOTE_FAIL_UNSUPPORTED_STYLE)
+
+    if not exhibit.strip():
+        return _fail(QUOTE_FAIL_NO_EXHIBIT)
+
+    # THE fail-closed step. Any non-whitespace prose before the exhibit, or
+    # anything but structural terminal punctuation after it, rejects the line
+    # outright. Subjects, predicates, objects, qualifiers, conjunctions and
+    # parentheticals outside the quotation marks all land here. No attempt is
+    # made to decide whether the remainder "forms a claim".
+    if leading.strip():
+        return _fail(QUOTE_FAIL_LEADING, remainder=leading)
+    if not _EXHIBIT_TRAILER_RE.match(trailing):
+        return _fail(QUOTE_FAIL_TRAILING, remainder=trailing)
+
+    return QuoteParseResult(
+        True,
+        quote_style=style,
+        exhibit=exhibit,
+        unquoted_remainder=trailing,
+    )
 
 
 def _region_body_lines(lines, open_at, close_at):
@@ -1971,16 +2192,21 @@ def _validate_example_region(body, introducer, name, open_at):
             f"{MAX_EXAMPLE_REGION_LINES}-line maximum for a bounded example"
         )
     for lineno, raw in body:
-        if not _quoted_spans(raw):
+        parsed = parse_quoted_exhibit(raw)
+        if not parsed.valid:
             problems.append(
                 f"line {lineno}: line in a \"non-authoritative example\" "
-                "region is not an explicit quotation; illustrative shape "
-                "(blockquote, table row, or label column) never exempts "
-                "content by itself"
+                f"region is not exactly one complete quoted exhibit "
+                f"[{parsed.reason}]; the contract is one line, one balanced "
+                "quoted exhibit, no meaningful unquoted remainder"
             )
-    # The shared enforcement scan. Identical scanner, identical lexicon.
-    for lineno, raw in body:
-        outside = _normalize_markdown(_strip_quoted_spans(raw))
+            continue
+        # The shared enforcement scan is retained, not replaced. It now runs
+        # over a remainder that the grammar has already proven contains no
+        # prose, so it is a belt-and-braces check rather than the primary
+        # defence -- which is exactly the point: structural quoting is not a
+        # generic escape mechanism.
+        outside = _normalize_markdown(parsed.unquoted_remainder)
         problems.extend(
             f"{f} [inside reason=\"non-authoritative example\" region]"
             for f in _scan_clauses(outside, name, lineno)
@@ -4840,6 +5066,313 @@ class Round9LegitimateExamplesStillAccepted(unittest.TestCase):
             name="T.md",
         )
         self.assertTrue(findings, "text after the closing marker was not scanned")
+
+
+ROUND10_TAIL = (
+    "Closing framing line: no runtime enforcement exists in this package.\n"
+)
+
+
+def _round10_region(body):
+    """One example region with `body` as its content, plus honest framing."""
+    return (
+        "Invalid example:\n%s\n%s\n%s\n" % (_R9_BEGIN, body, _R9_END)
+    ) + ROUND10_TAIL
+
+
+class Round10QuoteParserGrammar(unittest.TestCase):
+    """Round 10: the quoted-exhibit grammar itself, in isolation.
+
+    The contract is deliberately narrow: one line, one balanced quoted
+    exhibit, no meaningful unquoted remainder.
+    """
+
+    def test_straight_double_exhibit_parses(self):
+        result = parse_quoted_exhibit('> "Gate A verifies the digest."')
+        self.assertTrue(result.valid, result)
+        self.assertEqual(result.quote_style, QUOTE_STYLE_STRAIGHT_DOUBLE)
+        self.assertEqual(result.exhibit, "Gate A verifies the digest.")
+        self.assertEqual(result.unquoted_remainder.strip(), "")
+
+    def test_smart_double_exhibit_parses(self):
+        result = parse_quoted_exhibit("> “Gate A verifies the digest.”")
+        self.assertTrue(result.valid, result)
+        self.assertEqual(result.quote_style, QUOTE_STYLE_SMART_DOUBLE)
+        self.assertEqual(result.exhibit, "Gate A verifies the digest.")
+
+    def test_list_bullet_and_indentation_prefixes_are_structural(self):
+        for prefix in ("> ", "- ", "  * ", "1. ", ">   - ", "    "):
+            with self.subTest(prefix=prefix):
+                result = parse_quoted_exhibit(
+                    '%s"Gate A verifies the digest."' % prefix
+                )
+                self.assertTrue(result.valid, result)
+
+    def test_terminal_punctuation_after_the_close_is_structural(self):
+        for tail in ("", ".", ",", ";", ":", "!", "?", "  "):
+            with self.subTest(tail=tail):
+                result = parse_quoted_exhibit(
+                    '> "Gate A verifies the digest."%s' % tail
+                )
+                self.assertTrue(result.valid, result)
+
+    def test_supported_and_unsupported_quote_styles_are_explicit(self):
+        self.assertEqual(
+            SUPPORTED_QUOTE_STYLES,
+            (QUOTE_STYLE_STRAIGHT_DOUBLE, QUOTE_STYLE_SMART_DOUBLE),
+        )
+        for mark in "„‹›«»「」‚":
+            with self.subTest(mark=mark):
+                result = parse_quoted_exhibit(
+                    "> %sGate A verifies the digest.%s" % (mark, mark)
+                )
+                self.assertFalse(result.valid, result)
+                self.assertEqual(result.reason, QUOTE_FAIL_UNSUPPORTED_STYLE)
+
+    def test_structured_failure_reasons(self):
+        cases = (
+            ("Gate A \"verifies the digest.\"", QUOTE_FAIL_LEADING),
+            ("\"Gate A verifies\" the digest.", QUOTE_FAIL_TRAILING),
+            ("\"Gate A\" verifies \"the digest.\"", QUOTE_FAIL_MULTIPLE),
+            ("\"a.\" \"b.\"", QUOTE_FAIL_MULTIPLE),
+            ("\"Gate A verifies the digest.\" (Current behavior.)",
+             QUOTE_FAIL_TRAILING),
+            ("\"Gate A verifies the digest,\" and the runtime blocks it.",
+             QUOTE_FAIL_TRAILING),
+            ("\"Gate A verifies the digest.\"; the runtime blocks calls.",
+             QUOTE_FAIL_TRAILING),
+            ("Before execution, \"Gate A verifies the digest.\"",
+             QUOTE_FAIL_LEADING),
+            ("\"Gate A verifies the digest.", QUOTE_FAIL_UNBALANCED),
+            ("Gate A verifies the digest.\"", QUOTE_FAIL_UNBALANCED),
+            ("“Gate A verifies the digest.\"", QUOTE_FAIL_MISMATCHED),
+            ("\"Gate A verifies the digest.”", QUOTE_FAIL_MISMATCHED),
+            ("“Gate A verifies the digest.", QUOTE_FAIL_MULTILINE),
+            ("Gate A verifies the digest.”", QUOTE_FAIL_UNBALANCED),
+            ("\"Gate A 'verifies' the digest.\"", QUOTE_FAIL_UNSUPPORTED_STYLE),
+            ('"Gate A \\"verifies\\" the digest."',
+             QUOTE_FAIL_UNSUPPORTED_STYLE),
+            ("`Gate A verifies the digest.`", QUOTE_FAIL_INLINE_CODE),
+            ("Gate A verifies the digest.", QUOTE_FAIL_NO_EXHIBIT),
+            ('""', QUOTE_FAIL_NO_EXHIBIT),
+        )
+        for line, reason in cases:
+            with self.subTest(line=line):
+                result = parse_quoted_exhibit("> " + line)
+                self.assertFalse(result.valid, result)
+                self.assertEqual(result.reason, reason, result)
+                self.assertIn(result.reason, QUOTE_PARSE_FAILURE_REASONS)
+
+    def test_word_internal_apostrophes_are_not_nested_quotes(self):
+        for exhibit in (
+            "Gate A's digest is verified by the runtime.",
+            "The runtime doesn't verify the digest.",
+        ):
+            with self.subTest(exhibit=exhibit):
+                result = parse_quoted_exhibit('> "%s"' % exhibit)
+                self.assertTrue(result.valid, result)
+
+    def test_nested_and_escaped_and_multiline_are_unsupported(self):
+        # Documented, deliberate choices -- all fail closed rather than being
+        # silently misparsed.
+        self.assertFalse(
+            parse_quoted_exhibit("> \"Gate A 'verifies' the digest.\"").valid
+        )
+        self.assertFalse(
+            parse_quoted_exhibit('> "Gate A \\"verifies\\" the digest."').valid
+        )
+        self.assertFalse(parse_quoted_exhibit('> "Gate A verifies').valid)
+
+
+class Round10QuoteBoundaryBypassesAreClosed(unittest.TestCase):
+    """The compositional split-across-the-quote-boundary attack matrix.
+
+    Every one of these was ACCEPTED by the round-9 strip-and-scan helper, or
+    is a near neighbour of one that was. All must now be REJECTED.
+    """
+
+    def assertRejected(self, line, label):
+        findings = find_enforcement_overclaims(
+            _round9_doc(_round10_region("> " + line)), name="T.md"
+        )
+        self.assertTrue(findings, "wrongly exempted (%s): %r" % (label, line))
+
+    def test_four_confirmed_round9_bypasses(self):
+        for label, line in (
+            ("partial predicate quoted",
+             'Gate A "verifies the authorization digest."'),
+            ("partial subject and predicate quoted",
+             '"Gate A verifies" the authorization digest.'),
+            ("subject and object in separate spans",
+             '"Gate A" verifies "the authorization digest."'),
+            ("quote plus parenthetical remainder",
+             '"Gate A verifies the authorization digest." '
+             "(This is current runtime behavior.)"),
+        ):
+            with self.subTest(case=label):
+                self.assertRejected(line, label)
+
+    def test_partial_quoting_of_every_sentence_part(self):
+        for label, line in (
+            ("subject only", '"Gate A" verifies the authorization digest.'),
+            ("predicate only", 'Gate A "verifies" the authorization digest.'),
+            ("object only", 'Gate A verifies "the authorization digest."'),
+        ):
+            with self.subTest(case=label):
+                self.assertRejected(line, label)
+
+    def test_remainder_shapes_outside_the_exhibit(self):
+        for label, line in (
+            ("two independent exhibits",
+             '"Gate A verifies the digest." "The runtime blocks invocation."'),
+            ("conjunction remainder",
+             '"Gate A verifies the digest," and the runtime blocks invocation.'),
+            ("semicolon remainder",
+             '"Gate A verifies the digest."; the runtime blocks calls.'),
+            ("leading prose",
+             'Before execution, "Gate A verifies the digest."'),
+            ("trailing prose",
+             '"Gate A verifies the digest." The runtime blocks invocation.'),
+        ):
+            with self.subTest(case=label):
+                self.assertRejected(line, label)
+
+    def test_malformed_quote_shapes(self):
+        for label, line in (
+            ("unbalanced opening", '"Gate A verifies the digest.'),
+            ("unbalanced closing", 'Gate A verifies the digest."'),
+            ("mismatched smart then straight",
+             "“Gate A verifies the digest.\""),
+            ("mismatched straight then smart",
+             "\"Gate A verifies the digest.”"),
+            ("nested quotes", "\"Gate A 'verifies' the digest.\""),
+            ("escaped quotes", '"Gate A \\"verifies\\" the digest."'),
+            ("inline code", "`Gate A verifies the digest.`"),
+        ):
+            with self.subTest(case=label):
+                self.assertRejected(line, label)
+
+    def test_multiline_quote_span_is_rejected(self):
+        findings = find_enforcement_overclaims(
+            _round9_doc(
+                _round10_region(
+                    "> “Gate A verifies\n> the authorization digest.”"
+                )
+            ),
+            name="T.md",
+        )
+        self.assertTrue(findings, "multi-line quote span was exempted")
+
+    def test_quotation_outside_an_exemption_is_still_scanned(self):
+        for label, body in (
+            ("bare quotation", '"Gate A verifies the authorization digest."'),
+            ("blockquoted quotation",
+             '> "Gate A verifies the authorization digest."'),
+            ("reported speech",
+             'The document says "Gate A verifies the authorization digest."'),
+        ):
+            with self.subTest(case=label):
+                findings = find_enforcement_overclaims(
+                    _round9_doc(body), name="T.md"
+                )
+                self.assertTrue(
+                    findings,
+                    "quotation outside an exemption suppressed scanning (%s)"
+                    % label,
+                )
+
+    def test_unquoted_control_confirms_segmentation_was_the_defect(self):
+        # The same sentence, fully unquoted, was rejected even on the old head.
+        # Quote segmentation -- not lexicon coverage -- was the bypass.
+        self.assertRejected(
+            "Gate A verifies the authorization digest.", "unquoted control"
+        )
+
+    def test_the_narrow_valid_form_still_works(self):
+        for label, line in (
+            ("straight double", '"Gate A verifies the authorization digest."'),
+            ("smart double",
+             "“Gate A verifies the authorization digest.”"),
+        ):
+            with self.subTest(case=label):
+                findings = find_enforcement_overclaims(
+                    _round9_doc(_round10_region("> " + line)), name="T.md"
+                )
+                self.assertEqual(
+                    findings, [], "wrongly rejected valid exhibit (%s)" % label
+                )
+
+
+class Round10StripAndScanIsRetired(unittest.TestCase):
+    """The permissive substitution helper must not come back."""
+
+    def test_strip_quoted_spans_helper_is_gone(self):
+        self.assertNotIn("_strip_quoted_spans", globals())
+
+    def test_example_validator_uses_the_exhibit_grammar(self):
+        source = inspect.getsource(_validate_example_region)
+        self.assertIn("parse_quoted_exhibit", source)
+        self.assertNotIn("_strip_quoted_spans", source)
+
+    def test_shared_scanner_is_still_used_by_the_example_validator(self):
+        self.assertIn("_scan_clauses", inspect.getsource(_validate_example_region))
+
+
+class Round10RealExemptionRegionsMeetTheGrammar(unittest.TestCase):
+    """Every checked-in example region must satisfy the narrow contract."""
+
+    DOCS = (
+        "docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md",
+        "docs/experiments/STAGE-1-AUTEUR-EXECUTION-PACKAGE.md",
+        "docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md",
+    )
+
+    def _regions(self):
+        found = []
+        for rel in self.DOCS:
+            path = REPO_ROOT / rel
+            if not path.exists():
+                continue
+            lines = path.read_text(encoding="utf-8").splitlines()
+            open_at = None
+            for lineno, raw in enumerate(lines, start=1):
+                if _match_exemption_begin(raw) is not None:
+                    open_at = lineno
+                elif _is_exemption_end(raw) and open_at is not None:
+                    found.append(
+                        (rel, open_at,
+                         _region_body_lines(lines, open_at, lineno))
+                    )
+                    open_at = None
+        return found
+
+    def test_all_checked_in_example_regions_parse_as_single_exhibits(self):
+        regions = self._regions()
+        self.assertTrue(regions, "no checked-in exemption regions were found")
+        for rel, open_at, body in regions:
+            for lineno, raw in body:
+                with self.subTest(doc=rel, line=lineno):
+                    result = parse_quoted_exhibit(raw)
+                    self.assertTrue(
+                        result.valid,
+                        "%s line %d does not meet the exhibit grammar: %r"
+                        % (rel, lineno, result),
+                    )
+                    self.assertIn(result.quote_style, SUPPORTED_QUOTE_STYLES)
+                    self.assertEqual(result.unquoted_remainder.strip(), "")
+
+    def test_real_documents_remain_clean_under_the_new_grammar(self):
+        for rel in self.DOCS:
+            path = REPO_ROOT / rel
+            if not path.exists():
+                continue
+            with self.subTest(doc=rel):
+                self.assertEqual(
+                    find_enforcement_overclaims(
+                        path.read_text(encoding="utf-8"), name=rel
+                    ),
+                    [],
+                )
 
 
 if __name__ == "__main__":

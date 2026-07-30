@@ -506,32 +506,37 @@ positions drawn from a closed nine-word set. It is not a general English
 semantic analyzer.
 
 Concretely, it matches a closed lexicon of enforcement verbs in four shapes.
-One rejected shape per row. Each exhibit is an explicit quotation; the
-label outside the quotation marks is ordinary prose and is scanned as such.
+The four shapes, in the order the exhibits below appear, are: active simple
+present, emphatic `do`, present progressive, and affirmative passive. The label
+column that used to sit outside the quotation marks has been removed, because
+prose outside the quotes is precisely where half a claim can be hidden. Each
+line is now one complete quoted exhibit with no unquoted remainder.
 
 Invalid example:
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
-active simple present -- "Gate A verifies the digest."
-emphatic do -- "Gate A does verify the digest."
-present progressive -- "Gate A is checking the digest."
-affirmative passive -- "The digest is verified by Gate A."
+"Gate A verifies the digest."
+"Gate A does verify the digest."
+"Gate A is checking the digest."
+"The digest is verified by Gate A."
 # END_PROSE_GUARD_EXEMPTION
 ```
 
 **Adverb positions covered.** The passive grammar accepts a bounded manner
 adverb in four slots. The guard rejects all four of these when the claim
-is affirmative. Each exhibit below is an explicit quotation.
+is affirmative. The four slots, in the order the exhibits below appear, are:
+pre-participle, post-participle, pre-agent, and post-agent. Each line is one
+complete quoted exhibit with no unquoted remainder.
 
 Invalid example:
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
-pre-participle -- "The digest is procedurally verified."
-post-participle -- "The digest is verified procedurally."
-pre-agent -- "The digest is verified procedurally by Gate A."
-post-agent -- "The digest is verified by Gate A procedurally."
+"The digest is procedurally verified."
+"The digest is verified procedurally."
+"The digest is verified procedurally by Gate A."
+"The digest is verified by Gate A procedurally."
 # END_PROSE_GUARD_EXEMPTION
 ```
 
@@ -626,11 +631,43 @@ inventory of every one of them (file, opening line, closing line, reason,
 introducer, size, and reason-specific validator result) so they can be audited
 in one place.
 
+**The quoted-example contract is deliberately narrow (round 10).** Round 9
+validated example regions by deleting every quoted span and scanning the
+leftovers. That is compositionally bypassable: a single sentence can be split
+across the quote boundary so neither leftover fragment is a complete clause and
+the scanner sees nothing. Two demonstrated shapes -- one that quotes only the
+predicate and object, and one that quotes only the subject and verb -- both
+slipped through, even though the very same sentence with no quotation marks at
+all does not. That asymmetry pins the defect on quote segmentation rather than
+on lexicon coverage. The full attack matrix lives in
+`tests/test_stage1_auteur_prep_package.py`, which is where such strings belong.
+
+The remedy is not a smarter remainder scanner. Inferring whether fragments
+outside the quotes happen to reconstitute a claim is the guess-the-grammar
+approach that failed repeatedly. Instead the contract is now fail-closed:
+
+> one line, one balanced quoted exhibit, no meaningful unquoted remainder.
+
+A content line may contain only an optional blockquote prefix, optional list
+indentation or bullet, exactly one complete balanced quoted exhibit, optional
+terminal punctuation, and whitespace. Any other non-whitespace token outside
+the exhibit rejects the region. Partial-span bypasses are then impossible by
+construction: there is nowhere outside the quotation marks to put the other
+half of the sentence. Supported quote styles are exactly two -- straight double
+and smart double. Nested quotation, escaped quotation marks, multi-line quote
+spans, inline-code backticks, mixed straight/smart pairs, multiple independent
+spans, and every other Unicode quotation mark all fail closed with a named
+reason (`UNQUOTED_LEADING_TEXT`, `MULTIPLE_QUOTED_SPANS`,
+`MULTILINE_QUOTE_UNSUPPORTED`, `INLINE_CODE_NOT_QUOTATION`, and so on) rather
+than being silently misparsed. The label column that previously sat outside the
+quotation marks in the checked-in regions was removed for exactly this reason;
+the labels now live in ordinary scanned prose above each region.
+
 Because the guard's scope is bounded and enumerated, it is a regression fence
 for the wordings reviewers have actually demonstrated -- not proof that no
 dishonest sentence can ever be written. Reviewer judgement remains required.
 
-### Measured results (round 8)
+### Measured results (round 10)
 
 Recorded here, in the versioned package, so the numbers are not held only in a
 PR description. All figures below were observed, not carried forward.
@@ -643,18 +680,20 @@ classified version was used -- recorded, not assumed), `pip install -e .`,
 
 ```text
 package tests   python -m pytest tests/test_stage1_auteur_prep_package.py -q
-                272 passed, 338 subtests passed, exit 0   (was 239 / 286)
+                322 passed, 439 subtests passed, exit 0
+                (historical: 301 / 353 in round 9; 272 / 338 in round 8;
+                 239 / 286 in round 7)
 
 focused suite   clean main (1761e42f) : 236 passed, 5 skipped,   7 subtests, exit 0 (11 files)
-                proposed merge        : 508 passed, 5 skipped, 345 subtests, exit 0 (12 files)
-                delta +272 passing, +338 subtests; 236+272=508, 7+338=345
+                proposed merge        : 558 passed, 5 skipped, 446 subtests, exit 0 (12 files)
+                delta +322 passing, +439 subtests; 236+322=558, 7+439=446
 
 broader suite   python -m pytest tests -q --continue-on-collection-errors
                 clean main (1761e42f) : 23 failed, 587 passed, 6 skipped, 3 errors,
                                         25 warnings,  74 subtests, exit 1
-                proposed merge        : 23 failed, 859 passed, 6 skipped, 3 errors,
-                                        25 warnings, 412 subtests, exit 1
-                delta +272 passing, +338 subtests; 587+272=859, 74+338=412
+                proposed merge        : 23 failed, 909 passed, 6 skipped, 3 errors,
+                                        25 warnings, 513 subtests, exit 1
+                delta +322 passing, +439 subtests; 587+322=909, 74+439=513
 ```
 
 Failure and collection-error node IDs were captured and diffed: the two sets are

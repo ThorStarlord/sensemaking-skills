@@ -1338,32 +1338,37 @@ positions drawn from a closed nine-word set. It is not a general English
 semantic analyzer.
 
 Concretely, it matches a closed lexicon of enforcement verbs in four shapes.
-One rejected shape per row. Each exhibit is an explicit quotation; the
-label outside the quotation marks is ordinary prose and is scanned as such.
+The four shapes, in the order the exhibits below appear, are: active simple
+present, emphatic `do`, present progressive, and affirmative passive. The label
+column that used to sit outside the quotation marks has been removed, because
+prose outside the quotes is precisely where half a claim can be hidden. Each
+line is now one complete quoted exhibit with no unquoted remainder.
 
 Invalid example:
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
-active simple present -- "Gate A verifies the digest."
-emphatic do -- "Gate A does verify the digest."
-present progressive -- "Gate A is checking the digest."
-affirmative passive -- "The digest is verified by Gate A."
+"Gate A verifies the digest."
+"Gate A does verify the digest."
+"Gate A is checking the digest."
+"The digest is verified by Gate A."
 # END_PROSE_GUARD_EXEMPTION
 ```
 
 **Adverb positions covered.** The passive grammar accepts a bounded manner
 adverb in four slots. The guard rejects all four of these when the claim
-is affirmative. Each exhibit below is an explicit quotation.
+is affirmative. The four slots, in the order the exhibits below appear, are:
+pre-participle, post-participle, pre-agent, and post-agent. Each line is one
+complete quoted exhibit with no unquoted remainder.
 
 Invalid example:
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
-pre-participle -- "The digest is procedurally verified."
-post-participle -- "The digest is verified procedurally."
-pre-agent -- "The digest is verified procedurally by Gate A."
-post-agent -- "The digest is verified by Gate A procedurally."
+"The digest is procedurally verified."
+"The digest is verified procedurally."
+"The digest is verified procedurally by Gate A."
+"The digest is verified by Gate A procedurally."
 # END_PROSE_GUARD_EXEMPTION
 ```
 
