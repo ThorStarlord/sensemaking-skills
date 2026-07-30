@@ -8,6 +8,7 @@ only. They never invoke a model, never run the Stage 1 workflow, and never
 create an evidence directory.
 """
 
+import inspect
 import re
 import unittest
 from pathlib import Path
@@ -1440,7 +1441,6 @@ PROSE_GUARD_EXEMPTION_END = "END_PROSE_GUARD_EXEMPTION"
 # Closed reason enum. A reason outside this set fails closed.
 ALLOWED_EXEMPTION_REASONS = (
     "quoted obsolete wording",
-    "truthful denial list",
     "non-authoritative example",
 )
 
@@ -1771,13 +1771,11 @@ def _is_any_marker_line(raw_line):
 # introducer appearing only AFTER the opening marker grants nothing.
 _CODE_FENCE_RE = re.compile(r"^\s*(?:```|~~~)")
 
-# Denial-oriented introducers.
-_DENIAL_INTRODUCER_RE = re.compile(
-    r"\b(?:does\s+not\s+prove|do\s+not\s+prove|does\s+not|do\s+not|did\s+not|"
-    r"cannot|can\s+not|is\s+not|are\s+not|absence|absences|denial|denials|"
-    r"not\s+proven|no\s+\w+)\b",
-    re.IGNORECASE,
-)
+# Round 9: `truthful denial list` is retired. Every real denial region was
+# rewritten as ordinary explicit negative prose, which the guard already
+# accepts with no exemption at all. A reason retained only for symmetry is a
+# standing bypass surface, so the reason, its introducer vocabulary, its item
+# markers and its validator are all gone. See section 12 of the round-9 brief.
 
 # Historical/obsolete-quotation introducers.
 _OBSOLETE_INTRODUCER_RE = re.compile(
@@ -1787,37 +1785,76 @@ _OBSOLETE_INTRODUCER_RE = re.compile(
     re.IGNORECASE,
 )
 
-# Illustrative-example introducers.
-_EXAMPLE_INTRODUCER_RE = re.compile(
-    r"\b(?:example|examples|invalid\s+example|rejected\s+example|"
-    r"illustrative|illustration|illustrates|for\s+instance)\b",
-    re.IGNORECASE,
+# Illustrative-example introducers (round 9).
+#
+# The old rule was an UNBOUND substring search for `example`, which the eighth
+# review broke seven different ways: a distant `## Example gallery` heading, a
+# table header cell, an inline-code token, a trailing `| Example`, and even the
+# negated `Not an example:`. All of those "contain the word example" and none
+# of them marks the following region as non-authoritative.
+#
+# The replacement is a small CLOSED set matched against the WHOLE introducer
+# line. The line must BE an approved introducer, not merely contain one. That
+# single change is what binds the introducer to the region structurally: a
+# heading is not the whole line minus its `#`, a table row is not an
+# introducer, and prose that happens to mention examples is not an introducer.
+_APPROVED_EXAMPLE_INTRODUCERS = (
+    "invalid example",
+    "rejected example",
+    "non-authoritative example",
+    "hypothetical invalid wording",
+    "example of wording that must not be treated as current behavior",
 )
 
-# Explicitly negative / absence / non-implementation / non-proof vocabulary. A
-# `truthful denial list` item must contain at least one of these.
-_DENIAL_ITEM_MARKERS = (
-    "no ",
-    "not ",
-    "n't ",
-    "never",
-    "cannot",
-    "can not",
-    "non-",
-    "without",
-    "absent",
-    "absence",
-    "nothing",
-    "neither",
-    "nor ",
-    "unimplemented",
-    "not_implemented",
-    "pending",
-    "lacks",
-    "lacking",
-    "fails to",
-    "unproven",
+# Wording that must NEVER be honoured as an introducer even though it contains
+# the token `example`. Checked before the approved set so a negated or
+# authoritative-sounding phrase can never be silently accepted.
+_REJECTED_EXAMPLE_INTRODUCERS = (
+    "not an example",
+    "this is not an example",
+    "example implementation",
+    "current example",
+    "production example",
+    "authoritative example",
+    "example requirement",
 )
+
+
+def _introducer_candidate(raw):
+    """Reduce an introducer line to the text that may bind a region.
+
+    Structural containers are stripped to nothing rather than searched, so a
+    heading, a table row, a list bullet, an inline-code span, an HTML comment
+    or a link target can never supply an introducer.
+    """
+    text = raw.strip()
+    if not text:
+        return ""
+    # A heading, table row, or HTML comment is a different semantic unit.
+    if text.startswith("#") or text.startswith("|") or text.startswith("<!--"):
+        return ""
+    # Inline code and link targets are quoted tokens, not assertions.
+    text = re.sub(r"`[^`]*`", " ", text)
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r" \1 ", text)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = _normalize_markdown(text.replace("_", " "))
+    # The introducer must be the entire line, optionally ending in a colon.
+    text = text.strip().rstrip(":").strip()
+    return re.sub(r"\s+", " ", text).lower()
+
+
+def _is_approved_example_introducer(raw):
+    candidate = _introducer_candidate(raw)
+    if not candidate:
+        return False
+    # Boundary-aware: `authoritative example` must not fire inside the
+    # approved `non-authoritative example`.
+    if any(
+        re.search(rf"(?<![\w-]){re.escape(bad)}(?![\w-])", candidate)
+        for bad in _REJECTED_EXAMPLE_INTRODUCERS
+    ):
+        return False
+    return candidate in _APPROVED_EXAMPLE_INTRODUCERS
 
 
 def _region_introducer(lines, open_at):
@@ -1840,12 +1877,25 @@ def _has_quoted_span(raw):
     return bool(re.search(r'"[^"]+"', raw) or re.search(r"[“][^”]+[”]", raw))
 
 
-_LABEL_COLUMN_RE = re.compile(r"^\s*[A-Za-z][A-Za-z\-' ]{2,30}?\s{2,}\S")
+# Round 9: the label-column heuristic is DELETED, not narrowed.
+#
+# It was `^\s*[A-Za-z][A-Za-z\-' ]{2,30}?\s{2,}\S` -- any alphabetic label
+# followed by two spaces. It did not require the word "Example"; `Foo  Gate A
+# verifies the digest.` satisfied it. Two-column-looking whitespace is not
+# evidence that text is illustrative, so no amount of tightening makes it a
+# sound authorization signal. Illustrative content must now be an EXPLICIT
+# quotation, which is a positive, visible marker rather than a layout accident.
 
 
-def _is_label_column(raw):
-    """A two-column illustrative table row: `<shape label>   <example text>`."""
-    return bool(_LABEL_COLUMN_RE.match(raw))
+def _quoted_spans(raw):
+    """Return the quoted substrings of a line (straight or curly quotes)."""
+    return re.findall(r'"[^"]*"', raw) + re.findall(r"[“][^”]*[”]", raw)
+
+
+def _strip_quoted_spans(raw):
+    """Remove quoted spans, leaving the line's own unquoted assertions."""
+    text = re.sub(r'"[^"]*"', " ", raw)
+    return re.sub(r"[“][^”]*[”]", " ", text)
 
 
 def _region_body_lines(lines, open_at, close_at):
@@ -1854,36 +1904,6 @@ def _region_body_lines(lines, open_at, close_at):
         for lineno in range(open_at + 1, close_at)
         if lines[lineno - 1].strip()
     ]
-
-
-def _validate_denial_region(body, introducer, name, open_at):
-    """`truthful denial list`: plainly negative, no affirmative current claim."""
-    problems = []
-    if introducer is None or not _DENIAL_INTRODUCER_RE.search(
-        _normalize_markdown(introducer[1].replace("_", " "))
-    ):
-        problems.append(
-            f"line {open_at}: reason=\"truthful denial list\" region is not "
-            "immediately introduced by denial-oriented text"
-        )
-    for lineno, raw in body:
-        low = " " + _normalize_markdown(raw).lower() + " "
-        if not any(marker in low for marker in _DENIAL_ITEM_MARKERS):
-            problems.append(
-                f"line {lineno}: item in a \"truthful denial list\" region is "
-                "not explicitly negative, absence, non-implementation or "
-                "non-proof language"
-            )
-    # Reuse the ordinary enforcement lexicon: a denial list is only truthful if
-    # it survives the same active/emphatic/progressive/passive scanning that
-    # governing prose does. This also catches a denial clause followed by an
-    # affirmative current claim in the same sentence.
-    for lineno, raw in body:
-        problems.extend(
-            f"{f} [inside reason=\"truthful denial list\" region]"
-            for f in _scan_clauses(_normalize_markdown(raw), name, lineno)
-        )
-    return problems
 
 
 def _validate_obsolete_region(body, introducer, name, open_at):
@@ -1914,34 +1934,65 @@ def _validate_obsolete_region(body, introducer, name, open_at):
 
 
 def _validate_example_region(body, introducer, name, open_at):
-    """`non-authoritative example`: explicitly labeled, visibly illustrative."""
+    """`non-authoritative example`: bound introducer, quoted, and SCANNED.
+
+    Round 9. The round-8 version validated illustrative *shape* only and never
+    ran the shared enforcement scanner, so a false current-enforcement claim
+    that merely looked like an example was exempted outright. Illustrative
+    shape is now necessary but never sufficient. The order is fixed:
+
+      1. reason and marker structure (already checked by the caller);
+      2. the immediate introducer must be an approved, non-negated one;
+      3. the region must be narrowly bounded;
+      4. every line must be an explicit quotation;
+      5. the shared enforcement scanner runs over everything OUTSIDE the
+         quotation marks -- the same `_scan_clauses` and the same lexicon that
+         governs ordinary prose and `quoted obsolete wording` regions.
+
+    Quoting invalid wording is the whole point of the reason, so the text
+    inside the quotation marks is the exhibit and is not itself an assertion.
+    Everything else on the line is ordinary authoritative prose and is scanned
+    as such, which is what kills "quote plus a real claim on the same line",
+    "quote then a requirement", and every mixed-purpose region.
+    """
     problems = []
-    if introducer is None or not _EXAMPLE_INTRODUCER_RE.search(
-        _normalize_markdown(introducer[1].replace("_", " "))
-    ):
+    if introducer is None or not _is_approved_example_introducer(introducer[1]):
         problems.append(
             f"line {open_at}: reason=\"non-authoritative example\" region is "
-            "not immediately introduced by an Example / Invalid example / "
-            "Rejected example / illustrative introducer"
+            "not immediately preceded by an approved, non-negated example "
+            "introducer (the whole preceding line must be one of: "
+            + "; ".join(sorted(_APPROVED_EXAMPLE_INTRODUCERS))
+            + ")"
+        )
+    if len(body) > MAX_EXAMPLE_REGION_LINES:
+        problems.append(
+            f"line {open_at}: reason=\"non-authoritative example\" region "
+            f"spans {len(body)} content lines, more than the "
+            f"{MAX_EXAMPLE_REGION_LINES}-line maximum for a bounded example"
         )
     for lineno, raw in body:
-        if not (
-            _is_blockquoted(raw) or _has_quoted_span(raw) or _is_label_column(raw)
-        ):
+        if not _quoted_spans(raw):
             problems.append(
-                f"line {lineno}: line in a \"non-authoritative example\" region "
-                "is not marked as illustrative (blockquote, quotation, or "
-                "labeled example row); an example region may not carry "
-                "production contract prose"
+                f"line {lineno}: line in a \"non-authoritative example\" "
+                "region is not an explicit quotation; illustrative shape "
+                "(blockquote, table row, or label column) never exempts "
+                "content by itself"
             )
+    # The shared enforcement scan. Identical scanner, identical lexicon.
+    for lineno, raw in body:
+        outside = _normalize_markdown(_strip_quoted_spans(raw))
+        problems.extend(
+            f"{f} [inside reason=\"non-authoritative example\" region]"
+            for f in _scan_clauses(outside, name, lineno)
+        )
     return problems
 
 
 # Bounded quotation: smaller than the general region cap.
 MAX_OBSOLETE_REGION_LINES = 6
+MAX_EXAMPLE_REGION_LINES = 6
 
 REASON_CONTENT_VALIDATORS = {
-    "truthful denial list": _validate_denial_region,
     "quoted obsolete wording": _validate_obsolete_region,
     "non-authoritative example": _validate_example_region,
 }
@@ -2625,7 +2676,6 @@ def _exempt_begin(reason="quoted obsolete wording"):
 # seventh review demonstrated.
 _REASON_INTRODUCERS = {
     "quoted obsolete wording": "Previous obsolete wording:",
-    "truthful denial list": "Does not prove:",
     "non-authoritative example": "Invalid example:",
 }
 
@@ -2640,6 +2690,14 @@ def _exemption_region(body, reason="quoted obsolete wording", introducer=None,
             raw if (not raw.strip() or raw.strip().startswith(">")) else "> " + raw
             for raw in lines
         ]
+        if reason == "non-authoritative example":
+            # Round 9: example content must be an explicit quotation, so the
+            # helper quotes the exhibit as a legitimate author would.
+            lines = [
+                raw if (not raw.strip() or '"' in raw or "“" in raw)
+                else re.sub(r"^(\s*>\s*)(.*)$", r'\1"\2"', raw)
+                for raw in lines
+            ]
     intro_block = f"{intro}\n" if intro else ""
     return (
         f"{intro_block}{_exempt_begin(reason)}\n"
@@ -2650,19 +2708,15 @@ def _exemption_region(body, reason="quoted obsolete wording", introducer=None,
 
 # Narrowly valid, legitimate region fixtures -- one per reason (section 8).
 LEGITIMATE_REGION_FIXTURES = {
-    "truthful denial list": (
-        "Does not prove:",
-        "- No authorization consumer exists.\n"
-        "- Gate A is not runtime-enforced.\n"
-        "- Owner approval cannot currently authorize a run.",
-    ),
     "quoted obsolete wording": (
         "Previous obsolete wording:",
         "> Gate A verifies the authorization digest.",
     ),
+    # Round 9: an example region must be an EXPLICIT quotation. A bare
+    # blockquote no longer qualifies, so the fixture carries real quote marks.
     "non-authoritative example": (
         "Invalid example:",
-        "> Gate A verifies the authorization digest.",
+        '> "Gate A verifies the authorization digest."',
     ),
 }
 
@@ -4243,17 +4297,27 @@ class Round8LegitimateRegionsStillWork(unittest.TestCase):
                     f"legitimate {reason}",
                 )
 
-    def test_legitimate_truthful_denial_list_is_accepted(self):
-        self.assertAccepted(
+    def test_truthful_denial_list_reason_is_retired(self):
+        """Round 9, section 12: the reason no longer exists at all.
+
+        The identical denial content is accepted as ordinary prose with no
+        exemption (see test_truthful_denial_forms_need_no_exemption_at_all),
+        so the reason had no non-redundant use and was retired rather than
+        retained for symmetry.
+        """
+        self.assertNotIn("truthful denial list", ALLOWED_EXEMPTION_REASONS)
+        self.assertNotIn("truthful denial list", REASON_CONTENT_VALIDATORS)
+        findings = find_enforcement_overclaims(
             ROUND8_HONEST_PADDING
             + "Does not prove:\n"
             + f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="truthful denial list" -->\n'
             + "- No authorization consumer exists.\n"
-            + "- Gate A is not runtime-enforced.\n"
-            + "- Owner approval cannot currently authorize a run.\n"
-            + f"<!-- {PROSE_GUARD_EXEMPTION_END} -->\n"
-            + "Closing framing line: no runtime enforcement exists in this package.\n",
-            "section-8 denial list",
+            + f"<!-- {PROSE_GUARD_EXEMPTION_END} -->\n",
+            name="T.md",
+        )
+        self.assertTrue(
+            any("unknown exemption reason" in f for f in findings),
+            f"retired reason must fail closed, got {findings}",
         )
 
     def test_legitimate_quoted_obsolete_wording_is_accepted(self):
@@ -4272,7 +4336,7 @@ class Round8LegitimateRegionsStillWork(unittest.TestCase):
             ROUND8_HONEST_PADDING
             + "Invalid example:\n"
             + f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="non-authoritative example" -->\n'
-            + "> Gate A verifies the authorization digest.\n"
+            + '> "Gate A verifies the authorization digest."\n'
             + f"<!-- {PROSE_GUARD_EXEMPTION_END} -->\n"
             + "Closing framing line: no runtime enforcement exists in this package.\n",
             "section-8 invalid example",
@@ -4482,6 +4546,300 @@ class Round8GuardScopeLanguageIsHonest(unittest.TestCase):
     def test_reason_accuracy_still_requires_manual_review(self):
         text = PACKAGE_PATH.read_text(encoding="utf-8")
         self.assertIn("manual review", text)
+
+
+# ===========================================================================
+# Round 9: the example-region bypasses demonstrated by the eighth review.
+#
+# The eighth review executed attacks against `_validate_example_region` and
+# smuggled the claim below past the guard under
+# reason="non-authoritative example". The root cause was that the example
+# validator checked illustrative SHAPE only and never ran the shared
+# enforcement scanner, while its introducer test was an unbound substring
+# search for the token `example`.
+#
+# Every string in this section bypassed the guard at head
+# 3fe57e10b9e203575c364848ae2d314e1b026dd9 in its immediately-bound form.
+# ===========================================================================
+
+ROUND9_CLAIM = "Gate A verifies the authorization digest before every invocation."
+_R9_BEGIN = f'<!-- {PROSE_GUARD_EXEMPTION_BEGIN} reason="non-authoritative example" -->'
+_R9_END = f"<!-- {PROSE_GUARD_EXEMPTION_END} -->"
+
+
+def _round9_doc(body):
+    return ROUND8_HONEST_PADDING + body
+
+
+class Round9ExampleRegionRunsTheSharedScanner(unittest.TestCase):
+    """The invariant: illustrative shape never exempts content by itself."""
+
+    def test_example_validator_calls_the_shared_clause_scanner(self):
+        """Architectural: the example validator must use `_scan_clauses`."""
+        src = inspect.getsource(_validate_example_region)
+        self.assertIn("_scan_clauses", src)
+
+    def test_no_weaker_example_only_lexicon_exists(self):
+        src = inspect.getsource(_validate_example_region)
+        self.assertNotIn("_EXAMPLE_OVERCLAIM", src)
+
+    def test_permissive_label_column_heuristic_is_gone(self):
+        for gone in ("_is_label_column", "_LABEL_COLUMN_RE"):
+            with self.subTest(symbol=gone):
+                self.assertNotIn(gone, globals())
+
+    def test_example_introducer_set_is_small_and_closed(self):
+        self.assertLessEqual(len(_APPROVED_EXAMPLE_INTRODUCERS), 6)
+        for intro in _APPROVED_EXAMPLE_INTRODUCERS:
+            with self.subTest(introducer=intro):
+                self.assertTrue(
+                    _is_approved_example_introducer(intro + ":"),
+                    intro,
+                )
+
+
+class Round9DemonstratedExampleBypasses(unittest.TestCase):
+    """Section 8: all seven demonstrated bypasses must now be rejected."""
+
+    def assertRejected(self, text, label):
+        findings = find_enforcement_overclaims(_round9_doc(text), name="T.md")
+        self.assertTrue(findings, "BYPASS still accepted (%s): %r" % (label, text))
+
+    # 1. arbitrary label plus two spaces before a false claim
+    def test_bypass_1_arbitrary_label_plus_two_spaces(self):
+        self.assertRejected(
+            "Invalid example:\n%s\nNonAuthoritative  %s\n%s\n"
+            % (_R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "arbitrary label + two spaces",
+        )
+
+    def test_bypass_1b_any_alphabetic_label_plus_two_spaces(self):
+        self.assertRejected(
+            "Invalid example:\n%s\nFoo  %s\n%s\n"
+            % (_R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "any alphabetic label + two spaces",
+        )
+
+    # 2. `Not an example:` introducer
+    def test_bypass_2_not_an_example_introducer(self):
+        self.assertRejected(
+            "Not an example:\n%s\n> %s\n%s\n" % (_R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "Not an example: introducer",
+        )
+
+    def test_bypass_2b_negated_and_authoritative_introducers(self):
+        for intro in (
+            "This is not an example:",
+            "Example implementation:",
+            "Current example:",
+            "Production example:",
+            "Authoritative example:",
+            "Example requirement:",
+        ):
+            with self.subTest(introducer=intro):
+                self.assertRejected(
+                    '%s\n%s\n> "%s"\n%s\n'
+                    % (intro, _R9_BEGIN, ROUND9_CLAIM, _R9_END),
+                    "misleading introducer %r" % intro,
+                )
+
+    # 3. distant `## Example gallery` heading
+    def test_bypass_3_distant_example_gallery_heading(self):
+        self.assertRejected(
+            "## Example gallery\n\nSeveral unrelated paragraphs follow.\n\n"
+            "%s\n> %s\n%s\n" % (_R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "distant Example gallery heading",
+        )
+
+    def test_bypass_3b_adjacent_example_heading(self):
+        self.assertRejected(
+            '## Example gallery\n%s\n> "%s"\n%s\n'
+            % (_R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "adjacent Example heading",
+        )
+
+    # 4. blockquote containing a false enforcement claim
+    def test_bypass_4_bare_blockquote_is_not_illustrative_enough(self):
+        self.assertRejected(
+            "Example:\n%s\n> %s\n%s\n" % (_R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "bare blockquote under generic Example:",
+        )
+
+    # 5. unrelated table column containing `Example`
+    def test_bypass_5_unrelated_table_column(self):
+        self.assertRejected(
+            "| Example | Description |\n|---|---|\n%s\n| unrelated | %s |\n%s\n"
+            % (_R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "unrelated table column containing Example",
+        )
+
+    def test_bypass_5b_table_header_row_as_introducer(self):
+        self.assertRejected(
+            "| Example | Description |\n%s\n> %s\n%s\n"
+            % (_R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "table header row as introducer",
+        )
+
+    # 6. `Example` appearing after the false claim
+    def test_bypass_6_example_token_after_the_claim(self):
+        self.assertRejected(
+            "%s | Example\n%s\n> %s\n%s\n"
+            % (ROUND9_CLAIM, _R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "Example token trailing the claim",
+        )
+
+    def test_bypass_6b_example_trailing_an_unrelated_line(self):
+        self.assertRejected(
+            'See the gallery below. | Example\n%s\n> "%s"\n%s\n'
+            % (_R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "Example trailing unrelated prose",
+        )
+
+    # 7. inline-code or link-target `Example` token
+    def test_bypass_7_inline_code_example_token(self):
+        self.assertRejected(
+            "`Example:` %s\n%s\n> %s\n%s\n"
+            % (ROUND9_CLAIM, _R9_BEGIN, ROUND9_CLAIM, _R9_END),
+            "inline-code Example token",
+        )
+
+    def test_bypass_7b_inline_code_link_and_comment_introducers(self):
+        for intro in (
+            "`Example:` see below.",
+            "[see](./docs/Example.md)",
+            "<!-- Invalid example: -->",
+        ):
+            with self.subTest(introducer=intro):
+                self.assertRejected(
+                    '%s\n%s\n> "%s"\n%s\n'
+                    % (intro, _R9_BEGIN, ROUND9_CLAIM, _R9_END),
+                    "non-prose introducer %r" % intro,
+                )
+
+
+class Round9StrongerExampleRegionAttacks(unittest.TestCase):
+    """Section 9: a valid introducer must not license substantive content."""
+
+    VALID = "Invalid example:"
+
+    def assertRejected(self, text, label):
+        findings = find_enforcement_overclaims(_round9_doc(text), name="T.md")
+        self.assertTrue(findings, "wrongly exempted (%s): %r" % (label, text))
+
+    def _region(self, body):
+        return "%s\n%s\n%s\n%s\n" % (self.VALID, _R9_BEGIN, body, _R9_END)
+
+    def test_valid_introducer_plus_unquoted_claims_of_every_shape(self):
+        for shape, claim in (
+            ("active", "Gate A verifies the authorization digest."),
+            ("passive", "The authorization digest is verified by Gate A."),
+            ("emphatic", "Gate A does verify the authorization digest."),
+            ("progressive", "Gate A is verifying the authorization digest."),
+        ):
+            with self.subTest(shape=shape):
+                self.assertRejected(self._region(claim), "%s claim" % shape)
+
+    def test_example_quote_followed_by_current_authoritative_prose(self):
+        self.assertRejected(
+            self._region(
+                '> "Gate A verifies the digest."\n'
+                "Gate A enforces the authorization digest today."
+            ),
+            "quote plus current authoritative prose",
+        )
+
+    def test_valid_first_line_then_false_later_line(self):
+        self.assertRejected(
+            self._region('> "Some obsolete wording here."\n> ' + ROUND9_CLAIM),
+            "valid first line, false later line",
+        )
+
+    def test_requirement_hidden_after_a_quoted_example(self):
+        self.assertRejected(
+            self._region(
+                '> "Illustrative only."\n'
+                "Every invocation must present a verified digest."
+            ),
+            "requirement after a quoted example",
+        )
+
+    def test_table_with_example_in_one_row_and_claim_in_another(self):
+        self.assertRejected(
+            self._region("| Example | ok |\n| real | %s |" % ROUND9_CLAIM),
+            "Example row plus claim row",
+        )
+
+    def test_false_claim_in_a_neighbouring_cell(self):
+        self.assertRejected(
+            self._region(
+                '| Non-authoritative example | "old wording" | %s |' % ROUND9_CLAIM
+            ),
+            "false claim in a neighbouring cell",
+        )
+
+    def test_mixed_denial_plus_enforcement_clause(self):
+        self.assertRejected(
+            self._region(
+                "This does not prove ownership, and Gate A verifies the digest."
+            ),
+            "mixed denial plus enforcement clause",
+        )
+
+    def test_region_with_two_purposes(self):
+        self.assertRejected(
+            self._region(
+                '> "Invalid wording sample."\n'
+                "This section also documents that Gate A blocks unauthorized "
+                "invocation."
+            ),
+            "region with two purposes",
+        )
+
+    def test_oversized_example_region_fails(self):
+        body = "\n".join(
+            '> "sample wording %d"' % i
+            for i in range(MAX_EXAMPLE_REGION_LINES + 2)
+        )
+        self.assertRejected(self._region(body), "oversized example region")
+
+
+class Round9LegitimateExamplesStillAccepted(unittest.TestCase):
+    """Section 10: the narrow, honest example form must keep working."""
+
+    TAIL = "Closing framing line: no runtime enforcement exists in this package.\n"
+
+    def assertAccepted(self, text, label):
+        findings = find_enforcement_overclaims(_round9_doc(text), name="T.md")
+        self.assertEqual(findings, [], "wrongly rejected (%s)" % label)
+
+    def test_each_approved_introducer_is_accepted(self):
+        for intro in _APPROVED_EXAMPLE_INTRODUCERS:
+            with self.subTest(introducer=intro):
+                self.assertAccepted(
+                    '%s:\n%s\n> "%s"\n%s\n'
+                    % (intro[0].upper() + intro[1:], _R9_BEGIN,
+                       ROUND9_CLAIM, _R9_END)
+                    + self.TAIL,
+                    "approved introducer %r" % intro,
+                )
+
+    def test_curly_quoted_exhibit_is_accepted(self):
+        self.assertAccepted(
+            "Invalid example:\n%s\n> \u201c%s\u201d\n%s\n"
+            % (_R9_BEGIN, ROUND9_CLAIM, _R9_END)
+            + self.TAIL,
+            "curly-quoted exhibit",
+        )
+
+    def test_prose_after_the_closing_marker_is_still_scanned(self):
+        findings = find_enforcement_overclaims(
+            _round9_doc(
+                'Invalid example:\n%s\n> "old wording"\n%s\n%s\n'
+                % (_R9_BEGIN, _R9_END, ROUND9_CLAIM)
+            ),
+            name="T.md",
+        )
+        self.assertTrue(findings, "text after the closing marker was not scanned")
 
 
 if __name__ == "__main__":

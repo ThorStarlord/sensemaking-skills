@@ -1338,27 +1338,32 @@ positions drawn from a closed nine-word set. It is not a general English
 semantic analyzer.
 
 Concretely, it matches a closed lexicon of enforcement verbs in four shapes.
-Rejected examples, one per shape (illustrative, non-authoritative):
+One rejected shape per row. Each exhibit is an explicit quotation; the
+label outside the quotation marks is ordinary prose and is scanned as such.
+
+Invalid example:
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
-active simple present   Gate A verifies the digest.
-emphatic do             Gate A does verify the digest.
-present progressive     Gate A is checking the digest.   (also "Gate A's checking")
-affirmative passive     The digest is verified by Gate A. / is verified before execution.
+active simple present -- "Gate A verifies the digest."
+emphatic do -- "Gate A does verify the digest."
+present progressive -- "Gate A is checking the digest."
+affirmative passive -- "The digest is verified by Gate A."
 # END_PROSE_GUARD_EXEMPTION
 ```
 
 **Adverb positions covered.** The passive grammar accepts a bounded manner
 adverb in four slots. The guard rejects all four of these when the claim
-is affirmative. Rejected examples (illustrative, non-authoritative):
+is affirmative. Each exhibit below is an explicit quotation.
+
+Invalid example:
 
 ```text
 # BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
-pre-participle    The digest is procedurally verified.
-post-participle   The digest is verified procedurally.
-pre-agent         The digest is verified procedurally by Gate A.
-post-agent        The digest is verified by Gate A procedurally.
+pre-participle -- "The digest is procedurally verified."
+post-participle -- "The digest is verified procedurally."
+pre-agent -- "The digest is verified procedurally by Gate A."
+post-agent -- "The digest is verified by Gate A procedurally."
 # END_PROSE_GUARD_EXEMPTION
 ```
 
@@ -1388,8 +1393,8 @@ subject (`no current runner verifies`). Proximity to `not`, `prohibited`,
 
 **Exemption-marker semantics.** The only exemption is an exactly paired
 `BEGIN_PROSE_GUARD_EXEMPTION` / `END_PROSE_GUARD_EXEMPTION` region. The opening
-marker requires a non-empty reason from a closed set: `quoted obsolete wording`,
-`truthful denial list`, or `non-authoritative example`. Enclosing text excludes
+marker requires a non-empty reason from a closed set: `quoted obsolete wording`
+or `non-authoritative example`. Enclosing text excludes
 it from lexical matching and does **not** make it authoritative; authoritative
 contract requirements must never be placed inside a region. The mechanism fails
 closed: a missing, blank or unknown reason, a nested region, an unmatched
@@ -1410,24 +1415,25 @@ authorization digest was accepted, hiding a real overclaim. Each reason now
 carries its own **mechanically validated content contract**, checked *before*
 the region is exempted from ordinary scanning:
 
-- `truthful denial list` -- denial-oriented introducer immediately before the
-  region; every item in explicitly negative, absence, non-implementation or
-  non-proof language; the region is additionally scanned with the ordinary
-  enforcement lexicon.
 - `quoted obsolete wording` -- historical/obsolete introducer; every line quoted
   or blockquoted; bounded to six content lines.
-- `non-authoritative example` -- explicit `Example` / `Invalid example` /
-  `Rejected example` / illustrative introducer; every line visibly illustrative.
+- `non-authoritative example` -- the whole immediately preceding line must be one
+  of a closed set of approved, non-negated introducers; every line must be an
+  explicit quotation; bounded to six content lines; and everything outside the
+  quotation marks is scanned with the shared enforcement lexicon.
 
 Region validation reuses the same enforcement lexicon as ordinary prose, so a
 valid reason **cannot hide an affirmative current-enforcement claim**, and a
 region failing its contract exempts nothing. Reason *accuracy* still receives
 manual review; an obvious semantic mismatch mechanically fails its contract.
 This remains a **deterministic lexical/structural guard**, not a general
-semantic analyzer. Both real `truthful denial list` regions were eliminated by
-rewriting them into scanned negative grammar, taking the real region count from
-six to four; `tests/test_stage1_auteur_prep_package.py` publishes a
-deterministic inventory of the remaining four.
+semantic analyzer. Both real `truthful denial list` regions were eliminated in
+round 8 by rewriting them into scanned negative grammar, and the reason itself
+was retired in round 9. Four real regions remain in checked-in files, all
+`non-authoritative example`; `tests/test_stage1_auteur_prep_package.py`
+publishes a deterministic inventory of those four. That count is for
+**checked-in files only**; the live PR body is inventoried separately and now
+contains zero exemption regions.
 
 Because the guard's scope is bounded and enumerated, it is a regression fence
 for the wordings reviewers have actually demonstrated -- not proof that no
@@ -1769,3 +1775,47 @@ instruction filling in and dating the block above. Merging the documentation
 PR that carries this revision approves this package as an accurate,
 up-to-date planning artifact; it does not fill in this block and does not
 authorize execution.
+
+**Round 9: every exemption region receives the shared enforcement scan.** The
+eighth review found that the `non-authoritative example` contract covered
+illustrative *shape* only and never reached the shared clause scanner, and it
+executed seven distinct bypasses through that hole. The following now hold for
+**every** reason, with no per-reason exception:
+
+- Every exemption region, regardless of reason, is scanned with the **same**
+  enforcement lexicon and the same clause scanner as ordinary prose.
+- **Illustrative shape alone never exempts content.** A blockquote, a table
+  row, or a two-column layout is not evidence that text is an example.
+- Introducers are **immediately and structurally bound** to the region: the
+  whole preceding non-blank, non-marker, non-fence line must itself be an
+  approved introducer.
+- A **generic or negated `example` token is insufficient**. `Example:`,
+  `Not an example:`, `Example implementation:`, `Current example:`,
+  `Production example:`, `Authoritative example:` and `Example requirement:`
+  all authorize nothing. An unbound substring search for `example` is gone.
+- **Label-column heuristics cannot authorize an exemption.** The permissive
+  `<label><two spaces><text>` rule is deleted outright rather than narrowed;
+  example content must now be an explicit quotation.
+- A **current-enforcement claim cannot hide inside any reason type.** Text
+  outside the quotation marks on every region line is scanned as ordinary
+  authoritative prose.
+- The exemption inventory is reported for **checked-in files and the live PR
+  body separately**; no scope-qualified count is stated without saying which
+  scope it covers.
+- This remains a **deterministic lexical/structural guard**, not semantic
+  English understanding.
+
+**`truthful denial list` is retired (round 9).** Round 8 rewrote both real
+denial regions as ordinary explicit negative prose, which the guard already
+accepts with no exemption at all. The live PR body's surviving instance was
+rewritten the same way in round 9. Nothing then needed the reason, so it was
+removed from the allowed set together with its validator, its introducer
+vocabulary and its positive fixtures, rather than retained for symmetry. The
+allowed set is now exactly `quoted obsolete wording` and
+`non-authoritative example`.
+
+**Approved example introducers (closed set).** `Invalid example:`,
+`Rejected example:`, `Non-authoritative example:`, `Hypothetical invalid
+wording:`, `Example of wording that must not be treated as current behavior:`.
+Headings, table rows, HTML comments, inline code and link targets are reduced
+to nothing before matching, so none of them can introduce a region.
