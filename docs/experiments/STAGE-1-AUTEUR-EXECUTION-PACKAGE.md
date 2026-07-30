@@ -1,5 +1,52 @@
 # Stage 1 Auteur Execution Package
 
+> **Superseded for the next proposed attempt.** This document remains the
+> authoritative historical record for Evidence 0013, 0014, and 0015, and its
+> §3a (model enforcement), §6a (clone-source procedure), §8 (target-mutation
+> safeguard), §9 (structural validation), §10 (substantive rubric), and §11
+> (hard-stop matrix) remain in force. The pins, evidence number, gates, and
+> stopping rules for the **next** proposed attempt (Evidence 0016, against
+> the remediated auteur target) live in
+> `docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md`, status
+> `PREPARED_NOT_RUN`. Nothing in either document authorizes execution.
+>
+> Scope split, stated precisely: this historical document remains
+> authoritative for Evidence 0013, 0014, and 0015; the new preparation package
+> governs the proposed **Evidence 0016** contract. The current preparation
+> package is **not executable**: its `execution_framework_sha` is
+> `PENDING_POST_MERGE_PIN_FINALIZATION` and stays unset until a separate
+> post-merge pin-finalization task supplies the exact full SHA. Its
+> `runtime_baseline_sha` (`1761e42f6786af422e05e128bb6608d33854f1f3`) is
+> historical preparation evidence only and does not contain the preparation
+> package, so it must never be used as the execution pin. Neither merge status
+> nor preparation status authorizes a run; a separate owner run-authorization
+> decision is required after pin finalization.
+>
+> **Evidence 0016 remains unexecutable** without a later authenticated
+> authorization record. That record must be created after PR #107 merges, stored
+> in the immutable run-control location
+> `experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/`,
+> and hashed with SHA-256. The **owner-approved digest is a distinct artifact**
+> from the authorization record itself (`owner-approval.md`): a record may not
+> approve itself, and any digest carried inside the record is informational
+> only. The future Gate A consumer must recompute the record's digest and compare
+> it to the owner-approved value before any model invocation; a mismatch, a
+> missing record, or a missing owner approval must be a hard stop. No such
+> record or approval exists today.
+>
+> **Runtime enforcement of that contract does not exist.** No Gate A
+> authorization consumer is implemented anywhere in this repository: nothing
+> loads the authorization record, validates the owner approval, recomputes any
+> digest, or blocks a model invocation on authorization state. The Evidence 0016
+> preparation contract is therefore **not executable**, and cannot be made
+> executable by filling its pending sentinels, by creating the authorization
+> files, or by obtaining owner approval. Implementing, testing, reviewing,
+> merging, and wiring that consumer into the real Stage 1 invocation path is
+> **mandatory future work** and a hard prerequisite
+> (`GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`, hard stop 24 of the
+> preparation package). The historical Evidence 0013-0015 narrative below is
+> untouched by all of this.
+
 **Date**: 2026-07-27 (revised: this revision is a documentation-only refresh
 that proposes a **new** framework execution pin for a possible future
 controlled Stage 1 attempt, after PR #99 (generic `artifact_id` routing and
@@ -277,7 +324,7 @@ PR #101 address.)
 - Unicode normalization, indentation preservation, Markdown/backtick
   formatting, and newline handling are governed by deterministic,
   code-level policy rather than model transcription fidelity.
-- Path containment and target-root authority are enforced (the extraction
+- PR #106 established path containment and target-root authority (the extraction
   path cannot escape the declared target root).
 - The strict quote-grounding validator itself is unchanged; it validates the
   now-deterministically-extracted quote against source, same as before.
@@ -545,7 +592,7 @@ Moving branch avoided: yes — an exact SHA, not a branch name, is recorded;
   local checked-out branch ever substituting for this pinned SHA.
 ```
 
-No clone of, or write to, the target repository was performed to prepare
+No clone of, or write to, the target repository took place to prepare
 this or the prior revision of this package. Resolving issue #98 involved only
 read-only inspection of a pre-existing local auteur repository's Git
 configuration (`git remote -v`, `git branch -r --contains ...`) and a
@@ -883,7 +930,7 @@ Requirements confirmed satisfied by this layout:
 
 Numbered per the required stages. Steps 1-4 and 6-10 may be run to verify the
 plan (they do not invoke the model or generate experiment evidence). Step 5
-is gated by the execution boundary and must NOT be run without separate,
+remains outside the execution boundary and must NOT be run without separate,
 explicit owner authorization.
 
 ```text
@@ -1276,6 +1323,128 @@ divergence, is a hard stop regardless of brief quality.
 
 ## 9. Structural validation protocol
 
+### Scope of the prose-honesty guard
+
+The package tests include a deterministic prose guard that scans this document,
+the Gate D checklist, and the execution package for sentences asserting that
+authorization enforcement happens *now*. It exists because the authorization
+contract below is specified but has no runtime consumer, so any present-tense
+enforcement sentence in these files would be false.
+
+**Declared scope.** This deterministic guard covers the enumerated
+active-simple-present, emphatic-do, present-progressive, and affirmative-passive
+enforcement forms used by this package, with manner adverbs recognized in four
+positions drawn from a closed nine-word set. It is not a general English
+semantic analyzer.
+
+Concretely, it matches a closed lexicon of enforcement verbs in four shapes.
+The four shapes, in the order the exhibits below appear, are: active simple
+present, emphatic `do`, present progressive, and affirmative passive. The label
+column that used to sit outside the quotation marks has been removed, because
+prose outside the quotes is precisely where half a claim can be hidden. Each
+line is now one complete quoted exhibit with no unquoted remainder.
+
+Invalid example:
+
+```text
+# BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
+"Gate A verifies the digest."
+"Gate A does verify the digest."
+"Gate A is checking the digest."
+"The digest is verified by Gate A."
+# END_PROSE_GUARD_EXEMPTION
+```
+
+**Adverb positions covered.** The passive grammar accepts a bounded manner
+adverb in four slots. The guard rejects all four of these when the claim
+is affirmative. The four slots, in the order the exhibits below appear, are:
+pre-participle, post-participle, pre-agent, and post-agent. Each line is one
+complete quoted exhibit with no unquoted remainder.
+
+Invalid example:
+
+```text
+# BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
+"The digest is procedurally verified."
+"The digest is verified procedurally."
+"The digest is verified procedurally by Gate A."
+"The digest is verified by Gate A procedurally."
+# END_PROSE_GUARD_EXEMPTION
+```
+
+**Supported manner-adverb set (exactly these nine).** `procedurally`,
+`automatically`, `currently`, `mechanically`, `deterministically`, `explicitly`,
+`directly`, `securely`, `synchronously`. The guard claims support for these
+words only, not for arbitrary English adverbs. At most two adverbs are accepted
+per slot; the grammar uses explicit bounded quantifiers, never an open span.
+
+**No manner-adverb carve-out exists.** An earlier revision allowed an agentless procedural-block phrasing on the
+grounds that such wording asserts the opposite of runtime enforcement. That exception was demonstrably bypassable in the pre-participle
+slot, so it was deleted rather than extended. Truthful statements of this kind
+are now written in plainly negative form instead --
+`The run remains non-runnable because no consumer exists.` -- which contains no
+enforcement participle and therefore needs no exception.
+
+What it deliberately does **not** do: parse arbitrary English, resolve
+coreference, model tense beyond the auxiliaries `is/are/was/were` and
+`do/does/did`, or detect paraphrase. Modal and future forms (`must verify`,
+`will recompute`, `would be verified`) are legal by design, because those are
+the truthful ways to describe a contract whose consumer does not exist.
+
+Negation counts only in the auxiliary slot of the matched construction
+(`is not verified`, `does not verify`, `is not checking`) or bound to the
+subject (`no current runner verifies`). Proximity to `not`, `prohibited`,
+`must not`, `example`, `old wording`, `future` or `required` exempts nothing.
+
+**Exemption-marker semantics.** The only exemption is an exactly paired
+`BEGIN_PROSE_GUARD_EXEMPTION` / `END_PROSE_GUARD_EXEMPTION` region. The opening
+marker requires a non-empty reason from a closed set: `quoted obsolete wording`
+or `non-authoritative example`. Enclosing text excludes
+it from lexical matching and does **not** make it authoritative; authoritative
+contract requirements must never be placed inside a region. The mechanism fails
+closed: a missing, blank or unknown reason, a nested region, an unmatched
+marker, a region longer than twelve lines, a region covering more than half a
+document, a marker inside inline code, and a near-miss spelling all exempt
+nothing. Text after a closing marker is scanned normally.
+
+These markers previously carried a name implying they enclosed only historical
+quotations. They were renamed because they also enclosed current truthful denial
+lists, so that name misdescribed their own function -- unacceptable in a package
+whose subject is documentation honesty.
+
+**Reason-content contracts (round 8).** Marker reasons are **not merely
+vocabulary labels**. Validating only marker structure and reason vocabulary was
+shown to buy nothing: a structurally perfect region carrying an allowed reason
+but containing an affirmative simple-present sentence naming Gate A and the
+authorization digest was accepted, hiding a real overclaim. Each reason now
+carries its own **mechanically validated content contract**, checked *before*
+the region is exempted from ordinary scanning:
+
+- `quoted obsolete wording` -- historical/obsolete introducer; every line quoted
+  or blockquoted; bounded to six content lines.
+- `non-authoritative example` -- the whole immediately preceding line must be one
+  of a closed set of approved, non-negated introducers; every line must be an
+  explicit quotation; bounded to six content lines; and everything outside the
+  quotation marks is scanned with the shared enforcement lexicon.
+
+Region validation reuses the same enforcement lexicon as ordinary prose, so a
+valid reason **cannot hide an affirmative current-enforcement claim**, and a
+region failing its contract exempts nothing. Reason *accuracy* still receives
+manual review; an obvious semantic mismatch mechanically fails its contract.
+This remains a **deterministic lexical/structural guard**, not a general
+semantic analyzer. Both real `truthful denial list` regions were eliminated in
+round 8 by rewriting them into scanned negative grammar, and the reason itself
+was retired in round 9. Four real regions remain in checked-in files, all
+`non-authoritative example`; `tests/test_stage1_auteur_prep_package.py`
+publishes a deterministic inventory of those four. That count is for
+**checked-in files only**; the live PR body is inventoried separately and now
+contains zero exemption regions.
+
+Because the guard's scope is bounded and enumerated, it is a regression fence
+for the wordings reviewers have actually demonstrated -- not proof that no
+dishonest sentence can ever be written. Reviewer judgement remains required.
+
+
 ### Expected validation progression (structural sequence, not a pass claim)
 
 The following is the expected order in which structural checks occur for a
@@ -1611,3 +1780,47 @@ instruction filling in and dating the block above. Merging the documentation
 PR that carries this revision approves this package as an accurate,
 up-to-date planning artifact; it does not fill in this block and does not
 authorize execution.
+
+**Round 9: every exemption region receives the shared enforcement scan.** The
+eighth review found that the `non-authoritative example` contract covered
+illustrative *shape* only and never reached the shared clause scanner, and it
+executed seven distinct bypasses through that hole. The following now hold for
+**every** reason, with no per-reason exception:
+
+- Every exemption region, regardless of reason, is scanned with the **same**
+  enforcement lexicon and the same clause scanner as ordinary prose.
+- **Illustrative shape alone never exempts content.** A blockquote, a table
+  row, or a two-column layout is not evidence that text is an example.
+- Introducers are **immediately and structurally bound** to the region: the
+  whole preceding non-blank, non-marker, non-fence line must itself be an
+  approved introducer.
+- A **generic or negated `example` token is insufficient**. `Example:`,
+  `Not an example:`, `Example implementation:`, `Current example:`,
+  `Production example:`, `Authoritative example:` and `Example requirement:`
+  all authorize nothing. An unbound substring search for `example` is gone.
+- **Label-column heuristics cannot authorize an exemption.** The permissive
+  `<label><two spaces><text>` rule is deleted outright rather than narrowed;
+  example content must now be an explicit quotation.
+- A **current-enforcement claim cannot hide inside any reason type.** Text
+  outside the quotation marks on every region line is scanned as ordinary
+  authoritative prose.
+- The exemption inventory is reported for **checked-in files and the live PR
+  body separately**; no scope-qualified count is stated without saying which
+  scope it covers.
+- This remains a **deterministic lexical/structural guard**, not semantic
+  English understanding.
+
+**`truthful denial list` is retired (round 9).** Round 8 rewrote both real
+denial regions as ordinary explicit negative prose, which the guard already
+accepts with no exemption at all. The live PR body's surviving instance was
+rewritten the same way in round 9. Nothing then needed the reason, so it was
+removed from the allowed set together with its validator, its introducer
+vocabulary and its positive fixtures, rather than retained for symmetry. The
+allowed set is now exactly `quoted obsolete wording` and
+`non-authoritative example`.
+
+**Approved example introducers (closed set).** `Invalid example:`,
+`Rejected example:`, `Non-authoritative example:`, `Hypothetical invalid
+wording:`, `Example of wording that must not be treated as current behavior:`.
+Headings, table rows, HTML comments, inline code and link targets are reduced
+to nothing before matching, so none of them can introduce a region.
