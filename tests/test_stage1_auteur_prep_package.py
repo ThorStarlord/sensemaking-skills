@@ -357,13 +357,16 @@ class FrameworkPinLifecycle(unittest.TestCase):
     def test_pending_execution_pin_blocks_authorization(self):
         self.assertEqual(self.contract["execution_authorization_status"], "NOT_AUTHORIZED")
         self.assertFalse(self.contract["package_runnable"])
-        # Round 6: the procedural nature of the block is now stated
-        # explicitly, because a bare "is blocked" passive reads as a claim
-        # that a live runtime is doing the blocking.
+        # Round 7: stated in plainly negative active form. Round 6 wrote this
+        # as "is blocked procedurally", which needed a guard carve-out to stay
+        # legal; the carve-out proved bypassable, so the sentence was rewritten
+        # instead. "remains non-runnable" contains no enforcement participle
+        # and so needs no exception at all.
         self.assertIn(
-            "blocked procedurally while execution_framework_sha is unset",
+            "The run remains non-runnable while execution_framework_sha is unset",
             self.text,
         )
+        self.assertNotIn("blocked procedurally", self.text)
 
     # 4
     def test_runtime_baseline_is_not_treated_as_execution_pin(self):
@@ -855,7 +858,7 @@ class AuthorizationSentinels(unittest.TestCase):
         self.assertEqual(self.contract["pending_sentinels"], ALL_SENTINELS)
         for sentinel in ALL_SENTINELS:
             self.assertIn(sentinel, self.text)
-            self.assertIn("blocked procedurally while", self.text)
+            self.assertIn("remains non-runnable while", self.text)
         self.assertFalse(self.contract["package_runnable"])
         self.assertEqual(
             self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
@@ -1346,15 +1349,69 @@ CHANGED_DOCS = (PACKAGE_PATH, CHECKLIST_PATH, EXEC_PACKAGE_PATH)
 # The word "prohibited" wrongly exempted the false claim "Gate A verifies".
 #
 # The line-level exemption is deleted. There is now exactly one way to exempt
-# text: enclose it in an explicitly marked quotation region delimited by
-# BEGIN_QUOTED_OLD_WORDING / END_QUOTED_OLD_WORDING lines. Everything else is
+# text: enclose it in an explicitly marked exemption region. Everything else is
 # scanned clause by clause, so a negative word in one clause can never exempt
 # another clause. Proximity to words like "example", "quoted", "future" or
 # "required" grants nothing.
+#
+# Round 7 remediation: the markers are RENAMED.
+#
+# They were called BEGIN_QUOTED_OLD_WORDING / END_QUOTED_OLD_WORDING. By round
+# 6 they also enclosed two `does_not_prove` denial lists -- current, truthful
+# statements, not quotations of superseded wording. The name misdescribed its
+# own function, in a PR whose entire purpose is documentation honesty. The
+# markers are now named for what they actually do, and every use must declare a
+# reason drawn from a closed set.
+#
+# Semantics of an exemption region:
+#   - enclosed text is intentionally excluded from deterministic lexical guard
+#     matching;
+#   - exclusion does NOT make the enclosed text authoritative;
+#   - regions are only for non-authoritative quoted, denied, or example text;
+#   - authoritative contract requirements must never be placed inside one;
+#   - every region must carry a short reason from ALLOWED_EXEMPTION_REASONS.
+#
+# Syntax (exact):
+#
+#     BEGIN_PROSE_GUARD_EXEMPTION reason="truthful denial list"
+#     ...
+#     END_PROSE_GUARD_EXEMPTION
+#
+# Fail-closed in every direction: a missing, blank or unknown reason, a nested
+# region, an unmatched marker, an oversized region, a region covering more than
+# half a document, a marker inside inline code, or a near-miss spelling all
+# exempt NOTHING.
+#
+# Deliberate limit, stated rather than hidden: the guard enforces that the
+# reason is one of the closed set, not that the reason accurately characterizes
+# the region. Whether "truthful denial list" is an honest label for a given
+# region is reviewer judgement -- it is not lexically decidable, and this suite
+# does not pretend to decide it.
 # ---------------------------------------------------------------------------
 
-QUOTED_REGION_BEGIN = "BEGIN_QUOTED_OLD_WORDING"
-QUOTED_REGION_END = "END_QUOTED_OLD_WORDING"
+PROSE_GUARD_EXEMPTION_BEGIN = "BEGIN_PROSE_GUARD_EXEMPTION"
+PROSE_GUARD_EXEMPTION_END = "END_PROSE_GUARD_EXEMPTION"
+
+# Closed reason enum. A reason outside this set fails closed.
+ALLOWED_EXEMPTION_REASONS = (
+    "quoted obsolete wording",
+    "truthful denial list",
+    "non-authoritative example",
+)
+
+# Superseded marker names. Permitted in this module ONLY as the negative
+# constants asserting their absence from governing files.
+OLD_MARKER_NAMES = ("BEGIN_QUOTED_OLD_WORDING", "END_QUOTED_OLD_WORDING")
+
+# An exemption region is a bounded quotation, never a document section.
+MAX_EXEMPTION_REGION_LINES = 12
+
+# Authoritative-requirement language. A contract requirement inside an
+# exemption region would be unscanned AND non-authoritative, which is exactly
+# the confusion the rename exists to prevent.
+_AUTHORITATIVE_REQUIREMENT_RE = re.compile(
+    r"\b(?:must|shall|is\s+required\s+to|are\s+required\s+to)\b", re.IGNORECASE
+)
 
 # Subject nouns that, in this repository's prose, denote the runtime.
 _OVERCLAIM_SUBJECT = (
@@ -1422,12 +1479,28 @@ _OVERCLAIM_RE = re.compile(
 # "must verify") never match: the auxiliary lexicon is exactly
 # is/are/was/were and do/does/did, so truthful future-tense prose stays legal.
 #
-# Procedural-mechanism carve-out: an affirmative agentless passive whose manner
-# adverb explicitly names a NON-runtime mechanism ("is blocked procedurally",
-# "is enforced manually") is allowed, because that wording asserts the opposite
-# of runtime enforcement. The carve-out is a closed adverb list, and it does
-# NOT apply when a runtime agent is named ("is blocked procedurally by Gate A"
-# is still rejected).
+# Round 7 remediation: the procedural-mechanism carve-out is DELETED.
+#
+# Round 6 added a carve-out allowing an affirmative agentless passive whose
+# manner adverb named a non-runtime mechanism ("is blocked procedurally"). The
+# sixth review showed the carve-out was bypassable, and for a structural
+# reason: the manner adverb was only ever handled in the POST-participle slot
+# ("blocked procedurally"). With the adverb in the PRE-participle slot
+# ("is procedurally blocked") the passive regex did not match at all, so the
+# agent-naming safety check never ran. Four strings walked through, two of them
+# explicitly naming a runtime agent:
+#
+#     Invocation is procedurally blocked by Gate A.
+#     The digest is procedurally verified by the runtime.
+#
+# The fix is deletion, not another exception. Manner adverbs are now ORDINARY
+# adverbs in every position: they never excuse anything. The truthful sentences
+# the carve-out existed to protect are rewritten into plainly negative form
+# ("The run remains non-runnable because no consumer exists."), which needs no
+# exception because it contains no enforcement participle at all. This removes
+# an entire exception class rather than adding a parametrized dimension --
+# growing that dimension is what produced new grammatical-position bugs in
+# rounds 5 and 6.
 # ---------------------------------------------------------------------------
 
 # Past participles of the enforcement verb lexicon.
@@ -1456,25 +1529,58 @@ _INNER_ADVERB = (
     r"(?:currently|already|now|automatically|always|actually|explicitly|"
     r"deterministically|first|then|also)"
 )
-# Manner adverbs that explicitly name a non-runtime mechanism.
-_NONRUNTIME_MANNER = (
-    r"(?:procedurally|manually|administratively|editorially|"
-    r"by\s+(?:policy|review|convention|hand|this\s+document))"
+
+# Closed set of MANNER adverbs this guard recognizes. Deliberately small and
+# specific to this package's vocabulary. The guard claims support for exactly
+# these nine words -- not for arbitrary English adverbs.
+MANNER_ADVERBS = (
+    "procedurally",
+    "automatically",
+    "currently",
+    "mechanically",
+    "deterministically",
+    "explicitly",
+    "directly",
+    "securely",
+    "synchronously",
+)
+_MANNER_ADVERB = r"(?:" + r"|".join(MANNER_ADVERBS) + r")"
+
+# Any adverb legal in the slot between auxiliary and participle.
+_PRE_PARTICIPLE_ADVERB = r"(?:" + _INNER_ADVERB + r"|" + _MANNER_ADVERB + r")"
+
+# The four adverb slots the passive grammar declares support for. Documented
+# here because "which positions are covered" is exactly what rounds 5 and 6
+# got wrong, and a reviewer must be able to read the answer without inferring
+# it from the regex.
+SUPPORTED_PASSIVE_ADVERB_POSITIONS = (
+    "pre-participle:  is procedurally verified",
+    "post-participle: is verified procedurally",
+    "pre-agent:       is verified procedurally by Gate A",
+    "post-agent:      is verified by Gate A procedurally",
 )
 
-# Affirmative passive: "<object> is|are|was|were [adv] <participle> [and
-# <participle>] [by <agent>]". Rejected unless negated in the auxiliary slot
-# or marked with a non-runtime manner adverb and carrying no runtime agent.
+# Affirmative passive:
+#
+#   <auxiliary> [negator] [adverb]{0,2} [negator] <participle>
+#       [and|or <participle>] [manner adverb]{0,2}
+#       [by <runtime agent>] [manner adverb]{0,2}
+#
+# Every quantifier is explicitly bounded: no ".*", no unrestricted word span.
+# Rejected unless a negator sits in the auxiliary slot of this very
+# construction. No manner adverb excuses anything in any position -- the
+# round-6 carve-out is gone.
 _PASSIVE_RE = re.compile(
     r"\b" + _BE_AUX + r"\s+"
     r"(?P<neg1>" + _AUX_NEGATOR + r"\s+)?"
-    r"(?:" + _INNER_ADVERB + r"\s+)*"
+    r"(?:" + _PRE_PARTICIPLE_ADVERB + r"\s+){0,2}"
     r"(?P<neg2>" + _AUX_NEGATOR + r"\s+)?"
     r"(?P<part>" + _PASSIVE_PARTICIPLE + r")"
     r"(?:\s+(?:and|or)\s+" + _PASSIVE_PARTICIPLE + r")?"
-    r"(?P<manner>\s+" + _NONRUNTIME_MANNER + r")?"
+    r"(?:\s+" + _MANNER_ADVERB + r"){0,2}"
     r"(?P<agent>\s+by\s+(?:the\s+|a\s+|an\s+|any\s+|its\s+|"
-    r"(?:\w+\s+){0,2})?" + _OVERCLAIM_SUBJECT + r")?",
+    r"(?:\w+\s+){0,2})?" + _OVERCLAIM_SUBJECT + r")?"
+    r"(?:\s+" + _MANNER_ADVERB + r"){0,2}",
     re.IGNORECASE,
 )
 
@@ -1550,66 +1656,123 @@ def _normalize_markdown(text):
     return re.sub(r"\s+", " ", text)
 
 
-def _is_region_marker(raw_line, marker):
-    """True only for a standalone marker line.
+def _strip_marker_decoration(raw_line):
+    """Reduce a candidate marker line to its bare text, or None.
 
     A marker must be the whole line (optionally wrapped in an HTML comment or
-    prefixed by a YAML '#'). Markers inside inline code, or embedded in
-    user-facing prose, are NOT markers -- otherwise the region mechanism could
-    be created dynamically from ordinary text.
+    prefixed by a YAML '#'). Markers inside inline code are NOT markers --
+    otherwise the region mechanism could be created dynamically from ordinary
+    prose that merely mentions it.
     """
     if "`" in raw_line:
-        return False
+        return None
     stripped = raw_line.strip()
     stripped = re.sub(r"^<!--\s*", "", stripped)
     stripped = re.sub(r"\s*-->$", "", stripped)
-    stripped = stripped.lstrip("#-").strip()
-    return stripped == marker
+    return stripped.lstrip("#-").strip()
 
 
-def _resolve_quoted_regions(lines):
+_EXEMPTION_BEGIN_RE = re.compile(
+    r"^" + PROSE_GUARD_EXEMPTION_BEGIN + r'\s+reason="(?P<reason>[^"]*)"$'
+)
+
+
+def _match_exemption_begin(raw_line):
+    """Classify a candidate opening marker.
+
+    Returns None (not a marker at all), ("ok", reason) or ("bad", problem).
+    """
+    stripped = _strip_marker_decoration(raw_line)
+    if stripped is None or not stripped.startswith(PROSE_GUARD_EXEMPTION_BEGIN):
+        return None
+    rest = stripped[len(PROSE_GUARD_EXEMPTION_BEGIN):]
+    if rest and not rest[0].isspace():
+        # A near-miss spelling such as BEGIN_PROSE_GUARD_EXEMPTIONS is not a
+        # marker, so it activates nothing.
+        return None
+    match = _EXEMPTION_BEGIN_RE.match(stripped)
+    if not match:
+        return (
+            "bad",
+            f'malformed {PROSE_GUARD_EXEMPTION_BEGIN}: exact syntax '
+            f'reason="..." is required',
+        )
+    reason = match.group("reason").strip()
+    if not reason:
+        return ("bad", "exemption reason is blank")
+    if reason not in ALLOWED_EXEMPTION_REASONS:
+        return ("bad", f"unknown exemption reason {reason!r}")
+    return ("ok", reason)
+
+
+def _is_exemption_end(raw_line):
+    return _strip_marker_decoration(raw_line) == PROSE_GUARD_EXEMPTION_END
+
+
+def _is_any_marker_line(raw_line):
+    return _match_exemption_begin(raw_line) is not None or _is_exemption_end(raw_line)
+
+
+def _resolve_exemption_regions(lines):
     """Return (exempt_line_numbers, structural_violations).
 
-    Fail-closed: a malformed region exempts nothing.
+    Fail-closed: any malformed region exempts nothing at all.
     """
     exempt = set()
     violations = []
     open_at = None
     for lineno, raw in enumerate(lines, start=1):
-        if _is_region_marker(raw, QUOTED_REGION_BEGIN):
+        begin = _match_exemption_begin(raw)
+        if begin is not None:
+            kind, payload = begin
+            if kind == "bad":
+                violations.append(f"line {lineno}: {payload}")
+                continue
             if open_at is not None:
                 violations.append(
-                    f"line {lineno}: nested {QUOTED_REGION_BEGIN} "
+                    f"line {lineno}: nested {PROSE_GUARD_EXEMPTION_BEGIN} "
                     f"(already open at line {open_at})"
                 )
                 continue
             open_at = lineno
-        elif _is_region_marker(raw, QUOTED_REGION_END):
+        elif _is_exemption_end(raw):
             if open_at is None:
                 violations.append(
-                    f"line {lineno}: {QUOTED_REGION_END} without a matching "
-                    f"{QUOTED_REGION_BEGIN}"
+                    f"line {lineno}: {PROSE_GUARD_EXEMPTION_END} without a "
+                    f"matching {PROSE_GUARD_EXEMPTION_BEGIN}"
                 )
                 continue
-            # Exempt only the text strictly between the markers.
-            exempt.update(range(open_at + 1, lineno))
+            body = range(open_at + 1, lineno)
+            if len(body) > MAX_EXEMPTION_REGION_LINES:
+                violations.append(
+                    f"line {open_at}: exemption region spans {len(body)} lines, "
+                    f"more than the {MAX_EXEMPTION_REGION_LINES}-line maximum"
+                )
+                open_at = None
+                continue
+            for inner in body:
+                if _AUTHORITATIVE_REQUIREMENT_RE.search(lines[inner - 1]):
+                    violations.append(
+                        f"line {inner}: authoritative requirement language "
+                        "inside an exemption region; requirements must be "
+                        "stated in scanned, authoritative prose"
+                    )
+            exempt.update(body)
             open_at = None
     if open_at is not None:
         violations.append(
-            f"line {open_at}: {QUOTED_REGION_BEGIN} was never closed; "
+            f"line {open_at}: {PROSE_GUARD_EXEMPTION_BEGIN} was never closed; "
             "the region exempts nothing"
         )
     non_blank = [
         i
         for i, raw in enumerate(lines, start=1)
-        if raw.strip()
-        and not _is_region_marker(raw, QUOTED_REGION_BEGIN)
-        and not _is_region_marker(raw, QUOTED_REGION_END)
+        if raw.strip() and not _is_any_marker_line(raw)
     ]
     exempt_non_blank = [i for i in non_blank if i in exempt]
     if non_blank and len(exempt_non_blank) * 2 > len(non_blank):
         violations.append(
-            "quoted-old-wording regions cover more than half the document; "
+            "prose-guard exemption regions cover more than half the document; "
             "an exemption region may not swallow the document"
         )
     if violations:
@@ -1624,7 +1787,7 @@ def find_enforcement_overclaims(text, name="<text>"):
     logical block before clause splitting.
     """
     lines = text.splitlines()
-    exempt, findings = _resolve_quoted_regions(lines)
+    exempt, findings = _resolve_exemption_regions(lines)
     findings = [f"{name}: {v}" for v in findings]
 
     blocks = []  # (start_lineno, joined_text)
@@ -1635,9 +1798,7 @@ def find_enforcement_overclaims(text, name="<text>"):
                 blocks.append((start, " ".join(current)))
                 current, start = [], None
             continue
-        if _is_region_marker(raw, QUOTED_REGION_BEGIN) or _is_region_marker(
-            raw, QUOTED_REGION_END
-        ):
+        if _is_any_marker_line(raw):
             if current:
                 blocks.append((start, " ".join(current)))
                 current, start = [], None
@@ -1690,15 +1851,14 @@ def find_enforcement_overclaims(text, name="<text>"):
 
             passive = _PASSIVE_RE.search(clause)
             if passive and not passive.group("neg1") and not passive.group("neg2"):
-                # A non-runtime manner adverb only excuses the claim when no
-                # runtime agent is named.
-                if not (passive.group("manner") and not passive.group("agent")):
-                    findings.append(
-                        f"{name}:{start_lineno}: passive enforcement claim "
-                        f"{passive.group(0).strip()!r} in clause "
-                        f"{clause.strip()!r}"
-                    )
-                    continue
+                # No manner-adverb carve-out: an affirmative passive
+                # enforcement claim is rejected in every adverb position.
+                findings.append(
+                    f"{name}:{start_lineno}: passive enforcement claim "
+                    f"{passive.group(0).strip()!r} in clause "
+                    f"{clause.strip()!r}"
+                )
+                continue
 
             for literal in _OVERCLAIM_LITERALS:
                 if literal in low:
@@ -2182,8 +2342,13 @@ TRUTHFUL_STRINGS = (
 )
 
 
-def _quoted_region(body):
-    return f"{QUOTED_REGION_BEGIN}\n{body}\n{QUOTED_REGION_END}\n"
+def _exempt_begin(reason="quoted obsolete wording"):
+    """A well-formed opening marker line carrying an allowed reason."""
+    return f'{PROSE_GUARD_EXEMPTION_BEGIN} reason="{reason}"'
+
+
+def _exemption_region(body, reason="quoted obsolete wording"):
+    return f"{_exempt_begin(reason)}\n{body}\n{PROSE_GUARD_EXEMPTION_END}\n"
 
 
 class StaleAuthorizationPathIsGone(unittest.TestCase):
@@ -2416,22 +2581,22 @@ class ProseGuardExemptionBoundaries(unittest.TestCase):
     def test_well_formed_region_exempts_only_enclosed_text(self):
         text = (
             "Truthful intro.\n"
-            + _quoted_region("Gate A verifies the digest.")
+            + _exemption_region("Gate A verifies the digest.")
             + "Truthful outro.\n"
         )
         self.assertEqual(find_enforcement_overclaims(text), [])
 
     # 99
     def test_region_requires_both_markers(self):
-        opened_only = QUOTED_REGION_BEGIN + "\nGate A verifies the digest.\n"
+        opened_only = _exempt_begin() + "\nGate A verifies the digest.\n"
         self.assertNotEqual(find_enforcement_overclaims(opened_only), [])
-        closed_only = "Gate A verifies the digest.\n" + QUOTED_REGION_END + "\n"
+        closed_only = "Gate A verifies the digest.\n" + PROSE_GUARD_EXEMPTION_END + "\n"
         self.assertNotEqual(find_enforcement_overclaims(closed_only), [])
 
     # 100
     def test_unclosed_region_exempts_nothing(self):
         findings = find_enforcement_overclaims(
-            QUOTED_REGION_BEGIN + "\nGate A verifies the digest.\n"
+            _exempt_begin() + "\nGate A verifies the digest.\n"
         )
         self.assertTrue(any("never closed" in f for f in findings), findings)
         self.assertTrue(any("Gate A verifies" in f for f in findings), findings)
@@ -2439,16 +2604,16 @@ class ProseGuardExemptionBoundaries(unittest.TestCase):
     # 101
     def test_nested_regions_are_rejected(self):
         text = (
-            f"{QUOTED_REGION_BEGIN}\n{QUOTED_REGION_BEGIN}\n"
+            f"{_exempt_begin()}\n{_exempt_begin()}\n"
             "Gate A verifies the digest.\n"
-            f"{QUOTED_REGION_END}\n{QUOTED_REGION_END}\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n{PROSE_GUARD_EXEMPTION_END}\n"
         )
         findings = find_enforcement_overclaims(text)
         self.assertTrue(any("nested" in f for f in findings), findings)
 
     # 102
     def test_region_cannot_cover_the_whole_document(self):
-        text = _quoted_region(
+        text = _exemption_region(
             "Gate A verifies the digest.\nThe runtime blocks invocation."
         )
         findings = find_enforcement_overclaims(text)
@@ -2459,7 +2624,7 @@ class ProseGuardExemptionBoundaries(unittest.TestCase):
         text = (
             "Truthful intro line one.\nTruthful intro line two.\n"
             "Truthful intro line three.\nTruthful intro line four.\n"
-            + _quoted_region("Old wording lived here.")
+            + _exemption_region("Old wording lived here.")
             + "Gate A verifies the digest.\n"
         )
         findings = find_enforcement_overclaims(text)
@@ -2468,17 +2633,17 @@ class ProseGuardExemptionBoundaries(unittest.TestCase):
     # 104
     def test_marker_in_inline_code_or_prose_is_not_a_marker(self):
         inline_code = (
-            f"We use `{QUOTED_REGION_BEGIN}` here.\n"
+            f"We use `{_exempt_begin()}` here.\n"
             "Gate A verifies the digest.\n"
-            f"We use `{QUOTED_REGION_END}` here.\n"
+            f"We use `{PROSE_GUARD_EXEMPTION_END}` here.\n"
         )
         findings = find_enforcement_overclaims(inline_code)
         self.assertTrue(any("Gate A verifies" in f for f in findings), findings)
 
         dynamic_prose = (
-            f"Authors may add {QUOTED_REGION_BEGIN} to quote old text.\n"
+            f"Authors may add {_exempt_begin()} to quote old text.\n"
             "Gate A verifies the digest.\n"
-            f"Authors then add {QUOTED_REGION_END} to close it.\n"
+            f"Authors then add {PROSE_GUARD_EXEMPTION_END} to close it.\n"
         )
         findings = find_enforcement_overclaims(dynamic_prose)
         self.assertTrue(any("Gate A verifies" in f for f in findings), findings)
@@ -2543,7 +2708,9 @@ ROUND6_TRUTHFUL_STRINGS = (
     "The consumer will verify the digest only after implementation and review.",
     "The contract requires the future consumer to recompute SHA-256.",
     "Digest verification is not implemented.",
-    "The package is blocked procedurally because no consumer exists.",
+    # Round 7: rewritten from "is blocked procedurally because ..." into plainly
+    # negative form. The old phrasing required a carve-out; this needs none.
+    "The package remains non-runnable because no consumer exists.",
     "The authorization digest would be verified by a future consumer after merge.",
 )
 
@@ -2570,8 +2737,10 @@ class ProseGuardScopeIsDeclared(unittest.TestCase):
             self.assertIn(
                 "This deterministic guard covers the enumerated "
                 "active-simple-present, emphatic-do, present-progressive, and "
-                "affirmative-passive enforcement forms used by this package. It "
-                "is not a general English semantic analyzer.",
+                "affirmative-passive enforcement forms used by this package, "
+                "with manner adverbs recognized in four positions drawn from a "
+                "closed nine-word set. It is not a general English semantic "
+                "analyzer.",
                 collapsed,
                 f"{path.name} must declare the guard's bounded scope",
             )
@@ -2645,13 +2814,28 @@ class ProseGuardPassiveVoice(unittest.TestCase):
                 self.assertAccepted(text)
 
     # 112
-    def test_procedural_manner_adverb_does_not_launder_a_named_agent(self):
-        # "blocked procedurally" is honest; "blocked procedurally BY GATE A"
-        # smuggles a runtime agent back in and must still be rejected.
-        self.assertAccepted(
+    def test_manner_adverb_carve_out_is_deleted(self):
+        """Round 7: no manner adverb excuses an affirmative passive anywhere.
+
+        Round 6 allowed an agentless "is blocked procedurally". That exception
+        was bypassable via the pre-participle slot, so it is deleted rather
+        than extended. Both agentless and agentful forms are now rejected, and
+        the truthful sentence is expressed without a participle at all.
+        """
+        self.assertRejected(
             "The package is blocked procedurally because no consumer exists."
         )
         self.assertRejected("The package is blocked procedurally by Gate A.")
+        self.assertRejected("The package is procedurally blocked by Gate A.")
+        # The replacement wording is legal because it makes no passive claim.
+        self.assertAccepted(
+            "The package remains non-runnable because no consumer exists."
+        )
+        # The deleted carve-out constant must not come back.
+        self.assertFalse(
+            "_NONRUNTIME_MANNER" in globals(),
+            "the manner-adverb carve-out constant must stay deleted",
+        )
 
 
 class ProseGuardAuxiliaryAndProgressive(unittest.TestCase):
@@ -2919,10 +3103,10 @@ class ProseGuardRound6MarkerInteractions(unittest.TestCase):
             "Honest intro: digest verification is not implemented.\n"
             "More honest framing so the region stays a minority of the text.\n"
             "No consumer exists, and none is wired into the invocation path.\n"
-            f"{QUOTED_REGION_BEGIN}\n"
+            f"{_exempt_begin()}\n"
             "The authorization digest is verified by Gate A.\n"
             "Gate A does verify the digest.\n"
-            f"{QUOTED_REGION_END}\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n"
             "Honest outro: no consumer exists.\n"
         )
         self.assertEqual(find_enforcement_overclaims(text, name="T.md"), [])
@@ -2933,9 +3117,9 @@ class ProseGuardRound6MarkerInteractions(unittest.TestCase):
             "Honest framing line one.\n"
             "Honest framing line two.\n"
             "Honest framing line three.\n"
-            f"{QUOTED_REGION_BEGIN}\n"
+            f"{_exempt_begin()}\n"
             "Gate A is runtime-enforced.\n"
-            f"{QUOTED_REGION_END}\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n"
             "The authorization digest is verified by Gate A.\n"
             "Gate A does verify the digest.\n"
         )
@@ -2949,9 +3133,9 @@ class ProseGuardRound6MarkerInteractions(unittest.TestCase):
             "The runner is validating the approval.\n"
             "Honest framing line one.\n"
             "Honest framing line two.\n"
-            f"{QUOTED_REGION_BEGIN}\n"
+            f"{_exempt_begin()}\n"
             "Gate A is runtime-enforced.\n"
-            f"{QUOTED_REGION_END}\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n"
         )
         findings = find_enforcement_overclaims(text, name="T.md")
         self.assertTrue(any("progressive" in f for f in findings), findings)
@@ -2961,20 +3145,24 @@ class ProseGuardRound6MarkerInteractions(unittest.TestCase):
         # Unclosed, unopened, nested, misspelled and inline-code markers all
         # fail closed.
         cases = (
-            f"{QUOTED_REGION_BEGIN}\n"
+            f"{_exempt_begin()}\n"
             "The authorization digest is verified by Gate A.\n",
             "The authorization digest is verified by Gate A.\n"
-            f"{QUOTED_REGION_END}\n",
-            f"{QUOTED_REGION_BEGIN}\n"
-            f"{QUOTED_REGION_BEGIN}\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n",
+            f"{_exempt_begin()}\n"
+            f"{_exempt_begin()}\n"
             "Gate A does verify the digest.\n"
-            f"{QUOTED_REGION_END}\n",
-            "BEGIN_QUOTED_OLD_WORDINGS\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n",
+            "BEGIN_PROSE_GUARD_EXEMPTIONS\n"
             "The runner is validating the approval.\n"
-            "END_QUOTED_OLD_WORDINGS\n",
-            f"`{QUOTED_REGION_BEGIN}`\n"
+            "END_PROSE_GUARD_EXEMPTIONS\n",
+            # Reason omitted entirely.
+            f"{PROSE_GUARD_EXEMPTION_BEGIN}\n"
+            "The runner is validating the approval.\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n",
+            f"`{_exempt_begin()}`\n"
             "Gate A does verify the digest.\n"
-            f"`{QUOTED_REGION_END}`\n",
+            f"`{PROSE_GUARD_EXEMPTION_END}`\n",
         )
         for text in cases:
             with self.subTest(text=text):
@@ -2983,11 +3171,11 @@ class ProseGuardRound6MarkerInteractions(unittest.TestCase):
     # 139
     def test_region_may_not_swallow_a_passive_heavy_document(self):
         text = (
-            f"{QUOTED_REGION_BEGIN}\n"
+            f"{_exempt_begin()}\n"
             "The authorization digest is verified by Gate A.\n"
             "Gate A does verify the digest.\n"
             "The runner is validating the approval.\n"
-            f"{QUOTED_REGION_END}\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n"
             "One honest line.\n"
         )
         findings = find_enforcement_overclaims(text, name="T.md")
@@ -3042,6 +3230,423 @@ class ConsumerHardStopUnchangedByRound6(unittest.TestCase):
         )
         self.assertFalse(
             (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
+        )
+
+
+# ---------------------------------------------------------------------------
+# Round 7: pre-participle adverb bypass + honest exemption markers
+#
+# The sixth independent review demonstrated that the round-6 "procedurally"
+# carve-out was bypassable, and that the exemption markers were misnamed. Every
+# string below is quoted verbatim from that review.
+# ---------------------------------------------------------------------------
+
+# The seven strings from the sixth review, with the classification each must
+# receive. Four of these (1, 2, 3, 6) wrongly PASSED before this round.
+SEVEN_REVIEW_STRINGS = (
+    ("Authorization is procedurally enforced.", "reject"),
+    ("The digest is procedurally verified before invocation.", "reject"),
+    ("Invocation is procedurally blocked by Gate A.", "reject"),
+    ("The package is procedurally blocked because no consumer exists.", "reject"),
+    # "prohibited" is deliberately NOT in the enforcement-participle lexicon: it
+    # states a prohibition rather than asserting that an act of enforcement
+    # happens now, and "unauthorized runs are prohibited" is truthful prose used
+    # throughout these documents. Adding it would reject honest sentences. The
+    # governing prose was rewritten so this form is unnecessary; the string is
+    # classified as accepted, with the reason recorded here rather than hidden.
+    ("Execution is procedurally prohibited pending consumer implementation.", "accept"),
+    ("The digest is procedurally verified by the runtime.", "reject"),
+    ("Authorization is blocked procedurally, but Gate A verifies the digest.", "reject"),
+)
+
+# The adverbs exercised in every declared position.
+MATRIX_ADVERBS = (
+    "procedurally",
+    "automatically",
+    "currently",
+    "mechanically",
+    "deterministically",
+)
+
+MIXED_CLAUSE_STRINGS = (
+    "The package is not runnable, but the digest is procedurally verified.",
+    "No consumer exists; nevertheless, Gate A automatically checks the record.",
+    "Runtime enforcement is absent, although authorization is mechanically "
+    "validated.",
+    "This is only an example, but the digest is deterministically compared by "
+    "Gate A.",
+    "The future consumer must verify the record, and the runtime currently "
+    "blocks invalid approval.",
+)
+
+GOVERNING_FILES = (PACKAGE_PATH, CHECKLIST_PATH, EXEC_PACKAGE_PATH)
+
+
+class ProseGuardSevenReviewStrings(unittest.TestCase):
+    """144: the exact seven strings from the sixth review."""
+
+    # 144
+    def test_seven_review_strings_are_classified_correctly(self):
+        self.assertEqual(len(SEVEN_REVIEW_STRINGS), 7)
+        for text, expected in SEVEN_REVIEW_STRINGS:
+            with self.subTest(text=text):
+                findings = find_enforcement_overclaims(text, name="T.md")
+                if expected == "reject":
+                    self.assertTrue(findings, f"NOT rejected: {text!r}")
+                else:
+                    self.assertEqual(findings, [], f"wrongly rejected: {text!r}")
+
+    def test_the_two_agent_naming_bypasses_are_closed(self):
+        """The two strings that named a runtime agent and still passed."""
+        for text in (
+            "Invocation is procedurally blocked by Gate A.",
+            "The digest is procedurally verified by the runtime.",
+        ):
+            with self.subTest(text=text):
+                findings = find_enforcement_overclaims(text, name="T.md")
+                self.assertTrue(findings, f"agent-naming bypass survives: {text!r}")
+                self.assertTrue(
+                    any("passive" in f for f in findings),
+                    f"expected a passive finding, got {findings}",
+                )
+
+
+class ProseGuardAdverbPositionMatrix(unittest.TestCase):
+    """145: every adverb in every declared position, all four polarities."""
+
+    def _matrix(self, adverb):
+        return {
+            "pre-participle": f"The digest is {adverb} verified.",
+            "post-participle": f"The digest is verified {adverb}.",
+            "pre-agent": f"The digest is verified {adverb} by Gate A.",
+            "post-agent": f"The digest is verified by Gate A {adverb}.",
+        }
+
+    # 145
+    def test_affirmative_claims_rejected_in_every_position(self):
+        for adverb in MATRIX_ADVERBS:
+            for position, text in self._matrix(adverb).items():
+                with self.subTest(adverb=adverb, position=position):
+                    self.assertTrue(
+                        find_enforcement_overclaims(text, name="T.md"),
+                        f"NOT rejected ({position}): {text!r}",
+                    )
+
+    def test_negated_forms_remain_allowed_in_every_position(self):
+        for adverb in MATRIX_ADVERBS:
+            for text in (
+                f"The digest is not {adverb} verified.",
+                f"The digest is not verified {adverb}.",
+                f"The digest is never verified {adverb} by Gate A.",
+                f"The digest is no longer verified by Gate A {adverb}.",
+            ):
+                with self.subTest(text=text):
+                    self.assertEqual(
+                        find_enforcement_overclaims(text, name="T.md"),
+                        [],
+                        f"wrongly rejected negated form: {text!r}",
+                    )
+
+    def test_future_and_required_forms_remain_allowed_in_every_position(self):
+        for adverb in MATRIX_ADVERBS:
+            for text in (
+                f"The digest must be {adverb} verified by the future consumer.",
+                f"The digest will be verified {adverb} once the consumer exists.",
+                f"The digest would be verified {adverb} by Gate A after merge.",
+                f"The future consumer should verify the digest {adverb}.",
+            ):
+                with self.subTest(text=text):
+                    self.assertEqual(
+                        find_enforcement_overclaims(text, name="T.md"),
+                        [],
+                        f"wrongly rejected future form: {text!r}",
+                    )
+
+    def test_exemption_region_is_the_only_bypass_for_every_position(self):
+        for adverb in MATRIX_ADVERBS:
+            for position, claim in self._matrix(adverb).items():
+                with self.subTest(adverb=adverb, position=position):
+                    exempted = (
+                        "Honest framing line one.\n"
+                        "Honest framing line two.\n"
+                        "Honest framing line three.\n"
+                        + _exemption_region(claim, "quoted obsolete wording")
+                        + "Honest closing line.\n"
+                    )
+                    self.assertEqual(
+                        find_enforcement_overclaims(exempted, name="T.md"), []
+                    )
+
+    def test_supported_adverb_set_and_positions_are_declared(self):
+        self.assertEqual(len(MANNER_ADVERBS), 9)
+        self.assertEqual(len(set(MANNER_ADVERBS)), 9)
+        for adverb in MATRIX_ADVERBS:
+            self.assertIn(adverb, MANNER_ADVERBS)
+        self.assertEqual(len(SUPPORTED_PASSIVE_ADVERB_POSITIONS), 4)
+        # An adverb OUTSIDE the closed set is not claimed to be supported, and
+        # the guard does not pretend otherwise.
+        self.assertEqual(
+            find_enforcement_overclaims(
+                "The digest is bureaucratically verified.", name="T.md"
+            ),
+            [],
+            "the guard must not claim coverage of adverbs outside its closed set",
+        )
+
+    def test_declared_adverb_set_appears_in_governing_documents(self):
+        for path in (PACKAGE_PATH, EXEC_PACKAGE_PATH):
+            body = path.read_text(encoding="utf-8")
+            for adverb in MANNER_ADVERBS:
+                self.assertIn(
+                    adverb, body, f"{path.name} must document adverb {adverb!r}"
+                )
+            collapsed = " ".join(body.split())
+            self.assertIn("Adverb positions covered.", collapsed)
+            self.assertIn("Supported manner-adverb set (exactly these nine).", collapsed)
+
+
+class ProseGuardMixedClauseAdversarial(unittest.TestCase):
+    """146: a truthful clause never exempts an affirmative false one."""
+
+    # 146
+    def test_mixed_clause_strings_are_rejected(self):
+        self.assertEqual(len(MIXED_CLAUSE_STRINGS), 5)
+        for text in MIXED_CLAUSE_STRINGS:
+            with self.subTest(text=text):
+                self.assertTrue(
+                    find_enforcement_overclaims(text, name="T.md"),
+                    f"mixed-clause bypass survives: {text!r}",
+                )
+
+
+class ExemptionMarkerRenameIsComplete(unittest.TestCase):
+    """147: the old marker name is gone from every governing file."""
+
+    # 147
+    def test_old_marker_names_absent_from_governing_files(self):
+        offenders = []
+        for path in GOVERNING_FILES:
+            body = path.read_text(encoding="utf-8")
+            for lineno, line in enumerate(body.splitlines(), start=1):
+                for old in OLD_MARKER_NAMES:
+                    if old in line:
+                        offenders.append(f"{path.name}:{lineno}: {old}")
+        self.assertEqual(
+            offenders,
+            [],
+            "the misleading marker name must not survive in governing files:\n"
+            + "\n".join(offenders),
+        )
+
+    def test_new_markers_are_actually_used(self):
+        used = [
+            path.name
+            for path in GOVERNING_FILES
+            if PROSE_GUARD_EXEMPTION_BEGIN in path.read_text(encoding="utf-8")
+        ]
+        self.assertTrue(used, "the renamed marker is not used anywhere")
+
+    def test_every_marker_use_declares_an_allowed_reason(self):
+        for path in GOVERNING_FILES:
+            lines = path.read_text(encoding="utf-8").splitlines()
+            for lineno, raw in enumerate(lines, start=1):
+                if PROSE_GUARD_EXEMPTION_BEGIN not in raw:
+                    continue
+                if "`" in raw:
+                    continue  # inline-code mention, not a marker
+                verdict = _match_exemption_begin(raw)
+                self.assertIsNotNone(verdict, f"{path.name}:{lineno}: not a marker")
+                kind, payload = verdict
+                self.assertEqual(
+                    kind, "ok", f"{path.name}:{lineno}: {payload}"
+                )
+                self.assertIn(payload, ALLOWED_EXEMPTION_REASONS)
+
+    def test_governing_files_have_no_overclaims_after_the_rename(self):
+        for path in GOVERNING_FILES:
+            with self.subTest(doc=path.name):
+                findings = find_enforcement_overclaims(
+                    path.read_text(encoding="utf-8"), name=path.name
+                )
+                self.assertEqual(findings, [], "\n".join(findings))
+
+
+class ExemptionMarkerReasonSemantics(unittest.TestCase):
+    """148: the reason schema fails closed in every direction."""
+
+    CLAIM = "The authorization digest is verified by Gate A."
+
+    def _doc(self, begin_line, body=None):
+        return (
+            "Honest framing line one.\n"
+            "Honest framing line two.\n"
+            "Honest framing line three.\n"
+            f"{begin_line}\n"
+            f"{self.CLAIM if body is None else body}\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n"
+            "Honest closing line.\n"
+        )
+
+    def assertNotExempted(self, text, label):
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(findings, f"wrongly exempted ({label}): {text!r}")
+
+    # 148
+    def test_well_formed_reason_exempts(self):
+        for reason in ALLOWED_EXEMPTION_REASONS:
+            with self.subTest(reason=reason):
+                self.assertEqual(
+                    find_enforcement_overclaims(
+                        self._doc(_exempt_begin(reason)), name="T.md"
+                    ),
+                    [],
+                )
+
+    def test_missing_reason_fails(self):
+        self.assertNotExempted(
+            self._doc(PROSE_GUARD_EXEMPTION_BEGIN), "missing reason"
+        )
+
+    def test_blank_reason_fails(self):
+        self.assertNotExempted(self._doc(_exempt_begin("")), "blank reason")
+        self.assertNotExempted(self._doc(_exempt_begin("   ")), "whitespace reason")
+
+    def test_unknown_reason_fails(self):
+        self.assertNotExempted(
+            self._doc(_exempt_begin("because I said so")), "unknown reason"
+        )
+
+    def test_reason_without_quotes_fails(self):
+        self.assertNotExempted(
+            self._doc(f"{PROSE_GUARD_EXEMPTION_BEGIN} reason=truthful denial list"),
+            "unquoted reason",
+        )
+
+    def test_nested_regions_fail(self):
+        text = (
+            "Honest framing line one.\n"
+            "Honest framing line two.\n"
+            "Honest framing line three.\n"
+            f"{_exempt_begin()}\n"
+            f"{_exempt_begin()}\n"
+            f"{self.CLAIM}\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n"
+            f"{PROSE_GUARD_EXEMPTION_END}\n"
+        )
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(any("nested" in f for f in findings), findings)
+
+    def test_unmatched_open_fails(self):
+        findings = find_enforcement_overclaims(
+            f"{_exempt_begin()}\n{self.CLAIM}\n", name="T.md"
+        )
+        self.assertTrue(any("never closed" in f for f in findings), findings)
+
+    def test_unmatched_close_fails(self):
+        findings = find_enforcement_overclaims(
+            f"{self.CLAIM}\n{PROSE_GUARD_EXEMPTION_END}\n", name="T.md"
+        )
+        self.assertTrue(
+            any("without a matching" in f for f in findings), findings
+        )
+
+    def test_oversized_region_fails(self):
+        body = "\n".join([self.CLAIM] * (MAX_EXEMPTION_REGION_LINES + 1))
+        padding = "\n".join(f"Honest framing line {i}." for i in range(40))
+        text = padding + "\n" + self._doc(_exempt_begin(), body)
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(
+            any("more than the" in f and "maximum" in f for f in findings), findings
+        )
+
+    def test_authoritative_requirement_inside_region_fails(self):
+        text = self._doc(
+            _exempt_begin("quoted obsolete wording"),
+            "The consumer must recompute the digest before invocation.",
+        )
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(
+            any("authoritative requirement" in f for f in findings), findings
+        )
+
+    def test_region_may_not_cover_whole_document(self):
+        findings = find_enforcement_overclaims(
+            _exemption_region(f"{self.CLAIM}\nGate A does verify the digest."),
+            name="T.md",
+        )
+        self.assertTrue(
+            any("more than half the document" in f for f in findings), findings
+        )
+
+    def test_text_after_closing_marker_is_scanned(self):
+        text = self._doc(_exempt_begin(), "Old wording lived here.") + self.CLAIM + "\n"
+        findings = find_enforcement_overclaims(text, name="T.md")
+        self.assertTrue(any("passive" in f for f in findings), findings)
+
+    def test_markers_inside_inline_code_do_not_activate(self):
+        text = (
+            f"We document `{_exempt_begin()}` here.\n"
+            f"{self.CLAIM}\n"
+            f"We document `{PROSE_GUARD_EXEMPTION_END}` here.\n"
+        )
+        self.assertNotExempted(text, "inline code")
+
+    def test_markers_in_quoted_prose_do_not_activate(self):
+        text = (
+            f"Authors may add {_exempt_begin()} to exempt text.\n"
+            f"{self.CLAIM}\n"
+            f"Authors then add {PROSE_GUARD_EXEMPTION_END} to close it.\n"
+        )
+        self.assertNotExempted(text, "prose mention")
+
+    def test_near_miss_marker_names_do_not_activate(self):
+        for begin, end in (
+            ("BEGIN_PROSE_GUARD_EXEMPTIONS", "END_PROSE_GUARD_EXEMPTIONS"),
+            ("BEGIN_PROSE_GUARD_EXEMPT", "END_PROSE_GUARD_EXEMPT"),
+            ("BEGIN_QUOTED_OLD_WORDING", "END_QUOTED_OLD_WORDING"),
+        ):
+            with self.subTest(begin=begin):
+                self.assertNotExempted(
+                    f"{begin}\n{self.CLAIM}\n{end}\n", "near miss"
+                )
+
+
+class Round7ChangedNoSafetySemantics(unittest.TestCase):
+    """149: the round-7 prose work changed no safety semantics."""
+
+    def setUp(self):
+        self.contract, self.text = _load_contract()
+
+    # 149
+    def test_consumer_hard_stop_and_status_unchanged(self):
+        self.assertIn(CONSUMER_HARD_STOP, self.text)
+        self.assertEqual(
+            self.contract["first_evaluated_hard_stop"], CONSUMER_HARD_STOP
+        )
+        self.assertEqual(
+            self.contract["gate_a_authorization_consumer_status"], "NOT_IMPLEMENTED"
+        )
+        self.assertTrue(self.contract["consumer_absence_blocks_preflight"])
+        self.assertFalse(self.contract["package_runnable"])
+        self.assertEqual(
+            self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
+        )
+        self.assertEqual(self.contract["package_status"], "PREPARED_NOT_RUN")
+        self.assertEqual(
+            self.contract["readiness_classification_before"], "Externally exercised"
+        )
+
+    def test_no_authorization_artifacts_created_by_round7(self):
+        self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
+        self.assertFalse(
+            (REPO_ROOT / self.contract["execution_authorization_record_path"]).exists()
+        )
+        self.assertFalse(
+            (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
+        )
+        self.assertFalse(
+            (REPO_ROOT / self.contract["execution_authorization_record_digest_path"])
+            .exists()
         )
 
 

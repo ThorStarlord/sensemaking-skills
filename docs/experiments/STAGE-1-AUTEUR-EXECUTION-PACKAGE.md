@@ -930,8 +930,7 @@ Requirements confirmed satisfied by this layout:
 
 Numbered per the required stages. Steps 1-4 and 6-10 may be run to verify the
 plan (they do not invoke the model or generate experiment evidence). Step 5
-is gated procedurally by the execution boundary and must NOT be run
-without separate,
+remains outside the execution boundary and must NOT be run without separate,
 explicit owner authorization.
 
 ```text
@@ -1334,19 +1333,45 @@ enforcement sentence in these files would be false.
 
 **Declared scope.** This deterministic guard covers the enumerated
 active-simple-present, emphatic-do, present-progressive, and affirmative-passive
-enforcement forms used by this package. It is not a general English semantic
-analyzer.
+enforcement forms used by this package, with manner adverbs recognized in four
+positions drawn from a closed nine-word set. It is not a general English
+semantic analyzer.
 
 Concretely, it matches a closed lexicon of enforcement verbs in four shapes:
 
 ```text
-# BEGIN_QUOTED_OLD_WORDING
+# BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
 active simple present   Gate A verifies the digest.
 emphatic do             Gate A does verify the digest.
 present progressive     Gate A is checking the digest.   (also "Gate A's checking")
 affirmative passive     The digest is verified by Gate A. / is verified before execution.
-# END_QUOTED_OLD_WORDING
+# END_PROSE_GUARD_EXEMPTION
 ```
+
+**Adverb positions covered.** The passive grammar accepts a bounded manner
+adverb in four slots. The guard rejects all four when the claim is affirmative:
+
+```text
+# BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
+pre-participle    The digest is procedurally verified.
+post-participle   The digest is verified procedurally.
+pre-agent         The digest is verified procedurally by Gate A.
+post-agent        The digest is verified by Gate A procedurally.
+# END_PROSE_GUARD_EXEMPTION
+```
+
+**Supported manner-adverb set (exactly these nine).** `procedurally`,
+`automatically`, `currently`, `mechanically`, `deterministically`, `explicitly`,
+`directly`, `securely`, `synchronously`. The guard claims support for these
+words only, not for arbitrary English adverbs. At most two adverbs are accepted
+per slot; the grammar uses explicit bounded quantifiers, never an open span.
+
+**No manner-adverb carve-out exists.** An earlier revision allowed an agentless procedural-block phrasing on the
+grounds that such wording asserts the opposite of runtime enforcement. That exception was demonstrably bypassable in the pre-participle
+slot, so it was deleted rather than extended. Truthful statements of this kind
+are now written in plainly negative form instead --
+`The run remains non-runnable because no consumer exists.` -- which contains no
+enforcement participle and therefore needs no exception.
 
 What it deliberately does **not** do: parse arbitrary English, resolve
 coreference, model tense beyond the auxiliaries `is/are/was/were` and
@@ -1358,10 +1383,24 @@ Negation counts only in the auxiliary slot of the matched construction
 (`is not verified`, `does not verify`, `is not checking`) or bound to the
 subject (`no current runner verifies`). Proximity to `not`, `prohibited`,
 `must not`, `example`, `old wording`, `future` or `required` exempts nothing.
-The only exemption is an exactly paired
-`BEGIN_QUOTED_OLD_WORDING` / `END_QUOTED_OLD_WORDING` region, which fails
-closed: a malformed, nested, unclosed or inline-code marker exempts nothing,
-and a region may not cover more than half a document.
+
+**Exemption-marker semantics.** The only exemption is an exactly paired
+`BEGIN_PROSE_GUARD_EXEMPTION` / `END_PROSE_GUARD_EXEMPTION` region. The opening
+marker requires a non-empty reason from a closed set: `quoted obsolete wording`,
+`truthful denial list`, or `non-authoritative example`. Enclosing text excludes
+it from lexical matching and does **not** make it authoritative; authoritative
+contract requirements must never be placed inside a region. The mechanism fails
+closed: a missing, blank or unknown reason, a nested region, an unmatched
+marker, a region longer than twelve lines, a region covering more than half a
+document, a marker inside inline code, and a near-miss spelling all exempt
+nothing. Text after a closing marker is scanned normally.
+
+These markers previously carried a name implying they enclosed only historical
+quotations. They were renamed because they also enclose current truthful denial
+lists, so that name misdescribed their own function -- unacceptable in a package
+whose subject is documentation honesty. The guard enforces that a reason belongs
+to the closed set; whether a chosen reason honestly characterizes its region is
+reviewer judgement, and is not claimed to be mechanically decided.
 
 Because the guard's scope is bounded and enumerated, it is a regression fence
 for the wordings reviewers have actually demonstrated -- not proof that no

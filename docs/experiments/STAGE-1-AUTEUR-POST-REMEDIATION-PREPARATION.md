@@ -409,14 +409,14 @@ pr_107_proves:
   - the package remains non-runnable
   - future consumer requirements are explicit
 pr_107_does_not_prove:
-  # BEGIN_QUOTED_OLD_WORDING
+  # BEGIN_PROSE_GUARD_EXEMPTION reason="truthful denial list"
   - an authorization consumer exists
   - Gate A is runtime-enforced
   - owner approval can currently authorize a run
   - digests are currently checked
   - model invocation is currently blocked by authorization state
   - Evidence 0016 is executable
-  # END_QUOTED_OLD_WORDING
+  # END_PROSE_GUARD_EXEMPTION
 readiness_classification_before: Externally exercised
 readiness_auto_promotion_allowed: false
 second_structurally_different_target_required: true
@@ -498,19 +498,45 @@ enforcement sentence in these files would be false.
 
 **Declared scope.** This deterministic guard covers the enumerated
 active-simple-present, emphatic-do, present-progressive, and affirmative-passive
-enforcement forms used by this package. It is not a general English semantic
-analyzer.
+enforcement forms used by this package, with manner adverbs recognized in four
+positions drawn from a closed nine-word set. It is not a general English
+semantic analyzer.
 
 Concretely, it matches a closed lexicon of enforcement verbs in four shapes:
 
 ```text
-# BEGIN_QUOTED_OLD_WORDING
+# BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
 active simple present   Gate A verifies the digest.
 emphatic do             Gate A does verify the digest.
 present progressive     Gate A is checking the digest.   (also "Gate A's checking")
 affirmative passive     The digest is verified by Gate A. / is verified before execution.
-# END_QUOTED_OLD_WORDING
+# END_PROSE_GUARD_EXEMPTION
 ```
+
+**Adverb positions covered.** The passive grammar accepts a bounded manner
+adverb in four slots. The guard rejects all four when the claim is affirmative:
+
+```text
+# BEGIN_PROSE_GUARD_EXEMPTION reason="non-authoritative example"
+pre-participle    The digest is procedurally verified.
+post-participle   The digest is verified procedurally.
+pre-agent         The digest is verified procedurally by Gate A.
+post-agent        The digest is verified by Gate A procedurally.
+# END_PROSE_GUARD_EXEMPTION
+```
+
+**Supported manner-adverb set (exactly these nine).** `procedurally`,
+`automatically`, `currently`, `mechanically`, `deterministically`, `explicitly`,
+`directly`, `securely`, `synchronously`. The guard claims support for these
+words only, not for arbitrary English adverbs. At most two adverbs are accepted
+per slot; the grammar uses explicit bounded quantifiers, never an open span.
+
+**No manner-adverb carve-out exists.** An earlier revision allowed an agentless procedural-block phrasing on the
+grounds that such wording asserts the opposite of runtime enforcement. That exception was demonstrably bypassable in the pre-participle
+slot, so it was deleted rather than extended. Truthful statements of this kind
+are now written in plainly negative form instead --
+`The run remains non-runnable because no consumer exists.` -- which contains no
+enforcement participle and therefore needs no exception.
 
 What it deliberately does **not** do: parse arbitrary English, resolve
 coreference, model tense beyond the auxiliaries `is/are/was/were` and
@@ -522,10 +548,24 @@ Negation counts only in the auxiliary slot of the matched construction
 (`is not verified`, `does not verify`, `is not checking`) or bound to the
 subject (`no current runner verifies`). Proximity to `not`, `prohibited`,
 `must not`, `example`, `old wording`, `future` or `required` exempts nothing.
-The only exemption is an exactly paired
-`BEGIN_QUOTED_OLD_WORDING` / `END_QUOTED_OLD_WORDING` region, which fails
-closed: a malformed, nested, unclosed or inline-code marker exempts nothing,
-and a region may not cover more than half a document.
+
+**Exemption-marker semantics.** The only exemption is an exactly paired
+`BEGIN_PROSE_GUARD_EXEMPTION` / `END_PROSE_GUARD_EXEMPTION` region. The opening
+marker requires a non-empty reason from a closed set: `quoted obsolete wording`,
+`truthful denial list`, or `non-authoritative example`. Enclosing text excludes
+it from lexical matching and does **not** make it authoritative; authoritative
+contract requirements must never be placed inside a region. The mechanism fails
+closed: a missing, blank or unknown reason, a nested region, an unmatched
+marker, a region longer than twelve lines, a region covering more than half a
+document, a marker inside inline code, and a near-miss spelling all exempt
+nothing. Text after a closing marker is scanned normally.
+
+These markers previously carried a name implying they enclosed only historical
+quotations. They were renamed because they also enclose current truthful denial
+lists, so that name misdescribed their own function -- unacceptable in a package
+whose subject is documentation honesty. The guard enforces that a reason belongs
+to the closed set; whether a chosen reason honestly characterizes its region is
+reviewer judgement, and is not claimed to be mechanically decided.
 
 Because the guard's scope is bounded and enumerated, it is a regression fence
 for the wordings reviewers have actually demonstrated -- not proof that no
@@ -601,8 +641,8 @@ Runtime baseline SHA: 1761e42f6786af422e05e128bb6608d33854f1f3
 
 Execution framework SHA: PENDING_POST_MERGE_PIN_FINALIZATION
   Authoritative for the live attempt. Deliberately unset in this PR, because
-  it cannot be known until PR #107 merges. The run is blocked procedurally while it holds
-  the sentinel value. See section 2a.
+  it cannot be known until PR #107 merges. The run remains non-runnable while it
+  holds the sentinel value. See section 2a.
 
 Target SHA: 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
   Re-fetched from https://github.com/ThorStarlord/auteur.git during
@@ -654,7 +694,7 @@ runtime_baseline_sha does NOT contain the Gate D checklist.
 runtime_baseline_sha does NOT contain the package-validation tests.
 execution_framework_sha is authoritative for the live attempt.
 execution_framework_sha must contain the governing preparation artifacts.
-The run is blocked procedurally while execution_framework_sha is unset.
+The run remains non-runnable while execution_framework_sha is unset.
 Merging PR #107 does NOT fill execution_framework_sha.
 Merging PR #107 does NOT authorize execution.
 A separate pin-finalization task AND a separate run-authorization task are
@@ -1481,14 +1521,15 @@ Merging the PR that carries this package approves it as an accurate planning
 Merging PR #107 does not finalize execution_framework_sha either. Two separate
   steps follow, in order: (1) a post-merge pin-finalization task, then
   (2) a separate run-authorization decision. Neither is implied by the other.
-The run is blocked procedurally while execution_framework_sha is
+The run remains non-runnable while execution_framework_sha is
   PENDING_POST_MERGE_PIN_FINALIZATION.
-The run is blocked procedurally while run_control_commit_sha is
+The run remains non-runnable while run_control_commit_sha is
   PENDING_AUTHORIZATION_RECORD_CREATION.
-The run is blocked procedurally while authorization_record_sha256 is
+The run remains non-runnable while authorization_record_sha256 is
   PENDING_OWNER_APPROVAL.
-The run is blocked procedurally because no Gate A authorization consumer exists. This block
-  is independent of the three sentinels and is NOT cleared by filling them.
+The run remains non-runnable because no Gate A authorization consumer exists.
+  This condition is independent of the three sentinels and is NOT cleared by
+  filling them.
 No authorization record exists. No owner-approval artifact exists. No
   run-control directory exists. The package is not runnable.
 Authorization requires the sole mandatory mechanism of section 2b: an
@@ -1515,14 +1556,14 @@ PR #107 **proves**:
 PR #107 **does not prove**:
 
 ```text
-# BEGIN_QUOTED_OLD_WORDING
+# BEGIN_PROSE_GUARD_EXEMPTION reason="truthful denial list"
 - an authorization consumer exists;
 - Gate A is runtime-enforced;
 - owner approval can currently authorize a run;
 - digests are currently checked;
 - model invocation is currently blocked by authorization state;
 - Evidence 0016 is executable.
-# END_QUOTED_OLD_WORDING
+# END_PROSE_GUARD_EXEMPTION
 ```
 
 PR #107 is a **preparation-contract PR**. It implements no security
