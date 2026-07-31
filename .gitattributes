@@ -1,0 +1,19 @@
+# Byte-stability for SHA-256-pinned governance documents.
+#
+# Run-control authorization records pin their governing documents by SHA-256 of
+# the documents' exact bytes. A digest is only meaningful if those bytes are
+# identical on every platform. Without `-text`, Git's end-of-line conversion
+# rewrites LF to CRLF on checkout wherever core.autocrlf is enabled (the
+# default on Windows, including GitHub's windows-latest runners), which changes
+# the file's on-disk bytes and therefore silently invalidates every digest
+# computed over them.
+#
+# `-text` disables that conversion, so these files are checked out byte-for-byte
+# as committed. Any document referenced by a `*_sha256` field in an
+# authorization record MUST be listed here.
+docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md -text
+docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md -text
+
+# The run-control tree carries its own `* -text`; this is defence in depth so a
+# deleted or moved nested .gitattributes cannot silently reintroduce the bug.
+experiments/run-control/** -text
