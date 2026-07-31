@@ -405,7 +405,16 @@ _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?;])\s+|(?<=[.!?])(?=[A-Z])")
 # to everything earlier in the sentence: otherwise one "must verify" anywhere
 # ahead would exempt every later clause, which is the sentence-scope version of
 # the blanket line-level exemption PR #107 round 5 deleted.
-_CLAUSE_SPLIT_RE = re.compile(r"[,;:|]|\s--\s|—")
+# A COORDINATING CONJUNCTION opens a new clause just as punctuation does. This
+# is the true discriminator, and it replaces the line-join rule tried in round 4:
+# "The digest is not stale and owner approval exists." coordinates a second
+# clause on one line with no punctuation at all, while "The runtime must verify
+# that / owner approval exists." is one clause merely soft-wrapped across two.
+# Bounding on the line join caught the first only by also breaking the second.
+_CLAUSE_SPLIT_RE = re.compile(
+    r"[,;:|]|\s--\s|—|\b(?:and|but|so|or|yet|because|therefore|however|"
+    r"whereas|while|although|though)\b"
+)
 
 # Lines that begin a NEW structural unit and must not be joined into the
 # preceding paragraph: list items, table rows, headings and blockquote markers.
@@ -458,7 +467,7 @@ _ADJACENT_NEGATOR_RE = re.compile(
 )
 
 
-def _is_framed(sentence, match, bad_kind, linebreaks=()):
+def _is_framed(sentence, match, bad_kind):
     """Whether explicit historical or prospective framing governs `match`.
 
     The rule is deliberately ASYMMETRIC, because the two directions are not
@@ -478,7 +487,7 @@ def _is_framed(sentence, match, bad_kind, linebreaks=()):
     verification-requirement frame, which names a condition to be checked rather
     than a fact that holds.
     """
-    boundaries, clause = _clause_before(sentence, match, linebreaks)
+    boundaries, clause = _clause_before(sentence, match)
 
     # A conditional subordinator adjacent to the noun phrase makes this a
     # condition being TESTED, not a claim about what currently holds. That is
@@ -491,13 +500,17 @@ def _is_framed(sentence, match, bad_kind, linebreaks=()):
     if bad_kind == "deny":
         # A historical prefix governs the clause it introduces, not a third
         # clause bolted on after it.
-        if _HISTORICAL_PREFIX_RE.match(sentence) and len(boundaries) <= 1:
+        # A historical prefix governs its whole sentence in the DENY direction.
+        # There is no evasion risk here: denying a now-true fact is exactly what
+        # a historical statement legitimately does. The strict rule lives in the
+        # affirm branch, where R1 showed the risk actually is.
+        if _HISTORICAL_PREFIX_RE.match(sentence):
             return True
         return _MODAL_RE.search(clause) is not None
     return _VERIFICATION_REQUIREMENT_RE.search(clause) is not None
 
 
-def _clause_before(sentence, match, linebreaks=()):
+def _clause_before(sentence, match):
     """Return (clause boundaries, the clause text preceding `match`).
 
     Everything that reasons about what governs a match uses this, so the
@@ -505,17 +518,15 @@ def _clause_before(sentence, match, linebreaks=()):
     other is what let a negator in an earlier clause suppress a later false
     claim.
 
-    `linebreaks` are offsets where a wrapped line was joined. They count as
-    boundaries for FRAMING -- otherwise a "must verify" on the first line of a
-    wrapped bullet would govern a contradiction on its continuation line, which
-    is the paragraph-scope hole reached by a different route. They deliberately
-    do NOT count for the negator lookback, which legitimately binds a noun
-    phrase across a wrap ("No third-party / owner approval exists.").
+    A soft wrap is deliberately NOT a boundary. Round 4 made line joins bound
+    framing, which did stop a frame leaking across a wrapped bullet -- but it
+    also meant reflowing a paragraph to 80 columns changed the verdict, killing
+    every legitimate frame that happened to wrap ("The consumer checks whether /
+    owner approval exists."). Coordinating conjunctions are the real
+    discriminator and are handled in `_CLAUSE_SPLIT_RE` instead.
     """
-    start = match.start()
-    before = sentence[:start]
+    before = sentence[: match.start()]
     cuts = [m.end() for m in _CLAUSE_SPLIT_RE.finditer(before)]
-    cuts.extend(offset for offset in linebreaks if offset <= start)
     clause = before[max(cuts):] if cuts else before
     return cuts, clause
 
@@ -557,10 +568,7 @@ def _split_paragraph(paragraph):
         return
     joined = ""
     offsets = []  # (start_offset, lineno)
-    joins = []  # offsets at which a wrapped line was joined
-    for index, (lineno, line) in enumerate(paragraph):
-        if index:
-            joins.append(len(joined))
+    for lineno, line in paragraph:
         offsets.append((len(joined), lineno))
         joined += line.strip() + " "
 
@@ -579,15 +587,13 @@ def _split_paragraph(paragraph):
         pos = start + len(part)
         stripped = part.strip()
         if stripped:
-            lead = len(part) - len(part.lstrip())
-            local = [j - start - lead for j in joins if start + lead <= j <= pos]
-            yield stripped, lineno_at(start), tuple(local)
+            yield stripped, lineno_at(start)
 
 
 def _scan_text_for_contradictions(text, state, name):
     findings = []
     seen = set()
-    for sentence, lineno, linebreaks in _iter_sentences(text):
+    for sentence, lineno in _iter_sentences(text):
         for fact, lexicon in FACT_LEXICONS.items():
             value = state[fact]
             # Derived polarity: a true fact may not be denied, a false fact may
@@ -595,7 +601,7 @@ def _scan_text_for_contradictions(text, state, name):
             bad_kind = "deny" if value else "affirm"
             for pattern in lexicon[bad_kind]:
                 for match in re.finditer(pattern, sentence, re.IGNORECASE):
-                    if _is_framed(sentence, match, bad_kind, linebreaks):
+                    if _is_framed(sentence, match, bad_kind):
                         continue
                     if bad_kind == "affirm" and _ADJACENT_NEGATOR_RE.search(
                         _clause_before(sentence, match)[1]
@@ -702,6 +708,39 @@ def _scan_machine_blocks(text, state, name):
     return findings
 
 
+_MACHINE_FIELD_PROSE_RE = re.compile(
+    r"\b(?P<field>" + "|".join(MACHINE_FIELD_TO_FACT) + r")\s*[:=]\s*"
+    r"[\"']?(?P<value>true|false|yes|no)\b",
+    re.IGNORECASE,
+)
+
+
+def _scan_machine_fields_as_prose(text, state, name):
+    """Catch a state field written ANYWHERE, not only inside a parsed block.
+
+    Six of the seven machine fields have no prose lexicon entry, so before this
+    they were caught only by `_scan_machine_blocks` -- which keys off the fence
+    info string and silently skips a block that fails to parse. A false
+    `owner_approval_artifact_exists: true` therefore escaped by sitting in a
+    ```text fence, in no fence at all, or in a ```yaml block containing one
+    unparseable line. The declared rule is that a fence is not a safe harbor, so
+    the field is now read as data wherever it appears.
+    """
+    findings = []
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        for match in _MACHINE_FIELD_PROSE_RE.finditer(line):
+            field = match.group("field")
+            declared = match.group("value").lower() in ("true", "yes")
+            fact = MACHINE_FIELD_TO_FACT[field]
+            if declared != state[fact]:
+                findings.append(
+                    f"{name}:{lineno}: declares {field}: "
+                    f"{str(declared).lower()} but the repository state fact "
+                    f"{fact} is {str(state[fact]).lower()}"
+                )
+    return findings
+
+
 def find_state_contradictions(text, name="<text>", state=None):
     """Return findings where `text` contradicts the derived repository state.
 
@@ -712,5 +751,8 @@ def find_state_contradictions(text, name="<text>", state=None):
     if state is None:
         state = compute_current_state()
     findings = _scan_text_for_contradictions(text, state, name)
-    findings.extend(_scan_machine_blocks(text, state, name))
+    findings.extend(_scan_machine_fields_as_prose(text, state, name))
+    for extra in _scan_machine_blocks(text, state, name):
+        if extra not in findings:
+            findings.append(extra)
     return findings

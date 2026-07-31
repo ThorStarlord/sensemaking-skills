@@ -525,6 +525,86 @@ class Round4Regressions(GuardBase):
         self.assertRejected("When reviewing the package owner approval exists.\n")
 
 
+class Round5Regressions(GuardBase):
+    """Independent-review regressions (PR #112 round 5).
+
+    Round 4 made a wrapped LINE JOIN bound framing. That stopped a frame leaking
+    across a wrapped bullet, but it also meant reflowing a paragraph to 80
+    columns changed the verdict -- killing every legitimate frame that happened
+    to wrap. Coordinating conjunctions turned out to be the real discriminator
+    for both, so the line-join rule was replaced rather than patched.
+    """
+
+    COORDINATED_CLAUSE_EVASIONS = (
+        "The digest is not stale and owner approval exists.",
+        "The record is not present so owner approval exists.",
+        "There is no digest and owner approval exists.",
+        "It is not stale therefore the package is runnable.",
+        "This is without doubt and owner approval exists.",
+        "- The runtime must verify the Gate D checklist digest before Stage 1 runs\n"
+        "  and no Gate A consumer exists today",
+        "- The reviewer must confirm the run-control inputs\n"
+        "  because owner approval exists",
+    )
+
+    def test_a_conjunction_opens_a_new_clause(self):
+        """A negator or frame cannot reach across `and`/`so`/`because`."""
+        for text in self.COORDINATED_CLAUSE_EVASIONS:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    SOFT_WRAPPED_FRAMES = (
+        "The runtime must verify that\nowner approval exists.",
+        "The consumer must confirm\nowner approval exists.",
+        "The consumer checks whether\nowner approval exists.",
+        "- The consumer checks whether\n  owner approval exists",
+        "Before PR #109,\nno such consumer exists.",
+        "Historically, the repository had gaps,\nand no Gate A consumer exists.",
+    )
+
+    def test_reflowing_a_paragraph_does_not_change_the_verdict(self):
+        """Cosmetic wrapping must never flip a legitimate sentence."""
+        for text in self.SOFT_WRAPPED_FRAMES:
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+    def test_one_line_and_wrapped_forms_agree(self):
+        for one_line in (
+            "The consumer checks whether owner approval exists.",
+            "The runtime must verify that owner approval exists.",
+        ):
+            wrapped = one_line.replace(" owner approval", "\nowner approval")
+            with self.subTest(text=one_line):
+                self.assertEqual(self.scan(one_line + "\n"), [])
+                self.assertEqual(self.scan(wrapped + "\n"), [])
+
+    MACHINE_FIELDS_OUTSIDE_A_PARSED_BLOCK = (
+        "owner_approval_artifact_exists: true",
+        "```text\nowner_approval_artifact_exists: true\n```",
+        "```console\nowner_approval_artifact_exists: true\n```",
+        "```\ngate_a_runtime_enforcement_exists: false\n```",
+        "```yaml\nowner_approval_artifact_exists: true\nbad: [\n```",
+        'owner_approval_artifact_exists = "true"',
+    )
+
+    def test_a_state_field_is_read_as_data_wherever_it_appears(self):
+        """Six of the seven fields have no prose lexicon entry; without this
+        they were caught only inside a well-formed yaml fence, so an unparseable
+        line or the wrong info string was a safe harbor."""
+        for text in self.MACHINE_FIELDS_OUTSIDE_A_PARSED_BLOCK:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    def test_truthful_machine_field_values_stay_clean(self):
+        for text in (
+            "owner_approval_artifact_exists: false",
+            "gate_a_runtime_enforcement_exists: true",
+            "```text\npackage_runnable: false\n```",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+
 class MachineBlockEvasionRegressions(GuardBase):
     """Independent-review regressions (PR #112 round 1): container gaps."""
 
@@ -721,6 +801,18 @@ DOCS_DIR = REPO_ROOT / "docs" / "experiments"
 #
 # The ratchet is expected to move in both directions as the guard is corrected.
 # What it must never do is drift silently, which exact equality prevents.
+#
+# Honest caveat about the remaining 19, rather than a round number presented as
+# if it were all one thing: four of them (preparation package lines 211, 212,
+# 1561 and 1563) are numbered items of a FUTURE verification sequence, written
+# in bare present tense and separated from their introducing frame because each
+# is its own list item. They are correctly flagged under the guard's stated
+# rules -- a bare "Authorization record exists" reads as a current-state claim --
+# but they are stale PHRASING of a future step rather than stale beliefs about
+# the consumer. The follow-up rewrite fixes them by adding the modal ("the
+# runtime must verify that the authorization record exists"), not by weakening
+# the guard. The other 15, the Gate-D entry and all three execution-package
+# entries are straightforward stale absence claims.
 KNOWN_OUTSTANDING_CONTRADICTIONS = {
     "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md": 19,
     "GATE-D-STALE-DIAGNOSIS-CHECKLIST.md": 1,
