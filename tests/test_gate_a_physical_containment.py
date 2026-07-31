@@ -706,9 +706,15 @@ def test_no_real_evidence_0016_directory_is_ever_created():
     real = REPO_ROOT / "experiments" / "evidence" / CAMPAIGN_SLUG
     assert not real.exists(), (
         f"a test created the real Evidence 0016 directory at {real}")
+    # The run-control directory is now an authorized drafted artifact. What
+    # must not exist is an operative owner approval inside it.
     run_control = REPO_ROOT / "experiments" / "run-control"
-    assert not run_control.exists(), (
-        "a test created a real run-control directory")
+    if run_control.exists():
+        approvals = [
+            p for p in run_control.rglob("owner-approval.md")
+        ]
+        assert not approvals, (
+            f"an operative owner approval exists: {approvals}")
 
 
 def test_repository_experiments_tree_is_untouched_by_this_suite():

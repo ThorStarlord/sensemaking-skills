@@ -748,23 +748,43 @@ def test_malformed_files_are_never_rewritten(tmp_path):
 
 
 def test_real_run_control_paths_are_never_touched():
-    """The real Evidence 0016 run-control directory must not exist."""
+    """No operative owner approval, and Evidence 0016 stays unused.
+
+    The run-control directory itself is now an authorized, drafted artifact
+    (the immutable run-control commit). What must never exist before an
+    explicit owner decision is the *operative approval*, and what must never
+    exist before a successful authorized run is Evidence 0016 output.
+    """
     real_rc = REPO_ROOT / "experiments" / "run-control"
-    assert not real_rc.exists(), (
-        "a real run-control directory exists; this task must not create one")
+    if real_rc.exists():
+        assert not (real_rc / EVIDENCE_SLUG / "owner-approval.md").exists(), (
+            "an operative owner approval exists; only the owner may create it")
     real_evidence = REPO_ROOT / "experiments" / "evidence" / EVIDENCE_SLUG
     assert not real_evidence.exists(), "Evidence 0016 must remain unused"
 
 
 def test_no_real_authorization_artifacts_in_the_repository():
-    for name in ("authorization-record.yaml", "authorization-record.sha256",
-                 "owner-approval.md"):
+    """Only the drafted record and its digest may exist; never an approval.
+
+    ``owner-approval.md`` must not exist anywhere in the repository. The
+    record and its digest are permitted solely at the single contract-defined
+    run-control path.
+    """
+    allowed_dir = (
+        REPO_ROOT / "experiments" / "run-control" / EVIDENCE_SLUG
+    ).resolve()
+    permitted = {
+        "authorization-record.yaml": allowed_dir,
+        "authorization-record.sha256": allowed_dir,
+        "owner-approval.md": None,
+    }
+    for name, allowed_parent in permitted.items():
         matches = [
             p for p in REPO_ROOT.rglob(name)
             if ".git" not in p.parts and "tmp" not in p.parts
-            and "scratch" not in str(p)
+            and (allowed_parent is None or p.resolve().parent != allowed_parent)
         ]
-        assert not matches, f"real authorization artifact present: {matches}"
+        assert not matches, f"unexpected authorization artifact present: {matches}"
 
 
 def test_evidence_0015_is_untouched():
