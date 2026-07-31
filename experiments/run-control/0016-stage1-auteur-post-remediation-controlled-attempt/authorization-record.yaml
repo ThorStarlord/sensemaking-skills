@@ -9,7 +9,7 @@ target_sha: 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
 exact_model: claude-sonnet-5
 artifact_type: repository_sensemaking_brief
 preparation_package_path: docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md
-preparation_package_sha256: 0ef88ff0f4431e33917a389a2879bb36bbc0f84c3371cf3f65f9272996bd3768
+preparation_package_sha256: 0eb270f4a67fc407d0c2afc059fb1c944952facd2c01ac5b8aec249145e7927b
 gate_d_checklist_path: docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
 gate_d_checklist_sha256: acc6959930359ea40dbf8d75146b9f974394452c03ef816f8f34e0d188000d40
 authorization_record_created_at: "2026-07-31T00:00:00+00:00"

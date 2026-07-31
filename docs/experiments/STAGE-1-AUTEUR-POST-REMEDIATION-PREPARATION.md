@@ -128,9 +128,12 @@ run_control_directory: experiments/run-control/0016-stage1-auteur-post-remediati
 execution_authorization_record_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.yaml
 execution_authorization_record_digest_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.sha256
 owner_approval_artifact_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/owner-approval.md
-run_control_directory_exists: false
-execution_authorization_record_exists: false
-execution_authorization_record_digest_exists: false
+# Existence is not authority. The draft record and its digest exist so the
+# authorization proposal has stable, reviewable bytes; neither is operative.
+# Only owner_approval_artifact_exists gates authority, and it is still false.
+run_control_directory_exists: true
+execution_authorization_record_exists: true
+execution_authorization_record_digest_exists: true
 owner_approval_artifact_exists: false
 # Pending sentinels. All three block execution while unset.
 run_control_commit_sha: PENDING_AUTHORIZATION_RECORD_CREATION
@@ -152,7 +155,9 @@ approval_identity_verification_required: true
 required_authorization_status_string: AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION
 authorization_digest_algorithm: sha256
 authorization_digest_format: 64_lowercase_hex
-# Required fields of the FUTURE authorization record. None of these exist yet.
+# Required fields of the authorization record. A draft record carrying these
+# fields now exists; it is a proposal awaiting owner approval, not an
+# authorization.
 authorization_record_required_fields:
   - schema_version
   - authorization_status
@@ -1015,8 +1020,12 @@ Properties this location must satisfy:
 - **distinguishable from generated evidence** — run-control artifacts are
   authored governance inputs, never model output;
 - **immutable after owner approval** — see section 2f;
-- **unavailable before the later authorization task** — the directory does
-  not exist today (`run_control_directory_exists: false`).
+- **populated only with draft, non-operative artifacts before owner
+  approval** — the directory now exists
+  (`run_control_directory_exists: true`) and holds the draft authorization
+  record and its digest, but it does not and must not contain
+  `owner-approval.md` (`owner_approval_artifact_exists: false`). Stable bytes
+  for a proposal are not an approval of it.
 
 ---
 

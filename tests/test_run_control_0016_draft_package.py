@@ -74,6 +74,27 @@ def test_draft_artifacts_present_and_approval_absent():
     assert not APPROVAL.exists()
 
 
+def test_only_the_exact_planned_artifact_set_exists():
+    """An allowlist, not a prefix rule.
+
+    Forbids: owner-approval.md anywhere, duplicate records, duplicate digests,
+    any second run-control directory, and any Evidence 0016 output smuggled in
+    under run-control.
+    """
+    root = RUN_CONTROL.parent
+    assert sorted(p.name for p in root.iterdir() if p.is_dir()) == [
+        "0016-stage1-auteur-post-remediation-controlled-attempt"
+    ], "exactly one run-control directory is permitted"
+    assert not [p for p in root.iterdir() if p.is_file()]
+    assert {p.name for p in RUN_CONTROL.rglob("*") if p.is_file()} == {
+        ".gitattributes",
+        "authorization-record.yaml",
+        "authorization-record.sha256",
+        "owner-approval.template.md",
+    }
+    assert not list(REPO_ROOT.rglob("owner-approval.md"))
+
+
 def test_record_bytes_are_lf_only_and_match_digest_file():
     raw = _record_bytes()
     assert b"\r" not in raw, "record must be LF-only so its digest is byte-stable"
