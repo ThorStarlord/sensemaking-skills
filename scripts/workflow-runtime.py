@@ -44,12 +44,20 @@ from _validator_utils import (
 )
 
 try:
-    from skill_executor import create_executor, SkillExecutionStatus, validate_model_identifier
+    from skill_executor import (
+        create_executor, SkillExecutionStatus, validate_model_identifier,
+        GateAAuthorizationRequired,
+    )
 except ImportError:
     # Graceful fallback if skill_executor not available
     create_executor = None
     SkillExecutionStatus = None
     validate_model_identifier = None
+
+    class GateAAuthorizationRequired(ValueError):
+        """Placeholder so the except clause below is always well-formed."""
+        code = "GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED"
+        detail = ""
 # -- Error codes --------------------------------------------------------------
 WORKFLOW_NOT_FOUND = "WORKFLOW_NOT_FOUND"
 WORKFLOW_INVALID = "WORKFLOW_INVALID"
@@ -208,12 +216,29 @@ class OrchestrationRunner:
         target_repo: str | None = None,
         model: str | None = None,
         controlled_experiment: bool = False,
+        authorization=None,
+        invocation_identity=None,
     ):
         self.workflow_id = workflow_id
         self.mode = mode
         self.executor_id = executor
         self.model = model
+        # Declared mode. Informational: it still drives the --model
+        # requirement and child-workflow propagation, but it is NOT the Gate A
+        # switch any more. See ADR 0022 and
+        # gate_a_authorization.classify_invocation.
         self.controlled_experiment = controlled_experiment
+        # Gate A capability (typed AuthorizedInvocation) or None. The runtime
+        # only carries it; it never validates or mints it, and it can never
+        # fabricate one. create_executor refuses a Gate-A-requiring invocation
+        # when this is None.
+        self.authorization = authorization
+        # Immutable invocation identity (issue #108 remediation). Gate A
+        # requirement is DERIVED from this, not from controlled_experiment.
+        # The runtime only carries it; a capability must have been issued for
+        # exactly this identity or consumption fails with
+        # GATE_A_INVOCATION_IDENTITY_MISMATCH.
+        self.invocation_identity = invocation_identity
         self.errors: list[str] = []
 
         # Bounded explicit-model enforcement (issue #86): a controlled
@@ -242,7 +267,14 @@ class OrchestrationRunner:
                 self.skill_executor = create_executor(
                     executor, repo_root, model=self.model,
                     controlled_experiment=self.controlled_experiment,
+                    authorization=self.authorization,
+                    invocation_identity=self.invocation_identity,
                 )
+            except GateAAuthorizationRequired as e:
+                # Gate A denial is not a model-configuration error. It gets
+                # its own deterministic code so a failed preflight is
+                # auditable and never looks like a missing --model flag.
+                self.errors.append(format_error(e.code, e.detail))
             except ValueError as e:
                 self.errors.append(format_error("MODEL_REQUIRED", str(e)))
         self.repo_root = os.path.abspath(repo_root)

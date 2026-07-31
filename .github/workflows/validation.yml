@@ -7,7 +7,156 @@ on:
     branches: [main]
 
 jobs:
+  # ==========================================================================
+  # Gate A pytest security suites (issue #108, third independent review).
+  #
+  # These are SEPARATE, clearly named checks. The repository-validation job
+  # below runs validation SCRIPTS; it does not execute a single pytest test.
+  # Before this was added, "CI green" on PR #109 meant only that the scripts
+  # passed, while the Gate A security suites had never run in CI at all and
+  # the two symlink security tests had never executed on a capable runner.
+  # A security suite that is red or never runs cannot support a merge
+  # decision, so these jobs are the load-bearing ones.
+  # ==========================================================================
+  gate-a-tests-linux:
+    name: Gate A tests (Linux)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-subtests pyyaml click
+          # The exact SDK version the Stage 1 execution package documents.
+          pip install "claude-agent-sdk==0.2.82"
+
+      - name: Probe POSIX symlink capability
+        run: |
+          python - <<'PY'
+          import os, tempfile, sys
+          d = tempfile.mkdtemp()
+          t = os.path.join(d, "t"); os.mkdir(t)
+          try:
+              os.symlink(t, os.path.join(d, "l"))
+          except OSError as e:
+              sys.exit(f"runner cannot create symlinks: {e}")
+          print("symlink capability: OK")
+          PY
+
+      - name: Gate A authorization consumer
+        run: python -m pytest tests/test_gate_a_authorization_consumer.py -q
+
+      - name: Gate A invocation boundary
+        run: python -m pytest tests/test_gate_a_invocation_boundary.py -q
+
+      - name: Stage 1 prep package
+        run: python -m pytest tests/test_stage1_auteur_prep_package.py -q
+
+      - name: Gate A path canonicalization and trust boundary
+        run: |
+          python -m pytest tests/test_gate_a_path_canonicalization.py \
+                           tests/test_gate_a_trust_boundary.py -q
+
+      - name: Gate A physical containment (symlink tests MUST execute)
+        run: |
+          set -o pipefail
+          python -m pytest tests/test_gate_a_physical_containment.py -q -rs \
+            | tee /tmp/phys.txt
+          # A silently skipped symlink test is a security gap, not a pass.
+          if grep -i "SKIPPED" /tmp/phys.txt | grep -i "symlink"; then
+            echo "::error::symlink security tests were SKIPPED on Linux CI"
+            exit 1
+          fi
+          python -m pytest tests/test_gate_a_physical_containment.py \
+            -k "symlink" -q -rs | tee /tmp/sym.txt
+          grep -qE "[1-9][0-9]* passed" /tmp/sym.txt || {
+            echo "::error::no symlink security test executed"; exit 1; }
+
+  gate-a-tests-windows:
+    name: Gate A tests (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-subtests pyyaml click
+          pip install "claude-agent-sdk==0.2.82"
+
+      - name: Probe Windows filesystem capabilities
+        # bash, not pwsh: PowerShell has no heredoc, so `python - <<'PY'`
+        # is a parse error there. git-bash ships on the windows runner.
+        shell: bash
+        run: |
+          # Automated capability probes, so a skip in the log is explained
+          # rather than assumed. Junctions need no privilege; symlinks and 8.3
+          # short-name generation may be unavailable.
+          python - <<'PY'
+          import ctypes, os, subprocess, tempfile
+          from ctypes import wintypes
+          d = tempfile.mkdtemp()
+          tgt = os.path.join(d, "target"); os.mkdir(tgt)
+          j = subprocess.run(["cmd", "/c", "mklink", "/J",
+                              os.path.join(d, "j"), tgt],
+                             capture_output=True, text=True)
+          print("junction capability:", j.returncode == 0, j.stdout.strip())
+          try:
+              os.symlink(tgt, os.path.join(d, "s"))
+              print("symlink capability: True")
+          except OSError as e:
+              print("symlink capability: False --", e)
+          f = ctypes.windll.kernel32.GetShortPathNameW
+          f.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
+          f.restype = wintypes.DWORD
+          buf = ctypes.create_unicode_buffer(1024)
+          n = f(tgt, buf, 1024)
+          print("8.3 short-name generation:",
+                bool(n) and buf.value.casefold() != tgt.casefold(), buf.value)
+          PY
+
+      - name: Gate A authorization consumer
+        run: python -m pytest tests/test_gate_a_authorization_consumer.py -q
+
+      - name: Gate A invocation boundary
+        run: python -m pytest tests/test_gate_a_invocation_boundary.py -q
+
+      - name: Stage 1 prep package
+        run: python -m pytest tests/test_stage1_auteur_prep_package.py -q
+
+      - name: Gate A path canonicalization and trust boundary
+        run: |
+          python -m pytest tests/test_gate_a_path_canonicalization.py tests/test_gate_a_trust_boundary.py -q
+
+      - name: Gate A physical containment (trailing dot, junctions, 8.3, ADS)
+        run: python -m pytest tests/test_gate_a_physical_containment.py -q -rs
+
+      - name: Assert the repository tree was not mutated by the suites
+        shell: bash
+        run: |
+          git status --porcelain
+          test -z "$(git status --porcelain)" || {
+            echo "::error::test run dirtied the working tree"; exit 1; }
+          test ! -e "experiments/evidence/0016-stage1-auteur-post-remediation-controlled-attempt" || {
+            echo "::error::a real Evidence 0016 directory was created"; exit 1; }
+
   validate:
+    name: Repository validation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

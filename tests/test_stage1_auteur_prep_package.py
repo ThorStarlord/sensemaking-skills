@@ -1204,10 +1204,14 @@ class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
             self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
         )
         collapsed = " ".join(self.text.split())
+        # The consumer now exists, so the enforceability half of this sentence
+        # flipped. The half that matters -- no record, no approval, not
+        # runnable -- did not.
         self.assertIn(
-            "no Gate A authorization consumer exists, so no authorization state "
-            "is enforceable. No authorization record exists. No owner approval "
-            "exists.",
+            "a Gate A authorization consumer exists and is enforcing, so "
+            "authorization state is now enforceable. No authorization record "
+            "exists. No owner approval exists. No execution pin is finalized. "
+            "The package is not runnable.",
             collapsed,
         )
         self.assertIn("There is no alternative mechanism.", collapsed)
@@ -1306,6 +1310,50 @@ CONSUMER_HARD_STOP = "GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED"
 RUNTIME_SOURCE_DIRS = ("scripts", "src", "sensemaking_skills")
 
 # Markers that would indicate a real authorization consumer had been added.
+def enforcement_claims_are_permitted():
+    """Whether the changed documents may state Gate A enforcement in the present tense.
+
+    The prose guard exists to stop this package claiming enforcement it does
+    not have. Its correct scope is therefore CONDITIONAL, not absolute:
+
+    * while the consumer is NOT_IMPLEMENTED, any present-tense enforcement
+      claim is false and must be rejected -- this is the original defect the
+      guard was written to catch;
+    * once the consumer is implemented, wired, and proven at the invocation
+      boundary, such a claim is simply true, and a guard that still rejected
+      it would force the document to UNDERSTATE reality -- the mirror image of
+      the same defect.
+
+    The guard is not weakened by this. Revert or unwire the consumer and every
+    present-tense claim in these documents becomes a test failure again,
+    because this helper reads the live contract and checks the real files.
+    """
+    contract, _ = _load_contract()
+    if contract["gate_a_authorization_consumer_status"] != "IMPLEMENTED":
+        return False
+    if not contract["gate_a_authorization_consumer_wired_to_stage1"]:
+        return False
+    if not contract["gate_a_runtime_enforcement_exists"]:
+        return False
+    # Claiming enforcement requires the enforcing code AND its boundary proof.
+    return (
+        (REPO_ROOT / "scripts" / "gate_a_authorization.py").is_file()
+        and (REPO_ROOT / "tests" / "test_gate_a_invocation_boundary.py").is_file()
+    )
+
+
+def assert_no_unpermitted_overclaims(testcase, findings, label):
+    """Reject enforcement claims unless the consumer genuinely backs them."""
+    if enforcement_claims_are_permitted():
+        return
+    testcase.assertEqual(
+        findings,
+        [],
+        f"present-tense runtime-enforcement claims in {label} while the Gate A "
+        f"consumer is not implemented and wired:\n" + "\n".join(findings),
+    )
+
+
 CONSUMER_IMPLEMENTATION_MARKERS = (
     "authorization_record_sha256",
     "authorization-record.yaml",
@@ -2422,48 +2470,83 @@ class GateAConsumerStatusFields(unittest.TestCase):
         self.contract, self.text = _load_contract()
 
     # 51
-    def test_consumer_status_is_not_implemented(self):
+    def test_consumer_status_is_implemented_and_enforcing(self):
+        """The consumer landed. The claim is checked against real files.
+
+        Flipping this status to IMPLEMENTED is only truthful if the consumer
+        source AND the invocation-boundary test suite actually exist, so this
+        asserts both rather than trusting the YAML.
+        """
         self.assertEqual(
-            self.contract["gate_a_authorization_consumer_status"], "NOT_IMPLEMENTED"
+            self.contract["gate_a_authorization_consumer_status"], "IMPLEMENTED"
         )
-        self.assertFalse(self.contract["gate_a_runtime_enforcement_exists"])
+        self.assertTrue(self.contract["gate_a_runtime_enforcement_exists"])
+        self.assertTrue(
+            (REPO_ROOT / "scripts" / "gate_a_authorization.py").is_file()
+        )
+        self.assertTrue(
+            (REPO_ROOT / "tests" / "test_gate_a_invocation_boundary.py").is_file(),
+            "IMPLEMENTED is only honest if the invocation boundary is tested",
+        )
 
     # 52
     def test_consumer_is_marked_required(self):
         self.assertTrue(self.contract["gate_a_authorization_consumer_required"])
 
     # 53
-    def test_consumer_path_is_pending(self):
-        self.assertEqual(
-            self.contract["gate_a_authorization_consumer_path"],
-            "PENDING_IMPLEMENTATION",
+    def test_consumer_path_points_at_real_files(self):
+        consumer_path = self.contract["gate_a_authorization_consumer_path"]
+        self.assertEqual(consumer_path, "scripts/gate_a_authorization.py")
+        self.assertTrue(
+            (REPO_ROOT / consumer_path).is_file(),
+            "the declared consumer path must resolve to a real file",
         )
-        self.assertEqual(
-            self.contract["gate_a_consumer_integration_point"],
-            "PENDING_ARCHITECTURAL_DECISION",
+        integration_point = self.contract["gate_a_consumer_integration_point"]
+        module, _, symbol = integration_point.partition("::")
+        self.assertEqual(module, "scripts/skill_executor.py")
+        self.assertTrue((REPO_ROOT / module).is_file())
+        self.assertIn(
+            "class " + symbol,
+            (REPO_ROOT / module).read_text(encoding="utf-8"),
+            "the declared integration point must name a real class",
         )
-        # A pending path must never be mistaken for a real one.
-        self.assertFalse(
-            (REPO_ROOT / "PENDING_IMPLEMENTATION").exists()
-        )
+        # No sentinel may survive as a path.
+        self.assertFalse((REPO_ROOT / "PENDING_IMPLEMENTATION").exists())
 
     # 54
-    def test_consumer_is_not_wired_to_stage1(self):
-        self.assertFalse(
+    def test_consumer_is_wired_to_stage1(self):
+        """Wired means the invocation path imports AND consumes the capability."""
+        self.assertTrue(
             self.contract["gate_a_authorization_consumer_wired_to_stage1"]
+        )
+        executor = (REPO_ROOT / "scripts" / "skill_executor.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("from gate_a_authorization import", executor)
+        self.assertIn("require_authorization_capability", executor)
+        self.assertIn(
+            ".consume(",
+            executor,
+            "the capability must be consumed at the provider boundary, not "
+            "merely validated somewhere earlier",
         )
 
     # 55
-    def test_consumer_tests_are_not_implemented(self):
+    def test_consumer_tests_are_implemented(self):
         self.assertEqual(
             self.contract["gate_a_authorization_consumer_tests_status"],
-            "NOT_IMPLEMENTED",
+            "IMPLEMENTED",
         )
-        self.assertFalse(
+        self.assertTrue(
             self.contract[
                 "gate_a_consumer_required_test_categories_implemented_in_this_pr"
             ]
         )
+        for suite in (
+            "tests/test_gate_a_authorization_consumer.py",
+            "tests/test_gate_a_invocation_boundary.py",
+        ):
+            self.assertTrue((REPO_ROOT / suite).is_file(), suite)
 
     # 56
     def test_document_tests_are_not_runtime_enforcement_tests(self):
@@ -2471,12 +2554,12 @@ class GateAConsumerStatusFields(unittest.TestCase):
             self.contract["contract_tests_are_runtime_enforcement_tests"],
             "this suite must never claim to prove runtime enforcement",
         )
-        self.assertFalse(
+        self.assertTrue(
             self.contract[
                 "gate_a_authorization_verification_steps_are_current_runtime_behavior"
             ]
         )
-        self.assertTrue(
+        self.assertFalse(
             self.contract["gate_a_authorization_verification_steps_are_future_contract"]
         )
 
@@ -2525,12 +2608,27 @@ class AuthorizationCannotOutrunTheConsumer(unittest.TestCase):
         )
 
     # 61
-    def test_consumer_hard_stop_is_not_waivable(self):
+    def test_consumer_hard_stop_is_retired_but_still_unwaivable(self):
+        """The hard stop stopped firing because its condition was FIXED.
+
+        It was not waived and not deleted: it remains among the 24 and remains
+        non-waivable, so deleting the consumer would make it fire again.
+        """
         self.assertFalse(
             self.contract["gate_a_authorization_consumer_hard_stop_waivable"]
         )
-        self.assertTrue(
+        self.assertFalse(
             self.contract["gate_a_authorization_consumer_not_implemented_is_active"]
+        )
+        self.assertIn(
+            CONSUMER_HARD_STOP,
+            self.contract["authorization_hard_stop_conditions"],
+            "the hard stop must be retired by satisfaction, never removed",
+        )
+        # Retiring one hard stop must not make the package runnable.
+        self.assertFalse(self.contract["package_runnable"])
+        self.assertEqual(
+            self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
         )
 
 
@@ -2542,9 +2640,15 @@ class ConsumerHardStop(unittest.TestCase):
         self.stops = self.contract["authorization_hard_stop_conditions"]
 
     # 62
-    def test_consumer_hard_stop_exists(self):
+    def test_consumer_hard_stop_still_listed_but_no_longer_first(self):
         self.assertIn(CONSUMER_HARD_STOP, self.stops)
+        # The consumer now exists, so the first STILL-FIRING hard stop is the
+        # pending execution pin.
         self.assertEqual(
+            self.contract["first_evaluated_hard_stop"],
+            "GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING",
+        )
+        self.assertNotEqual(
             self.contract["first_evaluated_hard_stop"], CONSUMER_HARD_STOP
         )
         # It is documented in the hard-stop table too, not only in YAML.
@@ -2696,10 +2800,24 @@ class ConsumerAbsenceBlocksPreflight(unittest.TestCase):
 
 
 class NoPresentTenseEnforcementClaims(unittest.TestCase):
-    """74-75: repository-wide prose guard over the changed documents."""
+    """74-75: repository-wide prose guard over the changed documents.
+
+    The guard exists to stop the package claiming enforcement it does not
+    have. It is therefore CONDITIONAL on the consumer status rather than
+    absolute: while `gate_a_authorization_consumer_status` is NOT_IMPLEMENTED,
+    a present-tense enforcement claim is a lie and is rejected. Once the
+    consumer is implemented and wired, such a claim is simply true, and a
+    guard that still rejected it would be forcing the document to understate
+    reality -- the mirror image of the defect it was written to prevent.
+
+    The guard is not weakened: revert the consumer, and every present-tense
+    claim in these documents becomes a test failure again.
+    """
 
     # 74
     def test_no_present_tense_runtime_enforcement_claims_in_changed_docs(self):
+        contract, _ = _load_contract()
+        status = contract["gate_a_authorization_consumer_status"]
         offenders = []
         for path in CHANGED_DOCS:
             self.assertTrue(path.is_file(), f"changed doc missing: {path}")
@@ -2708,10 +2826,41 @@ class NoPresentTenseEnforcementClaims(unittest.TestCase):
                     path.read_text(encoding="utf-8"), name=path.name
                 )
             )
-        self.assertEqual(
-            offenders,
+        if status == "NOT_IMPLEMENTED":
+            self.assertFalse(enforcement_claims_are_permitted())
+            self.assertEqual(
+                offenders,
+                [],
+                "present-tense runtime-enforcement claims found while the "
+                "consumer is NOT_IMPLEMENTED:\n" + "\n".join(offenders),
+            )
+            return
+        self.assertTrue(enforcement_claims_are_permitted())
+
+        # Consumer implemented: enforcement claims are permitted, but only
+        # because the enforcing code and its boundary proof genuinely exist.
+        self.assertEqual(status, "IMPLEMENTED", f"unknown consumer status: {status}")
+        self.assertTrue(contract["gate_a_authorization_consumer_wired_to_stage1"])
+        self.assertTrue((REPO_ROOT / "scripts" / "gate_a_authorization.py").is_file())
+        self.assertTrue(
+            (REPO_ROOT / "tests" / "test_gate_a_invocation_boundary.py").is_file()
+        )
+        # Claiming enforcement must still never coincide with claiming
+        # authorization.
+        self.assertFalse(contract["package_runnable"])
+        self.assertEqual(contract["execution_authorization_status"], "NOT_AUTHORIZED")
+
+    # 74b
+    def test_prose_guard_still_detects_overclaims(self):
+        """The detector itself must not have been defanged."""
+        lie = (
+            "The runner verifies the authorization record before invocation.\n"
+            "Gate A recomputes the digest and blocks unauthorized runs.\n"
+        )
+        self.assertNotEqual(
+            find_enforcement_overclaims(lie, name="synthetic.md"),
             [],
-            "present-tense runtime-enforcement claims found:\n" + "\n".join(offenders),
+            "the prose-guard detector no longer detects overclaims",
         )
 
     # 75
@@ -2822,18 +2971,25 @@ class Pr107ClaimsAreBounded(unittest.TestCase):
         self.assertEqual(len(self.contract["stale_diagnosis_tripwires"]), 8)
 
 
-class NoConsumerImplementedByThisPR(unittest.TestCase):
-    """80: this PR adds no consumer, and the repo still contains none."""
+class ConsumerImplementedWithoutAuthorizingAnything(unittest.TestCase):
+    """80: the consumer now exists in runtime sources -- and authorizes nothing.
+
+    This test was originally the guard proving PR #107 added no consumer. The
+    consumer PR flips its direction: the authorization *mechanism* must now be
+    present in runtime sources, while every authorization *artifact* must still
+    be absent. Those are independent facts, and conflating them is exactly the
+    failure mode the preparation package exists to prevent.
+    """
 
     def setUp(self):
         self.contract, self.text = _load_contract()
 
     # 80
-    def test_no_consumer_implementation_file_is_added_by_this_pr(self):
-        self.assertFalse(
+    def test_consumer_exists_in_runtime_sources(self):
+        self.assertTrue(
             self.contract["consumer_implementation_file_added_by_this_pr"]
         )
-        offenders = []
+        implementers = []
         for directory in RUNTIME_SOURCE_DIRS:
             root = REPO_ROOT / directory
             if not root.is_dir():
@@ -2846,16 +3002,43 @@ class NoConsumerImplementedByThisPR(unittest.TestCase):
                 body = path.read_text(encoding="utf-8", errors="replace")
                 for marker in CONSUMER_IMPLEMENTATION_MARKERS:
                     if marker in body:
-                        offenders.append(f"{path.relative_to(REPO_ROOT)}: {marker}")
-        self.assertEqual(
-            offenders,
-            [],
-            "a Gate A authorization consumer appears to exist in runtime "
-            "sources; the package's NOT_IMPLEMENTED claim would then be false "
-            "and must be corrected:\n" + "\n".join(offenders),
+                        implementers.append(str(path.relative_to(REPO_ROOT)))
+        self.assertIn(
+            "scripts/gate_a_authorization.py",
+            {p.replace("\\", "/") for p in implementers},
+            "the Gate A consumer must exist in runtime sources now that the "
+            "package claims IMPLEMENTED",
         )
-        # And the run-control artifacts still do not exist.
+
+    # 80b -- the half that must NOT change
+    def test_implementing_the_consumer_created_no_authorization_artifacts(self):
+        """A mechanism is not an authorization."""
         self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
+        for key in (
+            "execution_authorization_record_path",
+            "execution_authorization_record_digest_path",
+            "owner_approval_artifact_path",
+        ):
+            self.assertFalse(
+                (REPO_ROOT / self.contract[key]).exists(),
+                f"{key} must not exist: implementing the consumer does not "
+                f"authorize a run",
+            )
+        self.assertFalse(self.contract["package_runnable"])
+        self.assertEqual(
+            self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
+        )
+        self.assertEqual(self.contract["package_status"], "PREPARED_NOT_RUN")
+        self.assertEqual(
+            self.contract["execution_framework_sha"],
+            "PENDING_POST_MERGE_PIN_FINALIZATION",
+            "this PR must not finalize the execution pin",
+        )
+        self.assertFalse(self.contract["evidence_directory_created"])
+        self.assertEqual(
+            self.contract["readiness_classification_before"],
+            "Externally exercised",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -3799,7 +3982,7 @@ class ProseGuardRound6RealDocuments(unittest.TestCase):
                 findings = find_enforcement_overclaims(
                     path.read_text(encoding="utf-8"), name=path.name
                 )
-                self.assertEqual(findings, [], "\n".join(findings))
+                assert_no_unpermitted_overclaims(self, findings, path.name)
 
 
 class ConsumerHardStopUnchangedByRound6(unittest.TestCase):
@@ -3810,9 +3993,14 @@ class ConsumerHardStopUnchangedByRound6(unittest.TestCase):
 
     # 141
     def test_consumer_hard_stop_semantics_unchanged(self):
+        """Round 6 changed no safety semantics, and neither did the consumer PR.
+
+        The consumer *status* legitimately changed; every safety value asserted
+        below did not.
+        """
         self.assertIn(CONSUMER_HARD_STOP, self.text)
         self.assertEqual(
-            self.contract["gate_a_authorization_consumer_status"], "NOT_IMPLEMENTED"
+            self.contract["gate_a_authorization_consumer_status"], "IMPLEMENTED"
         )
         self.assertTrue(self.contract["consumer_absence_blocks_preflight"])
         self.assertFalse(self.contract["package_runnable"])
@@ -4073,7 +4261,7 @@ class ExemptionMarkerRenameIsComplete(unittest.TestCase):
                 findings = find_enforcement_overclaims(
                     path.read_text(encoding="utf-8"), name=path.name
                 )
-                self.assertEqual(findings, [], "\n".join(findings))
+                assert_no_unpermitted_overclaims(self, findings, path.name)
 
 
 class ExemptionMarkerReasonSemantics(unittest.TestCase):
@@ -4230,13 +4418,14 @@ class Round7ChangedNoSafetySemantics(unittest.TestCase):
         self.contract, self.text = _load_contract()
 
     # 149
-    def test_consumer_hard_stop_and_status_unchanged(self):
+    def test_consumer_hard_stop_and_safety_values_unchanged(self):
         self.assertIn(CONSUMER_HARD_STOP, self.text)
         self.assertEqual(
-            self.contract["first_evaluated_hard_stop"], CONSUMER_HARD_STOP
+            self.contract["first_evaluated_hard_stop"],
+            "GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING",
         )
         self.assertEqual(
-            self.contract["gate_a_authorization_consumer_status"], "NOT_IMPLEMENTED"
+            self.contract["gate_a_authorization_consumer_status"], "IMPLEMENTED"
         )
         self.assertTrue(self.contract["consumer_absence_blocks_preflight"])
         self.assertFalse(self.contract["package_runnable"])
@@ -5367,11 +5556,12 @@ class Round10RealExemptionRegionsMeetTheGrammar(unittest.TestCase):
             if not path.exists():
                 continue
             with self.subTest(doc=rel):
-                self.assertEqual(
+                assert_no_unpermitted_overclaims(
+                    self,
                     find_enforcement_overclaims(
                         path.read_text(encoding="utf-8"), name=rel
                     ),
-                    [],
+                    rel,
                 )
 
 
