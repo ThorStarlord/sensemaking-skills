@@ -424,9 +424,16 @@ _ZERO_WIDTH_RE = re.compile(r"[​-‏  ﻿­]")
 # claim: "The consumer checks whether owner approval exists." describes what is
 # tested, not what is true. Must sit adjacent to the matched noun phrase, at the
 # start of the clause or immediately before it.
+# Only a determiner or qualifier from a CLOSED set may sit between the
+# subordinator and the fact's noun phrase. Arbitrary words would let idioms and
+# participles pose as conditionals: "After all owner approval exists." and
+# "When reviewing the package owner approval exists." are assertions, not
+# conditions, and neither "all" nor "reviewing the package" is a qualifier.
+_QUALIFIER = r"(?:the|a|an|any|its|valid|required|signed|approved|current)"
+
 _CONDITIONAL_RE = re.compile(
     r"\b(?:whether|if|once|when|unless|until|after|before|provided\s+that|"
-    r"in\s+case|as\s+soon\s+as|only\s+if)\s+(?:\w+[\s-]+){0,3}$",
+    r"in\s+case|as\s+soon\s+as|only\s+if)\s+(?:" + _QUALIFIER + r"\s+){0,2}$",
     re.IGNORECASE,
 )
 
@@ -434,8 +441,15 @@ _CONDITIONAL_RE = re.compile(
 # into a denial: "No authorization record exists." asserts absence, not presence.
 # Adjacency, not proximity -- at most two intervening words, in keeping with the
 # discipline PR #107 round 5 established when it deleted line-level exemptions.
+#
+# Each intervening token must START with a word character. A bare "--" is not a
+# word: without that requirement the class `[\s-]+` swallowed the em-dash that
+# _CLAUSE_SPLIT_RE treats as a clause boundary, so "The digest is not stale --
+# Stage 1 is authorized." suppressed its own false claim using the guard's own
+# declared boundary. Hyphens INSIDE a token stay legal ("No third-party owner
+# approval exists.").
 _ADJACENT_NEGATOR_RE = re.compile(
-    r"\b(?:no|neither|nor|not|never|without)\s+(?:\w+[\s-]+){0,3}$", re.IGNORECASE
+    r"\b(?:no|neither|nor|not|never|without)\s+(?:\w[\w-]*\s+){0,2}$", re.IGNORECASE
 )
 
 
@@ -459,11 +473,15 @@ def _is_framed(sentence, match, bad_kind):
     verification-requirement frame, which names a condition to be checked rather
     than a fact that holds.
     """
-    before = sentence[: match.start()]
-    # Framing is scoped to the clause containing the match. A frame in an
-    # earlier clause governs that clause, not this one.
-    boundaries = list(_CLAUSE_SPLIT_RE.finditer(before))
-    clause = before[boundaries[-1].end():] if boundaries else before
+    boundaries, clause = _clause_before(sentence, match)
+
+    # A conditional subordinator adjacent to the noun phrase makes this a
+    # condition being TESTED, not a claim about what currently holds. That is
+    # true in BOTH directions: "If no Gate A consumer exists, the runtime
+    # refuses to run." describes the merged consumer's own behavior and is not
+    # a stale absence claim.
+    if _CONDITIONAL_RE.search(clause):
+        return True
 
     if bad_kind == "deny":
         # A historical prefix governs the clause it introduces, not a third
@@ -471,11 +489,21 @@ def _is_framed(sentence, match, bad_kind):
         if _HISTORICAL_PREFIX_RE.match(sentence) and len(boundaries) <= 1:
             return True
         return _MODAL_RE.search(clause) is not None
-    # A conditional subordinator adjacent to the noun phrase makes this a
-    # condition being tested, not a claim that it currently holds.
-    if _CONDITIONAL_RE.search(clause):
-        return True
     return _VERIFICATION_REQUIREMENT_RE.search(clause) is not None
+
+
+def _clause_before(sentence, match):
+    """Return (clause boundaries, the clause text preceding `match`).
+
+    Everything that reasons about what governs a match uses this, so the
+    negator lookback is scoped exactly like framing is. Scoping one but not the
+    other is what let a negator in an earlier clause suppress a later false
+    claim.
+    """
+    before = sentence[: match.start()]
+    boundaries = list(_CLAUSE_SPLIT_RE.finditer(before))
+    clause = before[boundaries[-1].end():] if boundaries else before
+    return boundaries, clause
 
 
 def _iter_sentences(text):
@@ -551,7 +579,7 @@ def _scan_text_for_contradictions(text, state, name):
                     if _is_framed(sentence, match, bad_kind):
                         continue
                     if bad_kind == "affirm" and _ADJACENT_NEGATOR_RE.search(
-                        sentence[: match.start()]
+                        _clause_before(sentence, match)[1]
                     ):
                         # "No authorization record exists." denies the fact and
                         # is therefore truthful while the fact is false.

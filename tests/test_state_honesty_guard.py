@@ -389,6 +389,73 @@ class ConditionalsAreNotAssertions(GuardBase):
         )
 
 
+class NegatorLookbackIsClauseScoped(GuardBase):
+    """Independent-review regressions (PR #112 round 3).
+
+    Round 2 scoped FRAMING to the clause but left the negator lookback
+    searching the whole prefix, and its character class swallowed the em-dash
+    that `_CLAUSE_SPLIT_RE` treats as a boundary. A negator in an earlier clause
+    therefore suppressed a later false claim, using the guard's own declared
+    boundary to do it. A whole synthetic document of false claims scored zero.
+    """
+
+    CROSS_CLAUSE_NEGATOR_EVASIONS = (
+        "Gate A is not yet closed -- owner approval exists.",
+        "The digest is not stale -- Stage 1 is authorized.",
+        "The plan is not final -- Evidence 0016 exists.",
+        "Approval was never blocked - owner approval exists.",
+        "The record is not yet complete but owner approval exists.",
+    )
+
+    def test_a_negator_in_another_clause_does_not_suppress(self):
+        for text in self.CROSS_CLAUSE_NEGATOR_EVASIONS:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    def test_a_document_of_dash_separated_false_claims_is_caught(self):
+        doc = (
+            "- Gate A is not yet closed -- owner approval exists.\n"
+            "- The digest is not stale -- Stage 1 is authorized.\n"
+            "| Approval | not blocked - owner approval exists |\n"
+        )
+        self.assertEqual(len(self.scan(doc)), 3)
+
+    def test_adjacent_negators_still_govern(self):
+        """The legitimate direction is untouched, hyphenated words included."""
+        for text in (
+            "No owner approval exists.",
+            "No third-party owner approval exists.",
+            "No authorization record exists.",
+            "No Stage 1 run is authorized by this revision.",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+    SUBORDINATOR_ABUSE = (
+        "After all owner approval exists.",
+        "When reviewing the package owner approval exists.",
+    )
+
+    def test_idioms_and_participles_cannot_pose_as_conditionals(self):
+        for text in self.SUBORDINATOR_ABUSE:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    DENY_CONDITIONALS = (
+        "If no Gate A consumer exists, the runtime refuses to run.",
+        "The runtime raises an error when no Gate A consumer exists.",
+    )
+
+    def test_conditionals_are_handled_in_the_deny_direction_too(self):
+        """These describe the merged consumer's behavior; neither is stale."""
+        for text in self.DENY_CONDITIONALS:
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+    def test_a_qualifier_may_sit_between_subordinator_and_noun_phrase(self):
+        self.assertAccepted("If the required owner approval exists, Gate A proceeds.\n")
+
+
 class MachineBlockEvasionRegressions(GuardBase):
     """Independent-review regressions (PR #112 round 1): container gaps."""
 
