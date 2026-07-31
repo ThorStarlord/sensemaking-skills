@@ -888,24 +888,39 @@ After PR #107 merges, and only then:
 2. That task verifies the merged SHA contains: this preparation package; the
    Gate D checklist; the package-validation tests; the PR #106 runtime fix;
    current model enforcement; current validators and safety controls.
-3. It records that exact full 40-character SHA — never abbreviated, never a
-   branch ref — in a separate focused PR.
-4. It runs package validation.
-5. That pin-finalization PR is merged.
-6. Only then may a separate owner-level task decide whether to authorize the
-   live attempt. Pin finalization is not authorization.
+3. That exact full 40-character SHA — never abbreviated, never a branch ref —
+   is *selected* at this point, but it is **not written into this package**.
+   No PR writes an execution pin into this document. The selected SHA is
+   recorded only later, inside the future immutable `authorization-record.yaml`
+   described in section 2b, in that record's own `execution_framework_sha`
+   field.
+4. Selecting the SHA is a prerequisite for authoring the authorization record;
+   it is not itself an edit to any governing artifact.
+5. Only then may a separate owner-level task decide whether to authorize the
+   live attempt and create that authorization record.
+   Pin finalization is not authorization.
+
+The framework SHA selected under this procedure is
+`cad8ef227d6c20a28e786e90c0401f776f4b7b51` (the canonical merge commit of
+PR #109 on `main`). Recording it here as prose is descriptive history, not an
+execution pin: it is inert until an owner-approved authorization record carries
+it, and the machine-readable contract above still reads
+`PENDING_POST_MERGE_PIN_FINALIZATION`.
 
 ### Chosen mechanism: owner-approved external immutable authorization record
 
-The final executable pin should normally be the merge commit of the
-pin-finalization PR itself, since that is the first immutable commit
-containing the finalized field. A document cannot contain its own future merge
-SHA, so this package does **not** attempt to. Instead:
+A document cannot contain its own future merge SHA, and this package does
+**not** attempt to. It also does not delegate that job to a later PR against
+itself. Instead:
 
 - This package's machine-readable contract keeps
   `execution_framework_sha: PENDING_POST_MERGE_PIN_FINALIZATION` permanently.
   The preparation package remains the **governing contract**, not the pin
-  carrier.
+  carrier. The sentinel is permanent and is never replaced: it means "no
+  operative authorization record currently supplies the execution pin", not
+  "a value is owed to this field". Any future PR that proposes to write a SHA
+  into this field, or to add a second finalized-pin field beside it, is
+  out of contract and must be rejected.
 - A separate immutable **authorization record**, created only after this
   preparation PR merges, carries the **execution pin**.
 - The future Gate A consumer must consume the authorization record as the
