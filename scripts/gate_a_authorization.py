@@ -52,7 +52,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePath, PurePosixPath
 from typing import Callable, Literal, Optional
 
 try:  # pragma: no cover - exercised implicitly by every test
@@ -434,6 +434,33 @@ GATE_A_OUTPUT_PATH_ESCAPE = "GATE_A_OUTPUT_PATH_ESCAPE"
 GATE_A_OUTPUT_PATH_AMBIGUOUS = "GATE_A_OUTPUT_PATH_AMBIGUOUS"
 GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE = "GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE"
 
+# -- third-review physical-containment failure codes -------------------------
+# Each of these means "we could not establish where this path physically
+# lands". None of them may ever degrade to ordinary development.
+GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED = (
+    "GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED")
+GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS = (
+    "GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS")
+GATE_A_OUTPUT_PATH_OUTSIDE_FRAMEWORK_ROOT = (
+    "GATE_A_OUTPUT_PATH_OUTSIDE_FRAMEWORK_ROOT")
+GATE_A_OUTPUT_PATH_ALIAS_MISMATCH = "GATE_A_OUTPUT_PATH_ALIAS_MISMATCH"
+GATE_A_OUTPUT_PATH_UNANCHORABLE = "GATE_A_OUTPUT_PATH_UNANCHORABLE"
+GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED = (
+    "GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED")
+
+#: Every code meaning "physical containment could not be established". None of
+#: these may ever be treated as evidence of ordinary development.
+PHYSICAL_CONTAINMENT_FAILURE_CODES = frozenset({
+    GATE_A_OUTPUT_PATH_AMBIGUOUS,
+    GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE,
+    GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED,
+    GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS,
+    GATE_A_OUTPUT_PATH_OUTSIDE_FRAMEWORK_ROOT,
+    GATE_A_OUTPUT_PATH_ALIAS_MISMATCH,
+    GATE_A_OUTPUT_PATH_UNANCHORABLE,
+    GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED,
+})
+
 #: A directory name inside an evidence namespace: `NNNN-slug`.
 EVIDENCE_DIR_NAME_RE = re.compile(r"^(\d{4})-([A-Za-z0-9._-]+)$")
 
@@ -568,59 +595,145 @@ def canonicalize_path(value) -> CanonicalPath:
     )
 
 
+def has_colon_component(canon: CanonicalPath) -> bool:
+    """True when any path COMPONENT carries a colon.
+
+    On Windows a colon inside a component is NTFS alternate-data-stream or
+    drive-relative syntax (``experiments:x``, ``dir:stream``, ``dir::$DATA``).
+    Those forms do not mean what their spelling suggests and Win32 resolves
+    them inconsistently, so Gate A rejects them outright rather than letting a
+    failed evidence parse read as ordinary development. The drive prefix is
+    stripped by `canonicalize_path` before `parts` is built, so a legitimate
+    ``C:\\...`` never trips this.
+    """
+    return any(":" in p for p in canon.parts)
+
+
+def anchor_output_path(value, framework_root) -> tuple[Optional[Path], Optional[str]]:
+    """THE anchoring primitive. Returns ``(anchored_absolute_path, failure)``.
+
+    A relative output path is interpreted as ``framework_root / value`` and
+    NEVER against:
+
+      * process CWD;
+      * test-runner CWD;
+      * a caller-selected CWD;
+      * the current script directory;
+      * environment variables.
+
+    This is the third-review root cause: `resolve_containment` used to build
+    ``Path(str(value))``, which Python resolves against `os.getcwd()`. With a
+    CWD outside the framework root, every relative alias of the campaign
+    directory missed the physical pass entirely and fell back to a lexical
+    parse that reported ORDINARY_DEVELOPMENT. A caller running `os.chdir()`
+    must not be able to change a classification.
+    """
+    canon = canonicalize_path(value)
+    if canon.is_absolute or canon.drive:
+        return Path(str(value)), None
+    if framework_root in (None, ""):
+        # A relative path with no authoritative anchor cannot be placed. That
+        # is ambiguity, never ordinariness.
+        return None, GATE_A_OUTPUT_PATH_UNANCHORABLE
+    return Path(str(framework_root)).joinpath(*canon.parts) if canon.parts \
+        else Path(str(framework_root)), None
+
+
 def resolve_containment(value, root) -> tuple[Optional[Path], Optional[str]]:
     """PHYSICAL containment check. Returns ``(resolved_or_None, failure_code)``.
 
-    Lexical canonicalization cannot see symlinks, junctions or reparse points.
-    This resolves the nearest EXISTING ancestor of `value` and re-checks
-    containment in the resolved `root`. The final component is allowed not to
-    exist -- an output directory that has not been created yet is normal, and
-    requiring it to exist would mean classification depended on whether the
-    attacker had already made the directory.
+    Explicit sequence -- path INTERPRETATION is separated from filesystem
+    RESOLUTION, and interpretation always happens first:
 
-    Fails closed: any OSError (permission denied, broken reparse point, too
-    many levels of symbolic links) yields GATE_A_OUTPUT_PATH_AMBIGUOUS rather
-    than a permissive "probably fine".
+      1. validate input type;
+      2. select the authoritative anchor (`framework_root`);
+      3. build the anchored absolute path;
+      4. lexical normalization;
+      5. identify the nearest existing ancestor;
+      6. physically resolve that ancestor;
+      7. append the unresolved suffix;
+      8. evaluate containment against the PHYSICALLY RESOLVED framework root;
+      9. produce the canonical repository-relative identity.
+
+    The final component is allowed not to exist -- an output directory that has
+    not been created yet is normal, and requiring existence would make
+    classification depend on whether the attacker had already made the
+    directory. This function never creates anything.
+
+    Fails closed. Any OSError (permission denied, broken reparse point, symlink
+    loop, inaccessible ancestor, unsupported path form) yields an explicit
+    failure code. There is no "no physical signal, carry on lexically" branch:
+    that branch was the bypass.
     """
-    if value in (None, "") or root in (None, ""):
+    # 1. validate input type
+    if value in (None, ""):
         return None, None
-    try:
-        target = Path(str(value))
-        root_path = Path(str(root))
-        try:
-            real_root = root_path.resolve(strict=False)
-        except OSError:
-            return None, GATE_A_OUTPUT_PATH_AMBIGUOUS
+    if not isinstance(value, (str, os.PathLike, PurePath)):
+        return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
+    if root in (None, ""):
+        return None, None
 
-        existing = target
+    canon = canonicalize_path(value)
+    # Colon-bearing components are rejected BEFORE any filesystem contact.
+    if has_colon_component(canon):
+        return None, GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED
+
+    try:
+        # 2/3. anchor to the framework root -- never to CWD.
+        anchored, anchor_failure = anchor_output_path(value, root)
+        if anchor_failure:
+            return None, anchor_failure
+
+        # 6. resolve the framework root itself, with the same semantics, so
+        #    step 8 never compares a resolved candidate to an unresolved root.
+        try:
+            real_root = Path(str(root)).resolve(strict=False)
+        except OSError:
+            return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
+
+        # 5. nearest existing ancestor
+        existing = anchored
         unresolved: list[str] = []
         guard = 0
-        while not existing.exists() and existing.parent != existing and guard < 256:
-            unresolved.append(existing.name)
-            existing = existing.parent
-            guard += 1
+        try:
+            while (not existing.exists() and existing.parent != existing
+                   and guard < 256):
+                unresolved.append(existing.name)
+                existing = existing.parent
+                guard += 1
+        except OSError:
+            return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
         if guard >= 256:
-            return None, GATE_A_OUTPUT_PATH_AMBIGUOUS
+            return None, GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS
+
+        # 6. physically resolve it (follows junctions, symlinks, 8.3 names,
+        #    trailing-dot/space Win32 normalization and case aliases).
         try:
             resolved_ancestor = existing.resolve(strict=False)
         except OSError:
-            return None, GATE_A_OUTPUT_PATH_AMBIGUOUS
+            return None, GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS
+        if not resolved_ancestor.is_absolute():
+            # Resolution that did not produce an absolute path tells us
+            # nothing about physical location.
+            return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
 
+        # 7. append the unresolved suffix
         resolved = resolved_ancestor.joinpath(*reversed(unresolved))
-        canon = canonicalize_path(resolved)
+
+        # 8. component-aware containment against the resolved root
+        canon_res = canonicalize_path(resolved)
         canon_root = canonicalize_path(real_root)
-        rel = canon.relative_to_root(canon_root)
+        rel = canon_res.relative_to_root(canon_root)
         if rel is None:
-            # Outside the framework root. That is not automatically a failure
-            # (ordinary development writes to tmp dirs), so report the resolved
-            # path and let the caller decide; only flag a genuine escape when
-            # the LEXICAL form claimed to be inside.
-            lex_rel = canonicalize_path(value).relative_to_root(canon_root)
+            # An ANCHORED path that resolves outside the root escaped through a
+            # reparse point. A path that was absolute and outside to begin with
+            # is ordinary development writing elsewhere.
+            lex_rel = canonicalize_path(anchored).relative_to_root(canon_root)
             if lex_rel is not None:
                 return resolved, GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE
         return resolved, None
-    except (OSError, ValueError):  # pragma: no cover - defensive
-        return None, GATE_A_OUTPUT_PATH_AMBIGUOUS
+    except (OSError, ValueError):
+        return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
 
 
 EvidenceParseStatus = Literal[
@@ -747,7 +860,20 @@ def parse_evidence_path(value, framework_root=None) -> EvidencePathIdentity:
 
     lexical_identity = _parse_canonical_parts(parts, canon)
 
+    # A colon-bearing component is rejected before anything else. It must not
+    # read as ordinary merely because the evidence parse failed on it.
+    if has_colon_component(canon):
+        return EvidencePathIdentity(
+            under_experiments=True, under_evidence_namespace=False,
+            evidence_number=None, evidence_slug=None,
+            canonical_relative_path=canon.lexical,
+            parse_status="AMBIGUOUS_EVIDENCE_PATH",
+            containment_failure=GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED)
+
     # -- physical pass ----------------------------------------------------
+    # Authoritative. Physical filesystem identity overrides textual spelling:
+    # a trailing-dot alias, a junction, an 8.3 short name or a case variant all
+    # land on the same inode, and that is what decides classification.
     physical_identity = None
     containment_failure = None
     if framework_root:
@@ -755,9 +881,11 @@ def parse_evidence_path(value, framework_root=None) -> EvidencePathIdentity:
         containment_failure = code
         if resolved is not None:
             rcanon = canonicalize_path(resolved)
-            rroot = canonicalize_path(Path(str(framework_root)).resolve(strict=False)
-                                      if os.path.exists(str(framework_root))
-                                      else framework_root)
+            try:
+                real_root = Path(str(framework_root)).resolve(strict=False)
+            except OSError:
+                real_root = framework_root
+            rroot = canonicalize_path(real_root)
             rrel = rcanon.relative_to_root(rroot)
             rparts = (tuple(p for p in str(rrel).split("/") if p not in ("", "."))
                       if rrel is not None else rcanon.parts)
@@ -765,7 +893,14 @@ def parse_evidence_path(value, framework_root=None) -> EvidencePathIdentity:
 
     best = lexical_identity
     if physical_identity is not None:
-        if _control_rank(physical_identity) > _control_rank(lexical_identity):
+        # `>=`, not `>`: physical filesystem identity is AUTHORITATIVE over
+        # textual spelling, so it also wins a tie. A trailing-dot final
+        # component (`.../0016-...-attempt.`) parses lexically as a VALID
+        # evidence directory whose SLUG carries the dot -- same control rank,
+        # wrong identity. Preferring the physical parse is what makes two
+        # spellings of one directory produce ONE identity, which is what stops
+        # an alias from obtaining a second capability for the same output.
+        if _control_rank(physical_identity) >= _control_rank(lexical_identity):
             best = physical_identity
     if containment_failure:
         # Uncertainty about where this lands is itself ambiguity.

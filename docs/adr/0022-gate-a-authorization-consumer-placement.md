@@ -237,6 +237,126 @@ validated digests and revisions, plus revalidation at the invocation site.**
   canonical `main` SHA *after* this consumer merges and is independently
   verified. Setting it to this branch head would be a self-referential pin.
 
+## Third independent review: the physical-containment bypass
+
+A third adversarial review reproduced TWO further complete bypasses on a
+surface neither earlier review touched: **physical** filesystem identity.
+
+With the process CWD deliberately different from `framework_root`, these two
+relative spellings each classified `ORDINARY_DEVELOPMENT`, required no
+authorization, and would have permitted a provider call:
+
+```
+experiments./evidence/0016-stage1-auteur-post-remediation-controlled-attempt
+jexp/evidence/0016-stage1-auteur-post-remediation-controlled-attempt
+```
+
+(`jexp` being an NTFS junction to `experiments`.) `os.path.samefile()` proved
+both reached the physical Evidence 0016 campaign directory.
+
+### Root cause: CWD anchoring
+
+`resolve_containment()` built `Path(str(value))` from a RELATIVE output path.
+Python interprets that against `os.getcwd()`. When CWD was not the framework
+root, the physical pass examined a path that did not exist, learned nothing,
+and silently fell back to a purely LEXICAL parse. Lexically, `experiments.` and
+`jexp` are not the component `experiments`, so the parse returned
+`OUTSIDE_EXPERIMENTS` and the classifier called it ordinary development.
+
+Two decisions combined to make this exploitable: interpreting a
+security-relevant relative path against caller-controlled state, and treating
+"no physical signal" as permission to continue lexically.
+
+### The invariant
+
+> Every relative path is interpreted relative to the authorized framework
+> root -- never process CWD -- and physical filesystem identity overrides
+> textual spelling.
+
+### Relative paths are anchored to the framework root
+
+`anchor_output_path(value, framework_root)` is now the single anchoring
+primitive. A relative path becomes `framework_root / value` before any
+filesystem contact, and is never resolved against process CWD, test-runner
+CWD, a caller-selected CWD, the script directory, or environment variables. A
+caller invoking `os.chdir()` cannot change a classification. A relative path
+with no anchor available is `GATE_A_OUTPUT_PATH_UNANCHORABLE` -- ambiguous,
+never ordinary.
+
+### Interpretation is separated from resolution
+
+`resolve_containment()` follows an explicit sequence: validate input type;
+select the authoritative anchor; build the anchored absolute path; normalize
+lexically; find the nearest existing ancestor; physically resolve it; append
+the unresolved suffix; evaluate containment against the **physically resolved**
+framework root; produce the canonical repository-relative identity. Physical
+resolution never precedes anchoring, and the framework root is resolved with
+the same semantics as the candidate so a resolved path is never compared to an
+unresolved root.
+
+### Lexical/physical disagreement fails closed
+
+When the two parses disagree, the **physical** identity wins -- including on a
+control-rank tie, which is what a trailing dot on the final component
+produces. Anything that physically lands under `experiments/` or
+`experiments/evidence/` is controlled or ambiguous, never ordinary.
+
+### Fail-closed resolution
+
+Missing permissions, invalid Windows namespace syntax, junction/reparse
+failure, symlink loops, inaccessible ancestors, drive mismatch and filesystem
+API errors now yield explicit codes rather than a permissive silence:
+
+```
+GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
+GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS
+GATE_A_OUTPUT_PATH_OUTSIDE_FRAMEWORK_ROOT
+GATE_A_OUTPUT_PATH_ALIAS_MISMATCH
+GATE_A_OUTPUT_PATH_UNANCHORABLE
+GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED
+```
+
+Colon-bearing components (`experiments:x`, `dir:stream`, `dir::$DATA`) are
+rejected before classification rather than being called ordinary because the
+evidence parse failed on them.
+
+Junctions, trailing-dot and trailing-space forms, 8.3 short names, case
+aliases and extended-length `\?\` paths are all handled by resolving to
+physical identity and comparing whole components, never string prefixes.
+
+### The mutation harness now refuses a red baseline
+
+The previous harness counted a mutation as killed whenever the suite exited
+non-zero. It never asserted a green baseline and never checked WHICH test
+failed. The focused baseline was in fact **red** (9 failures), so the reported
+kills were potentially vacuous. The harness now proves a green baseline first,
+aborts with `BASELINE_RED` if it cannot, requires a named EXPECTED test to
+fail per mutation, and re-verifies restoration afterwards. It runs fifteen
+mutations: the original ten plus five targeting this defect (CWD resolution,
+skipped physical resolution, ignored reparse results, lexical-trust on
+disagreement, and unresolved-root comparison).
+
+### The nine red tests
+
+All nine shared one root cause: `os.path.relpath(expected_output_path,
+repo_root)` raises `ValueError` when the two are on different Windows drives.
+That crashed prompt construction *before* the Gate A boundary, turning specific
+Gate A error codes into a generic failure and breaking the positive
+exactly-one-invocation proof. Presentation-only relative paths now fall back to
+the absolute path; containment decisions never used this value.
+
+### Gate A tests now run in CI
+
+`.github/workflows/validation.yml` previously ran validation SCRIPTS only --
+not one pytest test. The Gate A security suites had never executed in CI and
+the symlink security tests had never run on a capable runner. Two new,
+clearly named jobs now exist: **Gate A tests (Linux)** (Python 3.11 and 3.12,
+with a symlink capability probe and a hard failure if any symlink security
+test is skipped) and **Gate A tests (Windows)** (trailing-dot, junction, 8.3,
+ADS and CWD-anchoring coverage, plus a working-tree mutation check). The
+existing script job is retained as **Repository validation**. "CI green" is
+only meaningful when the pytest jobs are green.
+
 ## Status rationale
 
 PROPOSED, not Accepted. The first submission was reviewed adversarially and
@@ -399,9 +519,11 @@ cannot evade them:
   only -- it is not an authorization input);
 - the exact campaign model.
 
-A committed mutation harness (`tests/mutation_harness.py`) runs ten mutations,
-including reverting `_norm_path` to the old weak form and restoring the deleted
-runtime regex. All ten are killed. It is committed so the next reviewer can
+A committed mutation harness (`tests/mutation_harness.py`) runs these
+mutations, including reverting `_norm_path` to the old weak form and restoring
+the deleted runtime regex. All are killed. (The harness was later expanded to
+fifteen mutations and taught to refuse a red baseline -- see the third-review
+section below.) It is committed so the next reviewer can
 re-run it rather than take this document on trust.
 
 ## Ordinary-development boundary after the fix
@@ -414,9 +536,15 @@ controlled or ambiguous.
 
 ## Status
 
-Still PROPOSED. Two consecutive adversarial reviews each found a real,
-reproducible bypass on a different surface. That is evidence the design is
-converging, not evidence it is finished. Promotion now additionally requires a
-third independent reviewer to confirm that no further spelling reaching the
-controlled campaign path classifies ordinary, and to re-run the mutation
-harness independently.
+Still PROPOSED. THREE consecutive adversarial reviews have each found a real,
+reproducible bypass on a different surface: raw-substring parsing, then
+duplicate parsers over unnormalized text, then physical containment anchored to
+process CWD. That is evidence the design is converging, not evidence it is
+finished.
+
+The historical defects above are deliberately retained. Promotion now
+additionally requires a FOURTH independent reviewer to confirm that no further
+spelling -- lexical or physical -- reaching the controlled campaign path
+classifies ordinary, to re-run the fifteen-mutation harness independently
+against a green baseline, and to confirm the Gate A pytest jobs are green on
+both Linux and Windows CI.

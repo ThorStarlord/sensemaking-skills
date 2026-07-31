@@ -263,7 +263,10 @@ def build_invocation_identity(
     evidence_slug = ctx.get("evidence_slug")
     if not (evidence_number and evidence_slug):
         # ONE parser, shared with the classifier. See parse_evidence_path.
-        ident = parse_evidence_path(output)
+        # `repo_root` is passed as the authoritative anchor: without it a
+        # relative output path would be interpreted against process CWD and an
+        # aliased campaign path would yield no evidence identity at all.
+        ident = parse_evidence_path(output, repo_root)
         if ident.evidence_number:
             evidence_number = evidence_number or ident.evidence_number
             evidence_slug = evidence_slug or ident.evidence_slug
@@ -285,6 +288,27 @@ def build_invocation_identity(
         execution_framework_sha=ctx.get("execution_framework_sha"),
         declared_controlled_mode=declared_controlled_mode,
     )
+
+
+def display_relative_path(path: str, root: str) -> str:
+    """`os.path.relpath` that survives a cross-drive pair.
+
+    On Windows `os.path.relpath("C:/tmp/x", "H:/repo")` raises ValueError
+    ("path is on mount 'C:', start on mount 'H:'"). This is used only to render
+    a prompt-facing path, but the raised ValueError propagated out of prompt
+    construction and aborted the invocation BEFORE the Gate A boundary --
+    turning specific Gate A error codes into a generic
+    "Skill execution failed: path is on mount ..." and, worse, breaking the
+    positive exactly-one-invocation proof. When the two paths share no mount
+    there is no relative form; the absolute path is the honest answer.
+
+    This is presentation only. It is never used for a security decision --
+    containment is decided by `gate_a_authorization.resolve_containment`.
+    """
+    try:
+        return os.path.relpath(path, root)
+    except ValueError:
+        return os.path.abspath(path)
 
 
 def validate_model_identifier(model: str) -> None:
@@ -1536,7 +1560,7 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
         # Expected output path — use the runtime-resolved (session-scoped) path so
         # the artifact lands where the runtime will look for it.
         expected_output_path = resolve_output_path(self.repo_root, expected_output_artifact, context)
-        relative_output_path = os.path.relpath(expected_output_path, self.repo_root)
+        relative_output_path = display_relative_path(expected_output_path, self.repo_root)
 
         # Session root the expected_output_path must be contained in (issue #43
         # follow-up): equality with expected_output_path alone doesn't prove the
@@ -2056,7 +2080,7 @@ class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
 
         # Add output instruction — use the runtime-resolved (session-scoped) path.
         expected_path = resolve_output_path(self.repo_root, expected_output_artifact, context)
-        relative_expected_path = os.path.relpath(expected_path, self.repo_root).replace("\\", "/")
+        relative_expected_path = display_relative_path(expected_path, self.repo_root).replace("\\", "/")
         prompt_parts.extend([
             "",
             "## Required Output",

@@ -794,7 +794,12 @@ def test_resolution_failure_fails_closed(monkeypatch, tmp_path):
     monkeypatch.setattr(Path, "resolve", boom)
     resolved, code = ga.resolve_containment(root / "experiments" / "x", root)
     assert resolved is None
-    assert code == ga.GATE_A_OUTPUT_PATH_AMBIGUOUS
+    # The third-review remediation replaced the single generic AMBIGUOUS code
+    # with specific fail-closed codes. What this test guards is unchanged: a
+    # filesystem that cannot answer must produce an explicit failure, never a
+    # permissive "no physical signal".
+    assert code in ga.PHYSICAL_CONTAINMENT_FAILURE_CODES
+    assert code == ga.GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
     monkeypatch.setattr(Path, "resolve", real_resolve)
 
 

@@ -65,6 +65,9 @@ class SpyProvider:
         self.retry_invocation_count = 0
         self.models_requested: list = []
         self.generated_brief_count = 0
+        #: When set, the provider call RAISES after being counted. Used to
+        #: prove a failed attempt never returns the capability to ISSUED.
+        self.raise_on_call = None
 
     # -- claude_agent_sdk.query substitute ---------------------------------
     def query(self, prompt=None, options=None):
@@ -73,6 +76,8 @@ class SpyProvider:
         self.models_requested.append(model)
         if getattr(options, "fallback_model", None):
             self.fallback_invocation_count += 1
+        if self.raise_on_call is not None:
+            raise self.raise_on_call
 
         async def _agen():
             if False:  # pragma: no cover - shapes the async generator
@@ -787,3 +792,59 @@ def test_denial_message_carries_a_code_and_leaks_no_approval_content(tmp_path, s
     assert "owner decision on the run-control PR" not in result.error
     result.error.encode("ascii")  # ASCII-only console output
     assert "no model invocation was attempted" in result.message.lower()
+
+
+# ===========================================================================
+# 18. Third review, section 27: an ALIAS of the same physical output path
+#     cannot obtain a second provider call.
+# ===========================================================================
+
+
+def test_alternate_alias_of_same_output_path_cannot_get_a_second_call(
+        tmp_path, spy, monkeypatch):
+    """One physical output directory is ONE invocation, however it is spelled.
+
+    The capability binds to a canonical identity derived from PHYSICAL
+    filesystem identity. Re-invoking with a different spelling of the very same
+    directory (here a `/./` + doubled-separator + trailing-dot alias) must not
+    look like a different invocation and must not yield a second provider call.
+    """
+    ctx, head, resolver, heads, decision, cap = make_capability(tmp_path)
+    executor = controlled_executor(tmp_path, cap)
+    monkeypatch.setattr(ga, "read_git_head", head)
+
+    invoke(executor, tmp_path)
+    assert spy.model_invocation_count == 1
+
+    out = tmp_path / "out"
+    out.mkdir(exist_ok=True)
+    alias = str(out).replace("out", "out\.\..\out") + "\\brief.md"
+    # The spent capability is refused at executor CONSTRUCTION -- an even
+    # stronger outcome than a refusal at the provider boundary. Either way the
+    # alias must not buy a second call.
+    with pytest.raises(se.GateAAuthorizationRequired) as exc:
+        aliased = controlled_executor(tmp_path, cap)
+        aliased._invocation_identity = invocation_identity(
+            tmp_path, output_path=alias)
+        invoke(aliased, tmp_path)
+    assert ga.GATE_A_CAPABILITY_NOT_LIVE in str(exc.value)
+    assert spy.model_invocation_count == 1, (
+        "an aliased spelling of the same physical output path obtained a "
+        "second provider call on a one-invocation authorization")
+
+
+def test_provider_exception_does_not_restore_issuance(tmp_path, spy,
+                                                      monkeypatch):
+    """A provider that raises must not hand the capability back."""
+    ctx, head, resolver, heads, decision, cap = make_capability(tmp_path)
+    executor = controlled_executor(tmp_path, cap)
+    monkeypatch.setattr(ga, "read_git_head", head)
+
+    spy.raise_on_call = RuntimeError("provider exploded")
+    invoke(executor, tmp_path)
+    assert cap.live is False, (
+        "a provider exception returned the capability to ISSUED; a failed "
+        "attempt must not become a fresh invocation budget")
+    second = invoke(executor, tmp_path)
+    assert spy.model_invocation_count <= 1
+    assert second.status is se.SkillExecutionStatus.FAILED
