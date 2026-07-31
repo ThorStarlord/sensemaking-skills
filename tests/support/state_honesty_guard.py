@@ -544,8 +544,22 @@ def _is_framed(sentence, match, bad_kind):
     return False
 
 
-# A `that`-complement joined by `and`/`or` is one requirement with two objects.
-_COORDINATED_OBJECT_RE = re.compile(r"\bthat\b.*\b(?:and|or)\b\s*$", re.IGNORECASE)
+# A `that`-COMPLEMENT joined by `and`/`or` is one requirement with two objects.
+#
+# `that` must be the complementizer, not a demonstrative determiner: it has to
+# follow the checking verb directly and introduce a clause, which in this
+# vocabulary means a determiner comes next. Without that constraint "must
+# validate that digest before the attempt and the package is now runnable"
+# reads as a coordinated object and smuggles an independent false claim, while
+# claiming to admit only genuine complements.
+_COORDINATED_OBJECT_RE = re.compile(
+    r"\b(?:verify|verifies|check|checks|confirm|confirms|validate|validates|"
+    r"ensure|ensures|require|requires|assert|asserts|recompute|recomputes|"
+    r"establish|establishes)\s+that\s+"
+    r"(?:the|a|an|its|their|no|every|each|owner|exactly)\b"
+    r".*\b(?:and|or)\b\s*$",
+    re.IGNORECASE,
+)
 
 # Reported speech: attributing a statement to a source is not asserting it now.
 # Deny direction only -- quoting a superseded claim is legitimate, affirming a
@@ -805,6 +819,9 @@ def find_state_contradictions(text, name="<text>", state=None):
         text, state, name
     ) + _scan_machine_blocks(text, state, name):
         field = next(f for f in MACHINE_FIELD_TO_FACT if f in finding)
-        machine.setdefault(field, finding)
+        # Keyed by (field, line) so the two scanners agreeing about ONE site
+        # collapse, while the same field declared wrongly at two different
+        # sites stays visible to whoever fixes the first.
+        machine.setdefault((field, finding.split(":")[1]), finding)
     findings.extend(machine.values())
     return findings

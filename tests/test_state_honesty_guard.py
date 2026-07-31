@@ -666,6 +666,41 @@ class HistoricalFramingDoesNotCrossAConjunction(GuardBase):
         findings = self.scan("```yaml\nowner_approval_artifact_exists: true\n```\n")
         self.assertEqual(len(findings), 1, findings)
 
+    def test_the_same_field_wrong_at_two_sites_is_reported_twice(self):
+        """Dedupe must not hide the second site from whoever fixes the first."""
+        findings = self.scan(
+            "```yaml\nowner_approval_artifact_exists: true\n```\n\n"
+            "Some prose.\n\n"
+            "```yaml\nowner_approval_artifact_exists: true\n```\n"
+        )
+        self.assertEqual(len(findings), 2, findings)
+
+    DEMONSTRATIVE_THAT_EVASIONS = (
+        "The runtime must validate that digest before the attempt and "
+        "the package is now runnable.",
+        "Gate A must verify that record and owner approval exists.",
+        "Gate A must check that box on the form or stage 1 is now authorized.",
+    )
+
+    def test_a_demonstrative_that_is_not_a_complement(self):
+        """`that digest` is a determiner, not a complementizer. Round 7."""
+        for text in self.DEMONSTRATIVE_THAT_EVASIONS:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    def test_sentences_the_follow_up_rewrite_needs_all_pass(self):
+        for text in (
+            "The runtime must verify that the authorization record exists.",
+            "Gate A must confirm that the owner approval artifact exists.",
+            "The runtime must verify that the authorization record exists "
+            "and owner approval exists.",
+            "Stage 1 is not authorized because no owner approval exists.",
+            "The package is not runnable and stage 1 is not authorized.",
+            "Gate A is runtime-enforced, and owner approval does not exist.",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
 
 class MachineBlockEvasionRegressions(GuardBase):
     """Independent-review regressions (PR #112 round 1): container gaps."""
