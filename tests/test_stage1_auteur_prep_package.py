@@ -1386,6 +1386,31 @@ CHANGED_DOCS = (PACKAGE_PATH, CHECKLIST_PATH, EXEC_PACKAGE_PATH)
 # ---------------------------------------------------------------------------
 # Prose honesty guard
 #
+# PREMISE MIGRATION NOTE (post-PR #109).
+#
+# Everything below was built on one historical premise: that no Gate A
+# authorization consumer existed, and therefore that ANY present-tense sentence
+# pairing a runtime subject with an enforcement verb was false. PR #109 merged
+# `scripts/gate_a_authorization.py` and wired it into `scripts/skill_executor.py`
+# at both provider boundaries, so that premise no longer holds. Under it, the
+# TRUE sentence "The runtime verifies the Gate D checklist digest." is rejected,
+# and the only way to state a true fact is to hide it inside a ```text fence the
+# scanner skips -- the exact evasion rounds 5-8 closed for false claims.
+#
+# The GOVERNING current-state check has therefore moved to
+# `tests/support/state_honesty_guard.py`, which derives authoritative state facts
+# from real files and the contract block and rejects prose that CONTRADICTS them,
+# in either direction, inside code fences as well as outside. Its self-tests live
+# in `tests/test_state_honesty_guard.py`.
+#
+# The detector below is deliberately NOT deleted. It remains the correct guard
+# for the world in which the consumer is absent, and `enforcement_claims_are_
+# permitted()` keeps it conditional on the live repository contract: revert or
+# unwire the consumer and it governs the documents again. Its ten rounds of
+# adversarial tests continue to run against synthetic fixtures, so its hardening
+# is preserved rather than discarded. What changed is its AUTHORITY over the
+# governed documents while the consumer exists, not its correctness.
+#
 # Design note (round 5 remediation):
 #
 # The previous implementation exempted an ENTIRE LINE whenever that line
