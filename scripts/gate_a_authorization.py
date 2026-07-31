@@ -698,6 +698,16 @@ def resolve_containment(value, root) -> tuple[Optional[Path], Optional[str]]:
         try:
             while (not existing.exists() and existing.parent != existing
                    and guard < 256):
+                # `Path.exists()` follows links and SWALLOWS the OSError, so a
+                # symlink loop and a dangling symlink both report False --
+                # indistinguishable from "this output directory has not been
+                # created yet". Treating them as not-yet-created let a
+                # component that physically EXISTS but cannot be resolved slide
+                # through as ordinary development. `os.path.lexists()` sees the
+                # link itself: if the entry is there but unresolvable, we do not
+                # know where it lands, and that is ambiguity, not absence.
+                if os.path.lexists(existing):
+                    return None, GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS
                 unresolved.append(existing.name)
                 existing = existing.parent
                 guard += 1

@@ -100,7 +100,9 @@ jobs:
           pip install "claude-agent-sdk==0.2.82"
 
       - name: Probe Windows filesystem capabilities
-        shell: pwsh
+        # bash, not pwsh: PowerShell has no heredoc, so `python - <<'PY'`
+        # is a parse error there. git-bash ships on the windows runner.
+        shell: bash
         run: |
           # Automated capability probes, so a skip in the log is explained
           # rather than assumed. Junctions need no privilege; symlinks and 8.3

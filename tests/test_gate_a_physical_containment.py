@@ -520,7 +520,11 @@ def test_symlinked_campaign_directory_is_gated(tmp_path):
     root = make_framework(tmp_path)
     (root / "scamp").symlink_to(root / "experiments" / "evidence" / CAMPAIGN_SLUG,
                                 target_is_directory=True)
-    assert_gated("scamp", root, why="symlinked campaign directory")
+    # A slash-bearing path: `build_invocation_identity` only treats an
+    # `expected_output_artifact` as a PATH when it contains a separator, so a
+    # bare component would test nothing.
+    assert_gated("scamp/repository-sensemaking-brief.md", root,
+                 why="symlinked campaign directory")
 
 
 @symlink_required
