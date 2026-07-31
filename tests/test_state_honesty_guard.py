@@ -559,7 +559,12 @@ class Round5Regressions(GuardBase):
         "The consumer checks whether\nowner approval exists.",
         "- The consumer checks whether\n  owner approval exists",
         "Before PR #109,\nno such consumer exists.",
-        "Historically, the repository had gaps,\nand no Gate A consumer exists.",
+        # Round 5 also listed "Historically, the repository had gaps, and no
+        # Gate A consumer exists." here. Round 6 showed that is wrong: the
+        # coordinated clause asserts the absence in the PRESENT, and one prefix
+        # was suppressing up to three stale claims. It is a rejection case now,
+        # in HistoricalFramingDoesNotCrossAConjunction below.
+        "Historically the repository had gaps,\nleaving no Gate A consumer.",
     )
 
     def test_reflowing_a_paragraph_does_not_change_the_verdict(self):
@@ -603,6 +608,63 @@ class Round5Regressions(GuardBase):
         ):
             with self.subTest(text=text):
                 self.assertAccepted(text + "\n")
+
+
+class HistoricalFramingDoesNotCrossAConjunction(GuardBase):
+    """Independent-review regressions (PR #112 round 6).
+
+    Round 5 let a historical prefix govern its whole sentence in the deny
+    direction, reasoning there was no evasion risk. Round 6 disproved that: a
+    stale present-tense clause coordinated after the frame escaped entirely, and
+    one prefix could suppress three stale claims at once. A historical prefix
+    now reaches across punctuation but not across a coordinating conjunction.
+    """
+
+    COORDINATED_STALE_CLAUSES = (
+        "Previously the consumer was unwired, and Gate A is still not enforced.",
+        "Historically the package was rough, but no Gate A authorization "
+        "consumer exists.",
+        "Previously things differed, and today no such consumer exists.",
+        "Previously, no consumer exists, and Gate A is not runtime-enforced, "
+        "so runtime enforcement does not exist.",
+    )
+
+    def test_a_prefix_does_not_launder_a_coordinated_present_claim(self):
+        for text in self.COORDINATED_STALE_CLAUSES:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    def test_a_prefix_still_reaches_across_punctuation(self):
+        for text in (
+            "Before PR #109, no consumer exists in the tree.",
+            "Historically, no consumer exists.",
+            "Previously, the consumer is not implemented.",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+    def test_a_verification_requirement_governs_a_coordinated_object(self):
+        """One requirement with two objects is one requirement, not two claims."""
+        self.assertAccepted(
+            "The runtime must verify that the authorization record exists "
+            "and owner approval exists.\n"
+        )
+
+    def test_but_not_across_punctuation(self):
+        """Round 2's evasion stays closed: a comma still ends the requirement."""
+        self.assertRejected(
+            "Gate A must verify the record, and owner approval exists.\n"
+        )
+
+    def test_a_field_value_on_the_following_line_is_still_read(self):
+        self.assertRejected(
+            "```text\nowner_approval_artifact_exists:\n  true\n```\n"
+        )
+
+    def test_one_wrong_field_is_reported_once(self):
+        """Two scanners overlap on a YAML fence; the ratchet counts defects."""
+        findings = self.scan("```yaml\nowner_approval_artifact_exists: true\n```\n")
+        self.assertEqual(len(findings), 1, findings)
 
 
 class MachineBlockEvasionRegressions(GuardBase):

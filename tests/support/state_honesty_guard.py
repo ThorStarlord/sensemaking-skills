@@ -411,9 +411,19 @@ _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?;])\s+|(?<=[.!?])(?=[A-Z])")
 # clause on one line with no punctuation at all, while "The runtime must verify
 # that / owner approval exists." is one clause merely soft-wrapped across two.
 # Bounding on the line join caught the first only by also breaking the second.
+#
+# Punctuation and conjunction boundaries are kept SEPARATE, because the reasons
+# treat them differently: a historical prefix may reach across a comma but not
+# across "but", and a verification requirement may govern a coordinated object
+# ("...that the record exists and owner approval exists") but not a clause
+# introduced after a comma.
+_PUNCTUATION_CLAUSE_RE = re.compile(r"[,;:|]|\s--\s|—")
+_CONJUNCTION_CLAUSE_RE = re.compile(
+    r"\b(?:and|but|so|or|yet|because|therefore|however|whereas|while|"
+    r"although|though)\b"
+)
 _CLAUSE_SPLIT_RE = re.compile(
-    r"[,;:|]|\s--\s|—|\b(?:and|but|so|or|yet|because|therefore|however|"
-    r"whereas|while|although|though)\b"
+    _PUNCTUATION_CLAUSE_RE.pattern + r"|" + _CONJUNCTION_CLAUSE_RE.pattern
 )
 
 # Lines that begin a NEW structural unit and must not be joined into the
@@ -497,17 +507,53 @@ def _is_framed(sentence, match, bad_kind):
     if _CONDITIONAL_RE.search(clause):
         return True
 
+    before = sentence[: match.start()]
+    coordinated = _CONJUNCTION_CLAUSE_RE.search(before) is not None
+
     if bad_kind == "deny":
-        # A historical prefix governs the clause it introduces, not a third
-        # clause bolted on after it.
-        # A historical prefix governs its whole sentence in the DENY direction.
-        # There is no evasion risk here: denying a now-true fact is exactly what
-        # a historical statement legitimately does. The strict rule lives in the
-        # affirm branch, where R1 showed the risk actually is.
-        if _HISTORICAL_PREFIX_RE.match(sentence):
+        # A historical prefix governs the clauses it introduces, including ones
+        # merely separated by punctuation ("Before PR #109, no consumer
+        # exists."). It does NOT reach across a coordinating conjunction:
+        # "Historically the package was rough, but no consumer exists." asserts
+        # the second clause in the present, and round 6 showed one prefix
+        # otherwise suppressed three stale claims at once.
+        if _HISTORICAL_PREFIX_RE.match(sentence) and (
+            not coordinated or _REPORTED_SPEECH_RE.search(clause)
+        ):
             return True
         return _MODAL_RE.search(clause) is not None
-    return _VERIFICATION_REQUIREMENT_RE.search(clause) is not None
+
+    # A verification requirement may govern a COORDINATED object of the same
+    # requirement ("must verify that the record exists and owner approval
+    # exists") -- that is one requirement, not two claims. It still may not
+    # reach across punctuation, which is what separates it from round 2's
+    # "Gate A must verify the record, and owner approval exists."
+    if _VERIFICATION_REQUIREMENT_RE.search(clause):
+        return True
+    # ...but only for a genuine coordinated OBJECT: `and`/`or` joining two
+    # predicates inside the same `that`-complement. "must confirm the inputs
+    # because owner approval exists" and "must validate the digest before the
+    # attempt and the package is now runnable" join a requirement to an
+    # INDEPENDENT claim, and stay rejected (round 4).
+    if (
+        coordinated
+        and not _PUNCTUATION_CLAUSE_RE.search(before)
+        and _COORDINATED_OBJECT_RE.search(before)
+    ):
+        return _VERIFICATION_REQUIREMENT_RE.search(before) is not None
+    return False
+
+
+# A `that`-complement joined by `and`/`or` is one requirement with two objects.
+_COORDINATED_OBJECT_RE = re.compile(r"\bthat\b.*\b(?:and|or)\b\s*$", re.IGNORECASE)
+
+# Reported speech: attributing a statement to a source is not asserting it now.
+# Deny direction only -- quoting a superseded claim is legitimate, affirming a
+# still-false fact through a mouthpiece is not.
+_REPORTED_SPEECH_RE = re.compile(
+    r"\b(?:stated|said|claimed|specified|asserted|noted|recorded)\s+that\b",
+    re.IGNORECASE,
+)
 
 
 def _clause_before(sentence, match):
@@ -711,7 +757,7 @@ def _scan_machine_blocks(text, state, name):
 _MACHINE_FIELD_PROSE_RE = re.compile(
     r"\b(?P<field>" + "|".join(MACHINE_FIELD_TO_FACT) + r")\s*[:=]\s*"
     r"[\"']?(?P<value>true|false|yes|no)\b",
-    re.IGNORECASE,
+    re.IGNORECASE | re.DOTALL,
 )
 
 
@@ -727,17 +773,17 @@ def _scan_machine_fields_as_prose(text, state, name):
     the field is now read as data wherever it appears.
     """
     findings = []
-    for lineno, line in enumerate(text.splitlines(), start=1):
-        for match in _MACHINE_FIELD_PROSE_RE.finditer(line):
-            field = match.group("field")
-            declared = match.group("value").lower() in ("true", "yes")
-            fact = MACHINE_FIELD_TO_FACT[field]
-            if declared != state[fact]:
-                findings.append(
-                    f"{name}:{lineno}: declares {field}: "
-                    f"{str(declared).lower()} but the repository state fact "
-                    f"{fact} is {str(state[fact]).lower()}"
-                )
+    for match in _MACHINE_FIELD_PROSE_RE.finditer(text):
+        field = match.group("field")
+        declared = match.group("value").lower() in ("true", "yes")
+        fact = MACHINE_FIELD_TO_FACT[field]
+        if declared != state[fact]:
+            lineno = text.count(chr(10), 0, match.start()) + 1
+            findings.append(
+                f"{name}:{lineno}: declares {field}: "
+                f"{str(declared).lower()} but the repository state fact "
+                f"{fact} is {str(state[fact]).lower()}"
+            )
     return findings
 
 
@@ -751,8 +797,14 @@ def find_state_contradictions(text, name="<text>", state=None):
     if state is None:
         state = compute_current_state()
     findings = _scan_text_for_contradictions(text, state, name)
-    findings.extend(_scan_machine_fields_as_prose(text, state, name))
-    for extra in _scan_machine_blocks(text, state, name):
-        if extra not in findings:
-            findings.append(extra)
+    # The two machine scanners overlap on a well-formed YAML fence. Report each
+    # offending FIELD once: the inventory ratchet counts defects, and one field
+    # declared wrongly is one defect however many scanners noticed it.
+    machine = {}
+    for finding in _scan_machine_fields_as_prose(
+        text, state, name
+    ) + _scan_machine_blocks(text, state, name):
+        field = next(f for f in MACHINE_FIELD_TO_FACT if f in finding)
+        machine.setdefault(field, finding)
+    findings.extend(machine.values())
     return findings
