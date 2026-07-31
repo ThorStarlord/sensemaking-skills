@@ -313,6 +313,82 @@ class FramingIsAsymmetric(GuardBase):
         self.assertAccepted("Historically, Gate A is not runtime-enforced.\n")
 
 
+class FramingIsClauseScoped(GuardBase):
+    """Independent-review regressions (PR #112 round 2).
+
+    Round 1 narrowed WHICH frames excuse an affirmation but left the SCOPE bug
+    underneath: the frame was searched across everything earlier in the joined
+    paragraph, so one "must verify" suppressed every later clause -- and since
+    the governed documents are overwhelmingly bullet lists without terminal
+    punctuation, "earlier" spanned whole sections.
+
+    Framing is now scoped to the clause containing the match, and structural
+    lines (list items, table rows, headings, blockquotes) start their own unit.
+    """
+
+    SCOPE_EVASIONS = (
+        "Gate A must verify the record, and owner approval exists.",
+        "The runtime must verify the following: owner approval exists.",
+        "- The runtime must verify the record\n- Owner approval exists",
+        "| The runtime must confirm approval | owner approval exists |",
+        "## The runtime must validate preconditions\nOwner approval exists.",
+        "Reviewers must ensure the digest matches, the checklist is current, "
+        "the run log is pinned, and owner approval exists.",
+        "> The runtime must confirm the record, so owner approval exists.",
+        "The runtime must verify the record.Owner approval exists.",
+        "Owner​ approval exists.",
+        "Historically, the digest is pinned, and owner approval exists.",
+    )
+
+    def test_a_frame_in_one_clause_does_not_exempt_another(self):
+        for text in self.SCOPE_EVASIONS:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    def test_a_realistic_checklist_is_fully_scanned(self):
+        """One framed bullet must not suppress the bullets beneath it."""
+        checklist = (
+            "Preconditions the operator must confirm before Stage 1\n\n"
+            "- The runtime must verify the Gate D checklist digest\n"
+            "- The run-control directory exists\n"
+            "- The authorization record exists\n"
+            "- Owner approval exists\n"
+            "- The package is runnable\n"
+        )
+        self.assertEqual(len(self.scan(checklist)), 4)
+
+
+class ConditionalsAreNotAssertions(GuardBase):
+    """Independent-review regressions (PR #112 round 2): false positives.
+
+    A condition being TESTED is not a claim that it currently holds. Without
+    this, the guard rejected a true description of the merged consumer's own
+    behavior -- the exact class of sentence this PR exists to unblock.
+    """
+
+    CONDITIONALS = (
+        "The consumer checks whether owner approval exists.",
+        "Once owner approval exists, the runtime authorizes Stage 1.",
+        "If owner approval exists, Gate A permits the run.",
+        "When owner approval exists, the operator may proceed.",
+        "Gate A blocks execution unless owner approval exists.",
+        "Stage 1 stays blocked until owner approval exists.",
+        "After owner approval exists, the digest is recomputed.",
+        "Gate A verifies whether the authorization record exists.",
+    )
+
+    def test_conditional_clauses_are_accepted(self):
+        for text in self.CONDITIONALS:
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+    def test_a_conditional_word_elsewhere_does_not_exempt(self):
+        """Adjacency still governs: the subordinator must precede the claim."""
+        self.assertRejected(
+            "Owner approval exists, if you were wondering about it.\n"
+        )
+
+
 class MachineBlockEvasionRegressions(GuardBase):
     """Independent-review regressions (PR #112 round 1): container gaps."""
 
@@ -498,10 +574,15 @@ class GuardIsNotDefanged(GuardBase):
 
 DOCS_DIR = REPO_ROOT / "docs" / "experiments"
 
+# These counts ROSE from 19/1/2 to 21/1/3 when round-2 review tightened framing
+# to clause scope and stopped joining structural lines. The three newly surfaced
+# entries (prep package lines 588 and 1770, execution package line 1390) are
+# genuine stale absence claims that paragraph-joining had been masking. The
+# ratchet moving UP after a tightening is the mechanism working, not drift.
 KNOWN_OUTSTANDING_CONTRADICTIONS = {
-    "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md": 19,
+    "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md": 21,
     "GATE-D-STALE-DIAGNOSIS-CHECKLIST.md": 1,
-    "STAGE-1-AUTEUR-EXECUTION-PACKAGE.md": 2,
+    "STAGE-1-AUTEUR-EXECUTION-PACKAGE.md": 3,
 }
 
 

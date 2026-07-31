@@ -164,10 +164,22 @@ def compute_current_state(contract=None):
         == "AUTHORIZED",
         "package_runnable": bool(contract.get("package_runnable")),
         "evidence_0016_exists": EVIDENCE_0016_DIR.is_dir(),
-        # A real model invocation would leave an evidence directory behind. The
-        # campaign invariant is that none has ever occurred.
-        "real_model_invoked": EVIDENCE_0016_DIR.is_dir(),
+        # Distinct from the directory merely existing: an actual invocation
+        # leaves a ledger or raw provider output behind. An empty or
+        # accidentally-created evidence directory must not make the guard assert
+        # that a real model ran.
+        "real_model_invoked": _real_invocation_traces_exist(),
     }
+
+
+def _real_invocation_traces_exist():
+    """Whether Evidence 0016 contains traces of an actual model invocation."""
+    if not EVIDENCE_0016_DIR.is_dir():
+        return False
+    for name in ("run-ledger.jsonl", "tool-call-trace.jsonl", "raw"):
+        if (EVIDENCE_0016_DIR / name).exists():
+            return True
+    return False
 
 
 # ---------------------------------------------------------------------------
@@ -385,7 +397,38 @@ _VERIFICATION_REQUIREMENT_RE = re.compile(
     re.IGNORECASE,
 )
 
-_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?;])\s+")
+# A sentence ends at terminal punctuation followed by whitespace, OR by a
+# capital with no space at all ("...the record.Owner approval exists.").
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?;])\s+|(?<=[.!?])(?=[A-Z])")
+
+# Clause boundaries. Framing is scoped to the clause CONTAINING the match, never
+# to everything earlier in the sentence: otherwise one "must verify" anywhere
+# ahead would exempt every later clause, which is the sentence-scope version of
+# the blanket line-level exemption PR #107 round 5 deleted.
+_CLAUSE_SPLIT_RE = re.compile(r"[,;:|]|\s--\s|—")
+
+# Lines that begin a NEW structural unit and must not be joined into the
+# preceding paragraph: list items, table rows, headings and blockquote markers.
+# Joining them let a frame in one bullet exempt claims in every later bullet.
+_BLOCK_START_RE = re.compile(r"^\s*(?:[-*+]\s|\d+[.)]\s|#{1,6}\s|\||>)")
+
+# A heading is a unit BY ITSELF: the line after it starts new prose, so joining
+# them would let a frame in the heading exempt the paragraph beneath it.
+_HEADING_RE = re.compile(r"^\s*#{1,6}\s")
+
+# Zero-width and formatting characters, stripped so an invisible character
+# cannot break a lexicon match.
+_ZERO_WIDTH_RE = re.compile(r"[​-‏  ﻿­]")
+
+# Subordinators that make a following affirmation a CONDITION rather than a
+# claim: "The consumer checks whether owner approval exists." describes what is
+# tested, not what is true. Must sit adjacent to the matched noun phrase, at the
+# start of the clause or immediately before it.
+_CONDITIONAL_RE = re.compile(
+    r"\b(?:whether|if|once|when|unless|until|after|before|provided\s+that|"
+    r"in\s+case|as\s+soon\s+as|only\s+if)\s+(?:\w+[\s-]+){0,3}$",
+    re.IGNORECASE,
+)
 
 # A negator IMMEDIATELY governing the matched noun phrase turns an affirmation
 # into a denial: "No authorization record exists." asserts absence, not presence.
@@ -416,11 +459,23 @@ def _is_framed(sentence, match, bad_kind):
     verification-requirement frame, which names a condition to be checked rather
     than a fact that holds.
     """
+    before = sentence[: match.start()]
+    # Framing is scoped to the clause containing the match. A frame in an
+    # earlier clause governs that clause, not this one.
+    boundaries = list(_CLAUSE_SPLIT_RE.finditer(before))
+    clause = before[boundaries[-1].end():] if boundaries else before
+
     if bad_kind == "deny":
-        if _HISTORICAL_PREFIX_RE.match(sentence):
+        # A historical prefix governs the clause it introduces, not a third
+        # clause bolted on after it.
+        if _HISTORICAL_PREFIX_RE.match(sentence) and len(boundaries) <= 1:
             return True
-        return _MODAL_RE.search(sentence[: match.start()]) is not None
-    return _VERIFICATION_REQUIREMENT_RE.search(sentence[: match.start()]) is not None
+        return _MODAL_RE.search(clause) is not None
+    # A conditional subordinator adjacent to the noun phrase makes this a
+    # condition being tested, not a claim that it currently holds.
+    if _CONDITIONAL_RE.search(clause):
+        return True
+    return _VERIFICATION_REQUIREMENT_RE.search(clause) is not None
 
 
 def _iter_sentences(text):
@@ -431,14 +486,27 @@ def _iter_sentences(text):
     line would sever "No third-party" from "owner approval exists", turning a
     truthful denial into a spurious finding. The reported line number is the
     line on which the sentence begins.
+
+    Structural lines -- list items, table rows, headings, blockquote markers --
+    START A NEW UNIT rather than joining the previous one. Joining them would let
+    a "must verify" frame in one bullet exempt claims in every later bullet, and
+    the governed documents are overwhelmingly bullet lists without terminal
+    punctuation, so that would be a hole the width of the document.
     """
+    text = _ZERO_WIDTH_RE.sub("", text)
     paragraph = []  # list of (lineno, line)
     for lineno, line in enumerate(text.splitlines(), start=1):
-        if line.strip():
-            paragraph.append((lineno, line))
+        if not line.strip():
+            yield from _split_paragraph(paragraph)
+            paragraph = []
             continue
-        yield from _split_paragraph(paragraph)
-        paragraph = []
+        if _BLOCK_START_RE.match(line):
+            yield from _split_paragraph(paragraph)
+            paragraph = []
+        paragraph.append((lineno, line))
+        if _HEADING_RE.match(line):
+            yield from _split_paragraph(paragraph)
+            paragraph = []
     yield from _split_paragraph(paragraph)
 
 
