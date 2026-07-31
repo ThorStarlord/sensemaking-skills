@@ -11,6 +11,7 @@ create an evidence directory.
 import hashlib
 import inspect
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -592,6 +593,12 @@ OWNER_APPROVAL_TEMPLATE_PATH = f"{RUN_CONTROL_DIR}/owner-approval.template.md"
 # owner approval. This is an allowlist, not a prefix rule: anything else under
 # experiments/run-control/ -- extra records, extra digests, an operative
 # owner-approval.md, a second run-control directory -- is a violation.
+#
+# These are paths RELATIVE TO THE RUN-CONTROL DIRECTORY ROOT, not bare
+# filenames. Comparing bare names would let a nested duplicate (for example
+# `nested/authorization-record.yaml`) collide with the permitted top-level
+# entry of the same name and pass unnoticed -- exactly the "duplicate
+# authorization records" / "duplicate digest files" case this guard must catch.
 PERMITTED_RUN_CONTROL_FILES = frozenset(
     {
         ".gitattributes",
@@ -600,6 +607,19 @@ PERMITTED_RUN_CONTROL_FILES = frozenset(
         "owner-approval.template.md",
     }
 )
+
+
+def _relative_file_paths(root):
+    """Every file under `root`, as a POSIX path relative to `root`.
+
+    Relative -- never bare `.name` -- so that a nested duplicate of a permitted
+    filename is a distinct entry instead of silently colliding with it.
+    """
+    return {
+        str(p.relative_to(root)).replace("\\", "/")
+        for p in root.rglob("*")
+        if p.is_file()
+    }
 
 
 def _assert_only_permitted_run_control_artifacts(case):
@@ -622,14 +642,93 @@ def _assert_only_permitted_run_control_artifacts(case):
         [],
         "no stray files directly under experiments/run-control/",
     )
-    found = {p.name for p in (REPO_ROOT / RUN_CONTROL_DIR).rglob("*") if p.is_file()}
+    run_control_root = REPO_ROOT / RUN_CONTROL_DIR
+    # Relative paths, so a nested duplicate is a DISTINCT entry rather than one
+    # that collides with the permitted top-level name.
+    found = _relative_file_paths(run_control_root)
     case.assertEqual(
         found,
         set(PERMITTED_RUN_CONTROL_FILES),
         "only the exact planned draft artifact set may exist under run-control",
     )
+    # No subdirectories either: the planned artifact set is flat, so any
+    # directory under the run-control root can only be hiding something.
+    case.assertEqual(
+        sorted(
+            str(p.relative_to(run_control_root)).replace("\\", "/")
+            for p in run_control_root.rglob("*")
+            if p.is_dir()
+        ),
+        [],
+        "no subdirectories are permitted under the run-control directory",
+    )
     # The operative approval is owner-only and must never be authored here.
     case.assertFalse((REPO_ROOT / OWNER_APPROVAL_PATH).exists())
+
+
+class NestedDuplicateRunControlArtifactsAreCaught(unittest.TestCase):
+    """Regression: the allowlist must compare RELATIVE PATHS, not bare names.
+
+    A prior version of `_assert_only_permitted_run_control_artifacts` collected
+    `p.name`. Because a nested duplicate has the same bare name as the
+    permitted top-level file, `{"authorization-record.yaml", ...}` was produced
+    either way and the whole suite passed with a duplicate authorization record
+    and duplicate digest sitting in a subdirectory -- both explicitly on the
+    must-catch list from the owner decision.
+    """
+
+    PERMITTED = {
+        ".gitattributes",
+        "authorization-record.yaml",
+        "authorization-record.sha256",
+        "owner-approval.template.md",
+    }
+
+    def _build(self, tmp, nested):
+        root = Path(tmp) / "0016-stage1-auteur-post-remediation-controlled-attempt"
+        root.mkdir(parents=True)
+        for name in self.PERMITTED:
+            (root / name).write_text("x", encoding="utf-8")
+        if nested:
+            sub = root / "nested"
+            sub.mkdir()
+            (sub / "authorization-record.yaml").write_text("x", encoding="utf-8")
+            (sub / "authorization-record.sha256").write_text("x", encoding="utf-8")
+        return root
+
+    def test_clean_tree_matches_the_allowlist(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._build(tmp, nested=False)
+            self.assertEqual(_relative_file_paths(root), self.PERMITTED)
+
+    def test_nested_duplicate_record_and_digest_are_detected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._build(tmp, nested=True)
+            found = _relative_file_paths(root)
+            self.assertNotEqual(
+                found,
+                self.PERMITTED,
+                "nested duplicates must make the allowlist comparison fail",
+            )
+            self.assertEqual(
+                found - self.PERMITTED,
+                {
+                    "nested/authorization-record.yaml",
+                    "nested/authorization-record.sha256",
+                },
+            )
+
+    def test_bare_name_comparison_would_have_missed_them(self):
+        """Pins the exact defect, so a revert to `p.name` fails loudly."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._build(tmp, nested=True)
+            bare = {p.name for p in root.rglob("*") if p.is_file()}
+            self.assertEqual(
+                bare,
+                self.PERMITTED,
+                "bare-name collection is blind to nested duplicates -- this is "
+                "why the guard must use relative paths",
+            )
 
 
 RUN_CONTROL_SENTINEL = "PENDING_AUTHORIZATION_RECORD_CREATION"
@@ -1290,12 +1389,14 @@ class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
         )
         collapsed = " ".join(self.text.split())
         # The consumer now exists, so the enforceability half of this sentence
-        # flipped. The half that matters -- no record, no approval, not
-        # runnable -- did not.
+        # flipped. So did the record/digest half: a DRAFT record and digest now
+        # exist, and saying otherwise would be false. The half that actually
+        # gates execution -- no owner approval, no pin, not runnable -- did not.
         self.assertIn(
             "a Gate A authorization consumer exists and is enforcing, so "
-            "authorization state is now enforceable. No authorization record "
-            "exists. No owner approval exists. No execution pin is finalized. "
+            "authorization state is now enforceable. A draft authorization "
+            "record and its digest file exist, and neither is operative. "
+            "No owner approval exists. No execution pin is finalized. "
             "The package is not runnable.",
             collapsed,
         )
