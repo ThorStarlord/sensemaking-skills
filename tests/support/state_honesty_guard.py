@@ -429,11 +429,16 @@ _ZERO_WIDTH_RE = re.compile(r"[​-‏  ﻿­]")
 # participles pose as conditionals: "After all owner approval exists." and
 # "When reviewing the package owner approval exists." are assertions, not
 # conditions, and neither "all" nor "reviewing the package" is a qualifier.
-_QUALIFIER = r"(?:the|a|an|any|its|valid|required|signed|approved|current)"
+_QUALIFIER = (
+    r"(?:the|a|an|any|its|this|that|such|your|our|their|valid|required|"
+    r"signed|approved|current|written|explicit|recorded|countersigned|"
+    r"genuine|documented)"
+)
 
 _CONDITIONAL_RE = re.compile(
-    r"\b(?:whether|if|once|when|unless|until|after|before|provided\s+that|"
-    r"in\s+case|as\s+soon\s+as|only\s+if)\s+(?:" + _QUALIFIER + r"\s+){0,2}$",
+    r"\b(?:whether|if|once|whenever|wherever|when|unless|until|after|before|"
+    r"provided\s+that|in\s+case|as\s+soon\s+as|only\s+if|each\s+time|"
+    r"any\s+time)\s+(?:" + _QUALIFIER + r"\s+){0,2}$",
     re.IGNORECASE,
 )
 
@@ -453,7 +458,7 @@ _ADJACENT_NEGATOR_RE = re.compile(
 )
 
 
-def _is_framed(sentence, match, bad_kind):
+def _is_framed(sentence, match, bad_kind, linebreaks=()):
     """Whether explicit historical or prospective framing governs `match`.
 
     The rule is deliberately ASYMMETRIC, because the two directions are not
@@ -473,7 +478,7 @@ def _is_framed(sentence, match, bad_kind):
     verification-requirement frame, which names a condition to be checked rather
     than a fact that holds.
     """
-    boundaries, clause = _clause_before(sentence, match)
+    boundaries, clause = _clause_before(sentence, match, linebreaks)
 
     # A conditional subordinator adjacent to the noun phrase makes this a
     # condition being TESTED, not a claim about what currently holds. That is
@@ -492,18 +497,27 @@ def _is_framed(sentence, match, bad_kind):
     return _VERIFICATION_REQUIREMENT_RE.search(clause) is not None
 
 
-def _clause_before(sentence, match):
+def _clause_before(sentence, match, linebreaks=()):
     """Return (clause boundaries, the clause text preceding `match`).
 
     Everything that reasons about what governs a match uses this, so the
     negator lookback is scoped exactly like framing is. Scoping one but not the
     other is what let a negator in an earlier clause suppress a later false
     claim.
+
+    `linebreaks` are offsets where a wrapped line was joined. They count as
+    boundaries for FRAMING -- otherwise a "must verify" on the first line of a
+    wrapped bullet would govern a contradiction on its continuation line, which
+    is the paragraph-scope hole reached by a different route. They deliberately
+    do NOT count for the negator lookback, which legitimately binds a noun
+    phrase across a wrap ("No third-party / owner approval exists.").
     """
-    before = sentence[: match.start()]
-    boundaries = list(_CLAUSE_SPLIT_RE.finditer(before))
-    clause = before[boundaries[-1].end():] if boundaries else before
-    return boundaries, clause
+    start = match.start()
+    before = sentence[:start]
+    cuts = [m.end() for m in _CLAUSE_SPLIT_RE.finditer(before)]
+    cuts.extend(offset for offset in linebreaks if offset <= start)
+    clause = before[max(cuts):] if cuts else before
+    return cuts, clause
 
 
 def _iter_sentences(text):
@@ -543,7 +557,10 @@ def _split_paragraph(paragraph):
         return
     joined = ""
     offsets = []  # (start_offset, lineno)
-    for lineno, line in paragraph:
+    joins = []  # offsets at which a wrapped line was joined
+    for index, (lineno, line) in enumerate(paragraph):
+        if index:
+            joins.append(len(joined))
         offsets.append((len(joined), lineno))
         joined += line.strip() + " "
 
@@ -562,13 +579,15 @@ def _split_paragraph(paragraph):
         pos = start + len(part)
         stripped = part.strip()
         if stripped:
-            yield stripped, lineno_at(start)
+            lead = len(part) - len(part.lstrip())
+            local = [j - start - lead for j in joins if start + lead <= j <= pos]
+            yield stripped, lineno_at(start), tuple(local)
 
 
 def _scan_text_for_contradictions(text, state, name):
     findings = []
     seen = set()
-    for sentence, lineno in _iter_sentences(text):
+    for sentence, lineno, linebreaks in _iter_sentences(text):
         for fact, lexicon in FACT_LEXICONS.items():
             value = state[fact]
             # Derived polarity: a true fact may not be denied, a false fact may
@@ -576,7 +595,7 @@ def _scan_text_for_contradictions(text, state, name):
             bad_kind = "deny" if value else "affirm"
             for pattern in lexicon[bad_kind]:
                 for match in re.finditer(pattern, sentence, re.IGNORECASE):
-                    if _is_framed(sentence, match, bad_kind):
+                    if _is_framed(sentence, match, bad_kind, linebreaks):
                         continue
                     if bad_kind == "affirm" and _ADJACENT_NEGATOR_RE.search(
                         _clause_before(sentence, match)[1]
@@ -630,6 +649,25 @@ def iter_fenced_blocks(text):
         yield info, start + 1, "\n".join(body)
 
 
+def _walk_state_fields(node):
+    """Yield (field, value) for every state field ANYWHERE in a parsed block.
+
+    A false value does not become acceptable by being nested one level deeper,
+    hidden behind a YAML anchor, or placed in the second document of a block --
+    the same reason a sentence does not become acceptable inside a fence.
+    """
+    found = []
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key in MACHINE_FIELD_TO_FACT:
+                found.append((key, value))
+            found.extend(_walk_state_fields(value))
+    elif isinstance(node, (list, tuple)):
+        for item in node:
+            found.extend(_walk_state_fields(item))
+    return found
+
+
 def _scan_machine_blocks(text, state, name):
     """Validate machine-readable YAML blocks against the derived facts."""
     findings = []
@@ -637,15 +675,14 @@ def _scan_machine_blocks(text, state, name):
         if info not in ("yaml", "yml", "json"):
             continue
         try:
-            data = yaml.safe_load(body)
+            documents = list(yaml.safe_load_all(body))
         except yaml.YAMLError:
             continue
-        if not isinstance(data, dict):
-            continue
-        for field, fact in MACHINE_FIELD_TO_FACT.items():
-            if field not in data:
-                continue
-            declared = data[field]
+        pairs = []
+        for document in documents:
+            pairs.extend(_walk_state_fields(document))
+        for field, declared in pairs:
+            fact = MACHINE_FIELD_TO_FACT[field]
             if isinstance(declared, str):
                 # A quoted "true" states the same thing as a bare true and must
                 # not slip past by being a string.

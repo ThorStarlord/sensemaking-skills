@@ -456,6 +456,75 @@ class NegatorLookbackIsClauseScoped(GuardBase):
         self.assertAccepted("If the required owner approval exists, Gate A proceeds.\n")
 
 
+class Round4Regressions(GuardBase):
+    """Independent-review regressions (PR #112 round 4)."""
+
+    NESTED_MACHINE_BLOCKS = (
+        "```yaml\ncontract:\n  owner_approval_artifact_exists: true\n```",
+        "```yaml\n---\nfoo: 1\n---\nowner_approval_artifact_exists: true\n```",
+        "```yaml\ndefaults: &d\n  owner_approval_artifact_exists: true\n"
+        "prod:\n  <<: *d\n```",
+        "```yaml\ncontract: {owner_approval_artifact_exists: true}\n```",
+        "```yaml\n- owner_approval_artifact_exists: true\n```",
+        '```json\n{"c": {"owner_approval_artifact_exists": true}}\n```',
+    )
+
+    def test_a_false_value_cannot_hide_by_nesting_or_anchoring(self):
+        """Depth, anchors and multi-doc blocks are not a safe harbor either."""
+        for text in self.NESTED_MACHINE_BLOCKS:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    WRAPPED_BULLET_EVASIONS = (
+        "- The runtime must verify the Gate D checklist digest before Stage 1 runs\n"
+        "  and no Gate A consumer exists today",
+        "- The reviewer must confirm the run-control inputs\n"
+        "  because owner approval exists",
+        "The operator must validate the digest before the attempt\n"
+        "  and the package is now runnable",
+    )
+
+    def test_a_frame_does_not_govern_a_wrapped_continuation_line(self):
+        for text in self.WRAPPED_BULLET_EVASIONS:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    def test_a_negator_still_binds_across_a_wrap(self):
+        """Line breaks bound framing, not the negator. Both must hold."""
+        self.assertAccepted("No third-party\nowner approval exists yet either.\n")
+
+    LEGITIMATE_QUALIFIERS = (
+        "If this owner approval exists, proceed.",
+        "If that owner approval exists, proceed.",
+        "If such owner approval exists, proceed.",
+        "If your owner approval exists, proceed.",
+        "If countersigned owner approval exists, Stage 1 proceeds.",
+        "Once written owner approval exists, Stage 1 proceeds.",
+        "When explicit owner approval exists, the run may begin.",
+        "Unless recorded owner approval exists, the runtime refuses.",
+        "If genuine owner approval exists, proceed.",
+    )
+
+    def test_demonstratives_and_adjectives_do_not_break_conditionals(self):
+        """The closed qualifier set must not reject ordinary conditionals."""
+        for text in self.LEGITIMATE_QUALIFIERS:
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+    def test_whenever_states_a_trigger_exactly_as_when_does(self):
+        for text in (
+            "TRIGGERED whenever no Gate A consumer exists.",
+            "TRIGGERED when no Gate A consumer exists.",
+            "The runtime refuses wherever no consumer exists.",
+        ):
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+    def test_the_idioms_that_motivated_the_closed_set_stay_rejected(self):
+        self.assertRejected("After all owner approval exists.\n")
+        self.assertRejected("When reviewing the package owner approval exists.\n")
+
+
 class MachineBlockEvasionRegressions(GuardBase):
     """Independent-review regressions (PR #112 round 1): container gaps."""
 
@@ -641,13 +710,19 @@ class GuardIsNotDefanged(GuardBase):
 
 DOCS_DIR = REPO_ROOT / "docs" / "experiments"
 
-# These counts ROSE from 19/1/2 to 21/1/3 when round-2 review tightened framing
-# to clause scope and stopped joining structural lines. The three newly surfaced
-# entries (prep package lines 588 and 1770, execution package line 1390) are
-# genuine stale absence claims that paragraph-joining had been masking. The
-# ratchet moving UP after a tightening is the mechanism working, not drift.
+# How these numbers moved, stated plainly rather than presented as stable.
+#
+# 19/1/2 initially. Round-2 review tightened framing to clause scope and stopped
+# joining structural lines, which surfaced three stale claims that had been
+# masked -> 21/1/3. Round-4 review then showed two of those 21 were GUARD
+# MISFIRES, not stale claims: the preparation package states trigger conditions
+# with "TRIGGERED whenever ...", and `whenever` was missing from the conditional
+# subordinator set while `when` was present. Adding it removed both -> 19/1/3.
+#
+# The ratchet is expected to move in both directions as the guard is corrected.
+# What it must never do is drift silently, which exact equality prevents.
 KNOWN_OUTSTANDING_CONTRADICTIONS = {
-    "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md": 21,
+    "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md": 19,
     "GATE-D-STALE-DIAGNOSIS-CHECKLIST.md": 1,
     "STAGE-1-AUTEUR-EXECUTION-PACKAGE.md": 3,
 }
