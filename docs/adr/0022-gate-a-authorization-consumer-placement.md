@@ -250,3 +250,173 @@ changes are limited to what actually changed, (d) the structural
 controlled-Stage-1 classification cannot be defeated by any caller-supplied
 value, and (e) no clone, reconstruction, or concurrent caller can obtain a
 second consumption from one issuance.
+
+---
+
+# Second independent review: a reproduced classifier bypass
+
+The second adversarial review accepted the capability mechanics above and then
+attacked a different surface: the **invocation classifier**. It reproduced a
+complete authorization bypass, end to end, against the real production chain
+(`build_invocation_identity()` -> `classify_invocation()` ->
+`require_authorization_capability()` -> provider boundary).
+
+## The bypass, stated exactly
+
+Two textual spellings that resolve to the *real* Evidence 0016 campaign
+directory:
+
+```text
+experiments/./evidence/0016-stage1-auteur-post-remediation-controlled-attempt
+experiments//evidence//0016-stage1-auteur-post-remediation-controlled-attempt
+```
+
+Both parsed to `evidence_number = None`, `evidence_slug = None`, both
+classified as `ORDINARY_DEVELOPMENT`, and both reached a fake provider with
+**zero authorization required**. Reproducing it on the pre-remediation head
+also created the real `experiments/evidence/0016-.../` output directory, which
+is precisely the campaign side effect the gate exists to prevent.
+
+A third spelling, `experiments\/evidence//0016-...`, was found during
+remediation and bypassed identically.
+
+This is recorded here rather than quietly fixed. Hiding it would make the next
+reviewer's job harder, and the historical record is what makes the invariant
+below legible.
+
+## Root cause: two weak normalizers that failed together
+
+`InvocationIdentity._norm_path` did only:
+
+```python
+str(value).replace("\\", "/").rstrip("/")
+```
+
+It normalized nothing structural: no `.` collapsing, no duplicate-separator
+collapsing, no `..` resolution. **Two independent consumers** then each applied
+their own weak check to that raw-ish text:
+
+1. the classifier's substring test, `"experiments/evidence/" in output_path`;
+2. the runtime's own `_EVIDENCE_DIR_RE` regex in `skill_executor.py`.
+
+Because both were weak *in the same way*, they did not provide defense in
+depth: they failed **together** on the same malformed spellings. Two
+independently maintained normalization implementations is not redundancy, it is
+one bug written twice.
+
+## Decision 1: one canonical path representation
+
+`canonicalize_path()` in `gate_a_authorization.py` is now the single
+canonicalization primitive, returning a frozen `CanonicalPath`. It is purely
+lexical and total: it never touches the filesystem, never raises, and works on
+paths that do not exist. It collapses `.`, collapses repeated separators,
+resolves `..` safely, accepts `\` and `/` as separators on every platform,
+captures drive letters, and NFC-normalizes components.
+
+`InvocationIdentity._norm_path` now delegates to it, so the digest that binds a
+capability is **spelling-independent**. An attacker cannot obtain a capability
+for one spelling and invoke with another, and cannot split one logical
+invocation into two identities.
+
+Case is deliberately **preserved** in the identity key (stable across
+platforms, so a differently-cased path fails a capability binding check) while
+namespace and slug **matching** is case-insensitive. Case can never turn
+controlled into ordinary; at worst it turns an authorized invocation into a
+rejected one.
+
+## Decision 2: lexical and physical resolution are distinct
+
+Lexical canonicalization decides classification, because Evidence 0016's output
+directory does not exist and must still be classifiable. `resolve_containment()`
+separately resolves the nearest **existing** ancestor to catch symlinks,
+junctions and reparse points, and `parse_evidence_path` returns whichever of
+the lexical and physical parses is **more controlled**. A symlink can therefore
+only ever upgrade a classification, never downgrade it. Any `OSError` during
+resolution yields `GATE_A_OUTPUT_PATH_AMBIGUOUS` -- uncertainty fails closed.
+
+## Decision 3: one shared evidence-path parser
+
+`parse_evidence_path()` returns a typed `EvidencePathIdentity` with
+`parse_status` in `VALID_EVIDENCE_PATH`, `EXPERIMENTS_NON_EVIDENCE_PATH`,
+`AMBIGUOUS_EVIDENCE_PATH`, `OUTSIDE_EXPERIMENTS`. The classifier consumes it;
+the runtime consumes it. `_EVIDENCE_DIR_RE` has been **deleted**, not fixed. A
+static test asserts it does not come back, and an invariant test asserts
+`runtime_evidence_identity == classifier_evidence_identity` for every path in
+the attack matrix.
+
+Containment is decided on whole path **components**, never string prefixes, so
+`experiments-old/` is not inside `experiments/` and `evidence-archive/` is not
+the evidence namespace.
+
+## Decision 4: the ambiguity floor under `experiments/`
+
+The invariant, stated precisely:
+
+> **A path parsing failure inside the `experiments/` namespace is never
+> evidence of ordinary development.**
+
+Classification floor:
+
+- valid controlled evidence path -> `CONTROLLED_STAGE1`;
+- malformed or incomplete path under `experiments/evidence/` -> `AMBIGUOUS`;
+- unknown path under `experiments/` -> `AMBIGUOUS`;
+- contradictory or malformed campaign metadata -> `AMBIGUOUS`;
+- only paths clearly outside campaign namespaces, with no campaign-like
+  signal, may classify `ORDINARY_DEVELOPMENT`.
+
+`AMBIGUOUS` requires Gate A exactly as `CONTROLLED_STAGE1` does
+(`GATE_A_INVOCATION_CLASSIFICATION_AMBIGUOUS`). A **malformed** signal is never
+equivalent to an **absent** one: absence can be ordinary, malformation cannot.
+
+The floor is bounded on purpose. Running `repo-sensemaker` into `artifacts/`
+stays ungated, and a test asserts it. A gate that swallows ordinary work gets
+routed around, which is its own security failure.
+
+## Decision 5: every campaign-like signal is individually load-bearing
+
+The review also mutation-tested the classifier and found **2 of 6 mutations
+survived** -- "ignore evidence-number signal" and "ignore target-repository
+signal". Neither was load-bearing: the whole suite stayed green with the signal
+deleted. That was true, and the earlier claim that the classifier was
+mutation-complete was wrong.
+
+The cause was structural, not merely missing tests: `evidence_identity_present`
+(any evidence id at all) was treated as a *strong controlled anchor*, so
+deleting the specific campaign-number branch changed nothing. It is now an
+**ambiguity trigger** rather than a controlled anchor, which makes the
+campaign-number and campaign-slug branches individually decisive.
+
+Signals, all matched through normalizing comparators so aliases and casing
+cannot evade them:
+
+- canonical evidence namespace (`experiments/evidence`, `experiments/run-control`);
+- Evidence 0016 number, from the path and from declared metadata;
+- Evidence 0016 slug, from the path and from declared metadata;
+- Stage 1 repository-sensemaking workflow stage / skill;
+- `repository_sensemaking_brief` artifact type;
+- pinned Auteur target identity (URL aliases normalized to `host/owner/repo`);
+- pinned campaign target SHA (`CONTRACT_TARGET_SHA`, a classification signal
+  only -- it is not an authorization input);
+- the exact campaign model.
+
+A committed mutation harness (`tests/mutation_harness.py`) runs ten mutations,
+including reverting `_norm_path` to the old weak form and restoring the deleted
+runtime regex. All ten are killed. It is committed so the next reviewer can
+re-run it rather than take this document on trust.
+
+## Ordinary-development boundary after the fix
+
+Ordinary (ungated) requires **all** of: canonical output path outside
+`experiments/` entirely; no campaign evidence number or slug, and no malformed
+campaign-like one; not the pinned target repository or SHA; not the exact
+campaign model; and no declared controlled mode. Everything else is gated as
+controlled or ambiguous.
+
+## Status
+
+Still PROPOSED. Two consecutive adversarial reviews each found a real,
+reproducible bypass on a different surface. That is evidence the design is
+converging, not evidence it is finished. Promotion now additionally requires a
+third independent reviewer to confirm that no further spelling reaching the
+controlled campaign path classifies ordinary, and to re-run the mutation
+harness independently.

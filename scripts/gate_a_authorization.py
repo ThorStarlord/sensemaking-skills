@@ -48,11 +48,12 @@ import re
 import secrets
 import subprocess
 import threading
+import unicodedata
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from pathlib import Path
-from typing import Callable, Optional
+from pathlib import Path, PurePosixPath
+from typing import Callable, Literal, Optional
 
 try:  # pragma: no cover - exercised implicitly by every test
     import yaml
@@ -146,6 +147,11 @@ CONTRACT_EVIDENCE_SLUG = "0016-stage1-auteur-post-remediation-controlled-attempt
 CONTRACT_EXACT_MODEL = "claude-sonnet-5"
 CONTRACT_ARTIFACT_TYPE = "repository_sensemaking_brief"
 CONTRACT_TARGET_REPOSITORY = "https://github.com/ThorStarlord/auteur.git"
+#: The pinned campaign target revision (preparation package, section "target_sha").
+#: Recognising it is a *campaign-like signal* for classification only. It is NOT
+#: an authorization input: Gate A still validates target_sha against the
+#: authorization record, which does not exist.
+CONTRACT_TARGET_SHA = "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
 CONTRACT_INVOCATION_LIMIT = 1
 
 CONTRACT_RUN_CONTROL_DIR = (
@@ -362,6 +368,509 @@ class _ValidatedSnapshot:
 # re-checked at consumption.
 
 
+# ============================================================================
+# Canonical path representation (issue #108, SECOND independent review)
+# ============================================================================
+#
+# WHY THIS EXISTS
+# ---------------
+# The first version of this module normalized paths with:
+#
+#     str(value).replace("\\", "/").rstrip("/")
+#
+# which lowercases nothing structural: it does not collapse `.` components,
+# does not collapse repeated separators, and does not resolve `..`. Two
+# separate consumers then each applied their own weak normalization -- the
+# classifier's substring test `"experiments/evidence/" in output_path`, and
+# the runtime's own `_EVIDENCE_DIR_RE` regex over the raw string. Because both
+# were weak in the SAME way, they failed TOGETHER, and these two spellings of
+# the real Evidence 0016 campaign directory:
+#
+#     experiments/./evidence/0016-stage1-auteur-post-remediation-controlled-attempt
+#     experiments//evidence//0016-stage1-auteur-post-remediation-controlled-attempt
+#
+# parsed to (evidence_number=None, evidence_slug=None), classified as
+# ORDINARY_DEVELOPMENT, and reached a provider with ZERO authorization.
+#
+# The fix is not to special-case those two strings. It is to have exactly ONE
+# canonicalization primitive and exactly ONE evidence-path parser, consumed by
+# the classifier, the runtime, the identity builder and the provider boundary
+# alike, plus an ambiguity floor (see `classify_invocation`) so that a parsing
+# FAILURE inside `experiments/` is never read as evidence of ordinary work.
+#
+# PLATFORM BEHAVIOUR (explicit, per review requirement)
+# -----------------------------------------------------
+# * Separators: `\` and `/` are both accepted as separators on every platform.
+#   This is deliberately more permissive than POSIX (where `\` is a legal
+#   filename character), because treating `\` as a literal character on Linux
+#   would let `experiments\evidence\0016-...` evade component matching on CI
+#   while naming the real directory on the Windows machine this repo runs on.
+#   Fail closed beats fail POSIX-pure.
+# * Drive letters: a leading `X:` is captured as `drive` and compared
+#   case-insensitively. UNC prefixes (`//host/share`) are preserved as leading
+#   components.
+# * Case: the canonical *identity key* PRESERVES case, so the digest that
+#   binds a capability is stable across platforms and a differently-cased path
+#   will NOT match a capability bound to another spelling (fail closed).
+#   Namespace and evidence-slug MATCHING, by contrast, is case-insensitive on
+#   every platform, so `EXPERIMENTS/EVIDENCE/0016-...` still classifies
+#   controlled. Case can never turn controlled into ordinary; at worst it
+#   turns an authorized invocation into a rejected one.
+# * Unicode: components are NFC-normalized before comparison so that
+#   decomposed spellings cannot evade a namespace match.
+# * `.` components are dropped. `..` components pop the preceding component
+#   when one exists; at the root of an absolute path they are dropped (a
+#   filesystem root has no parent); on a relative path with nothing to pop
+#   they are RETAINED and the path is flagged `escapes_anchor`.
+# * Non-existent paths: canonicalization is purely lexical and therefore works
+#   for output directories that do not exist yet. Evidence 0016's output
+#   directory must NEVER need to exist in order to be classified.
+# * Symlinks/junctions: handled separately by `resolve_containment`, which
+#   resolves the nearest EXISTING ancestor. If resolution raises (permissions,
+#   a broken reparse point), the result is ambiguous and fails closed.
+
+
+GATE_A_OUTPUT_PATH_ESCAPE = "GATE_A_OUTPUT_PATH_ESCAPE"
+GATE_A_OUTPUT_PATH_AMBIGUOUS = "GATE_A_OUTPUT_PATH_AMBIGUOUS"
+GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE = "GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE"
+
+#: A directory name inside an evidence namespace: `NNNN-slug`.
+EVIDENCE_DIR_NAME_RE = re.compile(r"^(\d{4})-([A-Za-z0-9._-]+)$")
+
+#: Namespace component names, matched as whole path COMPONENTS, never as
+#: substrings of a raw string.
+EXPERIMENTS_COMPONENT = "experiments"
+EVIDENCE_NAMESPACE_COMPONENTS = ("evidence", "run-control")
+
+_DRIVE_RE = re.compile(r"^([A-Za-z]):$")
+
+
+@dataclass(frozen=True)
+class CanonicalPath:
+    """One canonical representation of a path. Built by `canonicalize_path`.
+
+    Attributes
+    ----------
+    raw:
+        The original input, stringified. Kept for diagnostics ONLY. Nothing in
+        this module may make a security decision from `raw`.
+    drive:
+        Drive letter without the colon (``"C"``), or ``""``.
+    is_absolute:
+        Whether the input was rooted.
+    parts:
+        Canonical, case-preserving, NFC-normalized path components after `.`
+        removal, separator collapsing and safe `..` resolution.
+    escapes_anchor:
+        True when unresolved leading `..` components remain, i.e. the path
+        refers to something above its own anchor.
+    """
+
+    raw: str
+    drive: str
+    is_absolute: bool
+    parts: tuple[str, ...]
+    escapes_anchor: bool
+
+    @property
+    def lexical(self) -> PurePosixPath:
+        """Canonical lexical form as a POSIX pure path."""
+        prefix = ""
+        if self.drive:
+            prefix += f"{self.drive}:"
+        if self.is_absolute:
+            prefix += "/"
+        return PurePosixPath(prefix + "/".join(self.parts))
+
+    @property
+    def identity_key(self) -> str:
+        """The stable, case-preserving string stored on `InvocationIdentity`.
+
+        This is what the capability digest binds to. Two spellings of the same
+        path produce the SAME identity key; that is the property that stops an
+        attacker from obtaining a capability for one spelling and using it for
+        another, or from splitting one logical invocation into two identities.
+        """
+        return str(self.lexical)
+
+    @property
+    def match_parts(self) -> tuple[str, ...]:
+        """Components folded for case-insensitive, NFC-stable comparison."""
+        return tuple(p.casefold() for p in self.parts)
+
+    def relative_to_root(self, root: "CanonicalPath") -> Optional[PurePosixPath]:
+        """Repository-relative POSIX path, or None if not contained in `root`.
+
+        Containment is decided on whole components, never on string prefixes,
+        so `experiments-old/` is not "inside" `experiments/`.
+        """
+        if root is None or not root.parts and not root.is_absolute:
+            return None
+        if self.drive.casefold() != root.drive.casefold():
+            return None
+        if self.is_absolute != root.is_absolute:
+            return None
+        rp = root.match_parts
+        if self.match_parts[:len(rp)] != rp:
+            return None
+        return PurePosixPath("/".join(self.parts[len(rp):]) or ".")
+
+
+def canonicalize_path(value) -> CanonicalPath:
+    """THE canonicalization primitive. Lexical, total, filesystem-free.
+
+    Accepts ``str``, ``os.PathLike``, ``Path``, ``PurePosixPath`` or ``None``.
+    Never raises, never touches the filesystem, and never requires the path to
+    exist -- Evidence 0016's output directory does not exist and must still be
+    classifiable.
+    """
+    if value is None:
+        return CanonicalPath(raw="", drive="", is_absolute=False, parts=(),
+                             escapes_anchor=False)
+    raw = str(value)
+    text = unicodedata.normalize("NFC", raw)
+    text = text.replace("\\", "/")
+
+    drive = ""
+    m = _DRIVE_RE.match(text[:2])
+    if m:
+        drive = m.group(1)
+        text = text[2:]
+
+    is_absolute = text.startswith("/")
+
+    parts: list[str] = []
+    escapes = False
+    for segment in text.split("/"):
+        if segment == "" or segment == ".":
+            # Repeated separators produce empty segments; `.` is a no-op.
+            # Collapsing BOTH is precisely what the old normalizer failed to
+            # do, and is what the reproduced bypass depended on.
+            continue
+        if segment == "..":
+            if parts and parts[-1] != "..":
+                parts.pop()
+            elif is_absolute or drive:
+                # A filesystem root has no parent; `/..` is `/`.
+                continue
+            else:
+                parts.append("..")
+                escapes = True
+            continue
+        parts.append(segment)
+
+    return CanonicalPath(
+        raw=raw,
+        drive=drive,
+        is_absolute=is_absolute,
+        parts=tuple(parts),
+        escapes_anchor=escapes,
+    )
+
+
+def resolve_containment(value, root) -> tuple[Optional[Path], Optional[str]]:
+    """PHYSICAL containment check. Returns ``(resolved_or_None, failure_code)``.
+
+    Lexical canonicalization cannot see symlinks, junctions or reparse points.
+    This resolves the nearest EXISTING ancestor of `value` and re-checks
+    containment in the resolved `root`. The final component is allowed not to
+    exist -- an output directory that has not been created yet is normal, and
+    requiring it to exist would mean classification depended on whether the
+    attacker had already made the directory.
+
+    Fails closed: any OSError (permission denied, broken reparse point, too
+    many levels of symbolic links) yields GATE_A_OUTPUT_PATH_AMBIGUOUS rather
+    than a permissive "probably fine".
+    """
+    if value in (None, "") or root in (None, ""):
+        return None, None
+    try:
+        target = Path(str(value))
+        root_path = Path(str(root))
+        try:
+            real_root = root_path.resolve(strict=False)
+        except OSError:
+            return None, GATE_A_OUTPUT_PATH_AMBIGUOUS
+
+        existing = target
+        unresolved: list[str] = []
+        guard = 0
+        while not existing.exists() and existing.parent != existing and guard < 256:
+            unresolved.append(existing.name)
+            existing = existing.parent
+            guard += 1
+        if guard >= 256:
+            return None, GATE_A_OUTPUT_PATH_AMBIGUOUS
+        try:
+            resolved_ancestor = existing.resolve(strict=False)
+        except OSError:
+            return None, GATE_A_OUTPUT_PATH_AMBIGUOUS
+
+        resolved = resolved_ancestor.joinpath(*reversed(unresolved))
+        canon = canonicalize_path(resolved)
+        canon_root = canonicalize_path(real_root)
+        rel = canon.relative_to_root(canon_root)
+        if rel is None:
+            # Outside the framework root. That is not automatically a failure
+            # (ordinary development writes to tmp dirs), so report the resolved
+            # path and let the caller decide; only flag a genuine escape when
+            # the LEXICAL form claimed to be inside.
+            lex_rel = canonicalize_path(value).relative_to_root(canon_root)
+            if lex_rel is not None:
+                return resolved, GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE
+        return resolved, None
+    except (OSError, ValueError):  # pragma: no cover - defensive
+        return None, GATE_A_OUTPUT_PATH_AMBIGUOUS
+
+
+EvidenceParseStatus = Literal[
+    "VALID_EVIDENCE_PATH",
+    "EXPERIMENTS_NON_EVIDENCE_PATH",
+    "AMBIGUOUS_EVIDENCE_PATH",
+    "OUTSIDE_EXPERIMENTS",
+]
+
+
+@dataclass(frozen=True)
+class EvidencePathIdentity:
+    """THE result of parsing an output path. One parser, many consumers.
+
+    The classifier, `build_invocation_identity` in the runtime, and the
+    provider boundary all consume THIS object. Nothing downstream is permitted
+    to re-parse the raw path with its own regex; that duplication is exactly
+    what produced the reproduced bypass.
+    """
+
+    under_experiments: bool
+    under_evidence_namespace: bool
+    evidence_number: Optional[str]
+    evidence_slug: Optional[str]
+    canonical_relative_path: PurePosixPath
+    parse_status: EvidenceParseStatus
+    namespace_kind: Optional[str] = None
+    containment_failure: Optional[str] = None
+
+    @property
+    def campaign_number(self) -> bool:
+        return self.evidence_number == CONTRACT_EVIDENCE_NUMBER
+
+    @property
+    def campaign_slug(self) -> bool:
+        return (self.evidence_slug or "").casefold() == CONTRACT_EVIDENCE_SLUG.casefold()
+
+    def key(self) -> tuple:
+        """Comparable identity, for the runtime/classifier agreement invariant."""
+        return (self.under_experiments, self.under_evidence_namespace,
+                self.evidence_number, (self.evidence_slug or "").casefold() or None,
+                str(self.canonical_relative_path), self.parse_status)
+
+
+def _parse_canonical_parts(parts: tuple[str, ...], canon: CanonicalPath
+                           ) -> EvidencePathIdentity:
+    """Component-aware namespace parse. No substring matching anywhere."""
+    folded = tuple(p.casefold() for p in parts)
+    rel = PurePosixPath("/".join(parts) or ".")
+
+    if EXPERIMENTS_COMPONENT not in folded:
+        return EvidencePathIdentity(
+            under_experiments=False, under_evidence_namespace=False,
+            evidence_number=None, evidence_slug=None,
+            canonical_relative_path=rel, parse_status="OUTSIDE_EXPERIMENTS")
+
+    i = folded.index(EXPERIMENTS_COMPONENT)
+    rest = parts[i + 1:]
+    rest_folded = folded[i + 1:]
+
+    if canon.escapes_anchor:
+        # Unresolved `..` above the anchor while naming `experiments/`: we
+        # cannot say where this lands. Under the ambiguity floor that is
+        # ambiguous, never ordinary.
+        return EvidencePathIdentity(
+            under_experiments=True, under_evidence_namespace=False,
+            evidence_number=None, evidence_slug=None,
+            canonical_relative_path=rel, parse_status="AMBIGUOUS_EVIDENCE_PATH")
+
+    if not rest_folded or rest_folded[0] not in EVIDENCE_NAMESPACE_COMPONENTS:
+        return EvidencePathIdentity(
+            under_experiments=True, under_evidence_namespace=False,
+            evidence_number=None, evidence_slug=None,
+            canonical_relative_path=rel,
+            parse_status="EXPERIMENTS_NON_EVIDENCE_PATH")
+
+    namespace = rest_folded[0]
+    if len(rest) < 2:
+        # `experiments/evidence` with no campaign directory: inside the
+        # controlled namespace but unidentifiable. Fail closed.
+        return EvidencePathIdentity(
+            under_experiments=True, under_evidence_namespace=True,
+            evidence_number=None, evidence_slug=None,
+            canonical_relative_path=rel, namespace_kind=namespace,
+            parse_status="AMBIGUOUS_EVIDENCE_PATH")
+
+    m = EVIDENCE_DIR_NAME_RE.match(rest[1])
+    if not m:
+        return EvidencePathIdentity(
+            under_experiments=True, under_evidence_namespace=True,
+            evidence_number=None, evidence_slug=None,
+            canonical_relative_path=rel, namespace_kind=namespace,
+            parse_status="AMBIGUOUS_EVIDENCE_PATH")
+
+    return EvidencePathIdentity(
+        under_experiments=True, under_evidence_namespace=True,
+        evidence_number=m.group(1), evidence_slug=rest[1],
+        canonical_relative_path=rel, namespace_kind=namespace,
+        parse_status="VALID_EVIDENCE_PATH")
+
+
+def parse_evidence_path(value, framework_root=None) -> EvidencePathIdentity:
+    """THE evidence-path parser. The single source of truth.
+
+    Strategy:
+
+    1. Canonicalize `value` lexically (works on non-existent paths).
+    2. If `framework_root` is supplied and the path is contained in it, parse
+       the repository-relative components; otherwise parse the whole canonical
+       component list, anchored on the first `experiments` component.
+    3. If the filesystem is available, ALSO resolve symlinks/junctions and
+       parse the resolved form. Return whichever of the two parses is MORE
+       controlled. A symlink that hides the campaign directory therefore
+       cannot downgrade the classification; it can only ever upgrade it.
+    """
+    canon = canonicalize_path(value)
+    root_canon = canonicalize_path(framework_root) if framework_root else None
+
+    parts = canon.parts
+    if root_canon is not None and (root_canon.parts or root_canon.is_absolute):
+        rel = canon.relative_to_root(root_canon)
+        if rel is not None:
+            parts = tuple(p for p in str(rel).split("/") if p not in ("", "."))
+
+    lexical_identity = _parse_canonical_parts(parts, canon)
+
+    # -- physical pass ----------------------------------------------------
+    physical_identity = None
+    containment_failure = None
+    if framework_root:
+        resolved, code = resolve_containment(value, framework_root)
+        containment_failure = code
+        if resolved is not None:
+            rcanon = canonicalize_path(resolved)
+            rroot = canonicalize_path(Path(str(framework_root)).resolve(strict=False)
+                                      if os.path.exists(str(framework_root))
+                                      else framework_root)
+            rrel = rcanon.relative_to_root(rroot)
+            rparts = (tuple(p for p in str(rrel).split("/") if p not in ("", "."))
+                      if rrel is not None else rcanon.parts)
+            physical_identity = _parse_canonical_parts(rparts, rcanon)
+
+    best = lexical_identity
+    if physical_identity is not None:
+        if _control_rank(physical_identity) > _control_rank(lexical_identity):
+            best = physical_identity
+    if containment_failure:
+        # Uncertainty about where this lands is itself ambiguity.
+        best = EvidencePathIdentity(
+            under_experiments=True,
+            under_evidence_namespace=best.under_evidence_namespace,
+            evidence_number=best.evidence_number,
+            evidence_slug=best.evidence_slug,
+            canonical_relative_path=best.canonical_relative_path,
+            parse_status=("VALID_EVIDENCE_PATH"
+                          if best.parse_status == "VALID_EVIDENCE_PATH"
+                          else "AMBIGUOUS_EVIDENCE_PATH"),
+            namespace_kind=best.namespace_kind,
+            containment_failure=containment_failure)
+    return best
+
+
+_CONTROL_RANK = {
+    "OUTSIDE_EXPERIMENTS": 0,
+    "EXPERIMENTS_NON_EVIDENCE_PATH": 1,
+    "AMBIGUOUS_EVIDENCE_PATH": 2,
+    "VALID_EVIDENCE_PATH": 3,
+}
+
+
+def _control_rank(ident: EvidencePathIdentity) -> int:
+    base = _CONTROL_RANK[ident.parse_status]
+    if ident.campaign_number or ident.campaign_slug:
+        base += 1
+    return base
+
+
+# ---------------------------------------------------------------------------
+# Normalizing comparators for the non-path campaign signals.
+# A MALFORMED signal must never be equivalent to an ABSENT one: absence can be
+# ordinary, malformation is always ambiguity.
+# ---------------------------------------------------------------------------
+
+def _norm_evidence_number(value) -> str:
+    return unicodedata.normalize("NFC", str(value or "")).strip()
+
+
+def _norm_slug(value) -> str:
+    return unicodedata.normalize("NFC", str(value or "")).strip().casefold()
+
+
+def _norm_sha(value) -> str:
+    return str(value or "").strip().casefold()
+
+
+def _norm_repo_url(value) -> str:
+    """Reduce a git remote to `host/owner/repo`, so aliases compare equal.
+
+    `https://github.com/O/R.git`, `git@github.com:O/R`, `ssh://git@github.com/O/R/`
+    and `HTTPS://GitHub.com/O/R` are the same repository and must not be
+    distinguishable by spelling.
+    """
+    text = unicodedata.normalize("NFC", str(value or "")).strip().casefold()
+    if not text:
+        return ""
+    for scheme in ("https://", "http://", "ssh://", "git://", "git+ssh://"):
+        if text.startswith(scheme):
+            text = text[len(scheme):]
+            break
+    if text.startswith("git@"):
+        text = text[4:]
+    text = text.replace(":", "/", 1) if "@" not in text and text.count(":") == 1 else text
+    if "@" in text.split("/")[0]:
+        text = text.split("@", 1)[1]
+    text = text.replace(":", "/")
+    while "//" in text:
+        text = text.replace("//", "/")
+    text = text.rstrip("/")
+    if text.endswith(".git"):
+        text = text[:-4]
+    return text
+
+
+_NORM_CONTRACT_TARGET_REPOSITORY = _norm_repo_url(CONTRACT_TARGET_REPOSITORY)
+_CAMPAIGN_SLUG_STEM = CONTRACT_EVIDENCE_SLUG.split("-", 1)[1].casefold()
+
+
+def _is_campaign_like_number(value: str) -> bool:
+    """A number that is TRYING to be 0016 but is not spelled like it.
+
+    `16`, `00016`, ` 0016 ` (already stripped), `0016 ` all name the campaign
+    to a human and to a filesystem-adjacent reader; none of them equal the
+    contract string. They are malformed campaign identity, not absence.
+    """
+    if not value or value == CONTRACT_EVIDENCE_NUMBER:
+        return False
+    digits = value.strip()
+    if not digits.isdigit():
+        return True  # non-numeric evidence number is malformed by definition
+    return int(digits) == int(CONTRACT_EVIDENCE_NUMBER)
+
+
+def _is_campaign_like_slug(value: str) -> bool:
+    if not value or value == CONTRACT_EVIDENCE_SLUG.casefold():
+        return False
+    return (_CAMPAIGN_SLUG_STEM in value
+            or value.startswith(CONTRACT_EVIDENCE_NUMBER)
+            or "auteur" in value and "stage1" in value)
+
+
 @dataclass(frozen=True)
 class InvocationIdentity:
     """What is actually being invoked. Immutable, hashable, digestible.
@@ -392,9 +901,15 @@ class InvocationIdentity:
 
     @staticmethod
     def _norm_path(value) -> str:
+        """Canonical identity key for a path. ONE implementation, no regex.
+
+        Delegates to `canonicalize_path`. Because this is what `digest()`
+        binds, equivalent spellings produce the same capability binding and a
+        capability cannot be split across spellings of one invocation.
+        """
         if value is None:
             return ""
-        return str(value).replace("\\", "/").rstrip("/")
+        return canonicalize_path(value).identity_key
 
     @classmethod
     def build(cls, *, workflow_id="", workflow_stage="", artifact_type="",
@@ -452,17 +967,9 @@ class ExecutionMode(Enum):
     AMBIGUOUS = "AMBIGUOUS"
 
 
-#: Any output landing under one of these path segments is inside a controlled
-#: evidence namespace, regardless of what mode the caller declared.
-CONTROLLED_NAMESPACE_SEGMENTS = ("experiments/evidence/", "experiments/run-control/")
-
 #: Skills / workflow stages that constitute Stage 1 repository sensemaking.
 STAGE_1_STAGE_TOKENS = ("stage-1", "stage1", "stage_1", "1")
 STAGE_1_SKILL_IDS = ("repo-sensemaker",)
-
-_EVIDENCE_PATH_RE = re.compile(
-    r"experiments/(?:evidence|run-control)/(\d{4})-([A-Za-z0-9._-]+)"
-)
 
 
 def _is_stage_1(identity: "InvocationIdentity") -> bool:
@@ -473,9 +980,13 @@ def _is_stage_1(identity: "InvocationIdentity") -> bool:
     return any(tok in wid for tok in ("stage-1", "stage1")) or wid in STAGE_1_SKILL_IDS
 
 
-def _in_controlled_namespace(identity: "InvocationIdentity") -> bool:
-    out = identity.output_path.lower()
-    return any(seg in out for seg in CONTROLLED_NAMESPACE_SEGMENTS)
+def evidence_identity_for(identity: "InvocationIdentity") -> EvidencePathIdentity:
+    """The one evidence-path identity for an invocation.
+
+    The classifier, the runtime and the provider boundary all call THIS. There
+    is no second parser and no raw-text regex anywhere downstream.
+    """
+    return parse_evidence_path(identity.output_path, identity.framework_root)
 
 
 def classify_invocation(identity: Optional["InvocationIdentity"]
@@ -500,49 +1011,108 @@ def classify_invocation(identity: Optional["InvocationIdentity"]
         # an absence of the evidence needed to say so.
         return ExecutionMode.AMBIGUOUS, ("identity_missing",)
 
+    # ONE parse of the output path, from the ONE shared parser. Nothing below
+    # touches `identity.output_path` as text.
+    ident = evidence_identity_for(identity)
+
     signals: list[str] = []
+    contradictions: list[str] = []
+
+    # -- workflow-shape signals -------------------------------------------
     if identity.artifact_type == CONTRACT_ARTIFACT_TYPE:
         signals.append("artifact_type_is_stage1_brief")
     stage_1 = _is_stage_1(identity)
     if stage_1:
         signals.append("workflow_stage_is_stage_1")
-    if identity.evidence_number == CONTRACT_EVIDENCE_NUMBER:
-        signals.append("evidence_number_is_campaign")
-    if identity.evidence_slug == CONTRACT_EVIDENCE_SLUG:
-        signals.append("evidence_slug_is_campaign")
-    ns = _in_controlled_namespace(identity)
-    if ns:
+
+    # -- canonical path signals -------------------------------------------
+    if ident.parse_status in ("VALID_EVIDENCE_PATH", "AMBIGUOUS_EVIDENCE_PATH"):
         signals.append("output_in_controlled_evidence_namespace")
-    if identity.evidence_number or identity.evidence_slug:
+    if ident.parse_status == "EXPERIMENTS_NON_EVIDENCE_PATH":
+        signals.append("output_under_experiments_namespace")
+    if ident.parse_status == "AMBIGUOUS_EVIDENCE_PATH":
+        contradictions.append("evidence_path_unparseable")
+    if ident.containment_failure:
+        contradictions.append(f"path_containment_{ident.containment_failure}")
+    if ident.campaign_number:
+        signals.append("path_evidence_number_is_campaign")
+    if ident.campaign_slug:
+        signals.append("path_evidence_slug_is_campaign")
+
+    # -- declared evidence metadata (defense in depth, NOT a path repair) --
+    meta_number = _norm_evidence_number(identity.evidence_number)
+    meta_slug = _norm_slug(identity.evidence_slug)
+    if _norm_evidence_number(identity.evidence_number) == CONTRACT_EVIDENCE_NUMBER:
+        signals.append("evidence_number_is_campaign")
+    elif _is_campaign_like_number(meta_number):
+        contradictions.append("evidence_number_malformed")
+    if _norm_slug(identity.evidence_slug) == CONTRACT_EVIDENCE_SLUG.casefold():
+        signals.append("evidence_slug_is_campaign")
+    elif _is_campaign_like_slug(meta_slug):
+        contradictions.append("evidence_slug_malformed")
+    if meta_number or meta_slug:
+        # Campaign-LIKE but not campaign-EQUAL. On its own this is never
+        # enough to call something controlled, and never enough to call it
+        # ordinary either.
         signals.append("evidence_identity_present")
-    if identity.target_repository == CONTRACT_TARGET_REPOSITORY:
+
+    # -- metadata vs path, and metadata vs itself -------------------------
+    if (ident.evidence_number and meta_number
+            and ident.evidence_number != meta_number):
+        contradictions.append("evidence_number_conflicts_with_path")
+    if (ident.evidence_slug and meta_slug
+            and _norm_slug(ident.evidence_slug) != meta_slug):
+        contradictions.append("evidence_slug_conflicts_with_path")
+    if meta_number and meta_slug and not meta_slug.startswith(f"{meta_number}-"):
+        contradictions.append("evidence_number_slug_conflict")
+
+    # -- pinned target / model signals ------------------------------------
+    if _norm_repo_url(identity.target_repository) == _NORM_CONTRACT_TARGET_REPOSITORY:
         signals.append("target_repository_is_campaign_pin")
+    if _norm_sha(identity.target_sha) and _norm_sha(identity.target_sha) == _norm_sha(CONTRACT_TARGET_SHA):
+        signals.append("target_sha_is_campaign_pin")
     if identity.requested_model == CONTRACT_EXACT_MODEL:
         signals.append("requested_model_is_campaign_model")
     if identity.declared_controlled_mode is True:
         signals.append("declared_controlled_mode")
 
-    frozen_signals = tuple(signals)
+    frozen_signals = tuple(signals) + tuple(contradictions)
 
+    # STRONG anchors: an unambiguous statement that this output IS campaign
+    # output. `evidence_identity_present` is deliberately NOT here -- an
+    # unrecognized evidence id is ambiguity, not a controlled anchor. That
+    # separation is what makes the evidence-number and evidence-slug branches
+    # individually load-bearing (see the signal-isolation tests).
     strong = (
         "evidence_number_is_campaign" in signals
         or "evidence_slug_is_campaign" in signals
+        or "path_evidence_number_is_campaign" in signals
+        or "path_evidence_slug_is_campaign" in signals
         or "output_in_controlled_evidence_namespace" in signals
-        or "evidence_identity_present" in signals
     )
     weak = (
         "target_repository_is_campaign_pin" in signals
+        or "target_sha_is_campaign_pin" in signals
         or "requested_model_is_campaign_model" in signals
     )
     brief = "artifact_type_is_stage1_brief" in signals
+    campaign_like = (strong or weak or "evidence_identity_present" in signals
+                     or "output_under_experiments_namespace" in signals
+                     or bool(contradictions))
 
     # A caller who declares controlled mode gets controlled mode. A caller who
     # declares NOT-controlled while structural signals say otherwise gets
     # AMBIGUOUS -- never ordinary. `False` can never override structure.
     if identity.declared_controlled_mode is True:
         return ExecutionMode.CONTROLLED_STAGE1, frozen_signals
-    if identity.declared_controlled_mode is False and (strong or weak):
+    if identity.declared_controlled_mode is False and campaign_like:
         return ExecutionMode.AMBIGUOUS, frozen_signals + ("declared_mode_conflict",)
+
+    # A malformed or self-contradictory campaign identity is NEVER ordinary
+    # and never confidently controlled. It is ambiguous, and ambiguity is
+    # gated exactly as controlled is.
+    if contradictions:
+        return ExecutionMode.AMBIGUOUS, frozen_signals
 
     if strong and brief:
         return ExecutionMode.CONTROLLED_STAGE1, frozen_signals
@@ -552,6 +1122,16 @@ def classify_invocation(identity: Optional["InvocationIdentity"]
         return ExecutionMode.CONTROLLED_STAGE1, frozen_signals
     if weak and (brief or stage_1):
         return ExecutionMode.AMBIGUOUS, frozen_signals
+
+    # ---- THE AMBIGUITY FLOOR (issue #108, second review) ----------------
+    # A path parsing failure inside the `experiments/` namespace is never
+    # evidence of ordinary development. Anything at all under `experiments/`
+    # that we could not confidently place is ambiguous, not ordinary.
+    if ident.under_experiments:
+        return ExecutionMode.AMBIGUOUS, frozen_signals + ("experiments_ambiguity_floor",)
+    if "evidence_identity_present" in signals:
+        return ExecutionMode.AMBIGUOUS, frozen_signals
+
     return ExecutionMode.ORDINARY_DEVELOPMENT, frozen_signals
 
 

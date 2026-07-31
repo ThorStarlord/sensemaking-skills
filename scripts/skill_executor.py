@@ -42,6 +42,7 @@ from gate_a_authorization import (  # noqa: E402
     CONTRACT_ARTIFACT_TYPE,
     classify_invocation,
     format_gate_a_log,
+    parse_evidence_path,
     requires_gate_a,
 )
 
@@ -203,9 +204,16 @@ def require_authorization_capability(
     return mode
 
 
-_EVIDENCE_DIR_RE = re.compile(
-    r"experiments[\\/](?:evidence|run-control)[\\/](\d{4})-([A-Za-z0-9._-]+)"
-)
+# NOTE (issue #108, second independent review):
+# There used to be an `_EVIDENCE_DIR_RE` here -- a SECOND, independently
+# maintained evidence-path regex that ran over the raw output string. It was
+# weak in the same way the classifier's substring test was weak, so the two
+# checks failed together on `experiments/./evidence/0016-...` and
+# `experiments//evidence//0016-...`, both of which reached a provider with no
+# authorization at all. It has been deleted, not fixed: the runtime now
+# consumes `gate_a_authorization.parse_evidence_path`, the single shared
+# parser the classifier consumes. Do not reintroduce a local regex here; the
+# runtime/classifier agreement invariant test will fail if you do.
 
 #: Skill ids that ARE Stage 1 repository sensemaking.
 _STAGE_1_SKILLS = ("repo-sensemaker",)
@@ -254,10 +262,11 @@ def build_invocation_identity(
     evidence_number = ctx.get("evidence_number")
     evidence_slug = ctx.get("evidence_slug")
     if not (evidence_number and evidence_slug):
-        match = _EVIDENCE_DIR_RE.search(str(output))
-        if match:
-            evidence_number = evidence_number or match.group(1)
-            evidence_slug = evidence_slug or f"{match.group(1)}-{match.group(2)}"
+        # ONE parser, shared with the classifier. See parse_evidence_path.
+        ident = parse_evidence_path(output)
+        if ident.evidence_number:
+            evidence_number = evidence_number or ident.evidence_number
+            evidence_slug = evidence_slug or ident.evidence_slug
 
     return InvocationIdentity.build(
         workflow_id=str(ctx.get("workflow_id", "") or skill_id),
