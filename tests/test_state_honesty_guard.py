@@ -257,6 +257,77 @@ class CategoryThreeHistoricalAndProspectiveFraming(GuardBase):
         self.assertRejected("No consumer exists, historically speaking.\n")
 
 
+class FramingIsAsymmetric(GuardBase):
+    """Independent-review regressions (PR #112 round 1).
+
+    A fresh reviewer demonstrated that sentence-initial historical framing
+    exempted the WHOLE sentence regardless of direction, so a false present-tense
+    authorization claim slipped through behind a marker. That re-created, at
+    sentence scope, the blanket exemption PR #107 round 5 deleted at line scope.
+
+    Framing is now asymmetric: it may excuse denying a now-true fact, never
+    affirming a still-false one.
+    """
+
+    HISTORICAL_BYPASS_ATTEMPTS = (
+        "Historically, owner approval exists.",
+        "Previously, the package is runnable.",
+        "Originally, Stage 1 is now authorized.",
+        "Formerly, a real model was invoked.",
+        "Before PR #109, owner approval exists.",
+        "The original preparation package says the package is runnable.",
+    )
+
+    def test_historical_framing_cannot_excuse_a_false_present_claim(self):
+        for text in self.HISTORICAL_BYPASS_ATTEMPTS:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    MODAL_BYPASS_ATTEMPTS = (
+        "Reviewers must note that the package is runnable.",
+        "This may surprise you: stage 1 is now authorized.",
+        "Readers will observe that owner approval exists.",
+    )
+
+    def test_a_bare_modal_cannot_excuse_a_false_present_claim(self):
+        for text in self.MODAL_BYPASS_ATTEMPTS:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    VERIFICATION_REQUIREMENTS = (
+        "The runtime must verify that the authorization record exists.",
+        "Gate A must confirm that owner approval exists.",
+        "The consumer will check that the run-control directory exists.",
+        "Gate A is required to validate that authorization-record.sha256 exists.",
+    )
+
+    def test_verification_requirement_frames_remain_legal(self):
+        """A condition to be CHECKED is not a claim that it currently holds."""
+        for text in self.VERIFICATION_REQUIREMENTS:
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+    def test_historical_framing_still_excuses_denials(self):
+        """The legitimate direction is untouched."""
+        self.assertAccepted("Before PR #109, no consumer exists in the tree.\n")
+        self.assertAccepted("Historically, Gate A is not runtime-enforced.\n")
+
+
+class MachineBlockEvasionRegressions(GuardBase):
+    """Independent-review regressions (PR #112 round 1): container gaps."""
+
+    def test_a_quoted_boolean_does_not_slip_past(self):
+        findings = self.scan('```yaml\nowner_approval_artifact_exists: "true"\n```\n')
+        self.assertTrue(findings)
+
+    def test_a_json_block_is_validated_too(self):
+        findings = self.scan('```json\n{"package_runnable": true}\n```\n')
+        self.assertTrue(findings)
+
+    def test_quoted_truthful_values_still_pass(self):
+        self.assertAccepted('```yaml\nowner_approval_artifact_exists: "false"\n```\n')
+
+
 class StaleAbsenceClaimRegressionsFromPr111(GuardBase):
     """Every stale variant surfaced by the PR #111 review history."""
 

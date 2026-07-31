@@ -59,11 +59,24 @@ Three claim categories
    shapes are mechanically rejected.
 
 3. **Historical or prospective statements** -- legal only when EXPLICITLY marked,
-   never inferred from grammar. Historical framing must be a sentence-initial
-   marker from a closed set (``Before PR #109,`` / ``Historically,`` / ``The
-   original preparation package ...``). Prospective framing must carry a modal
-   before the claim. Proximity to the word "future" grants nothing, in keeping
-   with the adjacency discipline PR #107 round 5 established.
+   never inferred from grammar, and only in the direction where they can be
+   true. Framing is ASYMMETRIC:
+
+   * a statement DENYING a now-true fact has a real historical reading
+     ("Before PR #109, no consumer existed"), so a sentence-initial marker from
+     a closed set, or a modal before the claim, exempts it;
+   * a statement AFFIRMING a still-false fact has none. Owner approval does not
+     exist now and did not exist earlier either, so "Historically, owner
+     approval exists." is false in both tenses. Historical framing exempts
+     NOTHING here, and a bare modal does not either -- only a
+     verification-requirement frame ("The runtime must verify that the
+     authorization record exists"), which names a condition to be checked
+     rather than a fact that holds.
+
+   Letting a sentence-initial marker exempt the rest of a sentence
+   unconditionally would re-create, at sentence scope, the blanket exemption
+   PR #107 round 5 deleted at line scope. Proximity to the word "future" grants
+   nothing, in keeping with that same adjacency discipline.
 
 Code fences are not a safe harbor
 ---------------------------------
@@ -357,6 +370,21 @@ _MODAL_RE = re.compile(
     re.IGNORECASE,
 )
 
+# A VERIFICATION-REQUIREMENT frame: a modal followed by a checking verb, as in
+# "The runtime must verify that the authorization record exists." Such a
+# sentence names a condition to be CHECKED, not a fact that currently holds, so
+# it may legitimately contain a present-tense affirmation of a currently-false
+# fact. "Reviewers must note that the package is runnable." is not of this kind
+# and is not exempted: "note" is not a verification verb.
+_VERIFICATION_REQUIREMENT_RE = re.compile(
+    r"\b(?:will|would|shall|may|might|could|must|is\s+required\s+to|"
+    r"are\s+required\s+to|is\s+expected\s+to)\s+(?:\w+\s+){0,2}"
+    r"(?:verify|verifies|check|checks|confirm|confirms|validate|validates|"
+    r"ensure|ensures|require|requires|assert|asserts|recompute|recomputes|"
+    r"establish|establishes)\b",
+    re.IGNORECASE,
+)
+
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?;])\s+")
 
 # A negator IMMEDIATELY governing the matched noun phrase turns an affirmation
@@ -368,12 +396,31 @@ _ADJACENT_NEGATOR_RE = re.compile(
 )
 
 
-def _is_framed(sentence, match):
-    """Whether explicit historical or prospective framing governs `match`."""
-    if _HISTORICAL_PREFIX_RE.match(sentence):
-        return True
-    modal = _MODAL_RE.search(sentence[: match.start()])
-    return modal is not None
+def _is_framed(sentence, match, bad_kind):
+    """Whether explicit historical or prospective framing governs `match`.
+
+    The rule is deliberately ASYMMETRIC, because the two directions are not
+    symmetric in reality.
+
+    A `deny` match denies a fact that is currently TRUE. Such a statement has a
+    legitimate historical reading ("Before PR #109, no consumer existed") and a
+    legitimate prospective reading, so historical and modal framing both exempt.
+
+    An `affirm` match affirms a fact that is currently FALSE. There is NO
+    legitimate historical reading of one: owner approval does not exist now and
+    did not exist earlier either, so "Historically, owner approval exists."
+    states a falsehood in both tenses. Allowing a sentence-initial marker to
+    exempt it would re-create, at sentence scope, exactly the blanket exemption
+    PR #107 round 5 deleted at line scope. Historical framing therefore exempts
+    NOTHING in this direction, and a bare modal is not enough either -- only a
+    verification-requirement frame, which names a condition to be checked rather
+    than a fact that holds.
+    """
+    if bad_kind == "deny":
+        if _HISTORICAL_PREFIX_RE.match(sentence):
+            return True
+        return _MODAL_RE.search(sentence[: match.start()]) is not None
+    return _VERIFICATION_REQUIREMENT_RE.search(sentence[: match.start()]) is not None
 
 
 def _iter_sentences(text):
@@ -433,7 +480,7 @@ def _scan_text_for_contradictions(text, state, name):
             bad_kind = "deny" if value else "affirm"
             for pattern in lexicon[bad_kind]:
                 for match in re.finditer(pattern, sentence, re.IGNORECASE):
-                    if _is_framed(sentence, match):
+                    if _is_framed(sentence, match, bad_kind):
                         continue
                     if bad_kind == "affirm" and _ADJACENT_NEGATOR_RE.search(
                         sentence[: match.start()]
@@ -491,7 +538,7 @@ def _scan_machine_blocks(text, state, name):
     """Validate machine-readable YAML blocks against the derived facts."""
     findings = []
     for info, start_lineno, body in iter_fenced_blocks(text):
-        if info not in ("yaml", "yml"):
+        if info not in ("yaml", "yml", "json"):
             continue
         try:
             data = yaml.safe_load(body)
@@ -503,6 +550,14 @@ def _scan_machine_blocks(text, state, name):
             if field not in data:
                 continue
             declared = data[field]
+            if isinstance(declared, str):
+                # A quoted "true" states the same thing as a bare true and must
+                # not slip past by being a string.
+                lowered = declared.strip().lower()
+                if lowered in ("true", "yes"):
+                    declared = True
+                elif lowered in ("false", "no"):
+                    declared = False
             if not isinstance(declared, bool):
                 continue
             if declared != state[fact]:
