@@ -685,10 +685,22 @@ def test_permission_error_fails_closed(tmp_path, monkeypatch):
 
 
 def test_capability_cannot_be_constructed_directly(tmp_path):
-    ctx, head, resolver, _ = build_valid_case(tmp_path)
-    decision, snapshot = run(ctx, head, resolver)
+    """Direct construction is refused -- but that is NOT the security claim.
+
+    Python attribute privacy is a convention, not a boundary. The real
+    invariant is asserted below: an object built by reflection, carrying a
+    capability id the registry never issued, is not live and cannot be
+    consumed.
+    """
     with pytest.raises(ga.GateAError):
-        ga.AuthorizedInvocation(object(), decision, ctx, snapshot)
+        ga.AuthorizedInvocation(object(), "deadbeef")
+
+    forged = object.__new__(ga.AuthorizedInvocation)
+    object.__setattr__(forged, "_capability_id", "f" * 64)
+    assert forged.live is False
+    with pytest.raises(ga.GateAError, match="NOT_LIVE"):
+        forged.consume(model="claude-sonnet-5",
+                       artifact_type="repository_sensemaking_brief")
 
 
 def test_authorize_invocation_mints_capability_only_on_success(tmp_path):
@@ -728,7 +740,14 @@ def test_capability_refuses_a_different_model(tmp_path):
     with pytest.raises(ga.GateAError, match="MODEL_MISMATCH"):
         cap.consume(model="claude-opus-4-7",
                     artifact_type="repository_sensemaking_brief", git_head=head)
-    assert cap.consumed is False
+    # Remediation semantics: the attempt burned the authorization. A refused
+    # consumption must not leave a reusable capability behind, or a wrong-model
+    # attempt becomes a free retry.
+    assert cap.consumed is True
+    assert cap.live is False
+    with pytest.raises(ga.GateAError, match="CONSUMPTION_FAILED"):
+        cap.consume(model="claude-sonnet-5",
+                    artifact_type="repository_sensemaking_brief", git_head=head)
 
 
 def test_log_output_is_ascii_and_leaks_nothing(tmp_path):

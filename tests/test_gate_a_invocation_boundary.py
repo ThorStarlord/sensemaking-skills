@@ -129,10 +129,36 @@ def spy(monkeypatch):
 # ===========================================================================
 
 
-def make_capability(tmp_path, **kwargs):
+def invocation_identity(tmp_path, repo_root=None, *, model="claude-sonnet-5",
+                        executor_id="claude-code", declared=True,
+                        output_path=None):
+    """The identity of the invocation `invoke()` below actually performs.
+
+    Gate A binds the capability to this. Building it from the same inputs the
+    executor uses at the provider boundary is the point: a capability issued
+    for one invocation cannot authorize a different one.
+    """
+    return se.build_invocation_identity(
+        repo_root=str(repo_root or REPO_ROOT),
+        executor_id=executor_id,
+        skill_id="repo-sensemaker",
+        expected_output_artifact="repository_sensemaking_brief",
+        context={
+            "expected_output_path": str(
+                output_path if output_path is not None
+                else tmp_path / "out" / "brief.md"),
+        },
+        model=model,
+        declared_controlled_mode=(True if declared else None),
+    )
+
+
+def make_capability(tmp_path, identity=None, repo_root=None, **kwargs):
     ctx, head, resolver, heads = build_valid_case(tmp_path, **kwargs)
     decision, cap = ga.authorize_invocation(
-        ctx, git_head=head, run_control_commit_resolver=resolver)
+        ctx, git_head=head, run_control_commit_resolver=resolver,
+        invocation_identity=(identity if identity is not None
+                             else invocation_identity(tmp_path, repo_root)))
     return ctx, head, resolver, heads, decision, cap
 
 
@@ -151,6 +177,7 @@ def controlled_executor(tmp_path, capability, repo_root=None):
         model="claude-sonnet-5",
         controlled_experiment=True,
         authorization=capability,
+        invocation_identity=invocation_identity(tmp_path, repo_root),
     )
 
 
@@ -326,12 +353,23 @@ def test_negative_zero_invocation_no_capability_passed_at_all(tmp_path, spy):
 
 
 def test_invoke_skill_refuses_when_capability_removed_after_construction(tmp_path, spy):
-    """Defence in depth: even if something clears the capability post-construction,
-    invoke_skill fails closed and never reaches the SDK."""
+    """Post-construction tampering: rejected outright, and fails closed anyway.
+
+    Two layers are asserted here. First, `authorization` is no longer a
+    settable attribute -- the reported downgrade path raises. Second, even the
+    brute-force route that bypasses `__setattr__` entirely by writing to
+    `__dict__` still cannot reach the SDK, because Gate A is re-derived from
+    the invocation identity at the provider boundary rather than trusted from
+    executor state.
+    """
     ctx, head, resolver, heads, decision, cap = make_capability(tmp_path)
     assert cap is not None
     executor = controlled_executor(tmp_path, cap)
-    executor.authorization = None  # simulate tampering
+
+    with pytest.raises(AttributeError):
+        executor.authorization = None
+
+    executor.__dict__["authorization"] = None  # bypass __setattr__ entirely
     result = invoke(executor, tmp_path)
     assert result.status is se.SkillExecutionStatus.FAILED
     assert ga.GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED in result.error
@@ -361,7 +399,12 @@ def test_unauthorized_decision_capability_rejected(tmp_path, spy):
         ctx, git_head=head, run_control_commit_resolver=resolver)
     denied = ga.AuthorizationDecision(authorized=False,
                                       failure_code=ga.GATE_A_AUTHORIZATION_RECORD_INVALID)
-    cap = ga.AuthorizedInvocation(ga._CAPABILITY_TOKEN, denied, ctx, snapshot)
+    # Issued through the registry so the capability IS live -- the point is
+    # that liveness alone is not authorization; the decision must also be
+    # authorized.
+    cap = ga._REGISTRY.issue(denied, ctx, snapshot,
+                             invocation_identity(tmp_path))
+    assert cap.live is True
     with pytest.raises(se.GateAAuthorizationRequired):
         controlled_executor(tmp_path, cap)
     assert_zero_invocation(spy, tmp_path, ctx)
@@ -412,7 +455,11 @@ def test_second_invocation_attempt_is_rejected(tmp_path, spy, monkeypatch):
     assert spy.model_invocation_count == 1, (
         "a second model invocation happened on a one-invocation authorization")
     assert second.status is se.SkillExecutionStatus.FAILED
-    assert ga.GATE_A_CAPABILITY_ALREADY_CONSUMED in second.error
+    # The issuance is retired in the registry, so the non-consuming preflight
+    # already refuses it -- the second attempt never even reaches consume().
+    assert (ga.GATE_A_CAPABILITY_NOT_LIVE in second.error
+            or ga.GATE_A_CAPABILITY_ALREADY_CONSUMED in second.error)
+    assert cap.live is False
 
 
 def test_no_fallback_model_is_ever_configured(tmp_path, spy, monkeypatch):
@@ -456,7 +503,11 @@ def test_toctou_bytes_changed_after_validation(tmp_path, spy, monkeypatch, mutat
         f"{mutate} changed after validation but the invocation still happened")
     assert result.status is se.SkillExecutionStatus.FAILED
     assert ga.GATE_A_REVALIDATION_FAILED in result.error
-    assert cap.consumed is False
+    # Remediation semantics: a consumption ATTEMPT burns the authorization.
+    # It must never return to ISSUED, or a failed provider attempt becomes an
+    # unauthorized retry. This campaign permits no retry.
+    assert cap.consumed is True
+    assert cap.live is False
 
 
 @pytest.mark.parametrize("which", ["framework", "target"])
@@ -531,24 +582,49 @@ def test_api_executor_alternate_path_is_gated(tmp_path, spy):
     # And the invoke_skill layer refuses independently, if the object is
     # somehow obtained without going through __init__.
     executor = se.ApiSkillExecutor.__new__(se.ApiSkillExecutor)
-    executor.repo_root = str(tmp_path)
-    executor.model = se.ApiSkillExecutor.API_MODEL
-    executor.controlled_experiment = True
-    executor.authorization = None
+    executor.__dict__.update({
+        "repo_root": str(tmp_path),
+        "model": se.ApiSkillExecutor.API_MODEL,
+        "_declared_controlled_experiment": True,
+        "authorization": None,
+    })
     result = executor.invoke_skill("repo-sensemaker", "cmd", [],
                                    "repository_sensemaking_brief", {})
     assert result.status is se.SkillExecutionStatus.FAILED
     assert ga.GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED in result.error
     assert_zero_invocation(spy, tmp_path)
 
+    # And with the declared flag stripped entirely -- the reported opt-out --
+    # the SAME Stage 1 invocation is still classified as requiring Gate A,
+    # because classification comes from the invocation, not the flag.
+    ordinary_looking = se.ApiSkillExecutor.__new__(se.ApiSkillExecutor)
+    ordinary_looking.__dict__.update({
+        "repo_root": str(tmp_path),
+        "model": se.ApiSkillExecutor.API_MODEL,
+        "_declared_controlled_experiment": False,
+        "authorization": None,
+    })
+    result = ordinary_looking.invoke_skill(
+        "repo-sensemaker", "cmd", [], "repository_sensemaking_brief",
+        {"expected_output_path": str(
+            tmp_path / "experiments" / "evidence" / EVIDENCE_SLUG / "brief.md")})
+    assert result.status is se.SkillExecutionStatus.FAILED
+    assert "GATE_A_" in result.error
+    assert_zero_invocation(spy, tmp_path)
+
 
 def test_api_executor_refuses_even_with_a_valid_capability(tmp_path, spy):
     """It hardcodes a model that is not the authorized one, so it can never
     serve a Stage 1 invocation -- no model substitution."""
-    ctx, head, resolver, heads, decision, cap = make_capability(tmp_path)
+    api_identity = invocation_identity(
+        tmp_path, tmp_path, model=se.ApiSkillExecutor.API_MODEL,
+        executor_id="api", output_path="")
+    ctx, head, resolver, heads, decision, cap = make_capability(
+        tmp_path, identity=api_identity)
     assert cap is not None
     executor = se.ApiSkillExecutor(repo_root=str(tmp_path),
-                                   controlled_experiment=True, authorization=cap)
+                                   controlled_experiment=True, authorization=cap,
+                                   invocation_identity=api_identity)
     result = executor.invoke_skill("repo-sensemaker", "cmd", [],
                                    "repository_sensemaking_brief", {})
     assert result.status is se.SkillExecutionStatus.FAILED
@@ -703,7 +779,7 @@ def test_evidence_0015_is_untouched():
 def test_denial_message_carries_a_code_and_leaks_no_approval_content(tmp_path, spy):
     ctx, head, resolver, heads, decision, cap = make_capability(tmp_path)
     executor = controlled_executor(tmp_path, cap)
-    executor.authorization = None
+    executor.__dict__["authorization"] = None
     result = invoke(executor, tmp_path)
     assert ga.GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED in result.error
     approval = ctx.owner_approval_path.read_text(encoding="utf-8")

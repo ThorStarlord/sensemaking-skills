@@ -31,10 +31,18 @@ from claude_agent_sdk import ResultMessage, AssistantMessage
 # already on sys.path for every consumer of this module.
 from gate_a_authorization import (  # noqa: E402
     AuthorizedInvocation,
+    ExecutionMode,
     GateAError,
+    InvocationIdentity,
     GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED,
+    GATE_A_CAPABILITY_NOT_LIVE,
+    GATE_A_INVOCATION_CLASSIFICATION_AMBIGUOUS,
+    GATE_A_INVOCATION_IDENTITY_MISMATCH,
     GATE_A_MODEL_MISMATCH,
+    CONTRACT_ARTIFACT_TYPE,
+    classify_invocation,
     format_gate_a_log,
+    requires_gate_a,
 )
 
 
@@ -47,15 +55,26 @@ from gate_a_authorization import (  # noqa: E402
 #     No valid authorization capability, no path to the model invocation
 #     function.
 #
-# `controlled_experiment=True` is the declared execution mode of a Stage 1
-# controlled run. In that mode a typed `AuthorizedInvocation` capability is
-# REQUIRED, and it is consumed inside the function that performs the provider
-# call -- not by some earlier caller whose return value could be ignored.
+# REMEDIATION (issue #108 independent review). The first design made this
+# decision from a caller-supplied boolean, `controlled_experiment`. That was a
+# reproduced bypass: the flag defaults to False, so omitting one CLI flag
+# reached the provider with no authorization at all, and assigning
+# `executor.controlled_experiment = False` after construction downgraded a
+# gated executor while leaving its capability unspent and reusable.
 #
-# Ordinary (non-controlled) development invocations are unchanged: they are
-# not Stage 1 runs and Gate A does not claim to govern them. What Gate A
-# guarantees is that a controlled Stage 1 invocation cannot happen without a
-# validated capability, through any executor, on any code path.
+# The boolean is no longer a security input. Whether Gate A is mandatory is
+# DERIVED, at every provider boundary, from an immutable `InvocationIdentity`
+# built from the actual invocation arguments -- workflow stage, artifact type,
+# evidence number/slug, output destination, target pin, exact model. The
+# declared flag survives only as informational metadata, and a declared
+# `False` that disagrees with structural signals yields AMBIGUOUS, which is
+# gated exactly like CONTROLLED_STAGE1.
+#
+# Ordinary (non-campaign) development invocations remain ungated only when they
+# are structurally distinguishable: outside every controlled evidence
+# namespace, not naming the campaign evidence identity, not targeting the
+# pinned campaign repository, not requesting the exact campaign model. See
+# gate_a_authorization.classify_invocation and ADR 0022.
 
 
 class GateAAuthorizationRequired(ValueError):
@@ -72,33 +91,95 @@ class GateAAuthorizationRequired(ValueError):
         super().__init__(f"{code}: {detail}")
 
 
+class _GateAImmutableAttributes:
+    """Refuses post-construction reassignment of security-relevant attributes.
+
+    This is defense in depth, not the boundary. The boundary is that every
+    provider-side authorization decision is derived from the invocation
+    arguments at the moment of the call, so even a successful `__dict__` poke
+    cannot downgrade the classification of what is actually being invoked.
+    """
+
+    _GATE_A_FROZEN = frozenset({
+        "repo_root",
+        "model",
+        "authorization",
+        "controlled_experiment",
+        "_declared_controlled_experiment",
+        "_invocation_identity",
+    })
+
+    def __setattr__(self, name, value):
+        if name in self._GATE_A_FROZEN and name in self.__dict__:
+            raise AttributeError(
+                f"{name!r} is fixed at construction on "
+                f"{type(self).__name__}; Gate A classification is derived from "
+                f"immutable invocation identity and cannot be reassigned."
+            )
+        object.__setattr__(self, name, value)
+
+    def __delattr__(self, name):
+        if name in self._GATE_A_FROZEN:
+            raise AttributeError(
+                f"{name!r} may not be deleted from {type(self).__name__}."
+            )
+        object.__delattr__(self, name)
+
+    @property
+    def controlled_experiment(self) -> bool:
+        """Informational only. NOT an authorization switch.
+
+        Kept because callers, logs, and the CLI still speak this word. It is
+        the *declared* mode; the *effective* mode is
+        ``classify_invocation(identity)`` and a declared False never overrides
+        a structural controlled-Stage-1 signal.
+        """
+        return bool(self.__dict__.get("_declared_controlled_experiment", False))
+
+
 def require_authorization_capability(
     capability: Optional[AuthorizedInvocation],
     *,
-    controlled_experiment: bool,
+    identity: Optional[InvocationIdentity],
     model: Optional[str],
     executor_name: str,
-) -> None:
-    """Fail closed unless a controlled invocation carries a valid capability.
+) -> ExecutionMode:
+    """Fail closed unless a Gate-A-requiring invocation carries a live capability.
 
     Non-consuming. Called early so the failure happens before any prompt is
     built, any SDK object is constructed, or any provider client exists.
+
+    Returns the derived ``ExecutionMode`` so callers can log what was decided.
     """
-    if not controlled_experiment:
-        return
+    mode, signals = classify_invocation(identity)
+    if not requires_gate_a(mode):
+        return mode
+    why = ",".join(signals) or "none"
     if capability is None:
         raise GateAAuthorizationRequired(
-            GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED,
-            f"{executor_name} refuses a controlled-experiment invocation with no "
-            f"Gate A authorization capability. A validated AuthorizedInvocation "
-            f"must be supplied; there is no flag, environment variable, or "
-            f"override that substitutes for it.",
+            GATE_A_INVOCATION_CLASSIFICATION_AMBIGUOUS
+            if mode is ExecutionMode.AMBIGUOUS
+            else GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED,
+            f"{executor_name} classified this invocation as {mode.value} "
+            f"(signals: {why}) and refuses it with no Gate A authorization "
+            f"capability. A live AuthorizedInvocation must be supplied; there "
+            f"is no flag, environment variable, or override that substitutes "
+            f"for it.",
         )
     if not isinstance(capability, AuthorizedInvocation):
         raise GateAAuthorizationRequired(
             GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED,
             f"{executor_name} received an object that is not an "
             f"AuthorizedInvocation capability.",
+        )
+    # Liveness is asked of the issuer registry, not of the object. A copy, a
+    # reconstruction, or a forged ID is not live.
+    if not capability.live:
+        raise GateAAuthorizationRequired(
+            GATE_A_CAPABILITY_NOT_LIVE,
+            f"{executor_name} received a capability with no live issuance "
+            f"record: it was never issued, is already spent, or is a "
+            f"reconstruction of one that was.",
         )
     if not capability.decision.authorized:
         raise GateAAuthorizationRequired(
@@ -112,6 +193,89 @@ def require_authorization_capability(
             f"{executor_name} was configured for model '{model}' but the "
             f"capability authorizes '{capability.model}'.",
         )
+    bound = capability.identity
+    if identity is not None and bound is not None and bound.digest() != identity.digest():
+        raise GateAAuthorizationRequired(
+            GATE_A_INVOCATION_IDENTITY_MISMATCH,
+            f"{executor_name} is performing an invocation that is not the one "
+            f"this capability authorizes.",
+        )
+    return mode
+
+
+_EVIDENCE_DIR_RE = re.compile(
+    r"experiments[\\/](?:evidence|run-control)[\\/](\d{4})-([A-Za-z0-9._-]+)"
+)
+
+#: Skill ids that ARE Stage 1 repository sensemaking.
+_STAGE_1_SKILLS = ("repo-sensemaker",)
+
+
+def build_invocation_identity(
+    *,
+    repo_root: str,
+    executor_id: str,
+    skill_id: str = "",
+    expected_output_artifact: str = "",
+    context: Optional[dict] = None,
+    model: Optional[str] = None,
+    declared_controlled_mode: Optional[bool] = None,
+) -> InvocationIdentity:
+    """Build the immutable identity of the invocation actually being performed.
+
+    Everything here comes from the CALL, not from mutable executor state that
+    an attacker could have poked after construction. That is what makes the
+    post-construction-downgrade bypass structurally impossible rather than
+    merely tested against.
+    """
+    ctx = context or {}
+
+    # `expected_output_artifact` is the artifact TYPE at the invoke_skill
+    # layer and a resolved PATH at the async provider layer. Both layers must
+    # derive the SAME identity or the fail-fast check and the consuming check
+    # would disagree, so normalize here rather than at the call sites.
+    looks_like_path = bool(expected_output_artifact) and (
+        "/" in expected_output_artifact or "\\" in expected_output_artifact
+    )
+    output = str(ctx.get("expected_output_path", "") or "")
+    if not output and looks_like_path:
+        output = expected_output_artifact
+
+    artifact_type = str(ctx.get("artifact_type", "") or "")
+    if not artifact_type and expected_output_artifact and not looks_like_path:
+        artifact_type = expected_output_artifact
+    if not artifact_type and skill_id in _STAGE_1_SKILLS:
+        artifact_type = CONTRACT_ARTIFACT_TYPE
+
+    workflow_stage = str(ctx.get("workflow_stage", "") or "")
+    if not workflow_stage and skill_id in _STAGE_1_SKILLS:
+        workflow_stage = "stage-1"
+
+    evidence_number = ctx.get("evidence_number")
+    evidence_slug = ctx.get("evidence_slug")
+    if not (evidence_number and evidence_slug):
+        match = _EVIDENCE_DIR_RE.search(str(output))
+        if match:
+            evidence_number = evidence_number or match.group(1)
+            evidence_slug = evidence_slug or f"{match.group(1)}-{match.group(2)}"
+
+    return InvocationIdentity.build(
+        workflow_id=str(ctx.get("workflow_id", "") or skill_id),
+        workflow_stage=workflow_stage,
+        artifact_type=artifact_type,
+        evidence_number=evidence_number,
+        evidence_slug=evidence_slug,
+        output_path=output,
+        framework_root=repo_root,
+        target_root=str(ctx.get("target_root", "") or ""),
+        target_repository=str(ctx.get("target_repository", "") or ""),
+        target_sha=str(ctx.get("target_sha", "") or ""),
+        requested_model=model or "",
+        executor_id=executor_id,
+        invocation_limit=int(ctx.get("invocation_limit", 1) or 1),
+        execution_framework_sha=ctx.get("execution_framework_sha"),
+        declared_controlled_mode=declared_controlled_mode,
+    )
 
 
 def validate_model_identifier(model: str) -> None:
@@ -1115,7 +1279,7 @@ class PromptChainSkillExecutor(SkillExecutor):
 # Unsupported / Future Executors
 # ============================================================================
 
-class ClaudeAgentSdkSkillExecutor(SkillExecutor):
+class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
     """Invoke skills via Claude Agent SDK.
 
     Uses the Claude Agent SDK's query() API to invoke skills with autonomous
@@ -1134,6 +1298,7 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         model: Optional[str] = None,
         controlled_experiment: bool = False,
         authorization: Optional[AuthorizedInvocation] = None,
+        invocation_identity: Optional[InvocationIdentity] = None,
     ):
         """
         Args:
@@ -1166,17 +1331,48 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
             validate_model_identifier(model)
 
         self.model = model
-        self.controlled_experiment = controlled_experiment
+        # Declared mode is informational metadata only. See
+        # _GateAImmutableAttributes.controlled_experiment.
+        self._declared_controlled_experiment = bool(controlled_experiment)
+        self._invocation_identity = invocation_identity or build_invocation_identity(
+            repo_root=repo_root,
+            executor_id="claude-code",
+            model=model,
+            declared_controlled_mode=(True if controlled_experiment else None),
+        )
 
         # Gate A, outermost layer: refuse to even construct an executor that
-        # could reach the SDK without a validated capability.
+        # could reach the SDK without a live capability, when the identity
+        # known at construction already requires one.
         require_authorization_capability(
             authorization,
-            controlled_experiment=controlled_experiment,
+            identity=self._invocation_identity,
             model=model,
             executor_name="ClaudeAgentSdkSkillExecutor",
         )
         self.authorization = authorization
+
+    def _actual_identity(self, skill_id, expected_output_artifact,
+                         context) -> InvocationIdentity:
+        """Identity of the invocation being performed right now.
+
+        Built from the call arguments every time. Deliberately does NOT trust
+        stored executor state for the classification-bearing fields, so
+        mutating the executor after construction cannot change what Gate A
+        thinks is happening.
+        """
+        return build_invocation_identity(
+            repo_root=self.repo_root,
+            executor_id="claude-code",
+            skill_id=skill_id,
+            expected_output_artifact=expected_output_artifact,
+            context=context,
+            model=self.model,
+            declared_controlled_mode=(
+                True if self.__dict__.get("_declared_controlled_experiment")
+                else None
+            ),
+        )
 
     def _check_dependencies(self) -> tuple[bool, str]:
         """Check if required dependencies are installed."""
@@ -1252,7 +1448,9 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         try:
             require_authorization_capability(
                 self.authorization,
-                controlled_experiment=self.controlled_experiment,
+                identity=self._actual_identity(
+                    skill_id, expected_output_artifact, context
+                ),
                 model=self.model,
                 executor_name="ClaudeAgentSdkSkillExecutor.invoke_skill",
             )
@@ -1431,19 +1629,27 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
         # return a value an intermediate caller could discard -- and it marks
         # the capability spent so no second invocation is possible.
         # ------------------------------------------------------------------
-        if self.controlled_experiment:
-            if self.authorization is None:
-                raise GateAAuthorizationRequired(
-                    GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED,
-                    "reached the provider boundary with no Gate A capability",
-                )
+        actual_identity = self._actual_identity(
+            skill_id, expected_output_path, context
+        )
+        gate_a_mode = require_authorization_capability(
+            self.authorization,
+            identity=actual_identity,
+            model=self.model,
+            executor_name="ClaudeAgentSdkSkillExecutor._invoke_skill_async",
+        )
+        if requires_gate_a(gate_a_mode):
             gate_a_decision = self.authorization.consume(
                 model=self.model,
                 artifact_type=self.authorization.artifact_type,
+                actual_identity=actual_identity,
             )
             trace_log.append(_trace_event(
                 "GateAAuthorization", skill_id, expected_output_path, "consumed",
-                extra={"gate_a": format_gate_a_log(gate_a_decision)},
+                extra={
+                    "gate_a": format_gate_a_log(gate_a_decision),
+                    "execution_mode": gate_a_mode.value,
+                },
             ))
 
         try:
@@ -1660,7 +1866,7 @@ class ClaudeAgentSdkSkillExecutor(SkillExecutor):
 ClaudeCodeSkillExecutor = ClaudeAgentSdkSkillExecutor
 
 
-class ApiSkillExecutor(SkillExecutor):
+class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
     """Invoke skills by calling Claude API directly with skill instructions.
 
     Loads the skill definition from SKILL.md, builds a prompt with input artifacts,
@@ -1676,21 +1882,43 @@ class ApiSkillExecutor(SkillExecutor):
     API_MODEL: str = "claude-opus-4-7"
 
     def __init__(self, repo_root: str, controlled_experiment: bool = False,
-                 authorization: Optional[AuthorizedInvocation] = None):
+                 authorization: Optional[AuthorizedInvocation] = None,
+                 invocation_identity: Optional[InvocationIdentity] = None):
         self.repo_root = repo_root
         self.model = self.API_MODEL
-        self.controlled_experiment = controlled_experiment
+        self._declared_controlled_experiment = bool(controlled_experiment)
+        self._invocation_identity = invocation_identity or build_invocation_identity(
+            repo_root=repo_root,
+            executor_id="api",
+            model=self.API_MODEL,
+            declared_controlled_mode=(True if controlled_experiment else None),
+        )
         # Same constructor-level Gate A layer as the Agent SDK executor, so
-        # neither production provider path can even be built for a controlled
-        # run without a capability.
+        # neither production provider path can even be built for a
+        # Gate-A-requiring invocation without a live capability.
         require_authorization_capability(
             authorization,
-            controlled_experiment=controlled_experiment,
+            identity=self._invocation_identity,
             model=None,
             executor_name="ApiSkillExecutor",
         )
         self.authorization = authorization
         self._check_dependencies()
+
+    def _actual_identity(self, skill_id, expected_output_artifact,
+                         context) -> InvocationIdentity:
+        return build_invocation_identity(
+            repo_root=self.repo_root,
+            executor_id="api",
+            skill_id=skill_id,
+            expected_output_artifact=expected_output_artifact,
+            context=context,
+            model=self.API_MODEL,
+            declared_controlled_mode=(
+                True if self.__dict__.get("_declared_controlled_experiment")
+                else None
+            ),
+        )
 
     def _check_dependencies(self) -> tuple[bool, list[str]]:
         """Check if required dependencies are installed."""
@@ -1749,13 +1977,16 @@ class ApiSkillExecutor(SkillExecutor):
         model, so a controlled invocation through it is always refused.
         """
         try:
-            require_authorization_capability(
+            api_identity = self._actual_identity(
+                skill_id, expected_output_artifact, context
+            )
+            api_mode = require_authorization_capability(
                 self.authorization,
-                controlled_experiment=self.controlled_experiment,
+                identity=api_identity,
                 model=None,
                 executor_name="ApiSkillExecutor.invoke_skill",
             )
-            if self.controlled_experiment:
+            if requires_gate_a(api_mode):
                 # Hardcoded API model can never equal the authorized model,
                 # so this always fails closed rather than substituting.
                 raise GateAAuthorizationRequired(
@@ -1913,6 +2144,7 @@ def create_executor(
     model: Optional[str] = None,
     controlled_experiment: bool = False,
     authorization: Optional[AuthorizedInvocation] = None,
+    invocation_identity: Optional[InvocationIdentity] = None,
 ) -> SkillExecutor:
     """Create a SkillExecutor instance by id.
 
@@ -1968,6 +2200,7 @@ def create_executor(
             repo_root=repo_root, model=model,
             controlled_experiment=controlled_experiment,
             authorization=authorization,
+            invocation_identity=invocation_identity,
         )
 
     if executor_id == "api":
@@ -1975,6 +2208,7 @@ def create_executor(
             repo_root=repo_root,
             controlled_experiment=controlled_experiment,
             authorization=authorization,
+            invocation_identity=invocation_identity,
         )
 
 

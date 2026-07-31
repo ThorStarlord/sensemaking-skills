@@ -45,9 +45,12 @@ import hashlib
 import hmac
 import os
 import re
+import secrets
 import subprocess
+import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from enum import Enum
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -109,6 +112,19 @@ GATE_A_EVIDENCE_OUTPUT_ALREADY_PRESENT = "GATE_A_EVIDENCE_OUTPUT_ALREADY_PRESENT
 GATE_A_CAPABILITY_ALREADY_CONSUMED = "GATE_A_CAPABILITY_ALREADY_CONSUMED"
 GATE_A_CAPABILITY_CONTEXT_MISMATCH = "GATE_A_CAPABILITY_CONTEXT_MISMATCH"
 GATE_A_REVALIDATION_FAILED = "GATE_A_REVALIDATION_FAILED"
+
+# --- Remediation codes (issue #108 independent review) -----------------------
+# Added after an independent review reproduced three authorization bypasses in
+# the first design: a caller-controlled opt-out flag, capability cloning via
+# copy/deepcopy/pickle, and a check-then-set race in consume().
+GATE_A_INVOCATION_CLASSIFICATION_AMBIGUOUS = "GATE_A_INVOCATION_CLASSIFICATION_AMBIGUOUS"
+GATE_A_INVOCATION_IDENTITY_MISMATCH = "GATE_A_INVOCATION_IDENTITY_MISMATCH"
+GATE_A_CAPABILITY_COPY_PROHIBITED = "GATE_A_CAPABILITY_COPY_PROHIBITED"
+GATE_A_CAPABILITY_SERIALIZATION_PROHIBITED = "GATE_A_CAPABILITY_SERIALIZATION_PROHIBITED"
+GATE_A_CAPABILITY_NOT_LIVE = "GATE_A_CAPABILITY_NOT_LIVE"
+GATE_A_CAPABILITY_CONCURRENT_CONSUMPTION = "GATE_A_CAPABILITY_CONCURRENT_CONSUMPTION"
+GATE_A_CAPABILITY_CONSUMPTION_FAILED = "GATE_A_CAPABILITY_CONSUMPTION_FAILED"
+GATE_A_CAPABILITY_IMMUTABLE = "GATE_A_CAPABILITY_IMMUTABLE"
 
 ALL_FAILURE_CODES = tuple(
     sorted(
@@ -334,62 +350,494 @@ class _ValidatedSnapshot:
     target_head: str
 
 
-class AuthorizedInvocation:
-    """Single-use capability proving Gate A passed for one exact invocation.
+# ============================================================================
+# Immutable invocation identity
+# ============================================================================
+#
+# The security decision "is this a controlled Stage 1 invocation?" must not be
+# a caller-supplied boolean. It is derived from *what is actually being
+# invoked*: the workflow stage, the artifact type, the evidence namespace the
+# output lands in, the pinned target, and the exact model. Those values are
+# captured here in a frozen object, bound into the capability at issuance, and
+# re-checked at consumption.
 
-    This object cannot be constructed from outside this module with a forged
-    state: ``__init__`` requires the private module token, so the only way to
-    obtain one is ``authorize_invocation()`` returning ``authorized=True``.
 
-    It is deliberately *not* a boolean and *not* a flag. An intermediate
-    caller cannot "ignore" it -- the invocation function requires the object
-    itself, and consuming it is what permits exactly one provider call.
+@dataclass(frozen=True)
+class InvocationIdentity:
+    """What is actually being invoked. Immutable, hashable, digestible.
+
+    Every field is a plain string (paths are normalized to POSIX-style strings)
+    so the digest is stable across platforms and across process boundaries.
+    Construct with :meth:`build`, which does the normalization.
     """
 
-    def __init__(self, token, decision: AuthorizationDecision,
-                 context: AuthorizationContext, snapshot: _ValidatedSnapshot):
+    workflow_id: str
+    workflow_stage: str
+    artifact_type: str
+    evidence_number: Optional[str]
+    evidence_slug: Optional[str]
+    output_path: str
+    framework_root: str
+    target_root: str
+    target_repository: str
+    target_sha: str
+    requested_model: str
+    executor_id: str
+    invocation_limit: int = 1
+    execution_framework_sha: Optional[str] = None
+    #: Informational only. Recorded for the audit log and for conflict
+    #: detection. It is NEVER sufficient to make Gate A optional -- see
+    #: ``classify_invocation``.
+    declared_controlled_mode: Optional[bool] = None
+
+    @staticmethod
+    def _norm_path(value) -> str:
+        if value is None:
+            return ""
+        return str(value).replace("\\", "/").rstrip("/")
+
+    @classmethod
+    def build(cls, *, workflow_id="", workflow_stage="", artifact_type="",
+              evidence_number=None, evidence_slug=None, output_path="",
+              framework_root="", target_root="", target_repository="",
+              target_sha="", requested_model="", executor_id="",
+              invocation_limit=1, execution_framework_sha=None,
+              declared_controlled_mode=None) -> "InvocationIdentity":
+        return cls(
+            workflow_id=str(workflow_id or ""),
+            workflow_stage=str(workflow_stage or ""),
+            artifact_type=str(artifact_type or ""),
+            evidence_number=(str(evidence_number) if evidence_number else None),
+            evidence_slug=(str(evidence_slug) if evidence_slug else None),
+            output_path=cls._norm_path(output_path),
+            framework_root=cls._norm_path(framework_root),
+            target_root=cls._norm_path(target_root),
+            target_repository=str(target_repository or ""),
+            target_sha=str(target_sha or ""),
+            requested_model=str(requested_model or ""),
+            executor_id=str(executor_id or ""),
+            invocation_limit=int(invocation_limit),
+            execution_framework_sha=(str(execution_framework_sha)
+                                     if execution_framework_sha else None),
+            declared_controlled_mode=(None if declared_controlled_mode is None
+                                      else bool(declared_controlled_mode)),
+        )
+
+    def digest(self) -> str:
+        """Deterministic digest over every field except the informational flag.
+
+        ``declared_controlled_mode`` is excluded on purpose: it is metadata,
+        not identity. Two invocations that differ only in that flag are the
+        SAME invocation and must not be able to obtain different treatment by
+        binding to different capabilities.
+        """
+        payload = "\x1f".join(
+            (
+                self.workflow_id, self.workflow_stage, self.artifact_type,
+                self.evidence_number or "", self.evidence_slug or "",
+                self.output_path, self.framework_root, self.target_root,
+                self.target_repository, self.target_sha, self.requested_model,
+                self.executor_id, str(self.invocation_limit),
+                self.execution_framework_sha or "",
+            )
+        )
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+class ExecutionMode(Enum):
+    """Typed classification of an invocation. Not a boolean."""
+
+    ORDINARY_DEVELOPMENT = "ORDINARY_DEVELOPMENT"
+    CONTROLLED_STAGE1 = "CONTROLLED_STAGE1"
+    AMBIGUOUS = "AMBIGUOUS"
+
+
+#: Any output landing under one of these path segments is inside a controlled
+#: evidence namespace, regardless of what mode the caller declared.
+CONTROLLED_NAMESPACE_SEGMENTS = ("experiments/evidence/", "experiments/run-control/")
+
+#: Skills / workflow stages that constitute Stage 1 repository sensemaking.
+STAGE_1_STAGE_TOKENS = ("stage-1", "stage1", "stage_1", "1")
+STAGE_1_SKILL_IDS = ("repo-sensemaker",)
+
+_EVIDENCE_PATH_RE = re.compile(
+    r"experiments/(?:evidence|run-control)/(\d{4})-([A-Za-z0-9._-]+)"
+)
+
+
+def _is_stage_1(identity: "InvocationIdentity") -> bool:
+    stage = identity.workflow_stage.strip().lower()
+    if stage in STAGE_1_STAGE_TOKENS:
+        return True
+    wid = identity.workflow_id.strip().lower()
+    return any(tok in wid for tok in ("stage-1", "stage1")) or wid in STAGE_1_SKILL_IDS
+
+
+def _in_controlled_namespace(identity: "InvocationIdentity") -> bool:
+    out = identity.output_path.lower()
+    return any(seg in out for seg in CONTROLLED_NAMESPACE_SEGMENTS)
+
+
+def classify_invocation(identity: Optional["InvocationIdentity"]
+                        ) -> tuple[ExecutionMode, tuple[str, ...]]:
+    """Derive the execution mode from immutable invocation properties.
+
+    Returns ``(mode, signals)`` where ``signals`` names every structural
+    controlled-Stage-1 signal that fired. Fails closed: anything that looks
+    partially like the controlled campaign is AMBIGUOUS, and AMBIGUOUS
+    requires Gate A exactly as CONTROLLED_STAGE1 does.
+
+    The ordinary-development boundary is deliberately narrow and structural:
+    an invocation is ordinary only when it lands OUTSIDE every controlled
+    evidence namespace, does NOT name the campaign evidence number or slug,
+    does NOT target the pinned campaign repository, does NOT request the exact
+    campaign model, and does NOT declare controlled mode. Running
+    repo-sensemaker locally into ``artifacts/`` therefore stays ungated;
+    running it into ``experiments/evidence/`` never does.
+    """
+    if identity is None:
+        # No identity at all at a provider boundary is not "ordinary" -- it is
+        # an absence of the evidence needed to say so.
+        return ExecutionMode.AMBIGUOUS, ("identity_missing",)
+
+    signals: list[str] = []
+    if identity.artifact_type == CONTRACT_ARTIFACT_TYPE:
+        signals.append("artifact_type_is_stage1_brief")
+    stage_1 = _is_stage_1(identity)
+    if stage_1:
+        signals.append("workflow_stage_is_stage_1")
+    if identity.evidence_number == CONTRACT_EVIDENCE_NUMBER:
+        signals.append("evidence_number_is_campaign")
+    if identity.evidence_slug == CONTRACT_EVIDENCE_SLUG:
+        signals.append("evidence_slug_is_campaign")
+    ns = _in_controlled_namespace(identity)
+    if ns:
+        signals.append("output_in_controlled_evidence_namespace")
+    if identity.evidence_number or identity.evidence_slug:
+        signals.append("evidence_identity_present")
+    if identity.target_repository == CONTRACT_TARGET_REPOSITORY:
+        signals.append("target_repository_is_campaign_pin")
+    if identity.requested_model == CONTRACT_EXACT_MODEL:
+        signals.append("requested_model_is_campaign_model")
+    if identity.declared_controlled_mode is True:
+        signals.append("declared_controlled_mode")
+
+    frozen_signals = tuple(signals)
+
+    strong = (
+        "evidence_number_is_campaign" in signals
+        or "evidence_slug_is_campaign" in signals
+        or "output_in_controlled_evidence_namespace" in signals
+        or "evidence_identity_present" in signals
+    )
+    weak = (
+        "target_repository_is_campaign_pin" in signals
+        or "requested_model_is_campaign_model" in signals
+    )
+    brief = "artifact_type_is_stage1_brief" in signals
+
+    # A caller who declares controlled mode gets controlled mode. A caller who
+    # declares NOT-controlled while structural signals say otherwise gets
+    # AMBIGUOUS -- never ordinary. `False` can never override structure.
+    if identity.declared_controlled_mode is True:
+        return ExecutionMode.CONTROLLED_STAGE1, frozen_signals
+    if identity.declared_controlled_mode is False and (strong or weak):
+        return ExecutionMode.AMBIGUOUS, frozen_signals + ("declared_mode_conflict",)
+
+    if strong and brief:
+        return ExecutionMode.CONTROLLED_STAGE1, frozen_signals
+    if strong:
+        return ExecutionMode.AMBIGUOUS, frozen_signals
+    if weak and brief and stage_1:
+        return ExecutionMode.CONTROLLED_STAGE1, frozen_signals
+    if weak and (brief or stage_1):
+        return ExecutionMode.AMBIGUOUS, frozen_signals
+    return ExecutionMode.ORDINARY_DEVELOPMENT, frozen_signals
+
+
+def requires_gate_a(mode: ExecutionMode) -> bool:
+    """Gate A is mandatory for controlled Stage 1 AND for ambiguity."""
+    return mode is not ExecutionMode.ORDINARY_DEVELOPMENT
+
+
+# ============================================================================
+# Issuer-backed capability registry
+# ============================================================================
+#
+# The capability OBJECT is not authorization. The authorization lives in this
+# process-local registry, keyed by a cryptographically random capability ID.
+# A copied, pickled, reconstructed, or hand-built object either carries no ID
+# that the registry knows, or carries an ID that maps to the SAME single
+# registry entry -- so duplicates compete for one atomic consumption and at
+# most one wins. Python attribute privacy is NOT the security boundary.
+
+_CAPABILITY_STATE_ISSUED = "ISSUED"
+_CAPABILITY_STATE_CONSUMING = "CONSUMING"
+_CAPABILITY_STATE_CONSUMED = "CONSUMED"
+_CAPABILITY_STATE_FAILED = "FAILED"
+
+
+class _CapabilityEntry:
+    """Registry-side authoritative state. Never handed to callers."""
+
+    __slots__ = ("capability_id", "decision", "context", "snapshot", "identity",
+                 "identity_digest", "state", "issued_at", "remaining")
+
+    def __init__(self, capability_id, decision, context, snapshot, identity):
+        self.capability_id = capability_id
+        self.decision = decision
+        self.context = context
+        self.snapshot = snapshot
+        self.identity = identity
+        self.identity_digest = identity.digest() if identity is not None else None
+        self.state = _CAPABILITY_STATE_ISSUED
+        self.issued_at = datetime.now(timezone.utc)
+        self.remaining = int(context.invocation_limit)
+
+
+class _CapabilityRegistry:
+    """Process-local, lock-protected issuance ledger."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._entries: dict = {}
+
+    # -- issuance -----------------------------------------------------------
+
+    def issue(self, decision, context, snapshot, identity) -> "AuthorizedInvocation":
+        capability_id = secrets.token_hex(32)
+        entry = _CapabilityEntry(capability_id, decision, context, snapshot, identity)
+        with self._lock:
+            self._entries[capability_id] = entry
+        return AuthorizedInvocation(_CAPABILITY_TOKEN, capability_id)
+
+    # -- read (non-authoritative; never used to decide) ---------------------
+
+    def peek(self, capability_id):
+        with self._lock:
+            return self._entries.get(capability_id)
+
+    def is_live(self, capability_id) -> bool:
+        with self._lock:
+            entry = self._entries.get(capability_id)
+            return entry is not None and entry.state == _CAPABILITY_STATE_ISSUED
+
+    def live_count(self) -> int:
+        with self._lock:
+            return sum(1 for e in self._entries.values()
+                       if e.state == _CAPABILITY_STATE_ISSUED)
+
+    # -- atomic consumption -------------------------------------------------
+
+    def begin_consumption(self, capability_id) -> _CapabilityEntry:
+        """ISSUED -> CONSUMING, atomically. At most one caller can win.
+
+        The transition happens BEFORE any expensive revalidation, so the race
+        window is the width of a dict lookup under a lock, not the width of
+        five file hashes and two git invocations.
+        """
+        with self._lock:
+            entry = self._entries.get(capability_id)
+            if entry is None:
+                raise GateAError(
+                    f"{GATE_A_CAPABILITY_NOT_LIVE}: no live issuance exists for "
+                    f"this capability. It was never issued by this process, or "
+                    f"it is a copy/reconstruction of one that was."
+                )
+            if entry.state == _CAPABILITY_STATE_CONSUMING:
+                raise GateAError(
+                    f"{GATE_A_CAPABILITY_CONCURRENT_CONSUMPTION}: another caller "
+                    f"is already consuming this authorization. Exactly one "
+                    f"invocation is permitted."
+                )
+            if entry.state == _CAPABILITY_STATE_CONSUMED:
+                raise GateAError(
+                    f"{GATE_A_CAPABILITY_ALREADY_CONSUMED}: this authorization "
+                    f"permits exactly {entry.context.invocation_limit} invocation "
+                    f"and has already been spent. No retry, no rerun, no repair."
+                )
+            if entry.state == _CAPABILITY_STATE_FAILED:
+                raise GateAError(
+                    f"{GATE_A_CAPABILITY_CONSUMPTION_FAILED}: a previous "
+                    f"consumption attempt burned this authorization. This "
+                    f"campaign permits no retry."
+                )
+            if entry.remaining <= 0:
+                raise GateAError(
+                    f"{GATE_A_CAPABILITY_ALREADY_CONSUMED}: no invocations remain."
+                )
+            entry.state = _CAPABILITY_STATE_CONSUMING
+            return entry
+
+    def fail_consumption(self, capability_id) -> None:
+        """Burn the capability. It never returns to ISSUED."""
+        with self._lock:
+            entry = self._entries.get(capability_id)
+            if entry is not None and entry.state == _CAPABILITY_STATE_CONSUMING:
+                entry.state = _CAPABILITY_STATE_FAILED
+                entry.remaining = 0
+
+    def complete_consumption(self, capability_id) -> None:
+        with self._lock:
+            entry = self._entries.get(capability_id)
+            if entry is None or entry.state != _CAPABILITY_STATE_CONSUMING:
+                raise GateAError(
+                    f"{GATE_A_CAPABILITY_CONSUMPTION_FAILED}: capability state "
+                    f"changed underneath an in-flight consumption."
+                )
+            entry.state = _CAPABILITY_STATE_CONSUMED
+            entry.remaining = 0
+
+
+_REGISTRY = _CapabilityRegistry()
+
+
+class AuthorizedInvocation:
+    """Opaque handle to a single live issuance in the capability registry.
+
+    The object holds ONE thing: a cryptographically random capability ID. It
+    carries no authorization of its own. Every question ("is this authorized?",
+    "may this be consumed?") is answered by the registry, live, under a lock.
+
+    Consequences that matter:
+
+    - A copy, deepcopy, pickle, or hand-reconstruction of this object cannot
+      create a second authorization. Copying is explicitly refused; and even if
+      an attacker rebuilds an object carrying the same ID by reflection, that
+      object points at the SAME registry entry, which permits exactly one
+      atomic consumption.
+    - A forged ID is simply absent from the registry
+      (``GATE_A_CAPABILITY_NOT_LIVE``).
+    - The object is immutable: attribute assignment and deletion are refused,
+      and ``__slots__`` prevents adding new state.
+    """
+
+    __slots__ = ("_capability_id",)
+
+    def __init_subclass__(cls, **kwargs):  # pragma: no cover - defensive
+        raise TypeError(
+            f"{GATE_A_CAPABILITY_COPY_PROHIBITED}: AuthorizedInvocation may not "
+            f"be subclassed; a subclass would be a second capability type."
+        )
+
+    def __init__(self, token, capability_id: str):
         if token is not _CAPABILITY_TOKEN:
             raise GateAError(
                 "AuthorizedInvocation cannot be constructed directly. It is "
                 "minted only by authorize_invocation() after a successful "
-                "Gate A evaluation."
+                "Gate A evaluation. Note that constructing one is not the "
+                "security boundary -- the issuer registry is."
             )
-        self._decision = decision
-        self._context = context
-        self._snapshot = snapshot
-        self._consumed = False
-        self._remaining = int(context.invocation_limit)
+        object.__setattr__(self, "_capability_id", capability_id)
 
-    # -- read-only accessors -------------------------------------------------
+    # -- immutability --------------------------------------------------------
+
+    def __setattr__(self, name, value):
+        raise AttributeError(
+            f"{GATE_A_CAPABILITY_IMMUTABLE}: AuthorizedInvocation is immutable; "
+            f"refusing to set {name!r}."
+        )
+
+    def __delattr__(self, name):
+        raise AttributeError(
+            f"{GATE_A_CAPABILITY_IMMUTABLE}: AuthorizedInvocation is immutable; "
+            f"refusing to delete {name!r}."
+        )
+
+    # -- duplication prohibitions -------------------------------------------
+
+    def __copy__(self):
+        raise TypeError(
+            f"{GATE_A_CAPABILITY_COPY_PROHIBITED}: an authorization capability "
+            f"may not be copied."
+        )
+
+    def __deepcopy__(self, memo):
+        raise TypeError(
+            f"{GATE_A_CAPABILITY_COPY_PROHIBITED}: an authorization capability "
+            f"may not be deep-copied."
+        )
+
+    def __reduce__(self):
+        raise TypeError(
+            f"{GATE_A_CAPABILITY_SERIALIZATION_PROHIBITED}: an authorization "
+            f"capability may not be serialized."
+        )
+
+    def __reduce_ex__(self, protocol):
+        raise TypeError(
+            f"{GATE_A_CAPABILITY_SERIALIZATION_PROHIBITED}: an authorization "
+            f"capability may not be serialized (protocol {protocol})."
+        )
+
+    def __getstate__(self):
+        raise TypeError(
+            f"{GATE_A_CAPABILITY_SERIALIZATION_PROHIBITED}: an authorization "
+            f"capability exposes no serializable state."
+        )
+
+    def __setstate__(self, state):
+        raise TypeError(
+            f"{GATE_A_CAPABILITY_SERIALIZATION_PROHIBITED}: an authorization "
+            f"capability cannot be reconstructed from state."
+        )
+
+    def __repr__(self):
+        return f"<AuthorizedInvocation live={self.live}>"
+
+    # -- registry-backed accessors ------------------------------------------
+
+    @property
+    def capability_id(self) -> str:
+        """Opaque handle. Knowing it is useless without a live registry entry."""
+        return object.__getattribute__(self, "_capability_id")
+
+    def _live_entry(self) -> _CapabilityEntry:
+        entry = _REGISTRY.peek(self.capability_id)
+        if entry is None:
+            raise GateAError(
+                f"{GATE_A_CAPABILITY_NOT_LIVE}: this capability has no issuance "
+                f"record. It was not minted by authorize_invocation()."
+            )
+        return entry
+
+    @property
+    def live(self) -> bool:
+        return _REGISTRY.is_live(self.capability_id)
 
     @property
     def decision(self) -> AuthorizationDecision:
-        return self._decision
+        return self._live_entry().decision
+
+    @property
+    def identity(self) -> Optional[InvocationIdentity]:
+        return self._live_entry().identity
 
     @property
     def model(self) -> str:
         """The exact authorized model. Passed to the provider unchanged."""
-        return self._context.exact_model
+        return self._live_entry().context.exact_model
 
     @property
     def evidence_number(self) -> str:
-        return self._context.evidence_number
+        return self._live_entry().context.evidence_number
 
     @property
     def artifact_type(self) -> str:
-        return self._context.artifact_type
+        return self._live_entry().context.artifact_type
 
     @property
     def consumed(self) -> bool:
-        return self._consumed
+        return self._live_entry().state != _CAPABILITY_STATE_ISSUED
 
     @property
     def remaining_invocations(self) -> int:
-        return self._remaining
+        return self._live_entry().remaining
 
     # -- fail-closed guarantees ---------------------------------------------
 
-    def revalidate(self, git_head: Optional[Callable[[Path], str]] = None) -> AuthorizationDecision:
+    def revalidate(self, git_head: Optional[Callable[[Path], str]] = None
+                   ) -> AuthorizationDecision:
         """Re-read every authoritative byte and revision and compare to the
         snapshot taken at validation time.
 
@@ -397,81 +845,116 @@ class AuthorizedInvocation:
         call, inside the invocation function -- not in the caller -- so a
         change made between preflight and invocation fails closed.
         """
-        head_fn = git_head or read_git_head
-        ctx = self._context
-        try:
-            checks = (
-                ("record", ctx.authorization_record_path, self._snapshot.record_sha256),
-                ("digest", ctx.authorization_digest_path, self._snapshot.digest_file_sha256),
-                ("approval", ctx.owner_approval_path, self._snapshot.approval_sha256),
-                ("package", ctx.framework_root / CONTRACT_PACKAGE_PATH,
-                 self._snapshot.package_sha256),
-                ("checklist", ctx.framework_root / CONTRACT_CHECKLIST_PATH,
-                 self._snapshot.checklist_sha256),
-            )
-            for label, path, expected in checks:
-                current = sha256_file(path)
-                if current is None:
-                    return _fail(
-                        GATE_A_REVALIDATION_FAILED,
-                        f"{label} disappeared between validation and invocation",
-                    )
-                if not _digests_equal(current, expected):
-                    return _fail(
-                        GATE_A_REVALIDATION_FAILED,
-                        f"{label} bytes changed between validation and invocation",
-                    )
-
-            framework_head = head_fn(ctx.framework_root)
-            if framework_head != self._snapshot.framework_head:
-                return _fail(
-                    GATE_A_REVALIDATION_FAILED,
-                    "framework HEAD moved between validation and invocation",
-                )
-            target_head = head_fn(ctx.target_root)
-            if target_head != self._snapshot.target_head:
-                return _fail(
-                    GATE_A_REVALIDATION_FAILED,
-                    "target HEAD moved between validation and invocation",
-                )
-        except OSError as exc:
-            return _fail(GATE_A_FILESYSTEM_ERROR, f"revalidation IO failure: {exc.strerror}")
-        return self._decision
+        entry = self._live_entry()
+        return _revalidate_entry(entry, git_head)
 
     def consume(self, *, model: str, artifact_type: str,
-                git_head: Optional[Callable[[Path], str]] = None) -> AuthorizationDecision:
-        """Spend the capability for one invocation.
+                git_head: Optional[Callable[[Path], str]] = None,
+                actual_identity: Optional[InvocationIdentity] = None,
+                _before_revalidation: Optional[Callable[[], None]] = None,
+                ) -> AuthorizationDecision:
+        """Atomically spend the single issuance backing this capability.
 
-        Raises ``GateAError`` on a second attempt, on a model or artifact-type
-        that does not match what was authorized, or when revalidation fails.
-        Raising (rather than returning) is deliberate: the invocation function
-        must not be able to proceed by ignoring a return value.
+        Sequence (see ADR 0022): take the registry lock, verify the issuance is
+        ISSUED, move it to CONSUMING, release. Only then perform identity
+        comparison and byte/revision revalidation. Any failure moves the
+        issuance to FAILED -- it never returns to ISSUED. Once a consumption
+        attempt begins, the capability is irreversibly spent; this campaign
+        permits no retry.
+
+        ``_before_revalidation`` is a test-only hook for deterministic race
+        construction. It has no effect on the security decision.
         """
-        if self._consumed or self._remaining <= 0:
-            raise GateAError(
-                f"{GATE_A_CAPABILITY_ALREADY_CONSUMED}: this authorization "
-                f"permits exactly {self._context.invocation_limit} invocation "
-                f"and has already been spent. No retry, no rerun, no repair."
-            )
-        if model != self._context.exact_model:
-            raise GateAError(
-                f"{GATE_A_MODEL_MISMATCH}: capability authorizes model "
-                f"'{self._context.exact_model}', invocation requested '{model}'."
-            )
-        if artifact_type != self._context.artifact_type:
-            raise GateAError(
-                f"{GATE_A_CAPABILITY_CONTEXT_MISMATCH}: capability authorizes "
-                f"artifact type '{self._context.artifact_type}', invocation "
-                f"requested '{artifact_type}'."
-            )
-        revalidated = self.revalidate(git_head=git_head)
-        if not revalidated.authorized:
-            raise GateAError(
-                f"{revalidated.failure_code}: {revalidated.failure_detail}"
-            )
-        self._consumed = True
-        self._remaining -= 1
+        capability_id = self.capability_id
+        entry = _REGISTRY.begin_consumption(capability_id)
+        try:
+            if _before_revalidation is not None:
+                _before_revalidation()
+
+            if model != entry.context.exact_model:
+                raise GateAError(
+                    f"{GATE_A_MODEL_MISMATCH}: capability authorizes model "
+                    f"'{entry.context.exact_model}', invocation requested "
+                    f"'{model}'."
+                )
+            if artifact_type != entry.context.artifact_type:
+                raise GateAError(
+                    f"{GATE_A_CAPABILITY_CONTEXT_MISMATCH}: capability authorizes "
+                    f"artifact type '{entry.context.artifact_type}', invocation "
+                    f"requested '{artifact_type}'."
+                )
+            if actual_identity is not None:
+                if entry.identity_digest is None:
+                    raise GateAError(
+                        f"{GATE_A_INVOCATION_IDENTITY_MISMATCH}: capability was "
+                        f"issued without a bound invocation identity."
+                    )
+                if not _digests_equal(actual_identity.digest(), entry.identity_digest):
+                    raise GateAError(
+                        f"{GATE_A_INVOCATION_IDENTITY_MISMATCH}: the invocation "
+                        f"being performed is not the invocation that was "
+                        f"authorized."
+                    )
+
+            revalidated = _revalidate_entry(entry, git_head)
+            if not revalidated.authorized:
+                raise GateAError(
+                    f"{revalidated.failure_code}: {revalidated.failure_detail}"
+                )
+        except BaseException:
+            # Includes GeneratorExit/CancelledError/KeyboardInterrupt: a
+            # cancelled or interrupted consumption burns the capability.
+            _REGISTRY.fail_consumption(capability_id)
+            raise
+
+        _REGISTRY.complete_consumption(capability_id)
         return revalidated
+
+
+def _revalidate_entry(entry: _CapabilityEntry,
+                      git_head: Optional[Callable[[Path], str]] = None
+                      ) -> AuthorizationDecision:
+    head_fn = git_head or read_git_head
+    ctx = entry.context
+    snapshot = entry.snapshot
+    try:
+        checks = (
+            ("record", ctx.authorization_record_path, snapshot.record_sha256),
+            ("digest", ctx.authorization_digest_path, snapshot.digest_file_sha256),
+            ("approval", ctx.owner_approval_path, snapshot.approval_sha256),
+            ("package", ctx.framework_root / CONTRACT_PACKAGE_PATH,
+             snapshot.package_sha256),
+            ("checklist", ctx.framework_root / CONTRACT_CHECKLIST_PATH,
+             snapshot.checklist_sha256),
+        )
+        for label, path, expected in checks:
+            current = sha256_file(path)
+            if current is None:
+                return _fail(
+                    GATE_A_REVALIDATION_FAILED,
+                    f"{label} disappeared between validation and invocation",
+                )
+            if not _digests_equal(current, expected):
+                return _fail(
+                    GATE_A_REVALIDATION_FAILED,
+                    f"{label} bytes changed between validation and invocation",
+                )
+
+        framework_head = head_fn(ctx.framework_root)
+        if framework_head != snapshot.framework_head:
+            return _fail(
+                GATE_A_REVALIDATION_FAILED,
+                "framework HEAD moved between validation and invocation",
+            )
+        target_head = head_fn(ctx.target_root)
+        if target_head != snapshot.target_head:
+            return _fail(
+                GATE_A_REVALIDATION_FAILED,
+                "target HEAD moved between validation and invocation",
+            )
+    except OSError as exc:
+        return _fail(GATE_A_FILESYSTEM_ERROR, f"revalidation IO failure: {exc.strerror}")
+    return entry.decision
 
 
 _CAPABILITY_TOKEN = object()
@@ -1112,17 +1595,54 @@ def authorize(context: AuthorizationContext, *,
     return decision, snapshot
 
 
+def identity_for_context(context: AuthorizationContext, *,
+                         workflow_id: str = "repo-sensemaker",
+                         workflow_stage: str = "stage-1",
+                         executor_id: str = "claude-code",
+                         output_path=None) -> InvocationIdentity:
+    """Derive the invocation identity a capability for ``context`` authorizes.
+
+    The output path defaults to the contract's evidence-output destination, so
+    the bound identity is the campaign invocation, not "anything at all".
+    """
+    if output_path is None:
+        output_path = (context.evidence_output_dir
+                       if context.evidence_output_dir is not None
+                       else Path("experiments/evidence") / context.evidence_slug)
+    return InvocationIdentity.build(
+        workflow_id=workflow_id,
+        workflow_stage=workflow_stage,
+        artifact_type=context.artifact_type,
+        evidence_number=context.evidence_number,
+        evidence_slug=context.evidence_slug,
+        output_path=output_path,
+        framework_root=context.framework_root,
+        target_root=context.target_root,
+        target_repository=context.expected_target_repository,
+        target_sha=context.target_sha,
+        requested_model=context.exact_model,
+        executor_id=executor_id,
+        invocation_limit=context.invocation_limit,
+        execution_framework_sha=context.execution_framework_sha,
+        declared_controlled_mode=True,
+    )
+
+
 def authorize_invocation(context: AuthorizationContext, *,
                          git_head: Optional[Callable[[Path], str]] = None,
                          run_control_commit_resolver: Optional[Callable[[Path, Path], str]] = None,
-                         now: Optional[datetime] = None
+                         now: Optional[datetime] = None,
+                         invocation_identity: Optional[InvocationIdentity] = None
                          ) -> tuple[AuthorizationDecision, Optional[AuthorizedInvocation]]:
-    """Evaluate Gate A and, only on success, mint the single-use capability.
+    """Evaluate Gate A and, only on success, issue the single-use capability.
 
     This is the only function in the codebase that can produce an
-    ``AuthorizedInvocation``. On any failure it returns
-    ``(decision, None)`` -- there is no partial capability, and no caller can
-    manufacture one.
+    ``AuthorizedInvocation``. On any failure it returns ``(decision, None)`` --
+    there is no partial capability.
+
+    The capability is issued *by the registry*: what is returned is an opaque
+    handle to one live issuance record bound to ``invocation_identity``.
+    Possessing the object is not authorization; being live in the registry is.
     """
     decision, snapshot = authorize(
         context, git_head=git_head,
@@ -1130,7 +1650,8 @@ def authorize_invocation(context: AuthorizationContext, *,
     )
     if not decision.authorized or snapshot is None:
         return decision, None
-    return decision, AuthorizedInvocation(_CAPABILITY_TOKEN, decision, context, snapshot)
+    identity = invocation_identity or identity_for_context(context)
+    return decision, _REGISTRY.issue(decision, context, snapshot, identity)
 
 
 def format_gate_a_log(decision: AuthorizationDecision) -> str:

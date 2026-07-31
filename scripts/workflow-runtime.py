@@ -217,17 +217,28 @@ class OrchestrationRunner:
         model: str | None = None,
         controlled_experiment: bool = False,
         authorization=None,
+        invocation_identity=None,
     ):
         self.workflow_id = workflow_id
         self.mode = mode
         self.executor_id = executor
         self.model = model
+        # Declared mode. Informational: it still drives the --model
+        # requirement and child-workflow propagation, but it is NOT the Gate A
+        # switch any more. See ADR 0022 and
+        # gate_a_authorization.classify_invocation.
         self.controlled_experiment = controlled_experiment
         # Gate A capability (typed AuthorizedInvocation) or None. The runtime
         # only carries it; it never validates or mints it, and it can never
-        # fabricate one. create_executor refuses a controlled-experiment run
+        # fabricate one. create_executor refuses a Gate-A-requiring invocation
         # when this is None.
         self.authorization = authorization
+        # Immutable invocation identity (issue #108 remediation). Gate A
+        # requirement is DERIVED from this, not from controlled_experiment.
+        # The runtime only carries it; a capability must have been issued for
+        # exactly this identity or consumption fails with
+        # GATE_A_INVOCATION_IDENTITY_MISMATCH.
+        self.invocation_identity = invocation_identity
         self.errors: list[str] = []
 
         # Bounded explicit-model enforcement (issue #86): a controlled
@@ -257,6 +268,7 @@ class OrchestrationRunner:
                     executor, repo_root, model=self.model,
                     controlled_experiment=self.controlled_experiment,
                     authorization=self.authorization,
+                    invocation_identity=self.invocation_identity,
                 )
             except GateAAuthorizationRequired as e:
                 # Gate A denial is not a model-configuration error. It gets

@@ -206,3 +206,106 @@ def build_valid_case(tmp_path: Path, *, record_overrides=None, approval_override
         return RUN_CONTROL_SHA
 
     return context, git_head, resolver, heads
+
+
+# ---------------------------------------------------------------------------
+# Invocation-identity helpers (issue #108 remediation)
+# ---------------------------------------------------------------------------
+#
+# Gate A no longer keys off a caller-supplied boolean. It keys off an
+# immutable InvocationIdentity that is bound into the capability at issuance
+# and re-checked at consumption. These helpers build the SAME identity the
+# executor will build at the provider boundary, so a synthetic positive case
+# can bind the two together the way a real operator would.
+
+CONTROLLED_SKILL_ID = "repo-sensemaker"
+
+
+def controlled_output_path(repo_root) -> str:
+    """The Evidence 0016 brief destination, inside the controlled namespace."""
+    return f"{repo_root}/experiments/evidence/{EVIDENCE_SLUG}/repository-sensemaking-brief.md"
+
+
+def controlled_context(target_root=None) -> dict:
+    """Workflow context for the controlled Stage 1 invocation."""
+    return {
+        "workflow_id": "stage-1-repository-sensemaking",
+        "workflow_stage": "stage-1",
+        "artifact_type": ARTIFACT_TYPE,
+        "evidence_number": EVIDENCE_NUMBER,
+        "evidence_slug": EVIDENCE_SLUG,
+        "target_repository": TARGET_REPOSITORY,
+        "target_sha": TARGET_SHA,
+        "target_root": str(target_root or ""),
+        "execution_framework_sha": FRAMEWORK_SHA,
+        "invocation_limit": 1,
+    }
+
+
+def controlled_identity(repo_root, *, executor_id="claude-code",
+                        model=EXACT_MODEL, target_root=None,
+                        output_path=None, context=None, declared=True):
+    """Build the identity for the controlled Stage 1 invocation."""
+    import sys
+
+    if str(SCRIPTS_DIR) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS_DIR))
+    from skill_executor import build_invocation_identity
+
+    return build_invocation_identity(
+        repo_root=str(repo_root),
+        executor_id=executor_id,
+        skill_id=CONTROLLED_SKILL_ID,
+        expected_output_artifact=(output_path
+                                  if output_path is not None
+                                  else controlled_output_path(repo_root)),
+        context=context if context is not None else controlled_context(target_root),
+        model=model,
+        declared_controlled_mode=(True if declared else None),
+    )
+
+
+def ordinary_identity(repo_root, *, skill_id="workflow-planner",
+                      artifact_type="workflow_orchestration_plan",
+                      output_path=None, model="claude-haiku-4-5"):
+    """A genuinely ordinary development invocation: no campaign signal at all."""
+    import sys
+
+    if str(SCRIPTS_DIR) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS_DIR))
+    from skill_executor import build_invocation_identity
+
+    return build_invocation_identity(
+        repo_root=str(repo_root),
+        executor_id="claude-code",
+        skill_id=skill_id,
+        expected_output_artifact=(output_path
+                                  if output_path is not None
+                                  else f"{repo_root}/artifacts/plan.md"),
+        context={"artifact_type": artifact_type, "workflow_id": skill_id},
+        model=model,
+    )
+
+
+def mint_capability(tmp_path, *, identity=None, repo_root=None, **kwargs):
+    """Run the real Gate A evaluation and issue a registry-backed capability.
+
+    Returns ``(decision, capability, context, git_head, identity)``.
+    """
+    import sys
+
+    if str(SCRIPTS_DIR) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS_DIR))
+    from gate_a_authorization import authorize_invocation
+
+    context, git_head, resolver, _heads = build_valid_case(tmp_path, **kwargs)
+    if identity is None:
+        identity = controlled_identity(
+            repo_root if repo_root is not None else context.framework_root,
+            target_root=context.target_root,
+        )
+    decision, capability = authorize_invocation(
+        context, git_head=git_head, run_control_commit_resolver=resolver,
+        invocation_identity=identity,
+    )
+    return decision, capability, context, git_head, identity
