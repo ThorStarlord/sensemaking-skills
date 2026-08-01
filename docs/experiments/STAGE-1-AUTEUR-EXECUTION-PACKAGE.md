@@ -23,28 +23,25 @@
 > decision is required after pin finalization.
 >
 > **Evidence 0016 remains unexecutable** without a later authenticated
-> authorization record. That record must be created after PR #107 merges, stored
-> in the immutable run-control location
+> authorization record. A draft record and its SHA-256 digest exist in the
+> immutable run-control location
 > `experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/`,
-> and hashed with SHA-256. The **owner-approved digest is a distinct artifact**
-> from the authorization record itself (`owner-approval.md`): a record may not
-> approve itself, and any digest carried inside the record is informational
-> only. The future Gate A consumer must recompute the record's digest and compare
-> it to the owner-approved value before any model invocation; a mismatch, a
-> missing record, or a missing owner approval must be a hard stop. No such
-> record or approval exists today.
+> but they are non-operative drafts. The **owner-approved digest is a distinct
+> artifact** from the authorization record itself (`owner-approval.md`): a
+> record may not approve itself, and any digest carried inside the record is
+> informational only. The Gate A consumer recomputes the record's digest and
+> compares it to the owner-approved value before any model invocation; a
+> mismatch, a missing record, or a missing owner approval is a hard stop.
+> No owner approval exists.
 >
-> **Runtime enforcement of that contract does not exist.** No Gate A
-> authorization consumer is implemented anywhere in this repository: nothing
-> loads the authorization record, validates the owner approval, recomputes any
-> digest, or blocks a model invocation on authorization state. The Evidence 0016
-> preparation contract is therefore **not executable**, and cannot be made
-> executable by filling its pending sentinels, by creating the authorization
-> files, or by obtaining owner approval. Implementing, testing, reviewing,
-> merging, and wiring that consumer into the real Stage 1 invocation path is
-> **mandatory future work** and a hard prerequisite
-> (`GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`, hard stop 24 of the
-> preparation package). The historical Evidence 0013-0015 narrative below is
+> **Runtime enforcement of that contract exists.** The Gate A authorization
+> consumer is implemented, tested, reviewed, merged, and wired into the real
+> Stage 1 invocation path (`scripts/gate_a_authorization.py`): it loads the
+> authorization record, validates the owner approval, recomputes the digests,
+> and blocks a model invocation on authorization state. The Evidence 0016
+> preparation contract is therefore **not executable** while Stage 1 is not
+> authorized: the pending sentinels and the absent owner approval keep every
+> invocation denied. The historical Evidence 0013-0015 narrative below is
 > untouched by all of this.
 
 **Date**: 2026-07-27 (revised: this revision is a documentation-only refresh
@@ -1328,8 +1325,10 @@ divergence, is a hard stop regardless of brief quality.
 The package tests include a deterministic prose guard that scans this document,
 the Gate D checklist, and the execution package for sentences asserting that
 authorization enforcement happens *now*. It exists because the authorization
-contract below is specified but has no runtime consumer, so any present-tense
-enforcement sentence in these files would be false.
+contract below was specified while no runtime consumer existed, so any
+present-tense enforcement sentence in these files would have been false; now
+that the consumer is merged and wired, the status-aware guard in
+`tests/support/state_honesty_guard.py` governs instead.
 
 **Declared scope.** This deterministic guard covers the enumerated
 active-simple-present, emphatic-do, present-progressive, and affirmative-passive
@@ -1382,14 +1381,14 @@ per slot; the grammar uses explicit bounded quantifiers, never an open span.
 grounds that such wording asserts the opposite of runtime enforcement. That exception was demonstrably bypassable in the pre-participle
 slot, so it was deleted rather than extended. Truthful statements of this kind
 are now written in plainly negative form instead --
-`The run remains non-runnable because no consumer exists.` -- which contains no
-enforcement participle and therefore needs no exception.
+`Stage 1 remains non-runnable because no owner approval exists.` -- which
+contains no enforcement participle and therefore needs no exception.
 
 What it deliberately does **not** do: parse arbitrary English, resolve
 coreference, model tense beyond the auxiliaries `is/are/was/were` and
 `do/does/did`, or detect paraphrase. Modal and future forms (`must verify`,
-`will recompute`, `would be verified`) are legal by design, because those are
-the truthful ways to describe a contract whose consumer does not exist.
+`will recompute`, `would be verified`) are legal by design, because they
+describe a requirement to be met rather than a fact that holds.
 
 Negation counts only in the auxiliary slot of the matched construction
 (`is not verified`, `does not verify`, `is not checking`) or bound to the

@@ -1,0 +1,24 @@
+schema_version: "1"
+authorization_status: AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION
+authorization_scope: "single controlled Stage 1 invocation, Evidence 0016, one repository-sensemaking brief over ThorStarlord/auteur at the pinned target SHA"
+evidence_number: "0016"
+evidence_slug: 0016-stage1-auteur-post-remediation-controlled-attempt
+execution_framework_sha: cad8ef227d6c20a28e786e90c0401f776f4b7b51
+target_repository: https://github.com/ThorStarlord/auteur.git
+target_sha: 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
+exact_model: claude-sonnet-5
+artifact_type: repository_sensemaking_brief
+preparation_package_path: docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md
+preparation_package_sha256: 555c9c1cad1127fe67c651e68002d68b3762b085e9cd08f2d48a8a6271321338
+gate_d_checklist_path: docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
+gate_d_checklist_sha256: 4264fa4b435bcf26975b16f44a7143a14aaf875ec9264bf08d5b3dddd1e3f355
+authorization_record_created_at: "2026-07-31T00:00:00+00:00"
+authorization_record_created_by: campaign-operator-agent
+owner_approval_reference: owner-approval.md
+one_invocation_only: true
+no_retry: true
+no_fallback: true
+no_model_substitution: true
+no_artifact_repair: true
+no_target_mutation: true
+stop_on_first_failed_gate: true

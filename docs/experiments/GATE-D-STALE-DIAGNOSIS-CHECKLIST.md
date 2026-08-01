@@ -36,17 +36,18 @@ remains non-runnable and this checklist governs nothing live.
 
 **Digest provenance.** This checklist's SHA-256 digest, computed over its exact
 bytes as read from `framework_root` at the authorized execution SHA, must match
-`gate_d_checklist_sha256` in the future authorization record. That
+`gate_d_checklist_sha256` in the authorization record. That
 authorization record's own SHA-256 must in turn match the digest approved by
 the repository owner in the distinct owner-approval artifact. Both comparisons
-belong to the **future Gate A authorization consumer contract**, and must occur
+belong to the **Gate A authorization consumer contract**, and must occur
 before any model invocation.
 
-**No current runtime verifies this checklist's digest.** That consumer is not
-implemented (see section 1a of the preparation package); this digest
-requirement is a contract requirement, not current runtime behavior. **Gate D
-must not begin unless the future Gate A consumer exists and has passed.** While
-the consumer is absent, this checklist governs no live run at all.
+**The Gate A consumer verifies this checklist's digest.** That consumer is
+implemented at `scripts/gate_a_authorization.py` (see section 1a of the
+preparation package): it recomputes this digest and compares it against
+`gate_d_checklist_sha256` before any invocation. **Gate D must not begin unless
+the Gate A consumer has passed.** While no owner approval exists, this
+checklist governs no live run at all.
 
 If either comparison fails — checklist
 digest mismatch, authorization-record digest mismatch, missing record, or

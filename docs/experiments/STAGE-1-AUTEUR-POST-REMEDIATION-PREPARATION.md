@@ -5,24 +5,25 @@ PREPARED_NOT_RUN
 ```
 
 > **READ THIS FIRST — the authorization contract in this document is SPECIFIED
-> but NOT ENFORCED.**
+> and is enforced by the merged Gate A consumer, but no Stage 1 run is
+> authorized.**
 >
 > ```text
 > Authorization contract:     specified
-> Authorization consumer:     not implemented
-> Runtime enforcement:        absent
+> Authorization consumer:     implemented
+> Runtime enforcement:        active at provider boundaries
 > Owner approval:             not yet meaningful
 > Package runnable:           false
 > Evidence 0016 execution:    prohibited
 > ```
 >
-> No component in this repository loads the authorization record, validates the
-> owner approval, recomputes any digest, or blocks a model invocation on
-> authorization state. Every "Gate A" check described below is a **ratified
-> future contract**, not current runtime behavior. Filling in the pending
-> sentinels, creating the authorization files, and obtaining owner approval
-> would **still** leave this package non-runnable, because the component that
-> would act on any of it does not exist. See section 1a.
+> A Gate A authorization consumer now exists at
+> `scripts/gate_a_authorization.py` and is wired into the real invocation path:
+> it loads the authorization record, validates the owner approval, recomputes
+> the digests, and blocks a model invocation on authorization state. That the
+> mechanism exists authorizes nothing. This package remains non-runnable
+> because the pending sentinels stand and no owner approval exists, and the
+> consumer therefore denies every request. See section 1a.
 
 **Nature of this document**: preparation and governance only. It resolves and
 records the exact configuration that exactly one future, separately
@@ -128,9 +129,12 @@ run_control_directory: experiments/run-control/0016-stage1-auteur-post-remediati
 execution_authorization_record_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.yaml
 execution_authorization_record_digest_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.sha256
 owner_approval_artifact_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/owner-approval.md
-run_control_directory_exists: false
-execution_authorization_record_exists: false
-execution_authorization_record_digest_exists: false
+# Existence is not authority. The draft record and its digest exist so the
+# authorization proposal has stable, reviewable bytes; neither is operative.
+# Only owner_approval_artifact_exists gates authority, and it is still false.
+run_control_directory_exists: true
+execution_authorization_record_exists: true
+execution_authorization_record_digest_exists: true
 owner_approval_artifact_exists: false
 # Pending sentinels. All three block execution while unset.
 run_control_commit_sha: PENDING_AUTHORIZATION_RECORD_CREATION
@@ -152,7 +156,9 @@ approval_identity_verification_required: true
 required_authorization_status_string: AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION
 authorization_digest_algorithm: sha256
 authorization_digest_format: 64_lowercase_hex
-# Required fields of the FUTURE authorization record. None of these exist yet.
+# Required fields of the authorization record. A draft record carrying these
+# fields now exists; it is a proposal awaiting owner approval, not an
+# authorization.
 authorization_record_required_fields:
   - schema_version
   - authorization_status
@@ -203,13 +209,14 @@ canonical_preparation_package_path: docs/experiments/STAGE-1-AUTEUR-POST-REMEDIA
 canonical_gate_d_checklist_path: docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
 package_and_checklist_loaded_from_framework_root: true
 external_package_or_checklist_copy_allowed: false
-# Required behavior of the FUTURE Gate A authorization consumer, in order.
-# NOT current runtime behavior. Nothing executes these steps today. See section 2g.
+# Required behavior of the Gate A authorization consumer, in order.
+# Current runtime behavior: scripts/gate_a_authorization.py executes these
+# steps (see section 2g).
 gate_a_authorization_verification_steps_are_current_runtime_behavior: true
 gate_a_authorization_verification_steps_are_future_contract: false
 gate_a_authorization_verification_steps:
   - 1 authorization record exists at the exact planned run-control path
-  - 2 owner approval artifact exists
+  - 2 owner approval artifact must exist at the exact planned run-control path
   - 3 authorization record SHA-256 must be recomputed over its exact bytes
   - 4 recomputed digest matches the owner-approved digest
   - 5 approval identity is valid
@@ -279,8 +286,8 @@ required_paths_at_execution_framework_sha:
 missing_required_path_is_gate_a_failure: true
 external_checklist_copy_allowed: false
 
-# --- Acceptance criteria for the FUTURE Gate A consumer (section 2j) ---
-# None of these are satisfied today. This is a specification of work not done.
+# --- Acceptance criteria for the Gate A consumer (section 2j) ---
+# The merged consumer satisfies these criteria; they are restated here as its contract.
 gate_a_consumer_acceptance_criteria:
   - accept the immutable run-control location or exact paths as input
   - load exactly one authorization record
@@ -420,11 +427,11 @@ pr_107_proves:
 # are now negative statements -- keeping `does_not_prove` would have made every
 # item a double negative.
 pr_107_absence_facts:
-  - no authorization consumer exists
-  - Gate A is not runtime-enforced
+  - "before PR #109, no authorization consumer exists in the tree"
+  - "before PR #109, Gate A is not runtime-enforced"
   - owner approval cannot currently authorize a run
-  - digests are not currently checked
-  - model invocation is not currently blocked by authorization state
+  - "before PR #109, digests are not checked"
+  - "before PR #109, model invocation is not blocked by authorization state"
   - Evidence 0016 is not executable
 readiness_classification_before: Externally exercised
 readiness_auto_promotion_allowed: false
@@ -502,10 +509,10 @@ The mechanism now exists. Nothing is authorized by it. Every one of these
 remains true and blocking:
 
 ```text
-No authorization record exists.
-No authorization-record digest file exists.
+A DRAFT authorization record exists, and it is NOT operative.
+A DRAFT authorization-record digest file exists, and it is NOT authority.
+The run-control directory exists, and it holds only draft artifacts.
 No owner-approval artifact exists.
-No run-control directory exists.
 No run-control commit is pinned.
 The execution framework SHA is still PENDING_POST_MERGE_PIN_FINALIZATION.
 execution_authorization_status is still NOT_AUTHORIZED.
@@ -514,20 +521,28 @@ package_status is still PREPARED_NOT_RUN.
 Evidence 0016 is still unused.
 ```
 
-An enforcement mechanism with nothing to enforce denies every request. That is
-the intended state: with no record, no digest, and no approval on disk, the
-consumer returns `GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING` and then
-`GATE_A_AUTHORIZATION_RECORD_MISSING`, and mints no capability. Merging the
-consumer therefore moves the package *closer* to being auditable, and not one
-step closer to being authorized.
+The existence of the draft record and its digest is NOT authority. It means
+only that the authorization *proposal* has stable, hashable bytes that an owner
+could later approve. Authority arrives solely with an owner-approval artifact,
+which does not exist.
+
+An enforcement mechanism with nothing operative to enforce denies every
+request. That is the intended state: the consumer returns
+`GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING` while the sentinel stands, and with
+the record and digest present but no owner approval on disk it denies with
+`GATE_A_OWNER_APPROVAL_MISSING`, and mints no capability. Merging the consumer
+therefore moves the package *closer* to being auditable, and not one step
+closer to being authorized.
 
 ### Scope of the prose-honesty guard
 
 The package tests include a deterministic prose guard that scans this document,
 the Gate D checklist, and the execution package for sentences asserting that
 authorization enforcement happens *now*. It exists because the authorization
-contract below is specified but has no runtime consumer, so any present-tense
-enforcement sentence in these files would be false.
+contract below was specified while no runtime consumer existed, so any
+present-tense enforcement sentence in these files would have been false; now
+that the consumer is merged and wired, the status-aware guard in
+`tests/support/state_honesty_guard.py` governs instead.
 
 **Declared scope.** This deterministic guard covers the enumerated
 active-simple-present, emphatic-do, present-progressive, and affirmative-passive
@@ -580,14 +595,15 @@ per slot; the grammar uses explicit bounded quantifiers, never an open span.
 grounds that such wording asserts the opposite of runtime enforcement. That exception was demonstrably bypassable in the pre-participle
 slot, so it was deleted rather than extended. Truthful statements of this kind
 are now written in plainly negative form instead --
-`The run remains non-runnable because no consumer exists.` -- which contains no
-enforcement participle and therefore needs no exception.
+`The run remains non-runnable because no owner approval exists.` -- which
+contains no enforcement participle and therefore needs no exception.
 
 What it deliberately does **not** do: parse arbitrary English, resolve
 coreference, model tense beyond the auxiliaries `is/are/was/were` and
 `do/does/did`, or detect paraphrase. Modal and future forms (`must verify`,
 `will recompute`, `would be verified`) are legal by design, because those are
-the truthful ways to describe a contract whose consumer does not exist.
+the truthful ways to describe a contract requirement as a requirement, rather
+than as a claim that some particular run has already been authorized.
 
 Negation counts only in the auxiliary slot of the matched construction
 (`is not verified`, `does not verify`, `is not checking`) or bound to the
@@ -751,15 +767,16 @@ state are each explicitly insufficient:
 
 | Attempted path | Result |
 |---|---|
-| Fill in all three pending sentinels with real SHAs and digests | **Still not runnable.** Nothing reads them. |
-| Create the run-control directory, the authorization record, and the digest file | **Still not runnable.** Nothing loads them. |
-| Obtain a genuine repository-owner approval of the exact digest | **Still not runnable, and the approval is non-operative.** Nothing verifies it. |
+| Fill in all three pending sentinels with real SHAs and digests | **Still not runnable.** By hand they are unapproved; Gate A denies. |
+| Create the run-control directory, the authorization record, and the digest file | **Still not runnable.** Done: they exist as drafts, and Gate A denies for missing owner approval. |
+| Obtain a genuine repository-owner approval of the exact digest | **Still not runnable** until the execution pin is also finalized. |
 
-The missing consumer is not a formality that owner approval can substitute for.
-An approval is a decision *about* an enforcement mechanism; it is not the
-mechanism. Approving a check that no code performs authorizes nothing.
+Existence is not authority. Drafting a record and hashing it produces stable
+bytes an owner *could* approve; it produces no approval. An approval is a
+decision *about* an enforcement mechanism, and the mechanism now exists and
+evaluates it — but no approval has been given.
 
-Before this package can become runnable, the actual consumer must be:
+The consumer requirement has been satisfied. The consumer was:
 
 1. **implemented** as real source code;
 2. **tested**, with the positive and negative categories of section 2j;
@@ -768,22 +785,22 @@ Before this package can become runnable, the actual consumer must be:
 5. **wired into the real Stage 1 invocation path**, ahead of the first model
    call, and proven so by integration test.
 
-Until all five are true, `GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`
-(hard stop 24, section 2h) fires, and no authorization state of any kind is
-effective.
+All five are true, so `GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`
+(hard stop 24, section 2h) is retired and no longer fires. Authorization state
+is therefore effective — and it currently evaluates to DENY.
 
-### Where the consumer will live
+### Where the consumer lives
 
 ```yaml
-gate_a_authorization_consumer_path: PENDING_IMPLEMENTATION
-gate_a_consumer_integration_point: PENDING_ARCHITECTURAL_DECISION
+gate_a_authorization_consumer_path: scripts/gate_a_authorization.py
+gate_a_consumer_integration_point: scripts/skill_executor.py::ClaudeAgentSdkSkillExecutor
 ```
 
-This package deliberately does **not** invent an implementation path. The
-contract requires that the consumer ultimately gate the real Stage 1 execution
-path — which today enters through `scripts/workflow-runtime.py` — before the
+The contract requires that the consumer gate the real Stage 1 execution
+path — which enters through `scripts/workflow-runtime.py` — before the
 first model call. It does **not** claim that `scripts/workflow-runtime.py`
-performs, or has ever performed, any authorization preflight. It does not.
+performs, or has ever performed, any authorization preflight. It does not; the
+preflight happens at the executor integration point named above.
 `scripts/workflow-runtime.py` is named in this package solely as
 `stage1_entrypoint`
 (`stage1_entrypoint_performs_authorization_preflight: false`).
@@ -923,10 +940,10 @@ itself. Instead:
   out of contract and must be rejected.
 - A separate immutable **authorization record**, created only after this
   preparation PR merges, carries the **execution pin**.
-- The future Gate A consumer must consume the authorization record as the
+- The Gate A consumer must consume the authorization record as the
   authoritative execution pin, while continuing to obey this package as the
-  governing contract. No such consumer exists; this is a contract requirement,
-  not current runtime behavior.
+  governing contract; the consumer merged in PR #109 implements this
+  requirement.
 
 This avoids the circular requirement that a commit contain its own SHA: the
 record is authored *after* the revision it pins is already immutable, and the
@@ -968,8 +985,8 @@ The future authorization record MUST:
   5. have its exact bytes hashed with SHA-256;
   6. have that SHA-256 digest approved by the repository owner, in a
      DISTINCT approval artifact, before any invocation;
-  7. be verified by the FUTURE Gate A consumer before any model invocation
-     (that consumer does not exist yet; see section 1a);
+  7. be verified by the Gate A consumer before any model invocation
+     (that consumer now exists and enforces; see section 1a);
   8. remain immutable for the life of Evidence 0016.
 
 There is no second mechanism. There is no fallback. There is no
@@ -995,8 +1012,9 @@ clearly distinguishable from generated evidence output:
 experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/
 ```
 
-Planned future paths (none of these exist, and none may be created by this
-PR):
+The authorization record and its digest are drafted by this PR at the first two
+paths below; the third path must remain absent until the repository owner
+creates it:
 
 ```text
 experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.yaml
@@ -1015,8 +1033,12 @@ Properties this location must satisfy:
 - **distinguishable from generated evidence** — run-control artifacts are
   authored governance inputs, never model output;
 - **immutable after owner approval** — see section 2f;
-- **unavailable before the later authorization task** — the directory does
-  not exist today (`run_control_directory_exists: false`).
+- **populated only with draft, non-operative artifacts before owner
+  approval** — the directory now exists
+  (`run_control_directory_exists: true`) and holds the draft authorization
+  record and its digest, but it does not and must not contain
+  `owner-approval.md` (`owner_approval_artifact_exists: false`). Stable bytes
+  for a proposal are not an approval of it.
 
 ---
 
@@ -1052,8 +1074,9 @@ merged, or skipped.
     HARD STOP before model invocation.
 ```
 
-**Steps 8-10 describe required behavior of a component that does not exist.**
-No code performs them today. See section 1a. The full ordered lifecycle,
+**Steps 8-10 describe required behavior of the Gate A consumer, which now
+exists and performs them.** See section 1a. Their being performed authorizes
+nothing: with the sentinels standing and no owner approval, they deny. The full ordered lifecycle,
 including the consumer-implementation steps that must precede step 3 above, is
 restated in `authorization_lifecycle_order` and immediately below.
 
@@ -1166,7 +1189,7 @@ No circular self-reference is created, because the two commits are distinct:
 - the authorization record pins an EARLIER framework execution SHA;
 - the LATER run-control commit contains the authorization and approval
   artifacts;
-- the future consumer must verify BOTH the framework SHA and the
+- the consumer verifies BOTH the framework SHA and the
   authorization digest;
 - the run-control commit does NOT need to equal the framework execution SHA,
   and must not be assumed to.
@@ -1233,8 +1256,7 @@ artifact.
 ### Package and checklist provenance
 
 The record carries SHA-256 digests for the two governing documents, and the
-future Gate A consumer must verify them (this is a contract requirement, not
-current runtime behavior — nothing checks these digests today):
+Gate A consumer verifies them before any model invocation:
 
 ```text
 SHA-256(preparation package bytes) == authorization record preparation_package_sha256
@@ -1300,8 +1322,10 @@ would make it fire again.
 
 Conditions 1-23 are now *reachable* and are evaluated by
 `scripts/gate_a_authorization.py`. The first hard stop that still fires is the
-pending execution pin (`GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING`), immediately
-followed by the missing authorization record and the missing owner approval.
+pending execution pin (`GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING`). The
+authorization record and its digest now exist as drafts, so the next hard stop
+that fires once the pin is finalized is the missing owner approval
+(`GATE_A_OWNER_APPROVAL_MISSING`).
 
 Semantics:
 
@@ -1326,9 +1350,9 @@ false` and it remains not waivable
 (`gate_a_authorization_consumer_hard_stop_waivable: false`).
 
 **Current state: a Gate A authorization consumer exists and is enforcing, so
-authorization state is now enforceable. No authorization record exists. No
-owner approval exists. No execution pin is finalized. The package is not
-runnable.**
+authorization state is now enforceable. A draft authorization record and its
+digest file exist, and neither is operative. No owner approval exists. No
+execution pin is finalized. The package is not runnable.**
 
 ### Preflight rule (mandatory, before any invocation)
 
@@ -1357,13 +1381,14 @@ one.
 
 ---
 
-## 2j. Acceptance criteria for the future Gate A authorization consumer
+## 2j. Acceptance criteria for the Gate A authorization consumer
 
-None of the criteria below are satisfied today. This section specifies work
-that has **not been done**, and that a separately scoped implementation PR must
-do. It is not a description of anything that currently runs.
+The criteria below were specified while the consumer was still future work;
+the implementation PR has since merged `scripts/gate_a_authorization.py`, which
+satisfies them, as proven by `tests/test_gate_a_authorization_consumer.py`.
+They are restated here as the consumer's contract.
 
-The future Gate A authorization consumer must:
+The Gate A authorization consumer must:
 
 1. accept the immutable run-control location, or the exact paths, as input;
 2. load exactly one authorization record;
@@ -1399,10 +1424,12 @@ enforced and is not.
 
 ### Required future test categories
 
-The consumer implementation PR must supply at least these categories. **None of
-them are implemented in PR #107**
-(`gate_a_consumer_required_test_categories_implemented_in_this_pr: false`);
-PR #107 asserts only, at contract level, that they are mandatory future work.
+The consumer implementation PR must supply at least these categories. **PR #107
+implemented none of them**; PR #107 asserts only, at contract level, that they
+are mandatory future work. The implementation work has since supplied them
+(`tests/test_gate_a_authorization_consumer.py`), and the contract field
+`gate_a_consumer_required_test_categories_implemented_in_this_pr` now reads
+`true`.
 
 ```text
 valid authorization accepted
@@ -1544,12 +1571,13 @@ later gate is evaluated, filled in, or guessed. Every gate below is
   finalization.
 - Target checkout SHA is exactly the pinned `target_sha`.
 
-#### Required behavior of the future Gate A authorization consumer
+#### Required behavior of the Gate A authorization consumer
 
-> **This subsection specifies a component that does not exist.** It is a
-> ratified contract requirement, not a description of current runtime
-> behavior. No code in this repository performs any of the fifteen steps
-> below. See section 1a.
+> **This subsection states the ratified contract requirement** for the Gate A
+> consumer, which now exists at `scripts/gate_a_authorization.py` and performs
+> the fifteen steps below at the invocation boundary. The requirement is
+> normative: it binds the consumer, and it is not a grant of authorization to
+> any run. See section 1a.
 
 **Digest verification must occur BEFORE model invocation.** The required Gate A
 consumer must recompute the authorization-record SHA-256 and compare it against
@@ -1560,7 +1588,7 @@ steps below successfully, in this order:
 ```text
  1. Authorization record exists at the EXACT planned run-control path:
     experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.yaml
- 2. Owner approval artifact exists:
+ 2. Owner approval artifact must exist at:
     experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/owner-approval.md
  3. Authorization record SHA-256 must be RECOMPUTED over its exact bytes
     on disk.
@@ -1593,10 +1621,11 @@ Any failure of any step:
 The full hard-stop condition list is section 2h. The three pending sentinels
 (`PENDING_POST_MERGE_PIN_FINALIZATION`,
 `PENDING_AUTHORIZATION_RECORD_CREATION`, `PENDING_OWNER_APPROVAL`) each block
-execution on their own — and hard stop 24,
-`GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`, blocks execution regardless of
-all three, because clearing the sentinels does not create the component that
-would read them.
+execution on their own. Hard stop 24,
+`GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`, is retired and no longer
+fires, because the component that reads the sentinels now exists; it is kept
+non-waivable so that deleting or unwiring the consumer would make it fire
+again.
 
 - A reviewed, merged Gate A authorization consumer exists, and is wired into
   the real Stage 1 invocation path ahead of the first model call. Absent this,
@@ -1723,11 +1752,12 @@ The run remains non-runnable while run_control_commit_sha is
   PENDING_AUTHORIZATION_RECORD_CREATION.
 The run remains non-runnable while authorization_record_sha256 is
   PENDING_OWNER_APPROVAL.
-The run remains non-runnable because no Gate A authorization consumer exists.
-  This condition is independent of the three sentinels and is NOT cleared by
-  filling them.
-No authorization record exists. No owner-approval artifact exists. No
-  run-control directory exists. The package is not runnable.
+A Gate A authorization consumer now exists and enforces this contract at the
+  invocation boundary. Its existence authorizes nothing; it only makes the
+  non-authorized state enforceable rather than merely documented.
+A draft authorization record, its digest file, and the run-control directory
+  exist. None of them is operative, and their existence is NOT authority.
+  No owner-approval artifact exists. The package is not runnable.
 Authorization requires the sole mandatory mechanism of section 2b: an
   owner-approved external immutable authorization record whose SHA-256 digest
   the repository owner approved in a distinct artifact, verified by Gate A
@@ -1752,11 +1782,11 @@ PR #107 **proves**:
 PR #107 **does not prove** runtime enforcement. Stated as scanned negative
 facts rather than inside a prose-guard exemption region:
 
-- no authorization consumer exists;
-- Gate A is not runtime-enforced;
+- before PR #109, no authorization consumer exists in the tree;
+- before PR #109, Gate A is not runtime-enforced;
 - owner approval cannot currently authorize a run;
-- digests are not currently checked;
-- model invocation is not currently blocked by authorization state;
+- before PR #109, digests are not checked;
+- before PR #109, model invocation is not blocked by authorization state;
 - Evidence 0016 is not executable.
 
 PR #107 is a **preparation-contract PR**. It implements no security
@@ -1767,11 +1797,14 @@ as evidence that runtime enforcement exists
 
 ### Owner authorization (blank — no approval pre-filled, and not yet meaningful)
 
-**An approval entered below today would be invalid and non-operative**, because
-no consumer exists to act on it (section 1a,
-`owner_approval_created_before_consumer_implementation_is_valid: false`). This
-block must remain blank until the consumer is implemented, tested, reviewed,
-merged, and wired into the Stage 1 invocation path.
+**An approval entered below would still not make this package runnable**, and
+this block must remain blank here regardless. The consumer now exists, so the
+condition recorded as
+`owner_approval_created_before_consumer_implementation_is_valid: false` is no
+longer what blocks an approval. What blocks it now is that the execution pin is
+still `PENDING_POST_MERGE_PIN_FINALIZATION`, and that a valid approval is a
+separate owner-authored artifact at the run-control path — never prose filled
+into this document.
 
 ```text
 Owner authorization decision:

@@ -212,6 +212,12 @@ FACT_LEXICONS = {
             rf"\b{_CONSUMER}\s+is\s+not\s+implemented\b",
             r"\bnone\s+of\s+them\s+are\s+implemented\b",
             r"\bnone\s+of\s+the\s+criteria\s+below\s+are\s+satisfied\s+today\b",
+            r"\bno\b[^.\n]{0,60}?\b(?:authorization\s+)?consumer\s+is\s+"
+            r"implemented\b",
+            r"\bconsumer\b[^.\n]{0,80}?\bmandatory\s+future\s+work\b",
+            r"\b(?:the\s+)?future\s+gate\s+a\s+(?:authorization\s+)?consumer\b",
+            r"\bnone\s+of\s+these\b[^.\n]{0,40}?\bsatisfied\b",
+            r"\bspecification\s+of\s+work\s+not\s+done\b",
         ),
     },
     "gate_a_consumer_wired": {
@@ -240,6 +246,11 @@ FACT_LEXICONS = {
             r"\bruntime\s+enforcement\s+(?:does\s+not|doesn't)\s+exist\b",
             rf"\bgate\s+a\b[^.\n]{{0,40}}:\s*not\s+enforced\b",
             r"\bgate\s+a\s+is\s+(?:still\s+)?not\s+enforced\b",
+            r"\bruntime\s+enforcement\b[^.;\n]{0,60}?\b(?:does\s+not|doesn't)"
+            r"\s+exist\b",
+            r"\bnothing\s+(?:loads|validates|recomputes|checks|blocks)\s+"
+            r"(?:(?:the|any|these|a)\s+)?(?:authorization[\s-]*record|digests?|"
+            r"owner[\s-]*approval|model\s+invocation)\b",
         ),
     },
     "run_control_directory_exists": {
@@ -248,6 +259,7 @@ FACT_LEXICONS = {
         "deny": (
             r"\bno\s+run[\s-]*control\s+director(?:y|ies)\s+exists\b",
             r"\brun[\s-]*control\s+director(?:y|ies)\s+does\s+not\s+exist\b",
+            r"\bnone\s+of\s+these\s+exist\b",
         ),
     },
     "authorization_record_exists": {
@@ -260,6 +272,8 @@ FACT_LEXICONS = {
             r"\bno\s+authorization[\s-]*record\s+exists\b",
             r"\b(?:the\s+)?authorization[\s-]*record\s+does\s+not\s+exist\b",
             r"\bauthorization-record\.yaml\s+does\s+not\s+exist\b",
+            r"\bno\s+such\s+(?:authorization[\s-]*)?record\b[^.\n]{0,30}?"
+            r"\bexists\b",
         ),
     },
     "authorization_record_digest_exists": {
@@ -285,6 +299,7 @@ FACT_LEXICONS = {
             r"\bno\s+owner[\s-]*approval(?:\s+artifact)?\s+exists\b",
             r"\bowner[\s-]*approval(?:\s+artifact)?\s+does\s+not\s+exist\b",
             r"\bowner-approval\.md\s+does\s+not\s+exist\b",
+            r"\bno\s+such\s+approval\b[^.\n]{0,30}?\bexists\b",
         ),
     },
     "stage1_authorized": {

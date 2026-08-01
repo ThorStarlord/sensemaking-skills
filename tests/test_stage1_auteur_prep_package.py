@@ -8,8 +8,10 @@ only. They never invoke a model, never run the Stage 1 workflow, and never
 create an evidence directory.
 """
 
+import hashlib
 import inspect
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -426,7 +428,12 @@ class FrameworkPinLifecycle(unittest.TestCase):
     def test_authorization_block_remains_unfilled(self):
         self.assertIn("Authorized execution framework SHA:\n", self.text)
         self.assertIn("Authorized by:\n", self.text)
-        self.assertFalse(self.contract["execution_authorization_record_exists"])
+        # A drafted record does not fill this block. The operative approval is
+        # what would, and it does not exist.
+        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertEqual(
+            self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
+        )
 
     # 14
     def test_sentinel_cannot_pass_executable_package_validator(self):
@@ -580,6 +587,149 @@ RUN_CONTROL_DIR = (
 AUTH_RECORD_PATH = f"{RUN_CONTROL_DIR}/authorization-record.yaml"
 AUTH_DIGEST_PATH = f"{RUN_CONTROL_DIR}/authorization-record.sha256"
 OWNER_APPROVAL_PATH = f"{RUN_CONTROL_DIR}/owner-approval.md"
+OWNER_APPROVAL_TEMPLATE_PATH = f"{RUN_CONTROL_DIR}/owner-approval.template.md"
+
+# The EXACT set of draft artifacts permitted to exist under run-control before
+# owner approval. This is an allowlist, not a prefix rule: anything else under
+# experiments/run-control/ -- extra records, extra digests, an operative
+# owner-approval.md, a second run-control directory -- is a violation.
+#
+# These are paths RELATIVE TO THE RUN-CONTROL DIRECTORY ROOT, not bare
+# filenames. Comparing bare names would let a nested duplicate (for example
+# `nested/authorization-record.yaml`) collide with the permitted top-level
+# entry of the same name and pass unnoticed -- exactly the "duplicate
+# authorization records" / "duplicate digest files" case this guard must catch.
+PERMITTED_RUN_CONTROL_FILES = frozenset(
+    {
+        ".gitattributes",
+        "authorization-record.yaml",
+        "authorization-record.sha256",
+        "owner-approval.template.md",
+    }
+)
+
+
+def _relative_file_paths(root):
+    """Every file under `root`, as a POSIX path relative to `root`.
+
+    Relative -- never bare `.name` -- so that a nested duplicate of a permitted
+    filename is a distinct entry instead of silently colliding with it.
+    """
+    return {
+        str(p.relative_to(root)).replace("\\", "/")
+        for p in root.rglob("*")
+        if p.is_file()
+    }
+
+
+def _assert_only_permitted_run_control_artifacts(case):
+    """Exactly one run-control directory, holding exactly the draft artifacts.
+
+    Existence of the draft record and digest is NOT authority; it only means
+    the authorization proposal has stable bytes. The operative approval
+    (owner-approval.md) must be absent.
+    """
+    root = REPO_ROOT / "experiments" / "run-control"
+    case.assertTrue(root.is_dir(), "the run-control root must exist")
+    subdirs = sorted(p.name for p in root.iterdir() if p.is_dir())
+    case.assertEqual(
+        subdirs,
+        ["0016-stage1-auteur-post-remediation-controlled-attempt"],
+        "exactly one run-control directory is permitted",
+    )
+    case.assertEqual(
+        sorted(p.name for p in root.iterdir() if p.is_file()),
+        [],
+        "no stray files directly under experiments/run-control/",
+    )
+    run_control_root = REPO_ROOT / RUN_CONTROL_DIR
+    # Relative paths, so a nested duplicate is a DISTINCT entry rather than one
+    # that collides with the permitted top-level name.
+    found = _relative_file_paths(run_control_root)
+    case.assertEqual(
+        found,
+        set(PERMITTED_RUN_CONTROL_FILES),
+        "only the exact planned draft artifact set may exist under run-control",
+    )
+    # No subdirectories either: the planned artifact set is flat, so any
+    # directory under the run-control root can only be hiding something.
+    case.assertEqual(
+        sorted(
+            str(p.relative_to(run_control_root)).replace("\\", "/")
+            for p in run_control_root.rglob("*")
+            if p.is_dir()
+        ),
+        [],
+        "no subdirectories are permitted under the run-control directory",
+    )
+    # The operative approval is owner-only and must never be authored here.
+    case.assertFalse((REPO_ROOT / OWNER_APPROVAL_PATH).exists())
+
+
+class NestedDuplicateRunControlArtifactsAreCaught(unittest.TestCase):
+    """Regression: the allowlist must compare RELATIVE PATHS, not bare names.
+
+    A prior version of `_assert_only_permitted_run_control_artifacts` collected
+    `p.name`. Because a nested duplicate has the same bare name as the
+    permitted top-level file, `{"authorization-record.yaml", ...}` was produced
+    either way and the whole suite passed with a duplicate authorization record
+    and duplicate digest sitting in a subdirectory -- both explicitly on the
+    must-catch list from the owner decision.
+    """
+
+    PERMITTED = {
+        ".gitattributes",
+        "authorization-record.yaml",
+        "authorization-record.sha256",
+        "owner-approval.template.md",
+    }
+
+    def _build(self, tmp, nested):
+        root = Path(tmp) / "0016-stage1-auteur-post-remediation-controlled-attempt"
+        root.mkdir(parents=True)
+        for name in self.PERMITTED:
+            (root / name).write_text("x", encoding="utf-8")
+        if nested:
+            sub = root / "nested"
+            sub.mkdir()
+            (sub / "authorization-record.yaml").write_text("x", encoding="utf-8")
+            (sub / "authorization-record.sha256").write_text("x", encoding="utf-8")
+        return root
+
+    def test_clean_tree_matches_the_allowlist(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._build(tmp, nested=False)
+            self.assertEqual(_relative_file_paths(root), self.PERMITTED)
+
+    def test_nested_duplicate_record_and_digest_are_detected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._build(tmp, nested=True)
+            found = _relative_file_paths(root)
+            self.assertNotEqual(
+                found,
+                self.PERMITTED,
+                "nested duplicates must make the allowlist comparison fail",
+            )
+            self.assertEqual(
+                found - self.PERMITTED,
+                {
+                    "nested/authorization-record.yaml",
+                    "nested/authorization-record.sha256",
+                },
+            )
+
+    def test_bare_name_comparison_would_have_missed_them(self):
+        """Pins the exact defect, so a revert to `p.name` fails loudly."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._build(tmp, nested=True)
+            bare = {p.name for p in root.rglob("*") if p.is_file()}
+            self.assertEqual(
+                bare,
+                self.PERMITTED,
+                "bare-name collection is blind to nested duplicates -- this is "
+                "why the guard must use relative paths",
+            )
+
 
 RUN_CONTROL_SENTINEL = "PENDING_AUTHORIZATION_RECORD_CREATION"
 OWNER_APPROVAL_SENTINEL = "PENDING_OWNER_APPROVAL"
@@ -1111,7 +1261,12 @@ class AuthorizationHardStops(unittest.TestCase):
     # 37
     def test_missing_record_blocks_invocation(self):
         self._stop("authorization record absent")
-        self.assertFalse(self.contract["execution_authorization_record_exists"])
+        # The stop stays declared even though a draft record now exists: the
+        # stop governs the run-time check, not today's repository state. What
+        # keeps the run blocked today is the absent owner approval.
+        self.assertTrue(self.contract["execution_authorization_record_exists"])
+        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["package_runnable"])
 
     # 38
     def test_missing_approval_blocks_invocation(self):
@@ -1173,25 +1328,54 @@ class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
     def setUp(self):
         self.contract, self.text = _load_contract()
 
-    # 46
-    def test_no_authorization_record_exists_in_this_pr(self):
-        self.assertFalse(
-            (REPO_ROOT / self.contract["execution_authorization_record_path"]).exists()
+    # 46 -- the draft record and digest exist, and the contract says so
+    # truthfully. Existence is not authority: the record is a proposal with
+    # stable bytes, nothing more.
+    def test_draft_authorization_record_exists_and_contract_is_truthful(self):
+        record = REPO_ROOT / self.contract["execution_authorization_record_path"]
+        digest = REPO_ROOT / self.contract["execution_authorization_record_digest_path"]
+        self.assertTrue(record.is_file())
+        self.assertTrue(digest.is_file())
+        self.assertTrue(self.contract["execution_authorization_record_exists"])
+        self.assertTrue(self.contract["execution_authorization_record_digest_exists"])
+        # The digest file must be a current digest of the record's exact bytes,
+        # never a stale one carried over from an earlier draft.
+        stored = digest.read_text(encoding="utf-8").strip()
+        self.assertTrue(HEX64.match(stored), stored)
+        self.assertEqual(
+            stored,
+            hashlib.sha256(record.read_bytes()).hexdigest(),
+            "authorization-record.sha256 is stale relative to the record bytes",
         )
-        self.assertFalse(
-            (REPO_ROOT / self.contract["execution_authorization_record_digest_path"]).exists()
+        # A record on disk does not authorize anything. The owner-approval
+        # sentinel in the package must still be pending.
+        self.assertEqual(
+            self.contract["authorization_record_sha256"], OWNER_APPROVAL_SENTINEL
         )
-        self.assertFalse(self.contract["execution_authorization_record_exists"])
-        self.assertFalse(self.contract["execution_authorization_record_digest_exists"])
 
-    # 47
+    # 47 -- the operative owner approval still does not exist, and nothing
+    # beyond the exact planned draft artifact set does either.
     def test_no_owner_approval_artifact_exists_in_this_pr(self):
         self.assertFalse(
             (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
         )
-        self.assertFalse((REPO_ROOT / self.contract["run_control_directory"]).exists())
         self.assertFalse(self.contract["owner_approval_artifact_exists"])
-        self.assertFalse(self.contract["run_control_directory_exists"])
+        self.assertTrue((REPO_ROOT / self.contract["run_control_directory"]).is_dir())
+        self.assertTrue(self.contract["run_control_directory_exists"])
+        _assert_only_permitted_run_control_artifacts(self)
+
+    # 47b -- the package's declared preparation-package digest inside the
+    # record must match the package's CURRENT bytes.
+    def test_record_pins_the_current_preparation_package_bytes(self):
+        record_text = (
+            REPO_ROOT / self.contract["execution_authorization_record_path"]
+        ).read_text(encoding="utf-8")
+        pinned = yaml.safe_load(record_text)["preparation_package_sha256"]
+        self.assertEqual(
+            pinned,
+            hashlib.sha256(PACKAGE_PATH.read_bytes()).hexdigest(),
+            "the authorization record pins a stale preparation-package digest",
+        )
 
     # 48
     def test_package_remains_prepared_not_run(self):
@@ -1205,12 +1389,14 @@ class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
         )
         collapsed = " ".join(self.text.split())
         # The consumer now exists, so the enforceability half of this sentence
-        # flipped. The half that matters -- no record, no approval, not
-        # runnable -- did not.
+        # flipped. So did the record/digest half: a DRAFT record and digest now
+        # exist, and saying otherwise would be false. The half that actually
+        # gates execution -- no owner approval, no pin, not runnable -- did not.
         self.assertIn(
             "a Gate A authorization consumer exists and is enforcing, so "
-            "authorization state is now enforceable. No authorization record "
-            "exists. No owner approval exists. No execution pin is finalized. "
+            "authorization state is now enforceable. A draft authorization "
+            "record and its digest file exist, and neither is operative. "
+            "No owner approval exists. No execution pin is finalized. "
             "The package is not runnable.",
             collapsed,
         )
@@ -1278,13 +1464,19 @@ class FutureAuthorizationRecordFixture(unittest.TestCase):
                 )
 
     def test_fixture_never_touches_the_filesystem(self):
-        """The fixture is in-memory only; no run-control artifact is written."""
+        """The fixture is in-memory only; it writes no run-control artifact."""
+        before = sorted(
+            p.name for p in (REPO_ROOT / RUN_CONTROL_DIR).rglob("*") if p.is_file()
+        )
         validate_future_authorization_record(
             valid_future_authorization_record(), EXPECTED_AUTHORIZED_INPUTS
         )
-        self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
-        self.assertFalse((REPO_ROOT / AUTH_RECORD_PATH).exists())
+        after = sorted(
+            p.name for p in (REPO_ROOT / RUN_CONTROL_DIR).rglob("*") if p.is_file()
+        )
+        self.assertEqual(before, after, "the fixture must not write to disk")
         self.assertFalse((REPO_ROOT / OWNER_APPROVAL_PATH).exists())
+        _assert_only_permitted_run_control_artifacts(self)
 
 
 # ---------------------------------------------------------------------------
@@ -2931,12 +3123,14 @@ class Pr107ClaimsAreBounded(unittest.TestCase):
         self.assertFalse(self.contract["pr_107_implements_runtime_enforcement"])
         for claim in (
             # Round 8: stated as scanned negative facts, not inside a prose-guard
-            # exemption region. The key is renamed accordingly.
-            "no authorization consumer exists",
-            "Gate A is not runtime-enforced",
+            # exemption region. The key is renamed accordingly. The consumer-era
+            # rewrite frames the items that became false historically, because
+            # the statements describe PR #107 and the pre-PR #109 tree.
+            "before PR #109, no authorization consumer exists in the tree",
+            "before PR #109, Gate A is not runtime-enforced",
             "owner approval cannot currently authorize a run",
-            "digests are not currently checked",
-            "model invocation is not currently blocked by authorization state",
+            "before PR #109, digests are not checked",
+            "before PR #109, model invocation is not blocked by authorization state",
             "Evidence 0016 is not executable",
         ):
             self.assertIn(claim, self.contract["pr_107_absence_facts"])
@@ -2984,11 +3178,10 @@ class Pr107ClaimsAreBounded(unittest.TestCase):
         checklist = CHECKLIST_PATH.read_text(encoding="utf-8")
         collapsed = " ".join(checklist.split())
         self.assertIn(
-            "No current runtime verifies this checklist's digest.", collapsed
+            "The Gate A consumer verifies this checklist's digest.", collapsed
         )
         self.assertIn(
-            "Gate D must not begin unless the future Gate A consumer exists and "
-            "has passed.",
+            "Gate D must not begin unless the Gate A consumer has passed.",
             collapsed,
         )
         self.assertIn("this checklist governs no live run", collapsed)
@@ -3037,13 +3230,9 @@ class ConsumerImplementedWithoutAuthorizingAnything(unittest.TestCase):
 
     # 80b -- the half that must NOT change
     def test_implementing_the_consumer_created_no_authorization_artifacts(self):
-        """A mechanism is not an authorization."""
-        self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
-        for key in (
-            "execution_authorization_record_path",
-            "execution_authorization_record_digest_path",
-            "owner_approval_artifact_path",
-        ):
+        """A mechanism is not an authorization; a draft record is not either."""
+        _assert_only_permitted_run_control_artifacts(self)
+        for key in ("owner_approval_artifact_path",):
             self.assertFalse(
                 (REPO_ROOT / self.contract[key]).exists(),
                 f"{key} must not exist: implementing the consumer does not "
@@ -4042,10 +4231,7 @@ class ConsumerHardStopUnchangedByRound6(unittest.TestCase):
 
     # 143
     def test_no_authorization_artifacts_created_by_round6(self):
-        self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
-        self.assertFalse(
-            (REPO_ROOT / self.contract["execution_authorization_record_path"]).exists()
-        )
+        _assert_only_permitted_run_control_artifacts(self)
         self.assertFalse(
             (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
         )
@@ -4463,16 +4649,9 @@ class Round7ChangedNoSafetySemantics(unittest.TestCase):
         )
 
     def test_no_authorization_artifacts_created_by_round7(self):
-        self.assertFalse((REPO_ROOT / RUN_CONTROL_DIR).exists())
-        self.assertFalse(
-            (REPO_ROOT / self.contract["execution_authorization_record_path"]).exists()
-        )
+        _assert_only_permitted_run_control_artifacts(self)
         self.assertFalse(
             (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
-        )
-        self.assertFalse(
-            (REPO_ROOT / self.contract["execution_authorization_record_digest_path"])
-            .exists()
         )
 
 
