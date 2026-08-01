@@ -22,8 +22,9 @@ PREPARED_NOT_RUN
 > it loads the authorization record, validates the owner approval, recomputes
 > the digests, and blocks a model invocation on authorization state. That the
 > mechanism exists authorizes nothing. This package remains non-runnable
-> because the pending sentinels stand and no owner approval exists, and the
-> consumer therefore denies every request. See section 1a.
+> while the pending sentinels stand, and authorization cannot succeed without
+> an owner approval binding the exact current record digest; the consumer
+> therefore denies every request. See section 1a.
 
 **Nature of this document**: preparation and governance only. It resolves and
 records the exact configuration that exactly one future, separately
@@ -131,7 +132,8 @@ execution_authorization_record_digest_path: experiments/run-control/0016-stage1-
 owner_approval_artifact_path: experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/owner-approval.md
 # Existence is not authority. The draft record and its digest exist so the
 # authorization proposal has stable, reviewable bytes; neither is operative.
-# Only owner_approval_artifact_exists gates authority, and it is still false.
+# Authorization requires an owner approval binding the exact current record
+# digest; its presence or absence is derived repository state.
 run_control_directory_exists: true
 execution_authorization_record_exists: true
 execution_authorization_record_digest_exists: true
@@ -512,7 +514,7 @@ remains true and blocking:
 A DRAFT authorization record exists, and it is NOT operative.
 A DRAFT authorization-record digest file exists, and it is NOT authority.
 The run-control directory exists, and it holds only draft artifacts.
-No owner-approval artifact exists.
+Authorization requires an owner approval binding the exact current record digest.
 No run-control commit is pinned.
 The execution framework SHA is still PENDING_POST_MERGE_PIN_FINALIZATION.
 execution_authorization_status is still NOT_AUTHORIZED.
@@ -595,7 +597,7 @@ per slot; the grammar uses explicit bounded quantifiers, never an open span.
 grounds that such wording asserts the opposite of runtime enforcement. That exception was demonstrably bypassable in the pre-participle
 slot, so it was deleted rather than extended. Truthful statements of this kind
 are now written in plainly negative form instead --
-`The run remains non-runnable because no owner approval exists.` -- which
+`The run remains non-runnable until an owner approval binds the exact current record digest.` -- which
 contains no enforcement participle and therefore needs no exception.
 
 What it deliberately does **not** do: parse arbitrary English, resolve
@@ -949,8 +951,9 @@ This avoids the circular requirement that a commit contain its own SHA: the
 record is authored *after* the revision it pins is already immutable, and the
 governing contract never mutates to carry a pin at all.
 
-That record does **not** exist yet. It must not be created by this PR. No
-owner approval exists yet either. The package remains non-runnable.
+That record does **not** exist yet. It must not be created by this PR.
+Authorization cannot succeed without an owner approval binding the exact
+current record digest. The package remains non-runnable.
 
 ---
 
@@ -1351,7 +1354,8 @@ false` and it remains not waivable
 
 **Current state: a Gate A authorization consumer exists and is enforcing, so
 authorization state is now enforceable. A draft authorization record and its
-digest file exist, and neither is operative. No owner approval exists. No
+digest file exist, and neither is operative. Authorization requires an owner
+approval binding the exact current record digest, and none binds it. No
 execution pin is finalized. The package is not runnable.**
 
 ### Preflight rule (mandatory, before any invocation)
@@ -1757,7 +1761,8 @@ A Gate A authorization consumer now exists and enforces this contract at the
   non-authorized state enforceable rather than merely documented.
 A draft authorization record, its digest file, and the run-control directory
   exist. None of them is operative, and their existence is NOT authority.
-  No owner-approval artifact exists. The package is not runnable.
+  Authorization requires an owner approval binding the exact current record
+  digest, and none binds it. The package is not runnable.
 Authorization requires the sole mandatory mechanism of section 2b: an
   owner-approved external immutable authorization record whose SHA-256 digest
   the repository owner approved in a distinct artifact, verified by Gate A

@@ -1000,6 +1000,38 @@ class GovernedDocumentInventory(unittest.TestCase):
         self.assertFalse(contract["package_runnable"])
         self.assertFalse(contract["owner_approval_artifact_exists"])
 
+    def test_documents_survive_both_approval_existence_states(self):
+        """The governed prose must be state-conditional, not existence-based.
+
+        The remediation rewrite frames the approval claim as binding-conditional
+        ("an owner approval binding the exact current record digest") so it
+        holds whether an approval artifact is present or absent. Prose that
+        named existence would flag in one of the two directions. The machine
+        field is pinned to the genuinely derived value, because a record-bound
+        document cannot hold both states at once -- which is exactly why a new
+        approval requires a regenerated package, record, and digest.
+        """
+        name = "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md"
+        text = (DOCS_DIR / name).read_text(encoding="utf-8")
+        real = guard.compute_current_state()
+        for approval_present in (False, True):
+            with self.subTest(approval_present=approval_present):
+                state = dict(real)
+                state["owner_approval_exists"] = approval_present
+                findings = guard._scan_text_for_contradictions(text, state, name)
+                self.assertEqual(
+                    findings,
+                    [],
+                    f"prose contradicted state owner_approval_exists="
+                    f"{approval_present}\n" + "\n".join(findings),
+                )
+        contract = guard.load_contract(text)
+        self.assertIs(
+            contract["owner_approval_artifact_exists"],
+            real["owner_approval_exists"],
+            "machine field must track the genuinely derived state",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

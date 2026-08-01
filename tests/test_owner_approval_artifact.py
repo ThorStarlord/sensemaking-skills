@@ -1,9 +1,20 @@
-"""Validation of the real owner-approval artifact and its exact-digest binding.
+"""Stopping-state validation of the Evidence 0016 run-control artifacts.
 
-These tests read the REAL run-control directory: the authorization record,
-the stored digest file, and the owner-approval artifact. They never write to
-the directory, never mint an authorization capability, and never invoke a
-model or a provider of any kind.
+These tests read the REAL run-control directory: the authorization record and
+the stored digest file. They never write to the directory, never mint an
+authorization capability, and never invoke a model or a provider of any kind.
+
+The remediation of PR #113 removed the operative ``owner-approval.md``: the
+approval it contained bound a PREVIOUS record digest (the old preparation
+package was corrected, so the record had to be regenerated, so the old
+approval no longer binds anything). Until the repository owner approves the
+NEW record digest in a fresh artifact, the stopping state holds: a well-formed
+draft record, a valid stored digest, and NO operative owner approval. The
+Gate A consumer therefore denies the package at the approval gate.
+
+The old approval's historical existence is not asserted here; only its
+absence at the stopping state, and the invariants that make the NEW digest
+approvable.
 """
 
 from __future__ import annotations
@@ -18,11 +29,9 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 from gate_a_authorization import (  # noqa: E402
-    CONTRACT_APPROVING_AUTHORITIES,
     CONTRACT_AUTHORIZATION_STATUS,
-    REQUIRED_APPROVAL_FIELDS,
-    SENTINEL_VALUES,
-    parse_approval_bytes,
+    REQUIRED_RECORD_FIELDS,
+    REQUIRED_SAFETY_BOOLEANS,
     parse_record_bytes,
 )
 
@@ -35,85 +44,86 @@ RUN_CONTROL = (
 RECORD = RUN_CONTROL / "authorization-record.yaml"
 DIGEST = RUN_CONTROL / "authorization-record.sha256"
 APPROVAL = RUN_CONTROL / "owner-approval.md"
-
-APPROVED_DIGEST = "ccd25facdf8c01d9b0e95ba3ae2d724c7a29ee1aca57d0ac2a77ce496e65d9e1"
-
-OWNER_STATEMENTS = (
-    "supplied directly by the repository owner in this prompt",
-    "did not infer, delegate, or manufacture",
-    "does not itself authorize live model invocation",
-    "remain separate controlled steps",
-    "invalidates this approval",
-)
+TEMPLATE = RUN_CONTROL / "owner-approval.template.md"
 
 
-def test_approval_artifact_exists_only_at_the_contract_path():
-    assert APPROVAL.is_file()
-    assert list(REPO_ROOT.rglob("owner-approval.md")) == [APPROVAL]
+def test_stopping_state_has_no_operative_owner_approval():
+    """The draft record exists; the operative approval does not.
+
+    The old approval bound the previous record digest and was invalidated by
+    the record regeneration. Signing a fresh approval for the new digest is an
+    owner-only act that has not happened, so no owner-approval.md exists.
+    """
+    assert RECORD.is_file()
+    assert DIGEST.is_file()
+    assert TEMPLATE.is_file()
+    assert not APPROVAL.exists()
+    assert list(REPO_ROOT.rglob("owner-approval.md")) == []
+    assert TEMPLATE.name != "owner-approval.md"
 
 
-def test_record_digest_recomputes_to_the_approved_digest():
-    computed = hashlib.sha256(RECORD.read_bytes()).hexdigest()
+def test_only_the_exact_planned_artifact_set_exists():
+    """The stopping-state allowlist: template present, operative approval absent."""
+    assert {p.name for p in RUN_CONTROL.rglob("*") if p.is_file()} == {
+        ".gitattributes",
+        "authorization-record.yaml",
+        "authorization-record.sha256",
+        "owner-approval.template.md",
+    }
+
+
+def test_record_digest_recomputes_and_matches_the_stored_digest():
+    raw = RECORD.read_bytes()
+    assert b"\r" not in raw, "record must be LF-only so its digest is byte-stable"
+    computed = hashlib.sha256(raw).hexdigest()
     stored = DIGEST.read_text(encoding="utf-8").strip()
-    assert computed == APPROVED_DIGEST
-    assert stored == APPROVED_DIGEST
+    assert computed == stored
+    assert len(computed) == 64 and computed == computed.lower()
 
 
-def test_record_bytes_are_lf_only():
-    assert b"\r" not in RECORD.read_bytes()
-
-
-def test_approval_parses_with_the_real_consumer_parser():
-    approval, code, detail = parse_approval_bytes(APPROVAL.read_bytes())
+def test_record_parses_and_is_well_formed():
+    record, code, detail = parse_record_bytes(RECORD.read_bytes())
     assert code is None, detail
-    assert approval is not None
+    assert record is not None
+    missing = [f for f in REQUIRED_RECORD_FIELDS if not str(record.get(f, "")).strip()]
+    assert not missing, f"record missing required fields: {missing}"
+    for field in REQUIRED_SAFETY_BOOLEANS:
+        assert record[field] is True, f"{field} must be an exact boolean true"
+    assert record["authorization_status"] == CONTRACT_AUTHORIZATION_STATUS
+    assert record["authorization_record_created_by"] != "ThorStarlord"
 
 
-def test_approval_carries_every_required_field_exactly_once():
-    text = APPROVAL.read_text(encoding="utf-8")
-    for field in REQUIRED_APPROVAL_FIELDS:
-        assert text.count(f"{field}:") == 1, field
-    approval, code, detail = parse_approval_bytes(APPROVAL.read_bytes())
+def test_record_pins_the_new_preparation_package_digest():
+    """The regenerated record must bind the CURRENT package bytes.
+
+    This is the whole point of the remediation: the old record pinned the
+    uncorrected preparation package, so the corrected package forced a record
+    regeneration, which in turn invalidated the old approval. The new record
+    pins the corrected package, making it the approvable target.
+    """
+    record, code, detail = parse_record_bytes(RECORD.read_bytes())
     assert code is None, detail
-    missing = [f for f in REQUIRED_APPROVAL_FIELDS
-               if not str(approval.get(f, "")).strip()]
-    assert not missing
-    sentinel = [f for f in REQUIRED_APPROVAL_FIELDS
-                if str(approval.get(f, "")).strip().upper() in SENTINEL_VALUES]
-    assert not sentinel
+    package_path = REPO_ROOT / record["preparation_package_path"]
+    assert package_path.is_file(), record["preparation_package_path"]
+    assert (
+        hashlib.sha256(package_path.read_bytes()).hexdigest()
+        == record["preparation_package_sha256"]
+    ), "record pins a stale preparation-package digest"
 
 
-def test_approval_binds_the_exact_recomputed_digest():
-    computed = hashlib.sha256(RECORD.read_bytes()).hexdigest()
-    approval, _, _ = parse_approval_bytes(APPROVAL.read_bytes())
-    assert approval["authorization_record_sha256"] == computed == APPROVED_DIGEST
-
-
-def test_approval_decision_and_identity():
-    approval, _, _ = parse_approval_bytes(APPROVAL.read_bytes())
-    assert approval["authorization_decision"] == CONTRACT_AUTHORIZATION_STATUS
-    approver = approval["approver_github_identity"]
-    assert approver in CONTRACT_APPROVING_AUTHORITIES
-    record, rec_code, _ = parse_record_bytes(RECORD.read_bytes())
-    assert rec_code is None
-    assert record["authorization_record_created_by"] != approver
-
-
-def test_approval_agrees_with_the_record_on_every_pinned_value():
-    approval, _, _ = parse_approval_bytes(APPROVAL.read_bytes())
-    record, rec_code, _ = parse_record_bytes(RECORD.read_bytes())
-    assert rec_code is None
-    for ap_field, rec_field in (
-        ("execution_framework_sha", "execution_framework_sha"),
-        ("target_sha", "target_sha"),
-        ("evidence_number", "evidence_number"),
-        ("evidence_slug", "evidence_slug"),
-        ("exact_model", "exact_model"),
+def test_provenance_digests_match_the_governing_documents():
+    record, code, _ = parse_record_bytes(RECORD.read_bytes())
+    assert code is None
+    for path_field, digest_field in (
+        ("preparation_package_path", "preparation_package_sha256"),
+        ("gate_d_checklist_path", "gate_d_checklist_sha256"),
     ):
-        assert approval[ap_field] == record[rec_field], ap_field
+        target = REPO_ROOT / record[path_field]
+        assert target.is_file(), record[path_field]
+        assert hashlib.sha256(target.read_bytes()).hexdigest() == record[digest_field]
 
 
-def test_approval_carries_the_owner_required_statements():
-    text = " ".join(APPROVAL.read_text(encoding="utf-8").split())
-    for statement in OWNER_STATEMENTS:
-        assert statement in text
+def test_approval_template_remains_the_future_shape():
+    text = TEMPLATE.read_text(encoding="utf-8")
+    assert "TEMPLATE ONLY" in text
+    assert "NOT AN APPROVAL" in text

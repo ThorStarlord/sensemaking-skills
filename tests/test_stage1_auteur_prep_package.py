@@ -1391,13 +1391,15 @@ class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
         # The consumer now exists, so the enforceability half of this sentence
         # flipped. So did the record/digest half: a DRAFT record and digest now
         # exist, and saying otherwise would be false. The half that actually
-        # gates execution -- no owner approval, no pin, not runnable -- did not.
+        # gates execution -- no operative approval binding the record digest,
+        # no pin, not runnable -- did not.
         self.assertIn(
             "a Gate A authorization consumer exists and is enforcing, so "
             "authorization state is now enforceable. A draft authorization "
             "record and its digest file exist, and neither is operative. "
-            "No owner approval exists. No execution pin is finalized. "
-            "The package is not runnable.",
+            "Authorization requires an owner approval binding the exact "
+            "current record digest, and none binds it. No execution pin is "
+            "finalized. The package is not runnable.",
             collapsed,
         )
         self.assertIn("There is no alternative mechanism.", collapsed)
