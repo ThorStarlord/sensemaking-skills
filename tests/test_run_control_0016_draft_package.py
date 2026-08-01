@@ -1,22 +1,25 @@
-"""Draft-package preflight for the Evidence 0016 run-control artifacts.
+"""Package preflight for the Evidence 0016 run-control artifacts.
 
 These tests read the REAL run-control directory
 (``experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt``)
-but never write to it, never create ``owner-approval.md``, never mint an
-authorization capability, and never invoke a model or a provider of any kind.
+but never write to it, never modify ``owner-approval.md``, and never invoke a
+model or a provider of any kind. ``authorize()`` calls in this module are pure
+in-process evaluations of already-committed bytes; minting an
+``AuthorizedInvocation`` capability is not invoking anything.
 
-They assert two complementary facts:
+The repository owner approved record digest ``bf31c7b6...`` on 2026-08-01
+(PR #113). The current lifecycle state is APPROVAL_PRESENT_PENDING_INDEPENDENT_REVIEW:
 
-1. **Negative (the real package as committed):** Gate A denies the package,
-   and denies it *specifically* for the missing owner approval - not for a
-   malformed record. Absence of ``owner-approval.md`` is the intended
-   pre-approval hard stop.
+1. **Positive (the real package as committed):** Gate A now authorizes the
+   real, committed package -- schema, status, digest, pins, provenance
+   digests, safety booleans, and the owner-approval binding all pass. This
+   alone must never create Evidence 0016 output or invoke a model.
 
-2. **Positive control (temporary copy, synthetic approval):** the exact
-   committed record bytes pass every other Gate A check - schema, status,
-   digest, pins, provenance digests, safety booleans - when a synthetic
-   approval is placed beside a temporary copy in ``tmp_path``. This is what
-   proves the denial in (1) is reached at the *final* gate rather than early.
+2. **Negative (synthetic copy, no approval, in ``tmp_path``):** the same
+   record bytes, copied to a temporary directory WITHOUT an approval file,
+   are still denied specifically for the missing owner approval. This proves
+   the approval binding is a genuine, load-bearing gate and not vestigial now
+   that the real package passes it.
 """
 
 from __future__ import annotations
@@ -65,21 +68,25 @@ def _record_bytes() -> bytes:
     return RECORD.read_bytes()
 
 
-def test_draft_artifacts_present_and_approval_absent():
+def test_draft_artifacts_present_and_approval_bound():
     assert RECORD.is_file()
     assert DIGEST.is_file()
     assert TEMPLATE.is_file()
-    # The operative owner approval must NOT exist. This is the pre-approval
-    # hard stop; creating it is an owner-only act.
-    assert not APPROVAL.exists()
+    # The operative owner approval exists, created by the repository owner
+    # (PR #113), and binds this exact record's digest.
+    assert APPROVAL.is_file()
+    computed_record_sha = hashlib.sha256(_record_bytes()).hexdigest()
+    assert f"authorization_record_sha256: {computed_record_sha}" in APPROVAL.read_text(
+        encoding="utf-8"
+    )
 
 
 def test_only_the_exact_planned_artifact_set_exists():
     """An allowlist, not a prefix rule.
 
-    Forbids: owner-approval.md anywhere, duplicate records, duplicate digests,
-    any second run-control directory, and any Evidence 0016 output smuggled in
-    under run-control.
+    Forbids: a second/misplaced owner-approval.md, duplicate records,
+    duplicate digests, any second run-control directory, and any Evidence
+    0016 output smuggled in under run-control.
     """
     root = RUN_CONTROL.parent
     assert sorted(p.name for p in root.iterdir() if p.is_dir()) == [
@@ -91,8 +98,13 @@ def test_only_the_exact_planned_artifact_set_exists():
         "authorization-record.yaml",
         "authorization-record.sha256",
         "owner-approval.template.md",
+        "owner-approval.md",
     }
-    assert not list(REPO_ROOT.rglob("owner-approval.md"))
+    assert [
+        str(p.relative_to(REPO_ROOT)).replace("\\", "/")
+        for p in REPO_ROOT.rglob("owner-approval.md")
+        if ".git" not in p.parts
+    ] == [str(APPROVAL.relative_to(REPO_ROOT)).replace("\\", "/")]
 
 
 def test_record_bytes_are_lf_only_and_match_digest_file():
@@ -158,9 +170,57 @@ def _context_for(tmp_path: Path, run_control_dir: Path, *, approval_path: Path):
     )
 
 
-def test_gate_a_denies_real_package_for_missing_owner_approval(tmp_path):
-    """Negative case: the committed package, exactly as it stands."""
+def test_gate_a_authorizes_the_real_package_now_that_owner_approval_exists(tmp_path):
+    """Positive case: the committed package, exactly as it stands, with the
+    repository owner's real approval (PR #113) bound to the current digest.
+
+    authorize() is a pure in-process evaluation of already-committed bytes --
+    it mints a capability object, nothing more. It must not create Evidence
+    0016 output or invoke a model; both are confirmed absent here.
+    """
     ctx = _context_for(tmp_path, RUN_CONTROL, approval_path=APPROVAL)
+
+    def git_head(root: Path) -> str:
+        return {
+            str(ctx.framework_root): EXPECTED_FRAMEWORK_SHA,
+            str(ctx.target_root): EXPECTED_TARGET_SHA,
+        }.get(str(root), "")
+
+    before = APPROVAL.read_bytes()
+    decision, snapshot = authorize(
+        ctx, git_head=git_head,
+        run_control_commit_resolver=lambda a, b: "2" * 40,
+    )
+    assert decision.authorized is True, (
+        f"real package failed a gate: {decision.failure_code} "
+        f"{decision.failure_detail}"
+    )
+    assert snapshot is not None
+    # authorize() must not have written to the real approval or record, and
+    # must not have created any real Evidence 0016 output.
+    assert APPROVAL.read_bytes() == before
+    assert not (REPO_ROOT / "experiments" / "evidence" / fx.EVIDENCE_SLUG).exists()
+
+
+def test_gate_a_denies_synthetic_copy_missing_owner_approval(tmp_path):
+    """Negative case: the exact committed record bytes, copied to a temporary
+    directory WITHOUT an approval file. Proves the owner-approval gate is
+    still a genuine, load-bearing check -- not vestigial now that the real
+    package (which does carry a valid approval) passes it.
+    """
+    raw = _record_bytes()
+    rc = tmp_path / "run-control-copy-no-approval"
+    rc.mkdir()
+    (rc / "authorization-record.yaml").write_bytes(raw)
+    (rc / "authorization-record.sha256").write_bytes(
+        (hashlib.sha256(raw).hexdigest() + "\n").encode("utf-8")
+    )
+    missing_approval_path = rc / "owner-approval.md"
+    assert not missing_approval_path.exists()
+
+    ctx = _context_for(tmp_path, rc, approval_path=missing_approval_path)
+    for rel in (fx.PACKAGE_REL, fx.CHECKLIST_REL):
+        shutil.copyfile(REPO_ROOT / rel, ctx.framework_root / rel)
 
     def git_head(root: Path) -> str:
         return {
@@ -175,16 +235,16 @@ def test_gate_a_denies_real_package_for_missing_owner_approval(tmp_path):
     assert decision.authorized is False
     assert decision.failure_code == GATE_A_OWNER_APPROVAL_MISSING
     assert snapshot is None
-    assert not APPROVAL.exists()
 
 
 def test_positive_control_record_passes_every_other_gate(tmp_path):
     """The exact committed record bytes, with a SYNTHETIC approval, in tmp_path.
 
     Proves the record is well-formed all the way through the owner-approval
-    gate, so the denial above is the final boundary and not an early reject.
-    Nothing here touches the real run-control directory.
+    gate using a synthetic approval, independent of the real one. Nothing
+    here touches the real run-control directory.
     """
+    real_approval_before = APPROVAL.read_bytes()
     raw = _record_bytes()
     rc = tmp_path / "run-control-copy"
     rc.mkdir()
@@ -223,6 +283,5 @@ def test_positive_control_record_passes_every_other_gate(tmp_path):
         f"{decision.failure_code} {decision.failure_detail}"
     )
     assert snapshot is not None
-    # Still no real approval, and no capability was minted: authorize() is a
-    # pure read-only evaluation and no provider was constructed or called.
-    assert not APPROVAL.exists()
+    # This synthetic tmp_path copy must never touch the real approval file.
+    assert APPROVAL.read_bytes() == real_approval_before

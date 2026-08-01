@@ -33,10 +33,20 @@ sys.path.insert(0, str(REPO_ROOT / "tests" / "support"))
 import state_honesty_guard as guard  # noqa: E402
 
 
-# The state under which the guard's behavior is specified here. It matches the
-# real repository today, but it is passed EXPLICITLY so these tests describe the
-# guard's logic rather than silently re-deriving whatever the repo happens to
-# say. A separate test below asserts the real derived state matches this.
+# The state under which the guard's behavior is specified here. It is passed
+# EXPLICITLY so these tests describe the guard's logic rather than silently
+# re-deriving whatever the repo happens to say -- hundreds of fixtures below
+# use "owner approval exists" as the canonical false-presence-claim sentence,
+# and that framing test battery is independent of what the real repository's
+# approval state happens to be at any given moment.
+#
+# owner_approval_exists is pinned False here deliberately, even though the
+# real repository now has a valid owner approval (bf31c7b6..., PR #113,
+# 2026-08-01): this dict is a fixed synthetic test-world for exercising the
+# guard's parsing and framing logic, not a live mirror of repo state.
+# REAL_REPO_STATE below is the one place that tracks the actual current
+# derived state, and only test_derived_state_matches_the_current_repository
+# compares the two -- with the one documented, intentional divergence.
 POST_GATE_A_STATE = {
     "gate_a_consumer_exists": True,
     "gate_a_consumer_wired": True,
@@ -50,6 +60,11 @@ POST_GATE_A_STATE = {
     "evidence_0016_exists": False,
     "real_model_invoked": False,
 }
+
+# The actual current derived state of the real repository. Differs from
+# POST_GATE_A_STATE in exactly one field: owner_approval_exists is True here
+# because the repository owner approved record digest bf31c7b6... (PR #113).
+REAL_REPO_STATE = dict(POST_GATE_A_STATE, owner_approval_exists=True)
 
 
 class GuardBase(unittest.TestCase):
@@ -69,8 +84,11 @@ class GuardBase(unittest.TestCase):
 class StateFactsAreDerivedNotDeclared(GuardBase):
     """The guard reads the world; it does not assert what the world looks like."""
 
-    def test_derived_state_matches_the_specified_state(self):
-        self.assertEqual(guard.compute_current_state(), POST_GATE_A_STATE)
+    def test_derived_state_matches_the_current_repository(self):
+        """compute_current_state() must track REAL_REPO_STATE, not the fixed
+        POST_GATE_A_STATE test-world -- the two intentionally differ on
+        owner_approval_exists now that the owner has approved (PR #113)."""
+        self.assertEqual(guard.compute_current_state(), REAL_REPO_STATE)
 
     def test_consumer_facts_trace_to_real_files(self):
         self.assertTrue(guard.CONSUMER_PATH.is_file())
@@ -78,19 +96,16 @@ class StateFactsAreDerivedNotDeclared(GuardBase):
         body = guard.PROVIDER_BOUNDARY_PATH.read_text(encoding="utf-8")
         self.assertIn("gate_a_authorization", body)
 
-    def test_negative_facts_trace_to_genuinely_absent_artifacts(self):
-        """The draft artifacts exist; only the operative approval is absent."""
+    def test_facts_trace_to_real_artifacts_including_the_approval(self):
+        """The draft artifacts exist, and so does the owner-approved approval."""
         contract = guard.load_contract()
         for field in (
             "execution_authorization_record_path",
             "execution_authorization_record_digest_path",
             "run_control_directory",
+            "owner_approval_artifact_path",
         ):
             self.assertTrue(guard._contract_path(contract, field).exists(), field)
-        self.assertFalse(
-            guard._contract_path(contract, "owner_approval_artifact_path").exists(),
-            "owner-approval.md must not exist: a draft record is not authority",
-        )
 
     def test_polarity_follows_the_derived_value_not_a_literal(self):
         """Flip the world and the same sentence flips verdict. No hardcoding."""
