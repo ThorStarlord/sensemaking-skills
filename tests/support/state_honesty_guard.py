@@ -215,6 +215,9 @@ FACT_LEXICONS = {
             r"\bno\b[^.\n]{0,60}?\b(?:authorization\s+)?consumer\s+is\s+"
             r"implemented\b",
             r"\bconsumer\b[^.\n]{0,80}?\bmandatory\s+future\s+work\b",
+            r"\b(?:the\s+)?future\s+gate\s+a\s+(?:authorization\s+)?consumer\b",
+            r"\bnone\s+of\s+these\b[^.\n]{0,40}?\bsatisfied\b",
+            r"\bspecification\s+of\s+work\s+not\s+done\b",
         ),
     },
     "gate_a_consumer_wired": {

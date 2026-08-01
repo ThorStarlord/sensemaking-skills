@@ -286,8 +286,8 @@ required_paths_at_execution_framework_sha:
 missing_required_path_is_gate_a_failure: true
 external_checklist_copy_allowed: false
 
-# --- Acceptance criteria for the FUTURE Gate A consumer (section 2j) ---
-# None of these are satisfied today. This is a specification of work not done.
+# --- Acceptance criteria for the Gate A consumer (section 2j) ---
+# The merged consumer satisfies these criteria; they are restated here as its contract.
 gate_a_consumer_acceptance_criteria:
   - accept the immutable run-control location or exact paths as input
   - load exactly one authorization record
@@ -1425,11 +1425,11 @@ enforced and is not.
 ### Required future test categories
 
 The consumer implementation PR must supply at least these categories. **PR #107
-implemented none of them**
-(`gate_a_consumer_required_test_categories_implemented_in_this_pr: false`);
-PR #107 asserts only, at contract level, that they are mandatory future work.
-The implementation work has since supplied them
-(`tests/test_gate_a_authorization_consumer.py`).
+implemented none of them**; PR #107 asserts only, at contract level, that they
+are mandatory future work. The implementation work has since supplied them
+(`tests/test_gate_a_authorization_consumer.py`), and the contract field
+`gate_a_consumer_required_test_categories_implemented_in_this_pr` now reads
+`true`.
 
 ```text
 valid authorization accepted

@@ -766,6 +766,11 @@ class StaleAbsenceShapesFromRound3Review(GuardBase):
     denials, "no such record or approval", "none of these exist", and
     "mandatory future work". Each sentence below is a REAL stale sentence from
     that review; a revert to the old lexicons must fail loudly.
+
+    The round-4 review surfaced two more shapes inside the contract block's
+    own comments: "FUTURE Gate A consumer" and "None of these are satisfied
+    today. This is a specification of work not done." -- the real sentences
+    from prep package lines 289-290, pinned verbatim below.
     """
 
     STALE_SENTENCES = (
@@ -780,6 +785,9 @@ class StaleAbsenceShapesFromRound3Review(GuardBase):
         "by this PR).",
         "Implementing, testing, reviewing, merging, and wiring that consumer "
         "into the real Stage 1 invocation path is mandatory future work.",
+        "Acceptance criteria for the FUTURE Gate A consumer (section 2j).",
+        "None of these are satisfied today. This is a specification of work "
+        "not done.",
     )
 
     def test_each_round3_stale_shape_is_rejected(self):
