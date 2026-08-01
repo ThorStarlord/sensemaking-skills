@@ -6,9 +6,9 @@ Scope of this module
 This is the self-test battery for ``tests/support/state_honesty_guard.py``, the
 replacement for the obsolete premise of the PR #107 prose-honesty guard. It is
 deliberately built from SYNTHETIC fixture strings, not from edits to the governed
-documents. The governed documents are not touched by this change; they still
-contain the stale absence claims they acquired while the Gate A consumer did not
-exist, and a follow-up task rewrites them under this guard.
+documents. The follow-up rewrite of the governed documents (this PR) drove their
+outstanding contradictions to zero and pinned the ratchet at the bottom of this
+module accordingly.
 
 Two failure modes are tested with equal weight:
 
@@ -41,9 +41,9 @@ POST_GATE_A_STATE = {
     "gate_a_consumer_exists": True,
     "gate_a_consumer_wired": True,
     "runtime_enforcement_exists": True,
-    "run_control_directory_exists": False,
-    "authorization_record_exists": False,
-    "authorization_record_digest_exists": False,
+    "run_control_directory_exists": True,
+    "authorization_record_exists": True,
+    "authorization_record_digest_exists": True,
     "owner_approval_exists": False,
     "stage1_authorized": False,
     "package_runnable": False,
@@ -79,12 +79,18 @@ class StateFactsAreDerivedNotDeclared(GuardBase):
         self.assertIn("gate_a_authorization", body)
 
     def test_negative_facts_trace_to_genuinely_absent_artifacts(self):
+        """The draft artifacts exist; only the operative approval is absent."""
         contract = guard.load_contract()
         for field in (
             "execution_authorization_record_path",
-            "owner_approval_artifact_path",
+            "execution_authorization_record_digest_path",
+            "run_control_directory",
         ):
-            self.assertFalse(guard._contract_path(contract, field).exists())
+            self.assertTrue(guard._contract_path(contract, field).exists(), field)
+        self.assertFalse(
+            guard._contract_path(contract, "owner_approval_artifact_path").exists(),
+            "owner-approval.md must not exist: a draft record is not authority",
+        )
 
     def test_polarity_follows_the_derived_value_not_a_literal(self):
         """Flip the world and the same sentence flips verdict. No hardcoding."""
@@ -144,6 +150,9 @@ class CategoryOneCurrentImplementationFactsAreLegal(GuardBase):
         "scripts/workflow-runtime.py performs the authorization preflight.",
         "The Gate A consumer is wired into the provider boundaries.",
         "Runtime enforcement exists.",
+        "The run-control directory exists.",
+        "The authorization record exists.",
+        "The authorization-record digest file exists.",
     )
 
     def test_truthful_current_implementation_claims_are_accepted(self):
@@ -179,9 +188,6 @@ class CategoryTwoAuthorizationStateMustStayNegative(GuardBase):
         "Evidence 0016 has been created.",
         "A real model was invoked.",
         "Real model invocation occurred.",
-        "The authorization record exists.",
-        "authorization-record.sha256 exists.",
-        "The run-control directory exists.",
     )
 
     def test_false_presence_claims_are_rejected(self):
@@ -197,9 +203,6 @@ class CategoryTwoAuthorizationStateMustStayNegative(GuardBase):
         "The package is not runnable.",
         "Evidence 0016 has not been created.",
         "No real model has been invoked.",
-        "No authorization record exists.",
-        "No authorization-record digest file exists.",
-        "No run-control directory exists.",
         "No Stage 1 run is authorized by this revision.",
     )
 
@@ -207,6 +210,18 @@ class CategoryTwoAuthorizationStateMustStayNegative(GuardBase):
         for text in self.TRUTHFUL_NEGATIVES:
             with self.subTest(text=text):
                 self.assertAccepted(text + "\n")
+
+    STALE_DENIALS = (
+        "No authorization record exists.",
+        "No authorization-record digest file exists.",
+        "No run-control directory exists.",
+    )
+
+    def test_stale_denials_of_merged_artifacts_are_rejected(self):
+        """The draft record and digest now exist; denying them is stale."""
+        for text in self.STALE_DENIALS:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
 
     def test_a_negator_wrapped_across_lines_still_governs(self):
         """Line-wise scanning would sever the negator and fire spuriously."""
@@ -350,10 +365,10 @@ class FramingIsClauseScoped(GuardBase):
         checklist = (
             "Preconditions the operator must confirm before Stage 1\n\n"
             "- The runtime must verify the Gate D checklist digest\n"
-            "- The run-control directory exists\n"
-            "- The authorization record exists\n"
             "- Owner approval exists\n"
             "- The package is runnable\n"
+            "- Stage 1 is authorized\n"
+            "- A real model was invoked\n"
         )
         self.assertEqual(len(self.scan(checklist)), 4)
 
@@ -425,7 +440,7 @@ class NegatorLookbackIsClauseScoped(GuardBase):
         for text in (
             "No owner approval exists.",
             "No third-party owner approval exists.",
-            "No authorization record exists.",
+            "No owner-approval artifact exists.",
             "No Stage 1 run is authorized by this revision.",
         ):
             with self.subTest(text=text):
@@ -811,7 +826,7 @@ class MachineReadableBlocksAreValidated(GuardBase):
             "gate_a_authorization_consumer_wired_to_stage1: true\n"
             "owner_approval_artifact_exists: false\n"
             "package_runnable: false\n"
-            "run_control_directory_exists: false\n"
+            "run_control_directory_exists: true\n"
             "```\n"
         )
         self.assertAccepted(text)
@@ -849,10 +864,10 @@ class GuardIsNotDefanged(GuardBase):
                 "gate_a_consumer_exists": "No authorization consumer exists.",
                 "gate_a_consumer_wired": "The consumer is not wired into Stage 1.",
                 "runtime_enforcement_exists": "Gate A is not runtime-enforced.",
-                "run_control_directory_exists": "The run-control directory exists.",
-                "authorization_record_exists": "The authorization record exists.",
+                "run_control_directory_exists": "No run-control directory exists.",
+                "authorization_record_exists": "No authorization record exists.",
                 "authorization_record_digest_exists": (
-                    "An authorization-record digest file exists."
+                    "No authorization-record digest file exists."
                 ),
                 "owner_approval_exists": "Owner approval exists.",
                 "stage1_authorized": "Stage 1 is authorized.",
@@ -872,17 +887,14 @@ class GuardIsNotDefanged(GuardBase):
 # ---------------------------------------------------------------------------
 # The governed documents.
 #
-# This change replaces the GUARD, not the documents. The two SHA-pinned governed
-# documents still carry the stale absence claims they acquired while the Gate A
-# consumer genuinely did not exist, plus a handful of future verification steps
-# written in bare present tense. Rewriting them is the explicitly separate
-# follow-up task, performed together with recomputing their digests.
+# The follow-up rewrite (this PR) drove every outstanding contradiction in the
+# three governed documents to zero, together with recomputing their digests and
+# the authorization record that pins them.
 #
-# The inventory below is therefore stated honestly rather than hidden: it pins
-# the EXACT number of outstanding contradictions per document. New stale claims
-# cannot be added (the count would rise) and the guard cannot be quietly
-# weakened (the count would fall). The follow-up rewrite drives every entry to
-# zero and deletes this inventory.
+# The ratchet remains, pinned at zero: it records the EXACT number of
+# outstanding contradictions per document. New stale claims cannot be added
+# (the count would rise) and the guard cannot be quietly weakened (the count
+# would fall), so any regression in either direction fails loudly.
 # ---------------------------------------------------------------------------
 
 DOCS_DIR = REPO_ROOT / "docs" / "experiments"
@@ -896,24 +908,13 @@ DOCS_DIR = REPO_ROOT / "docs" / "experiments"
 # with "TRIGGERED whenever ...", and `whenever` was missing from the conditional
 # subordinator set while `when` was present. Adding it removed both -> 19/1/3.
 #
+# The follow-up rewrite of the documents (this PR) drove all three to 0/0/0.
 # The ratchet is expected to move in both directions as the guard is corrected.
 # What it must never do is drift silently, which exact equality prevents.
-#
-# Honest caveat about the remaining 19, rather than a round number presented as
-# if it were all one thing: four of them (preparation package lines 211, 212,
-# 1561 and 1563) are numbered items of a FUTURE verification sequence, written
-# in bare present tense and separated from their introducing frame because each
-# is its own list item. They are correctly flagged under the guard's stated
-# rules -- a bare "Authorization record exists" reads as a current-state claim --
-# but they are stale PHRASING of a future step rather than stale beliefs about
-# the consumer. The follow-up rewrite fixes them by adding the modal ("the
-# runtime must verify that the authorization record exists"), not by weakening
-# the guard. The other 15, the Gate-D entry and all three execution-package
-# entries are straightforward stale absence claims.
 KNOWN_OUTSTANDING_CONTRADICTIONS = {
-    "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md": 19,
-    "GATE-D-STALE-DIAGNOSIS-CHECKLIST.md": 1,
-    "STAGE-1-AUTEUR-EXECUTION-PACKAGE.md": 3,
+    "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md": 0,
+    "GATE-D-STALE-DIAGNOSIS-CHECKLIST.md": 0,
+    "STAGE-1-AUTEUR-EXECUTION-PACKAGE.md": 0,
 }
 
 

@@ -1328,8 +1328,10 @@ divergence, is a hard stop regardless of brief quality.
 The package tests include a deterministic prose guard that scans this document,
 the Gate D checklist, and the execution package for sentences asserting that
 authorization enforcement happens *now*. It exists because the authorization
-contract below is specified but has no runtime consumer, so any present-tense
-enforcement sentence in these files would be false.
+contract below was specified while no runtime consumer existed, so any
+present-tense enforcement sentence in these files would have been false; now
+that the consumer is merged and wired, the status-aware guard in
+`tests/support/state_honesty_guard.py` governs instead.
 
 **Declared scope.** This deterministic guard covers the enumerated
 active-simple-present, emphatic-do, present-progressive, and affirmative-passive
@@ -1382,14 +1384,14 @@ per slot; the grammar uses explicit bounded quantifiers, never an open span.
 grounds that such wording asserts the opposite of runtime enforcement. That exception was demonstrably bypassable in the pre-participle
 slot, so it was deleted rather than extended. Truthful statements of this kind
 are now written in plainly negative form instead --
-`The run remains non-runnable because no consumer exists.` -- which contains no
-enforcement participle and therefore needs no exception.
+`Stage 1 remains non-runnable because no owner approval exists.` -- which
+contains no enforcement participle and therefore needs no exception.
 
 What it deliberately does **not** do: parse arbitrary English, resolve
 coreference, model tense beyond the auxiliaries `is/are/was/were` and
 `do/does/did`, or detect paraphrase. Modal and future forms (`must verify`,
-`will recompute`, `would be verified`) are legal by design, because those are
-the truthful ways to describe a contract whose consumer does not exist.
+`will recompute`, `would be verified`) are legal by design, because they
+describe a requirement to be met rather than a fact that holds.
 
 Negation counts only in the auxiliary slot of the matched construction
 (`is not verified`, `does not verify`, `is not checking`) or bound to the

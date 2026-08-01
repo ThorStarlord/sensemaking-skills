@@ -3123,12 +3123,14 @@ class Pr107ClaimsAreBounded(unittest.TestCase):
         self.assertFalse(self.contract["pr_107_implements_runtime_enforcement"])
         for claim in (
             # Round 8: stated as scanned negative facts, not inside a prose-guard
-            # exemption region. The key is renamed accordingly.
-            "no authorization consumer exists",
-            "Gate A is not runtime-enforced",
+            # exemption region. The key is renamed accordingly. The consumer-era
+            # rewrite frames the items that became false historically, because
+            # the statements describe PR #107 and the pre-PR #109 tree.
+            "before PR #109, no authorization consumer exists in the tree",
+            "before PR #109, Gate A is not runtime-enforced",
             "owner approval cannot currently authorize a run",
-            "digests are not currently checked",
-            "model invocation is not currently blocked by authorization state",
+            "before PR #109, digests are not checked",
+            "before PR #109, model invocation is not blocked by authorization state",
             "Evidence 0016 is not executable",
         ):
             self.assertIn(claim, self.contract["pr_107_absence_facts"])
@@ -3176,11 +3178,10 @@ class Pr107ClaimsAreBounded(unittest.TestCase):
         checklist = CHECKLIST_PATH.read_text(encoding="utf-8")
         collapsed = " ".join(checklist.split())
         self.assertIn(
-            "No current runtime verifies this checklist's digest.", collapsed
+            "The Gate A consumer verifies this checklist's digest.", collapsed
         )
         self.assertIn(
-            "Gate D must not begin unless the future Gate A consumer exists and "
-            "has passed.",
+            "Gate D must not begin unless the Gate A consumer has passed.",
             collapsed,
         )
         self.assertIn("this checklist governs no live run", collapsed)

@@ -220,7 +220,7 @@ def test_positive_control_record_passes_every_other_gate(tmp_path):
     )
     assert decision.authorized is True, (
         f"record failed a gate other than owner approval: "
-        f"{decision.failure_code} {decision.detail}"
+        f"{decision.failure_code} {decision.failure_detail}"
     )
     assert snapshot is not None
     # Still no real approval, and no capability was minted: authorize() is a
