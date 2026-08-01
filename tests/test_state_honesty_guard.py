@@ -756,6 +756,50 @@ class StaleAbsenceClaimRegressionsFromPr111(GuardBase):
                 self.assertRejected(text + "\n")
 
 
+class StaleAbsenceShapesFromRound3Review(GuardBase):
+    """Claim shapes the round-3 independent review found the lexicons missed.
+
+    The first review sweep rewrote every claim the lexicons could see. A fresh
+    independent review (REQUEST_CHANGES) then surfaced five stale sentences the
+    closed pattern sets did not cover: negator-before-affirmative-verb shapes,
+    "runtime enforcement of ... does not exist", "nothing ..." enforcement
+    denials, "no such record or approval", "none of these exist", and
+    "mandatory future work". Each sentence below is a REAL stale sentence from
+    that review; a revert to the old lexicons must fail loudly.
+    """
+
+    STALE_SENTENCES = (
+        "Runtime enforcement of that contract does not exist.",
+        "No Gate A authorization consumer is implemented anywhere in this "
+        "repository.",
+        "Nothing loads the authorization record, validates the owner approval, "
+        "or recomputes any digest.",
+        "Nothing checks these digests today.",
+        "No such record or approval exists today.",
+        "Planned future paths (none of these exist, and none may be created "
+        "by this PR).",
+        "Implementing, testing, reviewing, merging, and wiring that consumer "
+        "into the real Stage 1 invocation path is mandatory future work.",
+    )
+
+    def test_each_round3_stale_shape_is_rejected(self):
+        for text in self.STALE_SENTENCES:
+            with self.subTest(text=text):
+                self.assertRejected(text + "\n")
+
+    def test_historical_framing_still_excuses_the_new_shapes(self):
+        """The new shapes obey the same asymmetric framing as every other."""
+        framed = (
+            "Before PR #109, no Gate A authorization consumer is implemented "
+            "anywhere in this repository.",
+            "Before PR #109, runtime enforcement of that contract does not "
+            "exist.",
+        )
+        for text in framed:
+            with self.subTest(text=text):
+                self.assertAccepted(text + "\n")
+
+
 class CodeFencesAreNotASafeHarbor(GuardBase):
     """The evasion PR #107 closed for false claims stays closed for all claims."""
 

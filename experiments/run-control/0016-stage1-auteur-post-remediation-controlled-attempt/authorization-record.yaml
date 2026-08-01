@@ -9,9 +9,9 @@ target_sha: 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
 exact_model: claude-sonnet-5
 artifact_type: repository_sensemaking_brief
 preparation_package_path: docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md
-preparation_package_sha256: efe051eec242e312e12ce3f2de8b14bd39d5b9a53ca360a975a25894f35b769e
+preparation_package_sha256: 1ca1ed09e564d5ff3d332037eb4b4d157f52d517c38088f90d27a2cd0151ec68
 gate_d_checklist_path: docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
-gate_d_checklist_sha256: 813d9ea68e3ccb78cbb961b574eebcbae56e164f471331aee14663ec5325b707
+gate_d_checklist_sha256: 4264fa4b435bcf26975b16f44a7143a14aaf875ec9264bf08d5b3dddd1e3f355
 authorization_record_created_at: "2026-07-31T00:00:00+00:00"
 authorization_record_created_by: campaign-operator-agent
 owner_approval_reference: owner-approval.md

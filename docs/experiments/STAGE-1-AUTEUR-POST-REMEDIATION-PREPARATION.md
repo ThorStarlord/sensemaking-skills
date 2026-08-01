@@ -1012,8 +1012,9 @@ clearly distinguishable from generated evidence output:
 experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/
 ```
 
-Planned future paths (none of these exist, and none may be created by this
-PR):
+The authorization record and its digest are drafted by this PR at the first two
+paths below; the third path must remain absent until the repository owner
+creates it:
 
 ```text
 experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt/authorization-record.yaml
@@ -1188,7 +1189,7 @@ No circular self-reference is created, because the two commits are distinct:
 - the authorization record pins an EARLIER framework execution SHA;
 - the LATER run-control commit contains the authorization and approval
   artifacts;
-- the future consumer must verify BOTH the framework SHA and the
+- the consumer verifies BOTH the framework SHA and the
   authorization digest;
 - the run-control commit does NOT need to equal the framework execution SHA,
   and must not be assumed to.
@@ -1255,8 +1256,7 @@ artifact.
 ### Package and checklist provenance
 
 The record carries SHA-256 digests for the two governing documents, and the
-future Gate A consumer must verify them (this is a contract requirement, not
-current runtime behavior — nothing checks these digests today):
+Gate A consumer verifies them before any model invocation:
 
 ```text
 SHA-256(preparation package bytes) == authorization record preparation_package_sha256
