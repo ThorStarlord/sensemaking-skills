@@ -2,21 +2,20 @@
 
 These tests read the REAL run-control directory
 (``experiments/run-control/0016-stage1-auteur-post-remediation-controlled-attempt``)
-but never write to it, never create ``owner-approval.md``, never mint an
-authorization capability, and never invoke a model or a provider of any kind.
+but never write to it, never mint an authorization capability, and never
+invoke a model or a provider of any kind.
 
-They assert two complementary facts:
+They assert:
 
-1. **Negative (the real package as committed):** Gate A denies the package,
-   and denies it *specifically* for the missing owner approval - not for a
-   malformed record. Absence of ``owner-approval.md`` is the intended
-   pre-approval hard stop.
+1. **The real package with the real owner approval (as committed):** the
+   owner approved the exact record digest on 2026-08-01, so the real package
+   evaluates through every Gate A check with the real approval binding the
+   exact record digest.
 
 2. **Positive control (temporary copy, synthetic approval):** the exact
-   committed record bytes pass every other Gate A check - schema, status,
-   digest, pins, provenance digests, safety booleans - when a synthetic
-   approval is placed beside a temporary copy in ``tmp_path``. This is what
-   proves the denial in (1) is reached at the *final* gate rather than early.
+   committed record bytes pass every Gate A check when a synthetic approval
+   is placed beside a temporary copy in ``tmp_path``, independent of the real
+   approval artifact.
 """
 
 from __future__ import annotations
@@ -36,7 +35,6 @@ if str(SCRIPTS_DIR) not in sys.path:
 from gate_a_authorization import (  # noqa: E402
     CONTRACT_AUTHORIZATION_STATUS,
     CONTRACT_SCHEMA_VERSION,
-    GATE_A_OWNER_APPROVAL_MISSING,
     REQUIRED_RECORD_FIELDS,
     REQUIRED_SAFETY_BOOLEANS,
     AuthorizationContext,
@@ -65,21 +63,21 @@ def _record_bytes() -> bytes:
     return RECORD.read_bytes()
 
 
-def test_draft_artifacts_present_and_approval_absent():
+def test_draft_artifacts_present_with_owner_approval():
     assert RECORD.is_file()
     assert DIGEST.is_file()
     assert TEMPLATE.is_file()
-    # The operative owner approval must NOT exist. This is the pre-approval
-    # hard stop; creating it is an owner-only act.
-    assert not APPROVAL.exists()
+    # The operative owner approval now exists: the repository owner approved
+    # the exact record digest on 2026-08-01.
+    assert APPROVAL.is_file()
 
 
 def test_only_the_exact_planned_artifact_set_exists():
     """An allowlist, not a prefix rule.
 
-    Forbids: owner-approval.md anywhere, duplicate records, duplicate digests,
-    any second run-control directory, and any Evidence 0016 output smuggled in
-    under run-control.
+    Forbids: a second owner-approval.md anywhere, duplicate records, duplicate
+    digests, any second run-control directory, and any Evidence 0016 output
+    smuggled in under run-control.
     """
     root = RUN_CONTROL.parent
     assert sorted(p.name for p in root.iterdir() if p.is_dir()) == [
@@ -91,8 +89,9 @@ def test_only_the_exact_planned_artifact_set_exists():
         "authorization-record.yaml",
         "authorization-record.sha256",
         "owner-approval.template.md",
+        "owner-approval.md",
     }
-    assert not list(REPO_ROOT.rglob("owner-approval.md"))
+    assert list(REPO_ROOT.rglob("owner-approval.md")) == [APPROVAL]
 
 
 def test_record_bytes_are_lf_only_and_match_digest_file():
@@ -158,8 +157,14 @@ def _context_for(tmp_path: Path, run_control_dir: Path, *, approval_path: Path):
     )
 
 
-def test_gate_a_denies_real_package_for_missing_owner_approval(tmp_path):
-    """Negative case: the committed package, exactly as it stands."""
+def test_gate_a_on_real_package_passes_with_real_owner_approval(tmp_path):
+    """Positive case on the REAL artifacts: the committed package as it stands.
+
+    The repository owner approved the record digest on 2026-08-01, so the
+    real package no longer stops at the approval gate. This proves the
+    approval artifact binds the exact record digest through the real
+    consumer's full read-only evaluation; no capability is minted.
+    """
     ctx = _context_for(tmp_path, RUN_CONTROL, approval_path=APPROVAL)
 
     def git_head(root: Path) -> str:
@@ -172,17 +177,20 @@ def test_gate_a_denies_real_package_for_missing_owner_approval(tmp_path):
         ctx, git_head=git_head,
         run_control_commit_resolver=lambda a, b: "2" * 40,
     )
-    assert decision.authorized is False
-    assert decision.failure_code == GATE_A_OWNER_APPROVAL_MISSING
-    assert snapshot is None
-    assert not APPROVAL.exists()
+    assert decision.authorized is True
+    assert decision.failure_code is None
+    assert snapshot is not None
+    assert decision.validated_owner_identity == "ThorStarlord"
+    assert decision.validated_record_sha256 == hashlib.sha256(_record_bytes()).hexdigest()
+    assert "owner_approval_binds_exact_digest" in decision.checks_passed
+    assert APPROVAL.is_file()
 
 
 def test_positive_control_record_passes_every_other_gate(tmp_path):
     """The exact committed record bytes, with a SYNTHETIC approval, in tmp_path.
 
     Proves the record is well-formed all the way through the owner-approval
-    gate, so the denial above is the final boundary and not an early reject.
+    gate, so the real approval on the real package is the complete chain.
     Nothing here touches the real run-control directory.
     """
     raw = _record_bytes()
@@ -223,6 +231,7 @@ def test_positive_control_record_passes_every_other_gate(tmp_path):
         f"{decision.failure_code} {decision.failure_detail}"
     )
     assert snapshot is not None
-    # Still no real approval, and no capability was minted: authorize() is a
-    # pure read-only evaluation and no provider was constructed or called.
-    assert not APPROVAL.exists()
+    # No capability was minted: authorize() is a pure read-only evaluation and
+    # no provider was constructed or called. The real approval exists
+    # independently; this test evaluated the temporary copy.
+    assert APPROVAL.is_file()
