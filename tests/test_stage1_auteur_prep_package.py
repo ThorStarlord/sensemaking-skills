@@ -430,7 +430,7 @@ class FrameworkPinLifecycle(unittest.TestCase):
         self.assertIn("Authorized by:\n", self.text)
         # A drafted record does not fill this block. The operative approval is
         # what would, and it does not exist.
-        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["owner_approval_present_at_preparation_time"])
         self.assertEqual(
             self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
         )
@@ -589,17 +589,23 @@ AUTH_DIGEST_PATH = f"{RUN_CONTROL_DIR}/authorization-record.sha256"
 OWNER_APPROVAL_PATH = f"{RUN_CONTROL_DIR}/owner-approval.md"
 OWNER_APPROVAL_TEMPLATE_PATH = f"{RUN_CONTROL_DIR}/owner-approval.template.md"
 
-# The EXACT set of draft artifacts permitted to exist under run-control before
-# owner approval. This is an allowlist, not a prefix rule: anything else under
-# experiments/run-control/ -- extra records, extra digests, an operative
-# owner-approval.md, a second run-control directory -- is a violation.
+# The EXACT set of artifacts permitted to exist under run-control. This is an
+# allowlist, not a prefix rule: extra records, extra digests, a second
+# run-control directory, or a SECOND/misplaced owner-approval.md are all
+# violations regardless of lifecycle phase.
+#
+# The repository owner approved record digest bf31c7b6... on 2026-08-01 (PR
+# #113), so the current lifecycle state includes exactly one owner-approval.md
+# at the contract path. PERMITTED_RUN_CONTROL_FILES reflects that current
+# state; PERMITTED_RUN_CONTROL_FILES_DRAFT is kept for tests that describe the
+# pre-approval phase explicitly (e.g. as a historical/synthetic fixture).
 #
 # These are paths RELATIVE TO THE RUN-CONTROL DIRECTORY ROOT, not bare
 # filenames. Comparing bare names would let a nested duplicate (for example
 # `nested/authorization-record.yaml`) collide with the permitted top-level
 # entry of the same name and pass unnoticed -- exactly the "duplicate
 # authorization records" / "duplicate digest files" case this guard must catch.
-PERMITTED_RUN_CONTROL_FILES = frozenset(
+PERMITTED_RUN_CONTROL_FILES_DRAFT = frozenset(
     {
         ".gitattributes",
         "authorization-record.yaml",
@@ -607,6 +613,7 @@ PERMITTED_RUN_CONTROL_FILES = frozenset(
         "owner-approval.template.md",
     }
 )
+PERMITTED_RUN_CONTROL_FILES = PERMITTED_RUN_CONTROL_FILES_DRAFT | {"owner-approval.md"}
 
 
 def _relative_file_paths(root):
@@ -623,11 +630,14 @@ def _relative_file_paths(root):
 
 
 def _assert_only_permitted_run_control_artifacts(case):
-    """Exactly one run-control directory, holding exactly the draft artifacts.
+    """Exactly one run-control directory, holding exactly the current
+    lifecycle's artifact set.
 
-    Existence of the draft record and digest is NOT authority; it only means
-    the authorization proposal has stable bytes. The operative approval
-    (owner-approval.md) must be absent.
+    Existence of the draft record and digest is NOT authority by itself; it
+    only means the authorization proposal has stable bytes. What IS now true,
+    since the repository owner approved record digest bf31c7b6... (PR #113),
+    is that exactly one owner-approval.md may exist, and only at the exact
+    contract path -- never duplicated, nested, or misplaced.
     """
     root = REPO_ROOT / "experiments" / "run-control"
     case.assertTrue(root.is_dir(), "the run-control root must exist")
@@ -649,7 +659,8 @@ def _assert_only_permitted_run_control_artifacts(case):
     case.assertEqual(
         found,
         set(PERMITTED_RUN_CONTROL_FILES),
-        "only the exact planned draft artifact set may exist under run-control",
+        "only the exact planned artifact set (including exactly one owner "
+        "approval at the contract path) may exist under run-control",
     )
     # No subdirectories either: the planned artifact set is flat, so any
     # directory under the run-control root can only be hiding something.
@@ -662,8 +673,19 @@ def _assert_only_permitted_run_control_artifacts(case):
         [],
         "no subdirectories are permitted under the run-control directory",
     )
-    # The operative approval is owner-only and must never be authored here.
-    case.assertFalse((REPO_ROOT / OWNER_APPROVAL_PATH).exists())
+    # The operative approval, if present anywhere in the repository, must
+    # exist ONLY at the exact contract path -- never duplicated or misplaced.
+    approval_matches = sorted(
+        str(p.relative_to(REPO_ROOT)).replace("\\", "/")
+        for p in REPO_ROOT.rglob("owner-approval.md")
+        if ".git" not in p.parts
+    )
+    case.assertEqual(
+        approval_matches,
+        [OWNER_APPROVAL_PATH],
+        "owner-approval.md must exist exactly once, at the contract path, "
+        "with no duplicates or misplaced copies anywhere else in the tree",
+    )
 
 
 class NestedDuplicateRunControlArtifactsAreCaught(unittest.TestCase):
@@ -728,6 +750,71 @@ class NestedDuplicateRunControlArtifactsAreCaught(unittest.TestCase):
                 self.PERMITTED,
                 "bare-name collection is blind to nested duplicates -- this is "
                 "why the guard must use relative paths",
+            )
+
+
+class DuplicateOrMisplacedApprovalIsCaught(unittest.TestCase):
+    """Lifecycle-state regression: now that owner-approval.md is legitimately
+    present (PR #113), a SECOND or misplaced copy must still be caught by the
+    same allowlist mechanism that used to forbid the file outright. Approval
+    presence being expected does not mean anywhere-is-fine.
+    """
+
+    PERMITTED_WITH_APPROVAL = {
+        ".gitattributes",
+        "authorization-record.yaml",
+        "authorization-record.sha256",
+        "owner-approval.template.md",
+        "owner-approval.md",
+    }
+
+    def _build(self, tmp, *, duplicate_nested=False, duplicate_sibling=False):
+        root = Path(tmp) / "0016-stage1-auteur-post-remediation-controlled-attempt"
+        root.mkdir(parents=True)
+        for name in self.PERMITTED_WITH_APPROVAL:
+            (root / name).write_text("x", encoding="utf-8")
+        if duplicate_nested:
+            sub = root / "nested"
+            sub.mkdir()
+            (sub / "owner-approval.md").write_text("x", encoding="utf-8")
+        if duplicate_sibling:
+            sibling = root.parent / "0099-not-the-real-slug"
+            sibling.mkdir()
+            (sibling / "owner-approval.md").write_text("x", encoding="utf-8")
+        return root
+
+    def test_a_single_approval_at_the_contract_path_matches_the_allowlist(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._build(tmp)
+            self.assertEqual(
+                _relative_file_paths(root), self.PERMITTED_WITH_APPROVAL
+            )
+
+    def test_a_nested_duplicate_approval_is_detected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._build(tmp, duplicate_nested=True)
+            found = _relative_file_paths(root)
+            self.assertNotEqual(found, self.PERMITTED_WITH_APPROVAL)
+            self.assertIn("nested/owner-approval.md", found - self.PERMITTED_WITH_APPROVAL)
+
+    def test_a_sibling_directory_approval_is_detected(self):
+        """A second run-control-like directory holding its own approval must
+        also be caught -- not just the exact contract path's own tree."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._build(tmp, duplicate_sibling=True)
+            approvals = sorted(
+                str(p.relative_to(root.parent)).replace("\\", "/")
+                for p in root.parent.rglob("owner-approval.md")
+            )
+            self.assertEqual(
+                approvals,
+                [
+                    "0016-stage1-auteur-post-remediation-controlled-attempt/"
+                    "owner-approval.md",
+                    "0099-not-the-real-slug/owner-approval.md",
+                ],
+                "a second owner-approval.md anywhere under run-control must "
+                "be detectable, not silently ignored",
             )
 
 
@@ -1265,14 +1352,14 @@ class AuthorizationHardStops(unittest.TestCase):
         # stop governs the run-time check, not today's repository state. What
         # keeps the run blocked today is the absent owner approval.
         self.assertTrue(self.contract["execution_authorization_record_exists"])
-        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["owner_approval_present_at_preparation_time"])
         self.assertFalse(self.contract["package_runnable"])
 
     # 38
     def test_missing_approval_blocks_invocation(self):
         self._stop("approval artifact absent")
         self._stop("owner-approved digest absent")
-        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["owner_approval_present_at_preparation_time"])
 
     # 39
     def test_digest_mismatch_blocks_invocation(self):
@@ -1353,13 +1440,17 @@ class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
             self.contract["authorization_record_sha256"], OWNER_APPROVAL_SENTINEL
         )
 
-    # 47 -- the operative owner approval still does not exist, and nothing
-    # beyond the exact planned draft artifact set does either.
-    def test_no_owner_approval_artifact_exists_in_this_pr(self):
-        self.assertFalse(
+    # 47 -- the repository owner approved this record's digest (PR #113,
+    # 2026-08-01). The operative approval exists at the exact contract path,
+    # and only there; nothing beyond the exact planned artifact set exists.
+    # owner_approval_present_at_preparation_time is a historical observation
+    # about the moment this package was authored -- it stays false forever,
+    # independent of whether approval exists now.
+    def test_owner_approval_artifact_exists_at_the_contract_path(self):
+        self.assertTrue(
             (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
         )
-        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["owner_approval_present_at_preparation_time"])
         self.assertTrue((REPO_ROOT / self.contract["run_control_directory"]).is_dir())
         self.assertTrue(self.contract["run_control_directory_exists"])
         _assert_only_permitted_run_control_artifacts(self)
@@ -1391,13 +1482,15 @@ class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
         # The consumer now exists, so the enforceability half of this sentence
         # flipped. So did the record/digest half: a DRAFT record and digest now
         # exist, and saying otherwise would be false. The half that actually
-        # gates execution -- no owner approval, no pin, not runnable -- did not.
+        # gates execution -- no operative approval binding the record digest,
+        # no pin, not runnable -- did not.
         self.assertIn(
             "a Gate A authorization consumer exists and is enforcing, so "
             "authorization state is now enforceable. A draft authorization "
             "record and its digest file exist, and neither is operative. "
-            "No owner approval exists. No execution pin is finalized. "
-            "The package is not runnable.",
+            "Authorization requires an owner approval binding the exact "
+            "current record digest, and none binds it. No execution pin is "
+            "finalized. The package is not runnable.",
             collapsed,
         )
         self.assertIn("There is no alternative mechanism.", collapsed)
@@ -1475,7 +1568,6 @@ class FutureAuthorizationRecordFixture(unittest.TestCase):
             p.name for p in (REPO_ROOT / RUN_CONTROL_DIR).rglob("*") if p.is_file()
         )
         self.assertEqual(before, after, "the fixture must not write to disk")
-        self.assertFalse((REPO_ROOT / OWNER_APPROVAL_PATH).exists())
         _assert_only_permitted_run_control_artifacts(self)
 
 
@@ -3230,14 +3322,14 @@ class ConsumerImplementedWithoutAuthorizingAnything(unittest.TestCase):
 
     # 80b -- the half that must NOT change
     def test_implementing_the_consumer_created_no_authorization_artifacts(self):
-        """A mechanism is not an authorization; a draft record is not either."""
+        """A mechanism is not an authorization; a draft record is not either.
+
+        The owner-approval artifact that exists now was created by the
+        repository owner (PR #113), not by implementing the consumer -- the
+        allowlist check below still catches any EXTRA or misplaced artifact
+        the consumer implementation might have produced.
+        """
         _assert_only_permitted_run_control_artifacts(self)
-        for key in ("owner_approval_artifact_path",):
-            self.assertFalse(
-                (REPO_ROOT / self.contract[key]).exists(),
-                f"{key} must not exist: implementing the consumer does not "
-                f"authorize a run",
-            )
         self.assertFalse(self.contract["package_runnable"])
         self.assertEqual(
             self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
@@ -4232,9 +4324,6 @@ class ConsumerHardStopUnchangedByRound6(unittest.TestCase):
     # 143
     def test_no_authorization_artifacts_created_by_round6(self):
         _assert_only_permitted_run_control_artifacts(self)
-        self.assertFalse(
-            (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
-        )
 
 
 # ---------------------------------------------------------------------------
@@ -4650,9 +4739,6 @@ class Round7ChangedNoSafetySemantics(unittest.TestCase):
 
     def test_no_authorization_artifacts_created_by_round7(self):
         _assert_only_permitted_run_control_artifacts(self)
-        self.assertFalse(
-            (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
-        )
 
 
 # ---------------------------------------------------------------------------

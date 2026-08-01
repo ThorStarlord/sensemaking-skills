@@ -702,19 +702,25 @@ def test_classification_creates_no_filesystem_entries(tmp_path, monkeypatch):
 
 def test_no_real_evidence_0016_directory_is_ever_created():
     """The old bypass reproduction accidentally created a real campaign
-    directory in the repository. That must be structurally impossible now."""
+    directory in the repository. That must be structurally impossible now,
+    regardless of owner-approval state."""
     real = REPO_ROOT / "experiments" / "evidence" / CAMPAIGN_SLUG
     assert not real.exists(), (
         f"a test created the real Evidence 0016 directory at {real}")
-    # The run-control directory is now an authorized drafted artifact. What
-    # must not exist is an operative owner approval inside it.
+    # The repository owner approved record digest bf31c7b6... (PR #113), so
+    # exactly one owner-approval.md now legitimately exists, at the contract
+    # path. What this suite must still catch is a SECOND or misplaced one.
     run_control = REPO_ROOT / "experiments" / "run-control"
     if run_control.exists():
+        allowed = (
+            run_control / CAMPAIGN_SLUG / "owner-approval.md"
+        ).resolve()
         approvals = [
             p for p in run_control.rglob("owner-approval.md")
+            if p.resolve() != allowed
         ]
         assert not approvals, (
-            f"an operative owner approval exists: {approvals}")
+            f"an owner approval exists outside the contract path: {approvals}")
 
 
 def test_repository_experiments_tree_is_untouched_by_this_suite():

@@ -84,8 +84,13 @@ Code fences are not a safe harbor
 Every line of the document is scanned with the same lexicons, inside fences and
 outside them alike. In addition, machine-readable YAML blocks are parsed and
 their state keys are compared directly against the derived facts, so a false
-``owner_approval_artifact_exists: true`` is caught as a value, not as prose. A
-sentence never becomes acceptable by being moved into a fence.
+``execution_authorization_record_exists: true`` is caught as a value, not as
+prose. A sentence never becomes acceptable by being moved into a fence.
+
+``owner_approval_present_at_preparation_time`` is the one contract field
+exempt from this live cross-check by design: it is a historical observation
+about preparation time, not a present-state claim, so it is never compared
+against ``owner_approval_exists`` (see MACHINE_FIELD_TO_FACT).
 """
 
 import re
@@ -361,9 +366,18 @@ MACHINE_FIELD_TO_FACT = {
     "execution_authorization_record_digest_exists": (
         "authorization_record_digest_exists"
     ),
-    "owner_approval_artifact_exists": "owner_approval_exists",
     "package_runnable": "package_runnable",
 }
+
+# owner_approval_present_at_preparation_time is deliberately NOT in
+# MACHINE_FIELD_TO_FACT. It is a historical observation about the moment the
+# preparation package was authored, not a claim about current repository
+# state, so it must never be cross-checked against the live-derived
+# owner_approval_exists fact -- doing so would re-create the exact
+# immutable-vs-derived-state confusion this contract was redesigned to
+# remove. Live approval presence is exposed only as
+# compute_current_state()["owner_approval_exists"], derived fresh at
+# validation time, never pinned inside a digest-hashed document.
 
 # ---------------------------------------------------------------------------
 # Framing. Historical and prospective statements are legal, but only when the

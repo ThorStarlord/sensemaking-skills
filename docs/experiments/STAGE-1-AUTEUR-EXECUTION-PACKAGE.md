@@ -32,7 +32,8 @@
 > informational only. The Gate A consumer recomputes the record's digest and
 > compares it to the owner-approved value before any model invocation; a
 > mismatch, a missing record, or a missing owner approval is a hard stop.
-> No owner approval exists.
+> Authorization cannot succeed without an owner approval binding the exact
+> current record digest; none binds it at this state.
 >
 > **Runtime enforcement of that contract exists.** The Gate A authorization
 > consumer is implemented, tested, reviewed, merged, and wired into the real
@@ -1381,7 +1382,7 @@ per slot; the grammar uses explicit bounded quantifiers, never an open span.
 grounds that such wording asserts the opposite of runtime enforcement. That exception was demonstrably bypassable in the pre-participle
 slot, so it was deleted rather than extended. Truthful statements of this kind
 are now written in plainly negative form instead --
-`Stage 1 remains non-runnable because no owner approval exists.` -- which
+`Stage 1 remains non-runnable until an owner approval binds the exact current record digest.` -- which
 contains no enforcement participle and therefore needs no exception.
 
 What it deliberately does **not** do: parse arbitrary English, resolve
