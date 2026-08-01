@@ -475,13 +475,13 @@ class Round4Regressions(GuardBase):
     """Independent-review regressions (PR #112 round 4)."""
 
     NESTED_MACHINE_BLOCKS = (
-        "```yaml\ncontract:\n  owner_approval_artifact_exists: true\n```",
-        "```yaml\n---\nfoo: 1\n---\nowner_approval_artifact_exists: true\n```",
-        "```yaml\ndefaults: &d\n  owner_approval_artifact_exists: true\n"
+        "```yaml\ncontract:\n  package_runnable: true\n```",
+        "```yaml\n---\nfoo: 1\n---\npackage_runnable: true\n```",
+        "```yaml\ndefaults: &d\n  package_runnable: true\n"
         "prod:\n  <<: *d\n```",
-        "```yaml\ncontract: {owner_approval_artifact_exists: true}\n```",
-        "```yaml\n- owner_approval_artifact_exists: true\n```",
-        '```json\n{"c": {"owner_approval_artifact_exists": true}}\n```',
+        "```yaml\ncontract: {package_runnable: true}\n```",
+        "```yaml\n- package_runnable: true\n```",
+        '```json\n{"c": {"package_runnable": true}}\n```',
     )
 
     def test_a_false_value_cannot_hide_by_nesting_or_anchoring(self):
@@ -599,12 +599,12 @@ class Round5Regressions(GuardBase):
                 self.assertEqual(self.scan(wrapped + "\n"), [])
 
     MACHINE_FIELDS_OUTSIDE_A_PARSED_BLOCK = (
-        "owner_approval_artifact_exists: true",
-        "```text\nowner_approval_artifact_exists: true\n```",
-        "```console\nowner_approval_artifact_exists: true\n```",
+        "package_runnable: true",
+        "```text\npackage_runnable: true\n```",
+        "```console\npackage_runnable: true\n```",
         "```\ngate_a_runtime_enforcement_exists: false\n```",
-        "```yaml\nowner_approval_artifact_exists: true\nbad: [\n```",
-        'owner_approval_artifact_exists = "true"',
+        "```yaml\npackage_runnable: true\nbad: [\n```",
+        'package_runnable = "true"',
     )
 
     def test_a_state_field_is_read_as_data_wherever_it_appears(self):
@@ -617,7 +617,7 @@ class Round5Regressions(GuardBase):
 
     def test_truthful_machine_field_values_stay_clean(self):
         for text in (
-            "owner_approval_artifact_exists: false",
+            "package_runnable: false",
             "gate_a_runtime_enforcement_exists: true",
             "```text\npackage_runnable: false\n```",
         ):
@@ -673,20 +673,20 @@ class HistoricalFramingDoesNotCrossAConjunction(GuardBase):
 
     def test_a_field_value_on_the_following_line_is_still_read(self):
         self.assertRejected(
-            "```text\nowner_approval_artifact_exists:\n  true\n```\n"
+            "```text\npackage_runnable:\n  true\n```\n"
         )
 
     def test_one_wrong_field_is_reported_once(self):
         """Two scanners overlap on a YAML fence; the ratchet counts defects."""
-        findings = self.scan("```yaml\nowner_approval_artifact_exists: true\n```\n")
+        findings = self.scan("```yaml\nrun_control_directory_exists: false\n```\n")
         self.assertEqual(len(findings), 1, findings)
 
     def test_the_same_field_wrong_at_two_sites_is_reported_twice(self):
         """Dedupe must not hide the second site from whoever fixes the first."""
         findings = self.scan(
-            "```yaml\nowner_approval_artifact_exists: true\n```\n\n"
+            "```yaml\nrun_control_directory_exists: false\n```\n\n"
             "Some prose.\n\n"
-            "```yaml\nowner_approval_artifact_exists: true\n```\n"
+            "```yaml\nrun_control_directory_exists: false\n```\n"
         )
         self.assertEqual(len(findings), 2, findings)
 
@@ -721,7 +721,7 @@ class MachineBlockEvasionRegressions(GuardBase):
     """Independent-review regressions (PR #112 round 1): container gaps."""
 
     def test_a_quoted_boolean_does_not_slip_past(self):
-        findings = self.scan('```yaml\nowner_approval_artifact_exists: "true"\n```\n')
+        findings = self.scan('```yaml\npackage_runnable: "true"\n```\n')
         self.assertTrue(findings)
 
     def test_a_json_block_is_validated_too(self):
@@ -729,7 +729,7 @@ class MachineBlockEvasionRegressions(GuardBase):
         self.assertTrue(findings)
 
     def test_quoted_truthful_values_still_pass(self):
-        self.assertAccepted('```yaml\nowner_approval_artifact_exists: "false"\n```\n')
+        self.assertAccepted('```yaml\npackage_runnable: "false"\n```\n')
 
 
 class StaleAbsenceClaimRegressionsFromPr111(GuardBase):
@@ -860,10 +860,10 @@ class MachineReadableBlocksAreValidated(GuardBase):
     """YAML state blocks are checked as DATA, not merely scanned as prose."""
 
     def test_false_yaml_state_value_is_caught(self):
-        text = "```yaml\nowner_approval_artifact_exists: true\n```\n"
+        text = "```yaml\npackage_runnable: true\n```\n"
         findings = self.scan(text)
         self.assertTrue(findings)
-        self.assertIn("owner_approval_artifact_exists", findings[0])
+        self.assertIn("package_runnable", findings[0])
 
     def test_stale_yaml_state_value_is_caught(self):
         text = "```yaml\ngate_a_runtime_enforcement_exists: false\n```\n"
@@ -876,7 +876,6 @@ class MachineReadableBlocksAreValidated(GuardBase):
             "```yaml\n"
             "gate_a_runtime_enforcement_exists: true\n"
             "gate_a_authorization_consumer_wired_to_stage1: true\n"
-            "owner_approval_artifact_exists: false\n"
             "package_runnable: false\n"
             "run_control_directory_exists: true\n"
             "```\n"
@@ -998,7 +997,6 @@ class GovernedDocumentInventory(unittest.TestCase):
         contract = guard.load_contract(text)
         self.assertEqual(contract["execution_authorization_status"], "NOT_AUTHORIZED")
         self.assertFalse(contract["package_runnable"])
-        self.assertFalse(contract["owner_approval_artifact_exists"])
 
     def test_documents_survive_both_approval_existence_states(self):
         """The governed prose must be state-conditional, not existence-based.
@@ -1006,10 +1004,7 @@ class GovernedDocumentInventory(unittest.TestCase):
         The remediation rewrite frames the approval claim as binding-conditional
         ("an owner approval binding the exact current record digest") so it
         holds whether an approval artifact is present or absent. Prose that
-        named existence would flag in one of the two directions. The machine
-        field is pinned to the genuinely derived value, because a record-bound
-        document cannot hold both states at once -- which is exactly why a new
-        approval requires a regenerated package, record, and digest.
+        named existence would flag in one of the two directions.
         """
         name = "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md"
         text = (DOCS_DIR / name).read_text(encoding="utf-8")
@@ -1025,11 +1020,28 @@ class GovernedDocumentInventory(unittest.TestCase):
                     f"prose contradicted state owner_approval_exists="
                     f"{approval_present}\n" + "\n".join(findings),
                 )
+
+    def test_historical_preparation_field_does_not_track_live_approval_state(self):
+        """The redesigned contract boundary: owner_approval_present_at_preparation_time
+        is a historical observation, fixed at authoring time, and must NOT equal
+        or track the live-derived owner_approval_exists fact. If it did, this
+        digest-hashed document's bytes would need to change every time approval
+        presence changes, recreating the exact self-invalidating loop the
+        contract was redesigned to remove (see docs/experiments/
+        STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md section 2b/2d).
+        """
+        name = "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md"
+        text = (DOCS_DIR / name).read_text(encoding="utf-8")
         contract = guard.load_contract(text)
-        self.assertIs(
-            contract["owner_approval_artifact_exists"],
-            real["owner_approval_exists"],
-            "machine field must track the genuinely derived state",
+        self.assertIn("owner_approval_present_at_preparation_time", contract)
+        self.assertNotIn("owner_approval_artifact_exists", contract)
+        self.assertFalse(contract["owner_approval_present_at_preparation_time"])
+        self.assertTrue(contract.get("owner_approval_required"))
+        self.assertTrue(contract.get("owner_approval_must_bind_current_record_digest"))
+        self.assertNotIn(
+            "owner_approval_present_at_preparation_time",
+            guard.MACHINE_FIELD_TO_FACT,
+            "the historical field must never be cross-checked against live state",
         )
 
 

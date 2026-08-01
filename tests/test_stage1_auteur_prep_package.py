@@ -430,7 +430,7 @@ class FrameworkPinLifecycle(unittest.TestCase):
         self.assertIn("Authorized by:\n", self.text)
         # A drafted record does not fill this block. The operative approval is
         # what would, and it does not exist.
-        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["owner_approval_present_at_preparation_time"])
         self.assertEqual(
             self.contract["execution_authorization_status"], "NOT_AUTHORIZED"
         )
@@ -1265,14 +1265,14 @@ class AuthorizationHardStops(unittest.TestCase):
         # stop governs the run-time check, not today's repository state. What
         # keeps the run blocked today is the absent owner approval.
         self.assertTrue(self.contract["execution_authorization_record_exists"])
-        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["owner_approval_present_at_preparation_time"])
         self.assertFalse(self.contract["package_runnable"])
 
     # 38
     def test_missing_approval_blocks_invocation(self):
         self._stop("approval artifact absent")
         self._stop("owner-approved digest absent")
-        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["owner_approval_present_at_preparation_time"])
 
     # 39
     def test_digest_mismatch_blocks_invocation(self):
@@ -1359,7 +1359,7 @@ class NoAuthorizationArtifactsInThisPR(unittest.TestCase):
         self.assertFalse(
             (REPO_ROOT / self.contract["owner_approval_artifact_path"]).exists()
         )
-        self.assertFalse(self.contract["owner_approval_artifact_exists"])
+        self.assertFalse(self.contract["owner_approval_present_at_preparation_time"])
         self.assertTrue((REPO_ROOT / self.contract["run_control_directory"]).is_dir())
         self.assertTrue(self.contract["run_control_directory_exists"])
         _assert_only_permitted_run_control_artifacts(self)

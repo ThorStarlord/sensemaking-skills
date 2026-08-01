@@ -133,11 +133,22 @@ owner_approval_artifact_path: experiments/run-control/0016-stage1-auteur-post-re
 # Existence is not authority. The draft record and its digest exist so the
 # authorization proposal has stable, reviewable bytes; neither is operative.
 # Authorization requires an owner approval binding the exact current record
-# digest; its presence or absence is derived repository state.
+# digest; its presence or absence is derived repository state, computed at
+# validation time -- never pinned as a fact inside this digest-hashed
+# document. See section 2d for why: this document's bytes (including any
+# claim about approval existence) are hashed into preparation_package_sha256,
+# which is hashed into authorization-record.sha256. A present-tense existence
+# claim here would flip from false to true the moment a real approval is
+# added, changing this file's bytes, changing the record digest, and voiding
+# the very approval that was just granted for the old digest. Only a
+# historical, timestamped observation about the moment this package was
+# prepared can safely live here.
+owner_approval_required: true
+owner_approval_must_bind_current_record_digest: true
 run_control_directory_exists: true
 execution_authorization_record_exists: true
 execution_authorization_record_digest_exists: true
-owner_approval_artifact_exists: false
+owner_approval_present_at_preparation_time: false
 # Pending sentinels. All three block execution while unset.
 run_control_commit_sha: PENDING_AUTHORIZATION_RECORD_CREATION
 run_control_commit_sha_sentinel: PENDING_AUTHORIZATION_RECORD_CREATION
@@ -1040,8 +1051,9 @@ Properties this location must satisfy:
   approval** — the directory now exists
   (`run_control_directory_exists: true`) and holds the draft authorization
   record and its digest, but it does not and must not contain
-  `owner-approval.md` (`owner_approval_artifact_exists: false`). Stable bytes
-  for a proposal are not an approval of it.
+  `owner-approval.md` (`owner_approval_present_at_preparation_time: false`,
+  a historical observation about preparation time, not a claim about the
+  present). Stable bytes for a proposal are not an approval of it.
 
 ---
 
