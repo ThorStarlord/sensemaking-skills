@@ -40,13 +40,18 @@ import state_honesty_guard as guard  # noqa: E402
 # and that framing test battery is independent of what the real repository's
 # approval state happens to be at any given moment.
 #
-# owner_approval_exists is pinned False here deliberately, even though the
-# real repository now has a valid owner approval (bf31c7b6..., PR #113,
-# 2026-08-01): this dict is a fixed synthetic test-world for exercising the
-# guard's parsing and framing logic, not a live mirror of repo state.
-# REAL_REPO_STATE below is the one place that tracks the actual current
-# derived state, and only test_derived_state_matches_the_current_repository
-# compares the two -- with the one documented, intentional divergence.
+# owner_approval_exists is pinned False here. It was briefly True (PR #113
+# approved record digest bf31c7b6...), but the artifact-root topology change
+# (PR #114, merged as main commit 98a08d5...) forced a regeneration of the
+# authorization record (new execution_framework_sha, new record bytes, new
+# digest). The PR #113 approval bound the OLD digest and cannot bind the new
+# one, so it was renamed to owner-approval.SUPERSEDED-pre-artifact-root.md
+# and is no longer at the operative contract path. This dict is both the
+# fixed synthetic test-world for exercising the guard's parsing and framing
+# logic AND, as of this regeneration, an accurate mirror of live repo state --
+# REAL_REPO_STATE below is kept as a distinct name so
+# test_derived_state_matches_the_current_repository still names its own
+# comparison target explicitly, even though the two dicts are equal again.
 POST_GATE_A_STATE = {
     "gate_a_consumer_exists": True,
     "gate_a_consumer_wired": True,
@@ -61,10 +66,10 @@ POST_GATE_A_STATE = {
     "real_model_invoked": False,
 }
 
-# The actual current derived state of the real repository. Differs from
-# POST_GATE_A_STATE in exactly one field: owner_approval_exists is True here
-# because the repository owner approved record digest bf31c7b6... (PR #113).
-REAL_REPO_STATE = dict(POST_GATE_A_STATE, owner_approval_exists=True)
+# The actual current derived state of the real repository. Equal to
+# POST_GATE_A_STATE: the PR #113 approval was invalidated by the record
+# regeneration (see note above) and no fresh approval has been granted.
+REAL_REPO_STATE = dict(POST_GATE_A_STATE)
 
 
 class GuardBase(unittest.TestCase):
@@ -96,16 +101,21 @@ class StateFactsAreDerivedNotDeclared(GuardBase):
         body = guard.PROVIDER_BOUNDARY_PATH.read_text(encoding="utf-8")
         self.assertIn("gate_a_authorization", body)
 
-    def test_facts_trace_to_real_artifacts_including_the_approval(self):
-        """The draft artifacts exist, and so does the owner-approved approval."""
+    def test_facts_trace_to_real_draft_artifacts(self):
+        """The draft artifacts exist. The operative owner approval does not:
+        the artifact-root record regeneration invalidated the PR #113
+        approval's digest binding (see module-level note)."""
         contract = guard.load_contract()
         for field in (
             "execution_authorization_record_path",
             "execution_authorization_record_digest_path",
             "run_control_directory",
-            "owner_approval_artifact_path",
         ):
             self.assertTrue(guard._contract_path(contract, field).exists(), field)
+        self.assertFalse(
+            guard._contract_path(contract, "owner_approval_artifact_path").exists(),
+            "owner_approval_artifact_path",
+        )
 
     def test_polarity_follows_the_derived_value_not_a_literal(self):
         """Flip the world and the same sentence flips verdict. No hardcoding."""

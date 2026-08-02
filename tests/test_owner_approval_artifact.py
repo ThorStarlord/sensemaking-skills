@@ -4,18 +4,22 @@ These tests read the REAL run-control directory: the authorization record and
 the stored digest file. They never write to the directory, never mint an
 authorization capability, and never invoke a model or a provider of any kind.
 
-The remediation of PR #113 removed the operative ``owner-approval.md``: the
-approval it contained bound a PREVIOUS record digest (the old preparation
-package was corrected, so the record had to be regenerated, so the old
-approval no longer bound anything). The repository owner has since approved
-the new record digest (``bf31c7b6...``) in a fresh, human-authored artifact
-at the exact contract path. The current state is: a well-formed record, a
-valid stored digest, and exactly one operative owner approval binding that
-exact digest.
+The artifact-root topology change (PR #114, merged as main commit
+``98a08d5...``) forced a regeneration of the authorization record: it now
+pins the new ``execution_framework_sha``, which changes the record's bytes
+and therefore its digest. The PR #113 owner approval bound the PREVIOUS
+digest and cannot bind the new one, so it was renamed to
+``owner-approval.SUPERSEDED-pre-artifact-root.md`` (historical record,
+preserved rather than deleted; see that file's own banner) and is no longer
+at the contract path. Until the repository owner approves the NEW record
+digest in a fresh artifact at the exact contract path, the stopping state
+holds: a well-formed record, a valid stored digest, and NO operative owner
+approval. The Gate A consumer therefore denies the package at the approval
+gate.
 
-The two invalidated digests (``ccd25fac...``, ``9cf76a34...``) are not
-asserted here; only the current approved digest, and the invariants that
-keep it approvable and untransferable.
+The old approval's historical existence is not asserted here; only its
+absence at the stopping state, and the invariants that make the NEW digest
+approvable.
 """
 
 from __future__ import annotations
@@ -31,11 +35,8 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 from gate_a_authorization import (  # noqa: E402
     CONTRACT_AUTHORIZATION_STATUS,
-    CONTRACT_APPROVING_AUTHORITIES,
-    REQUIRED_APPROVAL_FIELDS,
     REQUIRED_RECORD_FIELDS,
     REQUIRED_SAFETY_BOOLEANS,
-    parse_approval_bytes,
     parse_record_bytes,
 )
 
@@ -51,53 +52,35 @@ APPROVAL = RUN_CONTROL / "owner-approval.md"
 TEMPLATE = RUN_CONTROL / "owner-approval.template.md"
 
 
-def test_owner_approval_is_present_and_binds_the_current_record_digest():
-    """The repository owner approved this record's digest (PR #113, 2026-08-01).
+def test_stopping_state_has_no_operative_owner_approval():
+    """The draft record exists; the operative approval does not.
 
-    The approval must exist at the exact contract path, parse successfully
-    with the real consumer, name an approving identity in
-    CONTRACT_APPROVING_AUTHORITIES that differs from the record's author, and
-    bind exactly the digest the record's own bytes recompute to -- never an
-    inferred or transferred digest.
+    The old approval bound the previous record digest and was invalidated by
+    the record regeneration. Signing a fresh approval for the new digest is an
+    owner-only act that has not happened, so no owner-approval.md exists.
     """
     assert RECORD.is_file()
     assert DIGEST.is_file()
     assert TEMPLATE.is_file()
-    assert APPROVAL.is_file()
+    assert not APPROVAL.exists()
+    assert list(REPO_ROOT.rglob("owner-approval.md")) == []
     assert TEMPLATE.name != "owner-approval.md"
-
-    record, record_code, record_detail = parse_record_bytes(RECORD.read_bytes())
-    assert record_code is None, record_detail
-    computed_record_sha = hashlib.sha256(RECORD.read_bytes()).hexdigest()
-
-    fields, code, detail = parse_approval_bytes(APPROVAL.read_bytes())
-    assert code is None, detail
-    missing = [f for f in REQUIRED_APPROVAL_FIELDS if not fields.get(f, "").strip()]
-    assert not missing, f"approval missing required fields: {missing}"
-    assert fields["authorization_record_sha256"] == computed_record_sha, (
-        "approval does not bind the exact current record digest"
-    )
-    assert fields["approver_github_identity"] in CONTRACT_APPROVING_AUTHORITIES
-    assert fields["approver_github_identity"] != record["authorization_record_created_by"]
 
 
 def test_only_the_exact_planned_artifact_set_exists():
-    """The approval-present allowlist: template and operative approval both
-    present, exactly once each, nowhere else in the repository."""
+    """The stopping-state allowlist: template present, operative approval absent.
+
+    ``owner-approval.SUPERSEDED-pre-artifact-root.md`` is the historical PR
+    #113 approval, relocated out of the active-approval path; it is not
+    ``owner-approval.md`` and Gate A never reads it.
+    """
     assert {p.name for p in RUN_CONTROL.rglob("*") if p.is_file()} == {
         ".gitattributes",
         "authorization-record.yaml",
         "authorization-record.sha256",
         "owner-approval.template.md",
-        "owner-approval.md",
+        "owner-approval.SUPERSEDED-pre-artifact-root.md",
     }
-    assert [
-        str(p.relative_to(REPO_ROOT)).replace("\\", "/")
-        for p in REPO_ROOT.rglob("owner-approval.md")
-        if ".git" not in p.parts
-    ] == [str(APPROVAL.relative_to(REPO_ROOT)).replace("\\", "/")], (
-        "owner-approval.md must exist exactly once, at the contract path"
-    )
 
 
 def test_record_digest_recomputes_and_matches_the_stored_digest():
