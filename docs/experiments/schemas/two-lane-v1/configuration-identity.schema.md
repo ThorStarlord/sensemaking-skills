@@ -46,6 +46,13 @@ field — including an `execution_parameters` value — produces a new
   `artifact_type` not present in the governing policy's allowlists: reject
   (this is a policy-conformance check performed by the future consumer, not
   by this schema alone, but the schema's fields are what that check reads).
+- The recomputed `configuration_id` must be checked against **both**: (1)
+  the `configuration_id` value carried by this document (they must match
+  exactly, or the document is corrupt/tampered), and (2) independently,
+  membership in the governing policy's `allowed_configuration_ids`
+  (`campaign-policy.schema.md`). Matching only one of the two is not
+  sufficient authorization — see that schema's "Conjunctive authorization
+  semantics" for the full check list.
 
 ## Example — EXAMPLE_ONLY_NOT_OPERATIVE
 

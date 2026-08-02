@@ -224,8 +224,8 @@ Authority and limits, fixed at approval time, never edited in place:
 `campaign_id`, `policy_schema_version`, `policy_digest`, `classification`
 (always `EXPLORATORY_NOT_CANONICAL_EVIDENCE`), `allowed_framework_shas`,
 `allowed_targets` (repository + SHA pairs), `allowed_models`,
-`allowed_artifact_types`, `allowed_configurations` (or configuration
-constraint expressions), `max_attempt_slots`, `max_provider_invocations`,
+`allowed_artifact_types`, `allowed_configuration_ids` (exact-ID-only
+allowlist; see §9d), `max_attempt_slots`, `max_provider_invocations`,
 `max_attempts_per_configuration`, `concurrency_ceiling`,
 `cost_ceiling`/`token_ceiling`/`invocation_ceiling` (§14 — enforceability
 varies by field), `validity_window` (start/expiry), `target_mutation_prohibited`
@@ -257,9 +257,24 @@ revision.
 (framework SHA, target repository + SHA, model identifier, prompt/skill
 revision, validator revision, artifact type, execution parameters). A
 `configuration_id` is computed once, at reservation time, from these fields;
-it is immutable thereafter and is not itself part of the policy, but every
-value it can take must be within the policy's `allowed_configurations`
-constraint.
+it is immutable thereafter and is not itself part of the policy.
+
+**Configuration authorization is exact-ID-only for schema v1.** The policy's
+`allowed_configuration_ids` field (§9a) is a non-empty, sorted, duplicate-free
+list of exact `configuration_id` SHA-256 hex values — schema v1 defines no
+configuration constraint expression, wildcard, pattern, predicate, range, or
+inheritance mechanism, and no partial-object policy matching. A
+`configuration_id` is authorized only when it is an exact member of that
+list, *and* — independently and conjunctively, not as an alternative path —
+its constituent fields each satisfy their own policy allowlist
+(`allowed_framework_shas`, `allowed_targets`, `allowed_models`,
+`allowed_artifact_types`). No allowlist can substitute for another: exact
+`configuration_id` membership does not override a failing constituent-field
+check, and passing every constituent-field check does not authorize a
+`configuration_id` absent from `allowed_configuration_ids`. This redundancy
+is intentional defense in depth. See
+`campaign-policy.schema.md`'s "Configuration authorization" section for the
+normative field definition and fail-closed rules.
 
 ### 9e. Attempt reservation / attempt result (runtime-derived)
 
@@ -458,6 +473,16 @@ already documents for `run_control_commit_sha` and `execution_framework_sha`.
 - **Claim exact pre-call cost enforcement.** Rejected per §14 — no
   provider-cost API guarantee exists to back that claim; overstating it
   would violate the "budget enforceability" requirement in Issue #117.
+- **Generalized configuration constraint expressions (patterns, predicates,
+  wildcards, ranges, partial-object matching) for `allowed_configuration_ids`.**
+  Rejected for schema v1: a constraint language with no defined precedence
+  or intersection semantics against the other policy allowlists left two
+  competing authorization mechanisms with no single canonical
+  interpretation, forcing Phase 2 (#118) to invent semantics this ADR should
+  define. Schema v1 instead requires exact, pre-computed `configuration_id`
+  membership only (§9d), checked conjunctively with the other allowlists. A
+  future schema version may reconsider a constraint language, but only with
+  an explicit precedence/intersection rule defined alongside it.
 
 ## 18. Phase dependency sequence (Issues #118–#122)
 

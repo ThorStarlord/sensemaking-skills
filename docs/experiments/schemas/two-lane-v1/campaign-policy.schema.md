@@ -19,7 +19,7 @@ document's `policy_digest`. See ADR 0023 §9a, §9c.
 | `allowed_targets` | list[object{repository, sha}] | yes | Exact repository URL + exact commit SHA pairs. |
 | `allowed_models` | list[string] | yes | Exact model identifiers. |
 | `allowed_artifact_types` | list[string] | yes | Artifact types this campaign may produce. |
-| `allowed_configurations` | list[object] or constraint expression | yes | Constrains which `configuration_id` values (see `configuration-identity.schema.md`) are legal under this policy. |
+| `allowed_configuration_ids` | list[string (sha256 hex)] | yes | Exact, non-empty allowlist of `configuration_id` values (see `configuration-identity.schema.md`) legal under this policy. See "Configuration authorization" below for the format and matching rule. |
 | `max_attempt_slots` | integer >= 1 | yes | Pre-invocation enforceable (ADR 0023 §14). |
 | `max_provider_invocations` | integer >= 0, <= `max_attempt_slots` | yes | Pre-invocation enforceable. |
 | `max_attempts_per_configuration` | integer >= 1 | yes | Pre-invocation enforceable. |
@@ -35,6 +35,58 @@ document's `policy_digest`. See ADR 0023 §9a, §9c.
 | `logging_requirements` | string | yes | Free text naming logging obligations. |
 | `prepared_by` | string | yes | Identity/role of preparer (e.g. `campaign-operator-agent`). Not an approval. |
 | `prepared_at` | string (RFC3339) | yes | |
+
+## Configuration authorization
+
+`allowed_configuration_ids` is the single, exclusive mechanism for
+determining whether a `configuration_id` is authorized under this policy.
+Schema v1 defines no other configuration-authorization mechanism.
+
+- **Format**: a non-empty list of lowercase 64-character SHA-256 hex
+  strings. Each entry is an exact `configuration_id` as computed under
+  `configuration-identity.schema.md` §10 — the digest of that configuration
+  document's full normative field set, not a partial object and not any
+  subset of fields.
+- **No constraint expressions.** Schema v1 defines no configuration
+  constraint expression, predicate, wildcard, pattern, range, or inheritance
+  mechanism. A policy may only enumerate exact, already-computed
+  `configuration_id` values.
+- **No partial configuration objects.** The list never contains an object
+  with individual fields (e.g. `artifact_type`, `prompt_or_skill_revision`);
+  it contains only opaque digest strings.
+- **Uniqueness and ordering**: duplicate IDs are invalid. The list must be
+  sorted lexicographically (byte-wise, ascending) to give the document one
+  canonical representation.
+- **Fail closed**: an ID that is not a well-formed 64-character lowercase
+  hex string, an empty list, or a malformed/unknown ID at consumption time
+  all fail closed (reject).
+
+### Conjunctive authorization semantics
+
+An attempted configuration is legal under this policy only when **all** of
+the following hold. These checks are conjunctive; none is a substitute for
+another, and none takes precedence over another:
+
+1. Its complete configuration document validates against
+   `configuration-identity.schema.md`.
+2. Its recomputed `configuration_id` exactly matches the ID carried by that
+   document.
+3. That exact ID is a member of `allowed_configuration_ids`.
+4. `framework_sha` is independently present in `allowed_framework_shas`.
+5. The exact `target_repository` + `target_sha` pair is independently
+   present in `allowed_targets`.
+6. `model_identifier` is independently present in `allowed_models`.
+7. `artifact_type` is independently present in `allowed_artifact_types`.
+8. Every other execution-relevant field is included in the configuration
+   digest (so it cannot vary without producing a different
+   `configuration_id`).
+
+There is no precedence rule where membership in `allowed_configuration_ids`
+overrides the other allowlists (2–7 above), and no rule where matching the
+individual allowlists alone authorizes a `configuration_id` that is absent
+from `allowed_configuration_ids`. This redundancy is intentional defense in
+depth, not an inconsistency to be resolved by picking one check over the
+other.
 
 ## Explicitly excluded (runtime-derived; must NOT appear in this document)
 
@@ -53,6 +105,9 @@ regardless of value.
   schema version does not support relaxing them.
 - `campaign_id` not matching the `EXP-NNNN` pattern, or matching an Evidence
   number pattern: reject.
+- `allowed_configuration_ids` empty, containing a malformed or non-lowercase
+  entry, containing a duplicate entry, or not sorted lexicographically:
+  reject.
 
 ## Versioning
 
@@ -76,9 +131,9 @@ allowed_models:
   - "example-model-identifier"
 allowed_artifact_types:
   - "repository_sensemaking_brief"
-allowed_configurations:
-  - artifact_type: "repository_sensemaking_brief"
-    prompt_revision: "example-v0"
+allowed_configuration_ids:
+  - "1111111111111111111111111111111111111111111111111111111111111111"
+  - "2222222222222222222222222222222222222222222222222222222222222222"
 max_attempt_slots: 5
 max_provider_invocations: 5
 max_attempts_per_configuration: 2
