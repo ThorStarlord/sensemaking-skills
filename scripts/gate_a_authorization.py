@@ -126,6 +126,8 @@ GATE_A_CAPABILITY_NOT_LIVE = "GATE_A_CAPABILITY_NOT_LIVE"
 GATE_A_CAPABILITY_CONCURRENT_CONSUMPTION = "GATE_A_CAPABILITY_CONCURRENT_CONSUMPTION"
 GATE_A_CAPABILITY_CONSUMPTION_FAILED = "GATE_A_CAPABILITY_CONSUMPTION_FAILED"
 GATE_A_CAPABILITY_IMMUTABLE = "GATE_A_CAPABILITY_IMMUTABLE"
+GATE_A_ARTIFACT_ROOT_HEAD_MISMATCH = "GATE_A_ARTIFACT_ROOT_HEAD_MISMATCH"
+GATE_A_ARTIFACT_SNAPSHOT_BYTES_MISMATCH = "GATE_A_ARTIFACT_SNAPSHOT_BYTES_MISMATCH"
 
 ALL_FAILURE_CODES = tuple(
     sorted(
@@ -293,6 +295,15 @@ class AuthorizationContext:
     required_framework_paths: tuple = (CONTRACT_PACKAGE_PATH, CONTRACT_CHECKLIST_PATH)
     required_target_paths: tuple = ()
     evidence_output_dir: Optional[Path] = None
+    # When set, run-control-artifact provenance is proven against a real git
+    # commit in THIS root (the "artifact snapshot") rather than resolved
+    # relative to framework_root. `run_control_commit_sha` is then the exact
+    # commit from which every authorization artifact is read; artifact_root
+    # must be checked out at that commit, every authorization path must be
+    # physically contained within it, and the bytes read must exactly match
+    # the git object bytes at that revision. Independent of framework_root
+    # and target_root, which remain pinned and verified exactly as before.
+    artifact_root: Optional[Path] = None
 
 
 @dataclass(frozen=True)
@@ -1825,6 +1836,46 @@ def resolve_run_control_commit(framework_root: Path, artifact_path: Path) -> str
     return out.stdout.strip() if out.returncode == 0 else ""
 
 
+def verify_artifact_snapshot_bytes(artifact_root: Path, snapshot_sha: str,
+                                    path: Path) -> Optional[str]:
+    """Prove `path`'s current bytes exactly equal the git object bytes for
+    that same path at `snapshot_sha`, inside `artifact_root`.
+
+    Read-only. Fails closed (returns a failure code, never a silent pass) on
+    a missing/untracked/ambiguous path, a dirty working tree, or any git
+    error -- never treats "cannot prove" as "must be fine".
+    """
+    try:
+        rel = os.path.relpath(path, artifact_root).replace("\\", "/")
+    except (OSError, ValueError):
+        return GATE_A_PATH_ESCAPE_PROHIBITED
+    try:
+        exists = subprocess.run(
+            ["git", "-C", str(artifact_root), "cat-file", "-e", f"{snapshot_sha}:{rel}"],
+            capture_output=True, timeout=30, check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return GATE_A_ARTIFACT_SNAPSHOT_BYTES_MISMATCH
+    if exists.returncode != 0:
+        return GATE_A_ARTIFACT_SNAPSHOT_BYTES_MISMATCH
+    try:
+        shown = subprocess.run(
+            ["git", "-C", str(artifact_root), "show", f"{snapshot_sha}:{rel}"],
+            capture_output=True, timeout=30, check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return GATE_A_ARTIFACT_SNAPSHOT_BYTES_MISMATCH
+    if shown.returncode != 0:
+        return GATE_A_ARTIFACT_SNAPSHOT_BYTES_MISMATCH
+    try:
+        disk_bytes = path.read_bytes()
+    except OSError:
+        return GATE_A_ARTIFACT_SNAPSHOT_BYTES_MISMATCH
+    if shown.stdout != disk_bytes:
+        return GATE_A_ARTIFACT_SNAPSHOT_BYTES_MISMATCH
+    return None
+
+
 # ============================================================================
 # Value validation helpers
 # ============================================================================
@@ -2191,17 +2242,55 @@ def authorize(context: AuthorizationContext, *,
     # filesystem convention (section 2f). The artifacts on disk must be the
     # ones introduced by the authorized run-control commit. This fails closed:
     # a resolver that cannot demonstrate the commit is a failure, not a skip.
-    resolve_rc = run_control_commit_resolver or resolve_run_control_commit
-    observed_rc = resolve_rc(context.framework_root, context.authorization_record_path)
-    if not observed_rc:
-        return _fail(GATE_A_RUN_CONTROL_COMMIT_MISMATCH,
-                     "cannot demonstrate which commit introduced the run-control "
-                     "artifacts; immutability is unproven"), None
-    if observed_rc.strip() != context.run_control_commit_sha.strip():
-        return _fail(GATE_A_RUN_CONTROL_COMMIT_MISMATCH,
-                     "run-control artifacts do not come from the authorized "
-                     "immutable run-control commit"), None
-    passed.append("run_control_commit")
+    if context.artifact_root is not None:
+        # Artifact-root topology: run_control_commit_sha is the exact
+        # artifact-snapshot commit. framework_root may be pinned to an older,
+        # unrelated revision (its own check above already proved that); the
+        # run-control artifacts are proven against artifact_root instead.
+        for label, path in (
+            ("authorization_record_path", context.authorization_record_path),
+            ("authorization_digest_path", context.authorization_digest_path),
+            ("owner_approval_path", context.owner_approval_path),
+        ):
+            code = check_run_control_path(path, context.artifact_root)
+            if code:
+                return _fail(code, f"{label} fails artifact-root containment"), None
+        passed.append("artifact_root_containment")
+
+        artifact_head = head_fn(context.artifact_root)
+        if artifact_head != context.run_control_commit_sha.strip():
+            return _fail(
+                GATE_A_ARTIFACT_ROOT_HEAD_MISMATCH,
+                f"artifact_root HEAD {artifact_head[:12] or '<unknown>'} != "
+                f"authorized {context.run_control_commit_sha[:12]}",
+            ), None
+        passed.append("artifact_root_head_matches_pin")
+
+        for label, path in (
+            ("authorization_record_path", context.authorization_record_path),
+            ("authorization_digest_path", context.authorization_digest_path),
+            ("owner_approval_path", context.owner_approval_path),
+        ):
+            code = verify_artifact_snapshot_bytes(
+                context.artifact_root, context.run_control_commit_sha, path
+            )
+            if code:
+                return _fail(
+                    code, f"{label} bytes do not match the pinned artifact snapshot"
+                ), None
+        passed.append("artifact_snapshot_bytes_verified")
+    else:
+        resolve_rc = run_control_commit_resolver or resolve_run_control_commit
+        observed_rc = resolve_rc(context.framework_root, context.authorization_record_path)
+        if not observed_rc:
+            return _fail(GATE_A_RUN_CONTROL_COMMIT_MISMATCH,
+                         "cannot demonstrate which commit introduced the run-control "
+                         "artifacts; immutability is unproven"), None
+        if observed_rc.strip() != context.run_control_commit_sha.strip():
+            return _fail(GATE_A_RUN_CONTROL_COMMIT_MISMATCH,
+                         "run-control artifacts do not come from the authorized "
+                         "immutable run-control commit"), None
+        passed.append("run_control_commit")
 
     # ---- 10. Evidence identity and artifact type -------------------------
     if not EVIDENCE_NUMBER_RE.match(str(record.get("evidence_number")).strip()):
