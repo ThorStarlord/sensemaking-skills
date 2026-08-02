@@ -292,6 +292,126 @@ def test_no_prose_claims_individual_allowlists_authorize_unlisted_configuration_
     assert "no rule where matching the individual allowlists" in combined
 
 
+def test_adr_defines_jcs_canonicalization():
+    text = _adr_text()
+    assert "rfc 8785" in text.lower(), (
+        "ADR 0023 must pin RFC 8785 (JCS) as the canonical serialization "
+        "algorithm for schema-v1 digests"
+    )
+    assert "json canonicalization scheme" in text.lower() or "jcs" in text.lower()
+
+
+def test_no_prose_suggests_hashing_raw_yaml_bytes():
+    combined = _normalize_whitespace(_adr_text().lower() + " " + (
+        SCHEMA_DIR / "README.md"
+    ).read_text(encoding="utf-8").lower())
+    assert "must not hash the original yaml presentation bytes" in combined, (
+        "the canonical-serialization contract must explicitly forbid "
+        "hashing raw YAML presentation bytes"
+    )
+
+
+def test_adr_rejects_duplicate_yaml_keys_and_forbidden_constructs():
+    text = _adr_text().lower()
+    for forbidden in (
+        "duplicate mapping keys",
+        "yaml aliases",
+        "yaml anchors",
+        "explicit yaml tags",
+        "merge keys",
+    ):
+        assert forbidden in text, (
+            f"ADR 0023 §10b must explicitly reject {forbidden!r} in "
+            "digest-bearing YAML input"
+        )
+
+
+def test_adr_rejects_non_finite_numbers():
+    text = _adr_text().lower()
+    assert "non-finite numbers" in text or "nan" in text
+
+
+def test_policy_digest_excluded_from_its_own_hashed_field_set():
+    text = _adr_text()
+    # §10c must state policy_digest hashes every normative field "except"
+    # policy_digest itself — guard against a future edit accidentally
+    # re-including it in its own hash input.
+    assert "except" in text.lower() and "policy_digest" in text
+    idx = text.lower().find("policy** (`policy_digest`)")
+    assert idx != -1, "ADR 0023 §10c must define the policy hashed field set explicitly"
+    section = text[idx : idx + 400].lower()
+    assert "except" in section and "policy_digest" in section
+
+
+def test_configuration_id_excluded_from_its_own_hashed_field_set():
+    text = _adr_text()
+    idx = text.lower().find("configuration** (`configuration_id`)")
+    assert idx != -1, (
+        "ADR 0023 §10c must define the configuration hashed field set explicitly"
+    )
+    section = text[idx : idx + 600]
+    assert "`configuration_id` itself" in section
+
+
+def test_campaign_id_excluded_from_configuration_hashed_field_set():
+    text = _adr_text()
+    idx = text.lower().find("configuration** (`configuration_id`)")
+    assert idx != -1
+    section = text[idx : idx + 600]
+    assert "`campaign_id`" in section
+    assert "excluded" in section.lower() or "explicitly excluded" in section.lower()
+
+
+def test_configuration_hashed_field_list_is_exact_and_complete():
+    expected_fields = [
+        "configuration_schema_version",
+        "framework_sha",
+        "target_repository",
+        "target_sha",
+        "model_identifier",
+        "prompt_or_skill_revision",
+        "validator_revision",
+        "artifact_type",
+        "execution_parameters",
+    ]
+    adr_text = _adr_text()
+    idx = adr_text.lower().find("configuration** (`configuration_id`)")
+    assert idx != -1
+    section = adr_text[idx : idx + 900]
+    for field in expected_fields:
+        assert f"`{field}`" in section, (
+            f"ADR 0023 §10c configuration hashed field set is missing "
+            f"required field `{field}`"
+        )
+
+    config_text = _configuration_identity_text()
+    for field in expected_fields:
+        assert field in config_text, (
+            f"configuration-identity.schema.md must list `{field}` as a "
+            "required field"
+        )
+
+
+def test_non_finite_numbers_are_rejected_not_permitted():
+    text = _adr_text().lower()
+    assert "non-finite numbers" in text
+    assert "permitted" not in text.split("non-finite numbers")[1][:60]
+
+
+def test_trailing_newline_treatment_is_specified():
+    text = _adr_text().lower()
+    assert "no trailing newline is included in the hashed bytes" in text
+
+
+def test_policy_and_configuration_use_the_same_canonicalization_algorithm():
+    text = _adr_text().lower()
+    # Both digests must be defined in terms of the same §10a algorithm,
+    # not two independently-described mechanisms.
+    assert "used identically by every digest in this adr" in text or (
+        "rfc 8785" in text and text.count("rfc 8785") >= 2
+    )
+
+
 def test_evidence_0016_and_0015_directories_untouched_by_this_module():
     """This test module never writes under experiments/run-control or
     experiments/evidence. It only reads. This assertion documents that

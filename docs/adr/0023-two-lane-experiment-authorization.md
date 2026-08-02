@@ -301,13 +301,111 @@ it never merges them into one document.
 
 ## 10. Digest and snapshot topology
 
-- `configuration_id` = digest (SHA-256) of the canonical serialization of
-  the fields in §9d. Canonical serialization: UTF-8, LF line endings, keys
-  sorted, no trailing whitespace — matching the existing convention used for
-  `preparation_package_sha256` / `gate_d_checklist_sha256` in the Evidence
-  0016 authorization record.
-- `policy_digest` = digest of the canonical serialization of the campaign
-  policy's normative fields (§9a), excluding `policy_digest` itself.
+### 10a. Canonical serialization algorithm (schema v1, normative)
+
+`UTF-8, LF line endings, keys sorted, no trailing whitespace` is necessary
+but not sufficient to guarantee byte-identical digests across independent
+implementations: it does not pin down number formatting, boolean/null
+representation, nested-structure ordering, string escaping, Unicode
+normalization, duplicate-key handling, or YAML-specific constructs (tags,
+anchors, aliases, merge keys). Schema v1 therefore defines exactly one
+canonicalization algorithm, used identically by every digest in this ADR
+(`configuration_id`, `policy_digest`, and any future schema-v1 digest that
+claims to reuse "the canonical serialization"):
+
+1. The source artifact may be authored as YAML.
+2. The YAML document is parsed under the restricted, fail-closed rules in
+   §10b into a JSON-compatible data model: object (string keys only),
+   array, string, JSON number, boolean, or `null`. No other value type is
+   permitted after parsing.
+3. The resulting data model — restricted to exactly the hashed field set
+   for that digest (§10c) — is serialized using
+   [RFC 8785, the JSON Canonicalization Scheme (JCS)](https://www.rfc-editor.org/rfc/rfc8785).
+   JCS fully defines key ordering, whitespace, string escaping, and number
+   formatting; schema v1 does not define a second, competing
+   number-formatting or key-ordering rule on top of it.
+4. SHA-256 is computed over the resulting UTF-8 bytes.
+5. No trailing newline is included in the hashed bytes (JCS output has
+   none; implementations must not append one before hashing).
+
+Consumers **must not** hash the original YAML presentation bytes (comments,
+indentation, quoting style, key order in the source file, and line wrapping
+are all presentation-only and must not affect the digest — only the parsed,
+restricted data model does). A validator that hashes raw YAML bytes instead
+of the JCS output of the restricted data model does not implement this
+contract.
+
+Number semantics: JSON-number canonicalization follows RFC 8785's own
+canonical number representation; schema v1 does not define a second,
+custom number-formatting mechanism. An implementation must reject a numeric
+value that cannot be represented under RFC 8785's data model (e.g.
+non-finite values, see §10b) rather than silently coercing it. A numeric
+value (`1`, `1.0`) and a string value (`"1"`) are distinct source values in
+the parsed data model and must never be treated as equivalent or normalized
+into one another, except exactly as RFC 8785 itself defines for its
+canonical number representation.
+
+### 10b. YAML input restrictions (fail-closed, every digest-bearing artifact)
+
+Before canonicalization, parsing of any digest-bearing schema-v1 artifact
+(campaign policy, configuration identity, and any future schema-v1 artifact
+whose digest reuses this algorithm) **must reject**:
+
+- duplicate mapping keys;
+- YAML aliases;
+- YAML anchors;
+- explicit YAML tags;
+- merge keys (`<<`);
+- non-string mapping keys;
+- non-JSON scalar types (anything outside object/array/string/number/
+  boolean/null);
+- implicit timestamp/date objects (a YAML loader that auto-converts an
+  RFC3339-looking scalar to a native date/datetime type instead of leaving
+  it as a string);
+- non-finite numbers (`NaN`, positive infinity, negative infinity);
+- multiple YAML documents in one stream;
+- implementation-specific custom types (e.g. `!!python/object`, `!!binary`
+  used to smuggle a non-JSON type).
+
+A parser that accepts any of the above is not a conforming schema-v1
+parser. This restriction exists so two independent implementations, given
+the same source YAML, always produce the same restricted data model and
+therefore the same digest — a YAML loader's default (non-fail-closed)
+behavior on any of these constructs is implementation-defined and would
+silently break that guarantee.
+
+### 10c. Hashed field sets (normative, exact)
+
+**Policy** (`policy_digest`): hash every required normative field listed in
+§9a **except** `policy_digest` itself. Unknown top-level fields are
+rejected before hashing (§9a fail-closed rule, restated in
+`campaign-policy.schema.md`'s "Fail-closed rules"). `allowed_configuration_ids`
+must already be lexicographically sorted before hashing — sort order is
+part of the normative value, not a canonicalization step applied at hash
+time. A change to any normative value changes `policy_digest` and
+invalidates the approval bound to the prior digest (§9c).
+
+**Configuration** (`configuration_id`): hash exactly these fields, no more
+and no fewer:
+
+- `configuration_schema_version`
+- `framework_sha`
+- `target_repository`
+- `target_sha`
+- `model_identifier`
+- `prompt_or_skill_revision`
+- `validator_revision`
+- `artifact_type`
+- `execution_parameters`
+
+Explicitly excluded from the configuration hash: `configuration_id` itself
+(the field being computed) and `campaign_id` (contextual, not
+normative-to-the-hash — see `configuration-identity.schema.md`'s Identity
+rule note). This exact list is the sole normative definition; it is
+restated identically in `configuration-identity.schema.md` and must not be
+described elsewhere only as "the fields in §9d" or any other indirect
+reference that could drift from this list.
+
 - **No circular dependency**: consistent with the existing Evidence 0016
   precedent (`authorization-record.yaml`'s documented treatment of
   `run_control_commit_sha` and `execution_framework_sha`), no digest-hashed
@@ -483,6 +581,17 @@ already documents for `run_control_commit_sha` and `execution_framework_sha`.
   membership only (§9d), checked conjunctively with the other allowlists. A
   future schema version may reconsider a constraint language, but only with
   an explicit precedence/intersection rule defined alongside it.
+- **Prose-only canonical serialization ("UTF-8, LF line endings, sorted
+  keys, no trailing whitespace") with no pinned number/boolean/nested-
+  structure format.** Rejected: it does not uniquely define serialization
+  of nested structures, strings, booleans, nulls, numbers, Unicode,
+  duplicate keys, or YAML-specific constructs (tags, anchors, aliases,
+  merge keys), so two independent implementations could compute different
+  bytes — and therefore different digests — for the same semantic content.
+  Schema v1 instead pins RFC 8785 (JCS) plus explicit fail-closed YAML
+  input restrictions (§10a, §10b), so Phase 2 (#118) implements a single,
+  fully specified algorithm rather than inventing the missing semantics
+  itself.
 
 ## 18. Phase dependency sequence (Issues #118–#122)
 

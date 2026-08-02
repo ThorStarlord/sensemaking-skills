@@ -27,14 +27,22 @@ operative.**
   example.
 - Every example is marked `EXAMPLE_ONLY_NOT_AUTHORIZATION` (approval
   examples) or `EXAMPLE_ONLY_NOT_OPERATIVE` (all other examples) and uses
-  unmistakable placeholder values (`EXP-0000-EXAMPLE`, SHAs of all `0`s or
-  `f`s, `example.invalid` hostnames) so no example can be mistaken for, or
-  copy-pasted into, an operative record.
+  unmistakable placeholder values (`EXP-0000-EXAMPLE`; SHAs built from
+  repeating `dead`/`beef`-style hex words, e.g.
+  `0000000000000000000000000000000000dead`; `example.invalid` hostnames) so
+  no example can be mistaken for, or copy-pasted into, an operative record.
 - `schema_version` is present on every top-level document and is a required
   field. A future consumer must fail closed (reject, not best-effort-parse)
   on an unrecognized `schema_version` or an unknown required field.
 - Digest fields use SHA-256 over the canonical serialization defined in
-  ADR 0023 §10 (UTF-8, LF line endings, sorted keys, no trailing whitespace).
+  ADR 0023 §10: source YAML is parsed under fail-closed restrictions
+  (§10b — no duplicate keys, aliases, anchors, tags, or merge keys) into a
+  restricted JSON-compatible data model, then serialized with RFC 8785
+  (JCS) before hashing. Consumers must not hash the original YAML
+  presentation bytes; comments, indentation, quoting style, key order, and
+  line wrapping in the source YAML never affect the digest. See ADR 0023
+  §10a–§10c for the exact algorithm and the exact hashed field set for each
+  digest.
 - These schemas are declarative documentation, not JSON Schema/YAML Schema
   documents with a validator binding — consistent with this repository's
   existing convention of normative-YAML-plus-prose contracts (see

@@ -13,7 +13,7 @@ document's `policy_digest`. See ADR 0023 §9a, §9c.
 |---|---|---|---|
 | `policy_schema_version` | string | yes | Must be `"1"` for this contract. Unknown version fails closed. |
 | `campaign_id` | string | yes | Pattern `EXP-\d{4}(-[a-z0-9-]+)?`. Never an Evidence number. |
-| `policy_digest` | string (sha256 hex) | computed, yes once set | Digest of this document's normative fields (all fields except `policy_digest` itself), per ADR 0023 §10. |
+| `policy_digest` | string (sha256 hex) | computed, yes once set | SHA-256 over the RFC 8785 (JCS) canonical serialization of this document's normative fields (every required field in this table except `policy_digest` itself). Unknown fields are rejected before hashing. See ADR 0023 §10a–§10c for the exact algorithm and hashed field set. |
 | `classification` | string enum | yes | Must be exactly `EXPLORATORY_NOT_CANONICAL_EVIDENCE`. |
 | `allowed_framework_shas` | list[string] | yes | Exact commit SHAs only. No branch names, no `HEAD`, no mutable refs. |
 | `allowed_targets` | list[object{repository, sha}] | yes | Exact repository URL + exact commit SHA pairs. |

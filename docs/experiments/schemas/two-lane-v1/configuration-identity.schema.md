@@ -12,7 +12,7 @@ shares it.
 | Field | Type | Immutable | Description |
 |---|---|---|---|
 | `configuration_schema_version` | string | yes | Must be `"1"`. |
-| `configuration_id` | string (sha256 hex) | computed | Digest of every other normative field below, canonical serialization per ADR 0023 §10. |
+| `configuration_id` | string (sha256 hex) | computed | SHA-256 over the RFC 8785 (JCS) canonical serialization of exactly these fields: `configuration_schema_version`, `framework_sha`, `target_repository`, `target_sha`, `model_identifier`, `prompt_or_skill_revision`, `validator_revision`, `artifact_type`, `execution_parameters`. Excludes `configuration_id` itself and `campaign_id`. See ADR 0023 §10a–§10c for the exact algorithm. |
 | `campaign_id` | string | yes | The campaign this configuration was computed under. Configurations are not shared across campaigns even if byte-identical, so budget accounting stays campaign-scoped. |
 | `framework_sha` | string (exact commit SHA) | yes | Must be a member of the campaign policy's `allowed_framework_shas`. Never a branch name or `HEAD`. |
 | `target_repository` | string (URL) | yes | Must be a member of the campaign policy's `allowed_targets`. |
@@ -25,11 +25,20 @@ shares it.
 
 ## Identity rule
 
-Two attempts share one `configuration_id` **only** when every field above
-(excluding `configuration_id` itself and `campaign_id`, which is contextual
-not normative-to-the-hash — see note) is byte-identical. Any change to any
-field — including an `execution_parameters` value — produces a new
-`configuration_id`. There is no partial-match or fuzzy-equivalence mode.
+`configuration_id` is computed by hashing exactly this field set — no more,
+no fewer:
+
+`configuration_schema_version`, `framework_sha`, `target_repository`,
+`target_sha`, `model_identifier`, `prompt_or_skill_revision`,
+`validator_revision`, `artifact_type`, `execution_parameters`.
+
+Excluded from the hash: `configuration_id` itself (the field being
+computed) and `campaign_id` (contextual, not normative-to-the-hash — see
+note below). Two attempts share one `configuration_id` **only** when every
+field in that list is byte-identical (after canonicalization, ADR 0023
+§10a). Any change to any hashed field — including an `execution_parameters`
+value — produces a new `configuration_id`. There is no partial-match or
+fuzzy-equivalence mode.
 
 > Note: `campaign_id` is included in the document for context and is part of
 > what scopes budget accounting, but implementations MUST compute
