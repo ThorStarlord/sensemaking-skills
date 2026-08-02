@@ -13,12 +13,12 @@ operative.**
 
 | Contract | File | Produced by (future) | Consumed by (future) |
 |---|---|---|---|
-| Campaign policy | `campaign-policy.schema.md` | Human + agent (drafted by agent, approved by human) | Campaign consumer (#120) |
-| Campaign approval | `campaign-approval.schema.md` | Human (approval act) | Campaign consumer (#120) |
+| Campaign policy | `campaign-policy.schema.md` | Human + agent (drafted by agent, approved by human) | Campaign consumer (#119) |
+| Campaign approval | `campaign-approval.schema.md` | Human (approval act) | Campaign consumer (#119) |
 | Configuration identity | `configuration-identity.schema.md` | Campaign consumer, at reservation time | Attempt reservation, attempt result |
 | Attempt reservation | `attempt-reservation.schema.md` | Campaign consumer, before provider invocation | Attempt result, campaign summary |
-| Attempt result | `attempt-result.schema.md` | Attempt executor (#121), after provider response or abort | Campaign summary |
-| Campaign summary | `campaign-summary.schema.md` | Ledger (#121) | Human review, canonical-promotion decision (§13 of ADR 0023) |
+| Attempt result | `attempt-result.schema.md` | Attempt executor (#120), after provider response or abort | Campaign summary |
+| Campaign summary | `campaign-summary.schema.md` | Ledger (#120) | Human review, canonical-promotion decision (§13 of ADR 0023) |
 
 ## Conventions
 

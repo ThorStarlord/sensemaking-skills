@@ -111,26 +111,26 @@ nothing at runtime.
 
 | # | Threat | Control defined here | Enforced by |
 |---|---|---|---|
-| 1 | Agent self-authorization (agent grants itself a campaign) | Campaign approval requires a human-authored, out-of-band-verifiable approval record (§12); the agent may only prepare, digest, and validate | Phase 3 (#120) |
-| 2 | Fabricated human identity | Approval provenance model distinguishes claimed identity from verifiable provenance from runtime-checkable fact (§12) | Phase 3 (#120) |
+| 1 | Agent self-authorization (agent grants itself a campaign) | Campaign approval requires a human-authored, out-of-band-verifiable approval record (§12); the agent may only prepare, digest, and validate | Phase 3 (#119) |
+| 2 | Fabricated human identity | Approval provenance model distinguishes claimed identity from verifiable provenance from runtime-checkable fact (§12) | Phase 2 (#118) |
 | 3 | Policy mutation after approval | Any change to normative policy bytes invalidates the approval; new digest, new approval required (§9c) | Phase 2 (#118) |
 | 4 | Configuration drift | New `configuration_id` on any execution-relevant field change (§10); attempts grouped only by identical configuration | Phase 2/4 (#118, #120) |
-| 5 | Model substitution | Model identifier is a normative configuration field and a policy allowlist field; mismatch fails closed | Phase 3 (#120) |
-| 6 | Target or framework drift | Target/framework SHA are normative configuration fields and policy allowlist fields | Phase 3 (#120) |
+| 5 | Model substitution | Model identifier is a normative configuration field and a policy allowlist field; mismatch fails closed | Phase 3 (#119) |
+| 6 | Target or framework drift | Target/framework SHA are normative configuration fields and policy allowlist fields | Phase 3 (#119) |
 | 7 | Lane confusion (exploratory treated as canonical, or vice versa) | Disjoint schemas, disjoint namespaces (`EXP-NNNN` vs Evidence numbers), mandatory `EXPLORATORY_NOT_CANONICAL_EVIDENCE` label (§11) | Phase 2/6 (#118, #122) |
 | 8 | Exploratory output presented as canonical | §13 canonical promotion always creates a new record; nothing renames an exploratory artifact | Phase 5/6 (#121, #122) — and this ADR as a documentation invariant |
 | 9 | Hidden retries | Every attempt gets a new `attempt_id`; policy declares `fallback_prohibited` / `repair_prohibited` (§9a) | Phase 4 (#120) |
-| 10 | Selective omission of failed attempts | Attempt result schema requires permanent preservation of every terminal state (§9e); ledger append-only (§9f) | Phase 4 (#121) |
-| 11 | Attempt ID reuse | `attempt_id` is durable and unique per reservation; schema forbids reissue (§8, §9d) | Phase 4 (#121) |
-| 12 | Reservation created after provider invocation | Reservation must exist and be durable *before* invocation; attempt result schema references `reservation_id` created strictly earlier (§8) | Phase 4 (#121) |
-| 13 | Cost or invocation-budget exhaustion | Policy declares enforceable ceilings (attempt slots, provider invocations, per-configuration limits); §14 distinguishes pre-invocation-enforceable from post-invocation-measured | Phase 3/4 (#120, #121) |
-| 14 | Campaign expiry | Policy declares a validity/expiry rule; expired campaigns transition to `EXPIRED` and accept no further reservations | Phase 3 (#120) |
-| 15 | Concurrent execution beyond policy | Policy declares a `concurrency_ceiling`; ledger tracks in-flight attempts | Phase 4 (#121) |
-| 16 | Ledger or result truncation | Campaign summary schema requires the ledger to be append-only and complete relative to reservations issued (§9f) | Phase 4 (#121) |
+| 10 | Selective omission of failed attempts | Attempt result schema requires permanent preservation of every terminal state (§9e); ledger append-only (§9f) | Phase 4 (#120) |
+| 11 | Attempt ID reuse | `attempt_id` is durable and unique per reservation; schema forbids reissue (§8, §9d) | Phase 4 (#120) |
+| 12 | Reservation created after provider invocation | Reservation must exist and be durable *before* invocation; attempt result schema references `reservation_id` created strictly earlier (§8) | Phase 4 (#120) |
+| 13 | Cost or invocation-budget exhaustion | Policy declares enforceable ceilings (attempt slots, provider invocations, per-configuration limits); §14 distinguishes pre-invocation-enforceable from post-invocation-measured | Phase 3/4 (#119, #120) |
+| 14 | Campaign expiry | Policy declares a validity/expiry rule; expired campaigns transition to `EXPIRED` and accept no further reservations | Phase 2 (#118) |
+| 15 | Concurrent execution beyond policy | Policy declares a `concurrency_ceiling`; ledger tracks in-flight attempts | Phase 4 (#120) |
+| 16 | Ledger or result truncation | Campaign summary schema requires the ledger to be append-only and complete relative to reservations issued (§9f) | Phase 4 (#120) |
 | 17 | Circular policy/snapshot hashes | No schema field requires a digest-hashed file to contain the commit SHA of the commit containing that file (§10, §15) | This ADR (documentation-level) |
 | 18 | Mutable-ref dependence | Configuration identity is defined only over exact SHAs/digests, never branch names or `HEAD` | This ADR (documentation-level) + Phase 2 (#118) |
-| 19 | Raw-output omission | Attempt result schema requires a reference to the raw provider output, not only a post-processed artifact | Phase 4 (#121) |
-| 20 | Automatic merge or target mutation | Policy declares `target_mutation_prohibited` and `automatic_merge_prohibited` as immutable fields (§9a) | Phase 3/4 (#120, #121) |
+| 19 | Raw-output omission | Attempt result schema requires a reference to the raw provider output, not only a post-processed artifact | Phase 4 (#120) |
+| 20 | Automatic merge or target mutation | Policy declares `target_mutation_prohibited` and `automatic_merge_prohibited` as immutable fields (§9a) | Phase 2/3 (#118, #119) |
 
 ## 7. Permanent invariants
 
@@ -340,7 +340,7 @@ Four distinct concepts, never conflated:
    API review URL/id).
 3. **What the current runtime can actually verify**: as of Phase 1, nothing
    — no runtime component reads or checks a campaign approval yet. A future
-   consumer (Phase 3, #120) is scoped to verify provenance mechanically
+   consumer (Phase 3, #119) is scoped to verify provenance mechanically
    where possible (e.g. a signed commit's GPG/SSH signature, a GitHub review
    API response) and must fail closed when it cannot.
 4. **What remains a governance assumption**: that the named human is who
@@ -429,7 +429,7 @@ already documents for `run_control_commit_sha` and `execution_framework_sha`.
   trades per-attempt ceremony for a stronger up-front policy + budget bound;
   Lane B keeps maximum per-invocation ceremony for canonical claims.
 - Nothing here is enforced yet. A campaign policy prepared today has no
-  runtime consumer; `EXP-0001` cannot legally exist until Phase 3 (#120)
+  runtime consumer; `EXP-0001` cannot legally exist until Phase 3 (#119)
   ships an authorization capability, matching Issue #117's explicit
   out-of-scope list.
 - The schemas add real documentation and review surface (six new contract
@@ -461,22 +461,22 @@ already documents for `run_control_commit_sha` and `execution_framework_sha`.
 
 ## 18. Phase dependency sequence (Issues #118–#122)
 
-1. **#118 — Campaign policy and approval validators.** Structural + digest
-   validation of the schemas defined here. No provider invocation.
-2. **#119** *(reserved per program sequence; if absorbed into #118/#120,
-   record that decision as an amendment to Issue #116, not silently here)*.
-3. **#120 — Explicit exploratory authorization capability and
+1. **Phase 2 — #118, campaign policy and approval validators.** Structural +
+   digest validation of the schemas defined here: policy digest binding,
+   approval identity/status, expiry, allowlists, limits, and configuration
+   hashing. No provider invocation.
+2. **Phase 3 — #119, exploratory authorization capability and
    provider-boundary enforcement.** Mirrors ADR 0022's capability model for
-   Lane A; this is where §12's provenance verification and §6 threats 1–8
-   get real enforcement.
-4. **#121 — Crash-safe attempt ledger, budgets, and raw-output
-   preservation.** Implements §8b, §9e, §9f, and §6 threats 9–19.
-5. **#122 — Prepare `EXP-0001-stage1-auteur-autonomy-pilot` without
-   executing it.** Uses the schemas here to author (not run) the first real
-   campaign policy.
-6. *(Program step 6, execute-and-report the approved pilot, is out of
-   Issue #116's Phase 1–5 numbering as currently filed and is explicitly out
-   of scope for this ADR.)*
+   Lane A; this is where §12's provenance verification and §6 threats 1, 5,
+   6, and 13 get real enforcement at the provider boundary.
+3. **Phase 4 — #120, crash-safe attempt ledger, budgets, and raw-output
+   preservation.** Implements §8b, §9e, §9f, and the remaining §6 ledger/
+   accounting threats (9–16, 19).
+4. **Phase 5 — #121, prepare `EXP-0001`.** Uses the schemas here to author
+   (not run) the first real campaign policy, non-executable.
+5. **Phase 6 — #122, execute and report `EXP-0001`.** Executes the approved
+   campaign within its envelope and produces the campaign summary; explicitly
+   out of scope for this ADR.
 
 Each phase is a separate PR, independently reviewed at an exact head, merged
 before the next dependent phase starts.
@@ -493,7 +493,7 @@ remains governed exclusively by Lane B / ADR 0022 / `scripts/gate_a_authorizatio
 This ADR is a governance and schema contract. It does not create, approve,
 or run any campaign or attempt. `EXP-0001` does not exist after this ADR
 merges. No provider is invoked as a result of this document. Runtime
-enforcement is deferred to Phases 2–5 (#118–#121) as listed in §18.
+enforcement is deferred to Phases 2–6 (#118–#122) as listed in §18.
 
 ## Status rationale
 

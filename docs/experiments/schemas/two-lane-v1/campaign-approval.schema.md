@@ -31,7 +31,7 @@ operative campaign approval may be created under Issue #117 — see the
 - Any claim that `approval_provenance` is currently verified by running
   code. As of Phase 1, nothing in this repository checks
   `approval_provenance.reference`. That verification is explicitly deferred
-  to Phase 3 (#120) — see ADR 0023 §12 item 3.
+  to Phase 3 (#119) — see ADR 0023 §12 item 3.
 
 ## Fail-closed rules
 
