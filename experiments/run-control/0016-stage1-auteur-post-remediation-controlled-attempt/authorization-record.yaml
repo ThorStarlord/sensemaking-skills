@@ -1,9 +1,28 @@
+# NOTE ON run_control_commit_sha (not a required record field; documented
+# here for reviewers per CLAUDE.md verification discipline). Per
+# scripts/gate_a_authorization.py (PR #114, artifact-root topology),
+# run_control_commit_sha is never stored inside this record -- it is a
+# runtime-resolved value on AuthorizationContext, supplied by the caller at
+# authorize() time. With artifact_root set, it means exactly one thing: the
+# artifact_root HEAD commit from which authorization-record.yaml,
+# authorization-record.sha256, and owner-approval.md are all byte-proven
+# (git cat-file / git show), independent of framework_root. That commit does
+# not exist until this preparation branch itself is committed, so it cannot
+# be pinned inside this digest-hashed file without creating a circular
+# dependency (this file's bytes would need to contain a hash of a commit
+# that itself contains this file's bytes). This is the same reasoning
+# docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md already
+# applies to execution_framework_sha (section 2a): the record is authored
+# after the revision it pins is already immutable. The operative
+# run_control_commit_sha will therefore be supplied by the runtime at
+# execution time, resolved against artifact_root's real HEAD -- never
+# guessed or pre-written here.
 schema_version: "1"
 authorization_status: AUTHORIZED_FOR_ONE_CONTROLLED_INVOCATION
 authorization_scope: "single controlled Stage 1 invocation, Evidence 0016, one repository-sensemaking brief over ThorStarlord/auteur at the pinned target SHA"
 evidence_number: "0016"
 evidence_slug: 0016-stage1-auteur-post-remediation-controlled-attempt
-execution_framework_sha: cad8ef227d6c20a28e786e90c0401f776f4b7b51
+execution_framework_sha: 98a08d50a0a8dbca4599296e717ab60f1d567d83
 target_repository: https://github.com/ThorStarlord/auteur.git
 target_sha: 0653defb05625f2fcde0ac32eac6e59ccf7eeb90
 exact_model: claude-sonnet-5
@@ -12,7 +31,7 @@ preparation_package_path: docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPA
 preparation_package_sha256: f06f0c62b22f7a1586ff8a46e4d4b0326be8062188226094b89cdbd2eb24098e
 gate_d_checklist_path: docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md
 gate_d_checklist_sha256: 4264fa4b435bcf26975b16f44a7143a14aaf875ec9264bf08d5b3dddd1e3f355
-authorization_record_created_at: "2026-07-31T00:00:00+00:00"
+authorization_record_created_at: "2026-08-02T00:00:00+00:00"
 authorization_record_created_by: campaign-operator-agent
 owner_approval_reference: owner-approval.md
 one_invocation_only: true

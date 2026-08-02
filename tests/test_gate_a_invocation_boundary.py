@@ -790,14 +790,18 @@ def test_no_real_authorization_artifacts_in_the_repository():
             and p.resolve().parent != allowed_parent
         ]
         assert not matches, f"unexpected authorization artifact present: {matches}"
-    # owner-approval.md must appear at most once, at exactly the contract path.
+    # owner-approval.md does not currently exist anywhere: the artifact-root
+    # record regeneration invalidated the PR #113 approval's digest binding,
+    # and it was renamed to owner-approval.SUPERSEDED-pre-artifact-root.md
+    # (which is not the filename "owner-approval.md" and is not matched by
+    # this glob). A fresh approval is required before any execution.
     approvals = [
         p for p in REPO_ROOT.rglob("owner-approval.md")
         if ".git" not in p.parts and "tmp" not in p.parts
     ]
-    assert approvals == [allowed_dir / "owner-approval.md"], (
-        f"owner-approval.md must exist exactly once, at the contract path: "
-        f"{approvals}"
+    assert approvals == [], (
+        f"owner-approval.md must not exist until a fresh owner approval is "
+        f"granted for the regenerated record: {approvals}"
     )
 
 
