@@ -157,22 +157,51 @@ rejection, and exact-bytes comparisons against the reference library.
   (`Decimal(raw) != Decimal(repr(float(raw)))`) -- catching lexemes like
   `0.10000000000000001` that Python's bare `float()` would silently round
   with no signal.
-* Negative zero is rejected at parse time (`yaml_profile.py`) and, as a
-  second independent guard, in `jcs.py`.
+* **Negative zero is rejected globally, at the parser boundary, for every
+  numeric field** -- not just floats. `-0.0`/`-0e0`/etc. are caught in the
+  float-lexeme path (`_parse_exact_float`); a bare integer-lexeme `-0` is
+  caught separately and explicitly in `_resolve_scalar` (the integer-lexeme
+  grammar has exactly one zero spelling, `"0"`, so `-0` is the only
+  negative-signed integer-lexeme string that can equal zero, and
+  `int("-0")` would otherwise silently discard the sign and become ordinary
+  `0`). This applies uniformly to policy integer fields, `cost_ceiling.amount`,
+  every level of `execution_parameters` nesting, and any other numeric
+  field -- rejection happens once, at the parser, not per-field. `jcs.py`
+  also independently rejects negative zero as a second guard, but the
+  parser-level rejection is the primary, authoritative one (a value that
+  never parses can never reach JCS at all).
 * Non-finite values (`NaN`, `+inf`, `-inf`) are unrepresentable — the parser
   never produces them (the RFC 8259 number grammar cannot express them) and
   `jcs.py` fails closed if one ever reaches it.
 
 ## Approval example/operative distinction
 
-`campaign-approval.v1.schema.json` expresses two disjoint profiles via
-`oneOf`: a document carrying `marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"`
-matches only the example/template profile; a document omitting `marker`
-entirely matches only the operative profile (the operative profile's
-`additionalProperties: false` has no `marker` property, so a document
-carrying it fails that branch). `validate_campaign_approval` additionally
-rejects unfilled human-placeholder tokens (e.g. `<HUMAN-FILLS-IN...>`) and a
-`approval_provenance.mechanism` of `"none"`.
+`campaign-approval.v1.schema.json` expresses two **fully independent**
+`oneOf` branches -- each branch defines its own fields from scratch, with no
+shared field-schema reference between them. An earlier revision had both
+branches `allOf`-reference one shared `commonFields` definition (with
+strict RFC3339/sha256-hex patterns); because `allOf` constituents are
+evaluated independently and ALL must pass, that shared reference silently
+forced the strict, operative-grade patterns onto the example/template
+branch too -- which made the documented blank template (whose `approved_at`
+is the literal placeholder string `"<HUMAN-FILLS-IN RFC3339 timestamp>"`)
+fail its own documentation schema. Now:
+
+* the **example/template branch** requires `marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"`
+  and accepts any non-empty string for every other field (a human has not
+  filled them in yet);
+* the **operative branch** forbids `marker` entirely and retains every
+  strict pattern (`campaign_id`, RFC3339 `approved_at`, non-empty
+  provenance fields).
+
+`validate_campaign_approval` detects the `marker` key **before** running
+any operative-grade schema check at all -- a template can never become
+operative no matter what else is (deliberately) blank or malformed about
+it; this ordering is exercised directly in
+`tests/campaign_validation/test_second_correction.py`. The validator
+additionally rejects unfilled human-placeholder tokens (e.g.
+`<HUMAN-FILLS-IN...>`) and an `approval_provenance.mechanism` of `"none"`
+on the operative path.
 
 ## Approval provenance — explicit boundary
 
@@ -219,29 +248,64 @@ directory in place of the expected file, the file disappearing mid-flight,
 malformed UTF-8) is converted to a deterministic `ValidationResult`; none
 can escape as a raw exception.
 
-## Stable failure codes
+## Stable failure codes and deterministic precedence
 
 See `failure_codes.py`, frozen and tested in
-`tests/campaign_validation/test_failure_codes.py`. Every code carries the
-`CAMPAIGN_` prefix; no code collapses two independent failure categories.
+`tests/campaign_validation/test_failure_codes.py` (37 codes). Every code
+carries the `CAMPAIGN_` prefix; no code collapses two independent failure
+categories.
+
+**Precedence is deterministic by construction, not a race against
+jsonschema's error ordering.** The three JSON Schemas are deliberately loose
+(base type only, no value-level constraint) on every field whose exact
+VALUE -- not just its scalar type -- is owned exclusively by Python (see
+each schema's own `$comment`): `policy_digest`/`configuration_id` format
+and correctness, the four `*_prohibited` boolean VALUES, and every
+policy numeric limit/range/cross-field rule, including the
+integer-lexeme-source-form rule the schema language cannot express at all.
+A malformed value in one of those fields therefore always produces its own
+specific code (e.g. `CAMPAIGN_POLICY_DIGEST_MALFORMED`, never
+`CAMPAIGN_POLICY_SCHEMA_INVALID`); only a genuine structural violation
+(wrong scalar type, a missing required field, an unknown closed-object
+field) ever reaches jsonschema for those particular fields.
+`tests/campaign_validation/test_second_correction.py` freezes this with
+exact-equality assertions, including multi-fault fixtures proving the
+precedence order (source-profile -> schema/version -> Python-owned
+digest/format -> Python-owned limits/range) stays deterministic even when
+several faults are present in the same document at once.
 
 ## This is not an invocation capability
 
-`ValidatedCampaignBundle` (`models.py`) carries only the three parsed,
-validated documents. It has no method, token, or field that grants
-provider access. No provider-facing module is imported anywhere in
+`ValidatedCampaignBundle` (`models.py`) carries only the three validated
+documents. It has no method, token, or field that grants provider access.
+No provider-facing module is imported anywhere in
 `src/sensemaking_skills/campaign_validation/` (enforced by
 `tests/campaign_validation/test_validators.py::test_bundle_provider_not_imported`,
 an AST-based import scan).
 
-It is also **deeply immutable**, not merely a frozen dataclass shell around
-mutable dicts/lists: every `.raw` mapping is recursively frozen
-(`immutable.py::freeze` -- mappings become detached `types.MappingProxyType`
-copies, sequences become tuples) when the bundle is constructed. Mutating
-`bundle.policy.raw`, a nested `execution_parameters` value, or an
-`allowed_targets` list item all raise `TypeError`; mutating the *original*
-parsed dict after validation cannot alter the already-returned bundle,
-because `freeze()` copies rather than views.
+**Every successful public validator returns an immutable, typed model --
+never a plain, mutable `dict`.** `validate_campaign_policy` returns
+`CampaignPolicy`; `validate_campaign_approval` returns `CampaignApproval`;
+`validate_configuration_identity` returns `ConfigurationIdentity`;
+`validate_campaign_bundle` returns `ValidatedCampaignBundle` (composed
+directly from the three already-validated, already-immutable typed objects
+the single-artifact validators returned -- it never reconstructs new
+wrappers from mutable mappings). Every one of these is deeply immutable,
+not merely a frozen dataclass shell around mutable dicts/lists: every
+`.raw` mapping is recursively frozen (`immutable.py::freeze` -- mappings
+become detached `types.MappingProxyType` copies, sequences become tuples)
+at the public boundary, exactly once, on the way out. Mutating `.raw`, a
+nested `execution_parameters` value, or an `allowed_targets` list item all
+raise `TypeError`; mutating the *original* parsed dict after validation
+cannot alter the already-returned model, because `freeze()` copies rather
+than views.
+
+`validate_campaign_approval` and `validate_configuration_identity` now
+consume an already-validated `CampaignPolicy` object as their `policy`
+argument -- never an arbitrary caller-supplied mapping. Passing anything
+else (a plain dict, `None`, ...) fails closed with
+`CAMPAIGN_INTERNAL_VALIDATION_ERROR` rather than silently trusting
+unvalidated data as though it conferred authority.
 
 ## Phase 3 handoff
 

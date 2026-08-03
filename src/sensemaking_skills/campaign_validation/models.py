@@ -37,29 +37,36 @@ class ValidationDiagnostic:
     path: Optional[str] = None
 
 
+#: Every shape a SUCCESSFUL ``ValidationResult.value`` can hold. Every one of
+#: these is an immutable, typed model -- never a plain, mutable ``dict``.
+#: ``validate_campaign_policy`` returns ``CampaignPolicy``;
+#: ``validate_campaign_approval`` returns ``CampaignApproval``;
+#: ``validate_configuration_identity`` returns ``ConfigurationIdentity``;
+#: ``validate_campaign_bundle`` returns ``ValidatedCampaignBundle``.
+ValidatedResultValue = Union[
+    "CampaignPolicy", "CampaignApproval", "ConfigurationIdentity", "ValidatedCampaignBundle"
+]
+
+
 @dataclass(frozen=True)
 class ValidationResult:
     """Result of validating a single artifact, OR the final campaign bundle.
 
-    ``value`` is populated only when ``valid`` is True, and holds one of two
-    distinct shapes depending on which function produced it:
-
-    * a plain parsed ``Mapping`` -- returned by the single-artifact
-      validators (``validate_campaign_policy``, ``validate_campaign_approval``,
-      ``validate_configuration_identity``);
-    * a ``ValidatedCampaignBundle`` -- returned only by
-      ``validate_campaign_bundle`` on success; an immutable, deep-frozen
-      snapshot (see ``immutable.freeze``), never a plain mapping.
+    ``value`` is populated only when ``valid`` is True, and is always one of
+    the immutable typed models enumerated in ``ValidatedResultValue`` above
+    -- never a plain, mutable mapping. Each public ``validate_*`` function
+    freezes (``immutable.freeze``) and wraps its result exactly once, at the
+    public boundary, on the way out.
     """
 
     valid: bool
     failure_code: Optional[str] = None
     detail: str = ""
     path: Optional[str] = None
-    value: Optional[Union[Mapping[str, Any], "ValidatedCampaignBundle"]] = None
+    value: Optional[ValidatedResultValue] = None
 
     @staticmethod
-    def ok(value: Union[Mapping[str, Any], "ValidatedCampaignBundle"]) -> "ValidationResult":
+    def ok(value: ValidatedResultValue) -> "ValidationResult":
         return ValidationResult(valid=True, value=value)
 
     @staticmethod

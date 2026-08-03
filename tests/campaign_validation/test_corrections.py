@@ -28,12 +28,14 @@ from sensemaking_skills.campaign_validation.yaml_profile import (
 
 from .fixtures import (
     AUTHORIZED_APPROVER,
+    base_approval_doc,
     base_configuration_doc,
     base_policy_doc,
     build_valid_bundle,
     build_valid_bundle_bytes,
     finalize_configuration,
     finalize_policy,
+    to_campaign_policy,
 )
 from .helpers import to_bytes
 
@@ -165,7 +167,7 @@ def test_configuration_campaign_mismatch_fails_even_with_every_other_check_passi
     caught any other way.
     """
     config = finalize_configuration(base_configuration_doc())
-    policy = finalize_policy(base_policy_doc([config["configuration_id"]]))
+    policy = to_campaign_policy(finalize_policy(base_policy_doc([config["configuration_id"]])))
 
     mutated_config = copy.deepcopy(config)
     mutated_config["campaign_id"] = "EXP-9999-different-campaign"
@@ -179,7 +181,7 @@ def test_configuration_campaign_mismatch_fails_even_with_every_other_check_passi
 
 def test_configuration_matching_campaign_id_passes():
     config = finalize_configuration(base_configuration_doc())
-    policy = finalize_policy(base_policy_doc([config["configuration_id"]]))
+    policy = to_campaign_policy(finalize_policy(base_policy_doc([config["configuration_id"]])))
     result = validate_configuration_identity(to_bytes(config), policy)
     assert result.valid
 
@@ -318,9 +320,9 @@ def test_normal_flow_mapping_accepted():
     "2026-01-01T00:61:00+00:00",  # invalid minute
 ])
 def test_invalid_approval_timestamp_rejected(bad_timestamp):
-    policy = finalize_policy(base_policy_doc(["1" * 64]))
-    from .fixtures import base_approval_doc
-    approval = base_approval_doc(policy)
+    policy_doc = finalize_policy(base_policy_doc(["1" * 64]))
+    policy = to_campaign_policy(policy_doc)
+    approval = base_approval_doc(policy_doc)
     approval["approved_at"] = bad_timestamp
     from sensemaking_skills.campaign_validation import validate_campaign_approval
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
@@ -328,23 +330,23 @@ def test_invalid_approval_timestamp_rejected(bad_timestamp):
 
 
 @pytest.mark.parametrize("placeholder", ["pending", "PENDING", "Tbd", "n/a", "N/A", "changeme"])
-def test_lowercase_and_mixed_case_human_placeholder_rejected(placeholder):
-    policy = finalize_policy(base_policy_doc(["1" * 64]))
-    from .fixtures import base_approval_doc
-    approval = base_approval_doc(policy)
+def test_lowercase_and_mixed_case_human_placeholder_rejected_exact_code(placeholder):
+    policy_doc = finalize_policy(base_policy_doc(["1" * 64]))
+    policy = to_campaign_policy(policy_doc)
+    approval = base_approval_doc(policy_doc)
     approval["claimed_approver_identity"] = placeholder
     from sensemaking_skills.campaign_validation import validate_campaign_approval
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
-    assert result.failure_code in ("CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT", "CAMPAIGN_APPROVER_UNAUTHORIZED")
+    assert result.failure_code == "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT"
 
 
 def test_legitimate_prose_containing_placeholder_word_not_misclassified():
     """'None of my objections remain' is genuine prose, not a placeholder --
     the exact-whole-value rule must not misfire on a longer sentence that
     merely starts with a sentinel word."""
-    policy = finalize_policy(base_policy_doc(["1" * 64]))
-    from .fixtures import base_approval_doc
-    approval = base_approval_doc(policy)
+    policy_doc = finalize_policy(base_policy_doc(["1" * 64]))
+    policy = to_campaign_policy(policy_doc)
+    approval = base_approval_doc(policy_doc)
     approval["approval_statement"] = "None of my objections remain; I approve this policy."
     from sensemaking_skills.campaign_validation import validate_campaign_approval
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())

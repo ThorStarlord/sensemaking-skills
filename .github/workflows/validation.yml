@@ -169,6 +169,85 @@ jobs:
           test ! -e "experiments/evidence/0016-stage1-auteur-post-remediation-controlled-attempt" || {
             echo "::error::a real Evidence 0016 directory was created"; exit 1; }
 
+  # ==========================================================================
+  # Phase 2 campaign-policy-validation suites (Issue #118, program Issue
+  # #116). These exercise the NEW sensemaking_skills.campaign_validation
+  # package: the Two-Lane YAML Profile v1 parser, RFC 8785 (rfc8785)
+  # digests, JSON Schema validation, deterministic failure-code precedence,
+  # deep immutability, and the shared path-containment characterization
+  # proof. Installed via package metadata (pip install -e .), not a
+  # hand-maintained dependency list, so pyproject.toml's declared runtime
+  # dependencies (PyYAML, jsonschema, rfc8785) are always exactly what CI
+  # installs.
+  # ==========================================================================
+  phase2-campaign-validation:
+    name: Phase 2 campaign validation
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the project and its declared runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest pytest-subtests
+
+      - name: Campaign validation suite
+        run: python -m pytest tests/campaign_validation -q
+
+      - name: Two-Lane schema contract tests (Phase 1, must remain green)
+        run: python -m pytest tests/test_two_lane_schema_contracts.py -q
+
+      - name: Path-containment extraction characterization
+        run: python -m pytest tests/test_path_containment_extraction_characterization.py -q
+
+      - name: Assert no real experiment/approval state was created
+        run: |
+          git status --porcelain
+          test -z "$(git status --porcelain)" || {
+            echo "::error::test run dirtied the working tree"; exit 1; }
+          test ! -e "experiments/evidence" -o -z "$(find experiments/evidence -maxdepth 1 -name 'EXP-*' 2>/dev/null)" || {
+            echo "::error::an EXP-* campaign directory was created"; exit 1; }
+
+  # ==========================================================================
+  # Installed-wheel smoke test: builds the real wheel, installs it (plus its
+  # declared runtime dependencies) into a clean venv, and exercises the
+  # public API from a directory with no repository docs/ or scripts/
+  # available -- proving the package works from a real installed
+  # distribution, not merely "from the repo checkout with everything on
+  # sys.path already". A separate job (not a step folded into the job
+  # above) so a wheel-packaging regression is distinguished at a glance from
+  # an ordinary test failure.
+  # ==========================================================================
+  phase2-wheel-smoke:
+    name: Phase 2 installed-wheel smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install the project (so the wheel-smoke test itself can run)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest
+
+      - name: Run the installed-wheel bundle-validation smoke test
+        run: python -m pytest tests/campaign_validation/test_installed_wheel_smoke.py -q -rs
+
   validate:
     name: Repository validation
     runs-on: ubuntu-latest

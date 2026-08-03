@@ -9,6 +9,9 @@ import copy
 import pytest
 
 from sensemaking_skills.campaign_validation import (
+    CampaignApproval,
+    CampaignPolicy,
+    ConfigurationIdentity,
     ValidatedCampaignBundle,
     ValidationContext,
     validate_campaign_approval,
@@ -26,6 +29,7 @@ from .fixtures import (
     build_valid_bundle_bytes,
     finalize_configuration,
     finalize_policy,
+    to_campaign_policy,
 )
 from .helpers import to_bytes
 
@@ -122,10 +126,13 @@ def test_policy_malformed_framework_sha():
 
 
 def test_policy_duplicate_configuration_ids_rejected():
+    """A duplicate leaves the list the same length but violates the
+    'no duplicates' rule -- an exclusively Python-owned LIMITS check, since
+    the JSON Schema has no duplicate-detection keyword for array items."""
     doc = base_policy_doc(["1" * 64, "1" * 64])
     doc = finalize_policy(doc)
     result = validate_campaign_policy(to_bytes(doc), _ctx())
-    assert result.failure_code in ("CAMPAIGN_POLICY_SCHEMA_INVALID", "CAMPAIGN_POLICY_LIMITS_INVALID")
+    assert result.failure_code == "CAMPAIGN_POLICY_LIMITS_INVALID"
 
 
 def test_policy_unsorted_configuration_ids_rejected():
@@ -136,41 +143,38 @@ def test_policy_unsorted_configuration_ids_rejected():
     assert result.failure_code == "CAMPAIGN_POLICY_LIMITS_INVALID"
 
 
-# --- Policy digest ------------------------------------------------------------
+# --- Policy digest (exact, deterministic codes) ------------------------------
 
-def test_policy_digest_malformed():
+def test_policy_digest_malformed_exact_code():
     doc = base_policy_doc(["1" * 64])
     doc["policy_digest"] = "not-a-hex-digest"
     result = validate_campaign_policy(to_bytes(doc), _ctx())
-    assert result.failure_code in ("CAMPAIGN_POLICY_SCHEMA_INVALID", "CAMPAIGN_POLICY_DIGEST_MALFORMED")
+    assert result.failure_code == "CAMPAIGN_POLICY_DIGEST_MALFORMED"
 
 
-def test_policy_digest_mismatch():
+def test_policy_digest_well_formed_but_incorrect_exact_code():
     doc = finalize_policy(base_policy_doc(["1" * 64]))
-    doc["policy_digest"] = "f" * 64
+    doc["policy_digest"] = "f" * 64  # well-formed sha256 hex, but wrong value
     result = validate_campaign_policy(to_bytes(doc), _ctx())
     assert result.failure_code == "CAMPAIGN_POLICY_DIGEST_MISMATCH"
 
 
-# --- Policy limits --------------------------------------------------------
+# --- Policy limits (exact, deterministic codes) ------------------------------
 
 @pytest.mark.parametrize("field,value", [
     ("max_attempt_slots", 0),
     ("max_attempts_per_configuration", 0),
     ("concurrency_ceiling", 0),
 ])
-def test_policy_limit_boundary_violations(field, value):
+def test_policy_limit_boundary_violations_exact_code(field, value):
     doc = base_policy_doc(["1" * 64])
     doc[field] = value
     doc = finalize_policy(doc)
     result = validate_campaign_policy(to_bytes(doc), _ctx())
-    # The JSON Schema's own minimum constraint may catch this before the
-    # cross-field limits check runs; either stable code is an acceptable
-    # fail-closed outcome for a boundary the schema already expresses.
-    assert result.failure_code in ("CAMPAIGN_POLICY_LIMITS_INVALID", "CAMPAIGN_POLICY_SCHEMA_INVALID")
+    assert result.failure_code == "CAMPAIGN_POLICY_LIMITS_INVALID"
 
 
-def test_policy_max_invocations_exceeds_max_slots():
+def test_policy_max_invocations_exceeds_max_slots_exact_code():
     doc = base_policy_doc(["1" * 64])
     doc["max_attempt_slots"] = 2
     doc["max_provider_invocations"] = 5
@@ -183,12 +187,30 @@ def test_policy_max_invocations_exceeds_max_slots():
     "target_mutation_prohibited", "fallback_prohibited",
     "repair_prohibited", "automatic_merge_prohibited",
 ])
-def test_policy_prohibited_flag_must_be_true(flag):
+def test_policy_prohibited_flag_false_exact_code(flag):
+    """A prohibited flag set to `false` is a valid BOOLEAN (the schema now
+    only enforces the base type) -- its VALUE is exclusively Python's to
+    judge, so this must be exactly CAMPAIGN_POLICY_LIMITS_INVALID, never
+    CAMPAIGN_POLICY_SCHEMA_INVALID."""
     doc = base_policy_doc(["1" * 64])
     doc[flag] = False
     doc = finalize_policy(doc)
     result = validate_campaign_policy(to_bytes(doc), _ctx())
-    assert result.failure_code in ("CAMPAIGN_POLICY_SCHEMA_INVALID", "CAMPAIGN_POLICY_LIMITS_INVALID")
+    assert result.failure_code == "CAMPAIGN_POLICY_LIMITS_INVALID"
+
+
+@pytest.mark.parametrize("flag", [
+    "target_mutation_prohibited", "fallback_prohibited",
+    "repair_prohibited", "automatic_merge_prohibited",
+])
+def test_policy_prohibited_flag_wrong_type_is_schema_invalid(flag):
+    """A prohibited flag that is not even a boolean (wrong scalar TYPE) is a
+    genuine structural violation -- SCHEMA_INVALID, not LIMITS_INVALID."""
+    doc = base_policy_doc(["1" * 64])
+    doc[flag] = "true"  # a string, not a boolean
+    doc = finalize_policy(doc)
+    result = validate_campaign_policy(to_bytes(doc), _ctx())
+    assert result.failure_code == "CAMPAIGN_POLICY_SCHEMA_INVALID"
 
 
 # --- Validity window --------------------------------------------------------
@@ -226,16 +248,21 @@ def test_policy_validity_window_not_before_after_not_after():
     assert result.failure_code == "CAMPAIGN_POLICY_VALIDITY_WINDOW_INVALID"
 
 
-def test_policy_valid_within_window():
+def test_policy_valid_within_window_returns_typed_immutable_result():
     doc = finalize_policy(base_policy_doc(["1" * 64]))
     result = validate_campaign_policy(to_bytes(doc), _ctx())
     assert result.valid
+    assert isinstance(result.value, CampaignPolicy)
 
 
 # --- Approval ---------------------------------------------------------------
 
-def _valid_policy():
+def _valid_policy_doc():
     return finalize_policy(base_policy_doc(["1" * 64]))
+
+
+def _valid_policy():
+    return to_campaign_policy(_valid_policy_doc(), current_time=NOW)
 
 
 def test_approval_missing():
@@ -244,63 +271,84 @@ def test_approval_missing():
     assert result.failure_code == "CAMPAIGN_APPROVAL_MISSING"
 
 
+def test_approval_arbitrary_mapping_instead_of_campaign_policy_fails_closed():
+    """Passing a plain dict (or anything else that is not an already-validated
+    CampaignPolicy) must fail closed -- never silently accepted as though it
+    conferred authority."""
+    policy_doc = _valid_policy_doc()
+    approval = base_approval_doc(policy_doc)
+    result = validate_campaign_approval(to_bytes(approval), policy_doc, _ctx())  # plain dict, not CampaignPolicy
+    assert not result.valid
+    assert result.failure_code == "CAMPAIGN_INTERNAL_VALIDATION_ERROR"
+
+
 def test_approval_example_marker_always_non_operative():
-    policy = _valid_policy()
-    approval = base_approval_doc(policy)
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
     approval["marker"] = "EXAMPLE_ONLY_NOT_AUTHORIZATION"
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
     assert result.failure_code == "CAMPAIGN_APPROVAL_EXAMPLE_TEMPLATE_NON_OPERATIVE"
 
 
-@pytest.mark.parametrize("field,placeholder", [
-    ("claimed_approver_identity", "<HUMAN-FILLS-IN-EXACT-GITHUB-HANDLE>"),
-    ("approval_statement", "<HUMAN-FILLS-IN first-person consent text>"),
-])
-def test_approval_placeholder_rejected(field, placeholder):
-    policy = _valid_policy()
-    approval = base_approval_doc(policy)
-    approval[field] = placeholder
+def test_approval_placeholder_identity_rejected():
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
+    approval["claimed_approver_identity"] = "<HUMAN-FILLS-IN-EXACT-GITHUB-HANDLE>"
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
-    assert result.failure_code in (
-        "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT", "CAMPAIGN_APPROVER_UNAUTHORIZED",
-    )
+    assert result.failure_code == "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT"
+
+
+def test_approval_placeholder_statement_rejected():
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
+    approval["approval_statement"] = "<HUMAN-FILLS-IN first-person consent text>"
+    result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
+    assert result.failure_code == "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT"
 
 
 def test_approval_missing_statement():
-    policy = _valid_policy()
-    approval = base_approval_doc(policy)
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
     approval["approval_statement"] = ""
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
     assert result.failure_code == "CAMPAIGN_APPROVAL_SCHEMA_INVALID"
 
 
 def test_approval_digest_mismatch():
-    policy = _valid_policy()
-    approval = base_approval_doc(policy)
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
     approval["policy_digest"] = "f" * 64
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
     assert result.failure_code == "CAMPAIGN_APPROVAL_POLICY_MISMATCH"
 
 
 def test_approval_campaign_mismatch():
-    policy = _valid_policy()
-    approval = base_approval_doc(policy)
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
     approval["campaign_id"] = "EXP-9999-other"
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
     assert result.failure_code == "CAMPAIGN_APPROVAL_POLICY_MISMATCH"
 
 
 def test_approval_unauthorized_claimed_identity():
-    policy = _valid_policy()
-    approval = base_approval_doc(policy)
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
     approval["claimed_approver_identity"] = "some-random-unauthorized-identity"
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
     assert result.failure_code == "CAMPAIGN_APPROVER_UNAUTHORIZED"
 
 
 def test_approval_missing_provenance_mechanism():
-    policy = _valid_policy()
-    approval = base_approval_doc(policy)
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
     approval["approval_provenance"]["mechanism"] = "none"
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
     assert result.failure_code == "CAMPAIGN_APPROVAL_PROVENANCE_INVALID"
@@ -310,23 +358,30 @@ def test_approval_structurally_valid_provenance_accepted_without_external_verifi
     """Phase 2 does not mechanically verify provenance -- a structurally
     valid, non-placeholder declaration is accepted; this test documents that
     boundary explicitly, honestly, without claiming authentication."""
-    policy = _valid_policy()
-    approval = base_approval_doc(policy)
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
     assert result.valid
 
 
-def test_approval_valid_operative_case():
-    policy = _valid_policy()
-    approval = base_approval_doc(policy)
+def test_approval_valid_operative_case_returns_typed_immutable_result():
+    policy_doc = _valid_policy_doc()
+    policy = to_campaign_policy(policy_doc, current_time=NOW)
+    approval = base_approval_doc(policy_doc)
     result = validate_campaign_approval(to_bytes(approval), policy, _ctx())
     assert result.valid
+    assert isinstance(result.value, CampaignApproval)
 
 
 # --- Configuration identity --------------------------------------------------
 
-def _policy_allowing(config_doc):
+def _policy_allowing_doc(config_doc):
     return finalize_policy(base_policy_doc([config_doc["configuration_id"]]))
+
+
+def _policy_allowing(config_doc):
+    return to_campaign_policy(_policy_allowing_doc(config_doc), current_time=NOW)
 
 
 def test_configuration_missing():
@@ -335,17 +390,33 @@ def test_configuration_missing():
     assert result.failure_code == "CAMPAIGN_CONFIGURATION_MISSING"
 
 
-def test_configuration_id_mismatch():
+def test_configuration_arbitrary_mapping_instead_of_campaign_policy_fails_closed():
+    config = finalize_configuration(base_configuration_doc())
+    policy_doc = _policy_allowing_doc(config)
+    result = validate_configuration_identity(to_bytes(config), policy_doc)  # plain dict
+    assert not result.valid
+    assert result.failure_code == "CAMPAIGN_INTERNAL_VALIDATION_ERROR"
+
+
+def test_configuration_id_malformed_exact_code():
     config = finalize_configuration(base_configuration_doc())
     policy = _policy_allowing(config)
-    config["configuration_id"] = "f" * 64
+    config["configuration_id"] = "not-a-hex-digest"
+    result = validate_configuration_identity(to_bytes(config), policy)
+    assert result.failure_code == "CAMPAIGN_CONFIGURATION_ID_MALFORMED"
+
+
+def test_configuration_id_well_formed_but_incorrect_exact_code():
+    config = finalize_configuration(base_configuration_doc())
+    policy = _policy_allowing(config)
+    config["configuration_id"] = "f" * 64  # well-formed sha256 hex, but wrong value
     result = validate_configuration_identity(to_bytes(config), policy)
     assert result.failure_code == "CAMPAIGN_CONFIGURATION_ID_MISMATCH"
 
 
 def test_configuration_id_not_in_allowlist():
     config = finalize_configuration(base_configuration_doc())
-    other_policy = finalize_policy(base_policy_doc(["9" * 64]))
+    other_policy = to_campaign_policy(finalize_policy(base_policy_doc(["9" * 64])), current_time=NOW)
     result = validate_configuration_identity(to_bytes(config), other_policy)
     assert result.failure_code == "CAMPAIGN_CONFIGURATION_ID_NOT_ALLOWED"
 
@@ -355,36 +426,36 @@ def test_configuration_framework_not_allowed_independently():
     membership alone would otherwise appear to pass -- see 'Conjunctive
     authorization semantics' in campaign-policy.schema.md."""
     config = finalize_configuration(base_configuration_doc())
-    policy = _policy_allowing(config)
-    policy["allowed_framework_shas"] = ["d" * 40]
-    policy = finalize_policy(policy)
+    policy_doc = _policy_allowing_doc(config)
+    policy_doc["allowed_framework_shas"] = ["d" * 40]
+    policy = to_campaign_policy(finalize_policy(policy_doc), current_time=NOW)
     result = validate_configuration_identity(to_bytes(config), policy)
     assert result.failure_code == "CAMPAIGN_CONFIGURATION_FRAMEWORK_NOT_ALLOWED"
 
 
 def test_configuration_target_not_allowed():
     config = finalize_configuration(base_configuration_doc())
-    policy = _policy_allowing(config)
-    policy["allowed_targets"] = [{"repository": "https://example.invalid/other/repo.git", "sha": "d" * 40}]
-    policy = finalize_policy(policy)
+    policy_doc = _policy_allowing_doc(config)
+    policy_doc["allowed_targets"] = [{"repository": "https://example.invalid/other/repo.git", "sha": "d" * 40}]
+    policy = to_campaign_policy(finalize_policy(policy_doc), current_time=NOW)
     result = validate_configuration_identity(to_bytes(config), policy)
     assert result.failure_code == "CAMPAIGN_CONFIGURATION_TARGET_NOT_ALLOWED"
 
 
 def test_configuration_model_not_allowed():
     config = finalize_configuration(base_configuration_doc())
-    policy = _policy_allowing(config)
-    policy["allowed_models"] = ["some-other-model"]
-    policy = finalize_policy(policy)
+    policy_doc = _policy_allowing_doc(config)
+    policy_doc["allowed_models"] = ["some-other-model"]
+    policy = to_campaign_policy(finalize_policy(policy_doc), current_time=NOW)
     result = validate_configuration_identity(to_bytes(config), policy)
     assert result.failure_code == "CAMPAIGN_CONFIGURATION_MODEL_NOT_ALLOWED"
 
 
 def test_configuration_artifact_type_not_allowed():
     config = finalize_configuration(base_configuration_doc())
-    policy = _policy_allowing(config)
-    policy["allowed_artifact_types"] = ["some_other_artifact_type"]
-    policy = finalize_policy(policy)
+    policy_doc = _policy_allowing_doc(config)
+    policy_doc["allowed_artifact_types"] = ["some_other_artifact_type"]
+    policy = to_campaign_policy(finalize_policy(policy_doc), current_time=NOW)
     result = validate_configuration_identity(to_bytes(config), policy)
     assert result.failure_code == "CAMPAIGN_CONFIGURATION_ARTIFACT_TYPE_NOT_ALLOWED"
 
@@ -399,11 +470,12 @@ def test_configuration_mutable_ref_rejected(mutable_ref):
     assert not result.valid
 
 
-def test_configuration_valid_case_passes_every_check():
+def test_configuration_valid_case_returns_typed_immutable_result():
     config = finalize_configuration(base_configuration_doc())
     policy = _policy_allowing(config)
     result = validate_configuration_identity(to_bytes(config), policy)
     assert result.valid
+    assert isinstance(result.value, ConfigurationIdentity)
 
 
 def test_configuration_nested_execution_parameters_remain_valid_and_hashed():
@@ -425,8 +497,8 @@ _FORBIDDEN_PROVIDER_IMPORTS = (
 def test_bundle_provider_not_imported():
     """The validation core must never import provider-invocation code.
 
-    (``fs_adapter.py`` legitimately loads ``gate_a_authorization`` for its
-    pure path-containment helpers -- that is a data/path utility, not a
+    (``fs_adapter.py`` legitimately loads ``sensemaking_skills.path_containment``
+    for its pure path/data helpers -- that is a data/path utility, not a
     provider invocation boundary -- so it is exempted here explicitly and
     covered instead by the "no Gate A behavior change" assertions elsewhere.)
     """
@@ -434,7 +506,7 @@ def test_bundle_provider_not_imported():
     from pathlib import Path
 
     package_dir = Path(__file__).resolve().parents[2] / "src" / "sensemaking_skills" / "campaign_validation"
-    for py_file in package_dir.glob("*.py"):
+    for py_file in package_dir.rglob("*.py"):
         if py_file.name == "fs_adapter.py":
             continue
         tree = ast.parse(py_file.read_text(encoding="utf-8"))
@@ -454,3 +526,19 @@ def test_bundle_every_invalid_case_has_stable_code():
     pb, ab, cb = build_valid_bundle_bytes()
     result = validate_campaign_bundle(pb, None, cb, _ctx())
     assert result.failure_code == "CAMPAIGN_APPROVAL_MISSING"
+
+
+def test_bundle_composes_the_same_typed_instances():
+    """The bundle must compose the ALREADY-validated typed objects the three
+    single-artifact validators returned, not reconstruct new wrappers from
+    mutable mappings."""
+    pb, ab, cb = build_valid_bundle_bytes()
+    ctx = _ctx()
+    policy_result = validate_campaign_policy(pb, ctx)
+    approval_result = validate_campaign_approval(ab, policy_result.value, ctx)
+    configuration_result = validate_configuration_identity(cb, policy_result.value)
+    bundle_result = validate_campaign_bundle(pb, ab, cb, ctx)
+
+    assert bundle_result.value.policy == policy_result.value
+    assert bundle_result.value.approval == approval_result.value
+    assert bundle_result.value.configuration == configuration_result.value

@@ -24,7 +24,7 @@ from sensemaking_skills.campaign_validation.fs_adapter import (
     resolve_under_root,
 )
 
-from .fixtures import base_policy_doc, finalize_policy, finalize_configuration, base_configuration_doc
+from .fixtures import base_policy_doc, finalize_policy, finalize_configuration, base_configuration_doc, to_campaign_policy
 from .helpers import to_bytes
 
 
@@ -101,7 +101,7 @@ def test_load_and_validate_policy_single_candidate_succeeds(tmp_path):
 
 def test_load_and_validate_configuration_duplicate_candidates_ambiguous(tmp_path):
     config = finalize_configuration(base_configuration_doc())
-    policy = finalize_policy(base_policy_doc([config["configuration_id"]]))
+    policy = to_campaign_policy(finalize_policy(base_policy_doc([config["configuration_id"]])))
     (tmp_path / "config-a.yaml").write_bytes(to_bytes(config))
     (tmp_path / "config-b.yaml").write_bytes(to_bytes(config))
     result = load_and_validate_configuration_from_root(

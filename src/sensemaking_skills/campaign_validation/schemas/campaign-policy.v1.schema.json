@@ -3,6 +3,7 @@
   "$id": "https://sensemaking-skills.invalid/schemas/two-lane-v1/campaign-policy.v1.schema.json",
   "title": "Campaign Policy v1",
   "description": "Machine-readable schema for the parsed, restricted JSON-compatible data model of a Two-Lane v1 campaign policy document (docs/experiments/schemas/two-lane-v1/campaign-policy.schema.md). This schema validates the ALREADY-PARSED data model produced by the Two-Lane YAML Profile v1 parser; it does not replace source-token validation.",
+  "$comment": "Deliberately loose on a few fields whose exact VALUE (not just base type) is owned exclusively by the Python validator, so failure-code routing stays deterministic instead of racing jsonschema: policy_digest is 'type: string' only (Python's CAMPAIGN_POLICY_DIGEST_MALFORMED/_MISMATCH own the sha256-hex-format and correctness checks); the four *_prohibited fields are 'type: boolean' only (Python's CAMPAIGN_POLICY_LIMITS_INVALID owns 'must be exactly true'); max_attempt_slots/max_provider_invocations/max_attempts_per_configuration/concurrency_ceiling/token_ceiling are 'type: integer' only, with no minimum/maximum/safe-integer-range constraint here (Python's CAMPAIGN_POLICY_LIMITS_INVALID owns every numeric-boundary and cross-field check, including the integer-lexeme-source-form rule that this schema language cannot express at all).",
   "type": "object",
   "additionalProperties": false,
   "$defs": {
@@ -17,11 +18,6 @@
     "rfc3339Timestamp": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
-    },
-    "safeInteger": {
-      "type": "integer",
-      "minimum": -9007199254740991,
-      "maximum": 9007199254740991
     },
     "target": {
       "type": "object",
@@ -83,7 +79,7 @@
       "type": "string",
       "pattern": "^EXP-\\d{4}(-[a-z0-9-]+)?$"
     },
-    "policy_digest": {"$ref": "#/$defs/sha256Hex"},
+    "policy_digest": {"type": "string"},
     "classification": {"const": "EXPLORATORY_NOT_CANONICAL_EVIDENCE"},
     "allowed_framework_shas": {
       "type": "array",
@@ -110,14 +106,14 @@
       "minItems": 1,
       "items": {"$ref": "#/$defs/sha256Hex"}
     },
-    "max_attempt_slots": {"allOf": [{"$ref": "#/$defs/safeInteger"}, {"minimum": 1}]},
-    "max_provider_invocations": {"allOf": [{"$ref": "#/$defs/safeInteger"}, {"minimum": 0}]},
-    "max_attempts_per_configuration": {"allOf": [{"$ref": "#/$defs/safeInteger"}, {"minimum": 1}]},
-    "concurrency_ceiling": {"allOf": [{"$ref": "#/$defs/safeInteger"}, {"minimum": 1}]},
+    "max_attempt_slots": {"type": "integer"},
+    "max_provider_invocations": {"type": "integer"},
+    "max_attempts_per_configuration": {"type": "integer"},
+    "concurrency_ceiling": {"type": "integer"},
     "token_ceiling": {
       "oneOf": [
         {"type": "null"},
-        {"$ref": "#/$defs/safeInteger"}
+        {"type": "integer"}
       ]
     },
     "cost_ceiling": {
@@ -127,10 +123,10 @@
       ]
     },
     "validity_window": {"$ref": "#/$defs/validityWindow"},
-    "target_mutation_prohibited": {"const": true},
-    "fallback_prohibited": {"const": true},
-    "repair_prohibited": {"const": true},
-    "automatic_merge_prohibited": {"const": true},
+    "target_mutation_prohibited": {"type": "boolean"},
+    "fallback_prohibited": {"type": "boolean"},
+    "repair_prohibited": {"type": "boolean"},
+    "automatic_merge_prohibited": {"type": "boolean"},
     "preservation_requirements": {"type": "string", "minLength": 1},
     "logging_requirements": {"type": "string", "minLength": 1},
     "prepared_by": {"type": "string", "minLength": 1},

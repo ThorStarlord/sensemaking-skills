@@ -11,8 +11,11 @@ from __future__ import annotations
 import copy
 
 from sensemaking_skills.campaign_validation import (
+    CampaignPolicy,
+    ValidationContext,
     compute_configuration_id,
     compute_policy_digest,
+    validate_campaign_policy,
 )
 
 from .helpers import to_bytes
@@ -101,6 +104,23 @@ def base_approval_doc(policy: dict) -> dict:
         "approval_statement": "I approve this exploratory campaign policy.",
         "approved_at": "2026-01-02T00:00:00+00:00",
     }
+
+
+def to_campaign_policy(policy_doc: dict, *, current_time: str = "2026-06-01T00:00:00+00:00") -> CampaignPolicy:
+    """Build a real, production-validated ``CampaignPolicy`` from a policy
+    document dict, by running it through the actual ``validate_campaign_policy``
+    validator (never a hand-rolled shortcut) -- this is exactly what
+    ``validate_campaign_approval``/``validate_configuration_identity`` now
+    require as their ``policy`` argument, per the immutable single-artifact
+    API. Raises ``AssertionError`` if the fixture document itself is not
+    valid (a bug in the test fixture, not the thing under test).
+    """
+    result = validate_campaign_policy(
+        to_bytes(policy_doc), ValidationContext(current_time=current_time)
+    )
+    assert result.valid, f"fixture policy document is not valid: {result.failure_code} {result.detail}"
+    assert isinstance(result.value, CampaignPolicy)
+    return result.value
 
 
 def build_valid_bundle():

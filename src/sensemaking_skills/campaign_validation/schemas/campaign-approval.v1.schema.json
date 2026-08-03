@@ -2,7 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sensemaking-skills.invalid/schemas/two-lane-v1/campaign-approval.v1.schema.json",
   "title": "Campaign Approval v1",
-  "description": "Machine-readable schema for the parsed data model of a Two-Lane v1 campaign approval document (docs/experiments/schemas/two-lane-v1/campaign-approval.schema.md). Two explicit, discriminated profiles: 'example' (documentation/template, always non-operative -- carries the marker field) and 'operative' (omits marker entirely). oneOf is used so a document matches exactly one profile, never both, and never neither.",
+  "description": "Machine-readable schema for the parsed data model of a Two-Lane v1 campaign approval document (docs/experiments/schemas/two-lane-v1/campaign-approval.schema.md). Two explicit, discriminated profiles: 'example' (documentation/template, always non-operative -- carries the marker field, and permits documented placeholder string values such as '<HUMAN-FILLS-IN ...>') and 'operative' (omits marker entirely, and enforces strict field formats). oneOf is used so a document matches exactly one profile, never both, and never neither.",
+  "$comment": "The two branches below are DELIBERATELY fully independent field definitions -- they do not share a single set of field schemas via a common allOf reference. An earlier revision of this schema referenced one shared 'commonFields' definition (with strict RFC3339/sha256-hex patterns) from BOTH branches; because allOf constituents are evaluated independently and ALL must pass, that shared reference silently forced the STRICT operative-grade patterns onto the example/template branch too, which made the documented blank template (whose approved_at is the literal placeholder string '<HUMAN-FILLS-IN RFC3339 timestamp>') fail its own documentation schema. Each branch below now defines its own fields from scratch: the example/template branch is permissive (any non-empty string is accepted for fields a human has not filled in yet), and the operative branch alone carries the strict patterns.",
   "$defs": {
     "sha256Hex": {
       "type": "string",
@@ -12,7 +13,7 @@
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
     },
-    "provenance": {
+    "strictProvenance": {
       "type": "object",
       "additionalProperties": false,
       "required": ["mechanism", "reference"],
@@ -21,32 +22,19 @@
         "reference": {"type": "string", "minLength": 1}
       }
     },
-    "commonFields": {
+    "looseProvenance": {
       "type": "object",
-      "required": [
-        "approval_schema_version",
-        "campaign_id",
-        "policy_digest",
-        "claimed_approver_identity",
-        "approval_provenance",
-        "approval_statement",
-        "approved_at"
-      ],
+      "additionalProperties": false,
+      "required": ["mechanism", "reference"],
       "properties": {
-        "approval_schema_version": {"const": "1"},
-        "campaign_id": {"type": "string", "pattern": "^EXP-\\d{4}(-[a-z0-9-]+)?$"},
-        "policy_digest": {"$ref": "#/$defs/sha256Hex"},
-        "claimed_approver_identity": {"type": "string", "minLength": 1},
-        "approval_provenance": {"$ref": "#/$defs/provenance"},
-        "approval_statement": {"type": "string", "minLength": 1},
-        "approved_at": {"$ref": "#/$defs/rfc3339Timestamp"}
+        "mechanism": {"type": "string"},
+        "reference": {"type": "string"}
       }
     }
   },
   "oneOf": [
     {
-      "title": "example-or-template profile (always non-operative)",
-      "allOf": [{"$ref": "#/$defs/commonFields"}],
+      "title": "example-or-template profile (always non-operative; permits documented placeholder values)",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -56,28 +44,32 @@
       ],
       "properties": {
         "approval_schema_version": {"const": "1"},
-        "campaign_id": {"type": "string"},
-        "policy_digest": {"type": "string"},
-        "claimed_approver_identity": {"type": "string"},
-        "approval_provenance": {"$ref": "#/$defs/provenance"},
-        "approval_statement": {"type": "string"},
-        "approved_at": {"type": "string"},
+        "campaign_id": {"type": "string", "minLength": 1},
+        "policy_digest": {"type": "string", "minLength": 1},
+        "claimed_approver_identity": {"type": "string", "minLength": 1},
+        "approval_provenance": {"$ref": "#/$defs/looseProvenance"},
+        "approval_statement": {"type": "string", "minLength": 1},
+        "approved_at": {"type": "string", "minLength": 1},
         "marker": {"const": "EXAMPLE_ONLY_NOT_AUTHORIZATION"}
       }
     },
     {
-      "title": "operative profile (must omit marker entirely)",
-      "allOf": [{"$ref": "#/$defs/commonFields"}],
+      "title": "operative profile (must omit marker entirely; strict field formats)",
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "approval_schema_version", "campaign_id", "policy_digest",
+        "claimed_approver_identity", "approval_provenance",
+        "approval_statement", "approved_at"
+      ],
       "properties": {
         "approval_schema_version": {"const": "1"},
-        "campaign_id": {"type": "string"},
+        "campaign_id": {"type": "string", "pattern": "^EXP-\\d{4}(-[a-z0-9-]+)?$"},
         "policy_digest": {"type": "string"},
-        "claimed_approver_identity": {"type": "string"},
-        "approval_provenance": {"$ref": "#/$defs/provenance"},
-        "approval_statement": {"type": "string"},
-        "approved_at": {"type": "string"}
+        "claimed_approver_identity": {"type": "string", "minLength": 1},
+        "approval_provenance": {"$ref": "#/$defs/strictProvenance"},
+        "approval_statement": {"type": "string", "minLength": 1},
+        "approved_at": {"$ref": "#/$defs/rfc3339Timestamp"}
       }
     }
   ]

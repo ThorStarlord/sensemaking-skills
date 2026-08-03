@@ -250,6 +250,18 @@ def _resolve_scalar(node: yaml.ScalarNode, *, is_key: bool) -> Any:
         # (max_attempt_slots, etc.) need in order to reject a float-lexeme
         # value like ``5.0``/``5e0`` even though it is mathematically
         # integral. See ``validators.py::_require_integer_lexeme``.
+        if raw == "-0":
+            # The integer-lexeme grammar (`-?(0|[1-9][0-9]*)`, no leading
+            # zeros permitted) has exactly one zero spelling, "0"; the only
+            # way a negative sign reaches this branch on a zero-valued
+            # lexeme is the literal string "-0" itself. `int("-0")` silently
+            # collapses to ordinary `0`, discarding the sign -- reject at
+            # the parser boundary instead, exactly like the float path
+            # already does for `-0.0`/`-0e0`/etc., so a bare `-0` can never
+            # reach ANY numeric field (policy integer fields,
+            # `cost_ceiling.amount`, `execution_parameters` at any nesting
+            # depth, or any other numeric field) as ordinary zero.
+            raise TwoLaneYamlError("NEGATIVE_ZERO_FORBIDDEN", "-0 is forbidden")
         return int(raw)
 
     raise TwoLaneYamlError(
