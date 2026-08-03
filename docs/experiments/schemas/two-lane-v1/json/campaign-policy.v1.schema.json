@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sensemaking-skills.invalid/schemas/two-lane-v1/campaign-policy.v1.schema.json",
+  "title": "Campaign Policy v1",
+  "description": "Machine-readable schema for the parsed, restricted JSON-compatible data model of a Two-Lane v1 campaign policy document (docs/experiments/schemas/two-lane-v1/campaign-policy.schema.md). This schema validates the ALREADY-PARSED data model produced by the Two-Lane YAML Profile v1 parser; it does not replace source-token validation.",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "sha256Hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "exactCommitSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "rfc3339Timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "safeInteger": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "sha"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "sha": {"$ref": "#/$defs/exactCommitSha"}
+      }
+    },
+    "costCeiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": {"type": "number"},
+        "currency": {"type": "string", "minLength": 1}
+      }
+    },
+    "validityWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not_before", "not_after"],
+      "properties": {
+        "not_before": {"$ref": "#/$defs/rfc3339Timestamp"},
+        "not_after": {"$ref": "#/$defs/rfc3339Timestamp"}
+      }
+    }
+  },
+  "required": [
+    "policy_schema_version",
+    "campaign_id",
+    "policy_digest",
+    "classification",
+    "allowed_framework_shas",
+    "allowed_targets",
+    "allowed_models",
+    "allowed_artifact_types",
+    "allowed_configuration_ids",
+    "max_attempt_slots",
+    "max_provider_invocations",
+    "max_attempts_per_configuration",
+    "concurrency_ceiling",
+    "token_ceiling",
+    "cost_ceiling",
+    "validity_window",
+    "target_mutation_prohibited",
+    "fallback_prohibited",
+    "repair_prohibited",
+    "automatic_merge_prohibited",
+    "preservation_requirements",
+    "logging_requirements",
+    "prepared_by",
+    "prepared_at"
+  ],
+  "properties": {
+    "policy_schema_version": {"const": "1"},
+    "campaign_id": {
+      "type": "string",
+      "pattern": "^EXP-\\d{4}(-[a-z0-9-]+)?$"
+    },
+    "policy_digest": {"$ref": "#/$defs/sha256Hex"},
+    "classification": {"const": "EXPLORATORY_NOT_CANONICAL_EVIDENCE"},
+    "allowed_framework_shas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/exactCommitSha"}
+    },
+    "allowed_targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/target"}
+    },
+    "allowed_models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "allowed_artifact_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "allowed_configuration_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/sha256Hex"}
+    },
+    "max_attempt_slots": {"allOf": [{"$ref": "#/$defs/safeInteger"}, {"minimum": 1}]},
+    "max_provider_invocations": {"allOf": [{"$ref": "#/$defs/safeInteger"}, {"minimum": 0}]},
+    "max_attempts_per_configuration": {"allOf": [{"$ref": "#/$defs/safeInteger"}, {"minimum": 1}]},
+    "concurrency_ceiling": {"allOf": [{"$ref": "#/$defs/safeInteger"}, {"minimum": 1}]},
+    "token_ceiling": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/safeInteger"}
+      ]
+    },
+    "cost_ceiling": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/costCeiling"}
+      ]
+    },
+    "validity_window": {"$ref": "#/$defs/validityWindow"},
+    "target_mutation_prohibited": {"const": true},
+    "fallback_prohibited": {"const": true},
+    "repair_prohibited": {"const": true},
+    "automatic_merge_prohibited": {"const": true},
+    "preservation_requirements": {"type": "string", "minLength": 1},
+    "logging_requirements": {"type": "string", "minLength": 1},
+    "prepared_by": {"type": "string", "minLength": 1},
+    "prepared_at": {"$ref": "#/$defs/rfc3339Timestamp"}
+  }
+}

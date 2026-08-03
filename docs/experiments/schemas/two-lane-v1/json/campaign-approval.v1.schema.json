@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sensemaking-skills.invalid/schemas/two-lane-v1/campaign-approval.v1.schema.json",
+  "title": "Campaign Approval v1",
+  "description": "Machine-readable schema for the parsed data model of a Two-Lane v1 campaign approval document (docs/experiments/schemas/two-lane-v1/campaign-approval.schema.md). Two explicit, discriminated profiles: 'example' (documentation/template, always non-operative -- carries the marker field) and 'operative' (omits marker entirely). oneOf is used so a document matches exactly one profile, never both, and never neither.",
+  "$defs": {
+    "sha256Hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rfc3339Timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mechanism", "reference"],
+      "properties": {
+        "mechanism": {"type": "string", "minLength": 1},
+        "reference": {"type": "string", "minLength": 1}
+      }
+    },
+    "commonFields": {
+      "type": "object",
+      "required": [
+        "approval_schema_version",
+        "campaign_id",
+        "policy_digest",
+        "claimed_approver_identity",
+        "approval_provenance",
+        "approval_statement",
+        "approved_at"
+      ],
+      "properties": {
+        "approval_schema_version": {"const": "1"},
+        "campaign_id": {"type": "string", "pattern": "^EXP-\\d{4}(-[a-z0-9-]+)?$"},
+        "policy_digest": {"$ref": "#/$defs/sha256Hex"},
+        "claimed_approver_identity": {"type": "string", "minLength": 1},
+        "approval_provenance": {"$ref": "#/$defs/provenance"},
+        "approval_statement": {"type": "string", "minLength": 1},
+        "approved_at": {"$ref": "#/$defs/rfc3339Timestamp"}
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "title": "example-or-template profile (always non-operative)",
+      "allOf": [{"$ref": "#/$defs/commonFields"}],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approval_schema_version", "campaign_id", "policy_digest",
+        "claimed_approver_identity", "approval_provenance",
+        "approval_statement", "approved_at", "marker"
+      ],
+      "properties": {
+        "approval_schema_version": {"const": "1"},
+        "campaign_id": {"type": "string"},
+        "policy_digest": {"type": "string"},
+        "claimed_approver_identity": {"type": "string"},
+        "approval_provenance": {"$ref": "#/$defs/provenance"},
+        "approval_statement": {"type": "string"},
+        "approved_at": {"type": "string"},
+        "marker": {"const": "EXAMPLE_ONLY_NOT_AUTHORIZATION"}
+      }
+    },
+    {
+      "title": "operative profile (must omit marker entirely)",
+      "allOf": [{"$ref": "#/$defs/commonFields"}],
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "approval_schema_version": {"const": "1"},
+        "campaign_id": {"type": "string"},
+        "policy_digest": {"type": "string"},
+        "claimed_approver_identity": {"type": "string"},
+        "approval_provenance": {"$ref": "#/$defs/provenance"},
+        "approval_statement": {"type": "string"},
+        "approved_at": {"type": "string"}
+      }
+    }
+  ]
+}
