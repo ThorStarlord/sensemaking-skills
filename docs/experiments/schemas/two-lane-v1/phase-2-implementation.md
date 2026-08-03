@@ -215,6 +215,47 @@ never inferred from merge state, write access, branch ownership, PR
 authorship, or silence. Mechanical provenance verification is explicitly
 deferred to Phase 3 (#119), per ADR 0023 section 12 item 3.
 
+## Checkout-local Gate A loading
+
+`scripts/gate_a_authorization.py` deterministically loads
+`sensemaking_skills.path_containment` from its OWN checkout, never from an
+ambient/pre-imported installation that happens to resolve first. Sequence
+(`_load_checkout_local_path_containment`): resolve the expected `src/`
+directory and exact `path_containment.py` file from
+`Path(__file__).resolve()` (never the current working directory); put that
+`src/` directory at the front of `sys.path` and invalidate import caches;
+if `sensemaking_skills` is ALREADY imported from somewhere else, fail
+closed immediately (`ImportError`) rather than silently evict-and-reimport;
+import fresh and verify the loaded module's resolved `__file__` is exactly
+the expected checkout-local file, failing closed on any mismatch before any
+security decision is possible.
+`tests/test_gate_a_checkout_local_containment.py` proves this with real
+subprocesses against a deliberately conflicting fake ambient package (both
+"conflicting package earlier on PYTHONPATH" and "conflicting package
+pre-imported before Gate A" cases), and confirms the separate
+`campaign_validation` package's installed-wheel support is unaffected (it
+already imports `sensemaking_skills.path_containment` as a normal package
+import, never a filesystem-path load).
+
+## Validator-owned CampaignPolicy provenance
+
+`CampaignPolicy`/`CampaignApproval`/`ConfigurationIdentity` cannot be
+constructed by ordinary public API use -- `CampaignPolicy(...)` raises
+`TypeError`. Instances are created only by a module-private factory
+(`models.py::_seal_dataclass`), which stamps a per-process sentinel object
+-- held only in a closure, never exported -- onto the instance via
+`object.__setattr__` (bypassing the disabled constructor). A paired
+module-private verifier checks that sentinel by identity.
+`validate_campaign_approval`/`validate_configuration_identity` call the
+verifier (`_is_genuine_campaign_policy`), not a bare `isinstance` check,
+before trusting a `policy` argument -- so a plain mapping, a hand-built
+instance via `object.__new__` guessing at a `_provenance_seal` attribute,
+or a `dataclasses.replace()` copy all fail closed with
+`CAMPAIGN_INTERNAL_VALIDATION_ERROR`. This is not a claim of protection
+against hostile arbitrary code in the same interpreter (which could import
+the private factory directly) -- it prevents normal API misuse and
+accidental nominal-type forgery.
+
 ## Filesystem / artifact-root trust boundary
 
 The pure path-containment primitives (`CanonicalPath`, `canonicalize_path`,
@@ -251,9 +292,34 @@ can escape as a raw exception.
 ## Stable failure codes and deterministic precedence
 
 See `failure_codes.py`, frozen and tested in
-`tests/campaign_validation/test_failure_codes.py` (37 codes). Every code
-carries the `CAMPAIGN_` prefix; no code collapses two independent failure
-categories.
+`tests/campaign_validation/test_failure_codes.py` (39 codes, calculated
+programmatically via `len(CAMPAIGN_FAILURE_CODES)` -- never a manually
+carried-forward number). Every code carries the `CAMPAIGN_` prefix; no code
+collapses two independent failure categories.
+`tests/campaign_validation/test_failure_code_reachability.py` is the actual
+reachability matrix: one direct trigger per code, executing the real
+parser/validator/root-loader and asserting exact equality -- not merely a
+membership check against the frozen mapping.
+
+**Numeric-domain preflight** (`numeric_domain.py`): arbitrary-precision
+integer lexemes parse as genuine Python `int` (no truncation), but
+`rfc8785` only accepts the interoperable safe-integer domain
+(+/-9007199254740991). `find_out_of_domain_path` recursively walks a parsed
+document (mappings and sequences, booleans never treated as integers)
+BEFORE digest computation, so an oversized value is an ordinary,
+deterministic `CAMPAIGN_POLICY_LIMITS_INVALID` (policy fields, including
+`cost_ceiling.amount`) or `CAMPAIGN_CONFIGURATION_NUMERIC_DOMAIN_INVALID`
+(anywhere inside `execution_parameters`, at any nesting depth) -- never
+`CAMPAIGN_INTERNAL_VALIDATION_ERROR`. `jcs.JCSError`/
+`rfc8785.CanonicalizationError`/`OverflowError` are also caught explicitly
+around the digest-computation calls themselves as defense in depth.
+
+**Exact version-field precedence** (policy/approval/configuration): a
+MISSING or non-string version field is a structural fault
+(`*_SCHEMA_INVALID`); only a well-formed string naming an unsupported
+version gets `*_SCHEMA_UNSUPPORTED`. `.get()` alone would conflate "absent"
+with "unsupported" -- presence and type are checked explicitly first.
+`CAMPAIGN_CONFIGURATION_SCHEMA_UNSUPPORTED` is a new code added for this.
 
 **Precedence is deterministic by construction, not a race against
 jsonschema's error ordering.** The three JSON Schemas are deliberately loose

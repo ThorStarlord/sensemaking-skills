@@ -197,33 +197,11 @@ def test_source_profile_violation_wins_over_everything_else():
     assert result.failure_code == "CAMPAIGN_POLICY_SOURCE_PROFILE_INVALID"
 
 
-@pytest.mark.parametrize("declared_code", sorted({
-    "CAMPAIGN_POLICY_MISSING", "CAMPAIGN_POLICY_SOURCE_PROFILE_INVALID",
-    "CAMPAIGN_POLICY_SCHEMA_UNSUPPORTED", "CAMPAIGN_POLICY_SCHEMA_INVALID",
-    "CAMPAIGN_POLICY_DIGEST_MALFORMED", "CAMPAIGN_POLICY_DIGEST_MISMATCH",
-    "CAMPAIGN_POLICY_LIMITS_INVALID", "CAMPAIGN_POLICY_NOT_YET_VALID",
-    "CAMPAIGN_POLICY_EXPIRED", "CAMPAIGN_POLICY_VALIDITY_WINDOW_INVALID",
-    "CAMPAIGN_APPROVAL_MISSING", "CAMPAIGN_APPROVAL_SOURCE_PROFILE_INVALID",
-    "CAMPAIGN_APPROVAL_SCHEMA_UNSUPPORTED", "CAMPAIGN_APPROVAL_SCHEMA_INVALID",
-    "CAMPAIGN_APPROVAL_EXAMPLE_TEMPLATE_NON_OPERATIVE",
-    "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT", "CAMPAIGN_APPROVAL_POLICY_MISMATCH",
-    "CAMPAIGN_APPROVER_UNAUTHORIZED", "CAMPAIGN_APPROVAL_PROVENANCE_INVALID",
-    "CAMPAIGN_CONFIGURATION_MISSING", "CAMPAIGN_CONFIGURATION_SOURCE_PROFILE_INVALID",
-    "CAMPAIGN_CONFIGURATION_SCHEMA_INVALID", "CAMPAIGN_CONFIGURATION_ID_MALFORMED",
-    "CAMPAIGN_CONFIGURATION_ID_MISMATCH", "CAMPAIGN_CONFIGURATION_CAMPAIGN_MISMATCH",
-    "CAMPAIGN_CONFIGURATION_ID_NOT_ALLOWED", "CAMPAIGN_CONFIGURATION_FRAMEWORK_NOT_ALLOWED",
-    "CAMPAIGN_CONFIGURATION_TARGET_NOT_ALLOWED", "CAMPAIGN_CONFIGURATION_MODEL_NOT_ALLOWED",
-    "CAMPAIGN_CONFIGURATION_ARTIFACT_TYPE_NOT_ALLOWED",
-}))
-def test_every_specialized_code_reachable_by_some_test_in_the_suite(declared_code):
-    """Documents (rather than re-proves in isolation) that each of these
-    codes has a dedicated, direct triggering test elsewhere in this test
-    package -- collected here as one explicit manifest so a reviewer can
-    check "is every code reachable" in one place. See test_validators.py
-    and this module for the actual triggering tests.
-    """
-    from sensemaking_skills.campaign_validation import CAMPAIGN_FAILURE_CODES
-    assert declared_code in CAMPAIGN_FAILURE_CODES
+# NOTE: the actual failure-code reachability matrix (one real trigger per
+# frozen code, executing the genuine parser/validator/loader) lives in
+# test_failure_code_reachability.py, not here -- a prior version of this
+# test only checked that each code string was a KEY in CAMPAIGN_FAILURE_CODES,
+# which proves nothing about whether any validator can actually return it.
 
 
 # ---------------------------------------------------------------------------

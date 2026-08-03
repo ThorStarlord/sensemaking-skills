@@ -188,7 +188,26 @@ jobs:
       matrix:
         python-version: ["3.11", "3.12"]
     steps:
+      # GitHub's `pull_request` trigger normally checks out a SYNTHETIC
+      # merge-preview ref (refs/pull/<n>/merge), not the exact PR head
+      # commit. Explicitly check out the real head SHA on pull_request
+      # events (github.event.pull_request.head.sha) and github.sha on push
+      # events, so this job's result can honestly be described as
+      # "exact-head CI" -- never a synthetic merge commit.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Print and assert the resolved checkout SHA
+        run: |
+          resolved="$(git rev-parse HEAD)"
+          echo "Resolved checkout SHA: $resolved"
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "Expected exact head SHA: $expected"
+          test "$resolved" = "$expected" || {
+            echo "::error::checked-out HEAD ($resolved) does not match the expected exact head ($expected)"
+            exit 1
+          }
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -238,7 +257,22 @@ jobs:
     name: Phase 2 installed-wheel smoke test
     runs-on: ubuntu-latest
     steps:
+      # See phase2-campaign-validation's checkout step comment: explicit
+      # exact-head checkout, never a synthetic pull_request merge ref.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Print and assert the resolved checkout SHA
+        run: |
+          resolved="$(git rev-parse HEAD)"
+          echo "Resolved checkout SHA: $resolved"
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "Expected exact head SHA: $expected"
+          test "$resolved" = "$expected" || {
+            echo "::error::checked-out HEAD ($resolved) does not match the expected exact head ($expected)"
+            exit 1
+          }
 
       - name: Set up Python
         uses: actions/setup-python@v5

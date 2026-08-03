@@ -5,19 +5,38 @@ never collapse into a shared generic code (no bare ``INVALID`` or
 ``UNAUTHORIZED``). This mapping is the single source of truth; tests freeze
 it (``tests/campaign_validation/test_failure_codes.py``).
 
-First-failure precedence (checked in this order by ``validate_campaign_bundle``):
+First-failure precedence (checked in this order by every validator and by
+``validate_campaign_bundle``):
 
-1. root / path safety (escape, symlink, filesystem errors)
-2. source-profile / YAML parsing
-3. schema / version validation
-4. digest / identity integrity (including configuration-to-campaign binding,
-   ``CAMPAIGN_CONFIGURATION_CAMPAIGN_MISMATCH`` -- checked immediately after
-   ``configuration_id`` recomputation, since ``campaign_id`` is deliberately
-   excluded from the ``configuration_id`` hash and so cannot be caught by
-   digest/ID matching alone)
-5. approval binding / identity declaration
-6. policy validity window
-7. configuration / conjunctive allowlists
+1. source-profile parsing (Two-Lane YAML Profile v1 violations)
+2. required field/type/version handling -- a MISSING or non-string version
+   field is a structural fault (``*_SCHEMA_INVALID``); a well-formed string
+   naming an unsupported version is ``*_SCHEMA_UNSUPPORTED``; `.get()`
+   alone would conflate "absent" with "unsupported", so presence and type
+   are checked explicitly before comparing the value
+3. structural schema validation (JSON Schema: wrong scalar type, missing
+   required field, unknown closed-object field)
+4. declared digest/ID format (``*_DIGEST_MALFORMED`` / ``*_ID_MALFORMED``)
+5. numeric-domain preflight (``numeric_domain.find_out_of_domain_path`` --
+   an oversized integer, outside the interoperable safe-integer domain
+   rfc8785 itself enforces, is an ordinary invalid-document case and must
+   never surface as ``CAMPAIGN_INTERNAL_VALIDATION_ERROR``; policy fields
+   route to ``CAMPAIGN_POLICY_LIMITS_INVALID``, configuration
+   ``execution_parameters`` fields route to the dedicated
+   ``CAMPAIGN_CONFIGURATION_NUMERIC_DOMAIN_INVALID``)
+6. digest/ID recomputation and mismatch (``*_DIGEST_MISMATCH`` /
+   ``*_ID_MISMATCH``), including configuration-to-campaign binding
+   (``CAMPAIGN_CONFIGURATION_CAMPAIGN_MISMATCH`` -- checked immediately
+   after ``configuration_id`` recomputation, since ``campaign_id`` is
+   deliberately excluded from the ``configuration_id`` hash and so cannot
+   be caught by digest/ID matching alone)
+7. semantic policy limits, validity window, approval binding/identity
+   declaration, and configuration conjunctive allowlists
+
+When the same policy field is both outside the JCS numeric domain and
+outside a policy-limit range, ``CAMPAIGN_POLICY_LIMITS_INVALID`` is the
+exact result either way (step 5 fires first, but both routes agree on the
+code).
 """
 
 from __future__ import annotations
@@ -60,7 +79,9 @@ CAMPAIGN_FAILURE_CODES: Mapping[str, str] = {
     # --- configuration identity / conjunctive checks ---
     "CAMPAIGN_CONFIGURATION_MISSING": "no configuration-identity document found at the expected location",
     "CAMPAIGN_CONFIGURATION_SOURCE_PROFILE_INVALID": "configuration source violates the Two-Lane YAML Profile v1",
+    "CAMPAIGN_CONFIGURATION_SCHEMA_UNSUPPORTED": "configuration_schema_version is not a supported version",
     "CAMPAIGN_CONFIGURATION_SCHEMA_INVALID": "configuration document does not satisfy the configuration-identity JSON Schema",
+    "CAMPAIGN_CONFIGURATION_NUMERIC_DOMAIN_INVALID": "a numeric value in execution_parameters is outside the interoperable safe-integer domain",
     "CAMPAIGN_CONFIGURATION_IDENTITY_AMBIGUOUS": "more than one configuration-identity candidate path exists",
     "CAMPAIGN_CONFIGURATION_ID_MALFORMED": "configuration_id is not a well-formed sha256 hex string",
     "CAMPAIGN_CONFIGURATION_ID_MISMATCH": "recomputed configuration_id does not match the document's declared value",

@@ -40,11 +40,14 @@ jsonschema at all for those fields.
 
 from __future__ import annotations
 
+import dataclasses
 import re
 from datetime import datetime, timezone
 from typing import Any, Iterable, Mapping, Optional
 
-from . import digests, schema_validation
+import rfc8785
+
+from . import digests, jcs, numeric_domain, schema_validation
 from .failure_codes import CAMPAIGN_FAILURE_CODES
 from .fs_adapter import ArtifactRootError, read_utf8_bytes, resolve_under_root
 from .immutable import freeze
@@ -55,6 +58,10 @@ from .models import (
     ValidatedCampaignBundle,
     ValidationContext,
     ValidationResult,
+    _create_campaign_approval,
+    _create_campaign_policy,
+    _create_configuration_identity,
+    _is_genuine_campaign_policy,
 )
 from .yaml_profile import TwoLaneYamlError, parse_two_lane_yaml
 
@@ -179,18 +186,46 @@ def _safe(fn):
 # Campaign policy
 # ---------------------------------------------------------------------------
 
+@dataclasses.dataclass(frozen=True)
+class _InternalResult:
+    """Private intermediate result shape for internal-only helpers.
+
+    Deliberately NOT the public ``ValidationResult`` class: a private
+    mutable mapping (a freshly parsed document dict, a list of candidate
+    (path, bytes) tuples) must never be placed inside a public
+    ``ValidationResult.value``, which is documented and typed to hold only
+    ``CampaignPolicy``/``CampaignApproval``/``ConfigurationIdentity``/
+    ``ValidatedCampaignBundle``. ``_parse_document`` and ``_load_candidates``
+    are private helpers whose result is always consumed and re-wrapped by
+    their caller before anything is returned to a public caller.
+    """
+
+    valid: bool
+    failure_code: Optional[str] = None
+    detail: str = ""
+    value: Any = None
+
+    @staticmethod
+    def ok(value: Any) -> "_InternalResult":
+        return _InternalResult(valid=True, value=value)
+
+    @staticmethod
+    def fail(code: str, detail: str = "") -> "_InternalResult":
+        return _InternalResult(valid=False, failure_code=code, detail=detail)
+
+
 def _parse_document(source_bytes: bytes, *, missing_code: str,
                      profile_invalid_code: str,
-                     open_map_root_field: Optional[str] = None) -> ValidationResult:
+                     open_map_root_field: Optional[str] = None) -> _InternalResult:
     if source_bytes is None:
-        return ValidationResult.fail(missing_code, "document is missing")
+        return _InternalResult.fail(missing_code, "document is missing")
     try:
         parsed = parse_two_lane_yaml(source_bytes, open_map_root_field=open_map_root_field)
     except TwoLaneYamlError as exc:
-        return ValidationResult.fail(profile_invalid_code, f"{exc.code}: {exc.message}")
+        return _InternalResult.fail(profile_invalid_code, f"{exc.code}: {exc.message}")
     if not isinstance(parsed, dict):
-        return ValidationResult.fail(profile_invalid_code, "document did not parse to a mapping")
-    return ValidationResult.ok(parsed)
+        return _InternalResult.fail(profile_invalid_code, "document did not parse to a mapping")
+    return _InternalResult.ok(parsed)
 
 
 def validate_campaign_policy(source_bytes: bytes,
@@ -206,14 +241,22 @@ def validate_campaign_policy(source_bytes: bytes,
             profile_invalid_code="CAMPAIGN_POLICY_SOURCE_PROFILE_INVALID",
         )
         if not parse_result.valid:
-            return parse_result
+            return ValidationResult.fail(parse_result.failure_code, parse_result.detail)
         policy = parse_result.value
 
-        version = policy.get("policy_schema_version")
-        if version != "1":
+        # Missing or non-string is a structural fault (SCHEMA_INVALID); only
+        # a well-formed string that names an unsupported version gets the
+        # deliberate SCHEMA_UNSUPPORTED result. `.get()` alone would
+        # conflate "absent" with "unsupported"; check presence explicitly.
+        if "policy_schema_version" not in policy or not isinstance(policy["policy_schema_version"], str):
+            return ValidationResult.fail(
+                "CAMPAIGN_POLICY_SCHEMA_INVALID",
+                f"policy_schema_version is missing or not a string: {policy.get('policy_schema_version')!r}",
+            )
+        if policy["policy_schema_version"] != "1":
             return ValidationResult.fail(
                 "CAMPAIGN_POLICY_SCHEMA_UNSUPPORTED",
-                f"unsupported policy_schema_version: {version!r}",
+                f"unsupported policy_schema_version: {policy['policy_schema_version']!r}",
             )
 
         errors = schema_validation.policy_schema_errors(policy)
@@ -237,7 +280,32 @@ def validate_campaign_policy(source_bytes: bytes,
                 "CAMPAIGN_POLICY_DIGEST_MALFORMED",
                 f"policy_digest is not a well-formed sha256 hex string: {declared_digest!r}",
             )
-        recomputed = digests.compute_policy_digest(policy)
+        # Numeric-domain preflight: an oversized integer (outside the
+        # interoperable safe-integer domain rfc8785 itself enforces) is an
+        # ordinary, EXPECTED invalid-document case -- never
+        # CAMPAIGN_INTERNAL_VALIDATION_ERROR. Checked recursively over the
+        # WHOLE document (covers max_attempt_slots and friends,
+        # token_ceiling, and cost_ceiling.amount in one pass) before digest
+        # recomputation, so an oversized value never even reaches
+        # rfc8785.dumps().
+        if numeric_domain.find_out_of_domain_path(policy) is not None:
+            return ValidationResult.fail(
+                "CAMPAIGN_POLICY_LIMITS_INVALID",
+                f"a numeric field is outside the interoperable safe-integer "
+                f"domain at {numeric_domain.find_out_of_domain_path(policy)}",
+            )
+
+        try:
+            recomputed = digests.compute_policy_digest(policy)
+        except (jcs.JCSError, rfc8785.CanonicalizationError, OverflowError) as exc:
+            # Defense in depth: the preflight above should already have
+            # caught any out-of-domain numeric value; if canonicalization
+            # still fails for some other expected reason, it is still a
+            # policy-limits-shaped problem, never an internal error.
+            return ValidationResult.fail(
+                "CAMPAIGN_POLICY_LIMITS_INVALID",
+                f"policy_digest could not be computed: {exc}",
+            )
         if recomputed != declared_digest:
             return ValidationResult.fail(
                 "CAMPAIGN_POLICY_DIGEST_MISMATCH",
@@ -253,7 +321,7 @@ def validate_campaign_policy(source_bytes: bytes,
             return window_result
 
         return ValidationResult.ok(
-            CampaignPolicy(
+            _create_campaign_policy(
                 campaign_id=policy["campaign_id"],
                 policy_digest=policy["policy_digest"],
                 raw=freeze(policy),
@@ -366,11 +434,11 @@ def validate_campaign_approval(source_bytes: bytes, policy: CampaignPolicy,
     approval document, checked against ``context.allowed_approver_identities``.
     """
     def _run() -> ValidationResult:
-        if not isinstance(policy, CampaignPolicy):
+        if not _is_genuine_campaign_policy(policy):
             return ValidationResult.fail(
                 "CAMPAIGN_INTERNAL_VALIDATION_ERROR",
-                "policy argument must be an already-validated CampaignPolicy, "
-                f"got {type(policy).__name__}",
+                "policy argument must be a genuine CampaignPolicy produced by "
+                f"validate_campaign_policy(), got {type(policy).__name__}",
             )
 
         parse_result = _parse_document(
@@ -379,14 +447,18 @@ def validate_campaign_approval(source_bytes: bytes, policy: CampaignPolicy,
             profile_invalid_code="CAMPAIGN_APPROVAL_SOURCE_PROFILE_INVALID",
         )
         if not parse_result.valid:
-            return parse_result
+            return ValidationResult.fail(parse_result.failure_code, parse_result.detail)
         approval = parse_result.value
 
-        version = approval.get("approval_schema_version")
-        if version != "1":
+        if "approval_schema_version" not in approval or not isinstance(approval["approval_schema_version"], str):
+            return ValidationResult.fail(
+                "CAMPAIGN_APPROVAL_SCHEMA_INVALID",
+                f"approval_schema_version is missing or not a string: {approval.get('approval_schema_version')!r}",
+            )
+        if approval["approval_schema_version"] != "1":
             return ValidationResult.fail(
                 "CAMPAIGN_APPROVAL_SCHEMA_UNSUPPORTED",
-                f"unsupported approval_schema_version: {version!r}",
+                f"unsupported approval_schema_version: {approval['approval_schema_version']!r}",
             )
 
         # Marker detection MUST win before any operative-grade schema check
@@ -443,7 +515,7 @@ def validate_campaign_approval(source_bytes: bytes, policy: CampaignPolicy,
             )
 
         return ValidationResult.ok(
-            CampaignApproval(
+            _create_campaign_approval(
                 campaign_id=approval["campaign_id"],
                 policy_digest=approval["policy_digest"],
                 claimed_approver_identity=approval["claimed_approver_identity"],
@@ -467,11 +539,11 @@ def validate_configuration_identity(source_bytes: bytes,
     success, ``.value`` is an immutable, typed ``ConfigurationIdentity``.
     """
     def _run() -> ValidationResult:
-        if not isinstance(policy, CampaignPolicy):
+        if not _is_genuine_campaign_policy(policy):
             return ValidationResult.fail(
                 "CAMPAIGN_INTERNAL_VALIDATION_ERROR",
-                "policy argument must be an already-validated CampaignPolicy, "
-                f"got {type(policy).__name__}",
+                "policy argument must be a genuine CampaignPolicy produced by "
+                f"validate_campaign_policy(), got {type(policy).__name__}",
             )
 
         parse_result = _parse_document(
@@ -481,8 +553,21 @@ def validate_configuration_identity(source_bytes: bytes,
             open_map_root_field="execution_parameters",
         )
         if not parse_result.valid:
-            return parse_result
+            return ValidationResult.fail(parse_result.failure_code, parse_result.detail)
         configuration = parse_result.value
+
+        if ("configuration_schema_version" not in configuration
+                or not isinstance(configuration["configuration_schema_version"], str)):
+            return ValidationResult.fail(
+                "CAMPAIGN_CONFIGURATION_SCHEMA_INVALID",
+                "configuration_schema_version is missing or not a string: "
+                f"{configuration.get('configuration_schema_version')!r}",
+            )
+        if configuration["configuration_schema_version"] != "1":
+            return ValidationResult.fail(
+                "CAMPAIGN_CONFIGURATION_SCHEMA_UNSUPPORTED",
+                f"unsupported configuration_schema_version: {configuration['configuration_schema_version']!r}",
+            )
 
         errors = schema_validation.configuration_schema_errors(configuration)
         if errors:
@@ -508,7 +593,28 @@ def validate_configuration_identity(source_bytes: bytes,
                 "CAMPAIGN_CONFIGURATION_ID_MALFORMED",
                 f"configuration_id is not a well-formed sha256 hex string: {declared_id!r}",
             )
-        recomputed = digests.compute_configuration_id(configuration)
+        # Numeric-domain preflight over execution_parameters -- the only
+        # place an arbitrary (open-map) numeric value can appear in a
+        # configuration document. An oversized integer anywhere in it
+        # (including nested mappings/sequences) is an ordinary, EXPECTED
+        # invalid-document case, never CAMPAIGN_INTERNAL_VALIDATION_ERROR.
+        out_of_domain_path = numeric_domain.find_out_of_domain_path(
+            configuration.get("execution_parameters", {})
+        )
+        if out_of_domain_path is not None:
+            return ValidationResult.fail(
+                "CAMPAIGN_CONFIGURATION_NUMERIC_DOMAIN_INVALID",
+                f"a numeric value in execution_parameters is outside the "
+                f"interoperable safe-integer domain at execution_parameters{out_of_domain_path[1:]}",
+            )
+
+        try:
+            recomputed = digests.compute_configuration_id(configuration)
+        except (jcs.JCSError, rfc8785.CanonicalizationError, OverflowError) as exc:
+            return ValidationResult.fail(
+                "CAMPAIGN_CONFIGURATION_NUMERIC_DOMAIN_INVALID",
+                f"configuration_id could not be computed: {exc}",
+            )
         if recomputed != declared_id:
             return ValidationResult.fail(
                 "CAMPAIGN_CONFIGURATION_ID_MISMATCH",
@@ -561,7 +667,7 @@ def validate_configuration_identity(source_bytes: bytes,
             )
 
         return ValidationResult.ok(
-            ConfigurationIdentity(
+            _create_configuration_identity(
                 configuration_id=configuration["configuration_id"],
                 campaign_id=configuration["campaign_id"],
                 raw=freeze(configuration),
@@ -625,13 +731,16 @@ def validate_campaign_bundle(policy_bytes: bytes, approval_bytes: bytes,
 # Filesystem / artifact-root loaders
 # ---------------------------------------------------------------------------
 
-def _load_candidates(artifact_root: str, candidate_paths: Iterable[str]) -> ValidationResult:
+def _load_candidates(artifact_root: str, candidate_paths: Iterable[str]) -> _InternalResult:
     """Resolve and read a set of candidate paths beneath ``artifact_root``.
 
     Never globs -- callers supply explicit candidate paths (ADR 0023
     section 15 / "no operative campaign-directory layout" constraint). Zero
     matches -> missing. More than one match -> ambiguous. Exactly one match
-    -> its bytes.
+    -> its bytes. Returns a private ``_InternalResult`` (never the public
+    ``ValidationResult``) -- its ``.value`` is a list of ``(path, bytes)``
+    candidate tuples, a private intermediate shape that must never appear
+    inside a public ``ValidationResult.value``.
     """
     found: list[tuple[str, bytes]] = []
     for candidate in candidate_paths:
@@ -639,18 +748,18 @@ def _load_candidates(artifact_root: str, candidate_paths: Iterable[str]) -> Vali
             resolved = resolve_under_root(candidate, artifact_root)
             data = read_utf8_bytes(resolved)
         except ArtifactRootError as exc:
-            return ValidationResult.fail(exc.code, exc.message, path=candidate)
+            return _InternalResult.fail(exc.code, exc.message)
         if data is not None:
             found.append((candidate, data))
-    return ValidationResult.ok({"matches": found})  # internal helper shape
+    return _InternalResult.ok(found)
 
 
 def load_and_validate_policy_from_root(artifact_root: str, candidate_paths: Iterable[str],
                                         context: ValidationContext) -> ValidationResult:
     load_result = _load_candidates(artifact_root, candidate_paths)
     if not load_result.valid:
-        return load_result
-    matches = load_result.value["matches"]
+        return ValidationResult.fail(load_result.failure_code, load_result.detail)
+    matches = load_result.value
     if len(matches) == 0:
         return ValidationResult.fail("CAMPAIGN_POLICY_MISSING", "no policy candidate path exists")
     if len(matches) > 1:
@@ -667,8 +776,8 @@ def load_and_validate_approval_from_root(artifact_root: str, candidate_paths: It
                                           context: ValidationContext) -> ValidationResult:
     load_result = _load_candidates(artifact_root, candidate_paths)
     if not load_result.valid:
-        return load_result
-    matches = load_result.value["matches"]
+        return ValidationResult.fail(load_result.failure_code, load_result.detail)
+    matches = load_result.value
     if len(matches) == 0:
         return ValidationResult.fail("CAMPAIGN_APPROVAL_MISSING", "no approval candidate path exists")
 
@@ -694,8 +803,8 @@ def load_and_validate_configuration_from_root(artifact_root: str, candidate_path
                                                policy: CampaignPolicy) -> ValidationResult:
     load_result = _load_candidates(artifact_root, candidate_paths)
     if not load_result.valid:
-        return load_result
-    matches = load_result.value["matches"]
+        return ValidationResult.fail(load_result.failure_code, load_result.detail)
+    matches = load_result.value
     if len(matches) == 0:
         return ValidationResult.fail("CAMPAIGN_CONFIGURATION_MISSING", "no configuration candidate path exists")
     if len(matches) > 1:

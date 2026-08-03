@@ -31,7 +31,9 @@ FROZEN_CODES = frozenset({
     "CAMPAIGN_POLICY_LIMITS_INVALID",
     "CAMPAIGN_CONFIGURATION_MISSING",
     "CAMPAIGN_CONFIGURATION_SOURCE_PROFILE_INVALID",
+    "CAMPAIGN_CONFIGURATION_SCHEMA_UNSUPPORTED",
     "CAMPAIGN_CONFIGURATION_SCHEMA_INVALID",
+    "CAMPAIGN_CONFIGURATION_NUMERIC_DOMAIN_INVALID",
     "CAMPAIGN_CONFIGURATION_IDENTITY_AMBIGUOUS",
     "CAMPAIGN_CONFIGURATION_ID_MALFORMED",
     "CAMPAIGN_CONFIGURATION_ID_MISMATCH",
@@ -47,6 +49,12 @@ FROZEN_CODES = frozenset({
 
 def test_failure_code_set_is_frozen_and_exact():
     assert set(CAMPAIGN_FAILURE_CODES.keys()) == FROZEN_CODES
+
+
+def test_exact_failure_code_count_is_calculated_not_guessed():
+    """The exact count must be computed from the frozen mapping itself
+    (never a manually-carried-forward number in docs/PR bodies)."""
+    assert len(CAMPAIGN_FAILURE_CODES) == len(FROZEN_CODES)
 
 
 def test_every_code_carries_campaign_prefix():

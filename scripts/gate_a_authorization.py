@@ -441,23 +441,85 @@ class _ValidatedSnapshot:
 #   a broken reparse point), the result is ambiguous and fails closed.
 
 
-try:
-    from sensemaking_skills import path_containment as _path_containment
-except ImportError:
-    # This script is run directly from a repository checkout in several CI
-    # jobs (e.g. .github/workflows/validation.yml's Gate A jobs) that install
-    # only pytest/pyyaml/click -- never `pip install -e .` -- so
-    # `sensemaking_skills` is not necessarily on sys.path even though the
-    # source tree is right there on disk. Fall back to adding the repo's
-    # src/ directory before failing outright; this mirrors the exact
-    # sys.path-augmentation pattern the test suite itself already uses (see
-    # e.g. tests/test_gate_a_artifact_root_topology.py's
-    # `sys.path.insert(0, ... / "scripts")`), just applied to `src/` instead.
+
+def _load_checkout_local_path_containment():
+    """Load ``sensemaking_skills.path_containment`` from THIS checkout,
+    deterministically -- never from an ambient/pre-imported installation
+    that happens to resolve first.
+
+    This script is run directly from a repository checkout in several CI
+    jobs (e.g. .github/workflows/validation.yml's Gate A jobs) that install
+    only pytest/pyyaml/click -- never `pip install -e .` -- so
+    `sensemaking_skills` is not necessarily importable via the ambient
+    environment even though the source tree is right there on disk. But an
+    ambient/pre-imported `sensemaking_skills` package (e.g. from an
+    unrelated `pip install -e .` in the same environment, or a stray
+    PYTHONPATH entry, or another package already having imported it earlier
+    in the same process) must never silently win over the containment
+    implementation that ships with THIS exact framework SHA -- Gate A's
+    entire trust model depends on knowing exactly which code performs its
+    path-containment decisions.
+
+    Sequence:
+      1. Resolve the expected checkout-local ``src/`` directory and exact
+         ``path_containment.py`` file from ``Path(__file__).resolve()`` --
+         never the current working directory.
+      2. Put that ``src/`` directory at the FRONT of ``sys.path`` (so it
+         wins over anything already present in ``sys.path``/``PYTHONPATH``,
+         regardless of ordering) and invalidate import caches.
+      3. If `sensemaking_skills` is ALREADY imported (sys.modules) from
+         somewhere else, fail closed immediately with an explicit
+         ImportError -- never silently evict-and-reimport in a way that
+         could leave other already-obtained references pointing at stale
+         code while this module proceeds with a different implementation.
+      4. Import fresh, then verify the loaded module's resolved ``__file__``
+         is exactly the expected checkout-local file. A mismatch (e.g. a
+         namespace-package merge, a `.pth`-file redirect, or any other
+         resolution surprise) fails closed with an explicit ImportError
+         before any security decision is possible.
+    """
+    import importlib as _importlib
     import sys as _sys
-    _src_dir = str(Path(__file__).resolve().parent.parent / "src")
-    if _src_dir not in _sys.path:
-        _sys.path.insert(0, _src_dir)
-    from sensemaking_skills import path_containment as _path_containment
+
+    expected_src_dir = Path(__file__).resolve().parent.parent / "src"
+    expected_file = (expected_src_dir / "sensemaking_skills" / "path_containment.py").resolve()
+
+    src_str = str(expected_src_dir)
+    if src_str in _sys.path:
+        _sys.path.remove(src_str)
+    _sys.path.insert(0, src_str)
+    _importlib.invalidate_caches()
+
+    already = _sys.modules.get("sensemaking_skills")
+    if already is not None:
+        already_file = getattr(already, "__file__", None)
+        already_dir = Path(already_file).resolve().parent if already_file else None
+        expected_pkg_dir = (expected_src_dir / "sensemaking_skills").resolve()
+        if already_dir != expected_pkg_dir:
+            raise ImportError(
+                "Gate A refuses to start: a 'sensemaking_skills' package is "
+                f"already imported from {already_dir!r}, which is not this "
+                f"checkout's own {expected_pkg_dir!r}. An ambient or "
+                "previously-imported installation must never silently "
+                "supply Gate A's path-containment implementation -- fail "
+                "closed rather than risk using containment code that does "
+                "not belong to this framework SHA."
+            )
+
+    from sensemaking_skills import path_containment as loaded
+
+    actual_file = Path(loaded.__file__).resolve()
+    if actual_file != expected_file:
+        raise ImportError(
+            f"Gate A refuses to use path_containment from {actual_file!r} -- "
+            f"expected the checkout-local {expected_file!r}. An ambient "
+            "sensemaking_skills installation must never silently win over "
+            "this checkout's own containment implementation."
+        )
+    return loaded
+
+
+_path_containment = _load_checkout_local_path_containment()
 
 from sensemaking_skills.path_containment import (  # noqa: E402
     CanonicalPath,
