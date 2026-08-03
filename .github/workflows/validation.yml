@@ -212,6 +212,12 @@ jobs:
 
       - name: Assert no real experiment/approval state was created
         run: |
+          # `pip install -e .` legitimately regenerates the tracked
+          # src/sensemaking_skills.egg-info/ metadata files as a side effect
+          # of installation, not of running the test suite -- restore them
+          # before checking for a dirtied tree so this check reflects what
+          # the TESTS did, not what the install step did.
+          git checkout -- src/sensemaking_skills.egg-info/ 2>/dev/null || true
           git status --porcelain
           test -z "$(git status --porcelain)" || {
             echo "::error::test run dirtied the working tree"; exit 1; }
