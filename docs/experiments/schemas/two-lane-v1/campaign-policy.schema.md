@@ -154,5 +154,9 @@ prepared_at: "2026-01-01T00:00:00+00:00"
 ```
 
 This example is authored under the Two-Lane YAML Profile v1 (ADR 0023
-§10b): every string-valued field is quoted, and only `true`/`false`/`null`/
-numeric literals appear unquoted.
+§10b): every string-valued field is a single-line quoted scalar (no block
+scalar styles), and only `true`/`false`/`null`/numeric literals appear
+unquoted. Every mapping key (e.g. `campaign_id`, `policy_digest`) is an
+unquoted, plain ASCII field-name token per the mapping-key grammar in §10b —
+a separate lexical class from scalar values, not an exception to the
+string-quoting rule.

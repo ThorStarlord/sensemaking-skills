@@ -590,4 +590,245 @@ def test_evidence_0016_and_0015_directories_untouched_by_this_module():
     """
     run_control = REPO_ROOT / "experiments" / "run-control"
     assert run_control.is_dir()
+
+
+# ---------------------------------------------------------------------------
+# Test-only Two-Lane YAML Profile v1 source-style conformance checker.
+#
+# This is NOT a production parser or validator. It exists only so this test
+# module can prove that fenced examples conform to the *source-level* style
+# rules of the profile (mapping-key grammar, allowed string-scalar styles),
+# which ``yaml.safe_load`` alone cannot prove: PyYAML's default resolver
+# happily accepts quoted keys, block scalars, and YAML-1.1-style booleans,
+# none of which are legal under the profile. The checker inspects PyYAML's
+# *composed node tree* (via ``yaml.compose``), which retains node style
+# (``node.style``) and tag information, rather than trusting the fully
+# resolved Python values from ``safe_load``.
+# ---------------------------------------------------------------------------
+
+_KEY_TOKEN_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+_JSON_NUMBER_RE = re.compile(r"^-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?$")
+
+BLOCK_STYLES = {"|", ">"}
+QUOTE_STYLES = {"'", '"'}
+
+
+class ProfileViolation(AssertionError):
+    pass
+
+
+def _check_scalar_value(node) -> None:
+    if node.tag == "tag:yaml.org,2002:merge" or node.value == "<<":
+        raise ProfileViolation("merge key construct is forbidden")
+    if node.style in BLOCK_STYLES:
+        raise ProfileViolation(
+            f"block scalar style {node.style!r} is forbidden for value {node.value!r}"
+        )
+    if node.style in QUOTE_STYLES:
+        start_line = getattr(node.start_mark, "line", None)
+        end_line = getattr(node.end_mark, "line", None)
+        if start_line is not None and end_line is not None and end_line != start_line:
+            raise ProfileViolation(
+                f"multiline quoted scalar is forbidden (source spans lines "
+                f"{start_line}-{end_line}): {node.value!r}"
+            )
+        return  # quoted scalar values are always legal strings
+    if node.style is None or node.style == "":
+        # plain scalar: only null/true/false/RFC-8259-number are legal
+        v = node.value
+        if v in ("null", "true", "false"):
+            return
+        if _JSON_NUMBER_RE.match(v):
+            return
+        raise ProfileViolation(f"unquoted plain scalar value {v!r} is not permitted")
+    raise ProfileViolation(f"unrecognized scalar style {node.style!r}")
+
+
+def _check_mapping_key(node) -> None:
+    if node.style in QUOTE_STYLES:
+        raise ProfileViolation(f"quoted mapping key is forbidden: {node.value!r}")
+    if node.style in BLOCK_STYLES:
+        raise ProfileViolation(f"block-style mapping key is forbidden: {node.value!r}")
+    if not isinstance(node, yaml.ScalarNode):
+        raise ProfileViolation("complex (non-scalar) mapping key is forbidden")
+    if not _KEY_TOKEN_RE.match(node.value):
+        raise ProfileViolation(
+            f"mapping key {node.value!r} does not match ^[a-z][a-z0-9_]*$"
+        )
+
+
+def check_profile_conformance(yaml_source: str) -> None:
+    """Walk the composed node tree of a single-document YAML source string
+    and raise ProfileViolation on the first construct that is illegal under
+    the Two-Lane YAML Profile v1 (ADR 0023 §10b): non-plain/non-quoted
+    string values, block scalars, multiline quoted scalars, non-conforming
+    or quoted/complex mapping keys, duplicate keys, aliases, anchors, or
+    explicit tags.
+    """
+    docs = list(yaml.compose_all(yaml_source))
+    if len(docs) != 1:
+        raise ProfileViolation(f"expected exactly one YAML document, found {len(docs)}")
+    _walk(docs[0])
+
+
+def _walk(node) -> None:
+    # PyYAML's Composer resolves aliases transparently into the anchored
+    # node itself (there is no distinct AliasNode class exposed here), so
+    # an alias surfaces as an anchor on the node it refers to -- caught by
+    # the anchor check below.
+    if getattr(node, "anchor", None):
+        raise ProfileViolation(f"YAML anchor is forbidden: {node.anchor!r}")
+    if isinstance(node, yaml.MappingNode):
+        if node.tag not in ("tag:yaml.org,2002:map",):
+            raise ProfileViolation(f"explicit tag on mapping is forbidden: {node.tag!r}")
+        seen: set[str] = set()
+        for key_node, value_node in node.value:
+            _check_mapping_key(key_node)
+            if key_node.value in seen:
+                raise ProfileViolation(f"duplicate mapping key: {key_node.value!r}")
+            seen.add(key_node.value)
+            _walk(value_node)
+    elif isinstance(node, yaml.SequenceNode):
+        if node.tag not in ("tag:yaml.org,2002:seq",):
+            raise ProfileViolation(f"explicit tag on sequence is forbidden: {node.tag!r}")
+        for item in node.value:
+            _walk(item)
+    elif isinstance(node, yaml.ScalarNode):
+        if node.tag not in (
+            "tag:yaml.org,2002:str",
+            "tag:yaml.org,2002:null",
+            "tag:yaml.org,2002:bool",
+            "tag:yaml.org,2002:int",
+            "tag:yaml.org,2002:float",
+        ):
+            raise ProfileViolation(f"explicit tag on scalar is forbidden: {node.tag!r}")
+        _check_scalar_value(node)
+    else:
+        raise ProfileViolation(f"unsupported node type: {type(node)!r}")
+
+
+@pytest.mark.parametrize("path", _schema_files())
+def test_fenced_examples_conform_to_two_lane_yaml_profile_v1(path: Path):
+    text = path.read_text(encoding="utf-8")
+    blocks = _extract_yaml_blocks(text)
+    assert blocks, f"{path.name} has no fenced yaml example"
+    for i, block in enumerate(blocks):
+        try:
+            check_profile_conformance(block)
+        except ProfileViolation as exc:
+            raise AssertionError(
+                f"{path.name} example #{i} violates Two-Lane YAML Profile v1: {exc}"
+            ) from exc
+
+
+# ---------------------------------------------------------------------------
+# Regression tests: each of these must independently fail if a specific
+# blocking-finding requirement regresses. Each reads exactly one document,
+# not a concatenation of several, per the review requirement.
+# ---------------------------------------------------------------------------
+
+
+def test_adr_defines_mapping_key_as_separate_lexical_class():
+    text = _adr_text()
+    assert "separate lexical class from scalar values" in text
+    assert "Mapping-key grammar (normative)" in text
+
+
+def test_adr_states_mapping_key_regex():
+    text = _adr_text()
+    assert "^[a-z][a-z0-9_]*$" in text
+
+
+def test_readme_references_mapping_key_rule():
+    text = (SCHEMA_DIR / "README.md").read_text(encoding="utf-8")
+    assert "mapping-key grammar" in text.lower()
+
+
+def test_campaign_policy_schema_references_mapping_key_rule():
+    text = _policy_text()
+    assert "mapping-key grammar" in text.lower()
+
+
+def test_configuration_identity_schema_references_mapping_key_rule():
+    text = _configuration_identity_text()
+    assert "mapping-key grammar" in text.lower()
+
+
+def test_adr_forbids_quoted_mapping_keys():
+    text = _adr_text()
+    assert "Quoted mapping keys" in text
+    assert "forbidden" in text.split("Quoted mapping keys", 1)[1][:80]
+
+
+def test_adr_requires_duplicate_key_detection_before_object_construction():
+    text = _adr_text()
+    assert "the object is constructed" in text
+    assert "before" in text.split("the object is constructed", 1)[0][-20:]
+
+
+def test_adr_forbids_block_scalar_styles():
+    text = _adr_text()
+    for token in ("literal block scalars", "folded block scalars"):
+        assert token in text
+
+
+def test_adr_forbids_chomping_and_indentation_indicators():
+    text = _adr_text()
+    assert "|-" in text and "|+" in text and ">-" in text and ">+" in text
+
+
+def test_adr_forbids_multiline_quoted_scalars():
+    text = _adr_text()
+    assert "multiline single-quoted scalars" in text
+    assert "multiline double-quoted scalars" in text
+
+
+def test_adr_string_quoting_rule_is_fail_closed_not_advisory():
+    text = _adr_text()
+    section = text.split("#### Permitted string-scalar styles", 1)[1][:600]
+    assert "**rejects**" in section or "must" in section.lower()
+
+
+def test_profile_checker_rejects_quoted_mapping_key():
+    source = 'campaign_id: "value"\n"other_field": "value"\n'
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source)
+
+
+def test_profile_checker_rejects_numeric_looking_mapping_key():
+    source = '"1": "value"\n'
+    # numeric-looking key, still quoted -- forbidden as quoted key first
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source)
+
+
+def test_profile_checker_rejects_literal_block_scalar():
+    source = "logging_requirements: |\n  example text\n"
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source)
+
+
+def test_profile_checker_rejects_folded_block_scalar():
+    source = "logging_requirements: >\n  example text\n"
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source)
+
+
+def test_profile_checker_rejects_duplicate_keys():
+    source = 'campaign_id: "a"\ncampaign_id: "b"\n'
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source)
+
+
+def test_profile_checker_rejects_multiline_double_quoted_scalar():
+    source = 'campaign_id: "line one\nline two"\n'
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source)
+
+
+def test_profile_checker_accepts_valid_campaign_policy_example():
+    text = _policy_text()
+    blocks = _extract_yaml_blocks(text)
+    assert blocks
+    check_profile_conformance(blocks[0])  # must not raise
     # No assertion beyond existence: this test suite performs no writes.

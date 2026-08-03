@@ -428,9 +428,70 @@ coerced to a string or to an alternate boolean/null/number interpretation:
 `-.inf`, `.nan`, and any timestamp- or date-looking plain scalar (e.g.
 `2026-01-01`). To represent any of these as strings, they must be quoted.
 
-Mapping keys must resolve to JSON strings and must match the declared
-schema field name exactly. Unknown fields are rejected before hashing
-(restated from §9a/§9c).
+**Mapping keys are a separate lexical class from scalar values, governed by
+their own grammar below — not by the plain-scalar rule above.** The
+restricted plain-scalar rule (quoted-string-required, `null`/`true`/`false`/
+number-only unquoted) applies to scalar *values*. It does not apply to
+mapping keys. Unquoted schema field names such as `campaign_id:`,
+`policy_digest:`, and `configuration_id:` are legal *only* because mapping
+keys are governed by this separate mapping-key grammar — this is not an
+exception to be inferred from examples, and Phase 2 must not invent its own
+key grammar.
+
+**Mapping-key grammar (normative):**
+
+1. Every mapping key **must** be an unquoted, plain ASCII field-name token
+   matching `^[a-z][a-z0-9_]*$`.
+2. The resulting token **must** exactly match a field declared by the schema
+   for that object (restated from §9a/§9c: unknown keys are rejected before
+   hashing).
+3. This rule applies recursively to every nested schema object, including
+   (non-exhaustively) keys such as `repository`, `sha`, `amount`, `currency`,
+   `not_before`, `not_after`, `mechanism`, and `reference`.
+4. Quoted mapping keys (e.g. `"campaign_id":` or `'campaign_id':`) are
+   **forbidden** in schema v1. Changing a key from unquoted to quoted form is
+   **not** a permitted presentation-only change — quoted keys are simply
+   invalid.
+5. Numeric-looking, boolean-looking, null-looking, timestamp-looking, empty,
+   Unicode, or otherwise nonconforming mapping keys are forbidden.
+6. Complex YAML keys and the explicit-key indicator (`?`) are forbidden in
+   key position.
+7. Aliases, anchors, tags, and merge keys remain forbidden in key position,
+   as well as in value position (restated below).
+8. Duplicate keys are detected on the exact decoded field-name string
+   *before* the object is constructed or any entry is discarded. A parser
+   that silently keeps only the first or last occurrence of a duplicate key
+   is nonconforming.
+9. Source mapping-key *order* is presentation-only, because JCS sorts object
+   keys (§10a). The *spelling and case* of a field name is normative: two
+   different valid field-name tokens never normalize to the same key, and no
+   Unicode normalization or case folding is applied to keys.
+
+#### Permitted string-scalar styles (normative)
+
+Schema v1 permits exactly two source-level styles for string values:
+
+- single-line single-quoted scalars (e.g. `'exploratory'`);
+- single-line double-quoted scalars (e.g. `"exploratory"`).
+
+Schema v1 **rejects**, for string values:
+
+- literal block scalars (`|`);
+- folded block scalars (`>`);
+- any chomping indicator (`|-`, `|+`, `>-`, `>+`);
+- any explicit indentation indicator (e.g. `|2`, `>2`, `|2-`);
+- multiline single-quoted scalars;
+- multiline double-quoted scalars;
+- arbitrary unquoted plain text (restated from the plain-scalar rule above).
+
+A string value containing a newline must represent that newline using an
+escape sequence inside a single-line double-quoted scalar (e.g. `"line
+one\nline two"`), never via a block scalar. YAML escape processing produces
+the resulting Unicode string before JCS runs (restated below); different
+allowed single-line quoted presentations that decode to the same Unicode
+string canonicalize identically. Block-scalar folding, chomping, and
+indentation behavior is unavailable in schema v1 and must never be delegated
+to a YAML library's default handling.
 
 #### Conformance table (normative, not illustrative)
 
@@ -507,6 +568,11 @@ and any future schema-v1 artifact whose digest reuses this algorithm)
 - explicit YAML tags;
 - merge keys (`<<`);
 - non-string mapping keys;
+- quoted, complex, or otherwise nonconforming mapping keys (restated from
+  the mapping-key grammar above);
+- literal (`|`) or folded (`>`) block scalars, in any chomping (`|-`, `|+`,
+  `>-`, `>+`) or indentation-indicator form, and multiline quoted scalars
+  (restated from the permitted string-scalar styles above);
 - non-JSON scalar types (anything outside object/array/string/number/
   boolean/null);
 - implicit timestamp/date objects (a YAML loader that auto-converts an

@@ -39,10 +39,18 @@ operative.**
   ADR 0023 §10: source YAML is authored under the **Two-Lane YAML Profile
   v1** (§10b — YAML 1.2.2 syntax, JSON-Schema-only scalar resolution, YAML
   1.1 and implementation-default resolution forbidden, plain scalars
-  restricted to `null`/`true`/`false`/RFC 8259 numbers, everything else
-  quoted) and parsed under fail-closed structural restrictions (§10b — no
-  duplicate keys, aliases, anchors, tags, or merge keys) into a restricted
-  JSON-compatible data model, then serialized with RFC 8785 (JCS) before
+  restricted to `null`/`true`/`false`/RFC 8259 numbers, string values
+  restricted to single-line quoted scalars — block scalar styles `|`, `>`,
+  and their chomping/indentation variants are rejected) and parsed under
+  fail-closed structural restrictions (§10b — no duplicate keys, aliases,
+  anchors, tags, or merge keys). Mapping keys are a separate lexical class
+  from scalar values, governed by their own grammar (§10b): every key must
+  be an unquoted, plain ASCII field-name token matching `^[a-z][a-z0-9_]*$`
+  and must exactly match a declared schema field; quoted or complex keys are
+  rejected. Unquoted field names such as `campaign_id:` are legal *because*
+  of this mapping-key grammar, not as an exception to the string-quoting
+  rule. This is parsed into a restricted JSON-compatible data model, then
+  serialized with RFC 8785 (JCS) before
   hashing. Consumers must not hash the original YAML presentation bytes;
   comments, indentation, quoting style (where the resulting string is
   identical), key order, and line wrapping in the source YAML never affect

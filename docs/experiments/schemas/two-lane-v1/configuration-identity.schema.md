@@ -83,5 +83,9 @@ execution_parameters:
 ```
 
 This example is authored under the Two-Lane YAML Profile v1 (ADR 0023
-§10b): every string-valued field is quoted; `max_tokens_hint` is an
-unquoted RFC 8259 number.
+§10b): every string-valued field is a single-line quoted scalar (no block
+scalar styles); `max_tokens_hint` is an unquoted RFC 8259 number. Every
+mapping key (e.g. `repository`, `sha`, `configuration_id`) is an unquoted,
+plain ASCII field-name token per the mapping-key grammar in §10b — a
+separate lexical class from scalar values, not an exception to the
+string-quoting rule.
