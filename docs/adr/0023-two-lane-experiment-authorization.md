@@ -479,38 +479,59 @@ its own field definition explicitly declares it open — being open is never
 inferred from a validator's implementation choice, from test convenience, or
 from an example's shape.
 
-- `execution_parameters` (`configuration-identity.schema.md`) is the **sole
-  open mapping** in schema v1. No other mapping defined by this ADR or by
-  any of the six schema-v1 contracts becomes open through implementation
-  choice — there is no other general unknown-field escape hatch.
-- **Open-map rules for `execution_parameters`** (normative, exact):
+- **Terminology.** An **open-map root field** is a schema field whose value
+  begins an **open-map subtree**: that field's mapping value, together with
+  every mapping recursively reachable from it through mapping values and
+  sequence elements. A **closed mapping** is any schema-defined mapping
+  outside an open-map subtree. The bare unqualified phrase pairing "sole"
+  with "open" and "mapping" (without "root field"/"subtree") is avoided
+  below — a single open-map subtree legitimately contains many mapping
+  *nodes*; what is singular is the *root field* that introduces the subtree.
+- `execution_parameters` (`configuration-identity.schema.md`) is schema v1's
+  **sole open-map root field**. Its value is the **sole open-map subtree** in
+  schema v1. No other mapping defined by this ADR or by any of the six
+  schema-v1 contracts becomes open through implementation choice — there is
+  no other general unknown-field escape hatch, and no implementation may
+  treat another mapping as open by analogy.
+- **Open-map subtree rules for `execution_parameters`** (normative, exact):
   - The `execution_parameters` field itself is required on every
     configuration-identity document; its value must be a mapping (an empty
     mapping is legal, an absent field is not).
-  - Every key inside `execution_parameters`, including keys of nested open
-    mappings, recursively matches the mapping-key grammar above
-    (`^[a-z][a-z0-9_]*$`) and the reserved-key prohibition (`true`, `false`,
-    `null`, `yes`, `no`, `on`, `off` remain forbidden as keys).
+  - Every mapping within the subtree — the root mapping and every mapping
+    nested inside it, whether reached through another mapping's value or
+    through a sequence element — is **open**: it permits arbitrary keys.
+    Every key at every such level, no matter how deeply nested, recursively
+    matches the mapping-key grammar above (`^[a-z][a-z0-9_]*$`) and the
+    reserved-key prohibition (`true`, `false`, `null`, `yes`, `no`, `on`,
+    `off` remain forbidden as keys). No mapping nested inside the
+    `execution_parameters` subtree is closed.
   - Quoted, complex, Unicode, numeric-looking, boolean-looking,
-    null-looking, timestamp-looking, or empty keys remain forbidden inside
-    `execution_parameters`, identically to closed mappings.
-  - Values inside `execution_parameters` may recursively be: a permitted
-    scalar value (per the scalar-resolution rules above); a sequence of
-    permitted values; or a nested open mapping governed by these same
-    rules. Sequences may themselves recursively contain scalars, sequences,
-    or nested open mappings.
-  - Duplicate keys remain forbidden inside `execution_parameters`, at every
+    null-looking, timestamp-looking, or empty keys remain forbidden anywhere
+    in the subtree, identically to closed mappings.
+  - Values anywhere in the subtree may recursively be: a permitted scalar
+    value (per the scalar-resolution rules above); a sequence of permitted
+    values; or a nested mapping, which is itself part of the same open-map
+    subtree and governed by these same rules. Sequences may themselves
+    recursively contain scalars, sequences, or nested mappings — a mapping
+    nested inside a sequence inside `execution_parameters` is still part of
+    the open-map subtree.
+  - Duplicate keys remain forbidden anywhere in the subtree, at every
     nesting level, identically to closed mappings.
   - Anchors, aliases, explicit tags, directives, merge keys, block scalars,
-    and multiline quoted strings remain forbidden inside
-    `execution_parameters`, identically to every other part of a schema-v1
-    document (restated from the structural rejections below).
-  - The entire resulting JSON-compatible `execution_parameters` value is
-    included in `configuration_id` computation (§10c) — an open mapping is
-    not exempt from hashing merely because its key set is not fixed.
-  - Unknown-key rejection for closed schema objects does not apply inside
-    `execution_parameters`; this is the one intentional exception, and it
-    does not extend to any other mapping by analogy.
+    and multiline quoted strings remain forbidden anywhere in the subtree,
+    identically to every other part of a schema-v1 document (restated from
+    the structural rejections below). "Open" waives only unknown-key
+    rejection — it never waives source-form, scalar, duplicate-key,
+    hashing, or JSON-compatible-value restrictions.
+  - The entire resulting JSON-compatible `execution_parameters` value —
+    the complete subtree — is included in `configuration_id` computation
+    (§10c) — an open-map subtree is not exempt from hashing merely because
+    its key set is not fixed.
+  - Unknown-key rejection for closed schema objects does not apply anywhere
+    inside the `execution_parameters` open-map subtree; this is the one
+    intentional exception, and it does not extend to any mapping outside
+    the subtree by analogy. Every mapping outside the subtree remains
+    closed and rejects unknown keys.
 
 #### Required-field presence (normative)
 

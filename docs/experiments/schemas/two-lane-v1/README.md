@@ -48,15 +48,19 @@ operative.**
   be an unquoted, plain ASCII field-name token matching `^[a-z][a-z0-9_]*$`.
   Every schema-defined mapping is **closed** by default: for a closed
   mapping, the key must exactly match a declared schema field, and quoted
-  or complex keys are rejected. `execution_parameters` is the **sole open
-  mapping** in schema v1 (ADR 0023 §10b "Closed and open mapping model"):
-  arbitrary keys are permitted there only under the open-map key-grammar
-  and reserved-key rules ADR 0023 §10b defines — there is no other general
-  unknown-field escape hatch, and no other map becomes open through
-  implementation choice. Unquoted field names such as `campaign_id:` are
-  legal *because* of this mapping-key grammar, not as an exception to the
-  string-quoting rule. This is parsed into a restricted JSON-compatible
-  data model, then
+  or complex keys are rejected. `execution_parameters` is schema v1's **sole
+  open-map root field** (ADR 0023 §10b "Closed and open mapping model"): its
+  value, together with every mapping recursively nested inside it through
+  mapping values or sequence elements, forms one **open-map subtree** in
+  which arbitrary keys are permitted, subject to the same open-map
+  key-grammar and reserved-key rules ADR 0023 §10b defines. A mapping
+  nested anywhere inside that subtree is itself open, not closed. There is
+  no other general unknown-field escape hatch, and no other mapping —
+  whether at the top level or nested elsewhere — becomes open through
+  implementation choice. Every mapping outside that one subtree remains
+  closed. Unquoted field names such as `campaign_id:` are legal *because* of
+  this mapping-key grammar, not as an exception to the string-quoting rule.
+  This is parsed into a restricted JSON-compatible data model, then
   serialized with RFC 8785 (JCS) before
   hashing. Consumers must not hash the original YAML presentation bytes;
   comments, indentation, quoting style (where the resulting string is

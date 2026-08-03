@@ -804,7 +804,10 @@ def _check_tagged_node(node) -> None:
 # Every schema-defined object is closed (`("closed", {field: shape, ...})`)
 # unless the field table explicitly documents it as open, per ADR 0023 /
 # configuration-identity.schema.md: `execution_parameters` is schema v1's
-# one intentionally open mapping.
+# sole open-map root field, and its value forms the sole open-map subtree --
+# every mapping recursively nested inside that subtree (through mapping
+# values or sequence elements) is open too, not closed. Every mapping
+# outside that one subtree remains closed.
 
 SCALAR = ("scalar",)
 
@@ -836,14 +839,16 @@ def closed(fields, required=None):
     return ("closed", fields_dict, required_set)
 
 
-# `execution_parameters` (configuration-identity.schema.md): the only
-# intentionally open mapping in schema v1. Keys still obey the mapping-key
-# grammar and the reserved-key prohibition; values are recursively either
-# an allowed scalar, a sequence of allowed scalars, or a nested open
-# mapping under the same rules -- never anchors/aliases/tags/block
+# `execution_parameters` (configuration-identity.schema.md): schema v1's
+# sole open-map root field. Its value is the sole open-map subtree -- every
+# mapping recursively reachable from it through mapping values or sequence
+# elements is open, not closed. Keys still obey the mapping-key grammar and
+# the reserved-key prohibition; values are recursively either an allowed
+# scalar, a sequence of allowed values, or a nested mapping belonging to the
+# same open-map subtree -- never anchors/aliases/tags/block
 # scalars/multiline strings/duplicate keys (those are already rejected by
 # Layer A and by `_check_scalar_value`/`_check_mapping_key`, which the open
-# map walk still applies).
+# map walk still applies). Every mapping outside this one subtree is closed.
 OPEN_MAP = ("open",)
 
 # A fully unconstrained shape used only by the low-level source-syntax unit
@@ -2043,16 +2048,66 @@ def test_adr_defines_closed_maps_as_the_default():
     assert "every schema-defined mapping is closed" in text
 
 
-def test_adr_names_execution_parameters_as_the_sole_open_map():
+def test_adr_names_execution_parameters_as_the_sole_open_map_root_field():
     text = _normalize_whitespace(_adr_text().lower())
     assert "execution_parameters" in text
-    assert "sole open mapping" in text
+    assert "sole open-map root field" in text
+    assert "open-map subtree" in text
 
 
 def test_configuration_identity_defines_same_open_map_semantics():
     text = _normalize_whitespace(_configuration_identity_text().lower())
     assert "execution_parameters" in text
-    assert "open mapping" in text
+    assert "open-map root field" in text
+    assert "open-map subtree" in text
+
+
+def test_adr_does_not_use_bare_sole_open_mapping_phrase_undefined():
+    # The bare phrase "sole open mapping" is ambiguous (a subtree can
+    # legitimately contain many mapping nodes); the ADR must use the
+    # disambiguated "sole open-map root field" / "open-map subtree"
+    # terminology instead, everywhere it makes this claim.
+    text = _adr_text()
+    assert "sole open mapping" not in text.lower()
+
+
+def test_readme_does_not_use_bare_sole_open_mapping_phrase_undefined():
+    text = (SCHEMA_DIR / "README.md").read_text(encoding="utf-8")
+    assert "sole open mapping" not in text.lower()
+
+
+def test_configuration_identity_schema_does_not_claim_nested_maps_closed():
+    # The field-table description must not claim that mappings nested
+    # inside execution_parameters are closed -- they are part of the one
+    # open-map subtree and are themselves open. It must instead state that
+    # mappings *outside* the subtree are closed.
+    text = _normalize_whitespace(_configuration_identity_text())
+    assert "nested inside `execution_parameters`" not in text
+    assert "mapping nested inside" not in text.lower() or "not closed" in text.lower()
+    assert "every mapping outside that subtree is closed" in text.lower()
+
+
+def test_adr_and_readme_agree_on_single_open_map_root_field():
+    # No document may imply more than one field introduces an open-map
+    # subtree.
+    for text_fn in (_adr_text, lambda: (SCHEMA_DIR / "README.md").read_text(encoding="utf-8")):
+        text = _normalize_whitespace(text_fn().lower())
+        assert text.count("open-map root field") >= 1
+        # execution_parameters must be named as the root field somewhere
+        # near (within 400 chars before) at least one occurrence of the
+        # phrase "open-map root field".
+        start = 0
+        found_named = False
+        while True:
+            idx = text.find("open-map root field", start)
+            if idx == -1:
+                break
+            window = text[max(0, idx - 400):idx]
+            if "execution_parameters" in window:
+                found_named = True
+                break
+            start = idx + 1
+        assert found_named, f"execution_parameters not named near 'open-map root field' in {text_fn}"
 
 
 def test_readme_summarizes_closed_default_and_open_exception():
@@ -2151,6 +2206,47 @@ def test_checker_rejects_unknown_field_at_configuration_identity_top_level():
     mutated = block + 'brand_new_unknown_field: "value"\n'
     with pytest.raises(ProfileViolation, match="unknown key"):
         check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+def test_checker_rejects_invented_top_level_field_negative_control():
+    # Negative control required by the two-lane governance normative-
+    # contradiction remediation: an unrelated invented top-level field on
+    # a configuration-identity document must fail closed as an unknown
+    # field -- it must not be silently treated as belonging to any
+    # open-map subtree, since only `execution_parameters` is a root field.
+    block = _configuration_identity_example_block()
+    mutated = block + 'invented_top_level_field: "value"\n'
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+def test_only_one_open_map_root_field_exists_across_all_schema_shapes():
+    # Restates test_checker_shape_model_matches_normative_distinction's
+    # invariant explicitly as a "no other field may introduce an open-map
+    # subtree" regression: exactly one OPEN_MAP-typed field path may exist
+    # across every schema-v1 shape.
+    def _collect_open_map_field_paths(shape, path):
+        kind = shape[0]
+        found = []
+        if kind == "open":
+            found.append(path)
+        elif kind == "closed":
+            for field_name, field_shape in shape[1].items():
+                found.extend(_collect_open_map_field_paths(field_shape, f"{path}.{field_name}"))
+        elif kind == "seq":
+            found.extend(_collect_open_map_field_paths(shape[1], f"{path}[]"))
+        elif kind == "nullable":
+            found.extend(_collect_open_map_field_paths(shape[1], path))
+        return found
+
+    all_open_paths = []
+    for schema_name, shape in SCHEMA_SHAPES.items():
+        all_open_paths.extend(_collect_open_map_field_paths(shape, schema_name))
+
+    assert len(all_open_paths) == 1, (
+        f"exactly one open-map root field must exist across schema v1, "
+        f"found: {all_open_paths!r}"
+    )
 
 
 @pytest.mark.parametrize(
