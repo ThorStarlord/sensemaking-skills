@@ -1,8 +1,10 @@
 # ADR 0023: Two-Lane Experiment Authorization
 
-**Status**: PROPOSED — awaiting independent adversarial review. This ADR
-defines a governance and schema contract only. **It does not authorize any
-experiment, campaign, or attempt, and it does not change runtime behavior.**
+**Status**: ACCEPTED — independently reviewed at exact head
+`e74969f485286bed8b6f400dcb380f09aed153ea` and merged by
+`41288e2fe31f3ca873b19c1974f04f3d26e20058`. This ADR defines a
+governance and schema contract only. **It does not authorize any experiment,
+campaign, or attempt, and it does not change runtime behavior.**
 **Date**: 2026-08-02
 **Proposes resolution for**: Issue #117 (Phase 1 of the two-lane experiment
 authorization program, Issue #116).
