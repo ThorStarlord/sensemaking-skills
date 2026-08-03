@@ -45,11 +45,18 @@ operative.**
   fail-closed structural restrictions (§10b — no duplicate keys, aliases,
   anchors, tags, or merge keys). Mapping keys are a separate lexical class
   from scalar values, governed by their own grammar (§10b): every key must
-  be an unquoted, plain ASCII field-name token matching `^[a-z][a-z0-9_]*$`
-  and must exactly match a declared schema field; quoted or complex keys are
-  rejected. Unquoted field names such as `campaign_id:` are legal *because*
-  of this mapping-key grammar, not as an exception to the string-quoting
-  rule. This is parsed into a restricted JSON-compatible data model, then
+  be an unquoted, plain ASCII field-name token matching `^[a-z][a-z0-9_]*$`.
+  Every schema-defined mapping is **closed** by default: for a closed
+  mapping, the key must exactly match a declared schema field, and quoted
+  or complex keys are rejected. `execution_parameters` is the **sole open
+  mapping** in schema v1 (ADR 0023 §10b "Closed and open mapping model"):
+  arbitrary keys are permitted there only under the open-map key-grammar
+  and reserved-key rules ADR 0023 §10b defines — there is no other general
+  unknown-field escape hatch, and no other map becomes open through
+  implementation choice. Unquoted field names such as `campaign_id:` are
+  legal *because* of this mapping-key grammar, not as an exception to the
+  string-quoting rule. This is parsed into a restricted JSON-compatible
+  data model, then
   serialized with RFC 8785 (JCS) before
   hashing. Consumers must not hash the original YAML presentation bytes;
   comments, indentation, quoting style (where the resulting string is

@@ -442,9 +442,13 @@ key grammar.
 
 1. Every mapping key **must** be an unquoted, plain ASCII field-name token
    matching `^[a-z][a-z0-9_]*$`.
-2. The resulting token **must** exactly match a field declared by the schema
-   for that object (restated from §9a/§9c: unknown keys are rejected before
-   hashing).
+2. For a **closed** mapping (the default — see "Closed and open mapping
+   model" below), the resulting token **must** exactly match a field
+   declared by the schema for that object (restated from §9a/§9c: unknown
+   keys are rejected before hashing). For the schema v1 **open** mapping
+   (`execution_parameters` only), arbitrary keys are permitted, subject to
+   the open-map key-grammar and reserved-key rules defined below — there is
+   no other general unknown-field escape hatch.
 3. This rule applies recursively to every nested schema object, including
    (non-exhaustively) keys such as `repository`, `sha`, `amount`, `currency`,
    `not_before`, `not_after`, `mechanism`, and `reference`.
@@ -466,6 +470,68 @@ key grammar.
    keys (§10a). The *spelling and case* of a field name is normative: two
    different valid field-name tokens never normalize to the same key, and no
    Unicode normalization or case folding is applied to keys.
+
+#### Closed and open mapping model (normative)
+
+Every schema-defined mapping is closed by default: it permits exactly its
+declared fields and rejects any other key. A mapping becomes open only when
+its own field definition explicitly declares it open — being open is never
+inferred from a validator's implementation choice, from test convenience, or
+from an example's shape.
+
+- `execution_parameters` (`configuration-identity.schema.md`) is the **sole
+  open mapping** in schema v1. No other mapping defined by this ADR or by
+  any of the six schema-v1 contracts becomes open through implementation
+  choice — there is no other general unknown-field escape hatch.
+- **Open-map rules for `execution_parameters`** (normative, exact):
+  - The `execution_parameters` field itself is required on every
+    configuration-identity document; its value must be a mapping (an empty
+    mapping is legal, an absent field is not).
+  - Every key inside `execution_parameters`, including keys of nested open
+    mappings, recursively matches the mapping-key grammar above
+    (`^[a-z][a-z0-9_]*$`) and the reserved-key prohibition (`true`, `false`,
+    `null`, `yes`, `no`, `on`, `off` remain forbidden as keys).
+  - Quoted, complex, Unicode, numeric-looking, boolean-looking,
+    null-looking, timestamp-looking, or empty keys remain forbidden inside
+    `execution_parameters`, identically to closed mappings.
+  - Values inside `execution_parameters` may recursively be: a permitted
+    scalar value (per the scalar-resolution rules above); a sequence of
+    permitted values; or a nested open mapping governed by these same
+    rules. Sequences may themselves recursively contain scalars, sequences,
+    or nested open mappings.
+  - Duplicate keys remain forbidden inside `execution_parameters`, at every
+    nesting level, identically to closed mappings.
+  - Anchors, aliases, explicit tags, directives, merge keys, block scalars,
+    and multiline quoted strings remain forbidden inside
+    `execution_parameters`, identically to every other part of a schema-v1
+    document (restated from the structural rejections below).
+  - The entire resulting JSON-compatible `execution_parameters` value is
+    included in `configuration_id` computation (§10c) — an open mapping is
+    not exempt from hashing merely because its key set is not fixed.
+  - Unknown-key rejection for closed schema objects does not apply inside
+    `execution_parameters`; this is the one intentional exception, and it
+    does not extend to any other mapping by analogy.
+
+#### Required-field presence (normative)
+
+- Every field a schema's field table documents as required must be present
+  in a conforming document for that schema.
+- A **nullable** field is still a required *key*: its value may be JSON
+  `null`, but the key itself may not be omitted. Nullable never means
+  "optional key."
+- A field may be legitimately absent only when the normative schema field
+  table explicitly marks it optional/omittable. As of schema v1, every
+  field listed in each of the six contracts' "Required fields" tables is
+  required in this sense — none is documented as omittable.
+- Unknown fields remain rejected for closed objects (restated above); this
+  rule is independent of, and in addition to, required-field presence.
+- Required-field checks apply recursively to every nested closed object
+  (e.g. `validity_window`, `cost_ceiling` when non-null, each
+  `allowed_targets` item, `approval_provenance`, `state_history` entries).
+- Open mappings (`execution_parameters`) have no fixed required-key set of
+  their own beyond the field itself being required and being a mapping —
+  they never impose a per-key required set unless their own contract
+  explicitly defines one, which schema v1 does not.
 
 #### Permitted string-scalar styles (normative)
 

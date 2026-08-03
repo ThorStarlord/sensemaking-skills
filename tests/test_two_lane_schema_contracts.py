@@ -16,6 +16,7 @@ documentation/schema-contract deliverable, not a runtime implementation.
 from __future__ import annotations
 
 import re
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -745,6 +746,19 @@ def _check_scalar_value(node) -> None:
         if v in ("null", "true", "false"):
             return
         if _JSON_NUMBER_RE.match(v):
+            # RFC 8259 grammar accepted the lexeme; separately reject
+            # negative zero by its exact decimal lexical value (ADR 0023
+            # §10b: "Negative zero (`-0`) is rejected for schema v1").
+            # Decimal() interprets the lexeme exactly as written -- no
+            # binary-float conversion, so lexical intent is preserved and
+            # no underflow can hide a nonzero value as zero. This catches
+            # every negative-zero spelling, not only the literal `-0`
+            # string: `-0.0`, `-0e0`, `-0E+10`, `-0.000e-5`, etc.
+            if v.startswith("-") and Decimal(v) == 0:
+                raise ProfileViolation(
+                    f"unquoted plain scalar value {v!r} is negative zero, "
+                    "which is rejected (ADR 0023 s10b)"
+                )
             return
         raise ProfileViolation(f"unquoted plain scalar value {v!r} is not permitted")
     raise ProfileViolation(f"unrecognized scalar style {node.style!r}")
@@ -803,8 +817,23 @@ def seq(item):
     return ("seq", item)
 
 
-def closed(fields):
-    return ("closed", fields)
+def closed(fields, required=None):
+    """A closed mapping shape: exactly the declared ``fields`` are legal
+    keys, and every key in ``required`` (default: every declared field --
+    all six normative schema field tables document every listed field as
+    required, including nullable-but-required ones such as `token_ceiling`
+    or `cost_ceiling`) must be present in a conforming document.
+
+    Nullable fields (``nullable(...)``) are still required *keys*; only
+    their *value* may be JSON `null`. A field may be legitimately absent
+    only when it is not listed in ``required`` -- which, for every closed
+    object in this schema, is never (every documented field is required).
+    """
+    fields_dict = dict(fields)
+    required_set = (
+        frozenset(fields_dict) if required is None else frozenset(required)
+    )
+    return ("closed", fields_dict, required_set)
 
 
 # `execution_parameters` (configuration-identity.schema.md): the only
@@ -944,6 +973,11 @@ CAMPAIGN_SUMMARY_SHAPE = closed(
     }
 )
 
+# A minimal single-field shape used only by unit tests that want to exercise
+# `execution_parameters` open-map semantics in isolation, without needing a
+# complete configuration-identity document.
+CONFIGURATION_OPEN_MAP_ONLY_SHAPE = closed({"execution_parameters": OPEN_MAP})
+
 # Maps each schema-document path to its exact root shape. Every fenced
 # example under that path is checked against this shape -- there is no
 # generic "check declared fields for anything" fallback.
@@ -1033,6 +1067,7 @@ def _check_shape(node, shape, path: str) -> None:
         if not isinstance(node, yaml.MappingNode):
             raise ProfileViolation(f"{path}: expected a mapping")
         fields = shape[1]
+        required = shape[2]
         seen: set[str] = set()
         for key_node, value_node in node.value:
             _check_mapping_key(key_node)
@@ -1046,6 +1081,12 @@ def _check_shape(node, shape, path: str) -> None:
                     "(this object is closed)"
                 )
             _check_shape(value_node, fields[key], f"{path}.{key}")
+        missing = required - seen
+        if missing:
+            raise ProfileViolation(
+                f"{path}: missing required field(s) "
+                f"{sorted(missing)!r} (this object is closed)"
+            )
         return
 
     if kind == "open":
@@ -1223,6 +1264,72 @@ def test_profile_checker_accepts_valid_campaign_policy_example():
     assert blocks
     check_profile_conformance(blocks[0], shape=CAMPAIGN_POLICY_SHAPE)  # must not raise
     # No assertion beyond existence: this test suite performs no writes.
+
+
+# ---------------------------------------------------------------------------
+# Direct tests: negative-zero rejection (ADR 0023 s10b).
+#
+# Every negative numeric lexeme whose exact decimal value is zero is
+# rejected, not only the literal string `-0`. Positive zero and ordinary
+# negative numbers remain accepted.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "lexeme",
+    ["-0", "-0.0", "-0e0", "-0E+10", "-0.000e-5"],
+)
+def test_negative_zero_lexemes_are_rejected(lexeme):
+    source = f"max_attempt_slots: {lexeme}\n"
+    with pytest.raises(ProfileViolation, match="negative zero"):
+        check_profile_conformance(source, shape=ANY)
+
+
+@pytest.mark.parametrize("lexeme", ["0", "0.0", "0e0", "-1"])
+def test_non_negative_zero_lexemes_are_accepted(lexeme):
+    source = f"max_attempt_slots: {lexeme}\n"
+    check_profile_conformance(source, shape=ANY)  # must not raise
+
+
+def test_negative_zero_rejected_in_execution_parameters_scalar():
+    source = "execution_parameters:\n  temperature: -0\n"
+    with pytest.raises(ProfileViolation, match="negative zero"):
+        check_profile_conformance(source, shape=CONFIGURATION_OPEN_MAP_ONLY_SHAPE)
+
+
+def test_negative_zero_rejected_in_nested_execution_parameters_mapping():
+    source = "execution_parameters:\n  nested:\n    value: -0.0\n"
+    with pytest.raises(ProfileViolation, match="negative zero"):
+        check_profile_conformance(source, shape=CONFIGURATION_OPEN_MAP_ONLY_SHAPE)
+
+
+def test_negative_zero_rejected_in_execution_parameters_sequence():
+    source = "execution_parameters:\n  values:\n    - -0e0\n"
+    with pytest.raises(ProfileViolation, match="negative zero"):
+        check_profile_conformance(source, shape=CONFIGURATION_OPEN_MAP_ONLY_SHAPE)
+
+
+def test_execution_parameters_positive_controls_accepted():
+    source = 'execution_parameters:\n  temperature: 0.0\n  values:\n    - -1\n    - 0\n    - 1.0\n'
+    check_profile_conformance(source, shape=CONFIGURATION_OPEN_MAP_ONLY_SHAPE)  # must not raise
+
+
+def test_negative_zero_rejected_in_configuration_identity_real_example_mutation():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        "execution_parameters:\n  max_tokens_hint: 4096\n",
+        "execution_parameters:\n  max_tokens_hint: -0.0\n",
+    )
+    with pytest.raises(ProfileViolation, match="negative zero"):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+def test_negative_zero_rejected_replacing_a_numeric_field_in_campaign_policy():
+    text = _policy_text()
+    block = _extract_yaml_blocks(text)[0]
+    mutated = block.replace("max_attempt_slots: 5\n", "max_attempt_slots: -0\n")
+    with pytest.raises(ProfileViolation, match="negative zero"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
 
 
 # ---------------------------------------------------------------------------
@@ -1590,3 +1697,502 @@ def test_execution_parameters_rejects_block_scalar_inside_open_map():
     )
     with pytest.raises(ProfileViolation):
         check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+# ---------------------------------------------------------------------------
+# Direct tests: required-field presence (closed objects only).
+#
+# Removing a required field from an otherwise valid real fenced example must
+# be rejected as ProfileViolation, never silently accepted and never an
+# accidental KeyError/AttributeError.
+# ---------------------------------------------------------------------------
+
+
+def _attempt_reservation_text() -> str:
+    return (SCHEMA_DIR / "attempt-reservation.schema.md").read_text(encoding="utf-8")
+
+
+def _attempt_result_text() -> str:
+    return (SCHEMA_DIR / "attempt-result.schema.md").read_text(encoding="utf-8")
+
+
+def _campaign_summary_text() -> str:
+    return (SCHEMA_DIR / "campaign-summary.schema.md").read_text(encoding="utf-8")
+
+
+def _campaign_approval_filled_block() -> str:
+    text = (SCHEMA_DIR / "campaign-approval.schema.md").read_text(encoding="utf-8")
+    return _extract_yaml_blocks(text)[1]  # the filled illustrative example
+
+
+@pytest.mark.parametrize(
+    "removed_line",
+    [
+        'campaign_id: "EXP-0000-EXAMPLE"\n',
+        'policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"\n',
+        'allowed_configuration_ids:\n  - "1111111111111111111111111111111111111111111111111111111111111111"\n  - "2222222222222222222222222222222222222222222222222222222222222222"\n',
+        'validity_window:\n  not_before: "2026-01-01T00:00:00+00:00"\n  not_after: "2026-01-08T00:00:00+00:00"\n',
+    ],
+)
+def test_campaign_policy_rejects_missing_required_top_level_field(removed_line):
+    block = _extract_yaml_blocks(_policy_text())[0]
+    assert removed_line in block, "test setup: line must exist verbatim in the example"
+    mutated = block.replace(removed_line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_campaign_policy_rejects_missing_allowed_targets_repository():
+    block = _extract_yaml_blocks(_policy_text())[0]
+    original = '  - repository: "https://example.invalid/example-owner/example-target.git"\n    sha: "000000000000000000000000000000000000beef"\n'
+    replacement = '  - sha: "000000000000000000000000000000000000beef"\n'
+    assert original in block
+    mutated = block.replace(original, replacement, 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_campaign_policy_rejects_missing_allowed_targets_sha():
+    block = _extract_yaml_blocks(_policy_text())[0]
+    line = '    sha: "000000000000000000000000000000000000beef"\n'
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_campaign_policy_rejects_missing_validity_window_not_before():
+    block = _extract_yaml_blocks(_policy_text())[0]
+    line = '  not_before: "2026-01-01T00:00:00+00:00"\n'
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_campaign_policy_rejects_missing_validity_window_not_after():
+    block = _extract_yaml_blocks(_policy_text())[0]
+    line = '  not_after: "2026-01-08T00:00:00+00:00"\n'
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_campaign_policy_rejects_missing_cost_ceiling_amount_when_non_null():
+    block = _extract_yaml_blocks(_policy_text())[0]
+    mutated = block.replace(
+        "cost_ceiling: null\n",
+        'cost_ceiling:\n  amount: "0.00"\n  currency: "USD"\n',
+    )
+    mutated = mutated.replace('  amount: "0.00"\n', "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_campaign_policy_rejects_missing_cost_ceiling_currency_when_non_null():
+    block = _extract_yaml_blocks(_policy_text())[0]
+    mutated = block.replace(
+        "cost_ceiling: null\n",
+        'cost_ceiling:\n  amount: "0.00"\n  currency: "USD"\n',
+    )
+    mutated = mutated.replace('  currency: "USD"\n', "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_campaign_policy_accepts_cost_ceiling_present_and_complete_when_non_null():
+    block = _extract_yaml_blocks(_policy_text())[0]
+    mutated = block.replace(
+        "cost_ceiling: null\n",
+        'cost_ceiling:\n  amount: "0.00"\n  currency: "USD"\n',
+    )
+    check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)  # must not raise
+
+
+@pytest.mark.parametrize(
+    "removed_line",
+    [
+        'campaign_id: "EXP-0000-EXAMPLE"\n',
+        'policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"\n',
+        'marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"\n',
+    ],
+)
+def test_campaign_approval_rejects_missing_required_top_level_field(removed_line):
+    block = _campaign_approval_filled_block()
+    assert removed_line in block
+    mutated = block.replace(removed_line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_APPROVAL_SHAPE)
+
+
+def test_campaign_approval_rejects_missing_approval_provenance():
+    block = _campaign_approval_filled_block()
+    line = 'approval_provenance:\n  mechanism: "signed_commit"\n  reference: "000000000000000000000000000000000000c0de"\n'
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_APPROVAL_SHAPE)
+
+
+def test_campaign_approval_rejects_missing_approval_provenance_mechanism():
+    block = _campaign_approval_filled_block()
+    line = '  mechanism: "signed_commit"\n'
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_APPROVAL_SHAPE)
+
+
+def test_campaign_approval_rejects_missing_approval_provenance_reference():
+    block = _campaign_approval_filled_block()
+    line = '  reference: "000000000000000000000000000000000000c0de"\n'
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_APPROVAL_SHAPE)
+
+
+@pytest.mark.parametrize(
+    "removed_line",
+    [
+        'configuration_id: "1111111111111111111111111111111111111111111111111111111111111111"\n',
+        'campaign_id: "EXP-0000-EXAMPLE"\n',
+        'artifact_type: "repository_sensemaking_brief"\n',
+    ],
+)
+def test_configuration_identity_rejects_missing_required_top_level_field(removed_line):
+    block = _configuration_identity_example_block()
+    assert removed_line in block
+    mutated = block.replace(removed_line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+def test_configuration_identity_rejects_missing_execution_parameters():
+    block = _configuration_identity_example_block()
+    line = "execution_parameters:\n  max_tokens_hint: 4096\n  tool_allowlist:\n    - \"read_repository\"\n"
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+@pytest.mark.parametrize(
+    "removed_line",
+    [
+        'reservation_id: "00000000-0000-0000-0000-000000000001"\n',
+        'attempt_id: "00000000-0000-0000-0000-000000000001"\n',
+        'state: "RESERVED"\n',
+    ],
+)
+def test_attempt_reservation_rejects_missing_required_top_level_field(removed_line):
+    block = _extract_yaml_blocks(_attempt_reservation_text())[0]
+    assert removed_line in block
+    mutated = block.replace(removed_line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=ATTEMPT_RESERVATION_SHAPE)
+
+
+def test_attempt_reservation_rejects_missing_state_history():
+    block = _extract_yaml_blocks(_attempt_reservation_text())[0]
+    line = 'state_history:\n  - state: "RESERVED"\n    at: "2026-01-01T00:00:00+00:00"\n'
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=ATTEMPT_RESERVATION_SHAPE)
+
+
+@pytest.mark.parametrize(
+    "removed_line",
+    [
+        'attempt_id: "00000000-0000-0000-0000-000000000001"\n',
+        'state: "VALIDATION_PASSED"\n',
+        'classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"\n',
+    ],
+)
+def test_attempt_result_rejects_missing_required_top_level_field(removed_line):
+    block = _extract_yaml_blocks(_attempt_result_text())[0]
+    assert removed_line in block
+    mutated = block.replace(removed_line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=ATTEMPT_RESULT_SHAPE)
+
+
+def test_attempt_result_rejects_missing_state_history():
+    block = _extract_yaml_blocks(_attempt_result_text())[0]
+    line = (
+        'state_history:\n'
+        '  - state: "RESERVED"\n    at: "2026-01-01T00:00:00+00:00"\n'
+        '  - state: "INVOKED"\n    at: "2026-01-01T00:00:05+00:00"\n'
+        '  - state: "OUTPUT_CAPTURED"\n    at: "2026-01-01T00:03:00+00:00"\n'
+        '  - state: "VALIDATION_PASSED"\n    at: "2026-01-01T00:03:30+00:00"\n'
+    )
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=ATTEMPT_RESULT_SHAPE)
+
+
+@pytest.mark.parametrize(
+    "removed_line",
+    [
+        'campaign_id: "EXP-0000-EXAMPLE"\n',
+        'campaign_state: "ACTIVE"\n',
+    ],
+)
+def test_campaign_summary_rejects_missing_required_top_level_field(removed_line):
+    block = _extract_yaml_blocks(_campaign_summary_text())[0]
+    assert removed_line in block
+    mutated = block.replace(removed_line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_SUMMARY_SHAPE)
+
+
+def test_campaign_summary_rejects_missing_remaining_budget():
+    block = _extract_yaml_blocks(_campaign_summary_text())[0]
+    line = "remaining_budget:\n  attempt_slots: 3\n  provider_invocations: 4\n"
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_SUMMARY_SHAPE)
+
+
+def test_campaign_summary_rejects_missing_attempts():
+    block = _extract_yaml_blocks(_campaign_summary_text())[0]
+    line = (
+        "attempts:\n"
+        '  - attempt_id: "00000000-0000-0000-0000-000000000001"\n'
+        '    configuration_id: "1111111111111111111111111111111111111111111111111111111111111111"\n'
+        '    state: "VALIDATION_PASSED"\n'
+        '    terminal_at: "2026-01-01T00:03:30+00:00"\n'
+        '  - attempt_id: "00000000-0000-0000-0000-000000000002"\n'
+        '    configuration_id: "1111111111111111111111111111111111111111111111111111111111111111"\n'
+        '    state: "ABORTED_BEFORE_INVOCATION"\n'
+        '    terminal_at: "2026-01-01T00:04:00+00:00"\n'
+    )
+    assert line in block
+    mutated = block.replace(line, "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_SUMMARY_SHAPE)
+
+
+def test_nullable_required_field_accepted_present_with_null():
+    # token_ceiling is nullable-but-required: present with an explicit
+    # `null` value must be accepted.
+    block = _extract_yaml_blocks(_policy_text())[0]
+    assert "token_ceiling: null\n" in block
+    check_profile_conformance(block, shape=CAMPAIGN_POLICY_SHAPE)  # must not raise
+
+
+def test_nullable_required_field_rejected_when_absent():
+    # The same field, entirely removed (not merely set to null), must be
+    # rejected as a missing required field -- nullable never means
+    # "optional key".
+    block = _extract_yaml_blocks(_policy_text())[0]
+    mutated = block.replace("token_ceiling: null\n", "", 1)
+    with pytest.raises(ProfileViolation, match="missing required"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_missing_required_failure_is_profile_violation_not_key_error():
+    block = _extract_yaml_blocks(_policy_text())[0]
+    mutated = block.replace('campaign_id: "EXP-0000-EXAMPLE"\n', "", 1)
+    try:
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+    except ProfileViolation:
+        pass
+    except Exception as exc:  # pragma: no cover - defensive
+        pytest.fail(f"expected ProfileViolation, got {type(exc).__name__}: {exc}")
+    else:
+        pytest.fail("expected ProfileViolation, no exception was raised")
+
+
+def test_missing_required_error_message_includes_path_and_sorted_field_names():
+    source = 'campaign_id: "value"\n'
+    shape = closed({"campaign_id": SCALAR, "policy_digest": SCALAR, "artifact_type": SCALAR})
+    with pytest.raises(ProfileViolation) as exc_info:
+        check_profile_conformance(source, shape=shape)
+    message = str(exc_info.value)
+    assert "$" in message
+    assert "['artifact_type', 'policy_digest']" in message
+
+
+# ---------------------------------------------------------------------------
+# Real-example mutation round-trip guard: every mutation test above operates
+# on an in-memory `str.replace(...)` result, never on the file at rest.
+# ---------------------------------------------------------------------------
+
+
+def test_schema_files_are_never_written_by_this_test_module():
+    for path in _schema_files():
+        first = path.read_bytes()
+        second = path.read_bytes()
+        assert first == second
+
+
+# ---------------------------------------------------------------------------
+# Normative closed/open map contract-consistency tests (ADR 0023, README,
+# configuration-identity.schema.md, and the test-only checker's shape model
+# must all agree).
+# ---------------------------------------------------------------------------
+
+
+def test_adr_defines_closed_maps_as_the_default():
+    text = _normalize_whitespace(_adr_text().lower())
+    assert "every schema-defined mapping is closed" in text
+
+
+def test_adr_names_execution_parameters_as_the_sole_open_map():
+    text = _normalize_whitespace(_adr_text().lower())
+    assert "execution_parameters" in text
+    assert "sole open mapping" in text
+
+
+def test_configuration_identity_defines_same_open_map_semantics():
+    text = _normalize_whitespace(_configuration_identity_text().lower())
+    assert "execution_parameters" in text
+    assert "open mapping" in text
+
+
+def test_readme_summarizes_closed_default_and_open_exception():
+    text = _normalize_whitespace(
+        (SCHEMA_DIR / "README.md").read_text(encoding="utf-8").lower()
+    )
+    assert "closed" in text
+    assert "execution_parameters" in text
+    assert "open" in text
+
+
+def test_no_prose_says_every_map_closed_without_exception():
+    # The old absolute phrasing ("must exactly match a field declared by
+    # the schema for that object" with no open-map qualifier) must not
+    # reappear unqualified anywhere in the ADR.
+    text = _adr_text()
+    for line in text.splitlines():
+        lowered = line.lower()
+        if "must" in lowered and "exactly match a field declared" in lowered:
+            assert (
+                "closed" in lowered
+                or "open" in lowered
+                or "execution_parameters" in lowered
+            ), (
+                "ADR 0023 must not state the declared-field-match rule "
+                "without qualifying it against the closed/open distinction: "
+                f"{line!r}"
+            )
+
+
+def test_no_prose_permits_arbitrary_keys_outside_execution_parameters():
+    combined = _normalize_whitespace(
+        (_adr_text() + " " + (SCHEMA_DIR / "README.md").read_text(encoding="utf-8")).lower()
+    )
+    assert (
+        "no other map becomes open" in combined
+        or "no other general unknown-field escape hatch" in combined
+    )
+
+
+def test_checker_shape_model_matches_normative_distinction():
+    # CONFIGURATION_IDENTITY_SHAPE is the only shape in this module whose
+    # value uses OPEN_MAP; every other declared field, at every nesting
+    # level across all six shapes, must be `closed` (or a scalar/seq/
+    # nullable wrapper around one) -- never OPEN_MAP.
+    def _collect_open_map_field_paths(shape, path):
+        kind = shape[0]
+        found = []
+        if kind == "open":
+            found.append(path)
+        elif kind == "closed":
+            for field_name, field_shape in shape[1].items():
+                found.extend(_collect_open_map_field_paths(field_shape, f"{path}.{field_name}"))
+        elif kind == "seq":
+            found.extend(_collect_open_map_field_paths(shape[1], f"{path}[]"))
+        elif kind == "nullable":
+            found.extend(_collect_open_map_field_paths(shape[1], path))
+        return found
+
+    all_open_paths = []
+    for schema_name, shape in SCHEMA_SHAPES.items():
+        all_open_paths.extend(_collect_open_map_field_paths(shape, schema_name))
+
+    assert all_open_paths == ["configuration-identity.schema.md.execution_parameters"]
+
+
+def test_checker_accepts_new_valid_execution_parameters_key():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        "execution_parameters:\n  max_tokens_hint: 4096\n",
+        "execution_parameters:\n  max_tokens_hint: 4096\n  a_brand_new_valid_key: \"value\"\n",
+    )
+    check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)  # must not raise
+
+
+def test_checker_accepts_nested_valid_open_mapping():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        "execution_parameters:\n  max_tokens_hint: 4096\n",
+        'execution_parameters:\n  max_tokens_hint: 4096\n  nested_settings:\n    inner_a: "x"\n    inner_b: 1\n',
+    )
+    check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)  # must not raise
+
+
+def test_checker_accepts_sequence_containing_nested_open_mapping():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        "execution_parameters:\n  max_tokens_hint: 4096\n",
+        'execution_parameters:\n  max_tokens_hint: 4096\n  items:\n    - inner_key: "value"\n',
+    )
+    check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)  # must not raise
+
+
+def test_checker_rejects_unknown_field_at_configuration_identity_top_level():
+    block = _configuration_identity_example_block()
+    mutated = block + 'brand_new_unknown_field: "value"\n'
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+@pytest.mark.parametrize(
+    "shape_name,text_fn,shape",
+    [
+        ("campaign-policy", _policy_text, CAMPAIGN_POLICY_SHAPE),
+        (
+            "campaign-approval",
+            lambda: (SCHEMA_DIR / "campaign-approval.schema.md").read_text(encoding="utf-8"),
+            CAMPAIGN_APPROVAL_SHAPE,
+        ),
+        ("attempt-reservation", _attempt_reservation_text, ATTEMPT_RESERVATION_SHAPE),
+        ("attempt-result", _attempt_result_text, ATTEMPT_RESULT_SHAPE),
+        ("campaign-summary", _campaign_summary_text, CAMPAIGN_SUMMARY_SHAPE),
+    ],
+)
+def test_checker_rejects_unknown_field_in_every_other_closed_object(shape_name, text_fn, shape):
+    text = text_fn()
+    blocks = _extract_yaml_blocks(text)
+    block = blocks[-1]  # the operative/filled example, where multiple exist
+    mutated = block + 'brand_new_unknown_field: "value"\n'
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=shape)
+
+
+def test_checker_rejects_reserved_key_inside_execution_parameters_contract_test():
+    block = _configuration_identity_example_block()
+    for reserved in ("true", "false", "null", "yes", "no", "on", "off"):
+        mutated = block.replace(
+            "execution_parameters:\n  max_tokens_hint: 4096\n",
+            f'execution_parameters:\n  max_tokens_hint: 4096\n  {reserved}: "value"\n',
+        )
+        with pytest.raises(ProfileViolation, match="reserved"):
+            check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+def test_checker_rejects_malformed_keys_inside_execution_parameters_contract_test():
+    block = _configuration_identity_example_block()
+    for malformed in ('"Quoted-Key"', "'also-quoted'"):
+        mutated = block.replace(
+            "execution_parameters:\n  max_tokens_hint: 4096\n",
+            f'execution_parameters:\n  max_tokens_hint: 4096\n  {malformed}: "value"\n',
+        )
+        with pytest.raises(ProfileViolation, match="quoted"):
+            check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)

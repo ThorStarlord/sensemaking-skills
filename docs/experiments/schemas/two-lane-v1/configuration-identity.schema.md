@@ -21,7 +21,7 @@ shares it.
 | `prompt_or_skill_revision` | string | yes | Exact revision identifier (e.g. commit SHA, skill version tag) of the prompt/skill used. |
 | `validator_revision` | string | yes | Exact revision identifier of the validator that will assess the output. |
 | `artifact_type` | string | yes | Must be a member of the campaign policy's `allowed_artifact_types`. |
-| `execution_parameters` | object | yes | Any other execution-relevant parameter that can affect output (e.g. temperature, max tokens, tool allowlist). Empty object is valid; absent is not. |
+| `execution_parameters` | object (open mapping) | yes | Any other execution-relevant parameter that can affect output (e.g. temperature, max tokens, tool allowlist). Empty object is valid; absent is not. This is the **sole open mapping** in schema v1 (ADR 0023 §10b "Closed and open mapping model") — every other mapping in schema v1, including every mapping nested inside `execution_parameters`'s own value shape at the key-grammar level, is closed. Its keys are not declared in advance by this table; instead, every key must match `^[a-z][a-z0-9_]*$` and must not be one of the reserved tokens `true`, `false`, `null`, `yes`, `no`, `on`, `off`. Values may recursively be a permitted scalar, a sequence of permitted values, or a nested open mapping under the same rules. Unknown-key rejection for closed schema objects does not apply here; there is no other general unknown-field escape hatch in schema v1. |
 
 ## Identity rule
 
