@@ -593,17 +593,43 @@ def test_evidence_0016_and_0015_directories_untouched_by_this_module():
 
 
 # ---------------------------------------------------------------------------
-# Test-only Two-Lane YAML Profile v1 source-style conformance checker.
+# Test-only Two-Lane YAML Profile v1 conformance checker.
 #
 # This is NOT a production parser or validator. It exists only so this test
-# module can prove that fenced examples conform to the *source-level* style
-# rules of the profile (mapping-key grammar, allowed string-scalar styles),
-# which ``yaml.safe_load`` alone cannot prove: PyYAML's default resolver
-# happily accepts quoted keys, block scalars, and YAML-1.1-style booleans,
-# none of which are legal under the profile. The checker inspects PyYAML's
-# *composed node tree* (via ``yaml.compose``), which retains node style
-# (``node.style``) and tag information, rather than trusting the fully
-# resolved Python values from ``safe_load``.
+# module can prove that fenced examples conform to the Two-Lane YAML Profile
+# v1 (ADR 0023 §10b) and to the declared field sets of the six schema
+# contracts.
+#
+# It is deliberately two-layer, because the two layers see different
+# information and neither alone is sufficient:
+#
+# Layer A (`_check_source_tokens`) scans the *original source text* with
+# PyYAML's scanner (`yaml.scan`), before composition. Only the token stream
+# still carries syntax-level facts that composition throws away or
+# obscures: anchor tokens, alias tokens, explicit tag tokens (as opposed to
+# a composed node's *resolved* tag, which looks identical whether or not the
+# source wrote an explicit `!!str`/`!!int`), `%YAML`/`%TAG` directive
+# tokens, the literal `?` explicit-key indicator, and the `<<` merge-key
+# scalar. `yaml.compose_all` alone cannot detect any of these: composition
+# either resolves them into ordinary-looking nodes (explicit tags, merge
+# keys) or PyYAML's Composer silently follows aliases through to the
+# anchored node with no distinct "this was an alias" marker at all (aliases,
+# anchors). A prior version of this checker claimed "aliases surface as
+# anchors after composition" -- that claim is false: composing an anchored
+# node produces one node with an `anchor` attribute, and composing the alias
+# that refers to it returns the *same* node object with no additional
+# marker distinguishing "the place where the alias appeared" from "the place
+# where the anchor appeared" -- a document containing only an alias and no
+# in-document anchor definition, or an alias to something declared once,
+# composes without incident. Layer A closes that gap by inspecting the
+# `AliasToken`/`AnchorToken` stream directly, at the exact source location.
+#
+# Layer B (`_check_shape`) composes the document (`yaml.compose`) only after
+# Layer A passes, and walks the composed node tree to validate hierarchy,
+# key styles/grammar, duplicate keys, scalar styles/lexemes, and --
+# recursively, against a caller-supplied schema "shape" -- declared field
+# sets (closed objects reject unknown keys; the one intentionally open
+# object recursively validates its own key grammar and value domain).
 # ---------------------------------------------------------------------------
 
 _KEY_TOKEN_RE = re.compile(r"^[a-z][a-z0-9_]*$")
@@ -612,14 +638,94 @@ _JSON_NUMBER_RE = re.compile(r"^-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?$"
 BLOCK_STYLES = {"|", ">"}
 QUOTE_STYLES = {"'", '"'}
 
+# The ADR forbids boolean/null-looking mapping keys even though they match
+# the general `^[a-z][a-z0-9_]*$` grammar (YAML 1.1 resolves several of
+# these as booleans/null; the profile bans them as *keys* outright so a key
+# never depends on which resolver reads it).
+_RESERVED_KEY_TOKENS = {"true", "false", "null", "yes", "no", "on", "off"}
+
+_ALLOWED_SCALAR_TAGS = (
+    "tag:yaml.org,2002:str",
+    "tag:yaml.org,2002:null",
+    "tag:yaml.org,2002:bool",
+    "tag:yaml.org,2002:int",
+    "tag:yaml.org,2002:float",
+)
+
 
 class ProfileViolation(AssertionError):
     pass
 
 
+# --- Layer A: source-token validation --------------------------------------
+
+
+def _check_source_tokens(yaml_source: str) -> None:
+    """Scan ``yaml_source`` (before composition) and raise ProfileViolation
+    for any forbidden source-level construct: anchors, aliases, explicit
+    tags, `%YAML`/`%TAG`/unknown directives, the explicit-key `?` indicator,
+    and the `<<` merge-key construct.
+
+    Malformed YAML that PyYAML's scanner itself rejects is caught and
+    re-raised as ProfileViolation (stage: "scan"), distinct from a
+    deliberate profile-rule rejection (stage: "source"), so callers can
+    still tell "not YAML at all" apart from "valid YAML that violates the
+    Two-Lane profile" -- both raise ProfileViolation, but with a different
+    reason.
+    """
+    try:
+        tokens = list(yaml.scan(yaml_source, Loader=yaml.SafeLoader))
+    except yaml.YAMLError as exc:
+        raise ProfileViolation(f"scan stage: malformed YAML: {exc}") from exc
+
+    for tok in tokens:
+        if isinstance(tok, yaml.AnchorToken):
+            raise ProfileViolation(
+                f"source stage: YAML anchor is forbidden: &{tok.value}"
+            )
+        if isinstance(tok, yaml.AliasToken):
+            raise ProfileViolation(
+                f"source stage: YAML alias is forbidden: *{tok.value}"
+            )
+        if isinstance(tok, yaml.TagToken):
+            raise ProfileViolation(
+                f"source stage: explicit YAML tag is forbidden: {tok.value!r}"
+            )
+        if isinstance(tok, yaml.DirectiveToken):
+            name = tok.name
+            if name == "YAML":
+                version = tok.value
+                if version != (1, 2):
+                    raise ProfileViolation(
+                        f"source stage: %YAML directive version {version} is "
+                        "forbidden (only YAML 1.2 is permitted per ADR 0023)"
+                    )
+                # A %YAML 1.2 directive is syntactically permitted, but no
+                # normative example in this repository uses one; falling
+                # through here means it is not rejected outright.
+            elif name == "TAG":
+                raise ProfileViolation("source stage: %TAG directive is forbidden")
+            else:
+                raise ProfileViolation(
+                    f"source stage: unknown directive {name!r} is forbidden"
+                )
+        if isinstance(tok, yaml.KeyToken):
+            idx = getattr(tok.start_mark, "index", None)
+            if idx is not None and idx < len(yaml_source) and yaml_source[idx] == "?":
+                raise ProfileViolation(
+                    "source stage: explicit-key indicator '?' is forbidden"
+                )
+        if isinstance(tok, yaml.ScalarToken):
+            if tok.plain and tok.value == "<<":
+                raise ProfileViolation(
+                    "source stage: merge key construct '<<' is forbidden"
+                )
+
+
+# --- Layer B: structural / declared-field validation ------------------------
+
+
 def _check_scalar_value(node) -> None:
-    if node.tag == "tag:yaml.org,2002:merge" or node.value == "<<":
-        raise ProfileViolation("merge key construct is forbidden")
     if node.style in BLOCK_STYLES:
         raise ProfileViolation(
             f"block scalar style {node.style!r} is forbidden for value {node.value!r}"
@@ -645,79 +751,364 @@ def _check_scalar_value(node) -> None:
 
 
 def _check_mapping_key(node) -> None:
+    # Node-type check FIRST: a complex (non-scalar) key must be rejected
+    # deliberately, before any code path that assumes `.style`/`.value`
+    # exist only on scalar nodes. A prior version of this checker read
+    # `node.style` before this isinstance check and crashed with an
+    # unrelated AttributeError on a complex key instead of raising
+    # ProfileViolation.
+    if not isinstance(node, yaml.ScalarNode):
+        raise ProfileViolation("complex (non-scalar) mapping key is forbidden")
     if node.style in QUOTE_STYLES:
         raise ProfileViolation(f"quoted mapping key is forbidden: {node.value!r}")
     if node.style in BLOCK_STYLES:
         raise ProfileViolation(f"block-style mapping key is forbidden: {node.value!r}")
-    if not isinstance(node, yaml.ScalarNode):
-        raise ProfileViolation("complex (non-scalar) mapping key is forbidden")
+    if node.value in _RESERVED_KEY_TOKENS:
+        raise ProfileViolation(
+            f"mapping key {node.value!r} is a reserved boolean/null-looking "
+            "token and is forbidden regardless of the general key grammar"
+        )
     if not _KEY_TOKEN_RE.match(node.value):
         raise ProfileViolation(
             f"mapping key {node.value!r} does not match ^[a-z][a-z0-9_]*$"
         )
 
 
-def check_profile_conformance(yaml_source: str) -> None:
-    """Walk the composed node tree of a single-document YAML source string
-    and raise ProfileViolation on the first construct that is illegal under
-    the Two-Lane YAML Profile v1 (ADR 0023 §10b): non-plain/non-quoted
-    string values, block scalars, multiline quoted scalars, non-conforming
-    or quoted/complex mapping keys, duplicate keys, aliases, anchors, or
-    explicit tags.
+def _check_tagged_node(node) -> None:
+    if isinstance(node, yaml.MappingNode) and node.tag != "tag:yaml.org,2002:map":
+        raise ProfileViolation(f"unexpected tag on mapping: {node.tag!r}")
+    if isinstance(node, yaml.SequenceNode) and node.tag != "tag:yaml.org,2002:seq":
+        raise ProfileViolation(f"unexpected tag on sequence: {node.tag!r}")
+    if isinstance(node, yaml.ScalarNode) and node.tag not in _ALLOWED_SCALAR_TAGS:
+        raise ProfileViolation(f"unexpected tag on scalar: {node.tag!r}")
+
+
+# --- Schema shapes -----------------------------------------------------------
+#
+# A "shape" is a small tuple-tagged spec describing what a node is allowed to
+# be, used purely by this test module to enforce declared-field validation.
+# Every schema-defined object is closed (`("closed", {field: shape, ...})`)
+# unless the field table explicitly documents it as open, per ADR 0023 /
+# configuration-identity.schema.md: `execution_parameters` is schema v1's
+# one intentionally open mapping.
+
+SCALAR = ("scalar",)
+
+
+def nullable(inner):
+    return ("nullable", inner)
+
+
+def seq(item):
+    return ("seq", item)
+
+
+def closed(fields):
+    return ("closed", fields)
+
+
+# `execution_parameters` (configuration-identity.schema.md): the only
+# intentionally open mapping in schema v1. Keys still obey the mapping-key
+# grammar and the reserved-key prohibition; values are recursively either
+# an allowed scalar, a sequence of allowed scalars, or a nested open
+# mapping under the same rules -- never anchors/aliases/tags/block
+# scalars/multiline strings/duplicate keys (those are already rejected by
+# Layer A and by `_check_scalar_value`/`_check_mapping_key`, which the open
+# map walk still applies).
+OPEN_MAP = ("open",)
+
+# A fully unconstrained shape used only by the low-level source-syntax unit
+# tests in this module, which intentionally test forbidden *syntax*
+# (anchors, tags, directives, complex keys, ...) independent of any
+# particular schema's declared field set. Real fenced examples are always
+# checked against one of the concrete shapes below, never this one -- see
+# `check_profile_conformance`'s required `shape` parameter.
+ANY = ("any",)
+
+CAMPAIGN_POLICY_SHAPE = closed(
+    {
+        "policy_schema_version": SCALAR,
+        "campaign_id": SCALAR,
+        "policy_digest": SCALAR,
+        "classification": SCALAR,
+        "allowed_framework_shas": seq(SCALAR),
+        "allowed_targets": seq(closed({"repository": SCALAR, "sha": SCALAR})),
+        "allowed_models": seq(SCALAR),
+        "allowed_artifact_types": seq(SCALAR),
+        "allowed_configuration_ids": seq(SCALAR),
+        "max_attempt_slots": SCALAR,
+        "max_provider_invocations": SCALAR,
+        "max_attempts_per_configuration": SCALAR,
+        "concurrency_ceiling": SCALAR,
+        "token_ceiling": nullable(SCALAR),
+        "cost_ceiling": nullable(closed({"amount": SCALAR, "currency": SCALAR})),
+        "validity_window": closed({"not_before": SCALAR, "not_after": SCALAR}),
+        "target_mutation_prohibited": SCALAR,
+        "fallback_prohibited": SCALAR,
+        "repair_prohibited": SCALAR,
+        "automatic_merge_prohibited": SCALAR,
+        "preservation_requirements": SCALAR,
+        "logging_requirements": SCALAR,
+        "prepared_by": SCALAR,
+        "prepared_at": SCALAR,
+    }
+)
+
+CAMPAIGN_APPROVAL_SHAPE = closed(
+    {
+        "approval_schema_version": SCALAR,
+        "campaign_id": SCALAR,
+        "policy_digest": SCALAR,
+        "claimed_approver_identity": SCALAR,
+        "approval_provenance": closed({"mechanism": SCALAR, "reference": SCALAR}),
+        "approval_statement": SCALAR,
+        "approved_at": SCALAR,
+        "marker": SCALAR,
+    }
+)
+
+CONFIGURATION_IDENTITY_SHAPE = closed(
+    {
+        "configuration_schema_version": SCALAR,
+        "configuration_id": SCALAR,
+        "campaign_id": SCALAR,
+        "framework_sha": SCALAR,
+        "target_repository": SCALAR,
+        "target_sha": SCALAR,
+        "model_identifier": SCALAR,
+        "prompt_or_skill_revision": SCALAR,
+        "validator_revision": SCALAR,
+        "artifact_type": SCALAR,
+        "execution_parameters": OPEN_MAP,
+    }
+)
+
+ATTEMPT_RESERVATION_SHAPE = closed(
+    {
+        "reservation_schema_version": SCALAR,
+        "reservation_id": SCALAR,
+        "attempt_id": SCALAR,
+        "campaign_id": SCALAR,
+        "configuration_id": SCALAR,
+        "reserved_at": SCALAR,
+        "state": SCALAR,
+        "state_history": seq(closed({"state": SCALAR, "at": SCALAR})),
+        "terminal_states": seq(SCALAR),
+    }
+)
+
+ATTEMPT_RESULT_SHAPE = closed(
+    {
+        "result_schema_version": SCALAR,
+        "attempt_id": SCALAR,
+        "campaign_id": SCALAR,
+        "configuration_id": SCALAR,
+        "state": SCALAR,
+        "state_history": seq(closed({"state": SCALAR, "at": SCALAR})),
+        "provider_invoked_at": nullable(SCALAR),
+        "raw_output_reference": nullable(SCALAR),
+        "validated_output_reference": nullable(SCALAR),
+        "validation_outcome": nullable(closed({"passed": SCALAR, "details": SCALAR})),
+        "classification": SCALAR,
+        "tokens_observed": nullable(SCALAR),
+        "cost_observed": nullable(closed({"amount": SCALAR, "currency": SCALAR})),
+        "terminal_at": nullable(SCALAR),
+    }
+)
+
+CAMPAIGN_SUMMARY_SHAPE = closed(
+    {
+        "summary_schema_version": SCALAR,
+        "campaign_id": SCALAR,
+        "policy_digest": SCALAR,
+        "campaign_state": SCALAR,
+        "campaign_state_history": seq(closed({"state": SCALAR, "at": SCALAR})),
+        "reservations_issued": closed({"count": SCALAR, "ids": seq(SCALAR)}),
+        "provider_invocations_made": SCALAR,
+        "remaining_budget": closed(
+            {"attempt_slots": SCALAR, "provider_invocations": SCALAR}
+        ),
+        "attempts": seq(
+            closed(
+                {
+                    "attempt_id": SCALAR,
+                    "configuration_id": SCALAR,
+                    "state": SCALAR,
+                    "terminal_at": SCALAR,
+                }
+            )
+        ),
+        "first_reserved_at": nullable(SCALAR),
+        "last_activity_at": SCALAR,
+        "terminal_reason": nullable(SCALAR),
+    }
+)
+
+# Maps each schema-document path to its exact root shape. Every fenced
+# example under that path is checked against this shape -- there is no
+# generic "check declared fields for anything" fallback.
+SCHEMA_SHAPES = {
+    "campaign-policy.schema.md": CAMPAIGN_POLICY_SHAPE,
+    "campaign-approval.schema.md": CAMPAIGN_APPROVAL_SHAPE,
+    "configuration-identity.schema.md": CONFIGURATION_IDENTITY_SHAPE,
+    "attempt-reservation.schema.md": ATTEMPT_RESERVATION_SHAPE,
+    "attempt-result.schema.md": ATTEMPT_RESULT_SHAPE,
+    "campaign-summary.schema.md": CAMPAIGN_SUMMARY_SHAPE,
+}
+
+
+def _check_open_value(node, path: str) -> None:
+    """Values inside the one intentionally open mapping
+    (`execution_parameters`): recursively an allowed scalar, a sequence of
+    allowed values, or a nested open mapping under the same key grammar.
     """
-    docs = list(yaml.compose_all(yaml_source))
-    if len(docs) != 1:
-        raise ProfileViolation(f"expected exactly one YAML document, found {len(docs)}")
-    _walk(docs[0])
-
-
-def _walk(node) -> None:
-    # PyYAML's Composer resolves aliases transparently into the anchored
-    # node itself (there is no distinct AliasNode class exposed here), so
-    # an alias surfaces as an anchor on the node it refers to -- caught by
-    # the anchor check below.
-    if getattr(node, "anchor", None):
-        raise ProfileViolation(f"YAML anchor is forbidden: {node.anchor!r}")
+    _check_tagged_node(node)
+    if isinstance(node, yaml.ScalarNode):
+        _check_scalar_value(node)
+        return
+    if isinstance(node, yaml.SequenceNode):
+        for i, item in enumerate(node.value):
+            _check_open_value(item, f"{path}[{i}]")
+        return
     if isinstance(node, yaml.MappingNode):
-        if node.tag not in ("tag:yaml.org,2002:map",):
-            raise ProfileViolation(f"explicit tag on mapping is forbidden: {node.tag!r}")
         seen: set[str] = set()
         for key_node, value_node in node.value:
             _check_mapping_key(key_node)
             if key_node.value in seen:
-                raise ProfileViolation(f"duplicate mapping key: {key_node.value!r}")
+                raise ProfileViolation(f"{path}: duplicate mapping key {key_node.value!r}")
             seen.add(key_node.value)
-            _walk(value_node)
-    elif isinstance(node, yaml.SequenceNode):
-        if node.tag not in ("tag:yaml.org,2002:seq",):
-            raise ProfileViolation(f"explicit tag on sequence is forbidden: {node.tag!r}")
-        for item in node.value:
-            _walk(item)
-    elif isinstance(node, yaml.ScalarNode):
-        if node.tag not in (
-            "tag:yaml.org,2002:str",
-            "tag:yaml.org,2002:null",
-            "tag:yaml.org,2002:bool",
-            "tag:yaml.org,2002:int",
-            "tag:yaml.org,2002:float",
-        ):
-            raise ProfileViolation(f"explicit tag on scalar is forbidden: {node.tag!r}")
+            _check_open_value(value_node, f"{path}.{key_node.value}")
+        return
+    raise ProfileViolation(f"{path}: unsupported node type {type(node)!r} in open map")
+
+
+def _check_shape(node, shape, path: str) -> None:
+    kind = shape[0]
+
+    if kind == "any":
+        _check_tagged_node(node)
+        if isinstance(node, yaml.ScalarNode):
+            _check_scalar_value(node)
+        elif isinstance(node, yaml.MappingNode):
+            seen: set[str] = set()
+            for key_node, value_node in node.value:
+                _check_mapping_key(key_node)
+                if key_node.value in seen:
+                    raise ProfileViolation(
+                        f"{path}: duplicate mapping key {key_node.value!r}"
+                    )
+                seen.add(key_node.value)
+                _check_shape(value_node, ANY, f"{path}.{key_node.value}")
+        elif isinstance(node, yaml.SequenceNode):
+            for i, item in enumerate(node.value):
+                _check_shape(item, ANY, f"{path}[{i}]")
+        else:
+            raise ProfileViolation(f"{path}: unsupported node type {type(node)!r}")
+        return
+
+    if kind == "nullable":
+        if isinstance(node, yaml.ScalarNode) and node.tag == "tag:yaml.org,2002:null":
+            _check_tagged_node(node)
+            return
+        _check_shape(node, shape[1], path)
+        return
+
+    if kind == "scalar":
+        _check_tagged_node(node)
+        if not isinstance(node, yaml.ScalarNode):
+            raise ProfileViolation(f"{path}: expected a scalar value")
         _check_scalar_value(node)
-    else:
-        raise ProfileViolation(f"unsupported node type: {type(node)!r}")
+        return
+
+    if kind == "seq":
+        _check_tagged_node(node)
+        if not isinstance(node, yaml.SequenceNode):
+            raise ProfileViolation(f"{path}: expected a sequence")
+        for i, item in enumerate(node.value):
+            _check_shape(item, shape[1], f"{path}[{i}]")
+        return
+
+    if kind == "closed":
+        _check_tagged_node(node)
+        if not isinstance(node, yaml.MappingNode):
+            raise ProfileViolation(f"{path}: expected a mapping")
+        fields = shape[1]
+        seen: set[str] = set()
+        for key_node, value_node in node.value:
+            _check_mapping_key(key_node)
+            key = key_node.value
+            if key in seen:
+                raise ProfileViolation(f"{path}: duplicate mapping key {key!r}")
+            seen.add(key)
+            if key not in fields:
+                raise ProfileViolation(
+                    f"{path}: unknown key {key!r} is not declared by the schema "
+                    "(this object is closed)"
+                )
+            _check_shape(value_node, fields[key], f"{path}.{key}")
+        return
+
+    if kind == "open":
+        _check_tagged_node(node)
+        if not isinstance(node, yaml.MappingNode):
+            raise ProfileViolation(f"{path}: expected a mapping")
+        seen = set()
+        for key_node, value_node in node.value:
+            _check_mapping_key(key_node)
+            if key_node.value in seen:
+                raise ProfileViolation(f"{path}: duplicate mapping key {key_node.value!r}")
+            seen.add(key_node.value)
+            _check_open_value(value_node, f"{path}.{key_node.value}")
+        return
+
+    raise ProfileViolation(f"{path}: unsupported shape {shape!r}")
 
 
-@pytest.mark.parametrize("path", _schema_files())
+def check_profile_conformance(yaml_source: str, *, shape) -> None:
+    """Check ``yaml_source`` against the Two-Lane YAML Profile v1 (ADR 0023
+    §10b) AND the declared field set given by ``shape``.
+
+    ``shape`` is required (not defaulted) so a caller can never accidentally
+    check an example without stating which schema shape it belongs to. Pass
+    ``ANY`` only for source-syntax unit tests that are deliberately
+    independent of any particular schema's declared field set.
+
+    Layer A (`_check_source_tokens`) runs first, against the original
+    source text, and rejects forbidden syntax that composition would
+    otherwise discard or obscure. Layer B (`_check_shape`) then composes
+    the document and walks the node tree, validating hierarchy, key
+    grammar, duplicate keys, scalar styles/lexemes, and declared fields.
+
+    Malformed YAML is wrapped as ProfileViolation by whichever layer's
+    PyYAML call rejects it first; the resulting message is prefixed with
+    the stage name so a test can still distinguish "malformed YAML" from
+    "valid YAML that violates the Two-Lane profile".
+    """
+    _check_source_tokens(yaml_source)
+    try:
+        doc = yaml.compose(yaml_source, Loader=yaml.SafeLoader)
+    except yaml.YAMLError as exc:
+        raise ProfileViolation(f"compose stage: malformed YAML: {exc}") from exc
+    if doc is None:
+        raise ProfileViolation("compose stage: empty document")
+    _check_shape(doc, shape, "$")
+
+
+@pytest.mark.parametrize(
+    "path", _schema_files(), ids=lambda p: p.name
+)
 def test_fenced_examples_conform_to_two_lane_yaml_profile_v1(path: Path):
     text = path.read_text(encoding="utf-8")
     blocks = _extract_yaml_blocks(text)
     assert blocks, f"{path.name} has no fenced yaml example"
+    shape = SCHEMA_SHAPES[path.name]
     for i, block in enumerate(blocks):
         try:
-            check_profile_conformance(block)
+            check_profile_conformance(block, shape=shape)
         except ProfileViolation as exc:
             raise AssertionError(
-                f"{path.name} example #{i} violates Two-Lane YAML Profile v1: {exc}"
+                f"{path.name} example #{i} violates Two-Lane YAML Profile v1 "
+                f"or its declared field set: {exc}"
             ) from exc
 
 
@@ -792,43 +1183,410 @@ def test_adr_string_quoting_rule_is_fail_closed_not_advisory():
 def test_profile_checker_rejects_quoted_mapping_key():
     source = 'campaign_id: "value"\n"other_field": "value"\n'
     with pytest.raises(ProfileViolation):
-        check_profile_conformance(source)
+        check_profile_conformance(source, shape=ANY)
 
 
 def test_profile_checker_rejects_numeric_looking_mapping_key():
     source = '"1": "value"\n'
     # numeric-looking key, still quoted -- forbidden as quoted key first
     with pytest.raises(ProfileViolation):
-        check_profile_conformance(source)
+        check_profile_conformance(source, shape=ANY)
 
 
 def test_profile_checker_rejects_literal_block_scalar():
     source = "logging_requirements: |\n  example text\n"
     with pytest.raises(ProfileViolation):
-        check_profile_conformance(source)
+        check_profile_conformance(source, shape=ANY)
 
 
 def test_profile_checker_rejects_folded_block_scalar():
     source = "logging_requirements: >\n  example text\n"
     with pytest.raises(ProfileViolation):
-        check_profile_conformance(source)
+        check_profile_conformance(source, shape=ANY)
 
 
 def test_profile_checker_rejects_duplicate_keys():
     source = 'campaign_id: "a"\ncampaign_id: "b"\n'
     with pytest.raises(ProfileViolation):
-        check_profile_conformance(source)
+        check_profile_conformance(source, shape=ANY)
 
 
 def test_profile_checker_rejects_multiline_double_quoted_scalar():
     source = 'campaign_id: "line one\nline two"\n'
     with pytest.raises(ProfileViolation):
-        check_profile_conformance(source)
+        check_profile_conformance(source, shape=ANY)
 
 
 def test_profile_checker_accepts_valid_campaign_policy_example():
     text = _policy_text()
     blocks = _extract_yaml_blocks(text)
     assert blocks
-    check_profile_conformance(blocks[0])  # must not raise
+    check_profile_conformance(blocks[0], shape=CAMPAIGN_POLICY_SHAPE)  # must not raise
     # No assertion beyond existence: this test suite performs no writes.
+
+
+# ---------------------------------------------------------------------------
+# Direct tests: Layer A source-token validation.
+#
+# Every one of these targets a specific blocking finding from the review of
+# 461a091e: the prior single-layer `yaml.compose_all` checker passed all of
+# these silently.
+# ---------------------------------------------------------------------------
+
+
+def test_source_stage_rejects_anchor_alone():
+    source = 'campaign_id: &id "value"\n'
+    with pytest.raises(ProfileViolation, match="anchor"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_rejects_anchor_and_alias_together():
+    source = 'campaign_id: &id "value"\nprepared_by: *id\n'
+    # The anchor is rejected first (it appears first in the token stream);
+    # this proves the alias-bearing document is rejected end-to-end.
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_rejects_alias_token_itself_not_via_composed_anchor():
+    # Prove the *alias* token is what is detected, independent of any
+    # composed-node anchor attribute: scan the source directly and assert
+    # an AliasToken is present, then assert the checker rejects it.
+    source = 'campaign_id: &id "value"\nprepared_by: *id\n'
+    tokens = list(yaml.scan(source, Loader=yaml.SafeLoader))
+    assert any(isinstance(t, yaml.AliasToken) for t in tokens), (
+        "test setup: source must actually produce an AliasToken"
+    )
+    with pytest.raises(ProfileViolation, match="alias|anchor"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_rejects_explicit_str_tag():
+    source = 'campaign_id: !!str "value"\n'
+    with pytest.raises(ProfileViolation, match="tag"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_rejects_explicit_int_tag():
+    source = "max_attempt_slots: !!int 5\n"
+    with pytest.raises(ProfileViolation, match="tag"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_rejects_custom_explicit_tag():
+    source = 'campaign_id: !custom "value"\n'
+    with pytest.raises(ProfileViolation, match="tag"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_implicit_resolved_tag_is_not_confused_with_explicit_tag():
+    # An ordinary quoted string with no explicit tag must be accepted: the
+    # composed node's *resolved* tag (tag:yaml.org,2002:str) is normal
+    # parser metadata, not evidence of an explicit source TagToken.
+    source = 'campaign_id: "value"\n'
+    check_profile_conformance(source, shape=ANY)  # must not raise
+
+
+def test_source_stage_rejects_yaml_1_1_directive():
+    source = '%YAML 1.1\n---\ncampaign_id: "value"\n'
+    with pytest.raises(ProfileViolation, match="YAML"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_rejects_tag_directive():
+    source = "%TAG !e! tag:example.invalid,2026:\n---\ncampaign_id: \"value\"\n"
+    with pytest.raises(ProfileViolation, match="TAG"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_rejects_unknown_directive():
+    source = "%FOO bar\n---\ncampaign_id: \"value\"\n"
+    with pytest.raises(ProfileViolation, match="directive"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_accepts_yaml_1_2_directive():
+    source = '%YAML 1.2\n---\ncampaign_id: "value"\n'
+    check_profile_conformance(source, shape=ANY)  # must not raise
+
+
+def test_source_stage_rejects_explicit_simple_key():
+    source = '? campaign_id\n: "value"\n'
+    with pytest.raises(ProfileViolation, match="explicit-key"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_rejects_complex_sequence_key():
+    source = '? ["a", "b"]\n: "value"\n'
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_source_stage_accepts_normal_key_not_confused_with_explicit_key():
+    source = 'campaign_id: "value"\n'
+    check_profile_conformance(source, shape=ANY)  # must not raise
+
+
+def test_source_stage_rejects_merge_key():
+    source = 'defaults: &defaults\n  campaign_id: "value"\nmerged:\n  <<: *defaults\n'
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source, shape=ANY)
+
+
+# ---------------------------------------------------------------------------
+# Direct tests: mapping-key source grammar, including reserved tokens.
+# ---------------------------------------------------------------------------
+
+
+def test_mapping_key_double_quoted_is_rejected():
+    source = '"campaign_id": "value"\n'
+    with pytest.raises(ProfileViolation, match="quoted"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_mapping_key_single_quoted_is_rejected():
+    source = "'campaign_id': \"value\"\n"
+    with pytest.raises(ProfileViolation, match="quoted"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_mapping_key_numeric_looking_is_rejected():
+    source = "1: \"value\"\n"
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source, shape=ANY)
+
+
+@pytest.mark.parametrize(
+    "token", ["true", "false", "null", "yes", "no", "on", "off"]
+)
+def test_mapping_key_reserved_token_is_rejected(token):
+    source = f'{token}: "value"\n'
+    with pytest.raises(ProfileViolation, match="reserved"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_mapping_key_unicode_is_rejected():
+    source = 'cámpaign_id: "value"\n'
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_mapping_key_empty_is_rejected():
+    source = '"": "value"\n'
+    with pytest.raises(ProfileViolation, match="quoted"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_mapping_key_duplicate_is_rejected():
+    source = 'campaign_id: "a"\ncampaign_id: "b"\n'
+    with pytest.raises(ProfileViolation, match="duplicate"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_mapping_key_valid_plain_key_is_accepted():
+    source = 'campaign_id: "value"\n'
+    check_profile_conformance(source, shape=ANY)  # must not raise
+
+
+# ---------------------------------------------------------------------------
+# Direct tests: complex-key failure discipline (deliberate ProfileViolation,
+# not an accidental AttributeError from reading `.style` before checking
+# node type).
+# ---------------------------------------------------------------------------
+
+
+def test_complex_mapping_key_raises_profile_violation_not_attribute_error():
+    source = '[a, b]: "value"\n'
+    with pytest.raises(ProfileViolation, match="complex"):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_complex_mapping_key_via_check_mapping_key_directly():
+    # Exercise `_check_mapping_key` directly against a composed
+    # non-scalar key node to prove the node-type check runs before any
+    # scalar-only attribute access.
+    doc = yaml.compose('{a: 1}: "value"\n', Loader=yaml.SafeLoader)
+    key_node, _value_node = doc.value[0]
+    assert not isinstance(key_node, yaml.ScalarNode)
+    with pytest.raises(ProfileViolation, match="complex"):
+        _check_mapping_key(key_node)
+
+
+def test_malformed_yaml_is_wrapped_as_profile_violation():
+    source = "campaign_id: [unterminated\n"
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(source, shape=ANY)
+
+
+def test_malformed_yaml_and_valid_profile_violation_are_distinguishable():
+    malformed = "campaign_id: [unterminated\n"
+    with pytest.raises(ProfileViolation) as malformed_exc:
+        check_profile_conformance(malformed, shape=ANY)
+    assert "scan stage" in str(malformed_exc.value) or "compose stage" in str(
+        malformed_exc.value
+    )
+
+    valid_but_violating = 'campaign_id: &id "value"\n'
+    with pytest.raises(ProfileViolation) as violation_exc:
+        check_profile_conformance(valid_but_violating, shape=ANY)
+    assert "source stage" in str(violation_exc.value)
+
+
+# ---------------------------------------------------------------------------
+# Direct tests: declared-field (closed-object) validation per schema.
+# ---------------------------------------------------------------------------
+
+
+def test_unknown_top_level_field_rejected_in_campaign_policy():
+    text = _policy_text()
+    block = _extract_yaml_blocks(text)[0]
+    mutated = block.replace(
+        'classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"\n',
+        'classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"\n'
+        'unknown_extra_field: "value"\n',
+    )
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_unknown_key_rejected_in_allowed_targets_item():
+    text = _policy_text()
+    block = _extract_yaml_blocks(text)[0]
+    mutated = block.replace(
+        '    sha: "000000000000000000000000000000000000beef"\n',
+        '    sha: "000000000000000000000000000000000000beef"\n'
+        '    unknown_field: "value"\n',
+    )
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_unknown_key_rejected_in_validity_window():
+    text = _policy_text()
+    block = _extract_yaml_blocks(text)[0]
+    mutated = block.replace(
+        '  not_after: "2026-01-08T00:00:00+00:00"\n',
+        '  not_after: "2026-01-08T00:00:00+00:00"\n'
+        '  unknown_field: "value"\n',
+    )
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_unknown_key_rejected_in_cost_ceiling():
+    text = _policy_text()
+    block = _extract_yaml_blocks(text)[0]
+    mutated = block.replace(
+        "cost_ceiling: null\n",
+        "cost_ceiling:\n  amount: \"0.00\"\n  currency: \"USD\"\n  unknown_field: \"value\"\n",
+    )
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_POLICY_SHAPE)
+
+
+def test_unknown_top_level_field_rejected_in_configuration_identity():
+    text = _configuration_identity_text()
+    block = _extract_yaml_blocks(text)[0]
+    mutated = block + 'unknown_extra_field: "value"\n'
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+def test_unknown_top_level_field_rejected_in_campaign_approval():
+    text = (SCHEMA_DIR / "campaign-approval.schema.md").read_text(encoding="utf-8")
+    block = _extract_yaml_blocks(text)[1]  # the filled illustrative example
+    mutated = block + 'unknown_extra_field: "value"\n'
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_APPROVAL_SHAPE)
+
+
+def test_unknown_top_level_field_rejected_in_attempt_reservation():
+    text = (SCHEMA_DIR / "attempt-reservation.schema.md").read_text(encoding="utf-8")
+    block = _extract_yaml_blocks(text)[0]
+    mutated = block + 'unknown_extra_field: "value"\n'
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=ATTEMPT_RESERVATION_SHAPE)
+
+
+def test_unknown_top_level_field_rejected_in_attempt_result():
+    text = (SCHEMA_DIR / "attempt-result.schema.md").read_text(encoding="utf-8")
+    block = _extract_yaml_blocks(text)[0]
+    mutated = block + 'unknown_extra_field: "value"\n'
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=ATTEMPT_RESULT_SHAPE)
+
+
+def test_unknown_top_level_field_rejected_in_campaign_summary():
+    text = (SCHEMA_DIR / "campaign-summary.schema.md").read_text(encoding="utf-8")
+    block = _extract_yaml_blocks(text)[0]
+    mutated = block + 'unknown_extra_field: "value"\n'
+    with pytest.raises(ProfileViolation, match="unknown key"):
+        check_profile_conformance(mutated, shape=CAMPAIGN_SUMMARY_SHAPE)
+
+
+# ---------------------------------------------------------------------------
+# Direct tests: execution_parameters open-map semantics.
+# ---------------------------------------------------------------------------
+
+
+def _configuration_identity_example_block() -> str:
+    text = _configuration_identity_text()
+    return _extract_yaml_blocks(text)[0]
+
+
+def test_execution_parameters_accepts_arbitrary_valid_key():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        'execution_parameters:\n  max_tokens_hint: 4096\n',
+        'execution_parameters:\n  max_tokens_hint: 4096\n  temperature_hint: "low"\n',
+    )
+    check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)  # must not raise
+
+
+def test_execution_parameters_accepts_nested_open_map_key():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        'execution_parameters:\n  max_tokens_hint: 4096\n',
+        'execution_parameters:\n  max_tokens_hint: 4096\n  nested:\n    inner_key: "value"\n',
+    )
+    check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)  # must not raise
+
+
+def test_execution_parameters_rejects_invalid_key_grammar():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        'execution_parameters:\n  max_tokens_hint: 4096\n',
+        'execution_parameters:\n  max_tokens_hint: 4096\n  "Not-Valid": "value"\n',
+    )
+    with pytest.raises(ProfileViolation, match="quoted"):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+def test_execution_parameters_rejects_reserved_key():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        'execution_parameters:\n  max_tokens_hint: 4096\n',
+        'execution_parameters:\n  max_tokens_hint: 4096\n  true: "value"\n',
+    )
+    with pytest.raises(ProfileViolation, match="reserved"):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+def test_execution_parameters_rejects_anchor_inside_open_map():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        'execution_parameters:\n  max_tokens_hint: 4096\n',
+        'execution_parameters:\n  max_tokens_hint: 4096\n  anchored: &leak "value"\n',
+    )
+    with pytest.raises(ProfileViolation, match="anchor"):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
+
+
+def test_execution_parameters_rejects_block_scalar_inside_open_map():
+    block = _configuration_identity_example_block()
+    mutated = block.replace(
+        'execution_parameters:\n  max_tokens_hint: 4096\n',
+        'execution_parameters:\n  max_tokens_hint: 4096\n  notes: |\n    example text\n',
+    )
+    with pytest.raises(ProfileViolation):
+        check_profile_conformance(mutated, shape=CONFIGURATION_IDENTITY_SHAPE)
