@@ -40,10 +40,12 @@ def _schema_files() -> list[Path]:
     return files
 
 
-def test_adr_0023_exists_and_is_proposed():
+def test_adr_0023_exists_and_is_accepted():
     assert ADR_PATH.is_file(), f"missing ADR: {ADR_PATH}"
     text = ADR_PATH.read_text(encoding="utf-8")
-    assert "**Status**: PROPOSED" in text
+    assert "**Status**: ACCEPTED" in text
+    assert "e74969f485286bed8b6f400dcb380f09aed153ea" in text
+    assert "41288e2fe31f3ca873b19c1974f04f3d26e20058" in text
     assert "does not authorize" in text.lower()
 
 
