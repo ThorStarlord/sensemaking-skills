@@ -28,13 +28,21 @@ convention).
 | File | Responsibility |
 |---|---|
 | `yaml_profile.py` | Two-Lane YAML Profile v1 parser (`parse_two_lane_yaml`) |
-| `jcs.py` | RFC 8785 (JCS) canonicalization |
+| `jcs.py` | RFC 8785 (JCS) canonicalization -- adapter around the `rfc8785` dependency |
 | `digests.py` | `compute_policy_digest`, `compute_configuration_id` |
+| `immutable.py` | `freeze()` -- recursive deep-freeze for `ValidatedCampaignBundle`'s nested mappings/sequences |
 | `models.py` | Frozen dataclasses: `ValidationContext`, `ValidationResult`, `CampaignPolicy`, `CampaignApproval`, `ConfigurationIdentity`, `ValidatedCampaignBundle` |
 | `failure_codes.py` | Frozen `CAMPAIGN_FAILURE_CODES` mapping |
-| `schema_validation.py` | JSON Schema (Draft 2020-12) validation against the parsed data model |
-| `fs_adapter.py` | Narrow adapter around Gate A's path-containment primitives |
+| `schema_validation.py` | JSON Schema (Draft 2020-12) validation against the parsed data model, loaded via `importlib.resources` from `schemas/` |
+| `schemas/` | Packaged JSON Schema resources (byte-identical copies of the `docs/` originals) |
+| `fs_adapter.py` | Narrow adapter around `sensemaking_skills.path_containment`'s path-containment primitives |
 | `validators.py` | `validate_campaign_policy`, `validate_campaign_approval`, `validate_configuration_identity`, `validate_campaign_bundle`, and root-scoped loaders |
+
+Also new, at `src/sensemaking_skills/path_containment.py`: the pure
+path-containment primitives (`canonicalize_path`, `resolve_containment`,
+etc.), extracted unmodified from `scripts/gate_a_authorization.py` so both
+Gate A and this package share one implementation. See "Filesystem /
+artifact-root trust boundary" below.
 
 ## Parser layers (Two-Lane YAML Profile v1)
 
@@ -65,7 +73,15 @@ package — every digest-bearing document is parsed exclusively through
 
 ## JSON Schema (Draft 2020-12)
 
-`docs/experiments/schemas/two-lane-v1/json/`:
+Canonical, human-authored source: `docs/experiments/schemas/two-lane-v1/json/`.
+Runtime-loaded, packaged copy (byte-identical, diffed by
+`test_schema_doc_agreement.py::test_packaged_schemas_are_byte_identical_to_docs_originals`):
+`src/sensemaking_skills/campaign_validation/schemas/`, loaded via
+`importlib.resources` in `schema_validation.py` -- not via a
+`Path(__file__).parents[...] / "docs"` filesystem walk, so the package works
+correctly from an installed wheel with no repository checkout available.
+
+Files (identical in both locations):
 
 * `campaign-policy.v1.schema.json`
 * `campaign-approval.v1.schema.json` (two-profile `oneOf`: example/template
@@ -84,24 +100,23 @@ window ordering, `allowed_configuration_ids` sortedness) are enforced in
 
 ## JCS (RFC 8785) implementation
 
-**Custom implementation** (`jcs.py`), not a third-party dependency. At the
-time of writing, no maintained PyPI package resolvable from this
-environment's configured index implements RFC 8785's ECMAScript-compatible
-number formatting; `canonicaljson` (a real, available package) uses Python's
-`json` module for number formatting, which does not implement ECMAScript
-`Number::toString` — e.g. `json.dumps(1.0)` produces `"1.0"`, not the
-JCS-mandated `"1"`, which would silently violate ADR 0023's "1.0 and 1e0
-canonicalize identically" requirement for any non-integer-typed field. No
-`rfc8785`/`jsoncanonicalizer`/`python-json-canonicalize` distribution was
-resolvable either. The custom implementation extracts the shortest
-round-tripping decimal digit string from Python's `repr(float)` (which, like
-ECMAScript engines, uses a shortest-round-trip algorithm) and re-renders it
-using the exact ECMAScript `Number::toString` positional/exponential rules
-(RFC 8785 section 3.2.2.3), rather than Python's own float-formatting rules.
-Conformance is checked against a table of reference vectors in
-`tests/campaign_validation/test_jcs.py`, including presentation-equivalence
-(`1`/`1.0`/`1e0` canonicalize identically), negative-zero rejection,
-non-finite rejection, Unicode NFC/NFD distinctness, and object-key sorting.
+**Maintained dependency**: `rfc8785` (Trail of Bits), pinned
+`>=0.1.4,<0.2` in `pyproject.toml`. `jcs.py` is a narrow adapter around
+`rfc8785.dumps`, plus an independent negative-zero rejection (Python's
+`float ==` does not distinguish `+0.0`/`-0.0`, and `rfc8785` collapses
+both to `"0"`; negative-zero rejection is schema v1 policy, not an RFC 8785
+requirement, so it stays this module's job). An earlier revision of this
+module implemented JCS from scratch; it was replaced after review because
+`rfc8785` resolves cleanly from the configured package index and removes a
+real correctness gap the custom version had: RFC 8785 orders object keys by
+their UTF-16 code-unit sequence, not by Unicode code point, and the
+custom version used Python's default code-point `sorted()`, which
+disagrees with the RFC for key pairs that straddle the Basic Multilingual
+Plane boundary. `tests/campaign_validation/test_jcs.py` covers reference
+number vectors, presentation-equivalence (`1`/`1.0`/`1e0` canonicalize
+identically), negative-zero and non-finite rejection, safe-integer boundary
+and overflow, a UTF-16-vs-code-point key-ordering test, lone-surrogate
+rejection, and exact-bytes comparisons against the reference library.
 
 ## Exact hashed field sets
 
@@ -117,11 +132,31 @@ non-finite rejection, Unicode NFC/NFD distinctness, and object-key sorting.
 
 ## Numeric / type domain decisions
 
-* Integer-valued policy fields are validated as mathematically-integral
-  JSON numbers in the safe-integer range; `1`, `1.0`, and `1e0` canonicalize
-  identically (no source-spelling restriction is invented against
-  `1.0`/`1e0`, per explicit ADR 0023 instruction). `1.5` and quoted `"1"`
-  are rejected for integer-typed fields by the JSON Schema layer.
+* **Integer-lexeme policy fields** (`max_attempt_slots`,
+  `max_provider_invocations`, `max_attempts_per_configuration`,
+  `concurrency_ceiling`, `token_ceiling` when non-null) require the SOURCE
+  FORM to be integral: `5` is accepted; `5.0`, `5e0`, `5E+0`, `5.5`, and
+  quoted `"5"` are all rejected, even though some are mathematically
+  integral. This reuses the int/float type split `parse_two_lane_yaml`
+  already produces from the lexeme itself (a lexeme with no `.`/exponent
+  parses to a genuine Python `int`; any lexeme with a `.`/exponent parses
+  to `float`, regardless of value) -- `validators.py::_require_integer_lexeme`
+  checks `type(value) is int` (not `isinstance`, so `bool` is naturally
+  excluded too), rather than inventing a separate metadata-tracking type.
+* **General JSON numbers elsewhere** (inside `execution_parameters`, or
+  `cost_ceiling.amount`) are not integer-lexeme-constrained: `1` and `1.0`
+  still canonicalize identically under RFC 8785, per ADR 0023 section 10a/10b
+  -- that JCS-level equivalence is a property of the *hashing* stage and is
+  unrelated to the integer-lexeme *policy-field* rule above, which is a
+  stricter, field-specific schema constraint layered on top.
+* **Exact numeric domain** (`yaml_profile.py::_parse_exact_float`): every
+  decimal/exponent lexeme is parsed as an exact `Decimal` first, then
+  converted to `float`; the conversion is rejected (fails closed) if it
+  overflows to infinity, if a nonzero value underflows to zero, or if the
+  exact decimal value does not survive a binary64 round-trip
+  (`Decimal(raw) != Decimal(repr(float(raw)))`) -- catching lexemes like
+  `0.10000000000000001` that Python's bare `float()` would silently round
+  with no signal.
 * Negative zero is rejected at parse time (`yaml_profile.py`) and, as a
   second independent guard, in `jcs.py`.
 * Non-finite values (`NaN`, `+inf`, `-inf`) are unrepresentable — the parser
@@ -153,17 +188,36 @@ deferred to Phase 3 (#119), per ADR 0023 section 12 item 3.
 
 ## Filesystem / artifact-root trust boundary
 
-`fs_adapter.py` is a narrow adapter around
-`scripts/gate_a_authorization.py`'s existing `canonicalize_path` /
-`resolve_containment` functions, loaded by file path via
-`importlib.util.spec_from_file_location` (never via `sys.path` mutation).
-**No line of `gate_a_authorization.py` is edited by this phase** — every
-existing Gate A test suite passes unchanged (see the PR body for exact
-counts). `load_and_validate_policy_from_root` /
-`..._approval_from_root` / `..._configuration_from_root` accept explicit
-candidate paths (never a glob): zero matches fails as missing, more than one
-match fails as ambiguous (policy/configuration identity ambiguity, or more
-than one *operative* approval matching a policy).
+The pure path-containment primitives (`CanonicalPath`, `canonicalize_path`,
+`has_colon_component`, `anchor_output_path`, `resolve_containment`, and the
+`GATE_A_OUTPUT_PATH_*` constants) were extracted from
+`scripts/gate_a_authorization.py` into
+`src/sensemaking_skills/path_containment.py` -- a normal, installable
+package module with no dependency on the repository checkout.
+`gate_a_authorization.py` now imports these names as a genuine re-export
+(`gate_a_authorization.canonicalize_path is path_containment.canonicalize_path`
+holds by construction); `resolve_containment` is the one exception, kept as
+a real one-line delegating `def` in `gate_a_authorization.py` because an
+existing Gate A test performs source-level text inspection expecting that
+function to be defined literally in that file.
+`tests/test_path_containment_extraction_characterization.py` captured
+behavior before the extraction and proves the re-export/delegation
+introduces no drift; every existing Gate A test suite passes unchanged (see
+the PR body for exact counts).
+
+`fs_adapter.py` is a narrow adapter around this shared module -- a normal
+package import, not a filesystem-path load (an earlier revision loaded
+`scripts/gate_a_authorization.py` via `importlib.util.spec_from_file_location`,
+which does not work from an installed wheel with no `scripts/` directory).
+`load_and_validate_policy_from_root` / `..._approval_from_root` /
+`..._configuration_from_root` accept explicit candidate paths (never a
+glob): zero matches fails as missing, more than one match fails as
+ambiguous (policy/configuration identity ambiguity, using distinct codes
+for each, or more than one *operative* approval matching a policy). Every
+filesystem failure while reading a candidate (permission denied, a
+directory in place of the expected file, the file disappearing mid-flight,
+malformed UTF-8) is converted to a deterministic `ValidationResult`; none
+can escape as a raw exception.
 
 ## Stable failure codes
 
@@ -179,6 +233,15 @@ provider access. No provider-facing module is imported anywhere in
 `src/sensemaking_skills/campaign_validation/` (enforced by
 `tests/campaign_validation/test_validators.py::test_bundle_provider_not_imported`,
 an AST-based import scan).
+
+It is also **deeply immutable**, not merely a frozen dataclass shell around
+mutable dicts/lists: every `.raw` mapping is recursively frozen
+(`immutable.py::freeze` -- mappings become detached `types.MappingProxyType`
+copies, sequences become tuples) when the bundle is constructed. Mutating
+`bundle.policy.raw`, a nested `execution_parameters` value, or an
+`allowed_targets` list item all raise `TypeError`; mutating the *original*
+parsed dict after validation cannot alter the already-returned bundle,
+because `freeze()` copies rather than views.
 
 ## Phase 3 handoff
 
