@@ -441,36 +441,129 @@ class _ValidatedSnapshot:
 #   a broken reparse point), the result is ambiguous and fails closed.
 
 
-GATE_A_OUTPUT_PATH_ESCAPE = "GATE_A_OUTPUT_PATH_ESCAPE"
-GATE_A_OUTPUT_PATH_AMBIGUOUS = "GATE_A_OUTPUT_PATH_AMBIGUOUS"
-GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE = "GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE"
 
-# -- third-review physical-containment failure codes -------------------------
-# Each of these means "we could not establish where this path physically
-# lands". None of them may ever degrade to ordinary development.
-GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED = (
-    "GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED")
-GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS = (
-    "GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS")
-GATE_A_OUTPUT_PATH_OUTSIDE_FRAMEWORK_ROOT = (
-    "GATE_A_OUTPUT_PATH_OUTSIDE_FRAMEWORK_ROOT")
-GATE_A_OUTPUT_PATH_ALIAS_MISMATCH = "GATE_A_OUTPUT_PATH_ALIAS_MISMATCH"
-GATE_A_OUTPUT_PATH_UNANCHORABLE = "GATE_A_OUTPUT_PATH_UNANCHORABLE"
-GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED = (
-    "GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED")
+def _load_checkout_local_path_containment():
+    """Load ``sensemaking_skills.path_containment`` from THIS checkout,
+    deterministically -- never from an ambient/pre-imported installation
+    that happens to resolve first.
 
-#: Every code meaning "physical containment could not be established". None of
-#: these may ever be treated as evidence of ordinary development.
-PHYSICAL_CONTAINMENT_FAILURE_CODES = frozenset({
+    This script is run directly from a repository checkout in several CI
+    jobs (e.g. .github/workflows/validation.yml's Gate A jobs) that install
+    only pytest/pyyaml/click -- never `pip install -e .` -- so
+    `sensemaking_skills` is not necessarily importable via the ambient
+    environment even though the source tree is right there on disk. But an
+    ambient/pre-imported `sensemaking_skills` package (e.g. from an
+    unrelated `pip install -e .` in the same environment, or a stray
+    PYTHONPATH entry, or another package already having imported it earlier
+    in the same process) must never silently win over the containment
+    implementation that ships with THIS exact framework SHA -- Gate A's
+    entire trust model depends on knowing exactly which code performs its
+    path-containment decisions.
+
+    Sequence:
+      1. Resolve the expected checkout-local ``src/`` directory and exact
+         ``path_containment.py`` file from ``Path(__file__).resolve()`` --
+         never the current working directory.
+      2. Put that ``src/`` directory at the FRONT of ``sys.path`` (so it
+         wins over anything already present in ``sys.path``/``PYTHONPATH``,
+         regardless of ordering) and invalidate import caches.
+      3. If `sensemaking_skills` is ALREADY imported (sys.modules) from
+         somewhere else, fail closed immediately with an explicit
+         ImportError -- never silently evict-and-reimport in a way that
+         could leave other already-obtained references pointing at stale
+         code while this module proceeds with a different implementation.
+      4. Import fresh, then verify the loaded module's resolved ``__file__``
+         is exactly the expected checkout-local file. A mismatch (e.g. a
+         namespace-package merge, a `.pth`-file redirect, or any other
+         resolution surprise) fails closed with an explicit ImportError
+         before any security decision is possible.
+    """
+    import importlib as _importlib
+    import sys as _sys
+
+    expected_src_dir = Path(__file__).resolve().parent.parent / "src"
+    expected_file = (expected_src_dir / "sensemaking_skills" / "path_containment.py").resolve()
+
+    src_str = str(expected_src_dir)
+    if src_str in _sys.path:
+        _sys.path.remove(src_str)
+    _sys.path.insert(0, src_str)
+    _importlib.invalidate_caches()
+
+    already = _sys.modules.get("sensemaking_skills")
+    if already is not None:
+        already_file = getattr(already, "__file__", None)
+        already_dir = Path(already_file).resolve().parent if already_file else None
+        expected_pkg_dir = (expected_src_dir / "sensemaking_skills").resolve()
+        if already_dir != expected_pkg_dir:
+            raise ImportError(
+                "Gate A refuses to start: a 'sensemaking_skills' package is "
+                f"already imported from {already_dir!r}, which is not this "
+                f"checkout's own {expected_pkg_dir!r}. An ambient or "
+                "previously-imported installation must never silently "
+                "supply Gate A's path-containment implementation -- fail "
+                "closed rather than risk using containment code that does "
+                "not belong to this framework SHA."
+            )
+
+    from sensemaking_skills import path_containment as loaded
+
+    actual_file = Path(loaded.__file__).resolve()
+    if actual_file != expected_file:
+        raise ImportError(
+            f"Gate A refuses to use path_containment from {actual_file!r} -- "
+            f"expected the checkout-local {expected_file!r}. An ambient "
+            "sensemaking_skills installation must never silently win over "
+            "this checkout's own containment implementation."
+        )
+    return loaded
+
+
+_path_containment = _load_checkout_local_path_containment()
+
+from sensemaking_skills.path_containment import (  # noqa: E402
+    CanonicalPath,
+    GATE_A_OUTPUT_PATH_ALIAS_MISMATCH,
     GATE_A_OUTPUT_PATH_AMBIGUOUS,
-    GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE,
+    GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED,
+    GATE_A_OUTPUT_PATH_ESCAPE,
+    GATE_A_OUTPUT_PATH_OUTSIDE_FRAMEWORK_ROOT,
     GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED,
     GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS,
-    GATE_A_OUTPUT_PATH_OUTSIDE_FRAMEWORK_ROOT,
-    GATE_A_OUTPUT_PATH_ALIAS_MISMATCH,
+    GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE,
     GATE_A_OUTPUT_PATH_UNANCHORABLE,
-    GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED,
-})
+    PHYSICAL_CONTAINMENT_FAILURE_CODES,
+    anchor_output_path,
+    canonicalize_path,
+    has_colon_component,
+)
+
+# The path-containment primitives above (CanonicalPath, canonicalize_path,
+# has_colon_component, anchor_output_path, and the GATE_A_OUTPUT_PATH_* /
+# PHYSICAL_CONTAINMENT_FAILURE_CODES constants) used to be defined directly
+# in this module. They now live in sensemaking_skills.path_containment as a
+# shared, pure, importable module reused by the campaign-validation package
+# (ADR 0023 section 15), and are imported here UNCHANGED (a genuine
+# re-export -- e.g.
+# `gate_a_authorization.canonicalize_path is path_containment.canonicalize_path`
+# holds by construction). No behavior changes from this extraction; see
+# tests/test_path_containment_extraction_characterization.py for the
+# characterization battery captured before this move and the identity proof
+# checked after it.
+
+
+def resolve_containment(value, root):
+    """Delegates to ``sensemaking_skills.path_containment.resolve_containment``
+    (a genuine one-line delegation, not a reimplementation -- the actual
+    containment logic lives exactly once, in the shared module). Kept as a
+    real ``def`` (rather than a plain import alias) in this module
+    specifically because ``tests/test_gate_a_physical_containment.py``
+    performs a source-level inspection of this function's body text and
+    must remain unchanged and green; see that test and
+    ``test_path_containment_extraction_characterization.py`` for the
+    behavioral-equivalence proof this delegation preserves.
+    """
+    return _path_containment.resolve_containment(value, root)
 
 #: A directory name inside an evidence namespace: `NNNN-slug`.
 EVIDENCE_DIR_NAME_RE = re.compile(r"^(\d{4})-([A-Za-z0-9._-]+)$")
@@ -479,282 +572,6 @@ EVIDENCE_DIR_NAME_RE = re.compile(r"^(\d{4})-([A-Za-z0-9._-]+)$")
 #: substrings of a raw string.
 EXPERIMENTS_COMPONENT = "experiments"
 EVIDENCE_NAMESPACE_COMPONENTS = ("evidence", "run-control")
-
-_DRIVE_RE = re.compile(r"^([A-Za-z]):$")
-
-
-@dataclass(frozen=True)
-class CanonicalPath:
-    """One canonical representation of a path. Built by `canonicalize_path`.
-
-    Attributes
-    ----------
-    raw:
-        The original input, stringified. Kept for diagnostics ONLY. Nothing in
-        this module may make a security decision from `raw`.
-    drive:
-        Drive letter without the colon (``"C"``), or ``""``.
-    is_absolute:
-        Whether the input was rooted.
-    parts:
-        Canonical, case-preserving, NFC-normalized path components after `.`
-        removal, separator collapsing and safe `..` resolution.
-    escapes_anchor:
-        True when unresolved leading `..` components remain, i.e. the path
-        refers to something above its own anchor.
-    """
-
-    raw: str
-    drive: str
-    is_absolute: bool
-    parts: tuple[str, ...]
-    escapes_anchor: bool
-
-    @property
-    def lexical(self) -> PurePosixPath:
-        """Canonical lexical form as a POSIX pure path."""
-        prefix = ""
-        if self.drive:
-            prefix += f"{self.drive}:"
-        if self.is_absolute:
-            prefix += "/"
-        return PurePosixPath(prefix + "/".join(self.parts))
-
-    @property
-    def identity_key(self) -> str:
-        """The stable, case-preserving string stored on `InvocationIdentity`.
-
-        This is what the capability digest binds to. Two spellings of the same
-        path produce the SAME identity key; that is the property that stops an
-        attacker from obtaining a capability for one spelling and using it for
-        another, or from splitting one logical invocation into two identities.
-        """
-        return str(self.lexical)
-
-    @property
-    def match_parts(self) -> tuple[str, ...]:
-        """Components folded for case-insensitive, NFC-stable comparison."""
-        return tuple(p.casefold() for p in self.parts)
-
-    def relative_to_root(self, root: "CanonicalPath") -> Optional[PurePosixPath]:
-        """Repository-relative POSIX path, or None if not contained in `root`.
-
-        Containment is decided on whole components, never on string prefixes,
-        so `experiments-old/` is not "inside" `experiments/`.
-        """
-        if root is None or not root.parts and not root.is_absolute:
-            return None
-        if self.drive.casefold() != root.drive.casefold():
-            return None
-        if self.is_absolute != root.is_absolute:
-            return None
-        rp = root.match_parts
-        if self.match_parts[:len(rp)] != rp:
-            return None
-        return PurePosixPath("/".join(self.parts[len(rp):]) or ".")
-
-
-def canonicalize_path(value) -> CanonicalPath:
-    """THE canonicalization primitive. Lexical, total, filesystem-free.
-
-    Accepts ``str``, ``os.PathLike``, ``Path``, ``PurePosixPath`` or ``None``.
-    Never raises, never touches the filesystem, and never requires the path to
-    exist -- Evidence 0016's output directory does not exist and must still be
-    classifiable.
-    """
-    if value is None:
-        return CanonicalPath(raw="", drive="", is_absolute=False, parts=(),
-                             escapes_anchor=False)
-    raw = str(value)
-    text = unicodedata.normalize("NFC", raw)
-    text = text.replace("\\", "/")
-
-    drive = ""
-    m = _DRIVE_RE.match(text[:2])
-    if m:
-        drive = m.group(1)
-        text = text[2:]
-
-    is_absolute = text.startswith("/")
-
-    parts: list[str] = []
-    escapes = False
-    for segment in text.split("/"):
-        if segment == "" or segment == ".":
-            # Repeated separators produce empty segments; `.` is a no-op.
-            # Collapsing BOTH is precisely what the old normalizer failed to
-            # do, and is what the reproduced bypass depended on.
-            continue
-        if segment == "..":
-            if parts and parts[-1] != "..":
-                parts.pop()
-            elif is_absolute or drive:
-                # A filesystem root has no parent; `/..` is `/`.
-                continue
-            else:
-                parts.append("..")
-                escapes = True
-            continue
-        parts.append(segment)
-
-    return CanonicalPath(
-        raw=raw,
-        drive=drive,
-        is_absolute=is_absolute,
-        parts=tuple(parts),
-        escapes_anchor=escapes,
-    )
-
-
-def has_colon_component(canon: CanonicalPath) -> bool:
-    """True when any path COMPONENT carries a colon.
-
-    On Windows a colon inside a component is NTFS alternate-data-stream or
-    drive-relative syntax (``experiments:x``, ``dir:stream``, ``dir::$DATA``).
-    Those forms do not mean what their spelling suggests and Win32 resolves
-    them inconsistently, so Gate A rejects them outright rather than letting a
-    failed evidence parse read as ordinary development. The drive prefix is
-    stripped by `canonicalize_path` before `parts` is built, so a legitimate
-    ``C:\\...`` never trips this.
-    """
-    return any(":" in p for p in canon.parts)
-
-
-def anchor_output_path(value, framework_root) -> tuple[Optional[Path], Optional[str]]:
-    """THE anchoring primitive. Returns ``(anchored_absolute_path, failure)``.
-
-    A relative output path is interpreted as ``framework_root / value`` and
-    NEVER against:
-
-      * process CWD;
-      * test-runner CWD;
-      * a caller-selected CWD;
-      * the current script directory;
-      * environment variables.
-
-    This is the third-review root cause: `resolve_containment` used to build
-    ``Path(str(value))``, which Python resolves against `os.getcwd()`. With a
-    CWD outside the framework root, every relative alias of the campaign
-    directory missed the physical pass entirely and fell back to a lexical
-    parse that reported ORDINARY_DEVELOPMENT. A caller running `os.chdir()`
-    must not be able to change a classification.
-    """
-    canon = canonicalize_path(value)
-    if canon.is_absolute or canon.drive:
-        return Path(str(value)), None
-    if framework_root in (None, ""):
-        # A relative path with no authoritative anchor cannot be placed. That
-        # is ambiguity, never ordinariness.
-        return None, GATE_A_OUTPUT_PATH_UNANCHORABLE
-    return Path(str(framework_root)).joinpath(*canon.parts) if canon.parts \
-        else Path(str(framework_root)), None
-
-
-def resolve_containment(value, root) -> tuple[Optional[Path], Optional[str]]:
-    """PHYSICAL containment check. Returns ``(resolved_or_None, failure_code)``.
-
-    Explicit sequence -- path INTERPRETATION is separated from filesystem
-    RESOLUTION, and interpretation always happens first:
-
-      1. validate input type;
-      2. select the authoritative anchor (`framework_root`);
-      3. build the anchored absolute path;
-      4. lexical normalization;
-      5. identify the nearest existing ancestor;
-      6. physically resolve that ancestor;
-      7. append the unresolved suffix;
-      8. evaluate containment against the PHYSICALLY RESOLVED framework root;
-      9. produce the canonical repository-relative identity.
-
-    The final component is allowed not to exist -- an output directory that has
-    not been created yet is normal, and requiring existence would make
-    classification depend on whether the attacker had already made the
-    directory. This function never creates anything.
-
-    Fails closed. Any OSError (permission denied, broken reparse point, symlink
-    loop, inaccessible ancestor, unsupported path form) yields an explicit
-    failure code. There is no "no physical signal, carry on lexically" branch:
-    that branch was the bypass.
-    """
-    # 1. validate input type
-    if value in (None, ""):
-        return None, None
-    if not isinstance(value, (str, os.PathLike, PurePath)):
-        return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
-    if root in (None, ""):
-        return None, None
-
-    canon = canonicalize_path(value)
-    # Colon-bearing components are rejected BEFORE any filesystem contact.
-    if has_colon_component(canon):
-        return None, GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED
-
-    try:
-        # 2/3. anchor to the framework root -- never to CWD.
-        anchored, anchor_failure = anchor_output_path(value, root)
-        if anchor_failure:
-            return None, anchor_failure
-
-        # 6. resolve the framework root itself, with the same semantics, so
-        #    step 8 never compares a resolved candidate to an unresolved root.
-        try:
-            real_root = Path(str(root)).resolve(strict=False)
-        except OSError:
-            return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
-
-        # 5. nearest existing ancestor
-        existing = anchored
-        unresolved: list[str] = []
-        guard = 0
-        try:
-            while (not existing.exists() and existing.parent != existing
-                   and guard < 256):
-                # `Path.exists()` follows links and SWALLOWS the OSError, so a
-                # symlink loop and a dangling symlink both report False --
-                # indistinguishable from "this output directory has not been
-                # created yet". Treating them as not-yet-created let a
-                # component that physically EXISTS but cannot be resolved slide
-                # through as ordinary development. `os.path.lexists()` sees the
-                # link itself: if the entry is there but unresolvable, we do not
-                # know where it lands, and that is ambiguity, not absence.
-                if os.path.lexists(existing):
-                    return None, GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS
-                unresolved.append(existing.name)
-                existing = existing.parent
-                guard += 1
-        except OSError:
-            return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
-        if guard >= 256:
-            return None, GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS
-
-        # 6. physically resolve it (follows junctions, symlinks, 8.3 names,
-        #    trailing-dot/space Win32 normalization and case aliases).
-        try:
-            resolved_ancestor = existing.resolve(strict=False)
-        except OSError:
-            return None, GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS
-        if not resolved_ancestor.is_absolute():
-            # Resolution that did not produce an absolute path tells us
-            # nothing about physical location.
-            return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
-
-        # 7. append the unresolved suffix
-        resolved = resolved_ancestor.joinpath(*reversed(unresolved))
-
-        # 8. component-aware containment against the resolved root
-        canon_res = canonicalize_path(resolved)
-        canon_root = canonicalize_path(real_root)
-        rel = canon_res.relative_to_root(canon_root)
-        if rel is None:
-            # An ANCHORED path that resolves outside the root escaped through a
-            # reparse point. A path that was absolute and outside to begin with
-            # is ordinary development writing elsewhere.
-            lex_rel = canonicalize_path(anchored).relative_to_root(canon_root)
-            if lex_rel is not None:
-                return resolved, GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE
-        return resolved, None
-    except (OSError, ValueError):
-        return None, GATE_A_OUTPUT_PATH_PHYSICAL_RESOLUTION_FAILED
 
 
 EvidenceParseStatus = Literal[

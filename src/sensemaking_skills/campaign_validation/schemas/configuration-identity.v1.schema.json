@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sensemaking-skills.invalid/schemas/two-lane-v1/configuration-identity.v1.schema.json",
+  "title": "Configuration Identity v1",
+  "description": "Machine-readable schema for the parsed data model of a Two-Lane v1 configuration-identity document (docs/experiments/schemas/two-lane-v1/configuration-identity.schema.md). 'execution_parameters' is schema v1's sole open-map root field: its value and every mapping recursively reachable from it (through mappings or sequences) is open (additionalProperties true), per ADR 0023 section 10b. Every other object in this schema is closed.",
+  "$comment": "configuration_id is deliberately 'type: string' only (no sha256-hex pattern) -- Python's CAMPAIGN_CONFIGURATION_ID_MALFORMED/_MISMATCH own the format and correctness checks exclusively, so failure-code routing stays deterministic instead of racing jsonschema.",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "exactCommitSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "executionParameterValue": {
+      "$comment": "Open-map subtree value: a permitted scalar, a sequence of permitted values, or a nested open mapping.",
+      "anyOf": [
+        {"type": "string"},
+        {"type": "boolean"},
+        {"type": "null"},
+        {"type": "number"},
+        {"type": "array", "items": {"$ref": "#/$defs/executionParameterValue"}},
+        {"$ref": "#/$defs/executionParameterMap"}
+      ]
+    },
+    "executionParameterMap": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/executionParameterValue"},
+      "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$", "not": {"enum": ["true", "false", "null", "yes", "no", "on", "off"]}}
+    }
+  },
+  "required": [
+    "configuration_schema_version",
+    "configuration_id",
+    "campaign_id",
+    "framework_sha",
+    "target_repository",
+    "target_sha",
+    "model_identifier",
+    "prompt_or_skill_revision",
+    "validator_revision",
+    "artifact_type",
+    "execution_parameters"
+  ],
+  "properties": {
+    "configuration_schema_version": {"const": "1"},
+    "configuration_id": {"type": "string"},
+    "campaign_id": {"type": "string", "pattern": "^EXP-\\d{4}(-[a-z0-9-]+)?$"},
+    "framework_sha": {"$ref": "#/$defs/exactCommitSha"},
+    "target_repository": {"type": "string", "minLength": 1},
+    "target_sha": {"$ref": "#/$defs/exactCommitSha"},
+    "model_identifier": {"type": "string", "minLength": 1},
+    "prompt_or_skill_revision": {"type": "string", "minLength": 1},
+    "validator_revision": {"type": "string", "minLength": 1},
+    "artifact_type": {"type": "string", "minLength": 1},
+    "execution_parameters": {"$ref": "#/$defs/executionParameterMap"}
+  }
+}

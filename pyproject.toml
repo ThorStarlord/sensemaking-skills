@@ -10,6 +10,9 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "click>=8.1.0",
+    "PyYAML>=6.0,<7.0",
+    "jsonschema>=4.18,<5.0",
+    "rfc8785>=0.1.4,<0.2",
 ]
 license = {text = "MIT"}
 authors = [
@@ -44,3 +47,4 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 sensemaking_skills = ["skills/**/*", "examples/**/*", "docs/**/*"]
+"sensemaking_skills.campaign_validation.schemas" = ["*.json"]
