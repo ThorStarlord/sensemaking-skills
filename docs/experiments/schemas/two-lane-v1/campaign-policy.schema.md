@@ -119,14 +119,14 @@ document rather than partially parse it.
 
 ```yaml
 policy_schema_version: "1"
-campaign_id: EXP-0000-EXAMPLE
+campaign_id: "EXP-0000-EXAMPLE"
 policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"
-classification: EXPLORATORY_NOT_CANONICAL_EVIDENCE
+classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"
 allowed_framework_shas:
-  - "0000000000000000000000000000000000dead"
+  - "000000000000000000000000000000000000dead"
 allowed_targets:
   - repository: "https://example.invalid/example-owner/example-target.git"
-    sha: "0000000000000000000000000000000000beef"
+    sha: "000000000000000000000000000000000000beef"
 allowed_models:
   - "example-model-identifier"
 allowed_artifact_types:
@@ -149,6 +149,10 @@ repair_prohibited: true
 automatic_merge_prohibited: true
 preservation_requirements: "Every reservation and attempt result is preserved permanently, including failed and aborted attempts."
 logging_requirements: "Every provider invocation and its raw output reference is logged in the campaign ledger."
-prepared_by: campaign-operator-agent
+prepared_by: "campaign-operator-agent"
 prepared_at: "2026-01-01T00:00:00+00:00"
 ```
+
+This example is authored under the Two-Lane YAML Profile v1 (ADR 0023
+§10b): every string-valued field is quoted, and only `true`/`false`/`null`/
+numeric literals appear unquoted.

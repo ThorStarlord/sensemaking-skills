@@ -113,7 +113,7 @@ nothing at runtime.
 |---|---|---|---|
 | 1 | Agent self-authorization (agent grants itself a campaign) | Campaign approval requires a human-authored, out-of-band-verifiable approval record (§12); the agent may only prepare, digest, and validate | Phase 3 (#119) |
 | 2 | Fabricated human identity | Approval provenance model distinguishes claimed identity from verifiable provenance from runtime-checkable fact (§12) | Phase 2 (#118) |
-| 3 | Policy mutation after approval | Any change to normative policy bytes invalidates the approval; new digest, new approval required (§9c) | Phase 2 (#118) |
+| 3 | Policy mutation after approval | Any change to the parsed normative value of a policy field invalidates the approval; new digest, new approval required (§9c) | Phase 2 (#118) |
 | 4 | Configuration drift | New `configuration_id` on any execution-relevant field change (§10); attempts grouped only by identical configuration | Phase 2/4 (#118, #120) |
 | 5 | Model substitution | Model identifier is a normative configuration field and a policy allowlist field; mismatch fails closed | Phase 3 (#119) |
 | 6 | Target or framework drift | Target/framework SHA are normative configuration fields and policy allowlist fields | Phase 3 (#119) |
@@ -149,8 +149,8 @@ nothing at runtime.
 7. Target mutation, hidden fallback, silent retry, and automatic merge are
    forbidden in both lanes unless a future explicit policy revision changes
    them for Lane A specifically, through a new approved policy.
-8. Any change to normative campaign policy bytes invalidates the existing
-   campaign approval.
+8. Any change to the parsed normative value of a campaign policy field
+   (§9c) invalidates the existing campaign approval.
 9. A terminal attempt state never reverts to an earlier state, and one
    `attempt_id` never represents more than one provider invocation.
 
@@ -168,7 +168,7 @@ Legal transitions:
 | From | To | Trigger |
 |---|---|---|
 | `DRAFT` | `AWAITING_HUMAN_APPROVAL` | Policy prepared and digested by the agent, submitted for human review |
-| `AWAITING_HUMAN_APPROVAL` | `DRAFT` | Human requests changes (policy bytes change -> new digest, per invariant 8) |
+| `AWAITING_HUMAN_APPROVAL` | `DRAFT` | Human requests changes (parsed policy value changes -> new digest, per invariant 8) |
 | `AWAITING_HUMAN_APPROVAL` | `APPROVED_NOT_STARTED` | Genuine human approval recorded, binding the exact policy digest |
 | `APPROVED_NOT_STARTED` | `ACTIVE` | First reservation issued |
 | `ACTIVE` | `EXHAUSTED` | Any policy ceiling (attempt slots, invocations, budget) reached |
@@ -242,8 +242,14 @@ consent text, not inferred from silence or repository write access).
 
 ### 9c. Policy mutation rule
 
-Any byte-level change to the normative fields in §9a produces a new
-`policy_digest`. A new `policy_digest` requires a new campaign approval
+A change to the parsed normative JSON-compatible value of any field in §9a
+changes `policy_digest` unless both the prior and new source text resolve,
+under the Two-Lane YAML Profile v1 (§10b), to the same parsed value and RFC
+8785 produces the same canonical representation for it (§10a). Presentation-
+only source changes — comments, indentation, line wrapping, mapping-key
+order, or an equivalent single- versus double-quoting of an identical string
+value — do not change `policy_digest`, because they do not change the parsed
+value. A new `policy_digest` requires a new campaign approval
 (§9b) referencing that exact digest. The prior approval remains on record
 but no longer authorizes anything once a new policy digest exists for the
 same `campaign_id`; it is not deleted, only superseded. Runtime-derived
@@ -313,11 +319,15 @@ canonicalization algorithm, used identically by every digest in this ADR
 (`configuration_id`, `policy_digest`, and any future schema-v1 digest that
 claims to reuse "the canonical serialization"):
 
-1. The source artifact may be authored as YAML.
-2. The YAML document is parsed under the restricted, fail-closed rules in
-   §10b into a JSON-compatible data model: object (string keys only),
-   array, string, JSON number, boolean, or `null`. No other value type is
-   permitted after parsing.
+1. The source artifact may be authored as YAML, under exactly one pinned
+   source-language profile: the **Two-Lane YAML Profile v1**, defined
+   normatively in §10b. Schema v1 does not permit any other YAML profile,
+   and it does not permit a consumer to choose between profiles or fall
+   back to a YAML library's default scalar-resolution behavior.
+2. The YAML document is parsed under the Two-Lane YAML Profile v1 and the
+   restricted, fail-closed rules in §10b into a JSON-compatible data model:
+   object (string keys only), array, string, JSON number, boolean, or
+   `null`. No other value type is permitted after parsing.
 3. The resulting data model — restricted to exactly the hashed field set
    for that digest (§10c) — is serialized using
    [RFC 8785, the JSON Canonicalization Scheme (JCS)](https://www.rfc-editor.org/rfc/rfc8785).
@@ -343,13 +353,153 @@ non-finite values, see §10b) rather than silently coercing it. A numeric
 value (`1`, `1.0`) and a string value (`"1"`) are distinct source values in
 the parsed data model and must never be treated as equivalent or normalized
 into one another, except exactly as RFC 8785 itself defines for its
-canonical number representation.
+canonical number representation. Conversely, the plain scalars `1` and
+`1.0` both resolve, under the Two-Lane YAML Profile v1 (§10b), to the same
+JSON number value and therefore canonicalize identically under RFC 8785 —
+their different source spellings do not necessarily produce different
+digests, and this ADR makes no such claim.
 
-### 10b. YAML input restrictions (fail-closed, every digest-bearing artifact)
+### 10b. Two-Lane YAML Profile v1 (fail-closed, every digest-bearing artifact)
 
-Before canonicalization, parsing of any digest-bearing schema-v1 artifact
-(campaign policy, configuration identity, and any future schema-v1 artifact
-whose digest reuses this algorithm) **must reject**:
+RFC 8785 (JCS) fixes the *output* side of canonicalization. It does not fix
+the *input* side: different conforming YAML implementations may resolve
+identical plain scalars (`yes`, `on`, `01`, `2026-01-01`, ...) differently,
+producing different parsed values — and therefore different digests — from
+byte-identical YAML source. Schema v1 closes that gap by pinning exactly one
+source-language profile, used identically by every digest-bearing artifact
+in this ADR (`configuration_id`, `policy_digest`, and any future schema-v1
+digest that claims to reuse "the canonical serialization").
+
+#### Profile identity
+
+**Name: Two-Lane YAML Profile v1.**
+
+1. YAML syntax version is YAML 1.2.2.
+2. YAML 1.1 resolution is forbidden.
+3. Implementation-default or environment-dependent scalar resolution is
+   forbidden — a digest producer or consumer may not rely on whatever its
+   YAML library resolves a plain scalar to by default.
+4. Scalar resolution is based on the YAML 1.2.2 JSON Schema, with the
+   stricter number rule defined below (not the YAML 1.2 Core Schema).
+5. Explicit YAML tags remain forbidden (restated from the construct list
+   below).
+6. A YAML directive that requests another YAML version (e.g. `%YAML 1.1`)
+   is rejected.
+7. A `%YAML 1.2` directive may be accepted or omitted; its presence or
+   absence does not alter the required Two-Lane YAML Profile v1 behavior.
+8. Every digest producer and consumer must apply this exact profile,
+   regardless of what its underlying YAML library defaults to. **Schema v1
+   does not use the YAML 1.2 Core Schema, and it does not permit a consumer
+   to choose between Core Schema, JSON Schema, or its library's default —
+   the JSON Schema profile above, plus the stricter number rule below, is
+   the only legal choice.**
+
+#### Scalar-resolution rules (lexical, fail-closed)
+
+**Quoted scalars.** Single-quoted and double-quoted YAML scalars resolve to
+JSON strings. Quoting style (single vs. double) never affects the resulting
+string value. A value intended to be a string **must** be quoted — this
+includes ordinary schema strings such as campaign IDs, classifications,
+model identifiers, artifact types, roles, URLs, revision identifiers, and
+RFC3339 timestamps.
+
+**Plain (unquoted) scalars** are permitted only when they exactly match one
+of these forms; any other plain scalar is invalid and must be rejected, not
+silently converted to a string or to an alternate scalar type:
+
+| Plain scalar | Resolves to |
+|---|---|
+| `null` | JSON `null` |
+| `true` | JSON boolean `true` |
+| `false` | JSON boolean `false` |
+| a valid RFC 8259 JSON number (grammar below) | JSON number |
+
+JSON-number grammar (RFC 8259), used verbatim as the plain-scalar number
+test:
+
+```
+-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?
+```
+
+Therefore the following unquoted plain scalars are **rejected**, not
+coerced to a string or to an alternate boolean/null/number interpretation:
+`yes`, `no`, `on`, `off`, `Yes`, `No`, `True`, `False`, `TRUE`, `FALSE`,
+`Null`, `NULL`, `~`, `01`, `-01`, `0o7`, `0x10`, `+1`, `.5`, `1.`, `.inf`,
+`-.inf`, `.nan`, and any timestamp- or date-looking plain scalar (e.g.
+`2026-01-01`). To represent any of these as strings, they must be quoted.
+
+Mapping keys must resolve to JSON strings and must match the declared
+schema field name exactly. Unknown fields are rejected before hashing
+(restated from §9a/§9c).
+
+#### Conformance table (normative, not illustrative)
+
+Accepted:
+
+| YAML source | Parsed JSON value |
+|---|---|
+| `"yes"` | string `"yes"` |
+| `"on"` | string `"on"` |
+| `"01"` | string `"01"` |
+| `"2026-01-01"` | string `"2026-01-01"` |
+| `true` | boolean `true` |
+| `false` | boolean `false` |
+| `null` | `null` |
+| `0` | number `0` |
+| `-1` | number `-1` |
+| `1.5` | number `1.5` |
+| `1e3` | number `1000` |
+| `"1"` | string `"1"` |
+
+Rejected when unquoted: `yes`, `no`, `on`, `off`, `True`, `Null`, `~`, `01`,
+`0o7`, `0x10`, `+1`, `.5`, `1.`, `.nan`, `.inf`, `2026-01-01`.
+
+#### Number and JCS input domain
+
+- Every number must be finite; `NaN`, positive infinity, and negative
+  infinity are rejected (restated from the construct list below).
+- Every number must be representable as an IEEE-754 binary64 value, as
+  required by RFC 8785 / I-JSON. Overflow, underflow to an unintended
+  value, or unsupported precision fails closed rather than silently
+  altering authority.
+- Negative zero (`-0`) is rejected for schema v1, so `-0` cannot collapse
+  to the same JCS representation as `0`.
+- Integer-valued policy fields (e.g. `max_attempt_slots`,
+  `max_provider_invocations`, `max_attempts_per_configuration`,
+  `concurrency_ceiling`, `token_ceiling`) must be integers in the
+  interoperable safe-integer range `-9007199254740991` through
+  `9007199254740991` inclusive. A field declared as integer must reject a
+  fractional or exponential value even when that value is mathematically
+  integral (e.g. `5.0` is rejected for an integer field, even though it
+  equals `5`).
+- Numeric strings are never coerced into numbers: string `"1"` and number
+  `1` are distinct values, always.
+- Number `1` and number `1.0` resolve to the same JSON numeric value for
+  JCS purposes and therefore canonicalize identically (§10a); their
+  different source spellings do not necessarily produce different digests.
+- Schema v1 does not define a second number-serialization algorithm beyond
+  RFC 8785.
+
+#### String and Unicode rules
+
+- Parsed Unicode strings are preserved exactly as required by RFC 8785. No
+  Unicode normalization step is performed.
+- Canonically equivalent but differently encoded Unicode sequences (e.g.
+  NFC vs. NFD forms of the same visible text) remain different string
+  values.
+- Lone Unicode surrogates or otherwise invalid Unicode string data are
+  rejected.
+- YAML escape processing (for quoted scalars) occurs before JCS; JCS then
+  serializes the resulting Unicode string value. Different YAML quoting or
+  escape presentations that produce the same Unicode string value produce
+  the same digest.
+
+#### Structural rejections (fail-closed, every digest-bearing artifact)
+
+In addition to the scalar-resolution rules above, parsing of any
+digest-bearing schema-v1 artifact (campaign policy, configuration identity,
+and any future schema-v1 artifact whose digest reuses this algorithm)
+**must reject**:
 
 - duplicate mapping keys;
 - YAML aliases;
@@ -361,18 +511,22 @@ whose digest reuses this algorithm) **must reject**:
   boolean/null);
 - implicit timestamp/date objects (a YAML loader that auto-converts an
   RFC3339-looking scalar to a native date/datetime type instead of leaving
-  it as a string);
+  it as a string — this is the timestamp-resolution behavior forbidden by
+  the Two-Lane YAML Profile v1 above, restated here as a structural
+  rejection);
 - non-finite numbers (`NaN`, positive infinity, negative infinity);
 - multiple YAML documents in one stream;
 - implementation-specific custom types (e.g. `!!python/object`, `!!binary`
   used to smuggle a non-JSON type).
 
-A parser that accepts any of the above is not a conforming schema-v1
+A parser that accepts any of the above, or that resolves a plain scalar
+outside the exact forms permitted above, is not a conforming schema-v1
 parser. This restriction exists so two independent implementations, given
 the same source YAML, always produce the same restricted data model and
-therefore the same digest — a YAML loader's default (non-fail-closed)
-behavior on any of these constructs is implementation-defined and would
-silently break that guarantee.
+therefore the same digest — a YAML loader's default (non-fail-closed, or
+YAML-1.1-flavored, or Core-Schema-flavored) behavior on any of these
+constructs is implementation-defined and would silently break that
+guarantee.
 
 ### 10c. Hashed field sets (normative, exact)
 
@@ -592,6 +746,17 @@ already documents for `run_control_commit_sha` and `execution_framework_sha`.
   input restrictions (§10a, §10b), so Phase 2 (#118) implements a single,
   fully specified algorithm rather than inventing the missing semantics
   itself.
+- **Pin RFC 8785 (JCS) alone, without pinning YAML scalar resolution.**
+  Rejected: RFC 8785 fixes only the canonical *output* of an already-parsed
+  JSON-compatible value; it says nothing about how a YAML *input* scalar
+  like `yes`, `01`, or `2026-01-01` should resolve. Different YAML
+  implementations resolve these differently (YAML 1.1 booleans, Core vs.
+  JSON Schema, implementation defaults), so byte-identical YAML source
+  could parse to different values and therefore hash differently even with
+  JCS pinned. Schema v1 additionally pins the Two-Lane YAML Profile v1
+  (§10b): YAML 1.2.2 syntax, JSON-Schema-only scalar resolution, and an
+  exact RFC 8259 number grammar for plain scalars, so no implementation
+  choice remains.
 
 ## 18. Phase dependency sequence (Issues #118–#122)
 

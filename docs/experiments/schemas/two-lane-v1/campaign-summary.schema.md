@@ -45,17 +45,17 @@ opposed to what the policy authorizes. See ADR 0023 §8a, §9f. Append-only.
 
 ```yaml
 summary_schema_version: "1"
-campaign_id: EXP-0000-EXAMPLE
+campaign_id: "EXP-0000-EXAMPLE"
 policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"
-campaign_state: ACTIVE
+campaign_state: "ACTIVE"
 campaign_state_history:
-  - state: DRAFT
+  - state: "DRAFT"
     at: "2025-12-30T00:00:00+00:00"
-  - state: AWAITING_HUMAN_APPROVAL
+  - state: "AWAITING_HUMAN_APPROVAL"
     at: "2025-12-31T00:00:00+00:00"
-  - state: APPROVED_NOT_STARTED
+  - state: "APPROVED_NOT_STARTED"
     at: "2026-01-01T00:00:00+00:00"
-  - state: ACTIVE
+  - state: "ACTIVE"
     at: "2026-01-01T00:00:00+00:00"
 reservations_issued:
   count: 2
@@ -69,13 +69,18 @@ remaining_budget:
 attempts:
   - attempt_id: "00000000-0000-0000-0000-000000000001"
     configuration_id: "1111111111111111111111111111111111111111111111111111111111111111"
-    state: VALIDATION_PASSED
+    state: "VALIDATION_PASSED"
     terminal_at: "2026-01-01T00:03:30+00:00"
   - attempt_id: "00000000-0000-0000-0000-000000000002"
     configuration_id: "1111111111111111111111111111111111111111111111111111111111111111"
-    state: ABORTED_BEFORE_INVOCATION
+    state: "ABORTED_BEFORE_INVOCATION"
     terminal_at: "2026-01-01T00:04:00+00:00"
 first_reserved_at: "2026-01-01T00:00:00+00:00"
 last_activity_at: "2026-01-01T00:04:00+00:00"
 terminal_reason: null
 ```
+
+This example is authored under the Two-Lane YAML Profile v1 (ADR 0023
+§10b): every string-valued field, including enum-like state names, is
+quoted. `terminal_reason: null` is the permitted unquoted `null` plain
+scalar.

@@ -68,16 +68,20 @@ fuzzy-equivalence mode.
 ```yaml
 configuration_schema_version: "1"
 configuration_id: "1111111111111111111111111111111111111111111111111111111111111111"
-campaign_id: EXP-0000-EXAMPLE
-framework_sha: "0000000000000000000000000000000000dead"
+campaign_id: "EXP-0000-EXAMPLE"
+framework_sha: "000000000000000000000000000000000000dead"
 target_repository: "https://example.invalid/example-owner/example-target.git"
-target_sha: "0000000000000000000000000000000000beef"
+target_sha: "000000000000000000000000000000000000beef"
 model_identifier: "example-model-identifier"
 prompt_or_skill_revision: "example-skill@v0.0.0-example"
 validator_revision: "example-validator@v0.0.0-example"
-artifact_type: repository_sensemaking_brief
+artifact_type: "repository_sensemaking_brief"
 execution_parameters:
   max_tokens_hint: 4096
   tool_allowlist:
     - "read_repository"
 ```
+
+This example is authored under the Two-Lane YAML Profile v1 (ADR 0023
+§10b): every string-valued field is quoted; `max_tokens_hint` is an
+unquoted RFC 8259 number.

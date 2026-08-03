@@ -412,6 +412,177 @@ def test_policy_and_configuration_use_the_same_canonicalization_algorithm():
     )
 
 
+_HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
+
+_GIT_SHA_FIELD_KEYS = {"framework_sha", "target_sha", "sha", "reference"}
+
+
+def test_yaml_1_2_2_is_pinned():
+    text = _normalize_whitespace(_adr_text().lower())
+    assert "yaml syntax version is yaml 1.2.2" in text, (
+        "ADR 0023 must pin YAML 1.2.2 as the syntax version for the "
+        "Two-Lane YAML Profile v1"
+    )
+
+
+def test_yaml_1_1_is_forbidden():
+    text = _adr_text().lower()
+    assert "yaml 1.1 resolution is forbidden" in text, (
+        "ADR 0023 must explicitly forbid YAML 1.1 scalar resolution"
+    )
+
+
+def test_implementation_default_resolution_is_forbidden():
+    text = _adr_text().lower()
+    assert "implementation-default" in text and "forbidden" in text, (
+        "ADR 0023 must forbid implementation-default/environment-dependent "
+        "scalar resolution"
+    )
+
+
+def test_core_schema_is_not_permitted():
+    text = _normalize_whitespace(_adr_text().lower())
+    assert "does not use the yaml 1.2 core schema" in text, (
+        "ADR 0023 must explicitly reject the YAML 1.2 Core Schema"
+    )
+    assert "does not permit a consumer to choose between core schema" in text, (
+        "ADR 0023 must forbid a consumer choosing between Core/JSON "
+        "Schema/library default"
+    )
+
+
+def test_two_lane_yaml_profile_v1_is_named():
+    text = _normalize_whitespace(_adr_text())
+    assert "Two-Lane YAML Profile v1" in text, (
+        "ADR 0023 must name the pinned source-language profile "
+        "'Two-Lane YAML Profile v1'"
+    )
+    readme = _normalize_whitespace(
+        (SCHEMA_DIR / "README.md").read_text(encoding="utf-8")
+    )
+    assert "Two-Lane YAML Profile v1" in readme
+
+
+def test_ordinary_strings_must_be_quoted_rule_is_present():
+    text = _adr_text().lower()
+    assert "a value intended to be a string" in text and "must" in text and "quoted" in text
+
+
+def test_yes_no_on_off_cannot_resolve_as_booleans():
+    text = _normalize_whitespace(_adr_text().lower())
+    assert (
+        "rejected when unquoted: `yes`, `no`, `on`, `off`, `true`, `null`, `~`, `01`,"
+        in text
+    ), "ADR 0023 must list yes/no/on/off as rejected unquoted plain scalars"
+
+
+def test_true_null_tilde_cannot_resolve_unquoted():
+    text = _adr_text()
+    assert "`True`" in text or "`true`" in text.lower()
+    assert "`Null`" in text
+    assert "`~`" in text
+
+
+def test_octal_hex_leading_zero_leading_plus_and_dot_number_forms_rejected():
+    text = _adr_text()
+    for token in ("`01`", "`0o7`", "`0x10`", "`+1`", "`.5`", "`1.`"):
+        assert token in text, f"ADR 0023 must list {token} as a rejected plain scalar"
+
+
+def test_unquoted_timestamp_like_scalar_is_rejected():
+    text = _adr_text().lower()
+    assert "2026-01-01" in text and "rejected" in text
+
+
+def test_rfc_8259_number_grammar_is_present():
+    text = _adr_text()
+    assert "rfc 8259" in text.lower()
+    assert "[1-9][0-9]*" in text, "ADR 0023 must state the exact RFC 8259 number grammar"
+
+
+def test_nan_infinity_and_negative_zero_are_rejected():
+    text = _adr_text().lower()
+    assert "nan" in text
+    assert "negative zero" in text and "rejected" in text
+
+
+def test_unsafe_integer_policy_fields_are_bounded():
+    text = _adr_text()
+    assert "9007199254740991" in text, (
+        "ADR 0023 must bound integer-valued policy fields to the "
+        "interoperable safe-integer range"
+    )
+
+
+def test_lone_unicode_surrogates_are_rejected():
+    text = _adr_text().lower()
+    assert "lone unicode surrogates" in text or "lone surrogates" in text
+    assert "rejected" in text
+
+
+def test_unicode_normalization_is_not_applied():
+    text = _normalize_whitespace(_adr_text().lower())
+    assert "no unicode normalization step is performed" in text
+
+
+def test_no_prose_claims_every_source_byte_change_alters_digest():
+    for text, label in (
+        (_adr_text(), "ADR 0023"),
+        ((SCHEMA_DIR / "README.md").read_text(encoding="utf-8"), "README.md"),
+    ):
+        lowered = _normalize_whitespace(text.lower())
+        assert "any byte-level change to the normative fields" not in lowered, (
+            f"{label}: must not claim every source-byte change alters the digest; "
+            "use semantic-value language instead"
+        )
+        assert "any change to normative campaign policy bytes" not in lowered
+        assert "any change to normative policy bytes" not in lowered
+
+
+def test_quoted_string_is_not_treated_as_number():
+    text = _normalize_whitespace(_adr_text().lower())
+    assert 'string `"1"` and number `1` are distinct' in text
+
+
+def test_number_1_and_1_0_not_claimed_to_necessarily_differ():
+    text = _normalize_whitespace(_adr_text().lower())
+    assert "do not necessarily produce different digests" in text
+
+
+def test_git_sha_placeholders_are_exactly_40_hex_chars():
+    files = [ADR_PATH, SCHEMA_DIR / "README.md"] + _schema_files()
+    hex_run_re = re.compile(r"[0-9a-f]{20,}")
+    hex64_re = re.compile(r"^[0-9a-f]{64}$")
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        for match in hex_run_re.finditer(text):
+            token = match.group(0)
+            # Every long lowercase hex run in this corpus is either a
+            # SHA-256 placeholder (64 chars) or a Git SHA placeholder
+            # (40 chars) -- nothing else is legitimate here.
+            assert hex64_re.match(token) or _HEX40_RE.match(token), (
+                f"{path.name}: hex placeholder {token!r} (len {len(token)}) is "
+                "neither a well-formed 40-char Git SHA nor a 64-char SHA-256 "
+                "placeholder"
+            )
+
+
+def test_sha256_placeholders_are_exactly_64_hex_chars():
+    # Companion assertion: explicitly confirm at least one 64-char SHA-256
+    # placeholder exists per digest field, guarding against a future edit
+    # accidentally truncating one.
+    text = _policy_text()
+    blocks = _extract_yaml_blocks(text)
+    for block in blocks:
+        parsed = yaml.safe_load(block)
+        digest = parsed.get("policy_digest")
+        if digest:
+            assert _HEX64_RE.match(digest), (
+                f"policy_digest example {digest!r} is not a well-formed "
+                "64-character lowercase SHA-256 hex placeholder"
+            )
+
+
 def test_evidence_0016_and_0015_directories_untouched_by_this_module():
     """This test module never writes under experiments/run-control or
     experiments/evidence. It only reads. This assertion documents that

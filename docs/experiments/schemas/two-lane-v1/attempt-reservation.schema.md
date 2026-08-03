@@ -54,16 +54,20 @@ for transitions after `INVOKED`.
 reservation_schema_version: "1"
 reservation_id: "00000000-0000-0000-0000-000000000001"
 attempt_id: "00000000-0000-0000-0000-000000000001"
-campaign_id: EXP-0000-EXAMPLE
+campaign_id: "EXP-0000-EXAMPLE"
 configuration_id: "1111111111111111111111111111111111111111111111111111111111111111"
 reserved_at: "2026-01-01T00:00:00+00:00"
-state: RESERVED
+state: "RESERVED"
 state_history:
-  - state: RESERVED
+  - state: "RESERVED"
     at: "2026-01-01T00:00:00+00:00"
 terminal_states:
-  - ABORTED_BEFORE_INVOCATION
-  - PROVIDER_FAILED
-  - VALIDATION_FAILED
-  - VALIDATION_PASSED
+  - "ABORTED_BEFORE_INVOCATION"
+  - "PROVIDER_FAILED"
+  - "VALIDATION_FAILED"
+  - "VALIDATION_PASSED"
 ```
+
+This example is authored under the Two-Lane YAML Profile v1 (ADR 0023
+§10b): every string-valued field, including enum-like state names, is
+quoted.

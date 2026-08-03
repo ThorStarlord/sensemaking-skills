@@ -45,7 +45,7 @@ operative campaign approval may be created under Issue #117 — see the
 
 ```yaml
 approval_schema_version: "1"
-campaign_id: EXP-0000-EXAMPLE
+campaign_id: "EXP-0000-EXAMPLE"
 policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"
 claimed_approver_identity: "<HUMAN-FILLS-IN-EXACT-GITHUB-HANDLE>"
 approval_provenance:
@@ -53,7 +53,7 @@ approval_provenance:
   reference: "<HUMAN-FILLS-IN e.g. commit SHA or review URL>"
 approval_statement: "<HUMAN-FILLS-IN first-person consent text>"
 approved_at: "<HUMAN-FILLS-IN RFC3339 timestamp>"
-marker: EXAMPLE_ONLY_NOT_AUTHORIZATION
+marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"
 ```
 
 ## Illustrative filled example — EXAMPLE_ONLY_NOT_AUTHORIZATION
@@ -63,13 +63,16 @@ values. It must never be treated as a real approval.
 
 ```yaml
 approval_schema_version: "1"
-campaign_id: EXP-0000-EXAMPLE
+campaign_id: "EXP-0000-EXAMPLE"
 policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"
 claimed_approver_identity: "example-owner-handle"
 approval_provenance:
-  mechanism: signed_commit
-  reference: "0000000000000000000000000000000000c0de"
+  mechanism: "signed_commit"
+  reference: "000000000000000000000000000000000000c0de"
 approval_statement: "EXAMPLE ONLY. This illustrates the shape of a filled approval; it is not a real consent statement and authorizes nothing."
 approved_at: "2026-01-01T00:00:00+00:00"
-marker: EXAMPLE_ONLY_NOT_AUTHORIZATION
+marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"
 ```
+
+Both examples above are authored under the Two-Lane YAML Profile v1 (ADR
+0023 §10b): every string-valued field, including `mechanism`, is quoted.
