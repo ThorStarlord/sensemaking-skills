@@ -441,7 +441,24 @@ class _ValidatedSnapshot:
 #   a broken reparse point), the result is ambiguous and fails closed.
 
 
-from sensemaking_skills import path_containment as _path_containment  # noqa: E402
+try:
+    from sensemaking_skills import path_containment as _path_containment
+except ImportError:
+    # This script is run directly from a repository checkout in several CI
+    # jobs (e.g. .github/workflows/validation.yml's Gate A jobs) that install
+    # only pytest/pyyaml/click -- never `pip install -e .` -- so
+    # `sensemaking_skills` is not necessarily on sys.path even though the
+    # source tree is right there on disk. Fall back to adding the repo's
+    # src/ directory before failing outright; this mirrors the exact
+    # sys.path-augmentation pattern the test suite itself already uses (see
+    # e.g. tests/test_gate_a_artifact_root_topology.py's
+    # `sys.path.insert(0, ... / "scripts")`), just applied to `src/` instead.
+    import sys as _sys
+    _src_dir = str(Path(__file__).resolve().parent.parent / "src")
+    if _src_dir not in _sys.path:
+        _sys.path.insert(0, _src_dir)
+    from sensemaking_skills import path_containment as _path_containment
+
 from sensemaking_skills.path_containment import (  # noqa: E402
     CanonicalPath,
     GATE_A_OUTPUT_PATH_ALIAS_MISMATCH,
