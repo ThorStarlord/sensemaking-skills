@@ -10,7 +10,7 @@ docstring in ``validators.py`` for the full rationale.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Optional, Sequence
+from typing import Any, Mapping, Optional, Sequence, Union
 
 
 @dataclass(frozen=True)
@@ -39,19 +39,27 @@ class ValidationDiagnostic:
 
 @dataclass(frozen=True)
 class ValidationResult:
-    """Result of validating a single artifact (policy, approval, or configuration).
+    """Result of validating a single artifact, OR the final campaign bundle.
 
-    ``value`` is populated only when ``valid`` is True.
+    ``value`` is populated only when ``valid`` is True, and holds one of two
+    distinct shapes depending on which function produced it:
+
+    * a plain parsed ``Mapping`` -- returned by the single-artifact
+      validators (``validate_campaign_policy``, ``validate_campaign_approval``,
+      ``validate_configuration_identity``);
+    * a ``ValidatedCampaignBundle`` -- returned only by
+      ``validate_campaign_bundle`` on success; an immutable, deep-frozen
+      snapshot (see ``immutable.freeze``), never a plain mapping.
     """
 
     valid: bool
     failure_code: Optional[str] = None
     detail: str = ""
     path: Optional[str] = None
-    value: Optional[Mapping[str, Any]] = None
+    value: Optional[Union[Mapping[str, Any], "ValidatedCampaignBundle"]] = None
 
     @staticmethod
-    def ok(value: Mapping[str, Any]) -> "ValidationResult":
+    def ok(value: Union[Mapping[str, Any], "ValidatedCampaignBundle"]) -> "ValidationResult":
         return ValidationResult(valid=True, value=value)
 
     @staticmethod

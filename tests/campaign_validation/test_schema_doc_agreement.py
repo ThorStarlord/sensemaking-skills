@@ -12,6 +12,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MD_DIR = REPO_ROOT / "docs" / "experiments" / "schemas" / "two-lane-v1"
 JSON_DIR = MD_DIR / "json"
+PACKAGED_SCHEMA_DIR = (
+    REPO_ROOT / "src" / "sensemaking_skills" / "campaign_validation" / "schemas"
+)
 
 FIELD_ROW_RE = re.compile(r"^\|\s*`([a-z_]+)`\s*\|")
 
@@ -61,3 +64,22 @@ def test_campaign_approval_fields_match_doc_excluding_marker():
     # though it is one row in the same doc table -- both sides already
     # include it, so a straight equality check is correct here too.
     assert md_fields == json_fields, (md_fields ^ json_fields)
+
+
+def test_packaged_schemas_are_byte_identical_to_docs_originals():
+    """The runtime loads schemas as PACKAGED resources
+    (``sensemaking_skills/campaign_validation/schemas/*.json``), not from
+    ``docs/``, so an installed wheel works with no repository checkout.
+    That packaged copy must never silently drift from the human-authored
+    ``docs/`` original -- diff byte-for-byte on every commit.
+    """
+    for filename in (
+        "campaign-policy.v1.schema.json",
+        "campaign-approval.v1.schema.json",
+        "configuration-identity.v1.schema.json",
+    ):
+        docs_bytes = (JSON_DIR / filename).read_bytes()
+        packaged_bytes = (PACKAGED_SCHEMA_DIR / filename).read_bytes()
+        assert docs_bytes == packaged_bytes, (
+            f"{filename}: packaged schema resource has drifted from the docs/ original"
+        )

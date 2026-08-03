@@ -1,56 +1,31 @@
 """Filesystem / artifact-root trust boundary adapter.
 
 Campaign validation reuses the existing artifact-root trust model rather
-than building a second, incompatible path system (ADR 0023 section 15). This
-module is a narrow adapter around ``scripts/gate_a_authorization.py``'s
-pure, filesystem-touching-but-behavior-frozen containment primitives
-(``canonicalize_path``, ``resolve_containment``) -- it imports them
-unmodified; **no line of ``gate_a_authorization.py`` is edited by this
-package**, so every existing Gate A test remains byte-for-byte unaffected.
+than building a second, incompatible path system (ADR 0023 section 15).
+This module is a narrow adapter around ``sensemaking_skills.path_containment``
+-- the shared, pure containment primitives extracted (unmodified) from
+``scripts/gate_a_authorization.py`` and now reused by both Gate A and this
+package (see ``tests/test_path_containment_extraction_characterization.py``
+for the extraction's non-regression proof).
 
-``resolve_containment`` already implements: lexical normalization, physical
-resolution against a pinned root (never the process CWD), symlink/reparse
-point escape detection, and cross-platform (Windows/Linux) containment --
-exactly the properties this adapter needs. Reimplementing that logic here
-would risk a second, subtly-divergent containment mechanism; this module
-instead depends on it directly.
+This module is a normal package import: it does **not** load
+``scripts/gate_a_authorization.py`` by filesystem path at runtime. A prior
+revision did that (via ``importlib.util.spec_from_file_location``), which
+worked from a repository checkout but silently could not work from an
+installed wheel with no access to ``scripts/`` -- there is no such
+directory once the package is installed. Importing
+``sensemaking_skills.path_containment`` instead is a normal, packaged
+dependency that works identically from a checkout or an installed wheel.
 """
 
 from __future__ import annotations
 
-import importlib.util
-import sys
-import threading
 from pathlib import Path
 from typing import Optional
 
+from sensemaking_skills import path_containment as pc
+
 from .failure_codes import CAMPAIGN_FAILURE_CODES  # noqa: F401  (re-export point)
-
-_GATE_A_MODULE_NAME = "sensemaking_skills._gate_a_authorization_impl"
-_lock = threading.Lock()
-_gate_a_module = None
-
-
-def _load_gate_a_module():
-    """Load ``scripts/gate_a_authorization.py`` by file path (no sys.path mutation).
-
-    Loaded once, lazily, and cached. Using ``importlib.util.spec_from_file_location``
-    (rather than ``sys.path.insert`` + ``import``, the pattern used by Gate A's
-    own tests) avoids adding ``scripts/`` to ``sys.path`` for the lifetime of
-    the process, which would otherwise risk shadowing unrelated modules.
-    """
-    global _gate_a_module
-    with _lock:
-        if _gate_a_module is not None:
-            return _gate_a_module
-        repo_root = Path(__file__).resolve().parents[3]
-        module_path = repo_root / "scripts" / "gate_a_authorization.py"
-        spec = importlib.util.spec_from_file_location(_GATE_A_MODULE_NAME, module_path)
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[_GATE_A_MODULE_NAME] = module
-        spec.loader.exec_module(module)
-        _gate_a_module = module
-        return module
 
 
 class ArtifactRootError(ValueError):
@@ -69,20 +44,18 @@ def resolve_under_root(relative_or_absolute: str, artifact_root: str) -> Path:
     other filesystem failure. Returns the resolved, contained absolute path
     on success.
     """
-    ga = _load_gate_a_module()
     try:
-        resolved, failure = ga.resolve_containment(relative_or_absolute, artifact_root)
+        resolved, failure = pc.resolve_containment(relative_or_absolute, artifact_root)
     except Exception as exc:  # pragma: no cover - defensive, Gate A already fails closed
         raise ArtifactRootError("CAMPAIGN_FILESYSTEM_ERROR", str(exc)) from exc
 
-    if failure == ga.GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE or failure == getattr(
-        ga, "GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS", object()
-    ):
+    if failure in (pc.GATE_A_OUTPUT_PATH_SYMLINK_ESCAPE,
+                   pc.GATE_A_OUTPUT_PATH_REPARSE_POINT_AMBIGUOUS):
         raise ArtifactRootError(
             "CAMPAIGN_SYMLINK_CONTAINMENT_VIOLATION",
             f"path escapes artifact root via symlink/reparse point: {failure}",
         )
-    if failure == getattr(ga, "GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED", object()):
+    if failure == pc.GATE_A_OUTPUT_PATH_COLON_COMPONENT_PROHIBITED:
         raise ArtifactRootError(
             "CAMPAIGN_PATH_ESCAPE", f"path contains a forbidden colon component: {failure}"
         )
@@ -92,13 +65,19 @@ def resolve_under_root(relative_or_absolute: str, artifact_root: str) -> Path:
         raise ArtifactRootError("CAMPAIGN_PATH_ESCAPE", "path could not be resolved under root")
 
     # resolve_containment permits an absolute-and-outside path to pass through
-    # silently (it returns (resolved, None) for legitimate absolute paths
-    # outside the root, treating that as "ordinary development" in Gate A's
-    # domain). Campaign validation's contract is stricter: every candidate
-    # MUST be contained. Enforce that explicitly here rather than depending on
-    # Gate A callers' broader tolerance.
-    canon_resolved = ga.canonicalize_path(resolved)
-    canon_root = ga.canonicalize_path(Path(str(artifact_root)).resolve(strict=False))
+    # silently (it returns (resolved, None) for a plain lexical escape with
+    # no symlink involved -- Gate A's own docstring calls that "ordinary
+    # development writing elsewhere"). Campaign validation's contract is
+    # stricter: every candidate MUST be contained, regardless of mechanism.
+    # Enforce that explicitly here rather than depending on Gate A callers'
+    # broader tolerance -- see path_containment.resolve_containment's
+    # docstring note addressed specifically to this caller.
+    try:
+        real_root = Path(str(artifact_root)).resolve(strict=False)
+    except OSError as exc:
+        raise ArtifactRootError("CAMPAIGN_FILESYSTEM_ERROR", str(exc)) from exc
+    canon_resolved = pc.canonicalize_path(resolved)
+    canon_root = pc.canonicalize_path(real_root)
     if canon_resolved.relative_to_root(canon_root) is None:
         raise ArtifactRootError("CAMPAIGN_PATH_ESCAPE", "resolved path is outside artifact root")
 

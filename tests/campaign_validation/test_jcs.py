@@ -101,3 +101,61 @@ def test_unsupported_type_rejected():
 def test_bool_is_not_treated_as_number():
     assert canonicalize(True) == "true"
     assert canonicalize(False) == "false"
+
+
+# --- Maintained rfc8785 dependency: additional conformance vectors ---------
+
+def test_safe_integer_boundary_accepted():
+    assert canonicalize(9007199254740991) == "9007199254740991"
+    assert canonicalize(-9007199254740991) == "-9007199254740991"
+
+
+def test_integer_beyond_safe_domain_rejected():
+    with pytest.raises(JCSError):
+        canonicalize(9007199254740992)
+    with pytest.raises(JCSError):
+        canonicalize(2**60)
+
+
+def test_utf16_key_ordering_outside_bmp():
+    """RFC 8785 orders object keys by their UTF-16 code-unit sequence, not by
+    Unicode code point. An astral-plane character (encoded as a UTF-16
+    surrogate pair, code units >= 0xD800) sorts differently than a
+    code-point-only comparison would place it relative to a BMP character
+    in the private-use area near 0xFFFF. This is exactly the class of bug a
+    naive ``sorted(keys)`` (Python code-point order) gets wrong and the
+    maintained ``rfc8785`` dependency gets right.
+    """
+    astral = "\U00010000"  # U+10000, first astral-plane code point
+    bmp_high = "￿"    # last BMP code point
+    # Code-point order: astral (0x10000) > bmp_high (0xFFFF) -> "bmp_high" first.
+    # UTF-16 order: astral encodes as surrogate pair starting 0xD800, which is
+    # LESS than 0xFFFF -> astral-keyed entry sorts FIRST under UTF-16 rules.
+    payload = canonicalize({bmp_high: 1, astral: 2})
+    first_key_pos = payload.index('"')
+    # The astral character's key must appear before the BMP-high key's.
+    assert payload.find(astral.encode("unicode_escape").decode()) == -1  # sanity: not literally embedded as escape
+    # Simplest robust assertion: compare against rfc8785 directly to confirm
+    # child conformance, and independently confirm code-point order would
+    # have produced the opposite result.
+    import rfc8785 as _ref
+    assert canonicalize_bytes({bmp_high: 1, astral: 2}) == _ref.dumps({bmp_high: 1, astral: 2})
+    codepoint_order_keys = sorted([bmp_high, astral])
+    utf16_order_keys = sorted([bmp_high, astral], key=lambda s: s.encode("utf-16-be"))
+    assert codepoint_order_keys != utf16_order_keys
+
+
+def test_lone_surrogate_rejected():
+    lone_surrogate = "\ud800"
+    with pytest.raises(JCSError):
+        canonicalize(lone_surrogate)
+
+
+def test_exact_bytes_not_merely_equivalent_json():
+    """A digest consumer cares about exact bytes, not just equivalent parsed
+    JSON -- confirm no incidental whitespace/formatting differences exist
+    versus the reference library's own output."""
+    import rfc8785 as _ref
+
+    value = {"b": [1, 2.5, "x", None, True], "a": {"nested": 1}}
+    assert canonicalize_bytes(value) == _ref.dumps(value)

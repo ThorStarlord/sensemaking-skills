@@ -10,7 +10,11 @@ First-failure precedence (checked in this order by ``validate_campaign_bundle``)
 1. root / path safety (escape, symlink, filesystem errors)
 2. source-profile / YAML parsing
 3. schema / version validation
-4. digest / identity integrity
+4. digest / identity integrity (including configuration-to-campaign binding,
+   ``CAMPAIGN_CONFIGURATION_CAMPAIGN_MISMATCH`` -- checked immediately after
+   ``configuration_id`` recomputation, since ``campaign_id`` is deliberately
+   excluded from the ``configuration_id`` hash and so cannot be caught by
+   digest/ID matching alone)
 5. approval binding / identity declaration
 6. policy validity window
 7. configuration / conjunctive allowlists
@@ -55,9 +59,12 @@ CAMPAIGN_FAILURE_CODES: Mapping[str, str] = {
 
     # --- configuration identity / conjunctive checks ---
     "CAMPAIGN_CONFIGURATION_MISSING": "no configuration-identity document found at the expected location",
+    "CAMPAIGN_CONFIGURATION_SOURCE_PROFILE_INVALID": "configuration source violates the Two-Lane YAML Profile v1",
     "CAMPAIGN_CONFIGURATION_SCHEMA_INVALID": "configuration document does not satisfy the configuration-identity JSON Schema",
+    "CAMPAIGN_CONFIGURATION_IDENTITY_AMBIGUOUS": "more than one configuration-identity candidate path exists",
     "CAMPAIGN_CONFIGURATION_ID_MALFORMED": "configuration_id is not a well-formed sha256 hex string",
     "CAMPAIGN_CONFIGURATION_ID_MISMATCH": "recomputed configuration_id does not match the document's declared value",
+    "CAMPAIGN_CONFIGURATION_CAMPAIGN_MISMATCH": "configuration.campaign_id does not match policy.campaign_id",
     "CAMPAIGN_CONFIGURATION_ID_NOT_ALLOWED": "configuration_id is not a member of allowed_configuration_ids",
     "CAMPAIGN_CONFIGURATION_FRAMEWORK_NOT_ALLOWED": "framework_sha is not a member of allowed_framework_shas",
     "CAMPAIGN_CONFIGURATION_TARGET_NOT_ALLOWED": "target_repository/target_sha pair is not a member of allowed_targets",

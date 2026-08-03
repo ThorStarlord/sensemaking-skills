@@ -1,156 +1,68 @@
-"""RFC 8785 (JSON Canonicalization Scheme / JCS) implementation.
+"""RFC 8785 (JSON Canonicalization Scheme / JCS) adapter.
 
-This module implements a from-scratch RFC 8785 serializer rather than
-depending on a third-party package. No maintained PyPI package implementing
-RFC 8785's ECMAScript-compatible number formatting exists in this
-environment's package index at the time of writing (checked: no
-``jsoncanonicalizer``/``rfc8785``/``python-json-canonicalize`` distribution
-is resolvable from the configured index). ``canonicaljson`` (available) uses
-Python's stdlib ``json`` module for number formatting, which does not follow
-ECMAScript ``Number::toString`` (RFC 8785 section 3.2.2.3) -- e.g. Python's
-``json.dumps(1.0)`` produces ``"1.0"``, not the JCS-mandated ``"1"``. Using
-it would silently violate the "1.0 and 1e0 canonicalize identically"
-requirement for any non-integer-typed field, so it is not suitable as the
-normative JCS implementation here.
+This module is a narrow adapter around the maintained, published
+``rfc8785`` distribution (Trail of Bits), rather than a home-grown
+canonicalizer. A prior revision of this module implemented JCS from
+scratch; that was corrected after review because a maintained,
+conformance-tested implementation is available on the configured package
+index (``pip index versions rfc8785`` resolves ``0.1.4``), and reusing it
+removes an entire class of subtle divergence risk -- RFC 8785 mandates
+UTF-16 code-unit key ordering, not Python's default code-point string
+ordering. The home-grown version got this wrong for any object key pair
+that differs outside the Basic Multilingual Plane; ``rfc8785`` sorts by
+``key.encode("utf-16be")`` exactly as the RFC requires.
 
-This implementation is restricted to exactly the value domain the Two-Lane
-YAML Profile v1 parser can produce: ``None``, ``bool``, ``int``, ``float``,
-``str``, ``list``, and ``dict`` with string keys. It does not attempt to be
-a general-purpose JSON canonicalizer for arbitrary Python objects.
+``rfc8785`` does not reject negative zero (Python's ``float ==`` does not
+distinguish ``+0.0``/``-0.0``, and the library's zero fast-path collapses
+both to ``"0"``). Negative-zero rejection is schema v1 policy (ADR 0023
+section 10b), not an RFC 8785 requirement, so it remains this module's job
+and is enforced independently here, and again earlier still at parse time
+in ``yaml_profile.py``.
 """
 
 from __future__ import annotations
 
 import math
-from decimal import Decimal
+
+import rfc8785
+
+__all__ = ["JCSError", "canonicalize", "canonicalize_bytes"]
 
 
 class JCSError(ValueError):
     """Raised when a value cannot be canonicalized under RFC 8785."""
 
 
-def _canonical_number(value: float | int) -> str:
-    """Render a JSON number per RFC 8785 section 3.2.2.3 (ES Number::toString).
-
-    Integers are rendered as plain decimal integer strings (this is exactly
-    what the ECMAScript algorithm below produces for integral values in the
-    safe range, so an explicit fast path is just an optimization + clarity,
-    not a divergent code path).
-    """
-    if isinstance(value, bool):  # pragma: no cover - guarded by caller
-        raise JCSError("bool is not a JCS number")
-
-    if isinstance(value, int):
-        return str(value)
-
-    if not isinstance(value, float):
-        raise JCSError(f"not a JSON number: {value!r}")
-
-    if math.isnan(value) or math.isinf(value):
-        raise JCSError("non-finite numbers are not representable under RFC 8785")
-
-    if value == 0.0:
-        # Negative zero must already be rejected upstream (ADR 0023 policy);
-        # this module fails closed if it is not.
-        if math.copysign(1.0, value) < 0:
-            raise JCSError("negative zero is not permitted")
-        return "0"
-
-    neg = value < 0
-    x = abs(value)
-
-    # Python's repr() of a float produces the shortest decimal string that
-    # round-trips to the same IEEE-754 binary64 value -- the same guarantee
-    # ECMAScript's Number::toString relies on. We extract the significant
-    # digit string and decimal exponent from that shortest representation,
-    # then re-render using the ECMAScript positional/exponential rules
-    # (which differ from Python's repr formatting rules).
-    d = Decimal(repr(x))
-    sign, digit_tuple, exponent = d.as_tuple()
-    digits = "".join(str(dd) for dd in digit_tuple)
-
-    # Strip trailing zeros from the digit string, folding them into the
-    # exponent, to get the minimal-length digit string "s" and its exponent.
-    stripped = digits.rstrip("0")
-    if stripped == "":
-        stripped = "0"
-        exponent = 0
-    else:
-        exponent += len(digits) - len(stripped)
-    digits = stripped
-    k = len(digits)
-    n = exponent + k
-
-    if k <= n <= 21:
-        s = digits + ("0" * (n - k))
-    elif 0 < n <= 21:
-        s = digits[:n] + "." + digits[n:]
-    elif -6 < n <= 0:
-        s = "0." + ("0" * (-n)) + digits
-    else:
-        mantissa = digits if k == 1 else digits[0] + "." + digits[1:]
-        exp = n - 1
-        s = mantissa + "e" + ("+" if exp >= 0 else "-") + str(abs(exp))
-
-    return ("-" + s) if neg else s
-
-
-def _escape_string(value: str) -> str:
-    """Escape a string per RFC 8785 section 3.2.2.2 (== RFC 8259 escaping)."""
-    out = ["\""]
-    for ch in value:
-        cp = ord(ch)
-        if ch == "\"":
-            out.append("\\\"")
-        elif ch == "\\":
-            out.append("\\\\")
-        elif ch == "\b":
-            out.append("\\b")
-        elif ch == "\f":
-            out.append("\\f")
-        elif ch == "\n":
-            out.append("\\n")
-        elif ch == "\r":
-            out.append("\\r")
-        elif ch == "\t":
-            out.append("\\t")
-        elif cp < 0x20:
-            out.append(f"\\u{cp:04x}")
-        elif 0xD800 <= cp <= 0xDFFF:
-            # Lone surrogate -- must never appear in a valid Python str
-            # produced by our own parser, but fail closed if it does.
-            raise JCSError("lone surrogate in string value")
-        else:
-            out.append(ch)
-    out.append("\"")
-    return "".join(out)
-
-
-def canonicalize(value: object) -> str:
-    """Serialize ``value`` to its RFC 8785 canonical JSON string form."""
-    if value is None:
-        return "null"
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, (int, float)):
-        return _canonical_number(value)
-    if isinstance(value, str):
-        return _escape_string(value)
-    if isinstance(value, list):
-        return "[" + ",".join(canonicalize(v) for v in value) + "]"
+def _reject_negative_zero(value: object) -> None:
+    if isinstance(value, float) and value == 0.0 and math.copysign(1.0, value) < 0:
+        raise JCSError("negative zero is not permitted")
     if isinstance(value, dict):
-        items = []
-        for k in sorted(value.keys()):
-            if not isinstance(k, str):
-                raise JCSError("JCS object keys must be strings")
-            items.append(_escape_string(k) + ":" + canonicalize(value[k]))
-        return "{" + ",".join(items) + "}"
-    raise JCSError(f"value of type {type(value).__name__} is not JCS-serializable")
+        for v in value.values():
+            _reject_negative_zero(v)
+    elif isinstance(value, (list, tuple)):
+        for v in value:
+            _reject_negative_zero(v)
 
 
 def canonicalize_bytes(value: object) -> bytes:
     """Serialize ``value`` to its RFC 8785 canonical UTF-8 byte form.
 
-    No trailing newline is appended.
+    No trailing newline is appended (``rfc8785.dumps`` already omits one).
+    Accepts plain ``dict``/``list``/``str``/``int``/``float``/``bool``/``None``
+    -- the JSON-compatible value domain ``parse_two_lane_yaml`` produces.
+    Immutable containers produced by this package's deep-freeze
+    (``MappingProxyType``, ``tuple``) are NOT accepted directly here --
+    digest computation always runs over the plain, pre-freeze parsed
+    mapping (see ``digests.py``), never over the frozen, caller-facing
+    ``ValidatedCampaignBundle`` snapshot.
     """
-    return canonicalize(value).encode("utf-8")
+    _reject_negative_zero(value)
+    try:
+        return rfc8785.dumps(value)
+    except rfc8785.CanonicalizationError as exc:
+        raise JCSError(str(exc)) from exc
+
+
+def canonicalize(value: object) -> str:
+    """Serialize ``value`` to its RFC 8785 canonical JSON string (for tests/debugging)."""
+    return canonicalize_bytes(value).decode("utf-8")

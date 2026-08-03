@@ -107,4 +107,4 @@ def test_load_and_validate_configuration_duplicate_candidates_ambiguous(tmp_path
     result = load_and_validate_configuration_from_root(
         str(tmp_path), ["config-a.yaml", "config-b.yaml"], policy
     )
-    assert result.failure_code == "CAMPAIGN_POLICY_IDENTITY_AMBIGUOUS"
+    assert result.failure_code == "CAMPAIGN_CONFIGURATION_IDENTITY_AMBIGUOUS"

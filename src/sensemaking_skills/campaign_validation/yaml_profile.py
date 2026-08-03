@@ -28,11 +28,15 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
+import math
+from decimal import Decimal, InvalidOperation
+
 import yaml
 from yaml import (
     AliasToken,
     AnchorToken,
     DirectiveToken,
+    KeyToken,
     ScalarToken,
     TagToken,
 )
@@ -85,6 +89,24 @@ def _layer_a_validate_tokens(source_text: str) -> None:
         raise TwoLaneYamlError("MALFORMED_YAML", str(exc)) from exc
 
     for tok in tokens:
+        if isinstance(tok, KeyToken):
+            # Explicit-key '?' indicator, detected at the token/source-position
+            # level (not by scanning raw source lines): a KeyToken's
+            # start_mark points at the '?' character itself only for an
+            # EXPLICIT key ('? key' block form, or '{? key: value}' flow
+            # form); for an ordinary simple key, PyYAML synthesizes the
+            # KeyToken at the same position as the key scalar itself (no '?'
+            # character precedes it there). Checking the literal source byte
+            # at the token's own start position -- rather than line-anchored
+            # text scanning -- means a '?' inside a quoted string value or a
+            # comment is never misclassified as an explicit-key indicator.
+            mark = tok.start_mark
+            if mark.buffer is not None and 0 <= mark.pointer < len(mark.buffer) \
+                    and mark.buffer[mark.pointer] == "?":
+                raise TwoLaneYamlError(
+                    "EXPLICIT_KEY_FORBIDDEN",
+                    "explicit '?' key syntax is forbidden",
+                )
         if isinstance(tok, AliasToken):
             raise TwoLaneYamlError("ALIAS_FORBIDDEN", "YAML aliases are forbidden")
         if isinstance(tok, AnchorToken):
@@ -118,17 +140,6 @@ def _layer_a_validate_tokens(source_text: str) -> None:
                         "MULTILINE_QUOTED_SCALAR_FORBIDDEN",
                         "physically multiline quoted strings are forbidden",
                     )
-
-    # Explicit-key '?' indicator: heuristic, line-anchored detection. Aliases,
-    # anchors, and tags are already rejected above; a bare '?' introducing a
-    # mapping key is a source-form construct this profile does not support.
-    for line in source_text.splitlines():
-        stripped = line.strip()
-        if stripped == "?" or stripped.startswith("? "):
-            raise TwoLaneYamlError(
-                "EXPLICIT_KEY_FORBIDDEN",
-                "explicit '?' key syntax is forbidden",
-            )
 
 
 # ---------------------------------------------------------------------------
@@ -164,6 +175,52 @@ def _compose(source_text: str) -> Any:
     return nodes[0]
 
 
+def _parse_exact_float(raw: str) -> float:
+    """Parse a decimal/exponent JSON-number lexeme with exact Decimal analysis.
+
+    ``float(raw)`` alone is not sufficient: Python's ``float()`` silently
+    returns ``inf``/``0.0`` for lexemes whose exact decimal value overflows
+    or underflows binary64, and it silently rounds a lexeme with more
+    precision than binary64 can represent (e.g. ``0.10000000000000001``
+    rounds to the same bits as ``0.1``) with no signal that anything was
+    lost. This function instead parses the lexeme exactly as a ``Decimal``
+    first, converts to ``float``, and rejects (fails closed) whenever that
+    conversion is not value-preserving, per ADR 0023 section 10b's number
+    domain rules.
+    """
+    try:
+        exact = Decimal(raw)
+    except InvalidOperation as exc:  # pragma: no cover - regex already restricts form
+        raise TwoLaneYamlError("NUMERIC_PRECISION_UNSUPPORTED", str(exc)) from exc
+
+    value = float(raw)
+
+    if math.isinf(value):
+        raise TwoLaneYamlError(
+            "NUMERIC_OVERFLOW", f"{raw!r} overflows the binary64 domain"
+        )
+    if value == 0.0:
+        if math.copysign(1.0, value) < 0:
+            raise TwoLaneYamlError("NEGATIVE_ZERO_FORBIDDEN", "-0 is forbidden")
+        if exact != 0:
+            raise TwoLaneYamlError(
+                "NUMERIC_UNDERFLOW", f"{raw!r} underflows to zero in binary64"
+            )
+        return value
+
+    # Round-trip fidelity: the exact decimal lexeme must equal the exact
+    # decimal value of the binary64 result (Python's `repr(float)` is the
+    # shortest string that round-trips to that exact binary64 value). If
+    # they differ, `raw` carried more precision than binary64/JCS can
+    # preserve -- fail closed rather than silently rounding.
+    if exact != Decimal(repr(value)):
+        raise TwoLaneYamlError(
+            "NUMERIC_PRECISION_UNSUPPORTED",
+            f"{raw!r} cannot be represented exactly as a JCS/binary64 number",
+        )
+    return value
+
+
 def _resolve_scalar(node: yaml.ScalarNode, *, is_key: bool) -> Any:
     style = node.style
     raw = node.value
@@ -182,15 +239,18 @@ def _resolve_scalar(node: yaml.ScalarNode, *, is_key: bool) -> Any:
         return False
     if _JSON_NUMBER_RE.match(raw):
         if "." in raw or "e" in raw or "E" in raw:
-            value = float(raw)
-        else:
-            value = int(raw)
-        if isinstance(value, float) and value == 0.0:
-            import math
-
-            if math.copysign(1.0, value) < 0:
-                raise TwoLaneYamlError("NEGATIVE_ZERO_FORBIDDEN", "-0 is forbidden")
-        return value
+            return _parse_exact_float(raw)
+        # Integer-lexeme scalar (no '.' or exponent in source): parsed as a
+        # genuine Python ``int``, exactly, with no binary64 rounding --
+        # arbitrary precision, so a value like 9007199254740992 round-trips
+        # exactly here (a downstream safe-integer-range check is a distinct,
+        # field-specific concern, not a parser concern). This int/float type
+        # split is deliberately preserved rather than normalized away: it IS
+        # the "scalar-source metadata" the integer-lexeme policy fields
+        # (max_attempt_slots, etc.) need in order to reject a float-lexeme
+        # value like ``5.0``/``5e0`` even though it is mathematically
+        # integral. See ``validators.py::_require_integer_lexeme``.
+        return int(raw)
 
     raise TwoLaneYamlError(
         "PLAIN_SCALAR_FORBIDDEN",

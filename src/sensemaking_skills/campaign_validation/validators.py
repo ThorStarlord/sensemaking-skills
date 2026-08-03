@@ -24,6 +24,7 @@ from typing import Any, Iterable, Mapping, Optional
 from . import digests, schema_validation
 from .failure_codes import CAMPAIGN_FAILURE_CODES
 from .fs_adapter import ArtifactRootError, read_utf8_bytes, resolve_under_root
+from .immutable import freeze
 from .models import (
     CampaignApproval,
     CampaignPolicy,
@@ -54,10 +55,33 @@ _SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 _RFC3339_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$"
 )
-_PLACEHOLDER_MARKERS = ("<HUMAN-FILLS-IN", "TODO", "TBD", "<PLACEHOLDER>", "FIXME")
+# Placeholder detection uses two distinct, documented rules (never a bare
+# substring search over free-form prose, which would misclassify legitimate
+# text -- e.g. an approval_statement that happens to start "None of my
+# objections remain" is NOT a placeholder):
+#
+# 1. EXACT-token rule: if the entire field value, stripped and lowercased,
+#    equals one of these short English-word sentinels, it is a placeholder.
+#    A short common word appearing as the WHOLE field value is almost never
+#    a legitimate final answer for these fields; a short common word
+#    appearing INSIDE a longer sentence very often is -- so this rule only
+#    ever fires on an exact whole-value match.
+_EXACT_PLACEHOLDER_TOKENS = frozenset({
+    "pending", "tbd", "todo", "none", "n/a", "changeme", "placeholder",
+})
+# 2. SUBSTRING rule: these are distinctive, bracketed template tokens that
+#    are vanishingly unlikely to appear inside genuine prose by coincidence,
+#    so a substring match is safe.
+_SUBSTRING_PLACEHOLDER_MARKERS = ("<HUMAN-FILLS-IN", "FIXME")
 _EXAMPLE_MARKER = "EXAMPLE_ONLY_NOT_AUTHORIZATION"
 _MUTABLE_REF_TOKENS = frozenset(
     {"head", "main", "master", "latest"}
+)
+_POLICY_INTEGER_FIELDS = (
+    "max_attempt_slots",
+    "max_provider_invocations",
+    "max_attempts_per_configuration",
+    "concurrency_ceiling",
 )
 
 
@@ -89,7 +113,41 @@ def _looks_like_mutable_ref(value: str) -> bool:
 
 
 def _contains_placeholder(value: str) -> bool:
-    return isinstance(value, str) and any(marker in value for marker in _PLACEHOLDER_MARKERS)
+    """Case-insensitive placeholder detection using the two documented rules
+    above (module-level comment): exact-match against a short sentinel
+    vocabulary, or substring match against unambiguous bracketed templates.
+    """
+    if not isinstance(value, str):
+        return False
+    stripped = value.strip()
+    if stripped.lower() in _EXACT_PLACEHOLDER_TOKENS:
+        return True
+    return any(marker.lower() in value.lower() for marker in _SUBSTRING_PLACEHOLDER_MARKERS)
+
+
+def _require_integer_lexeme(policy: Mapping[str, Any], field_name: str) -> Optional[ValidationResult]:
+    """Reject a field whose parsed value is not a genuine ``int`` (i.e. whose
+    YAML source lexeme carried a ``.``/exponent, such as ``5.0`` or ``5e0``),
+    even though such a value may be mathematically integral.
+
+    JSON Schema's own ``"type": "integer"`` keyword is defined over the
+    VALUE (any number with a zero fractional part satisfies it) -- it would
+    accept ``5.0``. This function enforces ADR 0023's stricter SOURCE-FORM
+    requirement using the type split ``parse_two_lane_yaml`` already
+    preserves: an integer-lexeme scalar parses to a genuine Python ``int``;
+    any lexeme containing ``.`` or an exponent parses to ``float``,
+    regardless of its mathematical value. ``type(x) is int`` (not
+    ``isinstance``) also naturally excludes ``bool`` (whose type is
+    ``bool``, not ``int``), so no separate boolean guard is needed here.
+    """
+    value = policy.get(field_name)
+    if type(value) is not int:
+        return ValidationResult.fail(
+            "CAMPAIGN_POLICY_LIMITS_INVALID",
+            f"{field_name} must be an integer-lexeme source value (not a "
+            f"decimal/exponent form like 5.0 or 5e0), got {value!r}",
+        )
+    return None
 
 
 def _safe(fn):
@@ -149,6 +207,12 @@ def validate_campaign_policy(source_bytes: bytes,
                 "CAMPAIGN_POLICY_SCHEMA_INVALID", "; ".join(errors[:5])
             )
 
+        if _parse_rfc3339(policy.get("prepared_at", "")) is None:
+            return ValidationResult.fail(
+                "CAMPAIGN_POLICY_SCHEMA_INVALID",
+                f"prepared_at is not a valid RFC3339 timestamp: {policy.get('prepared_at')!r}",
+            )
+
         declared_digest = policy["policy_digest"]
         if not _SHA256_HEX_RE.match(declared_digest):
             return ValidationResult.fail(
@@ -176,6 +240,17 @@ def validate_campaign_policy(source_bytes: bytes,
 
 
 def _check_policy_limits(policy: Mapping[str, Any]) -> Optional[ValidationResult]:
+    for field_name in _POLICY_INTEGER_FIELDS:
+        lexeme_error = _require_integer_lexeme(policy, field_name)
+        if lexeme_error:
+            return lexeme_error
+    if policy.get("token_ceiling") is not None and type(policy["token_ceiling"]) is not int:
+        return ValidationResult.fail(
+            "CAMPAIGN_POLICY_LIMITS_INVALID",
+            f"token_ceiling must be an integer-lexeme source value when non-null, "
+            f"got {policy['token_ceiling']!r}",
+        )
+
     max_slots = policy["max_attempt_slots"]
     max_invocations = policy["max_provider_invocations"]
     max_per_config = policy["max_attempts_per_configuration"]
@@ -278,6 +353,12 @@ def validate_campaign_approval(source_bytes: bytes, policy: Mapping[str, Any],
                 "CAMPAIGN_APPROVAL_SCHEMA_INVALID", "; ".join(errors[:5])
             )
 
+        if _parse_rfc3339(approval.get("approved_at", "")) is None:
+            return ValidationResult.fail(
+                "CAMPAIGN_APPROVAL_SCHEMA_INVALID",
+                f"approved_at is not a valid RFC3339 timestamp: {approval.get('approved_at')!r}",
+            )
+
         if "marker" in approval:
             return ValidationResult.fail(
                 "CAMPAIGN_APPROVAL_EXAMPLE_TEMPLATE_NON_OPERATIVE",
@@ -335,7 +416,7 @@ def validate_configuration_identity(source_bytes: bytes,
         parse_result = _parse_document(
             source_bytes,
             missing_code="CAMPAIGN_CONFIGURATION_MISSING",
-            profile_invalid_code="CAMPAIGN_CONFIGURATION_SCHEMA_INVALID",
+            profile_invalid_code="CAMPAIGN_CONFIGURATION_SOURCE_PROFILE_INVALID",
             open_map_root_field="execution_parameters",
         )
         if not parse_result.valid:
@@ -368,6 +449,23 @@ def validate_configuration_identity(source_bytes: bytes,
             return ValidationResult.fail(
                 "CAMPAIGN_CONFIGURATION_ID_MISMATCH",
                 f"recomputed configuration_id {recomputed} != declared {declared_id}",
+            )
+
+        # campaign_id is deliberately EXCLUDED from the configuration_id hash
+        # (ADR 0023 section 10c), precisely so the same byte-identical
+        # configuration is recognizable across campaigns -- which means
+        # digest/ID matching alone can never catch a configuration document
+        # whose campaign_id was swapped for a different campaign's. This
+        # check exists specifically because that exclusion would otherwise
+        # be a binding gap: a configuration with every hashed field
+        # unchanged, a valid recomputed configuration_id, and every
+        # constituent allowlist check passing, but a different campaign_id,
+        # must still fail closed.
+        if configuration["campaign_id"] != policy["campaign_id"]:
+            return ValidationResult.fail(
+                "CAMPAIGN_CONFIGURATION_CAMPAIGN_MISMATCH",
+                f"configuration.campaign_id {configuration['campaign_id']!r} != "
+                f"policy.campaign_id {policy['campaign_id']!r}",
             )
 
         # Independent, conjunctive allowlist checks -- every one runs even if
@@ -440,22 +538,29 @@ def validate_campaign_bundle(policy_bytes: bytes, approval_bytes: bytes,
             return configuration_result
         configuration = configuration_result.value
 
+        # Deep-freeze every `.raw` mapping into a detached, recursively
+        # immutable snapshot (types.MappingProxyType over a private copy,
+        # tuples for sequences) -- see immutable.py. This is what makes
+        # ValidatedCampaignBundle an actual immutable snapshot rather than a
+        # frozen dataclass shell around still-mutable dicts/lists: mutating
+        # the original `policy`/`approval`/`configuration` dicts (or trying
+        # to mutate `bundle.policy.raw` directly) cannot alter the bundle.
         bundle = ValidatedCampaignBundle(
             policy=CampaignPolicy(
                 campaign_id=policy["campaign_id"],
                 policy_digest=policy["policy_digest"],
-                raw=policy,
+                raw=freeze(policy),
             ),
             approval=CampaignApproval(
                 campaign_id=approval["campaign_id"],
                 policy_digest=approval["policy_digest"],
                 claimed_approver_identity=approval["claimed_approver_identity"],
-                raw=approval,
+                raw=freeze(approval),
             ),
             configuration=ConfigurationIdentity(
                 configuration_id=configuration["configuration_id"],
                 campaign_id=configuration["campaign_id"],
-                raw=configuration,
+                raw=freeze(configuration),
             ),
         )
         return ValidationResult(valid=True, value=bundle)
@@ -479,9 +584,16 @@ def _load_candidates(artifact_root: str, candidate_paths: Iterable[str]) -> Vali
     for candidate in candidate_paths:
         try:
             resolved = resolve_under_root(candidate, artifact_root)
+            data = read_utf8_bytes(resolved)
         except ArtifactRootError as exc:
+            # Covers path escape/symlink-containment failures (from
+            # resolve_under_root) AND ordinary filesystem failures while
+            # reading (from read_utf8_bytes: permission denied, a directory
+            # replacing the expected file, the file disappearing between
+            # containment resolution and read -- all mapped to
+            # CAMPAIGN_FILESYSTEM_ERROR by read_utf8_bytes itself). No
+            # OSError/ArtifactRootError may escape this loop.
             return ValidationResult.fail(exc.code, exc.message, path=candidate)
-        data = read_utf8_bytes(resolved)
         if data is not None:
             found.append((candidate, data))
     return ValidationResult.ok({"matches": found})  # internal helper shape
@@ -542,7 +654,7 @@ def load_and_validate_configuration_from_root(artifact_root: str, candidate_path
         return ValidationResult.fail("CAMPAIGN_CONFIGURATION_MISSING", "no configuration candidate path exists")
     if len(matches) > 1:
         return ValidationResult.fail(
-            "CAMPAIGN_POLICY_IDENTITY_AMBIGUOUS",
+            "CAMPAIGN_CONFIGURATION_IDENTITY_AMBIGUOUS",
             f"{len(matches)} candidate configuration paths exist: {[p for p, _ in matches]}",
         )
     _, data = matches[0]
