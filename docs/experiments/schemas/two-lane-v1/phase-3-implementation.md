@@ -87,8 +87,18 @@ authority; expiry is rechecked at consumption.
 Consumption is atomic: `consume_exploratory_capability` binds all 13
 invocation facts, and any drift between the capability's bindings and the
 actual invocation — or any provider exception after consumption — burns the
-capability permanently (`ExploratoryConsumptionDecision.BURNED` /
-`DEAD`), so a spent capability can never run twice.
+capability permanently. Burning is a **registry transition**, not a value
+of `ExploratoryConsumptionDecision`: the decision object carries only the
+granted invocation facts (`exact_model`, `output_path`, `attempt_id`,
+`campaign_id`, `configuration_id`, `approval_digest`, `lane`). The
+capability state machine is `ISSUED → CONSUMING → CONSUMED` (normal
+consumption) with any state → `DEAD` (burn); a burned capability is
+permanently spent and can never run twice. Phase 4 (Issue #120) adds a
+separate durable attempt state machine (`RESERVED → INVOKED →
+OUTPUT_CAPTURED → terminal`) in `sensemaking_skills.campaign_accounting`;
+the two state machines cooperate — a capability is only ever minted for an
+already-durable reservation — but they are not the same machine and their
+states are never conflated.
 
 ## Enforcement at the provider boundary
 
