@@ -153,10 +153,18 @@ output is unreachable (the state machine forbids `INVOKED → VALIDATION_*`).
 Every caller-supplied name that reaches the filesystem through the
 accounting runtime is frozen to one narrow lowercase ASCII leaf-name
 grammar (`^[a-z0-9][a-z0-9._-]*$`, no `..` substring, no trailing dot or
-space). `record_produced_artifact` rejects any other name with the stable
-code `ARTIFACT_FILENAME_INVALID` before any write or state read, and
-re-checks that the resolved target is directly beneath the exact attempt
-directory. `record_raw_output` applies the same grammar to the composed
+space, maximum length 128 characters, and no Windows reserved-device stem
+-- `con`, `prn`, `aux`, `nul`, `com1`-`com9`, `lpt1`-`lpt9`, with or
+without an extension). The device-stem rejection is purely lexical (the
+stem is the portion before the first dot), so `console.md`, `com0.md`,
+`com10.md`, and `con-file.md` remain valid while `con.md`, `nul`, and
+`com1.log` are rejected before any `resolve()`/`exists()`/`open()` call or
+campaign-state access -- a DOS-device name can never block or raise a raw
+OSError inside the locked artifact-write path. `record_produced_artifact`
+rejects any other name with the stable code `ARTIFACT_FILENAME_INVALID`
+before any write or state read, and re-checks that the resolved target is
+directly beneath the exact attempt directory. `record_raw_output` applies
+the same grammar (including the 128-character limit) to the composed
 `raw-output.<extension>` leaf name (`RAW_OUTPUT_EXTENSION_INVALID`).
 
 A produced artifact is preserved only while the ledger state is

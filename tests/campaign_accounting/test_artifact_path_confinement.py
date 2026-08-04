@@ -38,6 +38,7 @@ from sensemaking_skills.campaign_accounting import (
     ValidationOutcome,
     invoke_exploratory_attempt,
     RAW_OUTPUT_EXTENSION_INVALID,
+    validate_produced_artifact_filename,
 )
 from sensemaking_skills.exploratory_authorization import mint_exploratory_capability
 
@@ -226,6 +227,130 @@ def test_produced_artifact_crash_resume_from_preserved_file(tmp_path: Path) -> N
         recorder.record_produced_artifact("# different", filename="produced-artifact.md")
     assert exc_info.value.failure_code == ARTIFACT_ALREADY_EXISTS
     assert target.read_bytes() == b"# preserved"
+
+
+# ---------------------------------------------------------------------------
+# Windows reserved-device stems (platform-independent lexical contract)
+# ---------------------------------------------------------------------------
+
+DEVICE_NAMES = (
+    ["con", "con.md", "con.xyz", "prn", "prn.txt", "aux", "aux.md",
+     "nul", "nul.bin"]
+    + [f"com{i}" for i in range(1, 10)]
+    + [f"com{i}.md" for i in range(1, 10)]
+    + [f"lpt{i}" for i in range(1, 10)]
+    + [f"lpt{i}.md" for i in range(1, 10)]
+)
+
+
+@pytest.mark.parametrize("bad", DEVICE_NAMES)
+def test_device_name_rejected_lexically(tmp_path: Path, bad: str) -> None:
+    """Device names fail with the exact code BEFORE any state or fs access."""
+    # Pure validator.
+    with pytest.raises(CampaignAccountingError) as exc_info:
+        validate_produced_artifact_filename(bad)
+    assert exc_info.value.failure_code == ARTIFACT_FILENAME_INVALID
+
+    # Through the recorder while the attempt is only RESERVED: lexical
+    # rejection must fire BEFORE the OUTPUT_CAPTURED state gate, proving no
+    # campaign state was read and no file was touched.
+    bundle = build_valid_bundle()
+    recorder = _reserve(tmp_path, bundle)
+    attempt_dir = tmp_path / bundle.policy.campaign_id / "attempts" / recorder.attempt_id
+    with pytest.raises(CampaignAccountingError) as exc_info:
+        recorder.record_produced_artifact("# x", filename=bad)
+    assert exc_info.value.failure_code == ARTIFACT_FILENAME_INVALID
+    # Only the reservation-time files exist; nothing artifact-related was
+    # created, no temp file, no escaped file.
+    assert sorted(p.name for p in attempt_dir.iterdir()) == [
+        "request-metadata.json",
+        "reservation.yaml",
+    ]
+
+
+DEVICE_LOOKALIKES = [
+    "console.md", "auxiliary.md", "null.md", "printer.md", "company.md",
+    "com0.md", "com10.md", "lpt0.md", "lpt10.md", "con-file.md",
+    "com1-file.md", "ordinary-artifact.md",
+]
+
+
+@pytest.mark.parametrize("good", DEVICE_LOOKALIKES)
+def test_device_lookalikes_stay_valid(tmp_path: Path, good: str) -> None:
+    """Ordinary names that merely resemble devices remain valid."""
+    bundle = build_valid_bundle()
+    recorder = _reach_captured(tmp_path, bundle)
+    ref = recorder.record_produced_artifact("# ok", filename=good)
+    target = (
+        tmp_path / bundle.policy.campaign_id / "attempts" / recorder.attempt_id / good
+    )
+    assert target.read_bytes() == b"# ok"
+    assert ref.endswith(good)
+
+
+# ---------------------------------------------------------------------------
+# Maximum leaf-name length (128 exactly; 129 rejected)
+# ---------------------------------------------------------------------------
+
+
+def test_length_128_accepted(tmp_path: Path) -> None:
+    bundle = build_valid_bundle()
+    recorder = _reach_captured(tmp_path, bundle)
+    name = "a" * 128
+    ref = recorder.record_produced_artifact("# ok", filename=name)
+    target = (
+        tmp_path / bundle.policy.campaign_id / "attempts" / recorder.attempt_id / name
+    )
+    assert target.read_bytes() == b"# ok"
+    assert ref.endswith(name)
+
+
+def test_length_129_rejected(tmp_path: Path) -> None:
+    with pytest.raises(CampaignAccountingError) as exc_info:
+        validate_produced_artifact_filename("a" * 129)
+    assert exc_info.value.failure_code == ARTIFACT_FILENAME_INVALID
+
+    bundle = build_valid_bundle()
+    recorder = _reserve(tmp_path, bundle)
+    with pytest.raises(CampaignAccountingError) as exc_info:
+        recorder.record_produced_artifact("# x", filename="a" * 129)
+    assert exc_info.value.failure_code == ARTIFACT_FILENAME_INVALID
+
+
+def test_raw_output_composed_length_boundary(tmp_path: Path) -> None:
+    """Length applies to the composed raw-output.<extension> leaf."""
+    bundle = build_valid_bundle()
+    recorder = _reserve(tmp_path, bundle)
+    recorder.record_invoked(bundle, now=_ANCHOR_NOW)
+
+    # "raw-output." is 11 characters: 11 + 117 = 128 -> accepted.
+    ext_128 = "b" * 117
+    recorder.record_raw_output(b"x", extension=ext_128, now=_ANCHOR_NOW)
+    attempt_dir = tmp_path / bundle.policy.campaign_id / "attempts" / recorder.attempt_id
+    assert (attempt_dir / f"raw-output.{ext_128}").exists()
+
+    # 11 + 118 = 129 -> rejected with the raw-output code.
+    ext_129 = "b" * 118
+    with pytest.raises(CampaignAccountingError) as exc_info:
+        recorder.record_raw_output(b"x", extension=ext_129, now=_ANCHOR_NOW)
+    assert exc_info.value.failure_code == RAW_OUTPUT_EXTENSION_INVALID
+
+
+def test_raw_output_device_like_extension_composes_safely(tmp_path: Path) -> None:
+    """raw-output.<device> is NOT a device (stem is 'raw-output')."""
+    bundle = build_valid_bundle(
+        policy_kwargs={"max_attempt_slots": 5, "max_attempts_per_configuration": 5,
+                       "max_provider_invocations": 5}
+    )
+    for ext in ("con", "nul", "com1", "lpt9"):
+        recorder = _reserve(tmp_path, bundle)
+        recorder.record_invoked(bundle, now=_ANCHOR_NOW)
+        ref = recorder.record_raw_output(b"x", extension=ext, now=_ANCHOR_NOW)
+        assert ref.endswith(f"raw-output.{ext}")
+        attempt_dir = tmp_path / bundle.policy.campaign_id / "attempts" / recorder.attempt_id
+        assert (attempt_dir / f"raw-output.{ext}").exists()
+        # Terminalize so the v1 concurrency slot frees for the next case.
+        recorder.record_validation_outcome(passed=True, details={}, now=_ANCHOR_NOW)
 
 
 # ---------------------------------------------------------------------------
