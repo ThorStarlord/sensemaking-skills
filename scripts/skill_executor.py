@@ -52,11 +52,15 @@ from gate_a_authorization import (  # noqa: E402
     requires_gate_a,
 )
 
-# Phase 3 exploratory authorization (issue #119). Imported AFTER
-# gate_a_authorization: the Gate A loader pins the checkout `src/` at the
-# front of sys.path and refuses an already-imported foreign package, so this
-# import must never precede the gate_a import above.
-from sensemaking_skills import exploratory_authorization as _ea  # noqa: E402
+# Phase 3 exploratory authorization (issue #119). Imported LAZILY -- see
+# `_load_exploratory_authorization` below -- never at module load. The
+# established minimal Gate A environment deliberately installs neither the
+# Phase 2/3 package nor its declared dependencies (rfc8785, jsonschema);
+# an eager import here would break every canonical executor import there.
+# When the lazy import does run, it happens AFTER gate_a_authorization was
+# imported: the Gate A loader pins the checkout `src/` at the front of
+# sys.path and refuses an already-imported foreign package, so the
+# exploratory import must never precede the gate_a import above.
 
 
 # ============================================================================
@@ -231,6 +235,45 @@ class ExploratoryAuthorizationRequired(GateAAuthorizationRequired):
     """Gate A-class denial raised on the EXPLORATORY lane (Phase 3, #119)."""
 
 
+#: Stable failure code: the exploratory authorization component (or one of
+#: its declared dependencies, e.g. rfc8785 or jsonschema) is unavailable in
+#: this environment. Raised on the EXPLORATORY lane BEFORE any provider
+#: construction or capability inspection; the invocation is never silently
+#: downgraded to ORDINARY or CANONICAL, and a raw ImportError is never
+#: surfaced as an authorization result. Precedence on the EXPLORATORY lane:
+#: component availability precedes capability availability.
+EXPLORATORY_AUTHORIZATION_COMPONENT_UNAVAILABLE = (
+    "EXPLORATORY_AUTHORIZATION_COMPONENT_UNAVAILABLE"
+)
+
+_EA_MODULE = None
+
+
+def _load_exploratory_authorization():
+    """Import the exploratory authorization package on first EXPLORATORY use.
+
+    Called ONLY when an actual invocation has been structurally classified
+    EXPLORATORY (or its consumption/burn path genuinely needs the package).
+    The successfully loaded module is cached for the process. An import
+    failure -- the package itself, or one of its declared dependencies such
+    as rfc8785, is unavailable -- raises the single stable configuration
+    failure instead of leaking a raw ImportError as an authorization result.
+    """
+    global _EA_MODULE
+    if _EA_MODULE is not None:
+        return _EA_MODULE
+    try:
+        from sensemaking_skills import exploratory_authorization as _ea
+    except ImportError as exc:
+        raise ExploratoryAuthorizationRequired(
+            EXPLORATORY_AUTHORIZATION_COMPONENT_UNAVAILABLE,
+            "the exploratory authorization component is unavailable in this "
+            f"environment ({exc}); the invocation is refused.",
+        ) from exc
+    _EA_MODULE = _ea
+    return _ea
+
+
 def declared_exploratory_from_context(context: Optional[dict]) -> Optional[DeclaredExploratory]:
     """The caller's declared exploratory identity, if any, from the call context.
 
@@ -278,6 +321,7 @@ def require_invocation_authorization(
     lane, signals = derive_authorization_lane(identity, declared)
     if lane == LANE_EXPLORATORY:
         why = ",".join(signals) or "none"
+        _ea = _load_exploratory_authorization()
         failure = _ea.exploratory_capability_availability(exploratory_capability)
         if failure is not None:
             raise ExploratoryAuthorizationRequired(
@@ -320,6 +364,7 @@ def _exploratory_invocation_context(executor, context, output_path):
     fields become empty strings, which fail closed against any non-empty
     binding.
     """
+    _ea = _load_exploratory_authorization()
     return _ea.ExploratoryInvocationContext(
         model=executor.model or "",
         target_repository=str(context.get("target_repository") or ""),
@@ -1823,6 +1868,7 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
             declared=declared_exploratory_from_context(context),
         )
         if lane == LANE_EXPLORATORY:
+            _ea = _load_exploratory_authorization()
             try:
                 exploratory_decision = _ea.consume_exploratory_capability(
                     getattr(self, "exploratory_capability", None),
@@ -1907,7 +1953,8 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
                             reported_models.append(reported_model)
             except Exception:
                 if lane == LANE_EXPLORATORY:
-                    _ea.burn_exploratory_capability(self.exploratory_capability)
+                    _load_exploratory_authorization().burn_exploratory_capability(
+                        self.exploratory_capability)
                 raise
 
             # For the runtime-skeleton path, reconcile whatever the model wrote
@@ -2208,6 +2255,7 @@ class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
                 # The API executor hardcodes a model that is never the bound
                 # exploratory model, so this always fails closed rather than
                 # substituting a different model into an exploratory attempt.
+                _ea = _load_exploratory_authorization()
                 try:
                     _ea.consume_exploratory_capability(
                         getattr(self, "exploratory_capability", None),
@@ -2312,7 +2360,7 @@ class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
                 )
             except Exception:
                 if lane == LANE_EXPLORATORY:
-                    _ea.burn_exploratory_capability(
+                    _load_exploratory_authorization().burn_exploratory_capability(
                         getattr(self, "exploratory_capability", None))
                 raise
 

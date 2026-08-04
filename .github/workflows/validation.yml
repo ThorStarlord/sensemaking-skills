@@ -352,6 +352,13 @@ jobs:
       - name: Real-executor provider-boundary suite
         run: python -m pytest tests/test_exploratory_provider_boundary.py -q
 
+      - name: Canonical-path import-isolation regression suite
+        # Subprocess tests proving ORDINARY/CANONICAL paths never import
+        # the exploratory component, and that a missing component fails
+        # closed with EXPLORATORY_AUTHORIZATION_COMPONENT_UNAVAILABLE and
+        # zero provider calls.
+        run: python -m pytest tests/test_exploratory_component_isolation.py -q
+
       - name: Assert no real experiment/approval state was created
         run: |
           # `pip install -e .` legitimately regenerates the tracked

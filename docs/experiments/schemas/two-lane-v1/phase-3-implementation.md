@@ -126,6 +126,29 @@ executor maps exploratory rejection to
 `ExploratoryAuthorizationRequired(GateAAuthorizationRequired)` so
 `_is_gate_a_authorization_error` handling stays uniform.
 
+### Canonical-path import isolation (CI correction)
+
+The Gate A CI jobs run a minimal environment that does not install
+`rfc8785`. `skill_executor.py` therefore imports
+`sensemaking_skills.exploratory_authorization` **lazily**, inside
+`_load_exploratory_authorization()`, only from a genuinely EXPLORATORY
+branch (dispatcher availability pre-check, invocation-context builder, both
+consume sites, both burn sites), caching the loaded module in `_EA_MODULE`.
+ORDINARY / CANONICAL / AMBIGUOUS invocations never import the exploratory
+component, `campaign_validation`, `rfc8785`, or `jsonschema`.
+
+If the component is missing, the EXPLORATORY lane fails closed with the
+stable code `EXPLORATORY_AUTHORIZATION_COMPONENT_UNAVAILABLE` (raised as
+`ExploratoryAuthorizationRequired`) before any provider construction, with
+zero provider calls; there is no downgrade to ORDINARY or CANONICAL, no
+canonical fallback, and no raw `ModuleNotFoundError` as an authorization
+result. Precedence on the EXPLORATORY lane: **component availability
+precedes capability availability** — a missing component is reported as
+component-unavailable, never as a capability-liveness failure.
+`tests/test_exploratory_component_isolation.py` covers this with
+subprocess-based tests (including a spy-provider test proving zero provider
+calls).
+
 ## TDD and test layout
 
 All five suites were written red first and are green at the exact head:
@@ -136,18 +159,22 @@ All five suites were written red first and are green at the exact head:
 | `tests/test_exploratory_lane_derivation.py` | The four-lane decision table, contradiction signals, malformed declarations, `_extract_campaign_id` path-prefix rule |
 | `tests/test_exploratory_capability_lifecycle.py` | Mint / consume / burn lifecycle, deep immutability, registry liveness, expiry recheck |
 | `tests/test_exploratory_provider_boundary.py` | REAL executors + spy provider: 12 drift categories, zero-invocation assertions on every denial, mixed-declaration fail-closed behavior |
+| `tests/test_exploratory_component_isolation.py` | Subprocess isolation tests: canonical-path zero-import proof, component-unavailable exact code, no-declaration-downgrade, zero-provider-calls fail-closed |
 | `tests/exploratory_fixtures.py` | Clock-relative fixture constants (no date flakes) and the shared capability-minting helpers |
 
 ## Verification summary
 
-* Phase 3 suites + canonical boundary: 172 passed / 0 failed.
+* Phase 3 suites + canonical boundary: 181 passed / 0 failed (incl. the
+  isolation suite).
 * Gate A CI-like suites (7 files): 794 passed / 12 skipped / 439 subtests —
   byte-identical totals and results at `fcc6772b` (base) and the PR head.
 * Full `tests/` tree base-vs-head parity: identical failure set (24,
   all pre-existing environment artifacts such as the installed-wheel smoke
   under a `PYTHONPATH=src` harness and provider-requiring integration
   tests), identical skips (21), identical errors (3), identical subtests
-  (786); head = base + 127 new Phase 3 passes.
+  (786); head = base + 127 new Phase 3 passes. After the import-isolation
+  correction the head tree is: 24 failed / 2226 passed / 21 skipped / 3
+  errors / 786 subtests — identical failures, +9 passes (isolation suite).
 * `scripts/validate-repo.py`: "Validation passed".
 * The CI job `phase3-exploratory-authorization` asserts the exact head SHA,
   a clean worktree after the suites, and that no `EXP-*` experiment state
