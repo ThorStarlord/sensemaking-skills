@@ -288,6 +288,91 @@ jobs:
       - name: Run the installed-wheel bundle-validation smoke test
         run: python -m pytest tests/campaign_validation/test_installed_wheel_smoke.py -q -rs
 
+  # ==========================================================================
+  # Phase 3 exploratory-authorization suites (Issue #119, program Issue
+  # #116). These exercise the four-lane authorization model (ORDINARY /
+  # CANONICAL / EXPLORATORY / AMBIGUOUS): lane derivation from the actual
+  # invocation in scripts/gate_a_authorization.py, the exploratory
+  # capability lifecycle in sensemaking_skills.exploratory_authorization
+  # (mint / consume / burn), and -- via the REAL executors in
+  # scripts/skill_executor.py with a spy provider -- that an EXPLORATORY
+  # invocation consumes its capability atomically exactly once at the
+  # narrowest point, that any of the 13 invocation-fact drift categories
+  # burns it, and that the provider is NEVER reached without a live
+  # capability. No real model is ever invoked by these suites.
+  # ==========================================================================
+  phase3-exploratory-authorization:
+    name: Phase 3 exploratory authorization
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      # See phase2-campaign-validation's checkout step comment: explicit
+      # exact-head checkout, never a synthetic pull_request merge ref.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Print and assert the resolved checkout SHA
+        run: |
+          resolved="$(git rev-parse HEAD)"
+          echo "Resolved checkout SHA: $resolved"
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "Expected exact head SHA: $expected"
+          test "$resolved" = "$expected" || {
+            echo "::error::checked-out HEAD ($resolved) does not match the expected exact head ($expected)"
+            exit 1
+          }
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the project and its declared runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest pytest-subtests
+          # The exact SDK version the Stage 1 execution package documents;
+          # skill_executor.py imports it at module load time.
+          python -m pip install "claude-agent-sdk==0.2.82"
+
+      - name: Exploratory digests suite
+        run: python -m pytest tests/test_exploratory_digests.py -q
+
+      - name: Exploratory lane derivation suite
+        run: python -m pytest tests/test_exploratory_lane_derivation.py -q
+
+      - name: Exploratory capability lifecycle suite
+        run: python -m pytest tests/test_exploratory_capability_lifecycle.py -q
+
+      - name: Real-executor provider-boundary suite
+        run: python -m pytest tests/test_exploratory_provider_boundary.py -q
+
+      - name: Canonical-path import-isolation regression suite
+        # Subprocess tests proving ORDINARY/CANONICAL paths never import
+        # the exploratory component, and that a missing component fails
+        # closed with EXPLORATORY_AUTHORIZATION_COMPONENT_UNAVAILABLE and
+        # zero provider calls.
+        run: python -m pytest tests/test_exploratory_component_isolation.py -q
+
+      - name: Assert no real experiment/approval state was created
+        run: |
+          # `pip install -e .` legitimately regenerates the tracked
+          # src/sensemaking_skills.egg-info/ metadata files as a side effect
+          # of installation, not of running the test suite -- restore them
+          # before checking for a dirtied tree so this check reflects what
+          # the TESTS did, not what the install step did.
+          git checkout -- src/sensemaking_skills.egg-info/ 2>/dev/null || true
+          git status --porcelain
+          test -z "$(git status --porcelain)" || {
+            echo "::error::test run dirtied the working tree"; exit 1; }
+          test ! -e "experiments/evidence" -o -z "$(find experiments/evidence -maxdepth 1 -name 'EXP-*' 2>/dev/null)" || {
+            echo "::error::an EXP-* campaign directory was created"; exit 1; }
+
   validate:
     name: Repository validation
     runs-on: ubuntu-latest

@@ -205,3 +205,21 @@ class ValidatedCampaignBundle:
     policy: CampaignPolicy
     approval: CampaignApproval
     configuration: ConfigurationIdentity
+
+
+def is_genuine_campaign_bundle(bundle: object) -> bool:
+    """True iff ``bundle`` is a ``ValidatedCampaignBundle`` whose three
+    documents were all produced by this package's validator pipeline.
+
+    The bundle itself is a plain frozen dataclass (inert data), so its
+    authenticity is decided by the per-document sentinels that only the
+    validator-owned factories stamp. A bundle reconstructed from
+    ``object.__new__`` and guessed attributes fails here -- this is the
+    gate the Phase 3 issuer (exploratory_authorization) relies on.
+    """
+    return (
+        isinstance(bundle, ValidatedCampaignBundle)
+        and _is_genuine_campaign_policy(bundle.policy)
+        and _is_genuine_campaign_approval(bundle.approval)
+        and _is_genuine_configuration_identity(bundle.configuration)
+    )
