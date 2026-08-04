@@ -569,6 +569,67 @@ jobs:
           test ! -d "experiments/campaigns/EXP-0001-stage1-auteur-autonomy-pilot/attempts" || {
             echo "::error::an attempts directory was created"; exit 1; }
 
+  # ==========================================================================
+  # Phase 6 execution infrastructure (Issue #122 readiness). The provenance
+  # verifier, provider adapter, and runner are infrastructure OUTSIDE the
+  # campaign configuration; the framework code must stay byte-identical to
+  # the pinned framework_sha. This job runs the infra suite (verifier
+  # fail-closed matrix, provider-adapter refusal, runner real-campaign
+  # guards + test-campaign lifecycle, framework-drift invariant). No
+  # provider/network call is made; no approval, reservation, or runtime
+  # state is created.
+  # ==========================================================================
+  phase6-execution-infrastructure:
+    name: Phase 6 execution infrastructure
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      # Exact-head checkout, never a synthetic pull_request merge ref.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Print and assert the resolved checkout SHA
+        run: |
+          resolved="$(git rev-parse HEAD)"
+          echo "Resolved checkout SHA: $resolved"
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "Expected exact head SHA: $expected"
+          test "$resolved" = "$expected" || {
+            echo "::error::checked-out HEAD ($resolved) does not match the expected exact head ($expected)"
+            exit 1
+          }
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the project and its declared runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest
+
+      - name: Execution infrastructure suite (verifier, adapter, runner, drift)
+        run: python -m pytest tests/execution_infra_tests -q
+
+      - name: Assert no runtime experiment/approval state was created
+        run: |
+          git checkout -- src/sensemaking_skills.egg-info/ 2>/dev/null || true
+          git status --porcelain
+          test -z "$(git status --porcelain)" || {
+            echo "::error::test run dirtied the working tree"; exit 1; }
+          test ! -e "experiments/campaigns/EXP-0001-stage1-auteur-autonomy-pilot/approval.yaml" || {
+            echo "::error::an operative approval was created"; exit 1; }
+          test ! -e "experiments/campaigns/EXP-0001-stage1-auteur-autonomy-pilot/ledger.jsonl" || {
+            echo "::error::a campaign ledger was created"; exit 1; }
+          test ! -d "experiments/campaigns/EXP-0001-stage1-auteur-autonomy-pilot/attempts" || {
+            echo "::error::an attempts directory was created"; exit 1; }
+
   validate:
     name: Repository validation
     runs-on: ubuntu-latest
