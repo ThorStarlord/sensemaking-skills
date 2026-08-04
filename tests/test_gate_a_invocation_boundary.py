@@ -554,6 +554,15 @@ def test_every_provider_call_site_is_inside_a_gated_executor():
     known = {
         ("scripts/skill_executor.py", "query("),          # Claude Agent SDK
         ("scripts/skill_executor.py", "client.messages.create("),  # Anthropic SDK
+        # scripts/execution_infra/provider_adapter.py (Phase 6, #122): the
+        # real provider adapter for the EXPLORATORY lane. Its SDK call is
+        # reachable ONLY after invoke_exploratory_attempt has consumed the
+        # exploratory capability (the same single-use capability the
+        # executor's EXPLORATORY branch consumes before its own query
+        # call), so the invocation is gated by the identical boundary --
+        # never reachable with an unconsumed capability, and the capability
+        # is single-use so no second invocation is possible.
+        ("scripts/execution_infra/provider_adapter.py", "query("),
     }
     found = set()
     for py in list((REPO_ROOT / "scripts").rglob("*.py")) + \

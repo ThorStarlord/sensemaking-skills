@@ -588,9 +588,13 @@ jobs:
         python-version: ["3.11", "3.12"]
     steps:
       # Exact-head checkout, never a synthetic pull_request merge ref.
+      # fetch-depth: 0 -- the framework-drift test diffs the pinned
+      # framework_sha (4ba049e...) against HEAD, which requires the full
+      # history in the CI checkout.
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
 
       - name: Print and assert the resolved checkout SHA
         run: |
