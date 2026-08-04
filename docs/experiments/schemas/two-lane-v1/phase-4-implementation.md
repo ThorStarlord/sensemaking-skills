@@ -148,6 +148,27 @@ The runtime keeps three distinguishable artifacts: raw provider output,
 produced artifact, and validation result. A validation state with no raw
 output is unreachable (the state machine forbids `INVOKED → VALIDATION_*`).
 
+## Produced-artifact path confinement
+
+Every caller-supplied name that reaches the filesystem through the
+accounting runtime is frozen to one narrow lowercase ASCII leaf-name
+grammar (`^[a-z0-9][a-z0-9._-]*$`, no `..` substring, no trailing dot or
+space). `record_produced_artifact` rejects any other name with the stable
+code `ARTIFACT_FILENAME_INVALID` before any write or state read, and
+re-checks that the resolved target is directly beneath the exact attempt
+directory. `record_raw_output` applies the same grammar to the composed
+`raw-output.<extension>` leaf name (`RAW_OUTPUT_EXTENSION_INVALID`).
+
+A produced artifact is preserved only while the ledger state is
+`OUTPUT_CAPTURED` (raw output must exist first), and is immutable once
+created: an existing identical artifact is a deterministic crash-resume
+(the previous run crashed after the atomic rename, before the terminal
+ledger event), while an existing different artifact is rejected
+(`ARTIFACT_ALREADY_EXISTS`) — never overwritten. New artifacts are written
+through temp file + fsync + atomic rename under the campaign lock, so no
+caller-supplied name can create or modify anything outside the exact
+attempt directory.
+
 ## Budget accounting
 
 * **Attempt slots** — every `RESERVED` event consumes one; aborts, failures,

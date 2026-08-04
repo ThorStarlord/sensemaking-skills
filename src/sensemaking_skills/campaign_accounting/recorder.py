@@ -29,6 +29,8 @@ import yaml
 
 from sensemaking_skills.campaign_validation.models import ValidatedCampaignBundle
 from .failure_codes import (
+    ARTIFACT_ALREADY_EXISTS,
+    ARTIFACT_FILENAME_INVALID,
     ATTEMPT_ALREADY_TERMINAL,
     ATTEMPT_NOT_RESERVED,
     ATTEMPT_STATE_INVALID_TRANSITION,
@@ -37,6 +39,10 @@ from .failure_codes import (
     CAMPAIGN_NOT_ACTIVE,
     RAW_OUTPUT_MISSING_FOR_CAPTURED_STATE,
     CampaignAccountingError,
+)
+from .filenames import (
+    validate_produced_artifact_filename,
+    validate_raw_output_extension,
 )
 from .ledger import CampaignLedger, campaign_lock
 from .models import (
@@ -208,6 +214,12 @@ class AttemptOutcomeRecorder:
             now = datetime.now(timezone.utc)
         timestamp_str = now.isoformat()
 
+        # The extension composes the immutable leaf name; it must stay
+        # inside the frozen lowercase ASCII leaf grammar so the raw output
+        # can never escape the attempt directory (fail-closed, before any
+        # write or state read).
+        validate_raw_output_extension(extension)
+
         filename = f"raw-output.{extension}"
         target_path = self.attempt_dir / filename
         temp_path = self.attempt_dir / f".tmp-{filename}"
@@ -245,13 +257,78 @@ class AttemptOutcomeRecorder:
         content: str,
         filename: str = "produced-artifact.md",
     ) -> str:
-        """Write produced candidate artifact to the attempt directory."""
-        target_path = self.attempt_dir / filename
-        with open(target_path, "w", encoding="utf-8") as f:
-            f.write(content)
-            f.flush()
-            os.fsync(f.fileno())
+        """Immutably preserve the produced candidate artifact.
 
+        Path confinement (merge-blocker correction, Issue #120):
+
+        1. ``filename`` must be a frozen lowercase ASCII leaf name -- no
+           separators, drive/UNC qualification, ADS/colon syntax, ``..``,
+           trailing dot/space aliases, hidden or empty names
+           (``ARTIFACT_FILENAME_INVALID``, raised before any write or state
+           read).
+        2. The resolved target must sit directly beneath the exact attempt
+           directory (defense-in-depth containment re-check).
+        3. The ledger state must be ``OUTPUT_CAPTURED``: an artifact is only
+           preserved after the raw provider output exists (state-gated).
+        4. The target is immutable once created: an existing identical
+           artifact is a deterministic crash-resume (the previous run
+           crashed after the write, before the terminal ledger event); an
+           existing different artifact is rejected
+           (``ARTIFACT_ALREADY_EXISTS``) -- never overwritten.
+        5. A new artifact is written through temp file + fsync + atomic
+           rename under the campaign lock.
+        """
+        validate_produced_artifact_filename(filename)
+
+        target_path = self.attempt_dir / filename
+        try:
+            resolved_target = target_path.resolve(strict=False)
+            resolved_attempt = self.attempt_dir.resolve(strict=False)
+        except OSError as exc:
+            raise CampaignAccountingError(
+                ARTIFACT_FILENAME_INVALID,
+                f"produced artifact filename: cannot resolve {filename!r} "
+                f"inside the attempt directory: {exc}",
+            ) from exc
+        if resolved_target.parent != resolved_attempt:
+            raise CampaignAccountingError(
+                ARTIFACT_FILENAME_INVALID,
+                f"produced artifact filename: resolved target "
+                f"'{resolved_target}' is not directly beneath the attempt "
+                f"directory '{resolved_attempt}'",
+            )
+
+        payload = content.encode("utf-8")
+
+        with campaign_lock(self.campaign_dir):
+            events = self.ledger.read_events()
+            # An artifact is preserved only after raw output was captured.
+            _require_state(events, self.attempt_id, AttemptState.OUTPUT_CAPTURED.value)
+
+            if target_path.exists():
+                existing = target_path.read_bytes()
+                if existing == payload:
+                    # Deterministic crash-resume: an identical artifact was
+                    # already preserved before any terminal ledger event;
+                    # nothing is rewritten, nothing is overwritten.
+                    return self._artifact_ref(filename)
+                raise CampaignAccountingError(
+                    ARTIFACT_ALREADY_EXISTS,
+                    f"attempt '{self.attempt_id}' already preserves a "
+                    f"different artifact at '{filename}'; refusing to "
+                    f"overwrite it",
+                )
+
+            temp_path = self.attempt_dir / f".tmp-{filename}"
+            with open(temp_path, "wb") as f:
+                f.write(payload)
+                f.flush()
+                os.fsync(f.fileno())
+            temp_path.replace(target_path)
+
+        return self._artifact_ref(filename)
+
+    def _artifact_ref(self, filename: str) -> str:
         return (
             f"experiments/campaigns/{self.campaign_id}/attempts/"
             f"{self.attempt_id}/{filename}"

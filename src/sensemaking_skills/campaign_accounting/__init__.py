@@ -11,6 +11,8 @@ Public API:
 """
 
 from .failure_codes import (
+    ARTIFACT_ALREADY_EXISTS,
+    ARTIFACT_FILENAME_INVALID,
     ATTEMPT_ALREADY_TERMINAL,
     ATTEMPT_DIRECTORY_EXISTS,
     ATTEMPT_ID_NOT_UUID,
@@ -29,6 +31,7 @@ from .failure_codes import (
     CAMPAIGN_SUMMARY_ORPHAN_RESULT,
     CONFIGURATION_ID_MISMATCH,
     CROSS_DOCUMENT_CAMPAIGN_ID_MISMATCH,
+    RAW_OUTPUT_EXTENSION_INVALID,
     RAW_OUTPUT_MISSING_FOR_CAPTURED_STATE,
     RESERVATION_ATTEMPT_MISMATCH,
     RESERVATION_CAMPAIGN_MISMATCH,
@@ -46,6 +49,11 @@ from .boundary import (
     verify_reservation_live_for_invocation,
 )
 from .digests import GENESIS_HASH, compute_event_hash
+from .filenames import (
+    validate_artifact_leaf_name,
+    validate_produced_artifact_filename,
+    validate_raw_output_extension,
+)
 from .ledger import CampaignLedger, campaign_lock
 from .models import (
     EXPLORATORY_CLASSIFICATION,
@@ -67,6 +75,8 @@ from .reservation import DurableReservationManager, verify_cross_document_campai
 from .summary import CampaignSummaryGenerator
 
 __all__ = [
+    "ARTIFACT_ALREADY_EXISTS",
+    "ARTIFACT_FILENAME_INVALID",
     "ATTEMPT_ALREADY_TERMINAL",
     "ATTEMPT_DIRECTORY_EXISTS",
     "ATTEMPT_ID_NOT_UUID",
@@ -88,6 +98,7 @@ __all__ = [
     "EXPLORATORY_CLASSIFICATION",
     "GENESIS_HASH",
     "LEGAL_TRANSITIONS",
+    "RAW_OUTPUT_EXTENSION_INVALID",
     "RAW_OUTPUT_MISSING_FOR_CAPTURED_STATE",
     "RESERVATION_ATTEMPT_MISMATCH",
     "RESERVATION_CAMPAIGN_MISMATCH",
@@ -115,6 +126,9 @@ __all__ = [
     "compute_event_hash",
     "invoke_exploratory_attempt",
     "is_genuine_attempt_reservation",
+    "validate_artifact_leaf_name",
+    "validate_produced_artifact_filename",
+    "validate_raw_output_extension",
     "validate_state_transition",
     "verify_capability_matches_reservation",
     "verify_cross_document_campaign_id",
