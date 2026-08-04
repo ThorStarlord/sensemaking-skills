@@ -59,7 +59,8 @@ TEST_PROVENANCE_REFERENCE = "000000000000000000000000000000000000c0de"
 
 def build_policy_raw(*, campaign_id: str = TEST_CAMPAIGN_ID,
                      allowed_configuration_ids: Optional[list] = None,
-                     include_policy_digest: bool = True) -> dict:
+                     include_policy_digest: bool = True,
+                     **kwargs) -> dict:
     raw = {
         "policy_schema_version": "1",
         "campaign_id": campaign_id,
@@ -97,6 +98,13 @@ def build_policy_raw(*, campaign_id: str = TEST_CAMPAIGN_ID,
         "prepared_by": "campaign-operator-agent",
         "prepared_at": "2026-01-01T00:00:00+00:00",
     }
+    raw.update(kwargs)
+    # Invariant: max_provider_invocations <= max_attempt_slots.
+    # Clamp after kwargs are applied so tests that reduce max_attempt_slots
+    # don't produce a policy that fails its own limits validation.
+    raw["max_provider_invocations"] = min(
+        raw["max_provider_invocations"], raw["max_attempt_slots"]
+    )
     if include_policy_digest:
         raw["policy_digest"] = compute_policy_digest(raw)
     return raw
@@ -146,12 +154,13 @@ def render_yaml(raw: Mapping[str, Any]) -> bytes:
 
 
 def build_valid_bundle(*, campaign_id: str = TEST_CAMPAIGN_ID,
+                       policy_kwargs: Optional[dict] = None,
                        approval_kwargs: Optional[dict] = None,
                        configuration_kwargs: Optional[dict] = None,
                        current_time: str = TEST_VALIDATION_TIME,
                        ) -> ValidatedCampaignBundle:
     """Run the REAL Phase 2 bundle pipeline over freshly built docs."""
-    policy_raw = build_policy_raw(campaign_id=campaign_id)
+    policy_raw = build_policy_raw(campaign_id=campaign_id, **(policy_kwargs or {}))
     config_raw = build_configuration_raw(
         campaign_id=campaign_id, **(configuration_kwargs or {}))
     policy_raw["allowed_configuration_ids"] = sorted(
