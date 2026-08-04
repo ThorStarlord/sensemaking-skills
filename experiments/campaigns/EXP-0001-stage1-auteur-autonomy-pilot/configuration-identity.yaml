@@ -1,0 +1,11 @@
+configuration_schema_version: "1"
+campaign_id: "EXP-0001-stage1-auteur-autonomy-pilot"
+framework_sha: "4ba049e04e74699a009147df112baed3f7536343"
+target_repository: "https://github.com/ThorStarlord/auteur.git"
+target_sha: "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
+model_identifier: "claude-sonnet-5"
+prompt_or_skill_revision: "4ba049e04e74699a009147df112baed3f7536343"
+validator_revision: "4ba049e04e74699a009147df112baed3f7536343"
+artifact_type: "repository_sensemaking_brief"
+execution_parameters: {}
+configuration_id: "bd36c7b68e85c37503daf07aa02a5e05147e052bf5f222731a996a0dcd242fc7"

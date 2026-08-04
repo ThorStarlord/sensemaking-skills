@@ -1,0 +1,10 @@
+approval_schema_version: "1"
+marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"
+campaign_id: "EXP-0001-stage1-auteur-autonomy-pilot"
+policy_digest: "050f0ff2ce797ee9a9056b913bdf9933b34d0d17f8a93dda439abbe5afc276aa"
+claimed_approver_identity: ""
+approval_provenance:
+  mechanism: ""
+  reference: ""
+approval_statement: ""
+approved_at: null
