@@ -49,6 +49,7 @@ import secrets
 import subprocess
 import threading
 import unicodedata
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
@@ -1111,6 +1112,147 @@ def classify_invocation(identity: Optional["InvocationIdentity"]
 def requires_gate_a(mode: ExecutionMode) -> bool:
     """Gate A is mandatory for controlled Stage 1 AND for ambiguity."""
     return mode is not ExecutionMode.ORDINARY_DEVELOPMENT
+
+
+# ============================================================================
+# Authorization lanes
+# ============================================================================
+#
+# A lane is the coarse authorization category a single provider-boundary
+# invocation belongs to. It is derived from the SAME immutable invocation
+# properties the classifier consumes -- never from a flag, an attribute, or a
+# capability object. Lanes are additive: nothing a caller declares can
+# downgrade a canonical classification, and an exploratory claim can only
+# name a path that structurally lies in the declared campaign's namespace.
+
+LANE_ORDINARY = "ORDINARY"
+LANE_CANONICAL = "CANONICAL"
+LANE_EXPLORATORY = "EXPLORATORY"
+LANE_AMBIGUOUS = "AMBIGUOUS"
+
+_EXPLORATORY_CLASSIFICATION = "EXPLORATORY_NOT_CANONICAL_EVIDENCE"
+_CAMPAIGN_ID_RE = re.compile(r"^EXP-[0-9]+(-[A-Za-z0-9._-]+)*$")
+_CONFIGURATION_ID_RE = re.compile(r"^[0-9a-f]{64}$")
+
+# Signals that independently disqualify an exploratory upgrade: a declared
+# mode conflict, an unparseable or self-contradictory identity, or any signal
+# that flavors the invocation as controlled-campaign-like. None of these can
+# be outvoted by a declaration.
+_EXPLORATORY_CONTRADICTION_SIGNALS = frozenset((
+    "declared_mode_conflict",
+    "evidence_path_unparseable",
+    "evidence_number_malformed",
+    "evidence_slug_malformed",
+    "evidence_number_conflicts_with_path",
+    "evidence_slug_conflicts_with_path",
+    "evidence_number_slug_conflict",
+))
+_EXPLORATORY_CONTROLLED_FLAVOR_SIGNALS = frozenset((
+    "identity_missing",
+    "artifact_type_is_stage1_brief",
+    "workflow_stage_is_stage_1",
+    "target_repository_is_campaign_pin",
+    "target_sha_is_campaign_pin",
+    "requested_model_is_campaign_model",
+    "evidence_identity_present",
+))
+
+
+@dataclass(frozen=True)
+class DeclaredExploratory:
+    """A caller's claim that an invocation is an exploratory campaign attempt.
+
+    The declaration is NEVER authorization on its own: ``derive_authorization_lane``
+    only honors it when the invocation is already ambiguous, structurally
+    inside the declared campaign's namespace, and free of controlled
+    campaign signals. Every field is structural and validated.
+    """
+
+    campaign_id: str
+    classification: str
+    attempt_id: str
+    configuration_id: str
+
+
+def _declared_exploratory_is_well_formed(declared: Optional[DeclaredExploratory]
+                                         ) -> bool:
+    """All-or-nothing structural validation of the declaration fields."""
+    if not isinstance(declared, DeclaredExploratory):
+        return False
+    if not _CAMPAIGN_ID_RE.fullmatch(declared.campaign_id):
+        return False
+    if declared.classification != _EXPLORATORY_CLASSIFICATION:
+        return False
+    try:
+        if str(uuid.UUID(declared.attempt_id)) != declared.attempt_id:
+            return False
+    except (AttributeError, TypeError, ValueError):
+        return False
+    if not _CONFIGURATION_ID_RE.fullmatch(declared.configuration_id):
+        return False
+    return True
+
+
+def _extract_campaign_id(ident: EvidencePathIdentity) -> Optional[str]:
+    """The campaign directory component, if the path names one structurally.
+
+    The canonical relative path must START at the ``experiments`` root
+    component and name ``campaigns`` immediately after it: anything else --
+    an outside-root absolute or drive path whose components merely CONTAIN
+    ``experiments/campaigns``, or a path deeper in the repo -- is not the
+    campaign namespace and must never be upgraded to EXPLORATORY. The
+    campaign id itself is compared RAW and case-sensitively: ``EXP-0001-alpha``
+    and ``exp-0001-alpha`` are different namespaces.
+    """
+    parts = ident.canonical_relative_path.parts
+    folded = tuple(p.casefold() for p in parts)
+    if len(parts) < 3 or folded[0] != EXPERIMENTS_COMPONENT or folded[1] != "campaigns":
+        return None
+    return parts[2]
+
+
+def derive_authorization_lane(identity: Optional[InvocationIdentity],
+                              declared: Optional[DeclaredExploratory] = None
+                              ) -> tuple[str, tuple[str, ...]]:
+    """Derive the authorization lane from the invocation itself.
+
+    Returns ``(lane, signals)`` where ``signals`` is the classifier's signal
+    tuple. The mapping is exact:
+
+    * CONTROLLED_STAGE1 -> ``LANE_CANONICAL`` always -- a declaration can
+      never downgrade canonical classification.
+    * ORDINARY_DEVELOPMENT with no claim -> ``LANE_ORDINARY``. With a claim,
+      the claim itself is evidence of intent that the ordinary boundary must
+      not silently absorb -> ``LANE_AMBIGUOUS``.
+    * AMBIGUOUS -> ``LANE_EXPLORATORY`` ONLY when the declaration is
+      well-formed AND the invocation carries no contradiction or
+      controlled-campaign signal AND the output path lies inside
+      ``experiments/campaigns/<declared campaign id>/``. Every other
+      ambiguous invocation is ``LANE_AMBIGUOUS`` (fail closed).
+    """
+    mode, signals = classify_invocation(identity)
+    if mode is ExecutionMode.CONTROLLED_STAGE1:
+        return LANE_CANONICAL, signals
+    if mode is ExecutionMode.ORDINARY_DEVELOPMENT:
+        if declared is None:
+            return LANE_ORDINARY, signals
+        return LANE_AMBIGUOUS, signals
+
+    # AMBIGUOUS below -- the only lane an exploratory claim may refine.
+    if not _declared_exploratory_is_well_formed(declared):
+        return LANE_AMBIGUOUS, signals
+    if any(s in signals for s in _EXPLORATORY_CONTRADICTION_SIGNALS):
+        return LANE_AMBIGUOUS, signals
+    if any(s.startswith("path_containment_") for s in signals):
+        return LANE_AMBIGUOUS, signals
+    if any(s in signals for s in _EXPLORATORY_CONTROLLED_FLAVOR_SIGNALS):
+        return LANE_AMBIGUOUS, signals
+    ident = evidence_identity_for(identity)
+    if ident.parse_status != "EXPERIMENTS_NON_EVIDENCE_PATH":
+        return LANE_AMBIGUOUS, signals
+    if _extract_campaign_id(ident) != declared.campaign_id:
+        return LANE_AMBIGUOUS, signals
+    return LANE_EXPLORATORY, signals
 
 
 # ============================================================================

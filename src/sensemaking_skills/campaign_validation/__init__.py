@@ -26,6 +26,7 @@ from .models import (
     ValidationContext,
     ValidationDiagnostic,
     ValidationResult,
+    is_genuine_campaign_bundle,
 )
 from .validators import (
     load_and_validate_approval_from_root,

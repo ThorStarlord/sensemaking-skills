@@ -31,9 +31,14 @@ from claude_agent_sdk import ResultMessage, AssistantMessage
 # already on sys.path for every consumer of this module.
 from gate_a_authorization import (  # noqa: E402
     AuthorizedInvocation,
+    DeclaredExploratory,
     ExecutionMode,
     GateAError,
     InvocationIdentity,
+    LANE_AMBIGUOUS,
+    LANE_CANONICAL,
+    LANE_EXPLORATORY,
+    LANE_ORDINARY,
     GATE_A_AUTHORIZATION_CONSUMER_NOT_CONFIGURED,
     GATE_A_CAPABILITY_NOT_LIVE,
     GATE_A_INVOCATION_CLASSIFICATION_AMBIGUOUS,
@@ -41,10 +46,17 @@ from gate_a_authorization import (  # noqa: E402
     GATE_A_MODEL_MISMATCH,
     CONTRACT_ARTIFACT_TYPE,
     classify_invocation,
+    derive_authorization_lane,
     format_gate_a_log,
     parse_evidence_path,
     requires_gate_a,
 )
+
+# Phase 3 exploratory authorization (issue #119). Imported AFTER
+# gate_a_authorization: the Gate A loader pins the checkout `src/` at the
+# front of sys.path and refuses an already-imported foreign package, so this
+# import must never precede the gate_a import above.
+from sensemaking_skills import exploratory_authorization as _ea  # noqa: E402
 
 
 # ============================================================================
@@ -105,6 +117,7 @@ class _GateAImmutableAttributes:
         "repo_root",
         "model",
         "authorization",
+        "exploratory_capability",
         "controlled_experiment",
         "_declared_controlled_experiment",
         "_invocation_identity",
@@ -144,6 +157,8 @@ def require_authorization_capability(
     identity: Optional[InvocationIdentity],
     model: Optional[str],
     executor_name: str,
+    mode: Optional[ExecutionMode] = None,
+    why: Optional[str] = None,
 ) -> ExecutionMode:
     """Fail closed unless a Gate-A-requiring invocation carries a live capability.
 
@@ -151,11 +166,19 @@ def require_authorization_capability(
     built, any SDK object is constructed, or any provider client exists.
 
     Returns the derived ``ExecutionMode`` so callers can log what was decided.
+
+    ``mode`` / ``why`` may be supplied when the caller has already derived
+    the classification from a richer source than ``classify_invocation``
+    alone (the four-lane dispatcher, where a declaration can make an
+    identity-ordinary invocation AMBIGUOUS). When omitted, the classification
+    is derived from the identity here.
     """
-    mode, signals = classify_invocation(identity)
+    if mode is None:
+        mode, signals = classify_invocation(identity)
+        why = why or (",".join(signals) or "none")
     if not requires_gate_a(mode):
         return mode
-    why = ",".join(signals) or "none"
+    why = why or ","
     if capability is None:
         raise GateAAuthorizationRequired(
             GATE_A_INVOCATION_CLASSIFICATION_AMBIGUOUS
@@ -202,6 +225,117 @@ def require_authorization_capability(
             f"this capability authorizes.",
         )
     return mode
+
+
+class ExploratoryAuthorizationRequired(GateAAuthorizationRequired):
+    """Gate A-class denial raised on the EXPLORATORY lane (Phase 3, #119)."""
+
+
+def declared_exploratory_from_context(context: Optional[dict]) -> Optional[DeclaredExploratory]:
+    """The caller's declared exploratory identity, if any, from the call context.
+
+    Fail-closed: if ANY declaration field is present, all four are treated as
+    declared (missing fields become empty strings and fail the structural
+    well-formedness check in ``derive_authorization_lane``). A partial or
+    malformed claim therefore lands AMBIGUOUS -- never ORDINARY.
+    """
+    ctx = context or {}
+    fields = ("campaign_id", "classification", "attempt_id", "configuration_id")
+    if not any(ctx.get(name) is not None for name in fields):
+        return None
+    return DeclaredExploratory(
+        campaign_id=str(ctx.get("campaign_id") or ""),
+        classification=str(ctx.get("classification") or ""),
+        attempt_id=str(ctx.get("attempt_id") or ""),
+        configuration_id=str(ctx.get("configuration_id") or ""),
+    )
+
+
+def require_invocation_authorization(
+    authorization: Optional[AuthorizedInvocation],
+    exploratory_capability,
+    *,
+    identity: Optional[InvocationIdentity],
+    model: Optional[str],
+    executor_name: str,
+    declared: Optional[DeclaredExploratory] = None,
+) -> tuple[str, ExecutionMode]:
+    """The four-lane dispatcher every provider-boundary entry point calls.
+
+    Derives the lane from the ACTUAL invocation (identity + declared
+    exploratory values) and demands the right capability:
+
+    * EXPLORATORY -> the exploratory capability must exist, be the right
+      type, and be live (fail-fast, non-consuming); the consumption itself
+      happens at the narrowest point, immediately before the provider call.
+    * CANONICAL / AMBIGUOUS -> the existing Gate A check (verbatim):
+      ``require_authorization_capability``.
+    * ORDINARY -> no authorization is consulted at all.
+
+    Returns ``(lane, mode)`` so the caller can log what was decided and
+    choose the correct consuming path.
+    """
+    lane, signals = derive_authorization_lane(identity, declared)
+    if lane == LANE_EXPLORATORY:
+        why = ",".join(signals) or "none"
+        failure = _ea.exploratory_capability_availability(exploratory_capability)
+        if failure is not None:
+            raise ExploratoryAuthorizationRequired(
+                failure,
+                f"{executor_name} classified this invocation as {lane} "
+                f"(signals: {why}) and refuses it: no usable exploratory "
+                f"capability ({failure}).",
+            )
+        return lane, ExecutionMode.AMBIGUOUS
+    if lane == LANE_ORDINARY:
+        # No authorization is consulted for ordinary development. This branch
+        # is taken BEFORE re-classification so a declaration-induced AMBIGUOUS
+        # lane can never fall through to ordinary (fail closed).
+        return lane, ExecutionMode.ORDINARY_DEVELOPMENT
+    # CANONICAL / AMBIGUOUS: the identical Gate A demand. The mode is forced
+    # from the lane, never re-derived from the identity alone -- an
+    # identity-ordinary invocation carrying an exploratory claim is AMBIGUOUS
+    # and must demand the canonical capability exactly like any other
+    # ambiguous invocation.
+    forced_mode = (
+        ExecutionMode.CONTROLLED_STAGE1 if lane == LANE_CANONICAL
+        else ExecutionMode.AMBIGUOUS
+    )
+    mode = require_authorization_capability(
+        authorization,
+        identity=identity,
+        model=model,
+        executor_name=executor_name,
+        mode=forced_mode,
+        why=",".join(signals) or "none",
+    )
+    return lane, mode
+
+
+def _exploratory_invocation_context(executor, context, output_path):
+    """The consumption context, built from the CALL (never from the capability).
+
+    Every field is the value actually being invoked right now: model from the
+    executor configuration, the rest from the invocation context. Absent
+    fields become empty strings, which fail closed against any non-empty
+    binding.
+    """
+    return _ea.ExploratoryInvocationContext(
+        model=executor.model or "",
+        target_repository=str(context.get("target_repository") or ""),
+        target_sha=str(context.get("target_sha") or ""),
+        framework_sha=str(context.get("execution_framework_sha") or ""),
+        artifact_type=str(context.get("artifact_type") or ""),
+        output_path=output_path,
+        campaign_id=str(context.get("campaign_id") or ""),
+        configuration_id=str(context.get("configuration_id") or ""),
+        configuration_snapshot_digest=str(
+            context.get("configuration_snapshot_digest") or ""),
+        policy_digest=str(context.get("policy_digest") or ""),
+        approval_digest=str(context.get("approval_digest") or ""),
+        attempt_id=str(context.get("attempt_id") or ""),
+        lane=_ea.EXPLORATORY_LANE,
+    )
 
 
 # NOTE (issue #108, second independent review):
@@ -1331,6 +1465,7 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
         model: Optional[str] = None,
         controlled_experiment: bool = False,
         authorization: Optional[AuthorizedInvocation] = None,
+        exploratory_capability=None,
         invocation_identity: Optional[InvocationIdentity] = None,
     ):
         """
@@ -1341,6 +1476,12 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
                 build an executor that could reach query() without one, and
                 invoke_skill/_invoke_skill_async re-check and consume it at
                 the provider boundary.
+            exploratory_capability: Phase 3 capability for the EXPLORATORY
+                lane (issue #119). Never required at construction; demanded
+                at invocation time, when the lane is derived from the actual
+                call. Supplying one here does NOT satisfy any CANONICAL or
+                AMBIGUOUS invocation -- those still require an
+                AuthorizedInvocation.
             model: Explicit model identifier passed straight through as
                 ClaudeAgentOptions(model=...) (issue #86). None preserves
                 today's ambient/default-model behavior.
@@ -1377,13 +1518,15 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
         # Gate A, outermost layer: refuse to even construct an executor that
         # could reach the SDK without a live capability, when the identity
         # known at construction already requires one.
-        require_authorization_capability(
+        require_invocation_authorization(
             authorization,
+            exploratory_capability,
             identity=self._invocation_identity,
             model=model,
             executor_name="ClaudeAgentSdkSkillExecutor",
         )
         self.authorization = authorization
+        self.exploratory_capability = exploratory_capability
 
     def _actual_identity(self, skill_id, expected_output_artifact,
                          context) -> InvocationIdentity:
@@ -1479,13 +1622,15 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
         # query(). This check exists so a controlled invocation with no
         # capability dies before any prompt is built or SDK object exists.
         try:
-            require_authorization_capability(
+            require_invocation_authorization(
                 self.authorization,
+                getattr(self, "exploratory_capability", None),
                 identity=self._actual_identity(
                     skill_id, expected_output_artifact, context
                 ),
                 model=self.model,
                 executor_name="ClaudeAgentSdkSkillExecutor.invoke_skill",
+                declared=declared_exploratory_from_context(context),
             )
         except GateAAuthorizationRequired as gate_error:
             return SkillExecutionResult(
@@ -1661,17 +1806,45 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
         # snapshot taken at validation time (TOCTOU). It raises -- it does not
         # return a value an intermediate caller could discard -- and it marks
         # the capability spent so no second invocation is possible.
+        #
+        # Phase 3 (issue #119): the four-lane dispatcher derives the lane
+        # from the actual invocation. EXPLORATORY is consumed here through
+        # the exploratory boundary, exactly once, immediately before query().
         # ------------------------------------------------------------------
         actual_identity = self._actual_identity(
             skill_id, expected_output_path, context
         )
-        gate_a_mode = require_authorization_capability(
+        lane, gate_a_mode = require_invocation_authorization(
             self.authorization,
+            getattr(self, "exploratory_capability", None),
             identity=actual_identity,
             model=self.model,
             executor_name="ClaudeAgentSdkSkillExecutor._invoke_skill_async",
+            declared=declared_exploratory_from_context(context),
         )
-        if requires_gate_a(gate_a_mode):
+        if lane == LANE_EXPLORATORY:
+            try:
+                exploratory_decision = _ea.consume_exploratory_capability(
+                    getattr(self, "exploratory_capability", None),
+                    _exploratory_invocation_context(
+                        self, context, expected_output_path
+                    ),
+                )
+            except _ea.ExploratoryAuthorizationError as exc:
+                raise ExploratoryAuthorizationRequired(
+                    exc.failure_code, exc.detail
+                ) from exc
+            trace_log.append(_trace_event(
+                "ExploratoryAuthorization", skill_id, expected_output_path,
+                "consumed",
+                extra={
+                    "attempt_id": exploratory_decision.attempt_id,
+                    "campaign_id": exploratory_decision.campaign_id,
+                    "exact_model": exploratory_decision.exact_model,
+                    "lane": exploratory_decision.lane,
+                },
+            ))
+        elif requires_gate_a(gate_a_mode):
             gate_a_decision = self.authorization.consume(
                 model=self.model,
                 artifact_type=self.authorization.artifact_type,
@@ -1686,49 +1859,56 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
             ))
 
         try:
-            # Query the Claude Agent SDK
-            async for message in query(
-                prompt=prompt,
-                options=ClaudeAgentOptions(
-                    cwd=self.repo_root,
-                    setting_sources=["project", "user"],
-                    skills=[skill_id],
-                    allowed_tools=["Read", "Write", "Glob", "Grep"],
-                    # Explicit model pin (issue #86). None (the default)
-                    # preserves today's ambient/default-model behavior --
-                    # this is never a hidden global default, only whatever
-                    # the caller explicitly supplied. fallback_model is
-                    # deliberately never set anywhere in this executor: no
-                    # fallback, retry, or escalation is introduced.
-                    model=self.model,
-                    hooks={
-                        "PreToolUse": [
-                            HookMatcher(matcher=None, hooks=[artifact_permission_gate, pre_trace]),
-                        ],
-                        "PostToolUse": [
-                            HookMatcher(matcher=None, hooks=[post_trace]),
-                        ],
-                    },
-                ),
-            ):
-                # Capture ResultMessage error info for classification
-                if isinstance(message, ResultMessage):
-                    if message.is_error:
-                        errors_text = "; ".join(str(e) for e in (message.errors or []))
-                        sdk_last_result_info = errors_text or str(message.subtype)
+            # Query the Claude Agent SDK. Any provider exception after an
+            # exploratory consumption burns the capability permanently
+            # (Phase 3, #119): the attempt is spent and can never be retried.
+            try:
+                async for message in query(
+                    prompt=prompt,
+                    options=ClaudeAgentOptions(
+                        cwd=self.repo_root,
+                        setting_sources=["project", "user"],
+                        skills=[skill_id],
+                        allowed_tools=["Read", "Write", "Glob", "Grep"],
+                        # Explicit model pin (issue #86). None (the default)
+                        # preserves today's ambient/default-model behavior --
+                        # this is never a hidden global default, only whatever
+                        # the caller explicitly supplied. fallback_model is
+                        # deliberately never set anywhere in this executor: no
+                        # fallback, retry, or escalation is introduced.
+                        model=self.model,
+                        hooks={
+                            "PreToolUse": [
+                                HookMatcher(matcher=None, hooks=[artifact_permission_gate, pre_trace]),
+                            ],
+                            "PostToolUse": [
+                                HookMatcher(matcher=None, hooks=[post_trace]),
+                            ],
+                        },
+                    ),
+                ):
+                    # Capture ResultMessage error info for classification
+                    if isinstance(message, ResultMessage):
+                        if message.is_error:
+                            errors_text = "; ".join(str(e) for e in (message.errors or []))
+                            sdk_last_result_info = errors_text or str(message.subtype)
 
-                # Record every AssistantMessage.model value observed (issue
-                # #86 requirement 7): this is the SDK's only per-message
-                # report of which model actually ran (ClaudeAgentOptions and
-                # ResultMessage do not carry a single "the model used" field).
-                if isinstance(message, AssistantMessage):
-                    reported_model = getattr(message, "model", None)
-                    trace_log.append(_trace_event(
-                        "AssistantMessage", None, None, "observed",
-                        extra={"reported_model": reported_model},
-                    ))
-                    if reported_model:
-                        reported_models.append(reported_model)
+                    # Record every AssistantMessage.model value observed (issue
+                    # #86 requirement 7): this is the SDK's only per-message
+                    # report of which model actually ran (ClaudeAgentOptions and
+                    # ResultMessage do not carry a single "the model used" field).
+                    if isinstance(message, AssistantMessage):
+                        reported_model = getattr(message, "model", None)
+                        trace_log.append(_trace_event(
+                            "AssistantMessage", None, None, "observed",
+                            extra={"reported_model": reported_model},
+                        ))
+                        if reported_model:
+                            reported_models.append(reported_model)
+            except Exception:
+                if lane == LANE_EXPLORATORY:
+                    _ea.burn_exploratory_capability(self.exploratory_capability)
+                raise
 
             # For the runtime-skeleton path, reconcile whatever the model wrote
             # (if anything) back into the canonical envelope. This is the
@@ -1916,6 +2096,7 @@ class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
 
     def __init__(self, repo_root: str, controlled_experiment: bool = False,
                  authorization: Optional[AuthorizedInvocation] = None,
+                 exploratory_capability=None,
                  invocation_identity: Optional[InvocationIdentity] = None):
         self.repo_root = repo_root
         self.model = self.API_MODEL
@@ -1929,13 +2110,15 @@ class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
         # Same constructor-level Gate A layer as the Agent SDK executor, so
         # neither production provider path can even be built for a
         # Gate-A-requiring invocation without a live capability.
-        require_authorization_capability(
+        require_invocation_authorization(
             authorization,
+            exploratory_capability,
             identity=self._invocation_identity,
             model=None,
             executor_name="ApiSkillExecutor",
         )
         self.authorization = authorization
+        self.exploratory_capability = exploratory_capability
         self._check_dependencies()
 
     def _actual_identity(self, skill_id, expected_output_artifact,
@@ -2013,13 +2196,32 @@ class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
             api_identity = self._actual_identity(
                 skill_id, expected_output_artifact, context
             )
-            api_mode = require_authorization_capability(
+            lane, api_mode = require_invocation_authorization(
                 self.authorization,
+                getattr(self, "exploratory_capability", None),
                 identity=api_identity,
                 model=None,
                 executor_name="ApiSkillExecutor.invoke_skill",
+                declared=declared_exploratory_from_context(context),
             )
-            if requires_gate_a(api_mode):
+            if lane == LANE_EXPLORATORY:
+                # The API executor hardcodes a model that is never the bound
+                # exploratory model, so this always fails closed rather than
+                # substituting a different model into an exploratory attempt.
+                try:
+                    _ea.consume_exploratory_capability(
+                        getattr(self, "exploratory_capability", None),
+                        _exploratory_invocation_context(
+                            self, context,
+                            resolve_output_path(
+                                self.repo_root, expected_output_artifact, context),
+                        ),
+                    )
+                except _ea.ExploratoryAuthorizationError as exc:
+                    raise ExploratoryAuthorizationRequired(
+                        exc.failure_code, exc.detail
+                    ) from exc
+            elif requires_gate_a(api_mode):
                 # Hardcoded API model can never equal the authorized model,
                 # so this always fails closed rather than substituting.
                 raise GateAAuthorizationRequired(
@@ -2098,14 +2300,21 @@ class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
 
             client = Anthropic()
 
-            # Call Claude API
-            message = client.messages.create(
-                model=self.API_MODEL,
-                max_tokens=4096,
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
-            )
+            # Call Claude API. A provider failure after an exploratory
+            # consumption burns the capability permanently (Phase 3, #119).
+            try:
+                message = client.messages.create(
+                    model=self.API_MODEL,
+                    max_tokens=4096,
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ],
+                )
+            except Exception:
+                if lane == LANE_EXPLORATORY:
+                    _ea.burn_exploratory_capability(
+                        getattr(self, "exploratory_capability", None))
+                raise
 
             artifact_content = message.content[0].text if message.content else ""
 
@@ -2177,6 +2386,7 @@ def create_executor(
     model: Optional[str] = None,
     controlled_experiment: bool = False,
     authorization: Optional[AuthorizedInvocation] = None,
+    exploratory_capability=None,
     invocation_identity: Optional[InvocationIdentity] = None,
 ) -> SkillExecutor:
     """Create a SkillExecutor instance by id.
@@ -2185,6 +2395,11 @@ def create_executor(
     `gate_a_authorization.authorize_invocation()`. It is REQUIRED whenever
     `controlled_experiment` is True, for every executor id. There is no
     executor id that performs a controlled Stage 1 invocation without it.
+
+    Phase 3 (issue #119): `exploratory_capability` is the exploratory-lane
+    capability, threaded to the claude-code and api executors. It is never
+    required at construction; the EXPLORATORY lane demands it at invocation
+    time, when the lane is derived from the actual call.
 
     Args:
         executor_id: One of "dry-run", "prompt-chain", "claude-code", "api".
@@ -2233,6 +2448,7 @@ def create_executor(
             repo_root=repo_root, model=model,
             controlled_experiment=controlled_experiment,
             authorization=authorization,
+            exploratory_capability=exploratory_capability,
             invocation_identity=invocation_identity,
         )
 
@@ -2241,6 +2457,7 @@ def create_executor(
             repo_root=repo_root,
             controlled_experiment=controlled_experiment,
             authorization=authorization,
+            exploratory_capability=exploratory_capability,
             invocation_identity=invocation_identity,
         )
 
