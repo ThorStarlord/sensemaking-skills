@@ -102,6 +102,7 @@ _EXACT_PLACEHOLDER_TOKENS = frozenset({
 #    unlikely to appear inside genuine prose, so a substring match is safe.
 _SUBSTRING_PLACEHOLDER_MARKERS = (
     "<HUMAN-FILLS-IN", "FIXME", "<PRESENTED_DIGEST>", "<session-id>",
+    "<message-id>",
 )
 _EXAMPLE_MARKER = "EXAMPLE_ONLY_NOT_AUTHORIZATION"
 _MUTABLE_REF_TOKENS = frozenset({"head", "main", "master", "latest"})
