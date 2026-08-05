@@ -79,16 +79,30 @@ def test_schema_examples_are_marked_non_operative(path: Path):
     for block in blocks:
         parsed = yaml.safe_load(block)
         if "campaign-approval" in path.name:
-            assert parsed.get("marker") == "EXAMPLE_ONLY_NOT_AUTHORIZATION", (
+            is_conversation = parsed.get("approval_source") == "active_human_conversation"
+            assert (
+                parsed.get("marker") == "EXAMPLE_ONLY_NOT_AUTHORIZATION"
+                or is_conversation
+            ), (
                 f"{path.name}: every approval example must carry "
-                "marker: EXAMPLE_ONLY_NOT_AUTHORIZATION"
+                "marker: EXAMPLE_ONLY_NOT_AUTHORIZATION or be a "
+                "conversation-approval example"
             )
+            if is_conversation:
+                # A conversation example is non-operative only because its
+                # tokens cannot resolve: the digest/reference must still
+                # carry placeholder markers.
+                dump = yaml.safe_dump(parsed)
+                assert "<" in dump, (
+                    f"{path.name}: conversation example has no "
+                    "placeholder signal in policy_digest/reference"
+                )
         # Every example in this directory must be visibly non-operative:
         # either via an explicit marker field, or via unmistakable
         # placeholder identity values that cannot resolve to a real
         # campaign, repository, or human approver.
         dump = yaml.safe_dump(parsed)
-        assert "example" in dump.lower() or parsed.get("marker") == "EXAMPLE_ONLY_NOT_AUTHORIZATION", (
+        assert "example" in dump.lower() or parsed.get("marker") == "EXAMPLE_ONLY_NOT_AUTHORIZATION" or parsed.get("approval_source") == "active_human_conversation", (
             f"{path.name}: example content has no placeholder/marker signal"
         )
 
@@ -919,11 +933,21 @@ CAMPAIGN_POLICY_SHAPE = closed(
     },
 )
 
-CAMPAIGN_APPROVAL_SHAPE = closed(
+_APPROVAL_PROFILE_COMMON = {
+    "approval_schema_version": SCALAR,
+    "campaign_id": SCALAR,
+    "policy_digest": SCALAR,
+    "approved_at": SCALAR,
+}
+
+# The campaign-approval schema defines THREE mutually exclusive profiles
+# (oneOf): 'example' (marker-bearing template), 'operative' (marker-less
+# strict provenance), and 'conversation' (active_human_conversation
+# receipt). Each fenced example must match EXACTLY ONE profile shape --
+# see test_approval_examples_match_exactly_one_profile.
+CAMPAIGN_APPROVAL_EXAMPLE_SHAPE = closed(
     {
-        "approval_schema_version": SCALAR,
-        "campaign_id": SCALAR,
-        "policy_digest": SCALAR,
+        **_APPROVAL_PROFILE_COMMON,
         "claimed_approver_identity": SCALAR,
         "approval_provenance": closed(
             {
@@ -937,7 +961,71 @@ CAMPAIGN_APPROVAL_SHAPE = closed(
             required={"mechanism", "reference"},
         ),
         "approval_statement": SCALAR,
-        "approved_at": SCALAR,
+        "marker": SCALAR,
+    }
+)
+
+CAMPAIGN_APPROVAL_OPERATIVE_SHAPE = closed(
+    {
+        **_APPROVAL_PROFILE_COMMON,
+        "claimed_approver_identity": SCALAR,
+        "approval_provenance": closed(
+            {
+                "mechanism": SCALAR,
+                "reference": SCALAR,
+                "repository": SCALAR,
+                "issue_number": SCALAR,
+                "comment_id": SCALAR,
+                "comment_body_sha256": SCALAR,
+            },
+            required={"mechanism", "reference"},
+        ),
+        "approval_statement": SCALAR,
+    }
+)
+
+CAMPAIGN_APPROVAL_CONVERSATION_SHAPE = closed(
+    {
+        **_APPROVAL_PROFILE_COMMON,
+        "status": SCALAR,
+        "approval_source": SCALAR,
+        "approval_text": SCALAR,
+        "maximum_attempts": SCALAR,
+        "concurrency": SCALAR,
+        "automatic_merge": SCALAR,
+        "external_provider_api_prohibited": SCALAR,
+        "classification": SCALAR,
+        "reference": SCALAR,
+    }
+)
+
+CAMPAIGN_APPROVAL_PROFILES = {
+    "example": CAMPAIGN_APPROVAL_EXAMPLE_SHAPE,
+    "operative": CAMPAIGN_APPROVAL_OPERATIVE_SHAPE,
+    "conversation": CAMPAIGN_APPROVAL_CONVERSATION_SHAPE,
+}
+
+# Union shape for the generic per-file conformance loop. The union cannot
+# express the per-profile required sets (they are mutually exclusive), so
+# only the four fields common to every profile are required here; the
+# exactly-one-profile test below enforces each profile's full required
+# set.
+CAMPAIGN_APPROVAL_SHAPE = closed(
+    {
+        **_APPROVAL_PROFILE_COMMON,
+        "claimed_approver_identity": SCALAR,
+        "approval_provenance": closed(
+            {
+                "mechanism": SCALAR,
+                "reference": SCALAR,
+                "repository": SCALAR,
+                "issue_number": SCALAR,
+                "comment_id": SCALAR,
+                "comment_body_sha256": SCALAR,
+            },
+            required={"mechanism", "reference"},
+        ),
+        "approval_statement": SCALAR,
         "marker": SCALAR,
         "status": SCALAR,
         "approval_source": SCALAR,
@@ -953,11 +1041,7 @@ CAMPAIGN_APPROVAL_SHAPE = closed(
         "approval_schema_version",
         "campaign_id",
         "policy_digest",
-        "claimed_approver_identity",
-        "approval_provenance",
-        "approval_statement",
         "approved_at",
-        "marker",
     },
 )
 
@@ -1216,6 +1300,35 @@ def test_fenced_examples_conform_to_two_lane_yaml_profile_v1(path: Path):
                 f"{path.name} example #{i} violates Two-Lane YAML Profile v1 "
                 f"or its declared field set: {exc}"
             ) from exc
+
+
+def test_approval_examples_match_exactly_one_profile():
+    """The three approval profiles are mutually exclusive: every fenced
+    approval example must conform to EXACTLY ONE profile shape (example /
+    operative / conversation), never two, never none. A document mixing
+    profile fields (e.g. a marker plus conversation fields) must not be
+    representable."""
+    text = (SCHEMA_DIR / "campaign-approval.schema.md").read_text(encoding="utf-8")
+    blocks = _extract_yaml_blocks(text)
+    assert blocks, "campaign-approval.schema.md has no fenced yaml example"
+
+    def _conforms(block: str, shape) -> bool:
+        try:
+            check_profile_conformance(block, shape=shape)
+            return True
+        except ProfileViolation:
+            return False
+
+    for i, block in enumerate(blocks):
+        matches = [
+            name
+            for name, shape in CAMPAIGN_APPROVAL_PROFILES.items()
+            if _conforms(block, shape)
+        ]
+        assert len(matches) == 1, (
+            f"campaign-approval.schema.md example #{i} matches profiles "
+            f"{matches}; expected exactly one (example|operative|conversation)"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -1880,7 +1993,6 @@ def test_campaign_policy_accepts_cost_ceiling_present_and_complete_when_non_null
     [
         'campaign_id: "EXP-0000-EXAMPLE"\n',
         'policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"\n',
-        'marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"\n',
     ],
 )
 def test_campaign_approval_rejects_missing_required_top_level_field(removed_line):
@@ -1891,13 +2003,45 @@ def test_campaign_approval_rejects_missing_required_top_level_field(removed_line
         check_profile_conformance(mutated, shape=CAMPAIGN_APPROVAL_SHAPE)
 
 
+def test_campaign_approval_marker_removal_reclassifies_to_operative():
+    """Removing the marker from the filled example must not vanish the
+    document: it becomes a legitimate operative-profile example, matching
+    exactly one profile (the marker is the example-profile discriminator,
+    not a universal requirement)."""
+    block = _campaign_approval_filled_block()
+    marker_line = 'marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"\n'
+    assert marker_line in block
+    mutated = block.replace(marker_line, "", 1)
+    matches = [
+        name
+        for name, shape in CAMPAIGN_APPROVAL_PROFILES.items()
+        if _block_conforms(mutated, shape)
+    ]
+    assert matches == ["operative"], matches
+
+
+def _block_conforms(block: str, shape) -> bool:
+    try:
+        check_profile_conformance(block, shape=shape)
+        return True
+    except ProfileViolation:
+        return False
+
+
 def test_campaign_approval_rejects_missing_approval_provenance():
+    """Removing the provenance from a marker-bearing example leaves a
+    document that matches NO profile (example requires provenance; the
+    other profiles reject the marker) -- it must not be representable."""
     block = _campaign_approval_filled_block()
     line = 'approval_provenance:\n  mechanism: "signed_commit"\n  reference: "000000000000000000000000000000000000c0de"\n'
     assert line in block
     mutated = block.replace(line, "", 1)
-    with pytest.raises(ProfileViolation, match="missing required"):
-        check_profile_conformance(mutated, shape=CAMPAIGN_APPROVAL_SHAPE)
+    matches = [
+        name
+        for name, shape in CAMPAIGN_APPROVAL_PROFILES.items()
+        if _block_conforms(mutated, shape)
+    ]
+    assert matches == [], matches
 
 
 def test_campaign_approval_rejects_missing_approval_provenance_mechanism():

@@ -166,7 +166,7 @@ def test_configuration_is_authorized_by_policy() -> None:
     assert config_raw["artifact_type"] in policy_raw["allowed_artifact_types"]
 
 
-def test_bundle_validates_with_an_approver_identity() -> None:
+def test_conversation_receipt_template_binds_the_package() -> None:
     """The conversation-receipt template binds the package and can never
     become operative (placeholder tokens remain)."""
     policy = _validated_policy()
@@ -193,7 +193,9 @@ def test_bundle_validates_with_an_approver_identity() -> None:
 def test_template_can_never_be_operative() -> None:
     """The template is rejected by the real validator: the placeholder
     policy_digest/approved_at/reference can never validate as an
-    operative conversation receipt."""
+    operative conversation receipt. The strict reference pattern (no
+    angle brackets) rejects the placeholder pointer at the schema layer;
+    the validator's placeholder markers remain as defense-in-depth."""
     from sensemaking_skills.exploratory_execution import extract_frontmatter
 
     frontmatter = extract_frontmatter(_read("approval-template.md"))
@@ -204,7 +206,7 @@ def test_template_can_never_be_operative() -> None:
         CONTEXT,
     )
     assert not result.valid
-    assert result.failure_code == "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT"
+    assert result.failure_code == "CAMPAIGN_APPROVAL_SCHEMA_INVALID"
 
 
 # ---------------------------------------------------------------------------

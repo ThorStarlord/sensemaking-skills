@@ -76,7 +76,14 @@ def test_correct_receipt_succeeds() -> None:
     # The receipt records no identity claim: the conversation is the
     # authority, and the file is not independent proof of identity.
     assert verified.signer_identity == ""
-    assert verified.approval_sha256.startswith("0" * 0) or len(verified.approval_sha256) == 64
+    # The recorded digest is the real sha256 of the operative receipt
+    # bytes, not a placeholder check.
+    import hashlib
+    import re
+
+    receipt_bytes = dump_two_lane_yaml(dict(_RECEIPT)).encode()
+    assert verified.approval_sha256 == hashlib.sha256(receipt_bytes).hexdigest()
+    assert re.fullmatch(r"[0-9a-f]{64}", verified.approval_sha256) is not None
 
 
 def _mutate(**changes) -> dict:
@@ -97,6 +104,9 @@ def _mutate(**changes) -> dict:
         ({"classification": "CANONICAL_EVIDENCE"}, "classification"),
         ({"approved_at": "2099-01-01T00:00:00Z"}, "future"),
         ({"reference": ""}, "reference"),
+        ({"reference": "<message-id>"}, "reference"),
+        ({"reference": "no-separator"}, "reference"),
+        ({"reference": "session id#42"}, "reference"),
         ({"status": "rejected"}, "status"),
         ({"approval_text": "maybe"}, "approval_text"),
         ({"approval_source": "github_issue_comment_approval"}, "approval_source"),
@@ -173,6 +183,43 @@ def test_fails_closed_without_policy() -> None:
 def test_fails_closed_without_approval_bytes() -> None:
     with pytest.raises(ProvenanceVerificationError, match="bytes"):
         _verifier().verify(_RECEIPT, approval_bytes=None)
+
+
+def test_schema_gate_rejects_unresolvable_reference() -> None:
+    """The REAL validator (schema first) refuses a receipt whose reference
+    cannot resolve to a conversation record: '<message-id>' alone, a
+    missing '#', or whitespace all fail the strict pattern -- the audit
+    pointer must be concrete."""
+    from sensemaking_skills.campaign_validation import (
+        validate_campaign_approval,
+    )
+    from sensemaking_skills.campaign_validation.models import (
+        ValidationContext,
+    )
+    from campaign_validation.fixtures import to_campaign_policy
+
+    from exploratory_fixtures import TEST_VALIDATION_TIME
+
+    policy = to_campaign_policy(_POLICY, current_time=TEST_VALIDATION_TIME)
+    ctx = ValidationContext(
+        current_time="2026-01-01T00:00:00+00:00",
+        allowed_approver_identities=frozenset(),
+    )
+    for bad_reference in ("<message-id>", "no-separator", "session id#42"):
+        receipt = dict(_RECEIPT)
+        receipt["reference"] = bad_reference
+        result = validate_campaign_approval(
+            dump_two_lane_yaml(receipt).encode(), policy, ctx
+        )
+        assert not result.valid, bad_reference
+        assert result.failure_code == "CAMPAIGN_APPROVAL_SCHEMA_INVALID", (
+            bad_reference, result.failure_code, result.detail
+        )
+    # A concrete pointer passes the schema and the envelope checks.
+    ok = validate_campaign_approval(
+        dump_two_lane_yaml(dict(_RECEIPT)).encode(), policy, ctx
+    )
+    assert ok.valid, (ok.failure_code, ok.detail)
 
 
 def test_no_network_no_token_no_provider() -> None:

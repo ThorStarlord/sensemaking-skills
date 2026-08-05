@@ -87,5 +87,42 @@ approved_at: "2026-01-01T00:00:00+00:00"
 marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"
 ```
 
-Both examples above are authored under the Two-Lane YAML Profile v1 (ADR
+## Conversation-approval example (active_human_conversation)
+
+The third, mutually exclusive profile: the human's standalone `approve`
+in the active conversation is the authorization; the coding agent records
+the receipt as `approval.md`. The conversation is the authority, and the
+file is not independent proof of identity. `approval_source` must be
+exactly `active_human_conversation`, `approval_text` exactly `approve`,
+and `status` exactly `approved`; `maximum_attempts`/`concurrency` must
+not exceed the policy limits; `automatic_merge` must be `prohibited` and
+`external_provider_api_prohibited` `true`, both mirrored by the policy;
+`classification` must equal the policy classification; `approved_at` must
+be inside the policy window; and `reference` must be a concrete
+`<session-id>#<message-id>` pointer (no whitespace, no angle brackets --
+`<message-id>` alone or a missing `#` is refused). It never carries
+`marker`, `claimed_approver_identity`, or `approval_provenance`.
+
+```yaml
+approval_schema_version: "1"
+status: "approved"
+campaign_id: "EXP-0002-stage1-auteur-coding-agent-pilot"
+policy_digest: "<PRESENTED_DIGEST>"
+approval_source: "active_human_conversation"
+approval_text: "approve"
+approved_at: "2026-08-20T12:00:00+00:00"
+maximum_attempts: 3
+concurrency: 1
+automatic_merge: "prohibited"
+external_provider_api_prohibited: true
+classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"
+reference: "<session-id>#<message-id>"
+```
+
+The example above is non-operative: its `policy_digest` and `reference`
+still carry placeholder tokens that can never resolve. An operative
+conversation receipt replaces those tokens with the exact digest
+presented to the human and the concrete conversation-record pointer.
+
+All examples above are authored under the Two-Lane YAML Profile v1 (ADR
 0023 §10b): every string-valued field, including `mechanism`, is quoted.

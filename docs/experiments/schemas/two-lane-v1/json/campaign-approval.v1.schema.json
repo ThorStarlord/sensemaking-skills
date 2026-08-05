@@ -110,7 +110,10 @@
         "automatic_merge": {"const": "prohibited"},
         "external_provider_api_prohibited": {"const": true},
         "classification": {"type": "string"},
-        "reference": {"type": "string", "minLength": 1}
+        "reference": {
+          "type": "string",
+          "pattern": "^[^\\s<>]+#[^\\s<>]+$"
+        }
       }
     }
   ]

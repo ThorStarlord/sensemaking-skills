@@ -128,6 +128,12 @@ class ConversationApprovalVerifier:
                 "conversation verifier: receipt reference (conversation "
                 "record) is empty (fail closed)"
             )
+        if re.fullmatch(r"[^\s<>]+#[^\s<>]+", reference) is None:
+            raise ProvenanceVerificationError(
+                "conversation verifier: receipt reference must be a "
+                "concrete '<session-id>#<message-id>' pointer with no "
+                "whitespace or angle brackets"
+            )
         if raw.get("campaign_id") != str(policy.get("campaign_id", "")):
             raise ProvenanceVerificationError(
                 "conversation verifier: receipt binds a different campaign "
