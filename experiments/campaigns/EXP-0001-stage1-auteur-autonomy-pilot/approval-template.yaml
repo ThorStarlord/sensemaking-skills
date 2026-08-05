@@ -1,10 +1,10 @@
 approval_schema_version: "1"
 marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"
 campaign_id: "EXP-0001-stage1-auteur-autonomy-pilot"
-policy_digest: "248ecb5d33e17aae3bff04f9fe07f3ddd5e0b478a419dbe21fb45e0aea5f6910"
+policy_digest: "ef0f79ca831d127bc0ac0af264d6d37209b6310acffcb336ca021aafb332db03"
 claimed_approver_identity: ""
 approval_provenance:
-  mechanism: ""
+  mechanism: "github_issue_comment_approval"
   reference: ""
 approval_statement: ""
 approved_at: null

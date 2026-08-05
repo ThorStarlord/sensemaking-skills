@@ -16,18 +16,18 @@ exact policy digest below.
 |---|---|
 | `campaign_id` | `EXP-0001-stage1-auteur-autonomy-pilot` |
 | Framework repository | `ThorStarlord/sensemaking-skills` |
-| Framework SHA | `8e1b424a314709ae5a1531551ec92451a96b4b46` |
+| Framework SHA | `9c01ccd45267058d5f7b4dd5a04fc77bd17efdfa` |
 | Target repository | `ThorStarlord/auteur` (`https://github.com/ThorStarlord/auteur.git`) |
 | Target SHA | `0653defb05625f2fcde0ac32eac6e59ccf7eeb90` |
 | Model | `claude-sonnet-5` |
 | Artifact type | `repository_sensemaking_brief` |
 | Configurations | exactly 1 (see `configuration-identity.yaml`) |
-| `configuration_id` | `d3f18d1ba862bbe0fb272d0af9990e4e72a939e75371b1b63da4ffab775fcb2f` |
+| `configuration_id` | `9ddb3e0cdbc8cc137ecf42c4d44641b9084ce5d98b2a8fdc2e43785c62119abd` |
 | Attempts | 3 (`max_attempt_slots=3`, `max_attempts_per_configuration=3`, `max_provider_invocations=3`) |
 | Concurrency | 1 (`concurrency_ceiling=1`) |
 | Classification | `EXPLORATORY_NOT_CANONICAL_EVIDENCE` |
 | Prohibitions | fallback, hidden retry, target mutation, automatic repair, automatic merge (all `*_prohibited: true`) |
-| `policy_digest` | `248ecb5d33e17aae3bff04f9fe07f3ddd5e0b478a419dbe21fb45e0aea5f6910` (see `campaign-policy.sha256`) |
+| `policy_digest` | `ef0f79ca831d127bc0ac0af264d6d37209b6310acffcb336ca021aafb332db03` (see `campaign-policy.sha256`) |
 
 The configuration pins `prompt_or_skill_revision` and
 `validator_revision` to the framework SHA: the `repo-sensemaker` skill and
@@ -128,14 +128,27 @@ and proves no execution residue exists.
 
 ## The human approval step (separate, later, not part of Phase 5)
 
-1. This preparation PR is reviewed and merged.
-2. A genuine human completes the approval form against this exact
-   `policy_digest` inside the validity window (or triggers the §9c
-   revision path above).
-3. Approval verification confirms the recorded approval binds the exact
-   digest.
-4. Only then may Phase 6 execute the campaign — and Phase 6 is a separate,
-   future task.
+This package binds the GitHub issue-comment approval mechanism (Lane A
+beta, Model B -- ADR 0023 section 21): `approval-template.yaml` names
+`approval_provenance.mechanism: github_issue_comment_approval`, and the
+operative approval is transcribed from the human's comment on Issue #122
+by `scripts/execution_infra/capture_github_approval.py` (mechanical
+transcription, never agent-authored consent).
 
-Stop marker for Phase 5: `EXP_0001_PREPARATION_PR_READY_FOR_REVIEW` — the
+1. This preparation PR is reviewed and merged (the merged `policy_digest`
+   below is the digest the human must approve).
+2. The human posts ONE approval comment on Issue #122 with the exact
+   grammar (`capture_github_approval.py --help` prints it), binding this
+   exact `policy_digest`, with `expires_at` inside the validity window.
+   The agent never posts the comment.
+3. The operator runs `capture_github_approval.py`, which transcribes the
+   verified comment into the operative `approval.yaml` in this directory.
+4. The runner re-verifies the comment against the live GitHub API before
+   the run and before every attempt (comment exists, author is the
+   designated maintainer with admin permission, body digest unchanged,
+   limits inside the policy envelope).
+5. Only then may Phase 6 execute the campaign -- and Phase 6 is a
+   separate, future task.
+
+Stop marker for Phase 5: `EXP_0001_PREPARATION_PR_READY_FOR_REVIEW` -- the
 package is ready to inspect, not ready to run.
