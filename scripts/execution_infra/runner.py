@@ -79,9 +79,12 @@ from sensemaking_skills.exploratory_authorization.models import (
     ExploratoryInvocationContext,
 )
 from sensemaking_skills.exploratory_execution import (
+    GOVERNED_GITHUB_REPOSITORY,
+    GOVERNED_REQUIRED_APPROVER_PERMISSION,
     TRUSTED_FRAMEWORK_REMOTE,
     CampaignBriefValidator,
     ClaudeProvider,
+    GitHubIssueCommentApprovalVerifier,
     ProductionSignedCommitVerifier,
     TargetCheckout,
     build_exploratory_prompt,
@@ -214,18 +217,46 @@ class GovernedCampaignRunner:
     # ------------------------------------------------------------------ #
 
     def _production_components(
-        self, config_raw: dict[str, Any], target: TargetCheckout
+        self, config_raw: dict[str, Any], target: TargetCheckout, bundle: Any
     ) -> tuple:
-        verifier = ProductionSignedCommitVerifier(
-            repo_root=self._framework_checkout,
-            trusted_remote=TRUSTED_FRAMEWORK_REMOTE,
-            approver_registry=(
-                self._framework_checkout
-                / "src" / "sensemaking_skills" / "exploratory_execution"
-                / "approver-registry.yaml"
-            ),
-            approval_path=APPROVAL_FILENAME,
-        )
+        """Construct the verifier for the approval's provenance mechanism.
+
+        The mechanism is read from the VALIDATED approval document (never
+        from a caller-supplied choice): ``signed_commit`` constructs the
+        fingerprint-registry verifier, ``github_issue_comment_approval``
+        constructs the GitHub issue-comment verifier, and any other
+        mechanism refuses. The GitHub verifier checks attempt limits and
+        expiry against the validated policy (``bundle.policy.raw``).
+        """
+        approval_raw = bundle.approval.raw
+        provenance = dict(approval_raw.get("approval_provenance") or {})
+        mechanism = str(provenance.get("mechanism", ""))
+        if mechanism == "signed_commit":
+            verifier = ProductionSignedCommitVerifier(
+                repo_root=self._framework_checkout,
+                trusted_remote=TRUSTED_FRAMEWORK_REMOTE,
+                approver_registry=(
+                    self._framework_checkout
+                    / "src" / "sensemaking_skills" / "exploratory_execution"
+                    / "approver-registry.yaml"
+                ),
+                approval_path=APPROVAL_FILENAME,
+            )
+        elif mechanism == "github_issue_comment_approval":
+            # The verifier's repository is the GOVERNED constant, never the
+            # provenance-supplied value: an approval naming a different
+            # repository must fail inside verify(), not silently redirect
+            # the verifier to the attacker's repository.
+            verifier = GitHubIssueCommentApprovalVerifier(
+                repository=GOVERNED_GITHUB_REPOSITORY,
+                required_permission=GOVERNED_REQUIRED_APPROVER_PERMISSION,
+                policy=bundle.policy.raw,
+            )
+        else:
+            raise RunnerRefusal(
+                f"unknown approval provenance mechanism {mechanism!r}; "
+                "no verifier can corroborate this approval"
+            )
         provider = ClaudeProvider(
             model=str(config_raw["model_identifier"]),
             target_repository=str(config_raw["target_repository"]),
@@ -320,7 +351,7 @@ class GovernedCampaignRunner:
 
         if campaign_id == REAL_CAMPAIGN_ID:
             verifier, provider, validate = self._production_components(
-                config_raw, target  # type: ignore[arg-type]
+                config_raw, target, bundle  # type: ignore[arg-type]
             )
         else:
             verifier, provider, validate = (
@@ -331,6 +362,14 @@ class GovernedCampaignRunner:
                 "test campaign requires injected verifier, provider, and "
                 "validate doubles"
             )
+
+        # Pre-flight approval corroboration BEFORE any reservation: a
+        # missing GitHub token, a deleted or edited approval comment, or an
+        # expired approval must surface as a refusal instead of burning an
+        # attempt slot. The per-attempt mint still re-verifies, so a comment
+        # revoked mid-run stops the next attempt.
+        if campaign_id == REAL_CAMPAIGN_ID:
+            verifier.verify(bundle.approval, approval_bytes=approval_bytes)
 
         max_attempts = int(policy_raw["max_attempt_slots"])
         used = self._reserved_slot_count(campaign_id)

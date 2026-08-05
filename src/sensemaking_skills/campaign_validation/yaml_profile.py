@@ -43,6 +43,7 @@ from yaml import (
 
 __all__ = [
     "TwoLaneYamlError",
+    "dump_two_lane_yaml",
     "parse_two_lane_yaml",
 ]
 
@@ -373,3 +374,74 @@ def parse_two_lane_yaml(source_bytes: bytes, *,
 
     return _compose_value(node, open_subtree=False,
                            open_map_root_field=open_map_root_field)
+
+
+def _render_scalar(value: Any) -> str:
+    """Render one scalar as Two-Lane YAML Profile v1 source.
+
+    Every string is quoted (escaped); booleans/None/numbers are emitted
+    unquoted. Mirrors exactly what ``parse_two_lane_yaml`` accepts.
+    """
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        return repr(value) if isinstance(value, float) else str(value)
+    if isinstance(value, str):
+        escaped = (
+            value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+        )
+        return f'"{escaped}"'
+    raise TwoLaneYamlError(
+        "NOT_A_SCALAR", f"cannot render non-scalar value {value!r} as YAML"
+    )
+
+
+def dump_two_lane_yaml(value: Any, indent: int = 0) -> str:
+    """Render a JSON-compatible Python value as Two-Lane YAML Profile v1
+    source text (the production counterpart of the test-only dumper).
+
+    Every string value is quoted; mapping keys are emitted unquoted plain
+    ASCII; booleans/None/numbers are emitted unquoted -- exactly what
+    ``parse_two_lane_yaml`` accepts, so ``dump_two_lane_yaml(x)`` then
+    ``parse_two_lane_yaml`` round-trips ``x``.
+    """
+    pad = "  " * indent
+    if isinstance(value, dict):
+        if not value:
+            return pad + "{}\n"
+        lines = []
+        for k, v in value.items():
+            if isinstance(v, dict) and v:
+                lines.append(f"{pad}{k}:")
+                lines.append(dump_two_lane_yaml(v, indent + 1).rstrip("\n"))
+            elif isinstance(v, list) and v:
+                lines.append(f"{pad}{k}:")
+                lines.append(dump_two_lane_yaml(v, indent).rstrip("\n"))
+            elif isinstance(v, dict):
+                lines.append(f"{pad}{k}: {{}}")
+            elif isinstance(v, list):
+                lines.append(f"{pad}{k}: []")
+            else:
+                lines.append(f"{pad}{k}: {_render_scalar(v)}")
+        return "\n".join(lines) + "\n"
+    if isinstance(value, list):
+        if not value:
+            return pad + "[]\n"
+        lines = []
+        for item in value:
+            if isinstance(item, dict):
+                sub_lines = dump_two_lane_yaml(item, indent + 1).split("\n")
+                first = sub_lines[0].strip()
+                lines.append(f"{pad}- {first}")
+                for extra in sub_lines[1:]:
+                    if extra.strip():
+                        lines.append(extra)
+            elif isinstance(item, list):
+                lines.append(f"{pad}-")
+                lines.append(dump_two_lane_yaml(item, indent + 1).rstrip("\n"))
+            else:
+                lines.append(f"{pad}- {_render_scalar(item)}")
+        return "\n".join(lines) + "\n"
+    return pad + _render_scalar(value) + "\n"

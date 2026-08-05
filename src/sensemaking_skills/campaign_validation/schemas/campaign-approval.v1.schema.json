@@ -19,7 +19,18 @@
       "required": ["mechanism", "reference"],
       "properties": {
         "mechanism": {"type": "string", "minLength": 1},
-        "reference": {"type": "string", "minLength": 1}
+        "reference": {"type": "string", "minLength": 1},
+        "repository": {"type": "string", "minLength": 1},
+        "issue_number": {"type": ["integer", "string"], "minLength": 1},
+        "comment_id": {"type": "string", "pattern": "^[0-9]+$"},
+        "comment_body_sha256": {"$ref": "#/$defs/sha256Hex"}
+      },
+      "if": {
+        "properties": {"mechanism": {"const": "github_issue_comment_approval"}},
+        "required": ["mechanism"]
+      },
+      "then": {
+        "required": ["repository", "issue_number", "comment_id", "comment_body_sha256"]
       }
     },
     "looseProvenance": {
@@ -28,7 +39,11 @@
       "required": ["mechanism", "reference"],
       "properties": {
         "mechanism": {"type": "string"},
-        "reference": {"type": "string"}
+        "reference": {"type": "string"},
+        "repository": {"type": "string"},
+        "issue_number": {"type": ["integer", "string"]},
+        "comment_id": {"type": "string"},
+        "comment_body_sha256": {"type": "string"}
       }
     }
   },

@@ -37,10 +37,33 @@ The correction moves the real execution path INTO the pinned framework:
 
 ## Operational sequence
 
-The approver registry ships inside the pinned framework tree, so every
-registry change is a framework change: registering an approver produces a
-NEW framework SHA, and the campaign package must be re-pinned to it
-before any approval can bind. The correct order is therefore:
+Two approval mechanisms exist; the validated approval's provenance
+`mechanism` selects the verifier (ADR 0023 §12/§21).
+
+### Lane A beta (default for EXP-0001): GitHub issue-comment approval
+
+1. The framework PR implementing the comment verifier is reviewed and
+   merged; the campaign package is re-pinned to the new SHA (new
+   `configuration_id`, `policy_digest`, refreshed `validity_window`) and
+   merged.
+2. The human posts ONE approval comment on the campaign's GitHub issue
+   (exact grammar, see `capture_github_approval.py --help`); the agent
+   never posts it.
+3. The operator runs `capture_github_approval.py`, which transcribes the
+   verified comment into the operative `approval.yaml` (mechanical
+   transcription, never agent-authored consent) and self-checks it with
+   the real validator.
+4. The runner corroborates the snapshot against the live GitHub API
+   before the run and before every attempt: comment exists, belongs to
+   the governed repository/issue, author is a maintainer with the
+   required permission and equals `claimed_approver_identity`, body
+   digest matches (any edit fails), and campaign/digest/limits/expiry/
+   classification stay inside the policy envelope. No GPG key,
+   fingerprint, or approver-registry PR is involved.
+5. The complete execution report is delivered as a results PR and
+   independently audited (Issue #122).
+
+### High-assurance: signed-commit approval
 
 1. The human approver supplies their real OpenPGP fingerprint (never
    invented by an agent; e.g. `gpg --fingerprint <key-id>` on the machine
@@ -51,8 +74,7 @@ before any approval can bind. The correct order is therefore:
    is independently reviewed at its exact head, and is merged. The merge
    produces a NEW framework SHA.
 3. The campaign package is re-pinned to that new SHA in a separate
-   preparation revision (new `configuration_id`, new `policy_digest`,
-   refreshed `validity_window`), independently reviewed, and merged.
+   preparation revision, independently reviewed, and merged.
 4. Only then does the human sign the operative `approval.yaml` against
    the new exact `policy_digest`: a signed commit on the governed
    protected ancestry whose signer fingerprint is the one registered in
@@ -61,8 +83,6 @@ before any approval can bind. The correct order is therefore:
 5. An operator runs the campaign inside the new window:
    `GovernedCampaignRunner` with the real package, the pinned framework
    checkout, and the genuine `allowed_approver_identities`.
-6. The complete execution report is delivered as a results PR and
-   independently audited (Issue #122).
 
 The registry cannot be updated "after pinning" and the old pin reused:
 `framework_tree_unchanged` requires the execution checkout to be
