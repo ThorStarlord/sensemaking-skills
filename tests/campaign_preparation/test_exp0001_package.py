@@ -40,7 +40,7 @@ from sensemaking_skills.campaign_validation.models import (
 )
 
 CAMPAIGN_ID = "EXP-0001-stage1-auteur-autonomy-pilot"
-FRAMEWORK_SHA = "8e1b424a314709ae5a1531551ec92451a96b4b46"
+FRAMEWORK_SHA = "9c01ccd45267058d5f7b4dd5a04fc77bd17efdfa"
 TARGET_REPOSITORY = "https://github.com/ThorStarlord/auteur.git"
 TARGET_SHA = "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
 MODEL = "claude-sonnet-5"

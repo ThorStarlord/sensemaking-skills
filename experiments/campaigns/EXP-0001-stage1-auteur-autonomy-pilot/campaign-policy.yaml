@@ -2,7 +2,7 @@ policy_schema_version: "1"
 campaign_id: "EXP-0001-stage1-auteur-autonomy-pilot"
 classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"
 allowed_framework_shas:
-- "8e1b424a314709ae5a1531551ec92451a96b4b46"
+- "9c01ccd45267058d5f7b4dd5a04fc77bd17efdfa"
 allowed_targets:
 - repository: "https://github.com/ThorStarlord/auteur.git"
   sha: "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
@@ -11,13 +11,15 @@ allowed_models:
 allowed_artifact_types:
 - "repository_sensemaking_brief"
 allowed_configuration_ids:
-- "d3f18d1ba862bbe0fb272d0af9990e4e72a939e75371b1b63da4ffab775fcb2f"
+- "9ddb3e0cdbc8cc137ecf42c4d44641b9084ce5d98b2a8fdc2e43785c62119abd"
 max_attempt_slots: 3
 max_provider_invocations: 3
 max_attempts_per_configuration: 3
 concurrency_ceiling: 1
 token_ceiling: null
-cost_ceiling: null
+cost_ceiling:
+  amount: 25.0
+  currency: "USD"
 validity_window:
   not_before: "2026-08-18T00:00:00+00:00"
   not_after: "2026-08-25T00:00:00+00:00"
@@ -28,5 +30,5 @@ automatic_merge_prohibited: true
 preservation_requirements: "Every reservation and every attempt result -- successful, failed, interrupted, or aborted before invocation -- is preserved permanently in the campaign ledger and attempt directory."
 logging_requirements: "Every provider invocation, raw-output reference, lifecycle transition, and terminal outcome is recorded in the append-only campaign ledger."
 prepared_by: "campaign-preparation-agent"
-prepared_at: "2026-08-04T00:00:00+00:00"
-policy_digest: "248ecb5d33e17aae3bff04f9fe07f3ddd5e0b478a419dbe21fb45e0aea5f6910"
+prepared_at: "2026-08-05T00:00:00+00:00"
+policy_digest: "ef0f79ca831d127bc0ac0af264d6d37209b6310acffcb336ca021aafb332db03"
