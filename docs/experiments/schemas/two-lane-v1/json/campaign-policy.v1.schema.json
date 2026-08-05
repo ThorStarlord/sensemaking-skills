@@ -81,6 +81,12 @@
     },
     "policy_digest": {"type": "string"},
     "classification": {"const": "EXPLORATORY_NOT_CANONICAL_EVIDENCE"},
+    "execution_mode": {
+      "type": "string",
+      "enum": ["provider_api", "coding_agent_native"]
+    },
+    "execution_surface": {"type": "string", "minLength": 1},
+    "external_provider_api_prohibited": {"type": "boolean"},
     "allowed_framework_shas": {
       "type": "array",
       "minItems": 1,
@@ -93,7 +99,6 @@
     },
     "allowed_models": {
       "type": "array",
-      "minItems": 1,
       "items": {"type": "string", "minLength": 1}
     },
     "allowed_artifact_types": {
@@ -131,5 +136,42 @@
     "logging_requirements": {"type": "string", "minLength": 1},
     "prepared_by": {"type": "string", "minLength": 1},
     "prepared_at": {"$ref": "#/$defs/rfc3339Timestamp"}
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"execution_mode": {"const": "coding_agent_native"}},
+        "required": ["execution_mode"]
+      },
+      "then": {
+        "properties": {
+          "execution_surface": {"type": "string", "minLength": 1},
+          "external_provider_api_prohibited": {"const": true},
+          "allowed_models": {"maxItems": 0}
+        },
+        "required": ["execution_surface", "external_provider_api_prohibited"]
+      }
+    },
+    {
+      "if": {
+        "properties": {"external_provider_api_prohibited": {"const": true}},
+        "required": ["external_provider_api_prohibited"]
+      },
+      "then": {
+        "properties": {"execution_mode": {"const": "coding_agent_native"}},
+        "required": ["execution_mode"]
+      }
+    },
+    {
+      "if": {
+        "not": {
+          "properties": {"execution_mode": {"const": "coding_agent_native"}},
+          "required": ["execution_mode"]
+        }
+      },
+      "then": {
+        "properties": {"allowed_models": {"minItems": 1}}
+      }
+    }
+  ]
 }

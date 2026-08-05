@@ -43,6 +43,17 @@ POLICY_DIGEST_FIELDS = (
     "prepared_at",
 )
 
+# Optional normative policy fields (Lane A beta amendment, ADR 0023
+# section 21e): included in the digest WHEN PRESENT, so a declared
+# execution mode / surface / external-API prohibition is digest-bound.
+# Absence hashes nothing (the field simply is not part of the declared
+# envelope), which keeps pre-amendment policies digest-stable.
+POLICY_DIGEST_OPTIONAL_FIELDS = (
+    "execution_mode",
+    "execution_surface",
+    "external_provider_api_prohibited",
+)
+
 # Exact hashed field set for the configuration ID (ADR 0023 section 10c),
 # verbatim -- excludes `configuration_id` itself and `campaign_id`.
 CONFIGURATION_ID_FIELDS = (
@@ -58,11 +69,17 @@ CONFIGURATION_ID_FIELDS = (
 )
 
 
-def _project(document: dict, fields: tuple[str, ...]) -> dict:
+def _project(
+    document: dict, fields: tuple[str, ...], optional: tuple[str, ...] = ()
+) -> dict:
     missing = [f for f in fields if f not in document]
     if missing:
         raise KeyError(f"missing required field(s) for digest: {missing}")
-    return {field: document[field] for field in fields}
+    projected = {field: document[field] for field in fields}
+    for field in optional:
+        if field in document:
+            projected[field] = document[field]
+    return projected
 
 
 def compute_policy_digest(policy: dict) -> str:
@@ -71,9 +88,12 @@ def compute_policy_digest(policy: dict) -> str:
     ``policy`` must be the restricted JSON-compatible mapping produced by
     ``parse_two_lane_yaml`` (or an equivalent already-validated mapping) --
     never raw YAML text. Unknown fields are not silently included: only the
-    exact fields in ``POLICY_DIGEST_FIELDS`` are hashed.
+    exact fields in ``POLICY_DIGEST_FIELDS`` (plus any declared
+    ``POLICY_DIGEST_OPTIONAL_FIELDS``) are hashed.
     """
-    projected = _project(policy, POLICY_DIGEST_FIELDS)
+    projected = _project(
+        policy, POLICY_DIGEST_FIELDS, POLICY_DIGEST_OPTIONAL_FIELDS
+    )
     payload = jcs.canonicalize_bytes(projected)
     return hashlib.sha256(payload).hexdigest()
 
