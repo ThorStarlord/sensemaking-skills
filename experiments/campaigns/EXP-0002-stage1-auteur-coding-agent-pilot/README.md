@@ -13,7 +13,7 @@ model/provider API is used at any point.
 |---|---|
 | `campaign_id` | `EXP-0002-stage1-auteur-coding-agent-pilot` |
 | Framework repository | `ThorStarlord/sensemaking-skills` |
-| Framework SHA | `805b7ee285c7520ae3ca9dd5538138275b9abe64` |
+| Framework SHA | `424e625261aa651add21acdc90e5d4af62f1cc3a` |
 | `execution_mode` | `coding_agent_native` |
 | `execution_surface` | `current_coding_agent` |
 | `external_provider_api_prohibited` | `true` (zero external API cost by construction) |
@@ -22,12 +22,12 @@ model/provider API is used at any point.
 | Model / surface identifier | `current_coding_agent` (no external model; `allowed_models: []`) |
 | Artifact type | `repository_sensemaking_brief` |
 | Configurations | exactly 1 (see `configuration-identity.yaml`) |
-| `configuration_id` | `da6f8538515854c4c30f1595f401065c2e203646ce4e1c0899e676649735d14a` |
+| `configuration_id` | `5f854a4ef6588cd725fae569a97b739a5761cd02762f61c15276a6ca5323accb` |
 | Attempts | 3 (`max_attempt_slots=3`, `max_attempts_per_configuration=3`) |
 | Concurrency | 1 (serialized attempts; an active attempt holds the slot) |
 | Classification | `EXPLORATORY_NOT_CANONICAL_EVIDENCE` |
 | Prohibitions | fallback, hidden retry, target mutation, automatic repair, automatic merge, external provider API |
-| `policy_digest` | `267fc060d20eed0f1e7f627e0e940e35de1ac3b085509637f4d3087a7f9a0908` (see `campaign-policy.sha256`) |
+| `policy_digest` | `4de1a3695b524a233cb68c3f57ac2eb8ff87bdd6c4901da448700c6860701849` (see `campaign-policy.sha256`) |
 | Validity window | `2026-08-18T00:00:00Z` .. `2026-08-25T00:00:00Z` |
 
 `cost_ceiling`/`token_ceiling` are `null`: with
