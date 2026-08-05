@@ -2,7 +2,7 @@ policy_schema_version: "1"
 campaign_id: "EXP-0001-stage1-auteur-autonomy-pilot"
 classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"
 allowed_framework_shas:
-- "4ba049e04e74699a009147df112baed3f7536343"
+- "8e1b424a314709ae5a1531551ec92451a96b4b46"
 allowed_targets:
 - repository: "https://github.com/ThorStarlord/auteur.git"
   sha: "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
@@ -11,7 +11,7 @@ allowed_models:
 allowed_artifact_types:
 - "repository_sensemaking_brief"
 allowed_configuration_ids:
-- "bd36c7b68e85c37503daf07aa02a5e05147e052bf5f222731a996a0dcd242fc7"
+- "d3f18d1ba862bbe0fb272d0af9990e4e72a939e75371b1b63da4ffab775fcb2f"
 max_attempt_slots: 3
 max_provider_invocations: 3
 max_attempts_per_configuration: 3
@@ -19,8 +19,8 @@ concurrency_ceiling: 1
 token_ceiling: null
 cost_ceiling: null
 validity_window:
-  not_before: "2026-08-07T00:00:00+00:00"
-  not_after: "2026-08-14T00:00:00+00:00"
+  not_before: "2026-08-18T00:00:00+00:00"
+  not_after: "2026-08-25T00:00:00+00:00"
 target_mutation_prohibited: true
 fallback_prohibited: true
 repair_prohibited: true
@@ -29,4 +29,4 @@ preservation_requirements: "Every reservation and every attempt result -- succes
 logging_requirements: "Every provider invocation, raw-output reference, lifecycle transition, and terminal outcome is recorded in the append-only campaign ledger."
 prepared_by: "campaign-preparation-agent"
 prepared_at: "2026-08-04T00:00:00+00:00"
-policy_digest: "050f0ff2ce797ee9a9056b913bdf9933b34d0d17f8a93dda439abbe5afc276aa"
+policy_digest: "248ecb5d33e17aae3bff04f9fe07f3ddd5e0b478a419dbe21fb45e0aea5f6910"

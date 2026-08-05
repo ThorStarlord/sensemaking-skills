@@ -40,16 +40,16 @@ from sensemaking_skills.campaign_validation.models import (
 )
 
 CAMPAIGN_ID = "EXP-0001-stage1-auteur-autonomy-pilot"
-FRAMEWORK_SHA = "4ba049e04e74699a009147df112baed3f7536343"
+FRAMEWORK_SHA = "8e1b424a314709ae5a1531551ec92451a96b4b46"
 TARGET_REPOSITORY = "https://github.com/ThorStarlord/auteur.git"
 TARGET_SHA = "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
 MODEL = "claude-sonnet-5"
 ARTIFACT_TYPE = "repository_sensemaking_brief"
-NOT_BEFORE = "2026-08-07T00:00:00+00:00"
-NOT_AFTER = "2026-08-14T00:00:00+00:00"
+NOT_BEFORE = "2026-08-18T00:00:00+00:00"
+NOT_AFTER = "2026-08-25T00:00:00+00:00"
 # Injected validation time, always inside the frozen window: deterministic
 # regardless of when the suite is executed (never the wall clock).
-CURRENT_TIME = "2026-08-08T00:00:00+00:00"
+CURRENT_TIME = "2026-08-19T00:00:00+00:00"
 
 PACKAGE_DIR = (
     Path(__file__).resolve().parents[2]

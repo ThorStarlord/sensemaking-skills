@@ -1,4 +1,4 @@
-# EXP-0001-stage1-auteur-autonomy-pilot — preparation package (Phase 5, Issue #121)
+# EXP-0001-stage1-auteur-autonomy-pilot — preparation package (Phase 5 revision, Issue #121/#122)
 
 **STATUS: PREPARATION ONLY. NOT OPERATIVE. NOT APPROVED. NOT EXECUTED.**
 
@@ -16,18 +16,18 @@ exact policy digest below.
 |---|---|
 | `campaign_id` | `EXP-0001-stage1-auteur-autonomy-pilot` |
 | Framework repository | `ThorStarlord/sensemaking-skills` |
-| Framework SHA | `4ba049e04e74699a009147df112baed3f7536343` |
+| Framework SHA | `8e1b424a314709ae5a1531551ec92451a96b4b46` |
 | Target repository | `ThorStarlord/auteur` (`https://github.com/ThorStarlord/auteur.git`) |
 | Target SHA | `0653defb05625f2fcde0ac32eac6e59ccf7eeb90` |
 | Model | `claude-sonnet-5` |
 | Artifact type | `repository_sensemaking_brief` |
 | Configurations | exactly 1 (see `configuration-identity.yaml`) |
-| `configuration_id` | `bd36c7b68e85c37503daf07aa02a5e05147e052bf5f222731a996a0dcd242fc7` |
+| `configuration_id` | `d3f18d1ba862bbe0fb272d0af9990e4e72a939e75371b1b63da4ffab775fcb2f` |
 | Attempts | 3 (`max_attempt_slots=3`, `max_attempts_per_configuration=3`, `max_provider_invocations=3`) |
 | Concurrency | 1 (`concurrency_ceiling=1`) |
 | Classification | `EXPLORATORY_NOT_CANONICAL_EVIDENCE` |
 | Prohibitions | fallback, hidden retry, target mutation, automatic repair, automatic merge (all `*_prohibited: true`) |
-| `policy_digest` | `050f0ff2ce797ee9a9056b913bdf9933b34d0d17f8a93dda439abbe5afc276aa` (see `campaign-policy.sha256`) |
+| `policy_digest` | `248ecb5d33e17aae3bff04f9fe07f3ddd5e0b478a419dbe21fb45e0aea5f6910` (see `campaign-policy.sha256`) |
 
 The configuration pins `prompt_or_skill_revision` and
 `validator_revision` to the framework SHA: the `repo-sensemaker` skill and
@@ -49,8 +49,8 @@ fallback; Resolution C rejected**):
 1. **Frozen absolute window** (part of the approved bytes):
 
    ```text
-   not_before: 2026-08-07T00:00:00+00:00
-   not_after:  2026-08-14T00:00:00+00:00   (exactly 7 days later)
+   not_before: 2026-08-18T00:00:00+00:00
+   not_after:  2026-08-25T00:00:00+00:00   (exactly 7 days later)
    ```
 
 2. **Approval protocol**: the genuine human approval must be recorded
@@ -72,9 +72,13 @@ fallback; Resolution C rejected**):
    fail-closed schema contract. A future schema revision may add it
    through the normal ADR process, not inside this package.
 
-The window is deliberately anchored with a short review buffer
-(`not_before` = preparation date + 3 days) so a prompt approval yields the
-full seven-day campaign window from `not_before`.
+The window is deliberately anchored AFTER the original August 7-14
+window expired (Phase 6 correction): the first window belonged to a
+preparation whose execution infrastructure was retired by the PR #129
+review (`PR_129_REQUEST_CHANGES`). The corrected, framework-governed
+execution boundary (merged at the pinned `framework_sha`) supersedes it;
+the new window is anchored with a review buffer so a prompt approval
+yields the full seven-day campaign window from `not_before`.
 
 ## What makes this package non-operative
 
