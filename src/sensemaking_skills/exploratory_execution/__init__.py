@@ -38,12 +38,23 @@ from .claude_provider import (
 )
 from .execution_identity import (
     GOVERNED_APPROVAL_PATH,
+    GOVERNED_GITHUB_REPOSITORY,
     GOVERNED_PROTECTED_BRANCH,
+    GOVERNED_REQUIRED_APPROVER_PERMISSION,
     TRUSTED_FRAMEWORK_REMOTE,
     checkout_sha,
     execution_module_digests,
     framework_tree_unchanged,
     module_digest,
+)
+from .github_approval import (
+    APPROVAL_MARKER,
+    APPROVAL_MECHANISM,
+    ApprovalCaptureError,
+    GitHubApprovalError,
+    GitHubIssueCommentApprovalVerifier,
+    capture_approval_snapshot,
+    parse_approval_comment,
 )
 from .production_verifier import ProductionSignedCommitVerifier
 from .prompt_builder import build_exploratory_prompt
@@ -52,20 +63,29 @@ from .target_checkout import TargetCheckout, TargetCheckoutError
 __all__ = [
     "ALLOWED_SDK_TOOLS",
     "ALLOWED_SETTING_SOURCES",
+    "APPROVAL_MARKER",
+    "APPROVAL_MECHANISM",
+    "ApprovalCaptureError",
     "GOVERNED_APPROVAL_PATH",
+    "GOVERNED_GITHUB_REPOSITORY",
     "GOVERNED_PROTECTED_BRANCH",
+    "GOVERNED_REQUIRED_APPROVER_PERMISSION",
     "TRUSTED_FRAMEWORK_REMOTE",
     "CampaignBriefValidator",
     "ClaudeProvider",
+    "GitHubApprovalError",
+    "GitHubIssueCommentApprovalVerifier",
     "ProductionSignedCommitVerifier",
-    "ProviderConfigMismatch",
-    "ProviderInvocationError",
-    "ProviderPermitDenied",
     "TargetCheckout",
     "TargetCheckoutError",
     "build_exploratory_prompt",
+    "capture_approval_snapshot",
     "checkout_sha",
     "execution_module_digests",
     "framework_tree_unchanged",
     "module_digest",
+    "parse_approval_comment",
+    "ProviderConfigMismatch",
+    "ProviderInvocationError",
+    "ProviderPermitDenied",
 ]

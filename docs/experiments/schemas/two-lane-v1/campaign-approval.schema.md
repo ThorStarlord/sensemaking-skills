@@ -17,7 +17,7 @@ operative campaign approval may be created under Issue #117 — see the
 | `campaign_id` | string | Must exactly match the `campaign_id` of the policy being approved. |
 | `policy_digest` | string (sha256 hex) | Must exactly match the policy document's `policy_digest`. An approval whose `policy_digest` does not match the current policy is invalid for that policy (ADR 0023 §9c). |
 | `claimed_approver_identity` | string | The identity the approval asserts (e.g. a GitHub handle). This is a **claim**, per ADR 0023 §12 item 1 — not by itself proof. |
-| `approval_provenance` | object{mechanism, reference} | §12 item 2. `mechanism` names how the claim could be corroborated (e.g. `signed_commit`, `github_review_approval`). `reference` points at the corroborating artifact (commit SHA, review URL/id). Required; an approval with `mechanism: "none"` is a template, not an operative approval. |
+| `approval_provenance` | object{mechanism, reference[, repository, issue_number, comment_id, comment_body_sha256]} | §12 item 2. `mechanism` names how the claim could be corroborated (e.g. `signed_commit`, `github_issue_comment_approval`). `reference` points at the corroborating artifact (commit SHA, comment URL). Required; an approval with `mechanism: "none"` is a template, not an operative approval. The four additional fields are REQUIRED when `mechanism` is `github_issue_comment_approval` (Lane A beta, Model B — see ADR 0023 §21): `repository` (governed repo), `issue_number`, `comment_id`, and `comment_body_sha256` (sha256 hex of the exact comment body), and are absent/ignored for other mechanisms. |
 | `approval_statement` | string | Explicit, first-person consent text authored by the approving human. Must not be inferred from silence, from a merge, or from repository write access (ADR 0023 §12 item 4). |
 | `approved_at` | string (RFC3339) | |
 | `marker` | string | Must be exactly `EXAMPLE_ONLY_NOT_AUTHORIZATION` in every example or template shipped in this repository under `docs/experiments/schemas/`. An operative approval (outside this schema-contract directory) omits this field entirely; its presence marks a document as non-operative. |
@@ -27,7 +27,11 @@ operative campaign approval may be created under Issue #117 — see the
 - Any mechanism for the coding agent to populate `claimed_approver_identity`,
   `approval_statement`, or `approved_at` on a human's behalf. Per ADR 0023
   §12, the agent may prepare a **blank template** (all four fields empty or
-  a placeholder) but must never fill them in with real values.
+  a placeholder) but must never fill them in with real values. Under the
+  Lane A beta amendment (ADR 0023 §21, Model B), trusted framework code MAY
+  transcribe these fields from a verified human-authored GitHub approval
+  comment (mechanical transcription, never agent-authored consent); the
+  fields are still never authored by the agent.
 - Any claim that `approval_provenance` is currently verified by running
   code. As of Phase 1, nothing in this repository checks
   `approval_provenance.reference`. That verification is explicitly deferred

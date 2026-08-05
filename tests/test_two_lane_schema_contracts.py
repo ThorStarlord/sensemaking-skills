@@ -896,7 +896,17 @@ CAMPAIGN_APPROVAL_SHAPE = closed(
         "campaign_id": SCALAR,
         "policy_digest": SCALAR,
         "claimed_approver_identity": SCALAR,
-        "approval_provenance": closed({"mechanism": SCALAR, "reference": SCALAR}),
+        "approval_provenance": closed(
+            {
+                "mechanism": SCALAR,
+                "reference": SCALAR,
+                "repository": SCALAR,
+                "issue_number": SCALAR,
+                "comment_id": SCALAR,
+                "comment_body_sha256": SCALAR,
+            },
+            required={"mechanism", "reference"},
+        ),
         "approval_statement": SCALAR,
         "approved_at": SCALAR,
         "marker": SCALAR,

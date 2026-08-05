@@ -34,6 +34,16 @@ from pathlib import Path
 #: this to the production verifier and the checkout guard.
 TRUSTED_FRAMEWORK_REMOTE = "https://github.com/ThorStarlord/sensemaking-skills.git"
 
+#: The governed GitHub repository for Lane A beta campaign approvals
+#: (issue-comment mechanism). Approval provenance must name exactly this
+#: repository; the comment verifier refuses anything else.
+GOVERNED_GITHUB_REPOSITORY = "ThorStarlord/sensemaking-skills"
+
+#: The minimum GitHub collaborator permission an approval-comment author
+#: must hold on the governed repository (admin = repository owner for
+#: EXP-0001's designated approver).
+GOVERNED_REQUIRED_APPROVER_PERMISSION = "admin"
+
 #: The governed path of the approval document inside signed commits.
 GOVERNED_APPROVAL_PATH = "approval.yaml"
 
@@ -47,6 +57,7 @@ GOVERNED_PROTECTED_BRANCH = "refs/remotes/origin/main"
 _EXECUTION_MODULES: list[str] = [
     "execution_identity.py",
     "production_verifier.py",
+    "github_approval.py",
     "target_checkout.py",
     "prompt_builder.py",
     "claude_provider.py",

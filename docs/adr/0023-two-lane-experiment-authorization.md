@@ -942,7 +942,101 @@ is **unchanged** by this ADR: no file under that directory is modified,
 `authorization-record.yaml` and its digest are untouched, and Evidence 0016
 remains governed exclusively by Lane B / ADR 0022 / `scripts/gate_a_authorization.py`.
 
-## 20. This ADR does not authorize an experiment
+## 21. Lane A beta amendment — GitHub issue-comment approval (Model B)
+
+**Amendment (dated 2026-08-05, Issue #116 decision record):** for
+exploratory **Lane A beta** campaigns, an explicit GitHub issue comment
+from a designated repository maintainer may authorize one exact campaign
+policy digest. This amendment does NOT apply to Lane B canonical
+evidence, and it does not remove the signed-commit mechanism (§12 item 3),
+which remains available for future high-assurance use.
+
+### 21a. Decision
+
+The certificate-heavy ceremony (OpenPGP fingerprint registration through
+a framework PR, then a signed approval commit) is replaced for Lane A
+beta campaigns by Model B:
+
+```text
+Human approves one bounded campaign (one issue comment)
+        -> agent executes up to the policy's attempt limit autonomously
+        -> agent publishes all results in a results PR
+        -> human reviews the aggregate results PR
+```
+
+The human performs exactly two substantive actions: posting the one
+approval comment, and reviewing the results PR.
+
+### 21b. Approval comment contract
+
+The approval is a GitHub issue comment on the campaign's issue with the
+exact grammar:
+
+```text
+APPROVE_EXPLORATORY_CAMPAIGN
+
+campaign_id: <exact campaign id>
+policy_digest: <exact 64-hex policy digest>
+maximum_attempts: <int, <= policy max_attempt_slots>
+concurrency: <int, <= policy concurrency_ceiling>
+automatic_merge: prohibited
+classification: <exact policy classification>
+expires_at: <RFC3339, <= policy window end>
+
+<explicit first-person statement containing "authorize">
+```
+
+A reaction, a merge, repository ownership, write access, or a vague
+comment is not approval. The comment must be posted by the human
+approver; an agent may prepare a copyable template but must never post
+the operative comment.
+
+### 21c. Provenance record and verification
+
+Trusted framework code transcribes the verified comment into the
+operative approval document (mechanical transcription, never
+agent-authored consent) with provenance:
+
+```yaml
+approval_provenance:
+  mechanism: "github_issue_comment_approval"
+  reference: "<comment URL>"
+  repository: "ThorStarlord/sensemaking-skills"
+  issue_number: "<issue>"
+  comment_id: "<numeric comment id>"
+  comment_body_sha256: "<sha256 of the exact comment body>"
+```
+
+The framework-governed verifier (bound by `framework_sha` like every
+other execution module) corroborates the snapshot against the live
+GitHub API before every capability mint and fails closed unless: the
+comment exists (deleted = 404 = absent); it belongs to the governed
+repository and recorded issue; the author login equals
+`claimed_approver_identity`; the author holds the required repository
+permission (`admin` for EXP-0001's designated approver); the body parses
+as the grammar; `campaign_id`/`policy_digest`/attempt limit/concurrency/
+automatic-merge rule/classification/expiry agree with the validated
+policy (nothing may exceed the envelope); the body digest equals
+`comment_body_sha256` (any edit fails); `approved_at` equals the
+comment's `created_at`; and the parsed statement equals
+`approval_statement`. Authority derives from GitHub repository
+permissions, not from a framework-embedded fingerprint registry.
+
+### 21d. Revalidation and mutation
+
+The comment is re-fetched before every attempt. If it has been edited,
+deleted, or no longer matches the recorded snapshot, the runner stops
+before the next reservation or provider invocation. Completed attempts
+remain in the ledger.
+
+### 21e. Unchanged prohibitions
+
+Even under Model B: no production secrets, no uncontrolled spending
+(policy ceilings remain enforced), no target mutation, no hidden
+retries, no omitted failures, no direct provider bypass, no automatic
+merge, and no treating exploratory output as canonical evidence.
+
+## 22. This ADR does not authorize an experiment
 
 This ADR is a governance and schema contract. It does not create, approve,
 or run any campaign or attempt. `EXP-0001` does not exist after this ADR
