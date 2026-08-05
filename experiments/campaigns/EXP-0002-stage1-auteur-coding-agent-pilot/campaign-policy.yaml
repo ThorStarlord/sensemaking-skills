@@ -1,0 +1,34 @@
+policy_schema_version: "1"
+campaign_id: "EXP-0002-stage1-auteur-coding-agent-pilot"
+classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"
+execution_mode: "coding_agent_native"
+execution_surface: "current_coding_agent"
+external_provider_api_prohibited: true
+allowed_framework_shas:
+- "253efe56d08f3e5c9a051bbba78efeaa606a6928"
+allowed_targets:
+- repository: "https://github.com/ThorStarlord/auteur.git"
+  sha: "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
+allowed_models: []
+allowed_artifact_types:
+- "repository_sensemaking_brief"
+allowed_configuration_ids:
+- "f354644e6dcfbf93a85ba309518ad0e9b8da4f6771a31fd11a8a15af166d167b"
+max_attempt_slots: 3
+max_provider_invocations: 3
+max_attempts_per_configuration: 3
+concurrency_ceiling: 1
+token_ceiling: null
+cost_ceiling: null
+validity_window:
+  not_before: "2026-08-18T00:00:00+00:00"
+  not_after: "2026-08-25T00:00:00+00:00"
+target_mutation_prohibited: true
+fallback_prohibited: true
+repair_prohibited: true
+automatic_merge_prohibited: true
+preservation_requirements: "Every reservation and every attempt result -- successful, failed, validation-failed, interrupted, or aborted before invocation -- is preserved permanently in the campaign ledger and attempt directory."
+logging_requirements: "Every attempt lifecycle transition, raw request, raw output, produced artifact, and terminal outcome is recorded in the append-only campaign ledger. No external model/provider API is used; external cost is zero by construction."
+prepared_by: "campaign-preparation-agent"
+prepared_at: "2026-08-05T00:00:00+00:00"
+policy_digest: "7121fa308899d02ca7365029bdd3d606744c4f00f8e58c762b64718d014b6290"

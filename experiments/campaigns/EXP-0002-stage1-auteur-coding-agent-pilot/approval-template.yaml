@@ -1,0 +1,10 @@
+approval_schema_version: "1"
+marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"
+campaign_id: "EXP-0002-stage1-auteur-coding-agent-pilot"
+policy_digest: "7121fa308899d02ca7365029bdd3d606744c4f00f8e58c762b64718d014b6290"
+claimed_approver_identity: ""
+approval_provenance:
+  mechanism: "github_issue_comment_approval"
+  reference: ""
+approval_statement: ""
+approved_at: null
