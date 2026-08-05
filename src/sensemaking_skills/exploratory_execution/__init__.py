@@ -47,6 +47,13 @@ from .execution_identity import (
     framework_tree_unchanged,
     module_digest,
 )
+from .conversation_approval import (
+    APPROVAL_FILENAME as CONVERSATION_APPROVAL_FILENAME,
+    APPROVAL_MECHANISM as CONVERSATION_APPROVAL_MECHANISM,
+    APPROVAL_TEXT,
+    ConversationApprovalVerifier,
+    extract_frontmatter,
+)
 from .github_approval import (
     APPROVAL_MARKER,
     APPROVAL_MECHANISM,
@@ -65,7 +72,11 @@ __all__ = [
     "ALLOWED_SETTING_SOURCES",
     "APPROVAL_MARKER",
     "APPROVAL_MECHANISM",
+    "APPROVAL_TEXT",
     "ApprovalCaptureError",
+    "CONVERSATION_APPROVAL_FILENAME",
+    "CONVERSATION_APPROVAL_MECHANISM",
+    "ConversationApprovalVerifier",
     "GOVERNED_APPROVAL_PATH",
     "GOVERNED_GITHUB_REPOSITORY",
     "GOVERNED_PROTECTED_BRANCH",
@@ -82,6 +93,7 @@ __all__ = [
     "capture_approval_snapshot",
     "checkout_sha",
     "execution_module_digests",
+    "extract_frontmatter",
     "framework_tree_unchanged",
     "module_digest",
     "parse_approval_comment",

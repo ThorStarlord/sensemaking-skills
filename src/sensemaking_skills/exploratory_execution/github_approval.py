@@ -1,9 +1,17 @@
-"""GitHub issue-comment campaign approval (Lane A beta, Model B).
+"""DEPRECATED LEGACY — GitHub issue-comment campaign approval (superseded).
 
-Framework-governed replacement for the signed-commit ceremony on Lane A
-beta campaigns: the human posts ONE approval comment on the campaign's
-GitHub issue, trusted framework code transcribes that comment into the
-operative ``approval.yaml`` (mechanical transcription, never agent-authored
+The governance decision of 2026-08-05 REPLACED the GitHub issue-comment
+mechanism for coding-agent-native campaigns with the conversation
+approval (active_human_conversation): the human approves in the
+conversation, the coding agent writes ``approval.md``, and no GitHub
+comment, capture script, API token, or live revalidation is involved.
+This module and ``capture_github_approval.py`` are retained ONLY for
+historical campaigns that used the earlier mechanism; they are not part
+of any new campaign path.
+
+The human posts ONE approval comment on the campaign's GitHub issue,
+trusted framework code transcribes that comment into the operative
+``approval.yaml`` (mechanical transcription, never agent-authored
 consent), and this verifier corroborates the snapshot against the LIVE
 GitHub API before every capability mint.
 

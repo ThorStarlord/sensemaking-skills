@@ -66,6 +66,7 @@ CAMPAIGN_FAILURE_CODES: Mapping[str, str] = {
     "CAMPAIGN_APPROVAL_EXAMPLE_TEMPLATE_NON_OPERATIVE": "approval carries the EXAMPLE_ONLY_NOT_AUTHORIZATION marker and can never be operative",
     "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT": "approval contains an unfilled human-placeholder token",
     "CAMPAIGN_APPROVAL_POLICY_MISMATCH": "approval's campaign_id or policy_digest does not match the policy being approved",
+    "CAMPAIGN_APPROVAL_ENVELOPE_EXCEEDED": "conversation-approval receipt exceeds the approved policy envelope (attempt limit, concurrency, merge rule, external-provider prohibition, classification, or window)",
     "CAMPAIGN_APPROVER_UNAUTHORIZED": "claimed_approver_identity is not in the caller-supplied allowed approver set",
     "CAMPAIGN_APPROVAL_PROVENANCE_INVALID": "approval_provenance mechanism/reference is missing or structurally invalid",
     "CAMPAIGN_APPROVAL_AMBIGUOUS": "more than one operative approval matches this policy",

@@ -58,6 +58,7 @@ _EXECUTION_MODULES: list[str] = [
     "execution_identity.py",
     "production_verifier.py",
     "github_approval.py",
+    "conversation_approval.py",
     "target_checkout.py",
     "prompt_builder.py",
     "claude_provider.py",

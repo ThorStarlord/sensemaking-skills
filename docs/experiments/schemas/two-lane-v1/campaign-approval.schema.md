@@ -20,6 +20,15 @@ operative campaign approval may be created under Issue #117 — see the
 | `approval_provenance` | object{mechanism, reference[, repository, issue_number, comment_id, comment_body_sha256]} | §12 item 2. `mechanism` names how the claim could be corroborated (e.g. `signed_commit`, `github_issue_comment_approval`). `reference` points at the corroborating artifact (commit SHA, comment URL). Required; an approval with `mechanism: "none"` is a template, not an operative approval. The four additional fields are REQUIRED when `mechanism` is `github_issue_comment_approval` (Lane A beta, Model B — see ADR 0023 §21): `repository` (governed repo), `issue_number`, `comment_id`, and `comment_body_sha256` (sha256 hex of the exact comment body), and are absent/ignored for other mechanisms. |
 | `approval_statement` | string | Explicit, first-person consent text authored by the approving human. Must not be inferred from silence, from a merge, or from repository write access (ADR 0023 §12 item 4). |
 | `approved_at` | string (RFC3339) | |
+| `status` | string | Conversation-approval profile only: must be exactly `approved`. |
+| `approval_source` | string | Conversation-approval profile only: must be exactly `active_human_conversation` — the human's standalone `approve` in the active conversation is the authority; the receipt is agent-recorded and is not independent proof of identity. |
+| `approval_text` | string | Conversation-approval profile only: must be exactly `approve`. |
+| `maximum_attempts` | integer | Conversation-approval profile only: must not exceed the policy `max_attempt_slots`. |
+| `concurrency` | integer | Conversation-approval profile only: must not exceed the policy `concurrency_ceiling`. |
+| `automatic_merge` | string | Conversation-approval profile only: must be exactly `prohibited`, and the policy must prohibit automatic merge. |
+| `external_provider_api_prohibited` | boolean | Conversation-approval profile only: must be exactly `true`, and the policy must declare `external_provider_api_prohibited: true`. |
+| `classification` | string | Conversation-approval profile only: must equal the policy classification. |
+| `reference` | string | Conversation-approval profile only: points at the conversation record (e.g. session/message id). Required. |
 | `marker` | string | Must be exactly `EXAMPLE_ONLY_NOT_AUTHORIZATION` in every example or template shipped in this repository under `docs/experiments/schemas/`. An operative approval (outside this schema-contract directory) omits this field entirely; its presence marks a document as non-operative. |
 
 ## What this schema does NOT define

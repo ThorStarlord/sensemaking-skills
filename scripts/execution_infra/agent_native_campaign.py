@@ -41,7 +41,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from execution_infra.runner import (  # noqa: E402
-    APPROVAL_FILENAME,
     ATTEMPT_ARTIFACTS,
     REAL_CAMPAIGN_ID,
     RunnerRefusal,
@@ -65,9 +64,12 @@ from sensemaking_skills.campaign_validation import (  # noqa: E402
     validate_campaign_bundle,
 )
 from sensemaking_skills.exploratory_execution import (  # noqa: E402
+    CONVERSATION_APPROVAL_FILENAME,
+    CONVERSATION_APPROVAL_MECHANISM,
     CampaignBriefValidator,
     TargetCheckout,
     execution_module_digests,
+    extract_frontmatter,
     framework_tree_unchanged,
 )
 
@@ -101,6 +103,31 @@ def _read_document(package_dir: Path, name: str) -> bytes:
     return path.read_bytes()
 
 
+def _read_approval_document(package_dir: Path) -> bytes:
+    """Read the operative approval for a coding-agent-native campaign:
+    ``approval.md`` (the conversation-approval receipt). Returns the
+    extracted YAML frontmatter bytes -- the machine-readable approval
+    record -- and refuses when the receipt is missing or has no
+    frontmatter.
+    """
+    path = Path(package_dir) / CONVERSATION_APPROVAL_FILENAME
+    if not path.is_file():
+        raise RunnerRefusal(
+            f"no operative approval at {path}: the human's standalone "
+            "'approve' in the active conversation is the authorization, "
+            "recorded by the coding agent as approval.md (never inferred "
+            "from merge, ownership, or silence)"
+        )
+    frontmatter = extract_frontmatter(path.read_bytes())
+    if frontmatter is None:
+        raise RunnerRefusal(
+            f"approval.md at {path} has no well-formed YAML frontmatter; "
+            "the conversation-approval receipt must carry the exact "
+            "frontmatter contract"
+        )
+    return frontmatter
+
+
 def _guard_real_campaign(
     package_dir: Path, campaign_id: str, *, verifier: Any, validate: Any
 ) -> None:
@@ -114,13 +141,23 @@ def _guard_real_campaign(
             "configuration (no caller-supplied callable may authorize the "
             "real campaign)"
         )
-    if not (Path(package_dir) / APPROVAL_FILENAME).is_file():
-        raise RunnerRefusal(
-            f"refusing to run the real campaign: no operative approval at "
-            f"{Path(package_dir) / APPROVAL_FILENAME}; approval is a human "
-            "act, never inferred from merge or ownership"
-        )
+    _read_approval_document(package_dir)
 
+
+
+def _guard_conversation_mechanism(bundle: Any) -> None:
+    """The coding-agent-native mode uses the conversation-approval receipt
+    (approval_source: active_human_conversation). The GitHub comment and
+    signed-commit mechanisms were REPLACED for this mode; anything else is
+    refused even if a legacy file were placed in the package."""
+    raw = getattr(bundle.approval, "raw", {}) or {}
+    if raw.get("approval_source") != CONVERSATION_APPROVAL_MECHANISM:
+        raise RunnerRefusal(
+            "coding-agent-native campaigns require the conversation-"
+            "approval receipt (approval_source: active_human_conversation); "
+            "the GitHub/signed-commit mechanisms were replaced for this "
+            "execution mode"
+        )
 
 def _guard_window(policy_raw: dict[str, Any], now: datetime) -> None:
     window = policy_raw["validity_window"]
@@ -274,6 +311,14 @@ def prepare_next_attempt(
             "campaigns; this policy declares "
             f"{policy_raw.get('execution_mode')!r}"
         )
+    if (
+        policy_raw.get("execution_mode") == "coding_agent_native"
+        and policy_raw.get("external_provider_api_prohibited") is not True
+    ):
+        raise RunnerRefusal(
+            "coding_agent_native requires external_provider_api_prohibited: "
+            "true (no external model/provider API may be involved)"
+        )
 
     _guard_real_campaign(package_dir, campaign_id, verifier=verifier, validate=None)
     _guard_window(policy_raw, now)
@@ -286,7 +331,7 @@ def prepare_next_attempt(
     )
     bundle_result = validate_campaign_bundle(
         policy_bytes,
-        _read_document(package_dir, APPROVAL_FILENAME),
+        _read_approval_document(package_dir),
         config_bytes,
         context,
     )
@@ -296,8 +341,9 @@ def prepare_next_attempt(
             f"{bundle_result.detail}"
         )
     bundle = bundle_result.value
+    _guard_conversation_mechanism(bundle)
 
-    approval_bytes = _read_document(package_dir, APPROVAL_FILENAME)
+    approval_bytes = _read_approval_document(package_dir)
     if campaign_id == AGENT_NATIVE_REAL_CAMPAIGN_ID:
         verifier = construct_production_verifier(framework_checkout, bundle)
     if verifier is not None:
@@ -446,7 +492,7 @@ def finalize_attempt(
     )
     bundle_result = validate_campaign_bundle(
         policy_bytes,
-        _read_document(package_dir, APPROVAL_FILENAME),
+        _read_approval_document(package_dir),
         config_bytes,
         context,
     )
@@ -456,13 +502,14 @@ def finalize_attempt(
             f"{bundle_result.detail}"
         )
     bundle = bundle_result.value
+    _guard_conversation_mechanism(bundle)
 
-    approval_bytes = _read_document(package_dir, APPROVAL_FILENAME)
+    approval_bytes = _read_approval_document(package_dir)
     if campaign_id == AGENT_NATIVE_REAL_CAMPAIGN_ID:
         verifier = construct_production_verifier(framework_checkout, bundle)
     if verifier is not None:
-        # Re-fetch the live approval before EVERY finalize (comment
-        # edited/deleted after prepare stops the attempt here).
+        # Re-validate the conversation receipt before EVERY finalize (a
+        # superseded or edited approval.md stops the attempt here).
         verifier.verify(bundle.approval, approval_bytes=approval_bytes)
 
     if not artifact_path.is_file():
@@ -572,7 +619,7 @@ def build_report(
     )
     bundle_result = validate_campaign_bundle(
         policy_bytes,
-        _read_document(package_dir, APPROVAL_FILENAME),
+        _read_approval_document(package_dir),
         config_bytes,
         context,
     )
@@ -582,6 +629,7 @@ def build_report(
             f"{bundle_result.detail}"
         )
     bundle = bundle_result.value
+    _guard_conversation_mechanism(bundle)
     summary = CampaignSummaryGenerator(campaign_root).update_campaign_summary(
         bundle, now=now
     )

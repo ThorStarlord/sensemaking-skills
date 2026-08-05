@@ -521,42 +521,106 @@ def validate_campaign_approval(source_bytes: bytes, policy: CampaignPolicy,
                 f"approved_at is not a valid RFC3339 timestamp: {approval.get('approved_at')!r}",
             )
 
-        for field_name in ("claimed_approver_identity", "approval_statement",
-                           "approved_at", "campaign_id", "policy_digest"):
-            if _contains_placeholder(approval.get(field_name, "")):
+        if "approval_source" in approval:
+            # Conversation-approval receipt (active_human_conversation, the
+            # human's standalone 'approve' in the active conversation; the
+            # conversation, not any external artifact, is the authority).
+            # The receipt must bind the exact policy and never exceed its
+            # envelope; there is no claimed identity -- the coding agent
+            # records the human's decision, it does not identify itself.
+            for field_name in ("approved_at", "reference",
+                               "campaign_id", "policy_digest"):
+                if _contains_placeholder(approval.get(field_name, "")):
+                    return ValidationResult.fail(
+                        "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT",
+                        f"field {field_name!r} contains an unfilled placeholder token",
+                    )
+            if (approval["campaign_id"] != policy.campaign_id
+                    or approval["policy_digest"] != policy.policy_digest):
                 return ValidationResult.fail(
-                    "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT",
-                    f"field {field_name!r} contains an unfilled placeholder token",
+                    "CAMPAIGN_APPROVAL_POLICY_MISMATCH",
+                    "approval campaign_id/policy_digest does not match the "
+                    "policy being approved",
                 )
-        provenance = approval["approval_provenance"]
-        mechanism = provenance.get("mechanism", "")
-        reference = provenance.get("reference", "")
-        if (_contains_placeholder(mechanism) or _contains_placeholder(reference)
-                or not mechanism.strip() or not reference.strip()
-                or mechanism.strip().lower() == "none"):
-            return ValidationResult.fail(
-                "CAMPAIGN_APPROVAL_PROVENANCE_INVALID",
-                "approval_provenance.mechanism/reference is missing, placeholder, or 'none'",
-            )
+            if int(approval["maximum_attempts"]) > int(policy.raw.get("max_attempt_slots", 0)):
+                return ValidationResult.fail(
+                    "CAMPAIGN_APPROVAL_ENVELOPE_EXCEEDED",
+                    f"approval maximum_attempts {approval['maximum_attempts']} "
+                    f"exceeds the policy limit "
+                    f"{policy.raw.get('max_attempt_slots')}",
+                )
+            if int(approval["concurrency"]) > int(policy.raw.get("concurrency_ceiling", 0)):
+                return ValidationResult.fail(
+                    "CAMPAIGN_APPROVAL_ENVELOPE_EXCEEDED",
+                    f"approval concurrency {approval['concurrency']} exceeds "
+                    f"the policy ceiling "
+                    f"{policy.raw.get('concurrency_ceiling')}",
+                )
+            if policy.raw.get("automatic_merge_prohibited") is not True:
+                return ValidationResult.fail(
+                    "CAMPAIGN_APPROVAL_ENVELOPE_EXCEEDED",
+                    "the approved policy does not prohibit automatic merge; "
+                    "the receipt's prohibition cannot bind it",
+                )
+            if policy.raw.get("external_provider_api_prohibited") is not True:
+                return ValidationResult.fail(
+                    "CAMPAIGN_APPROVAL_ENVELOPE_EXCEEDED",
+                    "the approved policy does not prohibit external provider "
+                    "APIs; the receipt's prohibition cannot bind it",
+                )
+            if approval["classification"] != policy.raw.get("classification", ""):
+                return ValidationResult.fail(
+                    "CAMPAIGN_APPROVAL_ENVELOPE_EXCEEDED",
+                    f"approval classification {approval['classification']!r} "
+                    f"differs from the policy "
+                    f"{policy.raw.get('classification')!r}",
+                )
+            approved_at = _parse_rfc3339(approval["approved_at"])
+            window = policy.raw.get("validity_window") or {}
+            not_after = _parse_rfc3339(window.get("not_after"))
+            if not_after is not None and approved_at > not_after:
+                return ValidationResult.fail(
+                    "CAMPAIGN_APPROVAL_ENVELOPE_EXCEEDED",
+                    f"approval approved_at {approval['approved_at']} is after "
+                    f"the policy window end {window.get('not_after')}",
+                )
+        else:
+            for field_name in ("claimed_approver_identity", "approval_statement",
+                               "approved_at", "campaign_id", "policy_digest"):
+                if _contains_placeholder(approval.get(field_name, "")):
+                    return ValidationResult.fail(
+                        "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT",
+                        f"field {field_name!r} contains an unfilled placeholder token",
+                    )
+            provenance = approval["approval_provenance"]
+            mechanism = provenance.get("mechanism", "")
+            reference = provenance.get("reference", "")
+            if (_contains_placeholder(mechanism) or _contains_placeholder(reference)
+                    or not mechanism.strip() or not reference.strip()
+                    or mechanism.strip().lower() == "none"):
+                return ValidationResult.fail(
+                    "CAMPAIGN_APPROVAL_PROVENANCE_INVALID",
+                    "approval_provenance.mechanism/reference is missing, placeholder, or 'none'",
+                )
 
-        if (approval["campaign_id"] != policy.campaign_id
-                or approval["policy_digest"] != policy.policy_digest):
-            return ValidationResult.fail(
-                "CAMPAIGN_APPROVAL_POLICY_MISMATCH",
-                "approval campaign_id/policy_digest does not match the policy being approved",
-            )
+            if (approval["campaign_id"] != policy.campaign_id
+                    or approval["policy_digest"] != policy.policy_digest):
+                return ValidationResult.fail(
+                    "CAMPAIGN_APPROVAL_POLICY_MISMATCH",
+                    "approval campaign_id/policy_digest does not match the policy being approved",
+                )
 
-        if approval["claimed_approver_identity"] not in context.allowed_approver_identities:
-            return ValidationResult.fail(
-                "CAMPAIGN_APPROVER_UNAUTHORIZED",
-                f"{approval['claimed_approver_identity']!r} is not an allowed approver identity",
-            )
+            if approval["claimed_approver_identity"] not in context.allowed_approver_identities:
+                return ValidationResult.fail(
+                    "CAMPAIGN_APPROVER_UNAUTHORIZED",
+                    f"{approval['claimed_approver_identity']!r} is not an allowed approver identity",
+                )
 
         return ValidationResult.ok(
             _create_campaign_approval(
                 campaign_id=approval["campaign_id"],
                 policy_digest=approval["policy_digest"],
-                claimed_approver_identity=approval["claimed_approver_identity"],
+                claimed_approver_identity=approval.get("claimed_approver_identity", ""),
                 raw=freeze(approval),
             )
         )

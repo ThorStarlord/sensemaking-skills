@@ -1,5 +1,6 @@
-"""Capture the human's GitHub approval comment into the operative approval
-snapshot (Lane A beta, Model B, Issue #122).
+"""DEPRECATED LEGACY — capture the human's GitHub approval comment into
+the operative approval snapshot (superseded by conversation approval,
+2026-08-05; retained only for historical campaigns).
 
 Usage:
     python scripts/execution_infra/capture_github_approval.py \
