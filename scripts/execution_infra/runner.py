@@ -84,6 +84,7 @@ from sensemaking_skills.exploratory_execution import (
     TRUSTED_FRAMEWORK_REMOTE,
     CampaignBriefValidator,
     ClaudeProvider,
+    ConversationApprovalVerifier,
     GitHubIssueCommentApprovalVerifier,
     ProductionSignedCommitVerifier,
     TargetCheckout,
@@ -122,16 +123,23 @@ def construct_production_verifier(framework_checkout: Path, bundle: Any) -> Any:
     """Construct the verifier for the VALIDATED approval's provenance
     mechanism (never from a caller-supplied choice).
 
-    ``signed_commit`` constructs the fingerprint-registry verifier,
-    ``github_issue_comment_approval`` constructs the GitHub issue-comment
-    verifier (pinned to the governed repository), and any other mechanism
-    refuses. Used by both the provider-loop runner and the agent-native
-    campaign CLI, so the two execution surfaces share one construction.
+    ``active_human_conversation`` constructs the conversation-approval
+    verifier (the coding-agent-native path: no network, no token -- the
+    receipt's consistency with the validated policy envelope IS the
+    check). ``signed_commit`` and ``github_issue_comment_approval`` are
+    DEPRECATED legacy mechanisms, retained only for historical campaigns;
+    any other mechanism refuses. Used by both the provider-loop runner
+    and the agent-native campaign CLI, so the two execution surfaces
+    share one construction.
     """
     approval_raw = bundle.approval.raw
     provenance = dict(approval_raw.get("approval_provenance") or {})
     mechanism = str(provenance.get("mechanism", ""))
+    if approval_raw.get("approval_source") == "active_human_conversation":
+        return ConversationApprovalVerifier(policy=bundle.policy.raw)
     if mechanism == "signed_commit":
+        # DEPRECATED legacy mechanism (fingerprint registry + signed
+        # commit); retained for historical campaigns only.
         return ProductionSignedCommitVerifier(
             repo_root=framework_checkout,
             trusted_remote=TRUSTED_FRAMEWORK_REMOTE,
@@ -143,10 +151,12 @@ def construct_production_verifier(framework_checkout: Path, bundle: Any) -> Any:
             approval_path=APPROVAL_FILENAME,
         )
     if mechanism == "github_issue_comment_approval":
-        # The verifier's repository is the GOVERNED constant, never the
-        # provenance-supplied value: an approval naming a different
-        # repository must fail inside verify(), not silently redirect
-        # the verifier to the attacker's repository.
+        # DEPRECATED legacy mechanism (GitHub issue-comment approval);
+        # retained for historical campaigns only. The verifier's
+        # repository is the GOVERNED constant, never the provenance-
+        # supplied value: an approval naming a different repository must
+        # fail inside verify(), not silently redirect the verifier to the
+        # attacker's repository.
         return GitHubIssueCommentApprovalVerifier(
             repository=GOVERNED_GITHUB_REPOSITORY,
             required_permission=GOVERNED_REQUIRED_APPROVER_PERMISSION,

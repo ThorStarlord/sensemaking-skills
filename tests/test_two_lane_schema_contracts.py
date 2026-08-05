@@ -939,7 +939,26 @@ CAMPAIGN_APPROVAL_SHAPE = closed(
         "approval_statement": SCALAR,
         "approved_at": SCALAR,
         "marker": SCALAR,
-    }
+        "status": SCALAR,
+        "approval_source": SCALAR,
+        "approval_text": SCALAR,
+        "maximum_attempts": SCALAR,
+        "concurrency": SCALAR,
+        "automatic_merge": SCALAR,
+        "external_provider_api_prohibited": SCALAR,
+        "classification": SCALAR,
+        "reference": SCALAR,
+    },
+    required={
+        "approval_schema_version",
+        "campaign_id",
+        "policy_digest",
+        "claimed_approver_identity",
+        "approval_provenance",
+        "approval_statement",
+        "approved_at",
+        "marker",
+    },
 )
 
 CONFIGURATION_IDENTITY_SHAPE = closed(

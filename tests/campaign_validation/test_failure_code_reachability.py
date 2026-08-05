@@ -16,6 +16,8 @@ import sys
 import pytest
 
 from sensemaking_skills.campaign_validation import (
+    compute_policy_digest,
+
     CAMPAIGN_FAILURE_CODES,
     ValidationContext,
     load_and_validate_approval_from_root,
@@ -238,6 +240,42 @@ def _trigger_approval_provenance_invalid():
     return validate_campaign_approval(to_bytes(approval), policy, _ctx()).failure_code
 
 
+def _conversation_approval_doc(policy_doc: dict) -> dict:
+    return {
+        "approval_schema_version": "1",
+        "status": "approved",
+        "campaign_id": policy_doc["campaign_id"],
+        "policy_digest": policy_doc["policy_digest"],
+        "approval_source": "active_human_conversation",
+        "approval_text": "approve",
+        "approved_at": "2026-01-02T00:00:00+00:00",
+        "maximum_attempts": int(policy_doc["max_attempt_slots"]),
+        "concurrency": int(policy_doc["concurrency_ceiling"]),
+        "automatic_merge": "prohibited",
+        "external_provider_api_prohibited": True,
+        "classification": policy_doc["classification"],
+        "reference": "session-1#message-42",
+    }
+
+
+def _agent_native_policy_doc() -> dict:
+    policy_doc = dict(_valid_policy_doc())
+    policy_doc["execution_mode"] = "coding_agent_native"
+    policy_doc["execution_surface"] = "current_coding_agent"
+    policy_doc["external_provider_api_prohibited"] = True
+    policy_doc["allowed_models"] = []
+    policy_doc["policy_digest"] = compute_policy_digest(policy_doc)
+    return policy_doc
+
+
+def _trigger_approval_envelope_exceeded():
+    policy_doc = _agent_native_policy_doc()
+    policy = to_campaign_policy(policy_doc)
+    approval = _conversation_approval_doc(policy_doc)
+    approval["maximum_attempts"] = int(policy_doc["max_attempt_slots"]) + 1
+    return validate_campaign_approval(to_bytes(approval), policy, _ctx()).failure_code
+
+
 def _trigger_approval_ambiguous(tmp_path):
     policy_doc = _valid_policy_doc()
     policy = to_campaign_policy(policy_doc)
@@ -381,6 +419,7 @@ _NO_ARG_TRIGGERS = {
     "CAMPAIGN_APPROVAL_EXAMPLE_TEMPLATE_NON_OPERATIVE": _trigger_approval_example_template_non_operative,
     "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT": _trigger_approval_placeholder_present,
     "CAMPAIGN_APPROVAL_POLICY_MISMATCH": _trigger_approval_policy_mismatch,
+    "CAMPAIGN_APPROVAL_ENVELOPE_EXCEEDED": _trigger_approval_envelope_exceeded,
     "CAMPAIGN_APPROVER_UNAUTHORIZED": _trigger_approver_unauthorized,
     "CAMPAIGN_APPROVAL_PROVENANCE_INVALID": _trigger_approval_provenance_invalid,
     "CAMPAIGN_CONFIGURATION_MISSING": _trigger_configuration_missing,

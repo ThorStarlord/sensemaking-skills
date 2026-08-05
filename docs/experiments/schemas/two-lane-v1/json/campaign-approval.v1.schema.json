@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sensemaking-skills.invalid/schemas/two-lane-v1/campaign-approval.v1.schema.json",
   "title": "Campaign Approval v1",
-  "description": "Machine-readable schema for the parsed data model of a Two-Lane v1 campaign approval document (docs/experiments/schemas/two-lane-v1/campaign-approval.schema.md). Two explicit, discriminated profiles: 'example' (documentation/template, always non-operative -- carries the marker field, and permits documented placeholder string values such as '<HUMAN-FILLS-IN ...>') and 'operative' (omits marker entirely, and enforces strict field formats). oneOf is used so a document matches exactly one profile, never both, and never neither.",
+  "description": "Machine-readable schema for the parsed data model of a Two-Lane v1 campaign approval document (docs/experiments/schemas/two-lane-v1/campaign-approval.schema.md). Three explicit, discriminated profiles: 'example' (documentation/template, always non-operative -- carries the marker field, and permits documented placeholder string values such as '<HUMAN-FILLS-IN ...>'), 'operative' (omits marker entirely, and enforces strict field formats), and 'conversation' (the active_human_conversation receipt -- the human's standalone 'approve' in the active conversation, recorded by the coding agent as approval.md; carries approval_source and no external provenance). oneOf is used so a document matches exactly one profile, never two, and never none.",
   "$comment": "The two branches below are DELIBERATELY fully independent field definitions -- they do not share a single set of field schemas via a common allOf reference. An earlier revision of this schema referenced one shared 'commonFields' definition (with strict RFC3339/sha256-hex patterns) from BOTH branches; because allOf constituents are evaluated independently and ALL must pass, that shared reference silently forced the STRICT operative-grade patterns onto the example/template branch too, which made the documented blank template (whose approved_at is the literal placeholder string '<HUMAN-FILLS-IN RFC3339 timestamp>') fail its own documentation schema. Each branch below now defines its own fields from scratch: the example/template branch is permissive (any non-empty string is accepted for fields a human has not filled in yet), and the operative branch alone carries the strict patterns.",
   "$defs": {
     "sha256Hex": {
@@ -85,6 +85,32 @@
         "approval_provenance": {"$ref": "#/$defs/strictProvenance"},
         "approval_statement": {"type": "string", "minLength": 1},
         "approved_at": {"$ref": "#/$defs/rfc3339Timestamp"}
+      }
+    },
+    {
+      "title": "conversation-approval profile (active_human_conversation; the human's standalone 'approve' in the active conversation, recorded by the coding agent as approval.md -- no marker, no external provenance)",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approval_schema_version", "status", "campaign_id", "policy_digest",
+        "approval_source", "approval_text", "approved_at",
+        "maximum_attempts", "concurrency", "automatic_merge",
+        "external_provider_api_prohibited", "classification", "reference"
+      ],
+      "properties": {
+        "approval_schema_version": {"const": "1"},
+        "status": {"const": "approved"},
+        "campaign_id": {"type": "string", "pattern": "^EXP-\\d{4}(-[a-z0-9-]+)?$"},
+        "policy_digest": {"type": "string"},
+        "approval_source": {"const": "active_human_conversation"},
+        "approval_text": {"const": "approve"},
+        "approved_at": {"$ref": "#/$defs/rfc3339Timestamp"},
+        "maximum_attempts": {"type": "integer"},
+        "concurrency": {"type": "integer"},
+        "automatic_merge": {"const": "prohibited"},
+        "external_provider_api_prohibited": {"const": true},
+        "classification": {"type": "string"},
+        "reference": {"type": "string", "minLength": 1}
       }
     }
   ]

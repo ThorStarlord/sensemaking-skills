@@ -38,32 +38,37 @@ The correction moves the real execution path INTO the pinned framework:
 ## Operational sequence
 
 Two approval mechanisms exist; the validated approval's provenance
-`mechanism` selects the verifier (ADR 0023 §12/§21).
+`mechanism` selects the verifier (ADR 0023 §12/§21/§21e).
 
-### Lane A beta (default for EXP-0001): GitHub issue-comment approval
+### Coding-agent-native campaigns (EXP-0002): conversation approval
 
-1. The framework PR implementing the comment verifier is reviewed and
-   merged; the campaign package is re-pinned to the new SHA (new
-   `configuration_id`, `policy_digest`, refreshed `validity_window`) and
-   merged.
-2. The human posts ONE approval comment on the campaign's GitHub issue
-   (exact grammar, see `capture_github_approval.py --help`); the agent
-   never posts it.
-3. The operator runs `capture_github_approval.py`, which transcribes the
-   verified comment into the operative `approval.yaml` (mechanical
-   transcription, never agent-authored consent) and self-checks it with
-   the real validator.
-4. The runner corroborates the snapshot against the live GitHub API
-   before the run and before every attempt: comment exists, belongs to
-   the governed repository/issue, author is a maintainer with the
-   required permission and equals `claimed_approver_identity`, body
-   digest matches (any edit fails), and campaign/digest/limits/expiry/
-   classification stay inside the policy envelope. No GPG key,
-   fingerprint, or approver-registry PR is involved.
+1. The agent presents the full campaign envelope (campaign id, digest,
+   limits, prohibitions, window) in the active conversation; there must
+   be exactly one pending campaign with an unchanged digest.
+2. The human replies with a standalone `approve`. Nothing else counts.
+3. The agent records `approval.md` in the package directory (the exact
+   receipt contract; `approval_source: active_human_conversation`). The
+   conversation is the authority; the file is an audit receipt, not
+   independent proof of identity.
+4. `prepare`/`finalize` validate the receipt against the exact campaign
+   id, policy digest, attempt limit, concurrency, no-auto-merge rule,
+   external-provider prohibition, classification, and window before
+   every step. No GitHub comment, capture script, API token, or live
+   comment revalidation is involved.
 5. The complete execution report is delivered as a results PR and
    independently audited (Issue #122).
 
-### High-assurance: signed-commit approval
+### Legacy (retained for historical campaigns only): GitHub issue-comment approval
+
+1. The human posts ONE approval comment on the campaign's GitHub issue
+   (exact grammar, see `capture_github_approval.py --help`); the agent
+   never posts it.
+2. The operator runs `capture_github_approval.py`, which transcribes the
+   verified comment into the operative `approval.yaml`.
+3. The runner corroborates the snapshot against the live GitHub API
+   before the run and before every attempt.
+
+### High-assurance legacy: signed-commit approval
 
 1. The human approver supplies their real OpenPGP fingerprint (never
    invented by an agent; e.g. `gpg --fingerprint <key-id>` on the machine

@@ -30,8 +30,6 @@ from exploratory_fixtures import (  # noqa: E402
     TEST_APPROVER_IDENTITY,
     TEST_CAMPAIGN_ID,
     TEST_VALIDATION_TIME,
-    TrustedReferenceProvenanceVerifier,
-    build_approval_raw,
     build_configuration_raw,
     build_policy_raw,
     render_yaml,
@@ -43,7 +41,6 @@ from execution_infra.agent_native_campaign import (  # noqa: E402
     prepare_next_attempt,
 )
 from execution_infra.runner import (  # noqa: E402
-    APPROVAL_FILENAME,
     GovernedCampaignRunner,
     RunnerRefusal,
 )
@@ -58,14 +55,78 @@ from sensemaking_skills.campaign_validation import (  # noqa: E402
 from sensemaking_skills.campaign_validation.models import (  # noqa: E402
     ValidationContext,
 )
+from sensemaking_skills.campaign_validation.yaml_profile import (  # noqa: E402
+    dump_two_lane_yaml,
+)
 from sensemaking_skills.exploratory_authorization.provenance import (  # noqa: E402
     ProvenanceVerificationError,
+)
+from sensemaking_skills.exploratory_execution import (  # noqa: E402
+    CONVERSATION_APPROVAL_FILENAME,
+    ConversationApprovalVerifier,
 )
 
 TEST_AGENT_NATIVE_CAMPAIGN = "EXP-9002-agent-native-test"
 
 _NOW = datetime.fromisoformat(TEST_VALIDATION_TIME)
 
+
+def _receipt_raw(
+    policy_raw: dict,
+    *,
+    campaign_id: str | None = None,
+    policy_digest: str | None = None,
+    maximum_attempts: int | None = None,
+    concurrency: int | None = None,
+    automatic_merge: str = "prohibited",
+    classification: str | None = None,
+    approved_at: str | None = None,
+    reference: str = "test-session#message-42",
+    status: str = "approved",
+    approval_text: str = "approve",
+) -> dict:
+    return {
+        "approval_schema_version": "1",
+        "status": status,
+        "campaign_id": campaign_id or policy_raw["campaign_id"],
+        "policy_digest": policy_digest or policy_raw["policy_digest"],
+        "approval_source": "active_human_conversation",
+        "approval_text": approval_text,
+        "approved_at": approved_at or _NOW.isoformat(),
+        "maximum_attempts": maximum_attempts or int(policy_raw["max_attempt_slots"]),
+        "concurrency": concurrency or int(policy_raw["concurrency_ceiling"]),
+        "automatic_merge": automatic_merge,
+        "external_provider_api_prohibited": True,
+        "classification": classification or policy_raw["classification"],
+        "reference": reference,
+    }
+
+
+def _write_receipt(pkg: Path, approval_raw: dict) -> None:
+    frontmatter = dump_two_lane_yaml(approval_raw)
+    body = (
+        "---\n" + frontmatter + "---\n"
+        "The human approved the single pending campaign presented in the "
+        "active conversation.\n"
+    )
+    (pkg / CONVERSATION_APPROVAL_FILENAME).write_text(body, encoding="utf-8")
+
+
+def _conversation_verifier(policy_raw: dict) -> ConversationApprovalVerifier:
+    return ConversationApprovalVerifier(
+        policy=policy_raw, clock=lambda: _NOW
+    )
+
+
+
+def _pkg_verifier(pkg: Path) -> ConversationApprovalVerifier:
+    """Injected conversation verifier bound to the package's policy."""
+    from sensemaking_skills.campaign_validation import parse_two_lane_yaml
+
+    policy_raw = parse_two_lane_yaml(
+        (pkg / "campaign-policy.yaml").read_bytes()
+    )
+    return _conversation_verifier(policy_raw)
 
 def _passing_validate(artifact_bytes: bytes) -> SimpleNamespace:
     return SimpleNamespace(passed=True, details="test validator: passed")
@@ -101,11 +162,9 @@ def _write_package(
         [config_raw["configuration_id"]]
     )
     policy_raw["policy_digest"] = compute_policy_digest(policy_raw)
-    approval_raw = build_approval_raw(campaign_id=campaign_id)
-    approval_raw["policy_digest"] = policy_raw["policy_digest"]
     (pkg / "campaign-policy.yaml").write_bytes(render_yaml(policy_raw))
     (pkg / "configuration-identity.yaml").write_bytes(render_yaml(config_raw))
-    (pkg / APPROVAL_FILENAME).write_bytes(render_yaml(approval_raw))
+    _write_receipt(pkg, _receipt_raw(policy_raw))
     return pkg
 
 
@@ -116,12 +175,17 @@ def _prepare(
     verifier: object = None,
     campaign_id: str = TEST_AGENT_NATIVE_CAMPAIGN,
 ) -> dict:
+    from sensemaking_skills.campaign_validation import parse_two_lane_yaml
+
+    policy_raw = parse_two_lane_yaml(
+        (pkg / "campaign-policy.yaml").read_bytes()
+    )
     return prepare_next_attempt(
         package_dir=pkg,
         campaign_root=root,
         framework_checkout=Path(__file__).resolve().parents[2],
         allowed_approver_identities=frozenset({TEST_APPROVER_IDENTITY}),
-        verifier=verifier or TrustedReferenceProvenanceVerifier(),
+        verifier=verifier or _conversation_verifier(policy_raw),
         now=_NOW,
     )
 
@@ -187,7 +251,7 @@ def test_prepare_derives_remaining_slots_from_ledger(tmp_path: Path) -> None:
             attempt_id=result["attempt_id"],
             artifact_path=result["delivery_path"],
             allowed_approver_identities=frozenset({TEST_APPROVER_IDENTITY}),
-            verifier=TrustedReferenceProvenanceVerifier(),
+            verifier=_pkg_verifier(pkg),
             validate=_passing_validate,
             now=_NOW,
         )
@@ -218,13 +282,57 @@ def test_prepare_refuses_provider_api_campaign(tmp_path: Path) -> None:
     config_raw = build_configuration_raw(campaign_id=TEST_CAMPAIGN_ID)
     policy_raw["allowed_configuration_ids"] = sorted([config_raw["configuration_id"]])
     policy_raw["policy_digest"] = compute_policy_digest(policy_raw)
+    from exploratory_fixtures import build_approval_raw
     approval_raw = build_approval_raw(campaign_id=TEST_CAMPAIGN_ID)
     approval_raw["policy_digest"] = policy_raw["policy_digest"]
     (pkg2 / "campaign-policy.yaml").write_bytes(render_yaml(policy_raw))
     (pkg2 / "configuration-identity.yaml").write_bytes(render_yaml(config_raw))
-    (pkg2 / APPROVAL_FILENAME).write_bytes(render_yaml(approval_raw))
+    (pkg2 / "approval.yaml").write_bytes(render_yaml(approval_raw))
     with pytest.raises(RunnerRefusal, match="coding_agent_native"):
         _prepare(pkg2, tmp_path / "root2", campaign_id=TEST_CAMPAIGN_ID)
+
+
+def test_prepare_refuses_legacy_approval_in_agent_native_mode(
+    tmp_path: Path,
+) -> None:
+    """A valid legacy (github) approval placed as approval.md is refused:
+    the conversation mechanism was REPLACED for coding-agent-native
+    campaigns; nothing else may authorize them."""
+    pkg = _write_package(tmp_path)
+    root = tmp_path / "root"
+    from sensemaking_skills.campaign_validation import parse_two_lane_yaml
+
+    policy_raw = parse_two_lane_yaml(
+        (pkg / "campaign-policy.yaml").read_bytes()
+    )
+    legacy = {
+        "approval_schema_version": "1",
+        "campaign_id": TEST_AGENT_NATIVE_CAMPAIGN,
+        "policy_digest": policy_raw["policy_digest"],
+        "claimed_approver_identity": TEST_APPROVER_IDENTITY,
+        "approval_provenance": {
+            "mechanism": "github_issue_comment_approval",
+            "reference": (
+                "https://github.com/ThorStarlord/sensemaking-skills/"
+                "issues/122#issuecomment-1"
+            ),
+            "repository": "ThorStarlord/sensemaking-skills",
+            "issue_number": "122",
+            "comment_id": "1",
+            "comment_body_sha256": "a" * 64,
+        },
+        "approval_statement": "I authorize this campaign.",
+        "approved_at": "2026-01-02T00:00:00Z",
+    }
+    from sensemaking_skills.campaign_validation.yaml_profile import (
+        dump_two_lane_yaml,
+    )
+
+    md = "---\n" + dump_two_lane_yaml(legacy) + "---\nlegacy prose\n"
+    (pkg / CONVERSATION_APPROVAL_FILENAME).write_text(md, encoding="utf-8")
+    with pytest.raises(RunnerRefusal, match="active_human_conversation"):
+        _prepare(pkg, root)
+    assert _events(root, TEST_AGENT_NATIVE_CAMPAIGN) == []
 
 
 def test_prepare_real_campaign_refuses_injection(tmp_path: Path) -> None:
@@ -259,7 +367,7 @@ def test_finalize_records_terminal_state(tmp_path: Path) -> None:
         attempt_id=result["attempt_id"],
         artifact_path=result["delivery_path"],
         allowed_approver_identities=frozenset({TEST_APPROVER_IDENTITY}),
-        verifier=TrustedReferenceProvenanceVerifier(),
+        verifier=_pkg_verifier(pkg),
         validate=_passing_validate,
         now=_NOW,
     )
@@ -280,7 +388,7 @@ def test_finalize_records_validation_failure(tmp_path: Path) -> None:
         attempt_id=result["attempt_id"],
         artifact_path=result["delivery_path"],
         allowed_approver_identities=frozenset({TEST_APPROVER_IDENTITY}),
-        verifier=TrustedReferenceProvenanceVerifier(),
+        verifier=_pkg_verifier(pkg),
         validate=_failing_validate,
         now=_NOW,
     )
@@ -299,7 +407,7 @@ def test_finalize_refuses_missing_artifact(tmp_path: Path) -> None:
             attempt_id=result["attempt_id"],
             artifact_path=tmp_path / "does-not-exist.md",
             allowed_approver_identities=frozenset({TEST_APPROVER_IDENTITY}),
-            verifier=TrustedReferenceProvenanceVerifier(),
+            verifier=_pkg_verifier(pkg),
             validate=_passing_validate,
             now=_NOW,
         )
@@ -323,7 +431,7 @@ def test_finalize_refuses_non_invoked_attempt(tmp_path: Path) -> None:
             attempt_id="00000000-0000-0000-0000-000000000000",
             artifact_path=artifact,
             allowed_approver_identities=frozenset({TEST_APPROVER_IDENTITY}),
-            verifier=TrustedReferenceProvenanceVerifier(),
+            verifier=_pkg_verifier(pkg),
             validate=_passing_validate,
             now=_NOW,
         )
@@ -343,7 +451,7 @@ def test_finalize_refuses_artifact_outside_delivery_dir(tmp_path: Path) -> None:
             attempt_id=result["attempt_id"],
             artifact_path=elsewhere,
             allowed_approver_identities=frozenset({TEST_APPROVER_IDENTITY}),
-            verifier=TrustedReferenceProvenanceVerifier(),
+            verifier=_pkg_verifier(pkg),
             validate=_passing_validate,
             now=_NOW,
         )
@@ -390,7 +498,7 @@ def test_report_enumerates_every_attempt(tmp_path: Path) -> None:
         attempt_id=result["attempt_id"],
         artifact_path=result["delivery_path"],
         allowed_approver_identities=frozenset({TEST_APPROVER_IDENTITY}),
-        verifier=TrustedReferenceProvenanceVerifier(),
+        verifier=_pkg_verifier(pkg),
         validate=_passing_validate,
         now=_NOW,
     )
@@ -413,7 +521,7 @@ def test_provider_loop_runner_refuses_agent_native(tmp_path: Path) -> None:
         campaign_package_dir=pkg,
         campaign_root=tmp_path / "root",
         framework_checkout=Path(__file__).resolve().parents[2],
-        verifier=TrustedReferenceProvenanceVerifier(),
+        verifier=_pkg_verifier(pkg),
         provider=lambda **kwargs: None,
         validate=_passing_validate,
         allowed_approver_identities=frozenset({TEST_APPROVER_IDENTITY}),
