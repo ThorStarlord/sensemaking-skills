@@ -1,0 +1,24 @@
+# Governed approver registry for signed-commit campaign approvals (Phase 6).
+#
+# This file is part of the PINNED FRAMEWORK: it ships inside the framework
+# repository and is bound by framework_sha. It is the ONLY trust root for
+# "who may approve a campaign" -- the verifier never trusts whatever keys
+# happen to be installed in an operator's local Git configuration.
+#
+# Format:
+#   schema_version: 1
+#   approvers:
+#     <openpgp-fingerprint-lowercase>: <claimed_approver_identity>
+#
+# Semantics (fail closed):
+#   * A fingerprint absent from this mapping can never corroborate an
+#     approval, regardless of git verify-commit's verdict.
+#   * A fingerprint present here corroborates ONLY the identity it maps to:
+#     an approval claiming a different identity fails.
+#   * An empty mapping (the current state) means NO key can corroborate an
+#     approval. No human approval exists yet, so nothing may authorize --
+#     this is the safe posture. Adding an approver is a framework
+#     governance act (PR + independent exact-head review), not a runtime
+#     configuration change.
+schema_version: 1
+approvers: {}

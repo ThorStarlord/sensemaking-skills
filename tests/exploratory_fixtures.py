@@ -241,7 +241,7 @@ class TrustedReferenceProvenanceVerifier:
         self.mechanism = mechanism
         self.reference = reference
 
-    def verify(self, approval):
+    def verify(self, approval, *, approval_bytes=None):
         from sensemaking_skills.exploratory_authorization.digests import (
             compute_approval_snapshot_digest,
         )
@@ -273,6 +273,7 @@ def make_context(
     artifact_type=None, output_path=None, campaign_id=None,
     configuration_id=None, configuration_snapshot_digest=None,
     policy_digest=None, approval_digest=None, attempt_id=None, lane=None,
+    campaign_root=None,
 ):
     """Build a consumption context from a capability's binding with optional
     per-field overrides (each override simulates one drift category)."""
@@ -304,4 +305,5 @@ def make_context(
             else b.approval_digest),
         attempt_id=attempt_id if attempt_id is not None else b.attempt_id,
         lane=lane if lane is not None else "EXPLORATORY",
+        campaign_root=campaign_root if campaign_root is not None else "",
     )

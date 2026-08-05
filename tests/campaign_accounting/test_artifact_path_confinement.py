@@ -27,6 +27,7 @@ from exploratory_fixtures import (
 )
 
 from sensemaking_skills.campaign_accounting import (
+    ProviderResponse,
     ARTIFACT_ALREADY_EXISTS,
     ARTIFACT_FILENAME_INVALID,
     ATTEMPT_STATE_INVALID_TRANSITION,
@@ -455,9 +456,9 @@ class CountingProvider:
     def __init__(self):
         self.calls = 0
 
-    def __call__(self) -> bytes:
+    def __call__(self, *, permit, context, prompt) -> ProviderResponse:
         self.calls += 1
-        return b"raw provider response"
+        return ProviderResponse(raw_output=b"raw provider response")
 
 
 def _invoke(tmp_path, bundle, capability, reservation, provider, validate):
@@ -469,6 +470,7 @@ def _invoke(tmp_path, bundle, capability, reservation, provider, validate):
         context=make_context(capability=capability),
         provider=provider,
         validate=validate,
+        prompt="test prompt",
         now=_ANCHOR_NOW,
     )
 
@@ -518,8 +520,15 @@ def test_boundary_rejects_traversal_artifact_filename(tmp_path: Path) -> None:
     # two legitimate lifecycle events.
     after_tree = _snapshot(tmp_path / bundle.policy.campaign_id)
     delta = set(after_tree) - set(before_tree)
+    # The only delta vs the pre-invoke tree: the three immutable attempt
+    # artifacts written by the boundary (raw request before INVOKED, the
+    # provider permit after INVOKED, raw output after the provider) plus
+    # the ledger's legitimate lifecycle events. Nothing escapes the
+    # attempt directory.
     assert delta == {
         f"attempts/{attempt_id}/raw-output.bin",
+        f"attempts/{attempt_id}/raw-request.txt",
+        f"attempts/{attempt_id}/provider-permit.yaml",
     }, delta
     assert not (tmp_path / "escaped.md").exists()
     assert not (tmp_path / bundle.policy.campaign_id / "escaped.md").exists()

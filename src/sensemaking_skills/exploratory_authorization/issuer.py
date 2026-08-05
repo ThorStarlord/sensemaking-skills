@@ -19,6 +19,8 @@ import os
 import uuid
 from typing import Any, Mapping, Optional
 
+_SHA256_HEX = hashlib.sha256  # module-level; used by mint below
+
 from ..campaign_validation import is_genuine_campaign_bundle
 from .digests import (
     compute_approval_snapshot_digest,
@@ -142,13 +144,18 @@ def mint_exploratory_capability(
     *,
     verifier: Optional[Any] = None,
     now: Optional[str] = None,
+    approval_bytes: Optional[bytes] = None,
 ) -> Any:
     """Mint a live, single-use exploratory capability from a genuine
     validated bundle plus a well-formed attempt request.
 
     ``verifier`` is required and fails closed when absent. ``now`` is an
     injectable ISO-8601 timestamp for deterministic tests; it defaults to
-    the real clock.
+    the real clock. ``approval_bytes`` are the exact operative
+    approval-document bytes (the file the campaign package carries); the
+    production verifier binds the signed commit's approval blob to these
+    bytes, so a signed-but-unrelated commit can never corroborate the
+    operative approval.
     """
     if not is_genuine_campaign_bundle(bundle):
         raise ExploratoryAuthorizationError(
@@ -166,7 +173,7 @@ def mint_exploratory_capability(
             "self-attest consent (fail closed)",
         )
     try:
-        verified = verifier.verify(bundle.approval)
+        verified = verifier.verify(bundle.approval, approval_bytes=approval_bytes)
     except ProvenanceVerificationError as exc:
         raise ExploratoryAuthorizationError(
             EXPLORATORY_PROVENANCE_VERIFIER_FAILED,
@@ -178,13 +185,56 @@ def mint_exploratory_capability(
             f"approval-provenance verifier failed: {exc}",
         ) from exc
     provenance = bundle.approval.raw.get("approval_provenance") or {}
-    if (
-        getattr(verified, "mechanism", None) != provenance.get("mechanism")
-        or getattr(verified, "reference", None) != provenance.get("reference")
-    ):
+    if getattr(verified, "mechanism", None) != provenance.get("mechanism"):
         raise ExploratoryAuthorizationError(
             EXPLORATORY_PROVENANCE_VERIFIER_FAILED,
             "verifier result contradicts the validated approval provenance",
+        )
+    # Signer-identity and document-binding cross-checks: whatever the
+    # verifier CONFIRMED must agree with the validated approval document.
+    # Test doubles may leave these fields empty (they only corroborate a
+    # reference); the production verifier always fills them, so a mismatch
+    # in a real run fails closed here. The verified reference is the signed
+    # commit CARRYING the operative approval bytes (found on the governed
+    # ancestry), which the approval document cannot name in advance (a
+    # commit hash is a function of the tree that would have to contain it);
+    # the byte binding is proven by ``approval_sha256`` against the exact
+    # operative approval bytes supplied at mint time.
+    if verified.approval_sha256:
+        if approval_bytes is None:
+            raise ExploratoryAuthorizationError(
+                EXPLORATORY_PROVENANCE_VERIFIER_FAILED,
+                "verifier confirmed a signed approval digest but no "
+                "operative approval bytes were supplied to compare it to",
+            )
+        if verified.approval_sha256 != _SHA256_HEX(approval_bytes).hexdigest():
+            raise ExploratoryAuthorizationError(
+                EXPLORATORY_PROVENANCE_VERIFIER_FAILED,
+                "verifier-confirmed signed approval digest does not match "
+                "the operative approval bytes",
+            )
+    if verified.signer_identity and (
+        verified.signer_identity
+        != str(bundle.approval.raw.get("claimed_approver_identity", "") or "")
+    ):
+        raise ExploratoryAuthorizationError(
+            EXPLORATORY_PROVENANCE_VERIFIER_FAILED,
+            "verifier-confirmed signer identity does not match the "
+            "approval's claimed_approver_identity",
+        )
+    if verified.campaign_id and verified.campaign_id != bundle.policy.campaign_id:
+        raise ExploratoryAuthorizationError(
+            EXPLORATORY_PROVENANCE_VERIFIER_FAILED,
+            "verifier-confirmed signed document names a different campaign "
+            "than the validated policy",
+        )
+    if verified.policy_digest and verified.policy_digest != str(
+        bundle.policy.policy_digest
+    ):
+        raise ExploratoryAuthorizationError(
+            EXPLORATORY_PROVENANCE_VERIFIER_FAILED,
+            "verifier-confirmed signed document binds a different "
+            "policy_digest than the validated policy",
         )
 
     # -- approval operationality (defense-in-depth) --------------------------

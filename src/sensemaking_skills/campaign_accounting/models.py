@@ -239,6 +239,21 @@ class AttemptResult:
 
 
 @dataclass(frozen=True)
+class ProviderResponse:
+    """The raw provider response plus post-hoc usage observations.
+
+    Pure data, publicly constructible. ``raw_output`` is the exact bytes
+    the durable recorder preserves verbatim. ``tokens_observed`` and
+    ``cost_observed`` are post-hoc measurements (ADR 0023 §14), never
+    pre-call guarantees.
+    """
+
+    raw_output: bytes
+    tokens_observed: Optional[int] = None
+    cost_observed: Optional[Dict[str, Any]] = None
+
+
+@dataclass(frozen=True)
 class ValidationOutcome:
     """The result of validating a preserved raw provider response.
 

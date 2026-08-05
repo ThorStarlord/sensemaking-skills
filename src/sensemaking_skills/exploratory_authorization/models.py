@@ -52,10 +52,26 @@ class VerifiedApprovalProvenance:
 
     Publicly constructible so verifiers (including test doubles) can return
     it; the issuer cross-checks it against the validated approval document.
+
+    The signer-identity fields are EMPTY for weak/test verifiers that only
+    corroborate a reference; the production verifier always fills them, and
+    the issuer cross-checks whatever is present against the approval
+    document (non-empty fields that mismatch fail closed).
     """
 
     mechanism: str
     reference: str
+    #: OpenPGP fingerprint of the key that produced the signature.
+    signer_fingerprint: str = ""
+    #: The trusted identity the fingerprint maps to in the approver registry.
+    signer_identity: str = ""
+    #: The governed path of the approval document inside the signed commit.
+    approval_path: str = ""
+    #: SHA-256 of the exact signed approval-document bytes.
+    approval_sha256: str = ""
+    #: campaign_id and policy_digest carried by the signed document.
+    campaign_id: str = ""
+    policy_digest: str = ""
 
 
 @dataclass(frozen=True)
@@ -80,6 +96,10 @@ class ExploratoryInvocationContext:
     approval_digest: str
     attempt_id: str
     lane: str
+    #: The campaign root whose ledger issued the attempt (used by the
+    #: provider permit registry). Empty for legacy callers that do not
+    #: reach a real provider.
+    campaign_root: str = ""
 
 
 @dataclass(frozen=True)
