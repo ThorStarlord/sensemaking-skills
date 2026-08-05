@@ -42,7 +42,7 @@ from sensemaking_skills.campaign_validation.models import (
 )
 
 CAMPAIGN_ID = "EXP-0002-stage1-auteur-coding-agent-pilot"
-FRAMEWORK_SHA = "253efe56d08f3e5c9a051bbba78efeaa606a6928"
+FRAMEWORK_SHA = "805b7ee285c7520ae3ca9dd5538138275b9abe64"
 TARGET_REPOSITORY = "https://github.com/ThorStarlord/auteur.git"
 TARGET_SHA = "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
 EXECUTION_SURFACE = "current_coding_agent"
@@ -62,7 +62,7 @@ PACKAGE_FILES = {
     "campaign-policy.yaml",
     "campaign-policy.sha256",
     "configuration-identity.yaml",
-    "approval-template.yaml",
+    "approval-template.md",
     "scientific-questions.md",
     "README.md",
 }
@@ -167,25 +167,44 @@ def test_configuration_is_authorized_by_policy() -> None:
 
 
 def test_bundle_validates_with_an_approver_identity() -> None:
-    """A candidate operative approval (github issue-comment mechanism) binds
-    the package; the claimed identity must be a real approved identity."""
+    """The conversation-receipt template binds the package and can never
+    become operative (placeholder tokens remain)."""
     policy = _validated_policy()
-    approval = _parse("approval-template.yaml")
-    assert approval.get("marker") == "EXAMPLE_ONLY_NOT_AUTHORIZATION"
-    assert approval["policy_digest"] == policy.policy_digest
-    assert approval["approval_provenance"]["mechanism"] == "github_issue_comment_approval"
+    from sensemaking_skills.exploratory_execution import extract_frontmatter
+
+    template_md = _read("approval-template.md")
+    frontmatter = extract_frontmatter(template_md)
+    assert frontmatter is not None, "template must carry YAML frontmatter"
+    from sensemaking_skills.campaign_validation import parse_two_lane_yaml
+
+    template = parse_two_lane_yaml(frontmatter)
+    assert template["approval_source"] == "active_human_conversation"
+    assert template["approval_text"] == "approve"
+    assert template["status"] == "approved"
+    assert template["campaign_id"] == policy.campaign_id
+    assert template["policy_digest"] == "<PRESENTED_DIGEST>"
+    assert template["maximum_attempts"] == 3
+    assert template["concurrency"] == 1
+    assert template["automatic_merge"] == "prohibited"
+    assert template["external_provider_api_prohibited"] is True
+    assert template["classification"] == policy.raw["classification"]
 
 
 def test_template_can_never_be_operative() -> None:
-    """The template is rejected by the real validator: a template can never
-    become an operative approval no matter how it is otherwise malformed."""
+    """The template is rejected by the real validator: the placeholder
+    policy_digest/approved_at/reference can never validate as an
+    operative conversation receipt."""
+    from sensemaking_skills.exploratory_execution import extract_frontmatter
+
+    frontmatter = extract_frontmatter(_read("approval-template.md"))
+    assert frontmatter is not None
     result = validate_campaign_approval(
-        _read("approval-template.yaml"),
+        frontmatter,
         _validated_policy(),
         CONTEXT,
     )
     assert not result.valid
-    assert result.failure_code == "CAMPAIGN_APPROVAL_EXAMPLE_TEMPLATE_NON_OPERATIVE"
+    assert result.failure_code == "CAMPAIGN_APPROVAL_PLACEHOLDER_PRESENT"
 
 
 # ---------------------------------------------------------------------------
@@ -196,7 +215,7 @@ def test_template_can_never_be_operative() -> None:
 @pytest.mark.parametrize(
     "filename, old, new",
     [
-        ("campaign-policy.yaml", "253efe56d08f3e5c9a051bbba78efeaa606a6928", "0" * 40),
+        ("campaign-policy.yaml", "805b7ee285c7520ae3ca9dd5538138275b9abe64", "0" * 40),
         ("campaign-policy.yaml", "coding_agent_native", "provider_api"),
         ("campaign-policy.yaml", "current_coding_agent", "other_agent_surface"),
         ("campaign-policy.yaml", "EXP-0002-stage1-auteur-coding-agent-pilot", "EXP-9999-other"),
@@ -226,7 +245,7 @@ def test_no_execution_residue() -> None:
     """The package directory contains ONLY the six preparation files."""
     files = {p.name for p in PACKAGE_DIR.iterdir()}
     assert files == PACKAGE_FILES
-    for name in ("approval.yaml", "ledger.jsonl", "ledger.lock"):
+    for name in ("approval.yaml", "approval.md", "ledger.jsonl", "ledger.lock"):
         assert not (PACKAGE_DIR / name).exists(), name
     attempts_dir = PACKAGE_DIR / "attempts"
     assert not attempts_dir.exists()
