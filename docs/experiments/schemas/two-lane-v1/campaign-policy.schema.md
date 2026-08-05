@@ -15,9 +15,12 @@ document's `policy_digest`. See ADR 0023 §9a, §9c.
 | `campaign_id` | string | yes | Pattern `EXP-\d{4}(-[a-z0-9-]+)?`. Never an Evidence number. |
 | `policy_digest` | string (sha256 hex) | computed, yes once set | SHA-256 over the RFC 8785 (JCS) canonical serialization of this document's normative fields (every required field in this table except `policy_digest` itself). Unknown fields are rejected before hashing. See ADR 0023 §10a–§10c for the exact algorithm and hashed field set. |
 | `classification` | string enum | yes | Must be exactly `EXPLORATORY_NOT_CANONICAL_EVIDENCE`. |
+| `execution_mode` | string enum, optional | yes | `provider_api` or `coding_agent_native` (Lane A beta amendment, ADR 0023 §21e). Absent = `provider_api` (backward compatible). `coding_agent_native` declares that the coding agent itself performs the skill — no external model/provider API. When declared, `coding_agent_native` REQUIRES `execution_surface`, `external_provider_api_prohibited: true`, and `allowed_models: []`. Digest-bound when present. |
+| `execution_surface` | string, optional | yes | The concrete execution surface identity (e.g. `claude_agent_sdk` for provider_api, `current_coding_agent` for coding_agent_native). Required when `execution_mode` is `coding_agent_native`. Digest-bound when present. |
+| `external_provider_api_prohibited` | boolean, optional | yes | `true` forbids any external model/provider API (structural zero external cost). Requires `execution_mode: coding_agent_native`. Digest-bound when present. |
 | `allowed_framework_shas` | list[string] | yes | Exact commit SHAs only. No branch names, no `HEAD`, no mutable refs. |
 | `allowed_targets` | list[object{repository, sha}] | yes | Exact repository URL + exact commit SHA pairs. |
-| `allowed_models` | list[string] | yes | Exact model identifiers. |
+| `allowed_models` | list[string] | yes | Exact model identifiers. MUST be `[]` when `execution_mode` is `coding_agent_native` (no external model authorized); otherwise non-empty. |
 | `allowed_artifact_types` | list[string] | yes | Artifact types this campaign may produce. |
 | `allowed_configuration_ids` | list[string (sha256 hex)] | yes | Exact, non-empty allowlist of `configuration_id` values (see `configuration-identity.schema.md`) legal under this policy. See "Configuration authorization" below for the format and matching rule. |
 | `max_attempt_slots` | integer >= 1 | yes | Pre-invocation enforceable (ADR 0023 §14). |

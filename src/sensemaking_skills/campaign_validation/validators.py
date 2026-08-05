@@ -390,6 +390,44 @@ def _check_policy_limits(policy: Mapping[str, Any]) -> Optional[ValidationResult
             return ValidationResult.fail(
                 "CAMPAIGN_POLICY_LIMITS_INVALID", f"{flag_name} must be exactly true"
             )
+
+    # Execution-mode coupling (Lane A beta amendment, ADR 0023 section 21e).
+    # The three fields are optional-and-absent for pre-amendment policies
+    # (implicit provider_api); once declared they must be coherent, and the
+    # coding_agent_native mode must leave no external model authorized.
+    mode = policy.get("execution_mode")
+    if mode is not None and mode not in ("provider_api", "coding_agent_native"):
+        return ValidationResult.fail(
+            "CAMPAIGN_POLICY_LIMITS_INVALID",
+            f"execution_mode must be 'provider_api' or 'coding_agent_native', "
+            f"got {mode!r}",
+        )
+    prohibited = policy.get("external_provider_api_prohibited")
+    if prohibited is True and mode != "coding_agent_native":
+        return ValidationResult.fail(
+            "CAMPAIGN_POLICY_LIMITS_INVALID",
+            "external_provider_api_prohibited: true requires execution_mode "
+            "'coding_agent_native'",
+        )
+    if mode == "coding_agent_native":
+        if prohibited is not True:
+            return ValidationResult.fail(
+                "CAMPAIGN_POLICY_LIMITS_INVALID",
+                "execution_mode 'coding_agent_native' requires "
+                "external_provider_api_prohibited: true",
+            )
+        if not str(policy.get("execution_surface", "") or "").strip():
+            return ValidationResult.fail(
+                "CAMPAIGN_POLICY_LIMITS_INVALID",
+                "execution_mode 'coding_agent_native' requires a non-empty "
+                "execution_surface",
+            )
+        if policy.get("allowed_models"):
+            return ValidationResult.fail(
+                "CAMPAIGN_POLICY_LIMITS_INVALID",
+                "execution_mode 'coding_agent_native' requires allowed_models: [] "
+                "(no external model API is authorized)",
+            )
     return None
 
 
@@ -655,7 +693,25 @@ def validate_configuration_identity(source_bytes: bytes,
                 "CAMPAIGN_CONFIGURATION_TARGET_NOT_ALLOWED",
                 f"{target_pair} is not a member of allowed_targets",
             )
-        if configuration["model_identifier"] not in set(policy.raw["allowed_models"]):
+        # Model membership is the PROVIDER-API check. For
+        # coding_agent_native campaigns there is no external model: the
+        # configuration's model_identifier carries the execution surface,
+        # which must equal the policy's declared execution_surface
+        # (configuration <-> policy coherence without provider semantics).
+        if policy.raw.get("execution_mode") == "coding_agent_native":
+            if configuration["model_identifier"] != policy.raw.get(
+                "execution_surface", ""
+            ):
+                return ValidationResult.fail(
+                    "CAMPAIGN_CONFIGURATION_MODEL_NOT_ALLOWED",
+                    "coding_agent_native: configuration model_identifier "
+                    f"{configuration['model_identifier']!r} must equal the "
+                    "policy execution_surface "
+                    f"{policy.raw.get('execution_surface')!r} (the "
+                    "execution surface is not a member of the empty "
+                    "allowed_models)",
+                )
+        elif configuration["model_identifier"] not in set(policy.raw["allowed_models"]):
             return ValidationResult.fail(
                 "CAMPAIGN_CONFIGURATION_MODEL_NOT_ALLOWED",
                 f"{configuration['model_identifier']} is not a member of allowed_models",

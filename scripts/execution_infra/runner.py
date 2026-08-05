@@ -118,6 +118,46 @@ class RunnerRefusal(Exception):
     """The runner refuses to execute; nothing was reserved or invoked."""
 
 
+def construct_production_verifier(framework_checkout: Path, bundle: Any) -> Any:
+    """Construct the verifier for the VALIDATED approval's provenance
+    mechanism (never from a caller-supplied choice).
+
+    ``signed_commit`` constructs the fingerprint-registry verifier,
+    ``github_issue_comment_approval`` constructs the GitHub issue-comment
+    verifier (pinned to the governed repository), and any other mechanism
+    refuses. Used by both the provider-loop runner and the agent-native
+    campaign CLI, so the two execution surfaces share one construction.
+    """
+    approval_raw = bundle.approval.raw
+    provenance = dict(approval_raw.get("approval_provenance") or {})
+    mechanism = str(provenance.get("mechanism", ""))
+    if mechanism == "signed_commit":
+        return ProductionSignedCommitVerifier(
+            repo_root=framework_checkout,
+            trusted_remote=TRUSTED_FRAMEWORK_REMOTE,
+            approver_registry=(
+                framework_checkout
+                / "src" / "sensemaking_skills" / "exploratory_execution"
+                / "approver-registry.yaml"
+            ),
+            approval_path=APPROVAL_FILENAME,
+        )
+    if mechanism == "github_issue_comment_approval":
+        # The verifier's repository is the GOVERNED constant, never the
+        # provenance-supplied value: an approval naming a different
+        # repository must fail inside verify(), not silently redirect
+        # the verifier to the attacker's repository.
+        return GitHubIssueCommentApprovalVerifier(
+            repository=GOVERNED_GITHUB_REPOSITORY,
+            required_permission=GOVERNED_REQUIRED_APPROVER_PERMISSION,
+            policy=bundle.policy.raw,
+        )
+    raise RunnerRefusal(
+        f"unknown approval provenance mechanism {mechanism!r}; "
+        "no verifier can corroborate this approval"
+    )
+
+
 class GovernedCampaignRunner:
     """Run the campaign lifecycle for a campaign package."""
 
@@ -219,44 +259,14 @@ class GovernedCampaignRunner:
     def _production_components(
         self, config_raw: dict[str, Any], target: TargetCheckout, bundle: Any
     ) -> tuple:
-        """Construct the verifier for the approval's provenance mechanism.
+        """Construct the provider-loop components for the validated bundle.
 
-        The mechanism is read from the VALIDATED approval document (never
-        from a caller-supplied choice): ``signed_commit`` constructs the
-        fingerprint-registry verifier, ``github_issue_comment_approval``
-        constructs the GitHub issue-comment verifier, and any other
-        mechanism refuses. The GitHub verifier checks attempt limits and
-        expiry against the validated policy (``bundle.policy.raw``).
+        The verifier comes from ``construct_production_verifier`` (mechanism
+        from the validated approval, never caller-chosen); the provider is
+        the Claude SDK provider (provider_api campaigns only -- agent-native
+        campaigns refuse in ``run()`` before reaching this point).
         """
-        approval_raw = bundle.approval.raw
-        provenance = dict(approval_raw.get("approval_provenance") or {})
-        mechanism = str(provenance.get("mechanism", ""))
-        if mechanism == "signed_commit":
-            verifier = ProductionSignedCommitVerifier(
-                repo_root=self._framework_checkout,
-                trusted_remote=TRUSTED_FRAMEWORK_REMOTE,
-                approver_registry=(
-                    self._framework_checkout
-                    / "src" / "sensemaking_skills" / "exploratory_execution"
-                    / "approver-registry.yaml"
-                ),
-                approval_path=APPROVAL_FILENAME,
-            )
-        elif mechanism == "github_issue_comment_approval":
-            # The verifier's repository is the GOVERNED constant, never the
-            # provenance-supplied value: an approval naming a different
-            # repository must fail inside verify(), not silently redirect
-            # the verifier to the attacker's repository.
-            verifier = GitHubIssueCommentApprovalVerifier(
-                repository=GOVERNED_GITHUB_REPOSITORY,
-                required_permission=GOVERNED_REQUIRED_APPROVER_PERMISSION,
-                policy=bundle.policy.raw,
-            )
-        else:
-            raise RunnerRefusal(
-                f"unknown approval provenance mechanism {mechanism!r}; "
-                "no verifier can corroborate this approval"
-            )
+        verifier = construct_production_verifier(self._framework_checkout, bundle)
         provider = ClaudeProvider(
             model=str(config_raw["model_identifier"]),
             target_repository=str(config_raw["target_repository"]),
@@ -309,6 +319,17 @@ class GovernedCampaignRunner:
         policy_raw = parse_two_lane_yaml(policy_bytes)
         campaign_id = policy_raw["campaign_id"]
         config_raw = parse_two_lane_yaml(config_bytes)
+
+        # Agent-native campaigns never enter the provider loop: the coding
+        # agent performs the skill itself, so the loop (which exists to gate
+        # a third-party provider) is structurally the wrong surface.
+        if policy_raw.get("execution_mode") == "coding_agent_native":
+            raise RunnerRefusal(
+                "campaign executes in coding_agent_native mode; the "
+                "provider loop cannot run it - use "
+                "scripts/execution_infra/agent_native_campaign.py "
+                "(prepare / finalize / report)"
+            )
 
         # Real-campaign guards BEFORE any approval parsing or validation
         # side effects: the real campaign refuses on the first unmet
