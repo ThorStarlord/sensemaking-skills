@@ -35,6 +35,7 @@ from exploratory_fixtures import (
 )
 
 from sensemaking_skills.campaign_accounting import (
+    ProviderResponse,
     RESERVATION_ATTEMPT_MISMATCH,
     RESERVATION_CAMPAIGN_MISMATCH,
     RESERVATION_CONFIGURATION_MISMATCH,
@@ -100,7 +101,7 @@ class SpyProvider:
         self.latest_states_at_call = []
         self.exception = None
 
-    def __call__(self) -> bytes:
+    def __call__(self, *, permit, context, prompt) -> ProviderResponse:
         self.calls += 1
         ledger = CampaignLedger(
             self.tmp_path / self.bundle.policy.campaign_id,
@@ -114,7 +115,7 @@ class SpyProvider:
         self.latest_states_at_call.append(states[-1] if states else None)
         if self.exception is not None:
             raise self.exception
-        return self.raw
+        return ProviderResponse(raw_output=self.raw)
 
 
 def _ledger_states(tmp_path, bundle, attempt_id):
@@ -137,6 +138,7 @@ def _invoke(tmp_path, bundle, capability, reservation, provider, validate=PASSIN
         context=make_context(capability=capability),
         provider=provider,
         validate=validate,
+        prompt="test prompt",
         now=_ANCHOR_NOW,
     )
 
@@ -259,6 +261,7 @@ def test_expired_reservation_zero_provider_calls(tmp_path: Path) -> None:
             context=make_context(capability=capability),
             provider=provider,
             validate=PASSING_VALIDATE,
+            prompt="test prompt",
             now=expired_now,
         )
     assert exc_info.value.failure_code == RESERVATION_EXPIRED

@@ -54,6 +54,7 @@ from exploratory_fixtures import (
     build_valid_bundle, make_context, new_attempt_id,
 )
 from sensemaking_skills.campaign_accounting import (
+    ProviderResponse,
     ARTIFACT_FILENAME_INVALID, CampaignAccountingError, CampaignLedger,
     DurableReservationManager, AttemptOutcomeRecorder, ValidationOutcome,
     invoke_exploratory_attempt, validate_produced_artifact_filename,
@@ -108,9 +109,9 @@ try:
             verifier=TrustedReferenceProvenanceVerifier(),
             now=_ANCHOR_NOW.isoformat())
         calls = []
-        def provider():
+        def provider(*, permit, context, prompt):
             calls.append(1)
-            return b"raw provider response"
+            return ProviderResponse(raw_output=b"raw provider response")
         def validate(raw):
             return ValidationOutcome(passed=True, details={{}},
                                      artifact_content="# candidate",
@@ -119,7 +120,8 @@ try:
             invoke_exploratory_attempt(
                 bundle=bundle, capability=capability, reservation=reservation,
                 campaign_root=tmp_path, context=make_context(capability=capability),
-                provider=provider, validate=validate, now=_ANCHOR_NOW)
+                provider=provider, validate=validate, prompt="test prompt",
+                now=_ANCHOR_NOW)
             result["error"] = "name unexpectedly accepted"
         except CampaignAccountingError as exc:
             result["code"] = exc.failure_code
@@ -133,14 +135,15 @@ try:
 
         # Retry the same attempt: zero additional provider calls.
         calls2 = []
-        def provider2():
+        def provider2(*, permit, context, prompt):
             calls2.append(1)
-            return b"x"
+            return ProviderResponse(raw_output=b"x")
         try:
             invoke_exploratory_attempt(
                 bundle=bundle, capability=capability, reservation=reservation,
                 campaign_root=tmp_path, context=make_context(capability=capability),
-                provider=provider2, validate=validate, now=_ANCHOR_NOW)
+                provider=provider2, validate=validate, prompt="test prompt",
+                now=_ANCHOR_NOW)
             result["retry_error"] = "retry unexpectedly accepted"
         except CampaignAccountingError as exc:
             result["retry_code"] = exc.failure_code

@@ -38,9 +38,12 @@ from .failure_codes import (
     CAMPAIGN_EXPIRED,
     CAMPAIGN_NOT_ACTIVE,
     RAW_OUTPUT_MISSING_FOR_CAPTURED_STATE,
+    RAW_REQUEST_ALREADY_EXISTS,
+    RAW_REQUEST_FILENAME_INVALID,
     CampaignAccountingError,
 )
 from .filenames import (
+    validate_artifact_leaf_name,
     validate_produced_artifact_filename,
     validate_raw_output_extension,
 )
@@ -119,10 +122,57 @@ class AttemptOutcomeRecorder:
     # record_invoked: the durable INVOKED transition, BEFORE provider entry
     # ------------------------------------------------------------------ #
 
+    def record_raw_request(
+        self,
+        raw: bytes,
+        now: Optional[datetime] = None,
+    ) -> str:
+        """Immutably preserve the exact prompt/request bytes sent to the
+        provider (Issue #122: 'Preserve all raw requests').
+
+        The request is written while the attempt is still RESERVED, before
+        the durable INVOKED transition and before any provider entry. The
+        leaf name is fixed to ``raw-request.txt`` under the frozen leaf
+        grammar; the write is temp-file + fsync + atomic rename under the
+        campaign lock, and an existing file is never overwritten.
+        """
+        if now is None:
+            now = datetime.now(timezone.utc)
+        validate_artifact_leaf_name(
+            "raw-request.txt",
+            label="raw request filename",
+            failure_code=RAW_REQUEST_FILENAME_INVALID,
+        )
+        target_path = self.attempt_dir / "raw-request.txt"
+        temp_path = self.attempt_dir / ".tmp-raw-request.txt"
+        rel_ref = (
+            f"experiments/campaigns/{self.campaign_id}/attempts/"
+            f"{self.attempt_id}/raw-request.txt"
+        )
+        with campaign_lock(self.campaign_dir):
+            events = self.ledger.read_events()
+            _require_state(events, self.attempt_id, AttemptState.RESERVED.value)
+            if target_path.exists():
+                existing = target_path.read_bytes()
+                if existing == raw:
+                    return rel_ref  # deterministic crash-resume
+                raise CampaignAccountingError(
+                    RAW_REQUEST_ALREADY_EXISTS,
+                    f"attempt '{self.attempt_id}' already preserves a "
+                    "different raw request; refusing to overwrite it",
+                )
+            with open(temp_path, "wb") as f:
+                f.write(raw)
+                f.flush()
+                os.fsync(f.fileno())
+            temp_path.replace(target_path)
+        return rel_ref
+
     def record_invoked(
         self,
         bundle: ValidatedCampaignBundle,
         now: Optional[datetime] = None,
+        raw_request_reference: Optional[str] = None,
     ) -> None:
         """Record the transition to INVOKED prior to entering the provider.
 
@@ -130,6 +180,9 @@ class AttemptOutcomeRecorder:
         has no durable reservation, the reservation is not live in the
         ledger, the policy window has expired, the campaign is exhausted on
         observed cost/tokens, or the provider-invocation budget is spent.
+        ``raw_request_reference`` (when present) is embedded in the INVOKED
+        event payload so the durable record of the invocation names its
+        exact preserved request.
         """
         if now is None:
             now = datetime.now(timezone.utc)
@@ -180,12 +233,15 @@ class AttemptOutcomeRecorder:
 
             # Append INVOKED event (fsynced) before returning to the caller
             # so the provider call can never precede the durable transition.
+            payload: Dict[str, Any] = {"provider_invoked_at": timestamp_str}
+            if raw_request_reference is not None:
+                payload["raw_request_reference"] = raw_request_reference
             self.ledger._append_event_unlocked(
                 events=events,
                 timestamp=timestamp_str,
                 attempt_id=self.attempt_id,
                 event_type=AttemptState.INVOKED.value,
-                payload={"provider_invoked_at": timestamp_str},
+                payload=payload,
             )
 
     # ------------------------------------------------------------------ #

@@ -554,6 +554,15 @@ def test_every_provider_call_site_is_inside_a_gated_executor():
     known = {
         ("scripts/skill_executor.py", "query("),          # Claude Agent SDK
         ("scripts/skill_executor.py", "client.messages.create("),  # Anthropic SDK
+        # src/sensemaking_skills/exploratory_execution/claude_provider.py
+        # (Phase 6 correction, #122): the framework-governed provider for
+        # the EXPLORATORY lane. Its SDK call is STRUCTURALLY unreachable
+        # without a genuine, consumed, attempt-bound ProviderPermit issued
+        # by the Phase 4 durable boundary after the durable INVOKED
+        # transition -- the permit gate runs before the SDK module is even
+        # imported. The class is not subclassable and no other code path
+        # can reach query().
+        ("src/sensemaking_skills/exploratory_execution/claude_provider.py", "query("),
     }
     found = set()
     for py in list((REPO_ROOT / "scripts").rglob("*.py")) + \

@@ -56,8 +56,13 @@ from .models import (
     AttemptReservation,
     AttemptResult,
     AttemptState,
+    ProviderResponse,
     ValidationOutcome,
     is_genuine_attempt_reservation,
+)
+from .permit import (
+    consume_provider_permit,
+    issue_provider_permit,
 )
 from .recorder import AttemptOutcomeRecorder
 
@@ -201,23 +206,31 @@ def invoke_exploratory_attempt(
     reservation: AttemptReservation,
     campaign_root: Path,
     context: Any,
-    provider: Callable[[], bytes],
+    provider: Callable[..., ProviderResponse],
     validate: Callable[[bytes], ValidationOutcome],
+    prompt: str,
     now: Optional[datetime] = None,
 ) -> AttemptResult:
     """Run exactly one reservation-backed, capability-bound attempt.
 
-    ``provider`` is the provider test double (or a future real provider
-    adapter) returning the exact raw response bytes and raising on failure.
-    ``validate`` turns the preserved raw bytes into a ``ValidationOutcome``.
+    ``provider`` is called as ``provider(permit=..., context=..., prompt=...)``
+    and must return a ``ProviderResponse`` carrying the exact raw response
+    bytes plus post-hoc usage observations. ``validate`` turns the
+    preserved raw bytes into a ``ValidationOutcome``.
 
     Guarantees:
 
     * Zero provider calls on every denial path (no reservation, forged
       reservation, wrong campaign/configuration/attempt, expired, not
       live, consumed/spent capability, binding drift).
-    * The durable INVOKED transition is persisted and fsynced BEFORE the
-      provider is called.
+    * The exact request bytes are preserved durably (``raw-request.txt``)
+      while the attempt is still RESERVED, and the durable INVOKED
+      transition -- which names the preserved request -- is persisted and
+      fsynced BEFORE the provider is called.
+    * The one-shot provider permit is issued only AFTER the durable INVOKED
+      transition and consumed atomically immediately before provider entry;
+      the provider cannot be reached with an unissued, unconsumed, or
+      stale permit.
     * The raw response is preserved atomically before validation.
     * A provider ``Exception`` records PROVIDER_FAILED and burns the
       capability, then re-raises.
@@ -252,13 +265,30 @@ def invoke_exploratory_attempt(
         Path(campaign_root), decision.campaign_id, decision.attempt_id
     )
 
-    # 4. Persist the durable INVOKED transition. From here on the attempt is
-    #    spent and visible even if this process dies.
-    recorder.record_invoked(bundle, now=now)
+    # 4. Preserve the exact request bytes before the durable INVOKED
+    #    transition (state: RESERVED).
+    request_ref = recorder.record_raw_request(prompt.encode("utf-8"), now=now)
 
-    # 5. Enter the provider.
+    # 5. Persist the durable INVOKED transition -- naming the preserved
+    #    request. From here on the attempt is spent and visible even if
+    #    this process dies.
+    recorder.record_invoked(bundle, now=now, raw_request_reference=request_ref)
+
+    # 6. Issue the one-shot provider permit (requires ledger state INVOKED)
+    #    and consume it immediately: the provider may only be entered with
+    #    a genuine, consumed, attempt-bound permit.
+    permit = issue_provider_permit(
+        campaign_root=Path(campaign_root),
+        campaign_id=decision.campaign_id,
+        attempt_id=decision.attempt_id,
+        configuration_id=decision.configuration_id,
+        now=now,
+    )
+    consume_provider_permit(permit, campaign_root=Path(campaign_root))
+
+    # 7. Enter the provider.
     try:
-        raw_output = provider()
+        response = provider(permit=permit, context=context, prompt=prompt)
     except BaseException as exc:
         # The capability is spent forever regardless of what happened.
         burn_exploratory_capability(capability)
@@ -272,12 +302,17 @@ def invoke_exploratory_attempt(
         # the attempt began and never finished; recovery must not pretend a
         # provider failure occurred. The interruption is always re-raised.
         raise
+    if not isinstance(response, ProviderResponse):
+        raise TypeError(
+            "provider must return a ProviderResponse (raw_output bytes + "
+            f"usage observations), got {type(response).__name__}"
+        )
 
-    # 6. Preserve the raw response before parsing or validating anything.
-    recorder.record_raw_output(raw_output, now=now)
+    # 8. Preserve the raw response before parsing or validating anything.
+    recorder.record_raw_output(response.raw_output, now=now)
 
-    # 7. Validate the preserved raw output and record the terminal outcome.
-    outcome = validate(raw_output)
+    # 9. Validate the preserved raw output and record the terminal outcome.
+    outcome = validate(response.raw_output)
 
     artifact_ref = None
     if outcome.artifact_content is not None:
@@ -289,7 +324,14 @@ def invoke_exploratory_attempt(
         passed=outcome.passed,
         details=outcome.details,
         validated_output_ref=outcome.validated_output_ref or artifact_ref,
-        tokens_observed=outcome.tokens_observed,
-        cost_observed=outcome.cost_observed,
+        tokens_observed=(
+            response.tokens_observed
+            if response.tokens_observed is not None
+            else outcome.tokens_observed
+        ),
+        cost_observed=(
+            response.cost_observed if response.cost_observed is not None
+            else outcome.cost_observed
+        ),
         now=now,
     )

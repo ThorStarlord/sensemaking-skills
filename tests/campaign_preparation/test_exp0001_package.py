@@ -264,6 +264,7 @@ def test_attempt_cannot_be_reserved_and_provider_never_called() -> None:
             context=None,
             provider=spy_provider,
             validate=lambda raw: None,
+            prompt="test prompt",
             now=datetime.fromisoformat(CURRENT_TIME),
         )
     assert exc_info.value.failure_code == RESERVATION_REQUIRED_BEFORE_INVOCATION
