@@ -17,3 +17,7 @@ docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md -text
 # The run-control tree carries its own `* -text`; this is defence in depth so a
 # deleted or moved nested .gitattributes cannot silently reintroduce the bug.
 experiments/run-control/** -text
+
+# Campaign packages are digest-bound (policy_digest / configuration_id and
+# the *_sha256 sidecar); their bytes must be identical on every platform.
+experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/** -text

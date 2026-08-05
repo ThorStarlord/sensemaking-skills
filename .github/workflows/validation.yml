@@ -568,6 +568,12 @@ jobs:
             echo "::error::a campaign ledger was created"; exit 1; }
           test ! -d "experiments/campaigns/EXP-0001-stage1-auteur-autonomy-pilot/attempts" || {
             echo "::error::an attempts directory was created"; exit 1; }
+          test ! -e "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/ledger.jsonl" || {
+            echo "::error::an EXP-0002 campaign ledger was created"; exit 1; }
+          test ! -d "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/attempts" || {
+            echo "::error::an EXP-0002 attempts directory was created"; exit 1; }
+          test ! -e "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/approval.yaml" || {
+            echo "::error::an EXP-0002 operative approval was created"; exit 1; }
 
   # ==========================================================================
   # Phase 6 correction -- framework-governed execution boundary (Issue #122).
@@ -626,6 +632,12 @@ jobs:
             echo "::error::a campaign ledger was created"; exit 1; }
           test ! -d "experiments/campaigns/EXP-0001-stage1-auteur-autonomy-pilot/attempts" || {
             echo "::error::an attempts directory was created"; exit 1; }
+          test ! -e "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/ledger.jsonl" || {
+            echo "::error::an EXP-0002 campaign ledger was created"; exit 1; }
+          test ! -d "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/attempts" || {
+            echo "::error::an EXP-0002 attempts directory was created"; exit 1; }
+          test ! -e "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/approval.yaml" || {
+            echo "::error::an EXP-0002 operative approval was created"; exit 1; }
 
   validate:
     name: Repository validation
