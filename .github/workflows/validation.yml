@@ -574,6 +574,8 @@ jobs:
             echo "::error::an EXP-0002 attempts directory was created"; exit 1; }
           test ! -e "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/approval.yaml" || {
             echo "::error::an EXP-0002 operative approval was created"; exit 1; }
+          test ! -e "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/approval.md" || {
+            echo "::error::an EXP-0002 conversation receipt was created"; exit 1; }
 
   # ==========================================================================
   # Phase 6 correction -- framework-governed execution boundary (Issue #122).
@@ -638,6 +640,8 @@ jobs:
             echo "::error::an EXP-0002 attempts directory was created"; exit 1; }
           test ! -e "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/approval.yaml" || {
             echo "::error::an EXP-0002 operative approval was created"; exit 1; }
+          test ! -e "experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/approval.md" || {
+            echo "::error::an EXP-0002 conversation receipt was created"; exit 1; }
 
   validate:
     name: Repository validation
