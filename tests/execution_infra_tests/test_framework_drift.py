@@ -24,14 +24,17 @@ from sensemaking_skills.exploratory_execution import (
 
 
 class _Repo:
-    def __init__(self, tmp_path: Path):
+    def __init__(self, tmp_path: Path, seed: str = "1"):
         self.path = tmp_path / "repo"
         self.path.mkdir()
         self._git(["init", "-q"])
         self._git(["config", "user.email", "t@e.i"])
         self._git(["config", "user.name", "T"])
         (self.path / "src").mkdir()
-        (self.path / "src" / "mod.py").write_text("x = 1\n", encoding="utf-8")
+        # The seed guarantees distinct commit objects even when two repos
+        # are created within the same second (identical tree + metadata
+        # would otherwise produce identical SHAs).
+        (self.path / "src" / "mod.py").write_text(f"x = {seed}\n", encoding="utf-8")
         (self.path / "skills").mkdir()
         (self.path / "skills" / "SKILL.md").write_text("skill\n", encoding="utf-8")
         self._git(["add", "."])
@@ -82,8 +85,8 @@ def test_staged_change_is_detected(tmp_path: Path) -> None:
 
 
 def test_wrong_head_is_detected(tmp_path: Path) -> None:
-    repo = _Repo(tmp_path)
-    other = _Repo(tmp_path.parent)
+    repo = _Repo(tmp_path, seed="1")
+    other = _Repo(tmp_path.parent, seed="2")
     assert framework_tree_unchanged(other.sha, repo.path) is False
 
 
