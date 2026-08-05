@@ -37,19 +37,38 @@ The correction moves the real execution path INTO the pinned framework:
 
 ## Operational sequence
 
-1. Framework PR (this code) reviewed and merged → the campaign package is
-   re-pinned to the new framework SHA (new `configuration_id`,
-   `policy_digest`, `validity_window`) in a separate preparation revision.
-2. A genuine human approval is recorded against the new digest; the
-   approver's OpenPGP fingerprint is added to
-   `src/sensemaking_skills/exploratory_execution/approver-registry.yaml`
-   through framework governance (PR + independent review) — never by a
-   runtime edit.
-3. An operator runs the campaign inside the new window:
+The approver registry ships inside the pinned framework tree, so every
+registry change is a framework change: registering an approver produces a
+NEW framework SHA, and the campaign package must be re-pinned to it
+before any approval can bind. The correct order is therefore:
+
+1. The human approver supplies their real OpenPGP fingerprint (never
+   invented by an agent; e.g. `gpg --fingerprint <key-id>` on the machine
+   holding the signing key).
+2. A framework governance PR registers
+   `fingerprint -> claimed_approver_identity` in
+   `src/sensemaking_skills/exploratory_execution/approver-registry.yaml`,
+   is independently reviewed at its exact head, and is merged. The merge
+   produces a NEW framework SHA.
+3. The campaign package is re-pinned to that new SHA in a separate
+   preparation revision (new `configuration_id`, new `policy_digest`,
+   refreshed `validity_window`), independently reviewed, and merged.
+4. Only then does the human sign the operative `approval.yaml` against
+   the new exact `policy_digest`: a signed commit on the governed
+   protected ancestry whose signer fingerprint is the one registered in
+   step 2, and whose `claimed_approver_identity` matches the registry
+   mapping for that fingerprint.
+5. An operator runs the campaign inside the new window:
    `GovernedCampaignRunner` with the real package, the pinned framework
    checkout, and the genuine `allowed_approver_identities`.
-4. The complete execution report is delivered as a results PR and
+6. The complete execution report is delivered as a results PR and
    independently audited (Issue #122).
+
+The registry cannot be updated "after pinning" and the old pin reused:
+`framework_tree_unchanged` requires the execution checkout to be
+byte-identical to the pin across the committed tree, index, working tree,
+and untracked files, and any registry edit changes the tree. Registration
+must precede the final repin; approval must follow it.
 
 No human approval, no provider call, and no campaign reservation are
 created by this repository's code, CI, or tests.
