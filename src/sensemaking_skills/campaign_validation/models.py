@@ -47,6 +47,12 @@ class ValidationContext:
 
     current_time: str  # RFC3339 timestamp, injected -- never read from wall clock.
     allowed_approver_identities: frozenset[str] = field(default_factory=frozenset)
+    # Report-only verification (post-expiry reporting, independent
+    # reconstruction): when False, the policy still validates in full but
+    # the wall clock is NOT required to sit inside the execution window.
+    # This never authorizes a reservation or invocation; the execution
+    # commands always enforce the window themselves (fail closed).
+    enforce_validity_window: bool = True
 
 
 @dataclass(frozen=True)

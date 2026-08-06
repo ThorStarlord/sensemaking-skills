@@ -581,6 +581,11 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
     aborted = sum(1 for a in summary_attempts if a["state"] == "ABORTED_BEFORE_INVOCATION")
     interrupted = sum(1 for a in summary_attempts if a["state"] == "INVOKED")
     captured_incomplete = sum(1 for a in summary_attempts if a["state"] == "OUTPUT_CAPTURED")
+    detail_by_id = {
+        a.get("attempt_id"): a
+        for a in run_result["attempts"]
+        if isinstance(a, dict) and a.get("attempt_id")
+    }
 
     # Structural / substantive pass counts from the recorded validation
     # outcomes (details carried by the per-attempt results).
@@ -589,8 +594,16 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
     substantive_passed = 0
     substantive_total = 0
     for attempt in run_result["attempts"]:
-        outcome = getattr(attempt, "validation_outcome", None) or {}
+        if isinstance(attempt, dict):
+            outcome = attempt.get("validation_outcome") or {}
+        else:
+            outcome = getattr(attempt, "validation_outcome", None) or {}
         details = outcome.get("details") or {}
+        if not isinstance(details, dict):
+            # Some outcomes carry a plain-string detail (e.g. injected
+            # test validators); they contribute no structural/substantive
+            # breakdown, so the rate stays "n/a" rather than crashing.
+            details = {}
         structural = details.get("structural") or {}
         substantive = details.get("substantive") or {}
         structural_total += int(structural.get("total", 0))
@@ -608,18 +621,61 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
         return f"{passed_n}/{total_n} ({100.0 * passed_n / total_n:.1f}%)"
 
     lines = [
-        "# EXP-0001 execution report",
+        f"# {summary.campaign_id} execution report",
         "",
         f"- campaign_id: {summary.campaign_id}",
         f"- campaign_state: {summary.campaign_state}",
         "- classification: EXPLORATORY_NOT_CANONICAL_EVIDENCE",
         f"- completed_at: {run_result['completed_at']}",
         "",
-        "## Budget and accounting (ledger-derived)",
-        "",
-        f"- total_attempts_authorized: {run_result['total_attempts_authorized']}",
-        f"- total_attempts_reserved: {summary.reservations_issued['count']}",
-        f"- total_provider_invocations: {summary.provider_invocations_made}",
+    ]
+    mode = run_result.get("mode", "provider_api")
+    if mode == "coding_agent_native":
+        # Agent-native mode: the coding agent performed the attempts
+        # directly; NO external provider API was involved. The internal
+        # ledger retains the historical provider_invocations_made field
+        # for compatibility, but the human-facing report must not claim
+        # a provider API was called.
+        agent_invocations = int(
+            run_result.get("total_agent_attempt_invocations", 0)
+        )
+        external_invocations = int(
+            run_result.get("external_provider_api_invocations", 0)
+        )
+        external_cost = run_result.get("external_provider_cost", 0)
+        lines += [
+            "## Budget and accounting (ledger-derived)",
+            "",
+            f"- total_attempts_authorized: {run_result['total_attempts_authorized']}",
+            f"- total_attempts_reserved: {summary.reservations_issued['count']}",
+            f"- total_agent_attempt_invocations: {agent_invocations}",
+            "- external_provider_api_invocations: 0",
+            "- external_provider_cost: 0",
+            "",
+            "## External provider assertion (fail-closed)",
+            "",
+            (
+                "- external_provider_api_prohibited: "
+                f"{'true' if run_result.get('external_provider_api_prohibited') else 'false'}"
+            ),
+            (
+                "- external_provider_api_invocations: "
+                f"{external_invocations} (must be 0; the policy prohibits "
+                "external provider APIs)"
+            ),
+            f"- external_provider_cost: {external_cost} (must be 0)",
+            "",
+        ]
+    else:
+        lines += [
+            "## Budget and accounting (ledger-derived)",
+            "",
+            f"- total_attempts_authorized: {run_result['total_attempts_authorized']}",
+            f"- total_attempts_reserved: {summary.reservations_issued['count']}",
+            f"- total_provider_invocations: {summary.provider_invocations_made}",
+            "",
+        ]
+    lines += [
         f"- VALIDATION_PASSED: {passed}",
         f"- PROVIDER_FAILED: {provider_failed}",
         f"- VALIDATION_FAILED: {validation_failed}",
@@ -632,6 +688,8 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
         "",
         "## Validation rates (per-attempt, pinned validator)",
         "",
+        f"- attempts_validation_passed: {passed}",
+        f"- attempts_validation_failed: {validation_failed}",
         f"- structural pass: {_rate(structural_passed, structural_total)}",
         f"- substantive pass: {_rate(substantive_passed, substantive_total)}",
         "",
@@ -653,6 +711,19 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
     ]
     for name, digest in sorted(run_result["execution_module_digests"].items()):
         lines.append(f"- {name}: {digest}")
+    if run_result.get("report_only"):
+        lines += [
+            "",
+            "## Report-only mode",
+            "",
+            (
+                "- This report was generated through the report-only "
+                "verification path: policy/configuration digests, approval "
+                "binding, the ledger, and artifacts were verified, but "
+                "NO reservation or invocation was authorized, and the wall "
+                "clock was NOT required to sit inside the execution window."
+            ),
+        ]
     lines += [
         "",
         "## Attempts (every attempt, every artifact path, no omissions)",
@@ -661,10 +732,20 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
     for entry in summary.attempts:
         attempt_id = entry["attempt_id"]
         lines.append(f"- attempt {attempt_id}: state={entry['state']}")
-        for artifact in ATTEMPT_ARTIFACTS:
+        detail = detail_by_id.get(attempt_id) or {}
+        if "artifacts" in detail:
+            artifacts = detail["artifacts"]
+        else:
+            artifacts = ATTEMPT_ARTIFACTS
+        for artifact in artifacts:
             lines.append(
                 f"    - {artifact}: experiments/campaigns/{summary.campaign_id}/"
                 f"attempts/{attempt_id}/{artifact}"
+            )
+        for orphan in detail.get("orphan_artifacts") or ():
+            lines.append(
+                f"    - ORPHAN FILE: {orphan} (not expected for "
+                f"state={entry['state']})"
             )
     for err in errors:
         lines.append(f"- runner error for {err['attempt_id']}: {err['error']}")
