@@ -122,11 +122,12 @@ def test_report_three_agent_invocations_zero_external(tmp_path: Path) -> None:
     assert "- total_agent_attempt_invocations: 3" in report
     # The FULL assertion lines must appear (a bare "0" line cannot be
     # vacuous): the policy prohibition, the zero invocation count, and
-    # the zero cost are each asserted exactly as rendered.
+    # the zero cost are each asserted exactly as rendered, and each
+    # metric appears EXACTLY once (no duplicate/contradictory sections).
     assert "- external_provider_api_invocations: 0 (must be 0; the policy prohibits external provider APIs)" in report
     assert "- external_provider_cost: 0 (must be 0)" in report
-    assert report.count("external_provider_api_invocations: 0") >= 2
-    assert report.count("external_provider_cost: 0") >= 2
+    assert report.count("external_provider_api_invocations: 0") == 1
+    assert report.count("external_provider_cost: 0") == 1
     assert "total_provider_invocations" not in report
 
 
@@ -237,9 +238,13 @@ def test_report_target_drift_detected(tmp_path: Path) -> None:
     assert "target_checkout_integrity: DRIFT DETECTED" in report
 
 
-def test_report_target_integrity_ok_on_pristine_checkout(tmp_path: Path) -> None:
-    """A real, pristine target checkout at the approved SHA reports OK --
-    the check is a live git verification, not a hardcoded value."""
+def _target_package_and_checkout(
+    tmp_path: Path, *, mutate: str | None = None
+) -> tuple[Path, Path, Path]:
+    """Build a package whose target is a real git repo materialized at
+    <work_root>/target (the ONE work-root contract). ``mutate`` applies a
+    drift: 'tracked' (dirty tracked file), 'untracked' (stray file),
+    'head' (extra commit), 'origin' (wrong origin URL)."""
     import subprocess
 
     from exploratory_fixtures import TEST_TARGET_REPOSITORY
@@ -247,35 +252,52 @@ def test_report_target_integrity_ok_on_pristine_checkout(tmp_path: Path) -> None
         compute_configuration_id,
         compute_policy_digest,
     )
-    from sensemaking_skills.campaign_validation.yaml_profile import (
-        dump_two_lane_yaml,
-    )
     from test_agent_native_campaign import _receipt_raw, _write_receipt
 
-    target = tmp_path / "target"
-    target.mkdir()
-    subprocess.run(["git", "init", "-q", str(target)], check=True)
+    work_root = tmp_path / "target-root"
+    checkout_path = work_root / "target"
+    checkout_path.mkdir(parents=True)
+    subprocess.run(["git", "init", "-q", str(checkout_path)], check=True)
     subprocess.run(
-        ["git", "-C", str(target), "config", "user.email", "test@example.invalid"],
+        ["git", "-C", str(checkout_path), "config", "user.email", "test@example.invalid"],
         check=True,
     )
     subprocess.run(
-        ["git", "-C", str(target), "config", "user.name", "test"], check=True
+        ["git", "-C", str(checkout_path), "config", "user.name", "test"], check=True
     )
     subprocess.run(
-        ["git", "-C", str(target), "remote", "add", "origin", TEST_TARGET_REPOSITORY],
+        ["git", "-C", str(checkout_path), "remote", "add", "origin", TEST_TARGET_REPOSITORY],
         check=True,
     )
-    (target / "README.md").write_text("target material\n", encoding="utf-8")
-    subprocess.run(["git", "-C", str(target), "add", "."], check=True)
-    subprocess.run(["git", "-C", str(target), "commit", "-qm", "init"], check=True)
+    (checkout_path / "README.md").write_text("target material\n", encoding="utf-8")
+    subprocess.run(["git", "-C", str(checkout_path), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(checkout_path), "commit", "-qm", "init"], check=True)
     head = subprocess.run(
-        ["git", "-C", str(target), "rev-parse", "HEAD"],
+        ["git", "-C", str(checkout_path), "rev-parse", "HEAD"],
         capture_output=True, text=True, check=True,
     ).stdout.strip()
 
+    if mutate == "tracked":
+        (checkout_path / "README.md").write_text(
+            "tampered\n", encoding="utf-8"
+        )
+    elif mutate == "untracked":
+        (checkout_path / "stray.txt").write_text("x", encoding="utf-8")
+    elif mutate == "head":
+        (checkout_path / "extra.txt").write_text("x", encoding="utf-8")
+        subprocess.run(["git", "-C", str(checkout_path), "add", "."], check=True)
+        subprocess.run(
+            ["git", "-C", str(checkout_path), "commit", "-qm", "extra"], check=True
+        )
+    elif mutate == "origin":
+        subprocess.run(
+            ["git", "-C", str(checkout_path), "remote", "set-url", "origin",
+             "https://example.invalid/evil/evil-target.git"],
+            check=True,
+        )
+
     from exploratory_fixtures import build_configuration_raw, build_policy_raw
-    from test_agent_native_campaign import _conversation_verifier
+    from exploratory_fixtures import render_yaml
 
     pkg = tmp_path / "pkg"
     pkg.mkdir()
@@ -295,15 +317,86 @@ def test_report_target_integrity_ok_on_pristine_checkout(tmp_path: Path) -> None
     ]
     policy_raw["allowed_configuration_ids"] = [config_raw["configuration_id"]]
     policy_raw["policy_digest"] = compute_policy_digest(policy_raw)
-    from exploratory_fixtures import render_yaml
-
     (pkg / "campaign-policy.yaml").write_bytes(render_yaml(policy_raw))
     (pkg / "configuration-identity.yaml").write_bytes(render_yaml(config_raw))
     _write_receipt(pkg, _receipt_raw(policy_raw))
+    return pkg, tmp_path / "root", work_root
 
-    root = tmp_path / "root"
-    report = _report(pkg, root, target_checkout_root=target)
+
+def test_report_target_integrity_ok_on_pristine_checkout(tmp_path: Path) -> None:
+    """A real, pristine checkout materialized at <work-root>/target
+    reports OK when the report receives the SAME work root -- the exact
+    same --target-checkout-root value works for prepare/finalize/report."""
+    pkg, root, work_root = _target_package_and_checkout(tmp_path)
+    report = _report(pkg, root, target_checkout_root=work_root)
     assert "target_checkout_integrity: OK" in report
+    assert "target_integrity_reason:" in report
+
+
+def test_report_rejects_checkout_path_instead_of_work_root(tmp_path: Path) -> None:
+    """Passing <work-root>/target (the checkout path) instead of the work
+    root is unsupported: the report derives <root>/target and finds
+    <root>/target/target absent -> DRIFT, never OK."""
+    pkg, root, work_root = _target_package_and_checkout(tmp_path)
+    report = _report(pkg, root, target_checkout_root=work_root / "target")
+    assert "target_checkout_integrity: DRIFT DETECTED" in report
+    assert "absent" in report
+
+
+@pytest.mark.parametrize(
+    "mutate, reason_fragment",
+    [
+        ("tracked", "not clean"),
+        ("untracked", "not clean"),
+        ("head", "not the approved target sha"),
+        ("origin", "is not the approved target repository"),
+    ],
+)
+def test_report_target_drift_variants(
+    tmp_path: Path, mutate: str, reason_fragment: str
+) -> None:
+    pkg, root, work_root = _target_package_and_checkout(tmp_path, mutate=mutate)
+    report = _report(pkg, root, target_checkout_root=work_root)
+    assert "target_checkout_integrity: DRIFT DETECTED" in report
+    assert reason_fragment in report
+
+
+def test_report_missing_checkout_cannot_report_ok(tmp_path: Path) -> None:
+    pkg, root, work_root = _target_package_and_checkout(tmp_path)
+    empty_root = tmp_path / "empty-work-root"
+    empty_root.mkdir()
+    report = _report(pkg, root, target_checkout_root=empty_root)
+    assert "target_checkout_integrity: DRIFT DETECTED" in report
+    assert "absent" in report
+
+
+def test_report_does_not_modify_target(tmp_path: Path) -> None:
+    """Reporting reopens and verifies only: the target's git status is
+    byte-for-byte identical before and after report generation."""
+    import subprocess
+
+    pkg, root, work_root = _target_package_and_checkout(tmp_path)
+
+    def status() -> bytes:
+        return subprocess.run(
+            ["git", "-C", str(work_root / "target"), "status", "--porcelain",
+             "--untracked-files=all"],
+            capture_output=True, check=True,
+        ).stdout
+
+    before = status()
+    head_before = subprocess.run(
+        ["git", "-C", str(work_root / "target"), "rev-parse", "HEAD"],
+        capture_output=True, text=True, check=True,
+    ).stdout
+    _report(pkg, root, target_checkout_root=work_root)
+    after = status()
+    head_after = subprocess.run(
+        ["git", "-C", str(work_root / "target"), "rev-parse", "HEAD"],
+        capture_output=True, text=True, check=True,
+    ).stdout
+    assert after == before
+    assert head_after == head_before
 
 
 def test_report_framework_drift_detected(tmp_path: Path) -> None:
@@ -401,3 +494,130 @@ def test_report_leaves_evidence_untouched(tmp_path: Path) -> None:
     pkg, root, _ = _full_attempt(tmp_path)
     _report(pkg, root)
     assert snapshot() == before
+
+
+# ---------------------------------------------------------------------------
+# A3: external-provider accounting is authoritative and fail-closed
+# ---------------------------------------------------------------------------
+
+
+def _minimal_run_result(**overrides) -> dict:
+    from types import SimpleNamespace
+
+    summary = SimpleNamespace(
+        campaign_id=TEST_AGENT_NATIVE_CAMPAIGN,
+        campaign_state="COMPLETE",
+        attempts=[],
+        reservations_issued={"count": 0},
+        provider_invocations_made=0,
+        remaining_budget={},
+    )
+    result = {
+        "summary": summary,
+        "attempts": [],
+        "errors": [],
+        "execution_module_digests": {},
+        "framework_checkout_sha": "0" * 40,
+        "pinned_framework_sha": "0" * 40,
+        "total_attempts_authorized": 3,
+        "mode": "coding_agent_native",
+        "total_agent_attempt_invocations": 0,
+        "external_provider_api_prohibited": True,
+        "external_provider_api_invocations": 0,
+        "external_provider_cost": 0,
+        "drift": {
+            "pre": True,
+            "post": True,
+            "target_integrity_ok": True,
+            "target_integrity_reason": "test",
+        },
+        "completed_at": "2026-08-19T00:00:00+00:00",
+    }
+    result.update(overrides)
+    return result
+
+
+def test_external_accounting_zero_succeeds() -> None:
+    from execution_infra.runner import build_execution_report
+
+    report = build_execution_report(_minimal_run_result())
+    assert "external_provider_api_invocations: 0 (must be 0" in report
+    assert "external_provider_cost: 0 (must be 0)" in report
+
+
+def test_external_accounting_zero_string_cost_succeeds() -> None:
+    """A string '0' cost is canonical zero: it renders as 0 and does not
+    trip the invariant."""
+    from execution_infra.runner import build_execution_report
+
+    report = build_execution_report(
+        _minimal_run_result(external_provider_cost="0")
+    )
+    assert "external_provider_cost: 0 (must be 0)" in report
+
+
+def test_external_accounting_unparseable_cost_refused() -> None:
+    """An unparseable cost is fail-closed data: NaN != 0, so a prohibiting
+    policy refuses the report instead of rendering a guess."""
+    from execution_infra.runner import RunnerRefusal, build_execution_report
+
+    with pytest.raises(RunnerRefusal, match="external_provider_cost"):
+        build_execution_report(
+            _minimal_run_result(external_provider_cost="not-a-number")
+        )
+
+
+@pytest.mark.parametrize(
+    "overrides, fragment",
+    [
+        ({"external_provider_api_invocations": 1}, "external_provider_api_invocations=1"),
+        ({"external_provider_cost": 0.5}, "external_provider_cost=0.5"),
+        ({"external_provider_api_invocations": 2, "external_provider_cost": 9.0},
+         "external_provider_api_invocations=2"),
+    ],
+)
+def test_external_accounting_nonzero_refused(overrides: dict, fragment: str) -> None:
+    """Under a prohibiting policy, ANY nonzero external activity makes the
+    report refuse -- a report can never claim zero while its input data
+    records nonzero activity."""
+    from execution_infra.runner import RunnerRefusal, build_execution_report
+
+    with pytest.raises(RunnerRefusal, match=fragment):
+        build_execution_report(_minimal_run_result(**overrides))
+
+
+def test_external_accounting_metrics_appear_once() -> None:
+    from execution_infra.runner import build_execution_report
+
+    report = build_execution_report(_minimal_run_result())
+    assert report.count("external_provider_api_invocations: 0") == 1
+    assert report.count("external_provider_cost: 0") == 1
+
+
+def test_external_accounting_agent_count_stays_separate() -> None:
+    """Coding-agent invocations remain a distinct metric from the external
+    provider count, even when both are present in the data."""
+    from execution_infra.runner import build_execution_report
+
+    report = build_execution_report(
+        _minimal_run_result(total_agent_attempt_invocations=3)
+    )
+    assert "total_agent_attempt_invocations: 3" in report
+    assert "external_provider_api_invocations: 0" in report
+
+
+def test_provider_mode_historical_report_compatible() -> None:
+    """The provider-loop path (mode default) renders the historical
+    provider fields without the agent-native assertion block."""
+    from execution_infra.runner import build_execution_report
+
+    result = _minimal_run_result()
+    del result["mode"]
+    del result["total_agent_attempt_invocations"]
+    del result["external_provider_api_prohibited"]
+    del result["external_provider_api_invocations"]
+    del result["external_provider_cost"]
+    result["summary"].provider_invocations_made = 2
+    report = build_execution_report(result)
+    assert "total_provider_invocations: 2" in report
+    assert "External provider assertion" not in report

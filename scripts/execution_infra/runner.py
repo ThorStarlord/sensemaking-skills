@@ -620,6 +620,14 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
             return "n/a (no checks)"
         return f"{passed_n}/{total_n} ({100.0 * passed_n / total_n:.1f}%)"
 
+    def _cost_text(value: Any) -> str:
+        """Render an external cost canonically: numeric zero (int or
+        float) renders as 0; anything else renders verbatim."""
+        try:
+            return "0" if float(value) == 0 else str(value)
+        except (TypeError, ValueError):
+            return str(value)
+
     lines = [
         f"# {summary.campaign_id} execution report",
         "",
@@ -632,10 +640,10 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
     mode = run_result.get("mode", "provider_api")
     if mode == "coding_agent_native":
         # Agent-native mode: the coding agent performed the attempts
-        # directly; NO external provider API was involved. The internal
-        # ledger retains the historical provider_invocations_made field
-        # for compatibility, but the human-facing report must not claim
-        # a provider API was called.
+        # directly. The authoritative external-provider pair comes from
+        # the run data; under a prohibiting policy, ANY nonzero external
+        # activity fails the report closed -- the report can never claim
+        # zero while its input records nonzero activity.
         agent_invocations = int(
             run_result.get("total_agent_attempt_invocations", 0)
         )
@@ -643,14 +651,27 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
             run_result.get("external_provider_api_invocations", 0)
         )
         external_cost = run_result.get("external_provider_cost", 0)
+        try:
+            external_cost_num = float(external_cost)
+        except (TypeError, ValueError):
+            # An unparseable cost is itself fail-closed data: NaN is never
+            # == 0, so the invariant below refuses the report.
+            external_cost_num = float("nan")
+        if run_result.get("external_provider_api_prohibited") and (
+            external_invocations != 0 or external_cost_num != 0
+        ):
+            raise RunnerRefusal(
+                "the policy prohibits external provider APIs, but the "
+                f"execution data records external_provider_api_invocations="
+                f"{external_invocations} and external_provider_cost="
+                f"{external_cost}; refusing to render a contradictory report"
+            )
         lines += [
             "## Budget and accounting (ledger-derived)",
             "",
             f"- total_attempts_authorized: {run_result['total_attempts_authorized']}",
             f"- total_attempts_reserved: {summary.reservations_issued['count']}",
             f"- total_agent_attempt_invocations: {agent_invocations}",
-            "- external_provider_api_invocations: 0",
-            "- external_provider_cost: 0",
             "",
             "## External provider assertion (fail-closed)",
             "",
@@ -663,7 +684,10 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
                 f"{external_invocations} (must be 0; the policy prohibits "
                 "external provider APIs)"
             ),
-            f"- external_provider_cost: {external_cost} (must be 0)",
+            (
+                "- external_provider_cost: "
+                f"{_cost_text(external_cost)} (must be 0)"
+            ),
             "",
         ]
     else:
@@ -704,6 +728,10 @@ def build_execution_report(run_result: dict[str, Any]) -> str:
         (
             f"- target_checkout_integrity: "
             f"{'OK' if run_result['drift']['target_integrity_ok'] else 'DRIFT DETECTED'}"
+        ),
+        (
+            f"- target_integrity_reason: "
+            f"{run_result['drift'].get('target_integrity_reason', 'n/a')}"
         ),
         "",
         "## Execution modules (framework-governed, bound by framework_sha)",
