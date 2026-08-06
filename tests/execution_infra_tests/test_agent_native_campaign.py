@@ -17,7 +17,7 @@ the coding agent performs repo-sensemaker itself. These tests prove:
 """
 
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -333,6 +333,103 @@ def test_prepare_refuses_legacy_approval_in_agent_native_mode(
     with pytest.raises(RunnerRefusal, match="active_human_conversation"):
         _prepare(pkg, root)
     assert _events(root, TEST_AGENT_NATIVE_CAMPAIGN) == []
+
+
+def test_prepare_refuses_before_window_opens(tmp_path: Path) -> None:
+    """The mechanical execution gate: a valid receipt does NOT make
+    prepare run early. Before validity_window.not_before, prepare refuses
+    and creates no reservation, no ledger event, and no attempt."""
+    from execution_infra.agent_native_campaign import prepare_next_attempt
+
+    pkg = _write_package(tmp_path)
+    root = tmp_path / "root"
+    from sensemaking_skills.campaign_validation import parse_two_lane_yaml
+
+    policy_raw = parse_two_lane_yaml(
+        (pkg / "campaign-policy.yaml").read_bytes()
+    )
+    # A time before the fixture window opens (not_before = anchor - 30d).
+    before_window = _NOW - timedelta(days=60)
+    # The receipt's approved_at must be the approval moment (not in the
+    # future relative to the validation clock).
+    _write_receipt(
+        pkg, _receipt_raw(policy_raw, approved_at=before_window.isoformat())
+    )
+    with pytest.raises(RunnerRefusal, match="validity window has not opened"):
+        prepare_next_attempt(
+            package_dir=pkg,
+            campaign_root=root,
+            framework_checkout=Path(__file__).resolve().parents[2],
+            allowed_approver_identities=frozenset(),
+            verifier=_conversation_verifier(policy_raw),
+            now=before_window,
+        )
+    assert _events(root, TEST_AGENT_NATIVE_CAMPAIGN) == []
+    assert not (root / TEST_AGENT_NATIVE_CAMPAIGN / "attempts").exists()
+
+
+def test_validate_approval_succeeds_before_window(tmp_path: Path) -> None:
+    """Approval validity is window-INDEPENDENT: the receipt validates any
+    time after presentation and before expiry, even before the execution
+    window opens."""
+    from execution_infra.agent_native_campaign import validate_approval
+
+    pkg = _write_package(tmp_path)
+    from sensemaking_skills.campaign_validation import parse_two_lane_yaml
+
+    policy_raw = parse_two_lane_yaml(
+        (pkg / "campaign-policy.yaml").read_bytes()
+    )
+    before_window = _NOW - timedelta(days=60)
+    _write_receipt(
+        pkg, _receipt_raw(policy_raw, approved_at=before_window.isoformat())
+    )
+    result = validate_approval(
+        package_dir=pkg,
+        allowed_approver_identities=frozenset(),
+        now=before_window,
+    )
+    assert result["campaign_id"] == TEST_AGENT_NATIVE_CAMPAIGN
+    assert result["policy_digest"] == policy_raw["policy_digest"]
+    assert result["window_independent"] is True
+    assert result["reference"] == "test-session#message-42"
+
+
+def test_validate_approval_creates_no_residue(tmp_path: Path) -> None:
+    """validate-approval performs NO reservation, NO invocation, and
+    creates no ledger event or attempt directory."""
+    from execution_infra.agent_native_campaign import validate_approval
+
+    pkg = _write_package(tmp_path)
+    root = tmp_path / "root"
+    validate_approval(
+        package_dir=pkg,
+        allowed_approver_identities=frozenset(),
+        now=_NOW,
+    )
+    assert _events(root, TEST_AGENT_NATIVE_CAMPAIGN) == []
+    assert not (root / TEST_AGENT_NATIVE_CAMPAIGN).exists()
+    assert not (pkg / "ledger.jsonl").exists()
+
+
+def test_validate_approval_refuses_bad_receipt(tmp_path: Path) -> None:
+    """A receipt that does not bind the exact envelope is refused even
+    window-independently."""
+    from execution_infra.agent_native_campaign import validate_approval
+
+    pkg = _write_package(tmp_path)
+    (pkg / "approval.md").write_text(
+        (pkg / "approval.md").read_text(encoding="utf-8").replace(
+            '"approve"', '"denied"'
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(RunnerRefusal):
+        validate_approval(
+            package_dir=pkg,
+            allowed_approver_identities=frozenset(),
+            now=_NOW,
+        )
 
 
 def test_prepare_real_campaign_refuses_injection(tmp_path: Path) -> None:

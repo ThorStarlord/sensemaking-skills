@@ -64,13 +64,21 @@ script, API token, or live revalidation is involved.
    pending campaign with an unchanged digest.
 3. The human replies with a standalone `approve`. Nothing else counts
    (a reaction, a merge, silence, or `approve` inside a question or
-   quote does not).
+   quote does not). The `approve` may be given any time after the final
+   envelope is presented and before it expires -- approval validity and
+   the execution window are SEPARATE gates.
 4. The agent writes `approval.md` in this directory with the exact
-   receipt contract.
+   receipt contract (`approved_at` = the actual approval timestamp) and
+   validates it window-independently with `validate-approval`
+   (`APPROVAL_VALID ... window_independent=true`); the campaign is
+   `APPROVED_NOT_STARTED`.
 5. `prepare`/`finalize` validate the receipt against the exact campaign
    id, policy digest, attempt limit, concurrency, no-auto-merge rule,
    external-provider prohibition, classification, and window before
-   every step.
+   every step. Before `validity_window.not_before`, `prepare` refuses by
+   design (mechanical execution gate, no reservation, no ledger event);
+   starting at `not_before`, the agent executes automatically inside the
+   approved envelope.
 6. Only then may the campaign execute -- and execution is a separate,
    future task.
 

@@ -44,7 +44,15 @@ allowed_models: []
 ```
 
 The human has replied with a standalone `approve` to the presented
-envelope in THIS conversation, and the policy window is open.
+envelope in THIS conversation.
+
+**Approval and the execution window are separate gates.** The human's
+`approve` may be given any time after the final envelope is presented and
+before it expires (`approved_at` must be within the policy window); the
+receipt is recorded immediately. Execution is mechanically gated by the
+window: `prepare` refuses until `validity_window.not_before`, and the
+agent executes automatically inside the approved envelope once the
+window opens.
 
 ## Hard rules
 
@@ -96,10 +104,37 @@ envelope in THIS conversation, and the policy window is open.
    The frontmatter must be written with the exact values presented; the
    runtime validates every binding (campaign id, digest, limits, merge
    rule, external-provider prohibition, classification, window) before
-   any step.
+   any step. `approved_at` is the actual approval timestamp (today, even
+   if the execution window has not opened yet); the receipt must never
+   carry a future timestamp.
 
-4. `prepare` the next attempt (durable reservation, frozen instructions,
-   durable INVOKED):
+4. **Validate the receipt immediately, window-independently:**
+
+   ```bash
+   python scripts/execution_infra/agent_native_campaign.py validate-approval \
+       --package-dir experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot
+   ```
+
+   Expected: `APPROVAL_VALID <campaign_id> <policy_digest>
+   window_independent=true reference=<session-id>#<message-id>`. The
+   command verifies the receipt against the exact envelope WITHOUT
+   requiring the execution window to be open and performs no reservation
+   or invocation. The campaign is now `APPROVED_NOT_STARTED`; execution
+   is scheduled for the valid window.
+
+5. **Before the window opens, `prepare` refuses by design:**
+
+   ```text
+   REFUSED: ... validity window has not opened
+   ```
+
+   That refusal is the mechanical execution gate, not an error: no
+   reservation, no ledger event, no attempt directory is created.
+   Starting at `validity_window.not_before`, execute the attempts
+   automatically inside the approved envelope (`prepare` / perform /
+   `finalize`, exactly three serialized attempts, no hidden retries).
+   Stop at the window end; the bookkeeping commands re-check the clock
+   and re-validate the receipt before every step.
 
    ```bash
    python scripts/execution_infra/agent_native_campaign.py prepare \
