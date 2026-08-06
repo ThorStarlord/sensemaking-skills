@@ -68,6 +68,7 @@ from sensemaking_skills.exploratory_execution import (  # noqa: E402
     CONVERSATION_APPROVAL_FILENAME,
     CONVERSATION_APPROVAL_MECHANISM,
     CampaignBriefValidator,
+    ConversationApprovalVerifier,
     TargetCheckout,
     execution_module_digests,
     extract_frontmatter,
@@ -817,6 +818,70 @@ def build_report(
 
 
 # ---------------------------------------------------------------------------
+# validate-approval (window-independent receipt validation)
+# ---------------------------------------------------------------------------
+
+
+def validate_approval(
+    *,
+    package_dir: Path,
+    allowed_approver_identities: frozenset | None = None,
+    now: datetime | None = None,
+) -> dict:
+    """Validate the operative conversation-approval receipt against the
+    exact campaign envelope WITHOUT coupling it to the execution window.
+
+    Proportional-approval contract: the human's standalone ``approve``
+    may be given any time after the final envelope is presented and
+    before it expires (``approved_at <= validity_window.not_after``).
+    The receipt is recorded immediately; execution remains mechanically
+    gated by ``validity_window.not_before`` (prepare/finalize always
+    enforce the window -- fail closed). This command performs NO
+    reservation, NO invocation, and creates NO runtime record.
+    """
+    package_dir = Path(package_dir)
+    now = now or datetime.now(UTC)
+
+    policy_bytes = _read_document(package_dir, "campaign-policy.yaml")
+    config_bytes = _read_document(package_dir, "configuration-identity.yaml")
+    allowed = (
+        allowed_approver_identities
+        if allowed_approver_identities is not None
+        else frozenset()
+    )
+    context = ValidationContext(
+        current_time=now.isoformat(),
+        allowed_approver_identities=allowed,
+        enforce_validity_window=False,
+    )
+    bundle_result = validate_campaign_bundle(
+        policy_bytes,
+        _read_approval_document(package_dir),
+        config_bytes,
+        context,
+    )
+    if not bundle_result.valid:
+        raise RunnerRefusal(
+            f"bundle validation failed: {bundle_result.failure_code} "
+            f"{bundle_result.detail}"
+        )
+    bundle = bundle_result.value
+    _guard_conversation_mechanism(bundle)
+    approval_bytes = _read_approval_document(package_dir)
+    verifier = ConversationApprovalVerifier(
+        policy=bundle.policy.raw, clock=lambda: now
+    )
+    verified = verifier.verify(bundle.approval, approval_bytes=approval_bytes)
+    return {
+        "campaign_id": verified.campaign_id,
+        "policy_digest": verified.policy_digest,
+        "approved_at": bundle.approval.raw.get("approved_at", ""),
+        "reference": verified.reference,
+        "window_independent": True,
+    }
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
@@ -848,6 +913,17 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("--target-checkout-root", type=Path, default=None)
     f.add_argument("--allowed-approver", action="append", default=[])
     f.add_argument("--token", default=None)
+
+    v = sub.add_parser(
+        "validate-approval",
+        help=(
+            "validate the operative approval receipt against the exact "
+            "envelope (window-independent: may run before the execution "
+            "window opens; performs no reservation or invocation)"
+        ),
+    )
+    v.add_argument("--package-dir", type=Path, required=True)
+    v.add_argument("--allowed-approver", action="append", default=[])
 
     r = sub.add_parser("report", help="render the complete ledger-derived report")
     r.add_argument("--package-dir", type=Path, required=True)
@@ -890,6 +966,18 @@ def main(argv: list[str] | None = None) -> int:
                 f"state={result['state']} passed={result['validation_passed']}"
             )
             return 0
+        if args.command == "validate-approval":
+            result = validate_approval(
+                package_dir=args.package_dir,
+                allowed_approver_identities=frozenset(args.allowed_approver),
+            )
+            print(
+                f"APPROVAL_VALID {result['campaign_id']} "
+                f"{result['policy_digest']} window_independent=true "
+                f"reference={result['reference']}"
+            )
+            return 0
+
         if args.command == "report":
             print(build_report(
                 package_dir=args.package_dir,
