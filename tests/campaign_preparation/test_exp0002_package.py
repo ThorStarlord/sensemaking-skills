@@ -42,7 +42,7 @@ from sensemaking_skills.campaign_validation.models import (
 )
 
 CAMPAIGN_ID = "EXP-0002-stage1-auteur-coding-agent-pilot"
-FRAMEWORK_SHA = "06686f9bdcfdd5ffa6fa7b0cc0c59b0cd29f71ba"
+FRAMEWORK_SHA = "483f7767f85aa93f4969f316f20d56d8fd5ca9d1"
 TARGET_REPOSITORY = "https://github.com/ThorStarlord/auteur.git"
 TARGET_SHA = "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
 EXECUTION_SURFACE = "current_coding_agent"
@@ -217,7 +217,7 @@ def test_template_can_never_be_operative() -> None:
 @pytest.mark.parametrize(
     "filename, old, new",
     [
-        ("campaign-policy.yaml", "06686f9bdcfdd5ffa6fa7b0cc0c59b0cd29f71ba", "0" * 40),
+        ("campaign-policy.yaml", "483f7767f85aa93f4969f316f20d56d8fd5ca9d1", "0" * 40),
         ("campaign-policy.yaml", "coding_agent_native", "provider_api"),
         ("campaign-policy.yaml", "current_coding_agent", "other_agent_surface"),
         ("campaign-policy.yaml", "EXP-0002-stage1-auteur-coding-agent-pilot", "EXP-9999-other"),
