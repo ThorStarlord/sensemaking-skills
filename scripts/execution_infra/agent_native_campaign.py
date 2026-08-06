@@ -369,9 +369,9 @@ def prepare_next_attempt(
                 "real agent-native campaign requires --target-checkout-root"
             )
         target = TargetCheckout.prepare(
-            Path(target_checkout_root),
-            repository=str(config_raw["target_repository"]),
-            sha=str(config_raw["target_sha"]),
+            target_repository=str(config_raw["target_repository"]),
+            target_sha=str(config_raw["target_sha"]),
+            work_root=Path(target_checkout_root),
         )
         target.seal_read_only()
         target_path = str(target.path)
@@ -652,26 +652,35 @@ def _target_integrity_check(
     target_checkout_root: Path | None,
     repository: str,
     sha: str,
-) -> bool:
-    """Report-time target integrity: REOPEN the materialized target
-    checkout at the approved SHA and verify origin, exact SHA, clean
-    working tree, no untracked files, and no submodule drift. Reports the
-    ACTUAL result -- never a hardcoded true. If no checkout exists at the
-    root, integrity cannot be attested (the staging phase materializes
-    the target; the report never clones or mutates)."""
+) -> tuple[bool, str]:
+    """Report-time target integrity under the ONE work-root contract:
+    ``--target-checkout-root`` is the materialization work root everywhere
+    (prepare/finalize/report), and the actual checkout lives at
+    ``<target-checkout-root>/target``.
+
+    Reporting only REOPENS and verifies that checkout -- it never calls
+    ``TargetCheckout.prepare()`` and never clones, fetches, checks out,
+    resets, cleans, or mutates anything. Returns ``(ok, reason)`` with the
+    ACTUAL result; ``ok`` is true only when every integrity check
+    (origin, exact SHA, clean index + working tree, no untracked files,
+    no .gitmodules, no active submodules) succeeds."""
     if target_checkout_root is None:
-        return False  # cannot attest without the target root
-    root = Path(target_checkout_root)
-    if not (root / ".git").exists():
-        return False  # nothing to attest
+        return False, "no --target-checkout-root supplied; integrity cannot be attested"
+    checkout_path = Path(target_checkout_root) / "target"
+    if not (checkout_path / ".git").exists():
+        return (
+            False,
+            f"target checkout {checkout_path} is absent; nothing to attest "
+            "(the staging phase materializes it; reporting never clones)",
+        )
     try:
         target = TargetCheckout(
-            root, target_repository=repository, target_sha=sha
+            checkout_path, target_repository=repository, target_sha=sha
         )
         target.verify_integrity()
-        return True
-    except Exception:  # noqa: BLE001 - integrity is reported, never fatal
-        return False
+        return True, "origin, SHA, index, working tree, untracked files, and submodules all verified clean"
+    except Exception as exc:  # noqa: BLE001 - integrity is reported, never fatal
+        return False, str(exc).strip() or "target integrity verification failed"
 
 
 def build_report(
@@ -771,7 +780,7 @@ def build_report(
         framework_checkout_sha = checkout_sha(framework_checkout)
     except Exception:  # noqa: BLE001 - integrity is reported, never fatal
         framework_checkout_sha = "unresolvable"
-    target_integrity_ok = _target_integrity_check(
+    target_integrity_ok, target_integrity_reason = _target_integrity_check(
         target_checkout_root,
         repository=str(config_raw.get("target_repository", "")),
         sha=str(config_raw.get("target_sha", "")),
@@ -799,6 +808,7 @@ def build_report(
                 "pre": drift_clean,
                 "post": drift_clean,
                 "target_integrity_ok": target_integrity_ok,
+                "target_integrity_reason": target_integrity_reason,
             },
             "report_only": report_only,
             "completed_at": now.isoformat(),
