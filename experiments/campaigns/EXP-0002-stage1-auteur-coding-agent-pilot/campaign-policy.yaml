@@ -5,7 +5,7 @@ execution_mode: "coding_agent_native"
 execution_surface: "current_coding_agent"
 external_provider_api_prohibited: true
 allowed_framework_shas:
-- "483f7767f85aa93f4969f316f20d56d8fd5ca9d1"
+- "50daa17aa066a568edccb82c6150b2d8ec9eefe2"
 allowed_targets:
 - repository: "https://github.com/ThorStarlord/auteur.git"
   sha: "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
@@ -13,7 +13,7 @@ allowed_models: []
 allowed_artifact_types:
 - "repository_sensemaking_brief"
 allowed_configuration_ids:
-- "0acaf030fe8fb18bf8ba3f5dfd4ad0bc6ad4e788d279e6ec25d866d9152807c0"
+- "85b2e144d6b7bcb78de1b72a5a08e7d9a0a35b43da65fdfe79a3377e3dc6e0a7"
 max_attempt_slots: 3
 max_provider_invocations: 3
 max_attempts_per_configuration: 3
@@ -31,4 +31,4 @@ preservation_requirements: "Every reservation and every attempt result -- succes
 logging_requirements: "Every attempt lifecycle transition, raw request, raw output, produced artifact, and terminal outcome is recorded in the append-only campaign ledger. No external model/provider API is used; external cost is zero by construction."
 prepared_by: "campaign-preparation-agent"
 prepared_at: "2026-08-05T00:00:00+00:00"
-policy_digest: "ee5d39a46379d06b5eba68277e9344e8ce38777ff0aa92c21d27c82b28a07873"
+policy_digest: "373053d0830b448b55cdbe49346c97b949e9885272c143bbc6ec999032a63b67"
