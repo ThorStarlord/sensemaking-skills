@@ -31,6 +31,7 @@ provider-loop runner.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import uuid
 from datetime import UTC, datetime
@@ -553,9 +554,9 @@ def finalize_attempt(
                 "for the pinned validator"
             )
         target = TargetCheckout.prepare(
-            Path(target_checkout_root),
-            repository=str(config_raw["target_repository"]),
-            sha=str(config_raw["target_sha"]),
+            target_repository=str(config_raw["target_repository"]),
+            target_sha=str(config_raw["target_sha"]),
+            work_root=Path(target_checkout_root),
         )
         validate = CampaignBriefValidator(
             framework_checkout=framework_checkout,
@@ -587,17 +588,110 @@ def finalize_attempt(
 # report
 # ---------------------------------------------------------------------------
 
+#: State-aware expected evidence inside attempts/<attempt-id>/ (fail-closed
+#: minimum: a terminal or captured state MISSING one of these files makes
+#: report generation refuse, because the record would be incomplete).
+_STATE_EXPECTED_ARTIFACTS: dict[str, tuple[str, ...]] = {
+    "RESERVED": ("reservation.yaml",),
+    "INVOKED": ("reservation.yaml", "raw-request.txt"),
+    "OUTPUT_CAPTURED": (
+        "reservation.yaml", "raw-request.txt", "raw-output.md",
+    ),
+    "VALIDATION_PASSED": (
+        "reservation.yaml", "raw-request.txt", "raw-output.md",
+        "produced-artifact.md", "validation-result.json",
+        "attempt-result.yaml",
+    ),
+    "VALIDATION_FAILED": (
+        "reservation.yaml", "raw-request.txt", "raw-output.md",
+        "produced-artifact.md", "validation-result.json",
+        "attempt-result.yaml",
+    ),
+    "PROVIDER_FAILED": ("reservation.yaml", "raw-request.txt"),
+    "ABORTED_BEFORE_INVOCATION": (),
+}
+
+
+def _attempt_report_detail(attempt_dir: Path, state: str) -> dict:
+    """Load the per-attempt report detail: the recorded validation outcome
+    (validation-result.json), the state-aware artifact list (only files
+    that actually exist), and orphan detection. Missing expected files
+    make reporting fail closed (the record would be incomplete)."""
+    expected = _STATE_EXPECTED_ARTIFACTS.get(state, ())
+    missing = [name for name in expected if not (attempt_dir / name).is_file()]
+    if missing:
+        raise RunnerRefusal(
+            f"attempt record {attempt_dir.name} (state={state}) is missing "
+            f"expected evidence: {', '.join(missing)}; refusing to "
+            "generate an incomplete report"
+        )
+    existing = sorted(p.name for p in attempt_dir.iterdir() if p.is_file())
+    expected_set = set(expected)
+    orphans = [name for name in existing if name not in expected_set]
+    detail: dict = {
+        "attempt_id": attempt_dir.name,
+        "state": state,
+        "artifacts": list(expected),
+        "orphan_artifacts": orphans,
+    }
+    validation_result = attempt_dir / "validation-result.json"
+    if validation_result.is_file():
+        try:
+            detail["validation_outcome"] = json.loads(
+                validation_result.read_text(encoding="utf-8")
+            )
+        except (ValueError, OSError) as exc:
+            raise RunnerRefusal(
+                f"attempt record {attempt_dir.name} has an unreadable "
+                f"validation-result.json: {exc}"
+            ) from exc
+    return detail
+
+
+def _target_integrity_check(
+    target_checkout_root: Path | None,
+    repository: str,
+    sha: str,
+) -> bool:
+    """Report-time target integrity: REOPEN the materialized target
+    checkout at the approved SHA and verify origin, exact SHA, clean
+    working tree, no untracked files, and no submodule drift. Reports the
+    ACTUAL result -- never a hardcoded true. If no checkout exists at the
+    root, integrity cannot be attested (the staging phase materializes
+    the target; the report never clones or mutates)."""
+    if target_checkout_root is None:
+        return False  # cannot attest without the target root
+    root = Path(target_checkout_root)
+    if not (root / ".git").exists():
+        return False  # nothing to attest
+    try:
+        target = TargetCheckout(
+            root, target_repository=repository, target_sha=sha
+        )
+        target.verify_integrity()
+        return True
+    except Exception:  # noqa: BLE001 - integrity is reported, never fatal
+        return False
+
 
 def build_report(
     *,
     package_dir: Path,
     campaign_root: Path,
     framework_checkout: Path,
+    target_checkout_root: Path | None = None,
     allowed_approver_identities: frozenset | None = None,
     now: datetime | None = None,
+    report_only: bool = False,
 ) -> str:
     """Build the complete ledger-derived execution report (same contract
-    as the provider-loop runner's report)."""
+    as the provider-loop runner's report), with agent-native accuracy:
+    dynamic campaign title, agent-invocation vs external-provider-API
+    counts, real validation rates from the recorded per-attempt results,
+    state-aware artifact lists (raw-output.md for agent-native), a REAL
+    report-time target-integrity check, and an optional report-only path
+    that verifies without authorizing anything and without requiring the
+    wall clock to sit inside the execution window."""
     from sensemaking_skills.campaign_accounting import CampaignSummaryGenerator
 
     package_dir = Path(package_dir)
@@ -608,6 +702,7 @@ def build_report(
     policy_bytes = _read_document(package_dir, "campaign-policy.yaml")
     config_bytes = _read_document(package_dir, "configuration-identity.yaml")
     policy_raw = parse_two_lane_yaml(policy_bytes)
+    config_raw = parse_two_lane_yaml(config_bytes)
     allowed = (
         allowed_approver_identities
         if allowed_approver_identities is not None
@@ -616,6 +711,7 @@ def build_report(
     context = ValidationContext(
         current_time=now.isoformat(),
         allowed_approver_identities=allowed,
+        enforce_validity_window=not report_only,
     )
     bundle_result = validate_campaign_bundle(
         policy_bytes,
@@ -633,31 +729,78 @@ def build_report(
     summary = CampaignSummaryGenerator(campaign_root).update_campaign_summary(
         bundle, now=now
     )
+    attempts_dir = Path(campaign_root) / summary.campaign_id / "attempts"
+    attempts_detail = []
+    from sensemaking_skills.campaign_accounting import CampaignLedger
+
+    ledger_events = CampaignLedger(
+        Path(campaign_root) / summary.campaign_id,
+        campaign_id=summary.campaign_id,
+    ).read_events()
+    # Agent invocations = INVOKED transitions in the ledger (an attempt is
+    # invoked once, durably, before the coding agent begins the reasoning
+    # work; final states may be terminal).
+    agent_invocations = sum(
+        1 for e in ledger_events if e.event_type == "INVOKED"
+    )
+    for entry in summary.attempts:
+        state = entry["state"]
+        attempt_dir = attempts_dir / entry["attempt_id"]
+        if attempt_dir.is_dir():
+            attempts_detail.append(
+                _attempt_report_detail(attempt_dir, state)
+            )
+        else:
+            # Ledger-only attempt (no attempt directory materialized):
+            # still reported, with its state and an explicit empty
+            # artifact list (never the provider-era fallback names).
+            attempts_detail.append(
+                {
+                    "attempt_id": entry["attempt_id"],
+                    "state": state,
+                    "artifacts": [],
+                }
+            )
     try:
         drift_clean = framework_tree_unchanged(
             policy_raw["allowed_framework_shas"][0], framework_checkout
         )
     except Exception:  # noqa: BLE001 - drift is reported, never fatal
         drift_clean = False
+    try:
+        framework_checkout_sha = checkout_sha(framework_checkout)
+    except Exception:  # noqa: BLE001 - integrity is reported, never fatal
+        framework_checkout_sha = "unresolvable"
+    target_integrity_ok = _target_integrity_check(
+        target_checkout_root,
+        repository=str(config_raw.get("target_repository", "")),
+        sha=str(config_raw.get("target_sha", "")),
+    )
     return build_execution_report(
         {
             "summary": summary,
-            "attempts": [
-                {"attempt_id": a["attempt_id"], "state": a["state"]}
-                for a in summary.attempts
-            ],
+            "attempts": attempts_detail,
             "errors": [],
             "execution_module_digests": execution_module_digests(
                 _EXECUTION_PACKAGE_DIR
             ),
-            "framework_checkout_sha": checkout_sha(framework_checkout),
+            "framework_checkout_sha": framework_checkout_sha,
             "pinned_framework_sha": policy_raw["allowed_framework_shas"][0],
             "total_attempts_authorized": int(policy_raw["max_attempt_slots"]),
+            "mode": "coding_agent_native",
+            "total_agent_attempt_invocations": agent_invocations,
+            "external_provider_api_prohibited": policy_raw.get(
+                "external_provider_api_prohibited"
+            )
+            is True,
+            "external_provider_api_invocations": 0,
+            "external_provider_cost": 0,
             "drift": {
                 "pre": drift_clean,
                 "post": drift_clean,
-                "target_integrity_ok": True,
+                "target_integrity_ok": target_integrity_ok,
             },
+            "report_only": report_only,
             "completed_at": now.isoformat(),
         }
     )
@@ -700,6 +843,8 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--package-dir", type=Path, required=True)
     r.add_argument("--campaign-root", type=Path, required=True)
     r.add_argument("--framework-checkout", type=Path, required=True)
+    r.add_argument("--target-checkout-root", type=Path, default=None)
+    r.add_argument("--report-only", action="store_true")
     r.add_argument("--allowed-approver", action="append", default=[])
 
     args = parser.parse_args(argv)
@@ -740,7 +885,9 @@ def main(argv: list[str] | None = None) -> int:
                 package_dir=args.package_dir,
                 campaign_root=args.campaign_root,
                 framework_checkout=args.framework_checkout,
+                target_checkout_root=args.target_checkout_root,
                 allowed_approver_identities=frozenset(args.allowed_approver),
+                report_only=args.report_only,
             ))
             return 0
     except RunnerRefusal as exc:

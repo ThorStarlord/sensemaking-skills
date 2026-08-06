@@ -451,6 +451,13 @@ def _check_validity_window(policy: Mapping[str, Any],
             "CAMPAIGN_POLICY_VALIDITY_WINDOW_INVALID",
             "context.current_time is not a valid RFC3339 timestamp",
         )
+    if not context.enforce_validity_window:
+        # Report-only verification (e.g. after campaign expiry): the
+        # policy still validates in full (digests, limits, coherence) but
+        # the wall clock is NOT required to sit inside the execution
+        # window. This never authorizes a reservation or invocation --
+        # the execution commands always enforce the window (fail closed).
+        return None
     if now < not_before:
         return ValidationResult.fail("CAMPAIGN_POLICY_NOT_YET_VALID", "current time is before validity_window.not_before")
     if now >= not_after:
