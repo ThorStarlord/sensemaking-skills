@@ -1,0 +1,61 @@
+schema: charter-approval-request-v1
+workstream: repository-sensemaking-skill-hardening-v1
+phase: 5C
+status: AWAITING_HUMAN_DECISION
+recorded_at: "2026-08-07T02:45:00Z"
+
+purpose: >
+  The charter lists charter_approval as a mandatory human gate. No tracked
+  product change (Commit 1) may begin before this gate passes.
+
+presented:
+  charter:
+    path: experiments/repository-sensemaking-skill-hardening-v1/charter.yaml
+    sha256: 09B06AF46A85B0540A0B5DADF58A2F3F7F0E1AE7D06DA50082582FB5A27FF8E0
+  branch_head: e188f43a7690adea35073ee3e38c16f46eddfe99
+  canonical_source: ThorStarlord/sensemaking-skills/skills/repo-sensemaker
+  repair_ceiling: 3
+  automatic_merge: prohibited
+  automatic_release: prohibited
+  acceptance_criteria_frozen: true
+
+baseline_metrics (mechanical, from baseline-report.yaml):
+  validation_pass_rate: 1.0
+  fog_classification_accuracy: 0.80
+  weakest_boundary_type_accuracy: 0.68
+  workflow_routing_registry_validity: 1.0
+  entry_point_coverage: 1.0
+  logic_trace_presence_rate: 1.0
+
+baseline_metrics (semantic, from baseline-semantic-metrics-v1.yaml, scorer frozen sha256 CF4D03F5...):
+  evidence_precision: 0.844
+  unsupported_claim_rate: 0.632
+  observed_claim_accuracy: 0.818
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.022
+  conflicting_evidence_detection_rate: 0.68
+
+interaction_probe_findings:
+  report: interaction-probe/review-findings-v1.md
+  examples: interaction-probe/ideal-response-examples/
+  contract_draft: interaction-probe/interaction-contract-draft-v1.yaml
+  headline: >
+    the 14-section brief is a strong machine artifact but a poor user
+    artifact: too long, punchline buried, internal fog vocabulary, no
+    confidence statement, no alternatives section. Proposal: keep the brief
+    as the machine artifact and add a derived compact human synthesis.
+
+proposed_amendment:
+  id: AMEND-1
+  status: PROPOSED - adoption requires an explicit human decision (charter 5A.6)
+  text: >
+    add a human synthesis layer derived from the machine brief as a
+    user-facing deliverable; interaction quality becomes a measured dimension
+    in Phase 16 (interaction evaluation) without replacing or weakening any
+    frozen numeric gate.
+  if_rejected: interaction findings remain advisory; no gate changes.
+
+decision_required:
+  - approve_charter_without_amendment
+  - approve_charter_with_amendment_AMEND-1
+  - revise (request changes before Commit 1)

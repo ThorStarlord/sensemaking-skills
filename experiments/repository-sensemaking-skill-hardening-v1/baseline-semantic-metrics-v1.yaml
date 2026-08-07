@@ -1,0 +1,340 @@
+scorer_version: semantic-scorer-v1
+scorer_sha256: CF4D03F573474EDAC19CBBEC305024C0B49DC02F082328368CFAFF042A67EA8B
+scorer_frozen_at: 2026-08-06 23:13:18
+scorer_rules_frozen: true
+same_scorer_for_hardened: true
+same_parser_for_baseline_and_hardened: true
+repositories: 25
+evidence_precision: 0.844
+unsupported_claim_rate: 0.632
+observed_claim_accuracy: 0.818
+derived_claim_accuracy: 1.0
+inference_labeling_rate: 0.022
+conflicting_evidence_detection_rate: 0.68
+total_claims: 2840
+per_repository:
+- repository_id: tiny-lib
+  claims:
+    OBSERVED: 34
+    DERIVED: 3
+    INFERRED: 0
+    UNSUPPORTED: 108
+    CITED_UNRESOLVABLE: 12
+  evidence_precision: 0.755
+  unsupported_claim_rate: 0.745
+  observed_claim_accuracy: 0.739
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.0
+  conflicting_evidence_detected: false
+- repository_id: cli-app
+  claims:
+    OBSERVED: 34
+    DERIVED: 5
+    INFERRED: 1
+    UNSUPPORTED: 31
+    CITED_UNRESOLVABLE: 2
+  evidence_precision: 0.951
+  unsupported_claim_rate: 0.443
+  observed_claim_accuracy: 0.944
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.031
+  conflicting_evidence_detected: true
+- repository_id: web-frontend
+  claims:
+    OBSERVED: 21
+    DERIVED: 5
+    INFERRED: 1
+    UNSUPPORTED: 31
+    CITED_UNRESOLVABLE: 12
+  evidence_precision: 0.684
+  unsupported_claim_rate: 0.544
+  observed_claim_accuracy: 0.636
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.031
+  conflicting_evidence_detected: true
+- repository_id: backend-service
+  claims:
+    OBSERVED: 20
+    DERIVED: 10
+    INFERRED: 0
+    UNSUPPORTED: 32
+    CITED_UNRESOLVABLE: 18
+  evidence_precision: 0.625
+  unsupported_claim_rate: 0.516
+  observed_claim_accuracy: 0.526
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.0
+  conflicting_evidence_detected: true
+- repository_id: full-stack
+  claims:
+    OBSERVED: 38
+    DERIVED: 9
+    INFERRED: 2
+    UNSUPPORTED: 34
+    CITED_UNRESOLVABLE: 11
+  evidence_precision: 0.81
+  unsupported_claim_rate: 0.42
+  observed_claim_accuracy: 0.776
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.056
+  conflicting_evidence_detected: true
+- repository_id: monorepo
+  claims:
+    OBSERVED: 21
+    DERIVED: 11
+    INFERRED: 1
+    UNSUPPORTED: 25
+    CITED_UNRESOLVABLE: 15
+  evidence_precision: 0.681
+  unsupported_claim_rate: 0.439
+  observed_claim_accuracy: 0.583
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.038
+  conflicting_evidence_detected: true
+- repository_id: multi-language
+  claims:
+    OBSERVED: 37
+    DERIVED: 5
+    INFERRED: 2
+    UNSUPPORTED: 125
+    CITED_UNRESOLVABLE: 9
+  evidence_precision: 0.824
+  unsupported_claim_rate: 0.749
+  observed_claim_accuracy: 0.804
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.016
+  conflicting_evidence_detected: true
+- repository_id: poorly-documented
+  claims:
+    OBSERVED: 18
+    DERIVED: 2
+    INFERRED: 3
+    UNSUPPORTED: 59
+    CITED_UNRESOLVABLE: 4
+  evidence_precision: 0.833
+  unsupported_claim_rate: 0.747
+  observed_claim_accuracy: 0.818
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.048
+  conflicting_evidence_detected: false
+- repository_id: docs-heavy-code-light
+  claims:
+    OBSERVED: 44
+    DERIVED: 4
+    INFERRED: 2
+    UNSUPPORTED: 108
+    CITED_UNRESOLVABLE: 10
+  evidence_precision: 0.828
+  unsupported_claim_rate: 0.692
+  observed_claim_accuracy: 0.815
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.018
+  conflicting_evidence_detected: true
+- repository_id: generated-heavy
+  claims:
+    OBSERVED: 38
+    DERIVED: 6
+    INFERRED: 1
+    UNSUPPORTED: 136
+    CITED_UNRESOLVABLE: 4
+  evidence_precision: 0.917
+  unsupported_claim_rate: 0.756
+  observed_claim_accuracy: 0.905
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.007
+  conflicting_evidence_detected: true
+- repository_id: unusual-layout
+  claims:
+    OBSERVED: 36
+    DERIVED: 6
+    INFERRED: 4
+    UNSUPPORTED: 115
+    CITED_UNRESOLVABLE: 10
+  evidence_precision: 0.808
+  unsupported_claim_rate: 0.732
+  observed_claim_accuracy: 0.783
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.034
+  conflicting_evidence_detected: true
+- repository_id: multi-executable
+  claims:
+    OBSERVED: 42
+    DERIVED: 9
+    INFERRED: 0
+    UNSUPPORTED: 26
+    CITED_UNRESOLVABLE: 3
+  evidence_precision: 0.944
+  unsupported_claim_rate: 0.338
+  observed_claim_accuracy: 0.933
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.0
+  conflicting_evidence_detected: false
+- repository_id: plugin-architecture
+  claims:
+    OBSERVED: 37
+    DERIVED: 4
+    INFERRED: 0
+    UNSUPPORTED: 140
+    CITED_UNRESOLVABLE: 5
+  evidence_precision: 0.891
+  unsupported_claim_rate: 0.773
+  observed_claim_accuracy: 0.881
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.0
+  conflicting_evidence_detected: false
+- repository_id: stale-readme
+  claims:
+    OBSERVED: 36
+    DERIVED: 7
+    INFERRED: 2
+    UNSUPPORTED: 44
+    CITED_UNRESOLVABLE: 5
+  evidence_precision: 0.896
+  unsupported_claim_rate: 0.506
+  observed_claim_accuracy: 0.878
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.043
+  conflicting_evidence_detected: true
+- repository_id: hidden-coupling
+  claims:
+    OBSERVED: 39
+    DERIVED: 3
+    INFERRED: 1
+    UNSUPPORTED: 138
+    CITED_UNRESOLVABLE: 4
+  evidence_precision: 0.913
+  unsupported_claim_rate: 0.767
+  observed_claim_accuracy: 0.907
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.007
+  conflicting_evidence_detected: false
+- repository_id: strong-ui-fog
+  claims:
+    OBSERVED: 27
+    DERIVED: 12
+    INFERRED: 1
+    UNSUPPORTED: 43
+    CITED_UNRESOLVABLE: 9
+  evidence_precision: 0.812
+  unsupported_claim_rate: 0.524
+  observed_claim_accuracy: 0.75
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.023
+  conflicting_evidence_detected: true
+- repository_id: no-ui
+  claims:
+    OBSERVED: 30
+    DERIVED: 4
+    INFERRED: 2
+    UNSUPPORTED: 31
+    CITED_UNRESOLVABLE: 3
+  evidence_precision: 0.919
+  unsupported_claim_rate: 0.477
+  observed_claim_accuracy: 0.909
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.061
+  conflicting_evidence_detected: false
+- repository_id: adv-misleading-readme
+  claims:
+    OBSERVED: 31
+    DERIVED: 7
+    INFERRED: 2
+    UNSUPPORTED: 42
+    CITED_UNRESOLVABLE: 6
+  evidence_precision: 0.864
+  unsupported_claim_rate: 0.525
+  observed_claim_accuracy: 0.838
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.045
+  conflicting_evidence_detected: true
+- repository_id: adv-dead-code
+  claims:
+    OBSERVED: 23
+    DERIVED: 2
+    INFERRED: 0
+    UNSUPPORTED: 38
+    CITED_UNRESOLVABLE: 1
+  evidence_precision: 0.962
+  unsupported_claim_rate: 0.603
+  observed_claim_accuracy: 0.958
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.0
+  conflicting_evidence_detected: false
+- repository_id: adv-unused-dep
+  claims:
+    OBSERVED: 47
+    DERIVED: 6
+    INFERRED: 3
+    UNSUPPORTED: 102
+    CITED_UNRESOLVABLE: 5
+  evidence_precision: 0.914
+  unsupported_claim_rate: 0.658
+  observed_claim_accuracy: 0.904
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.029
+  conflicting_evidence_detected: true
+- repository_id: adv-duplicated-packages
+  claims:
+    OBSERVED: 26
+    DERIVED: 9
+    INFERRED: 1
+    UNSUPPORTED: 26
+    CITED_UNRESOLVABLE: 3
+  evidence_precision: 0.921
+  unsupported_claim_rate: 0.426
+  observed_claim_accuracy: 0.897
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.037
+  conflicting_evidence_detected: false
+- repository_id: adv-misleading-dirs
+  claims:
+    OBSERVED: 34
+    DERIVED: 2
+    INFERRED: 2
+    UNSUPPORTED: 116
+    CITED_UNRESOLVABLE: 6
+  evidence_precision: 0.857
+  unsupported_claim_rate: 0.763
+  observed_claim_accuracy: 0.85
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.017
+  conflicting_evidence_detected: true
+- repository_id: adv-removed-feature-docs
+  claims:
+    OBSERVED: 36
+    DERIVED: 11
+    INFERRED: 3
+    UNSUPPORTED: 39
+    CITED_UNRESOLVABLE: 4
+  evidence_precision: 0.922
+  unsupported_claim_rate: 0.453
+  observed_claim_accuracy: 0.9
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.071
+  conflicting_evidence_detected: true
+- repository_id: adv-multi-registry
+  claims:
+    OBSERVED: 28
+    DERIVED: 4
+    INFERRED: 2
+    UNSUPPORTED: 45
+    CITED_UNRESOLVABLE: 15
+  evidence_precision: 0.681
+  unsupported_claim_rate: 0.584
+  observed_claim_accuracy: 0.651
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.043
+  conflicting_evidence_detected: true
+- repository_id: adv-partial-impl
+  claims:
+    OBSERVED: 29
+    DERIVED: 14
+    INFERRED: 1
+    UNSUPPORTED: 24
+    CITED_UNRESOLVABLE: 3
+  evidence_precision: 0.935
+  unsupported_claim_rate: 0.358
+  observed_claim_accuracy: 0.906
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.04
+  conflicting_evidence_detected: true

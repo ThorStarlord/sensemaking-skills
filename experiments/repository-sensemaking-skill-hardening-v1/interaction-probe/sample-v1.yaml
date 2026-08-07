@@ -1,0 +1,20 @@
+schema: interaction-probe-sample-v1
+frozen_at: "2026-08-07T02:00:00Z"
+purpose: >
+  Freeze the five-repository interaction sample BEFORE reviewing desired-response
+  quality. Selection must not change after seeing results.
+sample_id: interaction-probe-v1
+repositories:
+  - tiny-lib
+  - backend-service
+  - strong-ui-fog
+  - hidden-coupling
+  - adv-misleading-readme
+selection_rationale: |
+  tiny-lib: smallest possible surface (purpose/boundary clarity).
+  backend-service: conventional layered service (architecture readability).
+  strong-ui-fog: UI-heavy with fragmented structure (UI fog stress).
+  hidden-coupling: docs claim independence, code shares global state (contradiction stress).
+  adv-misleading-readme: README advertises features that do not exist (trust calibration stress).
+baseline_briefs: experiments/repository-sensemaking-skill-hardening-v1/baseline/<repository_id>.md
+no_reselection_rule: "Do not select different examples after seeing desired-response results."
