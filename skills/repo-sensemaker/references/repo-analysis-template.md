@@ -148,7 +148,7 @@ artifact_id: repository_sensemaking_brief
 schema_version: 1
 source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
 user_implied_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | unknown
-primary_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | mixed | unknown
+primary_fog_type: product_fog | ui_fog | docs_fog | architecture_fog  # mixed/unknown are NOT valid - validator accepts exactly these four
 diagnosis_conflict: true | false
 escalation_recommended: true | false
 evidence:
@@ -165,6 +165,11 @@ required_inputs:
 created_at: "2026-05-19T16:00:00Z"
 immutable: true
 ```
+
+No-user-intent runs (fixture/standalone/scheduled, no problem statement): use
+`user_implied_fog_type: unknown` and `diagnosis_conflict: false`. Do not invent
+an implied fog type.
+
 
 `weakness_type` is required metadata but non-blocking (D2): a missing or
 unrecognized value is a validator warning, not an error, and never

@@ -206,6 +206,59 @@ prose:
 Prefer better semantics over forcing a wrong category; if no canonical type
 fits after mapping, use `Other` with a non-empty `weakness_type_explanation`.
 
+## Fog Classification (evidence-based)
+
+Classify fog from cited evidence, never from vibes or from difficulty alone.
+The four fog types and their observable signals:
+
+- **product_fog** — unclear user/value contract; promised feature absent;
+  product workflow incomplete; conflicting feature behavior; unclear intended
+  outcomes. Evidence: README/roadmap feature lists vs implementation, issue
+  tracker, missing acceptance criteria, stubbed product surface.
+- **ui_fog** — use the [UI Fog Signals Registry](references/ui-fog-signals.md)
+  (Tier 1/2 signals, decision tree, tie-breaking with user intent).
+- **docs_fog** — missing specification; stale instructions; conflicting docs;
+  knowledge inaccessible although the implementation is coherent. Evidence:
+  docs that misdescribe current code, removed-feature docs, absent specs for
+  existing behavior.
+- **architecture_fog** — responsibility boundaries unclear; unsafe coupling;
+  lifecycle/state ambiguity; module structure prevents confident
+  implementation. Evidence: implicit dependency chains, global state,
+  unwired modules, structural mismatch between entry points and flow.
+
+**Ghost-feature reasoning** — for documented-but-unimplemented functionality,
+decide which of three cases the evidence supports:
+
+```text
+documentation is stale (feature was removed, never existed as code, or docs
+  simply lag the code)                       -> docs_fog candidate
+product promises functionality that does not exist (README/roadmap/UX
+  advertises it as a deliverable)            -> product_fog candidate
+feature exists only partially because the architecture cannot support it
+  (structural reason the feature cannot land) -> architecture_fog candidate
+```
+
+Ask: does the mismatch live in the *documentation* (docs_fog), in the
+*product contract* (product_fog), or in the *structure* (architecture_fog)?
+When the README advertises a feature as real and the code does not implement
+it, that is product_fog — the defect is the promise, not the docs.
+
+**Ambiguity handling**:
+- Allow uncertainty: state `primary_fog_type` only with cited evidence; if
+  evidence is genuinely tied, escalate (`escalation_recommended: true`) and
+  record the secondary candidate.
+- Do NOT default to architecture_fog merely because classification is hard.
+- Separate primary from secondary fog when both apply (e.g. product_fog with
+  contributing docs_fog); only the primary drives routing.
+- `mixed`/`unknown` are NOT valid `primary_fog_type` values — the validator
+  accepts exactly `product_fog | ui_fog | docs_fog | architecture_fog`. Use
+  one of the four; express residual uncertainty in prose and escalation.
+
+**No-user-intent runs (GAP-8)**: when no user problem statement/intent
+artifact exists (fixture, standalone, or scheduled runs), the canonical
+values are `user_implied_fog_type: unknown` and `diagnosis_conflict: false`
+(no stated intent to conflict with). Do not invent an implied fog type.
+
 ## Evidence Authority
 
 Every substantive claim carries an internal evidence class:
