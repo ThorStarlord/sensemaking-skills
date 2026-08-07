@@ -1,0 +1,25 @@
+schema: repository-sensemaking-baseline-manifest-v1
+frozen_at: "2026-08-06T00:00:00Z"
+canonical_skill_path: skills/repo-sensemaker/SKILL.md
+canonical_skill_sha256: 8E902B371B2A66D5F3CAA82C542263854D35DAF0DBB39F1EC301888AD2601440
+sensemaking_skills_head: c5f9a05f3ce404246a6d7ab06e85a1e3e4e6420b
+protocol: |
+  For each corpus repository: an agent session reads the canonical skill and
+  its references verbatim (unmodified), explores the fixture repository,
+  produces the repository sensemaking brief artifact following the skill's
+  evidence grammar (literal 'Logic trace:', recognized weakness types,
+  registry-grounded workflow routing, fog classification, no implementation),
+  writes the brief to baseline/<repository_id>.md, and validates it with
+  `python scripts/validate-brief.py <brief> --target-repo <fixture> --repo-root .`.
+  Raw briefs and validator results are preserved; scoring uses the frozen
+  rubric and the frozen ground truth; no skill file is modified.
+scoring_rubric:
+  purpose_accuracy: "does the brief identify the correct repository purpose (per ground truth)?"
+  architecture_accuracy: "are the major subsystems correctly identified?"
+  entry_point_accuracy: "are the real entry points identified?"
+  evidence_precision: "are claims backed by inspected files with valid line references?"
+  unsupported_claim_rate: "share of claims lacking supporting evidence"
+  weakest_boundary_accuracy: "is the selected weakest boundary the intended one (per ground truth)?"
+  fog_classification_accuracy: "is primary_fog_type correct?"
+  workflow_routing_accuracy: "is recommended_workflow_id registry-valid and appropriate?"
+  validation_pass_rate: "share of briefs passing validate-brief.py"

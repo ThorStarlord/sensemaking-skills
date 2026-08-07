@@ -1,0 +1,481 @@
+corpus_schema: repository-sensemaking-corpus-v2
+frozen_at: '2026-08-06T00:00:00Z'
+note: ground truth frozen BEFORE any candidate outputs; do not change after results
+  are visible without versioning the fixture
+repositories:
+- repository_id: tiny-lib
+  commit_sha: 3119fab564cc77b9e9df5d2e4bae7acca253ad9a
+  purpose: A tiny Python library that greets users with configurable salutations.
+  expected_major_subsystems:
+  - greeter core
+  - config loading
+  known_entry_points:
+  - greeter/greet.py:greet()
+  known_weak_boundaries:
+  - type: Zero Validation
+    evidence:
+    - greeter/greet.py
+    note: no input validation on name
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - product_fog
+- repository_id: cli-app
+  commit_sha: e8adf1901908c8daf8ae7784f30a9026e5b9ff31
+  purpose: A command-line task manager with add/list/done subcommands.
+  expected_major_subsystems:
+  - CLI parsing
+  - task store
+  known_entry_points:
+  - main.py:main()
+  known_weak_boundaries:
+  - type: Contract Mismatch
+    evidence:
+    - main.py
+    - README.md
+    note: README documents `tasks delete` but the CLI only implements add/list/done
+  known_misleading_signals:
+  - README mentions a delete subcommand that does not exist
+  expected_fog_candidates:
+  - product_fog
+- repository_id: web-frontend
+  commit_sha: df46e9a20526bffdfa678527aaa2accd09bc12e9
+  purpose: A single-page dashboard frontend with hand-rolled routing and fetch-based
+    data loading.
+  expected_major_subsystems:
+  - components
+  - router
+  - api client
+  known_entry_points:
+  - src/index.html
+  - src/app.js
+  known_weak_boundaries:
+  - type: Implicit Dependencies
+    evidence:
+    - src/app.js
+    - src/api.js
+    note: api client assumes a backend base URL with no configuration boundary
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - ui_fog
+- repository_id: backend-service
+  commit_sha: 96dbb5b8df3b4ae0904b389f4b71f0e5dd485783
+  purpose: A FastAPI-style REST service managing notes with SQLite persistence.
+  expected_major_subsystems:
+  - HTTP layer
+  - service logic
+  - persistence
+  known_entry_points:
+  - app/main.py:create_app()
+  known_weak_boundaries:
+  - type: Zero Validation
+    evidence:
+    - app/models.py
+    note: note bodies are stored without size limits or schema validation
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: full-stack
+  commit_sha: c1f25b21fce067bf2b2c92ea0d7349ea8d03a56b
+  purpose: 'A full-stack app: React frontend, Python backend, SQLite database, docker-compose.'
+  expected_major_subsystems:
+  - frontend
+  - backend
+  - database
+  - deployment
+  known_entry_points:
+  - frontend/src/App.jsx
+  - backend/app/main.py
+  known_weak_boundaries:
+  - type: Contract Mismatch
+    evidence:
+    - frontend/src/api.js
+    - backend/app/main.py
+    note: frontend expects /api/v1/items, backend serves /items
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: monorepo
+  commit_sha: eb4f3965b4a6a696ba204e458c6bd3e5a3b9911b
+  purpose: A monorepo with two independent packages (mathkit, strkit) managed by pnpm
+    workspaces.
+  expected_major_subsystems:
+  - mathkit package
+  - strkit package
+  - workspace tooling
+  known_entry_points:
+  - packages/mathkit/src/index.js
+  - packages/strkit/src/index.js
+  known_weak_boundaries:
+  - type: Implicit Dependencies
+    evidence:
+    - packages/strkit/src/index.js
+    note: strkit imports mathkit without declaring it as a dependency
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: multi-language
+  commit_sha: ef1b659f59d9effc94d4eaba25f2298f5d6af6bc
+  purpose: 'A project mixing Python, JavaScript and shell: build pipeline with a Makefile.'
+  expected_major_subsystems:
+  - python core
+  - js helper
+  - shell tooling
+  known_entry_points:
+  - core/main.py
+  - helper/run.js
+  - scripts/setup.sh
+  known_weak_boundaries:
+  - type: Ghost Features
+    evidence:
+    - Makefile
+    note: Makefile targets reference helper/run.js which is a stub
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: poorly-documented
+  commit_sha: b7eaf6f6e5b77042ddc12dd6748c08de007fafab
+  purpose: A data-processing library with no README and no docstrings.
+  expected_major_subsystems:
+  - processing
+  - io
+  known_entry_points:
+  - process.py:run()
+  known_weak_boundaries:
+  - type: Zero Validation
+    evidence:
+    - process.py
+    note: no input validation; undocumented contract
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - docs_fog
+- repository_id: docs-heavy-code-light
+  commit_sha: 26043b5b0b32a80a19715ebec35ca1a0407cfb51
+  purpose: A project with extensive documentation but almost no implementation.
+  expected_major_subsystems:
+  - docs
+  - stub implementation
+  known_entry_points:
+  - src/main.py
+  known_weak_boundaries:
+  - type: Ghost Features
+    evidence:
+    - docs/spec.md
+    - src/main.py
+    note: docs describe features the code does not implement
+  known_misleading_signals:
+  - docs/architecture.md describes modules that do not exist
+  expected_fog_candidates:
+  - product_fog
+- repository_id: generated-heavy
+  commit_sha: 2e584d2de2a8e357520980b5137aa24237793f33
+  purpose: A project where generated protobuf code and dist artifacts are committed
+    alongside handwritten code.
+  expected_major_subsystems:
+  - generated protobuf layer
+  - handwritten core
+  - build output
+  known_entry_points:
+  - handwritten/main.py
+  known_weak_boundaries:
+  - type: Contract Mismatch
+    evidence:
+    - generated/api_pb2.py
+    - handwritten/main.py
+    note: handwritten code drifts from the generated message schema
+  known_misleading_signals:
+  - generated/api_pb2.py and dist/*.py look like primary source but are build outputs
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: unusual-layout
+  commit_sha: 1a1efb3187e9e3a77495111e26eb906cf5fb3b58
+  purpose: A service with a deep, unconventional directory layout.
+  expected_major_subsystems:
+  - core logic
+  - config
+  - adapters
+  known_entry_points:
+  - app/main.py
+  known_weak_boundaries:
+  - type: Vocabulary Drift
+    evidence:
+    - app/src/lib/core/engine.py
+    - README.md
+    note: docs call it 'engine', code calls it 'executor'
+  known_misleading_signals:
+  - directory names do not match module contents
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: multi-executable
+  commit_sha: 4fdd096de164c84120abaf927240b767c2d7184e
+  purpose: 'A project with several executables: main server, CLI, worker and scripts.'
+  expected_major_subsystems:
+  - server
+  - cli
+  - worker
+  - scripts
+  known_entry_points:
+  - main.py
+  - cli.py
+  - worker.py
+  - scripts/backfill.py
+  known_weak_boundaries:
+  - type: Implicit Dependencies
+    evidence:
+    - worker.py
+    - db.py
+    note: worker and server both mutate the same queue table without coordination
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: plugin-architecture
+  commit_sha: 05c23ff31e40670aed891286d85f7b987671749f
+  purpose: An application with a plugin registry and loadable plugins.
+  expected_major_subsystems:
+  - core
+  - plugin registry
+  - plugins
+  known_entry_points:
+  - core/main.py:main()
+  known_weak_boundaries:
+  - type: Safety Gaps
+    evidence:
+    - core/registry.py
+    note: plugins are loaded via exec() from arbitrary paths with no sandbox
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: stale-readme
+  commit_sha: c8b1d9986c0c9bacb9898c9ff86f4ade26480d19
+  purpose: A storage library whose README describes SQLite but the code uses JSON
+    files.
+  expected_major_subsystems:
+  - storage
+  - api
+  known_entry_points:
+  - store.py:Store
+  known_weak_boundaries:
+  - type: Vocabulary Drift
+    evidence:
+    - README.md
+    - store.py
+    note: README says SQLite; code persists JSON files
+  known_misleading_signals:
+  - README claims sqlite3 usage
+  - docs/design.md describes an old architecture
+  expected_fog_candidates:
+  - docs_fog
+- repository_id: hidden-coupling
+  commit_sha: 65fc5a7261a09b1417a4d584501626792705883b
+  purpose: Two nominally independent modules that share global state via a registry.
+  expected_major_subsystems:
+  - module A
+  - module B
+  - shared registry
+  known_entry_points:
+  - main.py
+  known_weak_boundaries:
+  - type: Implicit Dependencies
+    evidence:
+    - a.py
+    - b.py
+    - registry.py
+    note: b.py consumes state written by a.py through a global registry; README presents
+      them as independent
+  known_misleading_signals:
+  - README claims modules are independent
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: strong-ui-fog
+  commit_sha: f99a339e44c1ef3c74809d21c7787d616573585e
+  purpose: A frontend with scattered components, complex undocumented routing, fragmented
+    design tokens and no UI tests.
+  expected_major_subsystems:
+  - views
+  - widgets
+  - router
+  - styles
+  known_entry_points:
+  - src/index.js
+  known_weak_boundaries:
+  - type: Zero Validation
+    evidence:
+    - src/router.js
+    note: routing is complex and entirely undocumented
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - ui_fog
+- repository_id: no-ui
+  commit_sha: 48e52d27f584cf7deff5c1725e799c8c936acea8
+  purpose: A pure backend library with no frontend surface at all.
+  expected_major_subsystems:
+  - core
+  - serialization
+  known_entry_points:
+  - core/engine.py
+  known_weak_boundaries:
+  - type: Zero Validation
+    evidence:
+    - core/engine.py
+    note: engine accepts malformed input silently
+  known_misleading_signals: []
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: adv-misleading-readme
+  commit_sha: a10049678856070e7b8e0ad8bac864a4cb17dc5d
+  purpose: A repository whose README advertises features that do not exist (ghost
+    features).
+  expected_major_subsystems:
+  - actual core
+  - advertised surface
+  known_entry_points:
+  - src/app.py
+  known_weak_boundaries:
+  - type: Ghost Features
+    evidence:
+    - README.md
+    - src/app.py
+    note: README lists sync/export/webhook features; code only implements ingest
+  known_misleading_signals:
+  - README feature list entirely aspirational
+  expected_fog_candidates:
+  - product_fog
+- repository_id: adv-dead-code
+  commit_sha: 24b68e31209f1789965c62efbf6a5aedecb7c9ed
+  purpose: A repository with a large legacy module that looks important but is never
+    reached.
+  expected_major_subsystems:
+  - active pipeline
+  - legacy module
+  known_entry_points:
+  - pipeline.py
+  known_weak_boundaries:
+  - type: Ghost Features
+    evidence:
+    - pipeline.py
+    - legacy/processor.py
+    note: legacy processor documented as core but never imported
+  known_misleading_signals:
+  - docs/architecture.md presents legacy/processor.py as the core processor
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: adv-unused-dep
+  commit_sha: eb08b81a5aa5d0d8dcb6005e5126fd390765a39a
+  purpose: A small project whose requirements list a heavy dependency never imported.
+  expected_major_subsystems:
+  - core
+  known_entry_points:
+  - app.py
+  known_weak_boundaries:
+  - type: Implicit Dependencies
+    evidence:
+    - requirements.txt
+    - app.py
+    note: tensorflow listed but never imported; misleading about the real dependency
+      footprint
+  known_misleading_signals:
+  - requirements.txt suggests ML usage
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: adv-duplicated-packages
+  commit_sha: 904b1ebae150bc6154cac3d6e433c63109819ad7
+  purpose: Two directories define the same package name with conflicting behavior.
+  expected_major_subsystems:
+  - utils (top)
+  - core.utils (nested)
+  known_entry_points:
+  - main.py
+  known_weak_boundaries:
+  - type: Vocabulary Drift
+    evidence:
+    - utils.py
+    - core/utils.py
+    - main.py
+    note: duplicate utils package; imports resolve ambiguously
+  known_misleading_signals:
+  - same module name in two locations
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: adv-misleading-dirs
+  commit_sha: 9b1e90bd04f6269660e09a4d1f2227da9243fbba
+  purpose: 'Directory names are misleading: models/ contains HTTP handlers, handlers/
+    contains data models.'
+  expected_major_subsystems:
+  - models dir (handlers)
+  - handlers dir (models)
+  known_entry_points:
+  - main.py
+  known_weak_boundaries:
+  - type: Vocabulary Drift
+    evidence:
+    - models/user.py
+    - handlers/user.py
+    note: directory names inverted relative to contents
+  known_misleading_signals:
+  - models/ is not models
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: adv-removed-feature-docs
+  commit_sha: 5a4ae3b82631026e90c7dc2e2492fbd0ab72751a
+  purpose: Documentation describes a feature that was removed from the code.
+  expected_major_subsystems:
+  - code
+  - docs
+  known_entry_points:
+  - app.py
+  known_weak_boundaries:
+  - type: Orphaned Examples
+    evidence:
+    - docs/export.md
+    - app.py
+    note: docs/export.md documents the export feature; no export code exists
+  known_misleading_signals:
+  - README links to export docs
+  expected_fog_candidates:
+  - docs_fog
+- repository_id: adv-multi-registry
+  commit_sha: 3c081742c946ea779bbeef29332f00818ea3fbe9
+  purpose: Two conflicting workflow registries exist; recommended IDs differ between
+    them.
+  expected_major_subsystems:
+  - runtime registry
+  - stale registry
+  known_entry_points:
+  - main.py
+  known_weak_boundaries:
+  - type: Contract Mismatch
+    evidence:
+    - .workflows/registry.yaml
+    - docs/workflow-registry.yaml
+    note: two registries with conflicting workflow IDs; routing grounded in the wrong
+      one breaks
+  known_misleading_signals:
+  - docs registry is stale but looks authoritative
+  expected_fog_candidates:
+  - architecture_fog
+- repository_id: adv-partial-impl
+  commit_sha: 31cd0393f8a6085470e08661bf12065e4c4e6c5e
+  purpose: A project whose entry point exists but core functionality is unimplemented.
+  expected_major_subsystems:
+  - entry point
+  - unimplemented core
+  - tests
+  known_entry_points:
+  - main.py
+  known_weak_boundaries:
+  - type: Ghost Features
+    evidence:
+    - core.py
+    - main.py
+    note: main.py calls core functions that raise NotImplementedError
+  known_misleading_signals:
+  - README claims feature is implemented
+  expected_fog_candidates:
+  - product_fog
+version_changelog:
+- version: v1
+  note: initial freeze before any candidate outputs
+- version: v2
+  reason: 'taxonomy fix: adv-dead-code weak boundary type Dead Code (not in canonical
+    7-type taxonomy) -> Ghost Features'
+  changed:
+  - adv-dead-code

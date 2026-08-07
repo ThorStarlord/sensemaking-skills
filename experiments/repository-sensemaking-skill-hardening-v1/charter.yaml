@@ -1,0 +1,72 @@
+schema: repository-sensemaking-skill-hardening-v1-charter
+frozen_at: "2026-08-06T00:00:00Z"
+workstream_id: repository-sensemaking-skill-hardening-v1
+decision_source: delegated_human_authority_via_conversation
+decision_reference: "master plan: actual repo-sensemaker / repository-skill hardening (pasted 2026-08-06)"
+
+canonical_source:
+  repository: ThorStarlord/sensemaking-skills
+  path: skills/repo-sensemaker/
+  rationale: "sensemaking-skills copy is materially richer (evidence grammar, weakness classification, UI-fog rules, workflow-registry grounding, runtime skeleton, execution protocol); Auteur is an evaluation target/consumer"
+
+objective: >
+  Improve the accuracy, evidence discipline, architectural understanding,
+  weakest-boundary diagnosis, fog classification, routing quality and
+  usefulness of repo-sensemaker. This workstream does NOT exist to improve
+  Docker, synthetic reviewer infrastructure, or cross-platform test machinery
+  unless those directly block skill evaluation.
+
+duplicate_copy_policy:
+  choice: A
+  description: "sensemaking-skills is canonical; Auteur consumes/releases it"
+  auteur_copy_status: stale_duplicate
+  auteur_copy_hashes:
+    sensemaking_skills_skil_lmd: 8E902B371B2A66D5F3CAA82C542263854D35DAF0DBB39F1EC301888AD2601440
+    auteur_skil_lmd: 112A02FE58C9FD2F7E63A645641AF35FB46AAA4BF5A20AD8277949C4107FEA19
+  auteur_missing_features:
+    - ui-fog-signals-registry
+    - evidence-authority-hierarchy
+    - literal-logic-trace-requirement
+    - MODEL_SECTION-runtime-skeleton
+    - full-repo-analysis-template
+  sync_rule: "synchronize mechanically from canonical after acceptance (Phase 23); never evolve both independently"
+
+authorized_tracked_changes:
+  repository: ThorStarlord/sensemaking-skills
+  skill_changes: true
+  reference_changes: true
+  validator_changes: true
+  test_changes: true
+  fixture_changes: true
+  documentation_changes: true
+  branch_creation: true
+  commits: true
+  push: true
+  pull_request: true
+
+prohibited:
+  automatic_merge: true
+  automatic_release: true
+  changing_acceptance_criteria_after_results: true
+  implementation_outside_frozen_scope: true
+  workflow_id_hallucination: true
+  runtime_skeleton_incompatibility: true
+
+human_gates:
+  - charter_approval
+  - scope_changing_amendment
+  - final_pr_merge_or_release
+
+evaluation_corpus:
+  location: experiments/repository-sensemaking-skill-hardening-v1/corpus/
+  freeze_rule: "do not change ground truth after candidate outputs are visible without versioning the fixture"
+
+improvement_gate:
+  unsupported_claim_rate: "hardened < baseline"
+  evidence_precision: "hardened > baseline"
+  weakest_boundary_accuracy: "hardened > baseline"
+  routing_accuracy: "hardened >= baseline"
+  validation_pass_rate: "hardened >= baseline"
+  no_material_regression_in_any_critical_dimension: true
+
+repair_ceiling: 3

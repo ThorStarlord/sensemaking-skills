@@ -1,0 +1,32 @@
+validation_results:
+  schema: baseline-validation-results-v1
+  validator: scripts/validate-brief.py (unmodified)
+  run_at: 2026-08-06 22:41:59
+  per_brief:
+    tiny-lib: exit=0 warnings=0
+    cli-app: exit=0 warnings=2
+    web-frontend: exit=0 warnings=0
+    backend-service: exit=0 warnings=0
+    full-stack: exit=0 warnings=0
+    monorepo: exit=0 warnings=0
+    multi-language: exit=0 warnings=2
+    poorly-documented: exit=0 warnings=0
+    docs-heavy-code-light: exit=0 warnings=2
+    generated-heavy: exit=0 warnings=0
+    unusual-layout: exit=0 warnings=2
+    multi-executable: exit=0 warnings=0
+    plugin-architecture: exit=0 warnings=0
+    stale-readme: exit=0 warnings=0
+    hidden-coupling: exit=0 warnings=0
+    strong-ui-fog: exit=0 warnings=0
+    no-ui: exit=0 warnings=0
+    adv-misleading-readme: exit=0 warnings=2
+    adv-dead-code: exit=0 warnings=2
+    adv-unused-dep: exit=0 warnings=2
+    adv-duplicated-packages: exit=0 warnings=0
+    adv-misleading-dirs: exit=0 warnings=0
+    adv-removed-feature-docs: exit=0 warnings=2
+    adv-multi-registry: exit=0 warnings=0
+    adv-partial-impl: exit=0 warnings=2
+  briefs: 25
+  passed: 25

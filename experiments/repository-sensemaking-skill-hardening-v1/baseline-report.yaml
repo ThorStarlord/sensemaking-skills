@@ -1,0 +1,121 @@
+schema: repository-sensemaking-baseline-report-v1
+workstream: repository-sensemaking-skill-hardening-v1
+phase: 5
+recorded_at: "2026-08-07T01:30:00Z"
+
+baseline_pins:
+  sensemaking_skills_head: c5f9a05f3ce404246a6d7ab06e85a1e3e4e6420b
+  canonical_skill_sha256: 8E902B371B2A66D5F3CAA82C542263854D35DAF0DBB39F1EC301888AD2601440
+  skill_modified_during_baseline: false
+  corpus_schema: repository-sensemaking-corpus-v2 (frozen before candidate outputs; v2 = taxonomy fix for adv-dead-code, versioned per freeze rule)
+
+protocol: |
+  One agent session per corpus repository executed the CURRENT unmodified skill:
+  read skills/repo-sensemaker/SKILL.md + 5 references + workflow-registry.yaml,
+  explored the fixture read-only, produced the brief (template sections 1-14 +
+  Section 13 handoff), validated with scripts/validate-brief.py (unmodified).
+  25/25 briefs written and validated (exit 0). Raw briefs preserved in
+  baseline/<repository_id>.md; validation results in baseline/validation-results.yaml.
+
+aggregate_metrics:
+  repositories: 25
+  briefs_produced: 25
+  validation_pass_rate: "25/25 = 1.0"
+  fog_classification_accuracy: "20/25 = 0.80"
+  weakest_boundary_type_accuracy: "17/25 = 0.68"
+  weakness_type_validity_rate: "25/25 = 1.0"
+  workflow_routing_registry_validity: "25/25 = 1.0 (0 hallucinated workflow ids)"
+  logic_trace_presence_rate: "25/25 = 1.0"
+  entry_point_coverage: "33/33 = 1.0"
+  evidence_citation_discipline: "all evidence excerpts cite real files, valid Lx formats, verbatim-grounded quotes"
+
+fog_classification_mismatches:
+  - repository_id: tiny-lib
+    declared: architecture_fog
+    expected: product_fog
+    note: defensible disagreement; ground-truth product_fog is weak for this fixture
+  - repository_id: docs-heavy-code-light
+    declared: docs_fog
+    expected: product_fog
+  - repository_id: adv-misleading-readme
+    declared: docs_fog
+    expected: product_fog
+  - repository_id: adv-multi-registry
+    declared: docs_fog
+    expected: architecture_fog
+  - repository_id: adv-partial-impl
+    declared: architecture_fog
+    expected: product_fog
+  pattern: "the current skill systematically under-classifies product_fog; documented-but-unimplemented features (Ghost Features) route to docs_fog or architecture_fog. Ghost-Features-to-fog mapping is under-specified in the skill."
+
+weakest_boundary_mismatches:
+  - repository_id: tiny-lib
+    brief: Implicit Dependencies
+    ground_truth: Zero Validation
+  - repository_id: cli-app
+    brief: Ghost Features
+    ground_truth: Contract Mismatch
+    note: brief choice is defensible (delete subcommand documented, not implemented)
+  - repository_id: web-frontend
+    brief: Contract Mismatch
+    ground_truth: Implicit Dependencies
+  - repository_id: unusual-layout
+    brief: Ghost Features
+    ground_truth: Vocabulary Drift
+  - repository_id: plugin-architecture
+    brief: Zero Validation
+    ground_truth: Safety Gaps
+    note: taxonomy gap - Safety Gaps is defined for autonomous-workflow human gates, not app-code exec() sandboxing
+  - repository_id: adv-unused-dep
+    brief: Ghost Features
+    ground_truth: Implicit Dependencies
+  - repository_id: adv-duplicated-packages
+    brief: Implicit Dependencies
+    ground_truth: Vocabulary Drift
+  - repository_id: adv-removed-feature-docs
+    brief: Ghost Features
+    ground_truth: Orphaned Examples
+  - repository_id: adv-multi-registry
+    brief: Vocabulary Drift
+    ground_truth: Contract Mismatch
+  pattern: "taxonomy is agent-domain-oriented (Safety Gaps, Implicit Dependencies, Orphaned Examples); app-code weaknesses (dead code, unused dependencies, exec() sandboxing) have no exact fit; subagents reported this in 9/25 runs."
+
+skill_gaps_reported_by_executors (deduplicated):
+  - id: GAP-1
+    severity: high
+    description: "template instructs quote placeholders ('see file/lines') because the runtime overwrites quote (issue #89); in standalone runs validate-brief.py's EVIDENCE_QUOTE_NOT_FOUND is blocking, so placeholders fail. Skill never distinguishes runtime vs standalone quote handling."
+    runs: 25/25
+  - id: GAP-2
+    severity: medium
+    description: "envelope field vocabulary drift: harness/runtime uses target_repo, workflow_registry_source, escalation_required; template Section 13 uses created_at, escalation_recommended. Not normalized anywhere."
+    runs: 15/25
+  - id: GAP-3
+    severity: medium
+    description: "FILE_CITATION_RE matches only md|py|yaml|yml|toml|txt; js/json/html/css targets cannot be cited in Section 7 prose (web-frontend brief had to cite an absent README.md)."
+    runs: 3/25
+  - id: GAP-4
+    severity: medium
+    description: "template Section 13 enum lists mixed|unknown for primary_fog_type; validator rejects both (blocking). Enum must match validator."
+    runs: 3/25
+  - id: GAP-5
+    severity: medium
+    description: "Ghost Features and Safety Gaps trigger validator D5 HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT warning; skill never documents this consequence."
+    runs: 7/25
+  - id: GAP-6
+    severity: medium
+    description: "weakness-types taxonomy lacks app-code categories (dead code, unused dependency, unwired module, exec() sandbox); 9/25 runs reported no exact fit."
+    runs: 9/25
+  - id: GAP-7
+    severity: low
+    description: "architecture-implementation-workflow allows only guided_execution; no plan_only mode exists for architecture diagnosis, colliding with the no-implementation boundary."
+    runs: 4/25
+  - id: GAP-8
+    severity: low
+    description: "no-intent fixture case: user_implied_fog_type/diagnosis_conflict values for runs without a user intent artifact are unspecified (convention: unknown/false)."
+    runs: 10/25
+  - id: GAP-9
+    severity: low
+    description: "Execution Protocol assumes runtime scripts (run-ledger/validate-and-record); standalone invocation of validate-brief.py is undocumented."
+    runs: 8/25
+
+comparison_target: "these aggregate metrics are the frozen comparison baseline for the hardened skill (Phase 16 improvement gate)."
