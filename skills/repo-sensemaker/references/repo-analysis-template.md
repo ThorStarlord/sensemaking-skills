@@ -26,6 +26,26 @@ Useful refinements that are not urgent blockers.
 ## 6. Weakest boundary
 The most ambiguous, unproven, unsafe, or unenforced part of the repo.
 
+Generate 2-5 candidate boundaries first (see SKILL.md "Weakest Boundary
+Reasoning"), score each on evidence strength, severity, blast radius, goal
+relevance, downstream blocking effect, and uncertainty, then select. Present
+the selection in this shape:
+
+```text
+Boundary:
+Observed contract:
+Observed violation or uncertainty:
+Evidence:
+Weakness type:
+Logic trace:
+Failure consequence:
+Confidence:
+Alternatives considered:
+```
+
+If no candidate has real evidence or consequence, say so instead of
+manufacturing a dramatic boundary.
+
 **You MUST classify the boundary using one of the recognized weakness types** (see
 [Weakness Types](weakness-types.md)): `Vocabulary Drift`, `Contract Mismatch`,
 `Ghost Features`, `Safety Gaps`, `Implicit Dependencies`, `Zero Validation`, or

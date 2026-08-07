@@ -138,6 +138,74 @@ Two rules: **import exists ≠ runtime execution path proven** (a module can be 
 
 **Required output improvement**: the brief's Current Shape section must explain, in plain terms: what starts the system, what controls the main flow, where state lives, where external systems enter, where validation happens, and where responsibility becomes unclear. If any of these cannot be established from inspected files, record it as UNKNOWN rather than inventing it.
 
+## Weakest Boundary Reasoning
+
+Do not jump straight to one weakness. Generate candidates first, then select.
+
+**Candidate generation** — identify 2-5 candidate boundaries. For each, score:
+
+```yaml
+boundary: what and where (file:line)
+evidence_strength: strong | medium | weak   (how directly the evidence supports it)
+severity: high | medium | low               (how bad the failure is)
+blast_radius: high | medium | low           (how much of the system it affects)
+goal_relevance: high | medium | low         (how central to the user's goal)
+downstream_blocking_effect: high | medium | low  (does it block valuable next work)
+uncertainty: high | medium | low            (how unsure we are)
+```
+
+**Selection rule** — prefer the candidate with the strongest combination of
+high consequence, strong evidence, centrality to the user goal, and ability to
+block valuable downstream work. Do NOT select merely the easiest problem to
+describe, the most dramatic-sounding one, or the first one found. If the best
+candidate has high uncertainty, say so and state what would resolve it.
+
+**Mandatory selection structure** — the brief's weakest-boundary section must
+contain, in this shape:
+
+```text
+Boundary:
+Observed contract:
+Observed violation or uncertainty:
+Evidence:
+Weakness type:
+Logic trace:
+Failure consequence:
+Confidence:
+Alternatives considered:
+```
+
+`Alternatives considered` lists the competing candidates from generation and
+why each lost. `Confidence` is high/medium/low plus what would raise it.
+
+**Do not manufacture a boundary**: if no candidate has real evidence or
+consequence, state that the repository has no serious weakness rather than
+filling the section dramatically.
+
+**Weakness-type consequences (GAP-5)**: choosing `Ghost Features` or
+`Safety Gaps` triggers the validator's D5 warning
+`HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT` — those classifications require a
+substantive human audit before final approval. That warning is by design, not
+an error; pick the type the evidence supports and expect the audit
+requirement. Do not misclassify to dodge the warning.
+
+**Taxonomy mapping (GAP-6)**: the seven canonical types are oriented toward
+agent/workflow failures. When the evidence points at an application-code
+weakness, map it to the closest canonical type and explain the mapping in
+prose:
+- dead/unreachable code masquerading as core -> `Ghost Features` (documented
+  functionality with no reachable implementation) or `Orphaned Examples` if
+  the dead code is example/documentation-shaped;
+- declared-but-unused dependency -> `Ghost Features` (declared surface,
+  no implementation) with the manifest vs import evidence in the Logic trace;
+- `exec()`/dynamic loading without validation -> `Zero Validation` (no
+  automated check on the loading contract), not `Safety Gaps` (which is
+  reserved for autonomous workflows lacking human approval gates);
+- unwired/never-imported module -> `Ghost Features` or `Implicit Dependencies`
+  depending on whether it is documented-as-present or merely coupled-by-luck.
+Prefer better semantics over forcing a wrong category; if no canonical type
+fits after mapping, use `Other` with a non-empty `weakness_type_explanation`.
+
 ## Evidence Authority
 
 Every substantive claim carries an internal evidence class:
