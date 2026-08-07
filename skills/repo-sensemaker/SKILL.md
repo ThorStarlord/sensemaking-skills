@@ -107,6 +107,37 @@ Investigate in passes. Do not rely on repository size, first impressions, or ran
 
 **Low-value content**: deprioritize generated bundles, dependency/vendor trees, caches, compiled artifacts, lockfiles (unless relevant to the question), large test snapshots, and duplicated generated sources. Never let repository size force random sampling; the passes above define the sample.
 
+## Architecture Reconstruction
+
+The brief must reconstruct how the system actually behaves, not summarize its directory layout.
+
+**Runtime model** — for the repository as a whole and for each entry point, identify with file:line citations:
+- startup path (what runs first and how it is launched);
+- orchestration (what controls the main flow);
+- domain/core logic;
+- persistence/state (where state lives);
+- external integration points (where external systems enter);
+- background work (workers, jobs, scheduled tasks);
+- output boundary (what leaves the system).
+
+**Dependency semantics** — classify every dependency you assert, and never conflate the classes:
+- `declared` — listed in a manifest;
+- `used` — actually imported/referenced by code;
+- `runtime` — exercised on a proven execution path;
+- `test` — used only by tests;
+- `optional` — conditionally loaded;
+- `dead` — declared but never used.
+
+Two rules: **import exists ≠ runtime execution path proven** (a module can be imported yet never called; a module can be executed without being imported — e.g. `exec()`-loaded plugins, entry points invoked by name); **dependency appears in manifest ≠ dependency is actively used**. State which class you mean for every dependency claim.
+
+**State model** — identify every state boundary: files, databases, caches, global/module state, queues, environment variables, remote systems. Note which code writes and which reads each state (file:line).
+
+**Boundary model** — identify transitions where responsibility changes: HTTP → application, CLI → command handler, handler → domain, domain → persistence, domain → external provider, worker → queue, plugin host → plugin. For each boundary, note what is validated and what is assumed.
+
+**Avoid false relationships**: `file imports module` is not `feature depends on module at runtime`; a directory named after a concern is not evidence the concern lives there.
+
+**Required output improvement**: the brief's Current Shape section must explain, in plain terms: what starts the system, what controls the main flow, where state lives, where external systems enter, where validation happens, and where responsibility becomes unclear. If any of these cannot be established from inspected files, record it as UNKNOWN rather than inventing it.
+
 ## Evidence Authority
 
 Every substantive claim carries an internal evidence class:

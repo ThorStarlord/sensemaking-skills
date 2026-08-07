@@ -6,6 +6,14 @@ What this repo appears to be trying to accomplish.
 ## 2. Current shape
 Main folders, files, skills, workflows, examples, and references.
 
+Describe the **runtime flow, not just the inventory** (see SKILL.md
+"Architecture Reconstruction"): what starts the system, what controls the main
+flow, where state lives, where external systems enter, where validation
+happens, and where responsibility becomes unclear — each with file:line
+citations. Distinguish declared from actually-used dependencies, and note
+state boundaries (files, databases, caches, global state, queues,
+environment, remote systems).
+
 ## 3. Strong signals
 What is already working or conceptually strong.
 
