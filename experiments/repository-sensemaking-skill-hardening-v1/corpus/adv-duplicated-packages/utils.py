@@ -1,0 +1,2 @@
+def fmt():
+    return 'top'
