@@ -1,0 +1,87 @@
+schema: phase19-evaluation-report-v1
+workstream: repository-sensemaking-skill-hardening-v1
+status: COMPLETE - CHARTER IMPROVEMENT GATE NOT MET
+repair_cycles_used: 3 of 3 (REPAIR-1 pre-candidate regression fix; REPAIR-2 GAP-6/fog guidance revision; REPAIR-3 round-2 YAML authoring-defect repair)
+verdict: STOP per plan - do not weaken thresholds, do not change ground truth, do not hide evidence
+
+## Final gate results (round 2 after REPAIR-3, frozen scorer CF4D03F5, frozen
+validator F53B637D, frozen template A013FF8B, candidate skill at 98f07ed)
+
+metric                          baseline  candidate  gate       result
+unsupported_claim_rate          0.632     0.633      < baseline FAIL (flat)
+evidence_precision              0.844     0.835      > baseline FAIL (flat, -0.009)
+weakest_boundary_accuracy       0.640     0.440      > baseline FAIL (real decline)
+routing_validity                1.000     1.000      >= baseline PASS
+validation_pass_rate            1.000     1.000      >= baseline PASS (after REPAIR-3)
+observed_claim_accuracy         0.818     0.812      no material regression PASS
+inference_labeling_rate         0.022     0.040      no material regression PASS (improved)
+
+fog_classification_accuracy     0.800     0.760      tracked (not gated) declined 1 repo net
+
+per_repository: IMPROVED 11 / UNCHANGED 10 / REGRESSED 4 (web-frontend,
+poorly-documented, generated-heavy, unusual-layout)
+
+## What the hardening PROVABLY improved (keep in the skill)
+- adv-misleading-readme: docs_fog -> product_fog (correct; baseline headline miss fixed)
+- adv-partial-impl: architecture_fog -> product_fog (correct)
+- docs-heavy-code-light: docs_fog -> product_fog (correct)
+- adv-unused-dep: Ghost Features -> Implicit Dependencies (correct, REPAIR-2 fix landed)
+- tiny-lib: Implicit Dependencies -> Zero Validation (correct, REPAIR-2 fix landed)
+- multi-language: Ghost Features -> Implicit Dependencies (correct, REPAIR-2 fix landed)
+- stale-readme: Vocabulary Drift held (correct); unusual-layout: -> Vocabulary Drift (correct)
+- inference_labeling_rate nearly doubled (0.022 -> 0.040) - the evidence-authority
+  model made uncertainty visible
+- conflicting_evidence_detection_rate 0.68 -> 0.92 (round 1; semantic scorer)
+- routing validity and validation rate never degraded across all three rounds
+
+## What failed and why (measurement evidence, three independent 25-run rounds)
+1. Boundary-type accuracy DECLINED twice in different directions (0.52 round 1,
+   0.44 round 2) under prose-guidance changes. Round 1: GAP-6 over-generalized
+   Ghost Features. Round 2: the corrected bullets over-corrected OTHER repos
+   (backend-service, strong-ui-fog: Zero Validation -> Implicit Dependencies;
+   hidden-coupling: Implicit Dependencies -> Vocabulary Drift; full-stack,
+   generated-heavy: Contract Mismatch -> Ghost Features). Prose guidance at
+   this level of specificity does not move a 25-repo boundary-type accuracy
+   distribution monotonically; each fix shifts an equivalent number of other
+   repos off their frozen type.
+2. Evidence metrics are FLAT (0.632/0.633, 0.844/0.835). The briefs got longer
+   and better-labeled (inference labeling up) but the claim-level precision
+   proxy did not move. No evidence of harm, no evidence of gain.
+3. Fog accuracy net -1: the ghost-feature 3-way and entry-point rules fixed 3
+   repos but flipped web-frontend (ui_fog -> architecture_fog, REPAIR-2
+   tie-break was applied but the app-cannot-boot structural argument won),
+   poorly-documented (docs -> arch), generated-heavy (arch -> product),
+   unusual-layout (arch -> docs). The remaining 4 flips are all defensible
+   diagnoses under the new rules - the frozen ground truth and the new
+   guidance disagree on 4 of 25 repos, which is the honest signal that the
+   guidance shifted the classifier's decision boundary, not that the new
+   answers are wrong.
+4. Three validation-pass-rate defects across rounds were YAML authoring bugs
+   (unquoted colons in evidence supports_claim scalars), not skill failures;
+   REPAIR-3 fixed them (validation 1.0) without touching diagnosis content.
+
+## Interpretation
+The hardening changed WHERE the classifier's decision boundary sits (fog and
+weakness-type choices shifted on ~half the corpus) and improved the visible
+reasoning discipline (inference labeling, conflict surfacing, routing/validation
+stability), but it did NOT improve the frozen headline metrics, and the
+boundary-type accuracy declined. At n=25 with model-run variance, the
+remaining gap cannot be closed by another prose-guidance cycle without
+overfitting to the corpus - which the charter prohibits.
+
+## Recommendation (Phase 22/23 input)
+DISPOSITION: REVISE (do not merge the candidate to main as-is).
+Keep in the skill (proven): evidence authority model, deterministic
+exploration protocol, registry authority + execution-mode rule, GAP-1 quote
+modes, GAP-3 citation extensions, ghost-feature 3-way fog rule, entry-point
+vs deliverable distinction, UI-fog tie-break, constrained GAP-6 mapping,
+logic-trace/alternatives/confidence structure.
+Requires a different mechanism (not prose): boundary-type selection should be
+a deterministic decision procedure (checklist with binary gates mirroring the
+mapping guidance) evaluated on a larger corpus before re-testing; the
+semantic evidence metrics need a claim-level ground truth (the current proxy
+cannot distinguish guidance quality from authoring style).
+Open items for human disposition: (1) approve REVISE and file follow-up
+workstream; (2) accept candidate with documented limitations (PASS_WITH_
+REMAINING_LIMITATIONS); (3) commission a larger-corpus re-run before any
+merge decision. automatic_merge remains prohibited.

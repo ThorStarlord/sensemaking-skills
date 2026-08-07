@@ -6,17 +6,17 @@ scorer_sha256: CF4D03F573474EDAC19CBBEC305024C0B49DC02F082328368CFAFF042A67EA8B 
 charter_gates:
   unsupported_claim_rate:
     baseline: 0.632
-    candidate: 0.615
+    candidate: 0.633
     gate: candidate < baseline
-    pass: true
+    pass: false
   evidence_precision:
     baseline: 0.844
-    candidate: 0.843
+    candidate: 0.835
     gate: candidate > baseline
     pass: false
   weakest_boundary_accuracy:
     baseline: 0.64
-    candidate: 0.52
+    candidate: 0.44
     gate: candidate > baseline
     pass: false
   routing_validity:
@@ -31,12 +31,12 @@ charter_gates:
     pass: true
   observed_claim_accuracy:
     baseline: 0.818
-    candidate: 0.821
+    candidate: 0.812
     gate: no material regression
     pass: true
   inference_labeling_rate:
     baseline: 0.022
-    candidate: 0.045
+    candidate: 0.04
     gate: no material regression
     pass: true
 gate_overall_pass: false
@@ -48,13 +48,13 @@ per_repository:
     expected: product_fog
   weakness_type:
     baseline: Implicit Dependencies
-    candidate: Ghost Features
+    candidate: Zero Validation
     ground_truth: Zero Validation
   entry_points:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: UNCHANGED
+  classification: IMPROVED
 - repository_id: cli-app
   fog:
     baseline: product_fog
@@ -90,13 +90,13 @@ per_repository:
     expected: architecture_fog
   weakness_type:
     baseline: Zero Validation
-    candidate: Zero Validation
+    candidate: Implicit Dependencies
     ground_truth: Zero Validation
   entry_points:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: UNCHANGED
+  classification: IMPROVED
 - repository_id: full-stack
   fog:
     baseline: architecture_fog
@@ -128,35 +128,35 @@ per_repository:
 - repository_id: multi-language
   fog:
     baseline: architecture_fog
-    candidate: docs_fog
+    candidate: architecture_fog
     expected: architecture_fog
   weakness_type:
     baseline: Ghost Features
-    candidate: Ghost Features
+    candidate: Implicit Dependencies
     ground_truth: Ghost Features
   entry_points:
     baseline: 3
     candidate: 3
     expected: 3
-  classification: REGRESSED
+  classification: IMPROVED
 - repository_id: poorly-documented
   fog:
     baseline: docs_fog
-    candidate: docs_fog
+    candidate: architecture_fog
     expected: docs_fog
   weakness_type:
     baseline: Zero Validation
-    candidate: Zero Validation
+    candidate: Implicit Dependencies
     ground_truth: Zero Validation
   entry_points:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: UNCHANGED
+  classification: REGRESSED
 - repository_id: docs-heavy-code-light
   fog:
     baseline: docs_fog
-    candidate: docs_fog
+    candidate: product_fog
     expected: product_fog
   weakness_type:
     baseline: Ghost Features
@@ -166,39 +166,39 @@ per_repository:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: UNCHANGED
+  classification: IMPROVED
 - repository_id: generated-heavy
   fog:
     baseline: architecture_fog
-    candidate: architecture_fog
+    candidate: product_fog
     expected: architecture_fog
   weakness_type:
     baseline: Contract Mismatch
-    candidate: Contract Mismatch
+    candidate: Ghost Features
     ground_truth: Contract Mismatch
   entry_points:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: UNCHANGED
+  classification: REGRESSED
 - repository_id: unusual-layout
   fog:
     baseline: architecture_fog
-    candidate: architecture_fog
+    candidate: docs_fog
     expected: architecture_fog
   weakness_type:
     baseline: Ghost Features
-    candidate: Implicit Dependencies
+    candidate: Vocabulary Drift
     ground_truth: Vocabulary Drift
   entry_points:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: UNCHANGED
+  classification: REGRESSED
 - repository_id: multi-executable
   fog:
     baseline: architecture_fog
-    candidate: product_fog
+    candidate: architecture_fog
     expected: architecture_fog
   weakness_type:
     baseline: Implicit Dependencies
@@ -208,7 +208,7 @@ per_repository:
     baseline: 4
     candidate: 4
     expected: 4
-  classification: REGRESSED
+  classification: IMPROVED
 - repository_id: plugin-architecture
   fog:
     baseline: architecture_fog
@@ -230,13 +230,13 @@ per_repository:
     expected: docs_fog
   weakness_type:
     baseline: Vocabulary Drift
-    candidate: Ghost Features
+    candidate: Vocabulary Drift
     ground_truth: Vocabulary Drift
   entry_points:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: IMPROVED
+  classification: UNCHANGED
 - repository_id: hidden-coupling
   fog:
     baseline: architecture_fog
@@ -244,13 +244,13 @@ per_repository:
     expected: architecture_fog
   weakness_type:
     baseline: Implicit Dependencies
-    candidate: Implicit Dependencies
+    candidate: Vocabulary Drift
     ground_truth: Implicit Dependencies
   entry_points:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: UNCHANGED
+  classification: IMPROVED
 - repository_id: strong-ui-fog
   fog:
     baseline: ui_fog
@@ -258,7 +258,7 @@ per_repository:
     expected: ui_fog
   weakness_type:
     baseline: Zero Validation
-    candidate: Ghost Features
+    candidate: Implicit Dependencies
     ground_truth: Zero Validation
   entry_points:
     baseline: 1
@@ -314,13 +314,13 @@ per_repository:
     expected: architecture_fog
   weakness_type:
     baseline: Ghost Features
-    candidate: Ghost Features
+    candidate: Implicit Dependencies
     ground_truth: Implicit Dependencies
   entry_points:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: UNCHANGED
+  classification: IMPROVED
 - repository_id: adv-duplicated-packages
   fog:
     baseline: architecture_fog
@@ -328,13 +328,13 @@ per_repository:
     expected: architecture_fog
   weakness_type:
     baseline: Implicit Dependencies
-    candidate: Vocabulary Drift
+    candidate: Implicit Dependencies
     ground_truth: Vocabulary Drift
   entry_points:
     baseline: 1
     candidate: 1
     expected: 1
-  classification: IMPROVED
+  classification: UNCHANGED
 - repository_id: adv-misleading-dirs
   fog:
     baseline: architecture_fog
@@ -370,7 +370,7 @@ per_repository:
     expected: architecture_fog
   weakness_type:
     baseline: Vocabulary Drift
-    candidate: Ghost Features
+    candidate: Vocabulary Drift
     ground_truth: Contract Mismatch
   entry_points:
     baseline: 1
@@ -392,7 +392,7 @@ per_repository:
     expected: 1
   classification: IMPROVED
 summary:
-  improved: 6
-  unchanged: 16
-  regressed: 3
+  improved: 11
+  unchanged: 10
+  regressed: 4
   ambiguous: 0
