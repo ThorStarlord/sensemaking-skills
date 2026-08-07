@@ -1,0 +1,158 @@
+schema: weakness-taxonomy-inventory-v2
+phase: repair-2
+decision: Outcome A
+decision_rationale: 'Outcome A: all 25 corpus weaknesses map to canonical types; keep
+  the seven types, document mapping guidance in SKILL.md, and use Other only with
+  explanation. No schema/validator/consumer changes needed, so no compatibility risk.'
+mapping_guidance_v2:
+  dead_code_documented_as_live: Ghost Features
+  dead_code_not_documented: Orphaned Examples or Implicit Dependencies
+  declared_but_unused_dependency: Implicit Dependencies (NOT Ghost Features)
+  packaging_metadata_gap: Zero Validation or Implicit Dependencies
+  unwired_module_documented: Ghost Features
+  unwired_module_undocumented: Implicit Dependencies
+  docs_misdescribing_existing_code: Vocabulary Drift (never Ghost Features)
+  exec_loading_without_validation: Zero Validation (not Safety Gaps)
+  entry_point_stub_in_running_system: architecture_fog (structural)
+  promised_deliverable_no_implementation: product_fog (product contract)
+  frontend_with_tier1_signal: ui_fog (specialized procedure wins)
+v1_corrections:
+- 'declared-but-unused dependency: Ghost Features -> Implicit Dependencies'
+- 'unwired module: Ghost Features default -> Implicit Dependencies unless documented'
+- 'docs misdescribing existing code: (implicit) -> Vocabulary Drift, never Ghost Features'
+- 'packaging gaps: (unmapped) -> Zero Validation or Implicit Dependencies by evidence'
+canonical_types_used:
+  Zero Validation: 5
+  Contract Mismatch: 4
+  Implicit Dependencies: 5
+  Ghost Features: 5
+  Vocabulary Drift: 4
+  Safety Gaps: 1
+  Orphaned Examples: 1
+repositories:
+- repository_id: tiny-lib
+  ground_truth_type: Zero Validation
+  canonical_type: Zero Validation
+  fit: exact fit - canonical type 6
+  baseline_brief_type: Implicit Dependencies
+- repository_id: cli-app
+  ground_truth_type: Contract Mismatch
+  canonical_type: Contract Mismatch
+  fit: exact fit - canonical type 2
+  baseline_brief_type: Ghost Features
+- repository_id: web-frontend
+  ground_truth_type: Implicit Dependencies
+  canonical_type: Implicit Dependencies
+  fit: exact fit - canonical type 5
+  baseline_brief_type: Contract Mismatch
+- repository_id: backend-service
+  ground_truth_type: Zero Validation
+  canonical_type: Zero Validation
+  fit: exact fit - canonical type 6
+  baseline_brief_type: Zero Validation
+- repository_id: full-stack
+  ground_truth_type: Contract Mismatch
+  canonical_type: Contract Mismatch
+  fit: exact fit - canonical type 2
+  baseline_brief_type: Contract Mismatch
+- repository_id: monorepo
+  ground_truth_type: Implicit Dependencies
+  canonical_type: Implicit Dependencies
+  fit: exact fit - canonical type 5
+  baseline_brief_type: Implicit Dependencies
+- repository_id: multi-language
+  ground_truth_type: Ghost Features
+  canonical_type: Ghost Features
+  fit: exact fit - canonical type 3; D5 high-risk (substantive audit)
+  baseline_brief_type: Ghost Features
+- repository_id: poorly-documented
+  ground_truth_type: Zero Validation
+  canonical_type: Zero Validation
+  fit: exact fit - canonical type 6
+  baseline_brief_type: Zero Validation
+- repository_id: docs-heavy-code-light
+  ground_truth_type: Ghost Features
+  canonical_type: Ghost Features
+  fit: exact fit - canonical type 3; D5 high-risk (substantive audit)
+  baseline_brief_type: Ghost Features
+- repository_id: generated-heavy
+  ground_truth_type: Contract Mismatch
+  canonical_type: Contract Mismatch
+  fit: exact fit - canonical type 2
+  baseline_brief_type: Contract Mismatch
+- repository_id: unusual-layout
+  ground_truth_type: Vocabulary Drift
+  canonical_type: Vocabulary Drift
+  fit: exact fit - canonical type 1
+  baseline_brief_type: Ghost Features
+- repository_id: multi-executable
+  ground_truth_type: Implicit Dependencies
+  canonical_type: Implicit Dependencies
+  fit: exact fit - canonical type 5
+  baseline_brief_type: Implicit Dependencies
+- repository_id: plugin-architecture
+  ground_truth_type: Safety Gaps
+  canonical_type: Safety Gaps
+  fit: 'partial fit: canonical definition is autonomous-workflow human gates; app-code
+    use requires prose justification (plugin-architecture)'
+  baseline_brief_type: Zero Validation
+- repository_id: stale-readme
+  ground_truth_type: Vocabulary Drift
+  canonical_type: Vocabulary Drift
+  fit: exact fit - canonical type 1
+  baseline_brief_type: Vocabulary Drift
+- repository_id: hidden-coupling
+  ground_truth_type: Implicit Dependencies
+  canonical_type: Implicit Dependencies
+  fit: exact fit - canonical type 5
+  baseline_brief_type: Implicit Dependencies
+- repository_id: strong-ui-fog
+  ground_truth_type: Zero Validation
+  canonical_type: Zero Validation
+  fit: exact fit - canonical type 6
+  baseline_brief_type: Zero Validation
+- repository_id: no-ui
+  ground_truth_type: Zero Validation
+  canonical_type: Zero Validation
+  fit: exact fit - canonical type 6
+  baseline_brief_type: Zero Validation
+- repository_id: adv-misleading-readme
+  ground_truth_type: Ghost Features
+  canonical_type: Ghost Features
+  fit: exact fit - canonical type 3; D5 high-risk (substantive audit)
+  baseline_brief_type: Ghost Features
+- repository_id: adv-dead-code
+  ground_truth_type: Ghost Features
+  canonical_type: Ghost Features
+  fit: exact fit - canonical type 3; D5 high-risk (substantive audit)
+  baseline_brief_type: Ghost Features
+- repository_id: adv-unused-dep
+  ground_truth_type: Implicit Dependencies
+  canonical_type: Implicit Dependencies
+  fit: exact fit - canonical type 5
+  baseline_brief_type: Ghost Features
+- repository_id: adv-duplicated-packages
+  ground_truth_type: Vocabulary Drift
+  canonical_type: Vocabulary Drift
+  fit: exact fit - canonical type 1
+  baseline_brief_type: Implicit Dependencies
+- repository_id: adv-misleading-dirs
+  ground_truth_type: Vocabulary Drift
+  canonical_type: Vocabulary Drift
+  fit: exact fit - canonical type 1
+  baseline_brief_type: Vocabulary Drift
+- repository_id: adv-removed-feature-docs
+  ground_truth_type: Orphaned Examples
+  canonical_type: Orphaned Examples
+  fit: exact fit - canonical type 7
+  baseline_brief_type: Ghost Features
+- repository_id: adv-multi-registry
+  ground_truth_type: Contract Mismatch
+  canonical_type: Contract Mismatch
+  fit: exact fit - canonical type 2
+  baseline_brief_type: Vocabulary Drift
+- repository_id: adv-partial-impl
+  ground_truth_type: Ghost Features
+  canonical_type: Ghost Features
+  fit: exact fit - canonical type 3; D5 high-risk (substantive audit)
+  baseline_brief_type: Ghost Features

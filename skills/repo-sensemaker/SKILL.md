@@ -192,17 +192,28 @@ requirement. Do not misclassify to dodge the warning.
 **Taxonomy mapping (GAP-6)**: the seven canonical types are oriented toward
 agent/workflow failures. When the evidence points at an application-code
 weakness, map it to the closest canonical type and explain the mapping in
-prose:
-- dead/unreachable code masquerading as core -> `Ghost Features` (documented
-  functionality with no reachable implementation) or `Orphaned Examples` if
-  the dead code is example/documentation-shaped;
-- declared-but-unused dependency -> `Ghost Features` (declared surface,
-  no implementation) with the manifest vs import evidence in the Logic trace;
+prose. `Ghost Features` is the RIGHT choice ONLY when a documented
+product/code surface promises functionality with no reachable implementation
+— it is not a default bucket:
+- dead/unreachable code masquerading as core -> `Ghost Features` ONLY if
+  documentation presents it as live functionality; otherwise `Orphaned
+  Examples` (example/documentation-shaped) or leave it to Implicit
+  Dependencies (wiring) — dead code alone is not Ghost Features;
+- declared-but-unused dependency -> `Implicit Dependencies` (the manifest
+  promises a contract the imports never use; cite manifest vs imports in
+  the Logic trace). NOT Ghost Features;
+- packaging metadata gaps (missing build backend, undeclared test/dev
+  dependencies, no pythonpath config) -> `Zero Validation` (no automated
+  check of the build/test contract) or `Implicit Dependencies` (undeclared
+  environment), by evidence;
+- unwired/never-imported module -> `Implicit Dependencies` (undocumented
+  wiring) unless it is DOCUMENTED as present, in which case `Ghost
+  Features`;
+- docs misdescribing EXISTING code -> `Vocabulary Drift` (the code exists;
+  the docs are wrong). Never Ghost Features;
 - `exec()`/dynamic loading without validation -> `Zero Validation` (no
   automated check on the loading contract), not `Safety Gaps` (which is
-  reserved for autonomous workflows lacking human approval gates);
-- unwired/never-imported module -> `Ghost Features` or `Implicit Dependencies`
-  depending on whether it is documented-as-present or merely coupled-by-luck.
+  reserved for autonomous workflows lacking human approval gates).
 Prefer better semantics over forcing a wrong category; if no canonical type
 fits after mapping, use `Other` with a non-empty `weakness_type_explanation`.
 
@@ -253,6 +264,25 @@ it, that is product_fog — the defect is the promise, not the docs.
 - `mixed`/`unknown` are NOT valid `primary_fog_type` values — the validator
   accepts exactly `product_fog | ui_fog | docs_fog | architecture_fog`. Use
   one of the four; express residual uncertainty in prose and escalation.
+
+**Frontend tie-break (ui_fog precedence)**: when frontend code exists AND at
+least one Tier-1 UI signal from the UI Fog Signals Registry is present,
+`ui_fog` is primary — the UI registry is the specialized decision procedure
+and wins over generic architecture signals (unwired modules, structural
+mismatch). `architecture_fog` is primary only when the repository has no
+frontend surface, or the defect is provably outside the UI layer (e.g. the
+app cannot boot because of an entry-point contract failure before any screen
+can render). Record the secondary fog in prose either way.
+
+**Entry-point stubs (structural qualification)**: a stubbed or missing
+RUNTIME ENTRY POINT within an otherwise-running system (a Makefile target,
+CLI command, server bootstrap, worker that exists but is skeletal) is a
+structural defect -> `architecture_fog`. A promised DELIVERABLE with no
+implementation anywhere (the README/roadmap claims a feature; no code exists
+for it) is a product-contract defect -> `product_fog`. Distinguish by
+whether the promised surface has ANY implementation: entry points that run
+but form an incomplete system are architecture; features with no
+implementation at all are product.
 
 **No-user-intent runs (GAP-8)**: when no user problem statement/intent
 artifact exists (fixture, standalone, or scheduled runs), the canonical

@@ -51,9 +51,22 @@ def main() -> None:
 
     canonical_fit = sum(1 for r in rows if r["canonical_type"] in CANONICAL)
     decision = "A" if canonical_fit == len(rows) else "B"
+    mapping_guidance = {
+        "dead_code_documented_as_live": "Ghost Features",
+        "dead_code_not_documented": "Orphaned Examples or Implicit Dependencies",
+        "declared_but_unused_dependency": "Implicit Dependencies (NOT Ghost Features)",
+        "packaging_metadata_gap": "Zero Validation or Implicit Dependencies",
+        "unwired_module_documented": "Ghost Features",
+        "unwired_module_undocumented": "Implicit Dependencies",
+        "docs_misdescribing_existing_code": "Vocabulary Drift (never Ghost Features)",
+        "exec_loading_without_validation": "Zero Validation (not Safety Gaps)",
+        "entry_point_stub_in_running_system": "architecture_fog (structural)",
+        "promised_deliverable_no_implementation": "product_fog (product contract)",
+        "frontend_with_tier1_signal": "ui_fog (specialized procedure wins)",
+    }
     out = {
-        "schema": "weakness-taxonomy-inventory-v1",
-        "phase": "commit-3",
+        "schema": "weakness-taxonomy-inventory-v2",
+        "phase": "repair-2",
         "decision": f"Outcome {decision}",
         "decision_rationale": (
             "Outcome A: all 25 corpus weaknesses map to canonical types; keep the "
@@ -63,10 +76,17 @@ def main() -> None:
             if decision == "A"
             else "Outcome B: extension required - schemas/validators/consumers must be updated."
         ),
+        "mapping_guidance_v2": mapping_guidance,
+        "v1_corrections": [
+            "declared-but-unused dependency: Ghost Features -> Implicit Dependencies",
+            "unwired module: Ghost Features default -> Implicit Dependencies unless documented",
+            "docs misdescribing existing code: (implicit) -> Vocabulary Drift, never Ghost Features",
+            "packaging gaps: (unmapped) -> Zero Validation or Implicit Dependencies by evidence",
+        ],
         "canonical_types_used": types_used,
         "repositories": rows,
     }
-    out_path = WORK / "weakness-taxonomy-inventory-v1.yaml"
+    out_path = WORK / "weakness-taxonomy-inventory-v2.yaml"
     out_path.write_text(yaml.safe_dump(out, sort_keys=False), encoding="utf-8")
     print(f"decision: Outcome {decision} ({canonical_fit}/{len(rows)} map to canonical types)")
     print(f"inventory written: {out_path}")

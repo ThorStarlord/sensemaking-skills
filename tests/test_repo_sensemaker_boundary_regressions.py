@@ -18,6 +18,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import re
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -165,6 +166,57 @@ class TestTaxonomyInvariants(unittest.TestCase):
             t = r.get("weakness_type")
             self.assertIsNotNone(t, f"{r['repository_id']} has no weakness_type")
             self.assertIn(t, CANONICAL_TYPES, f"{r['repository_id']}: {t}")
+
+
+def mapping_guard(case: str) -> str:
+    """Deterministic mirror of the REPAIR-2 GAP-6 mapping guidance."""
+    return {
+        "declared_but_unused_dependency": "Implicit Dependencies",
+        "packaging_metadata_gap": "Zero Validation",
+        "unwired_module_undocumented": "Implicit Dependencies",
+        "unwired_module_documented": "Ghost Features",
+        "docs_misdescribing_existing_code": "Vocabulary Drift",
+        "exec_loading_without_validation": "Zero Validation",
+        "dead_code_documented_as_live": "Ghost Features",
+        "dead_code_not_documented": "Orphaned Examples",
+    }[case]
+
+
+class TestGap6MappingGuard(unittest.TestCase):
+    """REPAIR-2: pin the corrected mapping directions so Ghost Features
+    cannot become the default bucket again."""
+
+    def test_unused_dependency_maps_to_implicit_dependencies(self):
+        self.assertEqual(mapping_guard("declared_but_unused_dependency"), "Implicit Dependencies")
+
+    def test_packaging_gap_maps_to_zero_validation(self):
+        self.assertEqual(mapping_guard("packaging_metadata_gap"), "Zero Validation")
+
+    def test_docs_misdescribing_existing_code_maps_to_vocabulary_drift(self):
+        self.assertEqual(mapping_guard("docs_misdescribing_existing_code"), "Vocabulary Drift")
+
+    def test_unwired_module_undocumented_maps_to_implicit_dependencies(self):
+        self.assertEqual(mapping_guard("unwired_module_undocumented"), "Implicit Dependencies")
+
+    def test_unwired_module_documented_maps_to_ghost_features(self):
+        self.assertEqual(mapping_guard("unwired_module_documented"), "Ghost Features")
+
+    def test_skill_documents_unused_dep_is_not_ghost_features(self):
+        text = SKILL.read_text(encoding="utf-8")
+        self.assertIn("declared-but-unused dependency", text)
+        self.assertIn("NOT Ghost Features", text)
+        self.assertIn("docs misdescribing EXISTING code", text)
+
+    def test_skill_documents_ui_fog_tie_break(self):
+        text = SKILL.read_text(encoding="utf-8")
+        self.assertIn("ui_fog precedence", text)
+        self.assertIn("specialized decision procedure", text)
+
+    def test_skill_documents_entry_point_stub_qualification(self):
+        text = re.sub(r"\s+", " ", SKILL.read_text(encoding="utf-8"))
+        self.assertIn("Entry-point stubs", text)
+        self.assertIn("architecture_fog", text)
+        self.assertIn("no implementation at all are product", text)
 
 
 class TestGap5ValidatorBehavior(unittest.TestCase):

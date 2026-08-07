@@ -1,0 +1,14 @@
+schema: candidate-freeze-v2 (REPAIR-2)
+frozen_at: 2026-08-07T05:19:49Z
+supersedes: candidate-freeze-v1.yaml (bcd7c21 implementation head)
+reason: REPAIR-2 revised SKILL.md GAP-6 mapping guidance + fog tie-breaks per phase18-regression-analysis-v1.yaml
+candidate_pins:
+  skill_sha256: DED5825C2D4FFDC15E01AF6E6079AA8F799EDB88B7CC4D166655BDB5DB7D279E
+  template_sha256: A013FF8B3A71DF7842B48E5BD8AC13E700835940757E3EC8D099C87EA55641D0 (unchanged)
+  validator_sha256: F53B637D4CB2510C9667507F0C38071D497CB77E77AC79E602617157E0432F9C (unchanged)
+  scorer_sha256: CF4D03F573474EDAC19CBBEC305024C0B49DC02F082328368CFAFF042A67EA8B (unchanged)
+  execution_protocol: unchanged (baseline protocol)
+frozen_inputs: corpus v2 / ground truth / baseline briefs / baseline metrics (all byte-identical)
+repair_accounting: REPAIR-1 (phase 13) + REPAIR-2 (phase 18) = 2 of 3 ceiling used
+round1_evidence: candidate-round1/ (preserved, committed 7d4a60b)
+round2_protocol: same protocol as round 1; candidate/ overwritten by round 2; final gate evaluation uses round 2
