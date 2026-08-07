@@ -1,0 +1,19 @@
+version: 1
+frozen_before_detailed_analysis: true
+selection_basis: All five have direct repository evidence, remain consequential, and collectively test reasoning, execution, governance, transition, and product-boundary questions.
+cases:
+  - id: decision-01
+    question: Should repo-sensemaker normally run once, or use multiple independent sensemaking attempts?
+    alternatives_frozen: [single_attempt_default, fixed_multiple_attempts, risk_triggered_additional_attempt]
+  - id: decision-02
+    question: Should the active coding agent execute sensemaking itself, or should a runtime delegate the intellectual task to another model?
+    alternatives_frozen: [active_agent_direct, runtime_external_delegation, selectable_execution_surface]
+  - id: decision-03
+    question: How much authorization and governance should an exploratory agent-native workflow require?
+    alternatives_frozen: [ordinary_conversation_consent, proportional_frozen_envelope, full_campaign_controls]
+  - id: decision-04
+    question: Should repository diagnosis automatically transition to another workflow, or return a recommendation for a user or agent decision?
+    alternatives_frozen: [recommend_and_stop, explicit_accept_then_transition, automatic_transition_with_opt_out]
+  - id: decision-05
+    question: Should Sensemaking Skills include a product-sensemaking layer above engineering sensemaking?
+    alternatives_frozen: [do_nothing_use_prompts, keep_manual_playbook, build_product_sensemaker]

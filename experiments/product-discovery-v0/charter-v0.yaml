@@ -1,0 +1,18 @@
+experiment: product-discovery-v0
+status: exploratory_manual_prototype
+branch: explore/product-discovery-v0
+objective: Test whether a lightweight discovery loop improves real Sensemaking Skills decisions and identify repeatable, narrowly skill-worthy reasoning.
+hypothesis: An upstream product-sensemaking capability may help determine what must be learned before deciding what software to build.
+non_goals:
+  - implement a product-discovery framework or skill
+  - change canonical product direction
+  - implement routing, runtime, schemas, validators, governance, or campaigns
+method:
+  cases: 5
+  lifecycle_under_test: [problem_discovery, problem_validation, solution_discovery, solution_validation, construction, proportional_assurance]
+  probe_rule: question_then_cheapest_credible_probe_then_learn_then_refine_then_only_automate_repetition
+  evidence_labels: [OBSERVED, DERIVED, INFERRED, UNKNOWN]
+stop_condition: Publish the learning report and capability recommendation without implementation.
+constraints:
+  write_scope: experiments/product-discovery-v0/**
+  repository_evidence_is_not_user_outcome_evidence: true

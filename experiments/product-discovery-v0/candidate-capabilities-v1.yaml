@@ -1,0 +1,39 @@
+version: 1
+conclusion: No broad product-sensemaker or product-discovery layer is justified yet.
+candidates:
+  - name: product-sensemaker
+    repeated_need_observed_in: [decision-05]
+    input: ambiguous product or build decision
+    output: lifecycle-spanning discovery recommendation
+    what_agent_can_do: organize evidence and options
+    what_requires_external_evidence: user problems, demand, behavior, outcome value
+    failure_mode_if_automated_badly: confident synthetic user evidence and premature routing
+    why_not_just_use_a_prompt: It should use a prompt; repeated stable mechanics and outcome benefit are not established.
+    recommended_status: DO_NOT_BUILD
+  - name: decision-probe-design
+    repeated_need_observed_in: [decision-01, decision-02, decision-03, decision-04, decision-05]
+    input: decision, alternatives, known evidence, constraints
+    output: decision-changing uncertainty plus cheapest credible probe and precommitment
+    what_agent_can_do: evidence separation, alternative generation, experiment draft, ambiguity and kill conditions
+    what_requires_external_evidence: observed behavior, comparative performance, costs, actionability, risk tolerance
+    failure_mode_if_automated_badly: optimizing easy-to-measure uncertainty or inventing thresholds
+    why_not_just_use_a_prompt: A short prompt is sufficient until prospective use shows recurring omissions or inconsistent quality.
+    recommended_status: KEEP_MANUAL
+  - name: evidence-synthesis
+    repeated_need_observed_in: [decision-01, decision-02, decision-03, decision-04, decision-05]
+    input: predeclared hypothesis, probe observations, evidence sources
+    output: observations, contradictions, update, confidence, unresolved uncertainty, disposition
+    what_agent_can_do: trace claims to evidence and expose contradictions
+    what_requires_external_evidence: adjudication of usefulness, substantive domain truth, decision ownership
+    failure_mode_if_automated_badly: laundering artifact presence into validation or overstating confidence
+    why_not_just_use_a_prompt: Current cases show the discipline is useful but not that a skill improves on a checklist.
+    recommended_status: KEEP_MANUAL
+  - name: evidence-boundary-check
+    repeated_need_observed_in: [decision-01, decision-02, decision-03, decision-04, decision-05]
+    input: claim and cited project evidence
+    output: evidence rung, unsupported promotion, missing real-world observation
+    what_agent_can_do: distinguish proposal, mechanism, execution, comparison, and external outcome
+    what_requires_external_evidence: all facts on unavailable higher rungs
+    failure_mode_if_automated_badly: false certainty from incomplete repository history
+    why_not_just_use_a_prompt: A concise checklist presently covers the repeated mechanic.
+    recommended_status: KEEP_MANUAL
