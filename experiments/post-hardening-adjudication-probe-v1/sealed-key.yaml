@@ -1,0 +1,20 @@
+schema: post-hardening-adjudication-probe-v1/sealed-key-v1
+status: SEALED - DO NOT OPEN until the per-repo worksheet table is complete for all 16 packets
+randomization: per-repo coin flip, System.Random seed 20260807 (reproducible); 0 -> A=baseline/B=candidate, 1 -> A=candidate/B=baseline
+repositories:
+  backend-service: A: baseline, B: candidate
+  full-stack: A: candidate, B: baseline
+  multi-language: A: candidate, B: baseline
+  poorly-documented: A: candidate, B: baseline
+  multi-executable: A: candidate, B: baseline
+  hidden-coupling: A: baseline, B: candidate
+  strong-ui-fog: A: baseline, B: candidate
+  tiny-lib: A: baseline, B: candidate
+  unusual-layout: A: baseline, B: candidate
+  adv-unused-dep: A: baseline, B: candidate
+  web-frontend: A: baseline, B: candidate
+  generated-heavy: A: baseline, B: candidate
+  adv-misleading-readme: A: candidate, B: baseline
+  docs-heavy-code-light: A: baseline, B: candidate
+  monorepo: A: candidate, B: baseline
+  stale-readme: A: baseline, B: candidate
