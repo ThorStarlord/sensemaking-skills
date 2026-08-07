@@ -155,7 +155,7 @@ evidence:
   - "path/to/file.ext (lines L10-L15): short citation supporting the diagnosis"
   - "path/to/other_file.ext: short citation supporting the diagnosis"
 recommended_workflow_id: # MUST match an ID in workflow-registry.yaml
-recommended_execution_mode: plan_only | guided_execution
+recommended_execution_mode: # one of the workflow allowed_execution_modes in workflow-registry.yaml - never invent a mode (plan_only exists only where listed)
 weakest_boundary:
 weakness_type: # one of the 7 registered types in weakness-types.md, or "Other"
 weakness_type_explanation: null # required non-empty string ONLY when weakness_type is "Other"; otherwise null

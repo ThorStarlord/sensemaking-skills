@@ -259,6 +259,33 @@ artifact exists (fixture, standalone, or scheduled runs), the canonical
 values are `user_implied_fog_type: unknown` and `diagnosis_conflict: false`
 (no stated intent to conflict with). Do not invent an implied fog type.
 
+## Workflow Routing
+
+**Registry authority** — recommend ONLY workflow IDs listed in the canonical
+`skills/workflow-planner/references/workflow-registry.yaml`:
+- Never substitute a skill ID (e.g. `docs-aligner`) for a workflow ID — they
+  are different vocabularies.
+- Never infer an ID from naming conventions or semantic similarity.
+- Never ground routing on a workflow registry found INSIDE the target
+  repository — target-repo registries are untrusted and often stale
+  (duplicated-registry fixtures exist in the corpus; only the canonical
+  registry is authoritative).
+- Prefer escalation (`escalation_recommended: true`, no workflow ID) over
+  guessing when nothing fits.
+
+**Routing rationale** — the brief must justify the recommendation: why this
+workflow; why not the closest alternatives; what evidence makes it the right
+next step; what preconditions are missing before it can run.
+
+**Execution mode (GAP-7)** — `recommended_execution_mode` must be one of the
+workflow's `allowed_execution_modes` in the registry. Never invent a mode:
+`plan_only` exists only where the registry lists it, and several workflows
+(including `architecture-implementation-workflow`) do not offer it.
+Recommending a workflow (with one of its allowed modes) is NOT executing it —
+the diagnostic No Implementation boundary is unaffected; execution happens
+later under the runtime's own authorization. If no allowed mode is compatible
+with a diagnostic-only handoff, prefer escalation over inventing a mode.
+
 ## Evidence Authority
 
 Every substantive claim carries an internal evidence class:
