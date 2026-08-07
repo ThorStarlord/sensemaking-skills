@@ -249,7 +249,11 @@ class TestValidatorPositiveRegression(unittest.TestCase):
         path = _write_tmp(reconciled)
         try:
             errors = validate_brief(path, REPO_ROOT)
-            self.assertEqual(errors, [], f"expected no errors, got {errors}")
+            # Severity model (Commit 6): informational FOG/WORKFLOW_PROSE_MISMATCH
+            # warnings fire when the synthetic payload's prose does not repeat
+            # the handoff values; only severity=error entries mean failure.
+            self.assertEqual([e for e in errors if e.get("severity") == "error"], [],
+                             f"expected no blocking errors, got {errors}")
         finally:
             os.remove(path)
 
