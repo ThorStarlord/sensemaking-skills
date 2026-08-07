@@ -72,20 +72,32 @@ are accepted. Every excerpt must include all four fields: `file`, `lines`,
 
 `file` and `lines` are what matter — give the exact path and the smallest
 line range that contains the cited text. Do not invent a path or a range you
-have not actually read. **Do not hand-transcribe the `quote` text yourself:**
-the runtime overwrites `quote` with the exact verbatim text it reads from
-`file`/`lines` before validation runs (issue #89) — the model is no longer
-the verbatim-copy boundary, because hand-transcription has been observed to
-silently mangle Unicode punctuation (e.g. em dashes), drop leading
-indentation, and alter Markdown formatting (bold/backticks). Write a short
-placeholder for `quote` (e.g. `"see file/lines"`) rather than retyping the
-source text.
+have not actually read.
+
+**Quote handling depends on the invocation mode (see SKILL.md "Invocation
+modes"):**
+
+- **Runtime invocation** (skeleton exists, runtime reconciles before
+  validation): you MAY write a short placeholder for `quote` (e.g.
+  `"see file/lines"`) — the runtime overwrites it with the exact verbatim
+  text it reads from `file`/`lines` before validation runs (issue #89), so
+  the model is not the verbatim-copy boundary in this mode. This exists
+  because hand-transcription has been observed to silently mangle Unicode
+  punctuation (e.g. em dashes), drop leading indentation, and alter Markdown
+  formatting (bold/backticks).
+- **Standalone invocation** (no runtime, no skeleton, no overwrite): the
+  `quote` value MUST be verbatim text from the cited file/lines — a
+  placeholder fails validation with the blocking
+  `EVIDENCE_QUOTE_NOT_FOUND` error. Validate standalone output with
+  `python scripts/validate-brief.py <artifact> --target-repo <repo> --repo-root <root>`.
+
+When in doubt, write verbatim quotes: they are valid in both modes.
 
 ```yaml
 evidence_excerpts:
   - file: path/to/file.ext
     lines: L10-L15
-    quote: "see file/lines"
+    quote: "verbatim source text in standalone mode; placeholder only in runtime mode"
     supports_claim: "..."
 ```
 

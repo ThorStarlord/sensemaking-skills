@@ -1,0 +1,37 @@
+schema: charter-approval-record-v1
+recorded_at: "2026-08-07T03:00:00Z"
+decision: APPROVED_WITH_AMENDMENT
+approved_charter_sha256: 09B06AF46A85B0540A0B5DADF58A2F3F7F0E1AE7D06DA50082582FB5A27FF8E0
+approved_amendment: AMEND-1
+reviewed_pre_approval_head: 7d71b0dbf1e546030a242108003262129be3f317
+repair_ceiling: 3
+automatic_merge: prohibited
+automatic_release: prohibited
+acceptance_criteria_frozen: true
+human_synthesis_layer:
+  authorized: true
+  source: derived_from_machine_repository_sensemaking_brief
+  purpose: user_facing_synthesis
+  measured_in_phase_16: true
+  replaces_machine_brief: false
+  weakens_numeric_gates: false
+approved_baseline:
+  validation_pass_rate: 1.0
+  fog_classification_accuracy: 0.8
+  weakest_boundary_accuracy: 0.68
+  workflow_routing_validity: 1.0
+  evidence_precision: 0.844
+  unsupported_claim_rate: 0.632
+  observed_claim_accuracy: 0.818
+  derived_claim_accuracy: 1.0
+  inference_labeling_rate: 0.022
+  conflict_detection_rate: 0.68
+decision_source: explicit human approval via gate question (2026-08-07)
+gate_result: |
+  CHARTER_APPROVAL: APPROVED
+  AMEND-1: APPROVED
+  canonical target: ThorStarlord/sensemaking-skills/skills/repo-sensemaker/
+  reviewed head: 7d71b0dbf1e546030a242108003262129be3f317
+  repair ceiling: 3
+  automatic merge: PROHIBITED
+  automatic release: PROHIBITED

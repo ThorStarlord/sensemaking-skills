@@ -105,7 +105,7 @@ def _run_weakness_type_safeguard(content: str) -> weakness_type_safeguard.Safegu
     return result
 
 FILE_CITATION_RE = re.compile(
-    r"`?[\w./\\-]+\.(?:md|py|yaml|yml|toml|txt)(?::\d+)?`?",
+    r"`?[\w./\\-]+\.(?:md|py|yaml|yml|toml|txt|js|jsx|ts|tsx|json|html|css|go|rs|java|rb|sh)(?::\d+)?`?",
     re.IGNORECASE,
 )
 

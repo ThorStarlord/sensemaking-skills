@@ -39,6 +39,7 @@ evidence:
   - "ARCHITECTURE.md missing: no design documentation"
   - "30+ issues lack acceptance criteria"
 recommended_workflow_id: product-implementation-workflow
+weakness_type: Zero Validation
 created_at: "2026-05-24T15:30:00Z"
 immutable: true
 ```

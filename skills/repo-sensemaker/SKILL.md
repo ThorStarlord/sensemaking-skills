@@ -91,6 +91,43 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
    - **architecture_fog**: Code structure problems, unclear boundaries, module coupling, state management scattered → needs spec-driven refactoring (default)
 8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows.
 
+## Repository Exploration Protocol (deterministic)
+
+Investigate in passes. Do not rely on repository size, first impressions, or random sampling: the protocol below is the ordering, and every claim must trace to a file actually opened.
+
+**Pass A — Repository orientation**: root inventory; README; manifests (package manager, project files); language markers; build configuration; CI configuration; container/deployment configuration; top-level documentation; repository-level configuration. Record what exists and what is absent.
+
+**Pass B — Execution discovery**: executable declarations; package scripts; `main`/entry-point modules; CLI commands; server bootstrap; route registration; framework entry points; workers/jobs; plugin registration; helper scripts. Every entry point found must be named with its file and line.
+
+**Pass C — System structure**: map each entry point through the flow: entry point → orchestration → domain/core logic → state/persistence → external integrations → outputs. Identify where each transition happens (file:line). If a hop cannot be traced, record it as UNKNOWN — do not invent the missing hop.
+
+**Pass D — Validation structure**: tests; schemas; assertions; input validation; authorization; error boundaries; type boundaries. Record what is validated and where, and what is not.
+
+**Pass E — Contradiction search**: actively look for README vs implementation disagreement; docs vs current code disagreement; manifest vs actual imports; declared feature vs missing implementation; test claims vs uncovered behavior; generated code mistaken for authored source. Surface every conflict found — do not silently pick a side.
+
+**Low-value content**: deprioritize generated bundles, dependency/vendor trees, caches, compiled artifacts, lockfiles (unless relevant to the question), large test snapshots, and duplicated generated sources. Never let repository size force random sampling; the passes above define the sample.
+
+## Evidence Authority
+
+Every substantive claim carries an internal evidence class:
+
+- **OBSERVED** — directly visible in a file you actually inspected (cite file + lines).
+- **DERIVED** — follows logically from multiple observed facts (the `Logic trace:` makes the derivation explicit).
+- **INFERRED** — plausible but not directly established (must be labeled as inference, never stated as fact).
+- **UNKNOWN** — evidence is insufficient (state it as unknown; do not convert into a confident conclusion).
+
+Rules:
+1. Never state an INFERRED claim as an observed fact.
+2. Never convert UNKNOWN into a conclusion; record what would resolve it.
+3. Conflicting evidence must be surfaced, not arbitrarily resolved.
+4. Source code/config outranks descriptive documentation for current runtime behavior.
+5. Configuration outranks prose for configured behavior.
+6. Tests prove intended/covered behavior, not necessarily production execution.
+7. Historical docs must be identified as historical.
+8. A file not opened must never be cited.
+
+Supported citation formats: any of `md, py, yaml, yml, toml, txt, js, jsx, ts, tsx, json, html, css, go, rs, java, rb, sh` as `path/to/file.ext:line` (or `:line-line`). Do not cite other extensions as evidence, and never invent a path.
+
 ## Output Format
 Every response must follow the [Repository Sensemaking Brief](references/repo-analysis-template.md) structure.
 
@@ -156,6 +193,29 @@ a file you have not opened; prefer direct code/config over comments over
 external docs when they conflict; include a **Logic trace** paragraph
 (beginning literally with "Logic trace:") connecting evidence to your
 weakest-boundary conclusion.
+
+## Invocation modes (quote handling)
+
+There are two distinct invocation modes. Know which one you are in before
+deciding how to write evidence quotes.
+
+**Runtime invocation** (through `ClaudeAgentSdkSkillExecutor` or the
+orchestration runtime): the runtime skeleton exists, and the runtime
+overwrites placeholder `quote` values with the exact verbatim text it reads
+from the cited file/lines before validation runs (issue #89). In this mode
+you MAY write a short placeholder (`"see file/lines"`) — but only because the
+runtime guarantees the overwrite happens before validation. Never assume this
+guarantee outside the runtime.
+
+**Standalone invocation** (skill executed directly, no runtime — e.g. a
+baseline, fixture, or manual run): there is no skeleton and no overwrite. You
+author the complete artifact yourself (including the envelope fields), and
+`quote` values MUST be verbatim text from the cited file/lines, or validation
+fails with blocking `EVIDENCE_QUOTE_NOT_FOUND`. Validate standalone output
+with `python scripts/validate-brief.py <artifact> --target-repo <repo> --repo-root <root>`.
+
+When in doubt, write verbatim quotes: verbatim quotes are valid in both
+modes, placeholders are valid only in the runtime mode.
 
 The runtime writes a **tool-call trace** (`tool-call-trace.jsonl` in the
 session artifact directory) recording every tool call you make during this

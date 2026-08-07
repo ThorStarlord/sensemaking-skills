@@ -10,6 +10,7 @@ This brief is missing critical required fields.
 
 ```yaml
 artifact_id: repository_sensemaking_brief
+weakness_type: Zero Validation
 created_at: "2026-05-24T15:30:00Z"
 immutable: true
 ```

@@ -14,7 +14,7 @@ import re
 
 # Define the validation functions (copy from validate-brief.py)
 FILE_CITATION_RE = re.compile(
-    r"`?[\w./\\-]+\.(?:md|py|yaml|yml|toml|txt)(?::\d+)?`?",
+    r"`?[\w./\\-]+\.(?:md|py|yaml|yml|toml|txt|js|jsx|ts|tsx|json|html|css|go|rs|java|rb|sh)(?::\d+)?`?",
     re.IGNORECASE,
 )
 
