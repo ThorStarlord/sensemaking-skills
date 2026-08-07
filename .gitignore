@@ -1,44 +1,24 @@
-```gitignore
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-python/
-venv/
-env/
-ENV/
-.venv/
-.env/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-*.pot
-*.po
-*.mo
+```
+# Build artifacts and generated files
+artifacts/
+dist/
 build/
-develop-eggs/
-.installed.cfg
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+*.pyc
+__pycache__/
 
-# Documentation
-docs/history/*.md
-docs/history/*.json
+# Documentation generation
+docs/history/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
 ```

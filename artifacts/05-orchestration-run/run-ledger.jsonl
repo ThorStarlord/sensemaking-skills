@@ -1,0 +1,4 @@
+{"timestamp": "2026-08-03T21:11:25.746671Z", "event": "run_started", "run_id": "orchestration-20260803-211118-ded6552a", "workflow_id": "full-local-sensemaking", "mode": "guided_execution", "git_commit": "c2974d00551600040653fe9ccea4d64ff15bd610"}
+{"timestamp": "2026-08-03T21:11:25.848505Z", "event": "step_started", "step_id": "1", "skill_id": "problem-framer", "output_artifact": "problem_frame"}
+{"timestamp": "2026-08-03T21:11:25.848714Z", "event": "step_completed", "step_id": "1", "status": "failed", "gate_status": ""}
+{"timestamp": "2026-08-03T21:11:25.984341Z", "event": "run_completed", "run_id": "orchestration-20260803-211118-ded6552a", "status": "failed", "exit_code": 2}

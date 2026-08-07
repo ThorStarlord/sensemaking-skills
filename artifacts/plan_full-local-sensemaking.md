@@ -1,6 +1,6 @@
 # Orchestration Plan: Full Local Sensemaking
 
-- **Session ID**: orchestration-20260803-195105-2909ce80
+- **Session ID**: orchestration-20260803-211126-2a68f975
 - **Date**: 2026-08-03
 - **Workflow**: full-local-sensemaking
 - **Execution Mode**: plan_only
@@ -110,7 +110,7 @@ escalation_recommended: false
 auto_escalation_allowed: false
 scope_expansion_requires_approval: true
 status: created
-session_id: orchestration-20260803-195105-2909ce80
+session_id: orchestration-20260803-211126-2a68f975
 initial_inputs:
 - id: raw_fog
   type: external_context
