@@ -1,0 +1,316 @@
+schema: candidate-scored-v1
+repositories: 25
+briefs_produced: 25
+fog_classification_accuracy: 0.76
+weakness_type_validity_rate: 1.0
+workflow_routing_registry_validity: 1.0
+logic_trace_presence_rate: 1.0
+rows:
+- repository_id: tiny-lib
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: product_fog
+  fog_match: false
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - greeter/greet.py:greet()
+- repository_id: cli-app
+  brief_present: true
+  fog_declared: product_fog
+  fog_expected: product_fog
+  fog_match: true
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: product-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - main.py:main()
+- repository_id: web-frontend
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: ui_fog
+  fog_match: false
+  weakness_type: Contract Mismatch
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - src/index.html
+  - src/app.js
+- repository_id: backend-service
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Zero Validation
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - app/main.py:create_app()
+- repository_id: full-stack
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - frontend/src/App.jsx
+  - backend/app/main.py
+- repository_id: monorepo
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Implicit Dependencies
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - packages/mathkit/src/index.js
+  - packages/strkit/src/index.js
+- repository_id: multi-language
+  brief_present: true
+  fog_declared: docs_fog
+  fog_expected: architecture_fog
+  fog_match: false
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: docs-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - core/main.py
+  - helper/run.js
+  - scripts/setup.sh
+- repository_id: poorly-documented
+  brief_present: true
+  fog_declared: docs_fog
+  fog_expected: docs_fog
+  fog_match: true
+  weakness_type: Zero Validation
+  weakness_type_valid: true
+  workflow_id: docs-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - process.py:run()
+- repository_id: docs-heavy-code-light
+  brief_present: true
+  fog_declared: docs_fog
+  fog_expected: product_fog
+  fog_match: false
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: docs-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - src/main.py
+- repository_id: generated-heavy
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Contract Mismatch
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - handwritten/main.py
+- repository_id: unusual-layout
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Implicit Dependencies
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - app/main.py
+- repository_id: multi-executable
+  brief_present: true
+  fog_declared: product_fog
+  fog_expected: architecture_fog
+  fog_match: false
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: product-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - main.py
+  - cli.py
+  - worker.py
+  - scripts/backfill.py
+- repository_id: plugin-architecture
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Zero Validation
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - core/main.py:main()
+- repository_id: stale-readme
+  brief_present: true
+  fog_declared: docs_fog
+  fog_expected: docs_fog
+  fog_match: true
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: docs-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - store.py:Store
+- repository_id: hidden-coupling
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Implicit Dependencies
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - main.py
+- repository_id: strong-ui-fog
+  brief_present: true
+  fog_declared: ui_fog
+  fog_expected: ui_fog
+  fog_match: true
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: ui-diagnostic-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - src/index.js
+- repository_id: no-ui
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Zero Validation
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - core/engine.py
+- repository_id: adv-misleading-readme
+  brief_present: true
+  fog_declared: product_fog
+  fog_expected: product_fog
+  fog_match: true
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: product-discovery-sprint
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - src/app.py
+- repository_id: adv-dead-code
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - pipeline.py
+- repository_id: adv-unused-dep
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - app.py
+- repository_id: adv-duplicated-packages
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Vocabulary Drift
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - main.py
+- repository_id: adv-misleading-dirs
+  brief_present: true
+  fog_declared: architecture_fog
+  fog_expected: architecture_fog
+  fog_match: true
+  weakness_type: Vocabulary Drift
+  weakness_type_valid: true
+  workflow_id: architecture-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - main.py
+- repository_id: adv-removed-feature-docs
+  brief_present: true
+  fog_declared: docs_fog
+  fog_expected: docs_fog
+  fog_match: true
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: docs-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - app.py
+- repository_id: adv-multi-registry
+  brief_present: true
+  fog_declared: docs_fog
+  fog_expected: architecture_fog
+  fog_match: false
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: docs-contract-reconciliation
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - main.py
+- repository_id: adv-partial-impl
+  brief_present: true
+  fog_declared: product_fog
+  fog_expected: product_fog
+  fog_match: true
+  weakness_type: Ghost Features
+  weakness_type_valid: true
+  workflow_id: product-implementation-workflow
+  workflow_id_in_registry: true
+  has_logic_trace: true
+  entry_points_found:
+  - main.py

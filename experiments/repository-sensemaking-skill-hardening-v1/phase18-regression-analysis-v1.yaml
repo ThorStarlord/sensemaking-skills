@@ -1,0 +1,40 @@
+schema: phase18-regression-analysis-v1
+phase: 18
+repair_cycle: REPAIR-2 (2 of 3 ceiling)
+candidate_pins: candidate-freeze-v1.yaml (bcd7c21 implementation head, fcdb241 freeze record)
+status: measurement evidence PRESERVED before any repair (no candidate briefs modified, no ground-truth/scorer/gate changes)
+
+gate_results (from phase15-comparison-v1.yaml):
+  unsupported_claim_rate: 0.632 -> 0.615  PASS
+  evidence_precision: 0.844 -> 0.843      FAIL (flat, delta -0.001, within noise; true positive signal is unsupported_claim_rate)
+  weakest_boundary_accuracy: 0.640 -> 0.520  FAIL (dominant failure)
+  routing_validity: 1.000 -> 1.000        PASS
+  validation_pass_rate: 1.000 -> 1.000    PASS
+  observed_claim_accuracy: 0.818 -> 0.821 PASS
+  inference_labeling_rate: 0.022 -> 0.045 PASS (improved)
+per_repository: IMPROVED 6 / UNCHANGED 16 / REGRESSED 3 (web-frontend, multi-language, multi-executable)
+confounders: subagents could not execute the validator (no shell) - they hand-traced; parent re-validated all 25 (exit 0). Same protocol as baseline.
+
+regression_1 (boundary accuracy - dominant):
+  symptom: boundary match fell 16/25 -> 13/25; 8 briefs shifted TO Ghost Features
+  introduced_by: Commit 3 (f4cc0d1) GAP-6 taxonomy mapping guidance
+  root_cause: the mapping bullets over-generalize Ghost Features ("declared surface, no implementation") to packaging metadata gaps (tiny-lib), stub entry points with accurate docs (multi-executable), unwired-but-undocumented modules (strong-ui-fog), declared-but-unused dependencies (adv-unused-dep; ground truth = Implicit Dependencies), and docs-vs-code drift (stale-readme; ground truth = Vocabulary Drift). GF is the right type only when the DOCUMENTED PRODUCT/CODE surface promises functionality with no reachable implementation.
+  rubric_reality: yes - the frozen ground truth exposes a real over-classification; GF also carries the D5 audit warning, so over-use has real downstream cost.
+  repair: constrain the GAP-6 mapping in SKILL.md (see below); unused dependency -> Implicit Dependencies (manifest/import mismatch); packaging gaps -> Zero Validation or Implicit Dependencies by evidence; unwired module -> Implicit Dependencies or Zero Validation; docs misdescribing EXISTING code -> Vocabulary Drift, not GF.
+
+regression_2 (web-frontend fog flip ui_fog -> architecture_fog):
+  introduced_by: Commit 4 (8383a9e) architecture_fog signals ("unwired modules", "structural mismatch between entry points and flow") competing with the UI-fog decision tree in frontend repos
+  root_cause: no tie-break between the specialized UI-fog procedure (Tier-1 signals in a frontend repo) and the generic architecture signals
+  rubric_reality: partially - the app-cannot-boot defect is genuinely structural, but the frozen ground truth (and the pre-hardening baseline) classify ui_fog; the UI registry is the specialized procedure and must win when the repo has a frontend surface and Tier-1 signals
+  repair: add the deterministic tie-break: frontend present + 1+ Tier-1 signal -> ui_fog primary; architecture_fog only when no frontend surface or the defect is provably outside the UI layer; record secondary fog in prose.
+
+regression_3 (multi-language fog flip architecture_fog -> docs_fog):
+  introduced_by: Commit 4 ghost-feature 3-way rule ("never existed as code -> docs_fog candidate")
+  root_cause: the Makefile-declared `helper` target is a TODO stub; the rule maps it to docs_fog, but the frozen ground truth (structure/entry-point mismatch: unwired setup.sh, stubbed helper) says architecture_fog
+  rubric_reality: ambiguous; both defensible. Kept as REGRESSED per frozen ground truth; the 3-way rule text stays but gains the 'when the declared surface is a runtime entry point the defect is structural' qualification.
+
+repair_scope (REPAIR-2):
+  - SKILL.md GAP-6 mapping bullets: constrain Ghost Features; correct unused-dependency -> Implicit Dependencies; add packaging-gap and unwired-module guidance; stale-docs -> Vocabulary Drift
+  - SKILL.md fog section: UI-fog tie-break rule + ghost-feature entry-point qualification
+  - taxonomy inventory v2 + regression tests updated/pinned
+  - rerun full 25-repo comparison before acceptance (plan Phase 18 rule)

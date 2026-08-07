@@ -1,0 +1,185 @@
+schema: candidate-validation-results-v1
+results:
+- repository_id: tiny-lib
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: cli-app
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: web-frontend
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: backend-service
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: full-stack
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: monorepo
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: multi-language
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: poorly-documented
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: docs-heavy-code-light
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: generated-heavy
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: unusual-layout
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: multi-executable
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: plugin-architecture
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: stale-readme
+  exit_code: 0
+  valid: true
+  error_count: 2
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+  - 'EVIDENCE_QUOTE_WINDOW_MATCH: Excerpt[0] quote in README.md (matched at line 3,
+    OUTSIDE the cited range 2-2 but within the +/-3-line grounding window 1-4).'
+- repository_id: hidden-coupling
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: strong-ui-fog
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: no-ui
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: adv-misleading-readme
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: adv-dead-code
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: adv-unused-dep
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: adv-duplicated-packages
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: adv-misleading-dirs
+  exit_code: 0
+  valid: true
+  error_count: 0
+  errors: []
+- repository_id: adv-removed-feature-docs
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: adv-multi-registry
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
+- repository_id: adv-partial-impl
+  exit_code: 0
+  valid: true
+  error_count: 1
+  errors:
+  - 'HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT: weakness_type is ''Ghost Features'',
+    a high-risk claim category (D5) requiring a substantive human audit before final
+    approval. This warning does not confirm an audit occurred and does not judge correctness
+    -- it only flags that one is required.'
