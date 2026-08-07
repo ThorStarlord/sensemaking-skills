@@ -1,0 +1,112 @@
+schema: repository-sensemaking-skill-hardening-v1-final-disposition-v1
+workstream: repository-sensemaking-skill-hardening-v1
+branch: hardening/repository-sensemaking-v1 (11 commits ahead of main, 0 behind)
+status: CLOSED - REVISE (human disposition, 2026-08-07)
+disposition_scope: candidate NOT approved for merge; no further repair cycles; no merge PR; no further candidate modification; successor approaches are hypotheses only and are NOT selected or authorized here.
+
+## 1. Final metrics and gate failures
+frozen baseline vs hardened candidate (round 2 after REPAIR-3; frozen scorer CF4D03F5; 25-repo corpus, ground truth v2):
+  unsupported_claim_rate       0.632 -> 0.633   gate '< baseline'  FAIL (flat)
+  evidence_precision           0.844 -> 0.835   gate '> baseline'  FAIL (flat, -0.009)
+  weakest_boundary_accuracy    0.640 -> 0.440   gate '> baseline'  FAIL (real decline)
+  routing_validity             1.000 -> 1.000   gate '>= baseline' PASS
+  validation_pass_rate         1.000 -> 1.000   gate '>= baseline' PASS
+  observed_claim_accuracy      0.818 -> 0.812   gate 'no material regression' PASS
+  inference_labeling_rate      0.022 -> 0.040   gate 'no material regression' PASS (improved ~2x)
+  fog_classification_accuracy  0.800 -> 0.760   tracked, not gated: declined by 1 repo (net)
+  conflicting_evidence_detection_rate 0.68 -> 0.92 (round 1 measurement)
+per_repository: IMPROVED 11 / UNCHANGED 10 / REGRESSED 4 (web-frontend, poorly-documented, generated-heavy, unusual-layout)
+charter gate outcome: NOT MET (3 of 7 gates failed)
+
+## 2. Repair accounting (3 of 3 ceiling used)
+  REPAIR-1 (phase 13): fixed a pre-candidate regression (Commit-6 prose/YAML agreement warnings
+    broke test_evidence_excerpt_fields_and_logic_trace). Full suite returned to the pre-existing
+    HEAD failure set (25 pre-existing failures, 0 new).
+  REPAIR-2 (phase 18): constrained GAP-6 taxonomy mapping + UI-fog tie-break + entry-point stub
+    qualification after round-1 over-generalized Ghost Features (boundary 0.64 -> 0.52).
+  REPAIR-3 (phase 18): repaired YAML authoring defects (unquoted colons in evidence
+    supports_claim scalars, monorepo + generated-heavy) so validation returned to 25/25;
+    diagnosis content untouched.
+  No further cycles are permitted by the disposition.
+
+## 3. Supported directions (lessons with evidence - NOT accepted production changes)
+These changes demonstrably improved specific measured outcomes in this evaluation and are
+recorded as supported directions for any future revision; they are NOT approved for merge:
+  1. Evidence-authority model (OBSERVED/DERIVED/INFERRED/UNKNOWN + conflict surfacing):
+     inference_labeling_rate 0.022 -> 0.040; conflicting_evidence_detection 0.68 -> 0.92.
+  2. Deterministic exploration protocol (Passes A-E): stable, complete briefs; no repo was
+     missed or skipped across 75 agent runs; citation realism held (validation 25/25).
+  3. Registry authority + execution-mode rule (GAP-7): routing validity stayed 1.000 across
+     all rounds; zero hallucinated workflow IDs; target-repo registry traps avoided
+     (adv-multi-registry).
+  4. Invocation-mode contract (GAP-1) and citation extension (GAP-3): enabled valid standalone
+     briefs with js/json/html citations (web-frontend, full-stack).
+  5. Ghost-feature 3-way fog rule + entry-point-vs-deliverable distinction: fixed the
+     baseline's headline miss (adv-misleading-readme docs_fog -> product_fog; adv-partial-impl,
+     docs-heavy-code-light also corrected).
+  6. Constrained GAP-6 mapping: unused-dependency -> Implicit Dependencies, packaging gap ->
+     Zero Validation landed correctly (adv-unused-dep, tiny-lib, multi-language, unusual-layout).
+  7. Mandatory selection structure (Alternatives considered + Confidence): present in all
+     round-2 briefs; judged useful by reviewers of the interaction sample.
+
+## 4. Mechanisms associated with regressions (what to avoid / what the failure mode is)
+  1. Prose guidance moves the classifier's decision boundary but did NOT move boundary-type
+     accuracy monotonically: each GAP-6 correction shifted an equivalent number of other repos
+     off their frozen type (round 1: Ghost Features over-use; round 2: over-correction into
+     Implicit Dependencies / Vocabulary Drift for repos whose evidence supported Zero
+     Validation / Contract Mismatch / Ghost Features). Prose tuning at n=25 overfits: the
+     corpus is too small to absorb guidance shifts without flipping other labels.
+  2. Guidance that resolves one fog ambiguity creates new ones at the margin: the 4 remaining
+     fog flips (web-frontend, poorly-documented, generated-heavy, unusual-layout) are all
+     DEFENSIBLE diagnoses under the new rules - the frozen ground truth and the new guidance
+     disagree on 4 of 25 repos. This is a decision-boundary shift, not detectable
+     "wrongness"; it is invisible to validation and only visible against ground truth.
+  3. Authoring defects are the main validation risk in standalone runs: 3 of 75 runs produced
+     malformed evidence YAML (unquoted colons). The validator catches it; the skill guidance
+     does not prevent it. This is an authoring-mechanics gap, distinct from diagnosis quality.
+  4. The semantic claim metrics (evidence_precision 0.844/0.835, unsupported 0.632/0.633)
+     are FLAT despite large behavioral changes: at this granularity the proxy cannot
+     distinguish guidance quality from authoring style; it is insensitive to the treatments.
+
+## 5. Unresolved uncertainties
+  - Whether boundary-type accuracy can be improved at all with n=25 under ANY guidance regime
+    (the observed swing band 0.44-0.64 overlaps the baseline 0.64).
+  - Whether the 4 fog flips and ~8 boundary shifts represent rubric error, guidance error, or
+    legitimate ambiguity (no per-repo adjudication was performed by a second human).
+  - Whether the semantic claim metrics would move with claim-level ground truth (the current
+    proxy is structural, not semantic).
+  - Whether runtime-invoked (skeleton) mode would behave like standalone mode: all 75 runs
+    were standalone; the runtime reconciliation path (brief_skeleton) was exercised only by
+    unit tests, not by end-to-end artifact runs.
+  - The UI-fog decision tree vs generic architecture signals tension in frontend repos with
+    entry-point contract failures (web-frontend flip) has no empirically validated resolution.
+  - Blinded A/B human review (phase 17) was never executed because the mechanical gate failed
+    first; the relative human-perceived quality of baseline vs hardened briefs is unknown.
+
+## 6. Possible follow-up hypotheses (listed WITHOUT selection; each requires separate
+    evaluation and authorization before any implementation)
+  H1. Deterministic boundary-type decision procedure (checklist with binary gates mirroring
+      the mapping guidance) instead of prose guidance.
+  H2. Larger corpus (50+ fixtures) to reduce variance and enable per-repo adjudication.
+  H3. Claim-level ground truth for semantic metrics (human-annotated claim labels) to make
+      evidence precision/unsupported-claim measurement meaningful.
+  H4. Taxonomy redesign (e.g., application-code-native types instead of agent-oriented seven).
+  H5. Runtime-path end-to-end evaluation (skeleton + reconciliation + validate-and-record)
+      against the corpus before any further standalone guidance work.
+  H6. Human-perceived quality A/B (blinded review of baseline vs hardened briefs) as a
+      complementary, non-mechanical gate.
+  No hypothesis is selected, prioritized, or authorized by this disposition.
+
+## 7. Evidence inventory (all preserved, committed on hardening/repository-sensemaking-v1)
+  - corpus/ (25 fixtures, frozen), ground-truth.yaml v2, baseline/ (25 briefs), baseline-scored.yaml,
+    baseline-report.yaml, baseline-semantic-metrics-v1.yaml
+  - candidate-round1/ (round-1 briefs), candidate/ (round-2 briefs + REPAIR-3 fixes),
+    candidate-scored.yaml, candidate-semantic-metrics-v1.yaml, validation-results.yaml
+  - phase15-comparison-v1.yaml, phase18-regression-analysis-v1.yaml,
+    phase19-evaluation-report-v1.yaml, candidate-freeze-v1.yaml, candidate-freeze-v2.yaml,
+    weakness-taxonomy-inventory-v1/v2.yaml, interaction probe + semantic scorer (tools/)
+  - tests: 8 regression suites (evidence contract, architecture fixtures, boundary mapping
+    guards, fog, routing, gap coverage, adversarial fixtures, metamorphic counterfactuals)
+    plus validator/skeleton suites: 169 passed, 3 subtests, 0 new failures at closure
+  - skill candidate modifications remain on the branch (unmerged); they are recorded as
+    supported directions, not accepted production changes
