@@ -396,6 +396,25 @@ with `python scripts/validate-brief.py <artifact> --target-repo <repo> --repo-ro
 When in doubt, write verbatim quotes: verbatim quotes are valid in both
 modes, placeholders are valid only in the runtime mode.
 
+**The two complete pipelines (GAP-9)**:
+
+```text
+Runtime invocation:
+  runtime generates the skeleton (expected_output_path)
+  -> model fills only the MODEL_SECTION regions + Section 8/13 fields
+  -> runtime reconciles model output into the canonical skeleton
+     (including overwriting placeholder quotes with verbatim text)
+  -> scripts/validate-and-record.py validates and records
+
+Standalone invocation (no runtime):
+  skill -> model authors the COMPLETE artifact (envelope included)
+  -> python scripts/validate-brief.py <artifact> --target-repo <repo>
+     --repo-root <root> validates it directly
+```
+
+No runtime-only assumption may make a valid standalone brief impossible, and
+no standalone-only assumption may weaken the runtime contract.
+
 The runtime writes a **tool-call trace** (`tool-call-trace.jsonl` in the
 session artifact directory) recording every tool call you make during this
 invocation — this is for debugging failed runs, not something you need to

@@ -1,0 +1,61 @@
+schema: artifact-vocabulary-map-v1
+phase: commit-6 (GAP-2)
+authority: skills/workflow-planner/references/artifact-contracts.yaml
+artifact: repository_sensemaking_brief
+recorded_at: "2026-08-07T04:00:00Z"
+
+canonical_machine_fields:
+  required:
+    - artifact_id
+    - primary_fog_type
+    - evidence
+    - recommended_workflow_id
+    - created_at
+    - immutable
+  recommended:
+    - source_intent_ref
+    - user_implied_fog_type
+    - diagnosis_conflict
+    - escalation_recommended
+    - escalation_target
+    - escalation_reason
+    - auto_escalation_allowed
+    - weakness_type
+    - weakness_type_explanation
+
+vocabulary_decisions:
+  escalation_field:
+    canonical: escalation_recommended
+    note: "escalation_required exists in artifact-contracts.yaml but belongs to the user-intent artifact (line ~229), NOT the sensemaking brief. Brief producers must use escalation_recommended."
+  timestamps_field:
+    canonical: created_at
+    note: "baseline harness asked for 'timestamps'; the contract and template use created_at. created_at is canonical."
+  target_repo_field:
+    canonical: not_a_brief_field
+    note: "target_repo is a validator CLI argument (--target-repo), not a brief machine field. Briefs MAY carry it as an extra key (validator ignores unknown keys) but it is not part of the contract."
+  workflow_registry_source:
+    canonical: not_a_brief_field
+    note: "informational extra key tolerated by the validator; the routing authority is the canonical registry path in the skill, not a per-brief field."
+  runtime_owned:
+    fields:
+      - artifact_id
+      - schema_version
+      - created_at
+      - immutable
+      - source_intent_ref
+      - heading structure + MODEL_SECTION markers
+    note: "runtime-owned fields are never model-authored in runtime mode; in standalone mode the model authors them with the same names."
+
+prose_agreement_rule:
+  - "Section 6 prose weakness type == handoff weakness_type (validator: WEAKNESS_TYPE_PROSE_MISMATCH warning)"
+  - "Section 6.5 fog prose == handoff primary_fog_type (validator: FOG_PROSE_MISMATCH warning)"
+  - "Recommended Workflow prose == handoff recommended_workflow_id (validator: WORKFLOW_PROSE_MISMATCH warning)"
+prose_agreement_severity: warning (never invalidates; structured fields are authoritative)
+
+producer_guidance_sources:
+  - skills/repo-sensemaker/SKILL.md
+  - skills/repo-sensemaker/references/repo-analysis-template.md
+consumer_sources:
+  - scripts/validate-brief.py
+  - scripts/brief_skeleton.py
+  - scripts/skill_executor.py

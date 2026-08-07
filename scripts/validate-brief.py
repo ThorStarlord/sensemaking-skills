@@ -38,6 +38,11 @@ WEAKNESS_TYPE_OTHER_NO_EXPLANATION = "WEAKNESS_TYPE_OTHER_NO_EXPLANATION"
 WEAKNESS_TYPE_MALFORMED = "WEAKNESS_TYPE_MALFORMED"
 WEAKNESS_TYPE_PROSE_MISMATCH = "WEAKNESS_TYPE_PROSE_MISMATCH"
 HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT = "HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT"
+# Commit 6 semantic agreement checks: structured handoff field missing from
+# the corresponding prose section. Informational warnings only - the
+# structured fields are authoritative for machine-facing routing.
+FOG_PROSE_MISMATCH = "FOG_PROSE_MISMATCH"
+WORKFLOW_PROSE_MISMATCH = "WORKFLOW_PROSE_MISMATCH"
 
 # Deterministic evidence-quote grounding (issue #80).
 EVIDENCE_QUOTE_NOT_FOUND = "EVIDENCE_QUOTE_NOT_FOUND"
@@ -677,6 +682,38 @@ def validate_brief(
                         field="weakness_type",
                         severity="warning",
                     ))
+
+                # Commit 6: fog prose/YAML agreement (informational warning).
+                # The structured field is authoritative for routing; the prose
+                # must carry the same conclusion for human readers.
+                fog_value = artifact_data.get("primary_fog_type")
+                if isinstance(fog_value, str) and fog_value in ("product_fog", "ui_fog", "docs_fog", "architecture_fog"):
+                    fog_prose = next((sections[k] for k in sections if "problem classification" in k), "")
+                    if fog_prose and fog_value.lower() not in fog_prose.lower():
+                        errors.append(_code_error(
+                            FOG_PROSE_MISMATCH,
+                            f"Structured primary_fog_type ('{fog_value}') does not appear "
+                            "in the Section 6.5 'Problem classification (fog type)' prose. "
+                            "The structured field is authoritative for routing; prose "
+                            "agreement is required for handoff consistency.",
+                            field="primary_fog_type",
+                            severity="warning",
+                        ))
+
+                # Commit 6: workflow prose/YAML agreement (informational warning).
+                workflow_value = artifact_data.get("recommended_workflow_id")
+                if isinstance(workflow_value, str) and workflow_value:
+                    workflow_prose = next((sections[k] for k in sections if "recommended workflow" in k), "")
+                    if workflow_prose and workflow_value.lower() not in workflow_prose.lower():
+                        errors.append(_code_error(
+                            WORKFLOW_PROSE_MISMATCH,
+                            f"Structured recommended_workflow_id ('{workflow_value}') does "
+                            "not appear in the 'Recommended Workflow' prose. The structured "
+                            "field is authoritative for routing; prose agreement is required "
+                            "for handoff consistency.",
+                            field="recommended_workflow_id",
+                            severity="warning",
+                        ))
 
     # 4. evidence_excerpts YAML block: presence + per-excerpt field checks
     evidence_match = re.search(r"```yaml\s+(evidence_excerpts:.*?)\s+```", content, re.DOTALL | re.IGNORECASE)

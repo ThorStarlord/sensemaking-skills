@@ -114,7 +114,12 @@ class TestSemanticMerge(unittest.TestCase):
         path = _write_tmp(out)
         try:
             errors = validate_brief(path, REPO_ROOT)
-            self.assertEqual(errors, [], f"expected no errors, got {errors}")
+            # The severity model (Commit 6, 11.4): warnings never invalidate.
+            # FOG/WORKFLOW_PROSE_MISMATCH are informational warnings that fire
+            # when the synthetic payload's 6.5 prose does not repeat the fog
+            # value; only severity=error entries mean the artifact fails.
+            self.assertEqual([e for e in errors if e.get("severity") == "error"], [],
+                             f"expected no blocking errors, got {errors}")
         finally:
             os.remove(path)
 
