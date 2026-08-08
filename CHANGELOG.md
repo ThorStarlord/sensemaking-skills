@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2026-08-07
+
+### Added
+- **Skill trees shipped in the wheel** — the built wheel now contains the
+  canonical SKILL.md trees under `sensemaking_skills/skill_trees/`, derived at
+  build time from the single authoritative repository-root `skills/` directory
+  (Task P1-F). The shipped 0.2.1 artifact contained no SKILL.md files, so the
+  documented `setup-skills` flow could not deliver the canonical
+  `repo-sensemaker` (Task P1-R: CONFIRMED).
+- **Drift detection in `setup-skills`** — an existing installed skill is
+  classified as `current` (matches packaged version, no action), `missing`
+  (installed), or `different` (reported as drift, NOT overwritten). Explicit
+  `--force` remains the deliberate-replacement mechanism.
+- **Packaged-resource resolution** — `setup-skills` now resolves its source
+  from installed package resources (`sensemaking_skills/skill_trees` via
+  `importlib.resources`) with a repository-root `skills/` fallback for
+  editable/source installs; no wheel-installed user needs a source-checkout
+  layout assumption.
+- **Installed-wheel distribution regression test** —
+  `tests/campaign_validation/test_installed_wheel_setup_skills.py` builds the
+  wheel, installs it into a fresh venv, runs the documented setup path into a
+  temporary destination, and verifies the installed `repo-sensemaker/SKILL.md`
+  and references match the release source byte-for-byte, that the CLI exposes
+  `setup-skills`, and that divergent copies are reported (not silently
+  overwritten) without `--force`.
+
+### Changed
+- **Version bumped** from 0.2.1 to 0.2.2 (0.2.1 remains the published broken
+  artifact; a new version is required for the repair, per Task P1-F).
+
 ## [0.2.1] - 2026-05-25
 
 ### Added
