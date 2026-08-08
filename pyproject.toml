@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sensemaking-skills"
-version = "0.2.1"
+version = "0.2.2"
 description = "Agent-native framework for repository diagnosis and workflow orchestration"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -46,5 +46,5 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-sensemaking_skills = ["skills/**/*", "examples/**/*", "docs/**/*"]
+sensemaking_skills = ["skills/**/*", "skill_trees/**/*", "examples/**/*", "docs/**/*"]
 "sensemaking_skills.campaign_validation.schemas" = ["*.json"]

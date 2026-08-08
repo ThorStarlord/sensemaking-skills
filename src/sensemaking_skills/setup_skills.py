@@ -9,10 +9,24 @@ Skills are copied with their original folder names:
 - using-sensemaking/SKILL.md
 - repo-sensemaker/SKILL.md
 - workflow-planner/SKILL.md
+
+Source resolution (Task P1-F):
+1. Packaged skill trees (``sensemaking_skills/skill_trees``) -- the
+   wheel-installed case. The wheel is built from the single authoritative
+   repository-root ``skills/`` tree (see ``setup.py``'s ``build_py``), so a
+   wheel-installed user needs no repository-layout assumption.
+2. Repository-root ``skills/`` -- the editable-install / source-checkout case.
+
+Drift detection: an existing destination is never silently overwritten.
+States are reported explicitly:
+- current  -> already matches the packaged version (no action);
+- missing  -> installed;
+- different -> reported as drift; only an explicit ``--force`` replaces it.
 """
 
-import sys
+import hashlib
 import shutil
+import sys
 from pathlib import Path
 from typing import List, Tuple
 
@@ -23,9 +37,25 @@ class SkillsSetupError(Exception):
 
 
 def get_package_skills_dir() -> Path:
-    """Get the path to skills directory in the installed package."""
-    # The skills are in the repo root, not in the package directory
-    # We need to find them relative to this file
+    """Get the path to the skills directory to install from.
+
+    Priority 1: packaged skill trees inside the installed package
+    (``sensemaking_skills/skill_trees``), resolved via importlib.resources
+    with no repository-layout assumption -- this is the wheel-installed case.
+
+    Priority 2: repository-root ``skills/`` -- the editable-install /
+    source-checkout case, where packaged trees do not exist (dev usage).
+    """
+    try:
+        from importlib.resources import files
+
+        packaged = files("sensemaking_skills") / "skill_trees"
+        if packaged.is_dir():
+            return Path(str(packaged))
+    except Exception:
+        pass
+
+    # Editable install / source checkout fallback.
     package_dir = Path(__file__).parent.parent.parent  # Go up from src/sensemaking_skills/
     skills_dir = package_dir / "skills"
 
@@ -79,6 +109,39 @@ def find_skills_in_package(skills_dir: Path) -> List[str]:
     return sorted(skill_names)
 
 
+def _skill_tree_fingerprint(skill_dir: Path) -> dict:
+    """Map every file's relative path to its SHA-256 content hash.
+
+    Used to compare an installed skill tree against the packaged source so
+    drift can be reported instead of silently assumed healthy.
+    """
+    fingerprint = {}
+    if not skill_dir.is_dir():
+        return fingerprint
+    for path in sorted(skill_dir.rglob("*")):
+        if path.is_file():
+            rel = path.relative_to(skill_dir).as_posix()
+            fingerprint[rel] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return fingerprint
+
+
+def skill_state(src_skill: Path, dest_skill: Path) -> str:
+    """Classify an existing destination relative to the packaged source.
+
+    Returns one of:
+    - "current"   -- every packaged file exists with identical content
+    - "different" -- destination exists but diverges from the packaged source
+    - "missing"   -- destination does not exist
+    """
+    if not dest_skill.exists():
+        return "missing"
+    src_fp = _skill_tree_fingerprint(src_skill)
+    dest_fp = _skill_tree_fingerprint(dest_skill)
+    if src_fp == dest_fp:
+        return "current"
+    return "different"
+
+
 def copy_skill(
     src_skill_dir: Path,
     dest_skills_dir: Path,
@@ -89,6 +152,10 @@ def copy_skill(
     """
     Copy a single skill to the destination directory.
 
+    Drift-aware: an existing destination that already matches the packaged
+    source is reported as current (no action); one that diverges is reported
+    as drift and is NOT overwritten unless ``force`` is set.
+
     Returns: (success, message)
     """
     src_skill = src_skill_dir / skill_name
@@ -97,11 +164,26 @@ def copy_skill(
     if not (src_skill / "SKILL.md").exists():
         return False, f"Source SKILL.md not found: {src_skill / 'SKILL.md'}"
 
+    state = skill_state(src_skill, dest_skill)
+
+    if state == "current":
+        return True, f"Current (already matches packaged version): {skill_name}"
+
+    if state == "different":
+        if not force:
+            return (
+                False,
+                f"Different from packaged version: {skill_name} "
+                f"(installed copy diverged; use --force to overwrite)",
+            )
+        # Fall through to replace below (force requested).
+
     if dest_skill.exists() and not force:
         return False, f"Destination already exists: {dest_skill} (use --force to overwrite)"
 
     if dry_run:
-        return True, f"[DRY-RUN] Would copy {src_skill} -> {dest_skill}"
+        action = "Would replace" if dest_skill.exists() else "Would copy"
+        return True, f"[DRY-RUN] {action} {src_skill} -> {dest_skill}"
 
     try:
         if dest_skill.exists():
@@ -130,7 +212,7 @@ def setup_skills(
             - "custom": Use --skills-dir path
         skills_dir: Custom destination directory (if target="custom")
         dry_run: Show what would be done without actually doing it
-        force: Overwrite existing skills
+        force: Overwrite existing skills (including divergent ones)
         verbose: Print detailed output
 
     Returns: True if successful, False otherwise
@@ -216,6 +298,8 @@ def setup_skills(
             print("  pip install sensemaking-skills")
         else:
             print("\nStatus: PARTIAL FAILURE - Some installations failed")
+            print("Existing divergent skill copies are reported above and are")
+            print("NOT overwritten. Use --force to deliberately replace them.")
 
         return all_success
 

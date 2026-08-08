@@ -288,6 +288,9 @@ jobs:
       - name: Run the installed-wheel bundle-validation smoke test
         run: python -m pytest tests/campaign_validation/test_installed_wheel_smoke.py -q -rs
 
+      - name: Run the installed-wheel distribution regression test (Task P1-F)
+        run: python -m pytest tests/campaign_validation/test_installed_wheel_setup_skills.py -q -rs
+
   # ==========================================================================
   # Phase 3 exploratory-authorization suites (Issue #119, program Issue
   # #116). These exercise the four-lane authorization model (ORDINARY /
