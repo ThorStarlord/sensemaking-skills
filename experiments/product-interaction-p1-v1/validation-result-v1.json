@@ -1,0 +1,36 @@
+{
+  "valid": false,
+  "artifact_id": "repository_sensemaking_brief",
+  "artifact_path": "H:\\GithubRepositories\\sensemaking-skills\\experiments\\product-interaction-p1-v1\\repo-sensemaker-investigation-v1.md",
+  "validator": "validate-brief.py",
+  "errors": [
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[0] quote not found in src/sensemaking_skills/setup_skills.py (searched lines 26-33, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L29-L30'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[1] quote not found in src/sensemaking_skills/setup_skills.py (searched lines 97-104, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L100-L101'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[2] quote not found in GETTING_STARTED.md (searched lines 20-27, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L23-L24'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    }
+  ],
+  "validation_timestamp": "2026-08-07T22:01:43.200132Z"
+}
