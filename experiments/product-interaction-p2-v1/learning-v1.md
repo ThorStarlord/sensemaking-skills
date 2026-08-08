@@ -131,9 +131,10 @@ overreach explicitly carved out.
 
 1. **The reframing is the product's sharpest value**: converting "broken
    validator" into "mode/producer-contract inconsistency" changed what work
-   the owner would authorize without any code change — a second replication
-   (after P1) of the pattern that the investigation substance, not the
-   validated artifact, carries the decision value.
+   the owner would authorize without any code change. P2 provides a second
+   supporting case (after P1) that decision value can come from the
+   investigation and synthesis even when the machine artifact fails
+   standalone validation.
 2. **The standalone validation failure is current, reproducible, and
    instruction-caused**: it survived the distribution repair; the canonical
    template itself causes it in standalone mode. This is a genuine product
@@ -146,9 +147,10 @@ overreach explicitly carved out.
 4. **The owner-facing synthesis can overreach beyond its evidence**: the
    synthesis re-promoted a previously-closed optional decision (PyPI
    publication) without new evidence, and the owner had to correct it. A
-   product that sharpens decisions must also respect the owner's standing
-   decisions — synthesis overreach is a failure mode to watch (and the
-   cheapest guard is citing the evidence behind each recommended item).
+   product that sharpens decisions must preserve prior owner decisions and
+   distinguish "unfinished technical state" from "product priority" —
+   synthesis overreach is a failure mode to watch (and the cheapest guard is
+   citing the evidence behind each recommended item).
 5. **The assisted-baseline design worked as intended**: `NO CLEAR PRE
    INCLINATION` forced the interaction to earn its usefulness on the fork,
    and the owner's POST confirms it did — while the claim stays honestly
@@ -182,7 +184,39 @@ future probes (owner's decision).
   interaction/synthesis work; optional mode-aware guidance fix) is recorded
   as the owner's next decision — not executed.
 
+## Owner acceptance (additive record; does not rewrite any observed evidence)
+
+recorded_at: 2026-08-08 (owner response to the P2 final report)
+
+- The owner **accepted Task P2 as a valid product-discovery result** and
+  confirmed the qualitative disposition `USEFUL_CONFIRMATION`.
+- Accepted claim (owner's framing, proportional to the weakened protocol):
+  "Given a real unresolved engineering question, repo-sensemaker produced a
+  reframing that the owner judged useful and decision-relevant, and that
+  reframing better justified the owner's existing direction." Not claimed:
+  an independently captured PRE->POST decision change.
+- Wording refinement applied per owner instruction: the stronger phrase
+  "second replication" (this file, lesson 1) is replaced with "second
+  supporting case", because P2 differs materially from P1 (assisted
+  baseline vs independent PRE; same repository ecosystem) and therefore
+  strengthens the hypothesis without being a strong independent
+  replication in the experimental sense.
+- Owner's refined product-learning framing: repo-sensemaker may be good at
+  discovering and reframing local repository evidence while still needing
+  stronger discipline around (a) preserving prior owner decisions and (b)
+  distinguishing "unfinished technical state" from "product priority"
+  (see lesson 4).
+- Owner's stated next step (recorded, NOT authorized or started here):
+  close P2 cleanly; do not fix the validator yet; do not turn the
+  "mode-aware guidance + CLI honesty" idea into a P2-F; the highest-value
+  next product experiment is P3 on ANOTHER repository, challenging the
+  alternative explanation that repo-sensemaker is unusually effective on
+  its own repository, keeping the lighter P2 interaction model (real owner
+  question -> minimal existing context -> one interaction -> compact
+  recommendation -> owner's free response). No scorer, no implementation,
+  no validator repair.
+
 ## Stop condition reached
 
-Learning record complete. STOP per charter — nothing further is implemented
-or changed in this task.
+Learning record complete (with owner-directed wording refinement applied).
+STOP per charter — nothing further is implemented or changed in this task.
