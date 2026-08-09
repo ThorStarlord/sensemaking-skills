@@ -1,0 +1,18 @@
+{
+  "valid": true,
+  "artifact_id": "repository_sensemaking_brief",
+  "artifact_path": "H:\\GithubRepositories\\sensemaking-skills\\experiments\\product-interaction-p4-v1\\repo-sensemaker-investigation-v1.md",
+  "validator": "validate-brief.py",
+  "errors": [
+    {
+      "error_type": "logic_error",
+      "field": "weakness_type",
+      "current_value": null,
+      "message": "WEAKNESS_TYPE_UNKNOWN: 'weakness_type' value 'Contract Mismatch' is not a recognized taxonomy term. Known types: , Other.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "warning"
+    }
+  ],
+  "validation_timestamp": "2026-08-08T14:27:35.500144Z"
+}
