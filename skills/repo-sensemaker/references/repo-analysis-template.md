@@ -47,6 +47,20 @@ This classification determines which implementation workflow will be used downst
 File-level evidence supporting the diagnosis (cites specific files and line ranges,
 e.g. `scripts/validate-brief.py:46`).
 
+**Output mode:** choose and signal the citation mode per [evidence-rules.md](evidence-rules.md)
+("Citation Format: Two Output Modes"):
+
+```markdown
+<!-- mode: investigative | durable -->
+```
+
+- **investigative** (default, human readers): file paths **with line numbers**, e.g. `src/auth/login.ts:42-58`.
+- **durable** (downstream skills that validate/transform evidence): file paths **only, no line numbers**, grep-verifiable claims.
+
+If unsure, default to `investigative` -- a downstream skill can transform
+investigative evidence into durable form, but the reverse is not possible
+without re-running the analysis.
+
 **This section's own prose must contain at least one literal file-path
 citation** (e.g. `scripts/validate-brief.py:46`), even though Section 8
 (evidence excerpts) and Section 13 (machine-readable `evidence:` list) also

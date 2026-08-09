@@ -165,6 +165,6 @@ User took the trade-off (speed vs. auditability) explicitly.
 
 ## Related
 
-- [Artifact Contracts](../workflow-orchestrator/references/artifact-contracts.yaml) -- What artifacts each skill produces/consumes
-- [Execution Modes](../workflow-orchestrator/references/execution-modes.md) -- Details on orchestrator modes (guided, autonomous, yolo)
-- [Skill Registry](../workflow-orchestrator/references/skill-registry.yaml) -- Available skills and their interfaces
+- [Artifact Contracts](../skills/workflow-planner/references/artifact-contracts.yaml) -- What artifacts each skill produces/consumes
+- [Execution Modes](../skills/workflow-planner/references/execution-modes.md) -- Details on orchestrator modes (guided, autonomous, yolo)
+- [Skill Registry](../skills/workflow-planner/references/skill-registry.yaml) -- Available skills and their interfaces

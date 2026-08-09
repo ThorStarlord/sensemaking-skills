@@ -8,13 +8,13 @@ import os
 
 def test_evidence_rules_exists():
     """Test that evidence-rules.md documentation exists"""
-    path = "repo-sensemaker/references/evidence-rules.md"
+    path = "skills/repo-sensemaker/references/evidence-rules.md"
     assert os.path.exists(path), f"evidence-rules.md not found at {path}"
 
 
 def test_evidence_rules_documents_dual_modes():
     """Test that evidence-rules document both output modes"""
-    path = "repo-sensemaker/references/evidence-rules.md"
+    path = "skills/repo-sensemaker/references/evidence-rules.md"
     with open(path) as f:
         content = f.read()
 
@@ -26,7 +26,7 @@ def test_evidence_rules_documents_dual_modes():
 
 def test_evidence_rules_explains_investigative():
     """Test that investigative mode is explained"""
-    path = "repo-sensemaker/references/evidence-rules.md"
+    path = "skills/repo-sensemaker/references/evidence-rules.md"
     with open(path) as f:
         content = f.read()
 
@@ -36,7 +36,7 @@ def test_evidence_rules_explains_investigative():
 
 def test_evidence_rules_explains_durable():
     """Test that durable mode is explained"""
-    path = "repo-sensemaker/references/evidence-rules.md"
+    path = "skills/repo-sensemaker/references/evidence-rules.md"
     with open(path) as f:
         content = f.read()
 
@@ -46,14 +46,14 @@ def test_evidence_rules_explains_durable():
 
 def test_repo_analysis_template_has_mode_toggle():
     """Test that repo-analysis-template.md has mode toggle"""
-    path = "repo-sensemaker/references/repo-analysis-template.md"
+    path = "skills/repo-sensemaker/references/repo-analysis-template.md"
     assert os.path.exists(path), f"repo-analysis-template.md not found at {path}"
 
     with open(path) as f:
         content = f.read()
 
-    assert "mode:" in content.lower() or "investigative" in content.lower(), \
-        "template must have mode toggle or reference modes"
+    assert "<!-- mode: investigative | durable -->" in content, \
+        "template must carry the literal mode toggle marker (<!-- mode: investigative | durable -->)"
 
 
 def test_downstream_docs_explain_implications():
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     sys.path.insert(0, ".")
 
     print("Checking evidence dual-mode documentation...")
-    path = "repo-sensemaker/references/evidence-rules.md"
+    path = "skills/repo-sensemaker/references/evidence-rules.md"
     if os.path.exists(path):
         print(f"✓ Found {path}")
         with open(path) as f:
