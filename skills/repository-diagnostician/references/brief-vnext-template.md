@@ -66,7 +66,38 @@ settled:
 
 ```yaml
 analysis_vnext:
-  schema_version: prototype-0
+  schema_version: prototype-1
+  domain:
+    - product | architecture | ui | docs | integration
+    # NOT a new taxonomy: these are the same base concepts as the canonical
+    # primary_fog_type enum (docs/canonical-vocabulary.yaml), deliberately
+    # reusing its vocabulary rather than inventing a second one (earlier
+    # ledger reasoning, still correct: "fog taxonomy already approximates
+    # this; reconcile the first taxonomy before adding a second").
+    # The behavioral value this adds over primary_fog_type: `domain` is a
+    # LIST. primary_fog_type must stay single-valued because routing
+    # (ADR 0018) needs exactly one value to key off of -- but a
+    # consequential_boundary is frequently NOT single-domain (P4's finding
+    # was simultaneously product AND architecture: which surface is
+    # canonical is a product question; how the two diverged is an
+    # architecture question). Forcing that into one primary_fog_type value
+    # already loses information today. `domain` doesn't fix routing (out
+    # of scope, unchanged) -- it lets the brief say what primary_fog_type
+    # structurally cannot.
+  discovery_confidence:
+    level: low | medium | high
+    why_bounded: "..."
+    # Formalizes the "Confidence and why bounded" prose pattern already
+    # used downstream of repo-sensemaker (see
+    # experiments/solution-interaction-s1-v1/owner-synthesis-v1.md section 8)
+    # -- extending an existing habit, not inventing a new one. Answers a
+    # DIFFERENT question than `uncertainty.source`: source asks "why is the
+    # boundary I found unresolved?"; discovery_confidence asks "how sure am
+    # I that I found the RIGHT boundary at all?" A repo whose real problem
+    # is buried in runtime behavior or an external system may still produce
+    # a structurally pristine brief around the wrong boundary -- this field
+    # exists so that case is distinguishable from a genuinely
+    # well-grounded finding, not to add another taxonomy.
   consequential_boundary:
     description: "..."
     rationale: "..."
@@ -105,23 +136,55 @@ analysis_vnext:
     # consequential_boundary without owner input it does not have --
     # the caller (interaction layer) must decide whether to ask, this
     # skill must not guess.
+  evidence_status_notes:
+    # OPTIONAL. Per-excerpt confidence annotation, keyed to Section 8's
+    # canonical evidence_excerpts by (file, lines) -- NOT a new field on
+    # evidence_excerpts itself. Section 8's four required fields (file,
+    # lines, quote, supports_claim) are ADR 0016-governed and untouched;
+    # this is a parallel, vNext-only list. Deliberately NOT top-level
+    # (earlier ledger reasoning, still correct: status belongs to a claim,
+    # not to the brief as a whole -- different excerpts in the same brief
+    # legitimately carry different confidence).
+    - file: "..."
+      lines: "..."
+      status: observed | derived | interpretation | hypothesis
+      # observed: directly read in the cited file/lines.
+      # derived: a deterministic computation over observed evidence (e.g.
+      #   this prototype's evidence scripts -- a duplicate-authority match,
+      #   a version-drift diff).
+      # interpretation: a semantic judgment about what observed/derived
+      #   evidence means (e.g. "this pattern indicates X").
+      # hypothesis: not yet confirmed; would need a probe (ties to
+      #   uncertainty.source: empirical) to become observed/derived.
   evidence_note: >
-    Citation-level trust (which SOURCE FILE to believe when two files
-    disagree about a fact) still follows the existing, unchanged
-    evidence-authority hierarchy (code/tests > contracts/registries >
-    accepted ADRs > canonical docs > open issues/proposed ADRs > historical
-    status docs > untracked drafts) -- this prototype does not touch that.
-    But that hierarchy answers a citation question, not a conflict
-    question, and this block's reasoning needs the latter: descriptive
-    evidence (code, tests, runtime behavior, config -- "what actually
-    exists/happens") and normative evidence (explicit owner decisions,
-    Accepted ADRs, ratified contracts -- "what is supposed to be true") are
-    not the same axis, and one is not simply higher-ranked than the other.
-    When they agree, cite either. When they DISAGREE (an Accepted ADR says
-    B, the code does A), the correct consequential_boundary finding is
-    "implementation has drifted from ratified intent" -- not "code wins
-    because it's higher on the citation list." Report the disagreement as
-    drift; do not collapse it into one ranking.
+    Three distinct evidence questions, not one ranking:
+
+    (1) CITATION TRUST -- which source file to believe when two files
+    disagree about a fact. Unchanged, canonical:
+    code/tests > contracts/registries > accepted ADRs > canonical docs >
+    open issues/proposed ADRs > historical status docs > untracked drafts.
+    This prototype does not touch that hierarchy.
+
+    (2) DESCRIPTIVE vs. NORMATIVE -- not a ranking, two different axes.
+    Descriptive evidence (code, tests, runtime behavior, config) answers
+    "what actually exists/happens?" Normative evidence (explicit owner
+    decisions, Accepted ADRs, ratified contracts) answers "what is
+    supposed to be true?" When they agree, cite either. When they
+    DISAGREE (an Accepted ADR says B, the code does A), the correct
+    consequential_boundary finding is "implementation has drifted from
+    ratified intent" -- not "code wins because it's higher on the
+    citation list." Report the disagreement as drift; do not collapse it
+    into one ranking.
+
+    (3) HISTORICAL/EMPIRICAL -- what happened in previous experiments or
+    revisions (e.g. experiments/*/learning-v1.md, prior PRs, git history).
+    This is neither a citation-trust question nor a descriptive/normative
+    question -- it's evidence about trajectory and precedent, useful for
+    discovery_confidence and for recognizing recurring patterns (e.g. "the
+    same drift class has appeared twice before"), but it does not by
+    itself establish current descriptive OR normative truth. A thing that
+    was true in a past experiment is historical evidence that it might
+    still be true now, not proof that it is.
 ```
 
 ### Field status (evidence level, per the assumption ledger)
@@ -131,6 +194,9 @@ analysis_vnext:
 | `consequential_boundary` | Supported by P4 (n=1) |
 | `uncertainty.source` | Supported by S1 (n=1, agent-selected target) |
 | `owner_intent_state` | Exploratory — direct response to "never silently invent owner preference," not yet tested in an interaction |
+| `domain` (list) | Exploratory — reuses canonical vocabulary, not a new taxonomy; multi-valuedness motivated by P4's actual finding spanning product+architecture |
+| `discovery_confidence` | Exploratory — formalizes an existing prose pattern (S1 owner-synthesis section 8), no case yet where the *field* (vs. the prose habit) changed behavior |
+| `evidence_status_notes` (per-excerpt) | Exploratory — added per this task's authorization; not yet exercised against a real disagreement between excerpts of different confidence |
 
 None of this is claimed as validated. See
 [the assumption ledger](../../docs/prototypes/repo-sensemaker-vnext.md) for
