@@ -29,6 +29,11 @@ Evaluates proposed architectural responses against principal-engineer judgment: 
 
 5. **Output decision outcomes**: Every recommendation must result in one of: `pursue`, `pursue_narrowed`, `investigate_first`, `defer`, or `reject`. Decisions must be actionable and justified with specific risks, constraints, or conditions.
 
+6. **Optional Section 15 awareness** (candidate, unratified — see `docs/candidate/architecture-decision.md`, Decision 4). If the brief has a Section 15 `extended_analysis` block, you may use two of its fields; absence of Section 15 changes nothing about this workflow.
+   - `consequential_boundary.is_demonstrated_weakness: true` means the weakness is independently, currently demonstrated (not just plausible). A proposal that addresses only part of a demonstrated weakness is narrower than what the evidence supports — that pushes toward `pursue_narrowed` rather than `pursue`, not because the proposal is flawed, but because the verdict should say so rather than imply full resolution.
+   - `domain` (a list) names every fog dimension genuinely implicated. If any value in `domain` is outside this review's own competence (e.g. a `product` domain value when you're evaluating pure architectural merit), say so explicitly in the recommendation as an out-of-lens disclosure — do not silently stay quiet about it, and do not expand scope to cover it yourself.
+   This does not change Boundary Rule 1 (still do not re-diagnose) or Boundary Rule 4 (still return `investigate_first` for an insufficient brief) — it only adds two optional inputs to the reasoning in Boundary Rules 2-3 above.
+
 ---
 
 ## Execution Protocol
