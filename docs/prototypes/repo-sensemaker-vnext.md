@@ -95,6 +95,47 @@ nothing else.
 Reversibility: high — read-only script, not wired into CI.
 Status: **PROTOTYPE ONLY**, but this one has passing tests against real
 repository state, not just constructed fixtures.
+**Revised after owner review**: originally scanned the filesystem
+(`os.walk`) under a misleadingly-named `find_tracked_files()`, repeating
+the exact class of mistake P4's `.venv` correction identified — workspace
+≠ tracked product. Now prefers `git ls-files` and reports which evidence
+source (`git_tracked` vs `filesystem_fallback`) produced each result; a new
+test proves an untracked file is correctly excluded when run inside a git
+repo.
+
+## Fixes applied after owner review of #164 (2026-08-09)
+
+Six internal-coherence issues were found reviewing the first prototype pass
+— all fixed, nothing else changed, per the owner's explicit "then stop":
+
+1. `repository-diagnostician/SKILL.md` told the model to record
+   `weakness_type: none` for legitimate-unresolved-choice findings —
+   directly contradicting the vNext template and A-04's explicit rejection
+   of that sentinel. Fixed to say: set `is_demonstrated_weakness: false`,
+   leave canonical `weakness_type` absent.
+2. The vNext template stored `recommended_next_information_action` — a
+   duplicate, model-authored copy of the pure function of `uncertainty.source`
+   that A-03 already said shouldn't be independently authored (it could
+   silently disagree with `source`, e.g. `owner_intent` + `probe`). Removed;
+   the mapping lives once, in `repo-sensemaker/SKILL.md`'s workflow diagram.
+3. `uncertainty.question` was commented "only meaningful when source is
+   owner_intent" — wrong; every source has an unresolved question
+   (empirical and repository_evidence examples added to the template).
+   Only the *conversion* of that question into something to ask the owner
+   is owner_intent-specific, and that conversion is the interaction layer's
+   job, not the diagnostic core's.
+4. `repo-sensemaker/SKILL.md`'s empirical-uncertainty branch said to
+   "propose ... (or just run) the probe" — directly contradicting this same
+   skill's Boundary Rule #1 ("No implementation"), and ignoring that some
+   probes are themselves ADR 0017/0021-gated. Fixed to formulate-and-
+   recommend only, with an explicit hand-off note.
+5. The vNext `evidence_note` copied the real, unchanged citation-authority
+   hierarchy (code/tests > ADRs > ...) as if it were a total ordering for
+   resolving code-vs-ADR *disagreements* too. Split into two axes:
+   citation trust (unchanged) vs. descriptive-vs-normative evidence, with
+   disagreement between the two now reported as drift rather than resolved
+   by rank.
+6. See A-05 above — scanner tracked-vs-filesystem fix.
 
 ## What was deliberately deferred this pass (not built)
 

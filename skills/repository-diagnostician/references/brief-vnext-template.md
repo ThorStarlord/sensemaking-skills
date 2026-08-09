@@ -79,8 +79,24 @@ analysis_vnext:
     # change (see docs/prototypes/repo-sensemaker-vnext.md, A-05).
   uncertainty:
     source: repository_evidence | empirical | owner_intent | external_environment
-    question: "..."  # only meaningful when source is owner_intent
-    recommended_next_information_action: investigate | probe | ask_owner | inspect_external
+    question: "..."
+    # The unresolved question itself, regardless of source -- every source
+    # has one (e.g. empirical: "does Cartographer's behavior actually meet
+    # the intended quality bar?"; repository_evidence: "which of these two
+    # implementations does the production path actually invoke?"). This
+    # field does NOT decide who the question is "for" -- that's what
+    # `source` is for. Only when source is owner_intent does the caller
+    # (repo-sensemaker's interaction layer) convert this into something to
+    # ask the owner, and only then does neutral phrasing apply.
+    #
+    # Deliberately no `recommended_next_information_action` field here
+    # (removed -- see assumption ledger A-03/A-06): it would be a stored,
+    # model-authored duplicate of a pure function of `source`
+    # (repository_evidence->investigate, empirical->probe,
+    # owner_intent->ask_owner, external_environment->inspect_external),
+    # creating a class of bug where the two fields silently disagree (e.g.
+    # source: owner_intent + action: probe). The mapping lives once, in
+    # repo-sensemaker's SKILL.md workflow diagram, derived at read time.
   owner_intent_state:
     known: "what was already established, verbatim or summarized"
     unresolved: "what remains unknown, if anything"
@@ -90,10 +106,22 @@ analysis_vnext:
     # the caller (interaction layer) must decide whether to ask, this
     # skill must not guess.
   evidence_note: >
-    This block's claims share the same evidence-authority hierarchy as the
-    rest of the brief (code/tests > contracts/registries > accepted ADRs >
-    canonical docs > open issues/proposed ADRs > historical status docs >
-    untracked drafts). No separate evidence tier is introduced.
+    Citation-level trust (which SOURCE FILE to believe when two files
+    disagree about a fact) still follows the existing, unchanged
+    evidence-authority hierarchy (code/tests > contracts/registries >
+    accepted ADRs > canonical docs > open issues/proposed ADRs > historical
+    status docs > untracked drafts) -- this prototype does not touch that.
+    But that hierarchy answers a citation question, not a conflict
+    question, and this block's reasoning needs the latter: descriptive
+    evidence (code, tests, runtime behavior, config -- "what actually
+    exists/happens") and normative evidence (explicit owner decisions,
+    Accepted ADRs, ratified contracts -- "what is supposed to be true") are
+    not the same axis, and one is not simply higher-ranked than the other.
+    When they agree, cite either. When they DISAGREE (an Accepted ADR says
+    B, the code does A), the correct consequential_boundary finding is
+    "implementation has drifted from ratified intent" -- not "code wins
+    because it's higher on the citation list." Report the disagreement as
+    drift; do not collapse it into one ranking.
 ```
 
 ### Field status (evidence level, per the assumption ledger)

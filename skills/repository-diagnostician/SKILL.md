@@ -53,9 +53,13 @@ field (see `references/brief-vnext-template.md`) rather than pausing to ask.
      Types](../repo-sensemaker/references/weakness-types.md) (unchanged from
      canonical — this prototype does not redefine that taxonomy).
    - Legitimate unresolved choice (e.g. two viable directions, repository
-     evidence cannot pick between them) → do **not** force a weakness label.
-     Record `weakness_type: none` in the vNext block (see template) and
-     describe the choice in `consequential_boundary`.
+     evidence cannot pick between them) → do **not** force a weakness label,
+     and do **not** invent a `none`/sentinel value for it either (rejected
+     in the assumption ledger, A-04 — it would contaminate the 7-item
+     defect-mechanism taxonomy). Set `is_demonstrated_weakness: false`,
+     describe the choice fully in `consequential_boundary`, and leave
+     Section 13's canonical `weakness_type` absent — its non-blocking
+     warning (D2) is the correct, already-existing behavior for this case.
 4. **Uncertainty classification (vNext)**: for whatever about the
    consequential boundary remains unresolved, classify *why* it's
    unresolved, not just that it is:

@@ -48,10 +48,14 @@ sufficient  thin              blocking_unknown
    |   repository_evidence -> re-invoke repository-diagnostician with
    |                          a narrower investigation focus (not a new
    |                          owner question)
-   |   empirical            -> propose a bounded probe in the
-   |                          recommendation; do not ask the owner to
-   |                          approve investigation, ask them to approve
-   |                          (or just run) the probe
+   |   empirical            -> formulate a bounded probe and recommend it.
+   |                          Do not run it here -- this skill does not
+   |                          implement (Boundary Rules #1). If the probe's
+   |                          execution is itself separately authorized
+   |                          (e.g. it's ordinary read-only investigation
+   |                          vs. something ADR 0021/0017-gated), hand off
+   |                          to the appropriate execution mechanism; do
+   |                          not assume "bounded" means "pre-authorized"
    |   owner_intent         -> would a different answer materially change
    |                          the recommendation?
    |                             no  -> proceed, note the residual
