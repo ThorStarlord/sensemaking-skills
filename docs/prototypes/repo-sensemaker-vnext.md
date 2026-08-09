@@ -333,12 +333,88 @@ equally ready to act on) — recorded as a REVISE item, not silently fixed.
 See the retrospective for the full KEEP/REVISE/DROP/UNKNOWN/NEXT EVIDENCE
 breakdown.
 
+## Round 3b — interaction-layer independence test + owner review (2026-08-09)
+
+The round 3 retrospective's own NEXT EVIDENCE item was run: the
+interaction layer (`repo-sensemaker`'s role) as a genuinely separate
+subagent invocation, given only its SKILL.md, the owner's real question,
+recovered `known_intent`, and the real vNext brief — explicitly barred
+from searching the repository beyond what was supplied. First attempt was
+contaminated by an authoring error (a literal unfilled placeholder sent in
+place of the real brief, the same failure shape as round 3's downstream-
+consumer attempt 1); preserved, not discarded, as
+`docs/prototypes/real-use-experiment-2026-08-09/06-interaction-layer-attempt-1-CONTAMINATED.md`.
+The corrected rerun
+([`07-interaction-layer-output.md`](real-use-experiment-2026-08-09/07-interaction-layer-output.md))
+was confirmed isolated (1 tool call, no access to the prior experiment
+record) and independently reached the same conclusion as the original
+in-conversation run: split the brief's Section 11 CI-fix (act now) from
+its moratorium (recommend, owner decides), and ask the same three-way
+neutral clarifying question.
+
+**Owner review of this result** set the following dispositions (owner's
+own table, recorded verbatim in substance):
+
+| Claim | Before round 3b | After round 3b |
+|---|---|---|
+| Investigate-first interaction | KEEP candidate | KEEP strengthened |
+| Neutral clarification | KEEP | KEEP strengthened |
+| Evidence-resolved vs. owner-authorized distinction | REVISE | KEEP candidate, pending one more *varied* replication |
+| `uncertainty.source` | strong | stronger |
+| Brief as boundary | supported | supported, unchanged by this specific test |
+| Interaction/diagnosis responsibility separation | plausible | stronger as a conceptual boundary |
+| Two-Skill Option A packaging | unknown | still unknown |
+
+Owner's explicit reasoning on the last row: a behavioral rule (interaction
+responsibility staying distinct from diagnostic responsibility) surviving
+context isolation is evidence the *rule* is sound — it is not evidence
+that the rule requires *two separate Skill packages* to hold. The same
+behavior could still live inside one well-structured `repo-sensemaker`
+(Option C). These are separable claims, per
+[[vnext-three-lane-promotion-strategy]].
+
+**Owner's explicit instruction on further replication**: do not
+manufacture a second same-shape replication (same brief, same owner
+question, same CI-fix + policy-recommendation shape) merely to move the
+REVISE item to KEEP — diminishing information gain. The next useful
+replication should happen against a *differently-shaped* real decision
+(e.g. a weakest boundary that's a straightforward technical defect with
+no adjacent policy recommendation; or one where the uncertainty is mostly
+empirical rather than owner-intent; or one where `discovery_confidence`
+is actually low) — testing generalization, not repetition. See
+`05-retrospective.md`'s updated NEXT EVIDENCE.
+
+**A second, orchestration-level finding, named by the owner explicitly**:
+the placeholder-instead-of-real-content authoring error occurred twice
+(round 3's downstream-consumer attempt 1, round 3b's interaction-layer
+attempt 1), same shape both times: compose a long natural-language
+subagent prompt with a required artifact manually interpolated → leave a
+note-to-self placeholder → send it → the missing input forces the
+subagent to search → contamination risk. At n=2, this is not incidental
+operator error; it points to a real weakness in how *this evaluation
+harness* hands artifacts to subagents — required input should be
+structurally supplied (e.g. read from a durable path the subagent is
+told to open), not manually retyped into prompt text during composition.
+Owner's explicit instruction: **record this, do not build a harness for
+it now** unless it keeps blocking experiments.
+
 ## Recommendation
 
-Keep — now with one real-use data point behind it, not zero. The
-diagnostic-core/downstream-consumer boundary has cleared its first
-genuinely-separated test; the interaction-layer/diagnostic-core boundary
-has not yet been tested the same way (see round 3's UNKNOWN section) and
-the interaction layer itself has one named, unfixed design gap. Continue
-treating every field and packaging choice as provisional — round 3 changed
-confidence levels on several, but ratified none.
+Keep, strengthened. Round 3b upgraded confidence on the interaction
+behavior itself (investigate-first, neutral clarification, and the
+evidence-resolved-vs-owner-authorized distinction all moved toward KEEP
+under a cleanly isolated replication) without touching the still-open
+Option A vs. C packaging question, which remains explicitly unresolved
+and is not what round 3b's evidence is about.
+
+**Standing status, per explicit owner instruction (2026-08-09): #164
+activity is paused again.** No new same-shape replication, no new
+feature construction, no promotion. Resume only when one of two things
+happens: (a) a real, differently-shaped owner decision becomes available
+to run through the prototype, or (b) PR #163 merges, enabling the
+separately-scoped canonical `fog_type` alias repair (a `main`-track item,
+not vNext promotion). The PR #164 description needs a housekeeping
+update (it still describes the 3-commit/18-file state; the branch is now
+5 commits/26 files including the real-use experiment and this
+independence test) — owner-flagged as housekeeping, explicitly not
+counted as another product-development round.
