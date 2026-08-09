@@ -312,11 +312,33 @@ one composition test); what's still deferred:
   brief, interaction synthesis, consumer output, plus the honest
   assessment)
 
+## Round 3 — real-use validation (2026-08-09)
+
+A genuine owner-originated question ("what should I focus on next for
+product value, what should I stop investing in") was run through the
+pipeline for the first time, with real invocation-level context separation
+(via the Agent tool) between the diagnostic core and the downstream
+consumer — the specific limitation the round-2 composition test flagged as
+unresolvable by a single self-administered session. Full record:
+[`docs/prototypes/real-use-experiment-2026-08-09/`](real-use-experiment-2026-08-09/05-retrospective.md).
+
+Headline results: the brief-as-boundary hypothesis held cleanly under real
+separation (downstream consumer used zero repository access, verdict
+`pursue_narrowed` reasoned correctly from brief content alone).
+`uncertainty.source` and `is_demonstrated_weakness` were both concretely
+load-bearing. A real interaction-layer design gap was found and caught
+live by the owner (bundling an evidence-resolved fix with an
+evidence-supported-but-unauthorized policy recommendation as if both were
+equally ready to act on) — recorded as a REVISE item, not silently fixed.
+See the retrospective for the full KEEP/REVISE/DROP/UNKNOWN/NEXT EVIDENCE
+breakdown.
+
 ## Recommendation
 
-Keep — as a reference for evaluating Option A specifically, and as the home
-for the two draft ADR sketches, which have value independent of whether
-this branch itself is ever merged. Discard or heavily revise before any of
-`repository-diagnostician`, the vNext brief fields, or the restructured
-`repo-sensemaker` role are treated as more than "one candidate that now
-exists to look at."
+Keep — now with one real-use data point behind it, not zero. The
+diagnostic-core/downstream-consumer boundary has cleared its first
+genuinely-separated test; the interaction-layer/diagnostic-core boundary
+has not yet been tested the same way (see round 3's UNKNOWN section) and
+the interaction layer itself has one named, unfixed design gap. Continue
+treating every field and packaging choice as provisional — round 3 changed
+confidence levels on several, but ratified none.
