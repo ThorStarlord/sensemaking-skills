@@ -6,7 +6,18 @@ pre-investigation known intent) → `01-repository-diagnostician-output.md`
 clarifying question + real owner answer) →
 `03-downstream-consumer-attempt-1-FAILED.md` (a real authoring error and
 what it revealed) → `04-downstream-consumer-output.md` (corrected,
-clean downstream run).
+clean downstream run) → `06-interaction-layer-attempt-1-CONTAMINATED.md`
+(a repeat of the same authoring error, preserved, not counted as clean
+evidence) → `07-interaction-layer-output.md` (corrected, clean,
+independently-isolated interaction-layer run — see addendum below).
+
+**Addendum (post-original-writing)**: section 7 and the REVISE/UNKNOWN/
+NEXT EVIDENCE judgments below were written before `07` existed, when the
+interaction-layer/diagnostic-core boundary had only been exercised inside
+this same conversation. `07` closed that gap with a genuinely separate
+subagent invocation. Rather than rewrite the original findings to look
+as if they already knew the answer, the relevant sections are appended
+with what changed, in place, so the original reasoning stays legible.
 
 ## Verification
 
@@ -124,6 +135,16 @@ proposal covered). That's a small, real, single-instance signal that the
 brief's discipline may be doing useful work independent of who's reading
 it — but it's not proof, and it's not about Option A's packaging question.
 
+**Addendum**: `07-interaction-layer-output.md` closed the specific gap
+named above — the interaction layer ran as a genuinely separate subagent
+invocation, given only its SKILL.md, the owner's question, `known_intent`,
+and the brief text, explicitly barred from repository search. It reached
+the same split (CI fix = act now; moratorium = recommend, not decide) and
+asked the same three-way clarifying question, independently. This is
+still not evidence about Option A's packaging question (two Skills vs.
+one) — it's evidence about whether the *bundling-avoidance reasoning*
+survives real context isolation, which it did, once.
+
 ## 8. Which prototype fields actually changed behavior?
 
 - **`uncertainty.source`**: yes, materially. It's the field that let the
@@ -201,10 +222,19 @@ investigation, did not anticipate the CI-governance finding at all.
 - **The interaction layer's synthesis step** — demonstrated a real
   tendency to bundle an evidence-resolved finding with an evidence-
   *supported-but-unauthorized* recommendation as if both were equally
-  ready to act on. Needs an explicit distinction in the interaction
-  layer's own design (not just relying on a human catching it), between
-  "evidence resolves this" and "evidence recommends this, but adopting it
-  as policy is still an owner call."
+  ready to act on, in the first (in-conversation) run. **Addendum**: a
+  second, cleanly-isolated run (`07-interaction-layer-output.md`)
+  independently avoided the bundling error without having seen this
+  finding — i.e. SKILL.md's existing flowchart plus the brief's
+  `uncertainty.source`/`is_demonstrated_weakness` fields were sufficient
+  for a fresh instance to draw the same distinction on its own. This
+  downgrades "needs an explicit new rule added" to "the existing design
+  handled it correctly under isolation, once — worth one more
+  replication under a differently-shaped question before calling this
+  KEEP rather than REVISE." Not yet moved to KEEP outright: n=1 clean is
+  suggestive, not conclusive, and the first in-conversation run still
+  shows the failure mode is reachable under some conditions (e.g. full
+  prior context, or reasoning under less structured prompting).
 - **`vnext-review-consumer`'s check #2/#3 text** — ambiguous about whether
   "unresolved uncertainty" scopes to the whole brief or the specific
   proposal under review; the subagent had to resolve this by inference
@@ -223,16 +253,22 @@ investigation, did not anticipate the CI-governance finding at all.
 
 ## UNKNOWN
 
-- **Option A vs. C (packaging)**: still unresolved. This run tested the
-  diagnostic-core/downstream-consumer boundary with real separation for
-  the first time, but not the interaction-layer/diagnostic-core boundary
-  the same way — the interaction layer ran in this same conversation, not
-  as a separate invocation.
+- **Option A vs. C (packaging)**: still unresolved. `07` exercised the
+  interaction-layer/diagnostic-core boundary with real separation for the
+  first time (closing the specific gap this section originally named),
+  but that tests whether the *behavioral rule* survives isolation, not
+  whether two Skills is the right *packaging* for it — per
+  [[vnext-three-lane-promotion-strategy]], those are separable claims.
+  Packaging remains untested.
 - **What happens when `discovery_confidence` is actually low**: no case
   this run.
 - **Whether the interaction-layer bundling error is systematic or a
-  one-off**: n=1, caught by a human this time; unknown whether it recurs
-  under different real decisions or was specific to this question's shape.
+  one-off**: originally n=1, caught by a human. **Addendum**: now n=2
+  directionally (contaminated run + clean run, both avoided the error),
+  n=1 clean. Moved from "unknown" toward "one clean data point says
+  avoided," but a single clean replication on one question shape is not
+  enough to call this closed — still listed here rather than promoted to
+  KEEP.
 - **Whether a real owner (as opposed to this conversation's owner, who is
   also this repository's primary author/reviewer) would experience the
   same low burden** — the familiarity caveat P4 already named applies here
@@ -240,15 +276,23 @@ investigation, did not anticipate the CI-governance finding at all.
 
 ## NEXT EVIDENCE
 
-**The cheapest, most information-dense next observation**: run the
-interaction layer itself as a separate subagent invocation (matching what
-this run already did for the diagnostic core and the downstream consumer),
-given only the owner's question and a recovered known-intent summary, and
-see whether it independently reproduces the same bundling error found this
-round, or avoids it. This would (a) close the one remaining un-tested
-boundary in Option A specifically, and (b) tell whether the CI-fix/
-moratorium conflation is a real, systematic design gap or was an artifact
-of this conversation's specific reasoning path. It's cheap — no new
-construction, just one more Agent-tool invocation on a question already in
-hand — and it would materially change either the REVISE or the UNKNOWN
-judgment above, not just add more data to an already-settled one.
+**Completed**: the interaction layer was run as a separate subagent
+invocation (`07-interaction-layer-output.md`), given only the owner's
+question, a recovered known-intent summary, the brief, and an explicit
+bar on repository search. It independently avoided the same bundling
+error and asked the same neutral clarifying question — see the addendum
+in section 7 and the updated REVISE/UNKNOWN entries above. First attempt
+at this (`06`) was contaminated by an authoring error (an unfilled
+placeholder in the prompt caused the subagent to search for its missing
+input and incidentally find the whole prior experiment record); preserved
+as-is rather than discarded, since the contamination itself and the
+subagent's unprompted self-report of it are real data points.
+
+**New cheapest next observation**: replicate `07` once more against a
+*differently-shaped* owner question (not "what's next," e.g. a brief
+whose weakest boundary is a straightforward technical defect with no
+policy-adjacent companion recommendation at all) to see whether the
+bundling-avoidance behavior generalizes or was specific to this brief's
+particular two-part Section 11 shape. This is the next thing that would
+move the REVISE item to KEEP or reveal it's narrower than currently
+believed.
