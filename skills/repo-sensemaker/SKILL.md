@@ -1,11 +1,20 @@
 ---
 name: repo-sensemaker
-description: analyze a repository to produce a repository sensemaking brief. use when the user asks what a repo is for, what is missing, what can be improved, what the weakest boundary is, or what the next steps should be.
+description: analyze a repository to produce a repository sensemaking brief. use when the user asks what a repo is for, what is missing, what can be improved, what the weakest boundary is, or what the next steps should be. When invoked conversationally (not via automated workflow execution), also applies an investigate-first interaction procedure to decide whether one neutral clarifying question is needed before recommending.
 ---
 
 # repo-sensemaker
 
 Analyzes a repository and produces a **Repository Sensemaking Brief**. This skill is diagnostic, focusing on understanding the user intent, codebase structure, and fragility to find the "weakest boundary."
+
+## Two responsibilities, one skill
+
+This skill has two responsibilities. They stay conceptually separate (see [docs/candidate/architecture-decision.md](../../docs/candidate/architecture-decision.md), Decision 1) but live in one file, not two, because one of them is structurally incapable of running outside conversation:
+
+- **Diagnose** (below, through "Runtime-owned artifact skeleton") — produces the brief. Runs identically whether invoked by a human or by `workflow-runtime.py`'s automated per-step execution. This is the whole of what this skill did before this section existed.
+- **Interact** (final section of this file) — reads the brief and decides whether to ask one clarifying question before recommending. **Only runs in direct conversational invocation.** The automated runtime path has no chat channel mid-run — its deliverable is the artifact, full stop — so this responsibility cannot execute there even in principle. Giving it a separate, independently-routable Skill file would misrepresent when it can run at all; keeping it as a clearly-labeled section of the same file keeps that constraint visible where an implementer will actually see it.
+
+If you are invoked through `workflow-runtime.py` (see "Execution Protocol" below), stop after producing and recording the artifact — the Interact section does not apply to you this run.
 
 ## Stage 1: Intent-Aware Analysis (New)
 
@@ -89,7 +98,7 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
      - → needs UI diagnostic workflow: ui-brief → ui-flow → ui-screen-spec
    - **docs_fog**: Missing documentation, unclear specifications, knowledge silos → needs documentation architecture
    - **architecture_fog**: Code structure problems, unclear boundaries, module coupling, state management scattered → needs spec-driven refactoring (default)
-8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows. Keep observed evidence, documented claims, inference, and owner-supplied judgment/context distinguishable in the synthesis. Decision-changing current-state claims must explicitly distinguish verified current state from merely documented state: cite the probe used when verified, and clearly identify unverified documented claims as documented but not independently verified.
+8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows. Keep observed evidence, documented claims, inference, and owner-supplied judgment/context distinguishable in the synthesis. Decision-changing current-state claims must explicitly distinguish verified current state from merely documented state: cite the probe used when verified, and clearly identify unverified documented claims as documented but not independently verified. If you have grounds for it, optionally fill in Section 15 (Extended analysis) — see [Repo Analysis Template](references/repo-analysis-template.md#15-extended-analysis-candidate). It is candidate, optional, and non-blocking; leave it out entirely if you have nothing to add.
 
 ## Probe Engine (verified current state, mandatory before synthesis)
 
@@ -130,7 +139,7 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 ## Boundary Rules
 1. **No Implementation**: Do not execute workflows or implement changes. The output of this skill is a diagnostic artifact.
 2. **Registry Grounding**: Every `recommended_workflow_id` MUST be verified against `skills/workflow-planner/references/workflow-registry.yaml`. Do not invent or "hallucinate" workflow IDs from semantic context. If no matching workflow exists, recommend a `plan_only` mode with the closest structural match or leave it blank with a note.
-3. **Clarification policy**: Ask no questions when repository evidence is sufficient. When unresolved owner intent would materially change the recommendation, ask a neutral, high-information clarification that gathers intent rather than advocating one option. Resolve empirical uncertainty through probes rather than asking the owner to guess.
+3. **Clarification policy**: Ask no questions when repository evidence is sufficient. When unresolved owner intent would materially change the recommendation, ask a neutral, high-information clarification that gathers intent rather than advocating one option. Resolve empirical uncertainty through probes rather than asking the owner to guess. This policy applies regardless of execution mode, but *how* it's carried out differs: in conversational invocation, apply it directly — see "Interact" below, which is this policy's full worked-out procedure (uncertainty classification, the neutral-clarification discipline, the one-question default). In automated runtime execution there is no owner to ask (see Execution Protocol step 8) — the equivalent signal is `escalation_recommended: true`, optionally sharpened by Section 15's `uncertainty`/`owner_intent_state` fields, which is what a later conversational consumer (a human, or this skill re-invoked conversationally) uses to actually ask.
 
 ## References
 - [Canonical Vocabulary Registry](../../docs/canonical-vocabulary.yaml) — Authoritative fog type definitions and routing field enums
@@ -138,6 +147,7 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 - [Weakness Types](references/weakness-types.md)
 - [Evidence Rules](references/evidence-rules.md)
 - [UI Fog Signals Registry](references/ui-fog-signals.md)
+- [Candidate architecture decision](../../docs/candidate/architecture-decision.md) — why Diagnose/Interact are one skill, not two
 
 ## Execution Protocol
 
@@ -150,6 +160,7 @@ When executing as part of a workflow run:
 5. Call `scripts/validate-and-record.py`.
 6. Only report completion if validation passes.
 7. Never mark the next step complete yourself.
+8. Stop here. Do not proceed to the Interact section below — there is no owner to ask in this execution path.
 
 ## Runtime-owned artifact skeleton (issue #55)
 
@@ -175,6 +186,9 @@ and must not be re-authored or reordered:
   `primary_fog_type`, `diagnosis_conflict`, `escalation_recommended`,
   `evidence`, `recommended_workflow_id`, `recommended_execution_mode`,
   `weakest_boundary`.
+- Optionally, Section 15's `extended_analysis:` block (candidate, unratified —
+  see `references/repo-analysis-template.md`'s Section 15). Leave it out
+  entirely if you have nothing grounded to add; it is never required.
 
 **Workflow IDs vs. skill IDs**: `recommended_workflow_id` must be an id from
 `workflow-registry.yaml` (e.g. `architecture-implementation-workflow`), never
@@ -197,3 +211,96 @@ session artifact directory) recording every tool call you make during this
 invocation — this is for debugging failed runs, not something you need to
 produce yourself.
 
+---
+
+## Interact: conversational-invocation-only interaction procedure
+
+**Applies only when you are talking directly with a user (or another agent) in conversation, not when invoked as an automated workflow step (see "Execution Protocol" above, step 8).** If you're not sure which mode you're in: if you were given a `run_id`/`step_id`/`expected_output_path`, you're in the automated path — stop after producing the artifact. Otherwise, continue below.
+
+This section is the conversational-mode procedure for **Boundary Rule 3's clarification policy** — the policy itself is stated once, above, and applies in both execution modes; what follows is how to actually carry it out when a chat channel exists. Don't let this section's wording drift from Boundary Rule 3's — if you're revising one, revise both.
+
+This skill's job, in this mode: given real (or agent-selected) owner uncertainty, produce a useful recommendation with the least owner burden possible, while never inventing an owner preference it doesn't have. This procedure is evidenced by a real-use validation experiment (see `docs/prototypes/real-use-experiment-2026-08-09/` on `prototype/repo-sensemaker-vnext`, PR #164) that ran it twice under genuine context isolation and found it independently avoided a real design failure mode (bundling an evidence-resolved fact with an evidence-supported-but-unauthorized recommendation) both times — see [docs/candidate/architecture-decision.md](../../docs/candidate/architecture-decision.md) for why the underlying *behavior* is treated as evidenced even though the packaging it originally shipped in (a separate Skill) was not. Independently, canonical `main`'s Boundary Rule 3 (PR #165, merged without knowledge of this branch) codifies the same "ask only if evidence-insufficient and decision-changing, resolve empirical uncertainty via probes" policy at the Diagnose level — real, if indirect, corroboration that this behavior is worth having, from a source that never saw #164's evidence.
+
+### Interaction workflow
+
+```text
+recover known owner intent (conversation/prior context)
+        |
+        v
+run Diagnose (above) -- produce the Repository Sensemaking Brief,
+        |               optionally with Section 15 filled in
+        v
+read the brief you just produced
+        |
+        v
+does Section 15's extended_analysis block exist and have an
+owner_intent_state?
+        |
+   +----+----+
+   no        yes
+   |          |
+   |          v
+   |    inspect owner_intent_state.status
+   |          |
+   |   +------+-------------------+
+   |   |                          |
+   | sufficient / thin      blocking_unknown
+   |   |                          |
+   |   |                          v
+   |   |                    ask the owner what's needed
+   |   |                    to proceed at all (a hard
+   |   |                    stop, not the "one neutral
+   |   |                    question" refinement below)
+   |   v
+   |  inspect uncertainty.source
+   |          |
+   |   repository_evidence -> re-run Diagnose with a narrower
+   |                          investigation focus (not a new
+   |                          owner question)
+   |   empirical            -> formulate a bounded probe and recommend
+   |                          it. Do not run it here -- Boundary Rule
+   |                          #1 (No implementation) still applies in
+   |                          this mode. If the probe would itself need
+   |                          separate authorization (e.g. it's
+   |                          ADR-0017/0021-gated, not ordinary
+   |                          read-only investigation), say so; do not
+   |                          assume "bounded" means "pre-authorized."
+   |   owner_intent         -> would a different answer materially
+   |                          change the recommendation?
+   |                             no  -> proceed, note the residual
+   |                                    uncertainty as non-decision-
+   |                                    changing
+   |                             yes -> ask ONE neutral, high-
+   |                                    information question (see
+   |                                    below), then proceed
+   |   external_environment -> note what would need inspecting
+   |                          outside this repository; do not guess
+   v
+synthesize and recommend, keeping these separate (do not bundle them
+into one "ready to act on" recommendation, even when both are true):
+  - a repository-evidence-resolved fact/fix (ready regardless of any
+    open owner question)
+  - an evidence-supported-but-not-owner-authorized recommendation
+    (present it as a recommendation for the owner to ratify, not as
+    already decided)
+```
+
+**"One question" is a working constraint, not a hard-coded rule.** If investigation genuinely produces two independent decision-changing owner-intent uncertainties, that is itself a finding worth reporting plainly rather than silently forcing both into one question or silently dropping the second — but the default is one question.
+
+### Neutral clarification
+
+A clarification question that labels one option as "what the repository evidence supports" is leading, even when unintentional. Concretely, when constructing the question:
+
+- Do not name a preferred option in the option labels.
+- Do not use language that implies one answer is more evidenced than another when the uncertainty is genuinely about *owner preference*, not evidence — if it were an evidence question, it wouldn't have reached this step (`uncertainty.source` would have been `repository_evidence` or `empirical`, handled above without asking).
+- State the decision each option leads to, not just the option's label — the owner is choosing a consequence, not a taxonomy term.
+
+### Recover known intent
+
+Before producing the brief, extract whatever the owner has already established from the conversation or prior context (this is the same extraction Stage 1 already does for `user_implied_fog_type` — apply it here as the interaction procedure's first step too, not a separate mechanism). **Do not pad thin intent to look more complete than it is** — a Section 15 `owner_intent_state.known` that overstates what's actually established defeats the field's own purpose.
+
+### What this procedure does not do
+
+- Does not treat this procedure as running during automated workflow execution — see the mode check above.
+- Does not ask more than one clarifying question without explicitly noting why the default was insufficient.
+- Does not represent Section 15's fields or this interaction procedure as ratified, settled architecture in the final output to the user — see [docs/candidate/architecture-decision.md](../../docs/candidate/architecture-decision.md) for current status.
