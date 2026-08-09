@@ -401,6 +401,51 @@ class TestCanonicalVocabularyUsage(unittest.TestCase):
             "Add missing artifacts to docs/canonical-vocabulary.yaml artifact_ids section."
         )
 
+    def test_validate_brief_accepts_every_canonical_fog_type(self):
+        """Verify scripts/validate-brief.py accepts every canonical fog type.
+
+        This is a coverage test, not a subset test: a naive "validator's list
+        is a subset of canonical" check would still pass even if the
+        validator silently dropped a canonical value (as it previously did
+        for integration_fog) -- the missing side is what matters. This
+        imports validate-brief.py's own allowed-values loader directly, so a
+        future regression that re-hard-codes a shorter list, or that fails to
+        load docs/canonical-vocabulary.yaml, fails this test rather than
+        silently staying green.
+        """
+        import importlib.util
+        import sys
+
+        scripts_dir = str(self.repo_root / "scripts")
+        if scripts_dir not in sys.path:
+            sys.path.insert(0, scripts_dir)
+
+        if "validate_brief" in sys.modules:
+            vb = sys.modules["validate_brief"]
+        else:
+            spec = importlib.util.spec_from_file_location(
+                "validate_brief", str(self.repo_root / "scripts" / "validate-brief.py")
+            )
+            vb = importlib.util.module_from_spec(spec)
+            sys.modules["validate_brief"] = vb
+            spec.loader.exec_module(vb)
+
+        import yaml
+        vocab_path = self.repo_root / "docs" / "canonical-vocabulary.yaml"
+        with open(vocab_path) as f:
+            vocab = yaml.safe_load(f)
+        canonical_fog_ids = {ft["id"] for ft in vocab.get("fog_types", [])}
+
+        accepted = set(vb._load_allowed_fog_types(str(self.repo_root)))
+
+        missing = canonical_fog_ids - accepted
+        self.assertFalse(
+            missing,
+            f"validate-brief.py does not accept canonical fog type(s): {sorted(missing)}\n"
+            "Every fog type in docs/canonical-vocabulary.yaml's fog_types section "
+            "must be accepted by validate-brief.py's primary_fog_type check."
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

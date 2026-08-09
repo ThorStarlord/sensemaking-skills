@@ -16,6 +16,7 @@ When analyzing a repository, **always compare** what the user intends with what 
    - Implied ui_fog? ("Dashboard UX redesign")
    - Implied docs_fog? ("API docs are confusing")
    - Implied architecture_fog? ("System is slow")
+   - Implied integration_fog? ("The webhook integration is unreliable")
 
 2. **Diagnose Codebase**: Analyze the code structure to determine what fog type the *actual problems* require:
    - **product_fog signals**: Feature flags, user data, analytics tracking, roadmap docs, unclear user needs
@@ -27,6 +28,7 @@ When analyzing a repository, **always compare** what the user intends with what 
      - Low test coverage for UI interactions
    - **docs_fog signals**: README, ADR files, architecture docs, runbooks missing or outdated
    - **architecture_fog signals**: Module boundaries unclear, circular dependencies, performance issues, coupling, state management scattered
+   - **integration_fog signals**: Unclear third-party API contracts, undocumented webhook/service boundaries, brittle external dependency handling
 
 3. **Detect Conflicts**: If user intent (implied fog) ≠ codebase diagnosis (actual fog), flag it:
    - Example: User wants "UI redesign" but code shows "state management is broken" → conflict
@@ -89,6 +91,7 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
      - → needs UI diagnostic workflow: ui-brief → ui-flow → ui-screen-spec
    - **docs_fog**: Missing documentation, unclear specifications, knowledge silos → needs documentation architecture
    - **architecture_fog**: Code structure problems, unclear boundaries, module coupling, state management scattered → needs spec-driven refactoring (default)
+   - **integration_fog**: External systems, APIs, or service boundaries are unclear → no workflow route is proven for this fog type yet (see ADR 0018); set `escalation_recommended: true` rather than guessing a workflow
 8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows.
 
 ## Output Format

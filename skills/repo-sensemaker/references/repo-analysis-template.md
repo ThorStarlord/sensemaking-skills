@@ -40,6 +40,7 @@ Classify the primary type of uncertainty or problem:
 - **ui_fog**: Navigation complexity, screen design issues, interaction patterns unclear
 - **docs_fog**: Missing documentation, unclear specifications, knowledge gaps
 - **architecture_fog**: Code structure problems, design issues, unclear boundaries (default if unclear)
+- **integration_fog**: Unclear third-party APIs, external service boundaries, or integration contracts (no proven workflow route yet -- see ADR 0018; set `escalation_recommended: true`)
 
 This classification determines which implementation workflow will be used downstream.
 
@@ -121,8 +122,8 @@ One workflow candidate from the official `workflow-registry.yaml`. Do not invent
 artifact_id: repository_sensemaking_brief
 schema_version: 1
 source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
-user_implied_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | unknown
-primary_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | mixed | unknown
+user_implied_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | integration_fog | unknown
+primary_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | integration_fog | mixed | unknown
 diagnosis_conflict: true | false
 escalation_recommended: true | false
 evidence:
