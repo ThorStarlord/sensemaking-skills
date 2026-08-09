@@ -78,6 +78,14 @@ Minimal valid example:
 evidence to the weakest boundary — i.e., the chain from observed signals to your
 conclusion. Begin this paragraph with the literal words "Logic trace:".
 
+**State currency and claim provenance (required):** Keep observed evidence,
+documented claims, inference, and owner-supplied judgment/context
+distinguishable. Decision-changing current-state claims must explicitly
+distinguish verified current state from merely documented state: when verified,
+cite the probe used (e.g. git history, working-tree state, test runs, recent
+reviews); when not verified, clearly identify the claim as documented but not
+independently verified. Never treat documented state as automatically current.
+
 ## 8. Evidence excerpts
 Each excerpt's `lines` field is a single line or a range. Use either the `Lx` /
 `Lx-Ly` form (e.g. `L18`, `L25-L30`) or bare numbers (e.g. `18`, `25-30`) — both
@@ -111,6 +119,10 @@ What breaks if this remains weak.
 
 ## 11. Recommended next step
 The smallest concrete action with highest leverage.
+
+If the recommended step depends on a current-state claim, cite the probe that
+verified it, or state explicitly that the claim is documented but not
+independently verified.
 
 ## 12. Recommended workflow
 One workflow candidate from the official `workflow-registry.yaml`. Do not invent workflow IDs.

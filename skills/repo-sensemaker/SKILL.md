@@ -75,7 +75,7 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
 1. **Analyze**: Inspect README, core files, folder structure, and existing documentation.
 2. **Signal Detection**: Identify what is working well (Strong Signals).
 3. **Gap Analysis**: Identify what is absent or incomplete (Missing Pieces).
-4. **Evidence Gathering**: Cite specific file paths and code snippets to back up signals and gaps. Each evidence excerpt's `lines` field is a single line or range — `Lx`/`Lx-Ly` or bare numbers both work (e.g. `L18` or `18`). Include a **Logic trace** (begin the paragraph with the literal words "Logic trace:") that walks from the cited evidence to the weakest-boundary conclusion.
+4. **Evidence Gathering**: Cite specific file paths and code snippets to back up signals and gaps. Each evidence excerpt's `lines` field is a single line or range — `Lx`/`Lx-Ly` or bare numbers both work (e.g. `L18` or `18`). Include a **Logic trace** (begin the paragraph with the literal words "Logic trace:") that walks from the cited evidence to the weakest-boundary conclusion. **State-currency verification:** documented state is not automatically verified current state — before treating any tracker, roadmap, TODO, review, milestone, or branch-status claim as current, verify it with the cheapest repository probe (current branches, commits, working-tree state, tests, runtime artifacts, recent reviews), or clearly identify the claim as documented but not independently verified. Never convert "documented X" into "X is currently true" without verification, and do not treat unfinished documentation as proof that work remains unfinished.
 5. **Boundary Stress Test**: Find the "Weakest Boundary" (e.g., mismatch between README and code, unsafe workflows, missing validation) and **classify it with one of the recognized [Weakness Types](references/weakness-types.md)** — `Vocabulary Drift`, `Contract Mismatch`, `Ghost Features`, `Safety Gaps`, `Implicit Dependencies`, `Zero Validation`, or `Orphaned Examples` — stated explicitly as `**Weakness type:** <type>` in Section 6's prose, AND recorded in the structured `weakness_type` field in Section 13's machine-readable YAML (the two must agree). If none of the 7 types fit, use `Other` and give a non-empty `weakness_type_explanation` in Section 13 — an unrecognized value or a missing explanation for `Other` is a non-blocking validator warning, not a rejection, but it must be resolved before a human grants final approval.
 6. **Intent Comparison** (Stage 1): Compare user intent with diagnosis. Detect conflicts. Recommend escalation if needed.
 7. **Problem Classification**: Classify the primary fog type based on the weakest boundary.
@@ -89,7 +89,7 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
      - → needs UI diagnostic workflow: ui-brief → ui-flow → ui-screen-spec
    - **docs_fog**: Missing documentation, unclear specifications, knowledge silos → needs documentation architecture
    - **architecture_fog**: Code structure problems, unclear boundaries, module coupling, state management scattered → needs spec-driven refactoring (default)
-8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows.
+8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows. Keep observed evidence, documented claims, inference, and owner-supplied judgment/context distinguishable in the synthesis. Decision-changing current-state claims must explicitly distinguish verified current state from merely documented state: cite the probe used when verified, and clearly identify unverified documented claims as documented but not independently verified.
 
 ## Output Format
 Every response must follow the [Repository Sensemaking Brief](references/repo-analysis-template.md) structure.
@@ -97,6 +97,7 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 ## Boundary Rules
 1. **No Implementation**: Do not execute workflows or implement changes. The output of this skill is a diagnostic artifact.
 2. **Registry Grounding**: Every `recommended_workflow_id` MUST be verified against `skills/workflow-planner/references/workflow-registry.yaml`. Do not invent or "hallucinate" workflow IDs from semantic context. If no matching workflow exists, recommend a `plan_only` mode with the closest structural match or leave it blank with a note.
+3. **Clarification policy**: Ask no questions when repository evidence is sufficient. When unresolved owner intent would materially change the recommendation, ask a neutral, high-information clarification that gathers intent rather than advocating one option. Resolve empirical uncertainty through probes rather than asking the owner to guess.
 
 ## References
 - [Canonical Vocabulary Registry](../../docs/canonical-vocabulary.yaml) — Authoritative fog type definitions and routing field enums
