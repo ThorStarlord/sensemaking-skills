@@ -1,0 +1,162 @@
+{
+  "valid": false,
+  "artifact_id": "repository_sensemaking_brief",
+  "artifact_path": "H:\\GithubRepositories\\sensemaking-skills\\experiments\\solution-interaction-s2-v1\\repo-sensemaker-investigation-v1.md",
+  "validator": "validate-brief.py",
+  "errors": [
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[0] quote not found in CONTEXT.md (searched lines 89-97, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L92-L94'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[1] quote not found in CONTEXT.md (searched lines 117-128, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L120-L125'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[2] quote not found in CONTEXT.md (searched lines 134-148, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L137-L145'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[3] quote not found in trackers/completion-tracker.md (searched lines 202-209, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L205-L208'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[4] quote not found in trackers/part1_asset_tracker.md (searched lines 1-22, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L3-L19'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[5] quote not found in game/script.rpy (searched lines 1-6, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L2-L3'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[6] quote not found in game/script.rpy (searched lines 17-33, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L20-L30'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[7] quote not found in game/screens.rpy (searched lines 234-249, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L237-L246'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[8] quote not found in game/screens.rpy (searched lines 531-572, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L534-L569'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[9] quote not found in game/screens.rpy (searched lines 1281-1287, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L1284'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[10] quote not found in game/options.rpy (searched lines 56-62, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L59'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[11] quote not found in game/scripts/core/expression_runtime.rpy (searched lines 24-56, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L27-L53'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[12] quote not found in game/scripts/dev/adr005_expression_gallery.rpy (searched lines 1-46, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L2-L43'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[13] quote not found in game/scripts/false_mc/parent_gen/parent_gen.rpy (searched lines 6-24, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L9-L21'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[14] quote not found in docs/adr/ADR-005-runtime-expression-integration.md (searched lines 1-7, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L1-L4'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[15] quote not found in state/runtime_expression_registry.json (searched lines 1-16, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L2-L13'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    },
+    {
+      "error_type": "logic_error",
+      "field": null,
+      "current_value": null,
+      "message": "EVIDENCE_QUOTE_NOT_FOUND: Excerpt[16] quote not found in .git/info/exclude (searched lines 47-51, no match). The quote must exist verbatim (after line-ending normalization and optional horizontal-whitespace collapsing) within 3 lines of the cited range 'L50'.",
+      "suggested_fixes": [],
+      "reference": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "severity": "error"
+    }
+  ],
+  "validation_timestamp": "2026-08-09T03:05:54.400341Z"
+}
