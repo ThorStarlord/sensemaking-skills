@@ -1,3 +1,16 @@
+# DEPRECATED (2026-08-09): this is the legacy copy of the artifact contracts.
+# The canonical, authoritative file is
+# skills/workflow-planner/references/artifact-contracts.yaml -- every live
+# consumer (scripts, tests, docs) has been repointed there as part of the
+# contract/wiring reconciliation slice. No code should read this file.
+#
+# It is kept (not deleted) only because it still contains required_sections/
+# required_machine_fields for prd, issue_list, agent_brief, and code_patch
+# (INFRA-004) that were never ported into the canonical file -- see the
+# xfail-marked tests in tests/test_artifact_contracts_pm_engineering.py.
+# Porting that content is deliberately out of scope for this slice. Once
+# ported (or once this content is confirmed obsolete), delete this file.
+#
 # Artifact Contracts: Sensemaking Pipeline
 # Machine-readable contracts for all artifact types produced/consumed by skills
 

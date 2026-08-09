@@ -38,3 +38,19 @@ Maximum automation for local sensemaking and assumed-installed implementation sk
 - **Requirement**: Must follow the [Git Safety Policy](git-safety-policy.md) and [Recovery Policy](recovery-policy.md).
 - **Safety Gate: Pre-flight Context Check**: The orchestrator will automatically downgrade the mode if the task/context size exceeds model limits.
 - **Safety Gate: Post-Step Verification**: After each step, the orchestrator automatically runs script-based and LLM-based validators. If any validator fails, the chain stops immediately and a rollback is recommended.
+
+---
+
+## Choosing by Risk Level
+
+**Low Risk** (you understand the code, you've done this before)
+-> Use `yolo_execution` (feature branch required)
+
+**Medium Risk** (new codebase, complex changes)
+-> Use `guided_execution` (approve at each step)
+
+**High Risk** (production, regulated, multi-stakeholder)
+-> Use `autonomous_execution` (mandatory gates at every step, high-risk opt-in required)
+
+**Exploration / Prototyping**
+-> Use `plan_only` (see the plan, then decide) or `prompt_chain` (light guidance, mostly autonomous, no gates)

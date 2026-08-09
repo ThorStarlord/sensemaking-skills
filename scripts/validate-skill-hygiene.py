@@ -18,6 +18,17 @@ import yaml
 import sys
 from pathlib import Path
 
+from _validator_utils import flatten_skill_registry
+
+# Canonical registry/contract paths (issue: these previously pointed at the
+# repo-root-level legacy "references" tree, which no longer carries
+# workflow-registry.yaml or skill-registry.yaml at all -- checks 2 and 3
+# silently no-op'd, reporting PASSED for checks they never ran).
+_REFS_DIR = os.path.join("skills", "workflow-planner", "references")
+WORKFLOW_REGISTRY_PATH = os.path.join(_REFS_DIR, "workflow-registry.yaml")
+SKILL_REGISTRY_PATH = os.path.join(_REFS_DIR, "skill-registry.yaml")
+ARTIFACT_CONTRACTS_PATH = os.path.join(_REFS_DIR, "artifact-contracts.yaml")
+
 
 def load_json(path):
     """Load JSON file safely"""
@@ -86,24 +97,29 @@ def check_skill_registry_xref():
     """Check 2: skill IDs cross-ref"""
     errors = []
 
-    # Load both registries
-    workflow_registry = load_yaml("workflow-orchestrator/references/workflow-registry.yaml")
-    skill_registry = load_yaml("workflow-orchestrator/references/skill-registry.yaml")
+    # Load both registries from their canonical paths.
+    workflow_registry = load_yaml(WORKFLOW_REGISTRY_PATH)
+    skill_registry_raw = load_yaml(SKILL_REGISTRY_PATH)
 
     if not workflow_registry or "workflows" not in workflow_registry:
-        return errors  # Skip if workflow registry doesn't exist
-
-    if not skill_registry or "skills" not in skill_registry:
-        errors.append("ERROR: skill-registry.yaml not found or malformed")
+        # A missing/malformed canonical registry is a hygiene failure, not a
+        # reason to skip the check -- silently skipping is what let checks 2
+        # and 3 report PASSED while never actually running (S1 finding).
+        errors.append(f"ERROR: workflow-registry.yaml not found or malformed at {WORKFLOW_REGISTRY_PATH}")
         return errors
 
-    available_skills = {s["id"] for s in skill_registry["skills"]}
+    if not skill_registry_raw or "ecosystems" not in skill_registry_raw:
+        errors.append(f"ERROR: skill-registry.yaml not found or malformed at {SKILL_REGISTRY_PATH}")
+        return errors
 
-    # Check each workflow step
+    available_skills = set(flatten_skill_registry(skill_registry_raw).keys())
+
+    # Check each workflow step. Steps reference a skill via the `skill` key
+    # (not `skill_id` -- the canonical workflow-registry.yaml schema).
     for workflow in workflow_registry["workflows"]:
         workflow_id = workflow.get("id", "unknown")
         for i, step in enumerate(workflow.get("steps", [])):
-            skill_id = step.get("skill_id")
+            skill_id = step.get("skill")
             if skill_id and skill_id not in available_skills:
                 errors.append(
                     f"MISSING_SKILL_ID: workflow '{workflow_id}' step {i} "
@@ -117,38 +133,30 @@ def check_artifact_contracts():
     """Check 3: artifact contracts resolve"""
     errors = []
 
-    # Load both registries and contracts
-    skill_registry = load_yaml("workflow-orchestrator/references/skill-registry.yaml")
-    artifact_contracts = load_yaml("workflow-orchestrator/references/artifact-contracts.yaml")
+    # Load registry and contracts from their canonical paths.
+    skill_registry_raw = load_yaml(SKILL_REGISTRY_PATH)
+    artifact_contracts = load_yaml(ARTIFACT_CONTRACTS_PATH)
 
-    if not skill_registry or "skills" not in skill_registry:
-        return errors  # Skip if skill registry doesn't exist
+    if not skill_registry_raw or "ecosystems" not in skill_registry_raw:
+        errors.append(f"ERROR: skill-registry.yaml not found or malformed at {SKILL_REGISTRY_PATH}")
+        return errors
 
     if not artifact_contracts or "artifacts" not in artifact_contracts:
-        errors.append("ERROR: artifact-contracts.yaml not found or malformed")
+        errors.append(f"ERROR: artifact-contracts.yaml not found or malformed at {ARTIFACT_CONTRACTS_PATH}")
         return errors
 
     available_artifacts = {a["id"] for a in artifact_contracts["artifacts"]}
 
-    # Check each skill's input/output artifacts
-    for skill in skill_registry["skills"]:
-        skill_id = skill.get("id", "unknown")
-
-        # Check input artifacts
-        for artifact_id in skill.get("input_artifact_ids", []):
-            if artifact_id not in available_artifacts:
-                errors.append(
-                    f"MISSING_ARTIFACT_CONTRACT: skill '{skill_id}' "
-                    f"references input artifact '{artifact_id}' which does not exist in artifact-contracts.yaml"
-                )
-
-        # Check output artifacts
-        for artifact_id in skill.get("output_artifact_ids", []):
-            if artifact_id not in available_artifacts:
-                errors.append(
-                    f"MISSING_ARTIFACT_CONTRACT: skill '{skill_id}' "
-                    f"references output artifact '{artifact_id}' which does not exist in artifact-contracts.yaml"
-                )
+    # Each skill declares a single `artifact` field (not
+    # `input_artifact_ids`/`output_artifact_ids`, which the canonical
+    # skill-registry.yaml schema does not use).
+    for skill_id, skill in flatten_skill_registry(skill_registry_raw).items():
+        artifact_id = skill.get("artifact")
+        if artifact_id and artifact_id not in available_artifacts:
+            errors.append(
+                f"MISSING_ARTIFACT_CONTRACT: skill '{skill_id}' "
+                f"references artifact '{artifact_id}' which does not exist in artifact-contracts.yaml"
+            )
 
     return errors
 

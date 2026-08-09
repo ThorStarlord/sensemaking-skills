@@ -64,7 +64,7 @@ def test_decision_criteria_mentioned():
 
 def test_execution_modes_has_context_note():
     """Test that execution-modes.md has context about decision tree"""
-    path = "workflow-orchestrator/references/execution-modes.md"
+    path = "skills/workflow-planner/references/execution-modes.md"
 
     if os.path.exists(path):
         with open(path) as f:
