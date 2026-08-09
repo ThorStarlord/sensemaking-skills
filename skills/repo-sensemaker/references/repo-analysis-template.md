@@ -197,3 +197,69 @@ immutable: true
 
 ## 14. Ready-to-copy prompt
 Prompt for `workflow-planner` or another downstream skill.
+
+## 15. Extended analysis (candidate)
+
+**Optional. Non-blocking. Not yet ratified** — see
+[docs/candidate/architecture-decision.md](../../../docs/candidate/architecture-decision.md)
+and [docs/candidate/draft-adr-extended-analysis.md](../../../docs/candidate/draft-adr-extended-analysis.md).
+Leave this section absent entirely if you have nothing to add here —
+`validate-brief.py` never requires it, and Sections 1-14 above remain the
+complete, ratified brief on their own.
+
+If you do have something to add, use a single `extended_analysis:` YAML
+mapping with any subset of these fields (all optional, independently):
+
+```yaml
+extended_analysis:
+  schema_version: candidate-1
+  domain:
+    # List, not a single value -- unlike primary_fog_type (Section 13),
+    # which is forced to pick one. Reuses the same canonical fog-type
+    # vocabulary base names (product, ui, architecture, docs, integration).
+    # List EVERY fog dimension genuinely implicated, not just the primary
+    # one. A downstream reader outside one of these domains should treat
+    # it as an explicit disclosure trigger ("this is out of my lens"),
+    # never silently ignore it.
+    - product
+    - architecture
+  discovery_confidence:
+    level: high | medium | low
+    why_bounded: >
+      One or two sentences on what grounds this confidence and what it's
+      NOT based on (e.g. "did not run the full test suite, only the
+      cited file").
+  consequential_boundary:
+    description: >
+      What actually matters for what happens next -- may be narrower or
+      broader than Section 6's weakest_boundary.
+    rationale: >
+      Why this boundary, specifically, is the one worth acting on.
+    is_demonstrated_weakness: true | false
+    # true only if this is independently, currently demonstrated (not a
+    # suspicion or a plausible-sounding pattern). Do NOT use a
+    # weakness_type value of "none" for a legitimate-but-unresolved
+    # choice -- set this to false and leave Section 13's weakness_type
+    # absent instead; weakness_type's own taxonomy (Section 6) is
+    # untouched by this field.
+  uncertainty:
+    source: repository_evidence | empirical | owner_intent | external_environment
+    question: >
+      The specific unresolved question, independent of source -- every
+      source can have one, not only owner_intent.
+  owner_intent_state:
+    known: >
+      What's already been established about owner intent from prior
+      context, stated plainly (not padded to look more complete than it
+      is).
+    status: sufficient | thin | blocking_unknown
+    # What's actually unresolved lives in uncertainty.question above --
+    # do not restate it here as a second, separately-maintained note;
+    # the two can silently drift apart.
+```
+
+None of these fields drive automated routing (`workflow-runtime.py` does
+not read them) — they exist for a human, or a downstream skill reading
+the brief directly, to use at their own discretion. See
+`skills/repo-sensemaker/SKILL.md`'s Interact section for how these fields
+are meant to be used in conversational (non-runtime) invocation.
