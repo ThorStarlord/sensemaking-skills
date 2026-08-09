@@ -142,11 +142,28 @@ artifacts:
       - auto_escalation_allowed
       - weakness_type
       - weakness_type_explanation
+    candidate_machine_fields:
+      # UNRATIFIED (candidate/sensemaking-vnext branch only as of this
+      # writing -- see docs/candidate/architecture-decision.md and
+      # docs/candidate/draft-adr-extended-analysis.md). Classified per
+      # ADR 0015's requirement ("any new field added to a contract must
+      # be classified at proposal time"): all "model, constrained"
+      # (same class as weakness_type), all OPTIONAL, all non-blocking --
+      # a stronger guarantee than weakness_type's "required but
+      # non-blocking" (D2). Live in a single Section 15
+      # `extended_analysis:` YAML mapping, not Section 13. Absence
+      # changes nothing; presence never fails validate-brief.py.
+      - extended_analysis.domain
+      - extended_analysis.discovery_confidence
+      - extended_analysis.consequential_boundary
+      - extended_analysis.uncertainty
+      - extended_analysis.owner_intent_state
     notes:
       - "Validation results are NOT stored in this artifact. See validators/run_log.md for validation output."
       - "PATH B (transient validation): validation_status field is NOT present."
       - "Phase 1 diagnostic scope: brief prepares handoff to workflow-planner for Phase 2 implementation."
       - "weakness_type (issue #80): structured taxonomy field in Section 13. Allowed values are the 7 registered types in skills/repo-sensemaker/references/weakness-types.md plus 'Other'. Required metadata but non-blocking (D2) -- missing/unrecognized values are validator warnings, never errors. weakness_type_explanation is required only when weakness_type is 'Other' (D4); its absence there is also a non-blocking warning that must be resolved before human final-approval."
+      - "candidate_machine_fields (Section 15, extended_analysis): unratified, optional, non-blocking. Not read by workflow-runtime.py's routing (_WORKFLOW_ID_FIELDS / _FOG_TYPE_FIELDS) -- see tests/test_field_contract_agreement.py, whose guard this deliberately does not need to touch. Owner ratification required before promotion out of candidate_machine_fields."
     verification:
       generic_validator: "python scripts/validate-artifact.py repository_sensemaking_brief {artifact_path}"
       specialized_validators:
