@@ -62,6 +62,22 @@ def first_yaml_block_under_section_13(content: str) -> dict:
     return yaml.safe_load(match.group(1))
 
 
+def complete_example_yaml_block(content: str) -> dict:
+    """The '### Complete Example' section's own yaml fence, specifically --
+    not "whichever yaml fence happens to be last in the file". The template
+    may legitimately contain yaml fences after Complete Example (e.g.
+    Section 15's own field-shape documentation), so anchoring by heading,
+    not position, is what actually proves this section's identity.
+    """
+    match = re.search(
+        r"### Complete Example\s+```yaml\s+(.*?)\s+```",
+        content,
+        re.DOTALL | re.IGNORECASE,
+    )
+    assert match, "Template must have a '### Complete Example' heading followed by a yaml fence."
+    return yaml.safe_load(match.group(1))
+
+
 def write_tmp(tmp_path, name: str, content: str) -> str:
     path = os.path.join(tmp_path, name)
     with open(path, "w", encoding="utf-8") as f:
@@ -91,8 +107,7 @@ def test_contract_declares_evidence_as_required_machine_field():
 def test_template_complete_example_matches_canonical_fixture_shape():
     with open(TEMPLATE_PATH, encoding="utf-8") as f:
         content = f.read()
-    yaml_blocks = re.findall(r"```yaml\s+(.*?)\s+```", content, re.DOTALL)
-    complete_example = yaml.safe_load(yaml_blocks[-1])
+    complete_example = complete_example_yaml_block(content)
     assert isinstance(complete_example["evidence"], list)
     assert len(complete_example["evidence"]) > 0
     entry = load_contract_entry()
