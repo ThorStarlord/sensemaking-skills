@@ -26,8 +26,9 @@ invalidate the interaction shape.
   repository's documented state was still current (owner: "The better one
   question would have asked whether the repository's milestone/tracker state
   still reflected reality").
-- **OWNER_BURDEN:** LOW ("Very low burden"; owner suggested "reasonable
-  burden" is the cleaner rating given the outcome was drift discovery).
+- **OWNER_BURDEN:** LOW — the owner provided the initial authentic question,
+  one multiple-choice clarification, and the POST correction; the primary
+  failure was recommendation quality rather than interaction burden.
 - **GROUNDING:** MIXED ("Mostly grounded" — real evidence, intent respected,
   but stale documentation treated as authoritative current state).
 - **INTENT_PRESERVATION:** GOOD — the owner's stated demo priority was
@@ -115,9 +116,24 @@ the owner had already done. The one-question budget was spent on intent when
 state-currency was the higher-information uncertainty — a CASE A
 (empirical/probe-able) question misclassified as CASE B (intent).
 
-## Refinement for the interaction (recorded, not implemented)
+## Durable refinement (owner-reviewed, recorded, not implemented)
 
-Before sequencing a recommendation, the investigation must verify that
+**documented state != verified current state.**
+
+The central S2 boundary: "the tracker says X" is not "X is true." A safe
+claim is "the tracker records no completed fresh-persistent playthrough" —
+not "no fresh-persistent playthrough has happened." The refined interaction
+model is:
+
+> Investigate autonomously. Distinguish documented state from verified
+> current state. If the recommendation depends on potentially stale state,
+> resolve that uncertainty through repository evidence or the minimum
+> owner-state confirmation first. Only after the relevant state is
+> established should the agent ask a neutral owner-intent question when
+> different intentions would materially change the recommendation. Then
+> recommend.
+
+Concretely: before sequencing a recommendation, verify that
 documented/tracked state is current, using the cheapest available probes
 (local artifacts such as saves and build outputs, working-tree activity,
 recency-weighted git history, or — if still ambiguous — the single
@@ -127,24 +143,21 @@ recommendation must explicitly separate "tracker-documented state" from
 
 ## Construction gate
 
-**CONSTRUCTION_PLAUSIBLY_JUSTIFIED.**
+**CONSTRUCTION_NOT_YET_JUSTIFIED — S2 strengthened confidence in
+investigation-first, low-burden interaction and neutral clarification, but
+exposed an unresolved state-currency failure: the agent treated
+repository-documented project state as verified current reality and spent
+its one clarification on strategic intent rather than checking the state
+its recommendation depended on. Test that refinement in another authentic
+use before deliberate product construction.**
 
-One authentic reuse case is not proof, but: (a) the interaction again produced
-value (drift discovery) at very low burden; (b) the neutral-clarification
-refinement was field-confirmed; and (c) the failure is a single, diagnosed,
-fixable behavior — state-currency verification — rather than a shape-level
-defect. Construction should proceed only if the refined interaction includes
-the state-currency check and a state/verification distinction in the
-synthesis. This is a recommendation for a future owner decision, NOT
-authorization to implement.
+This is a recommendation for a future owner decision, NOT authorization to
+implement.
 
 ## Validation note (Phase 6)
 
 Canonical standalone validation ran exactly once via
 `scripts/validate-brief.py --target-repo <superhero-netorare-parody>`:
-**failed** (17 `EVIDENCE_QUOTE_NOT_FOUND` logic errors — the same
-placeholder-quote failure mode as S1: the runtime's quote-overwrite step from
-issue #89 does not run in standalone execution; all file/line citations
-resolved correctly against the target repository). Result preserved verbatim
-in `validation-result-v1.json`. Not repaired, not rerun; validation is
-execution evidence, not the S2 product-value outcome.
+**failed with 17 `EVIDENCE_QUOTE_NOT_FOUND` errors.** The result is preserved
+as execution evidence (validation-result-v1.json) and is not used to
+determine the S2 interaction disposition; no repair or rerun occurred.
