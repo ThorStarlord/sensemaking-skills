@@ -1,6 +1,6 @@
 # Mode B+ completion report — candidate/sensemaking-vnext, second pass (post-#165 rebase, real-runtime evidence)
 
-**Branch**: `candidate/sensemaking-vnext`, pushed to origin (force-updated after rebase). Built from `main`, currently rebased onto `main` @ `beba74c` (includes PR #165, merged 2026-08-09 after this branch's first pass). Not from `prototype/repo-sensemaker-vnext` (#164, preserved untouched as the evidence record). **14 commits** (corrected from the first pass's report, which said "9" while the branch was actually 10 — that miscount is fixed here, not repeated). Not merged — per Mode B+'s retained boundary, merge stays an explicit owner decision.
+**Branch**: `candidate/sensemaking-vnext`, pushed to origin (force-updated after rebase). Built from `main`, currently rebased onto `main` @ `beba74c` (includes PR #165, merged 2026-08-09 after this branch's first pass). Not from `prototype/repo-sensemaker-vnext` (#164, preserved untouched as the evidence record). **12 commits** (verified via `git log --oneline origin/main..HEAD`, counted directly rather than estimated — the first-pass report said "9" while the branch was actually 10 at that point; this number is checked, not repeated from memory). Not merged — per Mode B+'s retained boundary, merge stays an explicit owner decision.
 
 This is a second pass, not a claim of completeness. First-pass scope note still applies: the `fog_type` alias repair, the CI-governance defect, and S3 interaction research remain untouched, in their own lanes.
 
@@ -79,7 +79,7 @@ Everything in `candidate_machine_fields` and the draft ADR. The Diagnose/Interac
 
 ## Recommended merge sequence (not executed, no merge performed)
 
-1. Owner reviews this branch's diff against current `main` (14 commits, additive-only except the deliberate #165 reconciliation, verified zero unexplained regressions against the current tip).
+1. Owner reviews this branch's diff against current `main` (12 commits, additive-only except the deliberate #165 reconciliation, verified zero unexplained regressions against the current tip).
 2. Owner reviews the real-runtime execution record (`docs/candidate/real-runtime-run-2026-08-09/`) as the concrete "what does this actually look like in use" evidence, not just the mechanism tests.
 3. Decide the `candidate_machine_fields` naming/governance question (durable incubation tier vs. one-time label) independently of whether to merge this branch's specific five fields.
 4. If judged sound: promote the draft ADR to a real, numbered, Proposed ADR; get explicit sign-off on field classifications.
