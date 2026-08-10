@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
 
-from scripts.repo_probes import churn, git_state
+from scripts.repo_probes import churn, ci_enforcement, git_state
 
 
 def _new_repo(tmp_path: Path) -> Path:
@@ -74,3 +74,45 @@ def test_churn_reports_top_changed_files(tmp_path: Path) -> None:
     report = churn(repo, commits=10)
     assert report["commits_scanned"] == 1
     assert report["top_changed_files"] == ["file.txt"]
+
+
+def _repo_with_readme_and_ci(tmp_path: Path) -> Path:
+    repo = tmp_path / "repo"
+    (repo / ".github" / "workflows").mkdir(parents=True)
+    (repo / "README.md").write_text(
+        "## Verification\nCI runs the same entrypoint: `python scripts/check.py` and pytest.\n",
+        encoding="utf-8",
+    )
+    (repo / ".github" / "workflows" / "validation.yml").write_text(
+        "jobs:\n  test:\n    steps:\n      - run: pytest -q\n",
+        encoding="utf-8",
+    )
+    return repo
+
+
+def test_verification_gap_detects_unenforced_ci_claim(tmp_path: Path) -> None:
+    report = ci_enforcement(_repo_with_readme_and_ci(tmp_path))
+    assert report["declared_checks"] == ["scripts/check.py"]
+    assert report["enforced_checks"] == ["pytest"]
+    assert report["declared_in_ci"] == []
+    assert report["vg"] == 1.0
+
+
+def test_verification_gap_zero_when_fully_enforced(tmp_path: Path) -> None:
+    repo = _repo_with_readme_and_ci(tmp_path)
+    (repo / ".github" / "workflows" / "validation.yml").write_text(
+        "jobs:\n  test:\n    steps:\n      - run: python scripts/check.py\n",
+        encoding="utf-8",
+    )
+    report = ci_enforcement(repo)
+    assert report["declared_in_ci"] == ["scripts/check.py"]
+    assert report["vg"] == 0.0
+
+
+def test_verification_gap_zero_when_no_checks_declared(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "README.md").write_text("Nothing about verification here.\n", encoding="utf-8")
+    report = ci_enforcement(repo)
+    assert report["declared_checks"] == []
+    assert report["vg"] == 0.0
