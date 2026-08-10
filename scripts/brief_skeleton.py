@@ -265,12 +265,10 @@ def build_skeleton(ctx: SkeletonContext | None = None) -> str:
     lines.append("```")
     lines.append("")
 
-    lines.append("## 15. Extended analysis (candidate)")
+    lines.append("## 15. Extended analysis")
     lines.append("")
     lines.append(
-        "<!-- OPTIONAL, non-blocking, candidate (not yet ratified -- see "
-        "docs/candidate/architecture-decision.md and "
-        "docs/candidate/draft-adr-extended-analysis.md). Leave this block "
+        "<!-- OPTIONAL, non-blocking (ADR 0024, ACCEPTED). Leave this block "
         "absent entirely if you have nothing here; validate-brief.py never "
         "requires it. If present, it must be a single `extended_analysis:` "
         "YAML mapping with any of: domain (list, reuses canonical fog "
@@ -464,7 +462,7 @@ def _extract_model_sections(text: str) -> dict[str, str]:
         if block.strip() and "evidence_excerpts: []" not in block:
             found["evidence_excerpts"] = block
 
-    # extended_analysis (Section 15, candidate): same shape as
+    # extended_analysis (Section 15, ADR 0024): same shape as
     # evidence_excerpts -- its own marker pair holding a yaml fence, kept
     # out of MODEL_SECTIONS so build_skeleton() can place it after Section
     # 13 rather than inline with the free-prose sections. Unlike

@@ -1,4 +1,4 @@
-"""End-to-end producer/consumer handoff proof for Section 15 (candidate).
+"""End-to-end producer/consumer handoff proof for Section 15 (ADR 0024).
 
 Per CLAUDE.md's verification discipline: "'Done' requires running the
 real path... exercise it end-to-end against realistic artifacts." The
@@ -66,7 +66,7 @@ evidence_excerpts:
 <!-- MODEL_SECTION:extended_analysis:BEGIN -->
 ```yaml
 extended_analysis:
-  schema_version: candidate-1
+  schema_version: 1
   domain:
     - architecture
   consequential_boundary:
@@ -104,8 +104,8 @@ class TestExtendedAnalysisEndToEnd(unittest.TestCase):
     def test_reconciled_brief_with_section_15_passes_full_validator_chain(self):
         # Real producer: brief_skeleton.reconcile(), not a hand-authored fixture.
         artifact_text = bs.reconcile(REALISTIC_MODEL_OUTPUT, target_root=REPO_ROOT)
-        self.assertIn("schema_version: candidate-1", artifact_text)
-        self.assertIn("## 15. Extended analysis (candidate)", artifact_text)
+        self.assertIn("schema_version: 1", artifact_text)
+        self.assertIn("## 15. Extended analysis", artifact_text)
 
         fd, path = tempfile.mkstemp(suffix=".md")
         try:
@@ -145,7 +145,7 @@ class TestExtendedAnalysisEndToEnd(unittest.TestCase):
 
     def test_reconciled_brief_without_section_15_is_unaffected(self):
         # Same real producer/consumer chain, minus the extended_analysis
-        # MODEL_SECTION entirely -- confirms the candidate mechanism is
+        # MODEL_SECTION entirely -- confirms the mechanism is
         # additive, not load-bearing for the pre-existing contract.
         without_section_15 = REALISTIC_MODEL_OUTPUT.replace(
             REALISTIC_MODEL_OUTPUT[
@@ -156,7 +156,7 @@ class TestExtendedAnalysisEndToEnd(unittest.TestCase):
             "",
         )
         artifact_text = bs.reconcile(without_section_15, target_root=REPO_ROOT)
-        self.assertNotIn("schema_version: candidate-1", artifact_text)
+        self.assertNotIn("The skeleton mechanism is now production-real.", artifact_text)
 
         fd, path = tempfile.mkstemp(suffix=".md")
         try:

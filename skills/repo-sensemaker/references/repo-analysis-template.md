@@ -198,21 +198,21 @@ immutable: true
 ## 14. Ready-to-copy prompt
 Prompt for `workflow-planner` or another downstream skill.
 
-## 15. Extended analysis (candidate)
+## 15. Extended analysis
 
-**Optional. Non-blocking. Not yet ratified** — see
-[docs/candidate/architecture-decision.md](../../../docs/candidate/architecture-decision.md)
-and [docs/candidate/draft-adr-extended-analysis.md](../../../docs/candidate/draft-adr-extended-analysis.md).
-Leave this section absent entirely if you have nothing to add here —
-`validate-brief.py` never requires it, and Sections 1-14 above remain the
-complete, ratified brief on their own.
+**Optional. Non-blocking.** Ratified as ordinary optional contract fields —
+see [ADR 0024](../../../docs/adr/0024-extended-analysis-field-classification.md)
+and [docs/candidate/architecture-decision.md](../../../docs/candidate/architecture-decision.md)
+for the classification and rationale. Leave this section absent entirely if
+you have nothing to add here — `validate-brief.py` never requires it, and
+Sections 1-14 above remain the complete, valid brief on their own.
 
 If you do have something to add, use a single `extended_analysis:` YAML
 mapping with any subset of these fields (all optional, independently):
 
 ```yaml
 extended_analysis:
-  schema_version: candidate-1
+  schema_version: 1
   domain:
     # List, not a single value -- unlike primary_fog_type (Section 13),
     # which is forced to pick one. Reuses the same canonical fog-type

@@ -1,15 +1,14 @@
-"""Tests for validate-brief.py's handling of the candidate Section 15
-("Extended analysis") block introduced on candidate/sensemaking-vnext.
+"""Tests for validate-brief.py's handling of Section 15
+("Extended analysis") ratified per ADR 0024.
 
-Per docs/candidate/architecture-decision.md (Decision 3), every field in
-this block is classified "model, constrained" but is entirely optional
-and non-blocking (warning severity only, never error) -- it is an
-unratified, candidate addition, not part of the ratified Section 1-14
-contract. These tests prove: (a) absence causes zero errors/warnings,
-(b) presence with valid values causes zero errors/warnings, (c) presence
-with invalid enum/type values produces a WARNING, never an error (the
-artifact must still validate overall), (d) a malformed block degrades to
-a warning, not a crash.
+Every field in this block is classified "model, constrained" (ADR 0024,
+per ADR 0015's taxonomy) but is entirely optional and non-blocking
+(warning severity only, never error). These tests prove: (a) absence
+causes zero errors/warnings, (b) presence with valid values causes zero
+errors/warnings, (c) presence with invalid enum/type values produces a
+WARNING, never an error (the artifact must still validate overall),
+(d) a malformed block degrades to a warning, not a crash, (e) the
+pre-ratification "(candidate)" heading spelling is still tolerated.
 """
 
 import importlib.util
@@ -98,11 +97,11 @@ class TestExtendedAnalysisAbsent(unittest.TestCase):
 class TestExtendedAnalysisValid(unittest.TestCase):
     def test_valid_section_15_produces_no_warnings(self):
         content = _BASE_VALID_BODY + """
-## 15. Extended analysis (candidate)
+## 15. Extended analysis
 
 ```yaml
 extended_analysis:
-  schema_version: candidate-1
+  schema_version: 1
   domain:
     - product
     - architecture
@@ -126,7 +125,7 @@ extended_analysis:
 class TestExtendedAnalysisInvalidValuesAreWarningsOnly(unittest.TestCase):
     def test_unknown_uncertainty_source_is_a_warning(self):
         content = _BASE_VALID_BODY + """
-## 15. Extended analysis (candidate)
+## 15. Extended analysis
 
 ```yaml
 extended_analysis:
@@ -142,7 +141,7 @@ extended_analysis:
 
     def test_unknown_owner_intent_status_is_a_warning(self):
         content = _BASE_VALID_BODY + """
-## 15. Extended analysis (candidate)
+## 15. Extended analysis
 
 ```yaml
 extended_analysis:
@@ -158,7 +157,7 @@ extended_analysis:
 
     def test_non_boolean_is_demonstrated_weakness_is_a_warning(self):
         content = _BASE_VALID_BODY + """
-## 15. Extended analysis (candidate)
+## 15. Extended analysis
 
 ```yaml
 extended_analysis:
@@ -173,7 +172,7 @@ extended_analysis:
 
     def test_malformed_yaml_degrades_to_warning_not_crash(self):
         content = _BASE_VALID_BODY + """
-## 15. Extended analysis (candidate)
+## 15. Extended analysis
 
 ```yaml
 extended_analysis:
@@ -182,18 +181,18 @@ extended_analysis:
 """
         # Must not raise. Base artifact is otherwise valid, so the only
         # blocking-severity errors (if any) must come from elsewhere, not
-        # from this malformed candidate block.
+        # from this malformed optional block.
         errors = _validate(content)
         matches = [e for e in errors if "EXTENDED_ANALYSIS_MALFORMED" in e["message"]]
         self.assertEqual(len(matches), 1)
         self.assertFalse(_is_blocking(matches[0]))
 
     def test_overall_artifact_still_valid_with_invalid_extended_analysis(self):
-        # The whole point of "candidate/non-blocking": an otherwise-valid
+        # The whole point of "optional/non-blocking": an otherwise-valid
         # brief must not fail overall validation just because Section 15
         # contains garbage.
         content = _BASE_VALID_BODY + """
-## 15. Extended analysis (candidate)
+## 15. Extended analysis
 
 ```yaml
 extended_analysis:
@@ -206,6 +205,23 @@ extended_analysis:
         errors = _validate(content)
         blocking = [e for e in errors if _is_blocking(e)]
         self.assertEqual(blocking, [], f"expected no blocking errors, got {blocking}")
+
+    def test_legacy_candidate_heading_spelling_still_tolerated(self):
+        # ADR 0024: the validator accepts the pre-ratification "(candidate)"
+        # heading so already-written artifacts revalidate unchanged.
+        content = _BASE_VALID_BODY + """
+## 15. Extended analysis (candidate)
+
+```yaml
+extended_analysis:
+  schema_version: candidate-1
+  domain:
+    - architecture
+```
+"""
+        errors = _validate(content)
+        codes = [e["message"] for e in errors if "EXTENDED_ANALYSIS" in e["message"]]
+        self.assertEqual(codes, [], f"legacy heading produced EXTENDED_ANALYSIS codes: {codes}")
 
 
 if __name__ == "__main__":

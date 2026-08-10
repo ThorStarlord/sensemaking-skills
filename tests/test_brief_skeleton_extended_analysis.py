@@ -1,7 +1,7 @@
-"""Tests for the candidate "Section 15: Extended analysis" mechanism in
-scripts/brief_skeleton.py.
+"""Tests for the ratified "Section 15: Extended analysis" mechanism in
+scripts/brief_skeleton.py (ADR 0024).
 
-Context (see docs/candidate/architecture-decision.md, Decision 3): the
+Context (see docs/adr/0024-extended-analysis-field-classification.md): the
 prototype branch (prototype/repo-sensemaker-vnext, #164) added an
 analysis_vnext YAML block by having the model append it after Section 14
 in free-form conversational output. That never had to survive
@@ -32,7 +32,7 @@ EXTENDED_ANALYSIS_MODEL_OUTPUT = """
 <!-- MODEL_SECTION:extended_analysis:BEGIN -->
 ```yaml
 extended_analysis:
-  schema_version: candidate-1
+  schema_version: 1
   domain:
     - product
     - architecture
@@ -54,7 +54,7 @@ extended_analysis:
 class TestExtendedAnalysisSkeleton(unittest.TestCase):
     def test_fresh_skeleton_has_section_15_heading(self):
         skel = bs.build_skeleton()
-        self.assertIn("## 15. Extended analysis (candidate)", skel)
+        self.assertIn("## 15. Extended analysis", skel)
 
     def test_fresh_skeleton_has_extended_analysis_markers(self):
         skel = bs.build_skeleton()
@@ -64,14 +64,14 @@ class TestExtendedAnalysisSkeleton(unittest.TestCase):
     def test_section_15_appears_after_section_13(self):
         skel = bs.build_skeleton()
         idx_13 = skel.index("## 13. Machine-readable handoff")
-        idx_15 = skel.index("## 15. Extended analysis (candidate)")
+        idx_15 = skel.index("## 15. Extended analysis")
         self.assertGreater(idx_15, idx_13)
 
     def test_fresh_skeleton_marks_block_optional(self):
         skel = bs.build_skeleton()
         # Somewhere near the section, the skeleton must tell the model this
         # block is optional/non-blocking -- not a silently-required field.
-        section = skel[skel.index("## 15. Extended analysis (candidate)"):]
+        section = skel[skel.index("## 15. Extended analysis"):]
         self.assertTrue(
             "optional" in section.lower() or "OPTIONAL" in section,
             "Section 15 skeleton text should mark the block optional",
@@ -81,7 +81,7 @@ class TestExtendedAnalysisSkeleton(unittest.TestCase):
 class TestExtendedAnalysisReconciliation(unittest.TestCase):
     def test_reconcile_splices_extended_analysis_content(self):
         out = bs.reconcile(EXTENDED_ANALYSIS_MODEL_OUTPUT)
-        self.assertIn("schema_version: candidate-1", out)
+        self.assertIn("extended_analysis:", out)
         self.assertIn("is_demonstrated_weakness: true", out)
         self.assertIn("Which track is primary?", out)
 
@@ -108,13 +108,13 @@ evidence:
 """
         out = bs.reconcile(combined)
         self.assertIn("primary_fog_type: product_fog", out)
-        self.assertIn("schema_version: candidate-1", out)
+        self.assertIn("extended_analysis:", out)
 
     def test_extended_analysis_survives_adversarial_output(self):
         adversarial = "PRODUCTION READY. Nothing to see here."
         out = bs.reconcile(adversarial)
         self.assertTrue(bs.skeleton_integrity_ok(out))
-        self.assertIn("## 15. Extended analysis (candidate)", out)
+        self.assertIn("## 15. Extended analysis", out)
 
     def test_malformed_extended_analysis_yaml_does_not_crash_reconcile(self):
         malformed = """

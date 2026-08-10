@@ -98,7 +98,7 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
      - → needs UI diagnostic workflow: ui-brief → ui-flow → ui-screen-spec
    - **docs_fog**: Missing documentation, unclear specifications, knowledge silos → needs documentation architecture
    - **architecture_fog**: Code structure problems, unclear boundaries, module coupling, state management scattered → needs spec-driven refactoring (default)
-8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows. Keep observed evidence, documented claims, inference, and owner-supplied judgment/context distinguishable in the synthesis. Decision-changing current-state claims must explicitly distinguish verified current state from merely documented state: cite the probe used when verified, and clearly identify unverified documented claims as documented but not independently verified. If you have grounds for it, optionally fill in Section 15 (Extended analysis) — see [Repo Analysis Template](references/repo-analysis-template.md#15-extended-analysis-candidate). It is candidate, optional, and non-blocking; leave it out entirely if you have nothing to add.
+8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows. Keep observed evidence, documented claims, inference, and owner-supplied judgment/context distinguishable in the synthesis. Decision-changing current-state claims must explicitly distinguish verified current state from merely documented state: cite the probe used when verified, and clearly identify unverified documented claims as documented but not independently verified. If you have grounds for it, optionally fill in Section 15 (Extended analysis) — see [Repo Analysis Template](references/repo-analysis-template.md#15-extended-analysis). It is optional and non-blocking (ADR 0024); leave it out entirely if you have nothing to add.
 
 ## Probe Engine (verified current state, mandatory before synthesis)
 
@@ -147,7 +147,7 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 - [Weakness Types](references/weakness-types.md)
 - [Evidence Rules](references/evidence-rules.md)
 - [UI Fog Signals Registry](references/ui-fog-signals.md)
-- [Candidate architecture decision](../../docs/candidate/architecture-decision.md) — why Diagnose/Interact are one skill, not two
+- [Architecture decision record](../../docs/candidate/architecture-decision.md) — why Diagnose/Interact are one skill, not two
 
 ## Execution Protocol
 
@@ -186,8 +186,7 @@ and must not be re-authored or reordered:
   `primary_fog_type`, `diagnosis_conflict`, `escalation_recommended`,
   `evidence`, `recommended_workflow_id`, `recommended_execution_mode`,
   `weakest_boundary`.
-- Optionally, Section 15's `extended_analysis:` block (candidate, unratified —
-  see `references/repo-analysis-template.md`'s Section 15). Leave it out
+- Optionally, Section 15's `extended_analysis:` block (see `references/repo-analysis-template.md`'s Section 15; ratified per ADR 0024). Leave it out
   entirely if you have nothing grounded to add; it is never required.
 
 **Workflow IDs vs. skill IDs**: `recommended_workflow_id` must be an id from
@@ -312,4 +311,4 @@ Before producing the brief, extract whatever the owner has already established f
 
 - Does not treat this procedure as running during automated workflow execution — see the mode check above.
 - Does not ask more than one clarifying question without explicitly noting why the default was insufficient.
-- Does not represent Section 15's fields or this interaction procedure as ratified, settled architecture in the final output to the user — see [docs/candidate/architecture-decision.md](../../docs/candidate/architecture-decision.md) for current status.
+- Does not present Section 15's fields or this interaction procedure as experimental in the final output to the user — they are ratified (ADR 0024); represent them as such, without hedging.

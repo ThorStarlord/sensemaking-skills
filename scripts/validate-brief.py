@@ -48,9 +48,8 @@ EVIDENCE_QUOTE_NOT_FOUND = "EVIDENCE_QUOTE_NOT_FOUND"
 # "not grounded at all" case.
 EVIDENCE_QUOTE_WINDOW_MATCH = "EVIDENCE_QUOTE_WINDOW_MATCH"
 
-# Section 15 "Extended analysis" (candidate, unratified -- see
-# docs/candidate/architecture-decision.md and
-# docs/candidate/draft-adr-extended-analysis.md). The block is entirely
+# Section 15 "Extended analysis" (ADR 0024, ACCEPTED -- see
+# docs/adr/0024-extended-analysis-field-classification.md). The block is entirely
 # optional; every check here is severity="warning" by construction --
 # nothing under this heading may ever set `valid` to False. This is a
 # deliberately stronger non-blocking guarantee than weakness_type's (D2),
@@ -75,8 +74,11 @@ def _parse_extended_analysis(content: str) -> dict[str, Any] | None:
     does not parse / is not a mapping (the caller reports that as
     EXTENDED_ANALYSIS_MALFORMED, a warning, not a crash).
     """
+    # Canonical heading is "## 15. Extended analysis" (ADR 0024). The
+    # pre-ratification "## 15. Extended analysis (candidate)" spelling is
+    # still tolerated so already-written artifacts revalidate unchanged.
     match = re.search(
-        r"## 15\. Extended analysis \(candidate\)\s+```yaml\s+(.*?)\s+```",
+        r"## 15\. Extended analysis(?:\s*\(candidate\))?\s+```yaml\s+(.*?)\s+```",
         content,
         re.DOTALL | re.IGNORECASE,
     )
@@ -818,18 +820,18 @@ def validate_brief(
     elif not large:
         errors.append(_code_error(MISSING_HANDOFF_BLOCK, "Missing 'Machine-readable handoff' YAML block."))
 
-    # 6. Section 15 "Extended analysis" (candidate, unratified, optional).
+    # 6. Section 15 "Extended analysis" (ADR 0024, ACCEPTED, optional).
     # Absence is the default and produces nothing here. Every check below
     # is severity="warning" -- this block can never fail the brief, per
-    # docs/candidate/architecture-decision.md Decision 3.
+    # ADR 0024.
     extended_analysis = _parse_extended_analysis(content)
     if extended_analysis is not None:
         if extended_analysis.get("__malformed__"):
             errors.append(_code_error(
                 EXTENDED_ANALYSIS_MALFORMED,
                 "Section 15's yaml fence is present but does not parse to a "
-                "single 'extended_analysis:' mapping. This is a candidate, "
-                "optional block -- malformed content here never invalidates "
+                "single 'extended_analysis:' mapping. This is an optional "
+                "block -- malformed content here never invalidates "
                 "the brief, but it also won't be usable by anything reading it.",
                 field="extended_analysis",
                 severity="warning",
