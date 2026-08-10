@@ -86,22 +86,26 @@ CI_FILE_CANDIDATES = (
     ".gitlab-ci.yml",
     ".circleci/config.yml",
 )
-CI_TOKEN_RE = re.compile(r"scripts/[\w./-]+\.py|\bpytest\b")
-README_TOKEN_RE = re.compile(r"scripts/[\w./-]+\.py")
+CI_TOKEN_RE = re.compile(r"(?<![\w./])scripts/[\w./-]+\.py|\bpytest\b")
+README_TOKEN_RE = re.compile(r"(?<![\w./])scripts/[\w./-]+\.py")
 
 
 def _ci_texts(repo_root: Path) -> List[str]:
     texts: List[str] = []
     workflows_dir = repo_root / ".github" / "workflows"
     if workflows_dir.is_dir():
-        texts.extend(
-            p.read_text(encoding="utf-8", errors="replace")
-            for p in sorted(workflows_dir.glob("*.y*ml"))
-        )
+        for p in sorted(workflows_dir.glob("*.y*ml")):
+            try:
+                texts.append(p.read_text(encoding="utf-8", errors="replace"))
+            except OSError:
+                pass
     for candidate in CI_FILE_CANDIDATES:
         path = repo_root / candidate
         if path.is_file():
-            texts.append(path.read_text(encoding="utf-8", errors="replace"))
+            try:
+                texts.append(path.read_text(encoding="utf-8", errors="replace"))
+            except OSError:
+                pass
     return texts
 
 
@@ -110,15 +114,30 @@ def ci_enforcement(repo_root: Path) -> Dict[str, object]:
     readme = repo_root / "README.md"
     declared: List[str] = []
     if readme.is_file():
-        text = readme.read_text(encoding="utf-8", errors="replace")
+        try:
+            text = readme.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            text = ""
         declared = list(dict.fromkeys(README_TOKEN_RE.findall(text)))
 
     enforced: List[str] = []
     for ci_text in _ci_texts(repo_root):
-        for line in ci_text.splitlines():
+        lines = ci_text.splitlines()
+        for i, line in enumerate(lines):
             stripped = line.strip()
-            if stripped.lstrip("- ").startswith("run:"):
-                enforced.extend(CI_TOKEN_RE.findall(stripped))
+            if not stripped.lstrip("- ").startswith("run:"):
+                continue
+            run_line = stripped.lstrip("- ")
+            payload_lines = [run_line[len("run:"):]]
+            if run_line.rstrip().endswith(("|", ">")):
+                base_indent = len(line) - len(line.lstrip())
+                for cont in lines[i + 1 :]:
+                    indent = len(cont) - len(cont.lstrip())
+                    if indent <= base_indent or not cont.strip():
+                        break
+                    payload_lines.append(cont)
+            for payload in payload_lines:
+                enforced.extend(CI_TOKEN_RE.findall(payload))
     enforced = list(dict.fromkeys(enforced))
 
     declared_in_ci = [check for check in declared if check in enforced]
