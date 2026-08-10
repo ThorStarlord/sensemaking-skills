@@ -160,3 +160,37 @@ def test_verification_gap_gitlab_script_key_not_scanned(tmp_path: Path) -> None:
     report = ci_enforcement(repo)
     assert report["enforced_checks"] == []
     assert report["vg"] == 1.0
+
+
+def test_verification_gap_zero_with_chomped_block_scalar(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    (repo / ".github" / "workflows").mkdir(parents=True)
+    (repo / "README.md").write_text(
+        "Runs `python scripts/check.py` in CI.\n",
+        encoding="utf-8",
+    )
+    (repo / ".github" / "workflows" / "validation.yml").write_text(
+        "jobs:\n  test:\n    steps:\n      - run: |-\n          python scripts/check.py\n",
+        encoding="utf-8",
+    )
+    report = ci_enforcement(repo)
+    assert report["declared_in_ci"] == ["scripts/check.py"]
+    assert report["vg"] == 0.0
+
+
+def test_verification_gap_block_scalar_with_blank_line_continues(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    (repo / ".github" / "workflows").mkdir(parents=True)
+    (repo / "README.md").write_text(
+        "Runs `python scripts/check.py` and `python scripts/lint.py` in CI.\n",
+        encoding="utf-8",
+    )
+    (repo / ".github" / "workflows" / "validation.yml").write_text(
+        "jobs:\n  test:\n    steps:\n      - run: |\n          python scripts/check.py\n"
+        "\n          python scripts/lint.py\n",
+        encoding="utf-8",
+    )
+    report = ci_enforcement(repo)
+    assert report["declared_in_ci"] == ["scripts/check.py", "scripts/lint.py"]
+    assert report["enforced_checks"] == ["scripts/check.py", "scripts/lint.py"]
+    assert report["vg"] == 0.0

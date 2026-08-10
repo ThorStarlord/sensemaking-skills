@@ -129,11 +129,12 @@ def ci_enforcement(repo_root: Path) -> Dict[str, object]:
                 continue
             run_line = stripped.lstrip("- ")
             payload_lines = [run_line[len("run:"):]]
-            if run_line.rstrip().endswith(("|", ">")):
+            if run_line.rstrip().rstrip("+-").endswith(("|", ">")):
                 base_indent = len(line) - len(line.lstrip())
                 for cont in lines[i + 1 :]:
-                    indent = len(cont) - len(cont.lstrip())
-                    if indent <= base_indent or not cont.strip():
+                    if not cont.strip():
+                        continue
+                    if len(cont) - len(cont.lstrip()) <= base_indent:
                         break
                     payload_lines.append(cont)
             for payload in payload_lines:
