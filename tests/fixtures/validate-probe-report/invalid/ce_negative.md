@@ -19,7 +19,7 @@ verification_gap:
   declared_checks: []
   enforced_checks: []
   declared_in_ci: []
-  vg: 1.5
+  vg: 0.5
   notes: ""
 context_entropy:
   tracked_volume: 0
