@@ -134,17 +134,45 @@ contract.
 
 ## Missing evidence
 
-- No real owner-in-the-loop run has exercised Section 15 through the
-  actual runtime (`ClaudeAgentSdkSkillExecutor`) end to end — the
-  end-to-end test above proves the mechanism works, not that a real
-  diagnostic run produces a useful Section 15 in practice.
+- ~~No real owner-in-the-loop run has exercised Section 15 through the
+  actual runtime end to end~~ **Closed, 2026-08-09/10**: ran the real
+  `brief_skeleton.build_skeleton()`/`reconcile()` sequence against this
+  repository itself, with genuine (not fabricated) analysis, validated
+  through both real validators with zero blocking errors and zero
+  `EXTENDED_ANALYSIS_*` warnings. See
+  `docs/candidate/real-runtime-run-2026-08-09/`. Still a single instance,
+  and the "model" step was performed directly rather than via a live,
+  separate `ClaudeAgentSdkSkillExecutor`/SDK invocation (a real
+  distinction — see that record's `00-context.md` for exactly what
+  differs and why what remains is still a faithful exercise of the real
+  path) — a live SDK-invoked run remains a further, not-yet-taken step
+  if that distinction ever matters for a decision.
 - `discovery_confidence.level: low`'s downstream behavior remains
   untested in any run, prototype or candidate.
 - No case has yet tested what happens when Section 15 disagrees with
   Section 1-14's own content (e.g. `consequential_boundary` describing a
   different boundary than Section 6's `weakest_boundary`) — the validator
   doesn't check cross-section consistency, and whether it should is an
-  open question this sketch doesn't resolve.
+  open question this sketch doesn't resolve. The one real run performed
+  so far was a clean-agreement case, not a stress test of disagreement.
+
+## Incidental finding (real-runtime run, unrelated to this proposal's scope)
+
+Building the real-runtime record surfaced a genuine, previously-
+undiscovered defect in `brief_skeleton.py`'s pre-existing, unmodified
+`reconcile()` logic: its generic flat-field splice stringifies a
+harvested Python `None` as literal text `None`, which parses back as the
+*string* `"None"`, not YAML `null` — confirmed directly against the
+run's own reconciled artifact. This would defeat
+`WEAKNESS_TYPE_OTHER_NO_EXPLANATION`'s truthiness check in the exact
+case D4 exists to catch, for any model that echoes an explicit `null`
+back for a flat field. Not part of this proposal's classification
+question (it affects `MODEL_YAML_FIELDS` generally, predates this
+branch, and is orthogonal to Section 15's own fields) — recorded here
+only because it was found while validating this proposal's real-run
+evidence, and belongs on the record. See
+`docs/candidate/real-runtime-run-2026-08-09/02-findings.md` for detail.
+Not fixed by this branch.
 
 ## Experiment or review trigger
 
