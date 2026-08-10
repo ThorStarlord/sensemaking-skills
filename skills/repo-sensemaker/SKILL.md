@@ -91,6 +91,39 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
    - **architecture_fog**: Code structure problems, unclear boundaries, module coupling, state management scattered → needs spec-driven refactoring (default)
 8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows. Keep observed evidence, documented claims, inference, and owner-supplied judgment/context distinguishable in the synthesis. Decision-changing current-state claims must explicitly distinguish verified current state from merely documented state: cite the probe used when verified, and clearly identify unverified documented claims as documented but not independently verified.
 
+## Probe Engine (verified current state, mandatory before synthesis)
+
+Deterministic probes replace *derived* evidence (text inspection) with *measured*
+current-state evidence. Before writing Sections 3–9, run the probe engine against
+the target repository:
+
+```powershell
+python scripts/probe-repo.py --repo-root <target-repo> [--output <path>/probe-report.yaml]
+```
+
+Then:
+
+1. **Read `probe-report.yaml`.** Its values are verified current state, measured
+   on the checked-out tree — prefer them over any documented claim (state-currency
+   verification, per Standard Workflow item 4).
+2. **Surface the numbers in your prose.** The report's `verification_gap.vg`,
+   `context_entropy.ce`, `fixtures_coverage.coverage`, and `churn` fields feed
+   directly into the missing-pieces, weakest-boundary, and evidence sections.
+   A `vg > 0` with declared-but-unenforced checks is a `Contract Mismatch` signal;
+   `vg == 1.0` means every declared check is unenforced (or CI is absent).
+   `ce >= 5` triggers a hygiene warning about untracked/ignored artifact sprawl.
+   A non-empty `missing_fixtures` list signals validator orphans (Zero Validation
+   or Orphaned Examples candidates).
+3. **Cite the probe in Section 8.** Every excerpt that rests on a measured value
+   must reference the probe that produced it (e.g.
+   `probe-report.yaml:verification_gap.vg`), plus the usual `file:lines`.
+4. **Probe failure fallback.** If the probe exits nonzero or the target is not a
+   git repository (`is_git_repo: false`), the probe still reports directory-level
+   facts; any claim you cannot measure must be labeled
+   "documented but not independently verified" (per Standard Workflow item 4 and
+   Section 8). Never skip the probe because a repo "looks simple" — a
+   non-git repo is itself a finding.
+
 ## Output Format
 Every response must follow the [Repository Sensemaking Brief](references/repo-analysis-template.md) structure.
 
@@ -153,7 +186,8 @@ runtime) is what rejects an invalid one.
 **Evidence-authority hierarchy and grammar** (unchanged from prior guidance,
 still your responsibility): cite specific files and line ranges you actually
 read (`Lx`/`Lx-Ly` or bare numbers both work, e.g. `L18` or `18`); never cite
-a file you have not opened; prefer direct code/config over comments over
+a file you have not opened; probe-report.yaml (measured current state) sits
+above direct code/config; prefer probes over code/config over comments over
 external docs when they conflict; include a **Logic trace** paragraph
 (beginning literally with "Logic trace:") connecting evidence to your
 weakest-boundary conclusion.

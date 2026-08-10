@@ -278,6 +278,22 @@ The system uses a multi-stage default workflow chain with fog-type-aware routing
 | `usage-researcher` | Evaluates skill performance in realistic scenarios | Orphan — registered in skill-registry but has zero workflow step references |
 | `workflow-presenter` | Presents workflow results to humans or agents | Orphan — no workflow references, not in skill-registry |
 
+## Probe Engine
+
+- **probe-report**: machine-readable YAML produced by `scripts/probe-repo.py`
+  capturing measured current state (git, CI enforcement, artifact volume, tests,
+  fixtures, churn). Canonical input to `repo-sensemaker` state-currency
+  verification; distinct from documented claims.
+- **Vg (verification gap)**: `1 - |declared ∩ enforced| / |declared|` over
+  verification entrypoints declared in README vs. steps executed in CI configs.
+  `Vg > 0` is a Contract-Mismatch signal; `Vg == 1.0` means no declared check is
+  enforced (or no CI exists).
+- **Ce (context entropy)**: `(untracked + ignored-present volume) / tracked
+  volume`. `Ce >= 5` is a hygiene/sprawl warning threshold.
+- **fixtures-coverage**: share of `scripts/validate-*.py` validators that have
+  `tests/fixtures/<name>/{valid,invalid}`; a gap is an Orphaned-Examples /
+  Zero-Validation candidate.
+
 ## Artifact Run Organization
 
 Artifacts from pipeline runs follow a flat numbered sequence at `artifacts/` root:
