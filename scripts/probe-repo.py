@@ -50,7 +50,11 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--no-write", action="store_true", help="Print summary only")
     args = parser.parse_args(argv)
 
-    repo_root = Path(args.repo_root).resolve()
+    try:
+        repo_root = Path(args.repo_root).resolve()
+    except OSError:
+        print(f"[probe] ERROR: repo-root path is not accessible: {args.repo_root}", file=sys.stderr)
+        return 2
     if not repo_root.is_dir():
         print(f"[probe] ERROR: repo-root is not a directory: {repo_root}", file=sys.stderr)
         return 2

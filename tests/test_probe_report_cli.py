@@ -41,3 +41,25 @@ def test_cli_writes_report_and_exits_zero(tmp_path: Path) -> None:
     summary = proc.stdout
     assert "REPO PROBE SUMMARY" in summary
     assert "Vg" in summary and "Ce" in summary
+
+
+def test_cli_no_write_prints_summary_without_file(tmp_path: Path) -> None:
+    repo = _committed_repo(tmp_path)
+    out = tmp_path / "report.yaml"
+    proc = subprocess.run(
+        [sys.executable, PROBE_SCRIPT, "--repo-root", str(repo), "--output", str(out), "--no-write"],
+        capture_output=True, text=True, cwd=repo,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert not out.is_file()
+    assert "REPO PROBE SUMMARY" in proc.stdout
+    assert "->" not in proc.stdout
+
+
+def test_cli_exits_two_on_missing_repo_root(tmp_path: Path) -> None:
+    proc = subprocess.run(
+        [sys.executable, PROBE_SCRIPT, "--repo-root", str(tmp_path / "nope")],
+        capture_output=True, text=True, cwd=tmp_path,
+    )
+    assert proc.returncode == 2
+    assert "ERROR" in proc.stderr

@@ -52,6 +52,7 @@ def git_state(repo_root: Path) -> Dict[str, object]:
 
     tracked = _git(repo_root, "ls-files").splitlines()
     untracked = _git(repo_root, "ls-files", "--others", "--exclude-standard").splitlines()
+    untracked = [f for f in untracked if not Path(f).name.startswith("probe-report")]
     ignored_present = _git(repo_root, "status", "--porcelain=v1", "--ignored").splitlines()
     porcelain = _git(repo_root, "status", "--porcelain=v1").splitlines()
     dirty = sum(1 for line in porcelain if not line.startswith("??"))
