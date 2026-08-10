@@ -196,7 +196,7 @@ def test_collection(repo_root: Path) -> Dict[str, object]:
         relative_parts = list(path.relative_to(repo_root).parts)[:-1]
         if any(part in _BLOAT_DIRS for part in relative_parts):
             continue
-        if path.is_file() and (path.name.startswith("test_") or path.name.endswith("_test.py")):
+        if path.is_file() and path.name.endswith(".py") and (path.name.startswith("test_") or path.name.endswith("_test.py")):
             count += 1
     pyproject = repo_root / "pyproject.toml"
     config_present = "[tool.pytest" in pyproject.read_text(encoding="utf-8", errors="replace") if pyproject.is_file() else False

@@ -218,11 +218,15 @@ def test_test_collection_counts_test_files_only(tmp_path: Path) -> None:
     (repo / "tests").mkdir(parents=True)
     (repo / "tests" / "test_one.py").write_text("", encoding="utf-8")
     (repo / "tests" / "test_two.py").write_text("", encoding="utf-8")
+    (repo / "tests" / "test_data.csv").write_text("a,b\n", encoding="utf-8")
+    (repo / ".venv" / "test_x.py").mkdir(parents=True)
+    (repo / ".venv" / "test_x.py" / "test_x.py").write_text("", encoding="utf-8")
     (repo / "src.py").write_text("", encoding="utf-8")
     (repo / "pyproject.toml").write_text("[tool.pytest.ini_options]\naddopts = \"-q\"\n", encoding="utf-8")
     report = probe_test_collection(repo)
     assert report["test_file_count"] == 2
     assert report["pytest_config_present"] is True
+    assert report["markers_declared"] == ""
 
 
 def test_fixtures_coverage_reports_missing_fixture_dirs(tmp_path: Path) -> None:
@@ -234,3 +238,18 @@ def test_fixtures_coverage_reports_missing_fixture_dirs(tmp_path: Path) -> None:
     assert report["total_validators"] == 1
     assert report["covered_validators"] == 0
     assert report["missing_fixtures"] == ["validate-demo"]
+
+
+def test_fixtures_coverage_reports_covered_and_partial(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    (repo / "scripts").mkdir(parents=True)
+    (repo / "scripts" / "validate-a.py").write_text("pass\n", encoding="utf-8")
+    (repo / "scripts" / "validate-b.py").write_text("pass\n", encoding="utf-8")
+    (repo / "tests" / "fixtures" / "validate-a" / "valid").mkdir(parents=True)
+    (repo / "tests" / "fixtures" / "validate-a" / "invalid").mkdir(parents=True)
+    (repo / "tests" / "fixtures" / "validate-b" / "valid").mkdir(parents=True)
+    report = fixtures_coverage(repo)
+    assert report["total_validators"] == 2
+    assert report["covered_validators"] == 1
+    assert report["missing_fixtures"] == ["validate-b"]
+    assert report["coverage"] == 0.5
