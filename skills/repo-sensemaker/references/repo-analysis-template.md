@@ -223,16 +223,15 @@ extended_analysis:
     # never silently ignore it.
     - product
     - architecture
-  discovery_confidence:
-    level: high | medium | low
-    why_bounded: >
-      One or two sentences on what grounds this confidence and what it's
-      NOT based on (e.g. "did not run the full test suite, only the
-      cited file").
   consequential_boundary:
     description: >
       What actually matters for what happens next -- may be narrower or
-      broader than Section 6's weakest_boundary.
+      broader than Section 6's weakest_boundary. Section 15 is
+      deliberately allowed to name a boundary Section 6 doesn't --
+      co-occurrence in the same brief is not a claim that they're the
+      same boundary. A downstream reader deciding whether a proposal
+      "covers" this weakness must check what THIS field itself
+      describes, not assume it's Section 6's weakest_boundary restated.
     rationale: >
       Why this boundary, specifically, is the one worth acting on.
     is_demonstrated_weakness: true | false
@@ -244,6 +243,19 @@ extended_analysis:
     # untouched by this field.
   uncertainty:
     source: repository_evidence | empirical | owner_intent | external_environment
+    # The discriminant between repository_evidence and empirical is NOT
+    # the question's subject matter or tense ("is X true", "has X
+    # happened") -- it's whether the answer already exists somewhere
+    # inspectable (repository_evidence: files, logs, traces, run
+    # history, git history -- already generated, just needs to be
+    # looked up/searched) or whether answering it requires generating a
+    # NEW observation (empirical: running something, executing a probe,
+    # triggering an experiment that hasn't happened yet). "Has this ever
+    # failed in production" is repository_evidence if run logs already
+    # exist to search; it's empirical if nothing has ever been run and
+    # the only way to find out is to run it. Either way: empirical
+    # uncertainty is never resolved by asking the owner to guess --
+    # formulate/recommend the probe instead (see Boundary Rule 3).
     question: >
       The specific unresolved question, independent of source -- every
       source can have one, not only owner_intent.
