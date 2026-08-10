@@ -1180,7 +1180,7 @@ class OrchestrationRunner:
     _WORKFLOW_ID_FIELDS = ("recommended_workflow_id", "chosen_workflow_id", "selected_workflow")
 
     # Candidate machine fields that may carry the fog type, in priority order.
-    _FOG_TYPE_FIELDS = ("fog_type", "primary_fog_type", "user_implied_fog_type")
+    _FOG_TYPE_FIELDS = ("primary_fog_type", "user_implied_fog_type")
 
     def _extract_recommended_workflow(self, source_artifact_id: str) -> str | None:
         """Extract the next workflow id from the source artifact.

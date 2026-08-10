@@ -1,34 +1,40 @@
-spike_name: distribution_drift
-status: SUCCESS
-metrics:
-  total_skills_checked: 15
-  synchronized_count: 3
-  drifted_skills_count: 12
-  drift_missing_from_install: 2
-  drift_line_ending_only: 5
-  drift_content_only: 5
-  installed_skills_count: 29
-  probe_function_elapsed_ms: 24.09
-  cli_total_elapsed_ms: 410.64
-  probe_repo_elapsed_ms: 7871.38
-  probe_repo_exit_code: 0
-  pytest_tests_passed: 8
-files_created:
-  - scripts/repo_probes.py
-  - scripts/probe_skill_distribution.py
-  - tests/test_skill_distribution_probe.py
-  - distribution-drift.yaml
-  - spike-report.yaml
-summary: |
-  Spike validated: probe_skill_distribution() in scripts/repo_probes.py scans
-  skills/*/SKILL.md and compares line counts + SHA-256 against ~/.agents/skills
-  (Path.home()-resolved, Windows and Unix safe; explicit path override for tests).
-  Of 15 repo skills, 3 are synchronized and 12 drifted: 2 skills are missing
-  from the install entirely (architectural-review, coding-agent-native-campaign),
-  5 differ only by CRLF-vs-LF line endings (docs-aligner, sensemaking-docs-reconciler,
-  setup-sensemaking-skills, to-issues, to-prd), and 5 carry real content drift
-  (handoff, problem-framer, repo-sensemaker 199 vs 119 lines, unknowns-mapper,
-  workflow-planner). Runtime is unchanged: probe_all/probe-repo.py untouched;
-  drift probe costs ~24 ms in-process. Recommendation for follow-up: normalize
-  line endings (or compare LF-normalized hashes) before flagging drift, and wire
-  distribution_drift into probe_all only after that decision.
+spikes:
+  - spike_name: distribution_drift
+    status: SUCCESS
+    metrics:
+      total_skills_checked: 15
+      synchronized_count: 3
+      drifted_skills_count: 12
+      drift_missing_from_install: 2
+      drift_line_ending_only: 5
+      drift_content_only: 5
+      installed_skills_count: 29
+      probe_function_elapsed_ms: 24.09
+      cli_total_elapsed_ms: 410.64
+      probe_repo_elapsed_ms: 7871.38
+      probe_repo_exit_code: 0
+      pytest_tests_passed: 8
+    files_created:
+      - scripts/repo_probes.py
+      - scripts/probe_skill_distribution.py
+      - tests/test_skill_distribution_probe.py
+      - distribution-drift.yaml
+      - spike-report.yaml
+    summary: |
+      Spike validated: probe_skill_distribution() in scripts/repo_probes.py scans
+      skills/*/SKILL.md and compares line counts + SHA-256 against ~/.agents/skills
+      (Path.home()-resolved, Windows and Unix safe; explicit path override for tests).
+      Of 15 repo skills, 3 are synchronized and 12 drifted: 2 skills are missing
+      from the install entirely (architectural-review, coding-agent-native-campaign),
+      5 differ only by CRLF-vs-LF line endings (docs-aligner, sensemaking-docs-reconciler,
+      setup-sensemaking-skills, to-issues, to-prd), and 5 carry real content drift
+      (handoff, problem-framer, repo-sensemaker 199 vs 119 lines, unknowns-mapper,
+      workflow-planner). Runtime is unchanged: probe_all/probe-repo.py untouched;
+      drift probe costs ~24 ms in-process. Recommendation for follow-up: normalize
+      line endings (or compare LF-normalized hashes) before flagging drift, and wire
+      distribution_drift into probe_all only after that decision.
+  - spike_name: "ci_contract_fix"
+    status: "SUCCESS"
+    diff_size_lines: 2
+    tests_passing: "3/3"
+    summary: "Fixed failing field-contract guardrail (tests/test_field_contract_agreement.py) by removing the non-canonical legacy alias 'fog_type' from OrchestrationRunner._FOG_TYPE_FIELDS in scripts/workflow-runtime.py (1 line replaced: 1 insertion, 1 deletion). Investigation showed 'fog_type' is not canonical: no artifact contract declares it (the repository_sensemaking_brief declares primary_fog_type as required and user_implied_fog_type as recommended; the workflow_orchestration_plan declares primary_fog_type), no producer emits it (all example briefs/plans use primary_fog_type), and validators (scripts/validate-plan.py) read primary_fog_type. Declaring 'fog_type' in the contract would have enshrined a field no producer writes; removing the dead alias preserves runtime behavior for all real artifacts (resolution falls through to primary_fog_type unchanged). Verified: pytest tests/test_field_contract_agreement.py -> 3 passed, 0 failed; scripts/test-validators.py -> 72/72 passed; scripts/validate-repo.py -> 'Validation passed!'. Note: the spike brief referenced 'defaults/artifact-contracts.yaml', but that path does not exist in this repo; the contract file loaded by the test is skills/workflow-planner/references/artifact-contracts.yaml, which required no changes."
