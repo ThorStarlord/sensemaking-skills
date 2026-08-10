@@ -265,6 +265,23 @@ def build_skeleton(ctx: SkeletonContext | None = None) -> str:
     lines.append("```")
     lines.append("")
 
+    lines.append("## 15. Extended analysis")
+    lines.append("")
+    lines.append(
+        "<!-- OPTIONAL, non-blocking (ADR 0024, ACCEPTED). Leave this block "
+        "absent entirely if you have nothing here; validate-brief.py never "
+        "requires it. If present, it must be a single `extended_analysis:` "
+        "YAML mapping with any of: domain (list, reuses canonical fog "
+        "vocabulary), consequential_boundary ({description, rationale, "
+        "is_demonstrated_weakness}), uncertainty ({source, question}), "
+        "owner_intent_state ({known, status}). -->"
+    )
+    lines.append("")
+    lines.append(_marker("extended_analysis", "BEGIN"))
+    lines.append("")
+    lines.append(_marker("extended_analysis", "END"))
+    lines.append("")
+
     return "\n".join(lines)
 
 
@@ -445,6 +462,22 @@ def _extract_model_sections(text: str) -> dict[str, str]:
         if block.strip() and "evidence_excerpts: []" not in block:
             found["evidence_excerpts"] = block
 
+    # extended_analysis (Section 15, ADR 0024): same shape as
+    # evidence_excerpts -- its own marker pair holding a yaml fence, kept
+    # out of MODEL_SECTIONS so build_skeleton() can place it after Section
+    # 13 rather than inline with the free-prose sections. Unlike
+    # evidence_excerpts, no quote-style deterministic overwrite is needed
+    # here -- the raw harvested text is spliced back verbatim; validate-
+    # brief.py is the sole authority on whether its content is acceptable.
+    begin = re.escape(_marker("extended_analysis", "BEGIN"))
+    end = re.escape(_marker("extended_analysis", "END"))
+    pattern = re.compile(f"{begin}(.*?){end}", re.DOTALL)
+    m = pattern.search(text)
+    if m:
+        block = m.group(1).strip("\n")
+        if block.strip():
+            found["extended_analysis"] = block
+
     return found
 
 
@@ -590,6 +623,12 @@ def reconcile(
             count=1,
             flags=re.DOTALL,
         )
+
+    if "extended_analysis" in harvested_sections:
+        content = harvested_sections["extended_analysis"]
+        begin = _marker("extended_analysis", "BEGIN")
+        end = _marker("extended_analysis", "END")
+        out = out.replace(f"{begin}\n\n{end}", f"{begin}\n\n{content}\n\n{end}")
 
     return out
 

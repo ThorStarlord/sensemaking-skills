@@ -48,6 +48,53 @@ EVIDENCE_QUOTE_NOT_FOUND = "EVIDENCE_QUOTE_NOT_FOUND"
 # "not grounded at all" case.
 EVIDENCE_QUOTE_WINDOW_MATCH = "EVIDENCE_QUOTE_WINDOW_MATCH"
 
+# Section 15 "Extended analysis" (ADR 0024, ACCEPTED -- see
+# docs/adr/0024-extended-analysis-field-classification.md). The block is entirely
+# optional; every check here is severity="warning" by construction --
+# nothing under this heading may ever set `valid` to False. This is a
+# deliberately stronger non-blocking guarantee than weakness_type's (D2),
+# which is "required but non-blocking" -- extended_analysis is "optional
+# and non-blocking."
+EXTENDED_ANALYSIS_MALFORMED = "EXTENDED_ANALYSIS_MALFORMED"
+EXTENDED_ANALYSIS_UNCERTAINTY_SOURCE_UNKNOWN = "EXTENDED_ANALYSIS_UNCERTAINTY_SOURCE_UNKNOWN"
+EXTENDED_ANALYSIS_OWNER_INTENT_STATUS_UNKNOWN = "EXTENDED_ANALYSIS_OWNER_INTENT_STATUS_UNKNOWN"
+EXTENDED_ANALYSIS_IS_DEMONSTRATED_WEAKNESS_TYPE = "EXTENDED_ANALYSIS_IS_DEMONSTRATED_WEAKNESS_TYPE"
+
+_EXTENDED_ANALYSIS_UNCERTAINTY_SOURCES = {
+    "repository_evidence", "empirical", "owner_intent", "external_environment",
+}
+_EXTENDED_ANALYSIS_OWNER_INTENT_STATUSES = {"sufficient", "thin", "blocking_unknown"}
+
+
+def _parse_extended_analysis(content: str) -> dict[str, Any] | None:
+    """Extract Section 15's `extended_analysis:` mapping, if present.
+
+    Returns None if Section 15 is absent (the common, fully-supported
+    case -- this block is optional) or if a yaml fence is present but
+    does not parse / is not a mapping (the caller reports that as
+    EXTENDED_ANALYSIS_MALFORMED, a warning, not a crash).
+    """
+    # Canonical heading is "## 15. Extended analysis" (ADR 0024). The
+    # pre-ratification "## 15. Extended analysis (candidate)" spelling is
+    # still tolerated so already-written artifacts revalidate unchanged.
+    match = re.search(
+        r"## 15\. Extended analysis(?:\s*\(candidate\))?\s+```yaml\s+(.*?)\s+```",
+        content,
+        re.DOTALL | re.IGNORECASE,
+    )
+    if not match:
+        return None
+    try:
+        data = yaml.safe_load(match.group(1))
+    except Exception:
+        return {"__malformed__": True}
+    if not isinstance(data, dict) or "extended_analysis" not in data:
+        return {"__malformed__": True}
+    inner = data["extended_analysis"]
+    if not isinstance(inner, dict):
+        return {"__malformed__": True}
+    return inner
+
 # Section-aware, duplicate-key-safe weakness_type safeguard (issue #90,
 # integrated per issue #93). These trace 1:1 to weakness_type_safeguard's
 # outcome taxonomy and run BEFORE any plain yaml.safe_load() touches the
@@ -772,6 +819,60 @@ def validate_brief(
             errors.append(_code_error(MISSING_WORKFLOW_ID, "Handoff missing 'recommended_workflow_id'."))
     elif not large:
         errors.append(_code_error(MISSING_HANDOFF_BLOCK, "Missing 'Machine-readable handoff' YAML block."))
+
+    # 6. Section 15 "Extended analysis" (ADR 0024, ACCEPTED, optional).
+    # Absence is the default and produces nothing here. Every check below
+    # is severity="warning" -- this block can never fail the brief, per
+    # ADR 0024.
+    extended_analysis = _parse_extended_analysis(content)
+    if extended_analysis is not None:
+        if extended_analysis.get("__malformed__"):
+            errors.append(_code_error(
+                EXTENDED_ANALYSIS_MALFORMED,
+                "Section 15's yaml fence is present but does not parse to a "
+                "single 'extended_analysis:' mapping. This is an optional "
+                "block -- malformed content here never invalidates "
+                "the brief, but it also won't be usable by anything reading it.",
+                field="extended_analysis",
+                severity="warning",
+            ))
+        else:
+            uncertainty = extended_analysis.get("uncertainty")
+            if isinstance(uncertainty, dict):
+                source = uncertainty.get("source")
+                if source is not None and source not in _EXTENDED_ANALYSIS_UNCERTAINTY_SOURCES:
+                    errors.append(_code_error(
+                        EXTENDED_ANALYSIS_UNCERTAINTY_SOURCE_UNKNOWN,
+                        f"extended_analysis.uncertainty.source '{source}' is not one "
+                        f"of {sorted(_EXTENDED_ANALYSIS_UNCERTAINTY_SOURCES)}.",
+                        field="extended_analysis.uncertainty.source",
+                        severity="warning",
+                    ))
+
+            owner_intent_state = extended_analysis.get("owner_intent_state")
+            if isinstance(owner_intent_state, dict):
+                status = owner_intent_state.get("status")
+                if status is not None and status not in _EXTENDED_ANALYSIS_OWNER_INTENT_STATUSES:
+                    errors.append(_code_error(
+                        EXTENDED_ANALYSIS_OWNER_INTENT_STATUS_UNKNOWN,
+                        f"extended_analysis.owner_intent_state.status '{status}' is "
+                        f"not one of {sorted(_EXTENDED_ANALYSIS_OWNER_INTENT_STATUSES)}.",
+                        field="extended_analysis.owner_intent_state.status",
+                        severity="warning",
+                    ))
+
+            consequential_boundary = extended_analysis.get("consequential_boundary")
+            if isinstance(consequential_boundary, dict):
+                is_demonstrated_weakness = consequential_boundary.get("is_demonstrated_weakness")
+                if is_demonstrated_weakness is not None and not isinstance(is_demonstrated_weakness, bool):
+                    errors.append(_code_error(
+                        EXTENDED_ANALYSIS_IS_DEMONSTRATED_WEAKNESS_TYPE,
+                        "extended_analysis.consequential_boundary.is_demonstrated_weakness "
+                        f"must be true or false, got {type(is_demonstrated_weakness).__name__}: "
+                        f"{is_demonstrated_weakness!r}.",
+                        field="extended_analysis.consequential_boundary.is_demonstrated_weakness",
+                        severity="warning",
+                    ))
 
     return errors
 

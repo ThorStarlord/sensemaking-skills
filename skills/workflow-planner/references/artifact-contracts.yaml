@@ -142,11 +142,23 @@ artifacts:
       - auto_escalation_allowed
       - weakness_type
       - weakness_type_explanation
+      # Section 15 "extended_analysis" fields (ADR 0024, ACCEPTED): classified
+      # per ADR 0015 as "model, constrained" (same class as weakness_type),
+      # all OPTIONAL, all non-blocking -- a stronger guarantee than
+      # weakness_type's "required but non-blocking" (D2). Live in a single
+      # Section 15 `extended_analysis:` YAML mapping (`## 15. Extended
+      # analysis`), not Section 13. Absence changes nothing; presence never
+      # fails validate-brief.py.
+      - extended_analysis.domain
+      - extended_analysis.consequential_boundary
+      - extended_analysis.uncertainty
+      - extended_analysis.owner_intent_state
     notes:
       - "Validation results are NOT stored in this artifact. See validators/run_log.md for validation output."
       - "PATH B (transient validation): validation_status field is NOT present."
       - "Phase 1 diagnostic scope: brief prepares handoff to workflow-planner for Phase 2 implementation."
       - "weakness_type (issue #80): structured taxonomy field in Section 13. Allowed values are the 7 registered types in skills/repo-sensemaker/references/weakness-types.md plus 'Other'. Required metadata but non-blocking (D2) -- missing/unrecognized values are validator warnings, never errors. weakness_type_explanation is required only when weakness_type is 'Other' (D4); its absence there is also a non-blocking warning that must be resolved before human final-approval."
+      - "extended_analysis (Section 15, ADR 0024 ACCEPTED): optional, non-blocking, model-constrained. Not read by workflow-runtime.py's routing (_WORKFLOW_ID_FIELDS / _FOG_TYPE_FIELDS) -- see tests/test_field_contract_agreement.py, whose guard this deliberately does not need to touch. Any future promotion to drive real routing requires a new owner decision per field."
     verification:
       generic_validator: "python scripts/validate-artifact.py repository_sensemaking_brief {artifact_path}"
       specialized_validators:

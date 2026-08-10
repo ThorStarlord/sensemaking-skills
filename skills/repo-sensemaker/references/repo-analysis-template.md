@@ -197,3 +197,81 @@ immutable: true
 
 ## 14. Ready-to-copy prompt
 Prompt for `workflow-planner` or another downstream skill.
+
+## 15. Extended analysis
+
+**Optional. Non-blocking.** Ratified as ordinary optional contract fields —
+see [ADR 0024](../../../docs/adr/0024-extended-analysis-field-classification.md)
+and [docs/candidate/architecture-decision.md](../../../docs/candidate/architecture-decision.md)
+for the classification and rationale. Leave this section absent entirely if
+you have nothing to add here — `validate-brief.py` never requires it, and
+Sections 1-14 above remain the complete, valid brief on their own.
+
+If you do have something to add, use a single `extended_analysis:` YAML
+mapping with any subset of these fields (all optional, independently):
+
+```yaml
+extended_analysis:
+  schema_version: 1
+  domain:
+    # List, not a single value -- unlike primary_fog_type (Section 13),
+    # which is forced to pick one. Reuses the same canonical fog-type
+    # vocabulary base names (product, ui, architecture, docs, integration).
+    # List EVERY fog dimension genuinely implicated, not just the primary
+    # one. A downstream reader outside one of these domains should treat
+    # it as an explicit disclosure trigger ("this is out of my lens"),
+    # never silently ignore it.
+    - product
+    - architecture
+  consequential_boundary:
+    description: >
+      What actually matters for what happens next -- may be narrower or
+      broader than Section 6's weakest_boundary. Section 15 is
+      deliberately allowed to name a boundary Section 6 doesn't --
+      co-occurrence in the same brief is not a claim that they're the
+      same boundary. A downstream reader deciding whether a proposal
+      "covers" this weakness must check what THIS field itself
+      describes, not assume it's Section 6's weakest_boundary restated.
+    rationale: >
+      Why this boundary, specifically, is the one worth acting on.
+    is_demonstrated_weakness: true | false
+    # true only if this is independently, currently demonstrated (not a
+    # suspicion or a plausible-sounding pattern). Do NOT use a
+    # weakness_type value of "none" for a legitimate-but-unresolved
+    # choice -- set this to false and leave Section 13's weakness_type
+    # absent instead; weakness_type's own taxonomy (Section 6) is
+    # untouched by this field.
+  uncertainty:
+    source: repository_evidence | empirical | owner_intent | external_environment
+    # The discriminant between repository_evidence and empirical is NOT
+    # the question's subject matter or tense ("is X true", "has X
+    # happened") -- it's whether the answer already exists somewhere
+    # inspectable (repository_evidence: files, logs, traces, run
+    # history, git history -- already generated, just needs to be
+    # looked up/searched) or whether answering it requires generating a
+    # NEW observation (empirical: running something, executing a probe,
+    # triggering an experiment that hasn't happened yet). "Has this ever
+    # failed in production" is repository_evidence if run logs already
+    # exist to search; it's empirical if nothing has ever been run and
+    # the only way to find out is to run it. Either way: empirical
+    # uncertainty is never resolved by asking the owner to guess --
+    # formulate/recommend the probe instead (see Boundary Rule 3).
+    question: >
+      The specific unresolved question, independent of source -- every
+      source can have one, not only owner_intent.
+  owner_intent_state:
+    known: >
+      What's already been established about owner intent from prior
+      context, stated plainly (not padded to look more complete than it
+      is).
+    status: sufficient | thin | blocking_unknown
+    # What's actually unresolved lives in uncertainty.question above --
+    # do not restate it here as a second, separately-maintained note;
+    # the two can silently drift apart.
+```
+
+None of these fields drive automated routing (`workflow-runtime.py` does
+not read them) — they exist for a human, or a downstream skill reading
+the brief directly, to use at their own discretion. See
+`skills/repo-sensemaker/SKILL.md`'s Interact section for how these fields
+are meant to be used in conversational (non-runtime) invocation.
