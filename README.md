@@ -257,6 +257,23 @@ python scripts/shadow-mode-runner.py
 
 ---
 
+## Tooling
+
+### Probe Engine
+
+Deterministic repository probes for verified current state. `repo-sensemaker`
+consumes the report it produces; you can also run it standalone on any repo:
+
+```powershell
+python scripts/probe-repo.py --repo-root <path> [--output probe-report.yaml]
+```
+
+The report (`probe-report.yaml`) contains git state, the verification-gap metric
+`Vg` (declared vs CI-enforced checks, from README + `.github/workflows`), the
+context-entropy metric `Ce` (untracked+ignored volume / tracked volume), test
+collection stats, validator fixture coverage, and change churn. Validate a
+report with `python scripts/validate-probe-report.py <report.yaml>`.
+
 ## Repository Structure
 
 ```
