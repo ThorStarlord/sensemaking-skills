@@ -7,6 +7,7 @@ dicts safe for YAML serialization.
 
 from __future__ import annotations
 
+import hashlib
 import re
 import subprocess
 from collections import Counter
@@ -238,6 +239,74 @@ def fixtures_coverage(repo_root: Path) -> Dict[str, object]:
         "covered_validators": len(covered),
         "missing_fixtures": missing,
         "coverage": round(len(covered) / total, 2) if total else 0.0,
+    }
+
+
+def _read_bytes(path: Path) -> bytes | None:
+    """Read raw file bytes; None on any OSError (caller decides how to treat it)."""
+    try:
+        return path.read_bytes()
+    except OSError:
+        return None
+
+
+def probe_skill_distribution(
+    repo_root: Path, installed_skills_root: Path | None = None
+) -> Dict[str, object]:
+    """Compare canonical skills/*/SKILL.md against installed copies.
+
+    Installed copies default to ~/.agents/skills; Path.home() resolves both
+    Windows (C:\\Users\\<user>\\.agents\\skills) and Unix (/home/<user>/.agents/skills)
+    home locations. Pure filesystem + hashlib reads, no writes, no subprocess.
+    A repo skill whose installed copy is missing or unreadable counts as
+    drifted (hash_match False, installed_lines None).
+    """
+    if installed_skills_root is None:
+        installed_skills_root = Path.home() / ".agents" / "skills"
+
+    drifted_skills: List[Dict[str, object]] = []
+    synchronized_count = 0
+    total_skills_checked = 0
+
+    repo_skills_dir = repo_root / "skills"
+    for skill_md in sorted(repo_skills_dir.glob("*/SKILL.md")):
+        skill_name = skill_md.parent.name
+        total_skills_checked += 1
+
+        repo_data = _read_bytes(skill_md)
+        installed_md = installed_skills_root / skill_name / "SKILL.md"
+        installed_data = _read_bytes(installed_md) if installed_md.is_file() else None
+
+        if repo_data is None:
+            repo_lines: int | None = None
+            repo_hash: str | None = None
+        else:
+            repo_lines = len(repo_data.decode("utf-8", errors="replace").splitlines())
+            repo_hash = hashlib.sha256(repo_data).hexdigest()
+
+        if installed_data is None:
+            installed_lines: int | None = None
+            hash_match = False
+        else:
+            installed_lines = len(installed_data.decode("utf-8", errors="replace").splitlines())
+            hash_match = repo_hash is not None and hashlib.sha256(installed_data).hexdigest() == repo_hash
+
+        if hash_match:
+            synchronized_count += 1
+        else:
+            drifted_skills.append(
+                {
+                    "skill_name": skill_name,
+                    "repo_lines": repo_lines,
+                    "installed_lines": installed_lines,
+                    "hash_match": hash_match,
+                }
+            )
+
+    return {
+        "total_skills_checked": total_skills_checked,
+        "synchronized_count": synchronized_count,
+        "drifted_skills": drifted_skills,
     }
 
 
