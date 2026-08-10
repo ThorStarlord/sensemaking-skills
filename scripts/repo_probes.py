@@ -20,6 +20,8 @@ def _git(repo_root: Path, *args: str) -> str:
             ["git", "-C", str(repo_root), *args],
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             cwd=str(repo_root),
             timeout=30,
         )
@@ -48,7 +50,7 @@ def git_state(repo_root: Path) -> Dict[str, object]:
 
     tracked = _git(repo_root, "ls-files").splitlines()
     untracked = _git(repo_root, "ls-files", "--others", "--exclude-standard").splitlines()
-    ignored_present = _git(repo_root, "status", "--porcelain=v1", "-uno", "--ignored").splitlines()
+    ignored_present = _git(repo_root, "status", "--porcelain=v1", "--ignored").splitlines()
     porcelain = _git(repo_root, "status", "--porcelain=v1").splitlines()
     dirty = sum(1 for line in porcelain if not line.startswith("??"))
 
@@ -59,7 +61,7 @@ def git_state(repo_root: Path) -> Dict[str, object]:
         "head_message": head_message,
         "tracked_file_count": len(tracked),
         "untracked_file_count": len(untracked),
-        "ignored_present_entry_count": len(ignored_present),
+        "ignored_present_entry_count": sum(1 for line in ignored_present if line.startswith("!!")),
         "dirty_file_count": dirty,
     }
 
