@@ -6,7 +6,7 @@
 An agent-native framework for repository diagnosis and workflow orchestration. Turns repository uncertainty into clear problem frames, research paths, and actionable next-step prompts.
 
 **Status**: Beta (Scenario 5 tested and proven)  
-**Current Use**: Agent/Claude Code invocation + CLI utilities (v0.2.1)  
+**Current Use**: Agent/Claude Code invocation + CLI utilities (v0.2.2)  
 **Maturity**: Production-ready for agent-based use, CLI beta-ready
 
 ---
@@ -31,7 +31,7 @@ An agent-native framework for repository diagnosis and workflow orchestration. T
 ## What This Is NOT
 
 ❌ **Not a fully autonomous CLI diagnosis engine** — Repository diagnosis is agent-led, CLI provides utilities  
-❌ **Not a service** — No external API calls, no server, no cloud dependency. Entirely local.  
+❌ **Not a service** — No server, no cloud dependency. The core package is entirely local; only the optional `exploratory_execution` subsystem calls the GitHub REST API (`api.github.com`) for issue-approval tracking  
 ❌ **Not a replacement for specialized tools** — Complements PM skills, UI skills, TDD tools  
 ❌ **Agent-driven diagnostics require Claude Code** — The CLI utilities (validate, test, analyze) work standalone; full diagnosis requires an agent harness  
 
@@ -43,7 +43,7 @@ An agent-native framework for repository diagnosis and workflow orchestration. T
 - A local repository to analyze
 - No API keys or external credentials required for the CLI itself
 
-**sensemaking-skills is a local-first Python utility.** The package itself reads repository files, validates artifacts, runs local scripts, and produces diagnostic Markdown outputs. It makes no external API calls and requires no credentials.
+**sensemaking-skills is a local-first Python utility.** The package itself reads repository files, validates artifacts, runs local scripts, and produces diagnostic Markdown outputs. The core CLI makes no external API calls and requires no credentials. One optional subsystem, `exploratory_execution` (issue/approval tracking for governed experiment runs), calls the GitHub REST API at `api.github.com` and requires a GitHub personal access token; it fails closed when unauthenticated or unreachable.
 
 For full agent-driven diagnostics, use the included SKILL.md files with an agent harness such as Claude Code. Any LLM/API access is handled by that harness, not by sensemaking-skills.
 
@@ -74,7 +74,7 @@ pip install -e .
 sensemaking-skills --version
 ```
 
-Expected version: `0.2.1`
+Expected version: `0.2.2`
 
 ### CLI Commands
 
@@ -278,6 +278,13 @@ report with `python scripts/validate-probe-report.py <report.yaml>`.
 
 ```
 sensemaking-skills/
+├── src/sensemaking_skills/
+│   ├── campaign_accounting/        (Campaign run accounting)
+│   ├── campaign_validation/        (Campaign validation)
+│   ├── exploratory_authorization/  (Exploratory capability minting)
+│   ├── exploratory_execution/      (Exploratory execution incl. GitHub approval)
+│   ├── commands/                   (CLI commands)
+│   └── defaults/                   (Default configuration)
 ├── skills/
 │   ├── repo-sensemaker/
 │   │   ├── SKILL.md              (Skill definition)
@@ -297,10 +304,11 @@ sensemaking-skills/
 │   └── [sample briefs and plans]
 ├── tests/
 │   └── [test suite]
+├── CONTEXT.md                     (Architecture and principles)
 ├── docs/
-│   ├── CONTEXT.md                (Architecture and principles)
 │   ├── philosophy/               (Design philosophy)
-│   └── adr/                       (Architecture Decision Records)
+│   ├── adr/                      (Architecture Decision Records)
+│   └── archive/                  (Archived phase reports)
 └── setup.py / pyproject.toml     (Packaging metadata)
 ```
 
@@ -314,14 +322,14 @@ sensemaking-skills/
 - ✅ No 4th attempt (budget respected)
 - ✅ Graceful escalation message
 
-See: [SCENARIO-5-CLEAN-TEST-EVIDENCE.md](SCENARIO-5-CLEAN-TEST-EVIDENCE.md)
+See: [docs/archive/phase-reports/SCENARIO-5-CLEAN-TEST-EVIDENCE.md](docs/archive/phase-reports/SCENARIO-5-CLEAN-TEST-EVIDENCE.md)
 
 ### Week 1: Real Execution
 - ✅ 10 real repositories tested
 - ✅ Real execution times measured (0.131s avg, 0.138s P95)
 - ✅ Honest results documented (infrastructure works, repos lack artifacts)
 
-See: [WEEK1-REAL-EXECUTION-EVIDENCE.md](WEEK1-REAL-EXECUTION-EVIDENCE.md)
+See: [docs/archive/phase-reports/WEEK1-REAL-EXECUTION-EVIDENCE.md](docs/archive/phase-reports/WEEK1-REAL-EXECUTION-EVIDENCE.md)
 
 ---
 
