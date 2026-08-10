@@ -287,6 +287,15 @@ into one "ready to act on" recommendation, even when both are true):
 
 **"One question" is a working constraint, not a hard-coded rule.** If investigation genuinely produces two independent decision-changing owner-intent uncertainties, that is itself a finding worth reporting plainly rather than silently forcing both into one question or silently dropping the second — but the default is one question.
 
+### `repository_evidence` vs. `empirical`
+
+The discriminant is not the question's subject matter or tense ("is X true," "has X happened") — it's whether the answer already exists somewhere inspectable, or has to be newly generated:
+
+- **`repository_evidence`**: the answer exists already, in something you can look up or search — files, git history, run logs, session artifact directories, `tool-call-trace.jsonl` records, CI history. You haven't looked yet, but looking is enough.
+- **`empirical`**: nothing that already exists can answer it. Answering requires making something happen that hasn't happened yet — running a script, executing a probe, triggering an experiment.
+
+"Has this ever caused a real failure in production" is `repository_evidence` if run logs/traces already exist to search. It's `empirical` if nothing has ever been run and the only way to find out is to run it. Get this wrong in either direction and the downstream behavior is still safe (neither branch asks the owner to guess), but get it right and the *type* of next step you recommend — search vs. probe — is the correct one, not just a defensible one.
+
 ### Neutral clarification
 
 A clarification question that labels one option as "what the repository evidence supports" is leading, even when unintentional. Concretely, when constructing the question:

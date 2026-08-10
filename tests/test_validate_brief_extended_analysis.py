@@ -106,9 +106,6 @@ extended_analysis:
   domain:
     - product
     - architecture
-  discovery_confidence:
-    level: high
-    why_bounded: "direct observation"
   consequential_boundary:
     description: "desc"
     rationale: "rationale"
@@ -171,21 +168,6 @@ extended_analysis:
 """
         errors = _validate(content)
         matches = [e for e in errors if "EXTENDED_ANALYSIS_IS_DEMONSTRATED_WEAKNESS_TYPE" in e["message"]]
-        self.assertEqual(len(matches), 1)
-        self.assertFalse(_is_blocking(matches[0]))
-
-    def test_unknown_discovery_confidence_level_is_a_warning(self):
-        content = _BASE_VALID_BODY + """
-## 15. Extended analysis (candidate)
-
-```yaml
-extended_analysis:
-  discovery_confidence:
-    level: extremely_sure
-```
-"""
-        errors = _validate(content)
-        matches = [e for e in errors if "EXTENDED_ANALYSIS_DISCOVERY_CONFIDENCE_LEVEL" in e["message"]]
         self.assertEqual(len(matches), 1)
         self.assertFalse(_is_blocking(matches[0]))
 

@@ -274,8 +274,7 @@ def build_skeleton(ctx: SkeletonContext | None = None) -> str:
         "absent entirely if you have nothing here; validate-brief.py never "
         "requires it. If present, it must be a single `extended_analysis:` "
         "YAML mapping with any of: domain (list, reuses canonical fog "
-        "vocabulary), discovery_confidence ({level, why_bounded}), "
-        "consequential_boundary ({description, rationale, "
+        "vocabulary), consequential_boundary ({description, rationale, "
         "is_demonstrated_weakness}), uncertainty ({source, question}), "
         "owner_intent_state ({known, status}). -->"
     )

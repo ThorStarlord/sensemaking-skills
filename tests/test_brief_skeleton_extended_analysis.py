@@ -36,9 +36,6 @@ extended_analysis:
   domain:
     - product
     - architecture
-  discovery_confidence:
-    level: high
-    why_bounded: "Grounded in direct first-hand observation."
   consequential_boundary:
     description: "Investment has drifted toward infrastructure."
     rationale: "LOC footprint and zero completed campaigns."

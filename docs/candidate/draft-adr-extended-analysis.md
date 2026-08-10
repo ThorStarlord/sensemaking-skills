@@ -2,12 +2,14 @@
 
 **Status**: DRAFT — not Proposed, not Accepted, no owner review yet. This
 is a sketch prepared per ADR 0015's own requirement ("any new field added
-to a contract must be classified at proposal time") for the five fields
-added to `repository_sensemaking_brief` on `candidate/sensemaking-vnext`.
-If this branch's work is ever brought toward `main`, this sketch is the
-starting point for a real, numbered, owner-reviewed ADR — it is not one
-itself, and nothing in it should be cited as ratified.
-**Date**: 2026-08-09
+to a contract must be classified at proposal time"), originally for five
+fields added to `repository_sensemaking_brief` on `candidate/sensemaking-vnext`,
+now **four** after an architecture stress-test round dropped `discovery_confidence`
+(see "Round 2" below). If this branch's work is ever brought toward
+`main`, this sketch is the starting point for a real, numbered,
+owner-reviewed ADR — it is not one itself, and nothing in it should be
+cited as ratified.
+**Date**: 2026-08-09, revised 2026-08-10
 **Depends on**: ADR 0015 (Accepted — the classification taxonomy this
 sketch instantiates), ADR 0016 (Accepted — governs `evidence_excerpts`,
 untouched by this proposal), ADR 0014 (Accepted — the repo-sensemaker /
@@ -41,17 +43,18 @@ time"), that declaration needs the classification this sketch documents
 
 ## Decision (proposed, not ratified)
 
-Classify all five `extended_analysis` fields as **model, constrained**
-(the same class ADR 0015 already uses for `weakness_type`) — not free
-prose, not machine-programmatic-routing:
+Classify all four surviving `extended_analysis` fields as **model,
+constrained** (the same class ADR 0015 already uses for `weakness_type`)
+— not free prose, not machine-programmatic-routing:
 
 | Field | Shape | Classification |
 |---|---|---|
 | `domain` | list of canonical fog-vocabulary base names | model, constrained |
-| `discovery_confidence` | `{level: high\|medium\|low, why_bounded: string}` | model, constrained |
 | `consequential_boundary` | `{description, rationale, is_demonstrated_weakness: bool}` | model, constrained |
 | `uncertainty` | `{source: repository_evidence\|empirical\|owner_intent\|external_environment, question: string}` | model, constrained |
 | `owner_intent_state` | `{known: string, status: sufficient\|thin\|blocking_unknown}` | model, constrained |
+
+(`discovery_confidence` — dropped 2026-08-10; see "Round 2" below.)
 
 **Enum/type checks are non-blocking (`severity="warning"`)** — stronger
 than `weakness_type`'s ADR-0015-ratified "required but non-blocking"
@@ -106,11 +109,11 @@ pressure — it is drafted, in the open, now.
 
 ## Hypothesis
 
-Five additive, non-blocking `model, constrained` fields can carry the
-vNext interaction behavior's evidence (uncertainty routing, demonstrated-
-weakness scoping, confidence bounding) through the real runtime pipeline
-without weakening any existing guarantee on the ratified Section 1-14
-contract.
+~~Five~~ **Four** (revised 2026-08-10, `discovery_confidence` dropped)
+additive, non-blocking `model, constrained` fields can carry the vNext
+interaction behavior's evidence (uncertainty routing, demonstrated-
+weakness scoping) through the real runtime pipeline without weakening any
+existing guarantee on the ratified Section 1-14 contract.
 
 ## Supporting evidence
 
@@ -122,7 +125,8 @@ contract.
   A second test in the same file proves the block's absence changes
   nothing about validation of the pre-existing contract.
 - `tests/test_brief_skeleton_extended_analysis.py` (9 tests) and
-  `tests/test_validate_brief_extended_analysis.py` (8 tests) prove the
+  `tests/test_validate_brief_extended_analysis.py` (7 tests, after
+  removing the `discovery_confidence`-specific case 2026-08-10) prove the
   skeleton/reconcile mechanics and the non-blocking validator behavior in
   isolation, including adversarial/malformed input never crashing or
   blocking.
@@ -147,14 +151,24 @@ contract.
   differs and why what remains is still a faithful exercise of the real
   path) — a live SDK-invoked run remains a further, not-yet-taken step
   if that distinction ever matters for a decision.
-- `discovery_confidence.level: low`'s downstream behavior remains
-  untested in any run, prototype or candidate.
-- No case has yet tested what happens when Section 15 disagrees with
-  Section 1-14's own content (e.g. `consequential_boundary` describing a
-  different boundary than Section 6's `weakest_boundary`) — the validator
-  doesn't check cross-section consistency, and whether it should is an
-  open question this sketch doesn't resolve. The one real run performed
-  so far was a clean-agreement case, not a stress test of disagreement.
+- ~~`discovery_confidence.level: low`'s downstream behavior remains
+  untested~~ **Closed by removal, 2026-08-10**: the architecture
+  stress-test round didn't just fail to test `low` — it confirmed no
+  consumer instruction anywhere (`architectural-review`'s Boundary Rule
+  6, `repo-sensemaker`'s Interact) reads `discovery_confidence` at all,
+  regardless of value. Dropped rather than wired in; see "Round 2" below.
+- ~~No case has yet tested what happens when Section 15 disagrees with
+  Section 1-14's own content~~ **Closed, 2026-08-10**: stress-test Case 5
+  deliberately constructed exactly this (confirmed to pass both real
+  validators with zero errors — no cross-section consistency check
+  exists, as expected). The downstream consumer noticed the conflict and
+  didn't silently merge the two, but hit a genuine textual ambiguity in
+  Boundary Rule 6 (does `is_demonstrated_weakness` require relating to
+  Section 6's boundary, or is it free-standing) that produced two
+  different, individually-defensible verdicts on identical input.
+  Boundary Rule 6 revised in response (see "Round 2"); still deliberately
+  **not** adding a validator-level consistency requirement between
+  Section 6 and Section 15 — they're allowed to legitimately differ.
 
 ## Incidental finding (real-runtime run, unrelated to this proposal's scope)
 
@@ -173,6 +187,55 @@ only because it was found while validating this proposal's real-run
 evidence, and belongs on the record. See
 `docs/candidate/real-runtime-run-2026-08-09/02-findings.md` for detail.
 Not fixed by this branch.
+
+## Round 2 — stress-test-informed revision (2026-08-10)
+
+Per the owner's explicit instruction after reviewing the stress-test
+report: apply only the findings the frozen-architecture experiment
+earned, nothing broader. Full case detail in
+`docs/candidate/stress-test-2026-08-10/`.
+
+1. **`discovery_confidence` dropped, not wired in.** Case 4 established
+   that neither documented consumer (`architectural-review`'s Boundary
+   Rule 6, `repo-sensemaker`'s Interact decision tree) reads this field
+   at all, regardless of its value — the correct verdict in Case 4 came
+   entirely from `consequential_boundary`, a different, licensed field.
+   Deliberately not inventing a consumer for it now ("field failed to
+   earn behavior → invent behavior so it can survive" was explicitly
+   rejected as backwards for a discovery prototype) — if a future real
+   case demands a confidence-bounding concept, it should be rediscovered
+   from that evidence, not resurrected because it already existed once.
+2. **`uncertainty.source` taxonomy kept structurally unchanged; its
+   `repository_evidence`/`empirical` decision rule clarified.** Case 1
+   and Case 3 classified structurally similar "has X already happened"
+   questions two different ways. The discriminant was never the
+   question's subject or tense — it's whether the answer already exists
+   somewhere inspectable (`repository_evidence`: files, logs, traces,
+   run history — unsearched, not unknowable) versus requires generating
+   a new observation (`empirical`: nothing existing can answer it;
+   answering means running/executing/probing something that hasn't
+   happened yet). This is now stated explicitly in
+   `repo-analysis-template.md` and `repo-sensemaker/SKILL.md`'s Interact
+   section, at the point of use, not just implied by example. No new
+   value added to the four-way enum.
+3. **`architectural-review` Boundary Rule 6, narrow revision.** Case 5's
+   actual finding wasn't "Section 6 and Section 15 can disagree" (already
+   known/allowed by design) — it was that a consumer facing that
+   disagreement had two equally-faithful readings of one sentence,
+   producing different verdicts. Revised the rule to state explicitly:
+   `is_demonstrated_weakness`'s partial-coverage penalty applies to
+   whatever `consequential_boundary` itself describes, never assumed to
+   be Section 6's `weakest_boundary` by co-occurrence; a proposal that
+   was never targeting Section 15's named boundary at all gets that
+   boundary disclosed as a separate, still-open finding, not folded into
+   the verdict on what the proposal actually addressed. Deliberately
+   **no** schema-level or validator-level equality requirement introduced
+   between Section 6 and Section 15 — this is a reading-scope
+   clarification for the consumer, not a new producer-side constraint.
+
+Verification: Cases 3, 4, and 5 rerun after these three changes (not the
+full six-case round) — see `docs/candidate/stress-test-2026-08-10/round2-results.md`
+for the before/after comparison.
 
 ## Experiment or review trigger
 

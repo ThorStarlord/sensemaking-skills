@@ -154,7 +154,6 @@ artifacts:
       # `extended_analysis:` YAML mapping, not Section 13. Absence
       # changes nothing; presence never fails validate-brief.py.
       - extended_analysis.domain
-      - extended_analysis.discovery_confidence
       - extended_analysis.consequential_boundary
       - extended_analysis.uncertainty
       - extended_analysis.owner_intent_state

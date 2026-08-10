@@ -60,13 +60,11 @@ EXTENDED_ANALYSIS_MALFORMED = "EXTENDED_ANALYSIS_MALFORMED"
 EXTENDED_ANALYSIS_UNCERTAINTY_SOURCE_UNKNOWN = "EXTENDED_ANALYSIS_UNCERTAINTY_SOURCE_UNKNOWN"
 EXTENDED_ANALYSIS_OWNER_INTENT_STATUS_UNKNOWN = "EXTENDED_ANALYSIS_OWNER_INTENT_STATUS_UNKNOWN"
 EXTENDED_ANALYSIS_IS_DEMONSTRATED_WEAKNESS_TYPE = "EXTENDED_ANALYSIS_IS_DEMONSTRATED_WEAKNESS_TYPE"
-EXTENDED_ANALYSIS_DISCOVERY_CONFIDENCE_LEVEL_UNKNOWN = "EXTENDED_ANALYSIS_DISCOVERY_CONFIDENCE_LEVEL_UNKNOWN"
 
 _EXTENDED_ANALYSIS_UNCERTAINTY_SOURCES = {
     "repository_evidence", "empirical", "owner_intent", "external_environment",
 }
 _EXTENDED_ANALYSIS_OWNER_INTENT_STATUSES = {"sufficient", "thin", "blocking_unknown"}
-_EXTENDED_ANALYSIS_CONFIDENCE_LEVELS = {"high", "medium", "low"}
 
 
 def _parse_extended_analysis(content: str) -> dict[str, Any] | None:
@@ -871,18 +869,6 @@ def validate_brief(
                         f"must be true or false, got {type(is_demonstrated_weakness).__name__}: "
                         f"{is_demonstrated_weakness!r}.",
                         field="extended_analysis.consequential_boundary.is_demonstrated_weakness",
-                        severity="warning",
-                    ))
-
-            discovery_confidence = extended_analysis.get("discovery_confidence")
-            if isinstance(discovery_confidence, dict):
-                level = discovery_confidence.get("level")
-                if level is not None and level not in _EXTENDED_ANALYSIS_CONFIDENCE_LEVELS:
-                    errors.append(_code_error(
-                        EXTENDED_ANALYSIS_DISCOVERY_CONFIDENCE_LEVEL_UNKNOWN,
-                        f"extended_analysis.discovery_confidence.level '{level}' is "
-                        f"not one of {sorted(_EXTENDED_ANALYSIS_CONFIDENCE_LEVELS)}.",
-                        field="extended_analysis.discovery_confidence.level",
                         severity="warning",
                     ))
 

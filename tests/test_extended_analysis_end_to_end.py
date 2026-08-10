@@ -69,9 +69,6 @@ extended_analysis:
   schema_version: candidate-1
   domain:
     - architecture
-  discovery_confidence:
-    level: high
-    why_bounded: "Directly read the cited file."
   consequential_boundary:
     description: "The skeleton mechanism is now production-real."
     rationale: "reconcile() only splices declared holes."
