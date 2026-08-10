@@ -1,51 +1,31 @@
 total_skills_checked: 15
-synchronized_count: 3
+synchronized_count: 10
+line_ending_drift_count: 5
+content_drift_count: 0
+missing_installed_count: 0
 drifted_skills:
-- skill_name: architectural-review
-  repo_lines: 107
-  installed_lines: null
-  hash_match: false
-- skill_name: coding-agent-native-campaign
-  repo_lines: 180
-  installed_lines: null
-  hash_match: false
 - skill_name: docs-aligner
   repo_lines: 56
   installed_lines: 56
   hash_match: false
-- skill_name: handoff
-  repo_lines: 42
-  installed_lines: 42
-  hash_match: false
-- skill_name: problem-framer
-  repo_lines: 53
-  installed_lines: 53
-  hash_match: false
-- skill_name: repo-sensemaker
-  repo_lines: 199
-  installed_lines: 119
-  hash_match: false
+  drift_type: line_ending_only
 - skill_name: sensemaking-docs-reconciler
   repo_lines: 30
   installed_lines: 30
   hash_match: false
+  drift_type: line_ending_only
 - skill_name: setup-sensemaking-skills
   repo_lines: 36
   installed_lines: 36
   hash_match: false
+  drift_type: line_ending_only
 - skill_name: to-issues
   repo_lines: 176
   installed_lines: 176
   hash_match: false
+  drift_type: line_ending_only
 - skill_name: to-prd
   repo_lines: 139
   installed_lines: 139
   hash_match: false
-- skill_name: unknowns-mapper
-  repo_lines: 112
-  installed_lines: 112
-  hash_match: false
-- skill_name: workflow-planner
-  repo_lines: 134
-  installed_lines: 134
-  hash_match: false
+  drift_type: line_ending_only

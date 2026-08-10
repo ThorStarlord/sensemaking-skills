@@ -1,14 +1,16 @@
 """Deterministic repository probes for repo-sensemaker.
 
 Pure probe functions: git subprocess reads and filesystem traversal only.
-No pytest subprocess, no network, no writes. Every function returns plain
-dicts safe for YAML serialization.
+No pytest subprocess, no network. Every function returns plain dicts safe
+for YAML serialization. The only write path is sync_skills(), which copies
+repo skills into an installed skills root and must be invoked explicitly.
 """
 
 from __future__ import annotations
 
 import hashlib
 import re
+import shutil
 import subprocess
 from collections import Counter
 from datetime import datetime, timezone
@@ -258,6 +260,13 @@ def probe_skill_distribution(
     Installed copies default to ~/.agents/skills; Path.home() resolves both
     Windows (C:\\Users\\<user>\\.agents\\skills) and Unix (/home/<user>/.agents/skills)
     home locations. Pure filesystem + hashlib reads, no writes, no subprocess.
+
+    Each skill is categorized by a drift_type:
+      - "none": raw bytes identical; counted in synchronized_count, NOT listed
+        in drifted_skills.
+      - "line_ending_only": identical after LF normalization (CRLF vs LF only).
+      - "content_drift": real content difference beyond line endings.
+      - "missing_installed": installed copy missing or unreadable.
     A repo skill whose installed copy is missing or unreadable counts as
     drifted (hash_match False, installed_lines None).
     """
@@ -266,6 +275,9 @@ def probe_skill_distribution(
 
     drifted_skills: List[Dict[str, object]] = []
     synchronized_count = 0
+    line_ending_drift_count = 0
+    content_drift_count = 0
+    missing_installed_count = 0
     total_skills_checked = 0
 
     repo_skills_dir = repo_root / "skills"
@@ -279,34 +291,104 @@ def probe_skill_distribution(
 
         if repo_data is None:
             repo_lines: int | None = None
-            repo_hash: str | None = None
+            repo_raw_hash: str | None = None
+            repo_lf_hash: str | None = None
         else:
             repo_lines = len(repo_data.decode("utf-8", errors="replace").splitlines())
-            repo_hash = hashlib.sha256(repo_data).hexdigest()
+            repo_raw_hash = hashlib.sha256(repo_data).hexdigest()
+            repo_lf_hash = hashlib.sha256(repo_data.replace(b"\r\n", b"\n")).hexdigest()
 
         if installed_data is None:
             installed_lines: int | None = None
-            hash_match = False
+            installed_raw_hash: str | None = None
+            installed_lf_hash: str | None = None
         else:
             installed_lines = len(installed_data.decode("utf-8", errors="replace").splitlines())
-            hash_match = repo_hash is not None and hashlib.sha256(installed_data).hexdigest() == repo_hash
+            installed_raw_hash = hashlib.sha256(installed_data).hexdigest()
+            installed_lf_hash = hashlib.sha256(installed_data.replace(b"\r\n", b"\n")).hexdigest()
 
+        hash_match = (
+            repo_raw_hash is not None
+            and installed_raw_hash is not None
+            and repo_raw_hash == installed_raw_hash
+        )
         if hash_match:
-            synchronized_count += 1
+            drift_type = "none"
+        elif installed_raw_hash is None:
+            drift_type = "missing_installed"
+        elif repo_lf_hash is not None and repo_lf_hash == installed_lf_hash:
+            drift_type = "line_ending_only"
         else:
-            drifted_skills.append(
-                {
-                    "skill_name": skill_name,
-                    "repo_lines": repo_lines,
-                    "installed_lines": installed_lines,
-                    "hash_match": hash_match,
-                }
-            )
+            drift_type = "content_drift"
+
+        if drift_type == "none":
+            synchronized_count += 1
+            continue
+        if drift_type == "line_ending_only":
+            line_ending_drift_count += 1
+        elif drift_type == "content_drift":
+            content_drift_count += 1
+        else:
+            missing_installed_count += 1
+        drifted_skills.append(
+            {
+                "skill_name": skill_name,
+                "repo_lines": repo_lines,
+                "installed_lines": installed_lines,
+                "hash_match": hash_match,
+                "drift_type": drift_type,
+            }
+        )
 
     return {
         "total_skills_checked": total_skills_checked,
         "synchronized_count": synchronized_count,
+        "line_ending_drift_count": line_ending_drift_count,
+        "content_drift_count": content_drift_count,
+        "missing_installed_count": missing_installed_count,
         "drifted_skills": drifted_skills,
+    }
+
+
+def sync_skills(
+    repo_root: Path,
+    installed_skills_root: Path | None = None,
+    overwrite_content_drift: bool = True,
+) -> Dict[str, object]:
+    """Synchronize repo skills into the installed skills root (explicit write path).
+
+    Uses the same drift categorization as probe_skill_distribution(): skills
+    missing from the install are copied in full; content-drifted skills are
+    overwritten when overwrite_content_drift is True (default). Skills that
+    differ only by line endings are left untouched -- their installed copy is
+    treated as equivalent. Returns a summary dict listing the synced skills.
+    """
+    if installed_skills_root is None:
+        installed_skills_root = Path.home() / ".agents" / "skills"
+
+    payload = probe_skill_distribution(repo_root, installed_skills_root)
+    synced_skills: List[str] = []
+    for entry in payload["drifted_skills"]:
+        skill_name = entry["skill_name"]
+        drift_type = entry["drift_type"]
+        if drift_type == "missing_installed":
+            shutil.copytree(
+                repo_root / "skills" / skill_name,
+                installed_skills_root / skill_name,
+                dirs_exist_ok=True,
+            )
+            synced_skills.append(skill_name)
+        elif drift_type == "content_drift" and overwrite_content_drift:
+            shutil.copytree(
+                repo_root / "skills" / skill_name,
+                installed_skills_root / skill_name,
+                dirs_exist_ok=True,
+            )
+            synced_skills.append(skill_name)
+
+    return {
+        "synced_skill_count": len(synced_skills),
+        "synced_skills": synced_skills,
     }
 
 
