@@ -1749,6 +1749,17 @@ class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
                     input_section += f"\n**{input_name}:**\nRepository root: {input_data['data'].get('path', '.')}\n"
             input_section += "\n"
 
+        # Add pre-computed repository probes when the runtime supplied a report
+        probe_report_path = context.get("probe_report_path")
+        if probe_report_path:
+            probe_parts: list[str] = [input_section]
+            append_probe_section(
+                probe_parts,
+                Path(probe_report_path) if Path(probe_report_path).is_absolute()
+                else Path(self.repo_root) / probe_report_path,
+            )
+            input_section = "\n".join(probe_parts) + "\n"
+
         # Expected output path — use the runtime-resolved (session-scoped) path so
         # the artifact lands where the runtime will look for it.
         expected_output_path = resolve_output_path(self.repo_root, expected_output_artifact, context)
