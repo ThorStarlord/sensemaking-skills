@@ -194,3 +194,43 @@ def test_verification_gap_block_scalar_with_blank_line_continues(tmp_path: Path)
     assert report["declared_in_ci"] == ["scripts/check.py", "scripts/lint.py"]
     assert report["enforced_checks"] == ["scripts/check.py", "scripts/lint.py"]
     assert report["vg"] == 0.0
+
+
+from scripts.repo_probes import context_entropy, fixtures_coverage
+from scripts.repo_probes import test_collection as probe_test_collection
+
+
+def test_context_entropy_uses_tracked_volume_as_denominator(tmp_path: Path) -> None:
+    repo = _init_committed_repo(tmp_path)  # 1 tracked, 1 untracked, 1 dirty
+    report = context_entropy(repo)
+    assert report["tracked_volume"] == 1
+    assert report["untracked_volume"] == 1
+    assert report["ce"] == 1.0
+
+
+def test_context_entropy_zero_for_empty_directory(tmp_path: Path) -> None:
+    report = context_entropy(tmp_path)
+    assert report["ce"] == 0.0
+
+
+def test_test_collection_counts_test_files_only(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    (repo / "tests").mkdir(parents=True)
+    (repo / "tests" / "test_one.py").write_text("", encoding="utf-8")
+    (repo / "tests" / "test_two.py").write_text("", encoding="utf-8")
+    (repo / "src.py").write_text("", encoding="utf-8")
+    (repo / "pyproject.toml").write_text("[tool.pytest.ini_options]\naddopts = \"-q\"\n", encoding="utf-8")
+    report = probe_test_collection(repo)
+    assert report["test_file_count"] == 2
+    assert report["pytest_config_present"] is True
+
+
+def test_fixtures_coverage_reports_missing_fixture_dirs(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    (repo / "scripts").mkdir(parents=True)
+    (repo / "scripts" / "validate-demo.py").write_text("pass\n", encoding="utf-8")
+    # No tests/fixtures/validate-demo directory at all.
+    report = fixtures_coverage(repo)
+    assert report["total_validators"] == 1
+    assert report["covered_validators"] == 0
+    assert report["missing_fixtures"] == ["validate-demo"]

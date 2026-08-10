@@ -160,3 +160,80 @@ def ci_enforcement(repo_root: Path) -> Dict[str, object]:
         "vg": vg,
         "notes": notes,
     }
+
+
+_BLOAT_DIRS = {".venv", "venv", "node_modules", "build", "dist", ".git", "__pycache__", ".mypy_cache", ".pytest_cache"}
+
+
+def context_entropy(repo_root: Path) -> Dict[str, object]:
+    """Ratio of untracked+ignored-present volume to tracked volume."""
+    state = git_state(repo_root)
+    tracked = state["tracked_file_count"]
+    if tracked == 0:
+        return {
+            "tracked_volume": 0,
+            "untracked_volume": state["untracked_file_count"],
+            "ignored_present_volume": state["ignored_present_entry_count"],
+            "ce": 0.0,
+            "notes": "no tracked files; entropy undefined",
+        }
+    untracked = state["untracked_file_count"]
+    ignored = state["ignored_present_entry_count"]
+    ce = round((untracked + ignored) / tracked, 2)
+    return {
+        "tracked_volume": tracked,
+        "untracked_volume": untracked,
+        "ignored_present_volume": ignored,
+        "ce": ce,
+        "notes": f"untracked+ignored ({untracked + ignored}) / tracked ({tracked})",
+    }
+
+
+def test_collection(repo_root: Path) -> Dict[str, object]:
+    """Count test files and detect pytest configuration (no pytest subprocess)."""
+    count = 0
+    for path in repo_root.rglob("*"):
+        relative_parts = list(path.relative_to(repo_root).parts)[:-1]
+        if any(part in _BLOAT_DIRS for part in relative_parts):
+            continue
+        if path.is_file() and (path.name.startswith("test_") or path.name.endswith("_test.py")):
+            count += 1
+    pyproject = repo_root / "pyproject.toml"
+    config_present = "[tool.pytest" in pyproject.read_text(encoding="utf-8", errors="replace") if pyproject.is_file() else False
+    if not config_present:
+        config_present = (repo_root / "pytest.ini").is_file() or (repo_root / "setup.cfg").is_file()
+    markers = ""
+    if pyproject.is_file():
+        match = re.search(r"markers\s*=\s*\[([^\]]*)\]", pyproject.read_text(encoding="utf-8", errors="replace"))
+        if match:
+            markers = match.group(1)
+    return {
+        "test_file_count": count,
+        "pytest_config_present": config_present,
+        "markers_declared": markers.strip(),
+    }
+
+
+def fixtures_coverage(repo_root: Path) -> Dict[str, object]:
+    """Coverage of validate-*.py scripts by tests/fixtures/<name>/{valid,invalid}."""
+    scripts_dir = repo_root / "scripts"
+    validators = sorted(
+        p.name[:-3]
+        for p in scripts_dir.glob("validate-*.py")
+        if p.name not in ("validate-and-record.py", "validate-and-report.py")
+    )
+    covered: List[str] = []
+    missing: List[str] = []
+    for name in validators:
+        base = repo_root / "tests" / "fixtures" / name
+        if (base / "valid").is_dir() and (base / "invalid").is_dir():
+            covered.append(name)
+        else:
+            missing.append(name)
+    total = len(validators)
+    return {
+        "total_validators": total,
+        "covered_validators": len(covered),
+        "missing_fixtures": missing,
+        "coverage": round(len(covered) / total, 2) if total else 0.0,
+    }
