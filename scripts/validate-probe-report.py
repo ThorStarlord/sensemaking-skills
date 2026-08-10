@@ -69,7 +69,8 @@ def validate_report(data: dict) -> bool:
             print(f"[PROBE_REPORT_MISSING_KEY] missing required key: {key}")
             ok = False
 
-    vg = (data.get("verification_gap") or {}).get("vg")
+    vg_data = data.get("verification_gap")
+    vg = vg_data.get("vg") if isinstance(vg_data, dict) else None
     if vg is not None and not isinstance(vg, (int, float)):
         print("[PROBE_REPORT_VG_RANGE] vg must be numeric")
         ok = False
@@ -77,8 +78,12 @@ def validate_report(data: dict) -> bool:
         print(f"[PROBE_REPORT_VG_RANGE] vg out of range [0,1]: {vg}")
         ok = False
 
-    ce = (data.get("context_entropy") or {}).get("ce")
-    if ce is not None and isinstance(ce, (int, float)) and float(ce) < 0.0:
+    ce_data = data.get("context_entropy")
+    ce = ce_data.get("ce") if isinstance(ce_data, dict) else None
+    if ce is not None and not isinstance(ce, (int, float)):
+        print("[PROBE_REPORT_CE_NEGATIVE] ce must be numeric")
+        ok = False
+    elif ce is not None and float(ce) < 0.0:
         print(f"[PROBE_REPORT_CE_NEGATIVE] ce must be >= 0: {ce}")
         ok = False
 
