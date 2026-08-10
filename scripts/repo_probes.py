@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 import subprocess
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List
 
@@ -237,3 +238,37 @@ def fixtures_coverage(repo_root: Path) -> Dict[str, object]:
         "missing_fixtures": missing,
         "coverage": round(len(covered) / total, 2) if total else 0.0,
     }
+
+
+def probe_all(repo_root: Path, churn_commits: int = 50) -> Dict[str, object]:
+    """Run every probe; assemble the machine-readable report payload."""
+    return {
+        "schema_version": 1,
+        "probe_tool": "sensemaking-skills probe-repo v1",
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "repo_root": str(repo_root),
+        "git_state": git_state(repo_root),
+        "verification_gap": ci_enforcement(repo_root),
+        "context_entropy": context_entropy(repo_root),
+        "test_collection": test_collection(repo_root),
+        "fixtures_coverage": fixtures_coverage(repo_root),
+        "churn": churn(repo_root, commits=churn_commits),
+    }
+
+
+def append_probe_section(prompt_parts: List[str], probe_report_path: Path) -> None:
+    """Append the probe-report block to an assembled prompt if the report exists."""
+    if not probe_report_path.is_file():
+        return
+    prompt_parts.extend([
+        "",
+        "## Repository Probe Report",
+        "The runtime pre-ran `scripts/probe-repo.py`; values below are verified "
+        "current state, measured on the checked-out tree. Prefer them over "
+        "documented claims (state-currency verification).",
+        f"`{probe_report_path}`",
+        "",
+        "```yaml",
+        probe_report_path.read_text(encoding="utf-8"),
+        "```",
+    ])
