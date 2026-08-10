@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Optional
+from pathlib import Path
 
 # SDK type imports for error classification
 from claude_agent_sdk import ResultMessage, AssistantMessage
@@ -527,6 +528,7 @@ import brief_skeleton
 # checks. Do not re-parse these files independently.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _validator_utils import load_workflow_registry, load_weakness_types  # noqa: E402
+from repo_probes import append_probe_section  # noqa: E402
 
 
 # ============================================================================
@@ -2327,6 +2329,15 @@ class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
                 if input_data.get("type") == "artifact_content":
                     prompt_parts.append(f"\n### {input_name}")
                     prompt_parts.append(f"```\n{input_data.get('content', '')}\n```")
+
+        # Add pre-computed repository probes when the runtime supplied a report
+        probe_report_path = context.get("probe_report_path")
+        if probe_report_path:
+            append_probe_section(
+                prompt_parts,
+                Path(probe_report_path) if Path(probe_report_path).is_absolute()
+                else Path(self.repo_root) / probe_report_path,
+            )
 
         # Add output instruction — use the runtime-resolved (session-scoped) path.
         expected_path = resolve_output_path(self.repo_root, expected_output_artifact, context)
