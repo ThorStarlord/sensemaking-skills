@@ -101,6 +101,7 @@ routing_fields:
       - product-implementation-workflow
       - ui-implementation-workflow
       - docs-implementation-workflow
+      - architecture-implementation-workflow
       # Strategy & Discovery
       - product-discovery-sprint
       - product-strategy-sprint
@@ -116,6 +117,9 @@ routing_fields:
       - product-to-issues
       # Setup
       - setup-sensemaking-repo
+      # Review & Evaluation
+      - skill-evaluation-workflow
+      - architectural-review-planning-workflow
     required: true
     description: "The workflow best suited to address this fog (must reference an existing workflow_id)"
     example: "fast-path-workflow"
@@ -359,6 +363,16 @@ gates:
   - gate_id: review_execution_readiness
     name: "Review Execution Readiness"
     description: "Verify readiness for execution"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_findings
+    name: "Review Findings"
+    description: "User reviews usage-research findings before improvement planning"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_recommendation
+    name: "Review Recommendation"
+    description: "User reviews an architectural review recommendation before acceptance"
     allowed_outcomes: [approved, denied, needs_revision]
 
   - gate_id: none
@@ -606,6 +620,18 @@ artifact_ids:
     consumed_by: [user]
     artifact_type: handoff
 
+  - id: architectural_review_recommendation
+    description: "Recommended architectural response with decision fields, produced by the architectural-review-planning workflow"
+    produced_by: architectural-review-planning-workflow
+    consumed_by: [workflow-planner]
+    artifact_type: plan
+
+  - id: proposed_direction
+    description: "Proposed architectural direction for review"
+    produced_by: user
+    consumed_by: [architectural-review]
+    artifact_type: plan
+
 workflow_ids:
   # Diagnostic & Orchestration Workflows
   - id: fast-path-workflow
@@ -724,3 +750,19 @@ workflow_ids:
     display_name: "Setup Sensemaking Repository"
     description: "Configure repository infrastructure for sensemaking"
     category: setup
+
+  # Review & Evaluation
+  - id: architecture-implementation-workflow
+    display_name: "Architecture Implementation Workflow"
+    description: "For architecture/refactoring problems: aligns domain, creates refactoring spec, decomposes into issues, and implements via TDD"
+    category: implementation
+
+  - id: skill-evaluation-workflow
+    display_name: "Skill Evaluation & Maintenance Workflow"
+    description: "Evaluate skill performance in realistic scenarios and implement improvements"
+    category: maintenance
+
+  - id: architectural-review-planning-workflow
+    display_name: "Architectural Review Planning"
+    description: "Evaluate a proposed architectural response against repository diagnostics and risks"
+    category: strategy
