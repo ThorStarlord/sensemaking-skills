@@ -27,6 +27,9 @@ def _summary(report: dict, output: Path) -> str:
     coll = report["test_collection"]
     fx = report["fixtures_coverage"]
     ch = report["churn"]
+    rel = report.get("relationships", {})
+    rel_ver = rel.get("version", {}).get("findings", []) if isinstance(rel, dict) else []
+    rel_adr = rel.get("adr", {}).get("findings", []) if isinstance(rel, dict) else []
     head = git.get("head_sha") or "no-commits"
     lines = [
         "REPO PROBE SUMMARY%s" % (f" -> {output}" if output else ""),
@@ -38,6 +41,8 @@ def _summary(report: dict, output: Path) -> str:
         f"  fixture coverage: {fx['covered_validators']}/{fx['total_validators']} "
         f"({fx['coverage']}) missing={fx['missing_fixtures']}",
         f"  churn: {ch['commits_scanned']} commits, {ch['changed_files_last_n']} files; top: {ch['top_changed_files']}",
+        f"  relationships: version findings={len(rel_ver)} adr findings={len(rel_adr)} "
+        f"(evidence candidates, not diagnoses)",
     ]
     return "\n".join(lines)
 

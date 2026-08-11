@@ -7,6 +7,7 @@ Error codes (substrings matched by tests/fixtures/validate-probe-report/):
   PROBE_REPORT_MISSING_KEY
   PROBE_REPORT_VG_RANGE
   PROBE_REPORT_CE_NEGATIVE
+  PROBE_REPORT_RELATIONSHIPS_SHAPE
 """
 
 from __future__ import annotations
@@ -86,6 +87,38 @@ def validate_report(data: dict) -> bool:
     elif ce is not None and float(ce) < 0.0:
         print(f"[PROBE_REPORT_CE_NEGATIVE] ce must be >= 0: {ce}")
         ok = False
+
+    rel = data.get("relationships")
+    if rel is not None:
+        # Optional-but-validated-when-present: the engine always emits the
+        # section (possibly with empty findings); older reports omit it.
+        if not isinstance(rel, dict):
+            print("[PROBE_REPORT_RELATIONSHIPS_SHAPE] relationships must be a mapping")
+            ok = False
+        else:
+            for subkey in ("doc_surface", "version", "adr"):
+                if subkey not in rel:
+                    print(f"[PROBE_REPORT_RELATIONSHIPS_SHAPE] relationships missing "
+                          f"subkey: {subkey}")
+                    ok = False
+                elif not isinstance(rel[subkey], dict):
+                    print(f"[PROBE_REPORT_RELATIONSHIPS_SHAPE] relationships.{subkey} "
+                          f"must be a mapping")
+                    ok = False
+            for subkey in ("version", "adr"):
+                sub = rel.get(subkey)
+                if isinstance(sub, dict):
+                    findings = sub.get("findings")
+                    if not isinstance(findings, list):
+                        print(f"[PROBE_REPORT_RELATIONSHIPS_SHAPE] relationships.{subkey}."
+                              f"findings must be a list")
+                        ok = False
+                    elif not all(isinstance(f, dict) and "concept" in f
+                                 and "finding_type" in f and "observations" in f
+                                 for f in findings):
+                        print(f"[PROBE_REPORT_RELATIONSHIPS_SHAPE] relationships.{subkey}."
+                              f"findings items need concept/finding_type/observations")
+                        ok = False
 
     return ok
 

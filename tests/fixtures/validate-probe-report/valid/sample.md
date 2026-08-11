@@ -36,3 +36,43 @@ churn:
   commits_scanned: 50
   changed_files_last_n: 40
   top_changed_files: [identity.py, validate-identity.py]
+relationships:
+  doc_surface:
+    total: 12
+    live: 4
+    by_class: {candidate: 0, example: 2, fixture: 1, generated: 1, historical: 4, live: 4, vendor: 0}
+  version:
+    declarations: 1
+    subpackage_declarations: 0
+    claims: 3
+    distinct_values: ["0.2.1", "0.2.2"]
+    findings:
+      - concept: product_version
+        finding_type: conflicting_values
+        observations:
+          - source: pyproject.toml
+            location: pyproject.toml:7
+            value: "0.2.2"
+            evidence: version = "0.2.2"
+            source_kind: declaration
+            claim_class: declared
+          - source: README.md
+            location: README.md:9
+            value: "0.2.1"
+            evidence: "Current release: 0.2.1"
+            source_kind: documentation
+            claim_class: current
+            source_class: live
+        confidence: high
+        requires_semantic_review: false
+        notes: "Values disagree mechanically across sources."
+  adr:
+    files: 1
+    catalog:
+      - id: "0001"
+        file: docs/adr/0001-example.md
+        title: "ADR 0001: Example"
+        status: proposed
+        raw_status: "Proposed"
+    references: 1
+    findings: []

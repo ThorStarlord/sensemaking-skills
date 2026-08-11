@@ -17,6 +17,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List
 
+try:
+    from probe_relationships import relationships  # scripts/ on sys.path (CLI)
+except ImportError:  # imported as scripts.repo_probes from tests
+    from scripts.probe_relationships import relationships
+
 
 def _git(repo_root: Path, *args: str) -> str:
     """Run a read-only git command; return stdout stripped ('' on failure)."""
@@ -405,6 +410,7 @@ def probe_all(repo_root: Path, churn_commits: int = 50) -> Dict[str, object]:
         "test_collection": test_collection(repo_root),
         "fixtures_coverage": fixtures_coverage(repo_root),
         "churn": churn(repo_root, commits=churn_commits),
+        "relationships": relationships(repo_root),
     }
 
 

@@ -132,6 +132,16 @@ Then:
    "documented but not independently verified" (per Standard Workflow item 4 and
    Section 8). Never skip the probe because a repo "looks simple" — a
    non-git repo is itself a finding.
+5. **Relationship findings are evidence candidates, not diagnoses.** The report's
+   `relationships` section (version drift + ADR integrity, plus the discovered
+   doc surface) lists mechanically-established disagreements with file:line
+   provenance. Treat each finding as a candidate requiring semantic review:
+   the probe cannot decide which source has authority, which claim is
+   historical, or whether a disagreement matters — you can. A repository with
+   zero relationship findings is a valid correct-negative result. Where a
+   relationship finding sharpens a boundary (e.g. a version conflict, a stale
+   ADR-status claim, a doc that references a missing ADR), cite it in Section 8
+   like any measured value (`probe-report.yaml:relationships.version.findings`).
 
 ## Output Format
 Every response must follow the [Repository Sensemaking Brief](references/repo-analysis-template.md) structure.
