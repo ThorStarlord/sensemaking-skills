@@ -682,3 +682,89 @@ jobs:
 
       - name: Level 5 — Mode Coverage Self-Validation
         run: python scripts/validate-mode-coverage.py --repo-root .
+
+  # ==========================================================================
+  # Canonical enforcement gate (enforcement-gap diagnosis follow-up). The
+  # repository has substantial verification machinery; these jobs make the
+  # smallest reliable slice of it load-bearing on every push/PR. Contract
+  # and promotion policy: docs/enforcement-contract.md.
+  #
+  # probe-gate: runs the CANONICAL Probe Engine (probe-repo.py) against the
+  # checkout, validates the report shape, then applies the explicit
+  # blocking policy (scripts/gate_relationship_findings.py). Only
+  # mechanically decidable finding types block (currently: missing ADR
+  # references, missing **Status** lines). Findings the probe flags as
+  # requiring semantic review NEVER block - repo-sensemaker owns
+  # interpretation, per the evidence-vs-diagnosis contract.
+  #
+  # core-assertions: the smallest stable pytest gate. Deliberately NOT
+  # "run every pytest file": it covers the Probe Engine, the canonical
+  # path/vocabulary drift detectors, and the CLI contract. It is EXPECTED
+  # to be red on current main (stale CLI version assertion; vocabulary
+  # coverage drift) until those are repaired in separate authorized
+  # decisions - a red-but-deterministic gate is enforcement, not flakiness.
+  # ==========================================================================
+  probe-gate:
+    name: Probe Engine enforcement gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml pytest click
+
+      - name: Run canonical Probe Engine (report to temp; never mutates tree)
+        run: python scripts/probe-repo.py --repo-root . --output "$RUNNER_TEMP/probe-report.yaml"
+
+      - name: Validate probe report shape
+        run: python scripts/validate-probe-report.py "$RUNNER_TEMP/probe-report.yaml" --repo-root .
+
+      - name: Apply blocking-findings policy
+        run: python scripts/gate_relationship_findings.py --report "$RUNNER_TEMP/probe-report.yaml"
+
+      - name: Assert the repository tree was not mutated
+        shell: bash
+        run: |
+          git status --porcelain
+          test -z "$(git status --porcelain)" || {
+            echo "::error::probe gate dirtied the working tree"; exit 1; }
+
+  core-assertions:
+    name: Core assertions (smallest stable pytest gate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          pip install pytest pyyaml click
+
+      - name: Core assertion suite
+        run: python -m pytest \
+          tests/test_repo_probes.py \
+          tests/test_probe_report_cli.py \
+          tests/test_probe_relationships.py \
+          tests/test_skill_distribution_probe.py \
+          tests/test_gate_relationship_findings.py \
+          tests/test_path_drift.py \
+          tests/test_cli.py -q
+
+      - name: Assert the repository tree was not mutated
+        shell: bash
+        run: |
+          git checkout -- src/sensemaking_skills.egg-info/ 2>/dev/null || true
+          git status --porcelain
+          test -z "$(git status --porcelain)" || {
+            echo "::error::core assertions dirtied the working tree"; exit 1; }
