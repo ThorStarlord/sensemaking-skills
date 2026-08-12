@@ -368,7 +368,7 @@ def invoke_validator(
                 }
 
             cmd = [
-                "python3",
+                sys.executable,
                 validator_path,
                 artifact_id,
                 artifact_path,
@@ -378,7 +378,7 @@ def invoke_validator(
         else:
             # Specific validators (brief, plan) take only artifact_path
             cmd = [
-                "python3",
+                sys.executable,
                 validator_path,
                 artifact_path,
                 "--repo-root", repo_root,

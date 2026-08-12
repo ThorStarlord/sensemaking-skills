@@ -54,6 +54,9 @@ setup(
     cmdclass={"build_py": build_py},
     install_requires=[
         "click>=8.1.0",
+        "PyYAML>=6.0,<7.0",
+        "jsonschema>=4.18,<5.0",
+        "rfc8785>=0.1.4,<0.2",
     ],
     entry_points={
         "console_scripts": [

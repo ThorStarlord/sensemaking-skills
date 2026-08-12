@@ -25,9 +25,10 @@ def run_tests():
     tests_passed = 0
 
     print("[TEST 1] Valid brief routes to validate-brief.py")
-    artifact_path = os.path.join(fixtures_dir, "brief-valid.md")
+    artifact_path = os.path.join(
+        fixtures_dir, "validate-brief", "valid", "valid-brief.md")
     stdout, stderr, returncode = run_cmd(
-        ["python3", "scripts/validate-and-report.py", artifact_path],
+        [sys.executable, "scripts/validate-and-report.py", artifact_path],
         cwd=repo_root
     )
     tests_run += 1
@@ -53,9 +54,11 @@ def run_tests():
         print(f"  FAILED: Invalid JSON output: {str(e)}")
 
     print("[TEST 2] Valid plan routes to validate-plan.py")
-    artifact_path = os.path.join(fixtures_dir, "plan-valid.md")
+    artifact_path = os.path.join(
+        fixtures_dir, "validate-and-report", "valid",
+        "dispatches-to-validate-plan.md")
     stdout, stderr, returncode = run_cmd(
-        ["python3", "scripts/validate-and-report.py", artifact_path],
+        [sys.executable, "scripts/validate-and-report.py", artifact_path],
         cwd=repo_root
     )
     tests_run += 1
@@ -80,9 +83,10 @@ def run_tests():
         print(f"  FAILED: Invalid JSON output: {str(e)}")
 
     print("[TEST 3] Known artifact (brief) correctly detected and routed")
-    artifact_path = os.path.join(fixtures_dir, "artifact-generic-valid.md")
+    artifact_path = os.path.join(
+        fixtures_dir, "validate-brief", "valid", "valid-brief-bare-lines.md")
     stdout, stderr, returncode = run_cmd(
-        ["python3", "scripts/validate-and-report.py", artifact_path],
+        [sys.executable, "scripts/validate-and-report.py", artifact_path],
         cwd=repo_root
     )
     tests_run += 1
@@ -108,9 +112,10 @@ def run_tests():
         print(f"  FAILED: Invalid JSON output: {str(e)}")
 
     print("[TEST 4] Invalid brief returns structured errors")
-    artifact_path = os.path.join(fixtures_dir, "brief-invalid-missing-fields.md")
+    artifact_path = os.path.join(
+        fixtures_dir, "validate-brief", "invalid", "evidence-quote-not-found.md")
     stdout, stderr, returncode = run_cmd(
-        ["python3", "scripts/validate-and-report.py", artifact_path],
+        [sys.executable, "scripts/validate-and-report.py", artifact_path],
         cwd=repo_root
     )
     tests_run += 1
@@ -120,13 +125,14 @@ def run_tests():
             result["valid"] == False,
             len(result["errors"]) > 0,
             returncode == 1,
-            "error_id" in result["errors"][0]
+            "error_type" in result["errors"][0],
+            "message" in result["errors"][0]
         ]
         if all(checks):
             tests_passed += 1
             print(f"  PASSED: Invalid brief returned {len(result['errors'])} structured errors")
             for error in result["errors"][:2]:
-                print(f"    - {error.get('error_id')}: {error.get('error_type')}")
+                print(f"    - {error.get('error_type')}: {error.get('message')}")
         else:
             print(f"  FAILED: Error structure issues")
             if result.get("errors"):
@@ -137,7 +143,7 @@ def run_tests():
     print("[TEST 5] Non-existent file returns structured error")
     artifact_path = os.path.join(fixtures_dir, "nonexistent-artifact.md")
     stdout, stderr, returncode = run_cmd(
-        ["python3", "scripts/validate-and-report.py", artifact_path],
+        [sys.executable, "scripts/validate-and-report.py", artifact_path],
         cwd=repo_root
     )
     tests_run += 1
@@ -164,15 +170,17 @@ def run_tests():
 
     print("[TEST 6] All results have unified schema")
     test_paths = [
-        os.path.join(fixtures_dir, "brief-valid.md"),
-        os.path.join(fixtures_dir, "plan-valid.md"),
-        os.path.join(fixtures_dir, "brief-invalid-missing-fields.md"),
+        os.path.join(fixtures_dir, "validate-brief", "valid", "valid-brief.md"),
+        os.path.join(fixtures_dir, "validate-and-report", "valid",
+                     "dispatches-to-validate-plan.md"),
+        os.path.join(fixtures_dir, "validate-brief", "invalid",
+                     "evidence-quote-not-found.md"),
     ]
     tests_run += 1
     all_valid_schema = True
     for artifact_path in test_paths:
         stdout, stderr, returncode = run_cmd(
-            ["python3", "scripts/validate-and-report.py", artifact_path],
+            [sys.executable, "scripts/validate-and-report.py", artifact_path],
             cwd=repo_root
         )
         try:
@@ -191,23 +199,26 @@ def run_tests():
     else:
         print("  FAILED: Some results missing required schema keys")
 
-    print("[TEST 7] error_id preserved in routed validation")
-    artifact_path = os.path.join(fixtures_dir, "brief-invalid-missing-fields.md")
+    print("[TEST 7] structured fields preserved in routed validation")
+    artifact_path = os.path.join(
+        fixtures_dir, "validate-brief", "invalid", "evidence-quote-not-found.md")
     stdout, stderr, returncode = run_cmd(
-        ["python3", "scripts/validate-and-report.py", artifact_path],
+        [sys.executable, "scripts/validate-and-report.py", artifact_path],
         cwd=repo_root
     )
     tests_run += 1
     try:
         result = json.loads(stdout)
-        error_ids_present = all("error_id" in e for e in result["errors"])
-        if error_ids_present and len(result["errors"]) > 0:
+        structured_errors = all(
+            all(field in e for field in ("error_type", "message", "reference"))
+            for e in result["errors"])
+        if structured_errors and len(result["errors"]) > 0:
             tests_passed += 1
-            print(f"  PASSED: All {len(result['errors'])} errors have error_id fields")
+            print(f"  PASSED: All {len(result['errors'])} errors have structured fields")
             for error in result["errors"][:2]:
-                print(f"    - {error.get('error_id')}")
+                print(f"    - {error.get('error_type')}: {error.get('reference')}")
         else:
-            print("  FAILED: Some errors missing error_id")
+            print("  FAILED: Some errors missing structured fields")
     except json.JSONDecodeError as e:
         print(f"  FAILED: Invalid JSON output: {str(e)}")
 

@@ -26,7 +26,7 @@ An agent-native framework for repository diagnosis and workflow orchestration. T
 ✅ **Agent-native design** — Built for Claude Code and agent invocation:
 - Skills defined in SKILL.md files
 - Orchestration via artifact handoffs
-- No external dependencies
+- No external service dependencies in the core CLI
 
 ## What This Is NOT
 

@@ -64,7 +64,7 @@ relationships:
             claim_class: current
             source_class: live
         confidence: high
-        requires_semantic_review: false
+        requires_semantic_review: true
         notes: "Values disagree mechanically across sources."
   adr:
     files: 1
