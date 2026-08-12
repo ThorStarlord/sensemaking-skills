@@ -752,14 +752,7 @@ jobs:
           pip install pytest pyyaml click
 
       - name: Core assertion suite
-        run: python -m pytest \
-          tests/test_repo_probes.py \
-          tests/test_probe_report_cli.py \
-          tests/test_probe_relationships.py \
-          tests/test_skill_distribution_probe.py \
-          tests/test_gate_relationship_findings.py \
-          tests/test_path_drift.py \
-          tests/test_cli.py -q
+        run: python -m pytest tests/test_repo_probes.py tests/test_probe_report_cli.py tests/test_probe_relationships.py tests/test_skill_distribution_probe.py tests/test_gate_relationship_findings.py tests/test_path_drift.py tests/test_cli.py -q
 
       - name: Assert the repository tree was not mutated
         shell: bash
