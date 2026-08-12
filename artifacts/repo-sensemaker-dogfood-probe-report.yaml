@@ -1,0 +1,412 @@
+schema_version: 1
+probe_tool: sensemaking-skills probe-repo v1
+generated_at: '2026-08-12T04:38:22Z'
+repo_root: F:\GithubProjects\sensemaking-skills
+git_state:
+  is_git_repo: true
+  branch: main
+  head_sha: 63350d4
+  head_message: 'stabilization: resolve the six core-assertions failures by authority'
+  tracked_file_count: 3815
+  untracked_file_count: 0
+  ignored_present_entry_count: 1
+  dirty_file_count: 0
+verification_gap:
+  declared_checks:
+  - scripts/shadow-mode-runner.py
+  - scripts/validate-brief.py
+  - scripts/validate-plan.py
+  - scripts/validate-and-report.py
+  - scripts/probe-repo.py
+  - scripts/validate-probe-report.py
+  enforced_checks:
+  - pytest
+  - scripts/validate-repo.py
+  - scripts/test-validators.py
+  - scripts/validate-run-log.py
+  - scripts/analyze-run-failures.py
+  - scripts/validate-mode-coverage.py
+  - scripts/probe-repo.py
+  - scripts/validate-probe-report.py
+  - scripts/gate_relationship_findings.py
+  declared_in_ci:
+  - scripts/probe-repo.py
+  - scripts/validate-probe-report.py
+  vg: 0.67
+  notes: declared-but-unenforced checks detected
+context_entropy:
+  tracked_volume: 3815
+  untracked_volume: 0
+  ignored_present_volume: 1
+  ce: 0.0
+  notes: untracked+ignored (1) / tracked (3815)
+test_collection:
+  test_file_count: 132
+  pytest_config_present: false
+  markers_declared: ''
+fixtures_coverage:
+  total_validators: 19
+  covered_validators: 14
+  missing_fixtures:
+  - validate-mode-coverage
+  - validate-output
+  - validate-repo
+  - validate-run-log
+  - validate-skill-hygiene
+  coverage: 0.74
+churn:
+  commits_scanned: 50
+  changed_files_last_n: 41
+  top_changed_files:
+  - scripts/repo_probes.py
+  - tests/test_repo_probes.py
+  - skills/repo-sensemaker/SKILL.md
+  - skills/workflow-planner/references/artifact-contracts.yaml
+  - tests/test_probe_prompt_injection.py
+relationships:
+  doc_surface:
+    total: 845
+    live: 146
+    by_class:
+      candidate: 20
+      example: 159
+      fixture: 123
+      generated: 45
+      historical: 352
+      live: 146
+  version:
+    declarations: 4
+    subpackage_declarations: 0
+    claims: 63
+    distinct_values:
+    - 0.2.0
+    - 0.2.1
+    - 0.2.2
+    - 4.1.0
+    findings:
+    - concept: product_version
+      finding_type: conflicting_values
+      observations:
+      - source: package.json
+        location: package.json:3
+        value: 4.1.0
+        evidence: '"version": "4.1.0"'
+        source_kind: declaration
+        claim_class: declared
+      - source: pyproject.toml
+        location: pyproject.toml:7
+        value: 0.2.2
+        evidence: version = "0.2.2"
+        source_kind: declaration
+        claim_class: declared
+      - source: setup.py
+        location: setup.py:42
+        value: 0.2.2
+        evidence: version="0.2.2"
+        source_kind: declaration
+        claim_class: declared
+      - source: src/sensemaking_skills/__init__.py
+        location: src/sensemaking_skills/__init__.py:3
+        value: 0.2.2
+        evidence: __version__ = "0.2.2"
+        source_kind: declaration
+        claim_class: declared
+      - source: INSTALLATION.md
+        location: INSTALLATION.md:381
+        value: 0.2.0
+        evidence: '- **Version:** 0.2.0'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: README.md
+        location: README.md:77
+        value: 0.2.2
+        evidence: 'Expected version: `0.2.2`'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: README.md
+        location: README.md:9
+        value: 0.2.2
+        evidence: '**Current Use**: Agent/Claude Code invocation + CLI utilities (v0.2.2)'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: docs/FAQ.md
+        location: docs/FAQ.md:104
+        value: 0.2.1
+        evidence: '- 0.2.1: Current release (PyPI available)'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: docs/PUBLISHING.md
+        location: docs/PUBLISHING.md:154
+        value: 0.2.1
+        evidence: '- **Semantic versioning:** Current version is 0.2.1 (beta)'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: docs/PUBLISHING.md
+        location: docs/PUBLISHING.md:163
+        value: 0.2.2
+        evidence: 1. Publish a patched version (e.g., 0.2.2) with the fix
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: docs/PUBLISHING.md
+        location: docs/PUBLISHING.md:50
+        value: 0.2.1
+        evidence: pip install -i https://test.pypi.org/simple/ sensemaking-skills==0.2.1
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: docs/PUBLISHING.md
+        location: docs/PUBLISHING.md:66
+        value: 0.2.1
+        evidence: pip install sensemaking-skills==0.2.1
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: integration-report.md
+        location: integration-report.md:75
+        value: 0.2.0
+        evidence: 'version: declarations=4 claims=56 distinct=[0.2.0,0.2.1,0.2.2,4.1.0]'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: integration-report.md
+        location: integration-report.md:75
+        value: 0.2.1
+        evidence: 'version: declarations=4 claims=56 distinct=[0.2.0,0.2.1,0.2.2,4.1.0]'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: integration-report.md
+        location: integration-report.md:75
+        value: 0.2.2
+        evidence: 'version: declarations=4 claims=56 distinct=[0.2.0,0.2.1,0.2.2,4.1.0]'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: integration-report.md
+        location: integration-report.md:75
+        value: 4.1.0
+        evidence: 'version: declarations=4 claims=56 distinct=[0.2.0,0.2.1,0.2.2,4.1.0]'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: roadmap.md
+        location: roadmap.md:108
+        value: 0.2.1
+        evidence: "- **0.2.1** \u2014 Current: CLI utilities + agent-native diagnosis"
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: roadmap.md
+        location: roadmap.md:127
+        value: 0.2.1
+        evidence: '- [ ] `sensemaking-skills --version` shows 0.2.1'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: roadmap.md
+        location: roadmap.md:16
+        value: 0.2.1
+        evidence: '**Current Version:** 0.2.1 (Beta)'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: roadmap.md
+        location: roadmap.md:78
+        value: 0.2.1
+        evidence: pip install sensemaking-skills==0.2.1
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: roadmap.md
+        location: roadmap.md:82
+        value: 0.2.1
+        evidence: 'Expected: `0.2.1`'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: tests/test_cli.py
+        location: tests/test_cli.py:20
+        value: 0.2.2
+        evidence: assert "0.2.2" in result.output
+        source_kind: verification
+        claim_class: current
+        source_class: verification
+      confidence: high
+      requires_semantic_review: false
+      notes: Values disagree mechanically across sources. Which source has authority,
+        which is historical, and whether it matters is for the model to interpret.
+        Claims of other version families are excluded from this decision set.
+  adr:
+    files: 24
+    catalog:
+    - id: '0001'
+      file: docs/adr/0001-strict-validation-in-execution-modes.md
+      title: 'ADR 0001: Strict Validation in Execution Modes'
+      status: accepted
+      raw_status: Accepted
+    - id: '0002'
+      file: docs/adr/0002-workflow-separation-of-concerns.md
+      title: 'ADR 0002: Workflow Separation of Concerns'
+      status: accepted
+      raw_status: Accepted
+    - id: '0003'
+      file: docs/adr/0003-artifact-composition-pattern.md
+      title: 'ADR 0003: Artifact Composition Pattern'
+      status: accepted
+      raw_status: Accepted
+    - id: '0004'
+      file: docs/adr/0004-evidence-tracking-for-trust.md
+      title: 'ADR 0004: Evidence Tracking for Trust'
+      status: accepted
+      raw_status: Accepted
+    - id: '0005'
+      file: docs/adr/0005-skill-invocation-via-workflows.md
+      title: 'ADR 0005: Skill Invocation via Workflow Registry (No Direct Skill-to-Skill
+        Calls)'
+      status: accepted
+      raw_status: Accepted
+    - id: '0006'
+      file: docs/adr/0006-intent-as-durable-artifact.md
+      title: 'ADR 0006: User Intent as Immutable Durable Artifact'
+      status: proposed
+      raw_status: Proposed
+    - id: '0007'
+      file: docs/adr/0007-soft-context-routing.md
+      title: "ADR 0007: Soft Context Routing \u2014 User Intent as Weighted Input,\
+        \ Not Authority"
+      status: proposed
+      raw_status: Proposed
+    - id: 0008
+      file: docs/adr/0008-routing-divergence-audit.md
+      title: 'ADR 0008: Routing Divergence and Action Audit Trail'
+      status: proposed
+      raw_status: Proposed
+    - id: 0009
+      file: docs/adr/0009-handoff-skill-naming-convention.md
+      title: 'ADR 0009: Handoff Skill Naming Convention'
+      status: accepted
+      raw_status: Accepted
+    - id: '0010'
+      file: docs/adr/0010-runtime-owns-artifact-path-resolution.md
+      title: 'ADR 0010: Runtime Owns Artifact Path Resolution'
+      status: accepted
+      raw_status: Accepted
+    - id: '0011'
+      file: docs/adr/0011-canonical-vocabulary-enforcement.md
+      title: 'ADR 0011: Canonical Vocabulary Enforcement'
+      status: accepted
+      raw_status: Accepted
+    - id: '0012'
+      file: docs/adr/0012-invocation-paths.md
+      title: 'ADR 0012: Manual vs Automation Invocation Paths'
+      status: accepted
+      raw_status: Accepted
+    - id: '0013'
+      file: docs/adr/0013-agent-native-orchestration-primary.md
+      title: 'ADR 0013: Agent-Native Orchestration as Primary Model'
+      status: proposed
+      raw_status: Proposed
+    - id: '0014'
+      file: docs/adr/0014-product-boundary.md
+      title: 'ADR 0014: Product Boundary of Sensemaking Skills'
+      status: accepted
+      raw_status: "ACCEPTED (revised, narrowed) \u2014 ratified 2026-07-26 by explicit"
+    - id: '0015'
+      file: docs/adr/0015-deterministic-vs-model-variable-fields.md
+      title: 'ADR 0015: Deterministic versus Model-Variable Artifact Fields'
+      status: accepted
+      raw_status: "ACCEPTED (with a ratified addendum) \u2014 2026-07-26 by explicit"
+    - id: '0016'
+      file: docs/adr/0016-evidence-policy-for-findings.md
+      title: 'ADR 0016: Evidence Policy for Repository Findings'
+      status: accepted
+      raw_status: "ACCEPTED (with a ratified addendum) \u2014 2026-07-26 by explicit"
+    - id: '0017'
+      file: docs/adr/0017-readiness-criteria-for-new-features.md
+      title: 'ADR 0017: Readiness Criteria for Adding New Features'
+      status: proposed
+      raw_status: "PROPOSED \u2014 draft for owner review, not yet accepted"
+    - id: 0018
+      file: docs/adr/0018-workflow-routing-policy.md
+      title: 'ADR 0018: Workflow-Routing Policy'
+      status: proposed
+      raw_status: "PROPOSED \u2014 draft for owner review, not yet accepted"
+    - id: 0019
+      file: docs/adr/0019-findings-to-tracker-tasks-policy.md
+      title: 'ADR 0019: When Findings Become Recommendations versus Tracker Tasks'
+      status: proposed
+      raw_status: "PROPOSED \u2014 draft for owner review, not yet accepted"
+    - id: '0020'
+      file: docs/adr/0020-wayfinder-and-prototypes-scope.md
+      title: 'ADR 0020: Whether Wayfinder and Prototypes Belong in the Core'
+      status: proposed
+      raw_status: "PROPOSED \u2014 draft for owner review, not yet accepted"
+    - id: '0021'
+      file: docs/adr/0021-production-readiness-requirements.md
+      title: 'ADR 0021: Production-Readiness Requirements'
+      status: proposed
+      raw_status: "PROPOSED \u2014 draft for owner review, not yet accepted. Owner\
+        \ has"
+    - id: '0022'
+      file: docs/adr/0022-gate-a-authorization-consumer-placement.md
+      title: 'ADR 0022: Gate A Authorization Consumer Placement and Invocation Binding'
+      status: proposed
+      raw_status: "PROPOSED \u2014 awaiting independent adversarial review. Merging\
+        \ this"
+    - id: '0023'
+      file: docs/adr/0023-two-lane-experiment-authorization.md
+      title: 'ADR 0023: Two-Lane Experiment Authorization'
+      status: accepted
+      raw_status: "ACCEPTED \u2014 independently reviewed at exact head"
+    - id: '0024'
+      file: docs/adr/0024-extended-analysis-field-classification.md
+      title: 'ADR 0024: Section 15 "Extended analysis" field classification'
+      status: accepted
+      raw_status: "ACCEPTED \u2014 owner decision 2026-08-10: (a) accept the"
+    references: 206
+    findings:
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0018-workflow-routing-policy.md
+        location: docs/adr/0018-workflow-routing-policy.md:6
+        value: accepted
+        evidence: 'closed; #29 is proposed, not yet accepted, in ADR 0014)'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed not accepted; actual ADR status is accepted (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0019-findings-to-tracker-tasks-policy.md
+        location: docs/adr/0019-findings-to-tracker-tasks-policy.md:6
+        value: accepted
+        evidence: proposed, not yet accepted, in ADR 0014, ADR 0018)
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed not accepted; actual ADR status is accepted (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0020-wayfinder-and-prototypes-scope.md
+        location: docs/adr/0020-wayfinder-and-prototypes-scope.md:6
+        value: accepted
+        evidence: proposed, not yet accepted, in ADR 0014, ADR 0018)
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed not accepted; actual ADR status is accepted (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
