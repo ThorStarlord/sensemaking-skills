@@ -66,12 +66,21 @@ class SpyProvider:
         return ProviderResponse(raw_output=self.raw)
 
 
-def _write_test_package(tmp_path: Path, *, campaign_id: str) -> Path:
+def _write_test_package(
+    tmp_path: Path,
+    *,
+    campaign_id: str,
+    window: dict | None = None,
+) -> Path:
     """Write a genuine fixture-based campaign package into a temp dir."""
+    selected_window = window or {
+        "not_before": NOT_BEFORE,
+        "not_after": NOT_AFTER,
+    }
     policy_raw = build_policy_raw(
         campaign_id=campaign_id,
         max_attempts_per_configuration=3,
-        validity_window={"not_before": NOT_BEFORE, "not_after": NOT_AFTER},
+        validity_window=selected_window,
     )
     config_raw = build_configuration_raw(campaign_id=campaign_id)
     policy_raw["allowed_configuration_ids"] = sorted([config_raw["configuration_id"]])
@@ -171,7 +180,14 @@ def test_real_campaign_refuses_closed_window(tmp_path: Path) -> None:
 
 
 def test_real_campaign_refuses_unpinned_framework_checkout(tmp_path: Path) -> None:
-    pkg = _write_test_package(tmp_path, campaign_id=REAL_CAMPAIGN_ID)
+    pkg = _write_test_package(
+        tmp_path,
+        campaign_id=REAL_CAMPAIGN_ID,
+        window={
+            "not_before": "2026-08-07T00:00:00+00:00",
+            "not_after": "2026-08-09T00:00:00+00:00",
+        },
+    )
     (pkg / APPROVAL_FILENAME).write_bytes(b"placeholder")
     runner = GovernedCampaignRunner(
         campaign_package_dir=pkg,
