@@ -34,6 +34,11 @@ ecosystems:
         artifact: docs_contract_reconciliation_report
         availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
         capabilities: [write_files]
+      - id: output-reconciler
+        purpose: verify claims about completed work against durable artifacts
+        artifact: reconciliation_report
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+        capabilities: [write_files]
       - id: handoff
         purpose: summarize a session and prepare the next handoff
         artifact: session_summary

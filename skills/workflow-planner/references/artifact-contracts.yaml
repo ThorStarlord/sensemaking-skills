@@ -690,3 +690,49 @@ artifacts:
       required_for_modes:
         - guided_execution
         - autonomous_execution
+
+  - id: work_claim
+    path: "artifacts/work_claim.md"
+    produced_by: task-requester
+    consumed_by:
+      - output-reconciler
+    description: "The handoff/task summary whose claims are being audited: a falsifiable statement of what was allegedly done (docs/reviews/*, docs/handoffs/*, an evidence record, or a pasted task summary). Produced outside the pipeline and promoted to this artifact so output-reconciler can cite it."
+    required_sections:
+      - source
+      - claims
+    required_machine_fields:
+      - artifact_id
+      - source
+      - claims
+      - created_at
+      - immutable
+    verification:
+      generic_validator: "python scripts/validate-artifact.py work_claim {artifact_path}"
+      required_for_modes:
+        - plan_only
+        - guided_execution
+
+  - id: reconciliation_report
+    path: "artifacts/reconciliation_report.md"
+    produced_by: output-reconciler
+    consumed_by:
+      - to-issues
+      - handoff
+    description: "Verdict of an artifact-reconciliation run: each claim of the audited work_claim classified verified/disputed/omitted against durable repository artifacts, plus findings, lessons, and actionable recommendations. Prototype: experiments/evidence/0018-auteur-docs-contract-reconciliation-analysis."
+    required_sections:
+      - claims
+      - findings
+      - recommendations
+    required_machine_fields:
+      - artifact_id
+      - source_claim_ref
+      - claims
+      - findings
+      - recommendations
+      - created_at
+      - immutable
+    verification:
+      generic_validator: "python scripts/validate-artifact.py reconciliation_report {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution

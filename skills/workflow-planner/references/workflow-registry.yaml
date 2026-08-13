@@ -165,6 +165,58 @@ workflows:
     gate: review_next_prompt
     input_artifact: docs_contract_reconciliation_report
     output_artifact: session_summary
+- id: artifact-reconciliation
+  display_name: Artifact Reconciliation (Handoff Audit)
+  purpose: Verify claims about completed work (handoff briefs, task summaries,
+    status reports) against durable repository artifacts; produce a reconciled
+    analysis with verified/disputed/omitted claims and actionable findings.
+  initial_inputs:
+  - id: work_claim
+    type: artifact
+    required: true
+    description: The handoff/task summary whose claims are audited (docs/reviews/*,
+      docs/handoffs/*, an evidence record, or a pasted task summary).
+  - id: repository_state
+    type: external_context
+    required: true
+    description: The repo whose artifacts ground the audit (probe report, evidence
+      records, merged HEAD, validator outputs).
+  - id: prior_evidence
+    type: external_context
+    required: false
+    description: Prior briefs/postmortems/evidence records about the target; the
+      output of a previous artifact-reconciliation run feeds the next (closed loop).
+  allowed_execution_modes:
+  - plan_only
+  - guided_execution
+  steps:
+  - id: 1
+    skill: repo-sensemaker
+    step_type: local_execution
+    gate: review_audit_diagnosis
+    input_source: repository_state
+    output_artifact: repository_sensemaking_brief
+  - id: 2
+    skill: output-reconciler
+    step_type: local_execution
+    gate: review_reconciliation
+    input_artifact: repository_sensemaking_brief
+    input_source: prior_evidence
+    output_artifact: reconciliation_report
+    description: work_claim and prior_evidence are supplied from the run
+      context (initial_inputs); repo-sensemaker's brief grounds the audit.
+  - id: 3
+    skill: to-issues
+    step_type: local_execution
+    gate: review_issues
+    input_artifact: reconciliation_report
+    output_artifact: issue_list
+  - id: 4
+    skill: handoff
+    step_type: local_execution
+    gate: review_next_prompt
+    input_artifact: issue_list
+    output_artifact: session_summary
 - id: autonomous-sprint-preflight
   display_name: Autonomous Sprint Preflight
   purpose: Verify that a repository is ready for Autonomous Sprint before selecting
