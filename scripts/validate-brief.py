@@ -24,6 +24,7 @@ MISSING_HANDOFF_BLOCK = "MISSING_HANDOFF_BLOCK"
 REGISTRY_NOT_FOUND = "REGISTRY_NOT_FOUND"
 NO_LOGIC_TRACE = "NO_LOGIC_TRACE"
 NO_EVIDENCE_FILE_CITATIONS = "NO_EVIDENCE_FILE_CITATIONS"
+COLLISION_DIRECTION_EVIDENCE_REQUIRED = "COLLISION_DIRECTION_EVIDENCE_REQUIRED"
 
 # Structured weakness-type contract (issue #80). UNKNOWN_WEAKNESS_TYPE (the old
 # blocking case-insensitive prose-substring check) is retired. PR #78 was
@@ -725,6 +726,40 @@ def validate_brief(
                         severity="warning",
                     ))
 
+    # 3b. Collision-direction evidence (evidence-rules Rule 7, issue #171):
+    #     when the brief RECOMMENDS renumbering/deduplicating a colliding ID
+    #     (ADR number, artifact id, workflow id), it must carry the collision
+    #     direction decision in Section 13's machine field
+    #     `collision_dedup_direction` (reference counts per candidate, prior
+    #     dedup intent, grep result incl. handoffs). The recommendation is
+    #     detected in the actionable sections only (candidate next steps /
+    #     recommended next step / ready-to-copy prompt / machine handoff), so
+    #     a brief merely QUOTING target text that contains "renumber" is not
+    #     falsely flagged.
+    recommendation_sections = " ".join(
+        sections.get(name, "") for name in (
+            "candidate next steps",
+            "recommended next step",
+            "ready to copy prompt",
+            "machine readable handoff",
+        )
+    )
+    recommends_collision_fix = bool(
+        re.search(r"\b(?:re-?number|dedup(?:licat\w+)?)\b",
+                  recommendation_sections, re.IGNORECASE)
+    )
+    if recommends_collision_fix:
+        direction = artifact_data.get("collision_dedup_direction") if artifact_data else None
+        if not (isinstance(direction, str) and direction.strip()):
+            errors.append(_code_error(
+                COLLISION_DIRECTION_EVIDENCE_REQUIRED,
+                "Brief recommends renumbering/deduplicating a colliding ID but "
+                "Section 13 lacks 'collision_dedup_direction' evidence "
+                "(reference counts per candidate, prior dedup intent, grep "
+                "result incl. handoffs). Count references before recommending "
+                "which side keeps the number -- see evidence-rules Rule 7.",
+            ))
+
     # 4. evidence_excerpts YAML block: presence + per-excerpt field checks
     evidence_match = re.search(r"```yaml\s+(evidence_excerpts:.*?)\s+```", content, re.DOTALL | re.IGNORECASE)
     if not evidence_match:
@@ -930,6 +965,7 @@ def main(argv: list[str] | None = None) -> int:
             REGISTRY_NOT_FOUND,
             NO_LOGIC_TRACE,
             NO_EVIDENCE_FILE_CITATIONS,
+            COLLISION_DIRECTION_EVIDENCE_REQUIRED,
             WEAKNESS_TYPE_MISSING,
             WEAKNESS_TYPE_UNKNOWN,
             WEAKNESS_TYPE_OTHER_NO_EXPLANATION,

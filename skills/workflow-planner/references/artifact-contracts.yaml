@@ -142,6 +142,11 @@ artifacts:
       - auto_escalation_allowed
       - weakness_type
       - weakness_type_explanation
+      # Issue #171 / evidence-rules Rule 7: REQUIRED (blocking) when the
+      # brief recommends renumbering/deduplicating a colliding ID. Value is
+      # the direction decision with reference counts per candidate, prior
+      # dedup intent, and grep result incl. handoffs.
+      - collision_dedup_direction
       # Section 15 "extended_analysis" fields (ADR 0024, ACCEPTED): classified
       # per ADR 0015 as "model, constrained" (same class as weakness_type),
       # all OPTIONAL, all non-blocking -- a stronger guarantee than
