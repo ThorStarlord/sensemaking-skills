@@ -121,6 +121,7 @@ artifacts:
       - workflow-planner
       - prompt-handoff
       - sensemaking-docs-reconciler
+      - output-reconciler
     description: "Phase 1 diagnostic artifact: fog type classification and handoff to workflow-planner"
     required_sections:
       - evidence
