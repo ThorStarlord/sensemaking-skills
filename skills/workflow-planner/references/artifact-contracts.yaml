@@ -737,3 +737,25 @@ artifacts:
       required_for_modes:
         - guided_execution
         - autonomous_execution
+
+  - id: repair_verification_report
+    path: "artifacts/repair_verification_report.md"
+    produced_by: repair-verifier
+    consumed_by:
+      - handoff
+    description: "Post-repair verification of a docs-contract-reconciliation run: the original brief's findings re-checked against a fresh probe report, each marked closed or remaining. The brief is the acceptance criteria, consumed by its own verification."
+    required_sections:
+      - findings_closed
+      - findings_remaining
+      - probe_summary
+    required_machine_fields:
+      - artifact_id
+      - verified_brief_ref
+      - findings_closed
+      - findings_remaining
+      - created_at
+      - immutable
+    verification:
+      generic_validator: "python scripts/validate-artifact.py repair_verification_report {artifact_path}"
+      required_for_modes:
+        - guided_execution

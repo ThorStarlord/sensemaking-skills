@@ -39,6 +39,11 @@ ecosystems:
         artifact: reconciliation_report
         availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
         capabilities: [write_files]
+      - id: repair-verifier
+        purpose: verify that reconciliation repairs closed the original brief findings
+        artifact: repair_verification_report
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+        capabilities: [write_files]
       - id: handoff
         purpose: summarize a session and prepare the next handoff
         artifact: session_summary
