@@ -339,6 +339,125 @@ def _read_bytes(path: Path) -> bytes | None:
         return None
 
 
+# Files compared per skill when checking for vendored-skill drift. The two
+# that carry the framework's captured learnings; SKILL.md is the procedure,
+# evidence-rules.md is the postmortem-derived rules (evidence 0016 -> 6-8,
+# evidence 0017 -> 9-12).
+_VENDORED_COMPARE_FILES = ("SKILL.md", "references/evidence-rules.md")
+
+
+def vendored_skill_drift(
+    repo_root: Path, canonical_skills_root: Path | None = None
+) -> Dict[str, object]:
+    """Compare a target's vendored skills/* against the canonical skills.
+
+    Issue #170 / evidence 0018: a target repo that vendors sensemaking
+    skills can execute with a STALE copy, so learnings captured in the
+    canonical skill (e.g. evidence-rules Rules 6-12) never reach the
+    executor -- the auteur docs-contract-reconciliation run repeated the
+    exact ADR-direction failure the framework had already documented because
+    its vendored evidence-rules.md predated Rules 6-8.
+
+    For every canonical skill present in the target's skills/ dir, the
+    compare files (_VENDORED_COMPARE_FILES, when the canonical skill has
+    them) are hashed and classified: none / line_ending_only /
+    content_drift / missing. Any content_drift or missing file produces a
+    skill_distribution_drift finding (evidence candidate, never blocking).
+
+    The canonical root defaults to the framework repo's own skills/ dir
+    (scripts/../skills). Pure filesystem + hashlib reads, no subprocess.
+    """
+    if canonical_skills_root is None:
+        canonical_skills_root = Path(__file__).resolve().parent.parent / "skills"
+
+    checked: List[str] = []
+    drifted: List[Dict[str, object]] = []
+    observations: List[Dict[str, str]] = []
+    notes: str = ""
+
+    if not canonical_skills_root.is_dir():
+        notes = "canonical skills root unavailable; vendored-skill drift not measured"
+        return {
+            "canonical_skills_root": str(canonical_skills_root),
+            "checked": checked,
+            "drifted": drifted,
+            "findings": [],
+            "notes": notes,
+        }
+
+    for skill_dir in sorted(canonical_skills_root.iterdir()):
+        canonical_md = skill_dir / "SKILL.md"
+        if not canonical_md.is_file():
+            continue
+        skill_name = skill_dir.name
+        target_skill_dir = repo_root / "skills" / skill_name
+        if not target_skill_dir.is_dir():
+            continue  # not vendored in the target; nothing to compare
+        checked.append(skill_name)
+        skill_files: List[Dict[str, object]] = []
+        for rel in _VENDORED_COMPARE_FILES:
+            canon_file = skill_dir / rel
+            if not canon_file.is_file():
+                continue
+            target_file = target_skill_dir / rel
+            canon_data = _read_bytes(canon_file)
+            target_data = _read_bytes(target_file) if target_file.is_file() else None
+            if canon_data is None:
+                continue
+            if target_data is None:
+                drift_type = "missing"
+            else:
+                lf = lambda b: b.replace(b"\r\n", b"\n")  # noqa: E731
+                if canon_data == target_data:
+                    drift_type = "none"
+                elif lf(canon_data) == lf(target_data):
+                    drift_type = "line_ending_only"
+                else:
+                    drift_type = "content_drift"
+            if drift_type in ("content_drift", "missing"):
+                skill_files.append({
+                    "path": f"skills/{skill_name}/{rel}",
+                    "drift_type": drift_type,
+                })
+                observations.append({
+                    "source": f"skills/{skill_name}/{rel}",
+                    "location": f"skills/{skill_name}/{rel}",
+                    "value": drift_type,
+                    "evidence": f"vendored {rel} differs from canonical "
+                                f"({drift_type.replace('_', ' ')})",
+                    "source_kind": "contract",
+                    "claim_class": "skill_distribution",
+                })
+        if skill_files:
+            drifted.append({"skill_name": skill_name, "files": skill_files})
+
+    findings: List[Dict[str, object]] = []
+    if drifted:
+        findings.append({
+            "concept": "vendored_skill",
+            "finding_type": "skill_distribution_drift",
+            "observations": observations,
+            "confidence": "high",
+            "requires_semantic_review": False,
+            "notes": (
+                "The target's vendored skill copy drifted from canonical; "
+                "learnings captured in canonical (e.g. evidence-rules Rules "
+                "6-12) may never reach an executor working in this target. "
+                "Refresh the vendored copy or consult the canonical skill "
+                "before producing a brief."
+            ),
+        })
+        notes = f"{len(drifted)} vendored skill(s) drifted from canonical"
+
+    return {
+        "canonical_skills_root": str(canonical_skills_root),
+        "checked": checked,
+        "drifted": drifted,
+        "findings": findings,
+        "notes": notes,
+    }
+
+
 def probe_skill_distribution(
     repo_root: Path, installed_skills_root: Path | None = None
 ) -> Dict[str, object]:
@@ -493,6 +612,7 @@ def probe_all(repo_root: Path, churn_commits: int = 50) -> Dict[str, object]:
         "fixtures_coverage": fixtures_coverage(repo_root),
         "churn": churn(repo_root, commits=churn_commits),
         "relationships": relationships(repo_root),
+        "skill_distribution": vendored_skill_drift(repo_root),
     }
 
 

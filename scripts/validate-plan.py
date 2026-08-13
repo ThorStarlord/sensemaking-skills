@@ -164,8 +164,23 @@ def _validate_plan_against_registries(plan_data: dict, repo_root: str = ".") -> 
     if plan_inputs or reg_inputs:
         plan_input_ids = {i["id"] for i in plan_inputs}
         reg_input_ids = {i["id"] for i in reg_inputs}
-        if plan_input_ids != reg_input_ids:
-            errors.append(_code_error(INPUT_MISMATCH, f"initial_inputs mismatch: plan has {plan_input_ids}, registry expects {reg_input_ids}"))
+        required_reg_input_ids = {
+            i["id"] for i in reg_inputs if i.get("required", False)
+        }
+        # A plan must declare every REQUIRED registry input and must not
+        # invent inputs; OPTIONAL registry inputs (required: false, e.g.
+        # docs-contract-reconciliation's prior_evidence, issue #170) may be
+        # omitted without failing validation.
+        if required_reg_input_ids - plan_input_ids:
+            errors.append(_code_error(
+                INPUT_MISMATCH,
+                f"initial_inputs mismatch: plan is missing required inputs "
+                f"{sorted(required_reg_input_ids - plan_input_ids)}"))
+        if plan_input_ids - reg_input_ids:
+            errors.append(_code_error(
+                INPUT_MISMATCH,
+                f"initial_inputs mismatch: plan has unknown inputs "
+                f"{sorted(plan_input_ids - reg_input_ids)}"))
         for i in plan_inputs:
             if "type" not in i or "required" not in i:
                 errors.append(_code_error(INPUT_MISMATCH, f"Initial input '{i.get('id')}' missing 'type' or 'required' fields"))

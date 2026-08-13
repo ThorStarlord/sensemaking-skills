@@ -134,6 +134,14 @@ workflows:
     required: true
     description: Current repository files, registries, templates, validator scripts,
       and git state.
+  - id: prior_evidence
+    type: external_context
+    required: false
+    description: Prior briefs, postmortems, and evidence records about this target
+      (e.g. experiments/evidence/NNNN-*, docs/reviews/*, vendored-skill drift
+      findings from the probe's skill_distribution section). repo-sensemaker must
+      consult these before producing the brief so framework learnings captured
+      after the target vendored its skills still reach the executor (evidence 0018).
   allowed_execution_modes:
   - plan_only
   - prompt_chain

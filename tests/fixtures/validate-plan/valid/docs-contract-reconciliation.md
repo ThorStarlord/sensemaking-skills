@@ -55,6 +55,10 @@ initial_inputs:
     type: external_context
     required: true
     source: repository
+  - id: prior_evidence
+    type: external_context
+    required: false
+    source: repository
 workflow_steps:
   - id: 1
     skill: repo-sensemaker

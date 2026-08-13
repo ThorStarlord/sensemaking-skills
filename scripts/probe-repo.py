@@ -17,7 +17,7 @@ import yaml
 
 from repo_probes import probe_all
 
-SUMMARY_LINES = 6
+SUMMARY_LINES = 7
 
 
 def _summary(report: dict, output: Path) -> str:
@@ -44,6 +44,10 @@ def _summary(report: dict, output: Path) -> str:
         f"  churn: {ch['commits_scanned']} commits, {ch['changed_files_last_n']} files; top: {ch['top_changed_files']}",
         f"  relationships: version findings={len(rel_ver)} adr findings={len(rel_adr)} "
         f"(evidence candidates, not diagnoses)",
+        f"  vendored skills: {len(sd.get('checked', []))} checked, "
+        f"{len(sd.get('findings', []))} drift finding(s) | {sd.get('notes') or 'in sync'}" if (
+            sd := report.get("skill_distribution", {})
+        ) else "  vendored skills: not measured",
     ]
     return "\n".join(lines)
 

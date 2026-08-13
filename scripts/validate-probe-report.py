@@ -8,6 +8,7 @@ Error codes (substrings matched by tests/fixtures/validate-probe-report/):
   PROBE_REPORT_VG_RANGE
   PROBE_REPORT_CE_NEGATIVE
   PROBE_REPORT_RELATIONSHIPS_SHAPE
+  PROBE_REPORT_SKILL_DISTRIBUTION_SHAPE
 """
 
 from __future__ import annotations
@@ -119,6 +120,36 @@ def validate_report(data: dict) -> bool:
                         print(f"[PROBE_REPORT_RELATIONSHIPS_SHAPE] relationships.{subkey}."
                               f"findings items need concept/finding_type/observations")
                         ok = False
+
+    sd = data.get("skill_distribution")
+    if sd is not None:
+        # Optional-but-validated-when-present (additive key, issue #170):
+        # older reports omit it; when present it must be a mapping with
+        # checked/drifted/findings lists.
+        if not isinstance(sd, dict):
+            print("[PROBE_REPORT_SKILL_DISTRIBUTION_SHAPE] skill_distribution "
+                  "must be a mapping")
+            ok = False
+        else:
+            for subkey in ("checked", "drifted", "findings"):
+                if subkey not in sd:
+                    print(f"[PROBE_REPORT_SKILL_DISTRIBUTION_SHAPE] "
+                          f"skill_distribution missing subkey: {subkey}")
+                    ok = False
+                elif not isinstance(sd[subkey], list):
+                    print(f"[PROBE_REPORT_SKILL_DISTRIBUTION_SHAPE] "
+                          f"skill_distribution.{subkey} must be a list")
+                    ok = False
+            findings = sd.get("findings")
+            if isinstance(findings, list) and not all(
+                isinstance(f, dict) and "concept" in f
+                and "finding_type" in f and "observations" in f
+                for f in findings
+            ):
+                print("[PROBE_REPORT_SKILL_DISTRIBUTION_SHAPE] "
+                      "skill_distribution.findings items need "
+                      "concept/finding_type/observations")
+                ok = False
 
     return ok
 

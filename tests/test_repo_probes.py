@@ -3,7 +3,6 @@ from pathlib import Path
 
 from scripts.repo_probes import churn, ci_enforcement, git_state
 
-
 def _new_repo(tmp_path: Path) -> Path:
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -322,3 +321,78 @@ def test_fixtures_coverage_valid_only_marker_does_not_exempt_missing_valid(tmp_p
     report = fixtures_coverage(repo)
     assert report["covered_validators"] == 0
     assert report["missing_fixtures"] == ["validate-x"]
+
+
+from scripts.repo_probes import vendored_skill_drift
+
+
+def _canonical_skill(root: Path, name: str, rules_text: str = "rules v1\n") -> None:
+    skill = root / "skills" / name
+    (skill / "references").mkdir(parents=True)
+    (skill / "SKILL.md").write_text(f"# {name}\n", encoding="utf-8")
+    (skill / "references" / "evidence-rules.md").write_text(rules_text, encoding="utf-8")
+
+
+def test_vendored_skill_drift_no_finding_when_in_sync(tmp_path: Path) -> None:
+    # Issue #170: a target whose vendored copy matches canonical is clean.
+    canonical = tmp_path / "canonical"
+    _canonical_skill(canonical, "repo-sensemaker")
+    repo = tmp_path / "repo"
+    _canonical_skill(repo, "repo-sensemaker")
+    report = vendored_skill_drift(repo, canonical_skills_root=canonical / "skills")
+    assert report["checked"] == ["repo-sensemaker"]
+    assert report["drifted"] == []
+    assert report["findings"] == []
+
+
+def test_vendored_skill_drift_flags_stale_evidence_rules(tmp_path: Path) -> None:
+    # The exact auteur failure: vendored evidence-rules.md predates the
+    # canonical learnings (Rules 6-12), so the executor never sees them.
+    canonical = tmp_path / "canonical"
+    _canonical_skill(canonical, "repo-sensemaker", rules_text="rules v2 (Rules 6-12)\n")
+    repo = tmp_path / "repo"
+    _canonical_skill(repo, "repo-sensemaker", rules_text="rules v1 (Rules 1-5)\n")
+    report = vendored_skill_drift(repo, canonical_skills_root=canonical / "skills")
+    assert len(report["findings"]) == 1
+    f = report["findings"][0]
+    assert f["finding_type"] == "skill_distribution_drift"
+    assert f["requires_semantic_review"] is False
+    assert {"skills/repo-sensemaker/references/evidence-rules.md"} == {
+        o["source"] for o in f["observations"]
+    }
+
+
+def test_vendored_skill_drift_flags_missing_evidence_rules(tmp_path: Path) -> None:
+    # A vendored skill dir that is missing a compare file (evidence-rules.md)
+    # is drift: the executor has no rules at all. A target with NO vendored
+    # skill dir is simply not using that skill and is not flagged.
+    canonical = tmp_path / "canonical"
+    _canonical_skill(canonical, "repo-sensemaker")
+    repo = tmp_path / "repo"
+    _canonical_skill(repo, "repo-sensemaker")
+    (repo / "skills" / "repo-sensemaker" / "references" / "evidence-rules.md").unlink()
+    report = vendored_skill_drift(repo, canonical_skills_root=canonical / "skills")
+    assert len(report["findings"]) == 1
+    assert report["drifted"][0]["skill_name"] == "repo-sensemaker"
+    assert report["drifted"][0]["files"][0]["drift_type"] == "missing"
+
+
+def test_vendored_skill_drift_ignores_skills_not_vendored(tmp_path: Path) -> None:
+    # Target with no skills/ at all: not using the framework's skills, so
+    # there is nothing to drift -- clean, not a finding.
+    canonical = tmp_path / "canonical"
+    _canonical_skill(canonical, "repo-sensemaker")
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    report = vendored_skill_drift(repo, canonical_skills_root=canonical / "skills")
+    assert report["checked"] == []
+    assert report["findings"] == []
+
+
+def test_vendored_skill_drift_unavailable_canonical_is_clean(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    report = vendored_skill_drift(repo, canonical_skills_root=tmp_path / "nope")
+    assert report["findings"] == []
+    assert report["checked"] == []
+    assert "unavailable" in report["notes"]

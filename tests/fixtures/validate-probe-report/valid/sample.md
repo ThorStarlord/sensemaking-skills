@@ -99,3 +99,24 @@ relationships:
         confidence: high
         requires_semantic_review: false
         notes: "Multiple files declare ADR id 0001; the id namespace is ambiguous."
+skill_distribution:
+  canonical_skills_root: H:/framework/skills
+  checked: [repo-sensemaker]
+  drifted:
+    - skill_name: repo-sensemaker
+      files:
+        - path: skills/repo-sensemaker/references/evidence-rules.md
+          drift_type: content_drift
+  findings:
+    - concept: vendored_skill
+      finding_type: skill_distribution_drift
+      observations:
+        - source: skills/repo-sensemaker/references/evidence-rules.md
+          location: skills/repo-sensemaker/references/evidence-rules.md
+          value: content_drift
+          evidence: "vendored evidence-rules.md differs from canonical (content drift)"
+          source_kind: contract
+          claim_class: skill_distribution
+      confidence: high
+      requires_semantic_review: false
+      notes: "The target's vendored skill copy drifted from canonical."
