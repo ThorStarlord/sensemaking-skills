@@ -123,7 +123,8 @@ def main():
     results["overall_pass"] = overall_pass
     results["completed_at"] = datetime.now().isoformat()
 
-    output_file = Path("PHASE-3-POC-RESULTS.json")
+    output_file = Path("docs/archive/root-artifacts") / "PHASE-3-POC-RESULTS.json"
+    output_file.parent.mkdir(parents=True, exist_ok=True)
     with open(output_file, "w") as f:
         json.dump(results, f, indent=2)
 

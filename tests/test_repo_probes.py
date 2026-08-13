@@ -323,6 +323,28 @@ def test_fixtures_coverage_valid_only_marker_does_not_exempt_missing_valid(tmp_p
     assert report["missing_fixtures"] == ["validate-x"]
 
 
+def test_fixtures_coverage_honors_regressions_exclusions(tmp_path: Path) -> None:
+    # Issue #174: validators excluded in tests/fixtures/REGRESSIONS.yaml (the
+    # harness's own documented convention) are not reported as missing; they
+    # count as covered because the repo's own gate treats them as such.
+    repo = tmp_path / "repo"
+    (repo / "scripts").mkdir(parents=True)
+    (repo / "scripts" / "validate-repo.py").write_text("pass\n", encoding="utf-8")
+    (repo / "tests" / "fixtures").mkdir(parents=True)
+    (repo / "tests" / "fixtures" / "REGRESSIONS.yaml").write_text(
+        "excluded_validators:\n"
+        "  - validator: validate-repo\n"
+        "    reason: Repository-level meta-validator; not fixture-tested.\n",
+        encoding="utf-8",
+    )
+    report = fixtures_coverage(repo)
+    assert report["total_validators"] == 1
+    assert report["covered_validators"] == 0
+    assert report["missing_fixtures"] == []
+    assert report["excluded_by_convention"] == ["validate-repo"]
+    assert report["coverage"] == 1.0
+
+
 from scripts.repo_probes import vendored_skill_drift
 
 

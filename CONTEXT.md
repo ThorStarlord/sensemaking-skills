@@ -301,13 +301,15 @@ The system uses a multi-stage default workflow chain with fog-type-aware routing
   of thousands of ignored files (auteur's root JSON sprawl). A silent
   "clean" reading would mask exactly the sprawl the metric exists to detect.
   Treat `ce: null` as "unmeasured", not "clean".
-- `fixtures-coverage` honors a documented **valid-only convention**: a target
-  may list repo-wide validators in `tests/fixtures/valid-only.txt` (one name
-  per line, `#` comments) whose `invalid/` fixtures are unsatisfiable and
-  deliberately retired (auteur commit 9994238). Listed validators count as
-  covered with `valid/` alone; without the marker the metric is unchanged.
-  A gap listed in `missing_fixtures` should be checked against this
-  convention before being reported as a defect.
+- `fixtures-coverage` honors documented conventions: a target may list
+  repo-wide validators in `tests/fixtures/valid-only.txt` (one name per line,
+  `#` comments) whose `invalid/` fixtures are unsatisfiable and deliberately
+  retired (auteur commit 9994238), and the validator harness's own exclusions
+  in `tests/fixtures/REGRESSIONS.yaml` (`excluded_validators`, each with a
+  reason) are reported in `excluded_by_convention` and never listed as
+  missing. Listed/excluded validators count as covered; without either marker
+  the metric is unchanged. A gap listed in `missing_fixtures` should be
+  checked against these conventions before being reported as a defect.
 - `relationships.adr.findings` emits `duplicate_id` when the catalog holds
   duplicate ADR ids; the renumber *direction* is a model decision
   (evidence-rules Rule 7), never a probe verdict.

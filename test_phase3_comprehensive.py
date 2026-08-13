@@ -198,7 +198,8 @@ print('API test passed')
     }
 
     # Save results
-    output_file = Path("PHASE-3-COMPREHENSIVE-RESULTS.json")
+    output_file = Path("docs/archive/root-artifacts") / "PHASE-3-COMPREHENSIVE-RESULTS.json"
+    output_file.parent.mkdir(parents=True, exist_ok=True)
     with open(output_file, "w") as f:
         json.dump(all_results, f, indent=2)
 

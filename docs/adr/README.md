@@ -1,9 +1,12 @@
 # Architecture Decision Records — Status Lifecycle
 
-This directory holds ADRs for this repository. No script validates the
-`**Status**` line today (ADRs are free-text Markdown, uninspected by any
-validator) — this file exists solely to define the convention so authors and
-reviewers use the same vocabulary.
+This directory holds ADRs for this repository. The ADR probe
+(`scripts/probe_relationships.py`, part of the Probe Engine) reads the
+`**Status**` line of every `docs/adr/NNN-*.md` and emits findings for
+unrecognized or missing statuses and for status-claim mismatches; the status
+vocabulary below is the canonical convention it validates against. This file
+exists to define the convention so authors and reviewers use the same
+vocabulary.
 
 ## Statuses
 

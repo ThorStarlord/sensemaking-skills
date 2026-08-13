@@ -287,16 +287,48 @@ def test_collection(repo_root: Path) -> Dict[str, object]:
     }
 
 
+def _fixtures_regressions_exclusions(repo_root: Path) -> List[str]:
+    """Validator names excluded from fixture coverage per REGRESSIONS.yaml.
+
+    The validator harness (scripts/test-validators.py) documents deliberate
+    coverage exclusions in `tests/fixtures/REGRESSIONS.yaml` under
+    `excluded_validators` (each with a reason: repo-wide meta-validators,
+    dynamic run-log validators, dispatchers). The probe honors the same
+    convention so it never reports a documented exclusion as a missing
+    fixture (issue #173/#174). Deterministic read; no subprocess.
+    """
+    path = repo_root / "tests" / "fixtures" / "REGRESSIONS.yaml"
+    if not path.is_file():
+        return []
+    try:
+        import yaml
+        data = yaml.safe_load(path.read_text(encoding="utf-8", errors="replace"))
+    except Exception:
+        return []
+    if not isinstance(data, dict):
+        return []
+    excluded = data.get("excluded_validators", [])
+    names: List[str] = []
+    if isinstance(excluded, list):
+        for entry in excluded:
+            name = entry.get("validator") if isinstance(entry, dict) else entry
+            if isinstance(name, str):
+                names.append(name)
+    return names
+
+
 def fixtures_coverage(repo_root: Path) -> Dict[str, object]:
     """Coverage of validate-*.py scripts by tests/fixtures/<name>/{valid,invalid}.
 
-    Valid-only convention (issue #173): a target may document that certain
-    validators are valid-only -- repo-wide validators cannot have a portable
-    unsatisfiable negative fixture (auteur commit 9994238). The convention is
-    declared in `tests/fixtures/valid-only.txt` (one validator name per line,
-    `#` comments allowed). A validator listed there is covered when its
-    `valid/` dir exists, without requiring `invalid/`. Without the marker the
-    metric is unchanged, so the probe never invents an exemption.
+    Two documented conventions are honored (issue #173/#174):
+    - `tests/fixtures/valid-only.txt`: validators listed here are covered with
+      `valid/` alone (repo-wide validators with unsatisfiable negative
+      fixtures, auteur commit 9994238).
+    - `tests/fixtures/REGRESSIONS.yaml` `excluded_validators`: the harness's
+      own documented exclusions (dynamic/meta validators) are reported in
+      `excluded_by_convention` and never listed as missing; they count as
+      covered because the repo's own gate treats them as such.
+    Without either marker the metric is unchanged.
     """
     scripts_dir = repo_root / "scripts"
     validators = sorted(
@@ -311,6 +343,9 @@ def fixtures_coverage(repo_root: Path) -> Dict[str, object]:
             name = raw.split("#", 1)[0].strip()
             if name and name in validators and name not in valid_only:
                 valid_only.append(name)
+    excluded_by_convention = [
+        n for n in _fixtures_regressions_exclusions(repo_root) if n in validators
+    ]
     covered: List[str] = []
     missing: List[str] = []
     for name in validators:
@@ -319,15 +354,19 @@ def fixtures_coverage(repo_root: Path) -> Dict[str, object]:
             covered.append(name)
         elif name in valid_only and (base / "valid").is_dir():
             covered.append(name)
+        elif name in excluded_by_convention:
+            continue
         else:
             missing.append(name)
     total = len(validators)
+    effective_covered = len(covered) + len(excluded_by_convention)
     return {
         "total_validators": total,
         "covered_validators": len(covered),
         "missing_fixtures": missing,
-        "coverage": round(len(covered) / total, 2) if total else 0.0,
+        "coverage": round(effective_covered / total, 2) if total else 0.0,
         "valid_only": valid_only,
+        "excluded_by_convention": excluded_by_convention,
     }
 
 

@@ -2,6 +2,7 @@ import os
 import yaml
 import sys
 import re
+from pathlib import Path
 
 def validate_repo():
     errors = []
@@ -399,6 +400,41 @@ def validate_repo():
                     else:
                         if res.returncode != 0 and not is_negative:
                             errors.append(f"Alignment mismatch between {os.path.basename(f_path)} and {os.path.basename(b_path)} in {root}:\n{res.stdout}{res.stderr}")
+
+    # 10. Product version consistency (issue #174): every product version
+    #     declaration (pyproject.toml, package.json, src/<pkg>/__init__.py
+    #     __version__) must agree. This closes the class of drift the version
+    #     probe reports as conflicting_values (package.json 4.1.0 vs
+    #     pyproject.toml 0.2.2) with a deterministic repo-side guard.
+    declared_versions = {}
+    pyproject = Path("pyproject.toml")
+    if pyproject.is_file():
+        m = re.search(r'^version\s*=\s*["\']([^"\']+)["\']',
+                      pyproject.read_text(encoding="utf-8", errors="replace"),
+                      re.MULTILINE)
+        if m:
+            declared_versions["pyproject.toml"] = m.group(1)
+    pkg_json = Path("package.json")
+    if pkg_json.is_file():
+        m = re.search(r'"version"\s*:\s*"([^"]+)"',
+                      pkg_json.read_text(encoding="utf-8", errors="replace"))
+        if m:
+            declared_versions["package.json"] = m.group(1)
+    if Path("src").is_dir():
+        for init in sorted(Path("src").rglob("__init__.py")):
+            rel = init.relative_to("src")
+            if len(rel.parts) == 2 and rel.parts[1] == "__init__.py":
+                m = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']',
+                              init.read_text(encoding="utf-8", errors="replace"))
+                if m:
+                    declared_versions[str(init)] = m.group(1)
+    distinct_versions = sorted(set(declared_versions.values()))
+    if len(distinct_versions) > 1:
+        sources = ", ".join(f"{k}={v}" for k, v in sorted(declared_versions.items()))
+        errors.append(
+            f"Product version declarations disagree ({sources}); align all to the "
+            "canonical release version (see CHANGELOG.md)."
+        )
 
     if errors:
         print("Validation failed:")

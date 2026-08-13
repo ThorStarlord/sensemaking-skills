@@ -1,6 +1,6 @@
 {
   "name": "sensemaking-skills",
-  "version": "4.1.0",
+  "version": "0.2.2",
   "description": "Autonomous diagnostic framework for complex sensemaking tasks",
   "type": "module",
   "scripts": {
