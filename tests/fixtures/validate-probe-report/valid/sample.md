@@ -67,12 +67,35 @@ relationships:
         requires_semantic_review: false
         notes: "Values disagree mechanically across sources."
   adr:
-    files: 1
+    files: 2
     catalog:
       - id: "0001"
         file: docs/adr/0001-example.md
         title: "ADR 0001: Example"
         status: proposed
         raw_status: "Proposed"
+      - id: "0001"
+        file: docs/adr/0001-second.md
+        title: "ADR 0001: Second"
+        status: proposed
+        raw_status: "Proposed"
     references: 1
-    findings: []
+    findings:
+      - concept: adr_identifier
+        finding_type: duplicate_id
+        observations:
+          - source: docs/adr/0001-example.md
+            location: docs/adr/0001-example.md
+            value: "0001"
+            evidence: "ADR id 0001 declared by 2 files"
+            source_kind: contract
+            claim_class: id_declaration
+          - source: docs/adr/0001-second.md
+            location: docs/adr/0001-second.md
+            value: "0001"
+            evidence: "ADR id 0001 declared by 2 files"
+            source_kind: contract
+            claim_class: id_declaration
+        confidence: high
+        requires_semantic_review: false
+        notes: "Multiple files declare ADR id 0001; the id namespace is ambiguous."

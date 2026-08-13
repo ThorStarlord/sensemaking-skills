@@ -464,6 +464,36 @@ def _adr_findings(refs: List[Dict[str, object]],
         by_id.setdefault(str(entry["id"]), []).append(entry)
     findings: List[Dict[str, object]] = []
 
+    # Duplicate identifiers: multiple files declaring the same ADR id is a
+    # mechanical defect of the id namespace itself. This makes the duplicate
+    # a top-level finding instead of a catalog-only condition the model must
+    # notice by reading raw data (evidence-rules Rule 11). The renumber
+    # DIRECTION is left to the model (evidence-rules Rule 7), so the finding
+    # is mechanical (requires_semantic_review=False) but never blocking.
+    for adr_id, entries in sorted(by_id.items()):
+        if len(entries) > 1:
+            findings.append({
+                "concept": "adr_identifier",
+                "finding_type": "duplicate_id",
+                "observations": [{
+                    "source": entry["file"],
+                    "location": entry["file"],
+                    "value": adr_id,
+                    "evidence": f"ADR id {adr_id} declared by {len(entries)} files",
+                    "source_kind": "contract",
+                    "claim_class": "id_declaration",
+                } for entry in entries],
+                "confidence": "high",
+                "requires_semantic_review": False,
+                "notes": (
+                    f"Multiple files declare ADR id {adr_id}; the id namespace "
+                    "is ambiguous. Before renumbering, count external references "
+                    "per candidate and grep all files including handoffs "
+                    "(evidence-rules Rule 7); which side is load-bearing is "
+                    "for the model to interpret."
+                ),
+            })
+
     for ref in refs:
         entries = by_id.get(ref["id"])
         if entries is None:

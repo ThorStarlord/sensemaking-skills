@@ -179,6 +179,16 @@ def test_adr_duplicate_ids_kept_and_reported_per_entry(tmp_path: Path) -> None:
     mismatches = [f for f in section["findings"]
                   if f["finding_type"] == "status_claim_mismatch"]
     assert len(mismatches) == 2  # one per catalog entry
+    # Issue #172: the duplicate id is a top-level finding, not a catalog-only
+    # condition the model must notice by reading raw data.
+    dupes = [f for f in section["findings"]
+             if f["finding_type"] == "duplicate_id"]
+    assert len(dupes) == 1
+    d = dupes[0]
+    assert d["concept"] == "adr_identifier"
+    assert d["requires_semantic_review"] is False
+    assert {o["value"] for o in d["observations"]} == {"013"}
+    assert len(d["observations"]) == 2  # one observation per declaring file
 
 
 def test_adr_missing_status_line_is_detected(tmp_path: Path) -> None:
