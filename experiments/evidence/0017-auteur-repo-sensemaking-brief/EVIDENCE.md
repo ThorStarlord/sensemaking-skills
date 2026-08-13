@@ -43,6 +43,30 @@ non-trivial target.
 | `validator-output.txt` | stdout of the target repo's `validate-brief.py` (exit 0) |
 | `EVIDENCE.md` | This run record |
 
+## Provenance
+
+- Target repository: Auteur (`H:\GithubRepositories\auteur`, v0.37.1)
+- Target repository SHA analyzed: `3acf8a1` (auteur `main` at analysis time;
+  reverified from `probe-report.yaml` `git_state.head_sha`)
+- Sensemaking generator repository SHA (sensemaking-skills `main` at run time):
+  `63350d47f251a6753662e9aeab92098f76c15d61` — recorded as the repository state
+  at run time, **not** as a formal product/version identifier
+- Loaded skill source (verified): the `repo-sensemaker` SKILL.md executed was
+  loaded from the installed skill root
+  (`C:\Users\Admin\.agents\skills\repo-sensemaker\SKILL.md`); its content does
+  NOT byte-match `skills/repo-sensemaker/SKILL.md` at the SHA above
+  (SHA-256 `7879fb8f44809debfb73abb3f44982e9bcd0910a317b50366ca45d55954d0d4b`
+  installed vs `b223b7808f210bd4b8021b898285261565b90ec77bca2eb50f023ced406dae7e`
+  at `63350d4`), so the SHA alone does not identify the loaded skill revision
+- Probe engine + validators: sensemaking-skills `scripts/probe-repo.py` /
+  `validate-brief.py` from the sensemaking-skills checkout at the SHA above
+- Execution mode: direct-invoked (no orchestration runtime)
+- Review verdict: ship as-is (forced review)
+- Promotion date: 2026-08-13
+- `run-ledger.jsonl` / `tool-call-trace.jsonl`: **not produced** — this was not a
+  full orchestration-runtime run; their absence is evidence of the execution
+  mode, not a gap (no fabricated telemetry)
+
 ## Dogfood findings (observations for sensemaking-skills)
 
 1. **Probe engine timeout masks context entropy.** On a target with ~10k ignored
@@ -73,3 +97,22 @@ artifact sprawl; `docs_fog` / Vocabulary Drift) was independently verified by a
 forced review (verdict: ship as-is). The same brief was promoted to the target
 repo's tracked evidence location (`docs/reviews/2026-08-13-auteur-repo-sensemaking-brief.md`)
 as target-repo evidence; this folder is the sensemaking-skills dogfood record.
+
+### Durability-completion pass (2026-08-13)
+
+The initial promotion copied the brief into tracked locations but its durable
+references still pointed at the gitignored runtime directory
+(`artifacts/09-orchestration-run/`). A corrective pass normalized every such
+reference so it resolves to the tracked companion artifacts inside this folder:
+
+- `artifacts/09-orchestration-run/probe-report.yaml`
+  → `experiments/evidence/0017-auteur-repo-sensemaking-brief/probe-report.yaml`
+  (5 occurrences: Sections 3.1, 3.3, 7, 11, 13 `evidence` list)
+- `artifacts/09-orchestration-run/00-user-intent.md`
+  → `experiments/evidence/0017-auteur-repo-sensemaking-brief/00-user-intent.md`
+  (1 occurrence: Section 13 `source_intent_ref`)
+
+Only path/reference syntax changed; the diagnosis, claims, recommendations,
+evidence meaning, fog/boundary classification, and quoted evidence are
+unchanged. The corrected brief re-passes the canonical validator (exit 0).
+
