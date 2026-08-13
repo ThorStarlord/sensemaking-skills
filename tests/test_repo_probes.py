@@ -213,6 +213,26 @@ def test_context_entropy_zero_for_empty_directory(tmp_path: Path) -> None:
     assert report["ce"] == 0.0
 
 
+def test_context_entropy_unmeasured_when_ignored_status_times_out(
+    tmp_path: Path, monkeypatch
+) -> None:
+    # Issue #173 / evidence-rules Rule 9: a timed-out git status --ignored
+    # must read as unmeasured (ce None), never a false clean 0.0.
+    repo = _init_committed_repo(tmp_path)
+    real_run = subprocess.run
+
+    def fake_run(cmd, *args, **kwargs):
+        if "--ignored" in cmd:
+            raise subprocess.TimeoutExpired(cmd=cmd, timeout=30)
+        return real_run(cmd, *args, **kwargs)
+
+    monkeypatch.setattr("scripts.repo_probes.subprocess.run", fake_run)
+    report = context_entropy(repo)
+    assert report["ce"] is None
+    assert "unmeasured" in report["notes"]
+    assert report["ignored_present_volume"] == 0
+
+
 def test_test_collection_counts_test_files_only(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     (repo / "tests").mkdir(parents=True)
@@ -227,6 +247,23 @@ def test_test_collection_counts_test_files_only(tmp_path: Path) -> None:
     assert report["test_file_count"] == 2
     assert report["pytest_config_present"] is True
     assert report["markers_declared"] == ""
+    # Best-effort collect count: key always present; value int or None.
+    assert "test_case_count" in report
+    assert report["test_case_count"] is None or isinstance(report["test_case_count"], int)
+
+
+def test_test_collection_reports_collected_case_count_when_pytest_available(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    (repo / "tests").mkdir(parents=True)
+    (repo / "tests" / "test_one.py").write_text(
+        "def test_a():\n    pass\ndef test_b():\n    pass\n", encoding="utf-8"
+    )
+    report = probe_test_collection(repo)
+    assert report["test_file_count"] == 1
+    # pytest may be unavailable in minimal environments; when present the
+    # count must be a positive integer matching the two collected tests.
+    if report["test_case_count"] is not None:
+        assert report["test_case_count"] == 2
 
 
 def test_fixtures_coverage_reports_missing_fixture_dirs(tmp_path: Path) -> None:
@@ -253,3 +290,35 @@ def test_fixtures_coverage_reports_covered_and_partial(tmp_path: Path) -> None:
     assert report["covered_validators"] == 1
     assert report["missing_fixtures"] == ["validate-b"]
     assert report["coverage"] == 0.5
+    assert report["valid_only"] == []
+
+
+def test_fixtures_coverage_honors_documented_valid_only_convention(tmp_path: Path) -> None:
+    # Issue #173: repo-wide validators cannot have a portable unsatisfiable
+    # invalid/ fixture; a documented valid-only convention must be honored.
+    repo = tmp_path / "repo"
+    (repo / "scripts").mkdir(parents=True)
+    (repo / "scripts" / "validate-repo.py").write_text("pass\n", encoding="utf-8")
+    (repo / "tests" / "fixtures" / "validate-repo" / "valid").mkdir(parents=True)
+    (repo / "tests" / "fixtures" / "valid-only.txt").write_text(
+        "# Repo-wide validators have no portable negative fixture\nvalidate-repo\n",
+        encoding="utf-8",
+    )
+    report = fixtures_coverage(repo)
+    assert report["total_validators"] == 1
+    assert report["covered_validators"] == 1
+    assert report["missing_fixtures"] == []
+    assert report["coverage"] == 1.0
+    assert report["valid_only"] == ["validate-repo"]
+
+
+def test_fixtures_coverage_valid_only_marker_does_not_exempt_missing_valid(tmp_path: Path) -> None:
+    # A validator listed as valid-only still needs its valid/ dir.
+    repo = tmp_path / "repo"
+    (repo / "scripts").mkdir(parents=True)
+    (repo / "scripts" / "validate-x.py").write_text("pass\n", encoding="utf-8")
+    (repo / "tests" / "fixtures").mkdir(parents=True)
+    (repo / "tests" / "fixtures" / "valid-only.txt").write_text("validate-x\n", encoding="utf-8")
+    report = fixtures_coverage(repo)
+    assert report["covered_validators"] == 0
+    assert report["missing_fixtures"] == ["validate-x"]

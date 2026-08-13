@@ -294,6 +294,24 @@ The system uses a multi-stage default workflow chain with fog-type-aware routing
   `tests/fixtures/<name>/{valid,invalid}`; a gap is an Orphaned-Examples /
   Zero-Validation candidate.
 
+**Known probe failure modes (see evidence-rules Rules 9-12):**
+
+- `context_entropy.ce` is `None` (never a false clean `0.0`) when the
+  `git status --ignored` call fails or times out -- e.g. a target with tens
+  of thousands of ignored files (auteur's root JSON sprawl). A silent
+  "clean" reading would mask exactly the sprawl the metric exists to detect.
+  Treat `ce: null` as "unmeasured", not "clean".
+- `fixtures-coverage` honors a documented **valid-only convention**: a target
+  may list repo-wide validators in `tests/fixtures/valid-only.txt` (one name
+  per line, `#` comments) whose `invalid/` fixtures are unsatisfiable and
+  deliberately retired (auteur commit 9994238). Listed validators count as
+  covered with `valid/` alone; without the marker the metric is unchanged.
+  A gap listed in `missing_fixtures` should be checked against this
+  convention before being reported as a defect.
+- `relationships.adr.findings` emits `duplicate_id` when the catalog holds
+  duplicate ADR ids; the renumber *direction* is a model decision
+  (evidence-rules Rule 7), never a probe verdict.
+
 ## Artifact Run Organization
 
 Artifacts from pipeline runs follow a flat numbered sequence at `artifacts/` root:

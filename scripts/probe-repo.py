@@ -36,8 +36,9 @@ def _summary(report: dict, output: Path) -> str:
         f"  git: {git.get('branch') or '-'} @ {head} | "
         f"tracked={git['tracked_file_count']} untracked={git['untracked_file_count']} dirty={git['dirty_file_count']}",
         f"  Vg (verification gap): {vg['vg']} | declared={vg['declared_checks']} enforced={vg['enforced_checks']}",
-        f"  Ce (context entropy): {ce['ce']} | {ce['notes']}",
-        f"  tests: {coll['test_file_count']} files | pytest-config={coll['pytest_config_present']}",
+        f"  Ce (context entropy): {ce['ce'] if ce['ce'] is not None else 'unmeasured'} | {ce['notes']}",
+        f"  tests: {coll['test_file_count']} files | pytest-config={coll['pytest_config_present']}"
+        + (f" | collect={coll['test_case_count']} cases" if coll.get("test_case_count") is not None else ""),
         f"  fixture coverage: {fx['covered_validators']}/{fx['total_validators']} "
         f"({fx['coverage']}) missing={fx['missing_fixtures']}",
         f"  churn: {ch['commits_scanned']} commits, {ch['changed_files_last_n']} files; top: {ch['top_changed_files']}",
