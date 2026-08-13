@@ -1,6 +1,6 @@
 ---
 name: output-reconciler
-description: verify claims about completed work (handoff briefs, task summaries, status reports) against durable repository artifacts, classify each claim verified/disputed/omitted, and produce a reconciliation report with findings and actionable recommendations. use when a handoff or summary asserts work was done and the claim must be grounded before it is trusted or acted on.
+description: verify claims about completed work against durable repository artifacts, classify each claim verified/disputed/omitted, and produce a reconciliation report with findings and actionable recommendations. use when a work_claim artifact (a handoff, task summary, or status report) asserts work was done and the claim must be grounded before it is trusted or acted on.
 ---
 
 # output-reconciler

@@ -167,9 +167,10 @@ workflows:
     output_artifact: session_summary
 - id: artifact-reconciliation
   display_name: Artifact Reconciliation (Handoff Audit)
-  purpose: Verify claims about completed work (handoff briefs, task summaries,
-    status reports) against durable repository artifacts; produce a reconciled
-    analysis with verified/disputed/omitted claims and actionable findings.
+  purpose: Verify claims about completed work (work_claim artifacts such as
+    handoffs, task summaries, or status reports) against durable repository
+    artifacts; produce a reconciled analysis with verified/disputed/omitted
+    claims and actionable findings.
   initial_inputs:
   - id: work_claim
     type: artifact
