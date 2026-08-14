@@ -155,3 +155,57 @@ finding CLOSED. If the owner prefers no docs work this round, the finding
 stands as verified-current and the next real engineering task should instead
 exercise a deeper portion of Workflow v0 (material work -> validation ->
 output reconciliation).
+
+## Remediation (2026-08-14) — CLOSED
+
+Authorized narrow docs-contract reconciliation executed. The record above is
+the pre-repair evidence (committed unchanged as `69802c2`; finding pinned to
+`0ff2ea38`).
+
+Guardrail 1 — legacy mechanisms mechanically verified at HEAD before being
+described as retained compatibility behavior:
+- `auto_invoke_next_workflow` / `auto_invoke_source` present in
+  `skills/workflow-planner/references/workflow-registry.yaml` (L38-39, 93-94,
+  495-497, 816-818);
+- `workflow-runtime.py` `_should_auto_invoke_next()` (L1099),
+  `_validate_workflow_fog_alignment()` (L1256), auto-invoke execution path
+  (L2685-2709);
+- workflow ids `ui-implementation-workflow`, `product-implementation-workflow`,
+  `docs-implementation-workflow`, `implementation-workflow`,
+  `ui-diagnostic-workflow` all present in the registry.
+=> "retained as CLI compatibility path" wording is mechanically justified, not
+a new ghost feature.
+
+Guardrail 2 — UI fog diagnosis labeled "current diagnosis behavior", not
+"ratified"; the repair's normative distinction (diagnosing `ui_fog` !=
+routing to `ui-implementation-workflow`) is stated.
+
+Patch applied (CONTEXT.md):
+- E1: "Fog-Type Routing (DEFERRED, not ratified)" replaces "Fog Type-Aware
+  Auto-Invocation (Phase 7)";
+- E2: "UI Fog Detection (current diagnosis behavior)" replaces "UI-Specific
+  Routing (NEW)";
+- E3: auto-invocation reframed as "legacy compatibility path only";
+- E4: default execution mode corrected `yolo_execution` -> `plan_only`;
+- E5: YOLO Execution re-labeled opt-in, not default;
+- E6: Fog Type Classification now "informs next-responsibility selection";
+- E7: Dynamic Chaining labeled legacy runtime mechanism.
+
+Validation:
+- `python scripts/validate-repo.py`: PASS;
+- `python -m pytest tests/test_field_contract_agreement.py`: 3 passed;
+- `git diff --check -- CONTEXT.md`: clean;
+- stale-claim scan (Default mode `yolo_execution` / Fog Type-Aware
+  Auto-Invocation / UI-Specific Routing / "chains ... without manual
+  intervention" / "default execution mode when --mode is not specified" /
+  "to enable routing"): zero matches.
+
+Classification: **CLOSED** — all three demonstrated contradictions are gone at
+current HEAD.
+
+Deliberately not touched: the `full-local-sensemaking` DEFAULT entry (already
+carries its legacy CLI-path caveat), routing-divergence/decision-method
+domain entries (document legacy runtime-recorded fields that still exist in
+contracts), the ADR 0005 bullet in Orchestration Principles (accepted
+historical ADR, mechanism factually described), and all runtime/Skills/
+workflows/contracts. No merge. No push.

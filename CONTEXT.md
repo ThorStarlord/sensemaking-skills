@@ -205,25 +205,11 @@ The system uses a multi-stage default workflow chain with fog-type-aware routing
    - **Steps**: problem-framer → unknowns-mapper → (discovery?) → repo-sensemaker → workflow-planner → handoff
    - **Produces**: `repository_sensemaking_brief` + `workflow_orchestration_plan` (with fog type classification and workflow recommendation)
 
-2. **Fog Type-Aware Auto-Invocation** (Phase 7) — Automatically routes to the appropriate implementation workflow
-   - `workflow-planner` classifies the fog type and recommends the best implementation workflow
-   - `workflow-runtime.py` validates fog type alignment with selected workflow (via `_validate_workflow_fog_alignment()`)
-   - Auto-chains to one of:
-     - **`ui-implementation-workflow`** — For UI/frontend design problems
-     - **`product-implementation-workflow`** — For product/feature problems  
-     - **`docs-implementation-workflow`** — For documentation/knowledge problems
-     - **`implementation-workflow`** — For architecture/code structure problems (default)
-   - Runs in the same execution mode as the triggering workflow
+2. **Fog-Type Routing** (DEFERRED, not ratified) — routing from the brief to a downstream implementation workflow is NOT current product behavior: it requires its own external proof and an owner decision before it is ratified (ADR 0014), and ADR 0018 (routing policy) is PROPOSED, not accepted. Under the agent-native operating model (ADR 0013), the active agent selects the next responsibility from the validated brief. The chain below still exists in the CLI compatibility path (verified at HEAD): `workflow-planner` recommends an implementation workflow; `workflow-runtime.py` validates fog-type alignment (via `_validate_workflow_fog_alignment()`) and chains to one of `ui-implementation-workflow`, `product-implementation-workflow`, `docs-implementation-workflow`, or `implementation-workflow` in the same execution mode.
 
-3. **UI-Specific Routing** (NEW) — Enhanced detection and routing for UI fog
-   - **`ui-diagnostic-workflow`** — Optional intermediate step for UI-heavy projects
-     - Analyzes screen complexity, design system maturity, and interaction patterns
-     - Produces `ui_specification` for review before implementation
-     - Auto-chains to `ui-implementation-workflow`
-   - **`ui-fog-signals.md`** — Registry of checkable UI fog indicators (Tier 1/2/3 signals)
-   - **UI Fog Detection** — `repo-sensemaker` now explicitly evaluates UI signals when classifying fog type
+3. **UI Fog Detection** (current diagnosis behavior) — `repo-sensemaker` explicitly evaluates UI signals when classifying fog type, using the checkable indicators in **`ui-fog-signals.md`** (Tier 1/2/3). Diagnosing `ui_fog` is not the same as routing to `ui-implementation-workflow`: downstream routing is deferred with all other fog types (see item 2). The legacy `ui-diagnostic-workflow` -> `ui-implementation-workflow` chain still exists in the CLI compatibility path (verified at HEAD), not as current automatic behavior.
 
-**Auto-invocation mechanism**: When a workflow completes successfully, `workflow-runtime.py` reads the fog type and recommended workflow from the orchestration plan and chains to it without manual intervention. Fog type alignment is validated to prevent silent misroutings.
+**Auto-invocation (legacy compatibility path only)**: the workflow-registry mechanism (`auto_invoke_next_workflow` / `auto_invoke_source`, ADR 0005) and the runtime's `_should_auto_invoke_next()` still exist and let the legacy `workflow-runtime.py` chain workflows without manual intervention. It is retained for the CLI compatibility path; it is not part of the agent-native operating model (ADR 0013), and automatic routing to downstream implementation workflows is not ratified (ADR 0014).
 
 ## Domain Language
 - **Fog**: The state of project uncertainty. Four primary types:
@@ -231,13 +217,13 @@ The system uses a multi-stage default workflow chain with fog-type-aware routing
   - **ui_fog**: Navigation complexity, screen design issues, interaction patterns unclear
   - **docs_fog**: Missing documentation, unclear specifications, knowledge silos
   - **architecture_fog**: Code structure problems, design boundaries unclear, implicit contracts
-- **Fog Type Classification**: Sensemaking stage (via `repo-sensemaker`) classifies the primary fog type to enable routing
+- **Fog Type Classification**: Sensemaking stage (via `repo-sensemaker`) classifies the primary fog type to inform next-responsibility selection (routing to a downstream workflow is deferred, ADR 0014)
 - **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, and `handoff`. The skill directory is `skills/handoff/` and produces a `session_summary` artifact. See ADR 0009 for the naming convention.
 - **Workflow**: An ordered sequence of Skill Steps that processes fog into actionable artifacts. Also referred to as **Skill Workflow** in user-facing documentation (README.md).
 - **Skill Step**: One skill invocation within a Workflow. Each Skill Step has inputs (artifacts or external context), a skill to execute, an output artifact, and an approval gate.
 - **Core Skills**: Skills that define the backbone of a pipeline's fog-to-action path. Their presence varies by workflow: `full-local-sensemaking` uses problem-framer → unknowns-mapper → repo-sensemaker; `fast-path-workflow` starts directly at repo-sensemaker.
 - **Conditional Skills**: Skills inserted into a Workflow based on characteristics of the input or intermediate artifacts (e.g., discovery skill if unknowns_map.research_needed is true).
-- **Dynamic Chaining**: The system of routing decisions that selects the next Skill Step based on analyzed input quality or artifact content. Primary decision point: unknowns_map.research_needed (derived from unknowns count + clarity assessment). Secondary decision points defer until recurrence validates their necessity (Harden Only Where Pressured).
+- **Dynamic Chaining** (legacy runtime mechanism): The workflow-registry/runtime routing decisions that select the next Skill Step based on input quality or artifact content (primary decision point: `unknowns_map.research_needed`, derived from unknowns count + clarity assessment). Describes the CLI compatibility path; under the agent-native operating model (ADR 0013), responsibility selection is the active agent's, and downstream routing is deferred (ADR 0014). Secondary decision points defer until recurrence validates their necessity (Harden Only Where Pressured).
 - **Sensemaking Brief**: The primary diagnostic artifact (14 sections). It must identify the "weakest boundary" and provide file-level evidence and excerpts.
 - **Orchestration Plan**: The procedural artifact that includes fog type classification, recommended implementation workflow, and execution strategy
 - **Implementation Workflows**: Four specialized workflows that execute based on fog type classification:
@@ -246,8 +232,8 @@ The system uses a multi-stage default workflow chain with fog-type-aware routing
   - **docs-implementation-workflow**: to-prd → handoff (for docs_fog)
   - **implementation-workflow**: to-prd → to-issues → triage → tdd (default for architecture_fog)
 - **High-Velocity Gate Pattern** (`gate: none`): Steps execute immediately without approval pauses. Used in implementation workflows for automatic progression between steps
-- **Execution Modes**: The system supports `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, and `yolo_execution`. **Default mode: `yolo_execution`**.
-- **YOLO Execution** (Default): High-velocity automation that bypasses approval gates for local skills. This is the default execution mode when `--mode` is not specified. Requires a clean git worktree and uses feature branches for mutations. In `yolo_execution`, validators function as the safety mechanism — gates are bypassed, but post-step validation is zero-tolerance.
+- **Execution Modes**: The system supports `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, and `yolo_execution`. **Default mode: `plan_only`** (post-retirement CLI default; `yolo_execution` is an opt-in high-velocity mode, not the default).
+- **YOLO Execution** (opt-in): High-velocity automation that bypasses approval gates for local skills. NOT the default (`plan_only` is); requires an explicit `--mode yolo_execution` and a clean git worktree, and uses feature branches for mutations. In `yolo_execution`, validators function as the safety mechanism — gates are bypassed, but post-step validation is zero-tolerance.
 - **Skill Split**: Diagnosis (`repo-sensemaker`) is separated from Action (`workflow-planner`) to ensure human-in-the-loop validation.
 - **Object Under Pressure**: The specific artifact or system boundary that is most ambiguous.
 - **Weakest Boundary**: The most fragile or unenforced point in a repository. Diagnosed by repo-sensemaker via evidence-backed analysis of signal-gap boundaries.
