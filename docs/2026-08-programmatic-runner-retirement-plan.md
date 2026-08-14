@@ -103,6 +103,21 @@ document; the migration begins only on explicit approval of the sequence.
   present in the local contaminated .claude/settings.json), unrelated to this
   slice. Diff inspected: 4 files, +28/-16, no line-ending churn.
 
+## CLI default-pair integrity check (post-Step-5, executed 2026-08-13)
+
+- Check: `python scripts/workflow-runtime.py --workflow fast-path-workflow`
+  (no --mode/--executor). Result before fix: INVALID - MODE_NOT_ALLOWED
+  (default mode yolo_execution is not allowed for the default workflow) and,
+  on workflows that do allow yolo, the yolo+dry-run pair silently skips
+  execution (validate_mode is never called in the runtime; the
+  supports_real_execution branch at workflow-runtime:915 is skipped).
+- Repair (smallest coherent contract): default --mode yolo_execution ->
+  plan_only (allowed for every retained workflow, requires no executor, matches
+  ADR 0013's CLI-as-planning/compat role). --executor default dry-run (the
+  runtime's normative __init__ default) retained.
+- Result after fix: VALID - no-arg default invocation generates the plan
+  (plan_only + dry-run). Retained tests 32 passed.
+
 ## Step 5 evidence (atomic removal, executed 2026-08-13)
 
 - SDK dependency classified COUPLED_TO_RETAINED_RUNTIME (eager module-level

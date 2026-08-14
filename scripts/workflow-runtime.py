@@ -931,8 +931,7 @@ class OrchestrationRunner:
                     return self._finalize_step_result(result, step_num)
 
                 # Build context for skill execution. resolved_inputs is what the
-                # resolved_inputs is what the model executor actually reads to
-                # populate the prompt.
+                # model executor actually reads to populate the prompt.
                 # expected_output_path is the runtime-owned, session-scoped path the
                 # executor MUST write to so the producer and consumer agree on
                 # location (see ARTIFACT_NOT_FOUND regression).
@@ -2995,8 +2994,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("problem", nargs="?", default=None, help="User problem statement or goal (will prompt if not provided for full-local-sensemaking)")
     parser.add_argument("--workflow", default=None, help="Explicit workflow ID (overrides default)")
-    parser.add_argument("--mode", default="yolo_execution", choices=list(KNOWN_MODES.keys()),
-                        help="Execution mode (default: yolo_execution)")
+    parser.add_argument("--mode", default="plan_only", choices=list(KNOWN_MODES.keys()),
+                        help="Execution mode (default: plan_only - the coherent default post-retirement: requires no model executor, and is the only mode every retained workflow allows). The mutating execution modes (guided/autonomous/yolo) have no real executor since the programmatic second-model runner was retired (ADR 0013).")
     parser.add_argument("--scope", default="soft", choices=["soft", "hard", "advisory"],
                         help="How strictly the problem statement constrains analysis (default: soft)")
     parser.add_argument("--repo-root", default=".", help="Framework root directory (where skills/registries live)")
