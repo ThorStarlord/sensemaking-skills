@@ -103,6 +103,33 @@ document; the migration begins only on explicit approval of the sequence.
   present in the local contaminated .claude/settings.json), unrelated to this
   slice. Diff inspected: 4 files, +28/-16, no line-ending churn.
 
+## Step 5 evidence (atomic removal, executed 2026-08-13)
+
+- SDK dependency classified COUPLED_TO_RETAINED_RUNTIME (eager module-level
+  `from claude_agent_sdk import ...` in skill_executor.py): removing the SDK
+  without the executors would break imports of retained DryRun/PromptChain and
+  workflow-runtime. So Steps 5-7 collapsed into one atomic cut.
+- Removed: ClaudeAgentSdkSkillExecutor, ApiSkillExecutor, --executor
+  claude-code|api, EXECUTOR_REGISTRY entries, the eager SDK import, the SDK
+  permission-gate/PreToolUse machinery, tool-call trace hooks, model-runner
+  prompt builders, duplicate path helpers, 14 SDK/API-specific test files, and
+  3 CI claude-agent-sdk installs.
+- Default-executor guardrail: --executor default changed claude-code ->
+  dry-run (the runtime's normative __init__ default; no retained executor can
+  run the default yolo mode, so a model default would be misleading). Choices
+  now [dry-run, prompt-chain].
+- Preserved: SkillExecutor ABC, DryRun, PromptChain, resolve_output_path,
+  brief_skeleton (canonical-structure authority), runtime/gates/sessions/
+  validators/artifact resolution.
+- Proof: import skill_executor + workflow-runtime OK; DryRun/PromptChain +
+  run-log + gate_a + path tests pass with the SDK reference removed (harness
+  74/74; retained sweeps 98 + 309 passed; only pre-existing env failures
+  remain - untracked 0016 file). --executor --help shows {dry-run,
+  prompt-chain} default dry-run. grep: zero claude_agent_sdk references in
+  scripts/, tests/, CI (the sole remaining reference is execution_infra/
+  README.md documenting the separate exploratory_execution.ClaudeProvider,
+  out of scope).
+
 ## Step 4 evidence (discovery-and-extraction, executed 2026-08-13)
 
 Finding: NO MOVE is earned. Existing module boundaries already disentangle

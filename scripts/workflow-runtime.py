@@ -931,7 +931,8 @@ class OrchestrationRunner:
                     return self._finalize_step_result(result, step_num)
 
                 # Build context for skill execution. resolved_inputs is what the
-                # claude-code executor actually reads to populate the prompt.
+                # resolved_inputs is what the model executor actually reads to
+                # populate the prompt.
                 # expected_output_path is the runtime-owned, session-scoped path the
                 # executor MUST write to so the producer and consumer agree on
                 # location (see ARTIFACT_NOT_FOUND regression).
@@ -1333,7 +1334,7 @@ class OrchestrationRunner:
             "--workflow", next_workflow_id,
             "--mode", self.mode,
             "--repo-root", self.repo_root,
-            "--executor", self.executor or "claude-code",
+            "--executor", self.executor or "dry-run",
             "--chained",
             "--from-session", self.artifact_session_dir,
         ]
@@ -2060,12 +2061,7 @@ class OrchestrationRunner:
         elif self.mode == "plan_only":
             runtime_str = "planning"
         else:
-            if executor == "claude-code":
-                runtime_str = "claude-agent-sdk"
-            elif executor == "api":
-                runtime_str = "claude-api"
-            else:
-                runtime_str = executor or "local_execution"
+            runtime_str = executor or "local_execution"
 
         for sr in self.step_results:
             lines.extend([
@@ -3009,9 +3005,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--log-dir", default=None, help="Directory for run log output")
     parser.add_argument("--list-workflows", action="store_true", help="List all registered workflows")
     parser.add_argument("--resume", action="store_true", help="Resume a paused execution")
-    parser.add_argument("--executor", default="claude-code",
-                        choices=["dry-run", "prompt-chain", "claude-code", "api"],
-                        help="Skill executor to use (default: claude-code; DEPRECATED - retained for backward compatibility during staged retirement of the programmatic second-model runner, ADR 0013). autonomous/yolo modes require a real executor.")
+    parser.add_argument("--executor", default="dry-run",
+                        choices=["dry-run", "prompt-chain"],
+                        help="Skill executor to use (default: dry-run, the runtime's normative default). The programmatic second-model executors (claude-code, api) were retired per ADR 0013; only deterministic/prompt executors remain, so autonomous/yolo modes have no real executor.")
     parser.add_argument("--gate-decision", default=None,
                         choices=["auto-approve", "auto-deny"],
                         help="Non-interactive gate decision for testing: auto-approve all gates or auto-deny the first gate")

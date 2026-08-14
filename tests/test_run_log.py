@@ -148,7 +148,7 @@ def test_run_log_runtime_strings():
     # 1. use_fixtures should write "fixture"
     runner = _make_runner("guided_execution", step_results=[_step("APPROVED", "1")])
     runner.use_fixtures = True
-    runner.executor = "claude-code"
+    runner.executor = "dry-run"
     
     mock_open = MagicMock()
     with patch("os.makedirs"), patch("builtins.open", mock_open):
@@ -162,7 +162,7 @@ def test_run_log_runtime_strings():
     # 2. plan_only should write "planning"
     runner = _make_runner("plan_only", step_results=[_step("PLANNED", "1")])
     runner.use_fixtures = False
-    runner.executor = "claude-code"
+    runner.executor = "dry-run"
     
     mock_open = MagicMock()
     with patch("os.makedirs"), patch("builtins.open", mock_open):
@@ -173,10 +173,10 @@ def test_run_log_runtime_strings():
     written_data = "".join(call.args[0] for call in mock_open.return_value.__enter__.return_value.write.call_args_list)
     assert "- **runtime**: planning" in written_data
 
-    # 3. guided_execution with claude-code should write "claude-agent-sdk"
+    # 3. guided_execution with dry-run should write "dry-run"
     runner = _make_runner("guided_execution", step_results=[_step("APPROVED", "1")])
     runner.use_fixtures = False
-    runner.executor = "claude-code"
+    runner.executor = "dry-run"
     
     mock_open = MagicMock()
     with patch("os.makedirs"), patch("builtins.open", mock_open):
@@ -185,4 +185,4 @@ def test_run_log_runtime_strings():
                 runner.write_run_log()
     
     written_data = "".join(call.args[0] for call in mock_open.return_value.__enter__.return_value.write.call_args_list)
-    assert "- **runtime**: claude-agent-sdk" in written_data
+    assert "- **runtime**: dry-run" in written_data

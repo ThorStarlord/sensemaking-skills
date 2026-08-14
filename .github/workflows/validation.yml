@@ -38,7 +38,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest pytest-subtests pyyaml click
           # The exact SDK version the Stage 1 execution package documents.
-          pip install "claude-agent-sdk==0.2.82"
 
       - name: Probe POSIX symlink capability
         run: |
@@ -104,7 +103,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-subtests pyyaml click
-          pip install "claude-agent-sdk==0.2.82"
 
       - name: Probe Windows filesystem capabilities
         # bash, not pwsh: PowerShell has no heredoc, so `python - <<'PY'`
@@ -341,7 +339,6 @@ jobs:
           python -m pip install pytest pytest-subtests
           # The exact SDK version the Stage 1 execution package documents;
           # skill_executor.py imports it at module load time.
-          python -m pip install "claude-agent-sdk==0.2.82"
 
       - name: Exploratory digests suite
         run: python -m pytest tests/test_exploratory_digests.py -q
