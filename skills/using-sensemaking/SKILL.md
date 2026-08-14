@@ -6,7 +6,7 @@ tags: [bootstrap, orchestration, diagnosis, routing]
 
 # Using Sensemaking Skills: Agent-Native Orchestration
 
-You are an agent working in Claude Code, Cursor, or OpenCode. This skill teaches you how to diagnose repositories and make autonomous orchestration decisions using the sensemaking-skills system.
+You are a coding agent working in any agent harness. This skill teaches you how to diagnose repositories and make autonomous orchestration decisions using the sensemaking-skills system.
 
 ## Table of Contents
 

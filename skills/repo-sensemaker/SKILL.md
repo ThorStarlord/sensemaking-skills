@@ -174,7 +174,7 @@ When executing as part of a workflow run:
 
 ## Runtime-owned artifact skeleton (issue #55)
 
-When this skill is invoked through the runtime (`ClaudeAgentSdkSkillExecutor`),
+When this skill is invoked through the runtime's model executor,
 `expected_output_path` already contains a **runtime-generated skeleton** by
 the time you read it — see `scripts/brief_skeleton.py`. This exists because
 prompt guidance alone was proven insufficient to guarantee the artifact's

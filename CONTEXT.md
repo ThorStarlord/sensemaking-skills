@@ -367,23 +367,23 @@ These are acknowledged gaps that the project is aware of but has not yet address
 2. **workflow-planner**: Procedural. Acts on the weak point via gated sequences.
 3. **docs-aligner**: Domain alignment. Resolves contradictions between code and documentation, sharpens terminology, and updates CONTEXT.md inline. Automates grilling for autonomous workflows.
 
-## Skills are agent-agnostic; execution is agent-native (ADR 0013)
+## Skills are agent-agnostic; the proposed primary execution is agent-native (ADR 0013)
 
 `skills/*/SKILL.md` are agent-native playbooks: any coding agent can follow
 them, and a skill's contract is its `SKILL.md` plus the artifact contracts,
-never a specific agent harness. The canonical execution model (ADR 0013,
-agent-native orchestration as primary) is that the ACTIVE coding agent reads
-the Skill, resolves its typed inputs, performs the work itself, and produces
-the artifact; deterministic validators then check it. No harness-specific
-adapter is required for this path.
+never a specific agent harness. The PROPOSED primary execution model (ADR
+0013, agent-native orchestration as primary - PROPOSED, not yet accepted) is
+that the active coding agent reads the Skill, resolves its typed inputs,
+performs the work itself, and produces the artifact; deterministic validators
+then check it. No harness-specific adapter is required for that path.
 
-`scripts/skill_executor.py` is the OPTIONAL automation/compatibility layer
-that lets a CLI or programmatic runner spawn a second agent/model. Its current
-model-backed executors are Claude-specific (`claude-code` via the Claude Agent
-SDK, and `api` via `ANTHROPIC_API_KEY`) - an optional adapter, not the
-definition of execution. Do not conflate the two: agent-native execution is
-the primary, agent-agnostic path; the programmatic model runner is optional
-and Claude-specific today.
+The repository also retains a programmatic second-model runner as an EXISTING
+automation path: `scripts/skill_executor.py` lets a CLI or programmatic runner
+spawn a second agent/model. Its current model-backed executors are
+Claude-specific (`claude-code` via the Claude Agent SDK, and `api` via
+`ANTHROPIC_API_KEY`). The runner's permanent scope is an open product decision
+pending ADR 0013 ratification; it is not declared canonical or out-of-scope
+here.
 
 ## Ecosystems
 - **Interface Skills**: Spec Packages and UI validation.
