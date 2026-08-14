@@ -103,6 +103,23 @@ document; the migration begins only on explicit approval of the sequence.
   present in the local contaminated .claude/settings.json), unrelated to this
   slice. Diff inspected: 4 files, +28/-16, no line-ending churn.
 
+## Step 4 evidence (discovery-and-extraction, executed 2026-08-13)
+
+Finding: NO MOVE is earned. Existing module boundaries already disentangle
+retained deterministic infrastructure from the retiring surface.
+
+| candidate responsibility | existing consumers | classification | rationale |
+|---|---|---|---|
+| resolve_output_path | DryRun/PromptChain (retained executors) + SDK/Api | KEEP_IN_PLACE | retained deterministic executor infra |
+| canonicalize_path / is_within_root (skill_executor copies) | SDK permission gate + test_artifact_permission_gate only | RETIRE_WITH_RUNNER | canonical primitive already lives in sensemaking_skills.path_containment (retained via gate_a_authorization, ADR 0023); the skill_executor copies are duplicates |
+| build_artifact_permission_gate + PreToolUse hooks | SDK executor + tests | RETIRE_WITH_RUNNER | exists to confine the SDK's tool calls |
+| prompt builders (build_semantic_authorities_block, build_evidence_discipline_block, build_yaml_fence_contract_block, build_skeleton_prompt) | SDK executor prompt-building + tests | RETIRE_WITH_RUNNER | classification B: prompt scaffolding whose only purpose is preparing the deprecated second-model executor |
+| brief_skeleton.py (standalone module) | deprecated executor (functional) + validate-brief/weakness_type_safeguard (canonical-structure references) | KEEP_IN_PLACE | already its own module; referenced as the canonical brief-structure authority; revisit at Step 7 |
+
+Criterion applied: does a non-deprecated responsibility or consumer need this
+capability independently of launching a second model? (No relocations made;
+no new abstraction created; no behavior change.)
+
 ## Non-goals
 
 - No deletion during discovery.
