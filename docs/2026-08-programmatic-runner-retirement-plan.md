@@ -1,0 +1,93 @@
+# Programmatic Runner — Staged Retirement Plan
+
+**Date**: 2026-08-13
+**Authority**: ADR 0013 (Accepted 2026-08-13): the primary execution model is
+agent-native — the active coding agent reads and executes Skills directly.
+The programmatic second-model runner (`workflow-runtime.py` /
+`skill_executor.py` model executors) is a separate automation/compatibility
+path, not part of the semantic definition of Skill execution.
+
+**Decision**: begin STAGED RETIREMENT of the programmatic model-invocation
+responsibility. Do not delete anything during discovery. Do not fund the
+credential-backed assurance run unless a concrete headless/second-model
+product use case later demands it.
+
+Retire because the responsibility is no longer needed by the ratified
+architecture — NOT because the runner failed. It never failed behaviorally;
+its product role was superseded.
+
+## Discovery — consumers of the model-invocation path
+
+- **Tests (30+)**: `tests/integration/test_yolo_execution_with_skills.py`,
+  `test_autonomous_execution_integration.py`, `test_executor_environment.py`,
+  `test_executor_path_handoff.py`, `test_artifact_permission_gate.py`,
+  `test_gate_a_*`, `tests/support/deterministic_executor.py`, and many
+  contract/path tests that exercise the runtime + executor machinery.
+- **CI** (`.github/workflows/validation.yml`): installs
+  `claude-agent-sdk==0.2.82` (3 places) and exercises `skill_executor.py`.
+- **Docs (~40 files)**: operational (PHASE5_SKILL_INVOCATION,
+  orchestration-patterns, workflow-output-system, TROUBLESHOOTING,
+  DEPLOYMENT_GUIDE, orchestrator-skill-example) and historical (PHASE-*).
+- **Scripts**: `brief_skeleton.py` (runtime-owned-skeleton prompt, built by
+  the executor), `gate_a_authorization.py` (Gate A consumer).
+
+## Responsibility classification
+
+### workflow-runtime.py
+
+| Responsibility | Classification | Note |
+|---|---|---|
+| Artifact resolution (session-scoped paths, ADR 0010) | **KEEP** | needed under agent-native; the deterministic layer still resolves paths |
+| Validation dispatch | **KEEP** | deterministic validators are core |
+| Gates / execution modes | **KEEP** | useful control points; may simplify under agent-native |
+| Workflow planning (plan generation) | **KEEP** | the plan is a durable contract |
+| Session handling / run ledger | **KEEP** | the evidence trail |
+| Second-model invocation (executor selection + invoke_skill) | **RETIRE** | the model-spawning responsibility |
+
+### skill_executor.py
+
+| Responsibility | Classification | Note |
+|---|---|---|
+| `SkillExecutor` ABC + `DryRunSkillExecutor` + `PromptChainSkillExecutor` | **KEEP** | deterministic, agent-agnostic; prompt-chain is a useful handoff |
+| `ClaudeAgentSdkSkillExecutor` (claude-code) | **RETIRE** | model invocation, Claude-specific |
+| `api` executor | **RETIRE** | model invocation, Claude-specific |
+| Permission-gate hooks / tool-call tracing tied to the SDK | **RETIRE WITH SDK EXECUTOR** | exist to confine the SDK's tool calls; the concepts (write confinement, trace) may be MOVE'd to a lighter agent-native form |
+| `resolve_output_path` / `canonicalize_path` / `is_within_root` | **KEEP** | deterministic infra used by tests |
+| `build_skeleton_prompt` (brief skeleton) | **MOVE** | to a standalone helper consumed by the agent-native path, not the SDK executor |
+
+### Supporting consumers
+
+| Consumer | Classification |
+|---|---|
+| CI `claude-agent-sdk` installs + SDK-invocation tests | **RETIRE** (with the SDK executor) |
+| Deterministic runtime/executor tests | **KEEP** |
+| Operational docs (PHASE5_SKILL_INVOCATION, orchestration-patterns, TROUBLESHOOTING, DEPLOYMENT_GUIDE, etc.) | **MOVE** (re-scope to agent-native; archive historical PHASE-* as-is) |
+
+## Smallest migration sequence
+
+1. Ratify ADR 0013 (DONE — `c29094d`).
+2. Record this plan (DONE — this document).
+3. **Deprecate**: mark the model executors + `--executor claude-code|api` as
+   deprecated in code comments and docs; no behavior change.
+4. **Move** the genuinely useful deterministic infra out of the executor
+   (skeleton prompt, path helpers) so retirement loses nothing.
+5. **Retire the SDK surface**: remove CI's `claude-agent-sdk` installs and the
+   SDK-invocation tests; keep `DryRun`/`PromptChain` + deterministic infra.
+6. **Re-scope docs**: operational docs to agent-native; archive historical
+   runner-led docs.
+7. **Final removal**: delete the SDK/api executors + the executor-selection
+   path, leaving `workflow-runtime.py` as pure deterministic infrastructure
+   (paths, validation, gates, planning, sessions) and `skill_executor.py` as
+   the deterministic/prompt-chain adapter set.
+8. Re-run the layering audit + full suite; verify ADR 0013 alignment.
+
+Each step is an independent, verifiable slice. Nothing is deleted in this
+document; the migration begins only on explicit approval of the sequence.
+
+## Non-goals
+
+- No deletion during discovery.
+- No funding of the credential-backed runner assurance run unless a concrete
+  headless/second-model use case appears.
+- No Codex/Pi/Hermes adapters; no generalization of the runner to "look
+  symmetric."
