@@ -158,6 +158,18 @@ memory - i.e., actual friction, wrong selection, or lost provenance in a real
 handoff. At that point, ask: what durable identity information was missing in
 this real handoff?
 
+Operating rule to carry into normal agent-native use:
+
+  When a continuation feels awkward:
+    preserve the actual handoff
+    preserve the candidate prior reports
+    record what the agent could and could not reconstruct
+    do not design the fix yet
+
+If the reopen trigger fires, the preserved handoff + candidates will make the
+missing semantics observable (explicit parent reference, ancestry, durable
+handoff record, or something not yet considered).
+
 NOT chosen now: prior_report_ref (caller selects predecessor) vs "latest
 report" (system defines recency/ancestry semantics). Both encode real policy
 (branches, abandoned runs, competing reports, merges, whether chronological
