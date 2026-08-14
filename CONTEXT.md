@@ -381,9 +381,11 @@ The repository also retains a programmatic second-model runner as an EXISTING
 automation path: `scripts/skill_executor.py` lets a CLI or programmatic runner
 spawn a second agent/model. Its current model-backed executors are
 Claude-specific (`claude-code` via the Claude Agent SDK, and `api` via
-`ANTHROPIC_API_KEY`). The runner's long-term support status is an open product
-decision (ADR 0013 ratifies the primary model without resolving the runner's
-fate); it is not declared canonical or out-of-scope here.
+`ANTHROPIC_API_KEY`) and are DEPRECATED (staged retirement, ADR 0013):
+retained temporarily for backward compatibility, with the `claude-code`
+default kept during the transition. Deprecation is non-behavioral - no
+execution semantics change. The runner's long-term support status remains an
+open product decision.
 
 ## Ecosystems
 - **Interface Skills**: Spec Packages and UI validation.

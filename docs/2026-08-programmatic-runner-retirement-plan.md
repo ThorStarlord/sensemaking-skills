@@ -1,6 +1,7 @@
 # Programmatic Runner — Staged Retirement Plan
 
 **Date**: 2026-08-13
+**Status**: Step 3 (deprecate model executors) EXECUTED 2026-08-13; steps 4-8 pending.
 **Authority**: ADR 0013 (Accepted 2026-08-13): the primary execution model is
 agent-native — the active coding agent reads and executes Skills directly.
 The programmatic second-model runner (`workflow-runtime.py` /
@@ -83,6 +84,24 @@ its product role was superseded.
 
 Each step is an independent, verifiable slice. Nothing is deleted in this
 document; the migration begins only on explicit approval of the sequence.
+
+## Step 3 evidence (executed 2026-08-13)
+
+- Deprecated (non-behavioral markers only): ClaudeAgentSdkSkillExecutor and
+  ApiSkillExecutor class docstrings; --executor help text notes claude-code and
+  api as DEPRECATED (retained for backward compatibility during staged
+  retirement, ADR 0013).
+- Preserved unmarked: SkillExecutor ABC, DryRunSkillExecutor,
+  PromptChainSkillExecutor, path/artifact resolution, planning, gates,
+  sessions/ledger, validators. The claude-code default is unchanged.
+- Zero execution-semantics change: --executor choices unchanged
+  (dry-run,prompt-chain,claude-code,api); no exit-code/gate/artifact/auth/
+  selection change; no runtime warnings added outside help output.
+- Verification: validate-repo PASS; validator harness 74/74; executor tests
+  40 passed / 4 skipped / 8 failed - all 8 failures pre-existing in
+  test_executor_environment.py (missing `tempfile` import; ANTHROPIC_BASE_URL
+  present in the local contaminated .claude/settings.json), unrelated to this
+  slice. Diff inspected: 4 files, +28/-16, no line-ending churn.
 
 ## Non-goals
 

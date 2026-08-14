@@ -3011,7 +3011,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--resume", action="store_true", help="Resume a paused execution")
     parser.add_argument("--executor", default="claude-code",
                         choices=["dry-run", "prompt-chain", "claude-code", "api"],
-                        help="Skill executor to use (default: claude-code). autonomous/yolo modes require a real executor.")
+                        help="Skill executor to use (default: claude-code; DEPRECATED - retained for backward compatibility during staged retirement of the programmatic second-model runner, ADR 0013). autonomous/yolo modes require a real executor.")
     parser.add_argument("--gate-decision", default=None,
                         choices=["auto-approve", "auto-deny"],
                         help="Non-interactive gate decision for testing: auto-approve all gates or auto-deny the first gate")

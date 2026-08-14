@@ -1494,14 +1494,18 @@ class PromptChainSkillExecutor(SkillExecutor):
 # ============================================================================
 
 class ClaudeAgentSdkSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
-    """Invoke skills via Claude Agent SDK.
+    """DEPRECATED: model-backed second-agent invocation (ADR 0013 staged retirement).
 
-    Uses the Claude Agent SDK's query() API to invoke skills with autonomous
-    tool use. The SDK handles skill discovery from filesystem, tool loops,
-    file management, and permissions.
+    The primary execution model is agent-native: the active coding agent
+    reads and executes Skills directly. This executor spawns a SECOND model
+    via the Claude Agent SDK and is retained temporarily for backward
+    compatibility during staged retirement. Deprecation is non-behavioral.
 
-    The executor bridges the synchronous SkillExecutor interface to the
-    async Claude Agent SDK using anyio.run().
+    Invoke skills via Claude Agent SDK: uses the SDK's query() API to invoke
+    skills with autonomous tool use. The SDK handles skill discovery from
+    filesystem, tool loops, file management, and permissions. The executor
+    bridges the synchronous SkillExecutor interface to the async Claude Agent
+    SDK using anyio.run().
     """
 
     supports_real_execution: bool = True
@@ -2140,12 +2144,17 @@ ClaudeCodeSkillExecutor = ClaudeAgentSdkSkillExecutor
 
 
 class ApiSkillExecutor(_GateAImmutableAttributes, SkillExecutor):
-    """Invoke skills by calling Claude API directly with skill instructions.
+    """DEPRECATED: model-backed second-agent invocation (ADR 0013 staged retirement).
 
-    Loads the skill definition from SKILL.md, builds a prompt with input artifacts,
-    calls Claude API, and saves the output to the expected artifact path.
+    The primary execution model is agent-native: the active coding agent
+    reads and executes Skills directly. This executor spawns a SECOND model
+    via the Claude API and is retained temporarily for backward compatibility
+    during staged retirement. Deprecation is non-behavioral.
 
-    Requires ANTHROPIC_API_KEY environment variable.
+    Invoke skills by calling Claude API directly with skill instructions:
+    loads the skill definition from SKILL.md, builds a prompt with input
+    artifacts, calls Claude API, and saves the output to the expected artifact
+    path. Requires ANTHROPIC_API_KEY environment variable.
     """
 
     supports_real_execution: bool = True
