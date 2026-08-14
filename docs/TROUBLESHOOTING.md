@@ -1,3 +1,12 @@
+> **CURRENT (2026-08, ADR 0013)**: the content below is superseded where it
+> describes the programmatic second-model runner. The ratified execution model
+> is agent-native: the ACTIVE coding agent reads the Skill (SKILL.md), performs
+> the work itself, and writes the contract artifact; deterministic validators
+> check it. The CLI/runtime (workflow-runtime.py; skill_executor.py dry-run /
+> prompt-chain) is deterministic SUPPORT infrastructure - planning, artifact/
+> path resolution, gates, sessions/ledger, validation - NOT a model launcher.
+> The programmatic second-model executors (claude-code, api) were retired.
+
 # Troubleshooting Guide
 
 ## Common Issues and Solutions

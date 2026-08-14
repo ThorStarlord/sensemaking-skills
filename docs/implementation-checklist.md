@@ -1,3 +1,7 @@
+> **HISTORICAL (pre-ADR-0013, 2026-08)**: runner-led orchestration record,
+> preserved as historical evidence. The ratified execution model is agent-native
+> (ADR 0013); the programmatic second-model runner was retired.
+
 # Implementation Checklist: Evidence Verdict & PRD Fix
 
 **Generated**: 2026-05-16  

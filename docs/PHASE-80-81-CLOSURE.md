@@ -1,3 +1,7 @@
+> **HISTORICAL (pre-ADR-0013, 2026-08)**: runner-led orchestration record,
+> preserved as historical evidence. The ratified execution model is agent-native
+> (ADR 0013); the programmatic second-model runner was retired.
+
 # Phase Closure: Issue #80 / PR #81 (Weakness-Type & Evidence-Quote Contract)
 
 **Date**: 2026-07-26

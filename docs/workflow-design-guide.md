@@ -1,3 +1,10 @@
+> **CURRENT (2026-08, ADR 0013)**: where this guide describes the programmatic
+> second-model runner, it is superseded: execution is agent-native (the active
+> coding agent reads the Skill and performs it; validators check the artifact),
+> and the CLI/runtime is deterministic support (planning, paths, gates,
+> sessions/ledger, validation) - not a model launcher. The claude-code/api
+> executors were retired.
+
 # Workflow Design Guide
 
 A step-by-step guide for designing new workflows in the sensemaking-skills orchestration system. Use this checklist to ensure your workflow follows the patterns and is production-ready.

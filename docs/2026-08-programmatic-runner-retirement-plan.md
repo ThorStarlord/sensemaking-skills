@@ -118,6 +118,22 @@ document; the migration begins only on explicit approval of the sequence.
 - Result after fix: VALID - no-arg default invocation generates the plan
   (plan_only + dry-run). Retained tests 32 passed.
 
+## Documentation reconciliation (post-retirement, executed 2026-08-13)
+
+Three buckets, classified individually:
+- CURRENT OPERATIONAL (agent-native banner added, runner content marked
+  superseded): PHASE5_SKILL_INVOCATION, orchestration-patterns,
+  orchestrator-skill-example, DEPLOYMENT_GUIDE, TROUBLESHOOTING,
+  workflow-output-system, workflow-design-guide, validation-workflow.
+- SUPERSEDED BUT HISTORICALLY USEFUL (HISTORICAL marker added, preserved):
+  PHASE-1-ACCEPTANCE-VERIFIED, PHASE-1-GOLDEN-PATH,
+  PHASE-1-IMPLEMENTATION-COMPLETE, PHASE-1-STATUS-SUMMARY, PHASE-80-81-CLOSURE,
+  implementation-checklist, candidate/architecture-decision.
+- ADRs: unchanged (historical decision records; ADR 0013 is current).
+- Deferred to a follow-up pass: ROUTING_GUIDE, run-ledger-guide,
+  PORTFOLIO_OPERATIONS, PRODUCT-CONTRACT-REVIEW (retained mechanics with
+  incidental runner mentions - verify incidental references individually).
+
 ## Step 5 evidence (atomic removal, executed 2026-08-13)
 
 - SDK dependency classified COUPLED_TO_RETAINED_RUNTIME (eager module-level

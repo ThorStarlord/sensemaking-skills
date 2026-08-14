@@ -1,3 +1,7 @@
+> **HISTORICAL (pre-ADR-0013, 2026-08)**: runner-led orchestration record,
+> preserved as historical evidence. The ratified execution model is agent-native
+> (ADR 0013); the programmatic second-model runner was retired.
+
 # Candidate architecture decision — repo-sensemaker vNext integration
 
 **Branch:** `candidate/sensemaking-vnext`, built from `main` @ `e790f30` (identical tip; PR #163 not yet merged, not included here — see "Known dependency" below). Built under [Mode B+](../../docs/prototypes/repo-sensemaker-vnext.md) (owner-broadened delegation, 2026-08-09): architecture/implementation authority delegated, merge-to-main withheld pending owner review.
