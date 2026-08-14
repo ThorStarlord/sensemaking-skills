@@ -1,9 +1,33 @@
 # ADR 0013: Agent-Native Orchestration as Primary Model
 
-**Status**: Proposed  
+**Status**: Accepted  
 **Date**: 2026-05-24  
+**Ratified**: 2026-08-13  
 **Context**: Phase 1 Architecture Migration  
 **Decision**: Shift from runner-led orchestration (CLI owns control loop) to skill-led orchestration (agents own control loop). Skills become platform-agnostic. CLI transitions from orchestrator to execution-only compatibility layer.
+
+---
+
+## Amendment (2026-08-13) — Ratified with explicit scope
+
+This ADR is ACCEPTED as the primary execution-model decision, with the
+following explicit scope:
+
+1. **Primary model**: the active coding agent reads and executes Skills
+   directly. The agent is the runtime.
+2. **Skill contract**: `SKILL.md` + typed artifact contracts + deterministic
+   validators are independent of any particular coding-agent harness.
+3. **Programmatic runner**: `workflow-runtime.py` / `skill_executor.py` are a
+   SEPARATE automation/compatibility path. They are not part of the semantic
+   definition of Skill execution.
+4. **Existing implementation reality**: the current programmatic model-backed
+   runner is Claude-specific (`claude-code` via the Claude Agent SDK, `api` via
+   `ANTHROPIC_API_KEY`). Acceptance does not claim that runner is
+   agent-agnostic, and does not require adapters for other coding agents.
+
+**Non-claim**: agent-native execution being primary does NOT imply that every
+workflow has been behaviorally validated under every coding-agent harness.
+`DEMONSTRATED` is not "universally proven".
 
 ---
 

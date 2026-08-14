@@ -367,12 +367,12 @@ These are acknowledged gaps that the project is aware of but has not yet address
 2. **workflow-planner**: Procedural. Acts on the weak point via gated sequences.
 3. **docs-aligner**: Domain alignment. Resolves contradictions between code and documentation, sharpens terminology, and updates CONTEXT.md inline. Automates grilling for autonomous workflows.
 
-## Skills are agent-agnostic; the proposed primary execution is agent-native (ADR 0013)
+## Skills are agent-agnostic; the primary execution model is agent-native (ADR 0013, accepted)
 
 `skills/*/SKILL.md` are agent-native playbooks: any coding agent can follow
 them, and a skill's contract is its `SKILL.md` plus the artifact contracts,
-never a specific agent harness. The PROPOSED primary execution model (ADR
-0013, agent-native orchestration as primary - PROPOSED, not yet accepted) is
+never a specific agent harness. The primary execution model (ADR 0013,
+agent-native orchestration as primary, ACCEPTED 2026-08-13) is
 that the active coding agent reads the Skill, resolves its typed inputs,
 performs the work itself, and produces the artifact; deterministic validators
 then check it. No harness-specific adapter is required for that path.
@@ -381,9 +381,9 @@ The repository also retains a programmatic second-model runner as an EXISTING
 automation path: `scripts/skill_executor.py` lets a CLI or programmatic runner
 spawn a second agent/model. Its current model-backed executors are
 Claude-specific (`claude-code` via the Claude Agent SDK, and `api` via
-`ANTHROPIC_API_KEY`). The runner's permanent scope is an open product decision
-pending ADR 0013 ratification; it is not declared canonical or out-of-scope
-here.
+`ANTHROPIC_API_KEY`). The runner's long-term support status is an open product
+decision (ADR 0013 ratifies the primary model without resolving the runner's
+fate); it is not declared canonical or out-of-scope here.
 
 ## Ecosystems
 - **Interface Skills**: Spec Packages and UI validation.
