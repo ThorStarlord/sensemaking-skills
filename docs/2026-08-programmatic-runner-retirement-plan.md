@@ -134,6 +134,36 @@ Three buckets, classified individually:
   PORTFOLIO_OPERATIONS, PRODUCT-CONTRACT-REVIEW (retained mechanics with
   incidental runner mentions - verify incidental references individually).
 
+## Project closure (2026-08-13)
+
+The programmatic-runner retirement project is CLOSED. Return to normal
+agent-native use (ADR 0013 primary). The architecture is coherent, the
+retirement is complete, and the one remaining convention is known and bounded.
+
+### cross-run identity: OPEN / DEFERRED (final status)
+
+- typed fan-in: CONTRACT_CLOSED
+- prior-report selection: CONVENTION (the agent must know WHICH prior report to
+  supply; the caller explicitly supplies it)
+- overall loop: CONVENTION_CLOSED
+
+reason: the convention remains, but there is NO demonstrated decision-blocking
+product failure yet. "Can we make the loop fully contract-closed?" is a
+different question from "do users/agents currently fail because it isn't?"
+
+reopen trigger (recorded): reopen cross-run identity when at least one real
+agent-native continuation cannot reconstruct the intended prior reconciliation
+report from durable repository state without relying on conversational/session
+memory - i.e., actual friction, wrong selection, or lost provenance in a real
+handoff. At that point, ask: what durable identity information was missing in
+this real handoff?
+
+NOT chosen now: prior_report_ref (caller selects predecessor) vs "latest
+report" (system defines recency/ancestry semantics). Both encode real policy
+(branches, abandoned runs, competing reports, merges, whether chronological
+recency equals semantic ancestry); neither is merely plumbing. Let the eventual
+failure decide.
+
 ## Step 5 evidence (atomic removal, executed 2026-08-13)
 
 - SDK dependency classified COUPLED_TO_RETAINED_RUNTIME (eager module-level
