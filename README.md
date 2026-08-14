@@ -23,7 +23,7 @@ An agent-native framework for repository diagnosis and workflow orchestration. T
 - `workflow_orchestration_plan` (10-section execution plan)
 - Validation ensures quality and safety
 
-✅ **Agent-native design** — Built for Claude Code and agent invocation:
+✅ **Agent-native design** — Agent-agnostic skills, invoked by any coding agent:
 - Skills defined in SKILL.md files
 - Orchestration via artifact handoffs
 - No external dependencies
@@ -33,7 +33,7 @@ An agent-native framework for repository diagnosis and workflow orchestration. T
 ❌ **Not a fully autonomous CLI diagnosis engine** — Repository diagnosis is agent-led, CLI provides utilities  
 ❌ **Not a service** — No server, no cloud dependency. The core package is entirely local; only the optional `exploratory_execution` subsystem calls the GitHub REST API (`api.github.com`) for issue-approval tracking  
 ❌ **Not a replacement for specialized tools** — Complements PM skills, UI skills, TDD tools  
-❌ **Agent-driven diagnostics require Claude Code** — The CLI utilities (validate, test, analyze) work standalone; full diagnosis requires an agent harness  
+❌ **Full diagnosis requires an agent harness** — The CLI utilities (validate, test, analyze) work standalone; agent-driven diagnosis requires a coding-agent harness (Claude Code is one supported harness, not the only one)  
 
 ---
 
@@ -45,7 +45,7 @@ An agent-native framework for repository diagnosis and workflow orchestration. T
 
 **sensemaking-skills is a local-first Python utility.** The package itself reads repository files, validates artifacts, runs local scripts, and produces diagnostic Markdown outputs. The core CLI makes no external API calls and requires no credentials. One optional subsystem, `exploratory_execution` (issue/approval tracking for governed experiment runs), calls the GitHub REST API at `api.github.com` and requires a GitHub personal access token; it fails closed when unauthenticated or unreachable.
 
-For full agent-driven diagnostics, use the included SKILL.md files with an agent harness such as Claude Code. Any LLM/API access is handled by that harness, not by sensemaking-skills.
+For full agent-driven diagnostics, use the included SKILL.md files with any coding-agent harness (Claude Code, Codex, Pi, Hermes). Any LLM/API access is handled by that harness, not by sensemaking-skills.
 
 ## Installation
 

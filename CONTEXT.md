@@ -367,6 +367,17 @@ These are acknowledged gaps that the project is aware of but has not yet address
 2. **workflow-planner**: Procedural. Acts on the weak point via gated sequences.
 3. **docs-aligner**: Domain alignment. Resolves contradictions between code and documentation, sharpens terminology, and updates CONTEXT.md inline. Automates grilling for autonomous workflows.
 
+## Skills are agent-agnostic; the executor is an adapter
+
+`skills/*/SKILL.md` are agent-native playbooks: any coding agent can follow
+them. A skill's contract is its `SKILL.md` plus the artifact contracts, never
+a specific agent harness. The model-backed executor (`scripts/skill_executor.py`)
+is a separate adapter layer whose current implementations are Claude-specific
+(`claude-code` via the Claude Agent SDK, and `api` via `ANTHROPIC_API_KEY`).
+Do not conflate the two layers: adding or replacing an executor does not change
+a skill's contract, and a skill must not bake a particular harness's invocation
+syntax into its instructions.
+
 ## Ecosystems
 - **Interface Skills**: Spec Packages and UI validation.
 - **Matt Pocock Skills**: Engineering rigor, TDD, and docs-aligner (domain alignment).
