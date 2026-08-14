@@ -184,6 +184,13 @@ and the plan name the same concept differently):
 
 3. **Skills are platform-agnostic**: Can also be invoked by CLI for backwards compatibility
 
+4. **Agent-native operating workflow**: the full end-to-end control loop --
+   when to sensemake, brief review, responsibility selection, specialized
+   work, validation, output reconciliation, repair verification, durability,
+   authority gates, stop conditions -- is mapped in
+   [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md)
+   (v0 operating guide, not an orchestration contract).
+
 ---
 
 ## Default Workflows
