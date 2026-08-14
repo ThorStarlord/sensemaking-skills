@@ -367,16 +367,23 @@ These are acknowledged gaps that the project is aware of but has not yet address
 2. **workflow-planner**: Procedural. Acts on the weak point via gated sequences.
 3. **docs-aligner**: Domain alignment. Resolves contradictions between code and documentation, sharpens terminology, and updates CONTEXT.md inline. Automates grilling for autonomous workflows.
 
-## Skills are agent-agnostic; the executor is an adapter
+## Skills are agent-agnostic; execution is agent-native (ADR 0013)
 
 `skills/*/SKILL.md` are agent-native playbooks: any coding agent can follow
-them. A skill's contract is its `SKILL.md` plus the artifact contracts, never
-a specific agent harness. The model-backed executor (`scripts/skill_executor.py`)
-is a separate adapter layer whose current implementations are Claude-specific
-(`claude-code` via the Claude Agent SDK, and `api` via `ANTHROPIC_API_KEY`).
-Do not conflate the two layers: adding or replacing an executor does not change
-a skill's contract, and a skill must not bake a particular harness's invocation
-syntax into its instructions.
+them, and a skill's contract is its `SKILL.md` plus the artifact contracts,
+never a specific agent harness. The canonical execution model (ADR 0013,
+agent-native orchestration as primary) is that the ACTIVE coding agent reads
+the Skill, resolves its typed inputs, performs the work itself, and produces
+the artifact; deterministic validators then check it. No harness-specific
+adapter is required for this path.
+
+`scripts/skill_executor.py` is the OPTIONAL automation/compatibility layer
+that lets a CLI or programmatic runner spawn a second agent/model. Its current
+model-backed executors are Claude-specific (`claude-code` via the Claude Agent
+SDK, and `api` via `ANTHROPIC_API_KEY`) - an optional adapter, not the
+definition of execution. Do not conflate the two: agent-native execution is
+the primary, agent-agnostic path; the programmatic model runner is optional
+and Claude-specific today.
 
 ## Ecosystems
 - **Interface Skills**: Spec Packages and UI validation.
