@@ -67,6 +67,20 @@ _EXTENDED_ANALYSIS_UNCERTAINTY_SOURCES = {
 _EXTENDED_ANALYSIS_OWNER_INTENT_STATUSES = {"sufficient", "thin", "blocking_unknown"}
 
 
+def _bool_flag(value: object) -> bool:
+    """Strict boolean parsing for escalation_recommended.
+
+    LLM-emitted YAML may contain a real bool or a quoted string
+    ("true"/"false"/"yes"/"no"/"1"/"0"). Only unambiguous truthy values
+    count; a quoted "false"/"no"/"0" must NOT enable the no-match gate.
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"true", "yes", "1"}
+    return False
+
+
 def _parse_extended_analysis(content: str) -> dict[str, Any] | None:
     """Extract Section 15's `extended_analysis:` mapping, if present.
 
@@ -579,10 +593,23 @@ def validate_brief(
                 })
         else:
             workflow_id = artifact_data.get("recommended_workflow_id")
+            # Truthful no-match (ADR 0014): `recommended_workflow_id: null` is
+            # valid ONLY when escalation_recommended is true (no supported
+            # workflow recommendation). A null value without escalation is a
+            # contract violation at any artifact size. Non-null values must
+            # always be real registry ids, even when escalating.
+            escalated = _bool_flag(artifact_data.get("escalation_recommended"))
+            if workflow_id is None and not escalated:
+                errors.append(_code_error(
+                    MISSING_WORKFLOW_ID,
+                    "recommended_workflow_id is null without "
+                    "escalation_recommended: true (truthful no-match "
+                    "requires escalation, ADR 0014).",
+                ))
             registry = load_workflow_registry(repo_root)
             if registry is not None:
                 valid_ids = {w["id"] for w in registry.get("workflows", [])}
-                if workflow_id not in valid_ids:
+                if workflow_id is not None and workflow_id not in valid_ids:
                     errors.append({
                         "error_id": "repository_sensemaking_brief.recommended_workflow_id.unknown_value",
                         "error_type": "unknown_value",
@@ -850,7 +877,8 @@ def validate_brief(
     # covers the large-artifact fallback path and hallucinated-ID detection)
     if artifact_data is not None:
         workflow_id = artifact_data.get("recommended_workflow_id")
-        if not workflow_id and not large:
+        no_match_ok = workflow_id is None and _bool_flag(artifact_data.get("escalation_recommended"))
+        if not workflow_id and not large and not no_match_ok:
             errors.append(_code_error(MISSING_WORKFLOW_ID, "Handoff missing 'recommended_workflow_id'."))
     elif not large:
         errors.append(_code_error(MISSING_HANDOFF_BLOCK, "Missing 'Machine-readable handoff' YAML block."))

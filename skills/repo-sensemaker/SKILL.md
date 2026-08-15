@@ -148,7 +148,7 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 
 ## Boundary Rules
 1. **No Implementation**: Do not execute workflows or implement changes. The output of this skill is a diagnostic artifact.
-2. **Registry Grounding**: Every `recommended_workflow_id` MUST be verified against `skills/workflow-planner/references/workflow-registry.yaml`. Do not invent or "hallucinate" workflow IDs from semantic context. If no matching workflow exists, recommend a `plan_only` mode with the closest structural match or leave it blank with a note.
+2. **Registry Grounding**: Every `recommended_workflow_id` MUST be verified against `skills/workflow-planner/references/workflow-registry.yaml`. Do not invent or "hallucinate" workflow IDs from semantic context. If no matching workflow exists, set `escalation_recommended: true` and emit `recommended_workflow_id: null` to truthfully express no supported recommendation (valid no-match state per ADR 0014). Do not fabricate a closest structural match merely to satisfy validation.
 3. **Clarification policy**: Ask no questions when repository evidence is sufficient. When unresolved owner intent would materially change the recommendation, ask a neutral, high-information clarification that gathers intent rather than advocating one option. Resolve empirical uncertainty through probes rather than asking the owner to guess. This policy applies regardless of execution mode, but *how* it's carried out differs: in conversational invocation, apply it directly — see "Interact" below, which is this policy's full worked-out procedure (uncertainty classification, the neutral-clarification discipline, the one-question default). In automated runtime execution there is no owner to ask (see Execution Protocol step 8) — the equivalent signal is `escalation_recommended: true`, optionally sharpened by Section 15's `uncertainty`/`owner_intent_state` fields, which is what a later conversational consumer (a human, or this skill re-invoked conversationally) uses to actually ask.
 
 ## References
@@ -202,7 +202,8 @@ and must not be re-authored or reordered:
 **Workflow IDs vs. skill IDs**: `recommended_workflow_id` must be an id from
 `workflow-registry.yaml` (e.g. `architecture-implementation-workflow`), never
 a skill id (e.g. `docs-aligner`). If uncertain which workflow applies, prefer
-escalation (`escalation_recommended: true`) over guessing — the runtime will
+escalation (`escalation_recommended: true`) and the truthful no-match value
+(`recommended_workflow_id: null`) over guessing — the runtime will
 preserve your value verbatim, valid or not, and the validator (not the
 runtime) is what rejects an invalid one.
 
