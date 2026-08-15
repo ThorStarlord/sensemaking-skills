@@ -360,3 +360,51 @@ Note: this run exercised the corrected responsibility-selection shape
 (nearest unresolved uncertainty -> investigation -> earned action) after the
 third-occurrence observation; the v1 wording candidate remains EARNED and
 unimplemented.
+
+## Auteur vendoring closure (2026-08-14) — bounded contract, CLOSED
+
+Owner decision (2026-08-14): Auteur intentionally vendors a curated, pinned
+subset of Sensemaking Skills. Implement a vendoring contract (source
+revision, supported subset, exclusions, sync expectations) and make the
+gate validate the supported subset; do NOT blindly upgrade the snapshot and
+do NOT introduce an external dependency/distribution architecture.
+
+Implementation (Auteur, committed ab1d6ee):
+- skills/VENDORED.yaml — machine-readable contract: source revision
+  recorded honestly as UNRECORDED (historical pre-workflow-planner
+  snapshot); included subset (16 skills, 24 scripts, 2 framework docs,
+  grounded in the vendored validate-repo.py's own expected core files);
+  excluded current-era components (workflow-planner, probe engine files,
+  brief_skeleton); known characteristics (the vendored validate-repo
+  warnings, documented non-critical); manual+gated update policy (record
+  upstream SHA at next sync); validation expectations.
+- scripts/verify_vendored_contract.py — drift check (included present,
+  excluded absent; exit 0/1/2; repo-relative path validation;
+  malformed-YAML handled), wired into scripts/check.py.
+- tests/test_vendored_contract.py — 7 focused tests.
+
+Validation: drift check "VENDORED CONTRACT: OK" against the real tree;
+drift cases unit-tested (missing included -> fail, excluded present ->
+fail); check.py --skip-pytest green (26/26 validators, validate-repo PASS
+with the documented warnings, drift check OK, ruff clean); focused tests
+7/7; security review no blocking issues (2 LOW hardening items fixed).
+
+Work claim + reconciliation: recorded in
+Auteur docs/reviews/2026-08-14-vendoring-contract-reconciliation.md
+(committed 7b09b3b); all claims VERIFIED (contract exists and matches the
+tree; gate validates the subset; no upgrade; no external dependency;
+warnings documented); "upstream revision pinned" DISPUTED-by-design
+(UNRECORDED until the next intentional update).
+
+Repair verification (finding-specific, evidence 0022 Auteur brief):
+- acquisition_status: SUCCEEDED
+- observation: the hidden, ungoverned vendoring relationship is now
+  explicit and machine-enforced (contract + drift check in the gate);
+  included verified present, excluded verified absent.
+- disposition: closed (the "no vendoring contract / hidden dependency"
+  defect is resolved; snapshot content intentionally unchanged per the
+  owner decision, so no content-upgrade claim is made).
+
+Both Bucket B (F1) and Bucket A (Auteur vendoring) are now CLOSED.
+Bucket C (responsibility-selection wording) remains an EARNED, unimplemented
+Workflow-v1 candidate.
