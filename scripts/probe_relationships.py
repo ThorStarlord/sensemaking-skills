@@ -318,7 +318,7 @@ def _version_findings(declared: List[Dict[str, str]],
         "finding_type": "conflicting_values",
         "observations": decision,
         "confidence": "high",
-        "requires_semantic_review": False,
+        "requires_semantic_review": True,
         "notes": (
             "Values disagree mechanically across sources. Which source has "
             "authority, which is historical, and whether it matters is for "

@@ -43,7 +43,7 @@ def test_unified_validator_pipeline():
             print("  SKIPPED: brief-valid.md fixture not found")
         else:
             stdout, stderr, returncode = run_cmd(
-                ["python3", "scripts/validate-and-report.py", valid_brief],
+                [sys.executable, "scripts/validate-and-report.py", valid_brief],
                 cwd=repo_root
             )
             tests_run += 1
@@ -67,7 +67,7 @@ def test_unified_validator_pipeline():
 
             # Step 1: Get validation output
             stdout, stderr, returncode = run_cmd(
-                ["python3", "scripts/validate-and-report.py", invalid_brief],
+                [sys.executable, "scripts/validate-and-report.py", invalid_brief],
                 cwd=repo_root
             )
 
@@ -78,7 +78,7 @@ def test_unified_validator_pipeline():
                 if not validation_result.get("valid") and returncode == 1:
                     # Step 2: Pipe to record-validation.py
                     log_stdout, log_stderr, log_rc = run_cmd(
-                        ["python3", "scripts/record-validation.py", "--run-log", run_log_test2],
+                        [sys.executable, "scripts/record-validation.py", "--run-log", run_log_test2],
                         stdin_data=json.dumps(validation_result),
                         cwd=repo_root
                     )
@@ -113,24 +113,24 @@ def test_unified_validator_pipeline():
 
         # Create first entry
         stdout1, _, _ = run_cmd(
-            ["python3", "scripts/validate-and-report.py", valid_brief],
+            [sys.executable, "scripts/validate-and-report.py", valid_brief],
             cwd=repo_root
         )
         result1 = json.loads(stdout1)
         _, _, _ = run_cmd(
-            ["python3", "scripts/record-validation.py", "--run-log", run_log_test3],
+            [sys.executable, "scripts/record-validation.py", "--run-log", run_log_test3],
             stdin_data=json.dumps(result1),
             cwd=repo_root
         )
 
         # Create second entry
         stdout2, _, _ = run_cmd(
-            ["python3", "scripts/validate-and-report.py", invalid_brief],
+            [sys.executable, "scripts/validate-and-report.py", invalid_brief],
             cwd=repo_root
         )
         result2 = json.loads(stdout2)
         _, _, rc2 = run_cmd(
-            ["python3", "scripts/record-validation.py", "--run-log", run_log_test3],
+            [sys.executable, "scripts/record-validation.py", "--run-log", run_log_test3],
             stdin_data=json.dumps(result2),
             cwd=repo_root
         )
@@ -154,7 +154,7 @@ def test_unified_validator_pipeline():
         tests_run += 1
         if os.path.exists(valid_brief):
             stdout, _, returncode = run_cmd(
-                ["python3", "scripts/validate-and-report.py", valid_brief],
+                [sys.executable, "scripts/validate-and-report.py", valid_brief],
                 cwd=repo_root
             )
             try:

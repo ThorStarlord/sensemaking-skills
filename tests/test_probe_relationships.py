@@ -90,7 +90,7 @@ def test_version_finding_on_doc_drift(tmp_path: Path) -> None:
     f = section["findings"][0]
     assert f["finding_type"] == "conflicting_values"
     assert {o["value"] for o in f["observations"]} == {"0.2.1", "0.2.2"}
-    assert f["requires_semantic_review"] is False
+    assert f["requires_semantic_review"] is True
 
 
 def test_version_consistent_is_correct_negative(tmp_path: Path) -> None:

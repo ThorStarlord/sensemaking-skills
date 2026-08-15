@@ -64,59 +64,15 @@ relationships:
             claim_class: current
             source_class: live
         confidence: high
-        requires_semantic_review: false
+        requires_semantic_review: true
         notes: "Values disagree mechanically across sources."
   adr:
-    files: 2
+    files: 1
     catalog:
       - id: "0001"
         file: docs/adr/0001-example.md
         title: "ADR 0001: Example"
         status: proposed
         raw_status: "Proposed"
-      - id: "0001"
-        file: docs/adr/0001-second.md
-        title: "ADR 0001: Second"
-        status: proposed
-        raw_status: "Proposed"
     references: 1
-    findings:
-      - concept: adr_identifier
-        finding_type: duplicate_id
-        observations:
-          - source: docs/adr/0001-example.md
-            location: docs/adr/0001-example.md
-            value: "0001"
-            evidence: "ADR id 0001 declared by 2 files"
-            source_kind: contract
-            claim_class: id_declaration
-          - source: docs/adr/0001-second.md
-            location: docs/adr/0001-second.md
-            value: "0001"
-            evidence: "ADR id 0001 declared by 2 files"
-            source_kind: contract
-            claim_class: id_declaration
-        confidence: high
-        requires_semantic_review: false
-        notes: "Multiple files declare ADR id 0001; the id namespace is ambiguous."
-skill_distribution:
-  canonical_skills_root: H:/framework/skills
-  checked: [repo-sensemaker]
-  drifted:
-    - skill_name: repo-sensemaker
-      files:
-        - path: skills/repo-sensemaker/references/evidence-rules.md
-          drift_type: content_drift
-  findings:
-    - concept: vendored_skill
-      finding_type: skill_distribution_drift
-      observations:
-        - source: skills/repo-sensemaker/references/evidence-rules.md
-          location: skills/repo-sensemaker/references/evidence-rules.md
-          value: content_drift
-          evidence: "vendored evidence-rules.md differs from canonical (content drift)"
-          source_kind: contract
-          claim_class: skill_distribution
-      confidence: high
-      requires_semantic_review: false
-      notes: "The target's vendored skill copy drifted from canonical."
+    findings: []
