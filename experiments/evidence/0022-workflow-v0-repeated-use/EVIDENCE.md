@@ -294,3 +294,69 @@ Workflow v0: KEEP_WITH_WATCH_ITEMS; continue normal use; accumulate evidence;
              no v1 work yet. The workflow is no longer justified by its design;
              it is accumulating a behavioral track record.
 ```
+
+## F1 closure (2026-08-14) — bounded contract repair, CLOSED
+
+Owner decision (per review): under the accepted ADR 0014 product boundary,
+"no supported workflow recommendation" is a valid Repository Sensemaking
+Brief state; a deterministic validator must not require the Brief to name a
+workflow unsupported by repository evidence. ADR 0018 remains PROPOSED;
+this decision does not ratify routing.
+
+Representation (smallest compatible): `recommended_workflow_id: null`
+together with `escalation_recommended: true` = truthful no-match. Null was
+chosen because validate-artifact's generic enum check already tolerates
+None (no canonical-vocabulary change needed). A null value without
+escalation is a contract violation at any artifact size; non-null values
+must always be valid registry ids.
+
+Repair (committed separately):
+- scripts/validate-brief.py: no-match gating in both workflow-id checks +
+  strict `_bool_flag` (quoted "false"/"no"/"0" cannot enable the gate) +
+  null-without-escalation check independent of the large-artifact exemption
+  (two gate-bypass flaws found by security review, fixed).
+- skills/repo-sensemaker/SKILL.md:151: "set escalation_recommended: true
+  and emit recommended_workflow_id: null; do not fabricate a closest
+  structural match" replaces the non-executable "leave it blank" option;
+  skeleton section aligned.
+- skills/workflow-planner/references/artifact-contracts.yaml: no-match
+  semantics note on repository_sensemaking_brief.
+- Validator-harness fixtures: valid/no-match-with-escalation.md (positive),
+  invalid/no-match-without-escalation.md and
+  invalid/no-match-with-string-false-escalation.md (negative).
+
+Validation: validator harness 77/77 PASS; scripts/validate-repo.py PASS;
+tests/test_field_contract_agreement.py 3 passed; focused checks confirmed
+truthful no-match PASSES, null-without-escalation FAILS at any size
+(verified with a 169-line brief), quoted "false" FAILS; security review
+verdict: ship (both bypasses fixed).
+
+Work claim (F1):
+- implemented: validate-brief no-match gating; SKILL.md + contract notes;
+  3 fixtures.
+- mechanically demonstrated: truthful no-match validates; fabrication no
+  longer required or instructed; string-"false" and large-artifact bypasses
+  closed.
+- still interpretive: the null representation (chosen as smallest
+  compatible); ADR 0018 semantics remain a separate PROPOSED question.
+- deliberately unchanged: routing machinery, canonical vocabulary,
+  validate-artifact, ADR 0018, Workflow v0.
+
+Reconciliation: all claims VERIFIED against the artifact/validator behavior;
+no omitted or disputed claims. The truthfulness problem F1 exposed
+(validator PASS obtained by fabricating the nearest workflow id) is gone:
+both contracts now agree no-match = null + escalation.
+
+Repair verification (finding-specific):
+- acquisition_status: SUCCEEDED
+- observation: a brief with `recommended_workflow_id: null` +
+  `escalation_recommended: true` now validates truthfully; the SKILL no
+  longer instructs "closest structural match or leave blank"; the validator
+  rejects null-without-escalation and non-null hallucinated ids.
+- disposition: CLOSED (contract contradiction resolved; fabrication neither
+  required nor instructed).
+
+Note: this run exercised the corrected responsibility-selection shape
+(nearest unresolved uncertainty -> investigation -> earned action) after the
+third-occurrence observation; the v1 wording candidate remains EARNED and
+unimplemented.
