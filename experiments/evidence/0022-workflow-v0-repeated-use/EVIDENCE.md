@@ -448,3 +448,52 @@ closure-selection error (recorded, corrected; no evidence rewritten).
 Workflow-v0 observation: reconciliation is a decision point, not a
 reporting endpoint - the DISPUTED pin claim correctly forced continuation
 into bounded historical acquisition rather than unqualified closure.
+
+## Addendum — closure-selection watch item + future first-pin invariant (2026-08-15)
+
+New watch item (recorded; NO Workflow-v0 change for one occurrence):
+
+```text
+closure-selection error
+occurrence:     FIRST_OBSERVED (Auteur vendoring: reconciliation exposed the
+                DISPUTED "upstream pinned" claim, yet the run declared
+                Bucket A CLOSED; corrected after review)
+impact:         truthfulness-affecting but corrected
+decision-blocking: no (after review)
+distinct from:  responsibility-selection jump (which skips nearer
+                uncertainty before choosing the eventual action; this
+                skips disposing a material DISPUTED claim before closure)
+possible future lesson (wording-refinement candidate only if it recurs):
+                material DISPUTED / unresolved claims must be disposed
+                before finding-specific closure
+```
+
+Workflow-v0 behavioral result (newly demonstrated): reconciliation is a
+decision-producing stage - it may send the run back into investigation
+(implementation -> validation -> work_claim -> reconciliation -> DISPUTED
+claim -> targeted investigation -> owner-governed disposition -> updated
+artifact -> reconciliation -> repair verification -> closure). It is not a
+reporting endpoint.
+
+Bucket A final state (defensible closure):
+
+```text
+historical exact source SHA: unrecoverable as a single revision
+  (mixed / locally modified snapshot; repo-sensemaker/SKILL.md alone maps
+   to 95b2962 modulo BOM; validate-repo.py + registry match no single
+   upstream revision -> a single source.revision would be FALSE provenance)
+
+closure: CLOSED WITH EXPLICIT HISTORICAL-PROVENANCE EXCEPTION
+  (NOT "historical pin completed")
+
+future invariant (recorded, not unfinished work today):
+  the next intentional vendoring update MUST establish
+  source.revision = <actual upstream SHA>;
+  leaving it UNRECORDED at that transition reopens the
+  vendoring-contract finding.
+```
+
+Buckets: A CLOSED-with-exception; B CLOSED; C (responsibility-selection
+wording) EARNED candidate, not implemented. Watch items now include the
+closure-selection error (FIRST_OBSERVED). Workflow v0: KEEP_WITH_WATCH_ITEMS,
+normal-use validation, v1 NOT STARTED.
