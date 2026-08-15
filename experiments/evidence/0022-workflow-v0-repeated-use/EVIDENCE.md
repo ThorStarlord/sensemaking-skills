@@ -170,3 +170,127 @@ change the guidance to closest-match).
 - This record pins every result to revisions above. Prior records
   (evidence 0021, Auteur reconciliation reports) were not rewritten.
 - Sensemaking revision supplying repo-sensemaker + Workflow v0: `a6239630`.
+
+## Addendum — consolidated state (2026-08-14, after review + Auteur vendoring continuation)
+
+### Workflow v0 status
+
+```text
+design/documentation                 DONE
+first cross-repo dogfood             DONE
+deep real engineering dogfood        DONE
+repeated-use dogfood                 DONE
+
+current phase:   ongoing normal-use validation
+verdict:         KEEP_WITH_WATCH_ITEMS (supported by repeated use, not
+                 merely provisional first-use evidence)
+v1:              NOT STARTED; specific revision candidates now exist
+```
+
+### Auteur vendoring continuation: UNSPECIFIED_VENDORING_CONTRACT -> owner decision now earned
+
+The fresh-run stop was corrected by the workflow itself: the vendoring
+*intent* was a mechanically knowable question, so the next responsibility
+was targeted repository-evidence acquisition, not owner decision. That
+acquisition established (all demonstrated, 2026-08-14):
+
+- old, partial framework snapshot (legacy `skills/workflow-orchestrator/`
+  layout; vendored repo-sensemaker predates the probe engine / Interact /
+  ADR 0024);
+- wired into Auteur's actual validation gate (`check.py` runs the vendored
+  test-validators.py + validate-repo.py);
+- no sync mechanism for this copy (sync_interface_skills.py targets a
+  different source -> .agents/skills);
+- no provenance/pinning in the scanned sources of truth (README, CONTEXT.md,
+  CLAUDE.md, AGENTS.md);
+- not dead vendoring (the gate depends on it).
+
+Owner decision scope (narrow, not "fix vendoring"):
+
+```text
+A. Auteur intentionally vendors a curated Sensemaking snapshot
+   -> document provenance, define supported subset, pin source revision,
+      decide update mechanism
+B. Auteur should consume current Sensemaking another way
+   -> de-vendor / replace snapshot, update the gate accordingly
+```
+
+### F1 — Sensemaking machinery revision candidate (NOT a Workflow-v1 item)
+
+```text
+F1: repo-sensemaker / brief-validator contract contradiction
+  Skill contract:    no matching workflow -> blank recommended_workflow_id valid
+  validator contract: blank recommended_workflow_id -> invalid
+  consequence:       agent fabricated the nearest valid workflow id to obtain
+                     structural PASS (structural correctness up, semantic
+                     truthfulness down - the wrong trade)
+
+evidence status: DEMONSTRATED
+recurrence required? NO (a direct normative-instruction vs deterministic-
+                     validator disagreement is objectively reproducible)
+impact: truthfulness-affecting; NON_BLOCKING in this campaign
+bucket:  Sensemaking machinery repair (repo-sensemaker instructions <-> artifact
+         schema/validator alignment), NOT Workflow-v1. Workflow v0 only exposed it.
+smallest fix candidate: align SKILL.md "leave blank" guidance with
+         validate-brief.py's enum requirement (permit empty-with-note, or
+         change guidance to closest-match). Not authorized in this campaign.
+```
+
+### Responsibility-selection jump — Workflow-v1 wording candidate
+
+```text
+occurrence: REPEATED (2 instances, identical shape)
+  1. release evidence: diagnosis -> implementation (corrected to investigation)
+  2. vendoring:        diagnosis -> owner decision (corrected to investigation)
+  shape: "current evidence -> eventual solution class" chosen instead of
+         "current evidence -> nearest decision-changing uncertainty ->
+          next information-producing responsibility"
+
+decision-blocking: no (workflow discipline corrected both)
+candidate principle (wording refinement): select the next responsibility from
+  the nearest unresolved decision-changing uncertainty, not from the likely
+  eventual action or authority boundary
+
+disposition: observe ONE more time in normal work before editing Workflow v0.
+  Both corrections succeeded under the current conceptual model, so the next
+  occurrence distinguishes "documentation insufficient" from "ordinary
+  reasoning error the workflow already corrects".
+third-occurrence trigger: agent identifies a consequential boundary ->
+  unresolved repository/empirical uncertainty remains -> agent nevertheless
+  jumps directly to implementation or owner decision.
+```
+
+### Reality map state (report-only; topology unchanged)
+
+```text
+REPOSITORY DIAGNOSIS        REAL     repeated-use evidence strengthened
+UNCERTAINTY CLASSIFICATION  REAL     increasingly strong behavioral evidence
+NEXT-RESPONSIBILITY SELECTION CONVENTION / agent reasoning; repeated jump pattern observed
+MECHANICAL VALIDATION       REAL     useful; one contract contradiction demonstrated (F1)
+OUTPUT RECONCILIATION       REAL     prior non-claim friction remains watch-only
+REPAIR VERIFICATION         REAL     no new friction
+CONTINUATION                CONVENTION_CLOSED   no reopen trigger
+AUTOMATIC ROUTING           UNRATIFIED / deferred
+V1 MACHINERY                MISSING? NO   (revision candidates exist; no new component earned)
+```
+
+### Three separated future-work buckets
+
+```text
+A. Auteur product decision     vendored Sensemaking contract -> owner chooses posture
+                               (active repository problem)
+B. Sensemaking contract repair F1 no-workflow guidance <-> validator enum contradiction
+                               (tiny bounded fix, separately authorized)
+C. Possible Workflow-v1 learn  responsibility-selection jump pattern
+                               (needs one more real-use observation before editing the guide)
+
+Auteur product issue != Sensemaking contract bug != Workflow-v1 learning.
+```
+
+### Verdict
+
+```text
+Workflow v0: KEEP_WITH_WATCH_ITEMS; continue normal use; accumulate evidence;
+             no v1 work yet. The workflow is no longer justified by its design;
+             it is accumulating a behavioral track record.
+```
