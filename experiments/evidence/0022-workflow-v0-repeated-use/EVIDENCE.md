@@ -408,3 +408,43 @@ Repair verification (finding-specific, evidence 0022 Auteur brief):
 Both Bucket B (F1) and Bucket A (Auteur vendoring) are now CLOSED.
 Bucket C (responsibility-selection wording) remains an EARNED, unimplemented
 Workflow-v1 candidate.
+
+## Auteur provenance pin (2026-08-15) — closed with historical exception
+
+The initial Bucket-A closure overclaimed the owner-approved "document +
+pin" goal: the manifest recorded `UNRECORDED`, so the pin claim was
+DISPUTED, full stop. The run continued with one bounded provenance
+investigation per the owner decision (a descriptive range does NOT satisfy
+"pin"; if the exact revision is unrecoverable, preserve UNRECORDED + range,
+classify provenance unrecoverable, and make the next intentional update the
+first canonical pinned baseline).
+
+Bounded investigation (git/content comparison, upstream sensemaking-skills
+window 2026-05-13..05-22):
+- vendored `repo-sensemaker/SKILL.md` content-identical (modulo BOM) to
+  upstream 95b2962 (2026-05-19, pre workflow-orchestrator->workflow-planner
+  rename);
+- vendored `validate-repo.py` differs from every era revision (~72 lines);
+  the vendored workflow-orchestrator registry is an auto-invocation-era
+  variant differing from every era revision;
+- Auteur intro commit 15699ea (2026-05-21) added the files; never modified.
+
+Classification: **MIXED_OR_LOCALLY_MODIFIED_SNAPSHOT** -> no single exact
+upstream SHA is pinnable -> owner-approved fallback applies.
+
+Manifest update (skills/VENDORED.yaml, committed ba7b1cb): revision stays
+UNRECORDED (no invented SHA); provenance_status:
+unrecoverable_for_pinning; best_supported_range sharpened (SKILL.md = 95b2962;
+rest = pre-rename locally-modified variants); historical_exception recorded
+(first intentional update = first canonical pinned baseline).
+
+Repair verification: acquisition SUCCEEDED; disposition **closed with
+explicit historical-provenance exception** - the hidden/ungoverned
+vendoring defect is closed, the contract is implemented and gate-validated
+(drift check OK; tests 7/7), and the pin requirement is satisfied per the
+owner-approved fallback. The earlier unqualified closure was a
+closure-selection error (recorded, corrected; no evidence rewritten).
+
+Workflow-v0 observation: reconciliation is a decision point, not a
+reporting endpoint - the DISPUTED pin claim correctly forced continuation
+into bounded historical acquisition rather than unqualified closure.
