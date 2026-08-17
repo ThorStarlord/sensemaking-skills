@@ -201,6 +201,8 @@ Do not copy a machine-readable schema from this bootstrap when the contract file
 
 ### Fog classification is diagnostic metadata
 
+The canonical enum source is `../../docs/canonical-vocabulary.yaml`.
+
 The four canonical fog types remain useful descriptors:
 
 | Fog type | Primary uncertainty |
