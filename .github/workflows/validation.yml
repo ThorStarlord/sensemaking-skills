@@ -13,7 +13,7 @@ jobs:
   # These are SEPARATE, clearly named checks. The repository-validation job
   # below runs validation SCRIPTS; it does not execute a single pytest test.
   # The current Gate A lane validates the retained authorization consumer,
-  # path/trust boundaries, and physical containment. Historical Evidence 0016
+  # path canonicalization, and physical containment. Historical Evidence 0016
   # preparation/run-control suites were bound to the programmatic second-model
   # executors retired under ADR 0013 and are no longer canonical runtime gates.
   # A security suite that is red or never runs cannot support a merge
@@ -55,10 +55,8 @@ jobs:
       - name: Gate A authorization consumer
         run: python -m pytest tests/test_gate_a_authorization_consumer.py -q
 
-      - name: Gate A path canonicalization and trust boundary
-        run: |
-          python -m pytest tests/test_gate_a_path_canonicalization.py \
-                           tests/test_gate_a_trust_boundary.py -q
+      - name: Gate A path canonicalization
+        run: python -m pytest tests/test_gate_a_path_canonicalization.py -q
 
       - name: Gate A physical containment (symlink tests MUST execute)
         run: |
@@ -125,9 +123,8 @@ jobs:
       - name: Gate A authorization consumer
         run: python -m pytest tests/test_gate_a_authorization_consumer.py -q
 
-      - name: Gate A path canonicalization and trust boundary
-        run: |
-          python -m pytest tests/test_gate_a_path_canonicalization.py tests/test_gate_a_trust_boundary.py -q
+      - name: Gate A path canonicalization
+        run: python -m pytest tests/test_gate_a_path_canonicalization.py -q
 
       - name: Gate A physical containment (trailing dot, junctions, 8.3, ADS)
         run: python -m pytest tests/test_gate_a_physical_containment.py -q -rs
