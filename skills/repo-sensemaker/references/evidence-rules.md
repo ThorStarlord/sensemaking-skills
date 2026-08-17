@@ -30,7 +30,7 @@ Rule 1 (File Citation) supports **two output modes**, optimized for different co
 **When to use:** Default mode when a human is reading the brief directly to decide what to do next.
 
 **What to cite:**
-- Specific file paths **with line numbers** (e.g. `src/auth/login.ts:42-58`)
+- Specific file paths **with line numbers** (e.g., `src/auth/login.ts:42-58`)
 - Exact code snippets showing the problem
 - Direct quotes from documentation
 
@@ -41,7 +41,7 @@ Rule 1 (File Citation) supports **two output modes**, optimized for different co
 **When to use:** When the brief will be consumed by downstream skills that validate, transform, or act on the evidence (e.g. `to-prd`, `to-issues`, `workflow-planner`, `sensemaking-docs-reconciler`).
 
 **What to cite:**
-- File paths **only, no line numbers** (e.g. `src/auth/login.ts`)
+- File paths **only, no line numbers** (e.g., `src/auth/login.ts`)
 - Behavioral descriptions, not code locations
 - All claims must be **grep-verifiable** against the current tree
 
