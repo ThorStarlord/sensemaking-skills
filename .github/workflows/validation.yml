@@ -12,11 +12,12 @@ jobs:
   #
   # These are SEPARATE, clearly named checks. The repository-validation job
   # below runs validation SCRIPTS; it does not execute a single pytest test.
-  # Before this was added, "CI green" on PR #109 meant only that the scripts
-  # passed, while the Gate A security suites had never run in CI at all and
-  # the two symlink security tests had never executed on a capable runner.
+  # The current Gate A lane validates the retained authorization consumer,
+  # path/trust boundaries, and physical containment. Historical Evidence 0016
+  # preparation/run-control suites were bound to the programmatic second-model
+  # executors retired under ADR 0013 and are no longer canonical runtime gates.
   # A security suite that is red or never runs cannot support a merge
-  # decision, so these jobs are the load-bearing ones.
+  # decision, so the retained jobs below are the load-bearing current checks.
   # ==========================================================================
   gate-a-tests-linux:
     name: Gate A tests (Linux)
@@ -53,16 +54,6 @@ jobs:
 
       - name: Gate A authorization consumer
         run: python -m pytest tests/test_gate_a_authorization_consumer.py -q
-
-      - name: Stage 1 prep package
-        run: python -m pytest tests/test_stage1_auteur_prep_package.py -q
-
-      # Evidence 0016 run-control draft package. This proves, with fake
-      # providers only, that Gate A DENIES the committed package for a missing
-      # owner approval, and that the SHA-256 pins over the governing documents
-      # hold byte-for-byte on this platform.
-      - name: Evidence 0016 run-control draft package
-        run: python -m pytest tests/test_run_control_0016_draft_package.py -q
 
       - name: Gate A path canonicalization and trust boundary
         run: |
@@ -133,16 +124,6 @@ jobs:
 
       - name: Gate A authorization consumer
         run: python -m pytest tests/test_gate_a_authorization_consumer.py -q
-
-      - name: Stage 1 prep package
-        run: python -m pytest tests/test_stage1_auteur_prep_package.py -q
-
-      # Evidence 0016 run-control draft package. This proves, with fake
-      # providers only, that Gate A DENIES the committed package for a missing
-      # owner approval, and that the SHA-256 pins over the governing documents
-      # hold byte-for-byte on this platform.
-      - name: Evidence 0016 run-control draft package
-        run: python -m pytest tests/test_run_control_0016_draft_package.py -q
 
       - name: Gate A path canonicalization and trust boundary
         run: |
@@ -286,12 +267,11 @@ jobs:
   # Phase 3 exploratory-authorization suites (Issue #119, program Issue
   # #116). These exercise the four-lane authorization model (ORDINARY /
   # CANONICAL / EXPLORATORY / AMBIGUOUS): lane derivation from the actual
-  # invocation in scripts/gate_a_authorization.py, the exploratory
+  # invocation in scripts/gate_a_authorization.py and the exploratory
   # capability lifecycle in sensemaking_skills.exploratory_authorization
-  # (mint / consume / burn), plus canonical-path import-isolation and
-  # fail-closed behavior for unavailable exploratory components. The retired
-  # programmatic second-model executors are not part of this suite. No real
-  # model is ever invoked by these tests.
+  # (mint / consume / burn). Programmatic executor/import-isolation proofs were
+  # retired with the second-model executors under ADR 0013. No real model is
+  # ever invoked by these tests.
   # ==========================================================================
   phase3-exploratory-authorization:
     name: Phase 3 exploratory authorization
@@ -337,13 +317,6 @@ jobs:
 
       - name: Exploratory capability lifecycle suite
         run: python -m pytest tests/test_exploratory_capability_lifecycle.py -q
-
-      - name: Canonical-path import-isolation regression suite
-        # Subprocess tests proving ORDINARY/CANONICAL paths never import
-        # the exploratory component, and that a missing component fails
-        # closed with EXPLORATORY_AUTHORIZATION_COMPONENT_UNAVAILABLE and
-        # zero provider calls.
-        run: python -m pytest tests/test_exploratory_component_isolation.py -q
 
       - name: Assert no real experiment/approval state was created
         run: |
@@ -682,10 +655,7 @@ jobs:
   #
   # core-assertions: the smallest stable pytest gate. Deliberately NOT
   # "run every pytest file": it covers the Probe Engine, the canonical
-  # path/vocabulary drift detectors, and the CLI contract. It is EXPECTED
-  # to be red on current main (stale CLI version assertion; vocabulary
-  # coverage drift) until those are repaired in separate authorized
-  # decisions - a red-but-deterministic gate is enforcement, not flakiness.
+  # path/vocabulary drift detectors, and the CLI contract.
   # ==========================================================================
   probe-gate:
     name: Probe Engine enforcement gate
