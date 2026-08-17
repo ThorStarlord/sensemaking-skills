@@ -48,11 +48,12 @@ envelope in THIS conversation.
 
 **Approval and the execution window are separate gates.** The human's
 `approve` may be given any time after the final envelope is presented and
-before it expires (`approved_at` must be within the policy window); the
-receipt is recorded immediately. Execution is mechanically gated by the
-window: `prepare` refuses until `validity_window.not_before`, and the
-agent executes automatically inside the approved envelope once the
-window opens.
+before it expires. `approved_at` records the actual approval time: it may
+precede `validity_window.not_before`, must not be in the future, and must
+not exceed `validity_window.not_after`. The receipt is recorded
+immediately. Execution is mechanically gated by the window: `prepare`
+refuses until `validity_window.not_before`, and the agent executes
+automatically inside the approved envelope once the window opens.
 
 ## Hard rules
 
@@ -105,8 +106,9 @@ window opens.
    runtime validates every binding (campaign id, digest, limits, merge
    rule, external-provider prohibition, classification, window) before
    any step. `approved_at` is the actual approval timestamp (today, even
-   if the execution window has not opened yet); the receipt must never
-   carry a future timestamp.
+   if the execution window has not opened yet): it may be earlier than
+   `validity_window.not_before`, must never be in the future, and must
+   not exceed `validity_window.not_after`.
 
 4. **Validate the receipt immediately, window-independently:**
 
