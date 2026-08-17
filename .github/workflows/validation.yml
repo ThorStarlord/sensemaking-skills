@@ -37,7 +37,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-subtests pyyaml click
-          # The exact SDK version the Stage 1 execution package documents.
 
       - name: Probe POSIX symlink capability
         run: |
@@ -54,9 +53,6 @@ jobs:
 
       - name: Gate A authorization consumer
         run: python -m pytest tests/test_gate_a_authorization_consumer.py -q
-
-      - name: Gate A invocation boundary
-        run: python -m pytest tests/test_gate_a_invocation_boundary.py -q
 
       - name: Stage 1 prep package
         run: python -m pytest tests/test_stage1_auteur_prep_package.py -q
@@ -137,9 +133,6 @@ jobs:
 
       - name: Gate A authorization consumer
         run: python -m pytest tests/test_gate_a_authorization_consumer.py -q
-
-      - name: Gate A invocation boundary
-        run: python -m pytest tests/test_gate_a_invocation_boundary.py -q
 
       - name: Stage 1 prep package
         run: python -m pytest tests/test_stage1_auteur_prep_package.py -q
@@ -295,12 +288,10 @@ jobs:
   # CANONICAL / EXPLORATORY / AMBIGUOUS): lane derivation from the actual
   # invocation in scripts/gate_a_authorization.py, the exploratory
   # capability lifecycle in sensemaking_skills.exploratory_authorization
-  # (mint / consume / burn), and -- via the REAL executors in
-  # scripts/skill_executor.py with a spy provider -- that an EXPLORATORY
-  # invocation consumes its capability atomically exactly once at the
-  # narrowest point, that any of the 13 invocation-fact drift categories
-  # burns it, and that the provider is NEVER reached without a live
-  # capability. No real model is ever invoked by these suites.
+  # (mint / consume / burn), plus canonical-path import-isolation and
+  # fail-closed behavior for unavailable exploratory components. The retired
+  # programmatic second-model executors are not part of this suite. No real
+  # model is ever invoked by these tests.
   # ==========================================================================
   phase3-exploratory-authorization:
     name: Phase 3 exploratory authorization
@@ -337,8 +328,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e .
           python -m pip install pytest pytest-subtests
-          # The exact SDK version the Stage 1 execution package documents;
-          # skill_executor.py imports it at module load time.
 
       - name: Exploratory digests suite
         run: python -m pytest tests/test_exploratory_digests.py -q
@@ -348,9 +337,6 @@ jobs:
 
       - name: Exploratory capability lifecycle suite
         run: python -m pytest tests/test_exploratory_capability_lifecycle.py -q
-
-      - name: Real-executor provider-boundary suite
-        run: python -m pytest tests/test_exploratory_provider_boundary.py -q
 
       - name: Canonical-path import-isolation regression suite
         # Subprocess tests proving ORDINARY/CANONICAL paths never import
