@@ -112,6 +112,7 @@ routing_fields:
       - experimental-autonomous-sprint
       # Documentation & Maintenance
       - docs-contract-reconciliation
+      - artifact-reconciliation
       - docs-architecture
       - skill-maintenance-loop
       - product-to-issues
@@ -317,6 +318,21 @@ gates:
   - gate_id: review_reconciliation_patch
     name: "Review Reconciliation Patch"
     description: "User reviews docs/contract reconciliation patch"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_audit_diagnosis
+    name: "Review Audit Diagnosis"
+    description: "User reviews the evidence-grounded diagnosis before work-claim reconciliation"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_reconciliation
+    name: "Review Reconciliation"
+    description: "User reviews the reconciliation of work claims against durable repository evidence"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_reconciliation_verified
+    name: "Review Reconciliation Verification"
+    description: "User reviews finding-specific verification after docs/contract reconciliation"
     allowed_outcomes: [approved, denied, needs_revision]
 
   - gate_id: review_patterns
@@ -595,6 +611,24 @@ artifact_ids:
     consumed_by: [prompt-handoff]
     artifact_type: research
 
+  - id: work_claim
+    description: "Falsifiable statement of allegedly completed work promoted for evidence-grounded audit"
+    produced_by: task-requester
+    consumed_by: [output-reconciler]
+    artifact_type: handoff
+
+  - id: reconciliation_report
+    description: "Evidence-grounded classification of work claims as verified, disputed, or omitted"
+    produced_by: output-reconciler
+    consumed_by: [to-issues, handoff]
+    artifact_type: research
+
+  - id: repair_verification_report
+    description: "Finding-specific post-repair verification against a fresh repository probe"
+    produced_by: repair-verifier
+    consumed_by: [handoff]
+    artifact_type: research
+
   - id: synthesis_report
     description: "Synthesis of research interviews"
     produced_by: interview-synthesis
@@ -730,6 +764,12 @@ workflow_ids:
     steps: 3
     category: documentation
     typical_fog_types: [docs_fog]
+
+  - id: artifact-reconciliation
+    display_name: "Artifact Reconciliation (Handoff Audit)"
+    description: "Audit completed-work claims against durable repository artifacts"
+    steps: 4
+    category: maintenance
 
   - id: docs-architecture
     display_name: "Docs Architecture"
