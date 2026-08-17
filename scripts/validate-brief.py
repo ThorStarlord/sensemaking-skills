@@ -8,7 +8,13 @@ from typing import TypedDict, Any
 
 import yaml
 
-from _validator_utils import format_error, extract_sections, load_weakness_types, load_workflow_registry
+from _validator_utils import (
+    format_error,
+    extract_sections,
+    load_weakness_types,
+    load_workflow_registry,
+    load_canonical_vocabulary,
+)
 import weakness_type_safeguard
 
 # Stable error codes
@@ -180,6 +186,20 @@ HIGH_RISK_WEAKNESS_TYPES = {"Safety Gaps", "Ghost Features"}
 # grounding an evidence_excerpts quote. Narrow and deterministic by design --
 # no semantic/paraphrase matching, no whole-repo fallback search.
 QUOTE_GROUNDING_WINDOW = 3
+
+# Historical fallback used only if the canonical vocabulary cannot be loaded.
+# The normal path is registry-driven so primary_fog_type cannot silently drift
+# from docs/canonical-vocabulary.yaml again.
+_DEFAULT_FOG_TYPES = ["product_fog", "ui_fog", "docs_fog", "architecture_fog"]
+
+
+def _load_allowed_fog_types(repo_root: str) -> list[str]:
+    """Return canonical fog-type ids, with the historical list as fallback."""
+    vocab = load_canonical_vocabulary(repo_root)
+    if not vocab or "fog_types" not in vocab:
+        return list(_DEFAULT_FOG_TYPES)
+    ids = [entry["id"] for entry in vocab["fog_types"] if isinstance(entry, dict) and "id" in entry]
+    return ids or list(_DEFAULT_FOG_TYPES)
 
 
 class ValidationError(TypedDict, total=False):
@@ -497,13 +517,14 @@ def validate_brief(
     weakness_types = load_weakness_types(repo_root)
     large = _is_large_artifact(content)
     artifact_data = _parse_artifact_data(content)
-
     # --- PHASE 1 REQUIRED FIELD CHECKS ---
     # Check for required machine fields per artifact-contracts.yaml
     # Required: artifact_id, primary_fog_type, evidence, recommended_workflow_id, created_at, immutable
 
     if artifact_data:
-        # Check primary_fog_type
+        # Check primary_fog_type against the canonical registry rather than a
+        # second hard-coded enum maintained inside this validator.
+        allowed_fog_types = _load_allowed_fog_types(repo_root)
         if "primary_fog_type" not in artifact_data:
             errors.append({
                 "error_id": "repository_sensemaking_brief.primary_fog_type.missing_field",
@@ -511,18 +532,12 @@ def validate_brief(
                 "field": "primary_fog_type",
                 "current_value": None,
                 "message": "Required field 'primary_fog_type' is missing.",
-                "suggested_fixes": [
-                    "Add primary_fog_type: product_fog",
-                    "Add primary_fog_type: ui_fog",
-                    "Add primary_fog_type: docs_fog",
-                    "Add primary_fog_type: architecture_fog"
-                ],
+                "suggested_fixes": [f"Add primary_fog_type: {ft}" for ft in allowed_fog_types],
                 "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
             })
         else:
             # Validate the value is an allowed fog type
             fog_type = artifact_data.get("primary_fog_type")
-            allowed_fog_types = ["product_fog", "ui_fog", "docs_fog", "architecture_fog"]
             if fog_type not in allowed_fog_types:
                 errors.append({
                     "error_id": "repository_sensemaking_brief.primary_fog_type.unknown_value",
