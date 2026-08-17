@@ -440,7 +440,7 @@ Read these when the task needs deeper detail:
 - `../../docs/agent-native-operating-workflow.md` — canonical v0 operating map
 - `../../docs/decision-orchestration-boundary.md` — decision vs. execution/orchestration ownership
 - `../../docs/adr/0013-agent-native-orchestration-primary.md` — active-agent control ownership
-- `../../docs/adr/0014-repo-sensemaker-product-boundary.md` — current product boundary and deferred automatic routing
+- `../../docs/adr/0014-product-boundary.md` — current product boundary and deferred automatic routing
 - `../workflow-planner/references/artifact-contracts.yaml` — artifact/machine-field contracts
 - `../workflow-planner/references/workflow-registry.yaml` — registered bounded workflows/subgraphs
 - `../repo-sensemaker/references/evidence-rules.md` — evidence discipline
