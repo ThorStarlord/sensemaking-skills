@@ -1,639 +1,465 @@
 ---
 name: using-sensemaking
-description: Learn how to use sensemaking-skills to diagnose repositories and route to implementation workflows. Teaches fog classification, artifact reading, validator error interpretation, and autonomous decision-making.
-tags: [bootstrap, orchestration, diagnosis, routing]
+description: Use Sensemaking Skills to turn repository uncertainty into evidence-grounded, warranted next action. Teaches when repository sensemaking is warranted, responsibility-before-Skill selection, artifact/evidence reading, validation, reconciliation, repair verification, authority boundaries, and stop/escalation decisions.
+tags: [bootstrap, sensemaking, control, evidence, responsibility-selection]
 ---
 
-# Using Sensemaking Skills: Agent-Native Orchestration
+# Using Sensemaking Skills: Agent-Native Control Loop
 
-You are a coding agent working in any agent harness. This skill teaches you how to diagnose repositories and make autonomous orchestration decisions using the sensemaking-skills system.
+You are the **active coding/software-engineering agent**. You own the top-level control loop. Sensemaking Skills helps you decide what engineering responsibility is warranted next, perform bounded responsibilities, and keep claims/actions constrained by evidence and authority.
 
-## Table of Contents
+> **Top rule:** Resolve the nearest unresolved decision-changing uncertainty before committing to the eventual solution.
 
-1. [What This Skill Teaches](#what-this-skill-teaches)
-2. [Core Concept: Fog Classification](#core-concept-fog-classification)
-3. [The Three-Step Diagnosis Pattern](#the-three-step-diagnosis-pattern)
-4. [Fog Types: How to Recognize Them](#fog-types-how-to-recognize-them)
-5. [Reading Artifacts & Making Decisions](#reading-artifacts--making-decisions)
-6. [Handling Validation Errors](#handling-validation-errors)
-7. [Retry Logic & Escalation](#retry-logic--escalation)
-8. [References & Further Reading](#references--further-reading)
+Do not turn this bootstrap into a fixed choreography. Registered workflows and scripts can coordinate already-selected work, but they do not replace your responsibility-selection judgment.
 
----
+## What this Skill teaches
 
-## What This Skill Teaches
+Use this bootstrap to:
 
-When a user asks you to "diagnose my codebase," you need to:
+1. decide whether repository sensemaking would materially change how you should interpret or execute the request;
+2. identify the nearest unresolved uncertainty that could change the correct next action;
+3. obtain evidence from the right source;
+4. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
+5. perform bounded work through the appropriate capability;
+6. distinguish mechanical validation from analytical correctness and closure;
+7. reconcile consequential work claims with durable evidence;
+8. perform finding-specific repair verification when a prior finding was supposedly fixed;
+9. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
+10. decide whether to continue, stop, escalate, or ask the owner.
 
-1. **Understand what fog types are** → Four categories of project uncertainty
-2. **Know when to invoke skills** → repo-sensemaker, workflow-planner, etc.
-3. **Read artifact outputs** → Parse JSON fields, understand fog_type classification
-4. **Interpret validator errors** → Parse JSON error messages, understand what went wrong
-5. **Decide when to retry vs. escalate** → Know when to fix automatically vs. ask the user
-6. **Understand implementation routing** → Know which workflow is appropriate for each fog type
+This Skill does **not** make every task require `repo-sensemaker`, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
 
-**This skill does NOT:**
-- Run any code or create files
-- Make you an expert in software architecture (that's for domain skills)
-- Replace human judgment (you escalate when uncertain)
+## The recursive operating loop
 
-**This skill DOES:**
-- Teach you the decision framework
-- Explain how artifacts flow between skills
-- Show you how to parse validator errors
-- Define retry vs. escalation rules
+For consequential work, reason in this order:
 
----
-
-## Core Concept: Fog Classification
-
-Every codebase has problems. But problems come in **four flavors**, and each flavor needs a different workflow.
-
-### The Four Fog Types
-
-**Think of fog as "uncertainty about the code."** Your job is to name which type of fog is PRIMARY.
-
-| Fog Type | What's unclear? | Example signals | Workflow |
-|----------|-----------------|-----------------|----------|
-| **product_fog** | User needs, feature scope, workflows | Vague user stories, missing PRD, unclear requirements | product-implementation-workflow (Phase 2) |
-| **ui_fog** | Design system, navigation, interaction | Scattered components, routing complexity, design inconsistencies | ui-implementation-workflow (Phase 2) |
-| **docs_fog** | Specifications, knowledge, architecture | Missing README, undocumented APIs, unclear design decisions | docs-implementation-workflow (Phase 2) |
-| **architecture_fog** | Code structure, boundaries, coupling | Layer violations, tight coupling, implicit contracts | architecture-implementation-workflow (Phase 2) |
-
-### Key Insight: PRIMARY vs. Secondary
-
-**A codebase almost always has multiple fog types.** Your job is to find the PRIMARY one—the fog that, if cleared, would make the most difference.
-
-**Decision rule:**
-1. Look at evidence (what signals are strongest)
-2. Ask: "Which problem blocks the other problems?"
-3. That's the PRIMARY fog type
-
-**Example:**
+```text
+GOAL / AUTHORIZED SCOPE
+  -> What unresolved uncertainty could change the correct next action?
+  -> What responsibility is warranted now to resolve it?
+  -> Perform bounded work through a Skill/tool/workflow if useful
+  -> What evidence do we now have?
+  -> What does that evidence warrant next?
+  -> Are we authorized to continue, act, publish, merge, or should we stop?
 ```
-Signals:
-- Missing UI design system (ui_fog signal) ← weak
-- Tight coupling in data layer (architecture_fog signal) ← strong
-- No user research (product_fog signal) ← weak
 
-Analysis:
-The tight coupling blocks everything—you can't scale the product until you refactor.
-PRIMARY fog: architecture_fog
+A useful compact form is:
+
+```text
+Orient
+-> locate decision-changing uncertainty
+-> select responsibility
+-> perform bounded work
+-> ground evidence
+-> validate mechanics
+-> update warrant
+-> continue / stop / escalate / verify / ask owner
 ```
+
+New evidence may change the expected solution. That is a feature, not a failure.
 
 ---
 
-## Phase 1 Scope: Diagnostic Only
+## 1. Establish goal and authority
 
-Phase 1 implements **diagnostic workflows only**. You can:
-- ✅ Diagnose fog type (repo-sensemaker)
-- ✅ Understand routing (workflow-planner)
-- ✅ Prepare for implementation (handoff)
+Before selecting work, identify:
 
-You CANNOT yet:
-- ❌ Implement product workflows (Phase 2)
-- ❌ Implement UI workflows (Phase 2)
-- ❌ Implement docs workflows (Phase 2)
-- ❌ Implement architecture workflows (Phase 2)
+- the user's actual goal;
+- the authorized scope;
+- what external mutations, publication, merge, deployment, or tracker writes require explicit approval;
+- whether the task is already mechanically narrow enough to perform directly.
 
-**If you see product-implementation-workflow or similar in Phase 2 planning, those are future workflows not yet implemented in Phase 1.**
+Do not silently convert a diagnosis or recommendation into authorization.
+
+Key non-identities:
+
+```text
+finding        != authorization to fix
+recommendation != owner decision
+implemented    != verified
+validated      != closed
+promoted       != merged
+merged         != original-finding closure
+```
 
 ---
 
-## The Three-Step Diagnosis Pattern
+## 2. Decide whether repository sensemaking is warranted
 
-When you receive a user request like **"Diagnose my codebase"** or **"What should I work on?"**, follow this pattern:
+Ask:
 
-### Step 1: Invoke repo-sensemaker
+> **Would repository sensemaking materially change how I should interpret or execute this request?**
 
-**Your action:**
-```
-I'll analyze your repository to identify the primary problem.
-[invoke repo-sensemaker skill or follow it as a local procedure]
-```
+Use `repo-sensemaker` when, for example:
 
-**How to invoke repo-sensemaker:**
+- repository reality may contradict the apparent task;
+- ownership/provenance of a responsibility is unclear;
+- the consequential boundary is unknown;
+- docs, architecture, tests, and implementation may disagree;
+- the request crosses unfamiliar subsystem boundaries;
+- deciding the correct responsibility requires a repository-wide evidence picture.
 
-- **If it's available as an installed Skill tool**: Use the Skill tool to invoke it directly.
-- **If it's not available**: Read `skills/repo-sensemaker/SKILL.md` and follow it as a local procedure. This means *you* (the agent) perform the analysis according to the skill's documented pattern.
+Skip it when the task is already locally evidenced and mechanically narrow, such as a known schema rename with known affected tests and no material ownership uncertainty.
 
-**What happens** (either way):
-- You read your codebase according to the repo-sensemaker pattern (analyze signals, find weakest boundary, classify fog type)
-- You produce artifact: `repository_sensemaking_brief`
-- Brief includes: `primary_fog_type` (product_fog | ui_fog | docs_fog | architecture_fog)
-- Brief includes: `evidence` (file-level proof supporting the classification)
-- Brief includes: `recommended_workflow_id` (which workflow to invoke next)
-
-**What you read from the artifact:**
-```json
-{
-  "primary_fog_type": "product_fog",
-  "evidence": [
-    "Line 15-22 in README.md: feature requirements are vague",
-    "No ARCHITECTURE.md explaining design decisions",
-    "User stories in /issues lack acceptance criteria"
-  ],
-  "recommended_workflow_id": "product-implementation-workflow"
-}
-```
-
-**CRITICAL: Your artifact MUST include a machine-readable YAML block**
-
-Before you call the validator, ensure your `repository_sensemaking_brief.md` contains this YAML structure at the end (section "Machine-readable handoff"):
-
-```yaml
-artifact_id: repository_sensemaking_brief
-schema_version: 1
-primary_fog_type: product_fog | ui_fog | docs_fog | architecture_fog
-evidence:
-  - "path/to/file.md (lines X-Y): concrete evidence supporting fog classification"
-  - "path/to/file.md: evidence line 2"
-  - "path/to/file.md: evidence line 3"
-recommended_workflow_id: fast-path-workflow
-created_at: "2026-05-25T00:00:00Z"
-immutable: true
-```
-
-**Required fields** (all must be present):
-- `artifact_id`: Always `repository_sensemaking_brief`
-- `primary_fog_type`: One of: `product_fog`, `ui_fog`, `docs_fog`, `architecture_fog`
-- `evidence`: Non-empty list of file-level citations (each must reference a real file path)
-- `recommended_workflow_id`: Must match a workflow ID in `skills/workflow-planner/references/workflow-registry.yaml`
-- `created_at`: ISO 8601 timestamp
-- `immutable`: Boolean (true for immutable artifacts)
-
-**If you skip this YAML block or miss any required field, validation will fail.** This is intentional—the machine-readable structure is part of the contract.
-
-### Step 2: Validate & Interpret
-
-**Your action:**
-repo-sensemaker calls validators automatically. You read the results.
-
-**What happens:**
-- Validator checks: Does the artifact have all required fields?
-- Validator outputs: JSON with `valid: true/false` + error details
-- If invalid: Error message tells you what's wrong
-
-**If valid**, proceed to Step 3.
-
-**If invalid**, see section [Handling Validation Errors](#handling-validation-errors).
-
-### Step 3: Complete Phase 1 Diagnosis
-
-**Your action:**
-```
-I detected primary_fog_type: "product_fog"
-This indicates unclear user needs and feature scope.
-
-Phase 1 diagnosis complete.
-Recommended implementation workflow: product-implementation-workflow
-(Available in Phase 2)
-```
-
-**What happens:**
-- Phase 1 diagnostic workflow is complete
-- You have identified the primary fog type
-- You have prepared the system for implementation
-- Implementation workflows (product-implementation-workflow, etc.) are Phase 2 work
-- Use the diagnosis as input to Phase 2 implementation planning
+Sensemaking is not ceremony. Use it where it can change the decision.
 
 ---
 
-## Fog Types: How to Recognize Them
+## 3. Identify the nearest decision-changing uncertainty
 
-This section teaches you **concrete signals** to recognize each fog type. Use these to verify repo-sensemaker's classification (or to reason about it if validation fails).
+Do not ask "what is the final solution?" first.
 
-### product_fog: "What are we building and for whom?"
+Ask:
 
-**Problem**: User needs are unclear, feature requirements are vague, workflows are undocumented.
+> **What remaining fact could make the apparent next action wrong?**
 
-**Signals** (what to look for in the codebase):
+Prefer the **nearest** uncertainty: the one you can resolve now that could change the next responsibility.
 
-**Strong signals** (high confidence this is product fog):
-- No PRD or user specification
-- Issue descriptions are vague ("Add feature X") without context
-- No acceptance criteria on issues
-- Missing user research / personas
-- Feature flags everywhere (unclear which features are core)
-- No runnable examples of user workflows
+Examples:
 
-**Weak signals** (could be secondary fog):
-- Code is messy (that's usually architecture_fog, not product_fog)
-- Components aren't documented (that's docs_fog)
+- Apparent task: "fix this validator."  
+  Decision-changing uncertainty: **is this validator still a live responsibility, or was it retired/replaced?**
 
-**Examples from real codebases**:
-```
-"New feature request: Add calendar view. Should show events."
-^ No: Which events? For which users? What should they see on click?
-^ This is product_fog.
+- Apparent task: "implement the recommended workflow."  
+  Decision-changing uncertainty: **does repository evidence actually support that responsibility, or is the recommendation stale/compatibility-only?**
 
-"The API response format changes depending on the client."
-^ This is architecture_fog (unclear contract), not product_fog.
-```
+- Apparent task: "ask the owner what to do."  
+  Decision-changing uncertainty: **can repository evidence answer the question first?**
 
-**How to verify**: Ask the user "Can you describe a typical user workflow?" If they can't, it's likely product_fog.
+Stop investigating once the next warranted action is stable. Do not exhaust every uncertainty in the repository.
 
 ---
 
-### ui_fog: "How should users navigate and interact?"
+## 4. Resolve uncertainty from the right source
 
-**Problem**: Design system is inconsistent, navigation is confusing, interaction patterns are unclear.
+Use the uncertainty source to choose the information-producing responsibility:
 
-**Signals** (what to look for):
+| Uncertainty source | Default response |
+| --- | --- |
+| `repository_evidence` | inspect repository/artifacts/history/contracts |
+| `empirical` | run a bounded probe/experiment if authorized |
+| `owner_intent` | ask the owner one neutral, high-information question |
+| `external_environment` | inspect the external environment if authorized |
 
-**Strong signals**:
-- No design system documentation
-- Components are scattered across multiple files
-- Routing logic is complex / unclear
-- CSS/styling is not centralized
-- Multiple design patterns for same interaction (e.g., 3 ways to show modal)
-- No accessibility guidelines
+Do not ask the owner questions the repository can answer. Do not infer owner preference from code. Do not infer external reality from repository text alone.
 
-**Weak signals**:
-- Backend has bugs (architecture_fog, not ui_fog)
-- Feature requirements unclear (product_fog)
-
-**Examples**:
-```
-`/src/components/Modal.tsx`
-`/src/modal/Dialog.tsx`
-`/src/popups/Popup.tsx`
-^ Three different components doing similar things = ui_fog
-^ Design system is unclear
-
-`const handleNavigation = (path) => { ... 47 lines of logic ... }`
-^ Navigation pattern is complex/unclear = ui_fog
-^ Should be documented or simplified
-```
-
-**How to verify**: Open the repo and ask "Where is the design system?" If the answer is "scattered across components," it's ui_fog.
+`repo-sensemaker` may encode this distinction in the Brief/extended analysis. Treat it as operational evidence, not as a routing command.
 
 ---
 
-### docs_fog: "How does this system work and what are the constraints?"
+## 5. Select responsibility before Skill
 
-**Problem**: Architecture isn't documented, specifications are missing, knowledge is in people's heads.
+A **responsibility** is the class of engineering work the current evidence/uncertainty state demands. A **Skill** is one bounded way to perform that responsibility.
 
-**Signals**:
+Choose the responsibility first.
 
-**Strong signals**:
-- No ARCHITECTURE.md or design document
-- No ADRs (Architecture Decision Records) explaining why things were built this way
-- README is outdated or minimal
-- No API documentation
-- No runbook for deployment/operations
-- Design decisions are explained only in code comments
+Examples:
 
-**Weak signals**:
-- Code itself is messy (architecture_fog, not docs_fog)
-- Users don't understand the product (product_fog)
+| Situation | Warranted responsibility | Possible capability |
+| --- | --- | --- |
+| repository boundary/ownership unclear | repository sensemaking | `repo-sensemaker` |
+| problem definition unclear | problem framing | `problem-framer` |
+| unknowns block a decision | unknown mapping / research | `unknowns-mapper` or bounded investigation |
+| architecture response needs evaluation | architectural review | `architectural-review` |
+| docs and implementation disagree | docs/contract reconciliation | `sensemaking-docs-reconciler` |
+| completed-work claim needs auditing | claim reconciliation | `output-reconciler` |
+| prior finding was supposedly repaired | finding-specific repair verification | `repair-verifier` |
+| next steps need a durable handoff | handoff creation | `handoff` |
+| task is already narrow and evidenced | ordinary implementation | normal coding tools |
 
-**Examples**:
-```
-CONTEXT.md: "Empty file"
-ADR folder: "Does not exist"
-README.md: "See package.json"
-^ Minimal documentation = docs_fog
-^ What's the system architecture? No one knows.
+### Responsibility selection rule
 
-Code comment: "This ugly hack prevents race condition in concurrent requests"
-^ Knowledge is in comments, not documented = docs_fog
-^ Should be in ARCHITECTURE.md with rationale
-```
+A responsibility is warranted when it is:
 
-**How to verify**: Ask "Where is your architecture documented?" If the answer is "in the code" or "in people's heads," it's docs_fog.
+1. justified by current evidence;
+2. appropriate to the nearest unresolved uncertainty;
+3. authorized within the current scope.
+
+Do not choose a Skill merely because it exists in the registry.
 
 ---
 
-### architecture_fog: "What is the structure, and are boundaries clear?"
+## 6. Repository Sensemaking Brief: how to read it
 
-**Problem**: Code structure is messy, layers aren't clear, tight coupling, implicit contracts.
+`repo-sensemaker` produces a `repository_sensemaking_brief` grounded in repository evidence and the Probe Engine.
 
-**Signals**:
+Read the Brief for:
 
-**Strong signals**:
-- Layer violations (UI code imports from data layer; vice versa)
-- Circular dependencies
-- Tight coupling (hard to change one thing without breaking another)
-- No clear separation between core logic and infrastructure
-- Tests are hard to write (suggests unclear boundaries)
-- Large refactors are risky (implies implicit contracts)
+- the consequential/weakest boundary;
+- direct file-level evidence;
+- interpretations vs. hypotheses;
+- unresolved uncertainty;
+- fog classification, when useful;
+- recommendations/planning metadata;
+- any machine-readable handoff fields required by the current artifact contract.
 
-**Weak signals**:
-- Code is long (maybe needs docs_fog work, maybe not architecture)
-- Components are unstyled (ui_fog, not architecture)
+The contract source of truth is:
 
-**Examples**:
-```
-src/ui/Table.tsx imports src/api/fetchUserData()
-^ UI directly imports API = layer violation = architecture_fog
+`../workflow-planner/references/artifact-contracts.yaml`
 
-service/User.ts imports service/Order.ts imports service/User.ts
-^ Circular dependency = architecture_fog
-^ Unclear boundaries
+Do not copy a machine-readable schema from this bootstrap when the contract file can be read directly; contracts evolve independently of explanatory prose.
 
-A one-line change to database schema breaks 5 different tests
-^ Tight coupling = architecture_fog
-^ Refactor needed
-```
+### Fog classification is diagnostic metadata
 
-**How to verify**: Try to explain the code structure to someone. If you have to say "well, technically this could be cleaner," it's architecture_fog.
+The canonical enum source is `../../docs/canonical-vocabulary.yaml`.
 
----
+The four canonical fog types remain useful descriptors:
 
-## Reading Artifacts & Making Decisions
+| Fog type | Primary uncertainty |
+| --- | --- |
+| `product_fog` | user needs, product scope, feature workflow |
+| `ui_fog` | interaction, navigation, design-system behavior |
+| `docs_fog` | documentation, specification, knowledge contracts |
+| `architecture_fog` | code structure, boundaries, coupling, implicit contracts |
 
-When skills produce artifacts, you need to know **what fields matter and what they mean**.
+A repository can contain multiple fog types. Classify the primary one when the artifact contract or analysis calls for it.
 
-### Artifact: repository_sensemaking_brief
+**Do not translate fog type directly into automatic implementation authority.** A `recommended_workflow_id` or `chosen_workflow_id` is a recommendation/planning field. It does not mean "execute this workflow now" unless the current responsibility and authority independently warrant doing so.
 
-**What it is**: Diagnostic output from repo-sensemaker skill.
-
-**Key fields you read**:
-
-```json
-{
-  "artifact_id": "repository_sensemaking_brief",
-  "primary_fog_type": "product_fog",
-  "evidence": [
-    "README.md (lines 5-12): Feature list vague, no user context",
-    "docs/ARCHITECTURE.md: Does not exist",
-    "Issues: 30+ marked 'needs-clarification', no acceptance criteria"
-  ],
-  "recommended_workflow_id": "product-implementation-workflow",
-  "created_at": "2026-05-24T15:30:00Z"
-}
-```
-
-**How you use it**:
-1. Read `primary_fog_type` — this tells you which workflow to invoke
-2. Read `evidence` — this tells you WHY that fog type was chosen
-3. Read `recommended_workflow_id` — this tells you the next skill to invoke
-4. **Artifact validation is separate** — validators output JSON with results (see [Handling Validation Errors](#handling-validation-errors))
-   - You do NOT read validation_status from the artifact
-   - You read validation results from validator output or run log
-
-### Artifact: workflow_orchestration_plan
-
-**What it is**: Procedural output from workflow-planner skill. Tells you what to do next.
-
-**Key fields you read**:
-
-```json
-{
-  "artifact_id": "workflow_orchestration_plan",
-  "primary_fog_type": "product_fog",
-  "chosen_workflow_id": "product-implementation-workflow",
-  "routing_decision_method": "diagnosis_primary_soft_context",
-  "workflow_steps": [
-    {
-      "step_id": 1,
-      "skill": "discovery",
-      "input_artifact": "user_intent",
-      "output_artifact": "discovery_findings",
-      "gate": "review_discovery",
-      "description": "User research: who are the users, what are their needs?"
-    },
-    {
-      "step_id": 2,
-      "skill": "opportunity-tree",
-      "input_artifact": "discovery_findings",
-      "output_artifact": "opportunity_tree",
-      "gate": "review_opportunities",
-      "description": "Map user needs to product opportunities"
-    }
-  ],
-  "created_at": "2026-05-24T15:30:00Z"
-}
-```
-
-**How you use it**:
-1. Read `chosen_workflow_id` — confirms which workflow to execute
-2. Read `workflow_steps` — tells you which skill to invoke next and what it expects
-3. Invoke first skill from workflow_steps[0] (e.g., `discovery`), which expects `user_intent` and produces `discovery_findings`
-4. Repeat for each step
-5. **Validation results are separate** — check validator output or run log, not the artifact
+Automatic fog-type routing is not ratified product behavior; see ADR 0014 and the decision/orchestration boundary document.
 
 ---
 
-## Handling Validation Errors
+## 7. Use registered workflows as bounded subgraphs
 
-Sometimes artifacts fail validation. When that happens, the validator outputs a JSON error message with details. **Validation results are NOT stored in the artifact.** They are output by the validator and recorded in the run log.
+A registered workflow can be useful when the selected responsibility has stable, mechanically expressible steps.
 
-### Understanding Validation Errors
+Examples include reconciliation or other bounded subflows already represented in the registry.
 
-When a validator detects an error, it outputs JSON to stdout:
+The top-level Sensemaking loop is **not** one registered workflow. The active agent retains responsibility for transitions that require judgment, including:
 
-```json
-{
-  "valid": false,
-  "error_type": "semantic_conflict",
-  "field": "primary_fog_type",
-  "current_value": "ui_fog",
-  "message": "Primary fog type 'ui_fog' contradicts evidence section. Evidence cites only architectural patterns (coupling, layer violations), not UI signals (design inconsistency, navigation complexity).",
-  "suggested_fixes": [
-    "Change primary_fog_type to 'architecture_fog'",
-    "Add UI-specific evidence (e.g., design system inconsistencies, navigation patterns)"
-  ],
-  "reference": "docs/adr/0007-soft-context-routing.md",
-  "validation_timestamp": "2026-05-24T15:30:00Z"
-}
-```
+- whether sensemaking is warranted;
+- which uncertainty is decision-changing;
+- what responsibility is warranted next;
+- whether more evidence is needed;
+- whether the task should stop or escalate;
+- whether authority permits action or publication.
 
-You read this JSON output to understand what went wrong.
+Execution/orchestration may decide which **already-defined execution step** runs next. Sensemaking decides what responsibility should become the next node at all.
 
-### Five Error Types (and how to handle them)
-
-#### **Missing or Invalid Fields** (Agent can auto-fix)
-
-Formal error types: `missing_field`, `unknown_value`, `type_error`
-
-**Example (missing_field)**:
-```json
-{
-  "error_type": "missing_field",
-  "field": "primary_fog_type",
-  "message": "Field 'primary_fog_type' is required but missing",
-  "suggested_fixes": ["Add primary_fog_type: choose from [product_fog, ui_fog, docs_fog, architecture_fog]"],
-  "reference": "docs/adr/0005-..."
-}
-```
-
-**Your action**: Add the missing field. Check `suggested_fixes` for allowed values.
-
-**Example (unknown_value)**:
-```json
-{
-  "error_type": "unknown_value",
-  "field": "primary_fog_type",
-  "current_value": "ui",
-  "message": "Field 'primary_fog_type' has value 'ui', which is not recognized. Did you mean 'ui_fog'?",
-  "suggested_fixes": ["Change to: primary_fog_type: ui_fog"],
-  "reference": "docs/canonical-vocabulary.yaml"
-}
-```
-
-**Your action**: Fix the value. Check `suggested_fixes` for correct format.
-
-#### **Semantic Conflicts** (Agent can auto-fix with reasoning)
-
-Formal error type: `semantic_conflict`
-
-**Example**:
-```json
-{
-  "error_type": "semantic_conflict",
-  "field": "primary_fog_type",
-  "current_value": "ui_fog",
-  "message": "Primary fog type 'ui_fog' contradicts evidence (no UI signals cited)",
-  "suggested_fixes": ["Change to: architecture_fog", "Add UI-specific evidence"],
-  "reference": "docs/adr/0007-soft-context-routing.md"
-}
-```
-
-**Your action**: Read the evidence section. Reason about whether fog_type is correct. If confident in your fix, change it and retry. If uncertain, escalate.
-
-#### **Logic Errors** (Needs escalation)
-
-Formal error type: `logic_error`
-
-**Example**:
-```json
-{
-  "error_type": "logic_error",
-  "message": "Evidence section is empty. Cannot verify fog type classification.",
-  "suggested_fixes": ["Read the actual codebase and add specific evidence lines"],
-  "reference": "docs/adr/0003-artifact-composition-pattern.md"
-}
-```
-
-**Your action**: This requires context or re-analysis. Escalate to the user with the error details.
+Legacy/runtime routing mechanics can remain compatibility features. Their existence is not product-level authority to bypass agent judgment.
 
 ---
 
-## Retry Logic & Escalation
+## 8. Perform bounded work and produce durable evidence
 
-### Rule: Bounded Retry with Graceful Escalation
+When you select a Skill:
 
-When validation fails, follow this bounded repair strategy:
+1. read its `SKILL.md`;
+2. gather its declared inputs from repository state/durable artifacts;
+3. perform only the selected responsibility;
+4. write the contracted artifact/evidence;
+5. do not let transient conversation memory substitute for required inputs.
 
-```
-Attempt 1: Invoke skill -> Get artifact -> Validate
-  ├─ If valid: Continue to next step
-  ├─ If missing_field or unknown_value: Fix automatically, goto Attempt 2
-  ├─ If semantic_conflict: Reason carefully, fix if confident, goto Attempt 2
-  └─ If logic_error OR requires_human_judgment: ESCALATE
+Use this boundary rule:
 
-Attempt 2: Invoke skill again with fixes -> Validate
-  ├─ If valid: Continue to next step
-  ├─ If same error: ESCALATE (don't retry same fix)
-  ├─ If different error: Try different approach, goto Attempt 3
-  └─ If logic_error: ESCALATE
+> **Skill = one bounded responsibility/artifact, not the whole engineering lifecycle.**
 
-Attempt 3: Last repair attempt with different strategy
-  ├─ If valid: Continue to next step
-  └─ If still invalid OR same error: ESCALATE TO USER
-```
-
-### Escalation: When & How
-
-**You escalate when any of these are true:**
-1. **Evidence is insufficient** — Evidence section is empty or doesn't support the fog type
-2. **Same error repeats** — You tried a fix on Attempt 2, same error came back
-3. **requires_human_judgment is true** — Error message indicates this needs human context
-4. **Retry budget exhausted** — You've tried 3 times; it's not working
-
-### Escalation Template
-
-When you escalate, show the user structured information:
-
-```
-I've attempted to fix the artifact 3 times, but it's still not validating.
-Here's what's happening:
-
-Artifact: repository_sensemaking_brief
-Error type: semantic_conflict
-Field: primary_fog_type
-
-Current value: ui_fog
-Problem: Evidence cites only architectural patterns (coupling), not UI patterns.
-Expected: fog_type should match evidence
-
-Suggested fixes from validator:
-  - Change to architecture_fog (if the evidence is actually architectural)
-  - Add UI-specific evidence (if you believe ui_fog is correct)
-
-Reference: docs/adr/0007-soft-context-routing.md
-
-What would you like me to do?
-  1. Change to architecture_fog
-  2. Re-analyze the codebase for UI signals
-  3. Something else
-```
-
-### When to Auto-Fix vs. Escalate
-
-| Error Type | Scenario | Auto-Fix? |
-|-----------|----------|-----------|
-| missing_field | Field is missing | **Yes** |
-| unknown_value | Enum value is wrong | **Yes** |
-| type_error | Wrong data type | **Yes** |
-| semantic_conflict | Field contradicts evidence (reasoning possible) | **Maybe** |
-| logic_error | Evidence is empty or insufficient | **No** -> Escalate |
-| logic_error | Re-analysis required | **No** -> Escalate |
-| Any type | Same error repeats on Attempt 2 | **No** -> Escalate |
-| Any type | 3 attempts failed | **No** -> Escalate |
+A Skill should not silently expand from diagnosis into repair, from repair into merge, or from recommendation into external publication.
 
 ---
 
-## References & Further Reading
+## 9. Validate mechanically
 
-Use these documents to deepen your understanding of specific topics.
+Validate consequential artifacts as soon as they are produced using the repository's current validator entrypoints/contracts.
 
-### Understanding Fog Classification
-- **[CONTEXT.md](CONTEXT.md)** — Domain language, fog types, orchestration principles
-- **[docs/adr/0007-soft-context-routing.md](docs/adr/0007-soft-context-routing.md)** — Why fog type is sometimes ambiguous, how to break ties
+Mechanical validation can prove things such as:
 
-### Understanding Artifact Contracts
-- **[skills/workflow-planner/references/artifact-contracts.yaml](skills/workflow-planner/references/artifact-contracts.yaml)** — The canonical list of all artifacts, required fields, field types
-- Each skill's SKILL.md file — Documents what outputs that skill produces
+- required fields exist;
+- enum values are canonical;
+- references/paths resolve;
+- artifact structure satisfies its contract;
+- a deterministic command/test passed.
 
-### Understanding Orchestration
-- **[docs/adr/0005-skill-invocation-via-workflows.md](docs/adr/0005-skill-invocation-via-workflows.md)** — Three-stage automation, auto-invocation
-- **[docs/adr/0013-agent-native-orchestration-primary.md](docs/adr/0013-agent-native-orchestration-primary.md)** — Why agents orchestrate, not CLI scripts
+Mechanical validation cannot prove:
 
-### Understanding Signals
-- **[skills/repo-sensemaker/references/ui-fog-signals.md](skills/repo-sensemaker/references/ui-fog-signals.md)** — Detailed signals for recognizing ui_fog (design systems, routing, etc.)
-- [CONTEXT.md - Domain Language](CONTEXT.md#domain-language) — Definitions of all terms
+- the evidence is sufficient;
+- the analysis is correct;
+- the user should accept the recommendation;
+- the original finding is repaired;
+- the task is closed.
 
-### Understanding Validation
-- When you see a JSON validation error, the `reference` field points to the ADR that explains why that rule exists
+Remember:
+
+```text
+schema validity
+!= evidence sufficiency
+!= correctness
+!= usefulness
+!= authorization
+!= closure
+```
+
+### Handling validation failures
+
+Treat validator failures according to what they actually establish.
+
+- **Mechanical/contract defect** (`missing_field`, invalid enum, wrong type, broken reference): repair the artifact mechanically if the correct value is evidenced.
+- **Semantic conflict**: re-read the evidence; change the claim only if the evidence warrants the change.
+- **Insufficient evidence / logic problem**: gather more evidence or select a new responsibility; do not fabricate a mechanically valid answer.
+- **Same failure after a bounded retry**: reconsider the diagnosis/responsibility rather than repeating the same repair.
+- **Authority/owner decision required**: stop and surface the decision; do not "retry" an authority boundary.
+
+A retry budget is an execution-control aid, not a substitute for reasoning. The important question after a failed attempt is: **what new evidence changed, and is the same responsibility still warranted?**
 
 ---
 
-## Summary: Your Job as an Agent
+## 10. Reconcile material work claims
 
-1. **Understand the four fog types** — product, ui, docs, architecture
-2. **Know which skill to invoke** — repo-sensemaker for diagnosis, then route to implementation
-3. **Read artifacts** — Know which fields to read and what they mean
-4. **Parse validator errors** — Understand JSON error messages
-5. **Retry with backoff** — Try to fix automatically up to 3 times
-6. **Escalate gracefully** — Show the user structured error details, offer choices
-7. **Never assume** — If unsure, ask the user; don't guess
+Trigger reconciliation for material/consequential claims such as:
 
-**Most importantly**: You are **guided by artifacts**, not memory. Everything that matters is in the artifacts. Read them carefully.
+- "implemented X";
+- "fixed Y";
+- "all relevant checks pass";
+- "the handoff is complete";
+- "ready to merge/publish".
+
+`output-reconciler` compares a `work_claim` with durable repository evidence and produces a `reconciliation_report`.
+
+Typical claim states include:
+
+- `verified`;
+- `disputed`;
+- `omitted`.
+
+Reconciliation asks:
+
+> **Does the repository support what we are claiming about the work?**
+
+It does not by itself answer whether the original diagnosed finding is now closed.
 
 ---
 
-## Next Steps
+## 11. Verify repairs against the original finding
 
-When a user asks you to diagnose their codebase:
+When work claims to repair a prior finding, use finding-specific verification.
 
-1. Say: "I'll analyze your repository to identify the primary problem."
-2. Invoke repo-sensemaker skill
-3. Read the artifact: primary_fog_type, evidence, recommended_workflow
-4. Validate the artifact (see [Handling Validation Errors](#handling-validation-errors))
-5. Report findings to the user
-6. Follow the workflow plan for next steps
+`repair-verifier` asks:
 
-**You now know how to use sensemaking-skills. Good luck!**
+> **Did this change actually close the original diagnosis under fresh observation?**
+
+Generic green CI is necessary evidence when relevant, but it is not automatically repair verification.
+
+A useful lifecycle is:
+
+```text
+observed
+-> understood
+-> responsibility selected
+-> implemented
+-> mechanically validated
+-> claims reconciled
+-> repair verified
+-> authorized
+-> integrated
+-> canonical state verified
+-> closed
+```
+
+Not every task uses every state, but do not collapse them when they matter.
+
+---
+
+## 12. Authority: KNOW vs. DECIDE vs. ACT vs. PUBLISH
+
+Keep these questions separate:
+
+### Can KNOW?
+
+Repository facts can be inspected. Empirical facts may require a bounded probe. External reality requires external evidence.
+
+### Can DECIDE?
+
+Reversible details may be agent-decidable inside scope. Owner preference, policy, canonical architecture decisions, and certain risk decisions belong to the owner/ADR process.
+
+### Can ACT?
+
+Local reversible work may be permitted by the task scope. External mutations (issue writes, destructive operations, deployments, etc.) need explicit authority where required.
+
+### Can PUBLISH / MERGE?
+
+Do not infer publication/merge authority from implementation success or green CI. If merge/publish is an owner boundary, surface it explicitly.
+
+A correct conclusion can be:
+
+> **The remaining uncertainty is no longer technical. It is an owner/publication decision.**
+
+---
+
+## 13. Continue, stop, or escalate
+
+Continue while:
+
+- the user's goal is unsatisfied;
+- another responsibility is knowable and warranted;
+- you have authority to perform it;
+- repository safety permits continuation.
+
+Stop when:
+
+- the goal is genuinely satisfied;
+- evidence says further work is unwarranted;
+- the next action is stable and remaining uncertainty cannot change it;
+- a real authority boundary is reached;
+- authorized scope is exhausted;
+- repository safety requires stopping.
+
+Not every successful Sensemaking cycle ends in code. Valid outcomes include:
+
+- discovery;
+- recommendation;
+- retirement of obsolete work;
+- reconciliation;
+- escalation;
+- owner handoff;
+- explicit decision not to change anything.
+
+---
+
+## 14. Durable continuation
+
+Prefer:
+
+```text
+next agent/run -> reads durable artifacts -> reconstructs state
+```
+
+not:
+
+```text
+next agent/run -> depends on what the previous conversation happened to remember
+```
+
+When continuation is awkward, preserve the actual handoff and candidate evidence first. Do not invent new cross-run machinery until repeated real use demonstrates a stable failure boundary.
+
+---
+
+## References
+
+Read these when the task needs deeper detail:
+
+- `../../CONTEXT.md` — current product/system context and terminology
+- `../../docs/agent-native-operating-workflow.md` — canonical v0 operating map
+- `../../docs/decision-orchestration-boundary.md` — decision vs. execution/orchestration ownership
+- `../../docs/adr/0013-agent-native-orchestration-primary.md` — active-agent control ownership
+- `../../docs/adr/0014-product-boundary.md` — current product boundary and deferred automatic routing
+- `../workflow-planner/references/artifact-contracts.yaml` — artifact/machine-field contracts
+- `../workflow-planner/references/workflow-registry.yaml` — registered bounded workflows/subgraphs
+- `../repo-sensemaker/references/evidence-rules.md` — evidence discipline
+- `../repo-sensemaker/references/ui-fog-signals.md` — detailed UI-fog signals when UI classification matters
+- `../../docs/research/control-model-research-agenda.md` — research hypotheses that must not be treated as ratified product architecture
+
+## Summary: your job as the active agent
+
+1. Establish the goal and authority boundary.
+2. Ask what uncertainty could change the correct next action.
+3. Resolve that uncertainty from the right evidence source.
+4. Select the responsibility before the Skill or solution.
+5. Perform bounded work through the appropriate capability.
+6. Validate mechanics without confusing PASS with truth or closure.
+7. Reconcile consequential work claims.
+8. Repair-verify original findings when relevant.
+9. Update the warrant from new evidence.
+10. Continue, stop, escalate, or ask the owner deliberately.
+
+**Most importantly:** the goal is not to follow a predetermined workflow. The goal is to move from uncertainty to warranted engineering action while keeping evidence, claims, and authority aligned.
