@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
-An agent-native framework for repository diagnosis and workflow orchestration. Turns repository uncertainty into clear problem frames, research paths, and actionable next-step prompts.
+An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into evidence-grounded, warranted next action.
 
 **Status**: Beta (Scenario 5 tested and proven)  
 **Current Use**: Agent/Claude Code invocation + CLI utilities (v0.2.2)  
@@ -13,27 +13,28 @@ An agent-native framework for repository diagnosis and workflow orchestration. T
 
 ## What This Is
 
-✅ **Proven diagnostic framework** — Scenario 5 budget-exhaustion testing confirms:
-- Error recovery with bounded retry logic (3 attempts)
-- Graceful escalation when limits exhausted
-- Real execution on actual repositories with honest metrics
+✅ **Evidence-grounded responsibility selection** — Sensemaking helps an active agent determine what kind of engineering responsibility is warranted next from repository evidence and unresolved uncertainty. The active agent owns the top-level control loop.
 
-✅ **Artifact-driven engineering** — All communication happens via durable, validated artifacts:
+✅ **Artifact-driven engineering** — Communication across bounded responsibilities happens through durable, validated artifacts:
 - `repository_sensemaking_brief` (14-section diagnostic)
-- `workflow_orchestration_plan` (10-section execution plan)
-- Validation ensures quality and safety
+- `workflow_orchestration_plan` (10-section planning artifact)
+- validators, reconciliation reports, and repair-verification evidence constrain what may be claimed
 
 ✅ **Agent-native design** — Agent-agnostic skills, invoked by any coding agent:
 - Skills defined in SKILL.md files
-- Orchestration via artifact handoffs
+- The agent selects responsibility before choosing a Skill
+- Runtime/orchestration machinery coordinates execution where useful; it does not own the product-level decision loop
 - No external service dependencies in the core CLI
 
 ## What This Is NOT
 
+❌ **Not a centralized agent orchestrator** — The active coding agent owns the recursive control loop. Sensemaking governs what responsibility is warranted; orchestration coordinates how selected work is executed.  
 ❌ **Not a fully autonomous CLI diagnosis engine** — Repository diagnosis is agent-led, CLI provides utilities  
 ❌ **Not a service** — No server, no cloud dependency. The core package is entirely local; only the optional `exploratory_execution` subsystem calls the GitHub REST API (`api.github.com`) for issue-approval tracking  
 ❌ **Not a replacement for specialized tools** — Complements PM skills, UI skills, TDD tools  
 ❌ **Full diagnosis requires an agent harness** — The CLI utilities (validate, test, analyze) work standalone; agent-driven diagnosis requires a coding-agent harness (Claude Code is one supported harness, not the only one)  
+
+See [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md) for the current operating model, [docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md) for the control boundary, and [docs/research/control-model-research-agenda.md](docs/research/control-model-research-agenda.md) for explicitly non-ratified research questions.
 
 ---
 
@@ -379,4 +380,6 @@ MIT License. See [LICENSE](LICENSE) for details.
 - **[INSTALLATION.md](INSTALLATION.md)** — Step-by-step setup guide
 - **[API.md](API.md)** — Python API reference
 - **[CLAUDE.md](CLAUDE.md)** — Agent guidelines and hooks
-
+- **[Agent-native operating workflow](docs/agent-native-operating-workflow.md)** — Current top-level control loop
+- **[Decision vs. orchestration boundary](docs/decision-orchestration-boundary.md)** — Control ownership boundary
+- **[Control-model research agenda](docs/research/control-model-research-agenda.md)** — Non-ratified research questions
