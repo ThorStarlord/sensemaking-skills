@@ -4,11 +4,12 @@ At session start, the **using-sensemaking** bootstrap skill is available to agen
 
 This skill teaches agents:
 - Fog classification (4 types)
-- 3-step diagnosis pattern (repo-sensemaker → validate → complete)
+- When repository sensemaking is warranted
 - How to read artifact outputs
 - How to interpret validator errors (JSON format)
-- Bounded retry logic (3 attempts with graceful escalation)
-- When to auto-fix vs. when to escalate
+- How to select responsibility before Skill
+- Bounded retry logic and escalation
+- When validation, reconciliation, repair verification, continuation, or stopping is warranted
 
 **Agents invoke this skill** via the Skill tool: `/skill using-sensemaking`
 
@@ -18,7 +19,7 @@ This skill teaches agents:
 - Invoke workflows
 - Validate artifacts
 
-Those are agent responsibilities, taught by the skill.
+Those are agent responsibilities, taught by the skill and the agent-native operating workflow.
 
 See `.claude/hooks/sessionstart.md` for full hook documentation and testing guide.
 
@@ -37,6 +38,31 @@ Five canonical labels using the skill defaults. See `docs/agents/triage-labels.m
 ### Domain docs
 
 Single-context repo — `CONTEXT.md` at root, ADRs in `docs/adr/`. See `docs/agents/domain.md`.
+
+## Current operating discipline
+
+The active coding agent owns the top-level control loop (ADR 0013). Use
+`docs/agent-native-operating-workflow.md` as the current operating map.
+
+- **Choose responsibility before Skill.** Resolve the nearest unresolved
+  decision-changing uncertainty before committing to an eventual solution.
+- **Decision is not orchestration.** Sensemaking selects the responsibility
+  warranted by current evidence. Execution/orchestration coordinates how the
+  selected responsibility is performed. Do not restore automatic downstream
+  routing merely because a runtime path exists.
+- **Validation is not closure.** Mechanical PASS makes an artifact eligible
+  for semantic use; it does not prove the conclusion, work claim, or original
+  finding is resolved.
+- **Finding is not authorization.** Diagnosis, recommendation, implementation,
+  validation, owner decision, publication, and canonical closure are distinct
+  lifecycle states.
+- **Research hypotheses are not architecture.** Domain-general Sensemaking,
+  domain-specific packs, and formalized decision-theory machinery remain
+  research questions unless separately ratified.
+
+See `docs/decision-orchestration-boundary.md` for the control-ownership boundary
+and `docs/research/control-model-research-agenda.md` for explicitly non-ratified
+research paths.
 
 ## Verification discipline (artifacts are the API)
 
