@@ -21,7 +21,7 @@ This fresh successor experiment is tracked by Issue #201 after the connector-nat
 - Target repository: `https://github.com/ThorStarlord/auteur.git`
 - Target SHA: `0653defb05625f2fcde0ac32eac6e59ccf7eeb90`
 - Artifact type: `repository_sensemaking_brief`
-- Configuration ID: `0000000000000000000000000000000000000000000000000000000000000000` (discovery placeholder; final preparation head must replace it)
+- Configuration ID: `cebe75031440292300aa154ba2ccdc7ec207de503088b28fa340acbec69562aa`
 - Policy digest: `0000000000000000000000000000000000000000000000000000000000000000` (discovery placeholder; final preparation head must replace it)
 - Classification: `EXPLORATORY_NOT_CANONICAL_EVIDENCE`
 - Attempt slots: 3
@@ -33,7 +33,7 @@ This fresh successor experiment is tracked by Issue #201 after the connector-nat
 - Automatic merge: prohibited
 - Validity window: `2026-08-18T19:00:00Z` through `2026-08-25T19:00:00Z`
 
-The zero identities are deliberate preparation-time discovery placeholders only. GitHub Actions must first compute and freeze the canonical configuration ID; only after the real configuration identity is bound into policy may GitHub Actions compute and freeze the final policy digest. A head containing either zero placeholder is not releasable and may not be approved or executed.
+The configuration ID above was produced by the repository's canonical digest implementation in GitHub Actions run #485 on the initial preparation head. The remaining zero policy digest is a deliberate discovery placeholder only. Only after the real configuration identity is bound into policy may GitHub Actions compute and freeze the final policy digest. A head containing the zero policy placeholder is not releasable and may not be approved or executed.
 
 ## Connector-native approval contract
 
