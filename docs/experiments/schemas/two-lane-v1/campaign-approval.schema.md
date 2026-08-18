@@ -28,7 +28,8 @@ operative campaign approval may be created under Issue #117 — see the
 | `automatic_merge` | string | Conversation-approval profile only: must be exactly `prohibited`, and the policy must prohibit automatic merge. |
 | `external_provider_api_prohibited` | boolean | Conversation-approval profile only: must be exactly `true`, and the policy must declare `external_provider_api_prohibited: true`. |
 | `classification` | string | Conversation-approval profile only: must equal the policy classification. |
-| `reference` | string | Conversation-approval profile only: points at the conversation record (e.g. session/message id). Required. |
+| `reference_kind` | string | Conversation-approval profile only and optional for backward compatibility. When present it must be `agent_recorded_github_issue_comment`, which means `reference` is the permalink of an agent-authored GitHub issue comment that durably transcribes the approval event. The comment is an audit locator, not independent human consent. |
+| `reference` | string | Conversation-approval profile only. With no `reference_kind`, this is a legacy concrete conversation pointer supplied only when the execution surface genuinely exposes it. With `reference_kind: agent_recorded_github_issue_comment`, this must be a concrete GitHub issue-comment permalink. Required in both forms. |
 | `marker` | string | Must be exactly `EXAMPLE_ONLY_NOT_AUTHORIZATION` in every example or template shipped in this repository under `docs/experiments/schemas/`. An operative approval (outside this schema-contract directory) omits this field entirely; its presence marks a document as non-operative. |
 
 ## What this schema does NOT define
@@ -45,13 +46,27 @@ operative campaign approval may be created under Issue #117 — see the
   code. As of Phase 1, nothing in this repository checks
   `approval_provenance.reference`. That verification is explicitly deferred
   to Phase 3 (#119) — see ADR 0023 §12 item 3.
+- Any claim that an `agent_recorded_github_issue_comment` is itself human
+  authorization. For the conversation profile, the standalone human
+  `approve` in the active conversation remains the authority. The GitHub
+  comment and `approval.md` are agent-recorded audit artifacts only.
 
 ## Fail-closed rules
 
 - `policy_digest` mismatch against the referenced policy: the approval does
   not authorize that policy.
-- Missing `approval_provenance.reference`: invalid, non-operative.
-- `approval_statement` empty or absent: invalid, non-operative.
+- Missing `approval_provenance.reference`: invalid, non-operative for the
+  provenance-based profile.
+- `approval_statement` empty or absent: invalid, non-operative for the
+  provenance-based profile.
+- Conversation receipt with missing/empty `reference`: invalid.
+- Conversation receipt with `reference_kind: agent_recorded_github_issue_comment`
+  but a non-GitHub, non-issue-comment, placeholder, or malformed permalink:
+  invalid.
+- Conversation receipt that puts a GitHub issue-comment URL in `reference`
+  without the explicit `reference_kind`: invalid. This prevents the new
+  connector-native form from being smuggled through the legacy `x#y` shape.
+- Unknown `reference_kind`: reject.
 - Unknown `approval_schema_version`: reject.
 
 ## Blank template (agent-preparable) — EXAMPLE_ONLY_NOT_AUTHORIZATION
@@ -87,7 +102,7 @@ approved_at: "2026-01-01T00:00:00+00:00"
 marker: "EXAMPLE_ONLY_NOT_AUTHORIZATION"
 ```
 
-## Conversation-approval example (active_human_conversation)
+## Conversation-approval profile (active_human_conversation)
 
 The third, mutually exclusive profile: the human's standalone `approve`
 in the active conversation is the authorization; the coding agent records
@@ -97,16 +112,47 @@ exactly `active_human_conversation`, `approval_text` exactly `approve`,
 and `status` exactly `approved`; `maximum_attempts`/`concurrency` must
 not exceed the policy limits; `automatic_merge` must be `prohibited` and
 `external_provider_api_prohibited` `true`, both mirrored by the policy;
-`classification` must equal the policy classification; `approved_at` must
-be inside the policy window; and `reference` must be a concrete
-`<session-id>#<message-id>` pointer (no whitespace, no angle brackets --
-`<message-id>` alone or a missing `#` is refused). It never carries
-`marker`, `claimed_approver_identity`, or `approval_provenance`.
+`classification` must equal the policy classification; and `approved_at`
+must satisfy the policy timing rules.
+
+### Reference form A — legacy conversation pointer
+
+This form is retained for backward compatibility and may be used only when
+the active execution surface actually exposes a truthful concrete
+conversation pointer. `reference_kind` is omitted and `reference` is a
+concrete `<session-id>#<message-id>` value with no whitespace or angle
+brackets. A GitHub URL is explicitly rejected through this legacy branch.
+
+### Reference form B — connector-native agent-recorded GitHub audit event
+
+When the execution surface does not expose real platform conversation IDs,
+use:
+
+```yaml
+reference_kind: "agent_recorded_github_issue_comment"
+reference: "https://github.com/<owner>/<repo>/issues/<issue-number>#issuecomment-<comment-id>"
+```
+
+The coding agent creates that issue comment **after** receiving the valid
+standalone `approve` and **before** writing the operative `approval.md`. The
+comment must durably transcribe at least the campaign id, exact policy digest,
+approval timestamp, and the fact that it is agent-recorded from the active
+conversation. It must explicitly state that the GitHub comment is not
+independent human-authored consent. The connector-returned permalink is then
+copied exactly into `approval.md`.
+
+The verifier validates the permalink grammar and all receipt/policy bindings
+without network access. Audit/recovery may follow the permalink in GitHub to
+inspect the transcription event. Neither the comment nor the receipt may be
+created in advance of the human decision, and neither substitutes for the
+standalone `approve`.
+
+### Non-operative connector-native example
 
 ```yaml
 approval_schema_version: "1"
 status: "approved"
-campaign_id: "EXP-0002-stage1-auteur-coding-agent-pilot"
+campaign_id: "EXP-0000-EXAMPLE"
 policy_digest: "<PRESENTED_DIGEST>"
 approval_source: "active_human_conversation"
 approval_text: "approve"
@@ -116,13 +162,15 @@ concurrency: 1
 automatic_merge: "prohibited"
 external_provider_api_prohibited: true
 classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"
-reference: "<session-id>#<message-id>"
+reference_kind: "agent_recorded_github_issue_comment"
+reference: "https://github.com/example/example/issues/1#issuecomment-<COMMENT-ID>"
 ```
 
-The example above is non-operative: its `policy_digest` and `reference`
-still carry placeholder tokens that can never resolve. An operative
-conversation receipt replaces those tokens with the exact digest
-presented to the human and the concrete conversation-record pointer.
+The example above is non-operative because its campaign, digest, repository,
+and comment id are placeholders. An operative connector-native receipt uses
+the exact presented digest and the concrete permalink returned by GitHub for
+the agent-recorded approval event.
 
 All examples above are authored under the Two-Lane YAML Profile v1 (ADR
-0023 §10b): every string-valued field, including `mechanism`, is quoted.
+0023 §10b): every string-valued field, including `mechanism` and
+`reference_kind`, is quoted.
