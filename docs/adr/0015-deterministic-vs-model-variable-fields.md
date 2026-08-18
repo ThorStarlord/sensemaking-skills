@@ -4,7 +4,7 @@
 owner decision (D2, D3, D4) recorded in
 `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`
 **Date**: 2026-07-25 (revised 2026-07-26)
-**Provisionally addresses**: Issue #30
+**Resolves**: Issue #30
 
 **2026-07-26 addendum, owner-ratified**: the auteur campaign's final rerun
 (PR #78) failed on `UNKNOWN_WEAKNESS_TYPE` — the classification taxonomy (7

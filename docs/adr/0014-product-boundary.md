@@ -3,7 +3,7 @@
 **Status**: ACCEPTED (revised, narrowed) — ratified 2026-07-26 by explicit
 owner decision (D1) recorded in `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`
 **Date**: 2026-07-25 (revised 2026-07-26)
-**Proposes resolution for**: Issue #29
+**Resolves**: Issue #29
 
 **2026-07-26 revision, owner-ratified**: following closure of the auteur
 external-validation campaign (PR #67/#69/#70/#72/#73/#75/#77/#78) and the
