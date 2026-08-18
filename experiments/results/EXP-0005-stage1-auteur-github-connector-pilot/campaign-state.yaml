@@ -22,11 +22,12 @@ automatic_merge_prohibited: true
 attempts:
 - attempt_id: "attempt-001"
   configuration_id: "cebe75031440292300aa154ba2ccdc7ec207de503088b28fa340acbec69562aa"
-  state: "INVOKED"
+  state: "OUTPUT_CAPTURED"
   state_history:
   - state: "RESERVED"
   - state: "INVOKED"
-  artifact_path: null
+  - state: "OUTPUT_CAPTURED"
+  artifact_path: "experiments/results/EXP-0005-stage1-auteur-github-connector-pilot/attempts/attempt-001/repository-sensemaking-brief.md"
   validation_head_sha: null
   validation_run_id: null
   terminal_reason: null
