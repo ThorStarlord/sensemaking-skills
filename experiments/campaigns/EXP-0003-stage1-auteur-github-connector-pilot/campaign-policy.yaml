@@ -31,4 +31,4 @@ preservation_requirements: "Every GitHub-durable state transition and every atte
 logging_requirements: "GitHub commit history, the campaign state document, attempt artifacts, and exact-head workflow run identifiers form the authoritative audit trail. No machine-local executor state is authoritative, and no external model/provider API is used."
 prepared_by: "campaign-preparation-agent"
 prepared_at: "2026-08-18T12:33:02+00:00"
-policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"
+policy_digest: "710478c4acf5217a9177ba7cfdca3623929c5f0cbf219d4a407b8e4c28533f2a"
