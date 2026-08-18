@@ -19,4 +19,13 @@ target_mutation_prohibited: true
 fallback_prohibited: true
 repair_prohibited: true
 automatic_merge_prohibited: true
-attempts: []
+attempts:
+- attempt_id: "attempt-001"
+  configuration_id: "cebe75031440292300aa154ba2ccdc7ec207de503088b28fa340acbec69562aa"
+  state: "RESERVED"
+  state_history:
+  - state: "RESERVED"
+  artifact_path: null
+  validation_head_sha: null
+  validation_run_id: null
+  terminal_reason: null
