@@ -22,7 +22,7 @@ This fresh successor experiment is tracked by Issue #201 after the connector-nat
 - Target SHA: `0653defb05625f2fcde0ac32eac6e59ccf7eeb90`
 - Artifact type: `repository_sensemaking_brief`
 - Configuration ID: `cebe75031440292300aa154ba2ccdc7ec207de503088b28fa340acbec69562aa`
-- Policy digest: `0000000000000000000000000000000000000000000000000000000000000000` (discovery placeholder; final preparation head must replace it)
+- Policy digest: `e4d85d344aac8b55b2444ec3e0eb963493daad2a43ac368d242479b8c21465ac`
 - Classification: `EXPLORATORY_NOT_CANONICAL_EVIDENCE`
 - Attempt slots: 3
 - Concurrency: 1
@@ -33,7 +33,7 @@ This fresh successor experiment is tracked by Issue #201 after the connector-nat
 - Automatic merge: prohibited
 - Validity window: `2026-08-18T19:00:00Z` through `2026-08-25T19:00:00Z`
 
-The configuration ID above was produced by the repository's canonical digest implementation in GitHub Actions run #485 on the initial preparation head. The remaining zero policy digest is a deliberate discovery placeholder only. Only after the real configuration identity is bound into policy may GitHub Actions compute and freeze the final policy digest. A head containing the zero policy placeholder is not releasable and may not be approved or executed.
+Both identities above were produced by the repository's canonical digest implementation in GitHub Actions. Run #485 produced the configuration ID. Only after that real configuration identity was bound into policy did run #486 produce the final policy digest. Neither identity was computed in chat or on an executor host.
 
 ## Connector-native approval contract
 
@@ -67,7 +67,7 @@ GitHub history and repository-resident state are authoritative. No Windows host,
 
 ## Preparation validation contract
 
-Preparation tests must prove, without creating real approval state, that the exact intended connector-native receipt shape validates when it contains a concrete issue-comment permalink on Issue #201. They must also prove the shipped template remains non-operative and that the immutable preparation directory contains no operative approval, ledger, attempts, or results state.
+Preparation tests prove, without creating real approval state, that the exact intended connector-native receipt shape validates when it contains a concrete issue-comment permalink on Issue #201. They also prove the shipped template remains non-operative and that the immutable preparation directory contains no operative approval, ledger, or attempts. A future isolated results namespace is not globally forbidden by this preparation proof; it is governed by the GitHub-durable state validator during execution.
 
 ## Research success criterion
 

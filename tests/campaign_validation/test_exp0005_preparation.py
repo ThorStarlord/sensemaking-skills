@@ -5,7 +5,8 @@ canonical digest discovery and final package validation happen in GitHub
 Actions. Preparation is lifecycle-scoped: the immutable campaign package must
 contain no operative approval or attempt state. A synthetic receipt proves the
 exact connector-native approval-reference form without creating real approval
-state.
+state. A future results namespace is governed separately by the GitHub-durable
+state validator and is not globally forbidden by this preparation proof.
 """
 
 from pathlib import Path
@@ -190,5 +191,3 @@ def test_exp0005_preparation_package_contains_no_execution_state() -> None:
     for name in ("approval.md", "approval.yaml", "ledger.jsonl", "ledger.lock"):
         assert not (PACKAGE_DIR / name).exists()
     assert not (PACKAGE_DIR / "attempts").exists()
-    results_dir = ROOT / "experiments" / "results" / CAMPAIGN_ID
-    assert not results_dir.exists()

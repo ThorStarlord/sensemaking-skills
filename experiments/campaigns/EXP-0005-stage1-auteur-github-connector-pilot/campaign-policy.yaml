@@ -31,4 +31,4 @@ preservation_requirements: "Every GitHub-durable approval receipt, campaign-stat
 logging_requirements: "GitHub issue #201 supplies the agent-recorded approval audit locator after a valid standalone approve; GitHub commit history, the campaign state document, exact-SHA connector evidence, attempt artifacts, and exact-head workflow run identifiers form the authoritative audit trail. No machine-local executor state is authoritative, no unavailable local-only probe metric is fabricated, and no external model/provider API is used."
 prepared_by: "campaign-preparation-agent"
 prepared_at: "2026-08-18T18:16:00+00:00"
-policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"
+policy_digest: "e4d85d344aac8b55b2444ec3e0eb963493daad2a43ac368d242479b8c21465ac"
