@@ -13,7 +13,7 @@ allowed_models: []
 allowed_artifact_types:
 - "repository_sensemaking_brief"
 allowed_configuration_ids:
-- "0000000000000000000000000000000000000000000000000000000000000000"
+- "b61d05fe7cb3670a99e0773ae3ef8dd6adfb6e26c8a8858a8f2b3eab567c4f4e"
 max_attempt_slots: 3
 max_provider_invocations: 3
 max_attempts_per_configuration: 3
