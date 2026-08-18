@@ -2,7 +2,9 @@
 
 This suite intentionally runs inside the existing Phase 2 campaign-validation
 matrix so canonical digest computation and package validation happen in GitHub
-Actions. Preparation must never create operative approval or attempt state.
+Actions. Preparation must never create operative approval or attempt state in
+the immutable preparation package. Results-branch lifecycle state is validated
+separately by the GitHub-durable state contract.
 """
 
 from pathlib import Path
@@ -135,9 +137,8 @@ def test_exp0003_approval_template_is_nonoperative() -> None:
     assert not result.valid
 
 
-def test_exp0003_preparation_contains_no_execution_state() -> None:
+def test_exp0003_preparation_package_contains_no_execution_state() -> None:
     assert {p.name for p in PACKAGE_DIR.iterdir()} == PACKAGE_FILES
     for name in ("approval.md", "approval.yaml", "ledger.jsonl", "ledger.lock"):
         assert not (PACKAGE_DIR / name).exists()
     assert not (PACKAGE_DIR / "attempts").exists()
-    assert not (ROOT / "experiments" / "results" / CAMPAIGN_ID).exists()
