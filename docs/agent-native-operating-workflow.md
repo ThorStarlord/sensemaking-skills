@@ -182,7 +182,7 @@ agent-reasoned and explicit. Examples:
 
 Automatic routing is deliberately **not** ratified: ADR 0014 defers routing
 until external proof, and ADR 0018 (deterministic fog-type routing table) is
-PROPOSED, not accepted. Do not restore automatic routing by accident.
+SUPERSEDED, never accepted. Do not restore automatic routing by accident.
 
 ### SPECIALIZED WORK
 
@@ -380,7 +380,7 @@ diagnosis          != authorization
 | Repository diagnosis | `repo-sensemaker` + probe engine | REAL (ratified, ADR 0014) | diagnosis does not authorize repair |
 | Brief contract validation | `validate-artifact.py` / `validate-brief.py` / `validate-output.py` | REAL | structural PASS != analytically correct |
 | Human review | conversation/process boundary | RATIFIED product boundary, agent-mediated | not an automated gate |
-| Next responsibility selection | agent judgment + skill catalog | CONVENTION / unratified automation (ADR 0018 PROPOSED) | do not restore automatic routing by accident |
+| Next responsibility selection | agent judgment + skill catalog | CONVENTION / unratified automation (ADR 0018 SUPERSEDED) | do not restore automatic routing by accident |
 | Specialized analysis | individual Skills | REAL per Skill | Skill existence != product need |
 | Artifact validation | validators + `artifact-contracts.yaml` | REAL | schema != truth |
 | Output reconciliation | `output-reconciler` + `artifact-reconciliation` workflow | REAL + dogfooded (evidence 0018, 0020) | not needed after every trivial action |
