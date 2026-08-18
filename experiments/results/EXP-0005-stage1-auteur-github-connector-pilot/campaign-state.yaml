@@ -34,12 +34,13 @@ attempts:
   terminal_reason: null
 - attempt_id: "attempt-002"
   configuration_id: "cebe75031440292300aa154ba2ccdc7ec207de503088b28fa340acbec69562aa"
-  state: "OUTPUT_CAPTURED"
+  state: "VALIDATION_PASSED"
   state_history:
   - state: "RESERVED"
   - state: "INVOKED"
   - state: "OUTPUT_CAPTURED"
+  - state: "VALIDATION_PASSED"
   artifact_path: "experiments/results/EXP-0005-stage1-auteur-github-connector-pilot/attempts/attempt-002/repository-sensemaking-brief.md"
-  validation_head_sha: null
-  validation_run_id: null
+  validation_head_sha: "7333f6791430685f00bc6fa6a6a7e62c00383b17"
+  validation_run_id: 32176260337
   terminal_reason: null
