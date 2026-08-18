@@ -73,6 +73,20 @@ def test_empty_results_pr_state_is_valid_before_first_attempt():
     validate_github_durable_state(_base_document())
 
 
+@pytest.mark.parametrize(
+    "states",
+    [
+        ["RESERVED"],
+        ["RESERVED", "INVOKED"],
+        ["RESERVED", "INVOKED", "OUTPUT_CAPTURED"],
+    ],
+)
+def test_nonterminal_lifecycle_checkpoints_are_valid(states):
+    document = _base_document()
+    document["attempts"] = [_attempt("attempt-001", states)]
+    validate_github_durable_state(document)
+
+
 def test_complete_validation_passed_attempt_is_valid():
     document = _base_document()
     document["attempts"] = [
