@@ -12,4 +12,4 @@ execution_parameters:
   validation_backend: "github_actions_exact_head"
   invocation_boundary: "before_first_experiment_scoped_target_read"
   target_access_mode: "github_connector_read_only"
-configuration_id: "0000000000000000000000000000000000000000000000000000000000000000"
+configuration_id: "96ef1c309e9f2f5c22eeb94fc4b0d887badc677573500eb8ddd8a24b8c6f8df6"
