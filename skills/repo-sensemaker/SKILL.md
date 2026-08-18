@@ -100,11 +100,20 @@ When evaluating whether a repository has **UI Fog**, follow the [UI Fog Signals 
    - **architecture_fog**: Code structure problems, unclear boundaries, module coupling, state management scattered → needs spec-driven refactoring (default)
 8. **Synthesis**: Produce a Repository Sensemaking Brief with fog type classification, intent alignment, candidate next steps, and recommended workflows. Keep observed evidence, documented claims, inference, and owner-supplied judgment/context distinguishable in the synthesis. Decision-changing current-state claims must explicitly distinguish verified current state from merely documented state: cite the probe used when verified, and clearly identify unverified documented claims as documented but not independently verified. If you have grounds for it, optionally fill in Section 15 (Extended analysis) — see [Repo Analysis Template](references/repo-analysis-template.md#15-extended-analysis). It is optional and non-blocking (ADR 0024); leave it out entirely if you have nothing to add.
 
-## Probe Engine (verified current state, mandatory before synthesis)
+## State-currency probe (mandatory before synthesis)
 
-Deterministic probes replace *derived* evidence (text inspection) with *measured*
-current-state evidence. Before writing Sections 3–9, run the probe engine against
-the target repository:
+A state-currency probe is mandatory before writing Sections 3–9. The probe backend is selected by the **authorized target-access surface**; do not widen that surface merely to satisfy a preferred probe implementation.
+
+### Backend selection
+
+- **Local checkout authorized:** use the local Probe Engine described below.
+- **Read-only GitHub connector + exact target SHA authorized:** use `github_connector_exact_sha_v1` as defined in [Connector-native exact-SHA probe](references/connector-native-probe.md).
+
+**No third implicit probe path exists.** Do not skip state-currency verification because the local backend is unavailable, and do not create an unauthorized local checkout when the connector-native backend is the authorized surface.
+
+### Local Probe Engine
+
+When a local target checkout is authorized, deterministic probes replace *derived* evidence (text inspection) with *measured* current-state evidence. Run:
 
 ```powershell
 python scripts/probe-repo.py --repo-root <target-repo> [--output <path>/probe-report.yaml]
@@ -112,36 +121,23 @@ python scripts/probe-repo.py --repo-root <target-repo> [--output <path>/probe-re
 
 Then:
 
-1. **Read `probe-report.yaml`.** Its values are verified current state, measured
-   on the checked-out tree — prefer them over any documented claim (state-currency
-   verification, per Standard Workflow item 4).
-2. **Surface the numbers in your prose.** The report's `verification_gap.vg`,
-   `context_entropy.ce`, `fixtures_coverage.coverage`, and `churn` fields feed
-   directly into the missing-pieces, weakest-boundary, and evidence sections.
-   A `vg > 0` with declared-but-unenforced checks is a `Contract Mismatch` signal;
-   `vg == 1.0` means every declared check is unenforced (or CI is absent).
-   `ce >= 5` triggers a hygiene warning about untracked/ignored artifact sprawl.
-   A non-empty `missing_fixtures` list signals validator orphans (Zero Validation
-   or Orphaned Examples candidates).
-3. **Cite the probe in Section 8.** Every excerpt that rests on a measured value
-   must reference the probe that produced it (e.g.
-   `probe-report.yaml:verification_gap.vg`), plus the usual `file:lines`.
-4. **Probe failure fallback.** If the probe exits nonzero or the target is not a
-   git repository (`is_git_repo: false`), the probe still reports directory-level
-   facts; any claim you cannot measure must be labeled
-   "documented but not independently verified" (per Standard Workflow item 4 and
-   Section 8). Never skip the probe because a repo "looks simple" — a
-   non-git repo is itself a finding.
-5. **Relationship findings are evidence candidates, not diagnoses.** The report's
-   `relationships` section (version drift + ADR integrity, plus the discovered
-   doc surface) lists mechanically-established disagreements with file:line
-   provenance. Treat each finding as a candidate requiring semantic review:
-   the probe cannot decide which source has authority, which claim is
-   historical, or whether a disagreement matters — you can. A repository with
-   zero relationship findings is a valid correct-negative result. Where a
-   relationship finding sharpens a boundary (e.g. a version conflict, a stale
-   ADR-status claim, a doc that references a missing ADR), cite it in Section 8
-   like any measured value (`probe-report.yaml:relationships.version.findings`).
+1. **Read `probe-report.yaml`.** Its values are verified current state, measured on the checked-out tree — prefer them over any documented claim (state-currency verification, per Standard Workflow item 4).
+2. **Surface the measured numbers in your prose.** The report's `verification_gap.vg`, `context_entropy.ce`, `fixtures_coverage.coverage`, and `churn` fields feed directly into the missing-pieces, weakest-boundary, and evidence sections. A `vg > 0` with declared-but-unenforced checks is a `Contract Mismatch` signal; `vg == 1.0` means every declared check is unenforced (or CI is absent). `ce >= 5` triggers a hygiene warning about untracked/ignored artifact sprawl. A non-empty `missing_fixtures` list signals validator orphans (Zero Validation or Orphaned Examples candidates).
+3. **Cite the local probe in Section 8.** Every excerpt that rests on a measured value must reference the probe that produced it (e.g. `probe-report.yaml:verification_gap.vg`), plus the usual `file:lines`.
+4. **Probe failure fallback.** If the local probe exits nonzero or the target is not a git repository (`is_git_repo: false`), the probe still reports directory-level facts; any claim you cannot measure must be labeled "documented but not independently verified" (per Standard Workflow item 4 and Section 8). Never treat local-probe failure as permission to fabricate measurements.
+5. **Relationship findings are evidence candidates, not diagnoses.** The report's `relationships` section (version drift + ADR integrity, plus the discovered doc surface) lists mechanically-established disagreements with file:line provenance. Treat each finding as a candidate requiring semantic review: the probe cannot decide which source has authority, which claim is historical, or whether a disagreement matters — you can. A repository with zero relationship findings is a valid correct-negative result. Where a relationship finding sharpens a boundary (e.g. a version conflict, a stale ADR-status claim, a doc that references a missing ADR), cite it in Section 8 like any measured value (`probe-report.yaml:relationships.version.findings`).
+
+### Connector-native exact-SHA probe
+
+When the execution contract authorizes only read-only GitHub connector access, follow [references/connector-native-probe.md](references/connector-native-probe.md) before synthesis. In this mode:
+
+1. verify the exact target commit through GitHub and pin **every repository-content read** to that SHA;
+2. record the GitHub-supplied blob SHA and line range for every file that supports a decision-changing claim;
+3. separate immutable exact-SHA repository evidence from live GitHub metadata observed at query time;
+4. treat local-only metrics (`verification_gap.vg`, `context_entropy.ce`, `fixtures_coverage.coverage`, `churn`) as **unmeasured on this surface** unless an explicitly authorized deterministic remote adapter produced them — never approximate them from prose inspection;
+5. state `github_connector_exact_sha_v1 @ <target-sha>` in Section 7's state-currency discussion and use only evidence actually read at that exact SHA in Section 8.
+
+The connector-native backend is not a weaker documentary fallback: exact Git tree/blob identity is measured evidence for the pinned snapshot. What the authorized surface cannot measure remains explicitly unmeasured rather than silently inferred.
 
 ## Output Format
 Every response must follow the [Repository Sensemaking Brief](references/repo-analysis-template.md) structure.
@@ -157,6 +153,7 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 - [Weakness Types](references/weakness-types.md)
 - [Evidence Rules](references/evidence-rules.md)
 - [UI Fog Signals Registry](references/ui-fog-signals.md)
+- [Connector-native exact-SHA probe](references/connector-native-probe.md)
 - [Architecture decision record](../../docs/candidate/architecture-decision.md) — why Diagnose/Interact are one skill, not two
 
 ## Execution Protocol
@@ -210,11 +207,12 @@ runtime) is what rejects an invalid one.
 **Evidence-authority hierarchy and grammar** (unchanged from prior guidance,
 still your responsibility): cite specific files and line ranges you actually
 read (`Lx`/`Lx-Ly` or bare numbers both work, e.g. `L18` or `18`); never cite
-a file you have not opened; probe-report.yaml (measured current state) sits
-above direct code/config; prefer probes over code/config over comments over
-external docs when they conflict; include a **Logic trace** paragraph
-(beginning literally with "Logic trace:") connecting evidence to your
-weakest-boundary conclusion.
+a file you have not opened; state-currency probe evidence (`probe-report.yaml`
+for the local backend, or exact-SHA Git tree/blob observations for
+`github_connector_exact_sha_v1`) sits above direct code/config; prefer probes
+over code/config over comments over external docs when they conflict; include
+a **Logic trace** paragraph (beginning literally with "Logic trace:") connecting
+evidence to your weakest-boundary conclusion.
 
 The runtime writes a **tool-call trace** (`tool-call-trace.jsonl` in the
 session artifact directory) recording every tool call you make during this
