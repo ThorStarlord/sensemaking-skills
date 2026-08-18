@@ -34,9 +34,10 @@ attempts:
   terminal_reason: null
 - attempt_id: "attempt-002"
   configuration_id: "cebe75031440292300aa154ba2ccdc7ec207de503088b28fa340acbec69562aa"
-  state: "RESERVED"
+  state: "INVOKED"
   state_history:
   - state: "RESERVED"
+  - state: "INVOKED"
   artifact_path: null
   validation_head_sha: null
   validation_run_id: null
