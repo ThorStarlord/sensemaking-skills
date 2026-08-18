@@ -50,6 +50,7 @@ from .execution_identity import (
 from .conversation_approval import (
     APPROVAL_FILENAME as CONVERSATION_APPROVAL_FILENAME,
     APPROVAL_MECHANISM as CONVERSATION_APPROVAL_MECHANISM,
+    APPROVAL_REFERENCE_KIND_GITHUB_ISSUE_COMMENT,
     APPROVAL_TEXT,
     ConversationApprovalVerifier,
     extract_frontmatter,
@@ -72,6 +73,7 @@ __all__ = [
     "ALLOWED_SETTING_SOURCES",
     "APPROVAL_MARKER",
     "APPROVAL_MECHANISM",
+    "APPROVAL_REFERENCE_KIND_GITHUB_ISSUE_COMMENT",
     "APPROVAL_TEXT",
     "ApprovalCaptureError",
     "CONVERSATION_APPROVAL_FILENAME",
