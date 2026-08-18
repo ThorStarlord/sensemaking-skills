@@ -1,9 +1,34 @@
 # ADR 0018: Workflow-Routing Policy
 
-**Status**: PROPOSED — draft for owner review, not yet accepted
-**Date**: 2026-07-25
-**Proposes resolution for**: Issue #33 (was blocked by #28, #29 — #28 is
-closed; #29 is proposed, not yet accepted, in ADR 0014)
+**Status**: SUPERSEDED — 2026-08-18; historical proposal, never Accepted
+**Date**: 2026-07-25 (superseded 2026-08-18)
+**Historical proposal for**: Issue #33
+
+## 2026-08-18 disposition — superseded by agent-native responsibility selection
+
+This ADR preserves a July proposal for deterministic workflow routing, but it
+never became an Accepted repository decision. The proposal assumed that a
+brief's `primary_fog_type` should deterministically select downstream work.
+Later accepted agent-native architecture moved responsibility selection to the
+**active coding agent**, using repository evidence and current uncertainty to
+decide what responsibility is warranted next before choosing a Skill or
+subflow.
+
+`primary_fog_type` remains useful **diagnostic metadata**. It can help describe
+the repository's weakest boundary, but it does not itself grant execution or
+routing authority. Deterministic registered subflows may still exist after a
+responsibility has already been selected; this disposition does not delete or
+change existing runtime routing, compatibility mechanics, workflow registry
+behavior, schemas, validators, Skills, artifact contracts, or Workflow-v0.
+
+ADR 0017 is now superseded and is therefore no longer an operative readiness
+gate for adding routing rows or other capabilities. No replacement automatic
+routing policy is being Accepted here. The current governing distinction is:
+
+> Decision selects the work. Orchestration coordinates already-selected work.
+> Evidence determines what becomes warranted next.
+
+Everything below is retained as the historical July proposal and rationale.
 
 ---
 
