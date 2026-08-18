@@ -19,7 +19,7 @@ This is the successor experiment tracked by Issue #197 after the connector-nativ
 - Target SHA: `0653defb05625f2fcde0ac32eac6e59ccf7eeb90`
 - Artifact type: `repository_sensemaking_brief`
 - Configuration ID: `b61d05fe7cb3670a99e0773ae3ef8dd6adfb6e26c8a8858a8f2b3eab567c4f4e`
-- Policy digest: `0000000000000000000000000000000000000000000000000000000000000000` (preparation placeholder until canonical GitHub Actions discovery)
+- Policy digest: `7b835df6f097799dbde5d350826721ad68130f5abf8220b1987584519fc56940`
 - Classification: `EXPLORATORY_NOT_CANONICAL_EVIDENCE`
 - Attempt slots: 3
 - Concurrency: 1
@@ -30,7 +30,7 @@ This is the successor experiment tracked by Issue #197 after the connector-nativ
 - Automatic merge: prohibited
 - Validity window: `2026-08-18T16:00:00Z` through `2026-08-25T16:00:00Z`
 
-The configuration ID above was produced by the repository's canonical digest implementation in GitHub Actions. The final policy digest must likewise be produced in GitHub Actions after binding this real configuration identity; neither identity is computed in chat or on an executor host.
+The configuration ID and policy digest above were produced by the repository's canonical digest implementation in GitHub Actions. The policy digest was computed only after the real configuration identity was bound into policy; neither identity was computed in chat or on an executor host.
 
 ## Connector-native state-currency contract
 
