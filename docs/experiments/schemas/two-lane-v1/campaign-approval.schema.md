@@ -126,9 +126,10 @@ brackets. A GitHub URL is explicitly rejected through this legacy branch.
 ### Reference form B — connector-native agent-recorded GitHub audit event
 
 When the execution surface does not expose real platform conversation IDs,
-use:
+the receipt uses the following two fields (shown as a partial fragment, not a
+complete schema example):
 
-```yaml
+```text
 reference_kind: "agent_recorded_github_issue_comment"
 reference: "https://github.com/<owner>/<repo>/issues/<issue-number>#issuecomment-<comment-id>"
 ```
@@ -147,9 +148,14 @@ inspect the transcription event. Neither the comment nor the receipt may be
 created in advance of the human decision, and neither substitutes for the
 standalone `approve`.
 
-### Non-operative connector-native example
+### Non-operative connector-native illustration
 
-```yaml
+The following is YAML-shaped documentation for the connector-native variant,
+but it is intentionally fenced as text because Phase-1 `yaml` fences are
+reserved for complete profile examples governed by the original closed-shape
+contract tests:
+
+```text
 approval_schema_version: "1"
 status: "approved"
 campaign_id: "EXP-0000-EXAMPLE"
@@ -166,11 +172,12 @@ reference_kind: "agent_recorded_github_issue_comment"
 reference: "https://github.com/example/example/issues/1#issuecomment-<COMMENT-ID>"
 ```
 
-The example above is non-operative because its campaign, digest, repository,
-and comment id are placeholders. An operative connector-native receipt uses
-the exact presented digest and the concrete permalink returned by GitHub for
-the agent-recorded approval event.
+The illustration above is non-operative because its campaign, digest,
+repository, and comment id are placeholders. An operative connector-native
+receipt uses the exact presented digest and the concrete permalink returned by
+GitHub for the agent-recorded approval event. The normative connector-native
+field/grammar contract is the Required fields table plus the byte-identical
+JSON schemas under `docs/` and the packaged runtime resources.
 
-All examples above are authored under the Two-Lane YAML Profile v1 (ADR
-0023 §10b): every string-valued field, including `mechanism` and
-`reference_kind`, is quoted.
+All full YAML examples above are authored under the Two-Lane YAML Profile v1
+(ADR 0023 §10b): every string-valued field, including `mechanism`, is quoted.
