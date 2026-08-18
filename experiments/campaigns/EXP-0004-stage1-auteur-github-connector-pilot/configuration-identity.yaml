@@ -13,4 +13,4 @@ execution_parameters:
   invocation_boundary: "before_first_experiment_scoped_target_read"
   target_access_mode: "github_connector_read_only"
   probe_backend: "github_connector_exact_sha_v1"
-configuration_id: "0000000000000000000000000000000000000000000000000000000000000000"
+configuration_id: "b61d05fe7cb3670a99e0773ae3ef8dd6adfb6e26c8a8858a8f2b3eab567c4f4e"
