@@ -74,19 +74,19 @@ The workspace is **not** authoritative for whether a reservation or invocation o
 
 ### GitHub Actions is the deterministic validator
 
-Artifact validation runs against an exact GitHub head. The validation terminal state records both the exact validated head and the workflow run id.
+Artifact validation runs against an exact GitHub head. A later terminal state records the exact prior head that was validated plus the workflow run id.
 
 ## 5. Required durable ordering
 
 For every attempt:
 
 ```text
-commit RESERVED
-    -> commit INVOKED
+commit state = RESERVED
+    -> commit state = INVOKED
     -> first experiment-scoped target read
-    -> commit OUTPUT_CAPTURED + artifact
+    -> commit state = OUTPUT_CAPTURED + artifact
     -> exact-head GitHub Actions validation
-    -> commit VALIDATION_PASSED or VALIDATION_FAILED
+    -> commit state = VALIDATION_PASSED or VALIDATION_FAILED
 ```
 
 The invocation boundary is explicitly:
@@ -96,6 +96,14 @@ before_first_experiment_scoped_target_read
 ```
 
 This is an execution-accounting boundary, not a statement about when the ChatGPT session itself started.
+
+### Why transition commits do not self-identify
+
+A Git commit cannot safely contain its **own** commit SHA: the commit SHA depends on the tree, and the tree would contain the SHA being computed. That would create a circular identity dependency.
+
+Therefore `github_results_branch_v1` does **not** embed a transition's own commit SHA inside the state transition. Transition commit identities are derived from the GitHub history of the results branch during recovery/audit.
+
+A later transition may safely refer to an already-existing earlier commit. In particular, the validation terminal state records `validation_head_sha`, which is the prior exact head on which GitHub Actions validated the preserved artifact.
 
 ## 6. Results branch and PR lifecycle
 
@@ -147,7 +155,7 @@ Unknown fields fail closed in contract v1.
 
 ## 8. Attempt contract
 
-Each attempt records the current state plus the exact commit SHA for every durable transition:
+Each attempt records the current state and the complete legal state history. GitHub commit history supplies the durable commit identity for each transition.
 
 ```yaml
 attempt_id: "attempt-001"
@@ -155,23 +163,16 @@ configuration_id: "<campaign configuration id>"
 state: "VALIDATION_PASSED"
 state_history:
   - state: "RESERVED"
-    commit_sha: "<40-hex>"
   - state: "INVOKED"
-    commit_sha: "<40-hex>"
   - state: "OUTPUT_CAPTURED"
-    commit_sha: "<40-hex>"
   - state: "VALIDATION_PASSED"
-    commit_sha: "<40-hex>"
-reserved_commit_sha: "<RESERVED commit>"
-invoked_commit_sha: "<INVOKED commit>"
-output_commit_sha: "<OUTPUT_CAPTURED commit>"
 artifact_path: "experiments/results/<campaign>/attempts/attempt-001/repository-sensemaking-brief.md"
-validation_head_sha: "<OUTPUT_CAPTURED commit>"
+validation_head_sha: "<prior exact head containing OUTPUT_CAPTURED + artifact>"
 validation_run_id: 123456789
 terminal_reason: null
 ```
 
-The validator requires transition commit SHAs to be unique across campaign history. Validation must be bound to the exact `OUTPUT_CAPTURED` head.
+The pure validator checks the state machine, budget/concurrency, artifact confinement, and validation-evidence shape. Recovery/audit additionally inspects GitHub history to identify which commit first introduced each transition and verifies that the recorded workflow run belongs to `validation_head_sha`.
 
 ## 9. Crash/interruption semantics
 
@@ -181,23 +182,22 @@ Nothing has been consumed. Another workspace may safely begin the attempt protoc
 
 ### After `RESERVED`, before `INVOKED`
 
-The slot exists permanently. Recovery must transition it to
-`ABORTED_BEFORE_INVOCATION` or continue that same attempt to `INVOKED`; it may not silently delete the reservation.
+The slot exists permanently because the results branch records `RESERVED`. Recovery must transition it to `ABORTED_BEFORE_INVOCATION` or continue that same attempt to `INVOKED`; it may not silently delete the reservation.
 
 ### After `INVOKED`, before output preservation
 
-The invocation is permanently known to have occurred. Recovery must not replay it as if it never happened. If no output can be recovered, the attempt terminates through the existing post-invocation failure path and the slot remains consumed.
+The invocation is permanently known to have occurred because the results branch contains an `INVOKED` transition before the target read. Recovery must not replay it as if it never happened. If no output can be recovered, the attempt terminates through the existing post-invocation failure path and the slot remains consumed.
 
 ### After `OUTPUT_CAPTURED`, before validation terminalization
 
-The artifact is already durable. Recovery validates that exact preserved head; it does not rerun the analysis.
+The artifact is already durable. Recovery validates the exact preserved head; it does not rerun the analysis.
 
 ## 10. Exact-head validation
 
 The existing `phase2-campaign-validation` GitHub Actions job runs the entire
 `tests/campaign_validation` directory on Python 3.11 and 3.12 at the exact PR head. The Phase-A adapter test suite therefore enters the existing validator ecosystem without changing the workflow definition.
 
-During a real EXP-0003 attempt, artifact-specific validation will also run against the exact `OUTPUT_CAPTURED` head. The terminal state records the workflow run id and requires `validation_head_sha == output_commit_sha`.
+During a real EXP-0003 attempt, artifact-specific validation runs against the exact head containing `OUTPUT_CAPTURED` and the artifact. The later terminal-state commit records that already-existing `validation_head_sha` plus the workflow run id. The audit layer verifies the run/head association through GitHub.
 
 ## 11. Phase A scope
 
