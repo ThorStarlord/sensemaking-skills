@@ -1,10 +1,40 @@
 # ADR 0021: Production-Readiness Requirements
 
-**Status**: PROPOSED — draft for owner review, not yet accepted. Owner has
-explicitly deferred D7/D8; **no implementation or GA claim authorized**.
+**Status**: SUPERSEDED — historical proposal, never Accepted
 **Date**: 2026-07-25 (updated 2026-07-26)
-**Proposes resolution for**: Issue #36 (was blocked by #28 [closed], #32,
-#30 — proposed in ADR 0017, provisionally addressed in ADR 0015)
+**Superseded on**: 2026-08-18
+**Proposed resolution for**: Issue #36 (closed `not planned` / superseded)
+
+## Current disposition
+
+This July GA/readiness proposal is retained as historical rationale, but it is
+not current product-wide readiness authority.
+
+- ADR 0017's proposed universal readiness gate was superseded and never
+  Accepted. Current readiness and verification are responsibility-local and
+  evidence-driven rather than one blanket prerequisite for every bounded
+  feature addition.
+- Bounded engineering changes should carry evidence proportional to the
+  responsibility and claim being changed. External-repository proof remains
+  appropriate when the claim itself depends on external generality, but is not
+  a universal gate on unrelated work.
+- A product-wide or GA claim requires its own explicit release scope plus
+  evidence sufficient for that claim. Supported-agent, platform, budget,
+  concurrency, and operational commitments are owner/product commitments when
+  such a release claim is actually being made; they are not standing blockers
+  on every bounded engineering responsibility.
+- Exploratory campaign outputs cannot silently establish canonical readiness
+  claims. The concluded EXP-0002 research path remains empirically
+  inconclusive and supplies no end-to-end production-readiness proof.
+- Closing issue #36 did not retroactively accept this ADR or create a
+  replacement universal readiness schema. A future GA/release-readiness
+  decision should be opened against the concrete release scope and evidence
+  claim current at that time.
+
+Everything below this point is the historical July proposal and evidence note,
+preserved for context.
+
+---
 
 **2026-07-26 update**: following the 2026-07-26 product-contract review and
 owner decision round (`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`), the

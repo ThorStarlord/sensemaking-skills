@@ -1,9 +1,33 @@
 # ADR 0019: When Findings Become Recommendations versus Tracker Tasks
 
-**Status**: PROPOSED — draft for owner review, not yet accepted
+**Status**: SUPERSEDED — historical proposal, never Accepted
 **Date**: 2026-07-25
-**Proposes resolution for**: Issue #34 (was blocked by #29, #33 — both
-proposed, not yet accepted, in ADR 0014, ADR 0018)
+**Superseded on**: 2026-08-18
+**Proposed resolution for**: Issue #34 (closed `not planned` / superseded)
+
+## Current disposition
+
+This July proposal is retained as historical rationale, but it is not current
+product authority.
+
+- ADR 0014's accepted product boundary keeps generic tracker synchronization
+  and direct third-party tracker writes outside the core product unless they
+  are separately re-ratified.
+- ADR 0018's deterministic product-level routing proposal was superseded and
+  never Accepted. The active coding agent selects the warranted engineering
+  responsibility; compatibility routing paths or deterministic subflows do
+  not own that decision by default.
+- Therefore there is no universal `finding -> tracker task` conversion policy.
+  Findings and validated artifacts inform the next warranted action. Task
+  creation may happen later inside an explicitly selected implementation
+  responsibility or downstream consumer, but it is not automatically
+  triggered by every finding and is not a core tracker-write contract.
+- Closing issue #34 did not retroactively accept this ADR. A future proposal
+  for direct tracker integration or deterministic task-generation authority
+  requires fresh evidence and a new explicit product decision.
+
+Everything below this point is the original July proposal and evidence note,
+preserved for historical context.
 
 ---
 
