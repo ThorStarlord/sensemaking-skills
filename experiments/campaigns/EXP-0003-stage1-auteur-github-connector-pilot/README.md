@@ -16,6 +16,8 @@ This is the successor experiment defined by Issue #191 and the merged Phase-A co
 - Target repository: `https://github.com/ThorStarlord/auteur.git`
 - Target SHA: `0653defb05625f2fcde0ac32eac6e59ccf7eeb90`
 - Artifact type: `repository_sensemaking_brief`
+- Configuration ID: `96ef1c309e9f2f5c22eeb94fc4b0d887badc677573500eb8ddd8a24b8c6f8df6`
+- Policy digest: `710478c4acf5217a9177ba7cfdca3623929c5f0cbf219d4a407b8e4c28533f2a`
 - Classification: `EXPLORATORY_NOT_CANONICAL_EVIDENCE`
 - Attempt slots: 3
 - Concurrency: 1
@@ -26,7 +28,7 @@ This is the successor experiment defined by Issue #191 and the merged Phase-A co
 - Automatic merge: prohibited
 - Validity window: `2026-08-18T12:00:00Z` through `2026-08-25T12:00:00Z`
 
-The final `configuration_id` and `policy_digest` are produced by the repository's canonical digest implementation under GitHub Actions and must replace the preparation placeholders before this package is review-ready.
+The configuration ID and policy digest above were produced by the repository's canonical digest implementation in GitHub Actions, not computed in chat or on an executor host.
 
 ## GitHub-durable execution protocol
 
@@ -57,4 +59,4 @@ No current file in this directory is an operative approval. No results branch, r
 
 A replacement workspace must be able to reconstruct the complete campaign state from GitHub alone after any interruption. If two materially different invocation histories remain indistinguishable from GitHub, or machine-local evidence is required to resolve the state, the successor hypothesis is unsupported/inconclusive.
 
-Stop marker: `EXP_0003_PREPARATION_ONLY_AWAITING_DIGEST_FREEZE`.
+Stop marker: `EXP_0003_PREPARATION_PR_READY_FOR_REVIEW`.
