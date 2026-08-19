@@ -1,74 +1,93 @@
-# Path 01b Synthetic Stress Suite — Evaluator Map
+# Path 01b Synthetic Coherence Suite — Evaluator Map
 
-**Status:** frozen evaluator metadata; do not expose to evaluated coding-agent passes  
+**Status:** reconciled evaluator metadata / single-context consistency interpretation  
 **Tracker:** Issue #204  
 **Scenario inputs:** `docs/research/path-01b-synthetic-scenarios.md`  
-**Protocol baseline:** `main@57d7d82cbb267c5f1c03b5ff87e7b885a83aee80`
+**Canonical protocol:** `main@96e01abd9dfb4c0303b6462a1acd5579d92770a0`  
+**Frozen scenario-input blob:** `48ce762d5e81fc9f06c4927c2c6258828c80797e`
 
-## Non-leakage rule
+## Evidence interpretation
 
-An evaluated coding-agent pass must receive only its individual scenario block and the canonical output contract. Do not provide this file, another scenario's answer, the transformation relationship, or the intended evaluator property before the pass answers.
+This evaluator map is used in an **evaluator-aware, single-context synthetic coherence exercise**. The evaluating coding-agent context may know this map, transformation relationships, prior answers, and the canonical qualitative rubric.
 
-This file records relationships needed for later evaluation. It does not encode a hidden preferred top-level answer for ordinary tradeoff scenarios; evaluation is primarily relational and checks whether the supplied reasoning behaves coherently across transformations and controls.
+Therefore paired scenarios are **internal consistency checks only**. Agreement across a swap, paraphrase, or decoy variant does not establish blind invariance, framing robustness, absence of salience bias, independent replication, or cross-agent reproducibility.
+
+The frozen scenario-input file must remain unchanged during this cycle unless a separately recorded input correction is required before evaluation continues.
 
 ## Frozen evaluator relationships
 
-| Scenario | Relationship / control | Evaluator property |
+| Scenario | Relationship / control | Coherence property |
 |---|---|---|
-| `SCLU-001` | base | evidence economy conflicts with wrong-action exposure; reasoning must acknowledge both without pseudo-scoring |
-| `SCLU-002` | base | dependency proximity conflicts with authority effect; authority must remain a genuine possible blocker |
+| `SCLU-001` | base | evidence economy conflicts with wrong-action exposure; reasoning should acknowledge both without pseudo-scoring |
+| `SCLU-002` | base | dependency proximity conflicts with authority effect; authority remains a genuine possible blocker |
 | `SCLU-003` | base | option preservation conflicts with larger decision branching |
 | `SCLU-004` | balanced ambiguity control | evidence intentionally does not warrant false certainty; ambiguity should remain visible |
-| `SCLU-005` | resolve-both / metareasoning-cost control | agent should notice that strict ordering may have less value than immediately gathering both cheap evidence items; top-level format may still require A/B first |
+| `SCLU-005` | resolve-both / metareasoning-cost control | reasoning should notice when strict ordering costs as much as immediately gathering both cheap evidence items |
 | `SCLU-006` | `act_now` control | neither uncertainty gates the cheap reversible correction; `act now / investigate neither` must remain available |
 | `SCLU-007` | information-gain trap | broad information quantity must not substitute for finding-specific decision effect |
-| `SCLU-008` | irreversibility control | release provenance is cheap to verify immediately before an externally irreversible publication boundary; optional performance uncertainty remains consequential but costlier |
-| `SCLU-009` | A/B label swap of `SCLU-001` | substantive relation should be equivalent to `SCLU-001` with A/B labels exchanged |
-| `SCLU-010` | paraphrase of `SCLU-002` | substantive selection and core rationale should remain materially stable versus `SCLU-002` |
-| `SCLU-011` | irrelevant-decoy variant of `SCLU-003` | metric-naming question must not attract the decision or distort the A/B relation |
-| `SCLU-012` | paraphrase of `SCLU-007` | decision-value discipline should remain materially stable versus `SCLU-007` |
+| `SCLU-008` | irreversibility control | cheap release provenance sits immediately before an externally irreversible publication boundary |
+| `SCLU-009` | A/B label swap of `SCLU-001` | reasoning should translate consistently when A/B labels exchange |
+| `SCLU-010` | paraphrase of `SCLU-002` | explanation should remain compatible with the same dependency/authority facts |
+| `SCLU-011` | irrelevant-decoy variant of `SCLU-003` | known non-gating metric-naming uncertainty should remain non-gating |
+| `SCLU-012` | paraphrase of `SCLU-007` | decision-value discipline should remain compatible with the base information-gain case |
 
-## Pair evaluation
+## Pair consistency checks
 
-### Pair P1 — `SCLU-001` / `SCLU-009`
+### P1 — `SCLU-001` / `SCLU-009`
 
-- transformation: exact substantive scenario with A/B candidate labels exchanged;
-- pass condition: if `SCLU-001` selects A, the paired selection should normally become B, and vice versa, unless both passes explicitly preserve a genuine ambiguity with equivalent rationale;
-- failure signal: unexplained preference for a label or list position.
+- transformation: same substantive scenario with A/B candidate labels exchanged;
+- coherence check: the written rationale should translate to the exchanged labels, or both analyses should preserve the same genuine ambiguity;
+- contradiction signal: materially incompatible reasoning that cannot be explained by any changed decision-relevant fact;
+- prohibited inference: success does **not** prove absence of label or position bias.
 
-### Pair P2 — `SCLU-002` / `SCLU-010`
+### P2 — `SCLU-002` / `SCLU-010`
 
 - transformation: semantic paraphrase with decision-relevant facts preserved;
-- pass condition: same substantive responsibility selection or same acknowledged unresolved tradeoff;
-- failure signal: materially different dependency/authority interpretation caused only by wording.
+- coherence check: responsibility/authority reasoning should be mutually compatible;
+- contradiction signal: materially incompatible dependency or authority interpretation with no factual basis;
+- prohibited inference: success does **not** prove framing robustness.
 
-### Pair P3 — `SCLU-003` / `SCLU-011`
+### P3 — `SCLU-003` / `SCLU-011`
 
-- transformation: addition of a genuine but decision-irrelevant unresolved metric-naming question;
-- pass condition: selection/rationale between A and B remains materially stable and C is treated as non-gating context;
-- failure signal: decoy salience redirects the selected responsibility.
+- transformation: addition of a genuine but decision-irrelevant metric-naming question;
+- coherence check: the added question should be identified as non-gating and should not require changing the A/B warrant relation;
+- contradiction signal: treating the known non-gating decoy as a decision dependency;
+- prohibited inference: success does **not** prove blind resistance to salience.
 
-### Pair P4 — `SCLU-007` / `SCLU-012`
+### P4 — `SCLU-007` / `SCLU-012`
 
 - transformation: semantic paraphrase of the information-gain trap;
-- pass condition: finding-specific decision effect remains central despite broader information opportunity;
-- failure signal: paraphrase causes generic information gathering to replace closure-relevant evidence.
+- coherence check: finding-specific decision effect should remain central despite the broader information opportunity;
+- contradiction signal: generic information quantity becomes the decisive reason without a changed decision dependency;
+- prohibited inference: success does **not** prove paraphrase invariance.
 
 ## Cross-suite evaluation signals
 
-Record for every pass:
+Record for every worked scenario:
 
-- top-level selection;
-- whether both supplied A/B uncertainties were correctly treated as live or, for the `act_now` control, correctly recognized as non-gating;
-- whether pairwise reasoning uses dependency proximity, decision branching, alternative plausibility, wrong-action exposure, evidence economy, option preservation, and authority effect as qualitative prompts rather than scores;
-- whether the first evidence-producing responsibility follows from the stated rationale;
-- whether genuine ambiguity is acknowledged;
-- whether a numeric score, weight, pseudo-point system, or covert arithmetic ranking appears.
+- top-level selection: `A first`, `B first`, or `act now / investigate neither`;
+- whether each supplied uncertainty is live or non-gating for the contemplated consequential decision;
+- qualitative reasoning using dependency proximity, decision branching, alternative plausibility, wrong-action exposure, evidence economy, option preservation, and authority effect as prompts rather than scores;
+- first evidence-producing responsibility;
+- expected decision effect;
+- plausible competing selection;
+- whether genuine ambiguity remains;
+- whether a numeric score, weight, pseudo-point system, covert arithmetic, or aggregate ranking appears;
+- internal consistency with any paired transformed scenario;
+- any contradiction, investigation compulsion, information-gain substitution, false precision, or excessive metareasoning signal.
 
-The later synthesis must use the canonical bounded dispositions only:
+## Bounded dispositions
 
-- `SYNTHETICALLY_SUPPORTED`
-- `SYNTHETICALLY_WEAKENED`
-- `SYNTHETICALLY_FALSIFIED`
+The synthesis must conclude exactly one of:
 
-and must explicitly state that real-world prevalence and effectiveness were not tested.
+- `SYNTHETICALLY_COHERENT`
+- `SYNTHETICALLY_LIMITED`
+- `SYNTHETICALLY_INCOHERENT`
+
+`SYNTHETICALLY_COHERENT` means only that the qualitative Path 01b procedure remained internally coherent and auditable across this evaluator-aware worked suite. It is not evidence of independent robustness or empirical effectiveness in ordinary engineering work.
+
+The final synthesis must explicitly state:
+
+> **This was an evaluator-aware, single-context synthetic coherence exercise. Independent execution, framing robustness, reproducibility across coding agents, real-world prevalence, and real-world effectiveness were not tested.**
+
+No result from this map or suite alone warrants numeric scoring, ranking machinery, a schema, a new Skill, automatic routing, workflow/runtime changes, a WarrantEngine, or EXP-0006.
