@@ -1,197 +1,173 @@
 # Research: Selecting Among Competing Live Uncertainties
 
-**Status:** amended research protocol / bounded synthetic stress study  
+**Status:** amended research protocol / evaluator-aware synthetic coherence study  
 **Authority:** not an ADR, not a product contract, not a Workflow-v0 change  
 **Tracker:** Issue #204  
 **Original baseline:** `main@65c2be1b430e7bc8d1400ca99d80c6ff6256a051`  
 **Synthetic-amendment baseline:** `main@cf959f0f5a262d78366f4dedb50cfb99f555e071`  
+**Single-context-amendment baseline:** `main@35b5f3126d95529290ae8d9ebb0dad82e9b07548`  
 **Parent research:** `docs/research/uncertainty-selection.md`  
 **Related control study:** `docs/research/warrant-as-control-primitive.md`
 
 ## 1. Amendment summary
 
-The original Path 01b protocol required 5–8 qualifying normal-use engineering episodes before synthesis. This amendment deliberately weakens that completion claim.
+Path 01b originally required normal-use engineering episodes, then was weakened to a bounded synthetic stress study with isolated independent coding-agent passes. This amendment deliberately weakens the claim again because the currently available connected execution surface does not provide an isolated general coding-agent executor.
 
-The immediate study may now use **deliberately constructed synthetic stress scenarios executed by a coding agent** to test whether the qualitative selection procedure is coherent, prospectively usable, invariant to irrelevant presentation changes, capable of admitting ambiguity, and resistant to obvious failure modes.
+The immediate study may therefore use the already-frozen synthetic scenarios as an **evaluator-aware, single-context synthetic coherence exercise**. The same coding-agent context may apply the qualitative procedure to all scenarios even though it has seen the research protocol, evaluator relationships, and prior answers.
 
-Synthetic evidence may close this dedicated research cycle under a bounded synthetic disposition. It may **not** establish that:
+That change removes any claim of independent replication, blind invariance, framing robustness, or cross-agent reproducibility. The exercise is useful only for asking whether the proposed qualitative reasoning procedure can be applied coherently to adversarial worked examples without obvious contradiction, investigation compulsion, information-gain substitution, false precision, or numeric scoring.
 
-- competing-live uncertainty cases are common in ordinary engineering work;
-- the policy improves outcomes in real repositories;
-- humans and coding agents would agree on the same choice;
-- a selected uncertainty is objectively optimal;
-- the policy is production-ready;
-- any numeric scoring, ranking, schema, Skill, workflow, or runtime mechanism is warranted.
-
-Real-world prevalence and effectiveness remain explicitly untested unless later normal-use evidence is collected.
+The frozen scenario inputs themselves must not be rewritten merely to make later reasoning look better. Any scenario correction must be separately recorded as a protocol/input change before evaluation continues.
 
 ## 2. Research question
 
-> **Under deliberately constructed cases where multiple uncertainties are simultaneously plausible and decision-changing, can a coding agent prospectively choose what to resolve first using qualitative pairwise reasoning without collapsing into brittle numeric ranking or unstable framing effects?**
+> **Given frozen synthetic competing-live-uncertainty scenarios and an explicit qualitative reasoning rubric, can a coding agent apply the procedure to produce coherent, auditable worked decisions without obvious contradiction, forced investigation, information-gain substitution, false precision, or numeric ranking?**
 
 This study extends Research Path 1. It does not replace the current operating rule:
 
 > **Resolve the nearest currently-live unresolved decision-changing dependency before committing to the consequential action.**
 
-The PR #164 falsification established that an unresolved historical question is not necessarily a currently-live decision dependency. Path 01b targets the harder case where two or more uncertainties are all relevant to the same consequential decision.
+The PR #164 falsification established that an unresolved historical question is not necessarily a currently-live decision dependency. Path 01b remains focused on the harder case where two or more uncertainties are relevant to the same consequential decision.
 
-Research Path 2 supplies a control frame rather than new machinery:
+Research Path 2 supplies a control frame rather than machinery:
 
 > **What do current evidence and required authority warrant for this specific target now?**
 
-## 3. Claim boundary
+## 3. Strongest permitted claim
 
 The strongest claim this study is allowed to support is:
 
-> **Under bounded synthetic competing-live-uncertainty scenarios, a coding agent can prospectively use qualitative pairwise reasoning to make explainable selections, survive defined invariance tests, expose genuine ambiguity and failure modes, and avoid collapsing the decision into a numeric ranking scheme.**
+> **Within a bounded evaluator-aware single-context synthetic exercise, the qualitative Path 01b procedure can be applied to the frozen adversarial scenarios in an internally coherent and auditable way, while preserving `act_now`, exposing genuine ambiguity, preferring decision effect over generic information gain where warranted, and avoiding numeric scoring.**
 
-A successful synthetic study is evidence of **conceptual coherence and stress resistance**, not ecological validity.
+A positive result is evidence of **internal conceptual coherence only**.
 
-The final synthesis must include this sentence or an equivalent explicit limitation:
+It does **not** establish:
 
-> **Real-world prevalence and effectiveness were not tested.**
+- independent replication;
+- blind invariance under A/B swaps or paraphrase;
+- robustness to framing effects;
+- reproducibility across coding agents, models, sessions, or contexts;
+- that competing-live cases are common in ordinary engineering work;
+- that the procedure improves real-world engineering outcomes;
+- human-agent agreement;
+- objective optimality of a selected uncertainty;
+- production readiness;
+- warrant for a score, ranking engine, schema, Skill, workflow, runtime mechanism, or EXP-0006.
+
+The final synthesis must explicitly state:
+
+> **This was an evaluator-aware, single-context synthetic coherence exercise. Independent execution, framing robustness, reproducibility across coding agents, real-world prevalence, and real-world effectiveness were not tested.**
 
 ## 4. Working hypotheses
 
-### H1 — dependency proximity usually dominates when a real dependency order exists
+### H1 — dependency proximity remains useful when a real dependency order exists
 
-If a credible contrary answer to uncertainty A would invalidate the entire responsibility in which uncertainty B matters, A should normally be resolved first.
+If a credible contrary answer to uncertainty A would invalidate the responsibility in which uncertainty B matters, resolving A first should remain a coherent qualitative choice.
 
-A scenario fully explained by this rule is a useful control case but is not a strong parallel-uncertainty stress case.
+### H2 — genuinely parallel cases can be discussed without numeric aggregation
 
-### H2 — genuinely parallel cases require qualitative comparison
-
-When neither uncertainty clearly invalidates the other's decision surface, compare them using:
+When neither uncertainty clearly invalidates the other, compare qualitatively:
 
 - **dependency proximity** — how early the uncertainty sits in the warrant for the contemplated decision;
-- **decision branching** — which consequential decisions could change if the answer differs;
+- **decision branching** — which consequential decisions could change;
 - **alternative plausibility** — whether contrary answers have credible support in the supplied evidence;
-- **wrong-action exposure** — cost, propagation, external visibility, reversibility, and false-closure risk if the assumption is wrong;
+- **wrong-action exposure** — cost, propagation, external visibility, reversibility, and false-closure risk if wrong;
 - **evidence economy** — cost and reliability of obtaining authoritative evidence;
-- **option preservation** — whether acting or investigating preserves future alternatives;
+- **option preservation** — whether acting or investigating preserves alternatives;
 - **authority effect** — whether the answer changes who may decide, act, publish, merge, or close.
 
-These are reasoning prompts, **not scores**. Do not assign numbers, weights, rankings, pseudo-points, or a composite value.
+These are reasoning prompts, **not scores**. Do not assign numbers, weights, pseudo-points, or a composite ranking.
 
-### H3 — pairwise explanation should be sufficient
+### H3 — pairwise explanation should remain intelligible
 
-A useful selection should be explainable prospectively as:
+A useful worked decision should be explainable prospectively as:
 
 ```text
 resolve A before B because ...
 ```
 
-The study is weakened if reliable choices require a hidden or explicit numeric ranking mechanism.
+or, where warranted:
+
+```text
+act now / investigate neither because ...
+```
+
+The study is limited or incoherent if the reasoning repeatedly depends on hidden arithmetic, arbitrary preference, or conclusions that cannot be reconciled with the supplied facts.
 
 ### H4 — decision value should beat raw information gain
 
-A broad uncertainty that would yield much more information should still lose to a narrower uncertainty when the narrower answer has materially greater effect on the consequential decision.
+A broad uncertainty that would yield more information should not automatically outrank a narrower uncertainty whose answer more directly changes the consequential decision.
 
 ### H5 — the procedure must permit `act_now`
 
-The coding agent must be able to conclude that neither uncertainty warrants further investigation before action. A framework that always selects something to investigate is over-controlling the workflow.
+The coding agent must be able to conclude that neither uncertainty needs resolution before a cheap, reversible, warranted action.
 
 ### H6 — genuine ambiguity should remain visible
 
-When two choices are defensible from the same evidence, the coding agent should identify the unresolved tradeoff rather than manufacture false precision.
+When the supplied evidence supports multiple defensible choices, the coding agent should preserve the tradeoff rather than manufacture false precision.
 
-## 5. Synthetic scenario requirements
+## 5. Frozen synthetic scenario suite
 
-Prefer **8–12 frozen scenarios**. The number is a bounded stress target, not a quota that justifies redundant cases.
+Use the frozen 12-scenario suite prepared under Issue #204. The suite covers:
 
-Every scenario must be written and frozen before the evaluated coding-agent pass sees it.
+1. evidence economy vs wrong-action exposure;
+2. dependency proximity vs authority effect;
+3. option preservation vs decision branching;
+4. balanced ambiguity;
+5. resolve-both / metareasoning-cost control;
+6. `act_now` control;
+7. information-gain trap;
+8. irreversibility control;
+9. A/B-label swap;
+10. semantic paraphrase;
+11. irrelevant-decoy insertion;
+12. a second information-gain paraphrase.
 
-Each scenario must provide:
+Scenario construction and evaluator metadata remain separate research artifacts. Their purpose is to preserve what was frozen before the worked evaluation, not to create a blind test.
 
-1. a goal;
-2. an authorized scope and authority boundary;
-3. one contemplated consequential decision;
-4. at least two candidate live uncertainties;
-5. credible alternative answers for each uncertainty;
-6. enough evidence to reason prospectively, while withholding the scenario's intended evaluation outcome;
-7. a plausible reason why a competent agent might select either A, B, or `act_now`.
+Synthetic scenarios do not count as evidence that the same case shapes are common in normal engineering work.
 
-Synthetic scenarios are deliberately constructed and therefore do **not** count as evidence that the same case shape occurs frequently in ordinary engineering work.
+## 6. Transformation pairs are consistency checks, not blind invariance tests
 
-## 6. Required scenario families
+A/B swaps, paraphrases, and decoy variants remain useful, but their interpretation is weakened.
 
-The suite should include conflicts where different qualitative dimensions pull in different directions.
+### A/B swap
 
-At minimum include:
+Ask whether the written reasoning can be translated consistently when candidate labels exchange. A contradiction is evidence against coherence.
 
-1. **evidence economy vs wrong-action exposure** — A is cheap to resolve; B is more consequential if assumed incorrectly;
-2. **dependency proximity vs authority effect** — A is earlier in the warrant chain; B could change who is authorized to act;
-3. **option preservation vs decision branching** — A preserves options; B may redirect more downstream work;
-4. **balanced ambiguity** — neither A nor B clearly dominates;
-5. **resolve-both control** — the metareasoning cost of ordering A/B approaches or exceeds resolving both;
-6. **act-now control** — neither uncertainty has enough expected decision effect to justify more investigation;
-7. **information-gain trap** — A yields more information but B has greater decision effect;
-8. **irreversibility control** — a relatively cheap uncertainty sits before an expensive or externally visible action.
+Do **not** claim that success proves absence of label or position bias, because the evaluator-aware context knows the relationship.
 
-Additional scenarios may cover technical vs authority, scope vs correctness, reconciliation vs repair, finding-specific verification vs more implementation, repository inspection vs empirical probe, or closure vs further validation.
+### Paraphrase
 
-## 7. Controlled transformations and invariance tests
+Ask whether semantically equivalent formulations receive mutually compatible explanations.
 
-The strongest synthetic evidence should come from paired variants rather than isolated answers.
+Do **not** claim that success proves framing robustness or blind paraphrase invariance.
 
-### T1 — A/B label swap
+### Irrelevant decoy
 
-Create an otherwise identical variant in which A and B labels are exchanged.
+Ask whether the reasoning correctly identifies a supplied non-gating uncertainty as non-gating.
 
-Expected property:
+Do **not** claim that success proves resistance to salience under blind conditions.
 
-- the substantive choice should exchange labels while the reasoning relation remains equivalent.
+### Information-gain trap
 
-A failure suggests label/position bias.
+Ask whether the worked reasoning can distinguish decision effect from generic information quantity without inventing a score.
 
-### T2 — paraphrase
+### `act_now` control
 
-Rewrite the same scenario without changing decision-relevant facts.
+Ask whether the procedure can explicitly stop investigating when a reversible warranted action does not depend on resolving the remaining uncertainties.
 
-Expected property:
+### Ambiguity control
 
-- the selected responsibility and core rationale should remain materially stable;
-- wording may differ.
+Ask whether the explanation can preserve an evidence-supported tradeoff without forcing a winner.
 
-Large unexplained changes indicate framing sensitivity.
+## 7. Single-context execution protocol
 
-### T3 — irrelevant decoy
+The same coding-agent context may evaluate all frozen scenarios sequentially.
 
-Add an interesting unresolved question that is not a live dependency of the contemplated consequential decision.
+Independence, context isolation, blindness to evaluator relationships, and absence of previous answers are **not requirements** and must not be implied in the synthesis.
 
-Expected property:
-
-- the decoy should not attract selection merely because it is salient or information-rich.
-
-### T4 — information-gain trap
-
-Make one uncertainty broad and informative while another is narrower but more decision-changing.
-
-Expected property:
-
-- decision effect should dominate information quantity when the evidence supports that distinction.
-
-### T5 — act-now control
-
-Construct a case where both uncertainties are real but neither needs resolution before a cheap, reversible, warranted action.
-
-Expected property:
-
-- the agent should be able to choose `act_now / investigate neither`.
-
-### T6 — ambiguity preservation
-
-Construct a balanced case with defensible arguments for both A and B.
-
-Expected property:
-
-- the agent should identify the genuine tradeoff and explain why the evidence does not warrant fake certainty.
-
-## 8. Coding-agent execution protocol
-
-Run each frozen scenario in an independent pass with no prior answer from another pass supplied as context.
-
-Each pass must return exactly one top-level selection:
+For each scenario, produce exactly one top-level action label:
 
 ```text
 A first
@@ -199,187 +175,164 @@ B first
 act now / investigate neither
 ```
 
-and must also provide:
+The top-level label is a compact execution record, not a claim that a unique objectively correct answer exists.
+
+Each worked evaluation must also provide:
 
 - the contemplated consequential decision;
 - why each candidate uncertainty is live in the supplied scenario;
 - credible alternatives for A and B;
-- pairwise reasoning across the qualitative dimensions;
+- qualitative reasoning across the relevant prompts;
 - prospective selection rationale;
-- plausible competing selection and why a competent agent might choose it;
+- a plausible competing selection and why a competent agent might choose it;
 - first evidence-producing responsibility it would take;
-- expected decision effect of resolving the selected uncertainty;
+- expected decision effect of resolving the selected uncertainty, when applicable;
 - whether ambiguity remains;
-- explicit statement that no numeric score, weight, or pseudo-point system was used.
+- whether the worked answer is influenced by an explicitly known transformation/control relationship;
+- an explicit statement that no numeric score, weight, or pseudo-point system was used.
 
-Do not reveal the intended stress property, transformation relationship, or evaluator expectation to the coding agent before its answer.
+Do not rewrite a scenario during evaluation. If a scenario is discovered to be malformed or insufficient, record that as a study limitation.
 
-## 9. Synthetic observation record
+## 8. Synthetic observation record
 
-Assign scenario-family IDs such as `SCLU-001`, with variant IDs such as `SCLU-001-base`, `SCLU-001-swap`, and `SCLU-001-paraphrase`.
-
-Use this research record:
+Use a compact research record such as:
 
 ```yaml
-scenario_id: "SCLU-XXX-variant"
-scenario_family: "SCLU-XXX"
-scenario_kind: "base|swap|paraphrase|decoy|information_trap|act_now|ambiguity|other"
+scenario_id: "SCLU-XXX"
 synthetic: true
+execution_mode: "evaluator_aware_single_context"
 
 contemplated_target: "<consequential decision>"
-authorized_scope: "<scope and authority boundary>"
-
-live_uncertainties:
-  - id: "A"
-    question: "<question>"
-    credible_alternatives:
-      - "<answer 1>"
-      - "<answer 2>"
-  - id: "B"
-    question: "<question>"
-    credible_alternatives:
-      - "<answer 1>"
-      - "<answer 2>"
-
 agent_selection: "A first|B first|act now / investigate neither"
-agent_rationale: "<prospective rationale>"
+agent_rationale: "<prospective qualitative rationale>"
 plausible_competing_selection: "<alternative and rationale>"
-first_evidence_responsibility: "<inspect|probe|ask_owner|other>"
+first_evidence_responsibility: "<inspect|probe|ask_owner|other|none>"
 ambiguity_acknowledged: "yes|no|not_applicable"
+known_transformation_or_control: "<yes/no + description if known>"
 numeric_scoring_used: false
 
 evaluation:
-  expected_stress_property: "<property tested>"
-  property_satisfied: "yes|no|unclear"
-  invariant_with_pair: "yes|no|not_applicable|unclear"
-  framing_sensitivity_observed: "yes|no|unclear"
-  information_gain_substitution_observed: "yes|no|unclear"
+  internally_coherent: "yes|no|unclear"
+  compatible_with_related_variant: "yes|no|not_applicable|unclear"
+  decision_value_disciplined: "yes|no|unclear"
+  investigation_compulsion_observed: "yes|no|unclear"
   false_precision_observed: "yes|no|unclear"
+  contradiction_observed: "yes|no|unclear"
   framework_failure_signal: "<none or failure>"
 ```
 
-This YAML is a **research observation format only**. It is not a repository schema, runtime contract, validation profile, or proposed persisted product artifact.
+This is a **research observation format only**. It is not a schema, runtime contract, validation profile, or proposed persisted product artifact.
 
-## 10. Evaluation principles
+## 9. Evaluation principles
 
-Do not judge success by agreement with a hidden preferred answer alone.
-
-Evaluate whether the agent's reasoning satisfies the intended relation across paired scenarios.
+The study evaluates the coherence of the worked reasoning, not blind model behavior.
 
 Important signals include:
 
-- **selection coherence** — the choice follows from the stated warrant dependencies;
-- **transformation invariance** — irrelevant label/wording changes do not alter the substantive decision;
-- **decision-value discipline** — decision effect is not replaced by generic information gain;
-- **option discipline** — reversibility and option preservation affect reasoning without becoming a score;
+- **selection coherence** — the explanation follows from stated warrant dependencies and does not contradict itself;
+- **cross-variant compatibility** — related worked examples can be reconciled without claiming blind invariance;
+- **decision-value discipline** — generic information gain does not substitute for decision effect;
+- **option discipline** — reversibility and option preservation matter without becoming scores;
 - **authority discipline** — authority-changing uncertainty is treated as consequential when relevant;
 - **stopping discipline** — `act_now` remains available;
 - **ambiguity honesty** — genuine ties or underspecification remain visible;
-- **non-numeric reasoning** — qualitative prompts do not collapse into pseudo-math.
+- **non-numeric reasoning** — qualitative prompts do not collapse into pseudo-math;
+- **evaluator-awareness disclosure** — the analysis does not pretend that known test relationships were hidden.
 
-## 11. Falsification and weakening criteria
+Agreement with a hidden preferred answer is not the criterion. The evaluator may use frozen relationship metadata to inspect contradictions and intended control properties, but successful alignment with that metadata cannot be presented as an independent behavioral result.
 
-Treat the bounded synthetic hypothesis as weakened or falsified if repeated scenarios show one or more of:
+## 10. Limitation / incoherence criteria
 
-### F1 — arbitrary selection
+Treat the bounded claim as limited or incoherent if repeated worked scenarios show one or more of:
 
-Independent passes repeatedly choose different uncertainties in equivalent cases without a stable qualitative explanation.
+### F1 — arbitrary or unreconcilable selection
 
-### F2 — retrospective-looking rationalization
+Equivalent or closely related scenarios receive incompatible selections without a stable qualitative explanation.
 
-The reasoning appears to justify whichever option was selected rather than prospectively discriminating among alternatives.
+### F2 — circular rationalization
+
+The explanation merely restates the selected label and does not discriminate prospectively among alternatives.
 
 ### F3 — information-gain substitution
 
-The agent repeatedly chooses the uncertainty that promises more information even when another uncertainty has clearly stronger decision effect.
+The procedure repeatedly prefers broader information gathering even when the supplied facts make another uncertainty more directly decision-changing.
 
 ### F4 — excessive metareasoning
 
-The reasoning needed to order A/B is more complex than resolving both in scenarios designed to make that comparison visible.
+The qualitative ordering discussion is more complex than simply gathering both cheap evidence items in scenarios designed to expose that possibility.
 
 ### F5 — hidden numeric ranking
 
-The agent introduces numbers, weights, pseudo-points, or consistent implicit scoring language to aggregate the qualitative dimensions.
+Numbers, weights, pseudo-points, or composite score language are used to aggregate the qualitative prompts.
 
-### F6 — dependency instability
+### F6 — cross-variant contradiction
 
-Equivalent scenario transformations produce materially different interpretations of the warrant dependency structure.
+A/B swaps, paraphrases, or decoy variants cannot be reconciled even with evaluator-awareness disclosed.
 
-### F7 — framing sensitivity
+### F7 — investigation compulsion
 
-A/B swaps or paraphrases cause unexplained substantive selection changes.
+The procedure cannot choose `act now / investigate neither` where the supplied scenario makes further investigation non-gating before a reversible action.
 
-### F8 — investigation compulsion
+### F8 — false precision
 
-The agent cannot select `act_now` in control scenarios where neither uncertainty needs resolution before a warranted reversible action.
+A deliberately balanced scenario is forced into a decisive winner without acknowledging the supported tradeoff.
 
-### F9 — false precision
+### F9 — evaluator leakage makes the result tautological
 
-The agent reports a decisive winner in deliberately balanced scenarios without acknowledging the evidence-supported tradeoff.
+The exercise becomes little more than reproducing the evaluator notes rather than demonstrating usable reasoning from the scenario facts. If this dominates the suite, the study should be classified `SYNTHETICALLY_LIMITED` or `SYNTHETICALLY_INCOHERENT`, not upgraded by apparent agreement.
 
-## 12. Bounded dispositions
+## 11. Bounded dispositions
 
 The synthesis must conclude exactly one of:
 
 ```text
-SYNTHETICALLY_SUPPORTED
-SYNTHETICALLY_WEAKENED
-SYNTHETICALLY_FALSIFIED
+SYNTHETICALLY_COHERENT
+SYNTHETICALLY_LIMITED
+SYNTHETICALLY_INCOHERENT
 ```
 
-### `SYNTHETICALLY_SUPPORTED`
+### `SYNTHETICALLY_COHERENT`
 
-Use only when the scenario suite shows that:
+Use only when the frozen worked examples show that the qualitative procedure can be applied without material self-contradiction, preserves `act_now` and ambiguity where warranted, distinguishes decision effect from generic information gain, and does not require numeric scoring.
 
-- the coding agent can identify the supplied live uncertainties;
-- pairwise qualitative reasoning produces prospective explanations;
-- label swapping preserves the substantive relation;
-- paraphrase sensitivity is acceptably bounded;
-- irrelevant decoys do not attract selection;
-- decision value beats raw information gain in trap cases;
-- `act_now` remains available;
-- genuine ambiguity is acknowledged;
-- the process does not require numeric scoring.
+This disposition means **the procedure remained internally coherent in this evaluator-aware single-context exercise**. It does not establish independent robustness, reproducibility, or real-world effectiveness.
 
-This disposition means **the qualitative procedure survived the bounded synthetic stress suite**. It does not mean the procedure is validated in ordinary engineering work.
+### `SYNTHETICALLY_LIMITED`
 
-### `SYNTHETICALLY_WEAKENED`
+Use when the procedure remains intelligible but meaningful contradictions, underspecification, evaluator dependence, metareasoning cost, or ambiguous application materially limits the claim.
 
-Use when the procedure remains partly useful but repeated stress cases expose instability, underspecification, framing dependence, or metareasoning cost that materially limits the claim.
+### `SYNTHETICALLY_INCOHERENT`
 
-### `SYNTHETICALLY_FALSIFIED`
+Use when the worked procedure repeatedly contradicts itself, cannot preserve obvious controls, requires arbitrary or numeric ranking, or cannot distinguish decision-changing uncertainty from distraction even with the rubric visible.
 
-Use when the core qualitative selection idea repeatedly fails its intended invariance or decision-value tests, requires covert ranking machinery, or cannot distinguish decision-changing uncertainty from information-rich distraction.
+## 12. Role of future evidence
 
-## 13. Role of future normal-use evidence
+Independent coding-agent passes are no longer required for this bounded cycle. If an isolated execution surface later becomes available, it may provide a stronger follow-up study but must be treated as new evidence rather than retroactively upgrading this result.
 
-Normal-use cases are now **future corroboration**, not a completion prerequisite for this bounded research cycle.
+Normal-use cases remain future corroboration. If ordinary engineering work later produces genuine competing-live cases, preserve them prospectively. They may strengthen, weaken, or falsify transfer from this synthetic coherence exercise to real work.
 
-If ordinary engineering work later produces genuine competing-live cases, preserve them using the prospective discipline from the original protocol. They can strengthen, weaken, or falsify transfer from synthetic scenarios to real work.
+Do not reinterpret this evaluator-aware synthetic exercise as normal-use or independent evidence.
 
-Do not reinterpret synthetic scenarios as normal-use observations, and do not use lack of normal-use cases to claim prevalence.
+## 13. Synthesis artifact
 
-## 14. Synthesis artifact
+After the worked scenario suite, produce a separate synthesis note containing:
 
-After the bounded scenario suite, produce a separate synthesis note containing:
+1. research question and twice-weakened claim;
+2. scenario construction and freeze method;
+3. explicit disclosure that the evaluator relationships were visible to the execution context;
+4. worked selections and rationales;
+5. cross-variant compatibility findings, explicitly **not** described as blind invariance results;
+6. decision-value and information-gain findings;
+7. `act_now` and ambiguity-control findings;
+8. contradictions, limitations, and evaluator-dependence signals;
+9. bounded disposition;
+10. remaining uncertainty;
+11. the mandatory limitation statement from Section 3;
+12. whether the result is coherent enough to move primary research attention to Path 3 or whether Path 01b needs revision.
 
-1. research question and weakened claim;
-2. scenario construction method;
-3. scenario families and controlled transformations;
-4. coding-agent execution protocol;
-5. selection results;
-6. invariance-test results;
-7. decision-value and information-trap findings;
-8. `act_now` and ambiguity-control findings;
-9. falsifications/refinements;
-10. bounded disposition;
-11. remaining uncertainty;
-12. explicit statement that real-world prevalence and effectiveness were not tested;
-13. whether the synthetic result is coherent enough to hand research attention to Path 3 or instead requires Path-01b revision.
+Synthetic coherence alone does not warrant product machinery.
 
-Synthetic success alone does not warrant product machinery.
-
-## 15. Machinery-promotion boundary
+## 14. Machinery-promotion boundary
 
 Success of this research does **not** itself warrant:
 
@@ -404,25 +357,26 @@ repeated useful responsibility
         -> candidate for formalization
 ```
 
-Interesting theory or synthetic success alone is not sufficient.
+Interesting theory or synthetic coherence alone is not sufficient.
 
-## 16. Definition of done for the weakened Path 01b cycle
+## 15. Definition of done for the evaluator-aware Path 01b cycle
 
-The bounded synthetic research cycle is complete when:
+The bounded research cycle is complete when:
 
-- this amended claim and protocol are durable and reviewable;
-- 8–12 frozen synthetic scenario families/variants provide meaningful coverage without padding;
-- controlled A/B swap, paraphrase, decoy, information-gain, `act_now`, and ambiguity tests are represented;
-- coding-agent passes are independent and do not receive previous answers;
-- scenario evaluations record invariance/failure signals rather than only preferred-answer agreement;
-- a synthesis note concludes `SYNTHETICALLY_SUPPORTED`, `SYNTHETICALLY_WEAKENED`, or `SYNTHETICALLY_FALSIFIED`;
-- the synthesis explicitly states that real-world prevalence and effectiveness were not tested;
-- no machinery is promoted merely because the synthetic study succeeds.
+- this twice-weakened claim and protocol are durable and reviewable;
+- the frozen 12-scenario suite remains unchanged except through explicit pre-evaluation amendment;
+- all frozen scenarios receive evaluator-aware single-context worked evaluations;
+- the worked records preserve `act_now`, ambiguity, decision-value discipline, and non-numeric reasoning as observable controls;
+- cross-variant compatibility is evaluated without claiming blind invariance or framing robustness;
+- evaluator dependence and any contradiction are recorded rather than hidden;
+- a synthesis note concludes `SYNTHETICALLY_COHERENT`, `SYNTHETICALLY_LIMITED`, or `SYNTHETICALLY_INCOHERENT`;
+- the synthesis includes the mandatory limitation statement;
+- no machinery is promoted merely because the synthetic exercise is coherent.
 
-## 17. Handoff to Research Path 3
+## 16. Handoff to Research Path 3
 
-If the study becomes `SYNTHETICALLY_SUPPORTED`, the next research priority may move to the decision/orchestration boundary under an equivalently bounded claim:
+If the study becomes `SYNTHETICALLY_COHERENT`, that is enough only to justify **moving research attention** to the decision/orchestration boundary under another appropriately bounded claim:
 
 > **Does orchestration faithfully coordinate a responsibility selected through qualitative evidence reasoning, or does available workflow machinery begin selecting the work indirectly?**
 
-Synthetic support is sufficient to justify asking that next research question. It is not sufficient to claim that Path 01b is empirically validated in ordinary engineering work.
+A coherent single-context synthetic result is not empirical validation of Path 01b. It is only evidence that the idea is not obviously internally broken under the frozen worked examples.
