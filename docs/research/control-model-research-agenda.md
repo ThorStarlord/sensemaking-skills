@@ -24,6 +24,48 @@ Research should improve or falsify that rule through normal use. It should not
 replace the current operating model merely because a more general theory is
 possible.
 
+## Current compressed-control hypothesis
+
+Recent bounded research suggests that several richer control concepts may be
+explanatory vocabulary rather than independent operational primitives. The
+current compressed research hypothesis is `C6R`:
+
+1. **Target:** What consequential decision are you making?
+2. **Evidence requirement:** What is the smallest reliable evidence needed to
+   decide what to do next?
+3. **Evidence economy:** Obtain that evidence with the least justified cost.
+4. **Authority:** Do not exceed your authority.
+5. **Claim scope:** Verify the specific claim before closure.
+6. **Orchestration boundary:** Orchestration may coordinate the selected
+   responsibility, but may not silently replace it with a materially different
+   responsibility.
+
+This is a **research hypothesis, not a product contract or runtime design**.
+Concepts such as `act_now`, bounded joint evidence, live versus stale
+uncertainty, stopping, and ambiguity may often be derivable from this smaller
+loop, but that compression should be retained only while prospective,
+independent, and normal-use evidence continues to support it.
+
+### Evidence status
+
+The control-model program has progressed through bounded synthetic coherence,
+component ablation, compression, prospective testing, blind fresh-session
+replication, and cross-model blind replication. Issues #223 through #225 record
+key compression and replication steps. Issue #226 records the current
+prospective gate-separation study motivated by the remaining tendency for models
+to blur evidence needed to select responsibility, authority needed to act, and
+verification needed before closure.
+
+The strongest current positive claim remains deliberately limited: the compact
+verbal policy has produced substantively compatible control behavior across a
+bounded synthetic suite and multiple isolated model contexts. This does **not**
+establish real-world effectiveness, prevalence, productivity benefit, objective
+optimality, human-agent agreement, universal model independence, or production
+readiness.
+
+Issue #218 remains the standing normal-use evidence lane. Synthetic cases from
+#226 do not count as normal-use episodes.
+
 ## Research path 1: responsibility selection under uncertainty
 
 ### Question
@@ -161,27 +203,22 @@ The following are clearly software-engineering-specific examples:
 - repair, refactor, component retirement, vendoring reconciliation;
 - canonical branch state and merge/publication evidence.
 
-### Transfer test
+### Transfer evidence
 
-Do not build a generic framework first. Instead, use a materially different
-problem domain as a transfer experiment and ask whether the same control policy
-still behaves naturally while only domain semantics change.
+Path 4 has now completed one bounded synthetic transfer exercise in AI-research
+semantics; see `docs/research/domain-general-control-transfer.md`,
+`docs/research/path-4-ai-research-transfer-cases.md`, and
+`docs/research/path-4-domain-transfer-results.md`.
 
-AI research is a plausible future test domain because it overlaps with software
-engineering while introducing different responsibilities and evidence:
+That exercise found the candidate control relationships coherent after replacing
+software-engineering-specific responsibility, evidence, verification, and
+authority semantics. The result is **limited conceptual-transfer evidence only**.
+It does not establish real-world AI-research effectiveness, prevalence,
+cross-agent reproducibility, organizational fit, or production readiness.
 
-```text
-software engineering:
-  usage research -> repair / retire / reconcile -> tests / CI -> repair verification
-
-AI research:
-  literature review -> hypothesis -> baseline reproduction -> experiment
-  -> replication / ablation -> research-claim verification
-```
-
-If the core decision logic survives while the responsibility/evidence model is
-replaced, that is evidence for domain generality. If the core must be rewritten,
-that is evidence that software semantics are doing essential work.
+The transfer result does not warrant a generic framework. Further transfer work
+should be driven by materially new uncertainty or real use, not by a desire to
+accumulate more synthetic examples of the same relation.
 
 ## Deferred architecture hypothesis: domain specializations
 
@@ -233,14 +270,55 @@ engineering work:
 7. whether the chosen investigation/action was useful;
 8. whether a recurring failure boundary emerged.
 
+### Autonomous-cycle stopping discipline
+
+An autonomous research or engineering cycle should not continue merely because a
+plausible next refinement can be invented.
+
+Before beginning another cycle, state:
+
+1. the **materially new consequential uncertainty** the cycle is intended to
+   resolve;
+2. why the existing evidence cannot already resolve it;
+3. what observation could materially change the model, predicted behavior, or
+   warranted action;
+4. which evidence class is appropriate for that uncertainty.
+
+If repeated cycles within the same evidence class no longer materially change
+the model, predicted behavior, or warranted action, **change evidence class or
+stop**. Useful evidence classes may include:
+
+```text
+thought experiment
+  -> bounded synthetic adversarial case
+  -> prospective frozen test
+  -> independent fresh-context replication
+  -> cross-model replication
+  -> normal-use observation
+  -> field intervention
+```
+
+This is a research-discipline rule, not a proposal for an automatic runtime loop
+or stopping engine. The purpose is to prevent locally sensible continuation from
+becoming an infinite refinement process.
+
 ## Current priority
 
-The highest-value research thread is:
+The current priority is no longer to expand the control vocabulary. It is to
+**test whether the compressed hypothesis survives the next stronger evidence
+classes without adding machinery prematurely**.
 
-> **How should a Sensemaking agent determine which unresolved uncertainty is
-> worth resolving before acting?**
+Near-term priorities are:
 
-Explore decision-making-under-uncertainty concepts only insofar as they sharpen
-that product problem. Cross-domain transfer and domain-specialization
-architecture remain secondary until the software-engineering control loop has
-more normal-use evidence.
+1. complete Issue #226's blind evidence-authority-verification gate-separation
+   study without modifying `C6R` before its preregistered result;
+2. continue Issue #218's normal-use evidence lane and give genuine engineering
+   episodes more weight than additional same-class synthetic refinements;
+3. treat further synthetic work as warranted only when it targets a materially
+   new behavioral failure or unresolved decision;
+4. keep runtime, schema, scoring, routing, and generic-core formalization behind
+   the existing repeated-use and mechanically-expressible-boundary gate.
+
+The most important next question is therefore not whether another refinement can
+be imagined, but whether the next consequential uncertainty requires a stronger
+class of evidence.
