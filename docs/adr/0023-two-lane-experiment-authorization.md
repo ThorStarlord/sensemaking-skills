@@ -6,7 +6,7 @@
 governance and schema contract only. **It does not authorize any experiment,
 campaign, or attempt, and it does not change runtime behavior.**
 **Date**: 2026-08-02
-**Proposes resolution for**: Issue #117 (Phase 1 of the two-lane experiment
+**Resolves**: Issue #117 (Phase 1 of the two-lane experiment
 authorization program, Issue #116).
 
 ---
@@ -1045,7 +1045,13 @@ enforcement is deferred to Phases 2–6 (#118–#122) as listed in §18.
 
 ## Status rationale
 
-PROPOSED, not Accepted. Promotion condition: an independent reviewer
+ACCEPTED — the promotion condition below was satisfied by the independent
+exact-head review of `e74969f485286bed8b6f400dcb380f09aed153ea`, the proposal
+merge `41288e2fe31f3ca873b19c1974f04f3d26e20058`, and the explicit acceptance
+reconciliation in PR #124 (merge `5c1612ac4fc66171da50f5a6b52c0f8d5fa64d17`).
+Issue #117 is closed `completed`.
+
+Historical promotion condition, preserved for record: an independent reviewer
 confirms (a) the six schema contracts in
 `docs/experiments/schemas/two-lane-v1/` are internally coherent with this
 ADR and with each other, (b) no field appears with conflicting authority in

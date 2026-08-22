@@ -1,440 +1,294 @@
 # Context: Sensemaking Skills
 
-## Goal
-To provide a meta-routing layer for AI agents that turns project uncertainty ("fog") into actionable problem frames, research paths, and specific skill recommendations.
+## Current product definition
 
-## Engineering Philosophy
-This repository is built on **Artifact-Driven Agentic Engineering**. We treat artifacts as the API between skills to ensure reliability, auditability, and safety. 
-> See [docs/philosophy/ARTIFACT_DRIVEN_AGENTIC_ENGINEERING.md](docs/philosophy/ARTIFACT_DRIVEN_AGENTIC_ENGINEERING.md) for the deep theory.
+Sensemaking Skills is an **agent-native engineering sensemaking and control layer for software-engineering agents**. It helps an active coding agent move from repository uncertainty to **evidence-grounded, warranted next action**.
 
-## Core Principles
-1. **Fog First**: Always classify the type of uncertainty before proposing a solution.
-2. **Artifacts as API**: Skills communicate via durable artifacts, not conversation memory.
-3. **Boundary Rule**: Do not perform downstream work (building) by default.
-4. **Anti-Causal Confusion**: Classify defect source (Skill vs. Fixture) before any repair.
-5. **Human in the Loop**: Skills provide judgment, but humans approve usefulness.
+The product-level question is not "which predefined workflow node runs next?" It is:
 
-## Dependency Philosophy: Local-First Design
+> **Given the current goal, evidence, uncertainty, and authority, what responsibility is warranted next?**
 
-**sensemaking-skills is a local-first Python utility.**
+A responsibility is **warranted** when it is supported by the current evidence, appropriate to the unresolved uncertainty, and permitted by the current authority/scope.
 
-The package itself makes no external API calls and requires no credentials:
-- Reads local repository files and artifacts
-- Validates artifacts locally using Python validators
-- Runs local orchestration scripts
-- Writes Markdown and JSON outputs to local disk
-- Works entirely offline (once installed via pip)
+The active coding agent owns the recursive control loop (ADR 0013). Sensemaking constrains that loop with repository evidence, bounded responsibilities, durable artifacts, validators, reconciliation, repair verification, and authority boundaries.
 
-**Agent-driven diagnostics may require an external agent harness** such as Claude Code. Any LLM/API access required for reasoning or decision-making is handled by that harness, not by sensemaking-skills itself. The tool is intentionally self-contained to keep it lightweight, portable, and simple to integrate.
+See:
+- [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md) — current end-to-end operating map
+- [docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md) — decision vs. orchestration ownership
+- [docs/research/control-model-research-agenda.md](docs/research/control-model-research-agenda.md) — explicitly non-ratified research directions
 
-**Why this matters:** You can use sensemaking-skills in environments with strict privacy requirements, airgapped networks, or CI/CD pipelines without special credential setup. The CLI utilities work standalone; agent-skill integration is optional and modular.
+## Top operating rule
 
-## Orchestration Principles
+> **Resolve the nearest unresolved decision-changing uncertainty before committing to the eventual solution.**
 
-The workflow orchestration system follows four key design patterns, each proven through implementation and testing:
+The practical loop is:
 
-1. **Strict vs. Lenient Validation** (ADR 0001)
-   - **Planning modes** (`plan_only`, `prompt_chain`) use lenient validation — artifacts don't exist yet, so only structure is checked
-   - **Execution modes** (`guided_execution`, `autonomous_execution`, `yolo_execution`) use strict validation — artifacts MUST be produced or the step fails
-   - **Why**: Lenient validation allows planning ahead; strict validation prevents silent failures in production
-   - See: [docs/adr/0001-strict-validation-in-execution-modes.md](docs/adr/0001-strict-validation-in-execution-modes.md)
+```text
+GOAL / AUTHORIZED SCOPE
+  -> identify nearest decision-changing uncertainty
+  -> select the responsibility most likely to resolve it
+  -> perform bounded work
+  -> produce durable evidence/artifact
+  -> validate mechanics
+  -> interpret what the evidence warrants now
+  -> continue / stop / escalate / ask owner / verify repair
+```
 
-2. **Workflow Separation of Concerns** (ADR 0002)
-   - Each workflow has **one clear purpose** — every step must advance that purpose
-   - If a step has a different purpose, move it to a separate workflow
-   - **Why**: Clear workflows are easier to understand, maintain, and compose
-   - See: [docs/adr/0002-workflow-separation-of-concerns.md](docs/adr/0002-workflow-separation-of-concerns.md)
+This loop is recursive. New evidence may change the responsibility, the expected solution, or whether action is warranted at all.
 
-3. **Artifact Composition & Chaining** (ADR 0003)
-   - Each step must **meaningfully transform** its input artifact
-   - No pass-through steps, formatting steps, or renaming — each step adds semantic value
-   - **Why**: Clear transformations make workflows debuggable and reusable
-   - See: [docs/adr/0003-artifact-composition-pattern.md](docs/adr/0003-artifact-composition-pattern.md)
+## Core principles
 
-4. **Evidence Tracking for Trust** (ADR 0004)
-   - Record which validators exercised which artifacts and which gates approved steps
-   - Create an audit trail in `mode-coverage.yaml` proving the system works
-   - **Why**: Trust comes from verifiable proof, not faith
-   - See: [docs/adr/0004-evidence-tracking-for-trust.md](docs/adr/0004-evidence-tracking-for-trust.md)
+1. **Responsibility before Skill** — decide what class of engineering work is warranted before choosing a Skill, tool, workflow, or patch.
+2. **Evidence before commitment** — resolve the closest uncertainty that could change the next action instead of jumping to the desired final implementation.
+3. **Artifacts are the API** — consequential information crosses responsibility boundaries through durable artifacts and declared inputs, not conversation memory.
+4. **Finding is not authorization** — diagnosis, recommendation, implementation, validation, owner decision, publication, and closure are distinct lifecycle states.
+5. **Validation is not closure** — deterministic PASS proves contract/mechanical properties, not analytical correctness, goal satisfaction, or repair of the original finding.
+6. **Claims must reconcile to evidence** — material claims such as "implemented," "fixed," or "ready" should be checked against durable repository evidence when consequential.
+7. **Repair requires finding-specific verification** — generic green CI is not proof that the diagnosed finding was closed.
+8. **Authority is explicit** — distinguish what the agent may know, decide, act on, and publish/merge.
+9. **Stop when the next action is stable** — do not investigate every possible uncertainty once remaining uncertainty cannot change the warranted next action.
+10. **Harden only where pressured** — formalize new machinery when repeated real use exposes a stable, mechanically expressible failure boundary.
 
-5. **Three-Stage Automation** (ADR 0005)
-   - **Stage 1 — Diagnostic Workflow**: User provides initial input (vague problem or repository state)
-   - **Stage 2 — Orchestration (workflow-planner skill)**: Analyzes diagnostic output and produces orchestration-plan with fog_type classification and recommended_workflow_id
-   - **Stage 3 — Implementation Workflow (auto-invoked)**: workflow-runtime automatically reads recommended_workflow_id from orchestration-plan and invokes the implementation workflow
-   - **Result**: Single entry point (fast-path-workflow or full-fog-workflow) automatically chains to the right implementation path without manual intervention
-   - **Why**: Automates the human decision point between "what's the problem?" (diagnosis) and "what do we do?" (implementation)
-   - **Auto-invocation mechanism**: Workflows declare `auto_invoke_next_workflow: true` and `auto_invoke_source: <artifact_id>` in workflow-registry.yaml; workflow-runtime.py detects this after workflow completion and invokes the next workflow in the same execution mode
-   - **See**: [docs/adr/0005-skill-invocation-via-workflows.md](docs/adr/0005-skill-invocation-via-workflows.md)
+## Architecture and ownership
 
-6. **Dynamic Workflow Routing**    - **Fog Type Classification**: Sensemaking produces a classification of the primary problem type
-   - **Four fog types**: product_fog (user needs), ui_fog (design), docs_fog (knowledge), architecture_fog (code structure)
-   - **Automatic routing**: workflow-runtime reads fog_type from orchestration-plan and invokes the appropriate implementation workflow via auto-invocation
-   - **Specialized workflows**: Four implementation workflows, each optimized for its fog type
-   - **High-velocity execution**: Implementation workflows use `gate: none` between steps for automatic progression
-   - **Why**: Allows single entry point (sensemaking) that automatically routes to the right implementation path
-   - **Details**: See [docs/adr/0005-skill-invocation-via-workflows.md](docs/adr/0005-skill-invocation-via-workflows.md)
+### Active coding agent
 
-6. **User Intent as Durable Artifact** (ADR 0006)
-   - **Immutable raw intent**: Every run creates `00-user-intent.md` that preserves exactly what the user asked for
-   - **Append-only amendments**: User clarifications create separate `00b-user-clarification.md`, never edit the original
-   - **Intent propagation**: Downstream artifacts (brief, plan, prd, issues) reference intent and record how it's addressed
-   - **Why**: Audit trail remains unbroken; system can surface diagnosis that differs from user intent without losing user's original goal
-   - See: [docs/adr/0006-intent-as-durable-artifact.md](docs/adr/0006-intent-as-durable-artifact.md)
+The active software-engineering/coding agent owns the top-level loop. It:
+- maintains the current goal and authorized scope;
+- interprets repository state and artifacts;
+- identifies decision-changing uncertainty;
+- selects the next responsibility;
+- chooses an appropriate bounded capability;
+- interprets resulting evidence;
+- decides whether continuation, stopping, escalation, or an owner decision is warranted.
 
-7. **Soft Context Routing** (ADR 0007)
-   - **User intent shapes the question; repo diagnosis answers it**: System recommends workflows based on code analysis, not user assumption
-   - **Routing authority ladder**: Explicit override > approved gate > high-confidence diagnosis > low-confidence + intent tie-breaker > default
-   - **Low-confidence diagnosis can use intent as tie-breaker**: When multiple fog types are plausible, user intent can guide selection
-   - **Why**: Preserves diagnostic integrity while respecting user agency; explicit override is always available for experts
-   - See: [docs/adr/0007-soft-context-routing.md](docs/adr/0007-soft-context-routing.md)
+### Sensemaking decision layer
 
-8. **Routing Divergence and Action Audit Trail** (ADR 0008)
-   - **Separate system recommendation from selected action**: Every decision records what was recommended vs. what was actually chosen
-   - **Explicit escalation control**: Fast-path recommends escalation to full-fog but does NOT auto-chain by default; user or execution mode must approve
-   - **Scope expansion is intentional**: Implementation workflows can propose additional work, but selection stays within approved scope unless a gate approves expansion
-   - **Intent changes invalidate approval**: If user re-scopes mid-workflow, prior approval becomes invalid; system pauses and requires re-approval
-   - **Why**: Audit trail is complete; divergences never silent; scope creep requires intentional approval; intent changes are safely detected
-   - See: [docs/adr/0008-routing-divergence-audit.md](docs/adr/0008-routing-divergence-audit.md)
+The Sensemaking decision layer answers **what responsibility should happen next**. It does not require a complete predetermined path to the final solution.
 
-9. **Orchestration Ownership: Skills Act, Scripts Record** (ADR 0013)
-   - **PRIMARY model (Phase 1+): Skill-led orchestration**
-     - **Agents own the control loop** (in Claude Code, Cursor, OpenCode)
-     - Agents read bootstrap skill (using-sensemaking), understand fog classification and workflow routing
-     - Agents invoke skills (via Skill tool), read artifacts, parse structured validator errors, decide next step
-     - Agent reasoning is conversational: "I found product fog, invoking product-implementation-workflow"
-     - Helper scripts (not agents) handle validation + run logging
-     - **Why**: Conversational UX, agent agency, context-aware decisions
-   - **LEGACY model (Phase 1, for backwards compatibility): Runner-led orchestration**
-     - `workflow-runtime.py` owns the control loop (CLI invocation)
-     - Transitioned to compatibility layer (CLI can invoke skills, but doesn't orchestrate)
-     - **Why**: Existing CI/CD, testing, automation can reuse validators + skills
-   - **Skills are platform-agnostic**: Same skill works whether called by agent (Skill tool) or CLI (Python import)
-   - **Evidence model unchanged**: Proof comes from durable artifacts, validator results (JSON structured), and run ledgers
-   - **Artifacts prove outputs. Validators prove outputs satisfy contracts. Run ledgers prove the causal chain**: which skill ran, with which inputs, on which repo state, producing which artifact, validated by which command (JSON result).
-   - **Validators output structured JSON**: Agents parse reliably; no human prose needed
-   - **Bootstrap skill teaches fog classification** (~2000-2500 words): Agents become guided researchers, referencing CONTEXT.md, ADRs, ui-fog-signals.md
-   - **Skills self-document** (in SKILL.md): Each skill describes outputs, fields, error handling; agents reference during execution
+### Skills
 
-10. **Canonical Vocabulary Enforcement** (ADR 0011)
-   - **Single source of truth**: `docs/canonical-vocabulary.yaml` defines all enumerated values (fog_types, routing_fields, gates, execution_modes, workflow_ids, artifact_ids)
-   - **Compile-time validation**: Path drift tests prevent stale references; enum consistency tests verify routing fields match registries
-   - **Runtime validation**: `validate-artifact.py` enforces enum values at artifact creation time; producers must emit canonical forms
-   - **Fog type normalization**: Validators accept aliases (ui, product, docs) but normalize to canonical forms (ui_fog, product_fog, docs_fog) before artifact storage
-   - **Routing guarantee**: By the time workflow-planner reads an artifact, all enum fields are validated canonical — no aliasing, no unknowns
-   - **Why**: Prevents contract drift (the regression from PR #14); makes auto-invocation safe because recommended_workflow_id is guaranteed valid
-   - **See**: [docs/HARDENING_STATUS.md](docs/HARDENING_STATUS.md)
+A Skill performs a **bounded responsibility** and produces a contracted artifact or evidence result. A Skill is not the whole product and should not absorb the full engineering lifecycle.
 
-11. **Manual vs Automation Invocation Paths** (ADR 0012)
-   - **Dual strategy**: System supports both manual path (full control) and automation path (full speed) using same workflows
-   - **Manual path**: User explicitly invokes each workflow, reviews artifacts, decides next step (best for learning, debugging, exploration)
-   - **Automation path**: User invokes once, system auto-chains based on registry config and recommended_workflow_id (best for production, speed, CI/CD)
-   - **Four execution modes**: guided_execution (user approval), autonomous_execution (validation-based), plan_only (dry-run), yolo_execution (no safety)
-   - **No code duplication**: Paths are orthogonal; decided at invocation time, not in workflow definitions
-   - **Phase 3 integration**: Both paths use same Phase 3 validation; automation path is safe because recommended_workflow_id is pre-validated
-   - **Why**: Control and speed are incompatible goals; supporting both paths serves learning, production, and experimentation use cases
-   - **See**: [docs/adr/0012-invocation-paths.md](docs/adr/0012-invocation-paths.md) and [GETTING_STARTED.md](GETTING_STARTED.md)
+Representative responsibilities include:
+- repository diagnosis: `repo-sensemaker`
+- problem framing: `problem-framer`
+- unknown mapping: `unknowns-mapper`
+- planning: `workflow-planner`
+- documentation/contract reconciliation: `sensemaking-docs-reconciler`
+- completed-work claim audit: `output-reconciler`
+- finding-specific repair verification: `repair-verifier`
+- durable handoff: `handoff`
 
-**For users**: See [GETTING_STARTED.md](GETTING_STARTED.md) for complete usage guide with examples of both invocation paths.
+Ordinary coding work is also a valid bounded responsibility when the task is already mechanically narrow and sufficiently evidenced.
 
-**For designers**: See [docs/orchestration-patterns.md](docs/orchestration-patterns.md) for detailed patterns and [docs/workflow-design-guide.md](docs/workflow-design-guide.md) for step-by-step workflow design instructions.
+### Execution and orchestration
 
-## Routing Source of Truth
+Execution/orchestration answers **how an already-selected responsibility is coordinated and performed**. It may invoke a Skill, sequence deterministic substeps, resolve artifact paths, collect outputs, retry established execution steps, and return results to the active agent.
+
+Registered workflows are bounded subgraphs inside the larger agent-owned loop. They are not the product-level controller.
+
+> **Decision selects the work. Orchestration coordinates the work. Evidence determines what becomes warranted next.**
+
+Automatic fog-type-to-implementation routing is **not ratified product behavior**. Existing runtime routing paths are compatibility machinery unless separately ratified. Do not restore automatic downstream routing merely because a runtime path or registry field exists.
+
+## Repository sensemaking and fog classification
+
+`repo-sensemaker` turns user intent plus repository evidence into an evidence-grounded `repository_sensemaking_brief`. It identifies consequential boundaries, weakness patterns, relevant evidence, and remaining uncertainty.
+
+The four canonical fog types remain useful **diagnostic metadata**:
+
+| Fog type | Primary uncertainty |
+| --- | --- |
+| `product_fog` | user needs, feature scope, product workflow |
+| `ui_fog` | interaction, navigation, design-system behavior |
+| `docs_fog` | specifications, knowledge, documentation contracts |
+| `architecture_fog` | code structure, boundaries, coupling, implicit contracts |
+
+Fog classification can help describe the repository and inform planning. It does **not** by itself authorize a downstream implementation workflow. A `recommended_workflow_id` is a recommendation/planning field, not execution authority.
+
+The brief is decision support, not repair authorization.
+
+## Evidence model
+
+Keep these categories distinct:
+
+- **direct evidence** — observed directly in repository/tool state;
+- **derived evidence** — mechanically calculated from direct evidence;
+- **interpretation** — reasoned explanation of evidence;
+- **hypothesis** — unresolved proposition requiring more evidence or a decision.
+
+Do not flatten them into equivalent confidence.
+
+Useful hierarchy:
+
+```text
+schema validity
+!= evidence sufficiency
+!= analytical correctness
+!= usefulness
+!= authorization
+!= closure
+```
+
+The Probe Engine (`scripts/probe-repo.py`) provides measured repository state for `repo-sensemaker`. When a probe cannot evaluate a fact, that is not evidence of absence.
+
+## Artifact and claim flow
+
+Important durable artifacts include:
+
+| Artifact | Role |
+| --- | --- |
+| `user_intent` | preserves the user's goal/scope context |
+| `problem_frame` | frames the problem and constraints |
+| `unknowns_map` | records unresolved unknowns/research needs |
+| `repository_sensemaking_brief` | evidence-grounded repository diagnosis |
+| `workflow_orchestration_plan` | optional procedural/planning artifact; not execution authority |
+| `work_claim` | falsifiable statement of allegedly completed work |
+| `reconciliation_report` | classifies work claims against durable evidence |
+| `docs_contract_reconciliation_report` | records documentation/contract reconciliation |
+| `repair_verification_report` | checks original findings against fresh evidence |
+| `session_summary` / `prompt_handoff` | durable continuation/handoff state |
+
+The canonical artifact contracts live in `skills/workflow-planner/references/artifact-contracts.yaml`.
+
+## Validation, reconciliation, and verification
+
+### Validation
+
+Validation is deterministic/mechanical. It can establish that required fields exist, controlled vocabulary is valid, references resolve, paths satisfy contracts, and artifact structure is correct.
+
+It cannot prove that the right evidence was selected, that a conclusion follows, that a recommendation is useful, or that the original engineering problem is solved.
+
+### Reconciliation
+
+Reconciliation compares material work claims with durable repository evidence. The `artifact-reconciliation` registered workflow and `output-reconciler` Skill operationalize this responsibility.
+
+Representative claim states include `verified`, `disputed`, and `omitted`.
+
+### Repair verification
+
+Repair verification asks whether a change actually closed the original finding. `repair-verifier` re-observes the repository and emits a `repair_verification_report`.
+
+```text
+implemented != validated != reconciled != repair-verified != authorized != integrated != closed
+```
+
+## Authority model
+
+Treat authority as a parallel control track:
+
+- **Can KNOW?** Inspect repository facts; use bounded probes for empirical facts; do not infer external reality without evidence.
+- **Can DECIDE?** Reversible implementation details may be agent-decidable within scope; owner preference, policy, and canonical authority remain owner/ADR decisions.
+- **Can ACT?** Local reversible work depends on scope; external mutations require explicit authority.
+- **Can PUBLISH / MERGE / DEPLOY?** Requires explicit authorization where the environment or project policy requires it.
+
+Non-identities:
+
+```text
+finding        != authorization to fix
+recommendation != owner decision
+implemented    != verified
+validated      != owner-ratified
+promoted       != merged
+merged         != original-finding closure
+```
+
+A correct terminal state can be: **the remaining uncertainty is no longer technical; it is an owner or publication decision.**
+
+## Stop and continuation conditions
+
+Continue while:
+- the goal is not yet satisfied;
+- another responsibility is knowable and warranted;
+- the agent has authority to perform it;
+- repository safety permits continuation.
+
+Stop when:
+- the goal is genuinely satisfied;
+- evidence shows further work is unwarranted;
+- the next consequential action is stable and remaining uncertainty cannot change it;
+- a genuine authority boundary is reached;
+- repository safety requires stopping;
+- authorized scope is exhausted.
+
+Not every cycle ends in code. Valid outcomes include discovery, recommendation, reconciliation, retirement, escalation, owner handoff, or a decision not to change anything.
+
+Durable continuation should prefer:
+
+```text
+next agent/run -> reads durable artifacts -> reconstructs state
+```
+
+over dependence on transient conversation memory.
+
+## Local-first and dependency boundary
+
+The **core CLI/package is local-first**: repository inspection, artifact validation, registry/contract use, and most support utilities do not require an external model API or hosted Sensemaking service. Agent reasoning is supplied by the user's coding-agent harness.
+
+The optional `exploratory_execution` subsystem may call the GitHub REST API for its approved experimental/campaign responsibilities. Do not generalize that optional integration into a requirement for the core product.
+
+## Registered workflows and compatibility mechanics
+
+The repository contains historical and current workflow/runtime machinery. Preserve the distinction between **mechanics that exist** and **product behavior that is ratified**.
+
+- ADRs 0001-0012 document important validation, artifact, routing, invocation, and runtime mechanics and their history.
+- ADR 0013 establishes the active agent as the primary control-loop owner.
+- ADR 0014 settles the current product boundary around evidence-grounded, human-reviewed repository sensemaking and defers automatic downstream routing.
+- Registered workflows can remain useful bounded subgraphs or compatibility paths.
+- Runtime support for a route does not give that route product-level authority.
+
+The legacy CLI path may still expose planning/execution modes and registered workflow sequencing. Treat those as compatibility/execution features, not as a replacement for agent-reasoned responsibility selection.
+
+## Source-of-truth map
+
 | Resource | Purpose |
-|----------|---------|
-| `skill-registry.yaml` | Find specific tools for a task |
-| `workflow-registry.yaml` | Find the sequence of skills for a project mode |
-| `examples/skill-tests/` | Behavioral evidence and test fixtures |
-| `docs/philosophy/` | Engineering rationale and FMEA taxonomies |
-| `docs/mode-coverage.yaml` | Execution mode proving status and run log references |
+| --- | --- |
+| `docs/agent-native-operating-workflow.md` | current top-level operating map |
+| `docs/decision-orchestration-boundary.md` | current decision/orchestration ownership boundary |
+| `docs/canonical-vocabulary.yaml` | canonical enumerated vocabulary |
+| `skills/workflow-planner/references/artifact-contracts.yaml` | artifact and machine-field contracts |
+| `skills/workflow-planner/references/workflow-registry.yaml` | registered workflow/subgraph definitions |
+| `skill-registry.yaml` | registered Skill/capability catalog |
+| `skills/repo-sensemaker/references/evidence-rules.md` | repository-sensemaking evidence discipline |
+| `docs/adr/` | ratified/proposed architecture decisions and historical rationale |
+| `docs/research/control-model-research-agenda.md` | non-ratified research hypotheses |
 
-### Machine Field Source of Truth
+## Domain language
 
-`skills/workflow-planner/references/artifact-contracts.yaml` (`required_machine_fields` /
-`recommended_machine_fields`) is the **single source of truth for machine field names**.
-A consumer must never read a field name that no producer declares — producers and
-consumers agree via the contract, not via memory. `tests/test_field_contract_agreement.py`
-enforces this for routing reads.
+- **Sensemaking**: the broader decision/evidence/authority layer that moves engineering uncertainty toward warranted action.
+- **Sensemaking Skills**: this repository/distribution and its bounded responsibility implementations/support machinery.
+- **Responsibility**: the class of work warranted by the current uncertainty/evidence state.
+- **Skill**: a bounded implementation of a responsibility with declared inputs/outputs.
+- **Workflow**: a registered, mechanically expressible sequence/subgraph; not automatically the top-level control loop.
+- **Warrant**: the current justification for a responsibility, claim, or action from evidence + unresolved uncertainty + authority.
+- **Repository Sensemaking Brief**: evidence-grounded diagnostic artifact from `repo-sensemaker`.
+- **Orchestration Plan**: optional procedural planning artifact; recommendation, not authority.
+- **Weakest Boundary**: the most consequential fragile/unenforced repository boundary identified by evidence.
+- **Probe**: bounded empirical observation used when repository text alone cannot establish reality.
+- **Validation**: mechanical contract checking.
+- **Reconciliation**: comparison of claims against durable evidence.
+- **Repair verification**: finding-specific post-change verification.
+- **Authority boundary**: point where knowing/understanding is possible but deciding, acting, publishing, or merging is not authorized.
+- **Harden Only Where Pressured**: formalize machinery after repeated real-use pressure exposes a stable failure boundary.
 
-**Tolerated routing-field aliases** (the runtime resolves these in order, since the brief
-and the plan name the same concept differently):
+## Current product boundaries and open edges
 
-| Concept | Fields the runtime reads (priority order) | Declared on |
-|---------|-------------------------------------------|-------------|
-| Next workflow id | `recommended_workflow_id` → `chosen_workflow_id` → `selected_workflow` | brief (`recommended_workflow_id`); plan (`chosen_workflow_id`, `selected_workflow`) |
-| Fog type | `fog_type` → `primary_fog_type` → `user_implied_fog_type` | plan (`fog_type`, recommended); brief (`primary_fog_type`, `user_implied_fog_type`) |
+Current, ratified/operationally grounded:
+- agent-native top-level loop;
+- repository sensemaking + Brief;
+- bounded Skills and artifact contracts;
+- deterministic validation;
+- output reconciliation;
+- repair verification;
+- authority-aware stopping/escalation discipline.
 
-## Phase 1 Bootstrap: Agent-Native Entry Point
+Not automatically ratified merely because related machinery exists:
+- deterministic fog-type routing as product control policy;
+- a universal centralized orchestrator;
+- one registered workflow that encodes the whole Sensemaking loop;
+- automatic external mutation/publication authority;
+- domain-general research-agent control semantics;
+- new decision-theory/control-model machinery from the research agenda.
 
-**New (Phase 1)**: Agents in Claude Code, Cursor, OpenCode invoke skills conversationally.
-
-1. **SessionStart hook** injects `using-sensemaking` bootstrap skill
-   - Teaches agents fog classification, workflow routing, structured error parsing, retry logic
-   - Links to CONTEXT.md, ADRs, external docs (ui-fog-signals.md)
-   - ~2000-2500 words
-
-2. **Agent invokes skills** via Skill tool:
-   ```
-   User: "Diagnose my codebase"
-   Agent: (reads bootstrap skill, understands decision framework)
-   Agent: "I'll run repo-sensemaker to analyze your repository"
-   Agent: (invokes repo-sensemaker skill)
-   Agent: (reads artifact, parses fog_type, decides next workflow)
-   Agent: "I detected product fog. Invoking product-implementation-workflow"
-   ```
-
-3. **Skills are platform-agnostic**: Can also be invoked by CLI for backwards compatibility
-
-4. **Agent-native operating workflow**: the full end-to-end control loop --
-   when to sensemake, brief review, responsibility selection, specialized
-   work, validation, output reconciliation, repair verification, durability,
-   authority gates, stop conditions -- is mapped in
-   [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md)
-   (v0 operating guide, not an orchestration contract).
-
----
-
-## Default Workflows
-
-The system uses a multi-stage default workflow chain with fog-type-aware routing:
-
-1. **`full-local-sensemaking`** (DEFAULT) — The primary entry point when running `python scripts/workflow-runtime.py` (legacy CLI path)
-   - **Note**: Phase 1 shifts primary entry point to agent-native (bootstrap skill in Claude Code). CLI becomes compatibility layer.
-   - Converts raw fog into a repository diagnosis and orchestration plan
-   - Executes locally without external API calls
-   - Supports all execution modes: `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, `yolo_execution`
-   - **Steps**: problem-framer → unknowns-mapper → (discovery?) → repo-sensemaker → workflow-planner → handoff
-   - **Produces**: `repository_sensemaking_brief` + `workflow_orchestration_plan` (with fog type classification and workflow recommendation)
-
-2. **Fog-Type Routing** (DEFERRED, not ratified) — routing from the brief to a downstream implementation workflow is NOT current product behavior: it requires its own external proof and an owner decision before it is ratified (ADR 0014), and ADR 0018 (routing policy) is PROPOSED, not accepted. Under the agent-native operating model (ADR 0013), the active agent selects the next responsibility from the validated brief. The chain below still exists in the CLI compatibility path (verified at HEAD): `workflow-planner` recommends an implementation workflow; `workflow-runtime.py` validates fog-type alignment (via `_validate_workflow_fog_alignment()`) and chains to one of `ui-implementation-workflow`, `product-implementation-workflow`, `docs-implementation-workflow`, or `implementation-workflow` in the same execution mode.
-
-3. **UI Fog Detection** (current diagnosis behavior) — `repo-sensemaker` explicitly evaluates UI signals when classifying fog type, using the checkable indicators in **`ui-fog-signals.md`** (Tier 1/2/3). Diagnosing `ui_fog` is not the same as routing to `ui-implementation-workflow`: downstream routing is deferred with all other fog types (see item 2). The legacy `ui-diagnostic-workflow` -> `ui-implementation-workflow` chain still exists in the CLI compatibility path (verified at HEAD), not as current automatic behavior.
-
-**Auto-invocation (legacy compatibility path only)**: the workflow-registry mechanism (`auto_invoke_next_workflow` / `auto_invoke_source`, ADR 0005) and the runtime's `_should_auto_invoke_next()` still exist and let the legacy `workflow-runtime.py` chain workflows without manual intervention. It is retained for the CLI compatibility path; it is not part of the agent-native operating model (ADR 0013), and automatic routing to downstream implementation workflows is not ratified (ADR 0014).
-
-## Domain Language
-- **Fog**: The state of project uncertainty. Four primary types:
-  - **product_fog**: Unclear user needs, vague feature requirements, undocumented workflows
-  - **ui_fog**: Navigation complexity, screen design issues, interaction patterns unclear
-  - **docs_fog**: Missing documentation, unclear specifications, knowledge silos
-  - **architecture_fog**: Code structure problems, design boundaries unclear, implicit contracts
-- **Fog Type Classification**: Sensemaking stage (via `repo-sensemaker`) classifies the primary fog type to inform next-responsibility selection (routing to a downstream workflow is deferred, ADR 0014)
-- **Flagship Skills**: The repo contains a five-skill sensemaking pipeline: `problem-framer`, `unknowns-mapper`, `repo-sensemaker`, `workflow-planner`, and `handoff`. The skill directory is `skills/handoff/` and produces a `session_summary` artifact. See ADR 0009 for the naming convention.
-- **Workflow**: An ordered sequence of Skill Steps that processes fog into actionable artifacts. Also referred to as **Skill Workflow** in user-facing documentation (README.md).
-- **Skill Step**: One skill invocation within a Workflow. Each Skill Step has inputs (artifacts or external context), a skill to execute, an output artifact, and an approval gate.
-- **Core Skills**: Skills that define the backbone of a pipeline's fog-to-action path. Their presence varies by workflow: `full-local-sensemaking` uses problem-framer → unknowns-mapper → repo-sensemaker; `fast-path-workflow` starts directly at repo-sensemaker.
-- **Conditional Skills**: Skills inserted into a Workflow based on characteristics of the input or intermediate artifacts (e.g., discovery skill if unknowns_map.research_needed is true).
-- **Dynamic Chaining** (legacy runtime mechanism): The workflow-registry/runtime routing decisions that select the next Skill Step based on input quality or artifact content (primary decision point: `unknowns_map.research_needed`, derived from unknowns count + clarity assessment). Describes the CLI compatibility path; under the agent-native operating model (ADR 0013), responsibility selection is the active agent's, and downstream routing is deferred (ADR 0014). Secondary decision points defer until recurrence validates their necessity (Harden Only Where Pressured).
-- **Sensemaking Brief**: The primary diagnostic artifact (14 sections). It must identify the "weakest boundary" and provide file-level evidence and excerpts.
-- **Orchestration Plan**: The procedural artifact that includes fog type classification, recommended implementation workflow, and execution strategy
-- **Implementation Workflows**: Four specialized workflows that execute based on fog type classification:
-  - **product-implementation-workflow**: discovery → opportunity-tree → to-prd → to-issues → triage → tdd (for product_fog)
-  - **ui-implementation-workflow**: ui-flow → ui-screen-spec → to-issues → triage → tdd (for ui_fog)
-  - **docs-implementation-workflow**: to-prd → handoff (for docs_fog)
-  - **implementation-workflow**: to-prd → to-issues → triage → tdd (default for architecture_fog)
-- **High-Velocity Gate Pattern** (`gate: none`): Steps execute immediately without approval pauses. Used in implementation workflows for automatic progression between steps
-- **Execution Modes**: The system supports `plan_only`, `prompt_chain`, `guided_execution`, `autonomous_execution`, and `yolo_execution`. **Default mode: `plan_only`** (post-retirement CLI default; `yolo_execution` is an opt-in high-velocity mode, not the default).
-- **YOLO Execution** (opt-in): High-velocity automation that bypasses approval gates for local skills. NOT the default (`plan_only` is); requires an explicit `--mode yolo_execution` and a clean git worktree, and uses feature branches for mutations. In `yolo_execution`, validators function as the safety mechanism — gates are bypassed, but post-step validation is zero-tolerance.
-- **Skill Split**: Diagnosis (`repo-sensemaker`) is separated from Action (`workflow-planner`) to ensure human-in-the-loop validation.
-- **Object Under Pressure**: The specific artifact or system boundary that is most ambiguous.
-- **Weakest Boundary**: The most fragile or unenforced point in a repository. Diagnosed by repo-sensemaker via evidence-backed analysis of signal-gap boundaries.
-- **Approval Gates**: Mandatory review points in an orchestration workflow. In `yolo_execution` mode, validators replace gates as the safety mechanism — gates are bypassed, but post-step validation is zero-tolerance.
-- **Canonical Evidence Layer**: The validator + run-log + mode-coverage infrastructure (`scripts/validate-*.py` scripts, `docs/mode-coverage.yaml`, run logs in `runs/` and `artifacts/`) that provides machine-verifiable proof of system claims. Every workflow execution records which validators ran, which gates fired, and which artifacts were produced. This layer makes the system auditable: you can verify claims about mode coverage, gate behavior, and artifact integrity without trusting the agent that produced them. It proves the system works correctly but does not, by itself, produce value for anyone outside the system.
-
-- **User Intent**: What the user actually cares about solving. Can come from explicit problem statement (`--problem "..."`), imported ticket, or system inference from repo state. Recorded immutably in `00-user-intent.md` and propagated through artifacts with references.
-- **Intent Source**: How user intent was obtained. Values: `user_problem_statement` (explicit CLI), `repo_inferred` (system guessed from code), `imported_ticket` (loaded from issue tracker).
-- **Scope Mode**: How strictly intent constrains the system's analysis. Values: `soft` (intent is context; system can surface broader concerns), `hard` (intent defines boundary; out-of-scope findings are appendix-only), `advisory` (intent is primary; system can propose conflicts but execution stays bounded).
-- **Intent Amendment**: A user clarification or re-scoping created mid-workflow. Stored as separate artifact (`00b-user-clarification.md`, etc.), never edits to original intent. Invalidates prior approval if it changes routing/scope.
-- **Routing Divergence**: Occurs when `system_recommended_workflow` differs from `selected_workflow`. May be due to explicit user override, low-confidence diagnosis + intent tie-break, or approved gate decision. Always recorded with rationale in orchestration plan.
-- **Routing Decision Method**: How the system chose which workflow to run. Values: `diagnosis_primary_soft_context` (repo diagnosis won), `intent_tiebreaker` (user intent broke a low-confidence tie), `user_explicit_override` (user --workflow flag), `approved_gate` (human approval changed the decision), `escalation_approved` (escalation to deeper analysis was approved).
-- **Escalation**: Fast-path workflow recommends deeper analysis (full-fog) when uncertainty is high or diagnosis conflicts with intent. Escalation is recommended but NOT automatic by default; user or execution mode must approve. Recorded as `escalation_recommended: true` with `auto_escalation_allowed: false`.
-- **Scope Expansion**: Implementation workflows (to-prd, to-issues) can propose work beyond the user's stated intent. Proposed expansions are explicit and require approval before being included in selected scope. Recorded as `scope_expansion_proposed: [list]` and `scope_expansion_requires_approval: true`.
-
-- **Harden Only Where Pressured**: A principle for post-run system improvement — restrict changes to boundaries where live execution exposes a **repeatable failure boundary** (same failure class across independent runs). Isolated one-off data issues are fixed in the artifact but do not trigger system hardening. Prevents preemptive over-engineering based on theory alone.
-  **Enforcement rule**: System-level hardening (new validators, runner features, or evidence tools) is only permitted when at least one condition is met: (1) a real (non-test) run fails with a specific error, (2) the same failure class recurs across independent runs, or (3) CI or static analysis detects a real inconsistency that a live run would miss. Exempted: artifact data fixes, bug fixes in existing validators, test fixtures, documentation, and contract/registry registration.
-  Validated by the first fast-local-diagnostic run: the brief theorized "Contract Mismatch" but the run stressed only weakness-type and logic-trace authoring, and those were single-occurrence data issues — no structural hardening was warranted.
-  **Update (2026-05-21):** `NO_LOGIC_TRACE` and `UNKNOWN_WEAKNESS_TYPE` then recurred across two further independent `guided_execution` runs of `full-local-sensemaking`, making them a **repeatable failure boundary**. Per this principle, that triggered producer-side hardening: the `repo-sensemaker` template and `SKILL.md` now explicitly require a logic trace and a recognized weakness type (the requirements `validate-brief.py` had been enforcing but the producing skill was never told to satisfy — a producer-spec ↔ consumer-validator drift). Separately, `INVALID_LINE_FORMAT` was resolved as a **validator bug-fix** (exempt from the hardening restriction): the `Lx`-only line format had no downstream consumer, so the check was relaxed to accept bare line numbers. These are the first hardening events recorded; earlier runs' `hardening_triggered: none` remains accurate for their dates.
-
-- **Repeatable Failure Boundary**: A failure class that recurs across independent live runs, signaling a systemic gap rather than an isolated data-quality issue. Determines whether a friction point triggers system hardening (repeatable) or artifact-level correction (single occurrence). Example: if UNKNOWN_WEAKNESS_TYPE occurs in two different workflow runs with different authors, that's a repeatable pattern warranting tooling improvement; a one-time authoring mistake is not.
-
-- **System-Proving Run vs. Value-Production Run**: A distinction in run purpose. A **system-proving run** exists to demonstrate that the orchestrator, validators, gates, and run-log infrastructure work correctly — the run log notes say "Proves X works." A **value-production run** uses the proven system to produce artifacts someone outside the system wants — the purpose is the outcome, not the proof. The 5 PRD mode-proving runs plus all subsequent guided_execution runs (full-local-sensemaking, product-discovery-sprint, skill-maintenance-loop, validator-live-coverage) are system-proving. No value-production run exists yet. The canonical evidence layer is necessary before value-production is safe, but it is not sufficient — the system must also be *used*.
-- **Evidence Source Rule**: Going forward, mode-coverage entries and run logs MUST be produced by `workflow-runtime.py`, not hand-authored. Existing hand-authored entries (e.g., early yolo and guided_execution runs from 2026-05-14 through 2026-05-16 morning) are grandfathered. This ensures all evidence is machine-verifiable and follows the canonical execution path.
-- **TDD Validator Cycle**: The red-green-refactor loop triggered when a Level 3 validator fails during a workflow run. Failure = RED, artifact data fix = GREEN, re-validation pass = REFACTOR. Demonstrated in the first YOLO run when validate-brief.py caught UNKNOWN_WEAKNESS_TYPE and NO_LOGIC_TRACE.
-- **Tracer Bullets**: AFK-compatible vertical slices of implementation.
-- **Validator Verification Suite**: A repeatable verification mechanism that checks validator behavior against positive and negative fixtures. It confirms that valid artifacts pass, invalid artifacts fail, and expected failures fail for the intended reason. Now enforces mandatory fixture coverage for all validator scripts.
-
-### Local Skills Status
-
-| Skill | Purpose | Status |
-|-------|---------|--------|
-| `data-access-layer-auditor` | Audits data access patterns and layer boundaries | Orphan — no workflow references, not in skill-registry |
-| `project-classifier` | Classifies projects by fog type, domain, and complexity | Orphan — no workflow references, not in skill-registry |
-| `usage-researcher` | Evaluates skill performance in realistic scenarios | Orphan — registered in skill-registry but has zero workflow step references |
-| `workflow-presenter` | Presents workflow results to humans or agents | Orphan — no workflow references, not in skill-registry |
-
-## Probe Engine
-
-- **probe-report**: machine-readable YAML produced by `scripts/probe-repo.py`
-  capturing measured current state (git, CI enforcement, artifact volume, tests,
-  fixtures, churn). Canonical input to `repo-sensemaker` state-currency
-  verification; distinct from documented claims.
-- **Vg (verification gap)**: `1 - |declared ∩ enforced| / |declared|` over
-  verification entrypoints declared in README vs. steps executed in CI configs.
-  `Vg > 0` is a Contract-Mismatch signal; `Vg == 1.0` means no declared check is
-  enforced (or no CI exists).
-- **Ce (context entropy)**: `(untracked + ignored-present volume) / tracked
-  volume`. `Ce >= 5` is a hygiene/sprawl warning threshold.
-- **fixtures-coverage**: share of `scripts/validate-*.py` validators that have
-  `tests/fixtures/<name>/{valid,invalid}`; a gap is an Orphaned-Examples /
-  Zero-Validation candidate.
-
-**Known probe failure modes (see evidence-rules Rules 9-12):**
-
-- `context_entropy.ce` is `None` (never a false clean `0.0`) when the
-  `git status --ignored` call fails or times out -- e.g. a target with tens
-  of thousands of ignored files (auteur's root JSON sprawl). A silent
-  "clean" reading would mask exactly the sprawl the metric exists to detect.
-  Treat `ce: null` as "unmeasured", not "clean".
-- `fixtures-coverage` honors documented conventions: a target may list
-  repo-wide validators in `tests/fixtures/valid-only.txt` (one name per line,
-  `#` comments) whose `invalid/` fixtures are unsatisfiable and deliberately
-  retired (auteur commit 9994238), and the validator harness's own exclusions
-  in `tests/fixtures/REGRESSIONS.yaml` (`excluded_validators`, each with a
-  reason) are reported in `excluded_by_convention` and never listed as
-  missing. Listed/excluded validators count as covered; without either marker
-  the metric is unchanged. A gap listed in `missing_fixtures` should be
-  checked against these conventions before being reported as a defect.
-- `relationships.adr.findings` emits `duplicate_id` when the catalog holds
-  duplicate ADR ids; the renumber *direction* is a model decision
-  (evidence-rules Rule 7), never a probe verdict.
-
-## Artifact Run Organization
-
-Artifacts from pipeline runs follow a flat numbered sequence at `artifacts/` root:
-
-```
-artifacts/
-├── 01-metamorfose-finance/       ← NN-project-name/
-│   ├── 01-problem-frame.md       ← NN-file-name.md
-│   ├── 02-unknowns-map.md
-│   ├── 03-sensemaking-brief.md
-│   ├── 04-orchestration-plan.md
-│   ├── 05-run-analysis.md
-│   └── README.md
-├── 02-metamorfose-classes/
-│   ├── 01-problem-frame.md
-│   └── ...
-├── 03-[next-run]/
-├── meta-analyses/                ← cross-run analyses
-├── ORGANIZATION-GUIDE.md
-└── README.md
-```
-
-**Rules:**
-- **Numbered run folders**: `NN-project-name` at `artifacts/` root — no `runs/` subfolder nesting
-- **Numbered files inside**: `NN-file-name.md` showing pipeline sequence
-- **Historical root-level files**: Left in place as pre-organization archive — not migrated
-- **Path convention**: The workflow-planner outputs future runs to `artifacts/NN-project-name/NN-file-name.md`
-- **Run folder numbering**: Monotonic across time — each new run gets the next integer in the sequence, regardless of date. Date metadata lives in the run's `README.md` or content, not the folder name.
-
-## Known Gaps
-
-These are acknowledged gaps that the project is aware of but has not yet addressed. The gaps are ordered by practical impact.
-
-- **Rollback-after-mutation proven** (closed): Test 8 proves the runner recommends ROLLBACK_RECOMMENDED with correct recovery commands (`git reset --hard HEAD`, `git clean -fd`). Test 9 proves those commands actually restore mutated state in an isolated temp repo — committed files revert to original content, untracked files are removed, git tree returns to clean. The full mutation → failure → rollback → recovery cycle is verified.
-- **Controlled failure tests can silently skip under dirty local state** : Integration tests
-    (gate denial, resume) include a guard that skips when the git tree is not clean.
-    In CI this guard is never triggered. Locally, the test suite now reports skipped
-    tests as `[SKIP]` (distinct from passed) and exits with code 2 when any tests are
-    skipped. The skip is visible and actionable rather than silent. Run with a clean
-    git tree to prove the full integration path.
-- **Failure-ledger has not detected organic repeated failures** (no action needed): `analyze-run-failures.py` detects repeatable failure boundaries, and the controlled test proves the mechanism. But no organic runs have produced repeated failures yet. The learning loop is too young to have generated enough failure data. This resolves with time as more value-production runs accumulate.
-- **No value-production runs exist** (blocked — see preconditions): All runs to date are system-proving. A value-production run requires: (a) a clean git worktree (guided_execution and higher modes enforce this), (b) external raw_fog input from a real stakeholder with an actual problem, and (c) human gate approval for each step (or --gate-decision auto-approve for non-interactive proving). Until a real external need triggers such a run, the operating habit of using the system for productive work remains unproven. See **System-Proving Run vs. Value-Production Run** above.
-
-## Tech Stack
-- Markdown-based skill definitions (`SKILL.md`).
-- YAML-based registries and agent definitions.
-- Relative linking for package portability.
-
-## Skills Split
-1. **repo-sensemaker**: Diagnostic. Finds the weakest boundary.
-2. **workflow-planner**: Procedural. Acts on the weak point via gated sequences.
-3. **docs-aligner**: Domain alignment. Resolves contradictions between code and documentation, sharpens terminology, and updates CONTEXT.md inline. Automates grilling for autonomous workflows.
-
-## Skills are agent-agnostic; the primary execution model is agent-native (ADR 0013, accepted)
-
-`skills/*/SKILL.md` are agent-native playbooks: any coding agent can follow
-them, and a skill's contract is its `SKILL.md` plus the artifact contracts,
-never a specific agent harness. The primary execution model (ADR 0013,
-agent-native orchestration as primary, ACCEPTED 2026-08-13) is
-that the active coding agent reads the Skill, resolves its typed inputs,
-performs the work itself, and produces the artifact; deterministic validators
-then check it. No harness-specific adapter is required for that path.
-
-The repository also retains a programmatic second-model runner as an EXISTING
-automation path: `scripts/skill_executor.py` lets a CLI or programmatic runner
-spawn a second agent/model. Its current model-backed executors are
-Claude-specific (`claude-code` via the Claude Agent SDK, and `api` via
-`ANTHROPIC_API_KEY`) and are DEPRECATED (staged retirement, ADR 0013):
-retained temporarily for backward compatibility, with the `claude-code`
-default kept during the transition. Deprecation is non-behavioral - no
-execution semantics change. The runner's long-term support status remains an
-open product decision.
-
-## Ecosystems
-- **Interface Skills**: Spec Packages and UI validation.
-- **Matt Pocock Skills**: Engineering rigor, TDD, and docs-aligner (domain alignment).
-- **Product Manager Skills**: Discovery, PRDs, and Strategy.
-
-## Automation & Validation (scripts/)
-The repository uses a Python-based three-level validator hierarchy to enforce artifact integrity and safety:
-
-- **Level 1 — Structural** (`validate-repo.py`): Repository-wide consistency checks across registries and examples. Runs pre-flight before any workflow that mutates the repo.
-- **Level 2 — Generic** (`validate-artifact.py`): Universal contract checks (sections, machine fields, no absolute paths). Runs after every artifact-producing step.
-- **Level 3 — Specialized** (one per artifact type): Semantic checks requiring registry cross-references. Currently:
-  - `validate-brief.py` — enforces evidence grounding, weakness-type recognition, workflow-ID validation
-  - `validate-plan.py` — verifies workflow steps, execution modes, approval gates, stop conditions
-  - `validate-skill-improvement-plan.py` — enforces formal failure mode classification and anti-overfitting
-  - `validate-usage-research-report.py` — checks semantic scores, role boundaries, evidence grounding
-  - `validate-prompt-handoff.py` — checks target skill exists in registry, artifact refs are real, stop conditions have content
-- **`validate-output.py`**: Dispatcher that delegates to per-artifact validators via `artifact-contracts.yaml`. This is the normal validation path — all runs should use it instead of calling validators directly.
-- **`validate-run-log.py`**: Validates run log structure against the template specification. Checks header fields, step structure, gate recording consistency (gate_result, approved_at, approved_by), pre-flight documentation, and path hygiene.
-- **`analyze-run-failures.py`**: Builds a failure ledger from all run logs in a directory. Detects repeatable failure boundaries (same error code across 2+ independent runs) per the Repeatable Failure Boundary principle.
-- **`_validator_utils.py`**: Shared utility module for registry loading, path resolution, and error formatting.
-
-In YOLO and autonomous execution modes, validators function as **zero-tolerance safety gates**: any failure triggers an immediate hard stop and rollback recommendation. See [validator-stack-policy.md](skills/workflow-planner/references/validator-stack-policy.md) for execution order.
-
-## Dynamic Chaining Implementation
-
-**Overview:** Workflows support conditional routing of Skill Steps based on artifact signals. The primary decision point is the clarity of the initial raw_fog input, detected by unknowns-mapper and encoded in the unknowns_map routing fields.
-
-**Routing Signal:** unknowns_map.research_needed (boolean)
-- Determined by: `(unknowns_count >= 5) OR (clarity_assessment == "low")`
-- If true: A discovery or research skill is inserted into the workflow
-- If false: The workflow skips to repo-sensemaker
-
-**Provisional Heuristic:** The thresholds (5 unknowns, "low" clarity) are initial estimates. They are validated empirically in early value-production runs, then refined using repeatable failure analysis.
-
-**Conditional Step Schema:** Workflows can define conditional steps with if_true/if_false branches:
-```yaml
-- id: 3-conditional
-  conditional: true
-  decision_field: unknowns_map.research_needed
-  if_true:
-    skill: discovery
-    gate: review_discovery
-    input_artifact: unknowns_map
-    output_artifact: discovery_findings
-    next_step: 4
-  if_false:
-    next_step: 4
-```
-
-**Machine Fields on unknowns_map:**
-- clarity_assessment: "high" | "medium" | "low"
-- unknowns_count: integer (count of unknowns)
-- assumptions_count: integer (count of unvalidated assumptions)
-- research_needed: boolean (routing decision)
-
-**Validators:**
-- `validate-unknowns-map.py` — Validates unknowns_map routing fields are present and well-typed
-- `validate-plan.py` — Validates conditional step logic references real skills
+The product should deepen through normal engineering use: preserve observations, identify repeated failure boundaries, and formalize only when the evidence warrants it.

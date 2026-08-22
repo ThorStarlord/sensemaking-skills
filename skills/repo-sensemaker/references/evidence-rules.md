@@ -17,7 +17,7 @@ To maintain diagnostic rigor, all claims in a **Repository Sensemaking Brief** m
 
 ## Provenance of rules 6-12
 
-Rules 6-8 were added after Evidence 0016 (`experiments/evidence/0016-auteur-remediation-postmortem.md`), a postmortem of the first full brief -> remediation cycle on the external `auteur` repository. Rule 6 fixes a false-positive vocabulary-drift flag (9 structure layers vs 5 semantic layers); Rule 7 fixes a reversed ADR-013 deduplication that broke 9 load-bearing references and missed a 10th; Rule 8 fixes a file-count-vs-case-count comparison in the HANDOFF staleness finding.
+Rules 6-8 were added after Evidence 0016 (`experiments/evidence/0016-auteur-remediation-postmortem.md`), a postmortem of the first full brief -> remediation cycle on the external `auteur` repository. Rule 6 fixes a false-positive vocabulary-drift flag (9 structure layers vs 5 semantic layers); Rule 7 fixes a reversed architecture-decision record 013 deduplication in the external Auteur repository that broke 9 load-bearing references and missed a 10th; Rule 8 fixes a file-count-vs-case-count comparison in the HANDOFF staleness finding.
 
 Rules 9-12 were added after Evidence 0017 (`experiments/evidence/0017-auteur-repo-sensemaking-brief/EVIDENCE.md`), the direct-invoked dogfood record of the second auteur brief. Rule 9 fixes a false "clean" `context_entropy.ce` caused by a probe timeout; Rule 10 fixes cross-validator excerpt-format drift (bare numbers vs `Lx`/`Lx-Ly`); Rule 11 fixes the duplicate-ADR condition being cataloged but not flagged; Rule 12 fixes the root-handoff `file:///` escape from a guard that only scanned `examples/`.
 

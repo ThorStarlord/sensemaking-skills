@@ -3,15 +3,24 @@ standalone ``approve`` in the active conversation.
 
 The human approves in the conversation; the coding agent performs every
 repository operation; a Markdown file (``approval.md``) records the
-decision; no GitHub comment, capture script, API token, or live comment
-revalidation is involved.
+decision. The conversation is the source of authority. The receipt and any
+agent-recorded GitHub audit event are NOT independent proof of human identity.
 
-Trust model (deliberate, per the governance decision): the conversation
-is the source of authority. ``approval.md`` is the agent-generated
-audit receipt containing the precise meaning of that decision -- it is
-NOT independent proof of human identity, and no runtime component can
-corroborate it externally. What the runtime DOES enforce, fail-closed,
-before every prepare and finalize operation:
+A conversation receipt may use either of two audit-locator forms:
+
+* a legacy concrete conversation pointer when the execution surface actually
+  exposes a truthful ``session-id#message-id`` value; or
+* ``reference_kind: agent_recorded_github_issue_comment`` with the durable
+  permalink of an agent-authored GitHub issue comment that transcribes the
+  approval event and exact campaign digest.
+
+The second form exists for connector-native surfaces that do not expose
+platform conversation identifiers. The GitHub comment is an audit locator,
+not the human authorization act. The standalone ``approve`` remains the only
+human decision authority.
+
+What the runtime enforces, fail-closed, before every prepare and finalize
+operation:
 
 * the receipt exists and parses (frontmatter is a Two-Lane v1 document);
 * it is the conversation-approval profile (``approval_source:
@@ -22,13 +31,14 @@ before every prepare and finalize operation:
   concurrency, automatic-merge prohibition, external-provider-API
   prohibition, classification, and window end;
 * ``approved_at`` is a plausible receipt timestamp (not in the future);
-* the reference (conversation record) is non-empty for audit.
+* the audit reference is non-empty and matches one of the explicit reference
+  profiles above.
 
 The conversation discipline -- exactly one pending campaign, presented
-envelope, unchanged digest, standalone ``approve``, not inside a quote
-or hypothetical -- is enforced by the coding agent in the conversation
-(see skills/coding-agent-native-campaign/SKILL.md); the runtime cannot
-see the transcript.
+envelope, unchanged digest, standalone ``approve``, not inside a quote or
+hypothetical -- is enforced by the coding agent in the conversation (see
+skills/coding-agent-native-campaign/SKILL.md); the runtime cannot see the
+transcript.
 """
 
 from __future__ import annotations
@@ -37,7 +47,6 @@ import hashlib
 import re
 from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 from typing import Any, Callable
 
 from sensemaking_skills.exploratory_authorization.models import (
@@ -50,9 +59,18 @@ from sensemaking_skills.exploratory_authorization.provenance import (
 APPROVAL_MECHANISM = "active_human_conversation"
 APPROVAL_TEXT = "approve"
 APPROVAL_FILENAME = "approval.md"
+APPROVAL_REFERENCE_KIND_GITHUB_ISSUE_COMMENT = (
+    "agent_recorded_github_issue_comment"
+)
 
 _FRONTMATTER_RE = re.compile(
     r"^---\s*\n(.*?)\n---\s*(\n|$)", re.DOTALL
+)
+_LEGACY_CONVERSATION_REFERENCE_RE = re.compile(r"^[^\s<>]+#[^\s<>]+$")
+_GITHUB_ISSUE_COMMENT_REFERENCE_RE = re.compile(
+    r"^https://github\.com/"
+    r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/issues/[1-9][0-9]*"
+    r"#issuecomment-[1-9][0-9]*$"
 )
 
 
@@ -76,11 +94,56 @@ def _parse_rfc3339(value: Any) -> datetime | None:
         return None
 
 
+def _validate_audit_reference(raw: Mapping[str, Any]) -> str:
+    reference = str(raw.get("reference", "")).strip()
+    if not reference:
+        raise ProvenanceVerificationError(
+            "conversation verifier: receipt reference (audit locator) is "
+            "empty (fail closed)"
+        )
+
+    reference_kind = raw.get("reference_kind")
+    if reference_kind is None:
+        # Backward compatibility for historical receipts whose execution
+        # surface genuinely exposed a concrete conversation pointer. A GitHub
+        # URL is NOT accepted through this legacy branch; connector-native
+        # receipts must opt into the explicit audit-locator kind below.
+        if reference.startswith("https://github.com/"):
+            raise ProvenanceVerificationError(
+                "conversation verifier: GitHub issue-comment references "
+                "require reference_kind='agent_recorded_github_issue_comment'"
+            )
+        if _LEGACY_CONVERSATION_REFERENCE_RE.fullmatch(reference) is None:
+            raise ProvenanceVerificationError(
+                "conversation verifier: legacy receipt reference must be a "
+                "concrete '<session-id>#<message-id>' pointer with no "
+                "whitespace or angle brackets"
+            )
+        return reference
+
+    if reference_kind != APPROVAL_REFERENCE_KIND_GITHUB_ISSUE_COMMENT:
+        raise ProvenanceVerificationError(
+            "conversation verifier: unsupported receipt reference_kind "
+            f"{reference_kind!r} (fail closed)"
+        )
+    if _GITHUB_ISSUE_COMMENT_REFERENCE_RE.fullmatch(reference) is None:
+        raise ProvenanceVerificationError(
+            "conversation verifier: agent-recorded GitHub audit reference "
+            "must be a concrete https://github.com/<owner>/<repo>/issues/"
+            "<number>#issuecomment-<id> permalink"
+        )
+    return reference
+
+
 class ConversationApprovalVerifier:
     """Corroborate the conversation-approval receipt against the validated
-    policy. No network, no token, no external artifact: the receipt's
-    internal consistency with the approved envelope IS the check (the
-    conversation is the authority; see module docstring).
+    policy.
+
+    No network, token, or external identity proof is required. The receipt's
+    internal consistency with the approved envelope is the runtime check; the
+    conversation is the human authority. A connector-native GitHub issue
+    comment is only a durable audit locator and is intentionally not fetched
+    or treated as independent human-authored consent.
     """
 
     def __init__(
@@ -122,18 +185,7 @@ class ConversationApprovalVerifier:
                 "conversation verifier: receipt is not a status=approved, "
                 f"approval_text={APPROVAL_TEXT!r} decision"
             )
-        reference = str(raw.get("reference", "")).strip()
-        if not reference:
-            raise ProvenanceVerificationError(
-                "conversation verifier: receipt reference (conversation "
-                "record) is empty (fail closed)"
-            )
-        if re.fullmatch(r"[^\s<>]+#[^\s<>]+", reference) is None:
-            raise ProvenanceVerificationError(
-                "conversation verifier: receipt reference must be a "
-                "concrete '<session-id>#<message-id>' pointer with no "
-                "whitespace or angle brackets"
-            )
+        reference = _validate_audit_reference(raw)
         if raw.get("campaign_id") != str(policy.get("campaign_id", "")):
             raise ProvenanceVerificationError(
                 "conversation verifier: receipt binds a different campaign "

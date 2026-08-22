@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sensemaking-skills.invalid/schemas/two-lane-v1/campaign-approval.v1.schema.json",
   "title": "Campaign Approval v1",
-  "description": "Machine-readable schema for the parsed data model of a Two-Lane v1 campaign approval document (docs/experiments/schemas/two-lane-v1/campaign-approval.schema.md). Three explicit, discriminated profiles: 'example' (documentation/template, always non-operative -- carries the marker field, and permits documented placeholder string values such as '<HUMAN-FILLS-IN ...>'), 'operative' (omits marker entirely, and enforces strict field formats), and 'conversation' (the active_human_conversation receipt -- the human's standalone 'approve' in the active conversation, recorded by the coding agent as approval.md; carries approval_source and no external provenance). oneOf is used so a document matches exactly one profile, never two, and never none.",
-  "$comment": "The two branches below are DELIBERATELY fully independent field definitions -- they do not share a single set of field schemas via a common allOf reference. An earlier revision of this schema referenced one shared 'commonFields' definition (with strict RFC3339/sha256-hex patterns) from BOTH branches; because allOf constituents are evaluated independently and ALL must pass, that shared reference silently forced the STRICT operative-grade patterns onto the example/template branch too, which made the documented blank template (whose approved_at is the literal placeholder string '<HUMAN-FILLS-IN RFC3339 timestamp>') fail its own documentation schema. Each branch below now defines its own fields from scratch: the example/template branch is permissive (any non-empty string is accepted for fields a human has not filled in yet), and the operative branch alone carries the strict patterns.",
+  "description": "Machine-readable schema for the parsed data model of a Two-Lane v1 campaign approval document (docs/experiments/schemas/two-lane-v1/campaign-approval.schema.md). Three explicit, discriminated profiles: 'example' (documentation/template, always non-operative -- carries the marker field, and permits documented placeholder string values such as '<HUMAN-FILLS-IN ...>'), 'operative' (omits marker entirely, and enforces strict field formats), and 'conversation' (the active_human_conversation receipt -- the human's standalone 'approve' in the active conversation, recorded by the coding agent as approval.md; carries approval_source and no external human-identity provenance). The conversation profile supports either a legacy truthful conversation pointer or an explicit agent_recorded_github_issue_comment audit locator for connector-native surfaces. oneOf is used so a document matches exactly one profile, never two, and never none.",
+  "$comment": "The example/template and operative branches deliberately define their fields independently so permissive documentation placeholders never inherit operative-grade patterns. Conversation receipts remain agent-recorded audit artifacts whose authority comes from the standalone human approve in the active conversation.",
   "$defs": {
     "sha256Hex": {
       "type": "string",
@@ -88,7 +88,7 @@
       }
     },
     {
-      "title": "conversation-approval profile (active_human_conversation; the human's standalone 'approve' in the active conversation, recorded by the coding agent as approval.md -- no marker, no external provenance)",
+      "title": "conversation-approval profile (active_human_conversation; standalone human approve is authority; approval.md and any GitHub comment are agent-recorded audit artifacts)",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -110,11 +110,44 @@
         "automatic_merge": {"const": "prohibited"},
         "external_provider_api_prohibited": {"const": true},
         "classification": {"type": "string"},
-        "reference": {
-          "type": "string",
-          "pattern": "^[^\\s<>]+#[^\\s<>]+$"
+        "reference_kind": {
+          "const": "agent_recorded_github_issue_comment"
+        },
+        "reference": {"type": "string", "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {"required": ["reference_kind"]},
+          "then": {
+            "properties": {
+              "reference": {
+                "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/issues/[1-9][0-9]*#issuecomment-[1-9][0-9]*$"
+              }
+            }
+          },
+          "else": {
+            "allOf": [
+              {
+                "properties": {
+                  "reference": {
+                    "pattern": "^[^\\s<>]+#[^\\s<>]+$"
+                  }
+                }
+              },
+              {
+                "not": {
+                  "properties": {
+                    "reference": {
+                      "pattern": "^https://github\\.com/"
+                    }
+                  },
+                  "required": ["reference"]
+                }
+              }
+            ]
+          }
         }
-      }
+      ]
     }
   ]
 }

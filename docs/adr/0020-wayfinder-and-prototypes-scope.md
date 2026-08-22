@@ -1,9 +1,33 @@
 # ADR 0020: Whether Wayfinder and Prototypes Belong in the Core
 
-**Status**: PROPOSED — draft for owner review, not yet accepted
+**Status**: SUPERSEDED — historical proposal, never Accepted
 **Date**: 2026-07-25
-**Proposes resolution for**: Issue #35 (was blocked by #29, #33 — both
-proposed, not yet accepted, in ADR 0014, ADR 0018)
+**Superseded on**: 2026-08-18
+**Proposed resolution for**: Issue #35 (closed `not planned` / superseded)
+
+## Current disposition
+
+This July proposal is retained as historical rationale, but it is not current
+product authority.
+
+- ADR 0014's accepted product boundary does not make Wayfinder-style issue
+  maps, prototype branch management, or generic planning orchestration part of
+  the first-release core.
+- ADR 0018's deterministic routing proposal was superseded and never Accepted.
+  Under the current agent-native model, the active coding agent may select
+  research or prototyping when warranted; it does not need a Wayfinder runtime
+  primitive or universal prototype-routing rule to do so.
+- Wayfinder-style maps may remain useful planning artifacts for humans or
+  agents, but they are not consumed as core runtime authority by default.
+- Prototype findings do not become canonical evidence merely because a
+  prototype exists. They influence later decisions only insofar as preserved
+  evidence supports the current warrant and any applicable evidence contract.
+- Closing issue #35 did not retroactively accept this ADR. A future first-class
+  prototype lifecycle or Wayfinder runtime requires recurring evidence of need
+  and a new explicit product decision.
+
+Everything below this point is the original July proposal and evidence note,
+preserved for historical context.
 
 ---
 

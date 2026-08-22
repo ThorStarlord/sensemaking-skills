@@ -1,8 +1,66 @@
 # ADR 0017: Readiness Criteria for Adding New Features
 
-**Status**: PROPOSED — draft for owner review, not yet accepted
-**Date**: 2026-07-25
-**Proposes resolution for**: Issue #32
+**Status**: SUPERSEDED — 2026-08-18; historical proposal, never Accepted
+**Date**: 2026-07-25 (superseded 2026-08-18)
+**Historical proposal for**: Issue #32
+
+## 2026-08-18 disposition — superseded by the agent-native responsibility model
+
+This ADR was a useful July proposal for a specific architectural moment, but it
+never became an operative repository decision. Its central assumption was that
+new Skills, workflows, and artifact types should clear one universal readiness
+gate by proving parity with the then-current runner-led golden path.
+
+That assumption no longer matches the ratified product/control model:
+
+- ADR 0013 now makes the **active coding agent the primary runtime and
+  control-loop owner**. `workflow-runtime.py` / `skill_executor.py` are a
+  separate automation/compatibility path, not the semantic definition of Skill
+  execution.
+- The current agent-native operating workflow treats registered workflows as
+  **bounded subgraphs inside the agent-owned loop**, not as the universal spine
+  every new capability must copy.
+- `CONTEXT.md` now makes **responsibility before Skill**, evidence before
+  commitment, proportional validation, finding-specific verification, explicit
+  authority, and **Harden Only Where Pressured** the governing operating
+  principles.
+- Current promotion discipline is scoped to the thing being promoted. For
+  example, `skills/skill-maintainer/references/promotion-criteria.md` requires
+  evidence-linked planning, approval, repository validation, triggering-scenario
+  verification, neighboring regression coverage, and an audit trail for Skill
+  improvements. It does not require every capability to reproduce a historical
+  workflow-runtime golden path.
+- External-repository evidence remains important when the **claim being made
+  actually depends on external generality**. ADR 0021's D7/D8 work is an
+  example of a product/readiness claim with an explicit external-validation
+  bar. It is not a universal prerequisite for every bounded feature addition.
+
+The useful disciplines inside this proposal remain valid where applicable:
+
+1. declared artifact/consumer contracts must stay compatible or version
+   deliberately;
+2. tests should exercise the real path relevant to the changed responsibility,
+   not merely isolated helper logic;
+3. claimed coverage must have durable evidence rather than orphaned labels;
+4. verification should be proportional to the triggering finding and the
+   change's risk/propagation surface.
+
+What is superseded is the **single universal checklist** and, specifically,
+the requirement that every new capability first achieve parity with one
+historical runner golden path plus an external-repository proof.
+
+The current operational replacement is deliberately responsibility-local:
+
+> Add or harden a capability when current evidence warrants that bounded
+> responsibility; declare durable interfaces when information crosses a
+> boundary; validate the mechanics that actually changed; verify the triggering
+> finding or scenario when consequential; preserve authority boundaries; and
+> demand external proof only for claims whose warrant depends on external
+> generality.
+
+This disposition does **not** create a new readiness schema, score, universal
+workflow gate, or production-readiness claim. It records that issue #32's
+original universal-gate premise is no longer a current product responsibility.
 
 ---
 
@@ -111,7 +169,17 @@ wouldn't catch.
 
 ## Status rationale
 
-Remains **Proposed**. This is an operational-policy ADR whose mechanics are
+**2026-08-18 update — Superseded.** The proposal was never Accepted. Later
+ratification of ADR 0013 moved the product-level control loop to the active
+coding agent, and current operating guidance makes capability hardening
+responsibility-local and evidence-driven rather than conditional on parity
+with one historical workflow-runtime golden path. The original five-criterion
+proposal remains below as historical rationale and as a source of still-useful
+local verification practices; it is not an operative feature-acceptance gate.
+
+Preserved for record, the prior rationale:
+
+**Proposed**: this is an operational-policy ADR whose mechanics are
 well-supported by evidence, but its own criterion 3 is explicitly unmet —
 an ADR cannot honestly claim Provisional or Accepted status for a readiness
 bar that the evidence base itself has not cleared.
