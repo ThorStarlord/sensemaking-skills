@@ -14,3 +14,11 @@
 4. **Flag uncertainty explicitly.** If you are not confident about an approach
    or technical detail, say so before proceeding. Confidence without certainty
    causes more damage than admitting a gap.
+
+## Evaluation & benchmark work
+
+For evaluation or benchmark work, do not silently resolve an ambiguity that can
+affect treatment, selection, scoring, or interpretation — surface it before
+consuming evidence. A runnable procedure is not necessarily a measurable one:
+verify required observability before execution. See
+`docs/experimental-phase-gates.md`.
