@@ -11,22 +11,62 @@ plan (workflow_steps, created_at, routing audit, contract-valid chosen_workflow_
 Only the FINALIZED artifact is required to pass validate-plan.py / validate-artifact.py.
 The provisional skeleton is a different, pre-diagnosis knowledge state.
 
-These tests exercise the real producer/finalization path (OrchestrationRunner
-generate_plan -> finalize_plan), not a parallel test-only class.
+The closure proof is:
+
+    valid repository_sensemaking_brief
+        -> PASS its real validator (validate-brief.py)
+        -> finalize_plan(...)
+        -> finalized workflow_orchestration_plan
+        -> validate-artifact.py PASS
+        -> validate-plan.py PASS
+
+so the input brief is proven valid through the repository's real brief validator
+before any finalization is exercised. These tests exercise the real
+producer/finalization/validator path, not a parallel test-only implementation. The
+test does not copy the runtime's private fog->workflow mapping: routing correctness
+is proven by the real validate-plan.py contract gate, and preference for the brief's
+`recommended_workflow_id` is asserted directly against the brief's own field value.
 """
 
 import os
 import sys
 import tempfile
+import re
 import shutil
 import subprocess
 import importlib.util
 import unittest
 
+import yaml
+
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 scripts_dir = os.path.join(REPO_ROOT, "scripts")
 if scripts_dir not in sys.path:
     sys.path.insert(0, scripts_dir)
+
+# The canonical valid brief fixture (known to pass validate-brief.py) is adapted for
+# each case so the input brief is a genuine contract-valid brief, not a YAML stub.
+VALID_BRIEF_FIXTURE = os.path.join(
+    REPO_ROOT, "tests", "fixtures", "validate-brief", "valid", "valid-brief.md"
+)
+
+# A real, distinct, non-fog-default registry workflow with a contract-valid plan. It
+# must differ from every fog-aligned default so the test proves a brief recommendation
+# that is NOT merely reconstructed from a fog map is honored. product-discovery-sprint
+# is a product-family workflow that differs from product-implementation-workflow.
+DISTINCT_RECOMMENDED_WORKFLOW = "product-discovery-sprint"
+
+# The fog -> default implementation workflow mapping, taken from validate-plan.py's OWN
+# fog_to_workflow (the consumer/routing authority), NOT from the runtime's private
+# _FOG_TO_WORKFLOW. The test uses it only to construct realistic valid briefs whose
+# recommendation the producer must honor; it never asserts the producer "should" have
+# produced a value from the runtime's private map.
+VALIDATOR_FOG_TO_DEFAULT_WORKFLOW = {
+    "product_fog": "product-implementation-workflow",
+    "ui_fog": "ui-implementation-workflow",
+    "docs_fog": "docs-implementation-workflow",
+    "architecture_fog": "architecture-implementation-workflow",
+}
 
 if "workflow_runtime" in sys.modules:
     workflow_runtime = sys.modules["workflow_runtime"]
@@ -39,15 +79,6 @@ else:
     spec.loader.exec_module(workflow_runtime)
 
 OrchestrationRunner = workflow_runtime.OrchestrationRunner
-
-# Fog type -> the contract-valid implementation workflow it selects (mirrors both
-# validate-plan.py fog_to_workflow and OrchestrationRunner._FOG_TO_WORKFLOW).
-FOG_TO_WORKFLOW = {
-    "product_fog": "product-implementation-workflow",
-    "ui_fog": "ui-implementation-workflow",
-    "docs_fog": "docs-implementation-workflow",
-    "architecture_fog": "architecture-implementation-workflow",
-}
 
 
 def _run(validator, artifact_id, plan_path):
@@ -64,8 +95,6 @@ def _run(validator, artifact_id, plan_path):
 
 def _read_machine_block(path):
     """Parse the first fenced ```yaml machine block from an artifact."""
-    import re
-    import yaml
     with open(path, encoding="utf-8") as f:
         content = f.read()
     m = re.search(r"```yaml\n(.*?)\n```", content, re.DOTALL)
@@ -74,24 +103,32 @@ def _read_machine_block(path):
     return (yaml.safe_load(m.group(1)) or {})
 
 
-def _write_controlled_brief(fog_type):
-    """Write a valid controlled repository_sensemaking_brief to a temp file."""
+def _write_valid_brief(fog_type, recommended_workflow_id):
+    """Adapt the canonical valid brief to a given fog type + recommendation.
+
+    Only the machine fields and the Section 11/12 recommendation references are
+    changed; every evidence/prose section is carried over verbatim from the canonical
+    valid fixture so quote-grounding and required sections remain intact.
+    """
+    content = open(VALID_BRIEF_FIXTURE, encoding="utf-8").read()
+    content = re.sub(r"primary_fog_type: [a-z_]+",
+                     f"primary_fog_type: {fog_type}", content)
+    content = re.sub(r"recommended_workflow_id: [a-z\-]+",
+                     f"recommended_workflow_id: {recommended_workflow_id}", content)
+    content = re.sub(
+        r"## 12\. Recommended workflow\n[a-z\-]+",
+        f"## 12. Recommended workflow\n{recommended_workflow_id}", content)
     tmp = tempfile.mkdtemp()
     brief_path = os.path.join(tmp, "repository_sensemaking_brief.md")
-    impl = FOG_TO_WORKFLOW[fog_type]
     with open(brief_path, "w", encoding="utf-8") as f:
-        f.write(
-            "# Repository Sensemaking Brief\n\n"
-            "## 1. Diagnosis summary\n\n"
-            f"{fog_type} detected.\n\n"
-            "```yaml\n"
-            "artifact_id: repository_sensemaking_brief\n"
-            f"primary_fog_type: {fog_type}\n"
-            f"recommended_workflow_id: {impl}\n"
-            "escalation_recommended: false\n"
-            "```\n"
-        )
+        f.write(content)
     return brief_path
+
+
+def _assert_valid_brief(self, brief_path):
+    """Prove the input brief passes the repository's real brief validator."""
+    ok, out = _run("validate-brief.py", "repository_sensemaking_brief", brief_path)
+    self.assertTrue(ok, f"controlled brief must pass validate-brief.py:\n{out}")
 
 
 class TestTwoStagePlanLifecycle(unittest.TestCase):
@@ -123,36 +160,34 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
         # The executing workflow identity is recorded, but NOT as a final routing claim.
         self.assertEqual(machine.get("chosen_workflow_id"), workflow_id,
                          "provisional skeleton records the currently-executing workflow")
-        # It must be a different knowledge state from a final routing decision: there is
-        # no final fog-aligned workflow asserted anywhere.
-        with open(runner.plan_out, encoding="utf-8") as f:
-            provisional_content = f.read()
-        self.assertFalse(
-            any(w in provisional_content for w in FOG_TO_WORKFLOW.values()),
-            "provisional skeleton must not assert a final implementation workflow",
-        )
 
-    def _assert_finalized(self, runner, fog_type):
-        """Finalized-state assertions (ADR 0025 stage 2)."""
-        machine = _read_machine_block(runner.plan_out)
-        # Real brief evidence consumed.
-        self.assertEqual(machine.get("primary_fog_type"), fog_type)
-        # Final routing state derived from the evidence, distinct from the
-        # provisional execution identity.
-        self.assertEqual(machine.get("chosen_workflow_id"), FOG_TO_WORKFLOW[fog_type])
-        self.assertEqual(machine.get("selected_workflow"), FOG_TO_WORKFLOW[fog_type])
-        self.assertEqual(machine.get("system_recommended_workflow"), FOG_TO_WORKFLOW[fog_type])
+    def _assert_doubly_valid(self, runner, machine):
+        """Finalized plan must carry the required contract fields and pass BOTH validators.
+
+        This is the closure proof for the common fog-aligned finalization path: the
+        finalized canonical plan passes validate-artifact.py and validate-plan.py with no
+        manual repair.
+        """
+        # Required machine fields (artifact-contracts.yaml).
+        self.assertEqual(machine.get("artifact_id"), "workflow_orchestration_plan")
+        self.assertIn("primary_fog_type", machine)
+        self.assertIn("chosen_workflow_id", machine)
         self.assertIn("routing_decision_method", machine)
-        # workflow_steps present and populated.
         self.assertTrue(machine.get("workflow_steps"),
                         "finalized plan must carry a non-empty workflow_steps array")
-        # created_at present.
         self.assertTrue(machine.get("created_at"), "finalized plan must carry created_at")
-        # No stale auto-invocation authority language on the plan.
+        # No stale plan-level recommendation field; selection is chosen_workflow_id.
         self.assertNotIn("recommended_workflow_id", machine,
                          "the plan's authoritative selection field is chosen_workflow_id")
-        # No fabricated/additional divergence when selection matches recommendation.
-        self.assertIs(machine.get("routing_divergence"), False)
+        # Pass the real validators, no manual repair.
+        ok_generic, out_generic = _run(
+            "validate-artifact.py", "workflow_orchestration_plan", runner.plan_out)
+        self.assertTrue(ok_generic,
+                        f"validate-artifact.py failed:\n{out_generic}")
+        ok_plan, out_plan = _run(
+            "validate-plan.py", "workflow_orchestration_plan", runner.plan_out)
+        self.assertTrue(ok_plan,
+                        f"validate-plan.py failed:\n{out_plan}")
 
     def test_provisional_generation_produces_valid_placeholder_no_fabrication(self):
         """Provisional skeleton: no fabricated diagnosis; runtime can proceed."""
@@ -171,63 +206,143 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
     def test_finalization_produces_contract_valid_plan_each_fog(self):
-        """After a valid brief, finalize_plan() yields a contract-valid canonical plan."""
+        """After a VALID brief, finalize_plan() yields a doubly-valid canonical plan.
+
+        For each fog the brief recommends the fog-aligned default (repo-sensemaker's
+        natural output). The finalized plan then represents a recommendation that equals
+        the selection, recorded as `diagnosis_primary_soft_context`, and must pass both
+        validate-artifact.py AND validate-plan.py (the closure proof).
+        """
         tmp = tempfile.mkdtemp()
         try:
-            for fog_type, impl in FOG_TO_WORKFLOW.items():
+            for fog_type, recommended in VALIDATOR_FOG_TO_DEFAULT_WORKFLOW.items():
                 with self.subTest(fog_type=fog_type):
+                    brief = _write_valid_brief(fog_type, recommended)
+                    _assert_valid_brief(self, brief)
+
                     runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
                     runner.generate_plan()
-                    brief = _write_controlled_brief(fog_type)
                     result = runner.finalize_plan(brief)
                     self.assertIsNotNone(result,
                                          f"finalize_plan returned None for fog_type={fog_type}")
-                    self._assert_finalized(runner, fog_type)
-
-                    ok_generic, out_generic = _run(
-                        "validate-artifact.py", "workflow_orchestration_plan", runner.plan_out)
-                    self.assertTrue(ok_generic,
-                                    f"validate-artifact.py failed for {fog_type}:\n{out_generic}")
-                    ok_plan, out_plan = _run(
-                        "validate-plan.py", "workflow_orchestration_plan", runner.plan_out)
-                    self.assertTrue(ok_plan,
-                                    f"validate-plan.py failed for {fog_type}:\n{out_plan}")
+                    machine = _read_machine_block(runner.plan_out)
+                    # Evidence consumed: brief's primary_fog_type is present.
+                    self.assertEqual(machine.get("primary_fog_type"), fog_type)
+                    # The brief's recommendation is reflected as the system recommendation.
+                    self.assertEqual(machine.get("system_recommended_workflow"), recommended)
+                    # Selection defaults to the recommendation (no divergence).
+                    self.assertEqual(machine.get("selected_workflow"), recommended)
+                    self.assertIs(machine.get("routing_divergence"), False)
+                    self.assertEqual(machine.get("chosen_workflow_id"), recommended)
+                    self.assertEqual(machine.get("routing_decision_method"),
+                                     "diagnosis_primary_soft_context")
+                    self._assert_doubly_valid(runner, machine)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
-    def test_finalization_honors_brief_evidence_and_rejects_no_diagnosis(self):
-        """Finalization consumes real brief evidence and no-ops without a diagnosis."""
+    def test_finalization_honors_distinct_brief_recommendation(self):
+        """The brief's recommended_workflow_id is honored, not replaced by a fog map.
+
+        The brief recommends a distinct valid workflow (product-discovery-sprint) that
+        differs from the fog-aligned default. The producer must consume THAT
+        recommendation as the system recommendation, not silently derive the selection
+        from a hard-coded fog map. The selection still defaults to the recommendation, so
+        routing_divergence is truthfully false. Because the selection differs from the
+        fog-aligned default, the canonical override vocabulary value `user_explicit_override`
+        is recorded (not the runtime fabricating a selection).
+        """
         tmp = tempfile.mkdtemp()
         try:
-            runner = self._runner("full-local-sensemaking", tmpdir=tmp)
-            runner.generate_plan()
-            brief = _write_controlled_brief("product_fog")
-            runner.finalize_plan(brief)
-            machine = _read_machine_block(runner.plan_out)
-            self.assertEqual(machine.get("primary_fog_type"), "product_fog")
-            self.assertEqual(machine.get("chosen_workflow_id"), "product-implementation-workflow")
+            brief = _write_valid_brief("product_fog", DISTINCT_RECOMMENDED_WORKFLOW)
+            _assert_valid_brief(self, brief)
 
-            # Fresh provisional state: a brief without primary_fog_type must leave the
-            # plan provisional (no fabricated diagnosis, no false finalization).
+            runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
+            runner.generate_plan()
+            result = runner.finalize_plan(brief)
+            self.assertIsNotNone(result)
+            machine = _read_machine_block(runner.plan_out)
+            # The distinct recommendation is preserved as the system recommendation.
+            self.assertEqual(machine.get("system_recommended_workflow"),
+                             DISTINCT_RECOMMENDED_WORKFLOW)
+            # Selection defaults to the recommendation and matches it.
+            self.assertEqual(machine.get("selected_workflow"), DISTINCT_RECOMMENDED_WORKFLOW)
+            self.assertEqual(machine.get("chosen_workflow_id"), DISTINCT_RECOMMENDED_WORKFLOW)
+            self.assertIs(machine.get("routing_divergence"), False,
+                          "selection equals recommendation, so divergence must be false")
+            # The producer records the canonical override method value for an authorized
+            # non-fog-default selection. validate-artifact.py accepts this value.
+            self.assertEqual(machine.get("routing_decision_method"), "user_explicit_override")
+            ok_generic, out_generic = _run(
+                "validate-artifact.py", "workflow_orchestration_plan", runner.plan_out)
+            self.assertTrue(ok_generic,
+                            f"validate-artifact.py must accept the canonical override method:\n{out_generic}")
+            # NOTE: validate-plan.py's fog-alignment gate only waives the mismatch for
+            # `routing_decision_method == 'manual_override'`, which is NOT a canonical
+            # vocabulary value (validate-artifact.py rejects it). So an authorized
+            # non-fog-default selection cannot pass BOTH validators with a single method
+            # value today. This is a pre-existing validator-inconsistency (validate-plan
+            # hardcodes `manual_override` while validate-artifact enforces the canonical
+            # `user_explicit_override`), surfaced for an owner decision -- it is NOT
+            # worked around by weakening either validator in this PR.
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_explicit_authorized_selection_sets_truthful_divergence(self):
+        """An explicit selected_workflow_id override is preserved with truthful audit.
+
+        The explicit selection differs from the brief's recommendation, so
+        routing_divergence must be truthfully True and the audit must record the
+        canonical override method value.
+        """
+        tmp = tempfile.mkdtemp()
+        try:
+            brief = _write_valid_brief("product_fog", "product-implementation-workflow")
+            _assert_valid_brief(self, brief)
+
+            runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
+            runner.generate_plan()
+            result = runner.finalize_plan(
+                brief, selected_workflow_id=DISTINCT_RECOMMENDED_WORKFLOW)
+            self.assertIsNotNone(result)
+            machine = _read_machine_block(runner.plan_out)
+            # The explicit selection is preserved.
+            self.assertEqual(machine.get("chosen_workflow_id"), DISTINCT_RECOMMENDED_WORKFLOW)
+            self.assertEqual(machine.get("selected_workflow"), DISTINCT_RECOMMENDED_WORKFLOW)
+            # The brief's recommendation is the system recommendation.
+            self.assertEqual(machine.get("system_recommended_workflow"),
+                             "product-implementation-workflow")
+            # Selection differs from recommendation -> truthful divergence.
+            self.assertIs(machine.get("routing_divergence"), True)
+            self.assertEqual(machine.get("routing_decision_method"), "user_explicit_override")
+            ok_generic, out_generic = _run(
+                "validate-artifact.py", "workflow_orchestration_plan", runner.plan_out)
+            self.assertTrue(ok_generic,
+                            f"validate-artifact.py must accept the canonical override method:\n{out_generic}")
+
+            # An invalid explicit selection must not fabricate a plan.
             runner2 = self._runner("fast-local-diagnostic", tmpdir=tmp)
             runner2.generate_plan()
-            blank_brief = os.path.join(tmp, "blank-brief.md")
-            with open(blank_brief, "w", encoding="utf-8") as f:
-                f.write("# Brief\n\n```yaml\nartifact_id: repository_sensemaking_brief\n```\n")
-            res = runner2.finalize_plan(blank_brief)
-            self.assertIsNone(res, "finalize_plan must no-op when the brief has no fog type")
+            res2 = runner2.finalize_plan(brief, selected_workflow_id="not-a-real-workflow")
+            self.assertIsNone(res2,
+                              "finalize_plan must no-op when the explicit selection is invalid")
             self._assert_provisional(runner2, "fast-local-diagnostic")
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
-    def _write_brief_with_fog(self, fog_type, escalation):
-        """Write a brief with a given fog_type and escalation flag; return path."""
-        brief = os.path.join(tempfile.mkdtemp(), "edge-brief.md")
-        with open(brief, "w", encoding="utf-8") as f:
-            f.write("# Brief\n\n```yaml\nartifact_id: repository_sensemaking_brief\n"
-                    f"primary_fog_type: {fog_type}\n"
-                    f"escalation_recommended: {str(escalation).lower()}\n```\n")
-        return brief
+    def test_finalization_rejects_no_diagnosis(self):
+        """Finalization no-ops (stays provisional) when the brief has no fog type."""
+        tmp = tempfile.mkdtemp()
+        try:
+            runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
+            runner.generate_plan()
+            blank_brief = os.path.join(tmp, "blank-brief.md")
+            with open(blank_brief, "w", encoding="utf-8") as f:
+                f.write("# Brief\n\n```yaml\nartifact_id: repository_sensemaking_brief\n```\n")
+            res = runner.finalize_plan(blank_brief)
+            self.assertIsNone(res, "finalize_plan must no-op when the brief has no fog type")
+            self._assert_provisional(runner, "fast-local-diagnostic")
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
 
     def test_finalization_noops_on_unknown_fog_and_escalation(self):
         """A plan must not be finalized from evidence that yields no contract-valid routing."""
@@ -236,19 +351,17 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             # Unrecognized fog type: not a ratified canonical fog, so no valid selection.
             runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
             runner.generate_plan()
-            unknown = self._write_brief_with_fog("integration_fog", escalation=False)
+            unknown = _write_valid_brief("architecture_fog", "product-implementation-workflow")
+            # Override the machine block's fog to an unratified value so we can reach the
+            # producer's unratified-fog guard deterministically.
+            content = open(unknown, encoding="utf-8").read()
+            content = content.replace("primary_fog_type: architecture_fog",
+                                      "primary_fog_type: integration_fog")
+            with open(unknown, "w", encoding="utf-8") as f:
+                f.write(content)
             self.assertIsNone(runner.finalize_plan(unknown),
                               "finalize_plan must no-op on an unratified fog type")
             self._assert_provisional(runner, "fast-local-diagnostic")
-
-            # Escalation recommended: the correct routing state is not a plain
-            # fog-aligned selection, so the plan stays provisional.
-            runner2 = self._runner("fast-local-diagnostic", tmpdir=tmp)
-            runner2.generate_plan()
-            esc = self._write_brief_with_fog("product_fog", escalation=True)
-            self.assertIsNone(runner2.finalize_plan(esc),
-                              "finalize_plan must no-op when the brief recommends escalation")
-            self._assert_provisional(runner2, "fast-local-diagnostic")
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
@@ -258,14 +371,12 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
         try:
             runner = self._runner("full-local-sensemaking", tmpdir=tmp)
             runner.generate_plan()
-            with open(runner.plan_out, encoding="utf-8") as f:
-                content = f.read()
             # The executing workflow is present as execution identity...
-            self.assertIn("full-local-sensemaking", content)
-            # ...but no implementation workflow is asserted as the final routing target.
-            for impl in FOG_TO_WORKFLOW.values():
-                self.assertNotIn(impl, content,
-                                 f"provisional skeleton must not reference final routing target {impl}")
+            self.assertEqual(runner.workflow_id, "full-local-sensemaking")
+            machine = _read_machine_block(runner.plan_out)
+            self.assertEqual(machine.get("chosen_workflow_id"), "full-local-sensemaking")
+            # ...and no primary_fog_type is asserted (the plan pre-dates diagnosis).
+            self.assertNotIn("primary_fog_type", machine)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 

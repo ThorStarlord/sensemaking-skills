@@ -856,9 +856,12 @@ class OrchestrationRunner:
 
         return plan
 
-    # Mapping of diagnosed fog types to the contract-valid implementation workflow
-    # they select (mirrors scripts/validate-plan.py fog_to_workflow). This is the
-    # routing rule used only during finalization (ADR 0025 stage 2).
+    # Mapping of diagnosed fog types to a default implementation workflow
+    # (mirrors scripts/validate-plan.py fog_to_workflow). This is used ONLY as a
+    # fallback system recommendation during finalization (ADR 0025 stage 2) when
+    # the brief carries no valid recommended_workflow_id. It is deliberately NOT
+    # treated as the final selection: the brief's recommendation is preferred, and
+    # selection (chosen_workflow_id / selected_workflow) is a distinct authority.
     _FOG_TO_WORKFLOW = {
         "product_fog": "product-implementation-workflow",
         "ui_fog": "ui-implementation-workflow",
@@ -866,32 +869,81 @@ class OrchestrationRunner:
         "architecture_fog": "architecture-implementation-workflow",
     }
 
-    def finalize_plan(self, brief_path: str | None = None) -> str | None:
+    def _read_brief_machine_data(self, brief_path: str) -> dict:
+        """Extract the authoritative machine data from a repository_sensemaking_brief.
+
+        The brief's canonical machine block is Section 13 ("## 13. Machine-readable
+        handoff"); the validator (validate-brief.py) parses exactly that block. A brief
+        may also carry other yaml fences (e.g. Section 8 "Evidence excerpts"), so
+        reading the first yaml fence would miss the handoff fields. Mirror the
+        validator: target the Section 13 handoff block, falling back to the last yaml
+        fence for large artifacts.
+        """
+        with open(brief_path, encoding="utf-8") as f:
+            content = f.read()
+        m = re.search(
+            r"## 13\. Machine-readable handoff\s+```yaml\s+(.*?)\s+```",
+            content, re.DOTALL | re.IGNORECASE,
+        )
+        if not m:
+            blocks = re.findall(r"```yaml\s+(.*?)\s+```", content, re.DOTALL)
+            if not blocks:
+                return {}
+            m_text = blocks[-1]
+        else:
+            m_text = m.group(1)
+        try:
+            data = yaml.safe_load(m_text)
+        except Exception:
+            return {}
+        return data if isinstance(data, dict) else {}
+
+    def finalize_plan(self, brief_path: str | None = None, *,
+                      selected_workflow_id: str | None = None) -> str | None:
         """Finalize the canonical workflow_orchestration_plan from brief evidence.
 
         STAGE 2 of the two-stage lifecycle (ADR 0025). This is the canonical
-        post-diagnosis producer: it consumes the actual repository_sensemaking_brief,
-        reads the real `primary_fog_type`, derives the routing audit from that evidence,
-        establishes a contract-valid final `chosen_workflow_id` (a fog-aligned
-        implementation workflow, or a valid brief `recommended_workflow_id`),
-        and writes the finalized canonical plan with `workflow_steps` and `created_at`.
+        post-diagnosis producer: it consumes the actual repository_sensemaking_brief
+        and produces the finalized canonical plan with the diagnosis, the routing
+        audit, a contract-valid `chosen_workflow_id`, `workflow_steps`, and
+        `created_at`. The finalized plan keeps the ratified distinction between
+        diagnosis, recommendation, and selection:
+
+        - `primary_fog_type` comes from the brief (real evidence).
+        - `system_recommended_workflow` reflects the brief's `recommended_workflow_id`
+          when it names a valid registry workflow; the fog->workflow mapping is used
+          only as a fallback recommendation (never as both recommendation and
+          selection).
+        - `selected_workflow` / `chosen_workflow_id` represent the final selection:
+          an explicit `selected_workflow_id` when supplied (an authorized selection,
+          e.g. agent/user override), otherwise the valid system recommendation.
+        - `routing_divergence` truthfully records whether selection differs from the
+          system recommendation.
+        - `routing_decision_method` records the decision mechanism: a selection that
+          matches the fog-aligned default is `diagnosis_primary_soft_context`; an
+          authorized non-default selection is `user_explicit_override` (the canonical
+          vocabulary value).
+
+        Recommendation and selection remain distinct; this method never grants
+        execution authority (ADR 0014) and does not participate in the runtime's
+        automatic-chaining read machinery (#230 boundary).
 
         Only THIS finalized artifact is required to satisfy validate-plan.py /
         validate-artifact.py. The provisional skeleton from generate_plan() is a
-        different, pre-diagnosis knowledge state and is left unchanged here only if a
-        valid brief is unavailable.
-
-        Per ADR 0025 / issue #230 boundary: this method realizes the artifact
-        lifecycle primitive. It does NOT grant execution authority and does NOT
-        participate in the runtime's automatic-chaining read machinery.
+        different, pre-diagnosis knowledge state and is left unchanged whenever a
+        valid brief, a valid recommendation, or a valid selection is unavailable.
 
         Args:
             brief_path: Path to the repository_sensemaking_brief. Defaults to the
                 contract-resolved path for `repository_sensemaking_brief`.
+            selected_workflow_id: Optional explicit authorized selection (agent/user
+                override). Must name a valid registry workflow. Defaults to the valid
+                system recommendation.
 
         Returns:
-            The finalized plan text, or None if no valid diagnosis evidence exists
-            (no `primary_fog_type`) or the derived routing workflow is not contract-valid.
+            The finalized plan text, or None if finalization cannot produce a
+            contract-valid plan (no `primary_fog_type`, unratified fog type,
+            escalation recommended, or no valid recommendation/selection).
         """
         # 1. Resolve and read the brief (real evidence).
         if not brief_path:
@@ -899,16 +951,16 @@ class OrchestrationRunner:
         if not os.path.exists(brief_path):
             print(f"  ~ finalize_plan: brief not found at {brief_path}; plan stays provisional")
             return None
-        brief_data = self._read_machine_readable_section(brief_path) or {}
+        brief_data = self._read_brief_machine_data(brief_path)
         fog_type = brief_data.get("primary_fog_type") or brief_data.get("user_implied_fog_type")
         if not fog_type:
             print(f"  ~ finalize_plan: no primary_fog_type in brief {brief_path}; plan stays provisional")
             return None
 
-        # Finalization is a routing decision over the four ratified canonical fog types.
-        # An unrecognized fog type or a brief that recommends escalation means the correct
-        # final routing state is NOT a simple fog-aligned selection; stay provisional
-        # rather than emit a plan that could not satisfy validate-plan.py.
+        # Finalization requires a ratified canonical fog type and a non-escalating
+        # brief. Otherwise the correct final routing state is not a simple selection
+        # and the plan must stay provisional rather than emit one that could not
+        # satisfy validate-plan.py.
         if fog_type not in self._FOG_TO_WORKFLOW:
             print(f"  ~ finalize_plan: primary_fog_type '{fog_type}' is not a ratified "
                   f"fog type ({sorted(self._FOG_TO_WORKFLOW)}); plan stays provisional")
@@ -917,26 +969,45 @@ class OrchestrationRunner:
             print(f"  ~ finalize_plan: brief recommends escalation; plan stays provisional "
                   f"(escalation routing is outside this fog-aligned finalization)")
             return None
-
-        # 2. Derive the contract-valid final routing decision directly from the fog
-        # evidence. The fog-aligned implementation workflow is the authoritative
-        # selection; there is no divergence in the ratified simple-routing case, so the
-        # routing audit records the selection faithfully.
-        chosen_id = self._FOG_TO_WORKFLOW[fog_type]
+        fog_default = self._FOG_TO_WORKFLOW[fog_type]
 
         registry = load_workflow_registry(self.repo_root)
         workflows = (registry or {}).get("workflows", [])
+        workflow_ids = {w["id"] for w in workflows}
+
+        # 2. System recommendation: the brief's recommendation when it names a valid
+        # registry workflow; otherwise fall back to the fog->workflow mapping. The fog
+        # mapping is a fallback recommendation mechanism, never silently both the
+        # recommendation and the selection.
+        brief_rec = brief_data.get("recommended_workflow_id")
+        system_recommended = (brief_rec if brief_rec in workflow_ids else fog_default)
+
+        # 3. Selection: an explicit authorized selection when supplied and valid,
+        # otherwise it defaults to the valid system recommendation.
+        if selected_workflow_id is not None and selected_workflow_id not in workflow_ids:
+            print(f"  ~ finalize_plan: requested selection '{selected_workflow_id}' is not "
+                  f"a valid registry workflow; plan stays provisional")
+            return None
+        selected = selected_workflow_id if selected_workflow_id is not None else system_recommended
+        chosen_id = selected
+
         target = next((w for w in workflows if w["id"] == chosen_id), None)
         if target is None:
-            print(f"  ~ finalize_plan: routing workflow '{chosen_id}' not in registry; "
+            print(f"  ~ finalize_plan: selection '{chosen_id}' not in registry; "
                   f"plan stays provisional (no valid contract selection)")
             return None
 
-        selected_workflow = chosen_id
-        routing_divergence = False
-        routing_method = "diagnosis_primary_soft_context"
+        # 4. Routing audit: divergence records selection vs recommendation; method
+        # records whether the selection deviates from the fog-aligned default workflow.
+        # The canonical vocabulary value for an authorized non-default selection is
+        # `user_explicit_override` (validate-plan.py's fog-alignment gate uses the legacy
+        # token `manual_override`, which is NOT in the canonical vocabulary; see
+        # tests/test_generate_plan_conformance.py for the surfaced inconsistency).
+        routing_divergence = system_recommended != selected
+        routing_method = ("user_explicit_override" if chosen_id != fog_default
+                          else "diagnosis_primary_soft_context")
 
-        # 3. Build machine-readable steps mirroring the ROUTED workflow's registry
+        # 5. Build machine-readable steps mirroring the SELECTED workflow's registry
         # steps (so validate-plan.py's registry cross-reference passes).
         workflows_steps = []
         for step in target.get("steps", []):
@@ -960,8 +1031,8 @@ class OrchestrationRunner:
             ("source_intent_ref", "00-user-intent.md"),
             ("chosen_workflow_id", chosen_id),
             ("execution_mode", self.mode),
-            ("system_recommended_workflow", chosen_id),
-            ("selected_workflow", selected_workflow),
+            ("system_recommended_workflow", system_recommended),
+            ("selected_workflow", selected),
             ("routing_divergence", routing_divergence),
             ("routing_decision_method", routing_method),
             ("escalation_recommended", False),
