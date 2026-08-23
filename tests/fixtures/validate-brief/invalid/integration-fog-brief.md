@@ -1,5 +1,6 @@
 ---
-validator_case: positive
+validator_case: negative
+expected_error_contains: "value 'integration_fog'"
 ---
 # Example: Repository Sensemaking Brief (integration_fog)
 

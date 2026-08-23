@@ -7,7 +7,7 @@ An agent-native engineering sensemaking and control layer for software-engineeri
 
 **Status**: Beta (Scenario 5 tested and proven)  
 **Current Use**: Agent/Claude Code invocation + CLI utilities (v0.2.2)  
-**Maturity**: Production-ready for agent-based use, CLI beta-ready
+**Maturity**: External brief production exercised; targeting "externally validated" per the owner-ratified D8 evidence bar. See `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`.
 
 ---
 
@@ -334,24 +334,17 @@ See: [docs/archive/phase-reports/WEEK1-REAL-EXECUTION-EVIDENCE.md](docs/archive/
 
 ---
 
-## Next: Roadmap to User-Ready
+## Next: Readiness to Externally Validated
 
-**Phase 2.1: User-Facing Installation**
-- [ ] Create CLI interface (click/argparse)
-- [ ] Add entry points in setup.py
-- [ ] Enable `sensemaking-skills analyze --repo /path`
-- [ ] Publish to PyPI
-
-**Phase 2.2: Documentation**
-- [ ] Write GETTING_STARTED.md with real examples
-- [ ] Write INSTALLATION.md with step-by-step guide
-- [ ] Create API reference documentation
-- [ ] Add troubleshooting guide
-
-**Phase 2.3: Quality Gates**
-- [ ] Add integration tests for CLI
-- [ ] Test on real projects
-- [ ] Create user feedback loops
+Current justified readiness: **externally exercised** (brief production
+validated internally). Next target: **externally validated** per the
+owner-ratified D8 evidence bar — two structurally different external
+repositories, clean structural Stage A validation, deterministic evidence
+grounding, substantive audit of high-risk claims, no target-repository mutation,
+pinned revisions, repeatability, and real human usefulness review on at least one
+target. See `docs/OWNER-DECISION-PACKAGE-2026-07-26.md` and `STATUS.md` for the
+current operating state and `roadmap.md` (historical) for the earlier shipment
+roadmap.
 
 ---
 

@@ -1,16 +1,23 @@
 # Sensemaking Skills: Customer Onboarding Guide
 
+> **HISTORICAL** — This guide documents the retired runner-based orchestration
+> product (wayfinder era). Automatic routing / autonomous / yolo execution is
+> not current ratified product behavior. See `README.md`, `GETTING_STARTED.md`,
+> `docs/agent-native-operating-workflow.md`, and ADR 0013/0014 for the current
+> product: an agent-native sensemaking and control layer whose deliverable is a
+> human-reviewed repository sensemaking brief.
+
 ## Welcome to Sensemaking Skills
 
-Sensemaking Skills is a production-ready orchestration system that automates high-level project workflows using AI-powered skill orchestration.
+Sensemaking Skills is an agent-native engineering sensemaking and control layer for software-engineering agents that helps turn repository uncertainty into evidence-grounded, warranted next action.
 
 ### What It Does
 
-The system takes a project description and:
-1. Automatically classifies your project type
-2. Selects the optimal workflow for your goals
-3. Executes the workflow with you or automatically
-4. Produces professional artifacts and documentation
+The system helps an active coding agent:
+1. Classify the repository's primary uncertainty (fog type)
+2. Identify the weakest boundary from evidence
+3. Produce a validated, human-reviewed repository sensemaking brief
+4. Recommend a bounded next responsibility
 
 ### Quick Start (5 minutes)
 

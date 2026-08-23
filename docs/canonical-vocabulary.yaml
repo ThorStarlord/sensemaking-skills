@@ -43,15 +43,6 @@ fog_types:
       - "Decision history isn't recorded"
     routing_indicator: "Use when documentation gaps are the primary blocker"
 
-  - id: integration_fog
-    aliases: [integration, api, service]
-    description: "Confusion about integrations, external APIs, or service boundaries"
-    examples:
-      - "The API contract is unclear"
-      - "The webhook mechanism is poorly documented"
-      - "Third-party dependencies have surprising behavior"
-    routing_indicator: "Use when external systems or integration points are unclear"
-
 fog_type_decision_tree:
   - step: 1
     question: "Is the confusion about what to build or why?"
@@ -69,21 +60,17 @@ fog_type_decision_tree:
     question: "Is the confusion specifically caused by missing/wrong documentation?"
     answer: "docs_fog"
 
-  - step: 5
-    question: "Is the confusion about external systems, APIs, or integrations?"
-    answer: "integration_fog"
-
 routing_fields:
   - field: primary_fog_type
     type: enum
-    values: [product_fog, ui_fog, architecture_fog, docs_fog, integration_fog]
+    values: [product_fog, ui_fog, architecture_fog, docs_fog]
     required: true
     description: "The dominant fog type identified in the repository"
     example: "ui_fog"
 
   - field: secondary_fog_types
     type: list(enum)
-    values: [product_fog, ui_fog, architecture_fog, docs_fog, integration_fog]
+    values: [product_fog, ui_fog, architecture_fog, docs_fog]
     required: false
     description: "Other fog types present but less critical"
     example: ["docs_fog", "architecture_fog"]
@@ -424,6 +411,8 @@ execution_modes:
     user_interaction: "None; fully automated"
     gates_honored: false
     warning: "Use only in fully trusted, isolated environments"
+    compatibility_only: true
+    status_note: "Legacy compatibility mode retained for mechanical compatibility only (retired programmatic runner, ADR 0013). Not ratified product behavior."
 
 artifact_ids:
   # Core Diagnostic Artifacts

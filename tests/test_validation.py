@@ -37,7 +37,6 @@ class TestCanonicalVocabulary:
         assert "ui_fog" in fog_values
         assert "architecture_fog" in fog_values
         assert "docs_fog" in fog_values
-        assert "integration_fog" in fog_values
 
     def test_get_enum_values_workflow_id(self):
         """Test getting enum values for workflow_id."""

@@ -168,13 +168,12 @@ Use `skills/workflow-planner/SKILL.md` to convert the brief into a `workflow_orc
 
 **Agent produces a plan that specifies:**
 ```
-Selected Workflow: architecture-implementation-workflow
+Selected Workflow: docs-contract-reconciliation
 Workflow Steps:
-  1. docs-aligner → Review domain docs
-  2. to-prd → Create architecture PRD
-  3. to-issues → Break into refactoring issues
-  4. triage → Assign to sprint
-  5. tdd → Implement with tests
+  1. repo-sensemaker → Diagnose drift
+  2. sensemaking-docs-reconciler → Reconcile docs/registries/contracts
+  3. repair-verifier → Verify closure of the original findings
+  4. handoff → Durable continuation
 ```
 
 **Step 5: Validate the plan**
@@ -292,9 +291,9 @@ Output: Problem frame, unknowns map, diagnosis, plan
 
 ### Workflow 3: Implementation
 ```
-docs-aligner → to-prd → to-issues → triage → tdd → (Your code)
+docs-contract-reconciliation (bounded subgraph) → validated artifacts
 Time: Days/weeks depending on scope
-Output: Implemented feature with tests
+Output: Reconciled docs/contracts and a repair-verification report
 ```
 
 ---
@@ -332,7 +331,9 @@ ls -la /path/to/your/repo
 
 3. **Follow the recommended workflow** from the orchestration plan
 
-4. **For implementation:** Use the `tdd` skill to build features test-first
+4. **For implementation:** follow the registered bounded subgraph recommended by
+   the plan (e.g. `docs-contract-reconciliation` for docs/registry drift); the
+   agent performs the selected responsibility directly (ADR 0013).
 
 ---
 

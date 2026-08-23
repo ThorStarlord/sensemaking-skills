@@ -1,6 +1,8 @@
 # Execution Modes
 
-The `workflow-planner` supports five distinct execution modes, each with different safety boundaries and user involvement.
+The `workflow-planner` supports five execution modes (four current plus the
+legacy `yolo_execution` compatibility mode retained for mechanical
+compatibility only), each with different safety boundaries and user involvement.
 
 | Mode | Status | Description | Approval Gates | Safety Requirements |
 | :--- | :--- | :--- | :--- | :--- |
@@ -8,7 +10,7 @@ The `workflow-planner` supports five distinct execution modes, each with differe
 | `prompt_chain` | Stable | Generate copy/paste prompts for specialized skills. | N/A | None |
 | `guided_execution` | Stable | Execute one step at a time with user approval. | Mandatory | None |
 | `autonomous_execution` | Stable | Execute full chain automatically with approval gates. | Mandatory | High-risk opt-in |
-| `yolo_execution` | Stable | Full automation of local steps with mandatory post-step verification. | Bypassed | Pre-flight Context Check, Post-Step Script + LLM Verification, Feature Branch, Run Log |
+| `yolo_execution` | Compatibility/legacy | Full automation of local steps with mandatory post-step verification. Retained for mechanical compatibility only (retired programmatic runner, ADR 0013); not ratified product behavior. | Bypassed | Pre-flight Context Check, Post-Step Script + LLM Verification, Feature Branch, Run Log |
 
 ---
 
@@ -29,6 +31,9 @@ The orchestrator executes the full chain but **MUST stop at every defined [Appro
 - **`gate: none` behavior**: Steps marked with `gate: none` execute immediately without approval pauses, even in `autonomous_execution` mode. This is useful for high-velocity workflows where intermediate approvals would introduce unnecessary delays.
 
 ### 5. `yolo_execution`
+
+> **COMPATIBILITY / LEGACY** — retained for mechanical compatibility only (retired programmatic runner, ADR 0013). Not ratified product behavior.
+
 Maximum automation for local sensemaking and assumed-installed implementation skills. All approval gates are bypassed for eligible skills.
 - **Requirement**: User must provide the exact opt-in string: 
   `"I choose yolo_execution and accept automated repository changes, feature-branch commits, bypassed gates, and recovery risk."`

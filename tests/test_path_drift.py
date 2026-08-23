@@ -140,7 +140,7 @@ class TestPathDrift(unittest.TestCase):
     def test_fog_type_consistency_in_docs(self):
         """Verify that fog type references use canonical forms.
 
-        Canonical forms: product_fog, ui_fog, architecture_fog, docs_fog, integration_fog
+        Canonical forms: product_fog, ui_fog, architecture_fog, docs_fog
         Should not use: product, ui, architecture, docs (without _fog suffix)
         """
         # Find skill/validator files that mention fog types
