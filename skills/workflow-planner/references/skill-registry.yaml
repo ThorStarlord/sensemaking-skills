@@ -77,26 +77,36 @@ ecosystems:
         invocation: { runtime: claude_code, command: "/to-issues", input_artifact: prd, output_artifact: issue_list }
       - id: triage
         purpose: assign issues to agent briefs
+        status: proposed
+        status_note: "STILL-PROPOSED - referenced as a consumer of user_intent and issue_list in the current operating workflow (docs/agent-native-operating-workflow.md:331,339) but not yet implemented."
         artifact: agent_brief
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/triage", input_artifact: issue_list, output_artifact: agent_brief }
       - id: tdd
         purpose: execute implementation with TDD loop
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill. Deprecated, not deleted, to keep registry/workflow/validator references reconciling."
         artifact: code_patch
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/tdd", input_artifact: agent_brief, output_artifact: code_patch }
       - id: ui-brief
         purpose: create a high-fidelity UI specification
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: ui_specification
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/ui-brief", input_artifact: prd, output_artifact: ui_specification, can_write_files: false }
       - id: ui-flow
         purpose: document user journeys and interaction flows
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: ui_flows
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/ui-flow", input_artifact: domain_alignment_report, output_artifact: ui_flows }
       - id: ui-screen-spec
         purpose: specify individual screen content and interactions
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: screen_specs
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/ui-screen-spec", input_artifact: ui_flows, output_artifact: screen_specs }
@@ -106,125 +116,175 @@ ecosystems:
     skills:
       - id: persona
         purpose: define target user and player fantasy
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: persona_definition
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/persona", input_artifact: repository_sensemaking_brief, output_artifact: persona_definition }
       - id: discovery
         purpose: investigate problem space and user needs
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: discovery_findings
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/discovery", input_artifact: persona_definition, output_artifact: discovery_findings }
       - id: interview-synthesis
         purpose: extract patterns from customer interviews
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: synthesis_report
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/interview-synthesis", input_artifact: discovery_findings, output_artifact: synthesis_report }
       - id: competitive-analysis
         purpose: audit market alternatives and positioning
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: market_analysis
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/competitive-analysis", input_artifact: repository_sensemaking_brief, output_artifact: market_analysis }
       - id: opportunity-tree
         purpose: map problems to desired outcomes
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: opportunity_map
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/opportunity-tree", input_artifact: synthesis_report, output_artifact: opportunity_map }
       - id: hypothesis
         purpose: define testable product bets
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: hypothesis_statement
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/hypothesis", input_artifact: opportunity_map, output_artifact: hypothesis_statement }
       - id: customer-journey
         purpose: map user flow and friction points
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: journey_map
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/customer-journey", input_artifact: persona_definition, output_artifact: journey_map }
       - id: prd
         purpose: synthesize requirements into a spec
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: prd
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/prd", input_artifact: hypothesis_statement, output_artifact: prd }
       - id: user-stories
         purpose: define feature slices from user perspective
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: story_list
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/user-stories", input_artifact: prd, output_artifact: story_list }
       - id: acceptance-criteria
         purpose: define done states for features
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: criteria_list
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/acceptance-criteria", input_artifact: story_list, output_artifact: criteria_list }
       - id: prioritize
         purpose: rank work by impact and feasibility
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/prioritize", input_artifact: story_list, output_artifact: prioritized_list }
       - id: roadmap
         purpose: sequence work across time
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: roadmap
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/roadmap", input_artifact: strategy_doc, output_artifact: sequencing_roadmap }
       - id: okr
         purpose: define goals and key results
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: okr_list
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/okr", input_artifact: strategy_doc, output_artifact: okr_list }
       - id: lean-canvas
         purpose: summarize business model on one page
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: business_canvas
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/lean-canvas", input_artifact: strategy_doc, output_artifact: business_canvas }
       - id: pricing
         purpose: design monetization and packaging
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: pricing_model
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/pricing", input_artifact: market_analysis, output_artifact: pricing_model }
       - id: north-star
         purpose: identify core leading metric
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: north_star_metric
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/north-star", input_artifact: strategy_doc, output_artifact: north_star_metric }
       - id: experiment-design
         purpose: plan validation tests for hypotheses
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: experiment_plan
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/experiment-design", input_artifact: hypothesis_statement, output_artifact: experiment_plan }
       - id: measure-pmf
         purpose: audit product-market fit signals
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: pmf_report
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/measure-pmf", input_artifact: okr_list, output_artifact: pmf_report }
       - id: ab-test-analysis
         purpose: evaluate results of split tests
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: test_results
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/ab-test-analysis", input_artifact: experiment_plan, output_artifact: test_results }
       - id: pre-mortem
         purpose: identify failure modes before launch
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: risk_analysis
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/pre-mortem", input_artifact: prd, output_artifact: risk_analysis }
       - id: launch-checklist
         purpose: verify operational readiness for release
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: readiness_report
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/launch-checklist", input_artifact: prd, output_artifact: readiness_report }
       - id: release-notes
         purpose: communicate value to users and stakeholders
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: feature_announcement
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/release-notes", input_artifact: prd, output_artifact: feature_announcement }
       - id: stakeholder-update
         purpose: communicate progress and blockers
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: stakeholder_update
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/stakeholder-update", input_artifact: okr_list, output_artifact: stakeholder_update }
       - id: gtm
         purpose: define go-to-market execution plan
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: gtm_plan
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/gtm", input_artifact: strategy_doc, output_artifact: gtm_plan }
       - id: battlecard
         purpose: summarize competitive talk tracks
+        status: deprecated
+        status_note: "HISTORICAL/DEPRECATED - no implementation under skills/; wayfinder-era skill."
         artifact: battlecard
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/battlecard", input_artifact: market_analysis, output_artifact: battlecard }

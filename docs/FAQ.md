@@ -106,13 +106,18 @@ A:
 - 1.0.0: Stable API, comprehensive docs
 
 ### Q: Is this production-ready?
-A: Yes! Phase 3 testing proved it works (11/11 tests PASS).
+A: The current justified readiness level is "externally exercised" (brief
+production validated internally); the next target is "externally validated" per
+the owner-ratified D8 evidence bar (two structurally different external
+repositories, clean Stage A, no target mutation, human usefulness review). It is
+not yet general-availability production-ready.
 
 ### Q: How is this licensed?
 A: MIT License. See LICENSE file.
 
 ### Q: Who maintains this?
-A: Core team with community contributions.
+A: Currently maintained by the repository owner (single-maintainer, experimental
+status). Contributions are welcome via issues/PRs.
 
 ## Still Have Questions?
 
