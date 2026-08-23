@@ -242,15 +242,15 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
     def test_finalization_honors_distinct_brief_recommendation(self):
-        """The brief's recommended_workflow_id is honored, not replaced by a fog map.
+        """A distinct valid brief recommendation is followed, with an honest audit.
 
         The brief recommends a distinct valid workflow (product-discovery-sprint) that
         differs from the fog-aligned default. The producer must consume THAT
         recommendation as the system recommendation, not silently derive the selection
-        from a hard-coded fog map. The selection still defaults to the recommendation, so
-        routing_divergence is truthfully false. Because the selection differs from the
-        fog-aligned default, the canonical override vocabulary value `user_explicit_override`
-        is recorded, and the finalized plan must pass both validators.
+        from a hard-coded fog map. The selection defaults to the recommendation, so
+        routing_divergence is truthfully false and the method is the ordinary
+        diagnosis method - NOT `user_explicit_override` (a deviation from the fog
+        default is NOT an override). The plan must pass both validators.
         """
         tmp = tempfile.mkdtemp()
         try:
@@ -270,9 +270,12 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             self.assertEqual(machine.get("chosen_workflow_id"), DISTINCT_RECOMMENDED_WORKFLOW)
             self.assertIs(machine.get("routing_divergence"), False,
                           "selection equals recommendation, so divergence must be false")
-            # An authorized non-fog-default selection is recorded with the canonical
-            # override method value and must pass both validators.
-            self.assertEqual(machine.get("routing_decision_method"), "user_explicit_override")
+            # Following a (possibly non-fog-default) system recommendation is NOT an
+            # override; the ordinary diagnosis method is used, and the plan still passes
+            # both validators because the validator audit compares selection against the
+            # system recommendation (fog map is only a fallback recommendation).
+            self.assertEqual(machine.get("routing_decision_method"),
+                             "diagnosis_primary_soft_context")
             self._assert_doubly_valid(runner, machine)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
@@ -316,27 +319,33 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
-    def test_non_default_selection_without_override_still_fails_alignment(self):
-        """A non-fog-default selection with a NON-override routing method is not blessed.
+    def test_selection_diverges_from_recommendation_without_override_fails(self):
+        """A selection diverging from the system recommendation needs an authorized method.
 
-        The fog-alignment gate must not be weakened: a non-default workflow whose
-        routing_decision_method is NOT an explicit override (here the soft-context
-        default) must still fail validate-plan.py's semantic-alignment check.
+        The routing-audit gate must not be weakened: when the selection differs from the
+        system recommendation and routing_decision_method is NOT an authorized divergence
+        method (here the ordinary soft-context method), validate-plan.py must fail with a
+        semantic_conflict. Following the system recommendation is fine even when it is a
+        non-fog-default workflow; DIVERGING from it without an override is not.
         """
         tmp = tempfile.mkdtemp()
         try:
-            # Produce a finalized non-default plan, then force a non-override method to
-            # assert the alignment gate still rejects it.
-            brief = _write_valid_brief("product_fog", DISTINCT_RECOMMENDED_WORKFLOW)
+            # Brief recommends the fog-default; a finalized (non-override) plan selects it.
+            brief = _write_valid_brief("product_fog", "product-implementation-workflow")
             _assert_valid_brief(self, brief)
             runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
             runner.generate_plan()
             self.assertIsNotNone(runner.finalize_plan(brief))
+            # Force the SELECTION to diverge from the system recommendation with the
+            # ordinary (non-override) diagnosis method.
             with open(runner.plan_out, encoding="utf-8") as f:
                 content = f.read()
             content = content.replace(
-                "routing_decision_method: user_explicit_override",
-                "routing_decision_method: diagnosis_primary_soft_context")
+                "selected_workflow: product-implementation-workflow",
+                f"selected_workflow: {DISTINCT_RECOMMENDED_WORKFLOW}")
+            content = content.replace(
+                "chosen_workflow_id: product-implementation-workflow",
+                f"chosen_workflow_id: {DISTINCT_RECOMMENDED_WORKFLOW}")
             with open(runner.plan_out, "w", encoding="utf-8") as f:
                 f.write(content)
             ok_generic, _ = _run(
@@ -346,8 +355,8 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             ok_plan, out_plan = _run(
                 "validate-plan.py", "workflow_orchestration_plan", runner.plan_out)
             self.assertFalse(ok_plan,
-                             "non-default workflow without an override method must fail "
-                             "validate-plan.py's semantic-alignment gate")
+                             "selection diverging from the system recommendation without an "
+                             "authorized override method must fail validate-plan.py")
             self.assertIn("semantic_conflict", out_plan)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)

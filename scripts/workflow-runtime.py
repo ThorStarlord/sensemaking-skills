@@ -919,10 +919,12 @@ class OrchestrationRunner:
           e.g. agent/user override), otherwise the valid system recommendation.
         - `routing_divergence` truthfully records whether selection differs from the
           system recommendation.
-        - `routing_decision_method` records the decision mechanism: a selection that
-          matches the fog-aligned default is `diagnosis_primary_soft_context`; an
-          authorized non-default selection is `user_explicit_override` (the canonical
-          vocabulary value).
+        - `routing_decision_method` records the decision mechanism: `user_explicit_override`
+          is emitted only for a genuine explicit user/agent selection override (an
+          explicit `selected_workflow_id` that differs from the system recommendation);
+          otherwise `diagnosis_primary_soft_context`. A selection that follows the system
+          recommendation is `diagnosis_primary_soft_context` even when the recommendation
+          differs from the fog-default workflow.
 
         Recommendation and selection remain distinct; this method never grants
         execution authority (ADR 0014) and does not participate in the runtime's
@@ -997,13 +999,13 @@ class OrchestrationRunner:
                   f"plan stays provisional (no valid contract selection)")
             return None
 
-        # 4. Routing audit: divergence records selection vs recommendation; method
-        # records whether the selection deviates from the fog-aligned default workflow.
-        # The canonical vocabulary value for an authorized non-default selection is
-        # `user_explicit_override`; validate-plan.py's fog-alignment gate recognizes it
-        # (and the legacy `manual_override` alias for compatibility). See #232.
+        # 4. Routing audit (#232 / ADR 0025 ratified semantics): divergence means
+        # selection differs from the system RECOMMENDATION, not from the naive
+        # fog->default map. A deviation from the fog default is not an override.
+        # `user_explicit_override` is emitted only for a genuine explicit user/agent
+        # selection override (selected_workflow_id supplied and != system recommendation).
         routing_divergence = system_recommended != selected
-        routing_method = ("user_explicit_override" if chosen_id != fog_default
+        routing_method = ("user_explicit_override" if system_recommended != selected
                           else "diagnosis_primary_soft_context")
 
         # 5. Build machine-readable steps mirroring the SELECTED workflow's registry
