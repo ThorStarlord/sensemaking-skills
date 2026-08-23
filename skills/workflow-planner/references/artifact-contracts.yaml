@@ -499,6 +499,7 @@ artifacts:
       - "PATH B (transient validation): validation_status field is NOT present."
       - "Phase 1 diagnostic scope: plan prepares agent for Phase 2 implementation workflow execution."
       - "workflow_steps is a structured array defining skill sequence: [{step_id, skill, input_artifact, output_artifact, gate, description}, ...]"
+      - "ADR 0025 two-stage lifecycle: the runtime's generate_plan() emits a PROVISIONAL execution skeleton (flagged `plan_stage: provisional`) at Phase 2 before the repository_sensemaking_brief exists; it is NOT the canonical contract-valid plan and may omit primary_fog_type / workflow_steps / created_at. The canonical plan exists only after finalize_plan(brief_path) consumes the brief's real primary_fog_type. Only the finalized plan is required to satisfy validate-plan.py / validate-artifact.py."
     verification:
       generic_validator: "python scripts/validate-artifact.py workflow_orchestration_plan {artifact_path}"
       specialized_validators:

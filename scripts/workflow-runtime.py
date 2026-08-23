@@ -622,16 +622,28 @@ class OrchestrationRunner:
         return all_ok
 
     def generate_plan(self) -> str:
-        """Generate the orchestration plan document. Returns the plan text.
+        """Generate the PROVISIONAL execution skeleton document. Returns the plan text.
 
-        The runtime is the canonical producer of workflow_orchestration_plan (ADR 0010
-        extends this from paths to the plan itself): all execution-state machine fields
-        (session_id, steps, gates, subset) are things only the runtime knows precisely,
-        so it authors a contract-conformant plan rather than letting an LLM guess them.
-        The output satisfies both validate-artifact.py (11 sections + 21 machine fields)
-        and validate-plan.py (steps mirror the registry; approval_gates == step gates).
-        The routing recommendation (recommended_workflow_id) is filled in later by the
-        workflow-planner step, once the step-4 brief's fog_type is known.
+        This is STAGE 1 of the two-stage workflow_orchestration_plan lifecycle
+        (ADR 0025). It is written at Phase 2, BEFORE any workflow step executes and
+        therefore BEFORE the repository_sensemaking_brief exists. As such it is a
+        *provisional execution skeleton*, NOT yet the canonical contract-valid
+        workflow_orchestration_plan:
+
+        - It does NOT fabricate diagnosis-dependent fields. In particular it emits no
+          `primary_fog_type` (the fog type is unknowable at Phase 2) and no
+          `workflow_steps` / `created_at` (those belong to the finalized artifact).
+          The plan is therefore deliberately NOT contract-valid and must not be passed
+          to validate-plan.py.
+        - Its `chosen_workflow_id` denotes the workflow currently being executed
+          (execution identity), and must NOT be misread as the post-diagnosis routing
+          decision. Routing audit fields describe this same execution identity only.
+        - The machine block is flagged `plan_stage: provisional` to make this state
+          explicit. It carries only the execution-state information known at Phase 2
+          (session_id, execution mode, steps, gates, subset).
+
+        The finalized canonical plan is produced separately by finalize_plan(brief_path)
+        once a valid repository_sensemaking_brief exists (ADR 0025 stage 2).
         """
         steps = self.workflow.get("steps", [])
         workflow_name = self.workflow.get("display_name", self.workflow_id)
@@ -659,8 +671,17 @@ class OrchestrationRunner:
             for g in approval_gates
         }
 
+        # PROVISIONAL execution skeleton (ADR 0025 stage 1). This machine block is
+        # intentionally NOT the canonical contract-valid plan: it carries only the
+        # execution-state information known at Phase 2, and is flagged `plan_stage:
+        # provisional` so a reader can never mistake it for a finalized routing plan.
+        # `primary_fog_type`, `workflow_steps`, and `created_at` are deliberately
+        # absent (diagnosis-dependent / finalized-canonical fields). `chosen_workflow_id`
+        # and the routing-audit fields below denote the workflow CURRENTLY being
+        # executed (execution identity), NOT a post-diagnosis routing decision.
         machine = OrderedDict([
             ("artifact_id", "workflow_orchestration_plan"),
+            ("plan_stage", "provisional"),
             ("source_intent_ref", "00-user-intent.md"),
             ("chosen_workflow_id", self.workflow_id),
             ("execution_mode", self.mode),
@@ -716,14 +737,19 @@ class OrchestrationRunner:
             f"",
             f"## 1. Brief consumed",
             f"",
-            f"Runtime-authored execution plan for `{self.workflow_id}`. Consumes the run's "
-            f"initial inputs ({', '.join(i['id'] for i in initial_inputs) or 'none'}); the "
-            f"upstream diagnostic brief, when produced by an earlier step, informs the "
-            f"routing recommendation recorded in the machine-readable plan.",
+            f"**PROVISIONAL EXECUTION SKELETON (ADR 0025 stage 1).** Runtime-authored "
+            f"execution skeleton for `{self.workflow_id}`, written at Phase 2 before the "
+            f"`repository_sensemaking_brief` exists. It is NOT yet the canonical "
+            f"contract-valid orchestration plan: it is provisional, carries only the "
+            f"execution-state information known at this point, and fabricates no "
+            f"diagnosis-dependent fields. The upstream diagnostic brief, once produced "
+            f"by a later step, drives finalization via `finalize_plan(brief_path)`.",
             f"",
-            f"## 2. Chosen workflow",
+            f"## 2. Executing workflow",
             f"",
-            f"`{self.workflow_id}` — {workflow_name}",
+            f"`{self.workflow_id}` — {workflow_name} (the workflow CURRENTLY being "
+            f"executed; this is execution identity, NOT a post-diagnosis routing "
+            f"decision).",
             f"",
             f"## 3. Why this workflow",
             f"",
@@ -827,6 +853,257 @@ class OrchestrationRunner:
         with open(self.plan_out, "w", encoding="utf-8") as f:
             f.write(plan)
         print(f"  [OK] Plan written to {self.plan_out}")
+
+        return plan
+
+    # Mapping of diagnosed fog types to the contract-valid implementation workflow
+    # they select (mirrors scripts/validate-plan.py fog_to_workflow). This is the
+    # routing rule used only during finalization (ADR 0025 stage 2).
+    _FOG_TO_WORKFLOW = {
+        "product_fog": "product-implementation-workflow",
+        "ui_fog": "ui-implementation-workflow",
+        "docs_fog": "docs-implementation-workflow",
+        "architecture_fog": "architecture-implementation-workflow",
+    }
+
+    def finalize_plan(self, brief_path: str | None = None) -> str | None:
+        """Finalize the canonical workflow_orchestration_plan from brief evidence.
+
+        STAGE 2 of the two-stage lifecycle (ADR 0025). This is the canonical
+        post-diagnosis producer: it consumes the actual repository_sensemaking_brief,
+        reads the real `primary_fog_type`, derives the routing audit from that evidence,
+        establishes a contract-valid final `chosen_workflow_id` (a fog-aligned
+        implementation workflow, or a valid brief `recommended_workflow_id`),
+        and writes the finalized canonical plan with `workflow_steps` and `created_at`.
+
+        Only THIS finalized artifact is required to satisfy validate-plan.py /
+        validate-artifact.py. The provisional skeleton from generate_plan() is a
+        different, pre-diagnosis knowledge state and is left unchanged here only if a
+        valid brief is unavailable.
+
+        Per ADR 0025 / issue #230 boundary: this method realizes the artifact
+        lifecycle primitive. It does NOT grant execution authority and does NOT
+        participate in the runtime's automatic-chaining read machinery.
+
+        Args:
+            brief_path: Path to the repository_sensemaking_brief. Defaults to the
+                contract-resolved path for `repository_sensemaking_brief`.
+
+        Returns:
+            The finalized plan text, or None if no valid diagnosis evidence exists
+            (no `primary_fog_type`) or the derived routing workflow is not contract-valid.
+        """
+        # 1. Resolve and read the brief (real evidence).
+        if not brief_path:
+            brief_path = self._resolve_artifact_path("repository_sensemaking_brief")
+        if not os.path.exists(brief_path):
+            print(f"  ~ finalize_plan: brief not found at {brief_path}; plan stays provisional")
+            return None
+        brief_data = self._read_machine_readable_section(brief_path) or {}
+        fog_type = brief_data.get("primary_fog_type") or brief_data.get("user_implied_fog_type")
+        if not fog_type:
+            print(f"  ~ finalize_plan: no primary_fog_type in brief {brief_path}; plan stays provisional")
+            return None
+
+        # Finalization is a routing decision over the four ratified canonical fog types.
+        # An unrecognized fog type or a brief that recommends escalation means the correct
+        # final routing state is NOT a simple fog-aligned selection; stay provisional
+        # rather than emit a plan that could not satisfy validate-plan.py.
+        if fog_type not in self._FOG_TO_WORKFLOW:
+            print(f"  ~ finalize_plan: primary_fog_type '{fog_type}' is not a ratified "
+                  f"fog type ({sorted(self._FOG_TO_WORKFLOW)}); plan stays provisional")
+            return None
+        if brief_data.get("escalation_recommended"):
+            print(f"  ~ finalize_plan: brief recommends escalation; plan stays provisional "
+                  f"(escalation routing is outside this fog-aligned finalization)")
+            return None
+
+        # 2. Derive the contract-valid final routing decision directly from the fog
+        # evidence. The fog-aligned implementation workflow is the authoritative
+        # selection; there is no divergence in the ratified simple-routing case, so the
+        # routing audit records the selection faithfully.
+        chosen_id = self._FOG_TO_WORKFLOW[fog_type]
+
+        registry = load_workflow_registry(self.repo_root)
+        workflows = (registry or {}).get("workflows", [])
+        target = next((w for w in workflows if w["id"] == chosen_id), None)
+        if target is None:
+            print(f"  ~ finalize_plan: routing workflow '{chosen_id}' not in registry; "
+                  f"plan stays provisional (no valid contract selection)")
+            return None
+
+        selected_workflow = chosen_id
+        routing_divergence = False
+        routing_method = "diagnosis_primary_soft_context"
+
+        # 3. Build machine-readable steps mirroring the ROUTED workflow's registry
+        # steps (so validate-plan.py's registry cross-reference passes).
+        workflows_steps = []
+        for step in target.get("steps", []):
+            m_step = dict(step)
+            m_step["status"] = "pending"
+            workflows_steps.append(m_step)
+
+        approval_gates = [s.get("gate") for s in workflows_steps if s.get("gate")]
+        mode_info = KNOWN_MODES.get(self.mode, {})
+        mode_gate_behavior = mode_info.get("gates", "none")
+        gate_behavior = {
+            g: ("automatic" if g == "none" else mode_gate_behavior)
+            for g in approval_gates
+        }
+
+        created_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        machine = OrderedDict([
+            ("artifact_id", "workflow_orchestration_plan"),
+            ("primary_fog_type", fog_type),
+            ("source_intent_ref", "00-user-intent.md"),
+            ("chosen_workflow_id", chosen_id),
+            ("execution_mode", self.mode),
+            ("system_recommended_workflow", chosen_id),
+            ("selected_workflow", selected_workflow),
+            ("routing_divergence", routing_divergence),
+            ("routing_decision_method", routing_method),
+            ("escalation_recommended", False),
+            ("auto_escalation_allowed", False),
+            ("scope_expansion_requires_approval", True),
+            ("status", "created"),
+            ("session_id", self.session_id),
+            ("initial_inputs", target.get("initial_inputs", [])),
+            ("workflow_steps", workflows_steps),
+            ("approval_gates", approval_gates),
+            ("gate_behavior", gate_behavior),
+            ("stop_conditions", [
+                {"id": "validation_failure"},
+                {"id": "gate_denial"},
+                {"id": "step_failure"},
+            ]),
+            ("subset_run", False),
+            ("subset_reason", None),
+            ("included_steps", [s.get("id") for s in workflows_steps]),
+            ("excluded_steps", []),
+            ("created_at", created_at),
+        ])
+        machine_yaml = yaml.dump(
+            {k: v for k, v in machine.items()},
+            sort_keys=False, default_flow_style=False, allow_unicode=True,
+        )
+
+        target_name = target.get("display_name", chosen_id)
+        target_purpose = target.get("purpose", "")
+        # A portability-safe source reference for the brief (relative when possible).
+        try:
+            _brief_ref = os.path.relpath(brief_path, self.repo_root)
+        except ValueError:
+            _brief_ref = brief_path
+
+        def _step_desc(step: dict) -> str:
+            skill = step.get("skill", "?")
+            s_type = step.get("step_type", "local_execution")
+            gate = step.get("gate", "none")
+            out = step.get("output_artifact", "N/A")
+            return f"{skill} ({s_type}, gate={gate}) -> {out}"
+
+        lines = [
+            f"# Workflow Orchestration Plan: {target_name}",
+            f"",
+            f"- **Session ID**: {self.session_id}",
+            f"- **Date**: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}",
+            f"- **Finalized Workflow**: {chosen_id}",
+            f"- **Execution Mode**: {self.mode}",
+            f"- **Diagnosed Fog Type**: {fog_type}",
+            f"",
+            f"## 1. Brief consumed",
+            f"",
+            f"Finalized from `{_brief_ref}` "
+            f"(ADR 0025 stage 2). The diagnosed primary fog type is `{fog_type}`, "
+            f"derived from the repository_sensemaking_brief evidence consumed by the "
+            f"diagnostic run that produced this plan.",
+            f"",
+            f"## 2. Chosen workflow",
+            f"",
+            f"`{chosen_id}` — {target_name}",
+            f"",
+            f"## 3. Why this workflow",
+            f"",
+            target_purpose or "(no purpose declared in workflow-registry.yaml)",
+            f"",
+            f"## 4. Workflow steps definition",
+            f"",
+        ]
+        for step in target.get("steps", []):
+            step_id = step.get("id", "?")
+            lines.extend([
+                f"### Step {step_id}: {_step_desc(step)}",
+                f"",
+            ])
+
+        lines.extend([
+            f"## 5. Inputs and outputs",
+            f"",
+        ])
+        for inp in target.get("initial_inputs", []):
+            lines.append(f"- **{inp['id']}** ({inp.get('type', '?')}): {inp.get('description', '')}")
+        lines.append(f"")
+
+        lines.extend([
+            f"## 6. Approval gates",
+            f"",
+            f"- **Mode**: {self.mode}",
+            f"- **Gate behavior**: {mode_gate_behavior}",
+            f"",
+        ])
+        if not approval_gates:
+            lines.append("No gates for this workflow.\n")
+        else:
+            for g in approval_gates:
+                lines.append(f"- `{g}`: {gate_behavior.get(g, mode_gate_behavior)}")
+            lines.append("")
+
+        lines.extend([
+            f"## 7. Stop conditions",
+            f"",
+            f"- Validator failure at any level -> HALT",
+            f"- Gate denial -> HALT",
+            f"- Step execution failure -> HALT",
+            f"- Final step completed -> SUCCESS",
+            f"",
+            f"## 8. Execution mode",
+            f"",
+            f"`{self.mode}` (gate behavior: {mode_gate_behavior}, "
+            f"mutates repo: {mode_info.get('mutation', False)}).",
+            f"",
+            f"## 9. Prompt chain",
+            f"",
+            f"N/A - the runtime executes steps directly; see the run directory.",
+            f"",
+            f"## 10. Run log template",
+            f"",
+            f"```markdown",
+            f"# Run Log: {chosen_id}",
+            f"",
+            f"| Step | Skill | Status | Gate |",
+            f"| :--- | :--- | :--- | :--- |",
+        ])
+        for step in target.get("steps", []):
+            lines.append(f"| {step.get('id', '?')} | {step.get('skill', '?')} | [ ] | [ ] |")
+        lines.extend([
+            f"```",
+            f"",
+            f"## 11. Machine-readable plan",
+            f"",
+            f"```yaml",
+            machine_yaml.rstrip("\n"),
+            f"```",
+            f"",
+        ])
+
+        plan = "\n".join(lines)
+
+        os.makedirs(os.path.dirname(self.plan_out), exist_ok=True)
+        with open(self.plan_out, "w", encoding="utf-8") as f:
+            f.write(plan)
+        print(f"  [OK] Finalized canonical plan written to {self.plan_out}")
 
         return plan
 
