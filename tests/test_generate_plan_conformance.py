@@ -50,6 +50,12 @@ VALID_BRIEF_FIXTURE = os.path.join(
     REPO_ROOT, "tests", "fixtures", "validate-brief", "valid", "valid-brief.md"
 )
 
+# A canonical VALID escalated brief (escalation_recommended: true, recommended_workflow_id:
+# null, ratified primary_fog_type: architecture_fog), known to pass validate-brief.py.
+VALID_ESCALATED_BRIEF_FIXTURE = os.path.join(
+    REPO_ROOT, "tests", "fixtures", "validate-brief", "valid", "no-match-with-escalation.md"
+)
+
 # A real, distinct, non-fog-default registry workflow with a contract-valid plan. It
 # must differ from every fog-aligned default so the test proves a brief recommendation
 # that is NOT merely reconstructed from a fog map is honored. product-discovery-sprint
@@ -94,13 +100,19 @@ def _run(validator, artifact_id, plan_path):
 
 
 def _read_machine_block(path):
-    """Parse the first fenced ```yaml machine block from an artifact."""
+    """Parse the LAST fenced ```yaml machine block from an artifact.
+
+    The plan has its single machine block (Section 11); a brief's authoritative machine
+    block is the Section 13 handoff, which is the last yaml fence in the canonical valid
+    fixtures (Section 8 "Evidence excerpts" is an earlier fence). Reading the last fence
+    is therefore correct for both the finalized plan and the brief.
+    """
     with open(path, encoding="utf-8") as f:
         content = f.read()
-    m = re.search(r"```yaml\n(.*?)\n```", content, re.DOTALL)
-    if not m:
+    blocks = re.findall(r"```yaml\s+(.*?)\s+```", content, re.DOTALL)
+    if not blocks:
         return {}
-    return (yaml.safe_load(m.group(1)) or {})
+    return (yaml.safe_load(blocks[-1]) or {})
 
 
 def _write_valid_brief(fog_type, recommended_workflow_id):
@@ -121,6 +133,17 @@ def _write_valid_brief(fog_type, recommended_workflow_id):
         f"## 12. Recommended workflow\n{recommended_workflow_id}", content)
     tmp = tempfile.mkdtemp()
     brief_path = os.path.join(tmp, "repository_sensemaking_brief.md")
+    with open(brief_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    return brief_path
+
+
+def _copy_brief_fixture(fixture_path):
+    """Copy a canonical brief fixture verbatim to a writable temp path."""
+    tmp = tempfile.mkdtemp()
+    brief_path = os.path.join(tmp, "repository_sensemaking_brief.md")
+    with open(fixture_path, encoding="utf-8") as src:
+        content = src.read()
     with open(brief_path, "w", encoding="utf-8") as f:
         f.write(content)
     return brief_path
@@ -395,6 +418,37 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             self.assertIsNone(runner.finalize_plan(unknown),
                               "finalize_plan must no-op on an unratified fog type")
             self._assert_provisional(runner, "fast-local-diagnostic")
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_finalization_noops_on_escalated_brief(self):
+        """An escalated valid brief must not be finalized (no fabricated selection).
+
+        Start from a VALID repository_sensemaking_brief with a ratified primary_fog_type
+        and escalation_recommended: true. finalize_plan() must return None, leave the
+        Phase-2 plan provisional, and fabricate no final routing selection, because
+        escalation routing is outside this fog-aligned finalization (ADR 0014).
+        """
+        tmp = tempfile.mkdtemp()
+        try:
+            escalation_brief = _copy_brief_fixture(VALID_ESCALATED_BRIEF_FIXTURE)
+            _assert_valid_brief(self, escalation_brief)
+            # Sanity: this is a ratified fog with escalation recommended.
+            machine = _read_machine_block(escalation_brief)
+            self.assertEqual(machine.get("primary_fog_type"), "architecture_fog")
+            self.assertIs(machine.get("escalation_recommended"), True)
+
+            runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
+            runner.generate_plan()
+            result = runner.finalize_plan(escalation_brief)
+            self.assertIsNone(result,
+                              "finalize_plan must no-op when the brief recommends escalation")
+            self._assert_provisional(runner, "fast-local-diagnostic")
+            # No final routing selection is fabricated.
+            with open(runner.plan_out, encoding="utf-8") as f:
+                provisional_content = f.read()
+            self.assertNotIn("product-implementation-workflow", provisional_content)
+            self.assertNotIn("primary_fog_type", _read_machine_block(runner.plan_out))
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
