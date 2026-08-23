@@ -1000,9 +1000,8 @@ class OrchestrationRunner:
         # 4. Routing audit: divergence records selection vs recommendation; method
         # records whether the selection deviates from the fog-aligned default workflow.
         # The canonical vocabulary value for an authorized non-default selection is
-        # `user_explicit_override` (validate-plan.py's fog-alignment gate uses the legacy
-        # token `manual_override`, which is NOT in the canonical vocabulary; see
-        # tests/test_generate_plan_conformance.py for the surfaced inconsistency).
+        # `user_explicit_override`; validate-plan.py's fog-alignment gate recognizes it
+        # (and the legacy `manual_override` alias for compatibility). See #232.
         routing_divergence = system_recommended != selected
         routing_method = ("user_explicit_override" if chosen_id != fog_default
                           else "diagnosis_primary_soft_context")

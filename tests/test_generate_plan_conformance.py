@@ -110,7 +110,8 @@ def _write_valid_brief(fog_type, recommended_workflow_id):
     changed; every evidence/prose section is carried over verbatim from the canonical
     valid fixture so quote-grounding and required sections remain intact.
     """
-    content = open(VALID_BRIEF_FIXTURE, encoding="utf-8").read()
+    with open(VALID_BRIEF_FIXTURE, encoding="utf-8") as f:
+        content = f.read()
     content = re.sub(r"primary_fog_type: [a-z_]+",
                      f"primary_fog_type: {fog_type}", content)
     content = re.sub(r"recommended_workflow_id: [a-z\-]+",
@@ -249,7 +250,7 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
         from a hard-coded fog map. The selection still defaults to the recommendation, so
         routing_divergence is truthfully false. Because the selection differs from the
         fog-aligned default, the canonical override vocabulary value `user_explicit_override`
-        is recorded (not the runtime fabricating a selection).
+        is recorded, and the finalized plan must pass both validators.
         """
         tmp = tempfile.mkdtemp()
         try:
@@ -269,21 +270,10 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             self.assertEqual(machine.get("chosen_workflow_id"), DISTINCT_RECOMMENDED_WORKFLOW)
             self.assertIs(machine.get("routing_divergence"), False,
                           "selection equals recommendation, so divergence must be false")
-            # The producer records the canonical override method value for an authorized
-            # non-fog-default selection. validate-artifact.py accepts this value.
+            # An authorized non-fog-default selection is recorded with the canonical
+            # override method value and must pass both validators.
             self.assertEqual(machine.get("routing_decision_method"), "user_explicit_override")
-            ok_generic, out_generic = _run(
-                "validate-artifact.py", "workflow_orchestration_plan", runner.plan_out)
-            self.assertTrue(ok_generic,
-                            f"validate-artifact.py must accept the canonical override method:\n{out_generic}")
-            # NOTE: validate-plan.py's fog-alignment gate only waives the mismatch for
-            # `routing_decision_method == 'manual_override'`, which is NOT a canonical
-            # vocabulary value (validate-artifact.py rejects it). So an authorized
-            # non-fog-default selection cannot pass BOTH validators with a single method
-            # value today. This is a pre-existing validator-inconsistency (validate-plan
-            # hardcodes `manual_override` while validate-artifact enforces the canonical
-            # `user_explicit_override`), surfaced for an owner decision -- it is NOT
-            # worked around by weakening either validator in this PR.
+            self._assert_doubly_valid(runner, machine)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
@@ -291,8 +281,8 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
         """An explicit selected_workflow_id override is preserved with truthful audit.
 
         The explicit selection differs from the brief's recommendation, so
-        routing_divergence must be truthfully True and the audit must record the
-        canonical override method value.
+        routing_divergence must be truthfully True, and a non-default selection with an
+        explicit override must pass both validators.
         """
         tmp = tempfile.mkdtemp()
         try:
@@ -314,10 +304,7 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             # Selection differs from recommendation -> truthful divergence.
             self.assertIs(machine.get("routing_divergence"), True)
             self.assertEqual(machine.get("routing_decision_method"), "user_explicit_override")
-            ok_generic, out_generic = _run(
-                "validate-artifact.py", "workflow_orchestration_plan", runner.plan_out)
-            self.assertTrue(ok_generic,
-                            f"validate-artifact.py must accept the canonical override method:\n{out_generic}")
+            self._assert_doubly_valid(runner, machine)
 
             # An invalid explicit selection must not fabricate a plan.
             runner2 = self._runner("fast-local-diagnostic", tmpdir=tmp)
@@ -326,6 +313,42 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             self.assertIsNone(res2,
                               "finalize_plan must no-op when the explicit selection is invalid")
             self._assert_provisional(runner2, "fast-local-diagnostic")
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_non_default_selection_without_override_still_fails_alignment(self):
+        """A non-fog-default selection with a NON-override routing method is not blessed.
+
+        The fog-alignment gate must not be weakened: a non-default workflow whose
+        routing_decision_method is NOT an explicit override (here the soft-context
+        default) must still fail validate-plan.py's semantic-alignment check.
+        """
+        tmp = tempfile.mkdtemp()
+        try:
+            # Produce a finalized non-default plan, then force a non-override method to
+            # assert the alignment gate still rejects it.
+            brief = _write_valid_brief("product_fog", DISTINCT_RECOMMENDED_WORKFLOW)
+            _assert_valid_brief(self, brief)
+            runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
+            runner.generate_plan()
+            self.assertIsNotNone(runner.finalize_plan(brief))
+            with open(runner.plan_out, encoding="utf-8") as f:
+                content = f.read()
+            content = content.replace(
+                "routing_decision_method: user_explicit_override",
+                "routing_decision_method: diagnosis_primary_soft_context")
+            with open(runner.plan_out, "w", encoding="utf-8") as f:
+                f.write(content)
+            ok_generic, _ = _run(
+                "validate-artifact.py", "workflow_orchestration_plan", runner.plan_out)
+            self.assertTrue(ok_generic,
+                            "validate-artifact.py still passes (method is a canonical value)")
+            ok_plan, out_plan = _run(
+                "validate-plan.py", "workflow_orchestration_plan", runner.plan_out)
+            self.assertFalse(ok_plan,
+                             "non-default workflow without an override method must fail "
+                             "validate-plan.py's semantic-alignment gate")
+            self.assertIn("semantic_conflict", out_plan)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
@@ -354,7 +377,8 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             unknown = _write_valid_brief("architecture_fog", "product-implementation-workflow")
             # Override the machine block's fog to an unratified value so we can reach the
             # producer's unratified-fog guard deterministically.
-            content = open(unknown, encoding="utf-8").read()
+            with open(unknown, encoding="utf-8") as f:
+                content = f.read()
             content = content.replace("primary_fog_type: architecture_fog",
                                       "primary_fog_type: integration_fog")
             with open(unknown, "w", encoding="utf-8") as f:

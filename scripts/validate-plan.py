@@ -558,20 +558,32 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
     workflow_id = plan_data.get("chosen_workflow_id")
     routing_method = plan_data.get("routing_decision_method")
 
+    # An explicit, intentional fog/workflow divergence is permitted when the routing
+    # decision was an explicit override. The canonical vocabulary value is
+    # `user_explicit_override` (docs/canonical-vocabulary.yaml); the legacy `manual_override`
+    # alias is still recognized for compatibility but is NOT part of the canonical
+    # vocabulary (validate-artifact.py enforces the canonical values). See #232.
+    explicit_override = isinstance(routing_method, str) and routing_method in (
+        "user_explicit_override", "manual_override",
+    )
+
     # Only check alignment if both fields are present and valid
     if fog_type in fog_to_workflow and workflow_id:
         expected_workflow = fog_to_workflow[fog_type]
         escalation_override = isinstance(routing_method, str) and routing_method.startswith("escalation_recommended")
-        if workflow_id != expected_workflow and routing_method != "manual_override" and not escalation_override:
+        if workflow_id != expected_workflow and not explicit_override and not escalation_override:
             errors.append({
                 "error_id": "workflow_orchestration_plan.chosen_workflow_id.semantic_conflict",
                 "error_type": "semantic_conflict",
                 "field": "chosen_workflow_id",
                 "current_value": workflow_id,
-                "message": f"Workflow '{workflow_id}' does not align with primary_fog_type '{fog_type}'. Expected '{expected_workflow}' unless routing_decision_method is 'manual_override'.",
+                "message": f"Workflow '{workflow_id}' does not align with primary_fog_type '{fog_type}'. "
+                           f"Expected '{expected_workflow}' unless routing_decision_method is an explicit override "
+                           f"(user_explicit_override).",
                 "suggested_fixes": [
                     f"Change chosen_workflow_id to: {expected_workflow}",
-                    "Or set routing_decision_method to: manual_override (if intentional)"
+                    "Or set routing_decision_method to: user_explicit_override (if this is an intentional explicit "
+                    "fog/workflow divergence).",
                 ],
                 "reference": "docs/adr/0007-soft-context-routing.md"
             })
