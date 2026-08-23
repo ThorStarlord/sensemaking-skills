@@ -1,16 +1,26 @@
 # Workflow Orchestration Plan
 
+> This template documents the **finalized** `workflow_orchestration_plan` (ADR 0025).
+> The runtime's `generate_plan()` first produces a **provisional execution skeleton**
+> at Phase 2 (no `primary_fog_type`, no `workflow_steps`, no `created_at`). Only after a
+> valid `repository_sensemaking_brief` exists does the runtime **finalize** the canonical
+> plan via `finalize_plan(brief_path)`. Only the finalized artifact is required to satisfy
+> `validate-plan.py`. This template describes that finalized artifact.
+
 ## 1. Brief consumed
 Short summary of the `repo-sensemaker` diagnosis, including fog type classification.
 
 ## 1.5. Problem classification (fog type)
-The primary type of uncertainty identified:
+The primary type of uncertainty identified (from the brief's `primary_fog_type`):
 - **product_fog**: Vague user needs, feature requirements unclear
 - **ui_fog**: Navigation or screen design issues
 - **docs_fog**: Missing documentation, knowledge gaps
 - **architecture_fog**: Code structure, design boundary issues (default)
 
-This determines which implementation workflow will be automatically invoked.
+This is a finalization input (ADR 0025 stage 2), consumed from the
+`repository_sensemaking_brief`. It informs which implementation workflow the plan
+**selects** as `chosen_workflow_id`; it is a planning recommendation/selection aid,
+not automatic execution authority (ADR 0014).
 
 ## 2. Chosen workflow
 Name of the workflow.
@@ -41,15 +51,18 @@ How to record what happened during the execution.
 
 ## 11. Machine-readable plan
 
-### Stage 1: Intent Context Fields
+### Stage 1: Finalized Artifact Fields (Required)
 ```yaml
 artifact_id: workflow_orchestration_plan
-schema_version: 1
+primary_fog_type: # product_fog, ui_fog, docs_fog, architecture_fog (from the brief; present only in the FINALIZED plan)
 source_intent_ref: # Path to 00-user-intent.md artifact
-chosen_workflow_id: # Which workflow was actually chosen for execution
+chosen_workflow_id: # The final routing decision (fog-aligned implementation workflow, or an explicitly authorized selection)
 execution_mode: # plan_only, prompt_chain, guided_execution, autonomous_execution
 status: # ready, in_progress, complete, failed
 ```
+`primary_fog_type` and `chosen_workflow_id` here describe the **finalized** post-diagnosis
+routing state (ADR 0025 stage 2). They are distinct from the provisional skeleton's
+Phase-2 execution identity.
 
 ### Stage 2: Routing Audit Fields (Required)
 ```yaml
@@ -69,14 +82,13 @@ initial_inputs: # List of initial artifacts required for this workflow
     type: # artifact type
     required: # true/false
     description: # human-readable description
-steps:
+workflow_steps:
   - id: # step number
     skill: # skill name
     step_type: # skill_execution, decision_point, validation_gate, etc.
     gate: # approval_gate_name, none, or session_close
     output_artifact: # artifact produced by this step
-approval_gates:
-  behavior: # pause_for_user_decision, auto_proceed, halt_on_failure
+approval_gates: # list of gate names (must equal the gates on workflow_steps)
 gate_behavior:
   default: # default behavior for unspecified gates
 stop_conditions: # validator_failure, gate_denial, step_failure, user_interrupt, etc.
@@ -90,6 +102,7 @@ created_at: # ISO 8601 timestamp
 ### Complete Example
 ```yaml
 artifact_id: workflow_orchestration_plan
+primary_fog_type: product_fog
 schema_version: 1
 source_intent_ref: ../../00-user-intent.md
 chosen_workflow_id: product-implementation-workflow
@@ -107,7 +120,7 @@ initial_inputs:
     type: artifact
     required: true
     description: "User's problem statement and scope"
-steps:
+workflow_steps:
   - id: 1
     skill: discovery
     step_type: skill_execution
@@ -124,9 +137,13 @@ steps:
     gate: review_prd
     output_artifact: prd
 approval_gates:
-  behavior: pause_for_user_decision
+  - review_discovery_findings
+  - review_opportunity_map
+  - review_prd
 gate_behavior:
-  default: pause_for_user_decision
+  review_discovery_findings: pause_for_user_decision
+  review_opportunity_map: pause_for_user_decision
+  review_prd: pause_for_user_decision
 stop_conditions:
   - validator_failure
   - gate_denial

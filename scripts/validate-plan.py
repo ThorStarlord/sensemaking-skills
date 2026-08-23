@@ -546,7 +546,10 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
         })
 
     # --- SEMANTIC CONFLICT CHECK: primary_fog_type vs chosen_workflow_id ---
-    # Mapping of fog types to expected workflow IDs
+    # Mapping of fog types to a default (fallback) recommendation workflow, used ONLY
+    # when the plan carries no explicit `system_recommended_workflow`. Following #232,
+    # the fog map is a fallback recommendation, not an unquestionable routing authority:
+    # the audit compares the recorded system recommendation against the selection.
     fog_to_workflow = {
         "product_fog": "product-implementation-workflow",
         "ui_fog": "ui-implementation-workflow",
@@ -555,25 +558,44 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
     }
 
     fog_type = plan_data.get("primary_fog_type")
-    workflow_id = plan_data.get("chosen_workflow_id")
+    selected_workflow = plan_data.get("chosen_workflow_id") or plan_data.get("selected_workflow")
+    system_recommended = (plan_data.get("system_recommended_workflow")
+                          or (fog_to_workflow.get(fog_type) if fog_type in fog_to_workflow else None))
     routing_method = plan_data.get("routing_decision_method")
 
-    # Only check alignment if both fields are present and valid
-    if fog_type in fog_to_workflow and workflow_id:
-        expected_workflow = fog_to_workflow[fog_type]
-        escalation_override = isinstance(routing_method, str) and routing_method.startswith("escalation_recommended")
-        if workflow_id != expected_workflow and routing_method != "manual_override" and not escalation_override:
+    # Routing-divergence audit (#232 / ADR 0025): divergence means selection differs
+    # from the system RECOMMENDATION, not from the naive fog->default map. A deviation
+    # from the fog default is NOT necessarily an override. Requiring an authorized
+    # divergence method applies only when the selection differs from the system
+    # recommendation.
+    #
+    # `user_explicit_override` denotes a genuine explicit user/agent selection override
+    # (ADR 0008 "user --workflow"). The legacy `manual_override` alias is still
+    # recognized for compatibility but is NOT in the canonical vocabulary
+    # (validate-artifact.py enforces the canonical values). An escalation method also
+    # authorizes a divergence.
+    explicit_override = isinstance(routing_method, str) and routing_method in (
+        "user_explicit_override", "manual_override",
+    )
+    escalation_override = (isinstance(routing_method, str)
+                           and routing_method.startswith("escalation_recommended"))
+
+    if selected_workflow and system_recommended and selected_workflow != system_recommended:
+        if not explicit_override and not escalation_override:
             errors.append({
                 "error_id": "workflow_orchestration_plan.chosen_workflow_id.semantic_conflict",
                 "error_type": "semantic_conflict",
                 "field": "chosen_workflow_id",
-                "current_value": workflow_id,
-                "message": f"Workflow '{workflow_id}' does not align with primary_fog_type '{fog_type}'. Expected '{expected_workflow}' unless routing_decision_method is 'manual_override'.",
+                "current_value": selected_workflow,
+                "message": f"Selected workflow '{selected_workflow}' does not match the system recommendation "
+                           f"'{system_recommended}'. A routing divergence must be authorized by an explicit "
+                           f"override (routing_decision_method: user_explicit_override) or an escalation method.",
                 "suggested_fixes": [
-                    f"Change chosen_workflow_id to: {expected_workflow}",
-                    "Or set routing_decision_method to: manual_override (if intentional)"
+                    f"Set chosen_workflow_id to the system recommendation: {system_recommended}",
+                    "Or set routing_decision_method to: user_explicit_override (if this is an intentional "
+                    "explicit selection override).",
                 ],
-                "reference": "docs/adr/0007-soft-context-routing.md"
+                "reference": "docs/adr/0008-routing-divergence-audit.md"
             })
 
     # --- REGISTRY CROSS-REFERENCE CHECKS ---
