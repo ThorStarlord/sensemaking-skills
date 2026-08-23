@@ -1,36 +1,37 @@
 ---
 name: workflow-planner
-description: read a repository sensemaking brief and produce a machine-readable workflow orchestration plan that the workflow runtime executes.
+description: read a repository sensemaking brief and produce a machine-readable workflow orchestration plan (a planning recommendation for the active agent, not execution authority).
 ---
 
 # workflow-planner
 
-This skill produces a **workflow orchestration plan** artifact. It does **not** execute workflows, run steps, manage gates, validate artifacts, or invoke other skills. Those responsibilities belong to `workflow-runtime.py` (the Python execution engine).
+This skill produces a **workflow orchestration plan** artifact. It does **not** execute workflows, run steps, manage gates, validate artifacts, or invoke other skills. Under the ratified agent-native model (ADR 0013), the active agent owns the control loop; the plan is a planning recommendation, not execution authorization.
 
-The workflow runtime reads this plan to determine which workflow to execute and how to sequence its steps.
+If the active agent selects a registered workflow for execution, `workflow-runtime.py` (the Python execution engine) is bounded orchestration/compatibility machinery: it reads the plan's `chosen_workflow_id` to sequence the selected workflow's steps. Workflow selection remains the agent's (or user's) decision; a plan recommendation never by itself authorizes execution.
 
 ## Workflow
 
 1. **Consume Brief**: Review the diagnostic brief from `repo-sensemaker`.
-2. **Select Workflow**: Match the recommended path to an available workflow in `workflow-registry.yaml`.
-3. **Plan**: Produce a Workflow Orchestration Plan with ordered steps and approval gates.
+2. **Recommend Workflow**: Map the recommended path to an available workflow in `workflow-registry.yaml`, as a recommendation.
+3. **Plan**: Produce a Workflow Orchestration Plan with the chosen workflow, ordered steps, and approval gates.
 4. **Mode Selection**: Determine the execution mode (default: `plan_only`).
 
 ## Stage 2: Routing Audit
 
-**Routing Audit Fields** track the gap between what the system recommended and what was actually selected.
+**Routing Audit Fields** track the gap between what the system recommended and what was actually chosen. In `guided_execution` mode these fields document the human/agent decision; they record a recommendation, they do not confer execution authority.
 
 ### Recording Routing Decisions
 
 **Step 1: Capture System Recommendation**
 - Read `recommended_workflow_id` from the repository sensemaking brief
 - Record this as `system_recommended_workflow` in the plan
-- This is what repo-sensemaker diagnosed based on fog type and conflict analysis
+- This is the planning recommendation repo-sensemaker derived from fog type and conflict analysis — a recommendation, not execution authority
 
-**Step 2: Determine User Selection**
+**Step 2: Determine User/Agent Selection**
 - If in `guided_execution` mode and the user is presented a choice, record their explicit selection
 - If user explicitly overrides the recommendation, record the selected workflow
-- If no override provided, selected workflow equals system recommendation
+- If no override provided, the selection equals the system recommendation
+- Record the final selection as `selected_workflow` and the plan's authoritative field `chosen_workflow_id`
 
 **Step 3: Calculate Routing Divergence**
 - `routing_divergence: true` if `system_recommended_workflow != selected_workflow`
@@ -78,23 +79,23 @@ When `escalation_recommended: true` in the brief:
 - If user accepts: selected matches system, `routing_divergence: false`, `decision_method: escalation_recommended_accepted`
 - If user rejects: selected is narrower workflow, `routing_divergence: true`, `decision_method: escalation_recommended_rejected`
 
-Always include `escalation_recommended` and `auto_escalation_allowed` from brief. Escalation recommendations are informational; users always control final selection unless auto_escalation is enabled.
+Always include `escalation_recommended` and `auto_escalation_allowed` from brief. `escalation_recommended` informs the human/agent decision; it does not itself authorize automatic escalation. Users/agents always control final selection.
 
 ## Plan Content
 
-The plan must include a `recommended_workflow_id` field in its machine-readable section. The workflow runtime reads this field to determine which workflow to auto-invoke next.
+The plan must include a `chosen_workflow_id` field in its machine-readable section. This is the plan's authoritative workflow-selection field — the workflow the active agent (or user) chose. `recommended_workflow_id` belongs to the repository sensemaking brief as a planning recommendation; the plan records that recommendation as `system_recommended_workflow` and the final selection as `chosen_workflow_id` / `selected_workflow`.
 
-Workflow routing logic (documented here; executed by the runtime):
+Workflow selection mapping (a planning recommendation / selection aid, not automatic execution authority):
 - Read `primary_fog_type` from repository sensemaking brief (always canonical form per canonical-vocabulary.yaml)
-- If `fog_type == "product_fog"`: use `product-implementation-workflow`
-- If `fog_type == "ui_fog"`: use `ui-implementation-workflow`
-- If `fog_type == "docs_fog"`: use `docs-implementation-workflow`
-- If `fog_type == "architecture_fog"`: use `implementation-workflow` with architecture focus
-- If `fog_type == "integration_fog"`: use `implementation-workflow` with integration focus
-- If fog_type is unclassified: use default `implementation-workflow` (graceful degradation)
-- Can override with explicit `recommended_workflow_id` field if user provides alternative
+- If primary fog suggests `product_fog`: consider `product-implementation-workflow`
+- If primary fog suggests `ui_fog`: consider `ui-implementation-workflow`
+- If primary fog suggests `docs_fog`: consider `docs-implementation-workflow`
+- If primary fog suggests `architecture_fog`: consider `implementation-workflow` with architecture focus
+- If fog_type is unclassified: default recommendation is `implementation-workflow` (graceful degradation)
+- Can prefer an explicit `recommended_workflow_id` from the brief if it provides an alternative
+- The active agent (or user) then selects the workflow; the plan records that decision as `chosen_workflow_id`. A recommendation is not execution authorization.
 
-**CRITICAL**: All fog_type values MUST be in canonical form (`product_fog`, `ui_fog`, `docs_fog`, `architecture_fog`, `integration_fog`). 
+**CRITICAL**: The four canonical fog types are `product_fog`, `ui_fog`, `docs_fog`, `architecture_fog`. `integration_fog` is NOT a canonical fog type in this model. 
 Validators normalize aliases (e.g., "ui" -> "ui_fog", "product" -> "product_fog") before artifact storage. 
 Downstream consumers (including this skill) always receive and must emit canonical values only.
 Reference `docs/canonical-vocabulary.yaml` for fog type definitions and aliases.
@@ -103,7 +104,7 @@ Reference `docs/canonical-vocabulary.yaml` for fog type definitions and aliases.
 
 Every response must follow the [Workflow Orchestration Plan](references/workflow-orchestration-template.md) structure.
 
-**CRITICAL**: Every plan MUST include the **Section 11: Machine-readable plan** YAML block containing `recommended_workflow_id`. Plans without this block are invalid and violate the artifact contract.
+**CRITICAL**: Every plan MUST include the **Section 11: Machine-readable plan** YAML block containing `chosen_workflow_id`. Plans without this block are invalid and violate the artifact contract.
 
 ## Boundary Rules
 
