@@ -1,3 +1,10 @@
+# auto_invoke_next_workflow semantics (ADR 0026):
+# These fields are COMPATIBILITY / HISTORICAL TRANSITION METADATA only. They do
+# NOT grant execution authority. A workflow may execute only after a SEPARATE
+# explicit authority event from the active agent/human authority model.
+# recommendation != selection != execution authorization; knowable != authorized.
+# The auto-invocation consumers surface the candidate and fail closed (no
+# automatic child-workflow spawn) in the absence of such an event.
 workflows:
 - id: fast-path-workflow
   display_name: Fast Path - Diagnostic & Orchestration
@@ -745,6 +752,10 @@ workflows:
   auto_invoke_next_workflow: true
   auto_invoke_source: ui_specification
   auto_invoke_next_workflow_id: ui-implementation-workflow
+  # NOTE (ADR 0026): an explicit next workflow id is still NOT execution
+  # authority. It is compatibility metadata naming a historical candidate; the
+  # consumer surfaces it and fails closed unless a separate explicit authority
+  # event authorizes the transition.
 - id: ui-implementation-workflow
   display_name: UI Implementation Workflow
   purpose: For UI/frontend design problems. Aligns domain, specifies flows and screens,

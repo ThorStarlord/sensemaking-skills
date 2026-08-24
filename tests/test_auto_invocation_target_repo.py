@@ -1,9 +1,16 @@
-"""Integration tests for auto-invocation and recursion guard in SkillsOrchestrator.
+"""Integration tests for auto-invocation authority-gating in SkillsOrchestrator.
+
+Per ADR 0026, auto_invoke_next_workflow / recommended_workflow_id /
+chosen_workflow_id / selected_workflow are compatibility metadata, NOT
+execution authority. These tests prove the packaged-library consumer
+(_handle_auto_invocation) surfaces a candidate and NEVER spawns a child
+workflow absent a separate explicit authority event.
 
 Tests the implementation of:
-1. Auto-invocation detection and execution
-2. Recursion guard to prevent self-routing
-3. Session passing via --from-session flag
+1. Candidate surfacing without spawning (fail-closed, ADR 0026)
+2. Recursion guard surfaced without spawning
+3. Session passing via --from-session flag (manual path, preserved)
+4. No candidate field alone causes a spawn
 """
 
 import os
@@ -19,7 +26,7 @@ src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
-from sensemaking_skills import SkillsOrchestrator
+from sensemaking_skills.runner import SkillsOrchestrator
 from sensemaking_skills.config import SkillsConfig
 
 
@@ -114,13 +121,14 @@ class TestAutoInvocationTargetRepo(unittest.TestCase):
         self.orchestrator = SkillsOrchestrator(config=self.config)
 
     def test_recursion_guard(self):
-        """Verify recursion guard prevents self-routing.
+        """Verify recursion is surfaced WITHOUT spawning (ADR 0026).
 
         Creates an orchestration plan where recommended_workflow_id == current workflow_id,
-        then verifies that _handle_auto_invocation detects and rejects it.
+        then verifies that _handle_auto_invocation surfaces the self-referential
+        candidate and does NOT spawn a child workflow.
         """
         print("\n" + "="*60)
-        print("TEST 1: Recursion Guard")
+        print("TEST 1: Recursion Guard (fail-closed, no spawn)")
         print("="*60)
 
         # Create a session with orchestration plan that would cause recursion
@@ -142,15 +150,26 @@ This is a recursive plan that incorrectly recommends invoking the same workflow.
         plan_file = session_dir / "plan_diagnostic-workflow.md"
         plan_file.write_text(plan_content)
 
-        # Call _handle_auto_invocation with self-referential workflow
-        exit_code = self.orchestrator._handle_auto_invocation(
-            current_workflow_id="diagnostic-workflow",
-            parent_session=str(session_dir)
-        )
+        # Prove no child workflow is spawned: patch run_workflow so a spawn
+        # would be observable, then assert it is never called.
+        spawned = []
+        original_run_workflow = self.orchestrator.run_workflow
+        def no_spawn(workflow_id, execution_mode=None, from_session=None, **kw):
+            spawned.append((workflow_id, execution_mode))
+            return 999
+        self.orchestrator.run_workflow = no_spawn
+        try:
+            exit_code = self.orchestrator._handle_auto_invocation(
+                current_workflow_id="diagnostic-workflow",
+                parent_session=str(session_dir)
+            )
+        finally:
+            self.orchestrator.run_workflow = original_run_workflow
 
-        # Verify that recursion was detected and rejected
-        self.assertEqual(exit_code, 1, "Recursion guard should return exit code 1")
-        print("  ✓ Recursion guard detected self-routing and failed safely")
+        # Fail-closed: returns clean completion (0) and never spawns.
+        self.assertEqual(exit_code, 0, "Fail-closed should return 0 (completed, no spawn)")
+        self.assertEqual(spawned, [], "No child workflow may be spawned (ADR 0026)")
+        print("  ✓ Recursion candidate surfaced; no child workflow spawned")
         print("  [OK] TEST PASSED")
 
     def test_from_session_flag(self):
@@ -214,20 +233,21 @@ execution_mode: yolo_execution
         print("  [OK] TEST PASSED")
 
     def test_auto_chaining_reads_plan(self):
-        """Verify auto-invocation reads and parses orchestration plan.
+        """Verify auto-invocation reads/parses the plan and surfaces the candidate WITHOUT spawning (ADR 0026).
 
-        Tests that _handle_auto_invocation can read YAML frontmatter from
-        an orchestration plan and extract the workflow_id correctly.
+        Tests that _handle_auto_invocation can read YAML frontmatter from an
+        orchestration plan, extract the candidate workflow_id, surface it, and
+        does NOT spawn a child workflow.
         """
         print("\n" + "="*60)
-        print("TEST 3: Auto-Chaining Plan Parsing (Stub)")
+        print("TEST 3: Auto-Chaining Plan Candidate Surfacing (fail-closed)")
         print("="*60)
 
         # Create a valid orchestration plan
         session_dir = self.tmp_root / "artifacts" / "test-plan-parsing"
         session_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create orchestration plan that chains to a different workflow
+        # Create orchestration plan that mentions a different implementation workflow
         plan_content = """---
 artifact_id: workflow_orchestration_plan
 chosen_workflow_id: diagnostic-workflow
@@ -242,22 +262,104 @@ Recommends chaining to implementation-workflow.
         plan_file = session_dir / "plan_diagnostic-workflow.md"
         plan_file.write_text(plan_content)
 
-        # Call _handle_auto_invocation (will fail on actual invocation,
-        # but we're testing plan parsing and recursion guard)
-        # We expect this to fail because we don't have a real workflow-runtime.py
-        exit_code = self.orchestrator._handle_auto_invocation(
-            current_workflow_id="diagnostic-workflow",
-            parent_session=str(session_dir)
-        )
+        # Prove no child workflow is spawned
+        spawned = []
+        original_run_workflow = self.orchestrator.run_workflow
+        def no_spawn(workflow_id, execution_mode=None, from_session=None, **kw):
+            spawned.append((workflow_id, execution_mode))
+            return 999
+        self.orchestrator.run_workflow = no_spawn
+        try:
+            exit_code = self.orchestrator._handle_auto_invocation(
+                current_workflow_id="diagnostic-workflow",
+                parent_session=str(session_dir)
+            )
+        finally:
+            self.orchestrator.run_workflow = original_run_workflow
 
-        # Should return non-zero because run_workflow will fail
-        # (no actual runtime.py executable)
-        # But the key is that it didn't fail on plan parsing
-        self.assertIsNotNone(exit_code, "Method should return an exit code")
+        # Fail-closed: candidate surfaced, no spawn, clean completion.
+        self.assertEqual(exit_code, 0, "Fail-closed should return 0")
+        self.assertEqual(spawned, [], "A recommended_workflow_id must NOT spawn a child workflow (ADR 0026)")
         print("  ✓ Orchestration plan parsing logic works")
-        print("  ✓ YAML frontmatter extraction works")
-        print("  ✓ Workflow ID extraction works")
-        print("  [OK] TEST PASSED (Placeholder - full E2E requires workflow-runtime.py)")
+        print("  ✓ Candidate workflow surfaced, no child workflow spawned")
+        print("  [OK] TEST PASSED")
+
+    def _assert_no_spawn_from_plan_field(self, field_name):
+        """Helper: prove that a single candidate field does NOT cause a spawn.
+
+        Writes a plan carrying only ``field_name`` mapping to implementation-workflow,
+        calls _handle_auto_invocation, and asserts no child workflow is spawned.
+        """
+        session_dir = self.tmp_root / "artifacts" / ("test-field-" + field_name.replace("_", "-"))
+        session_dir.mkdir(parents=True, exist_ok=True)
+        plan_content = """---
+artifact_id: workflow_orchestration_plan
+execution_mode: yolo_execution
+%s: implementation-workflow
+---
+
+# Orchestration Plan
+""" % field_name
+        (session_dir / "plan_diagnostic-workflow.md").write_text(plan_content)
+
+        spawned = []
+        original_run_workflow = self.orchestrator.run_workflow
+        def no_spawn(workflow_id, execution_mode=None, from_session=None, **kw):
+            spawned.append((workflow_id, execution_mode))
+            return 999
+        self.orchestrator.run_workflow = no_spawn
+        try:
+            exit_code = self.orchestrator._handle_auto_invocation(
+                current_workflow_id="diagnostic-workflow",
+                parent_session=str(session_dir)
+            )
+        finally:
+            self.orchestrator.run_workflow = original_run_workflow
+
+        self.assertEqual(exit_code, 0, "Fail-closed should return 0")
+        self.assertEqual(spawned, [], "Field '%s' must NOT spawn a child workflow (ADR 0026)" % field_name)
+
+    def test_recommended_workflow_id_alone_does_not_spawn(self):
+        """A discoverable recommended_workflow_id does NOT cause spawn (ADR 0026)."""
+        self._assert_no_spawn_from_plan_field("recommended_workflow_id")
+
+    def test_chosen_workflow_id_does_not_spawn(self):
+        """A chosen_workflow_id does NOT cause spawn (ADR 0026)."""
+        self._assert_no_spawn_from_plan_field("chosen_workflow_id")
+
+    def test_selected_workflow_does_not_spawn(self):
+        """A selected_workflow does NOT cause spawn (ADR 0026)."""
+        self._assert_no_spawn_from_plan_field("selected_workflow")
+
+    def test_no_candidate_surfaces_without_spawn(self):
+        """With no candidate in the plan, _handle_auto_invocation surfaces nothing and does not spawn."""
+        session_dir = self.tmp_root / "artifacts" / "test-no-candidate"
+        session_dir.mkdir(parents=True, exist_ok=True)
+        plan_content = """---
+artifact_id: workflow_orchestration_plan
+execution_mode: yolo_execution
+---
+
+# Orchestration Plan
+"""
+        (session_dir / "plan_diagnostic-workflow.md").write_text(plan_content)
+
+        spawned = []
+        original_run_workflow = self.orchestrator.run_workflow
+        def no_spawn(workflow_id, execution_mode=None, from_session=None, **kw):
+            spawned.append((workflow_id, execution_mode))
+            return 999
+        self.orchestrator.run_workflow = no_spawn
+        try:
+            exit_code = self.orchestrator._handle_auto_invocation(
+                current_workflow_id="diagnostic-workflow",
+                parent_session=str(session_dir)
+            )
+        finally:
+            self.orchestrator.run_workflow = original_run_workflow
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(spawned, [], "No candidate must not spawn (ADR 0026)")
 
 
 if __name__ == "__main__":

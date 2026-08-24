@@ -1446,7 +1446,13 @@ class OrchestrationRunner:
         return result
 
     def _should_auto_invoke_next(self) -> tuple[bool, str | None]:
-        """Check if this workflow declares auto-invocation. Returns (should_invoke, source_artifact_id).
+        """Check if this workflow declares a candidate next workflow. Returns (has_candidate, source_artifact_id).
+
+        This detects compatibility/historical transition metadata
+        ( ``auto_invoke_next_workflow`` ) and validates that the declared source
+        artifact reached a usable state. It does NOT grant execution authority:
+        per ADR 0026 the resulting candidate is surfaced but never spawned absent
+        a separate explicit authority event (see Phase 7).
 
         CRITICAL INVARIANT: auto_invoke_next_workflow requires VALIDATED source artifact.
         Never chain workflows on PROMPT_GENERATED or PLANNED artifacts.
@@ -1662,51 +1668,47 @@ class OrchestrationRunner:
 
         return validation_result
 
-    def _invoke_next_workflow(self, next_workflow_id: str) -> int:
-        """Invoke the next workflow automatically, propagating mode, executor, and gate.
+    def _surface_candidate_next_workflow(self, candidate_workflow_id: str,
+                                         source_artifact: str) -> int:
+        """Surface a candidate next workflow WITHOUT spawning it (ADR 0026).
 
-        Uses the same mode as the current execution and passes the same executor
-        (so auto-invoked child workflows do not silently default to dry-run).
-        Returns the exit code from the next workflow run.
+        Compatibility/historical transition metadata (``auto_invoke_next_workflow``)
+        plus a workflow id found in an artifact may identify a candidate next
+        workflow, but that is NOT execution authority. No searchable explicit
+        authority primitive exists in the product today, so the runtime FAILS
+        CLOSED: it records and logs the candidate together with the reason it was
+        discovered and the explicit statement that execution is NOT authorized,
+        and returns 0 (successful completion) without spawning any subprocess.
+
+        Returns the exit code (always 0; the run did not fail, it just did not
+        chain automatically).
         """
         print(f"\n{'='*60}")
-        print(f"AUTO-INVOCATION: Next Workflow")
+        print(f"CANDIDATE NEXT WORKFLOW (not authorized to execute)")
         print(f"{'='*60}")
         print(f"  Current workflow: {self.workflow_id} ({self.mode})")
-        print(f"  Next workflow:    {next_workflow_id} ({self.mode})")
-        print(f"")
+        print(f"  Candidate workflow: {candidate_workflow_id}")
+        print(f"  Source artifact: {source_artifact or '(none)'}")
+        print(f"  Reason: compatibility/historical transition metadata"
+              f" (auto_invoke_next_workflow) identified a candidate next workflow.")
+        print(f"  Execution: NOT AUTHORIZED. No explicit authority event present;"
+              f" automatic chaining is blocked per ADR 0026 (knowable != authorized).")
 
-        cmd = [
-            sys.executable,
-            os.path.join(self.repo_root, "scripts", "workflow-runtime.py"),
-            "--workflow", next_workflow_id,
-            "--mode", self.mode,
-            "--repo-root", self.repo_root,
-            "--executor", self.executor or "dry-run",
-            "--chained",
-            "--from-session", self.artifact_session_dir,
-        ]
+        # Record in the existing session run ledger using the smallest existing
+        # mechanism; do not introduce a new audit subsystem.
+        try:
+            self._log_ledger_event({
+                "event": "auto_invoke_candidate_surfaced",
+                "workflow_id": self.workflow_id,
+                "candidate_workflow_id": candidate_workflow_id,
+                "source_artifact": source_artifact,
+                "execution_authorized": False,
+                "reason": "explicit authority event absent (ADR 0026)",
+            })
+        except Exception:
+            print("  ~ [LEDGER] Could not record auto-invoke candidate; continuing")
 
-        if self.use_fixtures:
-            cmd.append("--use-fixtures")
-
-        if self.gate_decision:
-            cmd.extend(["--gate-decision", self.gate_decision])
-
-        # Propagate model enforcement (issue #86) to auto-invoked child
-        # workflows -- a controlled experiment must stay pinned across the
-        # whole chain, not just the first workflow invoked.
-        if self.model:
-            cmd.extend(["--model", self.model])
-        if self.controlled_experiment:
-            cmd.append("--controlled-experiment")
-
-        print(f"  Running: {' '.join(cmd)}\n")
-
-        code, _, _ = run_subprocess(cmd, self.repo_root,
-                                      inject_repo_root=False,
-                                      capture_output=False)
-        return code
+        return 0
 
     def _get_fixture_artifact_path(self, artifact_id: str) -> str | None:
         """Get path to fixture artifact if available. Returns None if not found."""
@@ -3034,37 +3036,44 @@ class OrchestrationRunner:
             should_invoke, source_artifact = self._should_auto_invoke_next()
             if should_invoke and self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
                 print(f"\n{'='*60}")
-                print(f"PHASE 7: AUTO-INVOCATION CHECK")
+                print(f"PHASE 7: AUTO-INVOCATION CHECK (authority-gated, ADR 0026)")
                 print(f"{'='*60}")
+                # Compatibility/historical transition metadata may identify a
+                # candidate next workflow, but it is NOT execution authority
+                # (ADR 0026). No automatic spawn occurs absent a separate
+                # explicit authority event; the candidate is surfaced and
+                # execution is blocked.
                 # Check for explicit override first
                 next_workflow_id = self._get_explicit_next_workflow()
                 if not next_workflow_id:
                     # Fall back to reading from source artifact
                     next_workflow_id = self._extract_recommended_workflow(source_artifact)
                 if next_workflow_id:
-                    # RECURSION GUARD: Prevent self-routing
+                    # RECURSION GUARD: still meaningful surface info for a
+                    # routing configuration error, even though we do not spawn.
                     if next_workflow_id == self.workflow_id:
                         print(f"  [ERROR] RECURSION DETECTED: Workflow '{self.workflow_id}' would invoke itself.")
                         print(f"  [ERROR] This indicates a routing configuration error.")
-                        print(f"  [FATAL] Auto-invocation aborted to prevent infinite loop.")
-                        return self._finalize_run(1, "recursion_error")
 
-                    # Validate fog type alignment. The fog field lives in the
-                    # repository_sensemaking_brief (primary_fog_type), not always in
-                    # the orchestration plan, so resolve across artifacts + field names.
+                    # Validate fog type alignment as surface info only. The fog
+                    # field lives in the repository_sensemaking_brief
+                    # (primary_fog_type), not always in the orchestration plan.
                     source_artifact_path = self._resolve_artifact_path(source_artifact)
                     fog_type = self._resolve_fog_type(source_artifact)
-
-                    validation_result = self._validate_workflow_fog_alignment(fog_type, next_workflow_id, source_artifact_path)
+                    validation_result = self._validate_workflow_fog_alignment(
+                        fog_type, next_workflow_id, source_artifact_path)
                     if validation_result["is_valid"] is False:
-                        print(f"  [WARN] Workflow routing may be incorrect; proceeding with caution")
+                        print(f"  [WARN] Workflow routing may be incorrect")
 
-                    next_exit_code = self._invoke_next_workflow(next_workflow_id)
-                    return next_exit_code
+                    self._surface_candidate_next_workflow(
+                        candidate_workflow_id=next_workflow_id,
+                        source_artifact=source_artifact,
+                    )
                 else:
                     print(f"  [SKIP] Auto-invocation enabled but no recommended workflow found.")
-                    print(f"  [OK] Execution completed successfully.")
-                    return self._finalize_run(0, "completed")
+                print(f"  [OK] Execution completed successfully. (No child workflow spawned: "
+                      f"absence of an explicit authority event blocks chaining per ADR 0026.)")
+                return self._finalize_run(0, "completed")
             else:
                 print(f"  [OK] Execution completed successfully.")
                 return self._finalize_run(0, "completed")
