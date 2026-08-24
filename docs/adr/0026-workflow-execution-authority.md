@@ -2,8 +2,8 @@
 
 **Status**: ACCEPTED — owner decision 2026-08-24 (ratified after the #230
 triage): the authority-gated-consumer model. `auto_invoke_next_workflow` may
-remain as compatibility metadata but is NOT execution authority. Merge to
-`main` is a separate repository action, pending and not part of this record.
+remain as compatibility metadata but is NOT execution authority. Merged to
+`main` via PR #235 (merge commit `e5a2e73`), 2026-08-24.
 
 **Date**: 2026-08-24
 
@@ -172,6 +172,6 @@ The evidence preserved from the completed #230 triage:
 ACCEPTED: the owner ratified the authority-gated-consumer model on 2026-08-24
 after the #230 triage established that the executable surface is understood and
 that the remaining uncertainty is an owner authority decision, not missing
-technical evidence. Per the repository convention in `docs/adr/README.md`,
-"Accepted" records the operative decision; the merge of the carrying branch to
-`main` is a separate repository action, not part of this record's content.
+technical evidence. The decision was merged to `main` 2026-08-24 via PR #235
+(merge commit `e5a2e73`). Per the repository convention in `docs/adr/README.md`,
+"Accepted" records the operative decision.
