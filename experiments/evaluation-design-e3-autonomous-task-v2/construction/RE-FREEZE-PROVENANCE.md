@@ -137,17 +137,35 @@ hash change.)
 - **Pilot manifest**: re-hashed because T1/T2/T3 task+oracle hashes changed.
   `pilot_manifest_sha256` regenerated (see lock record).
 - **Tranche-1 / Tranche-2 candidate pools, salts, rankings, samples, seeds,
-  bundles**: carried over **undated** as historical construction frozen at the
+  bundles**: carried over **unchanged** as historical construction frozen at the
   old freeze. Their re-validation/re-ranking against `a7b957d` is a
   **prerequisite for the separate main-study responsibility** and is explicitly
   out of scope for the pilot-only `PILOT_READY` gate. They are NOT asserted
   valid at the new freeze here.
 
-Because no task/oracle content in the **pilot** bundle remained byte-identical
-after the re-freeze, the pilot manifest hash, the per-task hashes, and the
-dispatch-seed/ranking records that depend on them are regenerated in the lock
-record. The main-study pools are intentionally left at their old-freeze frozen
-state (historical) until the main-study responsibility re-freezes them.
+Precisely what changed and what was retained unchanged (matching the lock record):
+
+- **Task/oracle SHA-256**: regenerated (T1/T2/T3 task + oracle hashes all changed
+  because freeze-base references / provenance notes changed).
+- **Pilot manifest hash**: regenerated (`pilot_manifest_sha256` recomputed).
+- **Evaluator-only bundles**: regenerated to match the updated oracle files.
+  **Agent-visible bundles**: byte-identical to the old freeze (the visible task
+  contract / non-goal sections carried no SHA reference and did not change).
+- **Regime hashes**: **unchanged** (regimes are substrate-independent prompts;
+  hashes verified identical to the old freeze).
+- **`seed_pilot_dispatch`**: **RETAINED unchanged.** Task/regime identities
+  (T1/T2/T3 × R0/R1/R2) were unchanged by the re-freeze, and the seed is
+  content-independent cryptographic random bytes (it only orders the 9
+  (task, regime) pairs), so it was not regenerated.
+- **Deterministic pilot order**: therefore **unchanged** (the 9-cell order
+  derived from the retained seed is identical to the old freeze).
+- **Tranche-1/Tranche-2 candidate pools, salts, rankings, samples**: carried
+  over **unchanged** as historical construction frozen at the old freeze; NOT
+  re-ranked or asserted valid at the new freeze here. Their re-validation is a
+  separate main-study responsibility.
+
+The main-study pools are intentionally left at their old-freeze frozen state
+(historical) until the main-study responsibility re-freezes them.
 
 ## 6. Historical vs new instrument provenance
 
