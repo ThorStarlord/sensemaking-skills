@@ -1,0 +1,23 @@
+CALIBRATION RECEIPT — WHOLE-WORKSPACE SUB-AGENT (tool:task, no write_paths)
+Session date (UTC): 2026-08-25
+
+Setup: `use_capability(action=call, capability_id=tool:task, arguments={prompt})` with
+no write_paths (sub-agent claims the whole workspace).
+
+Observed capabilities:
+- bash execution: OK (foreground). Confirmed `python --version` -> Python 3.14.3,
+  `git --version` -> 2.51.0.windows.1, `python -c "print('probe-ok')"` -> probe-ok.
+- file writes: OK (write_file + readback), unrestricted within the workspace.
+
+Observed limitation (cannot satisfy oracle isolation):
+- The sub-agent retains read access to the entire workspace. In this environment the
+  workspace is the live `main` checkout, which contains the hidden oracles and evaluator
+  bundles under
+  experiments/evaluation-design-e3-autonomous-task-v2/construction/pilot/*-PILOT-ORACLE.md.
+- A tested agent with oracle read access CANNOT enforce oracle isolation; exposing the
+  hidden oracle to the tested agent would destroy the measurement the pilot exists to make.
+
+Consequence: a whole-workspace sub-agent can execute and write, but cannot be isolated
+from the hidden oracle, so it is not an admissible tested-agent harness either.
+
+Manual repair count involved in producing this receipt: 0.
