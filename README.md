@@ -343,8 +343,10 @@ External Product Validation**, whose approved protocol is canonical at
 
 Goal A validates the ratified product scope through constructed external
 product-validation episodes (2 structurally different repositories × 2 fresh
-runs, independent evidence audit, optional human-owner usefulness review, no
-target mutation, no manual artifact repair). The historical D8 readiness bar
+runs, independent evidence audit, and a **required** human-owner usefulness
+review — the actual decision owner may be the sole usefulness reviewer, with a
+second human reviewer optional; no target mutation, no manual artifact
+repair). The historical D8 readiness bar
 (`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`) is inherited **evidence
 guidance**, not current binding authority; the Goal A evaluation axes govern
 episode admissibility and verdicts. Protocol approval does **not** authorize

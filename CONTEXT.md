@@ -39,10 +39,12 @@ Keep distinct:
 
 Goal A validates only the ratified product scope, through constructed
 external product-validation episodes against 2 structurally different
-repositories × 2 fresh runs, with independent evidence audit and optional
-human-owner usefulness review. Protocol approval does **not** authorize
-episode execution, and Goal B / research-grade E3 remains FROZEN / DEFERRED.
-Issue #218 (`docs/research/normal-use-evidence-lane.md`) remains the
+repositories × 2 fresh runs, with independent evidence audit and a
+**required** human-owner usefulness review — the actual decision owner may be
+the sole usefulness reviewer; a second human reviewer is optional. Protocol
+approval does **not** authorize episode execution, and Goal B / research-grade
+E3 remains FROZEN / DEFERRED. Issue #218
+(`docs/research/normal-use-evidence-lane.md`) remains the
 **separate** normal-use evidence lane.
 
 ## Top operating rule
