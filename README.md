@@ -7,7 +7,7 @@ An agent-native engineering sensemaking and control layer for software-engineeri
 
 **Status**: Beta (Scenario 5 tested and proven)  
 **Current Use**: Agent/Claude Code invocation + CLI utilities (v0.2.2)  
-**Maturity**: External brief production exercised; targeting "externally validated" per the owner-ratified D8 evidence bar. See `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`.
+**Maturity**: External brief production exercised; current product-validation priority is Goal A — External Product Validation. See `docs/research/goal-a-external-product-validation-protocol.md` and `docs/OWNER-DECISION-PACKAGE-2026-07-26.md` (historical D8 evidence guidance, not current binding authority).
 
 ---
 
@@ -334,17 +334,23 @@ See: [docs/archive/phase-reports/WEEK1-REAL-EXECUTION-EVIDENCE.md](docs/archive/
 
 ---
 
-## Next: Readiness to Externally Validated
+## Next: External Product Validation
 
 Current justified readiness: **externally exercised** (brief production
-validated internally). Next target: **externally validated** per the
-owner-ratified D8 evidence bar — two structurally different external
-repositories, clean structural Stage A validation, deterministic evidence
-grounding, substantive audit of high-risk claims, no target-repository mutation,
-pinned revisions, repeatability, and real human usefulness review on at least one
-target. See `docs/OWNER-DECISION-PACKAGE-2026-07-26.md` and `STATUS.md` for the
-current operating state and `roadmap.md` (historical) for the earlier shipment
-roadmap.
+validated internally). The current product-validation priority is **Goal A —
+External Product Validation**, whose approved protocol is canonical at
+[docs/research/goal-a-external-product-validation-protocol.md](docs/research/goal-a-external-product-validation-protocol.md).
+
+Goal A validates the ratified product scope through constructed external
+product-validation episodes (2 structurally different repositories × 2 fresh
+runs, independent evidence audit, optional human-owner usefulness review, no
+target mutation, no manual artifact repair). The historical D8 readiness bar
+(`docs/OWNER-DECISION-PACKAGE-2026-07-26.md`) is inherited **evidence
+guidance**, not current binding authority; the Goal A evaluation axes govern
+episode admissibility and verdicts. Protocol approval does **not** authorize
+episode execution, and Goal B / research-grade E3 remains FROZEN / DEFERRED.
+See `STATUS.md` for the current operating state and `roadmap.md` (historical)
+for the earlier shipment roadmap.
 
 ---
 
