@@ -17,6 +17,34 @@ See:
 - [docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md) — decision vs. orchestration ownership
 - [docs/research/control-model-research-agenda.md](docs/research/control-model-research-agenda.md) — explicitly non-ratified research directions
 
+## Current evidence strategy: Goal A
+
+The current product-validation priority is **Goal A — External Product
+Validation**. The canonical approved protocol is
+[docs/research/goal-a-external-product-validation-protocol.md](docs/research/goal-a-external-product-validation-protocol.md).
+
+```text
+Goal A       = ACTIVE
+A1           = ACTIVE  (absolute product utility)
+A2           = DEFERRED / UNAUTHORIZED
+Goal B / E3  = FROZEN / DEFERRED
+```
+
+Keep distinct:
+
+- **ratified current product scope** = validated, human-reviewed
+  `repository_sensemaking_brief` (ADR 0014);
+- **broader orchestration/control architecture** = informs research and
+  architecture, but **is not** silently ratified external product scope.
+
+Goal A validates only the ratified product scope, through constructed
+external product-validation episodes against 2 structurally different
+repositories × 2 fresh runs, with independent evidence audit and optional
+human-owner usefulness review. Protocol approval does **not** authorize
+episode execution, and Goal B / research-grade E3 remains FROZEN / DEFERRED.
+Issue #218 (`docs/research/normal-use-evidence-lane.md`) remains the
+**separate** normal-use evidence lane.
+
 ## Top operating rule
 
 > **Resolve the nearest unresolved decision-changing uncertainty before committing to the eventual solution.**
@@ -251,8 +279,9 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 | `skills/workflow-planner/references/workflow-registry.yaml` | registered workflow/subgraph definitions |
 | `skill-registry.yaml` | registered Skill/capability catalog |
 | `skills/repo-sensemaker/references/evidence-rules.md` | repository-sensemaking evidence discipline |
-| `docs/adr/` | ratified/proposed architecture decisions and historical rationale |
 | `docs/research/control-model-research-agenda.md` | non-ratified research hypotheses |
+| `docs/research/goal-a-external-product-validation-protocol.md` | current product-validation protocol (Goal A) — ACTIVE |
+| `docs/adr/` | ratified/proposed architecture decisions and historical rationale |
 
 ## Domain language
 

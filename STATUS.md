@@ -3,6 +3,26 @@
 **Version**: 0.2.2 (see [pyproject.toml](pyproject.toml), [CHANGELOG.md](CHANGELOG.md))
 **Last updated**: 2026-08-10 (Work Stream 2: docs & contract reconciliation)
 
+## Current product-validation priority
+
+**Goal A — External Product Validation** is the current product-validation
+strategy. The approved protocol is canonical at
+[docs/research/goal-a-external-product-validation-protocol.md](docs/research/goal-a-external-product-validation-protocol.md).
+
+```text
+Goal A       = ACTIVE
+A1           = ACTIVE  (absolute product utility)
+A2           = DEFERRED / UNAUTHORIZED
+Goal B / E3  = FROZEN / DEFERRED
+```
+
+Goal A validates the ratified product scope (a validated, human-reviewed
+`repository_sensemaking_brief`) through constructed external
+product-validation episodes. Protocol approval does **not** authorize episode
+execution; no repositories/tasks have been selected and no episodes have run.
+Goal B / research-grade E3 remains FROZEN / DEFERRED. See the canonical
+protocol for the full approved semantics and boundaries.
+
 ## Current state
 
 - Distribution-drift probe engine: CRLF normalization (`line_ending_only` vs
