@@ -1,0 +1,36 @@
+{
+  "manifest_hash": "bed02782df1c7de194cd249fec9f73ec8432bdb5ab2bcf709c356c74885c0c31",
+  "ranking": {
+    "T1-HIGH": [
+      "T1H-K9W",
+      "T1H-R5D",
+      "T1H-M2X"
+    ],
+    "T1-MEDIUM": [
+      "T1M-Q3F",
+      "T1M-V8N",
+      "T1M-H2R"
+    ],
+    "T2-HIGH": [
+      "T2H-D8N",
+      "T2H-Q5X",
+      "T2H-W4L"
+    ],
+    "T2-MEDIUM": [
+      "T2M-R9W",
+      "T2M-K7D",
+      "T2M-B3Q"
+    ],
+    "T3-HIGH": [
+      "T3H-Q8N",
+      "T3H-W4J",
+      "T3H-Z1V"
+    ],
+    "T3-MEDIUM": [
+      "T3M-K7X",
+      "T3M-R2B",
+      "T3M-P4W"
+    ]
+  },
+  "salt": "d7b1cc19908504e97f3620fa933dbc550d0dc515316ecec4ef93cc2dc4541763"
+}

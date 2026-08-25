@@ -1,0 +1,36 @@
+{
+  "manifest_hash": "f6a08e991956efc646a9f287c12e728597922cb23acd81adadc1651212e56a19",
+  "ranking": {
+    "T1-HIGH": [
+      "T1H-B6Y",
+      "T1H-W9R",
+      "T1H-J3K"
+    ],
+    "T1-MEDIUM": [
+      "T1M-N6P",
+      "T1M-F4T",
+      "T1M-X2L"
+    ],
+    "T2-HIGH": [
+      "T2H-V6C",
+      "T2H-N4P",
+      "T2H-X9Z"
+    ],
+    "T2-MEDIUM": [
+      "T2M-M8R",
+      "T2M-J4K",
+      "T2M-H7V"
+    ],
+    "T3-HIGH": [
+      "T3H-V3K",
+      "T3H-X7M",
+      "T3H-N9G"
+    ],
+    "T3-MEDIUM": [
+      "T3M-H4Q",
+      "T3M-L8R",
+      "T3M-C5N"
+    ]
+  },
+  "salt": "01a9c40dc537ef1393022981e9b9aa50853862a0057814b686980907ead5e2d7"
+}
