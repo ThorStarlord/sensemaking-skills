@@ -1,0 +1,24 @@
+CALIBRATION RECEIPT — SCOPED WRITER SUB-AGENT (tool:task with write_paths)
+Session date (UTC): 2026-08-25
+
+Setup: `use_capability(action=call, capability_id=tool:task, arguments={prompt, write_paths})`
+Write target: an isolated directory within the workspace.
+
+Observed capabilities:
+- file reads within write_paths: OK
+- file writes within write_paths (write_file / edit_file): OK
+
+Observed limitation (the harness block):
+- bash execution is DENIED for every target. Exact denial text:
+  `error: use_capability target "bash" is not proven read-only; explicit write_paths sub-agents cannot execute unscoped MCP writers`
+- Denied targets included: `python --version`, `git init/commit`, `python -c "print(...)"`,
+  the workflow orchestrator `python scripts/workflow-runtime.py ...`.
+- Root cause (host docs/SPEC.md §3.12): on Windows there is no OS Bash sandbox to rebind
+  write roots, so `bash` is removed from the writer sub-agent registry entirely; the
+  use_capability proxy refuses every target not proven read-only before any command runs.
+
+Consequence: a scoped writer sub-agent can edit repository files in its write scope but
+cannot run a single command. Because every T1/T2/T3 task requires running commands both
+to complete and to verify, a writer sub-agent cannot execute any frozen cell.
+
+Manual repair count involved in producing this receipt: 0.

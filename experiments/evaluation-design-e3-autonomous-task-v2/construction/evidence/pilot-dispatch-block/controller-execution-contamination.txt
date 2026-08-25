@@ -1,0 +1,16 @@
+HARNESS FINDING — CONTROLLER EXECUTION CONTAMINATION
+Session date (UTC): 2026-08-25
+
+Finding: the only other execution-capable agent available (the controller/orchestrator of
+this session) holds evaluator/oracle context. It read the frozen oracles and regime prompts
+as part of this execution session (required to build the canonical preflight oracle-self-test
+and to adjudicate cell output).
+
+Consequence: running the nine pilot cells as the controller, on fresh clones, would give
+"the tested agent" prior knowledge of all hidden oracles and of the other cells' tasks and
+regimes. That is a cross-cell and oracle-isolation violation and does not satisfy the frozen
+protocol's "fresh agent session per cell" requirement.
+
+Therefore the controller is not an admissible tested-agent harness for this pilot.
+
+Manual repair count involved in producing this receipt: 0.

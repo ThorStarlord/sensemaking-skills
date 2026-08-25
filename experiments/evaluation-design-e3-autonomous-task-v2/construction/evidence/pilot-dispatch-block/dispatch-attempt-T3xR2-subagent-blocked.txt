@@ -1,0 +1,34 @@
+DISPATCH ATTEMPT RECEIPT — CELL 1 (T3 x R2), single attempt
+Session date (UTC): 2026-08-25
+
+Dispatch accounting:
+  pilot_dispatch_attempts   = 1
+  attempted cell            = T3 x R2 (cell 1 of the frozen order)
+  valid evidentiary cells   = 0
+  completed / scored cells  = 0
+  cells 2-9 dispatched      = NO
+  manual repair count       = 0
+  PILOT_HARNESS_READY       = NO
+
+Setup:
+- A fresh standalone clone was created at exact a7b957d738f5e1c42b6dd06824c3e6029d816bcd
+  (HEAD verified, clean working tree) -> /home/admin-dimmi/e3-pilot-dispatch/cell01/repo.
+- A fresh scoped writer sub-agent (tool:task with write_paths) was given the T3 task
+  contract and the R2 (escalation) regime, told to work only inside that clone.
+
+Outcome (harness implementation defect, not a product/task result):
+1. The scoped writer sub-agent could not execute bash/python/git at all (see
+   calibration-writer-subagent-bash-denied.txt), so it could not run the orchestrator,
+   apply a fix, or verify. It returned status "blocked" with a correct static diagnosis
+   of the underlying scripts/validate-artifact.py missing-`--json` bug but NO executed
+   run and NO repository edit.
+2. Separately, the dispatch clone used was a raw a7b957d checkout; the frozen
+   T3-PILOT-TASK.md "Initial-state setup" (a three-part pre-dispatch patch: register
+   t3-pilot-recovery-workflow; repair the brief fixture; repair the unknowns-map fixture)
+   was NOT applied by the dispatch harness before the agent started. That omission is a
+   harness implementation defect (the frozen T3 task already specifies the setup), NOT a
+   T3 instrument-design defect.
+
+This attempt is recorded as non-evidentiary harness-block evidence only; it is NOT scored
+as a product (`a7b957d`) result, is NOT an agent-variance result, and produces no oracle
+evaluation.

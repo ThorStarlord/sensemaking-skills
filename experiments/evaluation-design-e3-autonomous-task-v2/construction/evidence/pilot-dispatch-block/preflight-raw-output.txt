@@ -1,0 +1,24 @@
+﻿Autonomous Task v2 preflight — 2026-08-25T00:35:15Z
+clone_dir=/home/admin-dimmi/e3-pilot-dispatch/preflight/cell01/repo frozen_sha=a7b957d738f5e1c42b6dd06824c3e6029d816bcd
+---
+PASS           clone-is-git-repo                        /home/admin-dimmi/e3-pilot-dispatch/preflight/cell01/repo
+PASS           clone-head-matches-frozen-sha            a7b957d738f5e1c42b6dd06824c3e6029d816bcd
+PASS           clone-working-tree-clean                 no tracked modifications
+PASS           clone-is-standalone-not-worktree         .git is a real directory
+PASS           no-known-sibling-experiment-dirs         none found under /home/admin-dimmi/e3-pilot-dispatch/preflight/cell01/repo/experiments
+PASS           clone-remote-has-no-local-path           no local-filesystem-path remotes configured
+PASS           clone-worktree-list-shows-self-only      1 entry
+PASS           clone-parent-directory-is-uncrowded      no unapproved entries in /home/admin-dimmi/e3-pilot-dispatch/preflight/cell01
+PASS           clone-no-alternate-object-store          no alternates file present
+PASS           clone-common-dir-is-self                 /home/admin-dimmi/e3-pilot-dispatch/preflight/cell01/repo/.git
+PASS           regime-file-present:R0-ROBUST            sha256=5cab71b47464ddeb4e3537d26dd58540bd88249b6f44d319f46ca008c0585ea9
+PASS           regime-file-present:R1-LEAN              sha256=6a7147cdfb726fc6a2f216dd39fdf3335daad08447a98178b5ae7b2dd24f4861
+PASS           regime-file-present:R2-ESCALATION        sha256=ab94cc5480a8e4410bcc9df1f788f36f622625c277b8c917170caf8e568e3714
+PASS           telemetry-destination-writable           /home/admin-dimmi/e3-pilot-dispatch/preflight/out
+PASS           run-state-dir-is-fresh                   /home/admin-dimmi/e3-pilot-dispatch/preflight/run-state exists and is empty
+PASS           oracle-self-test                         self-test output matches expected sha256=29d19ead61a379113a2df8c577553f8148e77d835bd0ca67d3cd69e25e09ef82
+PASS           task-bundle-matches-frozen-hash          task bundle sha256 matches expected: 021fcd90156be5c0e87ead018a22d2353620c123765c728c89a8f9018546f525
+ENV_LIMIT      ambient-scope-runtime-enforcement        AMBIENT_SCOPE_NOT_TECHNICALLY_ENFORCED — this script cannot verify or enforce that the executing agent's filesystem access is bounded to $CLONE_DIR during the run; verify via the harness/sandbox layer, not this script
+---
+PASS=17 FAIL=0 UNVERIFIABLE=0
+Report written to: /home/admin-dimmi/e3-pilot-dispatch/preflight/out/preflight-report-20260825T003515Z.txt
