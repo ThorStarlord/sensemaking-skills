@@ -39,11 +39,15 @@ Keep distinct:
 
 Goal A validates only the ratified product scope, through constructed
 external product-validation episodes against 2 structurally different
-repositories × 2 fresh runs, with independent evidence audit and a
-**required** human-owner usefulness review — the actual decision owner may be
-the sole usefulness reviewer; a second human reviewer is optional. Protocol
-approval does **not** authorize episode execution, and Goal B / research-grade
-E3 remains FROZEN / DEFERRED. Issue #218
+repositories × 2 fresh runs, with independent evidence audit and an
+**independent usefulness evaluation** — an independent evaluator (distinct
+from the producer; preferably distinct from the evidence auditor when
+operationally practical) renders the canonical `evaluator_usefulness` judgment.
+Actual human decision-owner usefulness review is **optional / deferred** and is
+**not required for A1**; A1 establishes no human decision-owner usefulness,
+human decision impact, human reuse intent, or actual human decision-change
+claim. Protocol approval does **not** authorize episode execution, and Goal B /
+research-grade E3 remains FROZEN / DEFERRED. Issue #218
 (`docs/research/normal-use-evidence-lane.md`) remains the
 **separate** normal-use evidence lane.
 

@@ -1,6 +1,6 @@
 # Goal A — External Product Validation Protocol v1.0 FINAL (Canonical)
 
-**Status:** APPROVED — owner approved this protocol v1.0 FINAL in a dedicated protocol design/review session (Decisions 0 and A–E).
+**Status:** APPROVED — owner approved this protocol v1.0 FINAL in a dedicated protocol design/review session (Decisions 0 and A–E); amended 2026-08-26 by owner decision (§34 owner decision F) to replace the mandatory human-usefulness authority with an independent-evaluator usefulness authority and explicit human claim ceilings.
 **Authority:** No episodes are authorized by this document. Episode execution requires a separate, explicit owner authorization.
 **Repository mutations:** None authorized by this document.
 **Goal A:** ACTIVE — successor product-validation strategy
@@ -8,6 +8,7 @@
 **A2:** DEFERRED / UNAUTHORIZED (incremental value, Decision E)
 **Goal B / research-grade E3:** FROZEN / DEFERRED
 **Document status:** CANONICAL — this file is the single source of truth for the approved Goal A protocol. Do not redesign or re-litigate the protocol; make bounded revisions only through a fresh owner-approved review.
+**Amendment note (2026-08-26):** This version of the protocol (v1.0 FINAL, amended) substitutes the **independent usefulness evaluator** (E1–E7) for the previously mandatory **actual-human decision-owner review** (H1–H7). The amendment is prospective from canonicalization; it does not rewrite or relabel any completed Goal A evidence artifact (§27.3, §30.2, §34 owner decision F).
 
 ---
 
@@ -60,9 +61,9 @@ Goal A
 
 ### A1 — Absolute product utility (ACTIVE)
 
-> **Does the ratified Sensemaking repository-sensemaking core produce grounded, useful repository-level decision support for fresh agents/humans on genuinely ambiguous external repositories, with acceptable repeatability and without manual artifact repair?**
+> **Does the ratified Sensemaking repository-sensemaking core produce grounded, decision-relevant repository-level decision support, judged useful by an independent usefulness evaluator, on genuinely ambiguous external repositories under fresh-agent use, with acceptable repeatability and without manual artifact repair?**
 
-A1 has **no comparator**. It asks whether the product works usefully on its own.
+A1 has **no comparator**. It asks whether the product works usefully on its own, where usefulness is judged by an **independent usefulness evaluator** (not demonstrated usefulness to an actual human decision owner — see §30.2 claim ceilings).
 
 ### A2 — Incremental value (DEFERRED, unauthorized — Decision E)
 
@@ -80,7 +81,7 @@ A2: Does Sensemaking improve the decision (vs baseline)?
 
 ## 3. What Goal A tests — product boundary (ADR 0014)
 
-Goal A tests the ratified product boundary: does the **human-reviewed, evidence-grounded `repository_sensemaking_brief`** — the brief/diagnosis core — produce useful decision support in fresh external use?
+Goal A tests the ratified product boundary: does the **evidence-grounded `repository_sensemaking_brief`** — the brief/diagnosis core — produce decision support that an independent usefulness evaluator judges useful in fresh external use?
 
 It is **not** testing:
 
@@ -102,7 +103,7 @@ It is **not** testing:
 
 ## 4. Unit of evidence: the Goal A episode
 
-One **episode** = one fresh agent, one pinned external repository state, one frozen genuinely ambiguous user task, one Sensemaking run, one unmodified resulting brief, followed by independent audit and human usefulness review.
+One **episode** = one fresh agent, one pinned external repository state, one frozen genuinely ambiguous user task, one Sensemaking run, one unmodified resulting brief, followed by independent audit and independent usefulness evaluation.
 
 ```text
 Episode
@@ -115,7 +116,7 @@ target repository @ pinned SHA
 + validation result
 + evidence audit
 + semantic-quality (rubric) review
-+ human-usefulness review
++ independent usefulness evaluation
 ```
 
 Each episode stands on its own. An earlier episode is never retroactively reinterpreted because a later one produced a better answer.
@@ -149,7 +150,7 @@ substantive evidence audit (§17)
 ↓
 usage-research rubric (§18)
 ↓
-human-usefulness review (§19–21)
+independent usefulness evaluation (E1–E7) (§19–21)
 ↓
 episode admissibility disposition (§22)
 ```
@@ -368,7 +369,7 @@ If a violation occurs, the episode record must preserve the violation faithfully
 
 Once the tested agent declares its brief complete, **the artifact freezes**. Then: validate it, audit it, score it, review it — in that order, unmodified. If it contains a defect, that defect is evidence. A human may annotate ("This citation is wrong") but may not silently repair the citation and then score the repaired version.
 
-**All Goal A evaluation (validation, audit, rubric, human-usefulness review) must use the original frozen artifact.** A later repaired copy is irrelevant to Goal A **only if** the original is preserved and remains the sole evaluated artifact. If the original is lost, or evaluation uses the repaired artifact, the episode cannot support Goal A.
+**All Goal A evaluation (validation, audit, rubric, independent usefulness evaluation) must use the original frozen artifact.** A later repaired copy is irrelevant to Goal A **only if** the original is preserved and remains the sole evaluated artifact. If the original is lost, or evaluation uses the repaired artifact, the episode cannot support Goal A.
 
 If a violation occurs, the episode record must preserve that fact faithfully (§31 records `manual_artifact_repair` as observed, not assumed), and the episode's admissibility/evaluability is assessed accordingly (§27).
 
@@ -396,13 +397,15 @@ GROUNDING = STRONG | MIXED | WEAK | INVALID
 0–21  (0–7 Critical Failure | 8–14 Partial Success | 15–21 Success)
 ```
 
-### Axis 4 — Human usefulness: was it actually useful?
+### Axis 4 — Evaluator usefulness: was it actually useful?
 
 ```text
 USEFUL | PARTIALLY_USEFUL | NOT_USEFUL | MISLEADING | INCONCLUSIVE
 ```
 
-**Placement rule:** `MISLEADING` belongs to the **human-usefulness** axis only. It is **not** an episode classification and does not appear in Axis 1.
+This axis is judged by the **independent usefulness evaluator** (E1–E7, §19), not by demonstrated usefulness to an actual human decision owner.
+
+**Placement rule:** `MISLEADING` belongs to the **evaluator-usefulness** axis only. It is **not** an episode classification and does not appear in Axis 1.
 
 **Product positivity/negativity is derived, never encoded in Axis 1** (see §22.3). Axis 1 records only whether the episode validly instantiated the test.
 
@@ -466,102 +469,117 @@ No numeric weighting required.
 Use `docs/usage-research-rubric.md` as the semantic/handoff-quality instrument. It scores seven dimensions from 0–3 (Object Under Pressure; Failure Mode; What Must Be True; Critical Unknowns; Research Paths; Stopping Rule; Next-Skill Readiness), banded 0–7 Critical Failure, 8–14 Partial Success, 15–21 Success.
 
 - Do **not** redesign the rubric for Goal A.
-- **Diagnostic only (Decision D):** the rubric never gates campaign success. **21/21 does not prove human usefulness; 13/21 does not disprove it.**
+- **Diagnostic only (Decision D):** the rubric never gates campaign success. **21/21 does not prove evaluator usefulness; 13/21 does not disprove it.** A grounded brief can still be judged not useful, and a high rubric score does not automatically imply `USEFUL` (see §23).
 - `Next-Skill Readiness` measures handoff quality only and does **not** evidence externally validated routing (§3.1).
 
 ---
 
-## 19. Evaluation layer 4 — Human-usefulness review (H1–H7)
+## 19. Evaluation layer 4 — Independent usefulness evaluation (E1–E7)
 
-The reviewer answers these **independently of the 0–21 score**. The **actual human decision owner may be the sole usefulness reviewer** (Decision B); a second human is valuable when cheaply available but not mandatory for A1.
+The **independent usefulness evaluator** answers these questions **independently of the 0–21 score and of the evidence audit**. The evaluator must be distinct from the producer (fresh/different review context). It should also be made distinct from the evidence auditor when operationally practical, but a second mandatory human role is **not** introduced for A1.
 
-### H1 — Consequential boundary
+The evaluator determines whether the grounded result constitutes **useful repository-level decision support** — not whether it demonstrated usefulness to an actual human decision owner, and not whether it changed any real human decision (§21, §30). The evaluator is not described as a human surrogate.
 
-> Did the brief identify a repository boundary/problem actually consequential to the stated goal?
+### E1 — Substantive correctness
+
+> Is the brief substantively correct enough to support a repository-level decision?
 
 ```text
 YES | PARTIALLY | NO | INSUFFICIENT_KNOWLEDGE
 ```
 
-### H2 — Evidence trust
+### E2 — Boundary usefulness
 
-> Would you trust the brief's major factual claims enough to use them in deciding what work to do next?
+> Does the identified consequential boundary materially clarify what matters next in the repository?
 
 ```text
 YES | WITH_RESERVATIONS | NO
 ```
 
-### H3 — Decision quality
+### E3 — Recommendation appropriateness
 
-> Is the proposed next responsibility/action appropriate given the evidence?
+> Given the grounded evidence, is the recommended next responsibility appropriate?
 
 ```text
 APPROPRIATE | PLAUSIBLE_BUT_NOT_BEST | INAPPROPRIATE | NO_ACTION_CORRECT
 ```
 
-### H4 — Decision impact
+### E4 — Decision effect
 
-> What effect did Sensemaking have on the human's decision?
+> For a reasonable fresh decision-maker facing the frozen task, what material effect would this brief be expected to have on the decision?
 
 ```text
-CHANGED_DECISION | CONFIRMED_DECISION_WITH_NEW_EVIDENCE |
-INCREASED_CONFIDENCE_ONLY | NO_MATERIAL_EFFECT | MADE_DECISION_WORSE
+WOULD_CHANGE_DECISION | WOULD_CONFIRM_DECISION_WITH_NEW_EVIDENCE |
+WOULD_INCREASE_CONFIDENCE_ONLY | NO_MATERIAL_DECISION_EFFECT |
+WOULD_MAKE_DECISION_WORSE
 ```
 
-A confirmation is still valuable if the evidence materially reduced uncertainty.
+This wording is deliberately **counterfactual**. The evaluator must not claim an actual human decision changed.
 
-### H5 — Novel useful information
+### E5 — Novel useful information
 
-> Did the brief surface a consequential fact, relationship, contradiction, or uncertainty the reviewer probably would not otherwise have considered at that decision point?
+> Does the brief surface materially useful information beyond what the evaluator would consider obvious from the task framing alone?
 
 ```text
 YES | PARTIALLY | NO
 ```
 
-### H6 — Intervention burden
+### E6 — Interpretive / repair burden
 
-> How much human intervention was required before the output became decision-useful?
+> How much evaluator intervention is required before the brief becomes decision-usable?
 
 ```text
 NONE | CLARIFICATION_ONLY | SUBSTANTIVE_INTERPRETATION | MAJOR_REWORK
 ```
 
-(The rework is never actually performed — this is the reviewer estimating what would have been required.)
+(The rework is never actually performed — this is the evaluator estimating what would have been required.) Normal independent evidence auditing does not itself count as repair burden.
 
-### H7 — Reuse intent
+### E7 — Reuse assessment
 
-> On another genuinely ambiguous repository task, would you choose to use Sensemaking again?
+> Based on this episode, would use of the Sensemaking process be warranted again for a comparable ambiguous repository-level decision?
 
 ```text
 YES | MAYBE | NO
 ```
 
-A practical product signal, not a scientific satisfaction metric.
+This is an **evaluator judgment**, not evidence of actual human reuse intent.
 
 ---
 
-## 20. Review roles (Decision B — approved)
+## 20. Review roles (Decision B, amended — approved)
 
 ```text
 producer agent                          → produces brief
         ↓
 independent evidence auditor            → grounding assessment (Axis 2)
         ↓
-actual human decision owner            → human-usefulness assessment (Axis 4)
+independent usefulness evaluator        → evaluator usefulness (Axis 4)
 ```
 
 - **Evidence audit:** mandatory independent context (fresh session / different reviewer), empowered to mark claims `UNSUPPORTED`/`CONTRADICTED` and to reject.
-- **Human usefulness:** the real decision owner may be the sole reviewer; their judgment is relevant product evidence because the product question is partly "would this actually help the human making the repository decision?"
+- **Usefulness evaluation:** independently judges whether the grounded result constitutes useful repository-level decision support (E1–E7). The evaluator is distinct from the producer; it should be distinct from the evidence auditor when operationally practical, but no second mandatory human role is added for A1.
+- **Actual human decision owner:** optional / deferred, **not required for A1**. A human decision-owner review may later be used to support stronger human-centered claims (§30.2 claim ceilings).
+
+The three responsibilities remain conceptually separate:
+
+```text
+producer            → creates the brief
+evidence auditor    → determines whether decision-bearing claims are grounded
+usefulness evaluator → determines whether the grounded result constitutes
+                       useful repository-level decision support
+```
 
 ---
 
-## 21. Human-usefulness verdict definitions
+## 21. Evaluator-usefulness verdict definitions
+
+The overall Axis 4 verdict is the **canonical `evaluator_usefulness`** result:
 
 ```text
 USEFUL
   The brief is grounded enough to trust, identifies a consequential boundary, and
-  materially changes or substantively confirms the next decision without major
-  human reconstruction.
+  would materially change or substantively confirm the next decision without
+  major evaluator reconstruction.
 
 PARTIALLY_USEFUL
   Contains genuine decision value but requires reservations, clarification, or
@@ -573,14 +591,24 @@ NOT_USEFUL
 
 MISLEADING
   The artifact appears actionable but its major decision-bearing claims are
-  unsupported/contradicted or would lead the reviewer toward worse work.
-  (Worse than merely unhelpful; this is a HUMAN-USEFULNESS verdict, not an
+  unsupported/contradicted or would lead the decision-maker toward worse work.
+  (Worse than merely unhelpful; this is an EVALUATOR-USEFULNESS verdict, not an
   episode classification.)
 
 INCONCLUSIVE
-  The reviewer cannot judge usefulness because the repository/task/protocol/
+  The evaluator cannot judge usefulness because the repository/task/protocol/
   environment prevented a meaningful evaluation.
 ```
+
+The protocol requires an explicit E1–E7 judgment by the evaluator. The canonical axis cleanly separates three distinct things:
+
+```text
+grounding              (Axis 2)   ≠
+diagnostic rubric score (Axis 3) ≠
+evaluator usefulness    (Axis 4)
+```
+
+A grounded brief can still be judged not useful. A high rubric score does not automatically imply `USEFUL`. `INCONCLUSIVE` here is an Axis 4 verdict, not an episode admissibility class.
 
 ---
 
@@ -637,10 +665,10 @@ Both patterns are valid and important:
 
 ```text
 Usage rubric: 19/21 SUCCESS     →  Sensemaking produces polished handoff-ready
-Human verdict: NOT_USEFUL          artifacts that do not actually improve decisions.
+Evaluator verdict: NOT_USEFUL      artifacts that do not actually improve decisions.
 
 Usage rubric: 13/21 PARTIAL     →  Some formal handoff properties are weaker
-Human verdict: USEFUL               than desired, but the underlying product
+Evaluator verdict: USEFUL           than desired, but the underlying product
                                    value may already exist.
 ```
 
@@ -716,7 +744,8 @@ SAFE / UNREPAIRED?  Did diagnosis remain read-only and the
         ↓
 GROUNDED?          Can its decision-bearing claims be trusted? (Axis 2)
         ↓
-USEFUL?            Did it actually help the decision?         (Axis 4)
+USEFUL?            Did an independent evaluator judge it useful
+                       repository-level decision support?     (Axis 4)
         ↓
 REPEATABLE?        Did another fresh run reach a compatible decision?
 ```
@@ -731,15 +760,15 @@ mechanical_validation = VALID
 target_mutated = false
 manual_artifact_repair = false
 grounding = STRONG or MIXED
-human_usefulness != MISLEADING
+evaluator_usefulness != MISLEADING
 
 repeatability = CONSISTENT or COMPATIBLE_VARIANCE
 
 at least one run:
-  human_usefulness = USEFUL
+  evaluator_usefulness = USEFUL
 
 other run:
-  human_usefulness = USEFUL or PARTIALLY_USEFUL
+  evaluator_usefulness = USEFUL or PARTIALLY_USEFUL
 ```
 
 ### Notes
@@ -747,7 +776,7 @@ other run:
 - **Operating invariants are gated.** `target_mutated = false` and `manual_artifact_repair = false` are explicit requirements for any run supporting `A1_POSITIVE`, because the A1 claim includes "without manual artifact repair" and a read-only diagnostic contract (§2, §13, §14).
   - **Target mutation by the tested agent remains negative product evidence**, not automatic inadmissibility: it is recorded (Axis 1 stays `EVIDENTIARY_VALID` if the test was otherwise validly instantiated) and may drive `A1_MIXED`/`A1_NEGATIVE`, but it disqualifies the run from supporting `A1_POSITIVE`.
   - **Manual repair:** all audit/scoring must use the original frozen artifact. A later repaired copy is irrelevant only if the original is preserved and remains the sole evaluated artifact; otherwise the episode cannot support Goal A.
-- **Mechanical validity is required for `A1_POSITIVE`.** The ratified product is a *validated, human-reviewed* brief (ADR 0014); a mechanically `INVALID` brief cannot prove the validated-brief product works, however useful its reasoning. A mechanically `INVALID` but otherwise admissible episode remains Goal A evidence and may contribute to `A1_MIXED`/`A1_NEGATIVE` — preserving `INVALID ≠ semantically worthless` (§16) without letting an invalid artifact prove the validated product.
+- **Mechanical validity is required for `A1_POSITIVE`.** The ratified product is a *validated* brief (ADR 0014) whose usefulness is assessed by an independent evaluator; a mechanically `INVALID` brief cannot prove the validated-brief product works, however useful its reasoning. A mechanically `INVALID` but otherwise admissible episode remains Goal A evidence and may contribute to `A1_MIXED`/`A1_NEGATIVE` — preserving `INVALID ≠ semantically worthless` (§16) without letting an invalid artifact prove the validated product.
 - **Grounding must be STRONG or MIXED.** `WEAK` grounding does not validate an evidence-grounded product. `WEAK` remains valid product evidence and may contribute to `A1_MIXED` or, if recurrent/severe, `A1_NEGATIVE` — mirroring the structural rule: *weakly grounded but useful → evidence, but not positive validation*.
 - The 0–21 rubric score is always reported alongside as **diagnostic evidence**; it never overrides or substitutes for this categorical logic.
 
@@ -758,9 +787,10 @@ A1_POSITIVE
   Both structurally different targets satisfy the per-target requirements above.
 
 A1_MIXED
-  Real usefulness exists, but one target/repeat exposes a meaningful
-  reliability/generalization weakness (including mechanically-invalid-but-useful,
-  weakly-grounded-but-useful, or invariant-violation evidence patterns).
+  Real evaluator-judged usefulness exists, but one target/repeat exposes a
+  meaningful reliability/generalization weakness (including
+  mechanically-invalid-but-useful, weakly-grounded-but-useful, or
+  invariant-violation evidence patterns).
 
 A1_NEGATIVE
   Valid episodes repeatedly fail to produce useful grounded decision support,
@@ -769,6 +799,34 @@ A1_NEGATIVE
 A1_INCONCLUSIVE
   Protocol/environment/task problems prevent the claim from being tested.
 ```
+
+### 27.2 Campaign verdicts remain categorical
+
+Campaign verdicts are categorical judgments; they do **not** introduce numeric
+aggregation or statistical-significance requirements. The 0–21 rubric remains
+diagnostic only (§18).
+
+### 27.3 Transition rule for already-completed evidence
+
+```text
+Artifacts, audit records, and evaluator judgments produced before this
+amendment retain their original provenance and labels.
+
+They must not be retroactively rewritten to appear as though they were
+produced under E1–E7.
+
+A pre-amendment run may be carried forward only after a fresh E1–E7
+usefulness evaluation is performed against its preserved, frozen artifact and
+completed grounding audit.
+
+That fresh evaluator judgment becomes the canonical evaluator_usefulness
+result for the amended A1 campaign.
+```
+
+This rule governs any evidence produced under the prior mandatory
+human-usefulness authority (e.g. the completed ViralFactory Run 1). It does
+**not** require rerunning an already-admissible producer run or independent
+evidence audit merely because the usefulness contract changed.
 
 ---
 
@@ -802,16 +860,42 @@ For future reference only (not authorization), A2's comparative design, when eng
 
 ## 30. What A1 can and cannot justify
 
+### 30.1 Positive A1 claim
+
 A positive A1 can support:
 
-> Sensemaking's ratified repository-sensemaking core has demonstrated useful external repository decision support across two structurally different targets under fresh-agent use, with acceptable repeatability, mechanically valid artifacts, no target mutation, and no manual artifact repair.
+> Sensemaking's ratified repository-sensemaking core has demonstrated grounded external repository decision support across two structurally different targets under fresh-agent use, with acceptable repeatability, mechanically valid artifacts, no target mutation, no manual artifact repair, and independent evaluator judgments of usefulness.
+
+This claim is scoped to the evidence class produced by the amended A1 protocol. It does **not** imply demonstrated usefulness to an actual human decision owner.
+
+### 30.2 Claim ceilings
+
+A1 under this protocol establishes **no** claim on human-centered outcomes. The following are canonically `NOT_TESTED`:
+
+```text
+HUMAN_DECISION_OWNER_USEFULNESS  = NOT_TESTED
+HUMAN_DECISION_IMPACT            = NOT_TESTED
+HUMAN_REUSE_INTENT               = NOT_TESTED
+ACTUAL_HUMAN_DECISION_CHANGE     = NOT_TESTED
+```
+
+Concretely, A1 under this protocol does **not** establish:
+
+- demonstrated usefulness to actual human decision owners;
+- actual human decision change;
+- actual human reuse intent;
+- comparative superiority versus unsensemade human/agent work.
+
+The last item remains relevant to deferred A2 (§29). A later, separately
+authorized human study may raise these claim ceilings.
 
 A positive A1 does **not** justify:
 
 - "Sensemaking makes agents better than baseline" — that is A2;
 - "Sensemaking reduces operational cost" — Goal B/E3;
 - "routing/control/next-workflow selection is externally validated" — outside ADR 0014; `Next-Skill Readiness` is diagnostic only;
-- an automatic "Externally Validated" readiness-label change — any formal readiness claim is a separate review against then-current authority (§1).
+- an automatic "Externally Validated" readiness-label change — any formal readiness claim is a separate review against then-current authority (§1);
+- demonstrated usefulness to an actual human decision owner, actual human decision change, or actual human reuse intent (§30.2).
 
 ---
 
@@ -842,10 +926,11 @@ AXIS 3 — usage_rubric:
   critical_unknowns / research_paths / stopping_rule /
   next_skill_readiness / total
 
-AXIS 4 — human_usefulness:
-  consequential_boundary / evidence_trust / decision_quality /
-  decision_impact / novel_useful_information / intervention_burden /
-  reuse_intent / overall_verdict
+AXIS 4 — evaluator_usefulness:
+  substantive_correctness (E1) / boundary_usefulness (E2) /
+  recommendation_appropriateness (E3) / decision_effect (E4) /
+  novel_useful_information (E5) / interpretive_repair_burden (E6) /
+  reuse_assessment (E7) / overall_verdict
 
 repeatability_relation (if applicable)
 clarifications logged (if any, verbatim)
@@ -878,37 +963,65 @@ Issue #218 remains the actual normal-use evidence lane (§9.2); Goal A episodes 
 
 ---
 
-## 34. Owner decisions carried in this version (unchanged)
+## 34. Owner decisions carried in this version
 
 | # | Decision | Approved content |
 |---|---|---|
 | **0** | Governance | Goal A is the current successor product-validation strategy; D8 = inherited evidence guidance; E4/Issue #83 = historical, closed, grants no authorization; ADR 0021 superseded; Issue #218 unchanged |
 | **A** | Campaign size | 2 structurally different repositories × 2 fresh evidence-bearing runs = 4 episodes; justified as lucky-run + single-repo protection |
-| **B** | Reviewers | Mandatory independent evidence-audit context; actual human decision owner may be sole usefulness reviewer; second human optional |
+| **B** | Reviewers (amended 2026-08-26) | Mandatory independent evidence-audit context; independent usefulness evaluator required (distinct from producer; preferably distinct from evidence auditor when operationally practical, but no second mandatory human role); actual human decision owner optional/deferred — **not** required for A1 |
 | **C** | Clarification | Freeze common task semantics before paired runs; material clarification ⇒ pilot observation + restart pair fresh; minor clarification ⇒ log + valid |
 | **D** | A1 success | Categorical judgment; 0–21 rubric diagnostic only, never a hard gate |
 | **E** | A2 | Deferred, unauthorized until owner reviews A1 |
+| **F** | Usefulness authority (2026-08-26) | Replace mandatory human-usefulness authority with independent evaluator usefulness (E1–E7) plus explicit human claim ceilings (§30.2); prospective from canonicalization; historical evidence unchanged (§27.3) |
+
+### 34.1 Amendment record — independent evaluator usefulness (2026-08-26)
+
+This subsection is the governance record of the protocol amendment that
+substitutes the independent-evaluator usefulness authority for the mandatory
+human-usefulness authority.
+
+```text
+amendment_id        = goal-a-protocol-2026-08-26-usefulness-authority
+owner decision      = APPROVED
+reason              = reduce recurring human-review bottleneck while preserving
+                      grounding, decision relevance, repeatability, and strict
+                      claim bounds
+trade-off           = A1 no longer demonstrates actual human usefulness or
+                      actual human decision impact (§30.2 claim ceilings)
+effective boundary  = prospective from canonicalization; historical artifacts,
+                      audit records, and evaluator judgments remain unchanged
+                      and retain their original provenance and labels (§27.3)
+old usefulness authority = mandatory actual-human decision-owner review (H1–H7)
+new usefulness authority = independent usefulness evaluator (E1–E7)
+human review requirement = OPTIONAL / DEFERRED, NOT REQUIRED FOR A1
+canonical axis       = evaluator_usefulness
+```
 
 ---
 
 ## 35. Status
 
-**APPROVED — canonical.**
+**APPROVED — canonical** (v1.0 FINAL, amended 2026-08-26 by owner decision F).
 
 - No repository mutation authorized by this protocol; none is implied by approval.
 - No Goal A episode authorized or executed by this protocol. Approving this protocol does **not** by itself authorize episodes; execution requires a separate, explicit owner authorization.
-- Next responsibility after canonicalization: **Goal A — Repository/Task Selection** in a fresh, separately authorized responsibility.
+- This amendment is **prospective from canonicalization**. Completed Goal A evidence, audit records, and evaluator judgments retain their original provenance and labels; they are not rewritten or relabeled to appear as though produced under E1–E7 (§27.3). The previous `USEFUL` auditor opinion under the prior audit prompt is historical/noncanonical for the amended usefulness axis.
+- Next responsibility after protocol canonicalization: for any carried-forward run (e.g. **ViralFactory Run 1**), a **fresh E1–E7 independent usefulness evaluation** against the preserved, frozen artifact and completed grounding audit — in a separately authorized responsibility. Run 2 authorization is considered only after that evaluation.
 
 ---
 
 ## Status disposition
 
 ```
-PROTOCOL_STATUS                = APPROVED  (Goal A — External Product Validation Protocol v1.0 FINAL)
+PROTOCOL_STATUS                = APPROVED, amended 2026-08-26  (Goal A — External Product Validation Protocol v1.0 FINAL)
 Goal A                         = ACTIVE
-A1                             = ACTIVE  (absolute product utility)
+A1                             = ACTIVE  (absolute product utility; independent evaluator usefulness)
 A2                             = DEFERRED / UNAUTHORIZED
 Goal B / E3                    = FROZEN / DEFERRED
+canonical usefulness axis      = evaluator_usefulness (E1–E7)
+human decision-owner review    = OPTIONAL / DEFERRED, NOT REQUIRED FOR A1
+claim ceilings                 = HUMAN_DECISION_OWNER_USEFULNESS / HUMAN_DECISION_IMPACT / HUMAN_REUSE_INTENT / ACTUAL_HUMAN_DECISION_CHANGE = NOT_TESTED
 Goal A episodes authorized     = NO
 repository mutation authorized = NO
 Goal A episodes executed       = 0
