@@ -1,7 +1,7 @@
 # Status
 
 **Version**: 0.2.2 (see [pyproject.toml](pyproject.toml), [CHANGELOG.md](CHANGELOG.md))
-**Last updated**: 2026-08-25 (Goal A protocol canonicalization fidelity repair)
+**Last updated**: 2026-08-26 (Goal A protocol amendment — independent evaluator usefulness authority)
 
 ## Current product-validation priority
 

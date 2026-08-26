@@ -107,9 +107,15 @@ A:
 
 ### Q: Is this production-ready?
 A: The current justified readiness level is "externally exercised" (brief
-production validated internally); the next target is "externally validated" per
-the owner-ratified D8 evidence bar (two structurally different external
-repositories, clean Stage A, no target mutation, human usefulness review). It is
+production validated internally); the current product-validation priority is
+Goal A, whose canonical protocol
+(`docs/research/goal-a-external-product-validation-protocol.md`) targets
+independent-evaluator usefulness of grounded, decision-relevant briefs across
+two structurally different external repositories, with no target mutation and
+no manual artifact repair. Human decision-owner usefulness review is optional /
+deferred and is not required for A1; A1 does not claim actual human
+decision-owner usefulness or human decision impact. The historical D8 readiness
+bar remains inherited evidence guidance, not current binding authority. It is
 not yet general-availability production-ready.
 
 ### Q: How is this licensed?
