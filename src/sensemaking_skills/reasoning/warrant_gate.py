@@ -116,15 +116,32 @@ def run_seam_warrant(
         record.derivation = [p.__dict__ for p in deriv.probes]
 
         if warrant == Warrant.PARTIAL:
+            # Directive #28 P1 fixed: PARTIAL materialization is scoped to the
+            # producer-declared bounded representation (needed_representation) and its
+            # grounded consequential gap (rationale) from the authoritative
+            # representation_sufficiency assessment. Mechanical/diagnostic probes do
+            # NOT masquerade as the warranted representation -- they are attached only
+            # as diagnostic provenance/telemetry. No additional structure is invented.
             record.representation_materialized = True
+            rs = (evidence.representation_sufficiency
+                  if isinstance(evidence, EvidenceInput)
+                  and isinstance(evidence.representation_sufficiency, dict)
+                  else None)
             record.representation = {
-                "scope": {
+                "warranted_representation": (
+                    (rs or {}).get("needed_representation") or
+                    "minimum warranted representation for the demonstrated "
+                    "consequential gap (brief production remains delegated to "
+                    "repo-sensemaker)"
+                ),
+                "rationale": (rs or {}).get("rationale") or "",
+                "diagnostic_probes": {
                     p.probe or k: {"value": p.value, "basis": p.basis}
                     for k, p in enumerate(deriv.probes)
                 },
-                "note": "Minimal PARTIAL representation projection (orientation/"
-                        "behavioral/context). Brief production remains delegated "
-                        "to the repo-sensemaker skill.",
+                "note": "PARTIAL materialization is scoped to the bounded "
+                        "producer-declared representation; diagnostic probes are "
+                        "telemetry only.",
             }
         elif warrant == Warrant.FULL:
             # Not implemented in this bounded slice (deferred). Record intent;

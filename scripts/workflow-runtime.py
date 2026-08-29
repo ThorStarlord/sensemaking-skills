@@ -1286,39 +1286,6 @@ class OrchestrationRunner:
                 print(f"  [RUNTIME_PLAN] Using runtime-authored orchestration plan "
                       f"(skipping skill re-generation; ADR 0010)")
 
-            # BOUNDED SEMANTIC-ARCHITECTURE SEAM (opt-in): compute the MODEL_WARRANT
-            # decision for the repo-sensemaker brief step. Guarded so existing
-            # runs (warrant_enabled=False) are byte-identical, and a warrant
-            # error never aborts brief production (log-and-continue).
-            elif self.warrant_enabled and output_artifact == "repository_sensemaking_brief":
-                record = self._run_seam_warrant(output_artifact, skill)
-                if record is not None:
-                    result["warrant"] = record.warrant
-                    result["warrant_record"] = record.to_dict()
-                    print(f"  [WARRANT] MODEL_WARRANT={record.warrant} "
-                          f"(representation_materialized={record.representation_materialized})")
-                    # CANONICAL GATE (directive #21): MODEL_WARRANT == INCONCLUSIVE
-                    # blocks acting on the repository-action outcome. This must run
-                    # BEFORE the NO_CHANGE terminal and before any routing: an
-                    # INCONCLUSIVE warrant never routes an ACTION workflow, never
-                    # terminalizes as NO_CHANGE, materializes no representation, and
-                    # does not mutate the target. The brief's independently derived
-                    # repository-action output is preserved (not rewritten).
-                    if record.warrant == "INCONCLUSIVE":
-                        r = self._terminal_inconclusive_gate(result, step_num)
-                        if r is not None:
-                            return r
-                # BOUNDED S3 (only when warrant is conclusive): only an EXPLICIT
-                # validated outcome = NO_REPOSITORY_CHANGE_WARRANTED (as declared
-                # in the brief's machine block) produces successful no-routing
-                # termination. Never inferred from a missing workflow id. Default
-                # path (brief lacks the outcome) is untouched.
-                brief_outcome = self._read_brief_outcome(output_artifact)
-                if brief_outcome == NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME:
-                    r = self._terminal_no_change_step(result, step_num)
-                    if r is not None:
-                        return r
-
             # Try to execute skill if executor supports real execution
             elif skill and skill != "?" and self.skill_executor and self.skill_executor.supports_real_execution:
                 # Resolve the step's declared inputs (input_artifact / input_source),
@@ -1466,6 +1433,44 @@ class OrchestrationRunner:
                 )
                 result["status"] = "FAILED"
                 return self._finalize_step_result(result, step_num)
+
+            # BOUNDED SEMANTIC-ARCHITECTURE SEAM (opt-in), directive #28 phase-order
+            # FIX: MODEL_WARRANT evaluation runs ONLY AFTER the repo-sensemaker
+            # producer has executed AND the newly-produced brief has passed the
+            # validator stack. The seam consumes THAT validated artifact (never a
+            # stale/nonexistent/non-produced one). This is the correct lifecycle:
+            #   producer execution -> artifact produced -> deterministic
+            #   reconciliation -> validator PASS -> MODEL_WARRANT evaluation ->
+            #   INCONCLUSIVE gate / NO_CHANGE / routing.
+            # Guarded so warrant_enabled=False runs are unchanged, and a warrant
+            # error never aborts brief production (log-and-continue).
+            if (self.warrant_enabled
+                    and output_artifact == "repository_sensemaking_brief"
+                    and artifact_path and os.path.exists(artifact_path)):
+                record_obj = self._run_seam_warrant(output_artifact, skill)
+                if record_obj is not None:
+                    result["warrant"] = record_obj.warrant
+                    result["warrant_record"] = record_obj.to_dict()
+                    print(f"  [WARRANT] MODEL_WARRANT={record_obj.warrant} "
+                          f"(representation_materialized={record_obj.representation_materialized})")
+                    # CANONICAL GATE (directive #21/#28): MODEL_WARRANT == INCONCLUSIVE
+                    # blocks acting on the repository-action outcome. Runs only after
+                    # producer+validation; an INCONCLUSIVE warrant never routes an
+                    # ACTION workflow, never terminalizes as NO_CHANGE, materializes no
+                    # representation, and does not mutate the target.
+                    if record_obj.warrant == "INCONCLUSIVE":
+                        r = self._terminal_inconclusive_gate(result, step_num)
+                        if r is not None:
+                            return r
+                # BOUNDED S3 (only when warrant is conclusive): only an EXPLICIT
+                # validated outcome = NO_REPOSITORY_CHANGE_WARRANTED (as declared
+                # in the brief's machine block) produces successful no-routing
+                # termination. Never inferred from a missing workflow id.
+                brief_outcome = self._read_brief_outcome(output_artifact)
+                if brief_outcome == NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME:
+                    r = self._terminal_no_change_step(result, step_num)
+                    if r is not None:
+                        return r
         elif output_artifact and output_artifact != "N/A":
             if self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
                 # Execution modes: FAIL if artifact expected but not produced
@@ -1865,7 +1870,10 @@ class OrchestrationRunner:
             probe_report = None
             probe_provenance = None
             pr_path = getattr(self, "_episode_probe_report_path", None)
-            rev = self._current_revision_hint()
+            # Directive #28: authoritative EXACT target-checkout revision SHA
+            # (git -C <target_repo> rev-parse HEAD). Fails closed to "unknown" --
+            # branch names / framework revisions / path names are never used.
+            rev = self._current_target_revision()
             if pr_path and os.path.exists(pr_path) and rev not in (None, "unknown"):
                 try:
                     with open(pr_path, encoding="utf-8") as _f:
@@ -1907,6 +1915,31 @@ class OrchestrationRunner:
             return _get_git_branch(self.repo_root) or "unknown"
         except Exception:
             return "unknown"
+
+    def _current_target_revision(self) -> str:
+        """Resolve the AUTHORITATIVE exact-SHA revision of the TARGET repo checkout.
+
+        Directive #28: the warrant target_revision must be the exact target-checkout
+        HEAD commit (``git -C <target_repo> rev-parse HEAD``), never a framework
+        branch name, a path name, or an ambient main/HEAD assumption. Fails closed:
+        returns "unknown" (never a fabricated branch/commit) when the target SHA
+        cannot be authoritatively established, so probe-report provenance is not
+        claimed and the report is not consumed as revision-bound evidence.
+        """
+        try:
+            target = getattr(self, "target_repo", None) or self.repo_root
+            result = subprocess.run(
+                ["git", "-C", target, "rev-parse", "HEAD"],
+                capture_output=True, text=True, timeout=20,
+            )
+            sha = (result.stdout or "").strip()
+            import re as _re
+            if result.returncode == 0 and _re.fullmatch(r"[0-9a-f]{40}", sha):
+                return sha
+            return "unknown"
+        except Exception:
+            return "unknown"
+
 
     def user_goal_hint(self) -> str:
         """Best-effort user-goal hint for the warrant record (from intent if available)."""

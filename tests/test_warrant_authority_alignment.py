@@ -8,6 +8,8 @@ import os
 import sys
 import unittest
 
+import yaml
+
 from sensemaking_skills.reasoning.vertical_slice import Warrant
 from sensemaking_skills.reasoning.evidence_probes import (
     EvidenceInput, derive_probes, probes_to_warrant, PROBE_UNKNOWN,
@@ -126,28 +128,36 @@ class TestInvariants(unittest.TestCase):
 
 class TestFrozenJtblFreevaluation(unittest.TestCase):
     """U: frozen jtbl P+C (representation_sufficiency=sufficient) -> NO, without
-    changing the historical SAFE_INCONCLUSIVE record."""
+    changing the historical SAFE_INCONCLUSIVE record.
+
+    Directive #28 (P2): the required frozen fixture is made DURABLE inside the
+    candidate (tests/fixtures/jtbl_frozen_reeval/) so a clean checkout/CI can
+    reproduce it; absence of that required fixture is a TEST FAILURE, never
+    skipTest. No external artifact / dogfood rerun is required.
+    """
+
+    _FIXTURE_DIR = os.path.join("tests", "fixtures", "jtbl_frozen_reeval")
+
+    def _load_fixture(self, name):
+        p = os.path.join(self._FIXTURE_DIR, name)
+        self.assertTrue(os.path.exists(p),
+                        f"required frozen-jtbl fixture missing: {p} (test failure, not skip)")
+        with open(p, encoding="utf-8") as f:
+            return yaml.safe_load(f)
 
     def test_frozen_jtbl_C_reevaluates_to_no(self):
-        dogfood_dir = os.path.join("experiments", "product-hypothesis-b",
-                                   "implementation", "dogfood-jtbl")
-        c = os.path.join(dogfood_dir, "C_post_reconcile_final_brief.md")
-        if not os.path.exists(c):
-            self.skipTest("frozen jtbl C not present")
-        with open(c, encoding="utf-8") as f:
-            text = f.read()
-        block = brief_skeleton.extract_handoff_yaml_block(text)
-        import yaml
-        machine = yaml.safe_load(block)
-        rs = machine.get("representation_sufficiency")
+        # Reproduce qualification point U from the durable, immutable fixture:
+        # the frozen jtbl final brief's authoritative representation_sufficiency
+        # (sufficient) with the same-episode frozen probe report P -> NO.
+        rs = self._load_fixture("representation_sufficiency.yaml").get("representation_sufficiency")
         self.assertEqual(rs.get("status"), "sufficient")
-        P = os.path.join(dogfood_dir, "P_same_episode_probe_report.yaml")
-        probe = None
-        if os.path.exists(P):
-            with open(P, encoding="utf-8") as f:
-                probe = yaml.safe_load(f)
+        probe = self._load_fixture("P_same_episode_probe_report.yaml")
+        machine = {"evidence": ["jtbl/cli.py (lines L299-L349): ...",
+                                "README.md (lines L4-L67): ...",
+                                "tests/test_make_table.py (lines L1-L5): ..."],
+                   "representation_sufficiency": rs}
         ev = EvidenceInput(probe_report=probe, brief_machine=machine,
-                           evidence_lines=list(machine.get("evidence") or []),
+                           evidence_lines=list(machine["evidence"]),
                            representation_sufficiency=rs)
         from sensemaking_skills.reasoning.warrant_gate import run_seam_warrant
         rec = run_seam_warrant(
