@@ -143,6 +143,20 @@ Fog classification can help describe the repository and inform planning. It does
 
 The brief is decision support, not repair authorization.
 
+### MODEL_WARRANT authority (canonical; see ADR 0015 addendum)
+
+Whether the brief's existing evidence environment is **sufficient for the current
+consequential reasoning problem** is a task-relative judgment. `representation_sufficiency`
+is that authoritative judgment supplied by the producer and mapped deterministically to
+`MODEL_WARRANT` (sufficient -> NO; contract-valid insufficient_bounded -> PARTIAL;
+inconclusive/missing/malformed -> INCONCLUSIVE; FULL deferred). Mechanical signals
+(behavioral flow, provenance spread, self-derived) are diagnostic evidence to that
+judgment, not independent vetoes. `MODEL_WARRANT` and the repository-action outcome are
+orthogonal; `NO_CHANGE` is affirmative-only; INCONCLUSIVE gates before representation
+materialization, action routing, and NO_CHANGE terminalization. Absence of evidence is
+never treated as insufficiency. The agent-mediated external product path is demonstrated
+on one fresh repository; product-wide GA and standard-CLI real-executor E2E are NOT claimed.
+
 ## Evidence model
 
 Keep these categories distinct:

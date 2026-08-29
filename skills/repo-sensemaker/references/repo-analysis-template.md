@@ -150,7 +150,20 @@ required_inputs:
   - repository_state
 created_at: "2026-05-19T16:00:00Z"
 immutable: true
+outcome: ACTION_REQUIRED | NO_REPOSITORY_CHANGE_WARRANTED # optional; omit for a normal action brief, set NO_REPOSITORY_CHANGE_WARRANTED for a first-class terminal success
+representation_sufficiency: # optional; producer-authored task-relative MODEL_WARRANT input (Ruling 2 / directive #23); NOT a repository fact
+  status: sufficient | insufficient_bounded | inconclusive
+  rationale: >- # required non-empty for insufficient_bounded; names the specific consequential gap
+  needed_representation: >- # required non-empty for insufficient_bounded; the bounded representation that resolves the reasoning gap; null for sufficient/inconclusive
 ```
+
+`representation_sufficiency` is the producer's semantic judgment about whether the
+current evidence environment is **sufficient for the current consequential
+reasoning problem** (MODEL_WARRANT input). It is never inferred from evidence-line
+count or citation presence. `status: sufficient` grounds `NO`; `status:
+insufficient_bounded` (with a non-empty `rationale` naming a consequential gap and
+a non-empty `needed_representation`) grounds `PARTIAL`; `inconclusive`/absent/
+malformed stays UNKNOWN. Absence of evidence is never treated as insufficiency.
 
 `weakness_type` is required metadata but non-blocking (D2): a missing or
 unrecognized value is a validator warning, not an error, and never
