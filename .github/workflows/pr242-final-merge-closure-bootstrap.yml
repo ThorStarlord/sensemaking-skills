@@ -1,0 +1,519 @@
+name: PR 242 final merge-closure bootstrap
+
+on:
+  push:
+    branches:
+      - agent/pr242-final-merge-closure-bootstrap
+
+permissions:
+  contents: write
+
+jobs:
+  apply-qualify-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact reviewed PR head
+        uses: actions/checkout@v4
+        with:
+          ref: phb-conditional-representation-candidate
+          fetch-depth: 0
+
+      - name: Assert reviewed head has not moved
+        run: |
+          actual="$(git rev-parse HEAD)"
+          expected="6580b8b149289d549851fddcc96c7ed7a2d86ba2"
+          echo "Reviewed head: $actual"
+          test "$actual" = "$expected" || {
+            echo "::error::PR head moved; expected $expected, got $actual"
+            exit 1
+          }
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Apply bounded merge-closure patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected exactly one replacement target, found {count}")
+              p.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          def insert_before_once(path, marker, addition):
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              count = text.count(marker)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected exactly one insertion marker, found {count}")
+              p.write_text(text.replace(marker, addition + marker, 1), encoding="utf-8")
+
+          # -----------------------------------------------------------------
+          # 1. Enabled warrant operational failure must fail closed.
+          # -----------------------------------------------------------------
+          replace_once(
+              "scripts/workflow-runtime.py",
+              """            # Guarded so warrant_enabled=False runs are unchanged, and a warrant\n            # error never aborts brief production (log-and-continue).\n""",
+              """            # Guarded so warrant_enabled=False runs are unchanged. Once enabled,\n            # inability to compute the warrant fails closed through the same\n            # INCONCLUSIVE terminal gate; it can never permit routing/NO_CHANGE.\n""",
+          )
+
+          replace_once(
+              "scripts/workflow-runtime.py",
+              """                record_obj = self._run_seam_warrant(output_artifact, skill)\n                if record_obj is not None:\n""",
+              """                record_obj = self._run_seam_warrant(output_artifact, skill)\n                if record_obj is None:\n                    # Defense in depth: this is an APPLICABLE warrant-enabled\n                    # repo-sensemaker brief step. If the seam cannot produce a\n                    # record at all, treat the operational failure as\n                    # INCONCLUSIVE rather than falling through to NO_CHANGE or\n                    # ordinary routing. Non-applicable skills never enter this\n                    # branch.\n                    result[\"warrant\"] = \"INCONCLUSIVE\"\n                    result[\"warrant_record\"] = {\n                        \"warrant\": \"INCONCLUSIVE\",\n                        \"representation_materialized\": False,\n                        \"error\": (\n                            \"MODEL_WARRANT_COMPUTATION_UNAVAILABLE: enabled \"\n                            \"warrant seam returned no record\"\n                        ),\n                    }\n                    return self._terminal_inconclusive_gate(result, step_num)\n                if record_obj is not None:\n""",
+          )
+
+          replace_once(
+              "scripts/workflow-runtime.py",
+              """        same-episode probe-report identity is NOT preserved by the\n        runtime (no registered artifact path) and is therefore NOT invented here;\n        absent probe-report evidence stays UNKNOWN (no absent->FALSE).\n        Safe-by-construction: lazy import; any failure returns None so routing is\n        never aborted by warrant computation itself.\n""",
+              """        same-episode probe-report identity IS preserved by the runtime via the\n        runtime-owned expected_probe_report_path and is consumed only when its\n        target revision is authoritative; otherwise probe evidence stays UNKNOWN\n        (no absent->FALSE). Safe-by-construction: lazy import; an applicable seam\n        failure returns a fail-closed INCONCLUSIVE record when possible, and\n        execute_step treats an unexpected None as INCONCLUSIVE defense-in-depth.\n        A different skill/artifact remains non-applicable and returns None.\n""",
+          )
+
+          replace_once(
+              "scripts/workflow-runtime.py",
+              """        except Exception as exc:  # never break the seam\n            print(f\"  ~ [WARRANT] warrant gate unavailable at seam: {exc}\")\n            return None\n""",
+              """        except Exception as exc:\n            print(f\"  ~ [WARRANT] warrant gate unavailable at seam: {exc}\")\n            # Once the seam is applicable and enabled, an operational failure\n            # must fail closed. Prefer the existing serializable WarrantRecord;\n            # execute_step also treats an unexpected None as INCONCLUSIVE so an\n            # import/runtime failure can never become an action bypass.\n            try:\n                from sensemaking_skills.reasoning.warrant_gate import WarrantRecord\n                return WarrantRecord(\n                    warrant=\"INCONCLUSIVE\",\n                    target_repository=getattr(self, \"target_repo\", self.repo_root),\n                    target_revision=self._current_target_revision(),\n                    user_goal=self.user_goal_hint(),\n                    representation_materialized=False,\n                    error=f\"MODEL_WARRANT_COMPUTATION_FAILED: {exc}\",\n                )\n            except Exception:\n                return None\n""",
+          )
+
+          # -----------------------------------------------------------------
+          # 2. NO_CHANGE and routable workflow are mutually exclusive.
+          # -----------------------------------------------------------------
+          replace_once(
+              "scripts/validate-brief.py",
+              "NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME = \"NO_REPOSITORY_CHANGE_WARRANTED\"\n",
+              "NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME = \"NO_REPOSITORY_CHANGE_WARRANTED\"\nNO_CHANGE_WORKFLOW_CONFLICT = \"NO_CHANGE_WORKFLOW_CONFLICT\"\n",
+          )
+
+          replace_once(
+              "scripts/validate-brief.py",
+              """        else:\n            workflow_id = artifact_data.get(\"recommended_workflow_id\")\n            # Truthful no-match (ADR 0014): `recommended_workflow_id: null` is\n""",
+              """        else:\n            workflow_id = artifact_data.get(\"recommended_workflow_id\")\n            if no_change_outcome and workflow_id is not None:\n                errors.append(_code_error(\n                    NO_CHANGE_WORKFLOW_CONFLICT,\n                    \"outcome=NO_REPOSITORY_CHANGE_WARRANTED requires \"\n                    \"recommended_workflow_id to be absent or null; a routable \"\n                    \"workflow contradicts the explicit terminal no-change outcome.\",\n                    field=\"recommended_workflow_id\",\n                ))\n            # Truthful no-match (ADR 0014): `recommended_workflow_id: null` is\n""",
+          )
+
+          replace_once(
+              "skills/repo-sensemaker/references/repo-analysis-template.md",
+              "recommended_workflow_id: # MUST match an ID in workflow-registry.yaml\n",
+              "recommended_workflow_id: # ACTION: MUST match an ID in workflow-registry.yaml; NO_REPOSITORY_CHANGE_WARRANTED: omit or null\n",
+          )
+          replace_once(
+              "skills/repo-sensemaker/references/repo-analysis-template.md",
+              "outcome: ACTION_REQUIRED | NO_REPOSITORY_CHANGE_WARRANTED # optional; omit for a normal action brief, set NO_REPOSITORY_CHANGE_WARRANTED for a first-class terminal success\n",
+              "outcome: ACTION_REQUIRED | NO_REPOSITORY_CHANGE_WARRANTED # optional for a normal action brief; when NO_REPOSITORY_CHANGE_WARRANTED, recommended_workflow_id MUST be absent or null\n",
+          )
+          replace_once(
+              "skills/repo-sensemaker/references/repo-analysis-template.md",
+              """`representation_sufficiency` is the producer's semantic judgment about whether the\n""",
+              """`outcome` and `recommended_workflow_id` are mutually constrained. For a normal\nACTION brief (whether `outcome` is omitted or explicitly `ACTION_REQUIRED`), emit a\nvalid registry workflow. For `NO_REPOSITORY_CHANGE_WARRANTED`, omit\n`recommended_workflow_id` or emit it as `null`; never emit a routable workflow. A\nmissing workflow by itself never implies NO_CHANGE.\n\n`representation_sufficiency` is the producer's semantic judgment about whether the\n""",
+          )
+
+          replace_once(
+              "skills/repo-sensemaker/SKILL.md",
+              """Do not infer sufficiency or insufficiency from evidence-line counts, missing files,\nor citation presence. Do not invent a gap or a bounded remedy to force PARTIAL.\n\n""",
+              """Do not infer sufficiency or insufficiency from evidence-line counts, missing files,\nor citation presence. Do not invent a gap or a bounded remedy to force PARTIAL.\n\n### Repository-action outcome / workflow invariant\n\nKeep the repository-action outcome independent from MODEL_WARRANT. For a normal\naction brief, `recommended_workflow_id` must name a valid registry workflow. If\nSection 13 explicitly declares `outcome: NO_REPOSITORY_CHANGE_WARRANTED`, then\n`recommended_workflow_id` must be absent or `null` -- never emit a routable\nworkflow alongside the terminal no-change outcome. Conversely, a missing/null\nworkflow alone never implies NO_CHANGE; the outcome must be affirmative and explicit.\n\n""",
+          )
+
+          # -----------------------------------------------------------------
+          # 3. Replace stale seam-failure qualification and add execute_step
+          #    failure-closed regressions.
+          # -----------------------------------------------------------------
+          replace_once(
+              "tests/test_warrant_seam_integration.py",
+              """  4. A failure in the warrant gate never aborts brief production (returns None).\n""",
+              """  4. An applicable enabled-seam failure returns a fail-closed INCONCLUSIVE\n     record; a non-applicable skill/artifact still returns None.\n""",
+          )
+          replace_once(
+              "tests/test_warrant_seam_integration.py",
+              """    def test_seam_warrant_gate_failure_never_aborts_brief(self):\n        \"\"\"Warrant gate failure returns None (log-and-continue), never raising.\"\"\"\n        runner = _make_runner(warrant_enabled=True)\n        with patch(\"sensemaking_skills.reasoning.warrant_gate.run_seam_warrant\",\n                   side_effect=RuntimeError(\"boom\")):\n            rec = runner._run_seam_warrant(\"repository_sensemaking_brief\", \"repo-sensemaker\")\n        self.assertIsNone(rec)  # no crash; brief production proceeds\n""",
+              """    def test_applicable_seam_failure_returns_fail_closed_inconclusive_record(self):\n        \"\"\"An applicable enabled seam failure is an INCONCLUSIVE record, not None.\"\"\"\n        runner = _make_runner(warrant_enabled=True)\n        with patch(\"sensemaking_skills.reasoning.warrant_gate.run_seam_warrant\",\n                   side_effect=RuntimeError(\"boom\")):\n            rec = runner._run_seam_warrant(\"repository_sensemaking_brief\", \"repo-sensemaker\")\n        self.assertIsNotNone(rec)\n        self.assertEqual(rec.warrant, \"INCONCLUSIVE\")\n        self.assertFalse(rec.representation_materialized)\n        self.assertIn(\"MODEL_WARRANT_COMPUTATION_FAILED\", rec.error or \"\")\n""",
+          )
+
+          insert_before_once(
+              "tests/test_runtime_remediation.py",
+              "\n\nclass TestTargetRevisionIdentity(unittest.TestCase):\n",
+              r'''
+
+    def _execute_with_warrant_failure(self, brief_text, *, warrant_enabled=True):
+        brief_path = os.path.abspath(os.path.join(
+            "artifacts-test-warrant-failure", "repository_sensemaking_brief.md"))
+        os.makedirs(os.path.dirname(brief_path), exist_ok=True)
+        executor = FakeRealExecutor(brief_text)
+        runner = self._runner(executor, brief_path)
+        runner.warrant_enabled = warrant_enabled
+        if os.path.exists(brief_path):
+            os.remove(brief_path)
+        step = {"skill": "repo-sensemaker",
+                "output_artifact": "repository_sensemaking_brief",
+                "step_type": "local_execution"}
+        try:
+            with patch("sensemaking_skills.reasoning.warrant_gate.run_seam_warrant",
+                       side_effect=RuntimeError("boom")) as mocked:
+                result = runner.execute_step(step, 1, 1)
+            return result, mocked.call_count
+        finally:
+            import shutil
+            shutil.rmtree(os.path.dirname(brief_path), ignore_errors=True)
+
+    def test_enabled_seam_failure_blocks_action_routing(self):
+        result, calls = self._execute_with_warrant_failure(VALID_BRIEF)
+        self.assertEqual(calls, 1)
+        self.assertEqual(result.get("warrant"), "INCONCLUSIVE")
+        self.assertEqual(result.get("terminal_outcome"), "STOPPED_WITHOUT_ACTION")
+        self.assertEqual(result.get("gate_result"), "blocked_inconclusive")
+        self.assertNotEqual(result.get("status"), "SUCCESS_NO_CHANGE")
+
+    def test_enabled_seam_failure_blocks_explicit_no_change_terminalization(self):
+        no_change = VALID_BRIEF.replace(
+            "recommended_workflow_id: docs-implementation-workflow",
+            "recommended_workflow_id: null",
+        ).replace(
+            "immutable: true",
+            "immutable: true\noutcome: NO_REPOSITORY_CHANGE_WARRANTED",
+        )
+        result, calls = self._execute_with_warrant_failure(no_change)
+        self.assertEqual(calls, 1)
+        self.assertEqual(result.get("warrant"), "INCONCLUSIVE")
+        self.assertEqual(result.get("terminal_outcome"), "STOPPED_WITHOUT_ACTION")
+        self.assertNotEqual(result.get("terminal_outcome"),
+                            "NO_REPOSITORY_CHANGE_WARRANTED")
+        self.assertNotEqual(result.get("status"), "SUCCESS_NO_CHANGE")
+
+    def test_warrant_disabled_legacy_path_does_not_call_failing_seam(self):
+        result, calls = self._execute_with_warrant_failure(
+            VALID_BRIEF, warrant_enabled=False)
+        self.assertEqual(calls, 0)
+        self.assertNotEqual(result.get("terminal_outcome"), "STOPPED_WITHOUT_ACTION")
+        self.assertNotIn("warrant", result)
+''',
+          )
+
+          # -----------------------------------------------------------------
+          # 4. Complete generic + specialized contract-agreement coverage.
+          # -----------------------------------------------------------------
+          Path("tests/test_artifact_contract_agreement.py").write_text(r'''"""Artifact-contract agreement for the repository sensemaking brief.
+
+The generic validator owns declared machine-field shape; the specialized brief
+validator owns the conditional outcome/workflow semantic invariant:
+- ACTION -> valid workflow required;
+- explicit NO_REPOSITORY_CHANGE_WARRANTED -> workflow absent/null;
+- missing workflow alone never implies NO_CHANGE.
+"""
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
+
+import yaml
+
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+SCRIPTS = os.path.join(REPO_ROOT, "scripts")
+
+
+def _run_script(name, args):
+    return subprocess.run(
+        [sys.executable, os.path.join(SCRIPTS, name)] + args,
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+    )
+
+
+def _brief(machine_lines):
+    return (
+        "# Repository Sensemaking Brief\n\n"
+        "## 13. Machine-readable handoff\n\n```yaml\n"
+        + "\n".join(machine_lines) + "\n```\n"
+    )
+
+
+def _base_lines():
+    return [
+        "artifact_id: repository_sensemaking_brief",
+        "schema_version: 1",
+        "source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md",
+        "user_implied_fog_type: architecture_fog",
+        "primary_fog_type: architecture_fog",
+        "diagnosis_conflict: false",
+        "escalation_recommended: false",
+        "evidence:\n  - \"a.py:1 x\"",
+        "recommended_execution_mode: guided_execution",
+        "weakest_boundary: version-drift",
+        "weakness_type: Contract Mismatch",
+        "weakness_type_explanation: null",
+        "required_inputs:\n  - repository_state",
+        "created_at: \"2026-08-29T00:00:00Z\"",
+        "immutable: true",
+        "representation_sufficiency:\n  status: sufficient",
+    ]
+
+
+def _action_with_workflow():
+    lines = _base_lines()
+    lines.insert(8, "recommended_workflow_id: architecture-implementation-workflow")
+    lines.append("outcome: ACTION_REQUIRED")
+    return _brief(lines)
+
+
+def _action_missing_workflow():
+    lines = _base_lines()
+    lines.append("outcome: ACTION_REQUIRED")
+    return _brief(lines)
+
+
+def _action_null_workflow():
+    lines = _base_lines()
+    lines.insert(8, "recommended_workflow_id: null")
+    lines.append("outcome: ACTION_REQUIRED")
+    return _brief(lines)
+
+
+def _no_change(*, workflow_marker="absent"):
+    lines = _base_lines()
+    if workflow_marker == "null":
+        lines.insert(8, "recommended_workflow_id: null")
+    elif workflow_marker == "non-null":
+        lines.insert(8, "recommended_workflow_id: architecture-implementation-workflow")
+    lines.append("outcome: NO_REPOSITORY_CHANGE_WARRANTED")
+    return _brief(lines)
+
+
+class TestContractAgreement(unittest.TestCase):
+    def _generic(self, text):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "brief.md")
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(text)
+            r = _run_script("validate-artifact.py", ["repository_sensemaking_brief", p])
+            return r.returncode, (r.stdout or r.stderr)
+
+    def _specialized(self, text):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "brief.md")
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(text)
+            r = _run_script("validate-brief.py", [p, "--repo-root", REPO_ROOT, "--json"])
+            try:
+                payload = json.loads(r.stdout)
+            except Exception:
+                payload = {"valid": False, "errors": [{"message": (r.stdout or r.stderr)[:500]}]}
+            return r.returncode, payload
+
+    @staticmethod
+    def _messages(payload):
+        return "\n".join(e.get("message", "") for e in payload.get("errors", []))
+
+    def _exercise_both(self, text):
+        generic = self._generic(text)
+        specialized = self._specialized(text)
+        return generic, specialized
+
+    def test_normal_action_valid_workflow_has_no_workflow_contract_error(self):
+        (g_ec, g_out), (_, s) = self._exercise_both(_action_with_workflow())
+        self.assertNotIn("missing required machine field: recommended_workflow_id",
+                         (g_out or "").lower())
+        messages = self._messages(s)
+        self.assertNotIn("MISSING_WORKFLOW_ID", messages)
+        self.assertNotIn("HALLUCINATED_WORKFLOW_ID", messages)
+        self.assertNotIn("NO_CHANGE_WORKFLOW_CONFLICT", messages)
+
+    def test_action_missing_workflow_fails_specialized_contract(self):
+        self._generic(_action_missing_workflow())  # exercise generic shape validator too
+        _, s = self._specialized(_action_missing_workflow())
+        self.assertIn("MISSING_WORKFLOW_ID", self._messages(s))
+
+    def test_action_null_workflow_fails_specialized_contract(self):
+        self._generic(_action_null_workflow())
+        _, s = self._specialized(_action_null_workflow())
+        self.assertIn("MISSING_WORKFLOW_ID", self._messages(s))
+
+    def test_explicit_no_change_absent_workflow_is_allowed(self):
+        (_, g_out), (_, s) = self._exercise_both(_no_change(workflow_marker="absent"))
+        self.assertNotIn("missing required machine field: recommended_workflow_id",
+                         (g_out or "").lower())
+        messages = self._messages(s)
+        self.assertNotIn("MISSING_WORKFLOW_ID", messages)
+        self.assertNotIn("NO_CHANGE_WORKFLOW_CONFLICT", messages)
+
+    def test_explicit_no_change_null_workflow_is_allowed(self):
+        self._generic(_no_change(workflow_marker="null"))
+        _, s = self._specialized(_no_change(workflow_marker="null"))
+        messages = self._messages(s)
+        self.assertNotIn("MISSING_WORKFLOW_ID", messages)
+        self.assertNotIn("NO_CHANGE_WORKFLOW_CONFLICT", messages)
+
+    def test_explicit_no_change_non_null_workflow_is_rejected(self):
+        self._generic(_no_change(workflow_marker="non-null"))
+        _, s = self._specialized(_no_change(workflow_marker="non-null"))
+        self.assertIn("NO_CHANGE_WORKFLOW_CONFLICT", self._messages(s))
+
+    def test_missing_workflow_alone_never_implies_no_change(self):
+        self._generic(_action_missing_workflow())
+        _, s = self._specialized(_action_missing_workflow())
+        messages = self._messages(s)
+        self.assertIn("MISSING_WORKFLOW_ID", messages)
+        self.assertNotIn("NO_CHANGE_WORKFLOW_CONFLICT", messages)
+
+    def test_programmatic_fields_are_declared_in_machine_contract(self):
+        with open(os.path.join(
+            REPO_ROOT, "skills", "workflow-planner", "references", "artifact-contracts.yaml"
+        ), encoding="utf-8") as f:
+            contracts = yaml.safe_load(f)
+        brief = next(a for a in contracts["artifacts"]
+                     if a.get("id") == "repository_sensemaking_brief")
+        fields = set(brief.get("required_machine_fields", [])) | set(
+            brief.get("recommended_machine_fields", []))
+        self.assertIn("representation_sufficiency", fields)
+        self.assertIn("outcome", fields)
+        self.assertIn("recommended_workflow_id", fields)
+
+
+if __name__ == "__main__":
+    unittest.main()
+''', encoding="utf-8")
+
+          # -----------------------------------------------------------------
+          # 5. Add bounded permanent exact-head feature CI as a separate lane.
+          # -----------------------------------------------------------------
+          exact_ref = "$" + "{{ github.event.pull_request.head.sha || github.sha }}"
+          permanent = r'''name: Conditional Representation Exact-Head Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  conditional-representation-exact-head:
+    name: Conditional representation exact-head qualification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: __EXACT_REF__
+
+      - name: Assert exact PR head checkout
+        run: |
+          resolved="$(git rev-parse HEAD)"
+          expected="__EXACT_REF__"
+          echo "Resolved checkout SHA: $resolved"
+          echo "Expected exact head SHA: $expected"
+          test "$resolved" = "$expected" || {
+            echo "::error::checked-out HEAD ($resolved) does not match exact head ($expected)"
+            exit 1
+          }
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install project and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest pytest-subtests
+
+      - name: Conditional-representation merge contract
+        run: |
+          python -m pytest -q \
+            tests/test_runtime_remediation.py \
+            tests/test_artifact_contract_agreement.py \
+            tests/test_warrant_authority_alignment.py \
+            tests/test_warrant_evidence_contract.py \
+            tests/test_warrant_seam_integration.py \
+            tests/test_canonical_warrant_seam_alignment.py \
+            tests/test_handoff_atomic_serialization.py \
+            tests/test_section13_evidence_projection.py \
+            tests/test_orthogonality_qualification.py \
+            tests/test_s2_no_change_contract.py \
+            tests/test_evidence_probes_qualification.py \
+            tests/test_vertical_slice_qualification.py
+
+      - name: Repository validation
+        run: python scripts/validate-repo.py
+
+      - name: Assert tests leave the tree clean
+        run: |
+          git checkout -- src/sensemaking_skills.egg-info/ 2>/dev/null || true
+          git status --porcelain
+          test -z "$(git status --porcelain)" || {
+            echo "::error::conditional-representation qualification dirtied the tree"
+            exit 1
+          }
+'''.replace("__EXACT_REF__", exact_ref)
+          ci_path = Path(".github/workflows/conditional-representation.yml")
+          if ci_path.exists():
+              raise SystemExit(f"{ci_path}: unexpected pre-existing workflow")
+          ci_path.write_text(permanent, encoding="utf-8")
+          PY
+
+      - name: Install project and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest pytest-subtests
+
+      - name: Run bounded conditional-representation qualification
+        run: |
+          python -m pytest -q \
+            tests/test_runtime_remediation.py \
+            tests/test_artifact_contract_agreement.py \
+            tests/test_warrant_authority_alignment.py \
+            tests/test_warrant_evidence_contract.py \
+            tests/test_warrant_seam_integration.py \
+            tests/test_canonical_warrant_seam_alignment.py \
+            tests/test_handoff_atomic_serialization.py \
+            tests/test_section13_evidence_projection.py \
+            tests/test_orthogonality_qualification.py \
+            tests/test_s2_no_change_contract.py \
+            tests/test_evidence_probes_qualification.py \
+            tests/test_vertical_slice_qualification.py
+
+      - name: Repository validation and diff hygiene
+        run: |
+          python scripts/validate-repo.py
+          git diff --check
+          git checkout -- src/sensemaking_skills.egg-info/ 2>/dev/null || true
+          git diff --check
+          git status --short
+
+      - name: Commit exactly one merge-closure commit and push PR branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          parent="$(git rev-parse HEAD)"
+          test "$parent" = "6580b8b149289d549851fddcc96c7ed7a2d86ba2" || {
+            echo "::error::parent moved before commit"
+            exit 1
+          }
+          git add \
+            scripts/workflow-runtime.py \
+            scripts/validate-brief.py \
+            skills/repo-sensemaker/SKILL.md \
+            skills/repo-sensemaker/references/repo-analysis-template.md \
+            tests/test_warrant_seam_integration.py \
+            tests/test_runtime_remediation.py \
+            tests/test_artifact_contract_agreement.py \
+            .github/workflows/conditional-representation.yml
+          git diff --cached --check
+          git commit -m "fix: close conditional representation merge contract"
+          new_head="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD^)" = "6580b8b149289d549851fddcc96c7ed7a2d86ba2"
+          echo "New PR head: $new_head"
+          git push origin HEAD:phb-conditional-representation-candidate
+
+      - name: Delete one-shot staging branch
+        if: success()
+        run: git push origin --delete agent/pr242-final-merge-closure-bootstrap || true
