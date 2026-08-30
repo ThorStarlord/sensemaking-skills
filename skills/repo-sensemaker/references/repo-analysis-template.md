@@ -165,6 +165,13 @@ insufficient_bounded` (with a non-empty `rationale` naming a consequential gap a
 a non-empty `needed_representation`) grounds `PARTIAL`; `inconclusive`/absent/
 malformed stays UNKNOWN. Absence of evidence is never treated as insufficiency.
 
+**No-change / workflow mutual exclusion (directive #29)**: `outcome:
+NO_REPOSITORY_CHANGE_WARRANTED` is affirmative-only and MUST NOT be combined with a
+non-null `recommended_workflow_id` (a NO_CHANGE terminal never routes a workflow; the
+validator rejects the combination as `NO_CHANGE_WORKFLOW_CONFLICT`). NORMAL ACTION
+briefs require a valid `recommended_workflow_id` (a real `workflow-registry.yaml` id).
+A missing/null `recommended_workflow_id` alone NEVER implies NO_CHANGE.
+
 `weakness_type` is required metadata but non-blocking (D2): a missing or
 unrecognized value is a validator warning, not an error, and never
 invalidates the brief. It must match the `**Weakness type:**` line stated in

@@ -135,6 +135,91 @@ class TestContractAgreement(unittest.TestCase):
         # ACTION without a workflow must FAIL the specialized validator.
         ec, j = self._specialized(_MALFORMED_ACTION)
         self.assertFalse(j.get("valid"), "ACTION brief missing workflow must fail")
+        wf_errors = [e for e in j.get("errors", [])
+                     if "recommended_workflow_id" in e.get("message", "")]
+        self.assertTrue(wf_errors, "ACTION+missing-workflow must report a workflow error")
+
+    def test_action_null_workflow_without_escalation_rejected(self):
+        # ACTION + null recommended_workflow_id WITHOUT escalation_recommended: true
+        # is a contract violation (truthful no-match requires escalation, ADR 0014).
+        brief = _brief([
+            "artifact_id: repository_sensemaking_brief",
+            "primary_fog_type: architecture_fog",
+            "evidence:\n  - \"a.py:1 x\"",
+            "outcome: ACTION_REQUIRED",
+            "recommended_workflow_id: null",
+            "escalation_recommended: false",
+            "created_at: \"2026-08-29T00:00:00Z\"",
+            "immutable: true",
+        ])
+        ec, j = self._specialized(brief)
+        self.assertFalse(j.get("valid"),
+                         "ACTION+null workflow without escalation must be rejected")
+
+    def test_action_unknown_workflow_rejected(self):
+        # ACTION + unknown (hallucinated) workflow id must be rejected.
+        brief = _brief([
+            "artifact_id: repository_sensemaking_brief",
+            "primary_fog_type: architecture_fog",
+            "evidence:\n  - \"a.py:1 x\"",
+            "outcome: ACTION_REQUIRED",
+            "recommended_workflow_id: bogus-not-in-registry",
+            "created_at: \"2026-08-29T00:00:00Z\"",
+            "immutable: true",
+        ])
+        ec, j = self._specialized(brief)
+        self.assertFalse(j.get("valid"),
+                         "ACTION+unknown workflow must be rejected")
+
+    def test_no_change_null_workflow_valid(self):
+        # Explicit NO_CHANGE + null workflow is valid wrt the workflow/outcome invariant.
+        brief = _brief([
+            "artifact_id: repository_sensemaking_brief",
+            "primary_fog_type: architecture_fog",
+            "evidence:\n  - \"a.py:1 x\"",
+            "outcome: NO_REPOSITORY_CHANGE_WARRANTED",
+            "recommended_workflow_id: null",
+            "created_at: \"2026-08-29T00:00:00Z\"",
+            "immutable: true",
+        ])
+        _, j = self._specialized(brief)
+        wf_errors = [e for e in j.get("errors", [])
+                     if "NO_CHANGE_WORKFLOW_CONFLICT" in e.get("message", "")]
+        self.assertEqual([], wf_errors,
+                         "NO_CHANGE+null workflow must not be a workflow conflict")
+
+    def test_no_change_nonnull_workflow_rejected(self):
+        # Explicit NO_CHANGE + NON-null workflow MUST be rejected with the stable
+        # NO_CHANGE_WORKFLOW_CONFLICT code (directive #29).
+        _, j = self._specialized(_MALFORMED_NO_CHANGE)
+        self.assertFalse(j.get("valid"),
+                         "NO_CHANGE+non-null workflow must be invalid")
+        conflict = [e for e in j.get("errors", [])
+                    if "NO_CHANGE_WORKFLOW_CONFLICT" in e.get("message", "")]
+        self.assertTrue(conflict,
+                        f"expected NO_CHANGE_WORKFLOW_CONFLICT, got {j.get('errors')}")
+
+    def test_missing_workflow_alone_never_no_change(self):
+        # A missing/null recommended_workflow_id alone NEVER means NO_CHANGE:
+        # without the explicit outcome, a brief with a missing workflow is still an
+        # (invalid) ACTION brief, not a NO_CHANGE terminal.
+        brief = _brief([
+            "artifact_id: repository_sensemaking_brief",
+            "primary_fog_type: architecture_fog",
+            "evidence:\n  - \"a.py:1 x\"",
+            # no outcome, no recommended_workflow_id
+            "created_at: \"2026-08-29T00:00:00Z\"",
+            "immutable: true",
+        ])
+        _, j = self._specialized(brief)
+        # Must NOT be treated as a valid NO_CHANGE terminal; it is an invalid action
+        # brief (missing workflow), never a NO_CHANGE success.
+        self.assertNotIn("NO_REPOSITORY_CHANGE_WARRANTED",
+                         " ".join(e.get("message", "") for e in j.get("errors", [])),
+                         "missing workflow alone must not be reported as NO_CHANGE")
+        wf_errors = [e for e in j.get("errors", [])
+                     if "recommended_workflow_id" in e.get("message", "")]
+        self.assertTrue(wf_errors, "missing workflow (no outcome) must be rejected")
 
     def test_representation_sufficiency_declared_in_contract(self):
         # representation_sufficiency + outcome must be declared among the brief's

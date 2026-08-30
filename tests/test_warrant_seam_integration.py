@@ -124,13 +124,25 @@ class TestBoundedWarrantSeam(unittest.TestCase):
         rec = runner._run_seam_warrant("workflow_orchestration_plan", "workflow-planner")
         self.assertIsNone(rec)
 
-    def test_seam_warrant_gate_failure_never_aborts_brief(self):
-        """Warrant gate failure returns None (log-and-continue), never raising."""
+    def test_seam_warrant_operational_failure_fails_closed(self):
+        """An applicable enabled warrant seam operational failure FAIL-CLOSES to an
+        INCONCLUSIVE-equivalent record (safe stop), never returning None and never
+        raising (directive #29)."""
         runner = _make_runner(warrant_enabled=True)
         with patch("sensemaking_skills.reasoning.warrant_gate.run_seam_warrant",
                    side_effect=RuntimeError("boom")):
             rec = runner._run_seam_warrant("repository_sensemaking_brief", "repo-sensemaker")
-        self.assertIsNone(rec)  # no crash; brief production proceeds
+        self.assertIsNotNone(rec, "applicable enabled seam must NOT return None on failure")
+        self.assertEqual(rec.warrant, "INCONCLUSIVE")
+        self.assertFalse(rec.representation_materialized)
+        self.assertTrue(rec.error, "operational-failure record must carry an error")
+
+    def test_seam_warrant_non_applicable_still_returns_none(self):
+        # A NON-applicable skill/artifact may still return None (fail-closed is
+        # scoped to the applicable repo-sensemaker brief step; None is not global).
+        runner = _make_runner(warrant_enabled=True)
+        rec = runner._run_seam_warrant("workflow_orchestration_plan", "workflow-planner")
+        self.assertIsNone(rec)
 
 
 class TestS3NoChangeTermination(unittest.TestCase):

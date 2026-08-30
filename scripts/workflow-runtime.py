@@ -1448,7 +1448,24 @@ class OrchestrationRunner:
                     and output_artifact == "repository_sensemaking_brief"
                     and artifact_path and os.path.exists(artifact_path)):
                 record_obj = self._run_seam_warrant(output_artifact, skill)
-                if record_obj is not None:
+                if record_obj is None:
+                    # DEFENSE-IN-DEPTH (directive #29): an applicable enabled warrant
+                    # seam that somehow yields NO record must FAIL CLOSED to an
+                    # INCONCLUSIVE-equivalent safe stop (STOPPED_WITHOUT_ACTION) rather
+                    # than falling through to NO_CHANGE terminalization or routing.
+                    # This is scoped to the applicable repo-sensemaker brief step, not
+                    # a global redefinition of None.
+                    print("  [WARRANT] applicable enabled seam produced no record; "
+                          "FAIL-CLOSED to INCONCLUSIVE (safe stop)")
+                    result["warrant"] = "INCONCLUSIVE"
+                    result["warrant_record"] = {
+                        "warrant": "INCONCLUSIVE", "representation_materialized": False,
+                        "error": "applicable enabled seam returned no record (fail-closed)",
+                    }
+                    r = self._terminal_inconclusive_gate(result, step_num)
+                    if r is not None:
+                        return r
+                else:
                     result["warrant"] = record_obj.warrant
                     result["warrant_record"] = record_obj.to_dict()
                     print(f"  [WARRANT] MODEL_WARRANT={record_obj.warrant} "
@@ -1844,11 +1861,14 @@ class OrchestrationRunner:
         Transports the already-produced same-episode brief evidence (Section-13
         machine block + evidence lines) into the EvidenceInput with provenance,
         so the warrant is computed over real production evidence rather than an
-        empty default. Same-episode probe-report identity is NOT preserved by the
-        runtime (no registered artifact path) and is therefore NOT invented here;
-        absent probe-report evidence stays UNKNOWN (no absent->FALSE).
-        Safe-by-construction: lazy import; any failure returns None so routing is
-        never aborted by warrant computation itself.
+        empty default. Same-episode probe-report identity IS preserved by the
+        runtime via the runtime-owned, session-scoped `expected_probe_report_path`
+        (consumed when present and the exact target-checkout SHA is authoritative);
+        absence stays UNKNOWN (no absent->FALSE).
+        OPERATIONAL-FAIL-CLOSED (directive #29): an unexpected failure in this
+        applicable enabled seam is converted to an INCONCLUSIVE-equivalent
+        WarrantRecord (safe stop) so the caller's INCONCLUSIVE gate blocks
+        action/NO_CHANGE/routing rather than failing open.
         """
         if output_artifact != "repository_sensemaking_brief" or skill != "repo-sensemaker":
             return None
@@ -1905,9 +1925,37 @@ class OrchestrationRunner:
                     ),
                 ),
             )
-        except Exception as exc:  # never break the seam
-            print(f"  ~ [WARRANT] warrant gate unavailable at seam: {exc}")
-            return None
+        except Exception as exc:  # OPERATIONAL FAILURE -> FAIL CLOSED (directive #29)
+            # An applicable enabled warrant seam must NEVER fail open: an unexpected
+            # operational failure is converted to an INCONCLUSIVE-equivalent canonical
+            # record (representation not materialized, deterministic error) so the
+            # caller's INCONCLUSIVE gate blocks action/routing/NO_CHANGE rather than
+            # falling through to normal routing.
+            print(f"  ~ [WARRANT] warrant computation failed at seam, FAIL-CLOSED to "
+                  f"INCONCLUSIVE (operational failure): {exc}")
+            try:
+                from sensemaking_skills.reasoning.warrant_gate import WarrantRecord
+                return WarrantRecord(
+                    warrant="INCONCLUSIVE",
+                    target_repository=getattr(self, "target_repo", self.repo_root),
+                    target_revision=self._current_target_revision(),
+                    user_goal=self.user_goal_hint(),
+                    representation_materialized=False,
+                    error="warrant computation failed at enabled production seam "
+                          "(operational/fail-closed)",
+                    uncertainty_log=[{
+                        "kind": "UNKNOWN",
+                        "question": "Enabled warranty seam failed operationally; "
+                                    "FAIL-CLOSED to INCONCLUSIVE (safe stop, no "
+                                    "routing/NO_CHANGE/representation).",
+                        "load_bearing": True,
+                    }],
+                )
+            except Exception as _inner:
+                # Worst case: cannot even build the record; return a lightweight
+                # sentinel that execute_step's defense-in-depth will treat as a
+                # fail-closed INCONCLUSIVE safe stop.
+                return None
 
     def _current_revision_hint(self) -> str:
         """Best-effort repository revision hint for the warrant record."""

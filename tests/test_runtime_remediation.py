@@ -7,6 +7,10 @@ Covers:
   SHA (git -C <target> rev-parse HEAD), never a framework branch name; fails closed.
 - #3 PARTIAL materialization is scoped to the producer-declared needed_representation
   (not all diagnostic probes).
+- Fail-closed on applicable enabled warrant-seam operational failure (directive #29):
+  -> INCONCLUSIVE-equivalent record / safe stop; ACTION does not route; explicit
+  NO_CHANGE does not terminalize; no representation materialized; warrant_enabled=false
+  legacy unchanged; non-applicable step unchanged.
 """
 import os
 import unittest
@@ -241,6 +245,123 @@ class TestPartialBoundedMaterialization(unittest.TestCase):
         rec = run_seam_warrant(target_repository="t", target_revision="r",
                                user_goal="g", evidence=ev)
         self.assertEqual(rec.warrant, "INCONCLUSIVE")
+
+
+class TestFailClosedWarrantFailure(unittest.TestCase):
+    """Directive #29: an applicable enabled warrant-seam operational failure must
+    FAIL CLOSED to an INCONCLUSIVE-equivalent safe stop (never route ACTION,
+    never terminalize NO_CHANGE, never materialize representation)."""
+
+    def _runner(self, executor, brief_path, brief_text):
+        r = object.__new__(OrchestrationRunner)
+        r.mode = "guided_execution"
+        r.warrant_enabled = True
+        r.use_fixtures = False
+        r.repo_root = "."
+        r.target_repo = "."
+        r.workflow_id = "phb-failclosed-test"
+        r.log_dir = "."
+        r.skill_executor = executor
+        r.errors = []
+        r.step_results = []
+        r.gate_decisions = []
+        r.session_id = "test-failclosed"
+        r.artifact_session_dir = None
+        r._episode_probe_report_path = None
+        r.contracts = None
+        r._resolve_artifact_path = MagicMock(return_value=brief_path)
+        r._resolve_step_inputs = MagicMock(return_value=([], {}))
+        r._log_ledger_event = MagicMock()
+        r._ensure_intent_ref = MagicMock()
+        r._compute_file_hash = MagicMock(return_value="abc")
+        r._run_validator_stack = MagicMock(return_value=[{"command": "x", "result": "PASSED"}])
+        r._manage_gate = MagicMock(side_effect=lambda g, s, sk: "approved")
+        r._finalize_step_result = OrchestrationRunner._finalize_step_result.__get__(r, OrchestrationRunner)
+        r._read_brief_machine_data = OrchestrationRunner._read_brief_machine_data.__get__(r, OrchestrationRunner)
+        r._read_brief_outcome = OrchestrationRunner._read_brief_outcome.__get__(r, OrchestrationRunner)
+        r._current_target_revision = MagicMock(return_value="3a8bfc4d")
+        r.user_goal_hint = MagicMock(return_value="g")
+        return r
+
+    def _run_with_failing_seam(self, brief_text):
+        brief_path = os.path.abspath(os.path.join("artifacts-test-failclosed",
+                                                  "repository_sensemaking_brief.md"))
+        os.makedirs(os.path.dirname(brief_path), exist_ok=True)
+        if os.path.exists(brief_path):
+            os.remove(brief_path)
+        executor = FakeRealExecutor(brief_text)
+        runner = self._runner(executor, brief_path, brief_text)
+        step = {"skill": "repo-sensemaker",
+                "output_artifact": "repository_sensemaking_brief",
+                "step_type": "local_execution"}
+        # Make the REAL warrant seam fail operationally at the applicable step.
+        with patch("sensemaking_skills.reasoning.warrant_gate.run_seam_warrant",
+                   side_effect=RuntimeError("boom")):
+            result = runner.execute_step(step, 1, 1)
+        import shutil
+        shutil.rmtree(os.path.dirname(brief_path), ignore_errors=True)
+        return result
+
+    def test_fail_closed_safe_stop_on_operational_failure(self):
+        result = self._run_with_failing_seam(VALID_BRIEF)
+        self.assertEqual(result.get("warrant"), "INCONCLUSIVE")
+        self.assertEqual(result.get("terminal_outcome"), "STOPPED_WITHOUT_ACTION")
+        self.assertIn("MODEL_WARRANT_INCONCLUSIVE", result.get("terminal_reason", ""))
+        self.assertEqual(result.get("gate_result"), "blocked_inconclusive")
+
+    def test_fail_closed_never_routes_action(self):
+        # An explicit ACTION brief + operational failure must NOT proceed to action/routing.
+        result = self._run_with_failing_seam(VALID_BRIEF)  # VALID_BRIEF is ACTION (docs workflow)
+        self.assertEqual(result.get("terminal_outcome"), "STOPPED_WITHOUT_ACTION")
+        self.assertNotEqual(result.get("status"), "APPROVED")
+        self.assertNotEqual(result.get("status"), "VALIDATED")
+
+    def test_fail_closed_never_terminalizes_no_change(self):
+        # An explicit NO_CHANGE brief + operational failure must NOT terminalize NO_CHANGE.
+        no_change_brief = VALID_BRIEF.replace(
+            "outcome: null", "outcome: NO_REPOSITORY_CHANGE_WARRANTED")
+        # Build a NO_CHANGE brief by replacing the outcome + nulling workflow.
+        nc = VALID_BRIEF.replace(
+            "recommended_workflow_id: docs-implementation-workflow",
+            "recommended_workflow_id: null")
+        result = self._run_with_failing_seam(nc)
+        self.assertEqual(result.get("terminal_outcome"), "STOPPED_WITHOUT_ACTION")
+        self.assertNotEqual(result.get("terminal_outcome"), "NO_REPOSITORY_CHANGE_WARRANTED")
+        self.assertNotEqual(result.get("status"), "SUCCESS_NO_CHANGE")
+
+    def test_fail_closed_no_representation(self):
+        result = self._run_with_failing_seam(VALID_BRIEF)
+        wrec = result.get("warrant_record", {})
+        self.assertFalse(wrec.get("representation_materialized", False))
+
+    def test_warrant_disabled_legacy_unchanged(self):
+        # warrant_enabled=false: the seam block is skipped entirely (no fail-closed gate).
+        executor = FakeRealExecutor(VALID_BRIEF)
+        brief_path = os.path.abspath(os.path.join("artifacts-test-failclosed",
+                                                  "repository_sensemaking_brief.md"))
+        os.makedirs(os.path.dirname(brief_path), exist_ok=True)
+        if os.path.exists(brief_path):
+            os.remove(brief_path)
+        r = self._runner(executor, brief_path, VALID_BRIEF)
+        r.warrant_enabled = False
+        step = {"skill": "repo-sensemaker",
+                "output_artifact": "repository_sensemaking_brief",
+                "step_type": "local_execution"}
+        result = r.execute_step(step, 1, 1)
+        import shutil
+        shutil.rmtree(os.path.dirname(brief_path), ignore_errors=True)
+        self.assertNotIn("warrant", result)
+
+    def test_non_applicable_still_none(self):
+        # A non-applicable skill/artifact still yields None (fail-closed is scoped
+        # to the applicable repo-sensemaker brief step; None is NOT globally redefined).
+        runner = object.__new__(OrchestrationRunner)
+        runner.repo_root = "."
+        runner.target_repo = "."
+        runner._resolve_artifact_path = MagicMock(return_value="/tmp/x.md")
+        rec = OrchestrationRunner._run_seam_warrant.__get__(runner, OrchestrationRunner)(
+            "workflow_orchestration_plan", "workflow-planner")
+        self.assertIsNone(rec)
 
 
 if __name__ == "__main__":

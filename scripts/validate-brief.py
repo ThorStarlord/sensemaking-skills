@@ -26,6 +26,10 @@ INVALID_LINE_FORMAT = "INVALID_LINE_FORMAT"
 PARSING_ERROR = "PARSING_ERROR"
 MISSING_WORKFLOW_ID = "MISSING_WORKFLOW_ID"
 HALLUCINATED_WORKFLOW_ID = "HALLUCINATED_WORKFLOW_ID"
+# Directive #29: an explicit NO_REPOSITORY_CHANGE_WARRANTED outcome is
+# affirmative-only and MUST NOT be combined with a non-null routable
+# recommended_workflow_id (a NO_CHANGE terminal must never route a workflow).
+NO_CHANGE_WORKFLOW_CONFLICT = "NO_CHANGE_WORKFLOW_CONFLICT"
 MISSING_HANDOFF_BLOCK = "MISSING_HANDOFF_BLOCK"
 REGISTRY_NOT_FOUND = "REGISTRY_NOT_FOUND"
 NO_LOGIC_TRACE = "NO_LOGIC_TRACE"
@@ -612,6 +616,19 @@ def validate_brief(
 
         # Check recommended_workflow_id
         no_change_outcome = _is_no_change_outcome(artifact_data)
+        # Directive #29 (NO_CHANGE/workflow mutual exclusion): an explicit
+        # NO_REPOSITORY_CHANGE_WARRANTED outcome is affirmative-only and MUST NOT
+        # carry a non-null, routable recommended_workflow_id (a NO_CHANGE terminal
+        # must never route a workflow). Absent/null workflow is valid for NO_CHANGE.
+        if no_change_outcome and artifact_data.get("recommended_workflow_id") is not None:
+            errors.append(_code_error(
+                NO_CHANGE_WORKFLOW_CONFLICT,
+                "outcome is NO_REPOSITORY_CHANGE_WARRANTED but recommended_workflow_id "
+                "is non-null; a NO_CHANGE terminal must not carry a routable workflow "
+                "(explicit NO_CHANGE is affirmative-only; omit or set "
+                "recommended_workflow_id to null).",
+                field="recommended_workflow_id",
+            ))
         if "recommended_workflow_id" not in artifact_data:
             if not large and not no_change_outcome:  # Large/NO_CHANGE can skip
                 errors.append({

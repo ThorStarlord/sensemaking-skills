@@ -239,6 +239,20 @@ escalation (`escalation_recommended: true`) and the truthful no-match value
 preserve your value verbatim, valid or not, and the validator (not the
 runtime) is what rejects an invalid one.
 
+**No-change / workflow mutual exclusion (directive #29)**: these are mutually
+exclusive — never emit a routable workflow on a no-change brief.
+- NORMAL ACTION brief -> emit a valid `recommended_workflow_id` (a real
+  `workflow-registry.yaml` id).
+- `outcome: NO_REPOSITORY_CHANGE_WARRANTED` -> omit `recommended_workflow_id`
+  entirely or emit `recommended_workflow_id: null`. NEVER emit a routable
+  workflow id on a NO_CHANGE brief (a NO_CHANGE terminal must not route a
+  workflow; the validator rejects the combination as
+  `NO_CHANGE_WORKFLOW_CONFLICT`).
+- A missing/null `recommended_workflow_id` alone NEVER means NO_CHANGE.
+  `NO_REPOSITORY_CHANGE_WARRANTED` is affirmative-only: it requires the
+  explicit `outcome` field set to that exact value. Do not infer it from an
+  absent workflow.
+
 **Evidence-authority hierarchy and grammar** (unchanged from prior guidance,
 still your responsibility): cite specific files and line ranges you actually
 read (`Lx`/`Lx-Ly` or bare numbers both work, e.g. `L18` or `18`); never cite
