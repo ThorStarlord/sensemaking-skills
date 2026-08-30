@@ -88,8 +88,12 @@ _MALFORMED_NO_CHANGE = _brief([
 
 class TestContractAgreement(unittest.TestCase):
     def _generic(self, text, name):
-        d = os.path.join("tests", "fixtures", "contract_agreement")
-        os.makedirs(d, exist_ok=True)
+        # Write the provisional brief to a temp dir (NOT tests/fixtures/) so the
+        # generic-validator run does not leave untracked files that would dirty the
+        # working tree in the exact-head CI clean-tree assertion (directive #30,
+        # gate hermeticity).
+        import tempfile
+        d = tempfile.mkdtemp()
         p = os.path.join(d, name)
         with open(p, "w", encoding="utf-8") as f:
             f.write(text)

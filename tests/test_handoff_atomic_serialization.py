@@ -7,6 +7,7 @@ fields cannot be replaced (F); invalid model values preserved verbatim (G);
 required required fields remain validator-visible (H); required_inputs
 default/override (I); outcome round-trips when present (J).
 """
+import os
 import sys
 import unittest
 
@@ -15,7 +16,14 @@ import yaml
 sys.path.insert(0, "scripts")
 import brief_skeleton as bs
 
-DOGFOOD_DIR = "experiments/product-hypothesis-b/implementation/dogfood-rmt"
+# Durable frozen-handoff fixture (directive #30): the frozen editor-I/O B document
+# was made DURABLE under tests/fixtures/ so a clean checkout/CI can reproduce the
+# atomic-serialization qualification. Path is derived relative to this test file
+# (repository-consistent), not from an untracked experiment directory.
+DOGFOOD_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "fixtures", "product_hypothesis_b_frozen_handoff",
+)
 
 
 def _section13_machine(text):
