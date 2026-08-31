@@ -220,6 +220,139 @@ The transfer result does not warrant a generic framework. Further transfer work
 should be driven by materially new uncertainty or real use, not by a desire to
 accumulate more synthetic examples of the same relation.
 
+## Candidate research direction: formative critique and independent review
+
+**Status:** candidate / inactive  
+**Authority:** research questions only; no execution program is authorized  
+**Product effect:** none; no new Skill, responsibility contract, artifact,
+workflow, validator, routing rule, or product-scope change is ratified here
+
+The terms **critic** and **reviewer** are provisional shorthand in this section,
+not canonical responsibility or Skill names. Their semantics and placement are
+part of the research question.
+
+This direction asks whether repository sensemaking would improve if diagnostic
+work were challenged before completion and/or independently evaluated after
+completion. It does **not** assume that either behavior belongs inside
+`repo-sensemaker`.
+
+### C1: formative diagnosis critique
+
+**Question:** can a bounded challenge before a `repository_sensemaking_brief` is
+finalized catch decision-changing blind spots without creating false uncertainty,
+contrarianism, unnecessary owner questions, or analysis paralysis?
+
+Candidate defects worth observing include:
+
+- a strong competing consequential boundary was ignored;
+- contradictory repository evidence was not considered;
+- an assumption was presented as established fact;
+- implementation or another downstream responsibility was selected before a
+  cheap decision-changing uncertainty was resolved;
+- a claim is stronger than its evidence;
+- a recommendation crosses an authority boundary.
+
+A useful critique changes something decision-relevant -- the consequential
+boundary, warranted responsibility, claim scope, evidence requirement, owner
+question, or decision to stop. The number of objections generated is not a
+success measure. Critique should not exist merely to manufacture alternatives.
+
+### C2: independent Brief review
+
+**Question:** after a Brief is frozen, can a sufficiently independent evaluation
+reliably detect consequential diagnostic defects that the producing agent missed,
+beyond what current mechanical validation already establishes?
+
+Candidate review dimensions include:
+
+- grounding of repository claims;
+- whether interpretations follow from cited evidence;
+- separation of observations, interpretations, and hypotheses;
+- support for the selected consequential boundary;
+- omission of materially plausible alternative responsibilities;
+- claim-scope and authority discipline;
+- usefulness for deciding what responsibility is warranted next.
+
+Independence is itself an empirical variable. Fresh context, a different agent
+instance, a different model, holdout criteria, or independent evidence access may
+help, but none is assumed sufficient merely because it is present.
+
+A review result is evidence for the active agent. Consistent with
+`docs/decision-orchestration-boundary.md`:
+
+```text
+review finding != next responsibility
+```
+
+### C3: responsibility placement
+
+**Question:** if C1 or C2 demonstrates recurring value, where should the useful
+behavior live?
+
+Plausible outcomes include:
+
+1. a lightweight conditional pass inside `repo-sensemaker`;
+2. a separate reusable formative-critique responsibility;
+3. a separate independent-review responsibility over a frozen Brief;
+4. coverage by existing capabilities such as `architectural-review`, mechanical
+   validators, `output-reconciler`, or finding-specific verification;
+5. no dedicated responsibility because the incremental value does not justify
+   additional machinery.
+
+Evidence that critique or review is useful does **not** by itself establish
+placement. Responsibility value should be demonstrated before architecture is
+chosen.
+
+### Evidence that would activate this direction
+
+Do not start a synthetic critic/reviewer campaign merely because these questions
+are now recorded. Activation should be driven by recurring decision-relevant
+pressure, such as:
+
+- normal-use episodes where a completed diagnosis later proves to have missed a
+  strong competing boundary, contradictory evidence, or an authority problem;
+- post-freeze evaluations that repeatedly identify consequential errors that the
+  producer missed and mechanical validation could not detect;
+- repeated cases where an independent finding changes the warranted
+  responsibility rather than only improving prose;
+- repeated manual burden around checking the same class of diagnostic defect.
+
+Two existing evidence sources are especially relevant:
+
+- **Goal A:** its frozen-Brief procedure already separates production from
+  substantive evidence audit, semantic-quality review, and independent
+  usefulness evaluation. Findings from those evaluations may reveal recurring
+  defects worth studying, but Goal A does not by itself ratify a reviewer role.
+- **Issue #218:** normal-use engineering episodes may reveal whether formative
+  critique or independent review would have changed consequential decisions in
+  ordinary work.
+
+Neither source automatically activates a new research program. If recurring
+findings appear, first characterize the defect class and ask whether a bounded
+critique or review would have prevented or detected it. Only then consider a
+prospective test.
+
+### Promotion discipline
+
+Use the repository's existing machinery-promotion rule. This candidate direction
+becomes a formal responsibility only if evidence demonstrates:
+
+```text
+recurring consequential defect
++ bounded critique/review materially improves the decision
++ semantics are stable enough to describe
++ repeated burden/error justifies another responsibility
++ the boundary is mechanically or operationally expressible
+        -> candidate for formalization
+```
+
+Not:
+
+```text
+critic/reviewer sounds useful
+        -> evolve repo-sensemaker / create a Skill
+```
+
 ## Deferred architecture hypothesis: domain specializations
 
 A future architecture might separate a reusable control model from
