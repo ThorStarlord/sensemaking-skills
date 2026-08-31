@@ -102,3 +102,69 @@ DEMONSTRATED rather than INTERPRETIVE*.
 
 ## EVALUATION PHASE
 (entries appended during retrospective challenges `11` and decision views `09`)
+
+### E-1 — Authority seam table was used in every prospective view
+`05-AUTHORITY-MAP.md`'s DEFINES / ENFORCES / RUNTIME-OWNS / WINS-ON-CONFLICT /
+POLICY-vs-IMPL row shape was consulted for `09` Q1, Q2, Q3, Q5, Q6, Q7 and
+`11` RC#1, RC#2, RC#4, RC#5, RC#6. Code C/D. Highest-use element in V0.
+
+### E-2 — POLICY-vs-IMPL column produced the sharpest single finding
+Ranking automatic fog-type routing as the #1 impl-ahead-of-policy divergence
+(`09` Q5, `11` RC#5) is not stated as a ranking anywhere in the repo; it is
+assembled from ADR 0014 + 0018(SUPERSEDED) + 0026 + CONTEXT.md:127/335 +
+registry flags + runtime chain. Code C/G, grade DERIVED.
+
+### E-3 — Cross-cutting impact analysis (09 Q6) is the one hard-to-recover capability
+Enumerating the ~9-node blast radius of a `representation_sufficiency` semantics
+change spans 4 relationship families (authority, artifact, research, structural).
+A human doing this from raw sources would plausibly miss the
+`infra.reasoning-slice DERIVES_FROM research-agenda` edge or the
+`validate-brief.py` parse. Code C. But this is question-specific — an on-demand
+projection, not a standing document (feeds `12` Q8/Q9).
+
+### E-4 — RC#6 (deprecated-file-is-canonical) is the clearest "V0 earned its keep"
+The contradiction spans two files and is only visible when you ask "who enforces
+the `prd` contract?" — V0 pre-assembled that question + answer in `06` §2. Code A,
+grade DEMONSTRATED.
+
+### E-5 — RC#3 exposed V0's floor: it does not enumerate validator rules
+The `Lx`-format-with-no-consumer episode is NOT_REPRESENTED at rule level; V0
+only carries the governing *principle*. Confirms V0 is a map to the right file +
+question, not a substitute for the file. Code H at rule granularity.
+
+### E-6 — RC#7 exposed a staleness/over-read risk
+Showing the reconciliation fan-in as "resolved" without foregrounding that
+cross-run prior-report identity is still `CONVENTION` risks code I (mislead by
+omission). Mitigated only if the reader reaches the `04` session_summary row.
+
+### E-7 — Most of V0 decays fast
+`02` (ADR statuses, counts), `07` (evidence-class rungs, issue numbers), and the
+SHAs throughout are time-stamped to `ba8968c`. The 6 commits since the
+authorization SHA already moved the research surface. A persisted rich V0 would
+need continuous refresh; the thin core (authority seams, lifecycle, enforcement
+gaps) changes far more slowly. Feeds `12` finding #4 and the disposition.
+
+### E-8 — No infrastructure was needed to USE V0 either
+Every prospective view and challenge was answered by reading the frozen Markdown/
+YAML directly. No index, query engine, or graph store was reached for. (The
+cross-cutting Q6 trace was done by hand across 4 files — tedious but not
+blocked.)
+
+### E-9 — ERRATUM: EVIDENCE-INDEX.yaml does not parse as strict YAML (frozen; NOT corrected)
+Post-freeze `yaml.safe_load` found 5 lines in `EVIDENCE-INDEX.yaml` of the form
+`E-CONTRACT-brief-notes:{kind: ...}` — a missing space after the key colon, so
+the file is not strict-YAML-parseable (lines 91, 93, and 3 others; `02` and `03`
+parse cleanly). Per freeze rule (authorization Section 14) the frozen bytes are
+**left unchanged** — this is a mechanical typo, not an architecture change, and
+V0 is historical evidence "as built." The file remains fully human-readable and
+every evidence id resolves by eye.
+**This is itself a finding:** hand-authoring flow-mapping YAML for a rich
+representation is error-prone (construction friction, feeds `12` finding #6 and
+the disposition toward *generated projections* over hand-maintained rich files).
+A V1 core should be tables or machine-generated, not hand-written nested YAML.
+
+## FREEZE-INTEGRITY NOTE
+Frozen artifacts (00-08, 10, EVIDENCE-INDEX) were not edited after
+`V0-FREEZE-MANIFEST.md`. `09`, `11`, `12` are post-freeze evaluation outputs.
+This file's construction-phase section (above the FREEZE LINE) is unchanged;
+only the EVALUATION PHASE section was appended to.

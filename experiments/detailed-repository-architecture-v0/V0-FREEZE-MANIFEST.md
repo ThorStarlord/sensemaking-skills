@@ -49,6 +49,14 @@ evaluation exposes a weakness. Evaluation observations go to `OBSERVATIONS.md`
 (evaluation phase) and to `11` / `09` / `12`. A later V1 may change the
 architecture; V0 remains historical evidence.
 
+## Post-freeze erratum (frozen bytes NOT changed)
+
+`EVIDENCE-INDEX.yaml` (hash above, unchanged) has 5 lines with a missing space
+after the key colon (`key:{...}`), so it is not strict-YAML-parseable. Per the
+freeze rule this typo is left as-is; `02-COMPONENTS.yaml` and
+`03-RELATIONSHIPS.yaml` parse cleanly. See `OBSERVATIONS.md` E-9. Any V1 must
+not carry this file forward verbatim.
+
 ## Integrity re-check command
 
 ```bash
