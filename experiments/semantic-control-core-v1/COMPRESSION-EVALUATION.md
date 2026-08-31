@@ -238,3 +238,68 @@ V1. Not selected to flatter V1 — both deliberately probe *core omissions*.
 correct authority region for two episodes outside the V0 set, with no
 misleading result. Neither needed `RAW_REPOSITORY_REQUIRED` beyond a single
 documented hop. Small sample (n=2), sanity-check only.
+
+---
+
+## 7. POST-FREEZE ACCOUNTING ERRATUM (owner review 2026-08-31)
+
+Owner review of PR #245 found the row / change-rate accounting in §1 and §2
+does not reconcile. This is a **record-accounting defect, not an architecture
+defect** — it does not touch the 10-case replay (§3-4), the drill (§5), or the
+holdouts (§6). Frozen artifacts (`00-SCOPE.md`, `SEMANTIC-CONTROL-CORE.md`,
+`ON-DEMAND-PROJECTION-RECIPE.md`) are **NOT rewritten** — the freeze manifest
+and hashes stand. The corrected accounting is recorded here.
+
+### 7a. What the frozen core actually contains
+
+`SEMANTIC-CONTROL-CORE.md` has **22 graded table rows**:
+
+| Section | Table rows | Row ids |
+|---|---|---|
+| §1 Authority-seam register | 7 | A1-A7 |
+| §2 Lifecycle ledger (table) | 6 | ADR 0018; ADRs 0017/0019/0020/0021; ADRs 0006/0007/0008/0022; deprecated `workflow-orchestrator/references/artifact-contracts.yaml`; `src/…/reasoning/` research-only; `orchestration-runner.py` name |
+| §3 Enforcement-gap register | 8 | G1-G8 |
+| §4 Research→product crossings | 1 | C6R → warrant seam |
+| **Total table rows** | **22** | — |
+
+Plus **1 graded prose fact** in §2 immediately after the ledger table:
+"ADR status vocabulary — `docs/adr/README.md` defines it; `scripts/probe_relationships.py`
+enforces it. Grade D / S." This is **not** one of the 22 table rows.
+
+**Adopted accounting (reconciles both of the owner's models):**
+- `CORE_TABLE_ROWS = 22`
+- `ADDITIONAL_GRADED_PROSE_FACTS = 1` (ADR-status enforcement, D / S / SLOW)
+- `REPRESENTED_SEMANTIC_ENTRIES_TOTAL = 23`
+
+### 7b. Corrected change-rate classification of the 22 table rows
+
+Every row carries `D / S` or `D / M` in the frozen bytes. **FAST = 0.**
+
+| Rate | Count | Rows |
+|---|---|---|
+| SLOW (`D / S`) | **14** | A1, A3, A4, A5 (4); ledger table: ADR 0018, ADRs 0017/0019/0020/0021, ADRs 0006/0007/0008/0022, deprecated contracts file, `orchestration-runner.py` name (5); G1, G2, G3, G6, G7 (5) |
+| MEDIUM (`D / M`) | **8** | A2, A6, A7 (3); ledger table: `src/…/reasoning/` research-only (1); G4, G5, G8 (3); §4 C6R→warrant-seam row (1) |
+| FAST | **0** | — |
+| **Total** | **22** | 14 + 8 + 0 |
+
+Adding the 1 prose fact (ADR-status enforcement, SLOW): SLOW = 15, MEDIUM = 8,
+FAST = 0, total = 23.
+
+### 7c. Errors being corrected
+
+| Location | Stated (defective) | Correct |
+|---|---|---|
+| `COMPRESSION-EVALUATION.md` §2 table | SLOW = 13, MEDIUM = 7 (sums to 20 ≠ 22) | **SLOW = 14, MEDIUM = 8, FAST = 0, total = 22** (table rows); +1 prose fact → 23 entries |
+| `COMPRESSION-EVALUATION.md` §2 named lists | omitted the §4 research→product row from MEDIUM; double-counted "ADR-status enforcement" as a SLOW *row* while giving SLOW = 13 | research→product row is MEDIUM; ADR-status enforcement is a prose fact (SLOW), not one of the 22 table rows |
+| `COMPRESSION-EVALUATION.md` §1 "Core rows retained = 22" | correct as *table rows*; ambiguous vs the prose fact | keep `= 22` table rows; add `REPRESENTED_SEMANTIC_ENTRIES_TOTAL = 23` |
+| **frozen** `SEMANTIC-CONTROL-CORE.md` §5 bullet: "13 of 15 load-bearing rows are `S` or `M`" | drafting error — neither 13 nor 15 matches the tables | the core has **22 table rows; all 22 are `S` or `M` (FAST = 0)**. Frozen — recorded here, **not** edited in place. |
+
+### 7d. What is unchanged
+
+The architecture finding, the 10-case replay result (8 direct / 1 projection /
+1 floor / 0 lost / 0 misleading), the drill, the holdouts, the staleness
+conclusion ("compression preferentially kept slow / decision-cadence facts;
+0 fast-changing rows"), and the disposition
+`THIN_CORE_PLUS_PROJECTIONS_PRESERVES_VALUE` all stand. If anything the
+corrected count *strengthens* the staleness conclusion: 14 of 22 rows SLOW,
+8 MEDIUM, 0 FAST.

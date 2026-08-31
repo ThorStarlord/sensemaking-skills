@@ -155,3 +155,29 @@ Return to owner review of the frozen V1 core + this evaluation. Do **not** build
 V2, wire the core into any product doc, implement persistence, or add
 infrastructure. The next *evidence* question is independent reconstruction +
 light normal-use consultation of the frozen core — not another compression pass.
+
+---
+
+## POST-FREEZE ACCOUNTING ERRATUM (owner review 2026-08-31)
+
+Owner review accepted the V1 architecture result
+(`THIN_CORE_PLUS_PROJECTIONS_PRESERVES_VALUE`) but flagged that the row /
+change-rate accounting did not reconcile. Full correction is in
+`COMPRESSION-EVALUATION.md` §7. Summary:
+
+- Frozen `SEMANTIC-CONTROL-CORE.md` has **22 graded table rows**
+  (7 authority + 6 lifecycle-ledger + 8 enforcement-gap + 1 research→product),
+  **plus 1 graded prose fact** (ADR-status-vocabulary enforcement, `D / S`)
+  = **23 represented semantic entries**.
+- Corrected change-rate for the 22 table rows: **SLOW = 14, MEDIUM = 8,
+  FAST = 0** (was mis-stated as 13 / 7 / 0, summing to 20). Including the prose
+  fact: SLOW = 15, MEDIUM = 8, FAST = 0.
+- Frozen `SEMANTIC-CONTROL-CORE.md` §5 says "13 of 15 load-bearing rows are
+  `S` or `M`" — a drafting error; the correct statement is **all 22 table rows
+  are `S` or `M` (FAST = 0)**. Frozen bytes not edited; recorded in the erratum.
+- This is a record-accounting defect, not an architecture defect. The 10-case
+  replay, drill, holdouts, staleness conclusion, and disposition are unchanged;
+  the corrected count (14 SLOW / 8 MEDIUM / 0 FAST) *strengthens* the staleness
+  conclusion.
+
+`V1_EVIDENCE_RECORD_CLEAN` = true (after this erratum).
