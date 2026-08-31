@@ -41,7 +41,10 @@ When analyzing a repository, **always compare** what the user intends with what 
    - Example: User wants "UI redesign" but code shows "state management is broken" → conflict
    - This is when escalation to full-fog is recommended
 
-4. **Emit Stage 1 Fields** (required for downstream routing):
+4. **Emit Stage 1 Fields** (decision-support metadata for the Brief handoff —
+   `primary_fog_type` is required and the remaining fields below are recommended
+   machine fields per `artifact-contracts.yaml`; none grants automatic-routing
+   authority):
    - `source_intent_ref`: Reference to 00-user-intent.md
    - `user_implied_fog_type`: What the user's problem statement suggests
    - `primary_fog_type`: What the codebase actually signals

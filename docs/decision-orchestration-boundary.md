@@ -98,6 +98,27 @@ A fixed orchestration path would have encoded `repair` too early. The
 Sensemaking decision layer keeps the responsibility revisable until the
 relevant decision-changing uncertainty is resolved.
 
+## Failure, review, and reassessment
+
+A failure, review rejection, validator result, or other abnormal outcome is
+**evidence about the current state**. It does not by itself prescribe a rewind,
+repair, or downstream route.
+
+Execution/orchestration may perform bounded mechanical recovery — retry, wait,
+timeout, fail — when that behavior is already established (see the retry policy
+above). When the outcome could change the selected responsibility, the expected
+solution, the scope, or the authority, control returns to the Sensemaking
+decision layer, which reassesses what responsibility is warranted now. That may
+be: retry or local repair; revise an upstream artifact; gather more evidence;
+reconcile conflicting artifacts; request an owner decision; or stop.
+
+```text
+failure          != rewind command
+review finding   != next responsibility
+test failure     != implementation-defect proof
+recommendation   != execution authority
+```
+
 ## Current ownership model
 
 | Question | Primary owner |
