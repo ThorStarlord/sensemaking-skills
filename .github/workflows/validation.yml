@@ -611,13 +611,20 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install pyyaml
+        run: pip install pyyaml pytest
 
       - name: Level 1 — Repository structural validation
         run: python scripts/validate-repo.py
 
       - name: Level 2/3 — Validator Verification Suite
         run: python scripts/test-validators.py
+
+      - name: Level 2/3b — External-repo evidence citation contract
+        run: >-
+          python -m pytest -q
+          tests/test_validate_brief_probe_report.py
+          tests/test_validate_brief_target_repo.py
+          tests/test_workflow_runtime_target_repo_validation.py
 
       - name: Level 4 — Run Log Validation & Failure Analysis
         run: |

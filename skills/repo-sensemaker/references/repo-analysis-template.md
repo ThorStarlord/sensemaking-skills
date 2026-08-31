@@ -103,12 +103,32 @@ indentation, and alter Markdown formatting (bold/backticks). Write a short
 placeholder for `quote` (e.g. `"see file/lines"`) rather than retyping the
 source text.
 
+**When you must supply a real `quote` yourself** (any invocation without the
+runtime's quote-extractor pass — standalone/conversational use), a multi-line
+span MUST be a YAML **literal block scalar** (`quote: |`) so newlines are
+preserved. A folded (`>`) or plain multi-line scalar collapses newlines to
+single spaces and will fail grounding against multi-line source. When in doubt,
+quote a single physical source line.
+
+**Local Probe Engine citations.** Cite a measured probe value with the exact
+logical name `file: probe-report.yaml` and a real `lines:` location in that
+report. On an external-repository run the report sits outside the target
+checkout (the runtime-owned `expected_probe_report_path`); the brief validator
+must be given that exact path via `--probe-report` for the citation to resolve
+(`validate-and-report.py` and the workflow runtime pass it automatically).
+That logical name binds to the one authorized report only — no other path may
+resolve outside `--target-repo`.
+
 ```yaml
 evidence_excerpts:
   - file: path/to/file.ext
     lines: L10-L15
     quote: "see file/lines"
     supports_claim: "..."
+  - file: probe-report.yaml            # resolves to --probe-report on external runs
+    lines: L24
+    quote: "  vg: 0.0"
+    supports_claim: "mechanical health is not the weak boundary"
 ```
 
 ## 9. Why this boundary matters

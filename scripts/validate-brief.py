@@ -23,6 +23,25 @@ MISSING_EVIDENCE_EXCERPTS = "MISSING_EVIDENCE_EXCERPTS"
 EVIDENCE_EXCERPT_FIELD = "EVIDENCE_EXCERPT_FIELD"
 HALLUCINATED_FILE = "HALLUCINATED_FILE"
 INVALID_LINE_FORMAT = "INVALID_LINE_FORMAT"
+
+# Explicit same-episode local-probe report authority (external-repo probe
+# citation contract). The producer contract (skills/repo-sensemaker/SKILL.md,
+# "Local Probe Engine") directs the probe report to the runtime-owned,
+# session-scoped `expected_probe_report_path`, which may legitimately sit
+# OUTSIDE the target repository (the target checkout must stay clean). On such
+# a run, evidence-citation resolution against citation_root alone misclassifies
+# the canonical Section-8 probe citation as HALLUCINATED_FILE.
+#
+# The fix is a SINGLE explicitly-authorized file, not a search: when
+# --probe-report PATH is supplied, the one canonical logical citation
+# `file: probe-report.yaml` binds deterministically to that exact path. Every
+# other `file:` value still resolves beneath citation_root only. There is no
+# heuristic discovery, no newest-file selection, no basename globbing, and no
+# other path may escape citation_root.
+PROBE_REPORT_LOGICAL_NAME = "probe-report.yaml"
+# --probe-report was supplied but names a path that does not exist -> fail
+# closed deterministically (no substitute report is ever searched for).
+PROBE_REPORT_NOT_FOUND = "PROBE_REPORT_NOT_FOUND"
 PARSING_ERROR = "PARSING_ERROR"
 MISSING_WORKFLOW_ID = "MISSING_WORKFLOW_ID"
 HALLUCINATED_WORKFLOW_ID = "HALLUCINATED_WORKFLOW_ID"
@@ -490,10 +509,31 @@ def _quote_found_near(file_path: str, lines_value: str, quote: str) -> QuoteGrou
     return QuoteGroundingResult(True, exact_range_match, ambiguous, matched_line, matched_lines, detail)
 
 
+def _resolve_citation_path(
+    file_path: str,
+    citation_root: str,
+    probe_report_path: str | None,
+) -> str:
+    """Resolve an evidence_excerpts `file:` value to an absolute/joinable path.
+
+    Every value resolves beneath ``citation_root`` EXCEPT the single canonical
+    logical probe-report name (``probe-report.yaml``), which -- only when an
+    explicit same-episode probe report path was authorized via --probe-report --
+    binds deterministically to that exact file. No other value can escape
+    ``citation_root``; there is no search, no glob, no newest-file selection.
+    When no probe authority is supplied, the logical name falls through to the
+    ordinary ``citation_root`` join (existing behavior; fails closed if absent).
+    """
+    if probe_report_path is not None and file_path == PROBE_REPORT_LOGICAL_NAME:
+        return probe_report_path
+    return os.path.join(citation_root, file_path)
+
+
 def validate_brief(
     artifact_path: str,
     repo_root: str = ".",
     target_repo: str | None = None,
+    probe_report: str | None = None,
 ) -> list[ValidationError]:
     """Validate a repository sensemaking brief and return structured errors.
 
@@ -504,6 +544,12 @@ def validate_brief(
         target_repo: Root of the repository the brief is ABOUT. Cited evidence
             files are resolved against this root when provided. Falls back to
             repo_root when not given (preserves single-repo behavior exactly).
+        probe_report: Explicit path to the same-episode local Probe Engine
+            report (the runtime-owned ``expected_probe_report_path``). When
+            given, the canonical Section-8 citation ``file: probe-report.yaml``
+            resolves to this exact file -- and only this file. Arbitrary paths
+            outside ``target_repo`` remain rejected. Supplying a non-existent
+            path fails closed (PROBE_REPORT_NOT_FOUND).
 
     Returns a list of ValidationError dicts. Empty list means validation passed.
     """
@@ -512,6 +558,23 @@ def validate_brief(
     # is about) when supplied; otherwise fall back to repo_root, preserving
     # existing single-repo/internal-proof behavior byte-for-byte.
     citation_root = target_repo if target_repo else repo_root
+
+    # Explicit same-episode probe-report authority. Two separate authorities:
+    # (1) target repository evidence -> citation_root; (2) exactly one
+    # authorized probe report -> this path. Supplied-but-missing fails closed
+    # unconditionally (deterministic), whether or not the brief cites it.
+    probe_report_path: str | None = None
+    if probe_report:
+        probe_report_path = os.path.abspath(probe_report)
+        if not os.path.isfile(probe_report_path):
+            errors.append(_code_error(
+                PROBE_REPORT_NOT_FOUND,
+                f"--probe-report was supplied ({probe_report}) but no file exists "
+                f"at {probe_report_path}. The explicit same-episode probe report "
+                "must exist; no substitute report is searched for.",
+                field="probe_report",
+            ))
+            probe_report_path = None
 
     if not os.path.exists(artifact_path):
         errors.append({
@@ -874,7 +937,7 @@ def validate_brief(
                     if file_path.startswith("file:///"):
                         errors.append(_code_error(HALLUCINATED_FILE, f"Excerpt[{i}] uses absolute file:/// path: {file_path}"))
                     else:
-                        full_path = os.path.join(citation_root, file_path)
+                        full_path = _resolve_citation_path(file_path, citation_root, probe_report_path)
                         if not os.path.exists(full_path):
                             errors.append(_code_error(HALLUCINATED_FILE, f"Excerpt[{i}] references non-existent file: {file_path}"))
 
@@ -900,7 +963,7 @@ def validate_brief(
                     and lines_valid
                     and quote
                 ):
-                    full_path = os.path.join(citation_root, file_path)
+                    full_path = _resolve_citation_path(file_path, citation_root, probe_report_path)
                     if os.path.exists(full_path):
                         result = _quote_found_near(full_path, str(lines), str(quote))
                         if not result.found:
@@ -1030,6 +1093,17 @@ def main(argv: list[str] | None = None) -> int:
             "resolved against this root when provided; falls back to --repo-root."
         ),
     )
+    parser.add_argument(
+        "--probe-report",
+        default=None,
+        help=(
+            "Path to the same-episode local Probe Engine report (the "
+            "runtime-owned expected_probe_report_path). When given, the "
+            "canonical Section-8 citation 'file: probe-report.yaml' resolves to "
+            "this exact file and only this file. Arbitrary paths outside "
+            "--target-repo remain rejected; a non-existent path fails closed."
+        ),
+    )
     parser.add_argument("--json", action="store_true", help="Output JSON format")
     parser.add_argument("--list-codes", action="store_true", help="List all error codes and exit")
     args = parser.parse_args(argv)
@@ -1041,6 +1115,7 @@ def main(argv: list[str] | None = None) -> int:
             MISSING_EVIDENCE_EXCERPTS,
             EVIDENCE_EXCERPT_FIELD,
             HALLUCINATED_FILE,
+            PROBE_REPORT_NOT_FOUND,
             INVALID_LINE_FORMAT,
             MISSING_WORKFLOW_ID,
             HALLUCINATED_WORKFLOW_ID,
@@ -1072,7 +1147,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_usage()
         return 1
 
-    errors = validate_brief(args.artifact_path, args.repo_root, args.target_repo)
+    errors = validate_brief(args.artifact_path, args.repo_root, args.target_repo, args.probe_report)
     blocking = [e for e in errors if _is_blocking(e)]
 
     if args.json:
