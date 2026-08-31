@@ -19,10 +19,28 @@
 - **Cost:** 18 min / 42 lines / 5 files for 0 decision change
 - **Benefit delta:** Narrower scope (whole-repo → subsystem) — useful nuance, but not decision-changing per `CONTEXT.md:146` warrant criteria
 
+## Replication #2 — structure subsystem (2026-08-30, spike-full-structure-graph.py)
+- Built: 38 lines, 27 nodes, 3 edges — `analyzer.py` (L2 diagnostics run_all_diagnostics), `bible_audit.py` cross-layer, `proposal_models.py` L2 plans
+- Files: 5, 15 min
+- Graph: structure analyzer is well-bounded L2 diagnostics with fail-closed rules (diagnostics.py); churn c996f84 is additive F3 thematic contribution, not systemic drift
+- Did FULL change decision? **No** — still architecture_fog → docs-aligner, narrowed to structure L2 proposal/diagnostic contract
+
+## Replication #3 — genre_pipeline subsystem (2026-08-30, spike-full-genre-pipeline-graph.py)
+- Built: 35 lines, 22 nodes, 3 edges — `runtime.py` orchestration, `identity.py` L1 compilation, `registry.py` L0 vocabularies
+- Files: 5, 14 min
+- Graph: cross-cutting orchestration per narrative-architecture.md ("Validation, orchestration... operate across layers"), correctly separated L0 registry vs runtime — no layer violation
+- Did FULL change decision? **No** — still architecture_fog → docs-aligner, narrowed to genre_pipeline orchestration boundary
+
+## Aggregate (3/3 replications)
+- Total FULL cost: 42+38+35 = 115 lines, 47 min, 15 files read
+- Total PARTIAL cost: ~5 min each (15 min)
+- Decision change: **0/3** (CONTEXT.md:321 hardening bar met for "conditional as default" — repeated useful responsibility with stable semantics but no decision change, so formal FULL schema not warranted)
+- All 3 show same pattern: FULL yields *narrower scope nuance*, not new workflow
+
 ## Conclusion for research program
-- For this slice, **PARTIAL sufficient** — building FULL did not reveal a new failure or change the workflow. This supports the conditional model (H1) on this repo, but as a *single spike* it does not generalize.
-- Repository full of `experiments/*` and `artifacts/*` is itself evidence: more briefs would not have revealed this; only building one FULL slice did.
-- If you repeated this on 2 more subsystems (e.g., `structure` vs `genre_pipeline`) and still got 0 decision change, you'd have durable evidence that detailed architecture is rarely warranted by default — exactly the hardening rule (`CONTEXT.md:321`).
+- **PARTIAL sufficient as default** — 3/3 replications support H1 with durable evidence. Building FULL is measurable but not warrant-changing for these subsystems.
+- Repository `experiments/*` sprawl confirmed: diagnosis loops saturated; constructive spikes were the only evidence that moved the question.
+- Do not promote FULL to formal schema/workflow; keep conditional + warrant gate per CONTEXT.md:146-159.
 
 ## Recommendation
-Do not promote FULL to formal schema/workflow yet. Keep conditional as default; next warranted spike (if any) is on a different subsystem to test if result replicates.
+Hardening met — document "conditional as default" in research agenda as warranted pattern, keep FULL deferred until a future spike shows decision change.
