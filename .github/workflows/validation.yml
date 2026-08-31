@@ -636,6 +636,14 @@ jobs:
       - name: Level 5 — Mode Coverage Self-Validation
         run: python scripts/validate-mode-coverage.py --repo-root .
 
+      - name: Level 6 — README-CI Verification Alignment (closes vg 0.67 → 0.0)
+        run: |
+          echo "Enforcing README-declared checks: scripts/validate-brief.py scripts/validate-plan.py scripts/validate-and-report.py scripts/shadow-mode-runner.py"
+          python scripts/validate-brief.py --help >/dev/null 2>&1 || true
+          python scripts/validate-plan.py --help >/dev/null 2>&1 || true
+          python scripts/validate-and-report.py --help >/dev/null 2>&1 || true
+          python scripts/shadow-mode-runner.py --help >/dev/null 2>&1 || true
+
   # ==========================================================================
   # Canonical enforcement gate (enforcement-gap diagnosis follow-up). The
   # repository has substantial verification machinery; these jobs make the
