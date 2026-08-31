@@ -359,6 +359,21 @@ STATUS_WORD_RE = re.compile(
 NOT_ACCEPTED_RE = re.compile(r"\bnot\s+(yet\s+)?(accepted|ratified|approved)\b", re.IGNORECASE)
 VALID_STATUSES = {"accepted", "proposed", "provisional", "superseded", "rejected"}
 
+# Advisory (non-blocking) stale-Accepted-ADR detection.
+# Semantic-control-map persistence trial (docs/semantic-control-map-trial.md):
+# surface -- never adjudicate -- the case where a newer ADR that is itself
+# Accepted refers to an older ADR whose own **Status** is still Accepted using
+# supersession language. Deciding whether the older ADR is *truly* superseded
+# needs semantic judgment, so the finding is requires_semantic_review=True and
+# is NOT in gate_relationship_findings.py's BLOCKING_FINDING_TYPES set.
+# Note the deliberate "superced" spelling: docs/adr/0013 line ~258 says
+# "now superceded by skill-led model" about ADR 0012.
+SUPERSESSION_CUE_RE = re.compile(
+    r"\b(supersed|superced|deprecat|replaced\s+by|no\s+longer|"
+    r"historical(?:\s*[,)—-]|\s+only|\s+proposal)|"
+    r"opposite\s+mechanism|de-?authoriz)", re.IGNORECASE)
+_ADR_SOURCE_RE = re.compile(r"^docs/adr/(\d{2,4})-")
+
 
 def _raw_status_text(text: str) -> Optional[str]:
     """Status value from **Status**: / **Status:** / ## Status block forms."""
@@ -455,6 +470,76 @@ def _adr_references(repo_root: Path, docs: List[Dict[str, str]]) -> List[Dict[st
                     "evidence": raw_line.strip()[:200],
                 })
     return sorted(refs, key=lambda r: (r["source"], r["location"]))
+
+
+def _stale_accepted_adr_findings(
+        refs: List[Dict[str, object]],
+        catalog: List[Dict[str, object]]) -> List[Dict[str, object]]:
+    """Advisory: a newer Accepted ADR uses supersession language about an older
+    ADR whose own **Status** is still Accepted.
+
+    Mechanical trigger only. Whether the older ADR is genuinely superseded (its
+    status line should change) or the newer ADR overstates the case is left to
+    the model: requires_semantic_review=True, never blocking (see
+    scripts/gate_relationship_findings.py). Introduced for the
+    semantic-control-map persistence trial.
+    """
+    status_by_id: Dict[str, Optional[str]] = {}
+    for entry in catalog:
+        # if an id is duplicated, treat it as accepted only if every entry is
+        status_by_id.setdefault(str(entry["id"]), entry["status"])
+        if entry["status"] != "accepted":
+            status_by_id[str(entry["id"])] = entry["status"]
+
+    findings: List[Dict[str, object]] = []
+    seen: set = set()
+    for ref in refs:
+        src_match = _ADR_SOURCE_RE.match(str(ref["source"]))
+        if not src_match:
+            continue
+        referencing_id = src_match.group(1)
+        referenced_id = str(ref["id"])
+        if referenced_id == referencing_id:
+            continue
+        # referencing ADR must itself be Accepted, and newer (higher id)
+        if status_by_id.get(referencing_id) != "accepted":
+            continue
+        if referenced_id.isdigit() and referencing_id.isdigit() \
+                and int(referencing_id) <= int(referenced_id):
+            continue
+        # referenced ADR's own status must still be Accepted
+        if status_by_id.get(referenced_id) != "accepted":
+            continue
+        evidence_line = str(ref["evidence"])
+        if not SUPERSESSION_CUE_RE.search(evidence_line):
+            continue
+        key = (referencing_id, referenced_id, ref["location"])
+        if key in seen:
+            continue
+        seen.add(key)
+        findings.append({
+            "concept": "adr_status",
+            "finding_type": "stale_accepted_adr_candidate",
+            "observations": [{
+                "source": ref["source"],
+                "location": ref["location"],
+                "value": referenced_id,
+                "evidence": evidence_line[:200],
+                "source_kind": "contract",
+                "claim_class": "status_claim",
+            }],
+            "confidence": "medium",
+            "requires_semantic_review": True,
+            "notes": (
+                f"ADR {referencing_id} (itself Accepted) uses supersession "
+                f"language about ADR {referenced_id}, whose own **Status** is "
+                f"still Accepted. Candidate inconsistency only: the model must "
+                f"decide whether ADR {referenced_id}'s status line is stale or "
+                f"ADR {referencing_id} overstates the supersession. Advisory / "
+                f"non-blocking."
+            ),
+        })
+    return findings
 
 
 def _adr_findings(refs: List[Dict[str, object]],
@@ -576,6 +661,8 @@ def _adr_findings(refs: List[Dict[str, object]],
                     "notes": "docs/adr/README.md defines the **Status** convention; "
                             "no script validates it today.",
                 })
+
+    findings.extend(_stale_accepted_adr_findings(refs, catalog))
     return findings
 
 
