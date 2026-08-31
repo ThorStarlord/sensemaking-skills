@@ -322,3 +322,7 @@ Near-term priorities are:
 The most important next question is therefore not whether another refinement can
 be imagined, but whether the next consequential uncertainty requires a stronger
 class of evidence.
+
+## Meta-finding 2026-08-30: sensemaking loops saturated (Product Hypothesis B hardening)
+
+Further sensemaking loops saturated; next evidence requires constructive spikes, not briefs. Dozens of `repo-sensemaker` runs and a full `experiments/product-hypothesis-b/` artifact sprawl (296 docs/109 historical in `auteur`) no longer changed the warranted responsibility. Three throwaway FULL spikes on `auteur` (`author_decisions` 42 lines/18 min, `structure` 38 lines/15 min, `genre_pipeline` 35 lines/14 min — total 115 lines/47 min) each yielded **0/3 decision change** vs PARTIAL (all `architecture_fog → docs-aligner`, only narrowed scope), meeting `CONTEXT.md:321` hardening for "conditional as default, FULL deferred." Future agents should not re-run sensemaking diagnosis to test this claim; replicate or falsify with a constructive FULL spike that shows a decision change, or stop.
