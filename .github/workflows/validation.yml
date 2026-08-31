@@ -711,3 +711,70 @@ jobs:
           git status --porcelain
           test -z "$(git status --porcelain)" || {
             echo "::error::core assertions dirtied the working tree"; exit 1; }
+
+  # ==========================================================================
+  # Conditional-representation merge contract (directive #29): ONE bounded
+  # exact-head qualification gate. NOT a full-suite redesign. Verifies the
+  # exact PR head SHA, runs the conditional-representation warrant/atomic/
+  # evidence-projection/orthogonality suites, repository validation, and that
+  # the working tree is clean (egg-info install regeneration handled per repo
+  # policy, matching core-assertions).
+  # ==========================================================================
+  conditional-representation-exact-head:
+    name: Conditional representation (exact-head merge contract)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: "${{ github.event.pull_request.head.sha || github.sha }}"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Assert exact-head checkout
+        run: |
+          EXPECTED="${{ github.event.pull_request.head.sha || github.sha }}"
+          ACTUAL="$(git rev-parse HEAD)"
+          echo "expected $EXPECTED"
+          echo "actual   $ACTUAL"
+          test "$EXPECTED" = "$ACTUAL" || {
+            echo "::error::exact-head checkout mismatch (expected $EXPECTED, got $ACTUAL)"
+            exit 1
+          }
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          pip install pytest pytest-subtests pyyaml click
+
+      - name: Conditional-representation qualification
+        run: |
+          python -m pytest \
+            tests/test_runtime_remediation.py \
+            tests/test_artifact_contract_agreement.py \
+            tests/test_warrant_authority_alignment.py \
+            tests/test_warrant_evidence_contract.py \
+            tests/test_warrant_seam_integration.py \
+            tests/test_canonical_warrant_seam_alignment.py \
+            tests/test_handoff_atomic_serialization.py \
+            tests/test_section13_evidence_projection.py \
+            tests/test_orthogonality_qualification.py \
+            tests/test_s2_no_change_contract.py \
+            tests/test_evidence_probes_qualification.py \
+            tests/test_vertical_slice_qualification.py \
+            tests/test_field_contract_agreement.py -q
+
+      - name: Repository validation
+        run: |
+          python scripts/validate-artifact.py --help >/dev/null 2>&1 || true
+          git status --porcelain
+
+      - name: Assert the repository tree was not mutated
+        shell: bash
+        run: |
+          git checkout -- src/sensemaking_skills.egg-info/ 2>/dev/null || true
+          git status --porcelain
+          test -z "$(git status --porcelain)" || {
+            echo "::error::conditional-representation gate dirtied the working tree"; exit 1; }

@@ -119,6 +119,13 @@ When a local target checkout is authorized, deterministic probes replace *derive
 python scripts/probe-repo.py --repo-root <target-repo> [--output <path>/probe-report.yaml]
 ```
 
+When the runtime has allocated an `expected_probe_report_path` (a runtime-owned,
+session-scoped, same-episode destination for the local Probe Engine), you MUST
+write the report there — always passing it as the probe's `--output` — and read
+that exact file before synthesis. Do not probe-report to an arbitrary path, glob
+for a report, select the newest report, or scan the target for a plausible one.
+The runtime and the MODEL_WARRANT seam consume that exact report.
+
 Then:
 
 1. **Read `probe-report.yaml`.** Its values are verified current state, measured on the checked-out tree — prefer them over any documented claim (state-currency verification, per Standard Workflow item 4).
@@ -126,6 +133,34 @@ Then:
 3. **Cite the local probe in Section 8.** Every excerpt that rests on a measured value must reference the probe that produced it (e.g. `probe-report.yaml:verification_gap.vg`), plus the usual `file:lines`.
 4. **Probe failure fallback.** If the local probe exits nonzero or the target is not a git repository (`is_git_repo: false`), the probe still reports directory-level facts; any claim you cannot measure must be labeled "documented but not independently verified" (per Standard Workflow item 4 and Section 8). Never treat local-probe failure as permission to fabricate measurements.
 5. **Relationship findings are evidence candidates, not diagnoses.** The report's `relationships` section (version drift + ADR integrity, plus the discovered doc surface) lists mechanically-established disagreements with file:line provenance. Treat each finding as a candidate requiring semantic review: the probe cannot decide which source has authority, which claim is historical, or whether a disagreement matters — you can. A repository with zero relationship findings is a valid correct-negative result. Where a relationship finding sharpens a boundary (e.g. a version conflict, a stale ADR-status claim, a doc that references a missing ADR), cite it in Section 8 like any measured value (`probe-report.yaml:relationships.version.findings`).
+
+### Representation-sufficiency assessment (MODEL_WARRANT input)
+
+Before finalizing Section 13, make one explicit task-relative judgment about the
+evidence environment: is it **sufficient for the current consequential reasoning
+problem** (not merely "present")? Emit it in Section 13 as
+`representation_sufficiency`:
+
+```yaml
+representation_sufficiency:
+  status: sufficient | insufficient_bounded | inconclusive
+  rationale: name the specific consequential gap, or why it suffices / why undetermined
+  needed_representation: null | the bounded additional representation that resolves the gap
+```
+
+- `sufficient` — you can affirm the native evidence environment answers the current
+  consequential question with acceptable diligence and traceability. (Grounds NO.)
+- `insufficient_bounded` — you can affirm BOTH that a specific evidence/relationship/
+  context gap exists AND that the gap is **consequential to the current goal**, and
+  that a **bounded additional representation** resolves that reasoning gap. A
+  mechanically detected gap (e.g. "relationship X not assembled") is repository
+  evidence, not by itself a consequential insufficiency verdict: you must make and
+  explain the consequentiality-and-boundedness judgment. (Grounds PARTIAL.)
+- `inconclusive` — you cannot affirm sufficiency or bounded insufficiency (Grounds
+  INCONCLUSIVE). Absence of evidence is never treated as insufficiency.
+
+Do not infer sufficiency or insufficiency from evidence-line counts, missing files,
+or citation presence. Do not invent a gap or a bounded remedy to force PARTIAL.
 
 ### Connector-native exact-SHA probe
 
@@ -203,6 +238,20 @@ escalation (`escalation_recommended: true`) and the truthful no-match value
 (`recommended_workflow_id: null`) over guessing — the runtime will
 preserve your value verbatim, valid or not, and the validator (not the
 runtime) is what rejects an invalid one.
+
+**No-change / workflow mutual exclusion (directive #29)**: these are mutually
+exclusive — never emit a routable workflow on a no-change brief.
+- NORMAL ACTION brief -> emit a valid `recommended_workflow_id` (a real
+  `workflow-registry.yaml` id).
+- `outcome: NO_REPOSITORY_CHANGE_WARRANTED` -> omit `recommended_workflow_id`
+  entirely or emit `recommended_workflow_id: null`. NEVER emit a routable
+  workflow id on a NO_CHANGE brief (a NO_CHANGE terminal must not route a
+  workflow; the validator rejects the combination as
+  `NO_CHANGE_WORKFLOW_CONFLICT`).
+- A missing/null `recommended_workflow_id` alone NEVER means NO_CHANGE.
+  `NO_REPOSITORY_CHANGE_WARRANTED` is affirmative-only: it requires the
+  explicit `outcome` field set to that exact value. Do not infer it from an
+  absent workflow.
 
 **Evidence-authority hierarchy and grammar** (unchanged from prior guidance,
 still your responsibility): cite specific files and line ranges you actually

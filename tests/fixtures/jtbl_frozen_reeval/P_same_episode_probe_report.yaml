@@ -1,0 +1,71 @@
+schema_version: 1
+probe_tool: sensemaking-skills probe-repo v1
+generated_at: '2026-08-29T22:11:39Z'
+repo_root: C:\Users\Admin\AppData\Local\Temp\reasonix-session-tmp-1327267141\jtbl-frozen-0018aadd
+git_state:
+  is_git_repo: true
+  branch: null
+  head_sha: 0018aad
+  head_message: readme update
+  tracked_file_count: 23
+  untracked_file_count: 0
+  ignored_present_entry_count: 0
+  ignored_status_measured: true
+  dirty_file_count: 0
+verification_gap:
+  declared_checks: []
+  enforced_checks: []
+  declared_in_ci: []
+  vg: 0.0
+  notes: no declared verification entrypoints found in README
+context_entropy:
+  tracked_volume: 23
+  untracked_volume: 0
+  ignored_present_volume: 0
+  ce: 0.0
+  notes: untracked+ignored (0) / tracked (23)
+test_collection:
+  test_file_count: 2
+  test_case_count: null
+  pytest_config_present: true
+  markers_declared: ''
+fixtures_coverage:
+  total_validators: 0
+  covered_validators: 0
+  missing_fixtures: []
+  coverage: 0.0
+  valid_only: []
+  excluded_by_convention: []
+churn:
+  commits_scanned: 50
+  changed_files_last_n: 12
+  top_changed_files:
+  - jtbl/cli.py
+  - CHANGELOG
+  - README.md
+  - man/jtbl.1
+  - setup.py
+relationships:
+  doc_surface:
+    total: 1
+    live: 1
+    by_class:
+      live: 1
+  version:
+    declarations: 1
+    subpackage_declarations: 0
+    claims: 102
+    distinct_values:
+    - 1.6.0
+    findings: []
+  adr:
+    files: 0
+    catalog: []
+    references: 0
+    findings: []
+skill_distribution:
+  canonical_skills_root: H:\GithubRepositories\sensemaking-skills\skills
+  checked: []
+  drifted: []
+  findings: []
+  notes: ''

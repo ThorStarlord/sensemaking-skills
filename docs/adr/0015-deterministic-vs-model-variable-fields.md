@@ -152,3 +152,61 @@ field must be classified at proposal time" process commitment — it was
 classified (as controlled-vocabulary deterministic, per D3) at the point of
 proposal, before implementation, which is exactly what this ADR's
 Consequences section committed to.
+
+
+---
+
+## 2026-08-29 addendum (owner-ratified): representation_sufficiency as primary MODEL_WARRANT authority
+
+Owner decision recorded in `experiments/product-hypothesis-b/PRODUCT_HYPOTHESIS_B_EXPERIMENT.md`
+(sections 67-72, directives #25-#28). This addendum canonically ratifies the final
+field classification and warrant-authority semantics. Historical experiment records
+remain append-only and are not rewritten (the jtbl final dogfood stays SAFE_INCONCLUSIVE).
+
+### Decision
+
+`representation_sufficiency` is the PRIMARY, task-relative MODEL_WARRANT authority on
+the Repository Sensemaking Brief. It is a controlled model-authored semantic field
+(a new instance of the controlled-vocabulary/model-judgment class, alongside
+`weakness_type`/`outcome`): the producer supplies the reasoning-episode judgment, the
+runtime maps it deterministically, the validator is the acceptance authority. It is an
+additive, optional field: absent/invalid fails closed (INCONCLUSIVE), so no
+schema_version bump is required merely for its addition.
+
+Authoritative mapping (single canonical judge):
+- `sufficient` -> NO
+- `insufficient_bounded` (contract-valid: rationale names a consequential gap AND
+  non-empty `needed_representation`) -> PARTIAL
+- `inconclusive` -> INCONCLUSIVE
+- missing / malformed / contract-invalid -> INCONCLUSIVE (fail closed)
+- FULL remains deferred and is never inferred.
+
+Mechanical probes (behavioral_flow_unassembled, provenance_scattered,
+existing_artifact_self_derived) are diagnostic/supporting evidence to the assessment,
+NOT independent MODEL_WARRANT vetoes. `fresh_comprehension_needed` does NOT gate
+production warrant. `minimum_subset_suffices` is subsumed by the
+`insufficient_bounded` + `needed_representation` contract. Absence of evidence is never
+treated as insufficiency (no absent->FALSE).
+
+### Related ratified canonical points
+
+- Section 8 `evidence_excerpts` is the structured evidence authority for the
+  deterministic Section-13 `evidence` projection (fail-closed).
+- Section 13 is ONE atomic runtime-serialized YAML mapping (no field-by-field splice).
+- MODEL_WARRANT and REPOSITORY_ACTION_OUTCOME are ORTHOGONAL; NO_CHANGE is
+  affirmative-only; INCONCLUSIVE gates before representation materialization, action
+  routing, and NO_CHANGE terminalization (STOPPED_WITHOUT_ACTION / MODEL_WARRANT_INCONCLUSIVE).
+- The local Probe Engine uses the runtime/session-owned same-episode
+  `expected_probe_report_path` when that contract is available (no heuristic discovery).
+- The runtime warrant seam must consume the newly validated brief (producer ->
+  reconciliation -> validation -> MODEL_WARRANT evaluation), never a stale/nonexistent one.
+- The warrant target_revision is the exact target-checkout revision (git -C <target>
+  rev-parse HEAD), not a framework branch name; it fails closed when not establishable.
+
+### Evidence
+
+187-test candidate qualification (warrant/atomic/evidence-projection/probe/orthogonality/
+validator/runtime suites), the jtbl SAFE_INCONCLUSIVE external agent-mediated observation,
+and the frozen jtbl P+C re-evaluation to NO under these semantics (regression, not a
+historical rewrite). See ADR 0013 (agent-native orchestration primary) for the execution/CLI
+claim boundary.

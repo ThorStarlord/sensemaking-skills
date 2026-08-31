@@ -41,6 +41,7 @@ into the actual invocation.
 from __future__ import annotations
 
 import re
+import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
@@ -481,6 +482,140 @@ def _extract_model_sections(text: str) -> dict[str, str]:
     return found
 
 
+# Runtime-default required_inputs shipped by the skeleton when the model does
+# not supply its own non-empty list.
+_DEFAULT_REQUIRED_INPUTS = ["user_intent", "repository_state"]
+
+# Model-authored scalar/bool machine fields, copied verbatim (invalid values
+# are preserved unchanged for the validator to reject; runtime never repairs).
+_MODEL_SCALAR_MACHINE_FIELDS = (
+    "user_implied_fog_type",
+    "primary_fog_type",
+    "diagnosis_conflict",
+    "escalation_recommended",
+    "recommended_workflow_id",
+    "recommended_execution_mode",
+    "weakest_boundary",
+    "weakness_type",
+    "weakness_type_explanation",
+    "outcome",  # optional explicit repository-action outcome (PHB §29)
+)
+
+
+def _project_evidence_strings(excerpts: list) -> list[str]:
+    """Deterministically render Section-13 `evidence` strings from Section-8
+    evidence_excerpts: ``<file> (lines <lines>): <supports_claim>``.
+
+    Fail-closed: incomplete/missing excerpts are skipped; empty => [] (the
+    validator still rejects). This is serialization of existing model-owned
+    evidence, not inference.
+    """
+    projected = []
+    for ex in excerpts:
+        file = ex.get("file")
+        lines = ex.get("lines")
+        claim = ex.get("supports_claim")
+        if not file or not claim:
+            continue
+        line_suffix = f" (lines {lines})" if lines else ""
+        projected.append(f"{file}{line_suffix}: {claim}")
+    return projected
+
+
+def _render_machine_block(harvested: dict, excerpts: list, ctx) -> str:
+    """Build the authoritative Section-13 machine YAML mapping ONCE and
+    serialize it exactly once (one structured mapping -> one yaml.dump).
+
+    Section 13 is an atomic deterministic serialization boundary: runtime-owned
+    fields come from the envelope and are never overwritten; model-authored
+    fields are copied verbatim (semantic judgment stays the model's; the
+    validator is the acceptance authority); required_inputs is a runtime
+    default with a non-empty model override; outcome is preserved; evidence is
+    deterministically derived from Section-8 excerpts (fail-closed).
+
+    Because the result is a single Python mapping (which by construction has
+    unique keys), field-level regex splicing that could introduce duplicate
+    YAML keys is gone -- a duplicate key is structurally impossible here.
+    """
+    machine = {
+        "artifact_id": ARTIFACT_ID,
+        "schema_version": SCHEMA_VERSION,
+        "source_intent_ref": ctx.source_intent_ref,
+    }
+    if isinstance(harvested, dict):
+        for key in _MODEL_SCALAR_MACHINE_FIELDS:
+            if key in harvested:
+                machine[key] = harvested[key]
+        # Ruling 2 (directive #23): the producer-authored task-relative
+        # representation-sufficiency assessment is a machine block dict field,
+        # carried verbatim to the warrant seam (model supplies the semantic
+        # judgment; runtime maps it deterministically; fail-closed upstream).
+        rs = harvested.get("representation_sufficiency")
+        if isinstance(rs, dict):
+            machine["representation_sufficiency"] = rs
+        # required_inputs: runtime default, non-empty model list overrides.
+        ri = harvested.get("required_inputs")
+        if isinstance(ri, list) and ri:
+            machine["required_inputs"] = ri
+        else:
+            machine["required_inputs"] = list(_DEFAULT_REQUIRED_INPUTS)
+        evidence = _project_evidence_strings(excerpts)
+        if not evidence:
+            # No excerpt-derived evidence. Backward-compatible fallback: if the
+            # model supplied its own non-empty Section-13 evidence list, preserve
+            # it verbatim (legacy fixtures/direct model-authoring path). This is
+            # NOT the authoritative projection path -- the minute Section-8
+            # excerpts exist, the derived list wins. Empty => fail closed.
+            me = harvested.get("evidence")
+            if isinstance(me, list) and me:
+                evidence = [_QuotedStr(v) if isinstance(v, str) else v for v in me]
+    else:
+        machine["required_inputs"] = list(_DEFAULT_REQUIRED_INPUTS)
+        evidence = []
+    # Evidence is derived (from excerpts) when available, else model-authored,
+    # else empty (validator rejects).
+    machine["evidence"] = [_QuotedStr(e) if isinstance(e, str) else e for e in evidence] if evidence else []
+
+    machine["created_at"] = _ForceDoubleQuoted(ctx.created_at)
+    machine["immutable"] = True
+
+    return yaml.dump(
+        machine,
+        Dumper=_EvidenceExcerptDumper,
+        sort_keys=False,
+        allow_unicode=True,
+        default_flow_style=False,
+        width=1_000_000,
+    ).rstrip("\n")
+
+
+class _ForceDoubleQuoted(str):
+    """Marker: emit this scalar with explicit double quotes (preserves the
+    skeleton's canonical `created_at: "..."` presentation through the atomic
+    serializer)."""
+
+
+def _force_double_quoted_representer(dumper, data):
+    return dumper.represent_scalar("tag:yaml.org,2002:str", str(data), style='"')
+
+
+_EvidenceExcerptDumper.add_representer(_ForceDoubleQuoted, _force_double_quoted_representer)
+
+
+def _replace_section13_block(artifact_text: str, machine_block: str) -> str:
+    """Replace exactly one Section-13 authoritative YAML block with the atomic
+    machine_block (everything between the ```yaml fence markers under the
+    Section-13 heading). Returns the text unmodified if the canonical location
+    is not found."""
+    pattern = re.compile(
+        r"(## 13\. Machine-readable handoff\s*\n\n```yaml\n).*?(\n```)",
+        re.DOTALL,
+    )
+    out, n = pattern.subn(lambda _m: _m.group(1) + machine_block + _m.group(2),
+                          artifact_text, count=1)
+    return out
+
+
 def reconcile(
     model_output_text: str,
     ctx: SkeletonContext | None = None,
@@ -519,77 +654,21 @@ def reconcile(
 
     out = skeleton
 
-    # Merge constrained YAML fields (verbatim, no validity rewriting).
-    for key in MODEL_YAML_FIELDS:
-        if key not in harvested_yaml:
-            continue
-        value = harvested_yaml[key]
-        if key == "evidence":
-            # Issue: this used to build the YAML line by hand
-            # (f'  - "{v}"') and simply wrapped whatever verbatim string
-            # the model/harvest step produced in a fresh pair of double
-            # quotes. Any embedded, unescaped double quote in that string
-            # (e.g. `__version__ = "0.35.0"`) then produced a syntactically
-            # invalid YAML document -- Evidence 0014's
-            # HANDOFF_YAML_PARSE_ERROR. The runtime, not the model, owns
-            # serialization: build the value as structured data and hand
-            # it to a real YAML dumper so every escaping rule (quotes,
-            # colons, `#`, backslashes, Unicode, control characters, ...)
-            # is handled by pyyaml rather than reimplemented ad hoc here.
-            if isinstance(value, list) and value:
-                block = yaml.dump(
-                    {"evidence": [_QuotedStr(v) if isinstance(v, str) else v for v in value]},
-                    Dumper=_EvidenceExcerptDumper,
-                    sort_keys=False,
-                    allow_unicode=True,
-                    default_flow_style=False,
-                    # See reconcile_evidence_excerpt_quotes' width= comment:
-                    # without this, embedded newlines fold to a space on
-                    # the next parse.
-                    width=1_000_000,
-                ).rstrip("\n")
-            else:
-                continue
-            # A lambda replacement, not a plain string, is required here:
-            # re.sub() treats a *string* repl specially and resolves its
-            # own backslash escapes (\n, \t, \g<...>, ...) before
-            # substitution -- so a literal backslash-n produced by yaml.dump
-            # to represent an escaped newline INSIDE a double-quoted YAML
-            # scalar would silently be re-interpreted by re.sub as an
-            # actual newline character, corrupting the very escaping this
-            # function exists to get right. A callable repl is inserted
-            # verbatim with no backslash processing.
-            out = re.sub(r"evidence: \[\].*", lambda _m, b=block: b, out)
-        elif key == "required_inputs":
-            # Runtime already ships a safe default (user_intent,
-            # repository_state); only override if the model gave a
-            # non-empty list, preserved verbatim. Same YAML-safe
-            # serialization boundary as `evidence` above -- a model-
-            # supplied required_inputs value is still an arbitrary string
-            # and must not be spliced in via string interpolation.
-            if isinstance(value, list) and value:
-                block = yaml.dump(
-                    {"required_inputs": [_QuotedStr(v) if isinstance(v, str) else v for v in value]},
-                    Dumper=_EvidenceExcerptDumper,
-                    sort_keys=False,
-                    allow_unicode=True,
-                    default_flow_style=False,
-                    # See reconcile_evidence_excerpt_quotes' width= comment:
-                    # without this, embedded newlines fold to a space on
-                    # the next parse.
-                    width=1_000_000,
-                ).rstrip("\n")
-                # See the `evidence` branch above: repl must be a callable,
-                # not a string, or re.sub reinterprets backslash escapes
-                # (e.g. an escaped "\n" inside a double-quoted YAML scalar)
-                # and corrupts them.
-                replacement = block + "\n"
-                out = re.sub(
-                    r"required_inputs:\n(?:  - .*\n)*", lambda _m, r=replacement: r, out
-                )
-        else:
-            placeholder_re = re.compile(rf"^{re.escape(key)}:.*$", re.MULTILINE)
-            out = placeholder_re.sub(f"{key}: {value}", out, count=1)
+    # ATOMIC Section-13 machine block (PHB §56). Replace the per-field regex
+    # splice with ONE deterministic serialization boundary: runtime-owned fields
+    # + harvested model-authored fields + derived evidence + defaulted
+    # required_inputs are assembled into a SINGLE mapping and serialized exactly
+    # once via yaml.dump. A plain Python dict has unique keys by construction,
+    # so field-level splicing that could create duplicate YAML keys (the fresh
+    # editor-I/O RECONCILIATION_DEFECT) is structurally impossible.
+    # Model-authored values are preserved verbatim (invalid values reach the
+    # validator unchanged, never repaired). Evidence is derived from Section-8
+    # excerpts at the end via _project_section13_evidence-equivalent logic and
+    # is NOT independently model-authored. required_inputs keeps its runtime
+    # default + non-empty model override. outcome (optional) is preserved.
+    excerpts = _parse_evidence_excerpts(model_output_text)
+    machine_block = _render_machine_block(harvested_yaml, excerpts, ctx)
+    out = _replace_section13_block(out, machine_block)
 
     # Merge prose sections.
     for section_id, _heading in MODEL_SECTIONS:
@@ -630,7 +709,99 @@ def reconcile(
         end = _marker("extended_analysis", "END")
         out = out.replace(f"{begin}\n\n{end}", f"{begin}\n\n{content}\n\n{end}")
 
+    # The Section-13 evidence projection is now folded into the ATOMIC machine
+    # block built by _render_machine_block (PHB §56): Section 8 validated
+    # evidence_excerpts are deterministically serialized into Section-13
+    # evidence (fail-closed; empty => []). No post-hoc regex block splice runs
+    # here, so the fresh editor-I/O duplicate-key defect cannot recur.
     return out
+
+
+def _project_section13_evidence(artifact_text: str) -> str:
+    """Deterministically render the Section-13 machine `evidence:` list from the
+    validated Section-8 `evidence_excerpts`.
+
+    Each excerpt supplies file + lines + supports_claim; the runtime formats
+    ``<file> (lines <lines>): <supports_claim>``. This is a serialization of
+    existing model-owned evidence -- it MUST NOT invent a file/line/claim, infer
+    from prose, or fill when no excerpts exist. Empty excerpts => `evidence: []`,
+    which the validator correctly rejects.
+
+    Returns the artifact text with the Section-13 `evidence` field rewritten in
+    place (final brief schema for that field is preserved: a list of strings).
+    """
+    excerpts = _parse_evidence_excerpts(artifact_text)
+
+    projected = []
+    for ex in excerpts:
+        file = ex.get("file")
+        lines = ex.get("lines")
+        claim = ex.get("supports_claim")
+        if not file or not claim:
+            continue  # model supplied an incomplete excerpt; skip projection
+        line_suffix = f" (lines {lines})" if lines else ""
+        projected.append(f"{file}{line_suffix}: {claim}")
+
+    # Build the machine `evidence:` value with the existing YAML-safe dumper so
+    # every escaping rule is handled deterministically (mirrors reconcile's own
+    # evidence serialization: _QuotedStr + _EvidenceExcerptDumper + width cap).
+    if projected:
+        block = yaml.dump(
+            {"evidence": [_QuotedStr(str(v)) for v in projected]},
+            Dumper=_EvidenceExcerptDumper,
+            sort_keys=False,
+            allow_unicode=True,
+            default_flow_style=False,
+            width=1_000_000,
+        ).rstrip("\n")
+    else:
+        block = "evidence: []"
+
+    # Replace the FULL Section-13 evidence mapping: the `evidence:` line plus any
+    # subsequent indented block (list items / continuation lines), terminating
+    # before the next non-indented line (the next machine key). We KEEP the
+    # newline that precedes the next key so the machine block stays well-formed.
+    def _repl(m):
+        # m.group(0) is the whole evidence block; we replace it, keeping the
+        # newline that originally followed (so the next key starts on its own line).
+        return m.group(1) + block + m.group(2)
+
+    pattern = re.compile(
+        r"(?m)^(\s*)evidence:.*(?:\n[ \t]+[^\n]*)*(?=(\n[ \t]*(?:user_implied_fog_type|primary_fog_type|diagnosis_conflict|escalation_recommended|recommended_workflow_id|recommended_execution_mode|weakest_boundary|weakness_type|required_inputs|created_at|immutable):))"
+    )
+    out, n = pattern.subn(_repl, artifact_text, count=1)
+    if n == 0:
+        # No machine `evidence:` block matched; leave the artifact unchanged.
+        return artifact_text
+    return out
+
+
+def _parse_evidence_excerpts(artifact_text: str) -> list[dict]:
+    """Extract the model-supplied evidence_excerpts (file/lines/supports_claim)
+    from the Section 8 YAML block. Pure parse; returns [] if none/empty."""
+    m = re.search(r"## 8\. Evidence excerpts(.*?)(?=## 9\.)", artifact_text, re.DOTALL | re.IGNORECASE)
+    if not m:
+        return []
+    block = m.group(1)
+    fence = re.search(r"```yaml\s*(.*?)\s*```", block, re.DOTALL)
+    if not fence:
+        return []
+    try:
+        data = yaml.safe_load(fence.group(1))
+    except Exception:
+        return []
+    if not isinstance(data, dict) or not isinstance(data.get("evidence_excerpts"), list):
+        return []
+    result = []
+    for item in data["evidence_excerpts"]:
+        if not isinstance(item, dict):
+            continue
+        result.append({
+            "file": item.get("file"),
+            "lines": item.get("lines"),
+            "supports_claim": item.get("supports_claim"),
+        })
+    return result
 
 
 def skeleton_integrity_ok(text: str) -> bool:

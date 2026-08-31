@@ -26,6 +26,10 @@ INVALID_LINE_FORMAT = "INVALID_LINE_FORMAT"
 PARSING_ERROR = "PARSING_ERROR"
 MISSING_WORKFLOW_ID = "MISSING_WORKFLOW_ID"
 HALLUCINATED_WORKFLOW_ID = "HALLUCINATED_WORKFLOW_ID"
+# Directive #29: an explicit NO_REPOSITORY_CHANGE_WARRANTED outcome is
+# affirmative-only and MUST NOT be combined with a non-null routable
+# recommended_workflow_id (a NO_CHANGE terminal must never route a workflow).
+NO_CHANGE_WORKFLOW_CONFLICT = "NO_CHANGE_WORKFLOW_CONFLICT"
 MISSING_HANDOFF_BLOCK = "MISSING_HANDOFF_BLOCK"
 REGISTRY_NOT_FOUND = "REGISTRY_NOT_FOUND"
 NO_LOGIC_TRACE = "NO_LOGIC_TRACE"
@@ -44,6 +48,27 @@ WEAKNESS_TYPE_UNKNOWN = "WEAKNESS_TYPE_UNKNOWN"
 WEAKNESS_TYPE_OTHER_NO_EXPLANATION = "WEAKNESS_TYPE_OTHER_NO_EXPLANATION"
 WEAKNESS_TYPE_MALFORMED = "WEAKNESS_TYPE_MALFORMED"
 WEAKNESS_TYPE_PROSE_MISMATCH = "WEAKNESS_TYPE_PROSE_MISMATCH"
+
+# First-class terminal-success outcome (ratified product direction / PHB §29).
+# When a brief's explicit `outcome` is NO_REPOSITORY_CHANGE_WARRANTED, the brief
+# is a VALID terminal success and `recommended_workflow_id` is
+# NOT_APPLICABLE / may be absent. It MUST NOT be inferred from a missing
+# workflow id; it must be an explicit outcome. (Intentional contract evolution.)
+NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME = "NO_REPOSITORY_CHANGE_WARRANTED"
+
+
+def _is_no_change_outcome(artifact_data) -> bool:
+    """True iff the brief explicitly declares the NO_CHANGE terminal outcome.
+
+    Keyed strictly on the explicit outcome field (never on a missing workflow).
+    """
+    try:
+        return (
+            isinstance(artifact_data, dict)
+            and artifact_data.get("outcome") == NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME
+        )
+    except Exception:
+        return False
 HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT = "HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT"
 
 # Deterministic evidence-quote grounding (issue #80).
@@ -590,8 +615,22 @@ def validate_brief(
                 })
 
         # Check recommended_workflow_id
+        no_change_outcome = _is_no_change_outcome(artifact_data)
+        # Directive #29 (NO_CHANGE/workflow mutual exclusion): an explicit
+        # NO_REPOSITORY_CHANGE_WARRANTED outcome is affirmative-only and MUST NOT
+        # carry a non-null, routable recommended_workflow_id (a NO_CHANGE terminal
+        # must never route a workflow). Absent/null workflow is valid for NO_CHANGE.
+        if no_change_outcome and artifact_data.get("recommended_workflow_id") is not None:
+            errors.append(_code_error(
+                NO_CHANGE_WORKFLOW_CONFLICT,
+                "outcome is NO_REPOSITORY_CHANGE_WARRANTED but recommended_workflow_id "
+                "is non-null; a NO_CHANGE terminal must not carry a routable workflow "
+                "(explicit NO_CHANGE is affirmative-only; omit or set "
+                "recommended_workflow_id to null).",
+                field="recommended_workflow_id",
+            ))
         if "recommended_workflow_id" not in artifact_data:
-            if not large:  # Large artifacts can skip this
+            if not large and not no_change_outcome:  # Large/NO_CHANGE can skip
                 errors.append({
                     "error_id": "repository_sensemaking_brief.recommended_workflow_id.missing_field",
                     "error_type": "missing_field",
@@ -614,7 +653,7 @@ def validate_brief(
             # contract violation at any artifact size. Non-null values must
             # always be real registry ids, even when escalating.
             escalated = _bool_flag(artifact_data.get("escalation_recommended"))
-            if workflow_id is None and not escalated:
+            if workflow_id is None and not escalated and not no_change_outcome:
                 errors.append(_code_error(
                     MISSING_WORKFLOW_ID,
                     "recommended_workflow_id is null without "
@@ -893,7 +932,8 @@ def validate_brief(
     if artifact_data is not None:
         workflow_id = artifact_data.get("recommended_workflow_id")
         no_match_ok = workflow_id is None and _bool_flag(artifact_data.get("escalation_recommended"))
-        if not workflow_id and not large and not no_match_ok:
+        no_change_ok = _is_no_change_outcome(artifact_data)
+        if not workflow_id and not large and not no_match_ok and not no_change_ok:
             errors.append(_code_error(MISSING_WORKFLOW_ID, "Handoff missing 'recommended_workflow_id'."))
     elif not large:
         errors.append(_code_error(MISSING_HANDOFF_BLOCK, "Missing 'Machine-readable handoff' YAML block."))

@@ -1,0 +1,21 @@
+# Frozen jtbl re-evaluation fixture (durable; not skippable).
+# Minimum immutable evidence needed to reproduce qualification point U under the
+# amended authority semantics: the frozen jtbl final brief C carried a valid
+# producer-authored representation_sufficiency.status = sufficient -> MODEL_WARRANT = NO.
+#
+# Provenance / hashes of the frozen artifacts this fixture reproduces
+# (see experiments/product-hypothesis-b/implementation/dogfood-jtbl/):
+#   P_same_episode_probe_report.yaml      SHA-256 32f854bc4b50e27cfb78412a968f3b6950dab074550832a44984181b6a76e929
+#   C_post_reconcile_final_brief.md       SHA-256 a30eec9dc518446e049c921d282f213f383a0066e9d41052cc46dddeab4be52e
+#   representation_sufficiency (this file) reproduces C's authoritative assessment
+#   that yields NO under the amended warrant authority. Absence of this fixture is a
+#   TEST FAILURE (never skipTest), per directive #28.
+representation_sufficiency:
+  status: sufficient
+  rationale: >-
+    jtbl is a single-file CLI whose whole behavioral flow is directly readable in
+    cli.py; README + tests + the probe establish purpose, options, IO contract, and
+    current measured state with no unassembled/contradictory signal. The evidence
+    environment suffices to reason about the consequential boundary with acceptable
+    diligence and traceability.
+  needed_representation: null

@@ -89,6 +89,11 @@ KNOWN_MODES = OrderedDict([
 
 GATE_RESULTS = ["approved_by_user", "denied_by_user", "automated_approval", "bypassed", "not_applicable"]
 
+# First-class terminal-success outcome (ratified product direction / PHB §29).
+# Mirrors the validate-brief.py constant; kept locally so workflow-runtime can
+# detect a validated NO_CHANGE brief without importing the validator module.
+NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME = "NO_REPOSITORY_CHANGE_WARRANTED"
+
 # -- State ladder (semantic contract) ------------------------------------------
 # Each mode progresses only to its honest ceiling
 STATE_LADDER = ["PLANNED", "PROMPT_GENERATED", "AWAITING_MANUAL_EXECUTION", "EXECUTED", "VALIDATED", "APPROVED"]
@@ -218,6 +223,7 @@ class OrchestrationRunner:
         controlled_experiment: bool = False,
         authorization=None,
         invocation_identity=None,
+        warrant_enabled: bool = False,  # BOUNDED SEAM: opt-in MODEL_WARRANT gate
     ):
         self.workflow_id = workflow_id
         self.mode = mode
@@ -285,6 +291,9 @@ class OrchestrationRunner:
         self.plan_out = plan_out or os.path.join(self.repo_root, "artifacts", f"plan_{workflow_id}.md")
         self.log_dir = log_dir or os.path.join(self.repo_root, "artifacts")
         self.use_fixtures = use_fixtures
+        # BOUNDED SEMANTIC-ARCHITECTURE SEAM: opt-in MODEL_WARRANT gate.
+        # Default False -> existing runs are byte-identical (no warrant work).
+        self.warrant_enabled = warrant_enabled
         self.chained = chained
         self.from_session = from_session
 
@@ -898,6 +907,23 @@ class OrchestrationRunner:
             return {}
         return data if isinstance(data, dict) else {}
 
+    def _read_brief_outcome(self, artifact_id_or_path: str) -> str | None:
+        """Read the explicit ``outcome`` from a brief's machine block, if any.
+
+        Only a declared ``outcome == NO_REPOSITORY_CHANGE_WARRANTED`` is treated
+        as NO_CHANGE (never inferred from a missing workflow id).
+        """
+        if artifact_id_or_path == "repository_sensemaking_brief":
+            path = self._resolve_artifact_path("repository_sensemaking_brief")
+        else:
+            path = artifact_id_or_path
+        if not path or not os.path.exists(path):
+            return None
+        data = self._read_brief_machine_data(path)
+        if not isinstance(data, dict):
+            return None
+        return data.get("outcome")
+
     def finalize_plan(self, brief_path: str | None = None, *,
                       selected_workflow_id: str | None = None) -> str | None:
         """Finalize the canonical workflow_orchestration_plan from brief evidence.
@@ -1304,6 +1330,19 @@ class OrchestrationRunner:
                     # defaults to self.repo_root -- see __init__).
                     "target_repo": self.target_repo,
                 }
+                # Ruling 1 (directive #23): for a local-checkout repo-sensemaker
+                # brief step, the runtime ALSO owns a session-scoped probe-report
+                # destination so the producer and the warrant seam can be
+                # guaranteed to use the SAME same-episode probe report. The
+                # producer MUST run
+                #   python scripts/probe-repo.py --repo-root <target> \
+                #       --output <expected_probe_report_path>
+                # and read that exact report before synthesis. No heuristic
+                # discovery is used. connector-native execution is untouched.
+                if (skill == "repo-sensemaker"
+                        and output_artifact == "repository_sensemaking_brief"):
+                    self._episode_probe_report_path = self._resolve_probe_report_path()
+                    context["expected_probe_report_path"] = self._episode_probe_report_path
 
                 # Invoke the skill
                 exec_result = self.skill_executor.invoke_skill(
@@ -1394,6 +1433,61 @@ class OrchestrationRunner:
                 )
                 result["status"] = "FAILED"
                 return self._finalize_step_result(result, step_num)
+
+            # BOUNDED SEMANTIC-ARCHITECTURE SEAM (opt-in), directive #28 phase-order
+            # FIX: MODEL_WARRANT evaluation runs ONLY AFTER the repo-sensemaker
+            # producer has executed AND the newly-produced brief has passed the
+            # validator stack. The seam consumes THAT validated artifact (never a
+            # stale/nonexistent/non-produced one). This is the correct lifecycle:
+            #   producer execution -> artifact produced -> deterministic
+            #   reconciliation -> validator PASS -> MODEL_WARRANT evaluation ->
+            #   INCONCLUSIVE gate / NO_CHANGE / routing.
+            # Guarded so warrant_enabled=False runs are unchanged, and a warrant
+            # error never aborts brief production (log-and-continue).
+            if (self.warrant_enabled
+                    and output_artifact == "repository_sensemaking_brief"
+                    and artifact_path and os.path.exists(artifact_path)):
+                record_obj = self._run_seam_warrant(output_artifact, skill)
+                if record_obj is None:
+                    # DEFENSE-IN-DEPTH (directive #29): an applicable enabled warrant
+                    # seam that somehow yields NO record must FAIL CLOSED to an
+                    # INCONCLUSIVE-equivalent safe stop (STOPPED_WITHOUT_ACTION) rather
+                    # than falling through to NO_CHANGE terminalization or routing.
+                    # This is scoped to the applicable repo-sensemaker brief step, not
+                    # a global redefinition of None.
+                    print("  [WARRANT] applicable enabled seam produced no record; "
+                          "FAIL-CLOSED to INCONCLUSIVE (safe stop)")
+                    result["warrant"] = "INCONCLUSIVE"
+                    result["warrant_record"] = {
+                        "warrant": "INCONCLUSIVE", "representation_materialized": False,
+                        "error": "applicable enabled seam returned no record (fail-closed)",
+                    }
+                    r = self._terminal_inconclusive_gate(result, step_num)
+                    if r is not None:
+                        return r
+                else:
+                    result["warrant"] = record_obj.warrant
+                    result["warrant_record"] = record_obj.to_dict()
+                    print(f"  [WARRANT] MODEL_WARRANT={record_obj.warrant} "
+                          f"(representation_materialized={record_obj.representation_materialized})")
+                    # CANONICAL GATE (directive #21/#28): MODEL_WARRANT == INCONCLUSIVE
+                    # blocks acting on the repository-action outcome. Runs only after
+                    # producer+validation; an INCONCLUSIVE warrant never routes an
+                    # ACTION workflow, never terminalizes as NO_CHANGE, materializes no
+                    # representation, and does not mutate the target.
+                    if record_obj.warrant == "INCONCLUSIVE":
+                        r = self._terminal_inconclusive_gate(result, step_num)
+                        if r is not None:
+                            return r
+                # BOUNDED S3 (only when warrant is conclusive): only an EXPLICIT
+                # validated outcome = NO_REPOSITORY_CHANGE_WARRANTED (as declared
+                # in the brief's machine block) produces successful no-routing
+                # termination. Never inferred from a missing workflow id.
+                brief_outcome = self._read_brief_outcome(output_artifact)
+                if brief_outcome == NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME:
+                    r = self._terminal_no_change_step(result, step_num)
+                    if r is not None:
+                        return r
         elif output_artifact and output_artifact != "N/A":
             if self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
                 # Execution modes: FAIL if artifact expected but not produced
@@ -1710,6 +1804,204 @@ class OrchestrationRunner:
 
         return 0
 
+    def _terminal_no_change_step(self, result: dict, step_num: int):
+        """BOUNDED S3: mark a brief step + run as a successful NO_CHANGE terminal,
+        returning the finalized result (or None if not applicable).
+
+        Only called when the brief's EXPLICIT outcome is NO_REPOSITORY_CHANGE_WARRANTED.
+        Produces a successful no-routing termination with the reason recorded. Never
+        inferred from a missing recommended_workflow_id.
+        """
+        if not getattr(self, "warrant_enabled", False):
+            # S3 is behind the same opt-in guard as the warrant seam; default
+            # runs are unaffected.
+            return None
+        result["terminal_outcome"] = NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME
+        result["terminal_reason"] = (
+            "Validated brief declares the first-class terminal-success outcome "
+            "NO_REPOSITORY_CHANGE_WARRANTED; no workflow routing."
+        )
+        result["status"] = "SUCCESS_NO_CHANGE"
+        result["gate_result"] = "terminal_success"
+        print("  [NO_CHANGE] Validated explicit NO_REPOSITORY_CHANGE_WARRANTED: "
+              "terminating successfully without routing.")
+        return self._finalize_step_result(result, step_num)
+
+    def _terminal_inconclusive_gate(self, result: dict, step_num: int):
+        """BOUNDED SEAM: block routing when MODEL_WARRANT is INCONCLUSIVE.
+
+        Canonical alignment (directive #21): the vertical-slice loop gates on
+        INCONCLUSIVE (never routes/acts while load-bearing uncertainty is
+        unresolved). This terminal STOPS without acting on the brief's
+        independently derived repository-action outcome -- it does NOT route an
+        ACTION workflow, does NOT terminate as NO_CHANGE, does NOT materialize
+        a representation, and does not mutate the target. The brief's
+        repository-action assessment is preserved (not rewritten) for
+        provenance. Absence of evidence is not treated as failure (the gate is
+        an epistemically-honest safe stop, not an implementation error).
+        """
+        result["warrant"] = "INCONCLUSIVE"
+        result["terminal_outcome"] = "STOPPED_WITHOUT_ACTION"
+        result["terminal_reason"] = (
+            "MODEL_WARRANT_INCONCLUSIVE: load-bearing evidence uncertainty is "
+            "unresolved; routing/acted-outcome gated (do NOT act on repository-action "
+            "outcome yet)."
+        )
+        result["status"] = "STOPPED_WITHOUT_ACTION"
+        result["gate_result"] = "blocked_inconclusive"
+        print("  [WARRANT] MODEL_WARRANT=INCONCLUSIVE -> routing blocked "
+              "(STOPPED_WITHOUT_ACTION)")
+        return self._finalize_step_result(result, step_num)
+
+    def _run_seam_warrant(self, output_artifact: str, skill: str):
+        """BOUNDED SEAM: compute + record the MODEL_WARRANT decision for a brief step.
+
+        Connects the seam to the SAME canonical warrant semantics as the
+        vertical slice (single judge via probes_to_warrant -> judge_warrant).
+        Transports the already-produced same-episode brief evidence (Section-13
+        machine block + evidence lines) into the EvidenceInput with provenance,
+        so the warrant is computed over real production evidence rather than an
+        empty default. Same-episode probe-report identity IS preserved by the
+        runtime via the runtime-owned, session-scoped `expected_probe_report_path`
+        (consumed when present and the exact target-checkout SHA is authoritative);
+        absence stays UNKNOWN (no absent->FALSE).
+        OPERATIONAL-FAIL-CLOSED (directive #29): an unexpected failure in this
+        applicable enabled seam is converted to an INCONCLUSIVE-equivalent
+        WarrantRecord (safe stop) so the caller's INCONCLUSIVE gate blocks
+        action/NO_CHANGE/routing rather than failing open.
+        """
+        if output_artifact != "repository_sensemaking_brief" or skill != "repo-sensemaker":
+            return None
+        try:
+            from sensemaking_skills.reasoning.warrant_gate import run_seam_warrant
+            from sensemaking_skills.reasoning.evidence_probes import EvidenceInput
+            # Transport the same-episode validated brief evidence (A).
+            brief_path = self._resolve_artifact_path("repository_sensemaking_brief")
+            brief_machine = {}
+            if brief_path and os.path.exists(brief_path):
+                brief_machine = self._read_brief_machine_data(brief_path) or {}
+            evidence_lines = list(brief_machine.get("evidence") or [])
+            # Ruling 1 (directive #23): consume the SAME runtime-owned, session-
+            # scoped probe-report that the producer was directed to write (via
+            # context['expected_probe_report_path']). No heuristic discovery. The
+            # report is consumed ONLY when the same-episode path exists and the
+            # target revision is authoritatively established; otherwise it is left
+            # absent (probes stay UNKNOWN -- never FALSE).
+            probe_report = None
+            probe_provenance = None
+            pr_path = getattr(self, "_episode_probe_report_path", None)
+            # Directive #28: authoritative EXACT target-checkout revision SHA
+            # (git -C <target_repo> rev-parse HEAD). Fails closed to "unknown" --
+            # branch names / framework revisions / path names are never used.
+            rev = self._current_target_revision()
+            if pr_path and os.path.exists(pr_path) and rev not in (None, "unknown"):
+                try:
+                    with open(pr_path, encoding="utf-8") as _f:
+                        loaded = yaml.safe_load(_f)
+                    if isinstance(loaded, dict):
+                        probe_report = loaded
+                        probe_provenance = (
+                            f"same-episode runtime-owned probe-report at {pr_path} "
+                            f"({self.target_repo} @ {rev})"
+                        )
+                except Exception as _exc:
+                    probe_report = None  # unparsable -> UNKNOWN (safe)
+            return run_seam_warrant(
+                target_repository=getattr(self, "target_repo", self.repo_root),
+                target_revision=rev,
+                user_goal=self.user_goal_hint(),
+                evidence=EvidenceInput(
+                    probe_report=probe_report,
+                    brief_machine=brief_machine,
+                    evidence_lines=evidence_lines,
+                    representation_sufficiency=(
+                        brief_machine.get("representation_sufficiency")
+                        if isinstance(brief_machine.get("representation_sufficiency"), dict)
+                        else None
+                    ),
+                    provenance=probe_provenance or (
+                        "same-episode validated Repository Sensemaking Brief "
+                        "(Section 13 machine block + evidence field)"
+                    ),
+                ),
+            )
+        except Exception as exc:  # OPERATIONAL FAILURE -> FAIL CLOSED (directive #29)
+            # An applicable enabled warrant seam must NEVER fail open: an unexpected
+            # operational failure is converted to an INCONCLUSIVE-equivalent canonical
+            # record (representation not materialized, deterministic error) so the
+            # caller's INCONCLUSIVE gate blocks action/routing/NO_CHANGE rather than
+            # falling through to normal routing.
+            print(f"  ~ [WARRANT] warrant computation failed at seam, FAIL-CLOSED to "
+                  f"INCONCLUSIVE (operational failure): {exc}")
+            try:
+                from sensemaking_skills.reasoning.warrant_gate import WarrantRecord
+                return WarrantRecord(
+                    warrant="INCONCLUSIVE",
+                    target_repository=getattr(self, "target_repo", self.repo_root),
+                    target_revision=self._current_target_revision(),
+                    user_goal=self.user_goal_hint(),
+                    representation_materialized=False,
+                    error="warrant computation failed at enabled production seam "
+                          "(operational/fail-closed)",
+                    uncertainty_log=[{
+                        "kind": "UNKNOWN",
+                        "question": "Enabled warranty seam failed operationally; "
+                                    "FAIL-CLOSED to INCONCLUSIVE (safe stop, no "
+                                    "routing/NO_CHANGE/representation).",
+                        "load_bearing": True,
+                    }],
+                )
+            except Exception as _inner:
+                # Worst case: cannot even build the record; return a lightweight
+                # sentinel that execute_step's defense-in-depth will treat as a
+                # fail-closed INCONCLUSIVE safe stop.
+                return None
+
+    def _current_revision_hint(self) -> str:
+        """Best-effort repository revision hint for the warrant record."""
+        try:
+            return _get_git_branch(self.repo_root) or "unknown"
+        except Exception:
+            return "unknown"
+
+    def _current_target_revision(self) -> str:
+        """Resolve the AUTHORITATIVE exact-SHA revision of the TARGET repo checkout.
+
+        Directive #28: the warrant target_revision must be the exact target-checkout
+        HEAD commit (``git -C <target_repo> rev-parse HEAD``), never a framework
+        branch name, a path name, or an ambient main/HEAD assumption. Fails closed:
+        returns "unknown" (never a fabricated branch/commit) when the target SHA
+        cannot be authoritatively established, so probe-report provenance is not
+        claimed and the report is not consumed as revision-bound evidence.
+        """
+        try:
+            target = getattr(self, "target_repo", None) or self.repo_root
+            result = subprocess.run(
+                ["git", "-C", target, "rev-parse", "HEAD"],
+                capture_output=True, text=True, timeout=20,
+            )
+            sha = (result.stdout or "").strip()
+            import re as _re
+            if result.returncode == 0 and _re.fullmatch(r"[0-9a-f]{40}", sha):
+                return sha
+            return "unknown"
+        except Exception:
+            return "unknown"
+
+
+    def user_goal_hint(self) -> str:
+        """Best-effort user-goal hint for the warrant record (from intent if available)."""
+        try:
+            intents = self._resolve_artifact_path("user_intent")
+            import os as _os
+            if _os.path.exists(intents):
+                with open(intents, encoding="utf-8", errors="replace") as f:
+                    line = f.read(200).strip().splitlines()
+                    return (line[0][:120] if line else "repository sensemaking brief production")
+            return "repository sensemaking brief production"
+        except Exception:
+            return "repository sensemaking brief production"
+
     def _get_fixture_artifact_path(self, artifact_id: str) -> str | None:
         """Get path to fixture artifact if available. Returns None if not found."""
         # Map artifact IDs to skill directories
@@ -1834,6 +2126,21 @@ class OrchestrationRunner:
             input_artifact_ids.append(input_source)
 
         return input_artifact_ids, resolved_inputs
+
+    def _resolve_probe_report_path(self) -> str:
+        """Resolve the runtime-owned, session-scoped probe-report path for the
+        current repo-sensemaker local-checkout episode.
+
+        Mirrors ``_resolve_artifact_path``: the runtime owns the authoritative
+        same-episode probe-report destination so the producer and the warrant
+        seam can be guaranteed to use the SAME artifact (no heuristic discovery,
+        no newest-file selection, no target scanning). Path:
+        ``<session>/probe-report.yaml`` when a session dir is bound, else
+        ``<repo_root>/artifacts/probe-report.yaml``.
+        """
+        if self.artifact_session_dir:
+            return os.path.join(self.artifact_session_dir, "probe-report.yaml")
+        return os.path.join(self.repo_root, "artifacts", "probe-report.yaml")
 
     def _resolve_artifact_path(self, artifact_id: str) -> str:
         """Resolve the file path for an artifact, scoped to session directory if set."""
@@ -2348,6 +2655,11 @@ class OrchestrationRunner:
         # Determine final state (respecting semantic contract: each mode has an honest ceiling)
         failures = [s for s in self.step_results if s["status"] in ("FAILED",)]
         pauses = [s for s in self.step_results if s["status"] in ("PAUSED",)]
+        no_changes = [
+            s for s in self.step_results
+            if s.get("terminal_outcome") == NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME
+            or s["status"] == "SUCCESS_NO_CHANGE"
+        ]
 
         # Count steps at each state (semantic contract)
         planned = [s for s in self.step_results if s["status"] == "PLANNED"]
@@ -2366,6 +2678,20 @@ class OrchestrationRunner:
         elif pauses:
             self.final_state = "paused"
             self.final_note = f"Paused at step {pauses[0]['step_id']} gate '{pauses[0]['gate']}'."
+        elif no_changes and self.warrant_enabled or self._is_no_change_terminated():
+            # Bounded canonical-loop completion: a validated explicit NO_CHANGE
+            # outcome terminates the run SUCCESSFULLY with no routing, recorded
+            # distinctly (never failure/unknown/blocked).
+            first = no_changes[0] if no_changes else (
+                next((s for s in self.step_results
+                      if s.get("status") == "SUCCESS_NO_CHANGE"
+                      or s.get("terminal_outcome") == NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME),
+                     {"step_id": "?"}))
+            self.final_state = "no_change_terminated"
+            self.final_note = (
+                f"Run terminated successfully at step {first['step_id']}: "
+                f"NO_REPOSITORY_CHANGE_WARRANTED. No workflow routing."
+            )
         elif self.mode == "prompt_chain" and len(prompted) == len(steps):
             self.final_state = "prompt_chain_generated"
             self.final_note = f"All {len(steps)} steps generated prompts successfully in '{self.mode}' mode."
@@ -2841,6 +3167,9 @@ class OrchestrationRunner:
 
         if self.final_state == "completed":
             lines.append(f"✓ Success: All steps executed and validated.")
+        elif self.final_state == "no_change_terminated":
+            # Successful terminal: NO repository change warranted (never failure).
+            lines.append(f"✓ Success (terminal): NO_REPOSITORY_CHANGE_WARRANTED; no workflow routing.")
         elif self.final_state == "failed":
             lines.append(f"✗ Failed: Execution halted due to validation failures.")
         else:
@@ -2865,6 +3194,21 @@ class OrchestrationRunner:
         print(f"  git reset --hard HEAD")
         print(f"  git clean -fd")
         print(f"(Review changes first with 'git diff')\n")
+
+    def _is_no_change_terminated(self) -> bool:
+        """True if any step result records a validated NO_CHANGE terminal outcome.
+
+        Used by run-level terminal propagation: a validated explicit
+        NO_REPOSITORY_CHANGE_WARRANTED terminates the run successfully (no
+        routing). Never inferred from a missing workflow id.
+        """
+        if not getattr(self, "warrant_enabled", False):
+            return False
+        for s in getattr(self, "step_results", []) or []:
+            if s.get("terminal_outcome") == NO_REPOSITORY_CHANGE_WARRANTED_OUTCOME \
+                    or s.get("status") == "SUCCESS_NO_CHANGE":
+                return True
+        return False
 
     def run(self) -> int:
         """Execute the full orchestration lifecycle. Returns exit code."""

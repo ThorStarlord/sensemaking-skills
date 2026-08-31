@@ -130,7 +130,6 @@ artifacts:
       - artifact_id
       - primary_fog_type
       - evidence
-      - recommended_workflow_id
       - created_at
       - immutable
     recommended_machine_fields:
@@ -143,6 +142,19 @@ artifacts:
       - auto_escalation_allowed
       - weakness_type
       - weakness_type_explanation
+      # directive #23/#28: recommended_workflow_id is required for ACTION briefs
+      # but is authoritatively optional under an EXPLICIT outcome =
+      # NO_REPOSITORY_CHANGE_WARRANTED (validated by validate-brief.py, NOT the
+      # generic validate-artifact.py which must not universally require it).
+      - recommended_workflow_id
+      # directive #23/#25/#28: representation_sufficiency + outcome are
+      # programmatically consumed by the MODEL_WARRANT seam and the NO_CHANGE
+      # terminal path, respectively. Declared here (per ADR 0015: any field a
+      # downstream consumer parses programmatically belongs in the declared
+      # machine contract) as OPTIONAL/ADDITIVE -- absent/invalid fails closed
+      # (INCONCLUSIVE / normal-action) and is not a generic-validator failure.
+      - representation_sufficiency
+      - outcome
       # Issue #171 / evidence-rules Rule 7: REQUIRED (blocking) when the
       # brief recommends renumbering/deduplicating a colliding ID. Value is
       # the direction decision with reference counts per candidate, prior
