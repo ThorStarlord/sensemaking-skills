@@ -302,6 +302,66 @@ class RuntimePassesExactExpectedProbePath(unittest.TestCase):
             validate_cmd[validate_cmd.index("--probe-report") + 1], exact_probe, validate_cmd
         )
 
+    def test_H_forwards_exact_path_even_when_the_allocated_report_is_MISSING(self):
+        """Contract-critical: if the producer failed to create the allocated
+        probe report, the runtime must STILL forward that exact path so the
+        validator fails closed (PROBE_REPORT_NOT_FOUND), not silently omit it."""
+        Runner = workflow_runtime.OrchestrationRunner
+        runner = Runner.__new__(Runner)
+        runner.repo_root = os.path.abspath(".")
+        runner.target_repo = os.path.abspath("..")
+        runner.log_dir = None
+
+        episode_dir = tempfile.mkdtemp()
+        missing_exact = os.path.join(episode_dir, "probe-report.yaml")  # deliberately not created
+        self.assertFalse(os.path.exists(missing_exact))
+        runner._episode_probe_report_path = missing_exact
+
+        captured = []
+
+        class _FakeCompletedProcess:
+            stdout = '{"valid": true, "errors": []}'
+            stderr = ""
+            returncode = 0
+
+        def _fake_run(cmd, **kwargs):
+            captured.append(cmd)
+            return _FakeCompletedProcess()
+
+        orig_run = workflow_runtime.subprocess.run
+        workflow_runtime.subprocess.run = _fake_run
+        try:
+            runner._run_validate_and_report("repository_sensemaking_brief", "brief.md", [])
+        finally:
+            workflow_runtime.subprocess.run = orig_run
+
+        validate_cmd = next(c for c in captured if any("validate-and-report.py" in str(p) for p in c))
+        self.assertIn("--probe-report", validate_cmd, validate_cmd)
+        self.assertEqual(
+            validate_cmd[validate_cmd.index("--probe-report") + 1], missing_exact, validate_cmd
+        )
+
+    def test_H_missing_allocated_report_yields_PROBE_REPORT_NOT_FOUND_downstream(self):
+        """The forwarded missing exact path must surface as PROBE_REPORT_NOT_FOUND
+        (environmental / runtime failure), not silent omission and not the old
+        HALLUCINATED_FILE-only degradation."""
+        real_repo_root = os.path.dirname(SCRIPTS_DIR)
+        fw = tempfile.mkdtemp()
+        tgt = tempfile.mkdtemp()
+        brief = _write_brief(fw, "src/mod.py")  # no probe citation at all
+        os.makedirs(os.path.join(tgt, "src"), exist_ok=True)
+        _write(os.path.join(tgt, "src", "mod.py"), "# x\n")
+        missing_exact = os.path.join(tempfile.mkdtemp(), "probe-report.yaml")
+        result = subprocess.run(
+            [sys.executable, os.path.join(SCRIPTS_DIR, "validate-and-report.py"), brief,
+             "--repo-root", real_repo_root, "--target-repo", tgt,
+             "--probe-report", missing_exact],
+            capture_output=True, text=True,
+        )
+        self.assertIn("PROBE_REPORT_NOT_FOUND", result.stdout, result.stdout + result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertFalse(payload["valid"], payload)
+
     def test_H_no_flag_when_no_episode_probe_report(self):
         Runner = workflow_runtime.OrchestrationRunner
         runner = Runner.__new__(Runner)

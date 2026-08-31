@@ -2304,10 +2304,14 @@ class OrchestrationRunner:
             # context['expected_probe_report_path'] for the producer), hand the
             # validator that EXACT path so a Section-8 `probe-report.yaml`
             # citation grounds against it without the probe report living inside
-            # the target checkout. No rediscovery -- reuse the attribute the
-            # runtime already set; absence -> flag simply omitted.
+            # the target checkout. Forward on AUTHORITY existence (the attribute
+            # is set), never on FILE existence: if the producer failed to create
+            # the expected report, validate-brief.py must still receive the exact
+            # path so it can fail closed with PROBE_REPORT_NOT_FOUND rather than
+            # the flag being silently dropped. The validator owns the existence
+            # check. No rediscovery -- reuse the attribute the runtime already set.
             episode_probe_report = getattr(self, "_episode_probe_report_path", None)
-            if episode_probe_report and os.path.exists(episode_probe_report):
+            if episode_probe_report:
                 validate_cmd.extend(["--probe-report", episode_probe_report])
 
             result = subprocess.run(validate_cmd, capture_output=True, text=True, timeout=120)
