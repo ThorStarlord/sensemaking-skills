@@ -70,7 +70,13 @@ SUBSTANTIVE_CODES = frozenset(
         "HIGH_RISK_CLAIM_NEEDS_SUBSTANTIVE_AUDIT",
     }
 )
-ENVIRONMENTAL_CODES = frozenset({"BRIEF_FILE_NOT_FOUND", "REGISTRY_NOT_FOUND"})
+# PROBE_REPORT_NOT_FOUND: the caller passed --probe-report <path> and that path
+# does not exist. Like a missing brief file or registry, this is a runtime
+# invocation problem (a bad same-episode probe-report path), never the model's
+# fault -- classified environmental so structural/substantive rates stay clean.
+ENVIRONMENTAL_CODES = frozenset(
+    {"BRIEF_FILE_NOT_FOUND", "REGISTRY_NOT_FOUND", "PROBE_REPORT_NOT_FOUND"}
+)
 
 
 def _code_of(message: str) -> str:

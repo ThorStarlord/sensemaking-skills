@@ -325,6 +325,7 @@ def invoke_validator(
     artifact_path: str,
     repo_root: str = ".",
     target_repo: str | None = None,
+    probe_report: str | None = None,
 ) -> ValidationResult:
     """Invoke a specific validator with --json and return the result.
 
@@ -336,6 +337,10 @@ def invoke_validator(
         target_repo: Root of the repository the artifact is ABOUT, if different
             from repo_root (external-repository runs). Passed through to
             validators that support it (currently validate-brief.py).
+        probe_report: Explicit same-episode local Probe Engine report path
+            (the runtime-owned expected_probe_report_path). Passed through to
+            validate-brief.py as --probe-report so a canonical
+            `file: probe-report.yaml` citation resolves to that exact file.
 
     Returns:
         ValidationResult with all errors and metadata
@@ -389,6 +394,13 @@ def invoke_validator(
             # evidence citations resolve against the repo the brief is about.
             if target_repo and validator_path.endswith("validate-brief.py"):
                 cmd.extend(["--target-repo", target_repo])
+            # Same-episode local-probe report authority: hand validate-brief.py
+            # the exact runtime-owned probe-report path so a canonical
+            # `file: probe-report.yaml` Section-8 citation can be grounded
+            # against it without the probe report living inside the target
+            # checkout. No rediscovery -- the caller supplies the exact path.
+            if probe_report and validator_path.endswith("validate-brief.py"):
+                cmd.extend(["--probe-report", probe_report])
 
         # Run validator
         result = subprocess.run(
@@ -477,6 +489,7 @@ def validate_and_report(
     artifact_path: str,
     repo_root: str = ".",
     target_repo: str | None = None,
+    probe_report: str | None = None,
 ) -> ValidationResult:
     """Validate an artifact and return unified structured JSON.
 
@@ -530,7 +543,7 @@ def validate_and_report(
     validator_path = select_validator(artifact_id)
 
     # Invoke validator and return result
-    return invoke_validator(validator_path, artifact_id, artifact_path, repo_root, target_repo)
+    return invoke_validator(validator_path, artifact_id, artifact_path, repo_root, target_repo, probe_report)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -544,9 +557,21 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Root of the repository the artifact is ABOUT, if different from --repo-root",
     )
+    parser.add_argument(
+        "--probe-report",
+        default=None,
+        help=(
+            "Explicit same-episode local Probe Engine report path (forwarded to "
+            "validate-brief.py as --probe-report). Lets a canonical "
+            "'file: probe-report.yaml' evidence citation resolve to that exact "
+            "file on external-repository runs."
+        ),
+    )
     args = parser.parse_args(argv)
 
-    result = validate_and_report(args.artifact_path, args.repo_root, args.target_repo)
+    result = validate_and_report(
+        args.artifact_path, args.repo_root, args.target_repo, args.probe_report
+    )
 
     # Always output JSON
     print(json.dumps(result, indent=2, default=str))
