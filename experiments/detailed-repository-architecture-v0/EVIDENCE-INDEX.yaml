@@ -1,0 +1,153 @@
+# EVIDENCE INDEX (DETAILED_REPOSITORY_ARCHITECTURE_PROTOTYPE_V0)
+#
+# Every load-bearing evidence pointer used in 01-08. Keyed by evidence id.
+# kind: file_range | doc_section | registry_entry | implementation | test |
+#       adr | commit | probe_behavior
+# All paths relative to repo root at target_repo_sha.
+
+meta:
+  target_repo_sha: ba8968ca1a12caa90ce7beb0ee5fd2dfac055f37
+  note: >
+    Line numbers for CONTEXT.md and docs/agent-native-operating-workflow.md are
+    exact (files read with line numbering during construction). ADR internal
+    line numbers are given as section references. Where an anchor is a topic
+    rather than a confirmed line, kind is doc_section.
+
+evidence:
+
+  # ---- CONTEXT.md ----
+  E-CTX-file:        {kind: file_range, path: CONTEXT.md, anchor: "whole file (343 lines)"}
+  E-CTX-05:          {kind: file_range, path: CONTEXT.md, anchor: "L5 — product definition"}
+  E-CTX-13:          {kind: file_range, path: CONTEXT.md, anchor: "L13 — agent owns recursive control loop"}
+  E-CTX-20:          {kind: file_range, path: CONTEXT.md, anchor: "L20-31 — Goal A status flags"}
+  E-CTX-40:          {kind: file_range, path: CONTEXT.md, anchor: "L40-52 — Goal A validates only ratified scope; A1 ceilings"}
+  E-CTX-49:          {kind: file_range, path: CONTEXT.md, anchor: "L49 — protocol approval != episode-execution authorization"}
+  E-CTX-50:          {kind: file_range, path: CONTEXT.md, anchor: "L50-52 — Issue #218 separate normal-use lane"}
+  E-CTX-77:          {kind: file_range, path: CONTEXT.md, anchor: "L77 — artifacts are the API"}
+  E-CTX-81:          {kind: file_range, path: CONTEXT.md, anchor: "L81 — repair requires finding-specific verification; generic green CI insufficient"}
+  E-CTX-105:         {kind: file_range, path: CONTEXT.md, anchor: "L105 — a Skill is not the whole product"}
+  E-CTX-127:         {kind: file_range, path: CONTEXT.md, anchor: "L127 — automatic fog-type routing is NOT ratified product behavior"}
+  E-CTX-131:         {kind: file_range, path: CONTEXT.md, anchor: "L131 — repo-sensemaker turns intent+evidence into brief"}
+  E-CTX-142:         {kind: file_range, path: CONTEXT.md, anchor: "L142 — recommended_workflow_id is planning field, not execution authority"}
+  E-CTX-146:         {kind: file_range, path: CONTEXT.md, anchor: "L146-159 — MODEL_WARRANT authority; representation_sufficiency -> NO/PARTIAL/INCONCLUSIVE; FULL deferred"}
+  E-CTX-158:         {kind: file_range, path: CONTEXT.md, anchor: "L158 — agent-mediated external path demonstrated on ONE fresh repo; GA/E2E not claimed"}
+  E-CTX-182:         {kind: file_range, path: CONTEXT.md, anchor: "L182 — probe cannot evaluate != evidence of absence"}
+  E-CTX-194:         {kind: file_range, path: CONTEXT.md, anchor: "L194 — workflow_orchestration_plan optional; not execution authority"}
+  E-CTX-201:         {kind: file_range, path: CONTEXT.md, anchor: "L201 — canonical artifact contracts live in skills/workflow-planner/references/artifact-contracts.yaml"}
+  E-CTX-207:         {kind: file_range, path: CONTEXT.md, anchor: "L207-209 — validation is mechanical; cannot prove evidence selection/conclusion/usefulness"}
+  E-CTX-277:         {kind: file_range, path: CONTEXT.md, anchor: "L273-277 — local-first; exploratory_execution optional, not a requirement"}
+  E-CTX-291:         {kind: file_range, path: CONTEXT.md, anchor: "L291-305 — source-of-truth map"}
+  E-CTX-297:         {kind: file_range, path: CONTEXT.md, anchor: "L297 — docs/canonical-vocabulary.yaml"}
+  E-CTX-335:         {kind: file_range, path: CONTEXT.md, anchor: "L335-341 — not automatically ratified merely because machinery exists"}
+  E-CTX-341:         {kind: file_range, path: CONTEXT.md, anchor: "L341 — domain-general research-agent control semantics not ratified"}
+
+  # ---- docs/agent-native-operating-workflow.md ----
+  E-AGW-file:        {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "whole file (437 lines)"}
+  E-AGW-6:           {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L6 — NOT a canonical orchestration specification"}
+  E-AGW-22:          {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L18-26 — Auteur handoff -> output-reconciler/repair-verifier; ADR 0013; second-model runner retired 2026-08-13"}
+  E-AGW-131:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L131-143 — probe engine mandatory before synthesis; probe-report.yaml; fallback label"}
+  E-AGW-185:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L184-191 — automatic routing deliberately not ratified; ADR 0018 SUPERSEDED"}
+  E-AGW-189:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L188-197 — agent reads SKILL.md, produces contracted output"}
+  E-AGW-201:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L199-213 — validate-output.py dispatch -> validate-artifact.py + specialized; JSON errors"}
+  E-AGW-221:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L221-233 — output-reconciler mechanics; verified|disputed|omitted; fix|defer|file"}
+  E-AGW-238:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L238-252 — repair-verifier mechanics; re-probe; findings_closed/remaining"}
+  E-AGW-248:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L246-252 — generic green tests != finding-specific closure"}
+  E-AGW-252:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L252 — formal `unevaluable` verdict proposed, not yet encoded"}
+  E-AGW-271:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L271 — promotion-criteria.md six gates for skill improvements"}
+  E-AGW-342:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L342-351 — mandatory fan-in: output-reconciler <- work_claim + brief; repair-verifier <- docs_contract_reconciliation_report"}
+  E-AGW-349:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L349 — repair-verifier required input"}
+  E-AGW-361:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L357-371 — authority flow table; issue_list != authorization to create tracker issue"}
+  E-AGW-380:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L377-392 — Reality map (REAL vs CONVENTION per responsibility)"}
+  E-AGW-381:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L381 — brief contract validation REAL"}
+  E-AGW-383:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L383 — next-responsibility selection CONVENTION / unratified automation"}
+  E-AGW-386:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L386 — output reconciliation REAL + dogfooded (evidence 0018,0020)"}
+  E-AGW-387:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L387 — repair verification REAL + dogfooded (evidence 0019); `unevaluable` UNRATIFIED"}
+  E-AGW-391:         {kind: file_range, path: docs/agent-native-operating-workflow.md, anchor: "L391 — stop conditions CONVENTION (no machinery)"}
+
+  # ---- ADRs ----
+  E-ADRLIST:         {kind: file_range, path: docs/adr/, anchor: "27 ADRs 0001-0026 + README"}
+  E-ADR-statuses:    {kind: doc_section, path: docs/adr/, anchor: "**Status** lines: 0001-0005/0009-0016/0023-0026 Accepted; 0006-0008/0022 Proposed; 0017-0021 SUPERSEDED (never Accepted); 0018 SUPERSEDED"}
+  E-ADRREADME:       {kind: file_range, path: docs/adr/README.md, anchor: "status vocabulary PROPOSED/PROVISIONAL/ACCEPTED/SUPERSEDED/REJECTED; probe_relationships.py reads every ADR **Status** line"}
+  E-ADR-0001:        {kind: adr, path: docs/adr/0001-strict-validation-in-execution-modes.md, anchor: "Accepted — strict validation in execution modes"}
+  E-ADR-0004:        {kind: adr, path: docs/adr/0004-evidence-tracking-for-trust.md, anchor: "Accepted — evidence tracking for trust (probe engine)"}
+  E-ADR-0005:        {kind: adr, path: docs/adr/0005-skill-invocation-via-workflows.md, anchor: "Accepted — skill invocation via workflows"}
+  E-ADR-0009:        {kind: adr, path: docs/adr/0009-handoff-skill-naming-convention.md, anchor: "Accepted — handoff skill naming convention"}
+  E-ADR-0010:        {kind: adr, path: docs/adr/0010-runtime-owns-artifact-path-resolution.md, anchor: "Accepted — runtime owns artifact path resolution + session scoping"}
+  E-ADR-0011:        {kind: adr, path: docs/adr/0011-canonical-vocabulary-enforcement.md, anchor: "Accepted — canonical vocabulary enforcement"}
+  E-ADR-0013:        {kind: adr, path: docs/adr/0013-agent-native-orchestration-primary.md, anchor: "Accepted — active coding agent owns the recursive control loop; runtime is support machinery"}
+  E-ADR-0014:        {kind: adr, path: docs/adr/0014-product-boundary.md, anchor: "ACCEPTED (revised, narrowed) 2026-07-26 — human-reviewed brief is the settled core; routing deferred"}
+  E-ADR-0014-head:   {kind: file_range, path: docs/adr/0014-product-boundary.md, anchor: "L1-45 — 2026-07-26 revision: interpretation A; routing/tracker-sync/deployment out of scope; diagnosis+routing no longer one unit"}
+  E-ADR-0015:        {kind: adr, path: docs/adr/0015-deterministic-vs-model-variable-fields.md, anchor: "ACCEPTED with ratified addendum — representation_sufficiency -> MODEL_WARRANT mapping"}
+  E-ADR-0022:        {kind: adr, path: docs/adr/0022-gate-a-authorization-consumer-placement.md, anchor: "PROPOSED — awaiting independent adversarial review"}
+  E-ADR-0023:        {kind: adr, path: docs/adr/0023-two-lane-experiment-authorization.md, anchor: "ACCEPTED — independently reviewed at exact head"}
+  E-ADR-0024:        {kind: adr, path: docs/adr/0024-extended-analysis-field-classification.md, anchor: "ACCEPTED 2026-08-10 — Section 15 extended_analysis: model-constrained, optional, non-blocking, NOT read by routing"}
+  E-ADR-0025:        {kind: adr, path: docs/adr/0025-workflow-orchestration-plan-lifecycle.md, anchor: "ACCEPTED 2026-08-23 — two-stage plan lifecycle: provisional skeleton -> finalized canonical"}
+  E-ADR-0026:        {kind: adr, path: docs/adr/0026-workflow-execution-authority.md, anchor: "ACCEPTED 2026-08-24 (PR #235 e5a2e73) — auto_invoke_next_workflow = compatibility metadata, NOT execution authority; separate explicit authority event required; Issue #230 open tracker"}
+
+  # ---- registries / contracts ----
+  E-CONTRACT-file:      {kind: file_range, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "whole file (775 lines) — canonical artifact + machine-field contract"}
+  E-CONTRACT-brief:     {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L117-188 — repository_sensemaking_brief"}
+  E-CONTRACT-brief-146: {kind: file_range, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L145-148 — recommended_workflow_id required for ACTION briefs but optional under EXPLICIT NO_REPOSITORY_CHANGE_WARRANTED; generic validator must NOT universally require it"}
+  E-CONTRACT-brief-notes:{kind: file_range, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L174-180 — brief notes: weakness_type D2/D4, extended_analysis not read by routing, recommended_workflow_id:null semantics"}
+  E-CONTRACT-plan:      {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L471-522 — workflow_orchestration_plan"}
+  E-CONTRACT-plan-notes:{kind: file_range, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L509-514 — ADR 0025 two-stage lifecycle note (provisional skeleton vs finalized)"}
+  E-CONTRACT-frame:     {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L67-88 — problem_frame"}
+  E-CONTRACT-unknowns:  {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L90-115 — unknowns_map"}
+  E-CONTRACT-recon:     {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L730-753 — reconciliation_report"}
+  E-CONTRACT-repair:    {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L755-775 — repair_verification_report"}
+  E-CONTRACT-docsrecon: {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L549-573 — docs_contract_reconciliation_report"}
+  E-CONTRACT-domalign:  {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L203-214 — domain_alignment_report"}
+  E-CONTRACT-handoff:   {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L524-547 — prompt_handoff (produced_by: [prompt-handoff, handoff])"}
+  E-CONTRACT-archrev:   {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L666-688 — architectural_review_recommendation"}
+  E-CONTRACT-prd:       {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L216-247 — prd"}
+  E-CONTRACT-issues:    {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L249-268 — issue_list"}
+  E-CONTRACT-simprov:   {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L599-617 — skill_improvement_plan"}
+  E-CONTRACT-usage:     {kind: registry_entry, path: skills/workflow-planner/references/artifact-contracts.yaml, anchor: "L575-597 — usage_research_report"}
+  E-CONTRACT-dupe:      {kind: file_range, path: workflow-orchestrator/references/artifact-contracts.yaml, anchor: "second copy of the artifact contracts"}
+  E-CONTRACT-dupe-header:{kind: file_range, path: workflow-orchestrator/references/artifact-contracts.yaml, anchor: "L1-13 — DEPRECATED (2026-08-09); 'No code should read this file'; sole home of prd/issue_list/agent_brief/code_patch required_sections+machine_fields (INFRA-004); xfail tests in tests/test_artifact_contracts_pm_engineering.py; delete once ported or confirmed obsolete"}
+  E-WFREG-head:         {kind: file_range, path: skills/workflow-planner/references/workflow-registry.yaml, anchor: "L1-7 — auto_invoke_next_workflow semantics (ADR 0026): compatibility/historical metadata only; consumers fail closed"}
+  E-WFREG-ids:          {kind: file_range, path: skills/workflow-planner/references/workflow-registry.yaml, anchor: "24 workflow ids incl fast-path-workflow, full-fog-workflow, artifact-reconciliation, docs-contract-reconciliation, implementation-workflow"}
+  E-WFREG-dupe:         {kind: file_range, path: src/sensemaking_skills/defaults/workflow-registry.yaml, anchor: "second copy; differs from canonical at ba8968c (missing prior_evidence input + a repair-verifier step)"}
+  E-SKILLREG:           {kind: file_range, path: skills/workflow-planner/references/skill-registry.yaml, anchor: "290 lines — registered Skill/capability catalog"}
+
+  # ---- runtime / execution / probes ----
+  E-RT-head:         {kind: file_range, path: scripts/workflow-runtime.py, anchor: "L1-44 — canonical execution engine; loads workflow-registry.yaml + artifact-contracts.yaml + skill-registry.yaml; orchestration-runner.py back-compat wrapper"}
+  E-RT-import:       {kind: file_range, path: scripts/workflow-runtime.py, anchor: "L46-58 — imports create_executor + GateAAuthorizationRequired from skill_executor; graceful fallback"}
+  E-RT-resolve:     {kind: implementation, path: scripts/workflow-runtime.py, anchor: "L2134-2160 _resolve_artifact_path — single authoritative session-scoped resolver; expected_output_path passed to executor (L1310-1322)"}
+  E-RT-routefields: {kind: implementation, path: scripts/workflow-runtime.py, anchor: "L1629-1696 _WORKFLOW_ID_FIELDS=(recommended_workflow_id,chosen_workflow_id,selected_workflow); _FOG_TYPE_FIELDS=(primary_fog_type,user_implied_fog_type); L226/294 warrant_enabled opt-in MODEL_WARRANT seam"}
+  E-RT-1438:        {kind: implementation, path: scripts/workflow-runtime.py, anchor: "L1438-1473 — MODEL_WARRANT evaluation runs ONLY AFTER repo-sensemaker step + reconciliation + validator PASS; INCONCLUSIVE -> routing blocked (L1831-1857)"}
+  E-GATEA-head:     {kind: file_range, path: scripts/gate_a_authorization.py, anchor: "L1-30 — capability-based gate; 'no valid authorization capability, no path to the model invocation function'; authorize()->AuthorizationDecision; only authorized=True yields AuthorizedInvocation; never invokes a model; never creates/repairs authorization artifacts"}
+  E-PROBE-head:     {kind: file_range, path: scripts/probe-repo.py, anchor: "L1-40 — probe engine CLI; writes probe-report.yaml; 7-line stdout summary; exit 0; exit 2 only if repo-root missing; imports repo_probes.probe_all"}
+  E-PROBEREL-fns:   {kind: implementation, path: scripts/probe_relationships.py, anchor: "doc_surface / version_drift / adr_catalog / adr_integrity / _adr_references / relationships — reads ADR **Status** lines vs docs/adr/README.md vocabulary"}
+  E-WG-head:        {kind: file_range, path: src/sensemaking_skills/reasoning/warrant_gate.py, anchor: "L1-80 — production-seam warrant gate; thin wrapper around qualified vertical slice; only surface workflow-runtime touches; never mutates native evidence; NO->no representation, PARTIAL->minimal record; does NOT change how repo-sensemaker produces the brief"}
+  E-SRCTREE:        {kind: file_range, path: src/sensemaking_skills/, anchor: "package tree: reasoning/ (vertical_slice, evidence_probes, warrant_gate), campaign_accounting/, campaign_validation/, exploratory_authorization/, exploratory_execution/, skills/ (repo_sensemaker, workflow_planner, base)"}
+  E-SCRIPTS-ls:     {kind: file_range, path: scripts/, anchor: "21 validate-*.py; probe-repo.py; probe_relationships.py; gate_a_authorization.py; skill_executor.py; workflow-runtime.py; _orchestrator.py"}
+  E-TESTS-ls:       {kind: file_range, path: tests/, anchor: "test_field_contract_agreement.py, test_artifact_contract_agreement.py, test_auto_invoke_registry_agreement.py, test_artifact_contracts_pm_engineering.py (xfail), test_warrant_evidence_contract.py, test_repo_sensemaker_evidence_contract.py"}
+  E-SKILLDIR:       {kind: file_range, path: skills/, anchor: "17 skill dirs each with SKILL.md; references/ and agents/ subdirs on most"}
+
+  # ---- CLAUDE.md ----
+  E-CLAUDEMD-file:   {kind: file_range, path: CLAUDE.md, anchor: "whole file — operating discipline + verification discipline (artifacts are the API; field names + paths are the contract; validator must trace to real consumer; ASCII-only console)"}
+  E-CLAUDEMD-fields: {kind: doc_section, path: CLAUDE.md, anchor: "'Field names are part of the contract' + tests/test_field_contract_agreement.py enforcement note"}
+  E-CLAUDEMD-consumer:{kind: doc_section, path: CLAUDE.md, anchor: "'A validator rule must trace to a real consumer' — Lx-only evidence-line format example"}
+  E-CLAUDEMD-hook:   {kind: doc_section, path: CLAUDE.md, anchor: "SessionStart hook section — using-sensemaking bootstrap skill; hook does NOT inspect repo / classify fog / invoke workflows / validate"}
+
+  # ---- research ----
+  E-RESAGENDA-file:      {kind: file_range, path: docs/research/control-model-research-agenda.md, anchor: "whole file"}
+  E-RESAGENDA-status:    {kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "Status line — 'research hypotheses only; not an ADR, not a product contract, not a roadmap commitment'"}
+  E-RESAGENDA-c6r:       {kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "'Current compressed-control hypothesis' — C6R six points"}
+  E-RESAGENDA-evstatus:  {kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "'Evidence status' — bounded synthetic..cross-model blind replication; strongest positive claim deliberately limited; #223-#226; #218 standing lane"}
+  E-RESAGENDA-path1:     {kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "Research path 1 — responsibility selection under uncertainty; formalization must be earned"}
+  E-RESAGENDA-path2:     {kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "Research path 2 — warrant as a control primitive; do not introduce a warrant schema until normal-use evidence"}
+  E-RESAGENDA-path3:     {kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "Research path 3 — decision vs orchestration; two failure modes"}
+  E-RESAGENDA-path4:     {kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "Research path 4 — one bounded synthetic transfer exercise; limited conceptual-transfer evidence only; does not warrant a generic framework"}
+  E-RESAGENDA-evclass:   {kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "'Autonomous-cycle stopping discipline' — evidence-class ladder"}
+  E-RESAGENDA-priority:   {kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "'Current priority' — #226 without modifying C6R; #218 normal-use lane weight"}
+  E-RESAGENDA-metafinding:{kind: doc_section, path: docs/research/control-model-research-agenda.md, anchor: "Meta-finding 2026-08-30 — sensemaking loops saturated; next evidence requires constructive spikes not briefs; 3 FULL spikes 0/3 decision change; meets CONTEXT.md:321 hardening"}
+  E-DOB-file:            {kind: file_range, path: docs/decision-orchestration-boundary.md, anchor: "whole file (152 lines) — 'Decision selects the work; orchestration coordinates the work'; guardrails"}
+
+  # ---- experiments ----
+  E-EVIDDIR:             {kind: file_range, path: experiments/evidence/, anchor: "0005..0022 evidence records; 0006 semantic-authorities-live-step1; 0008 standalone-clone-step2-proof; 0018/0019/0020 reconciliation dogfood"}
+  E-EVID-0020:           {kind: file_range, path: experiments/evidence/0020-read-the-output-pattern/, anchor: "'read the artifact, not the prose' pattern"}
+  E-GITLOG-intervening:  {kind: commit, path: (git), anchor: "8bae09b..ba8968c: 33530fd (H3 vg fix) / 8cd6af4 / b1edd9c (FULL spike cost/benefit auteur H1) / 2d9d1a4 (merge PR #242 conditional PARTIAL) / 5921943 (harden FULL spikes 2/3, 0/3 decision change) / ba8968c (meta-finding)"}
+  E-PHB-hyp:             {kind: file_range, path: artifacts/hypotheses-conditional-representation.md, anchor: "H1-H5 + 2026-08-30 dogfood results; H1 SUPPORTS, H2 CONTRADICTS-as-stated (0% disagreement, n=2), H3 VERIFIED 33530fd"}
+  E-PHB-close:           {kind: file_range, path: artifacts/pr-242-close-note-33530fd.md, anchor: "PR #242 close note — what was proven / what this does NOT claim / verdict conditional PARTIAL"}

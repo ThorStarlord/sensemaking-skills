@@ -1,0 +1,254 @@
+# 03 — RELATIONSHIPS (DETAILED_REPOSITORY_ARCHITECTURE_PROTOTYPE_V0)
+#
+# Typed, evidence-backed edges. Relationships are the primary object of interest.
+# Each edge: from, rel, to, note, evidence[], grade.
+# grade: DEMONSTRATED | DERIVED | INTERPRETIVE | HYPOTHESIS
+#
+# Relationship families used: STRUCTURAL, ARTIFACT, VALIDATION, AUTHORITY,
+# PRODUCT, LIFECYCLE, RESEARCH. Edges added because they materially describe the
+# repository, not to fill the vocabulary.
+
+meta:
+  target_repo_sha: ba8968ca1a12caa90ce7beb0ee5fd2dfac055f37
+  edge_count_by_family:
+    STRUCTURAL: 12
+    ARTIFACT: 21
+    VALIDATION: 14
+    AUTHORITY: 23
+    PRODUCT: 9
+    LIFECYCLE: 12
+    RESEARCH: 14
+  total_edges: 105
+
+# =====================================================================
+# STRUCTURAL  (CONTAINS / DEPENDS_ON / CALLS / INVOKES)
+# =====================================================================
+structural:
+  - {from: runtime.workflow-runtime, rel: DEPENDS_ON, to: registry.workflow,
+     note: "loads workflow-registry.yaml + artifact-contracts.yaml at startup", evidence: [E-RT-head], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: DEPENDS_ON, to: registry.artifact-contracts,
+     note: "load_artifact_contracts()", evidence: [E-RT-head], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: DEPENDS_ON, to: registry.skill,
+     note: "load_skill_registry()", evidence: [E-RT-head], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: CALLS, to: runtime.skill-executor,
+     note: "create_executor(...) imported from skill_executor; graceful fallback if absent", evidence: [E-RT-import], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: INVOKES, to: validator.dispatch,
+     note: "validator dispatch per step via subprocess", evidence: [E-RT-head, E-AGW-201], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: CALLS, to: infra.reasoning-slice,
+     note: "opt-in MODEL_WARRANT seam (warrant_enabled) -> run_seam_warrant; only surface the runtime touches", evidence: [E-RT-routefields, E-WG-head], grade: DEMONSTRATED}
+  - {from: runtime.skill-executor, rel: DEPENDS_ON, to: infra.gate-a-authorization,
+     note: "imports GateAAuthorizationRequired; Stage-1 model invocation requires AuthorizedInvocation capability", evidence: [E-RT-import, E-GATEA-head], grade: DEMONSTRATED}
+  - {from: infra.gate-a-authorization, rel: DEPENDS_ON, to: infra.exploratory-authorization,
+     note: "capability model (issuer/registry/provenance) for authorization records", evidence: [E-GATEA-head, E-SRCTREE], grade: DERIVED}
+  - {from: probe.engine, rel: CALLS, to: probe.relationships,
+     note: "repo_probes.probe_all() aggregates relationships sub-probe into probe-report.yaml", evidence: [E-PROBE-head, E-PROBEREL-fns], grade: DEMONSTRATED}
+  - {from: validator.dispatch, rel: CALLS, to: validator.generic,
+     note: "validate-output.py -> validate-artifact.py", evidence: [E-AGW-201], grade: DEMONSTRATED}
+  - {from: validator.dispatch, rel: CALLS, to: validator.brief,
+     note: "validate-output.py -> validate-brief.py for repository_sensemaking_brief", evidence: [E-AGW-201, E-CONTRACT-brief], grade: DEMONSTRATED}
+  - {from: skill.workflow-planner, rel: CONTAINS, to: registry.artifact-contracts,
+     note: "canonical registries live under skills/workflow-planner/references/ — a skill dir owns the product-wide contract file", evidence: [E-CONTRACT-file], grade: DEMONSTRATED}
+
+# =====================================================================
+# ARTIFACT  (PRODUCES / CONSUMES / TRANSFORMS / SERIALIZES / READS_FROM / WRITES_TO)
+# =====================================================================
+artifact:
+  - {from: runtime.workflow-runtime, rel: PRODUCES, to: art.user_intent,
+     note: "produced_by: workflow-runtime (contract)", evidence: [E-CONTRACT-file], grade: DEMONSTRATED}
+  - {from: skill.problem-framer, rel: PRODUCES, to: art.problem_frame, evidence: [E-CONTRACT-frame], grade: DEMONSTRATED}
+  - {from: skill.problem-framer, rel: CONSUMES, to: art.user_intent, evidence: [E-CONTRACT-file], grade: DEMONSTRATED}
+  - {from: skill.unknowns-mapper, rel: PRODUCES, to: art.unknowns_map, evidence: [E-CONTRACT-unknowns], grade: DEMONSTRATED}
+  - {from: skill.unknowns-mapper, rel: CONSUMES, to: art.problem_frame, evidence: [E-CONTRACT-unknowns], grade: DEMONSTRATED}
+  - {from: skill.repo-sensemaker, rel: PRODUCES, to: art.repository_sensemaking_brief, evidence: [E-CONTRACT-brief], grade: DEMONSTRATED}
+  - {from: skill.repo-sensemaker, rel: CONSUMES, to: art.user_intent, evidence: [E-CONTRACT-brief], grade: DEMONSTRATED}
+  - {from: skill.repo-sensemaker, rel: READS_FROM, to: art.probe_report,
+     note: "probe-report.yaml mandatory before synthesis", evidence: [E-AGW-131, E-CTX-182], grade: DEMONSTRATED}
+  - {from: probe.engine, rel: PRODUCES, to: art.probe_report, evidence: [E-PROBE-head], grade: DEMONSTRATED}
+  - {from: probe.engine, rel: SERIALIZES, to: art.probe_report,
+     note: "writes probe-report.yaml (YAML); bounded summary to stdout; exit 0", evidence: [E-PROBE-head], grade: DEMONSTRATED}
+  - {from: skill.workflow-planner, rel: PRODUCES, to: art.workflow_orchestration_plan, evidence: [E-CONTRACT-plan], grade: DEMONSTRATED}
+  - {from: skill.workflow-planner, rel: CONSUMES, to: art.repository_sensemaking_brief, evidence: [E-CONTRACT-plan, E-CONTRACT-brief], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: TRANSFORMS, to: art.workflow_orchestration_plan,
+     note: "generate_plan() emits PROVISIONAL skeleton (plan_stage: provisional) at Phase 2 before brief exists; finalize_plan(brief_path) consumes real primary_fog_type -> canonical plan (ADR 0025)", evidence: [E-CONTRACT-plan-notes, E-ADR-0025], grade: DEMONSTRATED}
+  - {from: skill.output-reconciler, rel: PRODUCES, to: art.reconciliation_report, evidence: [E-CONTRACT-recon], grade: DEMONSTRATED}
+  - {from: skill.output-reconciler, rel: CONSUMES, to: art.work_claim,
+     note: "work_claim required (fan-in)", evidence: [E-CONTRACT-recon, E-AGW-342], grade: DEMONSTRATED}
+  - {from: skill.output-reconciler, rel: CONSUMES, to: art.repository_sensemaking_brief,
+     note: "brief required as fan-in input alongside work_claim", evidence: [E-AGW-342], grade: DEMONSTRATED}
+  - {from: skill.repair-verifier, rel: PRODUCES, to: art.repair_verification_report, evidence: [E-CONTRACT-repair], grade: DEMONSTRATED}
+  - {from: skill.repair-verifier, rel: CONSUMES, to: art.docs_contract_reconciliation_report,
+     note: "required input; the brief is its own acceptance criteria (contract description)", evidence: [E-CONTRACT-repair, E-AGW-349], grade: DEMONSTRATED}
+  - {from: skill.repair-verifier, rel: READS_FROM, to: art.probe_report,
+     note: "re-probes; checks each original finding against fresh probe-report.yaml", evidence: [E-AGW-238], grade: DEMONSTRATED}
+  - {from: skill.sensemaking-docs-reconciler, rel: PRODUCES, to: art.docs_contract_reconciliation_report, evidence: [E-CONTRACT-docsrecon], grade: DEMONSTRATED}
+  - {from: skill.handoff, rel: PRODUCES, to: art.prompt_handoff,
+     note: "prompt_handoff produced_by BOTH prompt-handoff AND handoff (contract lists two producers)", evidence: [E-CONTRACT-file], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: WRITES_TO, to: art.run_log,
+     note: "run-log recording; validators/run_log.md holds validation output (NOT stored in artifacts)", evidence: [E-CONTRACT-brief-notes, E-RT-head], grade: DEMONSTRATED}
+
+# =====================================================================
+# VALIDATION  (VALIDATES / VERIFIES / QUALIFIES / REJECTS)
+# =====================================================================
+validation:
+  - {from: validator.generic, rel: VALIDATES, to: art.repository_sensemaking_brief,
+     note: "required sections (evidence, recommended_workflow) + required machine fields (artifact_id, primary_fog_type, evidence, created_at, immutable)", evidence: [E-CONTRACT-brief], grade: DEMONSTRATED}
+  - {from: validator.brief, rel: VALIDATES, to: art.repository_sensemaking_brief,
+     note: "recommended_workflow_id semantics, representation_sufficiency/outcome, collision_dedup_direction (blocking, Rule 7)", evidence: [E-CONTRACT-brief-notes], grade: DEMONSTRATED}
+  - {from: validator.generic, rel: REJECTS, to: rel.universal-workflow-id-requirement,
+     note: "generic validator must NOT universally require recommended_workflow_id — that is validate-brief.py's conditional job (contract lines 146-148)", evidence: [E-CONTRACT-brief-146], grade: DEMONSTRATED}
+  - {from: validator.plan, rel: VALIDATES, to: art.workflow_orchestration_plan,
+     note: "only the FINALIZED plan must pass; provisional skeleton exempt (ADR 0025)", evidence: [E-CONTRACT-plan-notes, E-ADR-0025], grade: DEMONSTRATED}
+  - {from: validator.field-contract-agreement, rel: VERIFIES, to: rel.producer-consumer-field-agreement,
+     note: "every routing field runtime reads must be declared in artifact-contracts.yaml", evidence: [E-CLAUDEMD-fields], grade: DEMONSTRATED}
+  - {from: validator.other-specialized, rel: VALIDATES, to: art.user_intent,
+     note: "validate-user-intent.py", evidence: [E-CONTRACT-file], grade: DEMONSTRATED}
+  - {from: validator.other-specialized, rel: VALIDATES, to: art.unknowns_map, evidence: [E-CONTRACT-unknowns], grade: DEMONSTRATED}
+  - {from: validator.other-specialized, rel: VALIDATES, to: art.prd, evidence: [E-CONTRACT-prd], grade: DEMONSTRATED}
+  - {from: validator.other-specialized, rel: VALIDATES, to: art.prompt_handoff,
+     note: "validate-prompt-handoff.py", evidence: [E-CONTRACT-handoff], grade: DEMONSTRATED}
+  - {from: validator.other-specialized, rel: VALIDATES, to: art.probe_report,
+     note: "validate-probe-report.py", evidence: [E-SCRIPTS-ls], grade: DEMONSTRATED}
+  - {from: probe.relationships, rel: VERIFIES, to: registry.adr-status-convention,
+     note: "reads every ADR **Status** line; findings for unrecognized/missing/mismatched status vs docs/adr/README.md vocabulary", evidence: [E-ADRREADME, E-PROBEREL-fns], grade: DEMONSTRATED}
+  - {from: skill.repair-verifier, rel: VERIFIES, to: art.repository_sensemaking_brief,
+     note: "finding-specific closure check — generic green CI is NOT closure (CONTEXT.md:81, AGW:248)", evidence: [E-CTX-81, E-AGW-248], grade: DEMONSTRATED}
+  - {from: skill.output-reconciler, rel: VERIFIES, to: art.work_claim,
+     note: "re-derives each claim from durable artifacts; classifies verified|disputed|omitted", evidence: [E-AGW-221], grade: DEMONSTRATED}
+  - {from: skill.skill-maintainer, rel: QUALIFIES, to: rel.skill-improvement,
+     note: "promotion-criteria.md six gates gate skill edits", evidence: [E-AGW-271], grade: DEMONSTRATED}
+
+# =====================================================================
+# AUTHORITY  (GOVERNS / DEFINES_CONTRACT_FOR / ENFORCES_CONTRACT_FOR /
+#             AUTHORIZES / OWNS / DERIVES_FROM)
+# =====================================================================
+authority:
+  - {from: doc.adr-corpus, rel: GOVERNS, to: rel.product-semantics,
+     note: "ADRs govern product semantics (CLAUDE.md operating discipline)", evidence: [E-CLAUDEMD-file], grade: DEMONSTRATED}
+  - {from: E-ADR-0013, rel: AUTHORIZES, to: rel.agent-owns-control-loop,
+     note: "active coding agent owns the top-level recursive control loop; runtime is support machinery", evidence: [E-ADR-0013, E-CTX-13], grade: DEMONSTRATED}
+  - {from: E-ADR-0014, rel: GOVERNS, to: skill.repo-sensemaker,
+     note: "ratifies the settled product core = evidence-grounded, human-reviewed brief; routing DEFERRED pending its own external proof", evidence: [E-ADR-0014, E-ADR-0014-head], grade: DEMONSTRATED}
+  - {from: E-ADR-0014, rel: GOVERNS, to: rel.automatic-fog-routing,
+     note: "routing/tracker-sync/deployment OUT OF SCOPE; 'diagnosis + routing' no longer one settled unit", evidence: [E-ADR-0014-head], grade: DEMONSTRATED}
+  - {from: E-ADR-0026, rel: GOVERNS, to: rel.auto-invoke-next-workflow,
+     note: "auto_invoke_next_workflow may remain as compatibility metadata but is NOT execution authority; a workflow executes only after a SEPARATE explicit authority event", evidence: [E-ADR-0026, E-WFREG-head], grade: DEMONSTRATED}
+  - {from: E-ADR-0010, rel: AUTHORIZES, to: runtime.workflow-runtime,
+     note: "ONE component owns artifact path resolution + session scoping; producers receive expected_output_path and write exactly there", evidence: [E-ADR-0010, E-CLAUDEMD-file], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: OWNS, to: rel.artifact-path-resolution,
+     note: "_resolve_artifact_path is the single authoritative resolver; skill-executor must not recompute artifacts/<id>.md", evidence: [E-RT-resolve, E-CLAUDEMD-file], grade: DEMONSTRATED}
+  - {from: registry.artifact-contracts, rel: DEFINES_CONTRACT_FOR, to: art.repository_sensemaking_brief,
+     note: "declares path, produced_by, consumed_by, required sections + machine fields, verification", evidence: [E-CONTRACT-brief], grade: DEMONSTRATED}
+  - {from: registry.artifact-contracts, rel: DEFINES_CONTRACT_FOR, to: rel.all-pipeline-artifacts,
+     note: "canonical for every artifact id in the sensemaking pipeline", evidence: [E-CONTRACT-file], grade: DEMONSTRATED}
+  - {from: validator.generic, rel: ENFORCES_CONTRACT_FOR, to: registry.artifact-contracts,
+     note: "mechanically enforces required_sections / required_machine_fields / controlled vocab / reference resolution", evidence: [E-CONTRACT-brief, E-ADR-0001], grade: DEMONSTRATED}
+  - {from: validator.brief, rel: ENFORCES_CONTRACT_FOR, to: rel.brief-conditional-fields,
+     note: "enforces the parts of the brief contract that generic cannot (conditional/blocking rules)", evidence: [E-CONTRACT-brief-notes], grade: DEMONSTRATED}
+  - {from: skill.repo-sensemaker, rel: DEFINES_CONTRACT_FOR, to: rel.brief-producer-behavior,
+     note: "SKILL.md instructions define producer behavior — the semantics of what a valid brief means, upstream of the mechanical contract", evidence: [E-CTX-77, E-AGW-189], grade: INTERPRETIVE}
+  - {from: registry.canonical-vocabulary, rel: DEFINES_CONTRACT_FOR, to: rel.enumerated-vocab,
+     note: "canonical enumerated vocabulary", evidence: [E-CTX-297], grade: DEMONSTRATED}
+  - {from: E-ADR-0011, rel: ENFORCES_CONTRACT_FOR, to: registry.canonical-vocabulary,
+     note: "canonical vocabulary enforcement", evidence: [E-ADR-0011], grade: DEMONSTRATED}
+  - {from: registry.adr-status-convention, rel: DEFINES_CONTRACT_FOR, to: doc.adr-corpus,
+     note: "defines the **Status** vocabulary; probe_relationships.py enforces", evidence: [E-ADRREADME], grade: DEMONSTRATED}
+  - {from: infra.gate-a-authorization, rel: AUTHORIZES, to: rel.stage1-model-invocation,
+     note: "capability, not flag: no valid AuthorizedInvocation -> no path to the model invocation function; fail closed", evidence: [E-GATEA-head], grade: DEMONSTRATED}
+  - {from: E-ADR-0022, rel: GOVERNS, to: infra.gate-a-authorization,
+     note: "PROPOSED — Gate A authorization consumer placement, awaiting independent adversarial review (NOT settled)", evidence: [E-ADR-0022, E-ADR-statuses], grade: DEMONSTRATED}
+  - {from: E-ADR-0023, rel: GOVERNS, to: infra.exploratory-authorization,
+     note: "ACCEPTED — two-lane experiment authorization (independently reviewed at exact head)", evidence: [E-ADR-0023, E-ADR-statuses], grade: DEMONSTRATED}
+  - {from: doc.context, rel: OWNS, to: rel.source-of-truth-map,
+     note: "CONTEXT.md source-of-truth map names which resource is authoritative for what", evidence: [E-CTX-291], grade: DEMONSTRATED}
+  - {from: doc.control-model-research-agenda, rel: DERIVES_FROM, to: rel.normal-use-evidence,
+     note: "research claims derive from bounded evidence; explicitly NOT product authority ('not an ADR, not a product contract')", evidence: [E-RESAGENDA-status], grade: DEMONSTRATED}
+  - {from: infra.reasoning-slice, rel: DERIVES_FROM, to: doc.control-model-research-agenda,
+     note: "the qualified vertical slice implements C6R-adjacent concepts as a research seam, not ratified architecture", evidence: [E-WG-head, E-RESAGENDA-status], grade: DERIVED}
+  - {from: E-ADR-0014, rel: GOVERNS, to: doc.goal-a-protocol,
+     note: "Goal A validates ONLY the ratified product scope (validated human-reviewed brief); protocol approval != episode-execution authorization", evidence: [E-CTX-40, E-CTX-49], grade: DEMONSTRATED}
+  - {from: doc.claude-md, rel: GOVERNS, to: rel.validator-must-trace-to-consumer,
+     note: "a validator rule must trace to a real downstream consumer; enforcing a convention nothing consumes produces false failures", evidence: [E-CLAUDEMD-file], grade: DEMONSTRATED}
+
+# =====================================================================
+# PRODUCT  (IMPLEMENTS / SUPPORTS_CAPABILITY / ROUTES_TO)
+# =====================================================================
+product:
+  - {from: skill.repo-sensemaker, rel: IMPLEMENTS, to: cap.repository-diagnosis,
+     note: "the one ratified/operationally-grounded product capability (ADR 0014)", evidence: [E-ADR-0014, E-AGW-380], grade: DEMONSTRATED}
+  - {from: probe.engine, rel: SUPPORTS_CAPABILITY, to: cap.repository-diagnosis,
+     note: "measured state feeds the brief; REAL (ADR 0004)", evidence: [E-AGW-131], grade: DEMONSTRATED}
+  - {from: skill.output-reconciler, rel: IMPLEMENTS, to: cap.output-reconciliation,
+     note: "REAL + dogfooded (evidence 0018, 0020)", evidence: [E-AGW-386], grade: DEMONSTRATED}
+  - {from: skill.repair-verifier, rel: IMPLEMENTS, to: cap.repair-verification,
+     note: "REAL + dogfooded (evidence 0019); `unevaluable` verdict UNRATIFIED", evidence: [E-AGW-387], grade: DEMONSTRATED}
+  - {from: validator.dispatch, rel: IMPLEMENTS, to: cap.deterministic-validation,
+     note: "REAL", evidence: [E-AGW-381], grade: DEMONSTRATED}
+  - {from: skill.workflow-planner, rel: IMPLEMENTS, to: cap.planning,
+     note: "plan is recommendation, not authority", evidence: [E-CONTRACT-plan, E-AGW-383], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: ROUTES_TO, to: cap.implementation-workflows,
+     note: "runtime CAN chain fog-type -> implementation workflow, but this route has NO product-level authority (CONTEXT.md:127, ADR 0018 SUPERSEDED)", evidence: [E-CTX-127, E-AGW-185], grade: DEMONSTRATED}
+  - {from: cap.automatic-fog-routing, rel: IMPLEMENTS, to: rel.NOT-ratified,
+     note: "capability exists in runtime + registry fields but is explicitly NOT ratified product behavior", evidence: [E-CTX-335, E-AGW-185], grade: DEMONSTRATED}
+  - {from: cap.domain-general-control, rel: IMPLEMENTS, to: rel.research-only,
+     note: "domain-general control semantics / domain packs / decision-theory machinery = research only, not warranted", evidence: [E-CTX-341, E-RESAGENDA-file], grade: DEMONSTRATED}
+
+# =====================================================================
+# LIFECYCLE  (SUPERSEDES / REPLACES / DEPRECATES / HISTORICAL_ONLY)
+# =====================================================================
+lifecycle:
+  - {from: E-ADR-0013, rel: SUPERSEDES, to: rel.programmatic-second-model-runner,
+     note: "agent-native execution ratified primary; programmatic second-model runner RETIRED (2026-08-13)", evidence: [E-AGW-22, E-ADR-0013], grade: DEMONSTRATED}
+  - {from: E-ADR-0018, rel: HISTORICAL_ONLY, to: rel.deterministic-fog-routing-table,
+     note: "SUPERSEDED 2026-08-18; historical proposal, NEVER Accepted", evidence: [E-ADR-statuses, E-AGW-185], grade: DEMONSTRATED}
+  - {from: E-ADR-0017, rel: HISTORICAL_ONLY, to: rel.readiness-criteria,
+     note: "SUPERSEDED 2026-08-18; never Accepted", evidence: [E-ADR-statuses], grade: DEMONSTRATED}
+  - {from: E-ADR-0019, rel: HISTORICAL_ONLY, to: rel.findings-to-tracker-policy,
+     note: "SUPERSEDED; never Accepted — so issue_list is NOT authorization to create a tracker issue", evidence: [E-ADR-statuses, E-AGW-361], grade: DEMONSTRATED}
+  - {from: E-ADR-0020, rel: HISTORICAL_ONLY, to: rel.wayfinder-prototypes-scope, evidence: [E-ADR-statuses], grade: DEMONSTRATED}
+  - {from: E-ADR-0021, rel: HISTORICAL_ONLY, to: rel.production-readiness-requirements, evidence: [E-ADR-statuses], grade: DEMONSTRATED}
+  - {from: E-ADR-0026, rel: DEPRECATES, to: rel.auto-invoke-as-authority,
+     note: "keeps the field as compatibility metadata but removes any authority reading", evidence: [E-ADR-0026], grade: DEMONSTRATED}
+  - {from: E-ADR-0025, rel: REPLACES, to: rel.single-stage-plan,
+     note: "two-stage plan lifecycle (provisional skeleton -> finalized canonical) replaces implicit single-stage assumption", evidence: [E-ADR-0025, E-CONTRACT-plan-notes], grade: DEMONSTRATED}
+  - {from: runtime.workflow-runtime, rel: REPLACES, to: rel.orchestration-runner-name,
+     note: "canonical engine; old name orchestration-runner.py kept as back-compat wrapper", evidence: [E-RT-head], grade: DEMONSTRATED}
+  - {from: doc.agent-native-operating-workflow, rel: HISTORICAL_ONLY, to: rel.auteur-handoff-episode,
+     note: "the Auteur 'read the artifact, not the prose' handoff is historical evidence that MOTIVATED output-reconciler / repair-verifier", evidence: [E-AGW-22, E-EVID-0020], grade: DEMONSTRATED}
+  - {from: experiments.product-hypothesis-b, rel: HISTORICAL_ONLY, to: rel.phb-conditional-partial,
+     note: "PHB bounded experiment closed conditional PARTIAL (33530fd); spike evidence b1edd9c", evidence: [E-GITLOG-intervening], grade: DEMONSTRATED}
+  - {from: doc.control-model-research-agenda, rel: HISTORICAL_ONLY, to: rel.sensemaking-loops-saturated,
+     note: "meta-finding 2026-08-30: further sensemaking loops saturated; next evidence requires constructive spikes not briefs", evidence: [E-RESAGENDA-metafinding], grade: DEMONSTRATED}
+
+# =====================================================================
+# RESEARCH  (TESTS_HYPOTHESIS / PROVIDES_EVIDENCE_FOR / LIMITS_CLAIM /
+#            DOES_NOT_ESTABLISH / MOTIVATES_FOLLOWUP)
+# =====================================================================
+research:
+  - {from: infra.reasoning-slice, rel: TESTS_HYPOTHESIS, to: hyp.C6R-compressed-control,
+     note: "qualified vertical slice is the tested module behind the runtime seam", evidence: [E-WG-head, E-RESAGENDA-c6r], grade: DEMONSTRATED}
+  - {from: experiments.evidence-0006, rel: PROVIDES_EVIDENCE_FOR, to: hyp.semantic-authorities,
+     note: "0006-semantic-authorities-live-step1", evidence: [E-EVIDDIR], grade: DEMONSTRATED}
+  - {from: experiments.evidence-0008, rel: PROVIDES_EVIDENCE_FOR, to: hyp.standalone-clone-usable,
+     note: "0008-standalone-clone-step2-proof — agent-mediated external path demonstrated on ONE fresh repo", evidence: [E-EVIDDIR, E-CTX-158], grade: DEMONSTRATED}
+  - {from: experiments.evidence-0008, rel: DOES_NOT_ESTABLISH, to: claim.product-wide-GA,
+     note: "product-wide GA and standard-CLI real-executor E2E NOT claimed (CONTEXT.md:158)", evidence: [E-CTX-158], grade: DEMONSTRATED}
+  - {from: doc.control-model-research-agenda, rel: LIMITS_CLAIM, to: hyp.C6R-compressed-control,
+     note: "strongest positive claim deliberately limited: compatible control behavior across a bounded synthetic suite + isolated model contexts; does NOT establish real-world effectiveness / prevalence / productivity / optimality / model independence / production readiness", evidence: [E-RESAGENDA-evstatus], grade: DEMONSTRATED}
+  - {from: hyp.path-1-responsibility-selection, rel: MOTIVATES_FOLLOWUP, to: rel.value-of-information-formalization,
+     note: "formalization must be EARNED by repeated cases where the qualitative heuristic fails; not a numeric scoring proposal", evidence: [E-RESAGENDA-path1], grade: DEMONSTRATED}
+  - {from: hyp.path-2-warrant-primitive, rel: MOTIVATES_FOLLOWUP, to: rel.warrant-schema,
+     note: "do NOT introduce a warrant schema until normal-use evidence demonstrates explicit representation solves a recurring problem", evidence: [E-RESAGENDA-path2], grade: DEMONSTRATED}
+  - {from: hyp.path-3-decision-vs-orchestration, rel: PROVIDES_EVIDENCE_FOR, to: doc.decision-orchestration-boundary,
+     note: "watch two failure modes: orchestration swallows decision / decision swallows orchestration", evidence: [E-RESAGENDA-path3, E-DOB-file], grade: DEMONSTRATED}
+  - {from: hyp.path-4-domain-general, rel: PROVIDES_EVIDENCE_FOR, to: claim.limited-conceptual-transfer,
+     note: "one bounded synthetic transfer exercise in AI-research semantics — LIMITED conceptual-transfer evidence only", evidence: [E-RESAGENDA-path4], grade: DEMONSTRATED}
+  - {from: hyp.path-4-domain-general, rel: DOES_NOT_ESTABLISH, to: claim.generic-framework-warranted,
+     note: "transfer result does NOT warrant a generic framework / plugin infra / Sensemaking Core", evidence: [E-RESAGENDA-path4], grade: DEMONSTRATED}
+  - {from: issue.226, rel: TESTS_HYPOTHESIS, to: hyp.gate-separation,
+     note: "prospective blind evidence-authority-verification gate-separation study; C6R frozen until preregistered result", evidence: [E-RESAGENDA-evstatus, E-RESAGENDA-priority], grade: DEMONSTRATED}
+  - {from: issue.218, rel: PROVIDES_EVIDENCE_FOR, to: claim.normal-use,
+     note: "standing normal-use evidence lane; synthetic cases from #226 do NOT count as normal-use episodes", evidence: [E-RESAGENDA-evstatus, E-CTX-50], grade: DEMONSTRATED}
+  - {from: experiments.product-hypothesis-b, rel: TESTS_HYPOTHESIS, to: hyp.conditional-representation,
+     note: "H1/H3 — FULL spike cost/benefit on auteur; conditional PARTIAL disposition; 3 FULL spikes = 0/3 decision change vs PARTIAL", evidence: [E-GITLOG-intervening, E-RESAGENDA-metafinding], grade: DEMONSTRATED}
+  - {from: experiments.product-hypothesis-b, rel: LIMITS_CLAIM, to: hyp.conditional-representation,
+     note: "meets CONTEXT.md:321 hardening for 'conditional as default, FULL deferred'; future agents should NOT re-run sensemaking diagnosis to test this — replicate/falsify with a constructive FULL spike or stop", evidence: [E-RESAGENDA-metafinding], grade: DEMONSTRATED}

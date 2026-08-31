@@ -1,0 +1,533 @@
+# 02 — COMPONENTS (DETAILED_REPOSITORY_ARCHITECTURE_PROTOTYPE_V0)
+#
+# Component register. Semantic coverage, not file-level enumeration.
+# Each component: id, kind, path(s), owns (responsibility), does_not_own
+# (boundary that matters), lifecycle, evidence, grade.
+#
+# lifecycle vocabulary: active | experimental | compatibility | deprecated
+#   | superseded | historical_evidence | research_only | open
+# grade vocabulary: DEMONSTRATED | DERIVED | INTERPRETIVE | HYPOTHESIS
+
+meta:
+  target_repo_sha: ba8968ca1a12caa90ce7beb0ee5fd2dfac055f37
+  component_count: 34
+
+components:
+
+  # ---------------------------------------------------------------- SKILLS
+  - id: skill.repo-sensemaker
+    kind: skill
+    path: skills/repo-sensemaker/SKILL.md
+    owns: >
+      Turn user_intent + measured repository evidence into a
+      repository_sensemaking_brief: consequential boundary, weakness pattern,
+      fog classification, remaining uncertainty, Section 13 machine handoff,
+      optional Section 15 extended_analysis, representation_sufficiency judgment.
+    does_not_own:
+      - "Choosing the downstream implementation workflow (recommendation only; CONTEXT.md:142)"
+      - "Authorization to modify the repository (brief is decision support; CONTEXT.md:144)"
+      - "Path resolution of its own output artifact (runtime owns; ADR 0010)"
+      - "The MODEL_WARRANT decision itself (runtime seam maps representation_sufficiency; CONTEXT.md:146-158)"
+    lifecycle: active
+    ratified_by: "ADR 0014 (product boundary — the settled core)"
+    evidence: [E-CTX-05, E-CTX-131, E-CTX-142, E-ADR-0014, E-CONTRACT-brief]
+    grade: DEMONSTRATED
+
+  - id: skill.workflow-planner
+    kind: skill
+    path: skills/workflow-planner/SKILL.md
+    owns: >
+      Read a repository_sensemaking_brief and emit a workflow_orchestration_plan
+      (machine-readable routing + step definitions). Also custodian of the
+      canonical reference registries under skills/workflow-planner/references/.
+    does_not_own:
+      - "Execution authority for the planned workflow (plan is recommendation, not authority; ADR 0026, CONTEXT.md:194)"
+      - "Runtime path resolution / session scoping (ADR 0010)"
+    lifecycle: active
+    evidence: [E-CONTRACT-plan, E-ADR-0026, E-CTX-194]
+    grade: DEMONSTRATED
+
+  - id: skill.problem-framer
+    kind: skill
+    path: skills/problem-framer/SKILL.md
+    owns: "Frame a vague fog into problem_frame (problem-under-the-problem, failure mode, success condition)."
+    does_not_own: ["Repository diagnosis (that is repo-sensemaker)"]
+    lifecycle: active
+    evidence: [E-CONTRACT-frame]
+    grade: DEMONSTRATED
+
+  - id: skill.unknowns-mapper
+    kind: skill
+    path: skills/unknowns-mapper/SKILL.md
+    owns: "Separate knowns/unknowns/assumptions/risks into unknowns_map; define research paths + stopping rule."
+    does_not_own: ["Resolving the unknowns"]
+    lifecycle: active
+    evidence: [E-CONTRACT-unknowns]
+    grade: DEMONSTRATED
+
+  - id: skill.output-reconciler
+    kind: skill
+    path: skills/output-reconciler/SKILL.md
+    owns: >
+      Re-derive each claim in a work_claim from durable artifacts; classify
+      verified|disputed|omitted; dispose each disputed/omitted claim
+      fix|defer|file; emit reconciliation_report.
+    does_not_own:
+      - "Repair verification of original findings (that is repair-verifier)"
+      - "Authority to create tracker issues from findings (CONTEXT.md authority track)"
+    lifecycle: active
+    dogfooded: "experiments/evidence/0018, 0019, 0020"
+    evidence: [E-CONTRACT-recon, E-AGW-221, E-EVID-0020]
+    grade: DEMONSTRATED
+
+  - id: skill.repair-verifier
+    kind: skill
+    path: skills/repair-verifier/SKILL.md
+    owns: >
+      Re-probe the repository; check each original brief finding against the
+      fresh probe-report.yaml; emit repair_verification_report
+      (findings_closed / findings_remaining with disposition).
+    does_not_own:
+      - "Judging whether work claims are supported (that is output-reconciler)"
+      - "A formal `unevaluable` verdict (proposed, NOT encoded in the contract; AGW:252, E-AGW-387)"
+    lifecycle: active
+    dogfooded: "experiments/evidence/0019"
+    evidence: [E-CONTRACT-repair, E-AGW-238, E-AGW-387]
+    grade: DEMONSTRATED
+
+  - id: skill.sensemaking-docs-reconciler
+    kind: skill
+    path: skills/sensemaking-docs-reconciler/SKILL.md
+    owns: >
+      Challenge repository architecture against its docs / registries / templates
+      / examples; emit docs_contract_reconciliation_report; update CONTEXT.md
+      glossary / registries / contracts ONLY after user approval.
+    does_not_own: ["Unilateral canonical-doc mutation (user-approval gate)"]
+    lifecycle: active
+    evidence: [E-CONTRACT-docsrecon]
+    grade: DEMONSTRATED
+
+  - id: skill.docs-aligner
+    kind: skill
+    path: skills/docs-aligner/SKILL.md
+    owns: "Align a target codebase's docs with implementation; produce domain_alignment_report; update CONTEXT.md."
+    does_not_own: ["Sensemaking-repo self-reconciliation (that is sensemaking-docs-reconciler)"]
+    lifecycle: active
+    evidence: [E-CONTRACT-domalign]
+    grade: DEMONSTRATED
+
+  - id: skill.handoff
+    kind: skill
+    path: skills/handoff/SKILL.md
+    owns: "Convert a sensemaking artifact into a ready-to-copy prompt for the next skill; emit prompt_handoff / session_summary."
+    does_not_own: ["Executing the next skill"]
+    lifecycle: active
+    naming_governed_by: "ADR 0009 (handoff skill naming convention)"
+    evidence: [E-CONTRACT-handoff, E-ADR-0009]
+    grade: DEMONSTRATED
+
+  - id: skill.architectural-review
+    kind: skill
+    path: skills/architectural-review/SKILL.md
+    owns: "Given proposed_direction, emit architectural_review_recommendation (decision, confidence, machine_readable_decision)."
+    does_not_own: ["Repository diagnosis; implementation"]
+    lifecycle: active
+    evidence: [E-CONTRACT-archrev]
+    grade: DEMONSTRATED
+
+  - id: skill.to-prd
+    kind: skill
+    path: skills/to-prd/SKILL.md
+    owns: "Convert opportunity map / discovery findings into prd with scope-expansion tracking."
+    does_not_own: ["Issue breakdown (that is to-issues)"]
+    lifecycle: active
+    evidence: [E-CONTRACT-prd]
+    grade: DEMONSTRATED
+
+  - id: skill.to-issues
+    kind: skill
+    path: skills/to-issues/SKILL.md
+    owns: "Convert prd into issue_list with acceptance criteria, effort, scope tracking."
+    does_not_own: ["Creating real tracker issues (authority boundary; AGW:361)"]
+    lifecycle: active
+    evidence: [E-CONTRACT-issues, E-AGW-361]
+    grade: DEMONSTRATED
+
+  - id: skill.skill-maintainer
+    kind: skill
+    path: skills/skill-maintainer/SKILL.md
+    owns: "Translate usage research into skill_improvement_plan; custodian of promotion-criteria.md (six gates)."
+    does_not_own: ["Editing a skill without going through the plan + gates"]
+    lifecycle: active
+    evidence: [E-CONTRACT-simprov, E-AGW-271]
+    grade: DEMONSTRATED
+
+  - id: skill.usage-researcher
+    kind: skill
+    path: skills/usage-researcher/SKILL.md
+    owns: "Behavioral learning loop: evaluate skill performance in realistic scenarios; emit usage_research_report."
+    does_not_own: ["Applying the recommended edits"]
+    lifecycle: active
+    evidence: [E-CONTRACT-usage]
+    grade: DEMONSTRATED
+
+  - id: skill.setup-sensemaking-skills
+    kind: skill
+    path: skills/setup-sensemaking-skills/SKILL.md
+    owns: "Configure a repo for sensemaking-skills: agent docs, contract refs, mode defaults, downstream skill mappings, run-log conventions."
+    does_not_own: ["Running the pipeline it configures"]
+    lifecycle: active
+    evidence: [E-SKILLDIR]
+    grade: DEMONSTRATED
+
+  - id: skill.using-sensemaking
+    kind: skill
+    path: skills/using-sensemaking/SKILL.md
+    owns: "Bootstrap skill: teach agents fog classification, artifact reading, validator-error interpretation, autonomous decision-making."
+    does_not_own: ["Inspecting the repository / classifying fog / invoking workflows / validating (per CLAUDE.md SessionStart hook section)"]
+    lifecycle: active
+    evidence: [E-CLAUDEMD-hook]
+    grade: DEMONSTRATED
+
+  - id: skill.coding-agent-native-campaign
+    kind: skill
+    path: skills/coding-agent-native-campaign/SKILL.md
+    owns: "Campaign-mode responsibility for coding-agent-native execution experiments."
+    does_not_own: ["Canonical product behavior"]
+    lifecycle: experimental
+    evidence: [E-SKILLDIR]
+    grade: INTERPRETIVE
+
+  # ---------------------------------------------------------- RUNTIME / EXECUTION
+  - id: runtime.workflow-runtime
+    kind: runtime
+    path: scripts/workflow-runtime.py
+    owns: >
+      Canonical execution engine for registered workflows: plan generation
+      (provisional + finalized, ADR 0025), step execution, validator dispatch,
+      gate management, run-log recording, mode-coverage updates,
+      AUTHORITATIVE artifact path resolution + session scoping
+      (_resolve_artifact_path), passing expected_output_path to executors,
+      and the opt-in MODEL_WARRANT seam (warrant_enabled).
+    does_not_own:
+      - "The top-level control loop (active coding agent owns it; ADR 0013)"
+      - "Product-level authority to auto-route fog-type -> implementation (deferred; ADR 0014, ADR 0018 SUPERSEDED)"
+      - "Deciding which responsibility is warranted (that is agent judgment; CONTEXT.md:75)"
+      - "Granting a child workflow execution authority (needs a separate explicit authority event; ADR 0026)"
+    lifecycle: compatibility   # real engine, but NOT the product controller
+    back_compat_alias: "scripts/_orchestrator.py / orchestration-runner.py"
+    evidence: [E-RT-head, E-RT-resolve, E-RT-routefields, E-ADR-0013, E-ADR-0026, E-ADR-0025]
+    grade: DEMONSTRATED
+
+  - id: runtime.skill-executor
+    kind: execution_infra
+    path: scripts/skill_executor.py
+    owns: >
+      Execute a skill step: receive runtime-resolved expected_output_path,
+      write the artifact exactly there, enforce model-identifier validation,
+      require an AuthorizedInvocation capability for Stage-1 controlled model
+      invocations (fail closed via GateAAuthorizationRequired).
+    does_not_own:
+      - "Recomputing artifacts/<id>.md independently (ADR 0010 — must use expected_output_path)"
+      - "Creating / normalizing authorization artifacts (gate_a_authorization owns the check, not creation)"
+    lifecycle: active
+    evidence: [E-RT-import, E-GATEA-head, E-ADR-0010]
+    grade: DEMONSTRATED
+
+  - id: infra.gate-a-authorization
+    kind: authorization_seam
+    path: scripts/gate_a_authorization.py
+    owns: >
+      Capability-based gate between an authorization record (+ external digest +
+      physically distinct owner-approval artifact) and a model invocation:
+      "no valid authorization capability, no path to the model invocation
+      function." authorize() -> typed AuthorizationDecision; only authorized=True
+      yields an AuthorizedInvocation.
+    does_not_own:
+      - "Invoking a model"
+      - "Creating / repairing / normalizing authorization artifacts"
+    lifecycle: active
+    placement_debated_by: "ADR 0022 (PROPOSED — consumer placement, awaiting adversarial review)"
+    evidence: [E-GATEA-head, E-ADR-0022]
+    grade: DEMONSTRATED
+
+  - id: infra.exploratory-authorization
+    kind: authorization_infra
+    path: src/sensemaking_skills/exploratory_authorization/
+    owns: "Issue / model / provenance / registry for exploratory-execution authorization capabilities (two-lane; ADR 0023)."
+    does_not_own: ["Core product operation (optional subsystem; CONTEXT.md:277)"]
+    lifecycle: active
+    evidence: [E-SRCTREE, E-ADR-0023, E-CTX-277]
+    grade: DEMONSTRATED
+
+  - id: infra.exploratory-execution
+    kind: execution_infra
+    path: src/sensemaking_skills/exploratory_execution/
+    owns: >
+      Optional experimental/campaign execution: GitHub REST approval capture,
+      target checkout, prompt building, production verification, execution
+      identity, conversation approval, claude provider.
+    does_not_own: ["Being a requirement of the core local-first product (CONTEXT.md:273-277)"]
+    lifecycle: experimental
+    evidence: [E-SRCTREE, E-CTX-273]
+    grade: DEMONSTRATED
+
+  - id: infra.campaign-accounting
+    kind: research_infra
+    path: src/sensemaking_skills/campaign_accounting/
+    owns: "Ledger / permit / reservation / recovery / digests accounting for governed experiment campaigns."
+    does_not_own: ["Product runtime behavior"]
+    lifecycle: research_only
+    evidence: [E-SRCTREE]
+    grade: INTERPRETIVE
+
+  - id: infra.campaign-validation
+    kind: research_infra
+    path: src/sensemaking_skills/campaign_validation/
+    owns: "Immutable / JCS canonicalization / schema validation / GitHub-durable checks for campaign artifacts."
+    does_not_own: ["Validating pipeline artifacts (that is scripts/validate-*.py)"]
+    lifecycle: research_only
+    evidence: [E-SRCTREE]
+    grade: INTERPRETIVE
+
+  - id: infra.reasoning-slice
+    kind: research_infra
+    path: src/sensemaking_skills/reasoning/
+    owns: >
+      Qualified vertical slice of the compressed control model: vertical_slice
+      (ReasoningEpisode / Warrant / Uncertainty), evidence_probes
+      (derive_probes / probes_to_warrant), warrant_gate (WarrantRecord,
+      run_seam_warrant) — the tested module behind the runtime's opt-in seam.
+    does_not_own:
+      - "Changing how repo-sensemaker produces the brief (warrant_gate.py docstring: only computes+records at the seam)"
+      - "Being ratified product architecture (research hypothesis; research-agenda Status line)"
+    lifecycle: research_only
+    evidence: [E-WG-head, E-RESAGENDA-status]
+    grade: DEMONSTRATED
+
+  # ------------------------------------------------------------------- PROBES
+  - id: probe.engine
+    kind: probe_infra
+    path: [scripts/probe-repo.py, scripts/repo_probes.py]
+    owns: >
+      Measured current repository state -> probe-report.yaml: git_state,
+      verification_gap (Vg), context_entropy (Ce), test_collection,
+      fixtures_coverage, churn, relationships. Mandatory before brief synthesis;
+      failed/errored observation is NOT an observed absence (times out, does not raise).
+    does_not_own:
+      - "Interpreting the measurements (that is repo-sensemaker synthesis)"
+      - "Treating 'probe could not evaluate' as evidence of absence (CONTEXT.md:182)"
+    lifecycle: active
+    ratified_by: "ADR 0004 (evidence tracking for trust)"
+    evidence: [E-PROBE-head, E-CTX-182, E-AGW-131]
+    grade: DEMONSTRATED
+
+  - id: probe.relationships
+    kind: probe_infra
+    path: scripts/probe_relationships.py
+    owns: >
+      Relationship sub-probe: version-drift findings, ADR catalog + ADR-integrity
+      (reads every docs/adr/NNN-*.md **Status** line vs the canonical vocabulary
+      in docs/adr/README.md; emits findings for unrecognized/missing/mismatched status),
+      doc-surface classification, ADR reference-vs-claim mismatch.
+    does_not_own: ["Defining the ADR status vocabulary (docs/adr/README.md defines it)"]
+    lifecycle: active
+    evidence: [E-PROBEREL-fns, E-ADRREADME]
+    grade: DEMONSTRATED
+
+  - id: probe.repo-probes-support
+    kind: probe_infra
+    path: [scripts/probe_skill_distribution.py, scripts/repo_probes.py]
+    owns: "Supporting probe computations (skill distribution, churn, fixtures)."
+    does_not_own: ["Synthesis"]
+    lifecycle: active
+    evidence: [E-SCRIPTS-ls]
+    grade: DERIVED
+
+  # --------------------------------------------------------------- VALIDATORS
+  - id: validator.dispatch
+    kind: validator
+    path: scripts/validate-output.py
+    owns: "Dispatch entrypoint: route an artifact to generic + specialized validators; structured JSON errors."
+    does_not_own: ["Proving analytical correctness / usefulness / closure (CONTEXT.md:209, AGW:209)"]
+    lifecycle: active
+    evidence: [E-AGW-201, E-CTX-207]
+    grade: DEMONSTRATED
+
+  - id: validator.generic
+    kind: validator
+    path: scripts/validate-artifact.py
+    owns: "Generic contract check for any artifact id: required sections, required machine fields, controlled vocabulary, reference resolution, path/contract satisfaction."
+    does_not_own:
+      - "Artifact-specific rules (delegated to specialized validators)"
+      - "Universally requiring recommended_workflow_id (must NOT — see artifact-contracts.yaml:146-148)"
+    lifecycle: active
+    ratified_by: "ADR 0001 (strict validation in execution modes)"
+    evidence: [E-CONTRACT-brief, E-ADR-0001]
+    grade: DEMONSTRATED
+
+  - id: validator.brief
+    kind: validator
+    path: scripts/validate-brief.py
+    owns: >
+      repository_sensemaking_brief specialized rules: recommended_workflow_id
+      required for ACTION briefs but authoritatively optional under EXPLICIT
+      outcome=NO_REPOSITORY_CHANGE_WARRANTED; recommended_workflow_id:null valid
+      only with escalation_recommended:true; collision_dedup_direction blocking
+      when recommending renumber/dedup (evidence-rules Rule 7 / Issue #171).
+    does_not_own: ["Generic field presence (that is validate-artifact.py)"]
+    lifecycle: active
+    evidence: [E-CONTRACT-brief-notes, E-CONTRACT-brief-146]
+    grade: DEMONSTRATED
+
+  - id: validator.plan
+    kind: validator
+    path: scripts/validate-plan.py
+    owns: "workflow_orchestration_plan specialized rules; only the FINALIZED plan must pass (ADR 0025 two-stage lifecycle)."
+    does_not_own: ["Validating the provisional skeleton as canonical (ADR 0025)"]
+    lifecycle: active
+    evidence: [E-CONTRACT-plan-notes, E-ADR-0025]
+    grade: DEMONSTRATED
+
+  - id: validator.field-contract-agreement
+    kind: validator_test
+    path: [tests/test_field_contract_agreement.py, tests/test_artifact_contract_agreement.py, tests/test_auto_invoke_registry_agreement.py]
+    owns: >
+      Enforce producer/consumer field-name agreement: every routing field the
+      runtime reads (_WORKFLOW_ID_FIELDS / _FOG_TYPE_FIELDS) must be declared in
+      artifact-contracts.yaml. "Field names are part of the contract" (CLAUDE.md).
+    does_not_own: ["Semantic correctness of the field values"]
+    lifecycle: active
+    evidence: [E-CLAUDEMD-fields, E-TESTS-ls]
+    grade: DEMONSTRATED
+
+  - id: validator.other-specialized
+    kind: validator
+    path: >
+      scripts/validate-{user-intent,unknowns-map,prd,alignment,prompt-handoff,
+      run-log,probe-report,architectural-review-recommendation,usage-research-report,
+      skill-improvement-plan,repo,fog-type-normalization,mode-coverage,
+      user-intent-amendment}.py
+    owns: "One specialized validator per artifact id / cross-cutting contract, dispatched from validate-output.py."
+    does_not_own: ["Enforcing a convention no downstream consumer parses (CLAUDE.md verification discipline)"]
+    lifecycle: active
+    evidence: [E-SCRIPTS-ls, E-CLAUDEMD-consumer]
+    grade: DEMONSTRATED
+
+  # -------------------------------------------------------------- REGISTRIES
+  - id: registry.artifact-contracts
+    kind: registry
+    path: skills/workflow-planner/references/artifact-contracts.yaml
+    owns: >
+      THE canonical artifact + machine-field contract: per artifact id — path,
+      produced_by, consumed_by, required_sections, required/recommended machine
+      fields, verification commands, required_for_modes. "Artifacts are the API."
+    does_not_own:
+      - "Path *resolution* at runtime (declares the template path; runtime session-scopes it; ADR 0010)"
+      - "Enforcement (validators enforce; this only declares)"
+    lifecycle: active
+    duplicate_at: "workflow-orchestrator/references/artifact-contracts.yaml (SECOND COPY — see 06-VALIDATION-MAP.md)"
+    evidence: [E-CONTRACT-file, E-CONTRACT-dupe, E-CTX-201]
+    grade: DEMONSTRATED
+
+  - id: registry.workflow
+    kind: registry
+    path: skills/workflow-planner/references/workflow-registry.yaml
+    owns: "Registered workflow / subgraph definitions: steps, skills, gates, initial inputs, allowed execution modes, auto_invoke_next_workflow (compatibility metadata only)."
+    does_not_own: ["Granting execution authority via auto_invoke_next_workflow (ADR 0026 — compatibility/historical metadata only)"]
+    lifecycle: active
+    duplicate_at: "src/sensemaking_skills/defaults/workflow-registry.yaml"
+    evidence: [E-WFREG-head, E-WFREG-ids, E-ADR-0026]
+    grade: DEMONSTRATED
+
+  - id: registry.skill
+    kind: registry
+    path: skills/workflow-planner/references/skill-registry.yaml
+    owns: "Registered Skill / capability catalog (auto_invoke bindings, fog-type associations)."
+    does_not_own: ["Making a listed skill a product requirement (CONTEXT.md: Skill existence != product need)"]
+    lifecycle: active
+    evidence: [E-SKILLREG, E-CTX-105]
+    grade: DEMONSTRATED
+
+  - id: registry.canonical-vocabulary
+    kind: registry
+    path: docs/canonical-vocabulary.yaml
+    owns: "Canonical enumerated vocabulary; enforced by ADR 0011 / validate-*.py controlled-vocab checks."
+    does_not_own: ["Defining architecture semantics (that is CONTEXT.md + ADRs)"]
+    lifecycle: active
+    ratified_by: "ADR 0011 (canonical vocabulary enforcement)"
+    evidence: [E-CTX-297, E-ADR-0011]
+    grade: DEMONSTRATED
+
+  - id: registry.adr-status-convention
+    kind: registry
+    path: docs/adr/README.md
+    owns: "Canonical ADR **Status** vocabulary (PROPOSED/PROVISIONAL/ACCEPTED/SUPERSEDED/REJECTED) that probe_relationships.py validates against."
+    does_not_own: ["The ADR decisions themselves"]
+    lifecycle: active
+    evidence: [E-ADRREADME]
+    grade: DEMONSTRATED
+
+  # ------------------------------------------------------- CANONICAL DOC SURFACES
+  - id: doc.context
+    kind: canonical_doc
+    path: CONTEXT.md
+    owns: "Single-context canonical account: current product definition, top operating rule, core principles, authority model, evidence model, artifact/claim flow, source-of-truth map, domain glossary, current product boundaries."
+    does_not_own: ["Ratifying decisions (ADRs do); executing anything"]
+    lifecycle: active
+    evidence: [E-CTX-file]
+    grade: DEMONSTRATED
+
+  - id: doc.agent-native-operating-workflow
+    kind: canonical_doc
+    path: docs/agent-native-operating-workflow.md
+    owns: "Current end-to-end operating MAP (3 synchronized views: responsibility / artifact / authority flow) + Reality map (REAL vs CONVENTION per responsibility)."
+    does_not_own: ["Being an executable orchestration contract (explicit: 'NOT a canonical orchestration specification', line 6)"]
+    lifecycle: active
+    evidence: [E-AGW-file, E-AGW-6]
+    grade: DEMONSTRATED
+
+  - id: doc.decision-orchestration-boundary
+    kind: canonical_doc
+    path: docs/decision-orchestration-boundary.md
+    owns: "The control-ownership boundary: 'Decision selects the work; orchestration coordinates the work.'"
+    does_not_own: ["Implementation"]
+    lifecycle: active
+    evidence: [E-DOB-file]
+    grade: DEMONSTRATED
+
+  - id: doc.control-model-research-agenda
+    kind: research_doc
+    path: docs/research/control-model-research-agenda.md
+    owns: "Explicitly non-ratified research hypotheses (C6R compressed control hypothesis; Paths 1-4); research-discipline / autonomous-cycle stopping rule."
+    does_not_own: ["Authorizing any product behavior ('not an ADR, not a product contract, not a roadmap commitment', Status line)"]
+    lifecycle: research_only
+    evidence: [E-RESAGENDA-file, E-RESAGENDA-status]
+    grade: DEMONSTRATED
+
+  - id: doc.adr-corpus
+    kind: canonical_doc
+    path: docs/adr/
+    owns: "27 ADRs: ratified/proposed/superseded architecture decisions + historical rationale. 0013 (agent-native primary) + 0014 (product boundary) are the load-bearing pair."
+    does_not_own: ["Operating guidance (that is AGW + CONTEXT.md)"]
+    lifecycle: active
+    evidence: [E-ADRLIST, E-ADR-statuses]
+    grade: DEMONSTRATED
+
+  - id: doc.goal-a-protocol
+    kind: research_doc
+    path: docs/research/goal-a-external-product-validation-protocol.md
+    owns: "Canonical approved Goal A external-product-validation protocol (ACTIVE). A1 active; A2 deferred/unauthorized."
+    does_not_own: ["Authorizing episode execution ('Protocol approval does not authorize episode execution', CONTEXT.md:49)"]
+    lifecycle: active
+    evidence: [E-CTX-20, E-CTX-49]
+    grade: DEMONSTRATED
+
+  - id: doc.claude-md
+    kind: canonical_doc
+    path: CLAUDE.md
+    owns: "Agent operating discipline + verification discipline ('artifacts are the API', field-name/path contract rules, validator-must-trace-to-consumer, ASCII-only console) + SessionStart hook description."
+    does_not_own: ["Being a substitute for ADR ratification"]
+    lifecycle: active
+    evidence: [E-CLAUDEMD-file]
+    grade: DEMONSTRATED
