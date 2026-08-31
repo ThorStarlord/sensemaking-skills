@@ -264,12 +264,25 @@ def _collect_test_case_count(repo_root: Path) -> Optional[int]:
 def test_collection(repo_root: Path) -> Dict[str, object]:
     """Count test files, best-effort collected test cases, and pytest config."""
     count = 0
-    for path in repo_root.rglob("*"):
-        relative_parts = list(path.relative_to(repo_root).parts)[:-1]
-        if any(part in _BLOAT_DIRS for part in relative_parts):
-            continue
-        if path.is_file() and path.name.endswith(".py") and (path.name.startswith("test_") or path.name.endswith("_test.py")):
-            count += 1
+    tracked = _git(repo_root, "ls-files").splitlines()
+    if tracked:
+        for rel in tracked:
+            name = Path(rel).name
+            if name.endswith(".py") and (name.startswith("test_") or name.endswith("_test.py")):
+                parts = Path(rel).parts[:-1]
+                if any(part in _BLOAT_DIRS for part in parts):
+                    continue
+                count += 1
+    else:
+        for path in repo_root.rglob("*"):
+            try:
+                relative_parts = list(path.relative_to(repo_root).parts)[:-1]
+            except ValueError:
+                continue
+            if any(part in _BLOAT_DIRS for part in relative_parts):
+                continue
+            if path.is_file() and path.name.endswith(".py") and (path.name.startswith("test_") or path.name.endswith("_test.py")):
+                count += 1
     pyproject = repo_root / "pyproject.toml"
     config_present = "[tool.pytest" in pyproject.read_text(encoding="utf-8", errors="replace") if pyproject.is_file() else False
     if not config_present:
