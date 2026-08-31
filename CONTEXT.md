@@ -12,6 +12,25 @@ A responsibility is **warranted** when it is supported by the current evidence, 
 
 The active coding agent owns the recursive control loop (ADR 0013). Sensemaking constrains that loop with repository evidence, bounded responsibilities, durable artifacts, validators, reconciliation, repair verification, and authority boundaries.
 
+### Lifecycle positioning
+
+Sensemaking is **cross-cutting, not an SDLC stage**. Software-engineering work
+contains nested feedback loops (discovery/definition/design/build/verify, and
+smaller loops inside each). The Sensemaking decision layer can operate across
+transitions where current evidence could change the warranted responsibility.
+
+New evidence may warrant a responsibility conventionally considered earlier,
+later, or sideways in a lifecycle. These are evidence-grounded responsibility
+transitions, not backward/forward commands. Local mechanical iteration stays
+inside the selected responsibility until evidence puts that responsibility itself
+in question.
+
+This clarification does not broaden product scope. The current product definition
+remains an engineering sensemaking/control layer for software-engineering agents,
+and the ratified external product scope remains the validated, human-reviewed
+`repository_sensemaking_brief` defined by ADR 0014. It does not ratify
+Sensemaking as a general product-development operating system.
+
 See:
 - [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md) — current end-to-end operating map
 - [docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md) — decision vs. orchestration ownership
