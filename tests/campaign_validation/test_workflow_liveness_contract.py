@@ -6,8 +6,6 @@ import importlib.util
 import sys
 from pathlib import Path
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
@@ -141,7 +139,9 @@ def test_deterministic_planner_refuses_inactive_former_default_without_substitut
     planner = _load_script_planner()
     brief = tmp_path / "brief.md"
     brief.write_text(
-        """# Brief\n\n## 13. Machine-readable handoff\n```yaml\n"
+        "# Brief\n\n"
+        "## 13. Machine-readable handoff\n"
+        "```yaml\n"
         "primary_fog_type: product_fog\n"
         "recommended_workflow_id: product-implementation-workflow\n"
         "escalation_recommended: false\n"
@@ -159,7 +159,9 @@ def test_deterministic_planner_still_plans_active_default(tmp_path: Path) -> Non
     planner = _load_script_planner()
     brief = tmp_path / "brief.md"
     brief.write_text(
-        """# Brief\n\n## 13. Machine-readable handoff\n```yaml\n"
+        "# Brief\n\n"
+        "## 13. Machine-readable handoff\n"
+        "```yaml\n"
         "primary_fog_type: docs_fog\n"
         "recommended_workflow_id: docs-implementation-workflow\n"
         "escalation_recommended: false\n"
