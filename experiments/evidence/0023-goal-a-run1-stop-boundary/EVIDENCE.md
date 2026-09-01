@@ -27,6 +27,33 @@ the prior local copies):
 The prior untracked copies under `experiments/goal-a-auteur-target1/` remain
 untracked and are superseded for citation purposes by these committed bytes.
 
+## Substrate reality this preserves (beyond the Run-1 stop)
+
+The Run-1 note (`RUN1-STOP-BOUNDARY.md`) records the immediate
+`HARNESS_ENVIRONMENT_FAILURE`. The two harness-qualification files in this folder
+record that the producer-write blocker is **one of three falsified execution
+substrates** in this environment:
+
+1. isolated task sub-agent, direct file write — **blocked** (Run 1; write dispatch
+   did not grant the target, and a canary write was also blocked);
+2. isolated task sub-agent, framed return — **`FRAMED_RETURN_NOT_LOSSLESS`** (the
+   producer's final answer is not exposed as a clean hashable blob by the tool
+   envelope; `LOSSLESS_ARTIFACT_CAPTURE_UNAVAILABLE`);
+3. external OS process (`claude_agent_sdk` / `claude` CLI / `anthropic`) —
+   **`EXTERNAL_RUNTIME_UNAVAILABLE`** (a genuinely separate process cannot
+   authenticate: host-injected credentials flow over IPC and no independent API
+   key is present).
+
+The owner's surface rule (v3 directive) is that if v3 also fails, Goal A
+execution stops **in this environment entirely** rather than designing Harness v4.
+V3 did fail, so no Auteur producer run is consumed and Goal A is halted here
+pending an owner decision (realistic options being an environment with an
+independent credential/API key, or a different host).
+
+**No repo code change fabricates a lossless frozen-artifact capture or an external
+session credential; the remaining boundary is an owner/environment decision, not a
+repo edit.**
+
 ## Verified top-level facts (from RUN1-STOP-BOUNDARY.md)
 
 - `GOAL_A_AUTEUR_TARGET1_RESULT = RUN1_COMPLETED_STOP_RULE_TRIGGERED`
