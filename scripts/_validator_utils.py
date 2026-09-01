@@ -33,7 +33,7 @@ def run_subprocess(cmd: list[str], repo_root: str, *,
             already present in cmd.
 
     Returns:
-        Tuple of (exit_code, combined_output_string, elapsed_seconds)
+        Tuple of (exit_code, combined_output_string, elapsed_seconds).
     """
     resolved = [arg.replace("{artifact_path}", "") for arg in cmd]
     if inject_repo_root and "--repo-root" not in resolved:
@@ -198,7 +198,7 @@ def validator_cli(
 ) -> int:
     """Standard CLI entry point for artifact validators.
 
-    Handles argparse setup, --list-codes, --repo-root, and error printing,
+    Handles argparse setup, --list-codes, --repo-root, error printing,
     and exit code logic. Reduces each validator's ``main()`` from ~30
     lines to ~3.
 
