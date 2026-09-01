@@ -166,3 +166,24 @@ def test_deterministic_planner_still_plans_active_default(tmp_path: Path) -> Non
     result = planner.plan_workflow(str(brief), str(ROOT))
     assert not result.startswith("ERROR:")
     assert "chosen_workflow_id: docs-implementation-workflow" in result
+
+
+def test_routing_divergence_tracks_recommendation_selection_mismatch(tmp_path: Path) -> None:
+    planner = _load_script_planner()
+    brief = tmp_path / "brief.md"
+    brief.write_text(
+        "# Brief\n\n"
+        "## 13. Machine-readable handoff\n"
+        "```yaml\n"
+        "primary_fog_type: docs_fog\n"
+        "recommended_workflow_id: full-fog-workflow\n"
+        "escalation_recommended: false\n"
+        "```\n",
+        encoding="utf-8",
+    )
+
+    result = planner.plan_workflow(str(brief), str(ROOT))
+    assert not result.startswith("ERROR:")
+    assert "chosen_workflow_id: docs-implementation-workflow" in result
+    assert "routing_decision_method: manual_override" in result
+    assert "routing_divergence: true" in result
