@@ -57,6 +57,12 @@ escalation_reason: intent_diagnosis_conflict
 ### ✅ Fixture 3: Insufficient Evidence
 **File**: `examples/repo-sensemaker-fixtures/03-insufficient-evidence.md`
 
+> **Historical note (2026-09-01)**: this record documents a 2026-05-19 pass
+> result under a vocabulary that no longer applies — `primary_fog_type:
+> unknown` is not a canonical value under the current
+> `docs/canonical-vocabulary.yaml`. See the fixture file's own historical
+> banner. Not a claim about current `validate-brief.py` behavior.
+
 **Scenario**: Repository is new/generic with no clear business context.
 
 **Key Fields**:

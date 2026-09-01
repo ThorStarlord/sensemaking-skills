@@ -1,3 +1,23 @@
+> **Historical / non-normative** (flagged 2026-09-01). This fixture is dated
+> 2026-05-19 and predates the current canonical fog vocabulary
+> (`docs/canonical-vocabulary.yaml`, which declares exactly `product_fog`,
+> `ui_fog`, `docs_fog`, `architecture_fog`). It uses `primary_fog_type:
+> unknown`, a singular `secondary_fog_type` field, and prose referring to an
+> "infrastructure fog" — none of which are valid or current: `unknown` is not
+> a canonical `primary_fog_type` value, and both `secondary_fog_type` and
+> `secondary_fog_types` (the ranked/subordinate-fog concept) have been
+> retired with no replacement (see the repo-sensemaker product-definition
+> adjudication retiring `secondary_fog_types`). It is preserved as a record
+> of an earlier product model, not as current `repo-sensemaker` guidance.
+> Under the current model: an agent facing this level of evidence
+> insufficiency reports it via `representation_sufficiency:
+> insufficient_bounded` / `escalation_recommended: true` with a null
+> `recommended_workflow_id` (per ADR 0014's no-match semantics), not an
+> `unknown` `primary_fog_type`; and any genuinely multi-domain signal is
+> disclosed via the unranked, routing-inert `extended_analysis.domain`
+> (ADR 0024), never a secondary fog-type field. Do not use this fixture as a
+> template for a new brief.
+
 # Repository Sensemaking Brief: Insufficient Evidence Case
 
 **Scenario**: Repository is small, new, or generic enough that no clear fog type signals exist yet.

@@ -62,6 +62,12 @@ Marked Stage 1 as complete, updated field status.
 | 02-conflict-intent.md | User wants UI, code needs architecture | ✅ PASS | ✅ All present | ✅ PASS |
 | 03-insufficient-evidence.md | No business context, unclear direction | ✅ PASS | ✅ All present | ✅ PASS |
 
+> **Historical note (2026-09-01)**: the 03-insufficient-evidence.md PASS
+> above was recorded 2026-05-19 under a vocabulary that no longer applies
+> (`primary_fog_type: unknown` is not a canonical value today). Not a claim
+> about current `validate-brief.py` behavior; see the fixture's own
+> historical banner.
+
 ### Validator Output
 
 **Normal Mode**:

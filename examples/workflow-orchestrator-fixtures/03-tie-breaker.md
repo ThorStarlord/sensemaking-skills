@@ -1,3 +1,30 @@
+> **Historical / non-normative** (flagged 2026-09-01). This fixture is dated
+> 2026-05-19 and predates the current canonical fog vocabulary
+> (`docs/canonical-vocabulary.yaml`, which declares exactly `product_fog`,
+> `ui_fog`, `docs_fog`, `architecture_fog` — no `mixed` value). It is built
+> around `primary_fog_type: mixed`, a singular `secondary_fog_type` field
+> listing two co-equal fogs, and a deterministic tie-breaker that turns that
+> pairing directly into a `chosen_workflow_id`. None of this reflects current
+> product semantics: `mixed` is not a canonical `primary_fog_type` value;
+> `secondary_fog_type`/`secondary_fog_types` (the ranked/subordinate-fog
+> concept this scenario relies on) has been retired with no replacement (see
+> the repo-sensemaker product-definition adjudication); and — independent of
+> the fog-vocabulary question — treating a brief's diagnosis as sufficient
+> authority to deterministically select and execute a workflow (as
+> `routing_decision_method: diagnosis_mixed_tiebreak_to_user_intent` does
+> here) is exactly the automatic-routing-as-authority model ADR 0026 later
+> rejected (recommendation ≠ selection ≠ execution authorization). This
+> fixture is preserved as a record of an earlier product/routing model, not
+> as current `workflow-orchestrator` guidance. It is not being rewritten
+> around current mechanisms because the scenario it was built to teach — a
+> brief's own diagnosis field driving an automatic tie-broken workflow
+> selection — has no current equivalent to rewrite it into; under the current
+> model, co-implicated fog dimensions are disclosed via unranked
+> `extended_analysis.domain` (ADR 0024), and any resulting workflow choice
+> requires a separate authority event from the active agent, not a
+> deterministic tie-break derived from the brief. Do not use this fixture as
+> a template for a new orchestration plan.
+
 # Workflow Orchestration Plan: Tie-Breaker Decision
 
 **Scenario**: Repository signals mixed fog (product + UI equally strong), multiple workflows equally valid. Orchestrator applies tie-breaker rule to select one.
