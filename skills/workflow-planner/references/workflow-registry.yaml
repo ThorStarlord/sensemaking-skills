@@ -49,8 +49,8 @@ workflows:
   purpose: Comprehensively analyze ambiguous projects from raw fog through diagnosis
     to automatic implementation workflow invocation.
   description: "Use this when the problem is vague or highly uncertain. Chains problem-framer\
-    \ \xE2\u2020\u2019 unknowns-mapper \xE2\u2020\u2019 repo-sensemaker \xE2\u2020\
-    \u2019 workflow-planner with approval gates between steps. The orchestrator automatically\
+    \ â†’ unknowns-mapper â†’ repo-sensemaker â†\
+    ’ workflow-planner with approval gates between steps. The orchestrator automatically\
     \ invokes the recommended implementation workflow without user intervention."
   initial_inputs:
   - id: user_intent
@@ -789,7 +789,6 @@ workflows:
     gate: session_close
     input_artifact: code_patch
     output_artifact: session_summary
-    description: Completion summary - document session
 - id: ui-diagnostic-workflow
   display_name: UI Diagnostic Workflow
   purpose: Analyze UI complexity, screen structure, and design patterns. Produces a high-fidelity UI assessment without implementation.
@@ -809,7 +808,7 @@ workflows:
   - id: 1
     skill: docs-aligner
     step_type: local_execution
-    gate: none
+    gate: review_alignment_report
     input_artifact: context_artifacts
     output_artifact: domain_alignment_report
     description: Domain alignment - refine understanding and validate domain model
@@ -890,7 +889,6 @@ workflows:
     gate: session_close
     input_artifact: code_patch
     output_artifact: session_summary
-    description: Completion summary - document session
 - id: docs-implementation-workflow
   display_name: Documentation Implementation Workflow
   purpose: For documentation/knowledge problems. Aligns domain understanding, creates
@@ -983,7 +981,6 @@ workflows:
     gate: session_close
     input_artifact: code_patch
     output_artifact: session_summary
-    description: Completion summary - document session
 - id: skill-evaluation-workflow
   display_name: Skill Evaluation & Maintenance Workflow
   purpose: Evaluate skill performance in realistic scenarios and implement improvements.
