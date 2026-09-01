@@ -88,22 +88,6 @@ def validate_fog_type_normalization(artifact_path: str, repo_root: str) -> list[
             except ValueError as e:
                 errors.append(f"INVALID_FOG_TYPE: {field}={value!r}. {e}")
 
-    # Check secondary_fog_types (list of fog types)
-    if "secondary_fog_types" in machine_data:
-        secondary = machine_data["secondary_fog_types"]
-        if secondary and isinstance(secondary, list):
-            normalized_secondary = []
-            for fog_type in secondary:
-                try:
-                    canonical = normalize_fog_type(str(fog_type), normalizer)
-                    normalized_secondary.append(canonical)
-                except ValueError as e:
-                    errors.append(
-                        f"INVALID_SECONDARY_FOG_TYPE: secondary_fog_types contains {fog_type!r}. {e}"
-                    )
-            if not errors:  # Only update if no errors
-                machine_data["secondary_fog_types"] = normalized_secondary
-
     return errors
 
 
@@ -118,7 +102,6 @@ def main() -> int:
             "VOCAB_NOT_FOUND",
             "NO_FOG_TYPES",
             "INVALID_FOG_TYPE",
-            "INVALID_SECONDARY_FOG_TYPE",
         ],
         success_msg="Fog type normalization passed! All fog types are in canonical form.",
     )

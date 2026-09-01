@@ -6,6 +6,14 @@
 
 ---
 
+> **⚠️ Historical document (flagged non-normative 2026-09-01).** This is a
+> dated 2026-05-19 hardening-status snapshot, not the current field/fog
+> contract. Field names it tracks include `secondary_fog_type`, which has
+> since been retired with no replacement (see the repo-sensemaker
+> product-definition adjudication). Do not treat anything below as current
+> instructions. Current authority lives in `docs/canonical-vocabulary.yaml`
+> and `skills/workflow-planner/references/artifact-contracts.yaml`.
+
 ## Hardening Stages
 
 ```
@@ -24,6 +32,7 @@ Stage 2: Patch workflow-orchestrator ✅ DONE
   └─ Updated workflow-orchestration-template.md with routing fields documented
   └─ Created 3 fixtures: 01-routing-agreement, 02-routing-override, 03-tie-breaker
   └─ All 3 fixtures pass strict validation
+  └─ [Historical, 2026-09-01] 03-tie-breaker's fog vocabulary (mixed/secondary_fog_type) is superseded; see the fixture's own historical banner
 
 Stage 3: Patch to-prd ✅ DONE
   └─ Promoted: source_intent_ref, user_goal_preserved_as, scope_expansion_proposed, scope_expansion_requires_approval

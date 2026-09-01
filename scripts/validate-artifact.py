@@ -64,7 +64,7 @@ def _validate_enum_fields(yaml_data, artifact_id, vocab, errors):
         if not allowed_values:
             continue
 
-        # Handle list fields (e.g., secondary_fog_types)
+        # Handle list(enum) fields declared in routing_fields
         if field_spec.get("type") == "list(enum)":
             if isinstance(value, list):
                 for i, item in enumerate(value):
@@ -103,20 +103,6 @@ def _validate_enum_fields(yaml_data, artifact_id, vocab, errors):
                         f"Must be one of: {', '.join(sorted(fog_type_normalizer.keys()))}"
                     )
                 )
-
-    # Check secondary_fog_types
-    if "secondary_fog_types" in yaml_data:
-        secondary = yaml_data["secondary_fog_types"]
-        if secondary and isinstance(secondary, list):
-            for i, fog_type in enumerate(secondary):
-                if fog_type not in fog_type_normalizer:
-                    errors.append(
-                        format_error(
-                            INVALID_ENUM_VALUE,
-                            f"Field 'secondary_fog_types[{i}]' has unknown fog type '{fog_type}'. "
-                            f"Must be one of: {', '.join(sorted(fog_type_normalizer.keys()))}"
-                        )
-                    )
 
 
 def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommended=False):

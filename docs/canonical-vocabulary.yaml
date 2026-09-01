@@ -68,12 +68,16 @@ routing_fields:
     description: "The dominant fog type identified in the repository"
     example: "ui_fog"
 
-  - field: secondary_fog_types
-    type: list(enum)
-    values: [product_fog, ui_fog, architecture_fog, docs_fog]
-    required: false
-    description: "Other fog types present but less critical"
-    example: ["docs_fog", "architecture_fog"]
+  # secondary_fog_types (ranked/subordinate non-primary fog types) was retired
+  # 2026-09-01: no demonstrated product decision ever depended on ranking
+  # non-primary fog types relative to each other (see repo-sensemaker product-
+  # definition adjudication). Multi-fog disclosure is already served by
+  # `extended_analysis.domain` (ADR 0024, repository_sensemaking_brief Section
+  # 15) -- an unranked, routing-inert list of every genuinely implicated fog
+  # dimension. Reintroduce a ranked-secondary concept only if future evidence
+  # shows a consequential decision for which primary_fog_type +
+  # extended_analysis.domain is materially insufficient AND relative ranking
+  # among the additional fogs changes the result.
 
   - field: recommended_workflow_id
     type: enum

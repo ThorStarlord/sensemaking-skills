@@ -7,6 +7,21 @@
 
 ---
 
+> **⚠️ Historical document (flagged non-normative 2026-09-01).** This is a
+> dated 2026-05-19 phase-completion record, not the current
+> `workflow-orchestrator` contract. Field lists, examples, and validation
+> claims below describe a since-superseded contract — `mixed` is not a
+> canonical `primary_fog_type` value today, and `secondary_fog_type` has
+> been retired with no replacement (see the repo-sensemaker
+> product-definition adjudication). The tie-breaker scenario's deterministic
+> diagnosis-to-workflow selection also predates ADR 0026 (recommendation ≠
+> selection ≠ execution authorization). Do not treat anything below as
+> current instructions or as a claim about current validator/runtime
+> behavior. Current authority lives in `docs/canonical-vocabulary.yaml`,
+> `skills/workflow-planner/references/artifact-contracts.yaml`,
+> `skills/workflow-orchestrator/SKILL.md`, `docs/adr/0026-workflow-execution-authority.md`,
+> and the current validators.
+
 ## What Was Done
 
 ### 1. Updated workflow-orchestrator Instructions
@@ -54,6 +69,14 @@ Expanded machine-readable plan section with:
 - routing_divergence: false
 - routing_decision_method: diagnosis_mixed_tiebreak_to_user_intent
 
+> **Historical note (2026-09-01)**: this scenario used `primary_fog_type:
+> mixed` and a deterministic diagnosis-to-workflow tie-break, neither of
+> which reflects current product semantics — `mixed` is not a canonical fog
+> value, ranked/secondary fog representation has been retired, and ADR 0026
+> later established that a brief's diagnosis alone does not authorize
+> workflow selection/execution. Not a claim about current
+> `workflow-orchestrator` behavior; see the fixture's own historical banner.
+
 ### 4. Validation Results
 All fixtures include complete artifact contract requirements:
 - All required sections: Brief Consumed, Chosen Workflow, Why This Workflow, Skills in Sequence, Inputs and Outputs, Approval Gates, Stop Conditions, Execution Mode, Prompt Chain, Run Log Template
@@ -99,7 +122,7 @@ Marked Stage 2 as complete with details on what was promoted and accomplished.
 |-----------|--------|-------|
 | Instructions | ✅ Updated | Routing audit workflow documented with 6 decision method types |
 | Template | ✅ Updated | Machine-readable fields documented with complete example |
-| Fixtures | ✅ Passing | 3/3 pass strict validation (01-routing-agreement, 02-routing-override, 03-tie-breaker) |
+| Fixtures | ✅ Passing | 3/3 pass strict validation (01-routing-agreement, 02-routing-override, 03-tie-breaker) — historical result (2026-05-19); 03-tie-breaker's fog vocabulary is superseded, see its historical banner |
 | Validator | ✅ Ready | Unambiguous [PASS]/[WARN]/[FAIL] output |
 | Contracts | ✅ Ready | 4 routing fields already required in artifact-contracts.yaml |
 

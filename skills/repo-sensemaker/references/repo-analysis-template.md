@@ -154,7 +154,7 @@ artifact_id: repository_sensemaking_brief
 schema_version: 1
 source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
 user_implied_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | unknown
-primary_fog_type: product_fog | ui_fog | docs_fog | architecture_fog | mixed | unknown
+primary_fog_type: product_fog | ui_fog | docs_fog | architecture_fog
 diagnosis_conflict: true | false
 escalation_recommended: true | false
 evidence:

@@ -1,3 +1,16 @@
+> **Historical / non-normative** (flagged 2026-09-01). This fixture is dated
+> 2026-05-19 and reflects that date's contract, not the current one: its
+> machine-readable block includes a singular `secondary_fog_type` field,
+> which is a retired concept (see the repo-sensemaker product-definition
+> adjudication retiring `secondary_fog_types`) with no replacement. It is
+> preserved as a record of an earlier product model, not as current
+> `repo-sensemaker` guidance, and must not be used as a template for a new
+> brief. Current authority for what a brief must contain lives in
+> `docs/canonical-vocabulary.yaml`, `skills/workflow-planner/references/artifact-contracts.yaml`,
+> `skills/repo-sensemaker/references/repo-analysis-template.md`, and the
+> current validators (`scripts/validate-brief.py`,
+> `scripts/validate-artifact.py`) — not in this file.
+
 # Repository Sensemaking Brief: Conflict Case
 
 **Scenario**: User intent implies UI/UX focus, but codebase signals suggest architecture issues are blocking it.

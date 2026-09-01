@@ -6,6 +6,21 @@
 
 ---
 
+> **⚠️ Historical document (flagged non-normative 2026-09-01).** This is a
+> dated 2026-05-19 phase-readiness record, not the current `repo-sensemaker`
+> contract. In particular, its "Fields repo-sensemaker Must Emit" section,
+> field lists (including `primary_fog_type: ... | mixed | unknown` and
+> `secondary_fog_type`), promotion instructions, validator examples, and
+> implementation checklist below all describe a since-superseded contract:
+> `mixed`/`unknown` are not canonical `primary_fog_type` values today, and
+> `secondary_fog_type`/`secondary_fog_types` has been retired with no
+> replacement (see the repo-sensemaker product-definition adjudication).
+> Do not treat anything below as current instructions. Current authority
+> lives in `docs/canonical-vocabulary.yaml`,
+> `skills/workflow-planner/references/artifact-contracts.yaml`,
+> `skills/repo-sensemaker/references/repo-analysis-template.md`,
+> `skills/repo-sensemaker/SKILL.md`, and the current validators.
+
 ## What Is Stage 1?
 
 Patch `repo-sensemaker` (the first diagnostic skill) to emit intent-aware fields.
@@ -56,6 +71,12 @@ escalation_reason: intent_diagnosis_conflict
 
 ### ✅ Fixture 3: Insufficient Evidence
 **File**: `examples/repo-sensemaker-fixtures/03-insufficient-evidence.md`
+
+> **Historical note (2026-09-01)**: this record documents a 2026-05-19 pass
+> result under a vocabulary that no longer applies — `primary_fog_type:
+> unknown` is not a canonical value under the current
+> `docs/canonical-vocabulary.yaml`. See the fixture file's own historical
+> banner. Not a claim about current `validate-brief.py` behavior.
 
 **Scenario**: Repository is new/generic with no clear business context.
 

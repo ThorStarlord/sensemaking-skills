@@ -99,7 +99,7 @@ def _build_valid_brief(target: _TargetRepo) -> str:
         "user_implied_fog_type: unknown",
     )
     text = text.replace(
-        "primary_fog_type:  # model fills: product_fog | ui_fog | docs_fog | architecture_fog | mixed | unknown",
+        "primary_fog_type:  # model fills: product_fog | ui_fog | docs_fog | architecture_fog",
         "primary_fog_type: architecture_fog",
     )
     text = text.replace(
