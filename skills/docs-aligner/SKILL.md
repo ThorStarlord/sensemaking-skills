@@ -13,12 +13,15 @@ This skill performs the same conceptual function as the interactive `grill-with-
 
 1. **Inventory**: Read `CONTEXT.md` and `docs/adr/` (if they exist), plus the repository structure.
 2. **Analyze Codebase**: Scan source code, configuration files, registries, and key artifacts for domain concepts.
-3. **Detect Contradictions**: Identify all conflicts between code and documentation in one pass.
+3. **Detect Contradictions**: Identify candidate conflicts between code and documentation in one pass.
    - Term in `CONTEXT.md` glossary that doesn't exist in code
    - Code concept not defined in glossary
    - Code behavior that contradicts documented design
+3b. **Authority/Currentness Triage** (narrow, generic): Before emitting a candidate as a contradiction, check locally available authority evidence and classify. Only `confirmed_contradiction` enters the report's contradiction count.
+   - Check: accepted/superseded ADR, explicit `compatibility_only`/`deprecated`/`proposed`/`historical` status, documented lifecycle exception or canonical note explaining divergence, superseded record.
+   - Classify: `confirmed_contradiction` | `intentional_divergence` | `previously_adjudicated` | `needs_adjudication`. If authority cannot be resolved cheaply/locally, emit `needs_adjudication` rather than inventing resolution. Candidates failing the contradiction test do not enter §2; keep for reconciler review.
 4. **Sharpen Fuzzy Language**: For ambiguous or overloaded terms, propose a precise canonical term.
-5. **Discover Undocumented Concepts**: Identify domain-significant concepts in code that belong in `CONTEXT.md`.
+5. **Discover Undocumented Concepts**: Identify domain-significant concepts in code that belong in `CONTEXT.md`. Concepts documented elsewhere but absent from the `CONTEXT.md` glossary subsection are `glossary gaps`, not globally undocumented.
 6. **Identify ADR Candidates**: Locate hard-to-reverse decisions that lack an ADR.
 7. **Mutate**: Update `CONTEXT.md` with resolved terms and flagged ambiguities. Create ADR files for qualified candidates.
 8. **Synthesize**: Produce the `domain_alignment_report` artifact documenting all findings.
@@ -35,6 +38,9 @@ Every response and output artifact must follow the [Domain Alignment Report](ref
 4. **Concrete Evidence**: Every contradiction, fuzzy term, or undocumented concept MUST cite specific file paths and line numbers. No vague claims.
 5. **Context Boundaries**: If `CONTEXT-MAP.md` exists, scope analysis to the active context. If not, treat repo as single context.
 6. **Idempotency**: Running the skill on an already-aligned codebase should produce an empty or near-empty contradictions section and no CONTEXT.md mutations.
+7. **Authority-Aware Classification**: Do not treat every code/doc mismatch as a contradiction. Apply step 3b classification; only `confirmed_contradiction` counts toward contradictions. `previously_adjudicated` and `intentional_divergence` must cite the ADR, status, or canonical note. When in doubt, use `needs_adjudication` and surface to `sensemaking-docs-reconciler`/owner review.
+8. **Negative Evidence Discipline**: Do not assert absence, non-wiring, or nonexistence unless the search scope covers every repository surface named by the claim. If coverage is incomplete, widen the search or classify as `needs_adjudication` — never emit a confirmed contradiction from a partial search.
+9. **Gate Discipline**: `gate: none` is permitted only when a downstream `review_alignment_report` gate mechanically exists in the workflow. Autonomous `CONTEXT.md` mutation without that downstream gate must be reported as a boundary gap rather than treated as implicitly authorized. Preserve `sensemaking-docs-reconciler` as the authority-aware adjudicator for Sensemaking-specific drift.
 
 ## ADR Eligibility
 
