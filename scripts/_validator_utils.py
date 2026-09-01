@@ -10,6 +10,8 @@ from datetime import datetime
 
 import yaml
 
+import workflow_liveness
+
 
 def run_subprocess(cmd: list[str], repo_root: str, *,
                    timeout: int = 120,
@@ -31,7 +33,7 @@ def run_subprocess(cmd: list[str], repo_root: str, *,
             already present in cmd.
 
     Returns:
-        Tuple of (exit_code, combined_output_string, elapsed_seconds).
+        Tuple of (exit_code, combined_output_string, elapsed_seconds)
     """
     resolved = [arg.replace("{artifact_path}", "") for arg in cmd]
     if inject_repo_root and "--repo-root" not in resolved:
@@ -100,9 +102,42 @@ def _registry_path(repo_root: str, filename: str) -> str:
     return os.path.join(repo_root, "skills", "workflow-planner", "references", filename)
 
 
+def load_workflow_liveness(repo_root: str) -> dict:
+    """Load the ADR-0027 workflow-liveness overlay.
+
+    Missing overlays default to ``active`` for backward compatibility with
+    external/custom registries that predate the liveness contract.
+    """
+    return workflow_liveness.load_liveness_file(
+        _registry_path(repo_root, "workflow-liveness.yaml")
+    )
+
+
+def load_workflow_catalog(repo_root: str) -> dict | None:
+    """Load the complete workflow catalog, annotated with effective liveness.
+
+    This is the provenance/structural view. Compatibility-only workflow IDs
+    remain present with their historical definitions.
+    """
+    raw = load_yaml(_registry_path(repo_root, "workflow-registry.yaml"))
+    if raw is None:
+        return None
+    return workflow_liveness.annotate_catalog(raw, load_workflow_liveness(repo_root))
+
+
 def load_workflow_registry(repo_root: str) -> dict | None:
-    """Load workflow-registry.yaml from the repo."""
-    return load_yaml(_registry_path(repo_root, "workflow-registry.yaml"))
+    """Load the CURRENT operational workflow view.
+
+    Stable catalog IDs remain recognizable, but compatibility-only definitions
+    are fail-closed tombstones with no executable modes or steps. Consumers
+    that need historical structure must call :func:`load_workflow_catalog`.
+    """
+    raw = load_yaml(_registry_path(repo_root, "workflow-registry.yaml"))
+    if raw is None:
+        return None
+    return workflow_liveness.operationalize_catalog(
+        raw, load_workflow_liveness(repo_root)
+    )
 
 
 def load_artifact_contracts(repo_root: str) -> dict | None:
@@ -163,7 +198,7 @@ def validator_cli(
 ) -> int:
     """Standard CLI entry point for artifact validators.
 
-    Handles argparse setup, --list-codes, --repo-root, error printing,
+    Handles argparse setup, --list-codes, --repo-root, and error printing,
     and exit code logic. Reduces each validator's ``main()`` from ~30
     lines to ~3.
 
