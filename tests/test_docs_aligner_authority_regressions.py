@@ -14,7 +14,13 @@ repository reality so a future docs-aligner run can be scored against them.
 
 from pathlib import Path
 
+import yaml
+
 REPO = Path(__file__).resolve().parents[1]
+WORKFLOW_REGISTRIES = [
+    REPO / "skills/workflow-planner/references/workflow-registry.yaml",
+    REPO / "src/sensemaking_skills/defaults/workflow-registry.yaml",
+]
 
 
 def test_c6_prior_adjudication_positive():
@@ -83,3 +89,27 @@ def test_skill_gate_discipline_present():
     assert "gate: none" in text
     assert "review_alignment_report" in text
     assert "Gate Discipline" in text
+
+
+def test_registered_docs_aligner_steps_honor_gate_discipline():
+    """Any gate-less docs-aligner step must have the required downstream review gate."""
+    for registry_path in WORKFLOW_REGISTRIES:
+        registry = yaml.safe_load(registry_path.read_text(encoding="utf-8")) or {}
+        for workflow in registry.get("workflows", []):
+            steps = workflow.get("steps", [])
+            for index, step in enumerate(steps):
+                if not isinstance(step, dict) or step.get("skill") != "docs-aligner":
+                    continue
+                if step.get("gate") != "none":
+                    continue
+
+                downstream_gates = {
+                    candidate.get("gate")
+                    for candidate in steps[index + 1 :]
+                    if isinstance(candidate, dict)
+                }
+                assert "review_alignment_report" in downstream_gates, (
+                    f"{registry_path.relative_to(REPO)} workflow {workflow.get('id')} "
+                    "uses docs-aligner with gate: none but has no downstream "
+                    "review_alignment_report gate"
+                )
