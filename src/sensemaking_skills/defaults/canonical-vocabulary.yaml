@@ -92,6 +92,7 @@ routing_fields:
       - product-implementation-workflow
       - ui-implementation-workflow
       - docs-implementation-workflow
+      - architecture-implementation-workflow
       # Strategy & Discovery
       - product-discovery-sprint
       - product-strategy-sprint
@@ -102,11 +103,15 @@ routing_fields:
       - experimental-autonomous-sprint
       # Documentation & Maintenance
       - docs-contract-reconciliation
+      - artifact-reconciliation
       - docs-architecture
       - skill-maintenance-loop
       - product-to-issues
       # Setup
       - setup-sensemaking-repo
+      # Review & Evaluation
+      - skill-evaluation-workflow
+      - architectural-review-planning-workflow
     required: true
     description: "The workflow best suited to address this fog (must reference an existing workflow_id)"
     example: "fast-path-workflow"
@@ -306,6 +311,21 @@ gates:
     description: "User reviews docs/contract reconciliation patch"
     allowed_outcomes: [approved, denied, needs_revision]
 
+  - gate_id: review_audit_diagnosis
+    name: "Review Audit Diagnosis"
+    description: "User reviews the evidence-grounded diagnosis before work-claim reconciliation"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_reconciliation
+    name: "Review Reconciliation"
+    description: "User reviews the reconciliation of work claims against durable repository evidence"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_reconciliation_verified
+    name: "Review Reconciliation Verification"
+    description: "User reviews finding-specific verification after docs/contract reconciliation"
+    allowed_outcomes: [approved, denied, needs_revision]
+
   - gate_id: review_patterns
     name: "Review Patterns"
     description: "User reviews patterns identified"
@@ -352,6 +372,16 @@ gates:
     description: "Verify readiness for execution"
     allowed_outcomes: [approved, denied, needs_revision]
 
+  - gate_id: review_findings
+    name: "Review Findings"
+    description: "User reviews usage-research findings before improvement planning"
+    allowed_outcomes: [approved, denied, needs_revision]
+
+  - gate_id: review_recommendation
+    name: "Review Recommendation"
+    description: "User reviews an architectural review recommendation before acceptance"
+    allowed_outcomes: [approved, denied, needs_revision]
+
   - gate_id: none
     name: "No Gate (Sentinel)"
     description: "Special value indicating no user approval gate required"
@@ -385,6 +415,8 @@ execution_modes:
     user_interaction: "None; fully automated"
     gates_honored: false
     warning: "Use only in fully trusted, isolated environments"
+    compatibility_only: true
+    status_note: "Legacy compatibility mode retained for mechanical compatibility only (retired programmatic runner, ADR 0013). Not ratified product behavior."
 
 artifact_ids:
   # Core Diagnostic Artifacts
@@ -572,6 +604,24 @@ artifact_ids:
     consumed_by: [prompt-handoff]
     artifact_type: research
 
+  - id: work_claim
+    description: "Falsifiable statement of allegedly completed work promoted for evidence-grounded audit"
+    produced_by: task-requester
+    consumed_by: [output-reconciler]
+    artifact_type: handoff
+
+  - id: reconciliation_report
+    description: "Evidence-grounded classification of work claims as verified, disputed, or omitted"
+    produced_by: output-reconciler
+    consumed_by: [to-issues, handoff]
+    artifact_type: research
+
+  - id: repair_verification_report
+    description: "Finding-specific post-repair verification against a fresh repository probe"
+    produced_by: repair-verifier
+    consumed_by: [handoff]
+    artifact_type: research
+
   - id: synthesis_report
     description: "Synthesis of research interviews"
     produced_by: interview-synthesis
@@ -596,6 +646,18 @@ artifact_ids:
     produced_by: handoff
     consumed_by: [user]
     artifact_type: handoff
+
+  - id: architectural_review_recommendation
+    description: "Recommended architectural response with decision fields, produced by the architectural-review-planning workflow"
+    produced_by: architectural-review-planning-workflow
+    consumed_by: [workflow-planner]
+    artifact_type: plan
+
+  - id: proposed_direction
+    description: "Proposed architectural direction for review"
+    produced_by: user
+    consumed_by: [architectural-review]
+    artifact_type: plan
 
 workflow_ids:
   # Diagnostic & Orchestration Workflows
@@ -696,6 +758,12 @@ workflow_ids:
     category: documentation
     typical_fog_types: [docs_fog]
 
+  - id: artifact-reconciliation
+    display_name: "Artifact Reconciliation (Handoff Audit)"
+    description: "Audit completed-work claims against durable repository artifacts"
+    steps: 4
+    category: maintenance
+
   - id: docs-architecture
     display_name: "Docs Architecture"
     description: "Architecture documentation"
@@ -715,3 +783,19 @@ workflow_ids:
     display_name: "Setup Sensemaking Repository"
     description: "Configure repository infrastructure for sensemaking"
     category: setup
+
+  # Review & Evaluation
+  - id: architecture-implementation-workflow
+    display_name: "Architecture Implementation Workflow"
+    description: "For architecture/refactoring problems: aligns domain, creates refactoring spec, decomposes into issues, and implements via TDD"
+    category: implementation
+
+  - id: skill-evaluation-workflow
+    display_name: "Skill Evaluation & Maintenance Workflow"
+    description: "Evaluate skill performance in realistic scenarios and implement improvements"
+    category: maintenance
+
+  - id: architectural-review-planning-workflow
+    display_name: "Architectural Review Planning"
+    description: "Evaluate a proposed architectural response against repository diagnostics and risks"
+    category: strategy
