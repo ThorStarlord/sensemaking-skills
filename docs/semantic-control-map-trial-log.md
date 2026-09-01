@@ -4,10 +4,10 @@ Fill during the trial. Protocol: `docs/semantic-control-map-trial.md`.
 Map: `docs/semantic-control-map.md`.
 
 ```
-trial_start_commit   = <commit that merged this PR>
-trial_start_date     = <YYYY-MM-DD>
-minimum_close_date   = trial_start_date + 4 weeks
-maximum_close_date   = trial_start_date + 8 weeks
+trial_start_commit   = df46871 (merge of PR #247, trial/semantic-control-map)
+trial_start_date     = 2026-08-31
+minimum_close_date   = 2026-09-28 (trial_start_date + 4 weeks)
+maximum_close_date   = 2026-10-26 (trial_start_date + 8 weeks)
 status               = OPEN
 ```
 
@@ -17,13 +17,14 @@ status               = OPEN
 
 | date | commit | trigger | affected rows | refreshed? |
 |---|---|---|---|---|
-| | | | | |
+| 2026-08-31 | 4a4fdb2 (PR #248 merge; head 2470ab2) | `STATUS.md` / `CONTEXT.md` product-scope language changes — `CONTEXT.md` "Lifecycle positioning" added; explicitly reaffirms ADR 0014 scope ("does not broaden product scope") | SA1, SA11 | yes — MIX review 2026-08-31 (see B) |
 
 ## B. Maintenance effort (actual minutes)
 
 | date | activity (MECH refresh / JUDG review / MIX review) | rows | minutes | notes |
 |---|---|---|---|---|
-| | | | | |
+| 2026-08-31 | MIX review (trigger: PR #248 `CONTEXT.md` product-scope language) | SA1 | <1 | interpretation unchanged: "Lifecycle positioning" speaks to responsibility transitions/routing, not ADR 0013 loop ownership or the runtime's whole-loop-style sequencing. judgment stays `contested` (both readings kept). Measured wall-clock; reviewer had already read the trigger diff + row in-session |
+| 2026-08-31 | MIX review (trigger: PR #248 `CONTEXT.md` product-scope language) | SA11 | <1 | interpretation unchanged + corroborated: the addition explicitly reaffirms ADR 0014 scope and does not claim broader readiness; STATUS.md vs PHASE-4-5 record conflict unchanged. judgment stays `affirmed`. Measured wall-clock; reviewer had already read the trigger diff + row in-session |
 
 ## C. Consultation events (ordinary work only — never a manufactured task)
 
