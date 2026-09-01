@@ -319,6 +319,26 @@ class TestCanonicalVocabularyUsage(unittest.TestCase):
             f"Canonical vocabulary file not found at {vocab_path}"
         )
 
+    def test_packaged_vocabulary_mirror_matches_authoritative_source(self):
+        """Packaged defaults must be an exact mirror of the authoritative docs vocabulary."""
+        authoritative = self.repo_root / "docs" / "canonical-vocabulary.yaml"
+        packaged = (
+            self.repo_root
+            / "src"
+            / "sensemaking_skills"
+            / "defaults"
+            / "canonical-vocabulary.yaml"
+        )
+
+        self.assertTrue(packaged.exists(), f"Packaged vocabulary mirror not found at {packaged}")
+        self.assertEqual(
+            packaged.read_bytes(),
+            authoritative.read_bytes(),
+            "Packaged canonical-vocabulary mirror drifted from docs/canonical-vocabulary.yaml. "
+            "The docs file is the single source of truth; copy it byte-for-byte into "
+            "src/sensemaking_skills/defaults/canonical-vocabulary.yaml before publishing.",
+        )
+
     def test_canonical_vocabulary_is_valid_yaml(self):
         """The vocabulary should be valid YAML."""
         vocab_path = self.repo_root / "docs" / "canonical-vocabulary.yaml"
