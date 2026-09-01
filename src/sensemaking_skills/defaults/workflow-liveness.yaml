@@ -1,0 +1,16 @@
+# Packaged workflow-liveness defaults. Keep semantic statuses aligned with the
+# canonical repository overlay for workflow IDs present in the packaged catalog.
+# Registry membership preserves identity; liveness controls CURRENT eligibility.
+schema_version: 1
+default_liveness: active
+allowed_liveness: [active, compatibility_only]
+
+overrides:
+  product-to-issues: compatibility_only
+  product-autonomous-sprint: compatibility_only
+  experimental-autonomous-sprint: compatibility_only
+  implementation-workflow: compatibility_only
+  product-implementation-workflow: compatibility_only
+  ui-diagnostic-workflow: compatibility_only
+  ui-implementation-workflow: compatibility_only
+  architecture-implementation-workflow: compatibility_only
