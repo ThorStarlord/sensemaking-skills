@@ -128,9 +128,9 @@ def load_workflow_catalog(repo_root: str) -> dict | None:
 def load_workflow_registry(repo_root: str) -> dict | None:
     """Load the CURRENT operational workflow view.
 
-    Stable catalog IDs remain recognizable, but compatibility-only definitions
-    are fail-closed tombstones with no executable modes or steps. Consumers
-    that need historical structure must call :func:`load_workflow_catalog`.
+    Only workflows whose effective liveness is ``active`` are returned.
+    Compatibility-only identities and historical definitions remain available
+    through :func:`load_workflow_catalog`.
     """
     raw = load_yaml(_registry_path(repo_root, "workflow-registry.yaml"))
     if raw is None:
