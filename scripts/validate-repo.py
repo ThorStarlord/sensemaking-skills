@@ -213,31 +213,32 @@ def validate_repo():
             )
 
     def check_active_local_skill(workflow_id, step_id, skill_id):
-        """Active local_execution must resolve to a live installed Skill."""
+        """Active local_execution must resolve to an installed, non-retired Skill."""
         if not skill_id:
             return
+
+        # Current liveness is a capability claim, so a local_execution step must
+        # have a real installed Skill implementation. Registry membership itself
+        # is NOT required here: setup-sensemaking-skills is an existing installed
+        # capability intentionally absent from the historical skill registry.
+        skill_file = Path("skills") / skill_id / "SKILL.md"
+        if not skill_file.is_file():
+            errors.append(
+                f"Active workflow '{workflow_id}' step '{step_id}' names local Skill "
+                f"'{skill_id}', but {skill_file.as_posix()} does not exist"
+            )
+
+        # When lifecycle metadata exists, it is authoritative negative evidence:
+        # proposed/deprecated Skills cannot back an active local workflow step.
         skill = registered_skills.get(skill_id)
-        if not skill:
-            errors.append(
-                f"Active workflow '{workflow_id}' step '{step_id}' references "
-                f"unregistered local Skill '{skill_id}'"
-            )
-            return
-        status = skill.get("status")
-        if status in {"proposed", "deprecated"}:
-            errors.append(
-                f"Active workflow '{workflow_id}' step '{step_id}' references Skill "
-                f"'{skill_id}' with non-live status '{status}'. Mark the workflow "
-                "compatibility_only or restore the Skill through a separately "
-                "authorized product decision."
-            )
-        availability = skill.get("availability", {})
-        if availability.get("requires_installed_skill") is True:
-            skill_file = Path("skills") / skill_id / "SKILL.md"
-            if not skill_file.is_file():
+        if skill:
+            status = skill.get("status")
+            if status in {"proposed", "deprecated"}:
                 errors.append(
-                    f"Active workflow '{workflow_id}' step '{step_id}' requires installed "
-                    f"Skill '{skill_id}', but {skill_file.as_posix()} does not exist"
+                    f"Active workflow '{workflow_id}' step '{step_id}' references Skill "
+                    f"'{skill_id}' with non-live status '{status}'. Mark the workflow "
+                    "compatibility_only or restore the Skill through a separately "
+                    "authorized product decision."
                 )
 
     # 4. Workflow & YOLO Validation
