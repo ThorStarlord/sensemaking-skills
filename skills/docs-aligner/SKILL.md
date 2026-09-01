@@ -7,7 +7,7 @@ description: autonomously align a codebase's documentation with its implementati
 
 Automated domain alignment for autonomous workflows. Reads the codebase and existing documentation, detects all contradictions and ambiguities in a single pass, updates `CONTEXT.md` directly, creates ADRs for hard-to-reverse decisions, and produces a consolidated `domain_alignment_report` artifact.
 
-This skill performs the same conceptual function as the interactive `grill-with-docs` skill (challenge domain language, sharpen terminology, update CONTEXT.md) but operates autonomously without human Q&A. Suitable for `gate: none` steps in autonomous workflows.
+This skill performs the same conceptual function as the interactive `grill-with-docs` skill (challenge domain language, sharpen terminology, update CONTEXT.md) but operates autonomously without human Q&A. Suitable for `gate: none` steps only when a downstream `review_alignment_report` gate is present; otherwise use `review_alignment_report`.
 
 ## Workflow
 

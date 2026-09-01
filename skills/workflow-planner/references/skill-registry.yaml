@@ -64,6 +64,7 @@ ecosystems:
         purpose: align implementation with repository documentation
         artifact: domain_alignment_report
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        capabilities: [write_files]
         invocation: { runtime: claude_code, command: "/docs-aligner" }
       - id: to-prd
         purpose: transform alignment report into a PRD
