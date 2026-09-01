@@ -88,7 +88,7 @@ diagnosis_conflict: false
 escalation_recommended: false
 evidence:
   - "{cited_file}: example citation"
-recommended_workflow_id: architecture-implementation-workflow
+recommended_workflow_id: full-fog-workflow
 weakness_type: Contract Mismatch
 created_at: "2026-01-01T00:00:00Z"
 immutable: true
