@@ -55,18 +55,12 @@ def test_catalog_preserves_compatibility_workflow_definitions() -> None:
         )
 
 
-def test_operational_view_fail_closes_compatibility_workflows() -> None:
+def test_operational_view_contains_active_workflows_only() -> None:
     operational = load_workflow_registry(str(ROOT))
     assert operational is not None
     workflows = _by_id(operational)
 
-    # Stable IDs remain recognizable, but current execution surfaces are empty.
-    assert COMPATIBILITY_ONLY <= set(workflows)
-    for workflow_id in COMPATIBILITY_ONLY:
-        workflow = workflows[workflow_id]
-        assert workflow["liveness"] == "compatibility_only"
-        assert workflow["allowed_execution_modes"] == []
-        assert workflow["steps"] == []
+    assert COMPATIBILITY_ONLY.isdisjoint(workflows)
 
     active = workflows["docs-contract-reconciliation"]
     assert active["liveness"] == "active"
