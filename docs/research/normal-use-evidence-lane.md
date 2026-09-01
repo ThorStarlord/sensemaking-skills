@@ -246,8 +246,9 @@ At establishment:
 
 ```text
 standing tracker                     Issue #218
-new post-Path-4 normal-use episodes  0
-recurring failure boundary            none yet
+new post-Path-4 normal-use episodes  2
+   (001 — Issue #190 safe-edit boundary; 002 — PR #249 merge base-advance race)
+recurring failure boundary            none yet (each episode is a distinct, first-occurrence boundary)
 focused follow-up study               none yet
 formalization candidate               none yet
 ```
