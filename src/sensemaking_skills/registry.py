@@ -9,11 +9,18 @@ from typing import Optional, Dict, Any, List
 from pathlib import Path
 
 
+ACTIVE = "active"
+COMPATIBILITY_ONLY = "compatibility_only"
+ALLOWED_LIVENESS = {ACTIVE, COMPATIBILITY_ONLY}
+
+
 class WorkflowRegistry:
-    """Manages workflow definitions with support for package defaults and user overrides.
+    """Manage workflow catalog identity separately from current liveness.
 
     The registry loads default workflows from package defaults and merges in
-    user-provided overrides from the target repository.
+    user-provided overrides from the target repository. Registry membership is
+    the durable catalog view; ADR 0027 liveness decides whether a workflow is
+    currently selectable.
     """
 
     def __init__(self, target_repo: Path, user_registry: Optional[Dict[str, Any]] = None):
@@ -22,20 +29,61 @@ class WorkflowRegistry:
         Args:
             target_repo: Path to the target repository
             user_registry: Optional dictionary of workflow definitions to merge with defaults.
-                          If provided, takes precedence over file-based registry.
+                          If provided, takes precedence over file-based registry. An optional
+                          ``workflow_liveness`` mapping may use the same overlay shape as
+                          workflow-liveness.yaml.
         """
         self.target_repo = Path(target_repo)
         self._workflows: Dict[str, Any] = {}
+        self._default_liveness: str = ACTIVE
+        self._liveness_overrides: Dict[str, str] = {}
 
-        # Load package defaults first
+        # Package liveness is loaded before definitions so an external override
+        # of a compatibility ID remains compatibility-only unless the target
+        # explicitly reclassifies it.
+        self._load_package_liveness()
         self._load_package_defaults()
 
         # Load user-provided registry if specified
         if user_registry:
             self._merge_workflows(user_registry.get("workflows", []))
+            self._merge_liveness(user_registry.get("workflow_liveness", {}))
         else:
             # Try to load user registry from target repo
             self._load_user_registry()
+
+    def _load_liveness_file(self, path: Path) -> Dict[str, Any]:
+        """Load one liveness overlay. Missing files are an empty override."""
+        if not path.exists():
+            return {}
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+        except (yaml.YAMLError, IOError) as e:
+            raise RuntimeError(f"Failed to load workflow liveness from {path}: {e}")
+        if not isinstance(data, dict):
+            raise RuntimeError(f"Workflow liveness overlay must be a mapping: {path}")
+        return data
+
+    def _merge_liveness(self, overlay: Dict[str, Any]) -> None:
+        """Merge liveness declarations, preserving fail-closed unknown values."""
+        if not overlay:
+            return
+        if "default_liveness" in overlay:
+            self._default_liveness = overlay["default_liveness"]
+        overrides = overlay.get("overrides", {})
+        if overrides is None:
+            return
+        if not isinstance(overrides, dict):
+            raise RuntimeError("workflow liveness 'overrides' must be a mapping")
+        for workflow_id, liveness in overrides.items():
+            self._liveness_overrides[str(workflow_id)] = liveness
+
+    def _load_package_liveness(self) -> None:
+        """Load packaged ADR-0027 liveness defaults."""
+        package_root = Path(__file__).parent
+        liveness_file = package_root / "defaults" / "workflow-liveness.yaml"
+        self._merge_liveness(self._load_liveness_file(liveness_file))
 
     def _load_package_defaults(self) -> None:
         """Load default workflow registry from package.
@@ -49,7 +97,7 @@ class WorkflowRegistry:
 
         if defaults_file.exists():
             try:
-                with open(defaults_file, "r") as f:
+                with open(defaults_file, "r", encoding="utf-8") as f:
                     data = yaml.safe_load(f) or {}
                     self._merge_workflows(data.get("workflows", []))
             except (yaml.YAMLError, IOError) as e:
@@ -65,6 +113,8 @@ class WorkflowRegistry:
         """Load user-provided workflow registry from target repository.
 
         Looks for workflow-registry.yaml in standard locations within the target repo.
+        If the selected registry has a sibling ``workflow-liveness.yaml``, that
+        overlay is applied after the package defaults.
         """
         candidates = [
             self.target_repo / "skills" / "workflow-planner" / "references" / "workflow-registry.yaml",
@@ -75,9 +125,12 @@ class WorkflowRegistry:
         for candidate in candidates:
             if candidate.exists():
                 try:
-                    with open(candidate, "r") as f:
+                    with open(candidate, "r", encoding="utf-8") as f:
                         data = yaml.safe_load(f) or {}
                         self._merge_workflows(data.get("workflows", []))
+                    self._merge_liveness(
+                        self._load_liveness_file(candidate.parent / "workflow-liveness.yaml")
+                    )
                     return
                 except (yaml.YAMLError, IOError) as e:
                     raise RuntimeError(
@@ -100,86 +153,104 @@ class WorkflowRegistry:
                 self._workflows[workflow_id] = workflow
 
     def get_workflow(self, workflow_id: str) -> Optional[Dict[str, Any]]:
-        """Get a workflow definition by ID.
+        """Get a catalog workflow definition by ID, regardless of liveness."""
+        return self._workflows.get(workflow_id)
 
-        Args:
-            workflow_id: The workflow ID
+    def get_workflow_liveness(self, workflow_id: str) -> Optional[str]:
+        """Return effective liveness for a registered workflow, else None."""
+        if workflow_id not in self._workflows:
+            return None
+        return self._liveness_overrides.get(workflow_id, self._default_liveness)
 
-        Returns:
-            Workflow definition dictionary or None if not found
-        """
+    def is_workflow_selectable(self, workflow_id: str) -> bool:
+        """True only when a registered workflow is currently active."""
+        return self.get_workflow_liveness(workflow_id) == ACTIVE
+
+    def get_selectable_workflow(self, workflow_id: str) -> Optional[Dict[str, Any]]:
+        """Return a workflow only when it is currently active/selectable."""
+        if not self.is_workflow_selectable(workflow_id):
+            return None
         return self._workflows.get(workflow_id)
 
     def list_workflows(self) -> List[str]:
-        """List all registered workflow IDs.
-
-        Returns:
-            List of workflow IDs sorted alphabetically
-        """
+        """List all registered catalog workflow IDs."""
         return sorted(self._workflows.keys())
 
-    def list_workflow_details(self) -> List[Dict[str, Any]]:
-        """List all workflows with their details.
+    def list_selectable_workflows(self) -> List[str]:
+        """List current active workflow IDs only."""
+        return sorted(
+            workflow_id
+            for workflow_id in self._workflows
+            if self.is_workflow_selectable(workflow_id)
+        )
 
-        Returns:
-            List of workflow definitions
-        """
+    def list_workflow_details(self) -> List[Dict[str, Any]]:
+        """List all catalog workflows with effective liveness annotations."""
+        details: List[Dict[str, Any]] = []
+        for workflow_id in sorted(self._workflows.keys()):
+            item = dict(self._workflows[workflow_id])
+            item["liveness"] = self.get_workflow_liveness(workflow_id)
+            details.append(item)
+        return details
+
+    def list_selectable_workflow_details(self) -> List[Dict[str, Any]]:
+        """List active workflows with liveness annotations."""
         return [
-            self._workflows[wid] for wid in sorted(self._workflows.keys())
+            item for item in self.list_workflow_details()
+            if item.get("liveness") == ACTIVE
         ]
 
     def has_auto_invocation(self, workflow_id: str) -> bool:
-        """Check if a workflow has auto-invocation enabled.
+        """Check current auto-invocation metadata for an active workflow.
 
-        Args:
-            workflow_id: The workflow ID
-
-        Returns:
-            True if workflow has auto_invoke_next_workflow set to True
+        Compatibility-only workflows never participate in current chaining.
         """
-        workflow = self.get_workflow(workflow_id)
+        workflow = self.get_selectable_workflow(workflow_id)
         if not workflow:
             return False
         return workflow.get("auto_invoke_next_workflow", False)
 
     def get_recommended_next_workflow(self, workflow_id: str) -> Optional[str]:
-        """Get the recommended next workflow for auto-invocation.
+        """Get a current selectable next-workflow candidate.
 
-        Args:
-            workflow_id: The workflow ID
-
-        Returns:
-            The recommended next workflow ID, or None if not specified
+        ADR 0026 still governs execution authority. ADR 0027 additionally
+        prevents compatibility-only source or target workflows from appearing
+        as current chaining candidates.
         """
-        workflow = self.get_workflow(workflow_id)
+        workflow = self.get_selectable_workflow(workflow_id)
         if not workflow:
             return None
 
         # Check for explicit next workflow ID first
         if "auto_invoke_next_workflow_id" in workflow:
-            return workflow["auto_invoke_next_workflow_id"]
+            next_id = workflow["auto_invoke_next_workflow_id"]
+            return next_id if self.is_workflow_selectable(next_id) else None
 
         # Check for source field (like workflow_orchestration_plan.recommended_workflow_id)
         auto_invoke_source = workflow.get("auto_invoke_source")
         if auto_invoke_source:
-            # For now, just return the source path as documentation
-            # The actual resolution will happen at runtime when the artifact is available
+            # The actual resolution happens at runtime when the artifact is
+            # available; this method does not infer a current target.
             return None
 
         return None
 
     def get_all_workflows(self) -> Dict[str, Any]:
-        """Get all workflow definitions.
-
-        Returns:
-            Dictionary mapping workflow IDs to their definitions
-        """
+        """Get all catalog workflow definitions."""
         return self._workflows.copy()
 
-    def workflow_count(self) -> int:
-        """Get the total number of registered workflows.
+    def get_all_selectable_workflows(self) -> Dict[str, Any]:
+        """Get current active workflow definitions only."""
+        return {
+            workflow_id: workflow
+            for workflow_id, workflow in self._workflows.items()
+            if self.is_workflow_selectable(workflow_id)
+        }
 
-        Returns:
-            Number of workflows
-        """
+    def workflow_count(self) -> int:
+        """Get the total number of registered catalog workflows."""
         return len(self._workflows)
+
+    def selectable_workflow_count(self) -> int:
+        """Get the number of currently active workflows."""
+        return len(self.list_selectable_workflows())
