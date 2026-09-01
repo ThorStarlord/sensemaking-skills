@@ -46,5 +46,5 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-sensemaking_skills = ["skills/**/*", "skill_trees/**/*", "examples/**/*", "docs/**/*"]
+sensemaking_skills = ["skills/**/*", "skill_trees/**/*", "examples/**/*", "docs/**/*", "defaults/*.yaml"]
 "sensemaking_skills.campaign_validation.schemas" = ["*.json"]
