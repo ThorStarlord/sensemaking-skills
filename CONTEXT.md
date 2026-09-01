@@ -316,7 +316,7 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 | `docs/canonical-vocabulary.yaml` | canonical enumerated vocabulary |
 | `skills/workflow-planner/references/artifact-contracts.yaml` | artifact and machine-field contracts |
 | `skills/workflow-planner/references/workflow-registry.yaml` | registered workflow/subgraph definitions |
-| `skill-registry.yaml` | registered Skill/capability catalog |
+| `skills/workflow-planner/references/skill-registry.yaml` | registered Skill/capability catalog |
 | `skills/repo-sensemaker/references/evidence-rules.md` | repository-sensemaking evidence discipline |
 | `docs/research/control-model-research-agenda.md` | non-ratified research hypotheses |
 | `docs/research/goal-a-external-product-validation-protocol.md` | current product-validation protocol (Goal A) — ACTIVE |
@@ -328,15 +328,22 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 - **Sensemaking Skills**: this repository/distribution and its bounded responsibility implementations/support machinery.
 - **Responsibility**: the class of work warranted by the current uncertainty/evidence state.
 - **Skill**: a bounded implementation of a responsibility with declared inputs/outputs.
-- **Workflow**: a registered, mechanically expressible sequence/subgraph; not automatically the top-level control loop.
-- **Warrant**: the current justification for a responsibility, claim, or action from evidence + unresolved uncertainty + authority.
+- **Workflow** (use qualified forms): `workflow-definition` (registry entry in `workflow-registry.yaml`), `workflow-recommendation` (`recommended_workflow_id` in brief), `workflow-selection` (`chosen_workflow_id` in plan), `workflow-execution` (runtime invocation). Bare `workflow` is ambiguous — always qualify.
+- **Warrant**: the current justification for a responsibility, claim, or action from evidence + unresolved uncertainty + authority. Distinct from `MODEL_WARRANT` (system-computed gate) and `gate-approval` (human approval event).
+- **MODEL_WARRANT**: deterministic task-relative gate (`NO | PARTIAL | INCONCLUSIVE`; `FULL` deferred) computed from authoritative `representation_sufficiency` judgment; diagnostic probes are telemetry only, never the warrant basis.
+- **Representation Sufficiency** (`representation_sufficiency`): producer-authored judgment `{status: sufficient | insufficient_bounded | inconclusive, rationale, needed_representation}` that is the sole authority for `MODEL_WARRANT`.
+- **NO_REPOSITORY_CHANGE_WARRANTED**: affirmative terminal outcome meaning no repository change is warranted on current evidence; mutually exclusive with `recommended_workflow_id` and orthogonal to `MODEL_WARRANT`.
 - **Repository Sensemaking Brief**: evidence-grounded diagnostic artifact from `repo-sensemaker`.
-- **Orchestration Plan**: optional procedural planning artifact; recommendation, not authority.
+- **Orchestration Plan** (`workflow_orchestration_plan`): optional procedural planning artifact; recommendation, not authority. `provisional` (pre-brief skeleton, may omit `primary_fog_type`) vs `canonical` (post-brief finalized, contract-valid).
 - **Weakest Boundary**: the most consequential fragile/unenforced repository boundary identified by evidence.
-- **Probe**: bounded empirical observation used when repository text alone cannot establish reality.
-- **Validation**: mechanical contract checking.
-- **Reconciliation**: comparison of claims against durable evidence.
-- **Repair verification**: finding-specific post-change verification.
+- **Weakness Type**: closed taxonomy for the shape of the weakest boundary (`Vocabulary Drift`, `Contract Mismatch`, `Ghost Features`, `Safety Gaps`, `Implicit Dependencies`, `Zero Validation`, `Orphaned Examples`, or `Other` with explanation).
+- **Extended Analysis** (`extended_analysis.domain` etc.): optional Section 15 multi-fog disclosure (`domain`, `consequential_boundary`, `uncertainty`, `owner_intent_state`); routing-inert, non-blocking, model-constrained.
+- **Probe** (qualified): `state-currency probe` (`probe-report.yaml` measured fact) → `probe-evidence`; distinct from `repository-evidence` (inspectable file/git state) and `derived-evidence`. Never infer `FALSE` from absent probe.
+- **Gate** (`gate_id`): human approval checkpoint (`review_repository_brief`, `review_workflow_plan`, etc.) with outcomes `approved | denied | needs_revision | none`; sentinel `none` means no gate required.
+- **Execution Mode**: `plan_only | prompt_chain | guided_execution (default) | autonomous_execution | yolo_execution (compatibility-only)`; determines `gates_honored` and auto-approval criteria.
+- **Validation** (`mechanical-validation`): deterministic contract checking. `Validation != evidence sufficiency != usefulness`.
+- **Reconciliation** (`claim-reconciliation`): comparison of `work_claim` against durable evidence → `reconciliation_report` (`verified | disputed | omitted`).
+- **Repair verification** (`finding-repair-verification`): finding-specific post-change check via fresh probe → `repair_verification_report` (`closed | remaining`).
 - **Authority boundary**: point where knowing/understanding is possible but deciding, acting, publishing, or merging is not authorized.
 - **Harden Only Where Pressured**: formalize machinery after repeated real-use pressure exposes a stable failure boundary.
 
