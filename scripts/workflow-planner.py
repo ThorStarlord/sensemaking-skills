@@ -78,8 +78,8 @@ def plan_workflow(brief_path: str, repo_root: str = ".") -> str:
     if primary_fog_type not in FOG_TYPE_TO_WORKFLOW:
         return f"ERROR: Unknown fog type: {primary_fog_type}"
 
-    # Load the ADR-0027 operational registry view. Compatibility-only IDs remain
-    # recognizable but have no executable modes/steps and are not selectable.
+    # Load the ADR-0027 operational registry view. Compatibility-only IDs are
+    # preserved in the catalog view but excluded from this CURRENT active view.
     registry = load_workflow_registry(repo_root)
     if not registry:
         return "ERROR: Could not load workflow registry"
@@ -104,14 +104,14 @@ def plan_workflow(brief_path: str, repo_root: str = ".") -> str:
     if escalation_recommended and recommended_workflow_id in active_workflow_ids:
         chosen_workflow_id = recommended_workflow_id
         routing_decision_method = "escalation_recommended_accepted"
-        routing_divergence = (chosen_workflow_id != default_workflow_id)
+        routing_divergence = (chosen_workflow_id != recommended_workflow_id)
     elif default_workflow_id in active_workflow_ids:
         chosen_workflow_id = default_workflow_id
         if chosen_workflow_id == recommended_workflow_id:
             routing_decision_method = "diagnosis_primary_soft_context"
         else:
             routing_decision_method = "manual_override"
-        routing_divergence = False
+        routing_divergence = (chosen_workflow_id != recommended_workflow_id)
     else:
         recommendation_note = (
             f"; brief recommendation '{recommended_workflow_id}' is also not active"
