@@ -7,6 +7,21 @@
 
 ---
 
+> **⚠️ Historical document (flagged non-normative 2026-09-01).** This is a
+> dated 2026-05-19 phase-completion record, not the current
+> `workflow-orchestrator` contract. Field lists, examples, and validation
+> claims below describe a since-superseded contract — `mixed` is not a
+> canonical `primary_fog_type` value today, and `secondary_fog_type` has
+> been retired with no replacement (see the repo-sensemaker
+> product-definition adjudication). The tie-breaker scenario's deterministic
+> diagnosis-to-workflow selection also predates ADR 0026 (recommendation ≠
+> selection ≠ execution authorization). Do not treat anything below as
+> current instructions or as a claim about current validator/runtime
+> behavior. Current authority lives in `docs/canonical-vocabulary.yaml`,
+> `skills/workflow-planner/references/artifact-contracts.yaml`,
+> `skills/workflow-orchestrator/SKILL.md`, `docs/adr/0026-workflow-execution-authority.md`,
+> and the current validators.
+
 ## What Was Done
 
 ### 1. Updated workflow-orchestrator Instructions

@@ -7,6 +7,19 @@
 
 ---
 
+> **⚠️ Historical document (flagged non-normative 2026-09-01).** This is a
+> dated 2026-05-19 phase-completion record, not the current `repo-sensemaker`
+> contract. Field lists, examples, and validation claims below describe a
+> since-superseded contract — `mixed`/`unknown` are not canonical
+> `primary_fog_type` values today, and `secondary_fog_type` has been retired
+> with no replacement (see the repo-sensemaker product-definition
+> adjudication). Do not treat anything below as current instructions or as a
+> claim about current validator behavior. Current authority lives in
+> `docs/canonical-vocabulary.yaml`,
+> `skills/workflow-planner/references/artifact-contracts.yaml`,
+> `skills/repo-sensemaker/references/repo-analysis-template.md`,
+> `skills/repo-sensemaker/SKILL.md`, and the current validators.
+
 ## What Was Done
 
 ### 1. Updated repo-sensemaker Instructions

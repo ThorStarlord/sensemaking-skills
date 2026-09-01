@@ -6,6 +6,21 @@
 
 ---
 
+> **⚠️ Historical document (flagged non-normative 2026-09-01).** This is a
+> dated 2026-05-19 phase-readiness record, not the current `repo-sensemaker`
+> contract. In particular, its "Fields repo-sensemaker Must Emit" section,
+> field lists (including `primary_fog_type: ... | mixed | unknown` and
+> `secondary_fog_type`), promotion instructions, validator examples, and
+> implementation checklist below all describe a since-superseded contract:
+> `mixed`/`unknown` are not canonical `primary_fog_type` values today, and
+> `secondary_fog_type`/`secondary_fog_types` has been retired with no
+> replacement (see the repo-sensemaker product-definition adjudication).
+> Do not treat anything below as current instructions. Current authority
+> lives in `docs/canonical-vocabulary.yaml`,
+> `skills/workflow-planner/references/artifact-contracts.yaml`,
+> `skills/repo-sensemaker/references/repo-analysis-template.md`,
+> `skills/repo-sensemaker/SKILL.md`, and the current validators.
+
 ## What Is Stage 1?
 
 Patch `repo-sensemaker` (the first diagnostic skill) to emit intent-aware fields.

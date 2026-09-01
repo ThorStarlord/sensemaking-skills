@@ -6,6 +6,14 @@
 
 ---
 
+> **⚠️ Historical document (flagged non-normative 2026-09-01).** This is a
+> dated 2026-05-19 hardening-status snapshot, not the current field/fog
+> contract. Field names it tracks include `secondary_fog_type`, which has
+> since been retired with no replacement (see the repo-sensemaker
+> product-definition adjudication). Do not treat anything below as current
+> instructions. Current authority lives in `docs/canonical-vocabulary.yaml`
+> and `skills/workflow-planner/references/artifact-contracts.yaml`.
+
 ## Hardening Stages
 
 ```
