@@ -26,7 +26,11 @@ blocker from `GOAL-A-RUN-1` has been resolved.
 
 ## Previous stop boundary (deterministic, not a product verdict)
 
-`experiments/goal-a-auteur-target1/RUN1-STOP-BOUNDARY.md` records
+The Goal A Run-1 stop boundary is durably recorded as **Evidence 0023** at
+`experiments/evidence/0023-goal-a-run1-stop-boundary/` (committed; byte-verified:
+`RUN1-STOP-BOUNDARY.md` SHA-256
+`cc493eab60ba89dc9cd0942687334691200349ddebd5fa60fd898b6893d756b3`), and is
+tracked live in **Issue #255 (Goal A execution substrate)**. It records
 `GOAL_A_AUTEUR_TARGET1_RESULT = RUN1_COMPLETED_STOP_RULE_TRIGGERED` with stop
 rule = `HARNESS_ENVIRONMENT_FAILURE`, including:
 
@@ -39,21 +43,24 @@ rule = `HARNESS_ENVIRONMENT_FAILURE`, including:
 3. the sub-agent had no write access to re-run the probe engine; probe-derived
    numbers were labeled documented-but-not-verified.
 
-The note is explicit: this is a **harness/environment stop, not a product
+Per the record's own note: this is a **harness/environment stop, not a product
 verdict**. The Auteur candidate is preserved; a compliant run requires a
 **corrected sub-agent artifact-finalization/write mechanism and a re-verified
-isolation contract before a future Run 1 under a fresh owner authorization**, and
-a re-verified run consumes the Auteur candidate only under a separate fresh
+isolation contract before a future Run 1 under a fresh owner authorization**,
+and a re-verified run consumes the Auteur candidate only under a separate fresh
 owner authorization.
 
 ## Current main: what changed relevant to the blocker
 
-- The trial bookkeeping (Semantic Control Map log init + PR #248 trigger) and
-  the PR #249 merge landed on `main`; `main` head is now `d0b70c`.
+- The trial bookkeeping (Semantic Control Map log init + PR #248 trigger), the
+  PR #249 merge, and the merged Semantic Control Map PR #251 landed on `main`;
+  `main` head is at the merge of PR #251.
 - These are durable-docs and research-preservation changes. **They do not
   change the Goal A execution surface**: no fix to the sub-agent
   write/isolation mechanism required for the producer to persist its own frozen
   brief has landed.
+- Evidence 0023 and Issue #255 now make the substrate blocker durably tracked,
+  but do not by themselves resolve it.
 
 ## Readiness assessment
 
@@ -104,3 +111,9 @@ boundary**, not ready to execute. No protocol change is warranted; the fix is a
 corrected harness (artifact-finalization + isolation/provenance verification)
 that this repository does not yet contain, and any run then requires a
 separate, fresh owner authorization.
+
+The substrate blockers are now durably tracked in **Issue #255 (Goal A execution
+substrate)**, with the verified Run-1 stop boundary committed as Evidence 0023.
+That issue is the place where the repro/locate → identify-ownership → smallest
+repair → finding-specific-verification → fresh-authorization → new-compliant-Run-1
+sequence is intended to be executed.
