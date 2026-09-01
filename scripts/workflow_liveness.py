@@ -1,18 +1,18 @@
 """Workflow catalog/liveness helpers (ADR 0027, issue #263).
 
-Workflow registry identity is durable catalog data.  Liveness is a separate
+Workflow registry identity is durable catalog data. Liveness is a separate
 contract that decides whether a registered workflow is eligible for CURRENT
-recommendation, planning, or execution.
+recommendation, planning, validation, or execution.
 
 This module deliberately exposes both views:
 
 * catalog view: every registered workflow, annotated with effective liveness;
-* operational view: the same stable IDs remain recognizable, but
-  compatibility-only definitions are fail-closed tombstones with no executable
-  modes or steps.
+* operational view: active workflows only.
 
-Catalog validators should inspect the raw/annotated catalog.  Current
-planning/runtime consumers should use the operational view.
+A compatibility-only workflow therefore remains known and inspectable through
+the catalog while being absent from CURRENT recommendation/selection surfaces.
+Catalog validators should inspect the raw/annotated catalog. Current
+planning/runtime/brief consumers should use the operational view.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ def load_liveness_file(path: str | Path) -> dict[str, Any]:
     External/custom registries that predate ADR 0027 remain active by default.
     Invalid values are preserved rather than silently normalized; repository
     validation is responsible for reporting malformed canonical overlays and
-    operational consumers fail closed because only ``active`` is executable.
+    operational consumers fail closed because only ``active`` is selectable.
     """
     path = Path(path)
     if not path.exists():
@@ -90,26 +90,22 @@ def operationalize_catalog(
     registry: dict[str, Any] | None,
     overlay: dict[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return the current operational view while preserving stable IDs.
+    """Return the CURRENT operational registry containing active workflows only.
 
-    Active definitions are unchanged apart from their explicit liveness field.
-    Compatibility-only definitions remain present so consumers can recognize a
-    historical ID, but their current execution surface is intentionally empty:
-    no allowed execution modes and no executable steps.  This makes existing
-    runtime/plan consumers fail closed without deleting catalog provenance.
-
-    Unknown/invalid liveness values are treated the same way as non-active
-    values: they are never silently promoted to current capability.
+    This is a filtered *view*, not deletion of catalog data. The complete
+    historical/compatibility definitions remain available through
+    :func:`annotate_catalog` / ``load_workflow_catalog``. Unknown or invalid
+    liveness values fail closed because they are not equal to ``active``.
     """
-    result = annotate_catalog(registry, overlay)
-    if result is None:
+    catalog = annotate_catalog(registry, overlay)
+    if catalog is None:
         return None
-    for workflow in result.get("workflows", []):
-        if not isinstance(workflow, dict):
-            continue
-        if workflow.get("liveness") != ACTIVE:
-            workflow["allowed_execution_modes"] = []
-            workflow["steps"] = []
+    result = deepcopy(catalog)
+    result["workflows"] = [
+        workflow
+        for workflow in catalog.get("workflows", [])
+        if isinstance(workflow, dict) and workflow.get("liveness") == ACTIVE
+    ]
     return result
 
 
