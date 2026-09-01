@@ -128,9 +128,11 @@ class TestS2NoChangeContract:
             os.unlink(path)
 
     def test_action_brief_with_workflow_no_workflow_error(self):
-        # Action-bearing WITH a workflow: no recommended_workflow_id error.
+        # Action-bearing WITH a CURRENT active workflow: no
+        # recommended_workflow_id error. ADR 0027 intentionally excludes
+        # compatibility-only IDs from this current-capability assertion.
         path = _write_brief({
-            "recommended_workflow_id": "product-implementation-workflow",
+            "recommended_workflow_id": "full-fog-workflow",
         })
         try:
             r = _run_validator(path)

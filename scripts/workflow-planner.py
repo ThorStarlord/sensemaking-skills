@@ -10,28 +10,21 @@ import sys
 import json
 import yaml
 import argparse
-from pathlib import Path
 from datetime import datetime, timezone
 from typing import TypedDict, Any, Optional
 
-# Fog type to workflow mapping (from workflow-planner SKILL.md)
+from _validator_utils import load_workflow_registry
+
+# Fog type to historical/default workflow candidate (from workflow-planner
+# SKILL.md). ADR 0027 requires a liveness check before any candidate can become
+# a current selection. A compatibility-only former default is NOT silently
+# replaced by another workflow.
 FOG_TYPE_TO_WORKFLOW = {
     "product_fog": "product-implementation-workflow",
     "ui_fog": "ui-implementation-workflow",
     "docs_fog": "docs-implementation-workflow",
     "architecture_fog": "architecture-implementation-workflow",
 }
-
-
-def load_workflow_registry(repo_root: str = ".") -> dict[str, Any] | None:
-    """Load workflow registry to get workflow definitions."""
-    registry_path = Path(repo_root) / "skills" / "workflow-planner" / "references" / "workflow-registry.yaml"
-    try:
-        with open(registry_path, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
-    except Exception as e:
-        print(f"Error loading workflow registry: {e}", file=sys.stderr)
-        return None
 
 
 def extract_brief_data(content: str) -> dict[str, Any] | None:
@@ -49,13 +42,13 @@ def extract_brief_data(content: str) -> dict[str, Any] | None:
 
 
 def get_workflow_steps(workflow_id: str, registry: dict[str, Any]) -> list[dict[str, Any]]:
-    """Extract workflow steps from registry for a given workflow ID."""
+    """Extract current executable workflow steps for a workflow ID."""
     if not registry:
         return []
 
     workflows = registry.get("workflows", [])
     for workflow in workflows:
-        if workflow.get("id") == workflow_id:
+        if workflow.get("id") == workflow_id and workflow.get("liveness", "active") == "active":
             return workflow.get("steps", [])
     return []
 
@@ -85,34 +78,58 @@ def plan_workflow(brief_path: str, repo_root: str = ".") -> str:
     if primary_fog_type not in FOG_TYPE_TO_WORKFLOW:
         return f"ERROR: Unknown fog type: {primary_fog_type}"
 
-    # Load registry first to validate workflows
+    # Load the ADR-0027 operational registry view. Compatibility-only IDs are
+    # preserved in the catalog view but excluded from this CURRENT active view.
     registry = load_workflow_registry(repo_root)
     if not registry:
         return "ERROR: Could not load workflow registry"
 
+    workflows = registry.get("workflows", [])
+    active_workflow_ids = {
+        workflow.get("id")
+        for workflow in workflows
+        if isinstance(workflow, dict)
+        and workflow.get("id")
+        and workflow.get("liveness", "active") == "active"
+    }
+
     # Determine routing decision method
-    # PHASE 4.3 FIX: Honor escalation recommendations
+    # PHASE 4.3 FIX: Honor escalation recommendations, now bounded by ADR 0027
+    # liveness. A former default becoming compatibility-only does not authorize
+    # the planner to invent a replacement route.
     default_workflow_id = FOG_TYPE_TO_WORKFLOW[primary_fog_type]
     recommended_workflow_id = brief_data.get("recommended_workflow_id", default_workflow_id)
     escalation_recommended = brief_data.get("escalation_recommended", False)
 
-    # Choose workflow based on escalation flag
-    if escalation_recommended and recommended_workflow_id:
+    if escalation_recommended and recommended_workflow_id in active_workflow_ids:
         chosen_workflow_id = recommended_workflow_id
         routing_decision_method = "escalation_recommended_accepted"
-        routing_divergence = (chosen_workflow_id != default_workflow_id)
-    else:
+        routing_divergence = (chosen_workflow_id != recommended_workflow_id)
+    elif default_workflow_id in active_workflow_ids:
         chosen_workflow_id = default_workflow_id
         if chosen_workflow_id == recommended_workflow_id:
             routing_decision_method = "diagnosis_primary_soft_context"
         else:
             routing_decision_method = "manual_override"
-        routing_divergence = False
+        routing_divergence = (chosen_workflow_id != recommended_workflow_id)
+    else:
+        recommendation_note = (
+            f"; brief recommendation '{recommended_workflow_id}' is also not active"
+            if recommended_workflow_id not in (None, "")
+            and recommended_workflow_id not in active_workflow_ids
+            else ""
+        )
+        return (
+            f"ERROR: Default workflow '{default_workflow_id}' for {primary_fog_type} "
+            f"is not currently active under ADR 0027{recommendation_note}. "
+            "No replacement route is ratified. Select an active workflow explicitly "
+            "or preserve/escalate the no-match decision instead of silently routing."
+        )
 
     # Get workflow steps
     workflow_steps = get_workflow_steps(chosen_workflow_id, registry)
     if not workflow_steps:
-        return f"ERROR: No steps found for workflow: {chosen_workflow_id}"
+        return f"ERROR: No active steps found for workflow: {chosen_workflow_id}"
 
     # Generate plan artifact
     timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")

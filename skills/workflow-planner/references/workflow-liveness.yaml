@@ -1,0 +1,21 @@
+# Workflow liveness is separate from registry identity.
+#
+# Registry membership preserves stable IDs and historical/compatibility provenance.
+# Liveness controls whether a workflow is eligible for CURRENT recommendation,
+# selection, planning, or execution. See ADR 0027 and issue #263.
+schema_version: 1
+default_liveness: active
+allowed_liveness: [active, compatibility_only]
+
+overrides:
+  # These workflows remain in workflow-registry.yaml for historical and
+  # compatibility references, but their local_execution chains depend on
+  # proposed/deprecated Skills with no current installed implementation.
+  product-to-issues: compatibility_only
+  product-autonomous-sprint: compatibility_only
+  experimental-autonomous-sprint: compatibility_only
+  implementation-workflow: compatibility_only
+  product-implementation-workflow: compatibility_only
+  ui-diagnostic-workflow: compatibility_only
+  ui-implementation-workflow: compatibility_only
+  architecture-implementation-workflow: compatibility_only

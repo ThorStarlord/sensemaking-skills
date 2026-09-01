@@ -4,9 +4,10 @@ import sys
 import re
 from pathlib import Path
 
+
 def validate_repo():
     errors = []
-    
+
     # 1. Check core files
     core_files = [
         "README.md",
@@ -21,12 +22,15 @@ def validate_repo():
         "skills/workflow-planner/agents/openai.yaml",
         "skills/workflow-planner/references/skill-registry.yaml",
         "skills/workflow-planner/references/workflow-registry.yaml",
+        "skills/workflow-planner/references/workflow-liveness.yaml",
         "skills/workflow-planner/references/workflow-orchestration-template.md",
         "skills/workflow-planner/references/execution-modes.md",
         "skills/workflow-planner/references/artifact-contracts.yaml",
         "skills/workflow-planner/references/git-safety-policy.md",
         "skills/workflow-planner/references/recovery-policy.md",
         "skills/workflow-planner/references/usage-research-scenarios.yaml",
+        "src/sensemaking_skills/defaults/workflow-registry.yaml",
+        "src/sensemaking_skills/defaults/workflow-liveness.yaml",
         "docs/research/usage-research-rubric.md",
         "skills/problem-framer/SKILL.md",
         "skills/problem-framer/agents/openai.yaml",
@@ -49,7 +53,7 @@ def validate_repo():
         "skills/usage-researcher/agents/openai.yaml",
         "skills/usage-researcher/references/usage-research-report-template.md"
     ]
-    
+
     for f in core_files:
         if not os.path.exists(f):
             errors.append(f"Missing core file: {f}")
@@ -60,14 +64,17 @@ def validate_repo():
         "skills/workflow-planner/agents/openai.yaml",
         "skills/workflow-planner/references/skill-registry.yaml",
         "skills/workflow-planner/references/workflow-registry.yaml",
+        "skills/workflow-planner/references/workflow-liveness.yaml",
         "skills/workflow-planner/references/artifact-contracts.yaml",
+        "src/sensemaking_skills/defaults/workflow-registry.yaml",
+        "src/sensemaking_skills/defaults/workflow-liveness.yaml",
         "skills/problem-framer/agents/openai.yaml",
         "skills/unknowns-mapper/agents/openai.yaml",
         "skills/handoff/agents/openai.yaml",
         "skills/setup-sensemaking-skills/agents/openai.yaml",
         "skills/sensemaking-docs-reconciler/agents/openai.yaml"
     ]
-    
+
     registries = {}
     for yf in yaml_files:
         if os.path.exists(yf):
@@ -86,7 +93,7 @@ def validate_repo():
             for skill in ecosystem.get("skills", []):
                 s_id = skill["id"]
                 registered_skills[s_id] = skill
-                
+
                 # Availability validation
                 availability = skill.get("availability")
                 if not availability:
@@ -95,7 +102,7 @@ def validate_repo():
                     a_type = availability.get("type")
                     if a_type not in ["local", "local_command", "external", "prompt_only"]:
                         errors.append(f"Skill '{s_id}' has invalid availability type: {a_type}")
-                    
+
                     # Invocation check for local_command
                     if a_type == "local_command":
                         invocation = skill.get("invocation")
@@ -105,26 +112,157 @@ def validate_repo():
                             if not invocation.get("command"):
                                 errors.append(f"Skill '{s_id}' invocation missing 'command'")
 
+    # 3b. Workflow liveness contract (ADR 0027 / issue #263)
+    allowed_liveness = {"active", "compatibility_only"}
+    liveness_path = "skills/workflow-planner/references/workflow-liveness.yaml"
+    liveness = registries.get(liveness_path) or {}
+    liveness_default = liveness.get("default_liveness")
+    liveness_overrides = liveness.get("overrides", {})
+    declared_allowed = liveness.get("allowed_liveness", [])
+
+    if liveness.get("schema_version") != 1:
+        errors.append("workflow-liveness.yaml must declare schema_version: 1")
+    if liveness_default not in allowed_liveness:
+        errors.append(
+            f"workflow-liveness.yaml default_liveness must be one of {sorted(allowed_liveness)}, "
+            f"got {liveness_default!r}"
+        )
+    if set(declared_allowed) != allowed_liveness:
+        errors.append(
+            "workflow-liveness.yaml allowed_liveness must be exactly "
+            "[active, compatibility_only]"
+        )
+    if not isinstance(liveness_overrides, dict):
+        errors.append("workflow-liveness.yaml overrides must be a mapping")
+        liveness_overrides = {}
+
+    raw_workflow_registry = registries.get(
+        "skills/workflow-planner/references/workflow-registry.yaml"
+    ) or {}
+    raw_workflow_ids = {
+        workflow.get("id")
+        for workflow in raw_workflow_registry.get("workflows", [])
+        if isinstance(workflow, dict) and workflow.get("id")
+    }
+    unknown_liveness_ids = set(liveness_overrides) - raw_workflow_ids
+    if unknown_liveness_ids:
+        errors.append(
+            "workflow-liveness.yaml overrides unknown workflow IDs: "
+            f"{sorted(unknown_liveness_ids)}"
+        )
+    for workflow_id, value in sorted(liveness_overrides.items()):
+        if value not in allowed_liveness:
+            errors.append(
+                f"Workflow '{workflow_id}' has invalid liveness {value!r}; "
+                f"expected one of {sorted(allowed_liveness)}"
+            )
+
+    def effective_liveness(workflow_id, overlay_default=liveness_default,
+                           overlay_overrides=liveness_overrides):
+        return overlay_overrides.get(workflow_id, overlay_default)
+
+    # The packaged catalog may differ structurally from the canonical/runtime
+    # catalog, but shared IDs must carry the same liveness semantics.
+    package_registry = registries.get(
+        "src/sensemaking_skills/defaults/workflow-registry.yaml"
+    ) or {}
+    package_liveness = registries.get(
+        "src/sensemaking_skills/defaults/workflow-liveness.yaml"
+    ) or {}
+    package_default = package_liveness.get("default_liveness")
+    package_overrides = package_liveness.get("overrides", {})
+    package_declared_allowed = package_liveness.get("allowed_liveness", [])
+    if package_liveness.get("schema_version") != 1:
+        errors.append("packaged workflow-liveness.yaml must declare schema_version: 1")
+    if package_default not in allowed_liveness:
+        errors.append(
+            "packaged workflow-liveness.yaml default_liveness must be active or "
+            "compatibility_only"
+        )
+    if set(package_declared_allowed) != allowed_liveness:
+        errors.append(
+            "packaged workflow-liveness.yaml allowed_liveness must be exactly "
+            "[active, compatibility_only]"
+        )
+    if not isinstance(package_overrides, dict):
+        errors.append("packaged workflow-liveness.yaml overrides must be a mapping")
+        package_overrides = {}
+    package_workflow_ids = {
+        workflow.get("id")
+        for workflow in package_registry.get("workflows", [])
+        if isinstance(workflow, dict) and workflow.get("id")
+    }
+    unknown_package_liveness_ids = set(package_overrides) - package_workflow_ids
+    if unknown_package_liveness_ids:
+        errors.append(
+            "packaged workflow-liveness.yaml overrides unknown packaged workflow IDs: "
+            f"{sorted(unknown_package_liveness_ids)}"
+        )
+    for workflow_id, value in sorted(package_overrides.items()):
+        if value not in allowed_liveness:
+            errors.append(
+                f"Packaged workflow '{workflow_id}' has invalid liveness {value!r}"
+            )
+    for workflow_id in sorted(raw_workflow_ids & package_workflow_ids):
+        canonical_value = effective_liveness(workflow_id)
+        package_value = package_overrides.get(workflow_id, package_default)
+        if canonical_value != package_value:
+            errors.append(
+                f"Workflow liveness drift for shared ID '{workflow_id}': "
+                f"canonical={canonical_value}, packaged={package_value}"
+            )
+
+    def check_active_local_skill(workflow_id, step_id, skill_id):
+        """Active local_execution must resolve to an installed, non-retired Skill."""
+        if not skill_id:
+            return
+
+        # Current liveness is a capability claim, so a local_execution step must
+        # have a real installed Skill implementation. Registry membership itself
+        # is NOT required here: setup-sensemaking-skills is an existing installed
+        # capability intentionally absent from the historical skill registry.
+        skill_file = Path("skills") / skill_id / "SKILL.md"
+        if not skill_file.is_file():
+            errors.append(
+                f"Active workflow '{workflow_id}' step '{step_id}' names local Skill "
+                f"'{skill_id}', but {skill_file.as_posix()} does not exist"
+            )
+
+        # When lifecycle metadata exists, it is authoritative negative evidence:
+        # proposed/deprecated Skills cannot back an active local workflow step.
+        skill = registered_skills.get(skill_id)
+        if skill:
+            status = skill.get("status")
+            if status in {"proposed", "deprecated"}:
+                errors.append(
+                    f"Active workflow '{workflow_id}' step '{step_id}' references Skill "
+                    f"'{skill_id}' with non-live status '{status}'. Mark the workflow "
+                    "compatibility_only or restore the Skill through a separately "
+                    "authorized product decision."
+                )
+
     # 4. Workflow & YOLO Validation
     if "skills/workflow-planner/references/workflow-registry.yaml" in registries:
         workflow_registry = registries["skills/workflow-planner/references/workflow-registry.yaml"]
         for workflow in workflow_registry.get("workflows", []):
+            workflow_id = workflow['id']
+            workflow_liveness = effective_liveness(workflow_id)
             allowed_modes = workflow.get("allowed_execution_modes", [])
             if not allowed_modes:
-                 errors.append(f"Workflow '{workflow['id']}' missing 'allowed_execution_modes'")
-            
+                 errors.append(f"Workflow '{workflow_id}' missing 'allowed_execution_modes'")
+
             # YOLO Safety Checks
             if "yolo_execution" in allowed_modes:
                 if not workflow.get("branch_policy", {}).get("required"):
-                    errors.append(f"Workflow '{workflow['id']}' allows YOLO but missing required branch_policy")
-                
+                    errors.append(f"Workflow '{workflow_id}' allows YOLO but missing required branch_policy")
+
                 steps = workflow.get("steps", [])
                 for step in steps:
                     s_id = step.get("skill")
                     if s_id in registered_skills:
                         s_type = registered_skills[s_id]["availability"]["type"]
                         if s_type not in ["local", "local_command"]:
-                            errors.append(f"Workflow '{workflow['id']}' allows YOLO but contains non-executable skill: {s_id}")
+                            errors.append(f"Workflow '{workflow_id}' allows YOLO but contains non-executable skill: {s_id}")
 
             # 4b. Recursive Orchestrator Check & Step Type Validation
             steps = workflow.get("steps", [])
@@ -141,35 +279,45 @@ def validate_repo():
                     if if_true.get("skill"):
                         s_type = if_true.get("step_type")
                         if not s_type:
-                            errors.append(f"Workflow '{workflow['id']}' conditional step '{step.get('id')}' if_true branch missing 'step_type'")
+                            errors.append(f"Workflow '{workflow_id}' conditional step '{step.get('id')}' if_true branch missing 'step_type'")
                         elif s_type not in ["local_execution", "prompt_handoff", "external_routing", "human_review"]:
-                            errors.append(f"Workflow '{workflow['id']}' conditional step '{step.get('id')}' if_true has invalid step_type: {s_type}")
+                            errors.append(f"Workflow '{workflow_id}' conditional step '{step.get('id')}' if_true has invalid step_type: {s_type}")
+                        elif workflow_liveness == "active" and s_type == "local_execution":
+                            check_active_local_skill(
+                                workflow_id,
+                                f"{step.get('id')}.if_true",
+                                if_true.get("skill"),
+                            )
                 else:
                     # Non-conditional steps must have step_type
                     s_type = step.get("step_type")
                     if not s_type:
-                        errors.append(f"Workflow '{workflow['id']}' step '{s_id}' missing 'step_type'")
+                        errors.append(f"Workflow '{workflow_id}' step '{s_id}' missing 'step_type'")
                     elif s_type not in ["local_execution", "prompt_handoff", "external_routing", "human_review"]:
-                        errors.append(f"Workflow '{workflow['id']}' step '{s_id}' has invalid step_type: {s_type}")
-                
+                        errors.append(f"Workflow '{workflow_id}' step '{s_id}' has invalid step_type: {s_type}")
+
                 if s_id in registered_skills:
                     availability = registered_skills[s_id]["availability"]["type"]
                     if s_type == "local_execution" and availability not in ["local", "local_command"]:
-                        errors.append(f"Workflow '{workflow['id']}' step '{s_id}' marked as local_execution but availability is {availability}")
+                        errors.append(f"Workflow '{workflow_id}' step '{s_id}' marked as local_execution but availability is {availability}")
+
+                if workflow_liveness == "active" and not step.get("conditional") \
+                        and s_type == "local_execution":
+                    check_active_local_skill(workflow_id, step.get("id"), s_id)
 
     # 5. Artifact Handoff & Initial Input Validation
     if "skills/workflow-planner/references/artifact-contracts.yaml" in registries and \
        "skills/workflow-planner/references/workflow-registry.yaml" in registries and \
        "skills/workflow-planner/references/skill-registry.yaml" in registries:
-        
+
         contracts = registries["skills/workflow-planner/references/artifact-contracts.yaml"]
         artifacts_list = contracts.get("artifacts", [])
         contract_ids = set()
-        
+
         for art in artifacts_list:
             a_id = art["id"]
             contract_ids.add(a_id)
-            
+
             # Verification block validation
             verification = art.get("verification")
             if not verification:
@@ -181,33 +329,33 @@ def validate_repo():
                     errors.append(f"Artifact '{a_id}' verification missing 'required_for_modes'")
                 elif not isinstance(verification["required_for_modes"], list):
                     errors.append(f"Artifact '{a_id}' 'required_for_modes' must be a list")
-        
+
         skill_registry = registries["skills/workflow-planner/references/skill-registry.yaml"]
         skill_to_artifact = {}
         for ecosystem in skill_registry.get("ecosystems", {}).values():
             for skill in ecosystem.get("skills", []):
                 if "artifact" in skill:
                     skill_to_artifact[skill["id"]] = skill["artifact"]
-        
+
         workflow_registry = registries["skills/workflow-planner/references/workflow-registry.yaml"]
         for workflow in workflow_registry.get("workflows", []):
             w_id = workflow["id"]
             initial_inputs = {i["id"] for i in workflow.get("initial_inputs", [])}
             steps = workflow.get("steps", [])
-            
+
             for i, step in enumerate(steps):
                 s_id = step.get("skill")
                 in_art = step.get("input_artifact")
                 in_src = step.get("input_source")
                 out_art = step.get("output_artifact")
-                
+
                 # 5a. First Step Validation
                 if i == 0:
                     if not in_art and not in_src:
                         errors.append(f"Workflow '{w_id}' first step '{s_id}' missing 'input_artifact' or 'input_source'")
                     if in_src and in_src not in initial_inputs:
                         errors.append(f"Workflow '{w_id}' step '{s_id}' uses undeclared input_source: {in_src}")
-                
+
                 # 5b. Output Artifact Validation (Matches Registry)
                 if out_art:
                     if s_id in skill_to_artifact:
@@ -315,12 +463,12 @@ def validate_repo():
 
     # 8. Check examples
     examples_dirs = [
-        "examples/repo-sensemaker", 
-        "examples/workflow-planner", 
-        "examples/negative", 
-        "examples/pipeline", 
-        "examples/problem-framer", 
-        "examples/unknowns-mapper", 
+        "examples/repo-sensemaker",
+        "examples/workflow-planner",
+        "examples/negative",
+        "examples/pipeline",
+        "examples/problem-framer",
+        "examples/unknowns-mapper",
         "examples/prompt-handoff",
         "examples/usage-research"
     ]
@@ -334,7 +482,7 @@ def validate_repo():
                             content = file.read()
                             if "file:///" in content:
                                 errors.append(f"Example {f} in {root} contains absolute file:/// paths")
-                        
+
                         import subprocess
                         # 8a. Validate orchestration plans
                         if "## 11. Machine-readable plan" in content:
@@ -347,7 +495,7 @@ def validate_repo():
                             else:
                                 if res.returncode != 0:
                                     errors.append(f"Example plan {f} failed validation:\n{res.stdout}{res.stderr}")
-                        
+
                         # 8b. Validate usage research reports
                         if "# Usage Research Report" in content:
                             cmd = [sys.executable, "scripts/validate-usage-research-report.py", path]
@@ -442,7 +590,8 @@ def validate_repo():
             print(f" - {err}")
         sys.exit(1)
     else:
-        print("Validation passed! Repo is aligned with the hardened V1 artifact contracts, YOLO safety, recursive-free workflows, and local-command execution rules.")
+        print("Validation passed! Repo is aligned with the hardened V1 artifact contracts, workflow liveness, YOLO safety, recursive-free workflows, and local-command execution rules.")
+
 
 if __name__ == "__main__":
     validate_repo()
