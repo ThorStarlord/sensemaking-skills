@@ -8,12 +8,16 @@ import os
 import sys
 import subprocess
 import shutil
+import warnings
 import yaml
 from typing import Optional, List, Dict, Any
 from pathlib import Path
 from .config import ConfigManager, SkillsConfig
 from .paths import PathResolver
 from .skills import BaseSkill, RepoSensemakerSkill, WorkflowPlannerSkill
+
+
+_EXECUTION_MODE_UNSET = object()
 
 
 class SkillsOrchestrator:
@@ -69,7 +73,7 @@ class SkillsOrchestrator:
     def run_workflow(
         self,
         workflow_id: str,
-        execution_mode: str = "yolo_execution",
+        execution_mode: Any = _EXECUTION_MODE_UNSET,
         from_session: Optional[str] = None,
         **kwargs
     ) -> int:
@@ -77,13 +81,26 @@ class SkillsOrchestrator:
 
         Args:
             workflow_id: ID of the workflow to execute
-            execution_mode: Execution mode (plan_only, guided_execution, autonomous_execution, yolo_execution)
+            execution_mode: Explicit execution mode (plan_only, guided_execution,
+                autonomous_execution, yolo_execution). Omitting this argument is
+                deprecated; for compatibility, omission currently behaves as
+                ``yolo_execution`` and emits a FutureWarning.
             from_session: Path to artifact session directory from a prior workflow run
             **kwargs: Additional arguments to pass to the runner (plan_out, log_dir, etc.)
 
         Returns:
             Exit code (0 for success, non-zero for failure)
         """
+        if execution_mode is _EXECUTION_MODE_UNSET:
+            warnings.warn(
+                "Omitting execution_mode is deprecated; pass an explicit execution mode. "
+                "For compatibility this call currently behaves as "
+                "execution_mode='yolo_execution'.",
+                FutureWarning,
+                stacklevel=2,
+            )
+            execution_mode = "yolo_execution"
+
         project_root = str(self.config.project_root)
         cmd = [
             sys.executable,
@@ -331,7 +348,9 @@ class SkillsOrchestrator:
                     shutil.copy2(artifact_file, dest)
                     print(f"  ✓ Copied {artifact_file.name}")
 
-            # Run workflow with parent session artifacts available
+            # Run workflow with parent session artifacts available. This call is
+            # intentionally explicit so it does not rely on the deprecated
+            # omitted-mode compatibility behavior.
             return self.run_workflow(
                 workflow_id,
                 execution_mode="yolo_execution",
