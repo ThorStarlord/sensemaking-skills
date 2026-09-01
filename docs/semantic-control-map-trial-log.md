@@ -4,7 +4,7 @@ Fill during the trial. Protocol: `docs/semantic-control-map-trial.md`.
 Map: `docs/semantic-control-map.md`.
 
 ```
-trial_start_commit   = df46871 (merge of PR #247, trial/semantic-control-map)
+trial_start_commit   = df46871c140cff64755cb3865df26354913d09c1 (merge of PR #247, trial/semantic-control-map)
 trial_start_date     = 2026-08-31
 minimum_close_date   = 2026-09-28 (trial_start_date + 4 weeks)
 maximum_close_date   = 2026-10-26 (trial_start_date + 8 weeks)
