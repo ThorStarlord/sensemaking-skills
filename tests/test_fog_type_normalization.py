@@ -39,7 +39,6 @@ class TestFogTypeNormalization(unittest.TestCase):
 artifact_id: test
 primary_fog_type: product_fog
 user_implied_fog_type: ui_fog
-secondary_fog_types: [docs_fog, architecture_fog]
 ```
 """
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
@@ -66,7 +65,6 @@ secondary_fog_types: [docs_fog, architecture_fog]
 artifact_id: test
 primary_fog_type: product
 user_implied_fog_type: ui
-secondary_fog_types: [docs, architecture]
 ```
 """
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:

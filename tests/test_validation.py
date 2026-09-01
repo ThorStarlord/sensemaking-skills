@@ -89,29 +89,6 @@ class TestCanonicalVocabulary:
         assert isinstance(error, ValidationError)
         assert "missing" in error.error_message.lower()
 
-    def test_validate_field_optional_missing(self):
-        """Test validating an optional field that is missing."""
-        vocab = CanonicalVocabulary(Path("."))
-
-        error = vocab.validate_field("secondary_fog_types", None)
-        assert error is None
-
-    def test_validate_field_list_enum(self):
-        """Test validating list of enum values."""
-        vocab = CanonicalVocabulary(Path("."))
-
-        # Valid list
-        error = vocab.validate_field(
-            "secondary_fog_types", ["docs_fog", "architecture_fog"]
-        )
-        assert error is None
-
-        # Invalid item in list
-        error = vocab.validate_field(
-            "secondary_fog_types", ["docs_fog", "invalid_fog"]
-        )
-        assert error is not None
-
     def test_get_vocabulary_returns_copy(self):
         """Test that get_vocabulary returns a copy."""
         vocab = CanonicalVocabulary(Path("."))

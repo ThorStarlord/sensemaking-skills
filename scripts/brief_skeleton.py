@@ -243,7 +243,7 @@ def build_skeleton(ctx: SkeletonContext | None = None) -> str:
     lines.append(f"schema_version: {SCHEMA_VERSION}")
     lines.append(f"source_intent_ref: {ctx.source_intent_ref}")
     lines.append("user_implied_fog_type:  # model fills: product_fog | ui_fog | docs_fog | architecture_fog | unknown")
-    lines.append("primary_fog_type:  # model fills: product_fog | ui_fog | docs_fog | architecture_fog | mixed | unknown")
+    lines.append("primary_fog_type:  # model fills: product_fog | ui_fog | docs_fog | architecture_fog")
     lines.append("diagnosis_conflict:  # model fills: true | false")
     lines.append("escalation_recommended:  # model fills: true | false")
     lines.append("evidence: []  # model fills: list of \"path/to/file (lines Lx-Ly): citation\"")
