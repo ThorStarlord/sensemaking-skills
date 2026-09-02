@@ -1,5 +1,7 @@
 # Sensemaking Skills: Roadmap to General Availability
 
+<!-- doc-status: historical -->
+
 > **HISTORICAL / SUPERSEDED (as of 2026-09-02).** This document describes a
 > PyPI-publication → general-availability plan that predates the ADR 0013
 > agent-native pivot and is no longer the product direction. PyPI publication /

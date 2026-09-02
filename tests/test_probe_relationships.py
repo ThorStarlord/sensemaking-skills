@@ -14,6 +14,8 @@ from scripts.probe_relationships import (
     adr_catalog,
     adr_integrity,
     _classify_doc_file,
+    _declared_doc_status,
+    _discover_docs,
     doc_surface,
     relationships,
     version_drift,
@@ -61,6 +63,73 @@ def test_classify_doc_file() -> None:
     }
     for rel, expected in cases.items():
         assert _classify_doc_file(rel) == expected, f"{rel} -> {expected}"
+
+
+def test_classify_doc_file_explicit_marker_wins_over_path() -> None:
+    # A declared status overrides every path heuristic (author stated the
+    # document's lifecycle directly). Pure-path calls are unchanged.
+    assert _classify_doc_file("roadmap.md") == "live"
+    assert _classify_doc_file("roadmap.md", "historical") == "historical"
+    assert _classify_doc_file("docs/guides/install.md", "historical") == "historical"
+    assert _classify_doc_file("roadmap.md", None) == "live"
+
+
+def test_declared_doc_status_reads_marker_from_head_only(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    # Marker near the top -> detected.
+    top = repo / "roadmap.md"
+    top.write_text("# Roadmap\n\n<!-- doc-status: historical -->\n\nbody\n",
+                   encoding="utf-8")
+    assert _declared_doc_status(top) == "historical"
+    # Synonyms are accepted and case-insensitive.
+    for token in ("superseded", "ARCHIVED", "Historical"):
+        p = repo / f"{token}.md"
+        p.write_text(f"# x\n<!--   doc-status:  {token}  -->\n", encoding="utf-8")
+        assert _declared_doc_status(p) == "historical"
+    # A mention far below the head window (or as prose, not an HTML comment)
+    # does NOT count -- a live doc documenting the convention stays live.
+    deep = repo / "convention.md"
+    deep.write_text("# Convention\n" + ("filler line\n" * 4000)
+                    + "Use `<!-- doc-status: historical -->` at the top.\n",
+                    encoding="utf-8")
+    assert _declared_doc_status(deep) is None
+    assert _classify_doc_file("convention.md",
+                              _declared_doc_status(deep)) == "live"
+
+
+def test_discover_docs_honors_doc_status_marker(tmp_path: Path) -> None:
+    repo = _mini_repo(tmp_path)
+    _write(repo, "README.md", "# x\n")
+    _write(repo, "roadmap.md",
+           "# Roadmap\n\n<!-- doc-status: historical -->\n\nold GA plan\n")
+    surface = doc_surface(repo)
+    classes = {d["source"]: d["source_class"] for d in _discover_docs(repo)}
+    assert classes["roadmap.md"] == "historical"
+    assert classes["README.md"] == "live"
+    assert surface["by_class"].get("historical") == 1
+    assert "roadmap.md" not in [
+        d["source"] for d in _discover_docs(repo) if d["source_class"] == "live"
+    ]
+
+
+def test_version_drift_ignores_marker_declared_historical_doc(tmp_path: Path) -> None:
+    repo = _mini_repo(tmp_path, version="0.2.2")
+    # A superseded doc that still names an old version, explicitly marked.
+    _write(repo, "roadmap.md",
+           "# Roadmap\n<!-- doc-status: historical -->\n"
+           "**Current Version:** 0.2.1 (Beta)\n")
+    # A genuinely live doc agrees with the declaration.
+    _write(repo, "README.md", "Current release: 0.2.2\n")
+    section = version_drift(repo)
+    assert section["findings"] == [], (
+        "a doc-status:historical doc must not enter the version decision set"
+    )
+    # Remove the marker -> the stale claim resurfaces as a finding.
+    _write(repo, "roadmap.md", "# Roadmap\n**Current Version:** 0.2.1 (Beta)\n")
+    assert version_drift(repo)["findings"], (
+        "without the marker the stale claim is still detected"
+    )
 
 
 def test_doc_surface_skips_hidden_dirs_and_counts_classes(tmp_path: Path) -> None:

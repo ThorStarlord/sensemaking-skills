@@ -1,5 +1,7 @@
 # Goal: Sensemaking Skills
 
+<!-- doc-status: historical -->
+
 > **HISTORICAL FRAMING (as of 2026-09-02).** This document describes an
 > autonomous goal-to-implementation router that classifies project type,
 > selects a workflow from the registry, and sequences skills. That is the

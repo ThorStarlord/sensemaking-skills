@@ -17,6 +17,10 @@ evidence, not code transplanted literally. Three capabilities survived:
 detection, (3) ADR integrity detection. The network-capability detector
 did NOT survive (NOT READY). No graph/node/edge abstraction is used.
 
+Live-document discovery is path-signal-driven, plus an explicit opt-in
+`<!-- doc-status: historical -->` marker a document can carry near its top
+to declare itself a point-in-time record (see _declared_doc_status).
+
 Output shape (one top-level report key, always present):
 
     relationships:
@@ -64,14 +68,45 @@ HISTORICAL_NAME_RE = re.compile(r"^(changelog|handoff)", re.IGNORECASE)
 HISTORICAL_PREFIX_RE = re.compile(
     r"^(\d{4}-\d{2}(-\d{2})?|v\d+\.\d+|phase-?\d|week\d|stage-?\d)", re.IGNORECASE)
 
+# Explicit in-file lifecycle marker. A document that has become a
+# point-in-time record while keeping its original path (a root-level
+# `roadmap.md` that predates a pivot, say) cannot be caught by the path
+# heuristics above. It can instead declare itself with an HTML comment near
+# the top:  <!-- doc-status: historical -->
+# Accepted values all mean "not a live current-state surface". Only the
+# document head is scanned (DOC_STATUS_HEAD_BYTES) so a mention deeper in the
+# body -- documentation of this convention, a quoted example -- does not
+# reclassify a live document.
+DOC_STATUS_MARKER_RE = re.compile(
+    r"<!--\s*doc-status:\s*(?:historical|superseded|archived)\s*-->", re.IGNORECASE)
+DOC_STATUS_HEAD_BYTES = 4096
 
-def _classify_doc_file(rel: str) -> str:
+
+def _declared_doc_status(path: Path) -> Optional[str]:
+    """Explicit in-file lifecycle marker read from the document head only.
+
+    Returns "historical" when a `doc-status` marker (see DOC_STATUS_MARKER_RE)
+    is present in the first DOC_STATUS_HEAD_BYTES bytes, else None.
+    """
+    try:
+        with path.open("r", encoding="utf-8", errors="replace") as handle:
+            head = handle.read(DOC_STATUS_HEAD_BYTES)
+    except OSError:
+        return None
+    return "historical" if DOC_STATUS_MARKER_RE.search(head) else None
+
+
+def _classify_doc_file(rel: str, declared_status: Optional[str] = None) -> str:
     """Classify a discovered .md path: live | historical | generated |
     fixture | vendor | example | candidate.
 
-    Deterministic path signals only (no content analysis). Order matters:
-    point-in-time records win over generic defaults.
+    Deterministic path signals, plus an optional explicit in-file `doc-status`
+    marker (see _declared_doc_status). An explicit marker wins over every path
+    heuristic -- the author has stated the document's lifecycle directly.
+    Otherwise: point-in-time path/name records win over generic defaults.
     """
+    if declared_status:
+        return declared_status
     low = rel.lower()
     name = rel.split("/")[-1]
     if (HISTORICAL_PATH_RE.search(low) or HISTORICAL_NAME_RE.match(name)
@@ -102,7 +137,9 @@ def _discover_docs(repo_root: Path) -> List[Dict[str, str]]:
                 continue
             rel = fname if rel_dir == "." else f"{rel_dir}/{fname}"
             rel = rel.replace("\\", "/")
-            docs.append({"source": rel, "source_class": _classify_doc_file(rel)})
+            declared = _declared_doc_status(Path(dirpath) / fname)
+            docs.append({"source": rel,
+                         "source_class": _classify_doc_file(rel, declared)})
     return docs
 
 
