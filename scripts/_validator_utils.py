@@ -3,6 +3,7 @@
 All functions are pure (no side effects, no CLI). Importable by any validator.
 """
 
+import importlib.util
 import os
 import re
 import subprocess
@@ -10,7 +11,35 @@ from datetime import datetime
 
 import yaml
 
-import workflow_liveness
+_WORKFLOW_LIVENESS = None
+
+
+def _workflow_liveness():
+    """Resolve the ``workflow_liveness`` helper module lazily.
+
+    ``import workflow_liveness`` only succeeds when ``scripts/`` is on
+    ``sys.path`` (direct script execution). When this module is loaded another
+    way -- as ``scripts._validator_utils`` from the repository root, or from a
+    copy of this file -- fall back to ``workflow_liveness.py`` beside this file.
+    Resolution is deferred to the first liveness call so importing this module
+    never requires ``workflow_liveness``; if neither source exists the liveness
+    helpers raise ``ImportError`` naming the missing file.
+    """
+    global _WORKFLOW_LIVENESS
+    if _WORKFLOW_LIVENESS is None:
+        try:
+            import workflow_liveness
+        except ImportError:
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "workflow_liveness.py")
+            if not os.path.exists(path):
+                raise ImportError(
+                    f"No module named 'workflow_liveness' and sibling file not found: {path}"
+                ) from None
+            spec = importlib.util.spec_from_file_location("workflow_liveness", path)
+            workflow_liveness = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(workflow_liveness)
+        _WORKFLOW_LIVENESS = workflow_liveness
+    return _WORKFLOW_LIVENESS
 
 
 def run_subprocess(cmd: list[str], repo_root: str, *,
@@ -108,7 +137,7 @@ def load_workflow_liveness(repo_root: str) -> dict:
     Missing overlays default to ``active`` for backward compatibility with
     external/custom registries that predate the liveness contract.
     """
-    return workflow_liveness.load_liveness_file(
+    return _workflow_liveness().load_liveness_file(
         _registry_path(repo_root, "workflow-liveness.yaml")
     )
 
@@ -122,7 +151,7 @@ def load_workflow_catalog(repo_root: str) -> dict | None:
     raw = load_yaml(_registry_path(repo_root, "workflow-registry.yaml"))
     if raw is None:
         return None
-    return workflow_liveness.annotate_catalog(raw, load_workflow_liveness(repo_root))
+    return _workflow_liveness().annotate_catalog(raw, load_workflow_liveness(repo_root))
 
 
 def load_workflow_registry(repo_root: str) -> dict | None:
@@ -135,7 +164,7 @@ def load_workflow_registry(repo_root: str) -> dict | None:
     raw = load_yaml(_registry_path(repo_root, "workflow-registry.yaml"))
     if raw is None:
         return None
-    return workflow_liveness.operationalize_catalog(
+    return _workflow_liveness().operationalize_catalog(
         raw, load_workflow_liveness(repo_root)
     )
 
