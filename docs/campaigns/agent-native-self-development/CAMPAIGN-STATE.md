@@ -1,7 +1,7 @@
 # Campaign: reliable agent-native, artifact-mediated self-development
 
 ```
-STATUS:    ACTIVE development-campaign record (living document, v8: closure deferred one responsibility)
+STATUS:    ACTIVE development-campaign record (living document, v9 after R7; R8 = closure)
 AUTHORITY: non-authoritative. Not an ADR, not a contract, not a validator input,
            not a registered workflow, not a research-agenda ratification.
 CHARTER:   docs/campaigns/agent-native-self-development/CHARTER.md
@@ -15,15 +15,16 @@ REMOTE:    see section 15 (push / PR / CI status is recorded there, not assumed)
 RULE:      update after every consequential campaign responsibility. Facts in
            this file are claims; task specs include verification steps so a
            continuing context can catch errors here (R2 F1; R3 M2/M3; R4
-           F1/F2; R5 F1-F3; R6 discrepancies 1-9).
+           F1/F2; R5 F1-F3; R6 discrepancies 1-9; R7 F1-F5).
 ```
 
 This file exists so that campaign reasoning does not live only in one
-conversation's context. Six fresh contexts have so far continued the campaign
+conversation's context. Seven fresh contexts have so far continued the campaign
 from this file alone: R1 (reconstruction), R2 (mechanical execution), R3
 (judgment-class documentation), R4 (implementation-class code + tests), R5
 (four-file architecture reconciliation), R6 (evidence-gathering + classification
-producing a new product document). See section 8.
+producing a new product document), R7 (product machinery + regression test). See
+section 8.
 
 ---
 
@@ -87,10 +88,10 @@ INSUFFICIENT_EVIDENCE`.
 | Workflow registry vs liveness | Identity and liveness separated; 8 of 23 `compatibility_only` | ADR 0027; `workflow-liveness.yaml` |
 | **Workflow-system disposition** | **On the product surface since R6**: `docs/workflow-system-disposition.md` classifies all 23 registered workflows in campaign vocabulary with pinned evidence: KEEP_AS_BOUNDED_SUBGRAPH 1 (`docs-contract-reconciliation`), DEMOTE 2 (`artifact-reconciliation` -> evidenced two-step core; `architectural-review-planning-workflow` -> internal golden-path proof, ADR 0014 defers step 2), RETIRE_CANDIDATE 2 (`product-discovery-sprint`, `product-strategy-sprint`: every step `external_routing` to a deprecated Skill), HISTORICAL 8 (ADR 0027 set, not re-decided), INSUFFICIENT_EVIDENCE 10, REPAIR 0. Every ledger with step events was produced by the SDK executor removed 2026-08-13; the only workflow with a recurring agent-native trace of its full sequence is `docs-contract-reconciliation`. Nine implied owner decisions listed, none applied. Pointer added in operating map section 1 | commit `70648c4`; `R6-workflow-system-disposition.md` |
 | Responsibility selection | **CONVENTION**; exercised by fresh contexts (R1 Q3; R4; R5; R6 dispositions) | operating map Reality map |
-| Continuation across responsibilities | **On the product surface since R3**; demonstrated for mechanical (R2), judgment-docs (R3), implementation-class (R4), four-file architecture reconciliation (R5), evidence-gathering + classification (R6) | operating map section 2 subsection; `R1-*.md` .. `R6-*.md` |
+| Continuation across responsibilities | **On the product surface since R3**; demonstrated for mechanical (R2), judgment-docs (R3), implementation-class tests (R4), four-file architecture reconciliation (R5), evidence-gathering + classification (R6), **product machinery + regression test (R7)** | operating map section 2 subsection; `R1-*.md` .. `R7-*.md` |
 | Continuation artifacts / U5 decision | Markdown record convention; no new artifact type; reopen conditions on the product surface | operating map section 6 bullet |
 | Repository-level development-direction representation | This record; field set documented in the operating map | this file |
-| Deterministic machinery | **Consolidated on the product surface since R5** (boundary doc section; Reality-map row); no retry policy exists in `workflow-runtime.py` | commit `13d1a09` |
+| Deterministic machinery | **Consolidated on the product surface since R5** (boundary doc section; Reality-map row); no retry policy exists in `workflow-runtime.py`. **Repaired by R7 (D12):** `scripts/_validator_utils.py` no longer hard-imports `workflow_liveness` at module load; a lazy resolver tries `sys.path`, then the sibling file, else raises a clear ImportError only when a liveness helper is called; public API unchanged; `validate-repo.py` exit 0 and `test-validators.py` 78/78 before and after; `validate-plan.py` still fails closed | commits `13d1a09`, `79e02c5` |
 | Hooks | **Disposition on the product surface since R5**: none executable; none warranted; admissible future shape mechanical only; hook doc and CLAUDE.md truthful | commit `13d1a09` |
 | CI on `main` | 13 jobs incl. `probe-gate` and `core-assertions`; green at `df46871` and `f10b7da` | `validation.yml`; `gh run list` |
 | Real-use evidence of the operating loop | Workflow v0 dogfood on 2 repos; 3 normal-use episodes on Issue #218 (GitHub-only) | evidence 0021/0022; Issue #218 |
@@ -120,14 +121,17 @@ at R6 close-out (R7).
 | R4 | Fresh-context implementation-class trial (D1/D2) | repair / repair / revert-and-report; spec tension F1 flagged; **VERIFIED**; CI green | `R4-*.md`; `769a180`, `ac47191`; `e35ead1` |
 | R5 | Fresh-context four-file architecture reconciliation (machinery + hooks) | +213/-83; three spec assumptions corrected from code; **VERIFIED** | `R5-*.md`; `13d1a09`, `c7afb57`; `89246f4` |
 | R6 | Fresh-context workflow-system disposition: rebuilt the inventory from sources, classified 23 workflows with pinned evidence, wrote `docs/workflow-system-disposition.md` (+410) and one pointer sentence | 1 KEEP / 2 DEMOTE / 2 RETIRE_CANDIDATE / 8 HISTORICAL / 10 INSUFFICIENT_EVIDENCE / 0 REPAIR; nine discrepancies vs the dispatcher's starting inventory (substring inflation in `ev`/`tests`; `ldg` dominated by `recommended_workflow_id` mentions; wrong date for `artifacts/reconciliation_report.md` (2026-09-01, not 08-22); `full-local-sensemaking` step 3 routes to deprecated `discovery` via `external_routing`; `setup-sensemaking-skills` has no skill-registry entry; packaged catalog carries 20 of 23 ids and 7 of 8 overrides; mode-coverage's two pointed entries overstate `steps_completed`); no overlay/registry edit; 50 files / 60 calls. **Dispatcher audit: VERIFIED** (status block, definitions, criteria, all 23 rows, sections 5-8 read; the two DEMOTE calls carry their alternatives; `validate-repo.py` exit 0; `test_path_drift` green; pointer sentence exact) | `R6-workflow-system-disposition.md`; `70648c4`, `5a89f2a` |
-| R6 close-out (dispatcher) | Audit; record v7; R7 (closure) specified | this commit | section 14 |
+| R6 close-out (dispatcher) | Audit; record v7; closure specified, then deferred one responsibility (record v8: R7 = D12) | `eb6c461`, `e702b31` | section 14 |
+| R7 | Fresh-context **product-machinery** continuation: verified D12 against code and tests (hard import arrived in `4b42263`, 2026-09-01), replaced it with a lazy resolver in `scripts/_validator_utils.py` (+33/-4), added `tests/test_validator_utils_liveness_import.py` (three fresh-interpreter tests, ASCII/LF, encoding-safe) | Both `test_mode_coverage_aggregation.py` failures flip green; `test_validator_utils.py` collects again but `test_load_workflow_registry_loads_yaml` stays red for a **second, independent** cause the record did not know (expected dict predates ADR 0027's `liveness` annotation) -- editing existing tests was not authorized, so it flagged (F2) instead of forcing; `validate-repo.py` exit 0 and `test-validators.py` 78/78 before and after (output byte-identical except a timestamp); direct execution resolves the same `workflow_liveness` module object; `validate-plan.py` still rejects compatibility-only selections; results identical under cp1252 and utf-8. Judgment call recorded: proceeded rather than stopping under stop-condition 2 because the defect reproduction matched exactly and only pytest's reporting shape / the after-state prediction differed. 21 files / 46 calls. **Dispatcher audit: VERIFIED** (diff read in full; named selections re-run under both code pages: 1 failed / 45 passed / 1 skipped, the one being D19; `validate-repo.py` and `test-validators.py` re-run; stray egg-info modifications confirmed generated by test runs and discarded, not committed) | `R7-machinery-continuation.md`; `79e02c5`, `1b47d06` |
+| R7 close-out (dispatcher) | Audit; record v9; R8 (closure) specified | this commit | section 14 |
 
 ---
 
 ## 4. EVIDENCE PRODUCED
 
 - `docs/campaigns/agent-native-self-development/`: `CAMPAIGN-STATE.md`, `CHARTER.md`, `R1-*.md` .. `R6-*.md` (reports verbatim from the fresh contexts).
-- Product-side changes: `docs/agent-native-operating-workflow.md` (R3 subsection + rows; R5 two rows; R6 pointer); `docs/decision-orchestration-boundary.md` (R5 section); `docs/workflow-system-disposition.md` (R6, new); `.claude/hooks/sessionstart.md` (R5); `CLAUDE.md` SessionStart section (R5); `docs/semantic-control-map.md`, `-trial-log.md`, `-trial.md`, `docs/enforcement-contract.md` (R2 + close-out); `tests/test_path_drift.py`, `tests/test_integration_external_repo.py` (R4).
+- Product-side changes: `docs/agent-native-operating-workflow.md` (R3 subsection + rows; R5 two rows; R6 pointer); `docs/decision-orchestration-boundary.md` (R5 section); `docs/workflow-system-disposition.md` (R6, new); `.claude/hooks/sessionstart.md` (R5); `CLAUDE.md` SessionStart section (R5); `docs/semantic-control-map.md`, `-trial-log.md`, `-trial.md`, `docs/enforcement-contract.md` (R2 + close-out); `tests/test_path_drift.py`, `tests/test_integration_external_repo.py` (R4); `scripts/_validator_utils.py`, `tests/test_validator_utils_liveness_import.py` (R7).
+- `docs/campaigns/agent-native-self-development/R7-machinery-continuation.md` (verbatim).
 
 ---
 
@@ -135,8 +139,9 @@ at R6 close-out (R7).
 
 - Pre-campaign: agent-native brief production + validation on two repositories; responsibility selection without routing; claim reconciliation and repair verification; fail-closed authority on auto-invoke and liveness; probe-engine enforcement in CI.
 - **(R1-R6)** Six consecutive record-mediated continuations into fresh contexts across five responsibility classes (reconstruction; mechanical; judgment-docs; implementation-class code + tests; multi-file architecture reconciliation; evidence-gathering + classification). Each fresh context respected every stated authority boundary, verified before acting, wrote narrower than the spec where evidence said less, and corrected the record from repository evidence where it was wrong.
-- **(count basis)** Seven record-mediated handoffs (R0 -> R1 -> ... -> R6, each returning for audit); six into fresh contexts; zero shape errors in the record; sixteen record errors/overstatements caught by verification steps (R2: 1; R3: 2; R4: 2; R5: 3; R6: 9 inventory discrepancies incl. one wrong date) -- none caused a wrong action; the ones that mattered were method errors in dispatcher-computed evidence (substring matching; counting recommendations as executions), which the fresh context's rebuild-before-use step caught.
-- **(substrate)** Isolated sub-agent direct worktree writes persisted six times (R1-R6) in this harness.
+- **(R7)** A fresh context changed the product's own deterministic machinery from the record alone: verified the defect against code and git, applied the simplest repair that preserved every public signature and ADR 0027's fail-closed liveness behavior, added fresh-interpreter regression tests, proved like-for-like equivalence of the validator harness, and refused to edit an existing test to make the record's predicted outcome come true.
+- **(count basis)** Eight record-mediated handoffs (R0 -> R1 -> ... -> R7, each returning for audit); seven into fresh contexts; zero shape errors in the record; twenty-one record errors/overstatements caught by verification steps (R2: 1; R3: 2; R4: 2; R5: 3; R6: 9; R7: 5 incl. a wrong after-state prediction) -- none caused a wrong action; the ones that mattered were method errors in dispatcher-computed evidence, which the fresh contexts' verify-before-use steps caught.
+- **(substrate)** Isolated sub-agent direct worktree writes persisted seven times (R1-R7) in this harness.
 
 ---
 
@@ -156,7 +161,7 @@ at R6 close-out (R7).
 | G10 | Dispatcher-computed claims in task specs need verification by the continuing context (16 instances caught) | 5 | CAMPAIGN_RELEVANT | mitigated by C9; this is the pattern working; residual risk: a wrong dispatcher claim that a spec does not ask to verify |
 | G11 | Two `active` workflows route every step to a deprecated Skill | 9 | CAMPAIGN_RELEVANT | **CLOSED as a recorded disposition (R6: RETIRE_CANDIDATE)**; overlay change = owner decision 3 |
 | G12 | Final qualification of the campaign branch (full like-for-like suite; CI on the final head; PR readiness) and the final report | 12, 13 | CAMPAIGN_BLOCKING | OPEN -> R8 |
-| G13 | The only code change performed from durable state so far is test-only (R4). Condition 5's strongest supportable version needs at least one product-machinery change (scripts/ or src/) with a regression test and CI, performed by a fresh context from this record | 5, 11 | CAMPAIGN_RELEVANT | OPEN -> R7 (D12) |
+| G13 | Code change from durable state was test-only (R4) | 5, 11 | CAMPAIGN_RELEVANT | **CLOSED (R7)**: `scripts/_validator_utils.py` repaired + regression tests; limitation: one script, no `src/` change |
 
 ---
 
@@ -186,7 +191,7 @@ at R6 close-out (R7).
 | U4 | Which workflows have enough real traces for a disposition? | **RESOLVED (R6)**: 1 KEEP, 2 DEMOTE, 2 RETIRE_CANDIDATE, 8 HISTORICAL, 10 INSUFFICIENT_EVIDENCE |
 | U5 | Continuation artifact form | **DECIDED FOR NOW**: Markdown record convention |
 | U6 | Can a fresh context perform a bounded task from this record? | **RESOLVED (R2)**, extended R3-R6 |
-| U7 | Implementation-class continuation | **RESOLVED (R4)** for a small test-only change; **to be strengthened by R7** (product machinery + regression test + CI) |
+| U7 | Implementation-class continuation | **RESOLVED (R4, R7)**: test-only change (R4) and product-machinery change with regression tests (R7), both from the record alone; not shown: `src/` changes, larger surfaces |
 | U8 | Disposition of `tests/test_validate_brief_json.py` (D2b) | OPEN; DEFERRED (fixture/validator semantics) |
 | U9 | The two all-deprecated `external_routing` sprints | **RESOLVED (R6): RETIRE_CANDIDATE**; overlay change = owner decision |
 | U10 | Does the final durable state suffice for a fresh context to reconstruct the campaign's disposition, what remains, and which decisions are the owner's? | OPEN -> R8 closure probe |
@@ -195,149 +200,55 @@ at R6 close-out (R7).
 
 ## 9. CURRENT HIGHEST-LEVERAGE CAPABILITY BOUNDARY
 
-**Implementation-class continuation on product machinery** (G13, U7). Every
-acceptance condition except 12-13 is met or largely met, but the mission is
-*self-development* and the only code the campaign has changed from durable
-state is two test files. D12 is a real defect in the product's deterministic
-machinery (`scripts/_validator_utils.py` cannot be imported without `scripts/`
-on `sys.path` because of a hard top-level `import workflow_liveness` added with
-ADR 0027's liveness work), it causes three baseline test failures on `main`,
-and its repair must preserve ADR 0027's fail-closed liveness behavior -- a
-bounded, verifiable, product-relevant change. Closure (R8) follows.
+**Closure** (G12, U10). Conditions 1-11 are met or largely met on the product
+surface with stated limitations; conditions 12-13 require the complete
+like-for-like qualification of the final campaign head, CI on that head, PR
+readiness, a final fresh-context closure probe (U10), and the final report.
+No further product change is warranted by current evidence: every remaining
+open item is either an owner decision (section 11), a deferred non-campaign
+finding (section 12), or a documented limitation.
 
 ---
 
 ## 10. CURRENT / NEXT WARRANTED RESPONSIBILITY
 
 ```text
-R7  Implementation-class continuation on product machinery (D12)
-    (a fresh context repairs scripts/_validator_utils.py's import of
-     workflow_liveness and adds a regression test)
+R8  Closure: qualification, final report, closure probe, PR ready
 
-CAMPAIGN CAPABILITY AFFECTED:   artifact-mediated continuation for product
-                                machinery + tests + CI (conditions 5, 11); U7; G13
-CURRENT LIMITATION:             R4's code change was test-only; no scripts/ or
-                                src/ change has been performed from durable state
-WHY IT MATTERS TO THE MISSION:  "self-development" means the product changes its
-                                own machinery from durable state under authority
-                                and proves it with tests and CI
-DEFECT (D12, dispatcher-established; VERIFY):
-  scripts/_validator_utils.py line ~13 has a top-level `import workflow_liveness`.
-  It works when a script in scripts/ is run directly (Python puts scripts/ on
-  sys.path[0]) but fails whenever _validator_utils is loaded another way:
-  (a) tests/test_validator_utils.py imports `scripts._validator_utils` with the
-      repository root on sys.path -> ModuleNotFoundError: workflow_liveness
-      (test_load_workflow_registry_loads_yaml);
-  (b) tests/test_mode_coverage_aggregation.py copies validate-mode-coverage.py
-      and _validator_utils.py into a fixture scripts/ dir without
-      workflow_liveness.py, then runs the validator as a subprocess ->
-      the same error (test_validator_passes_after_legitimate_update,
-      test_missing_run_log_path_still_flagged). validate-mode-coverage.py only
-      imports format_error, load_yaml, load_artifact_contracts; it never needs
-      liveness.
-  Both are pre-existing failures on main @ f10b7da (record D12/D14). Not in CI.
-BOUNDED RESPONSIBILITY:         steps for the fresh context:
-  1. read this file (sections 7, 9, 10, 12 D12); scripts/_validator_utils.py
-     (full); scripts/workflow_liveness.py (the functions _validator_utils
-     calls: load_liveness_file, annotate_catalog, operationalize_catalog);
-     scripts/validate-mode-coverage.py (imports only); the import blocks and
-     fixture setup of tests/test_mode_coverage_aggregation.py (lines ~1-60 and
-     the two failing tests) and tests/test_validator_utils.py; which scripts
-     import _validator_utils (`git grep -n "_validator_utils" -- scripts`);
-     `git log -S "import workflow_liveness" --format="%h %ad %s" --date=short
-     -- scripts/_validator_utils.py` (when the hard import arrived);
-     docs/adr/0027 "Consumer behavior" (validators must fail closed on
-     non-active workflows -- the repair must not weaken that).
-  2. VERIFY (reproduce before changing anything; if the reproduction differs
-     materially, write the report and stop):
-     `PYTHONUTF8=1 PYTHONPATH=src python -m pytest tests/test_validator_utils.py
-      tests/test_mode_coverage_aggregation.py -q -p no:cacheprovider`
-     -> expect exactly the three failures named above, each with
-     `ModuleNotFoundError: No module named 'workflow_liveness'` (quote the
-     failure lines). Also run `python scripts/validate-repo.py` (expect exit 0)
-     and `python scripts/test-validators.py` (record its pass/total) BEFORE
-     the change, as the like-for-like reference for step 5.
-  3. repair scripts/_validator_utils.py ONLY: replace the hard top-level import
-     with a lazy resolver (e.g. `_workflow_liveness()`) that (i) tries
-     `import workflow_liveness`; (ii) on ImportError loads
-     `workflow_liveness.py` from the same directory as _validator_utils.py via
-     importlib (spec_from_file_location) and caches it; (iii) if that file is
-     absent, raises ImportError naming the missing file -- but ONLY when a
-     liveness helper (load_workflow_liveness / annotate / operationalize) is
-     actually called. Module import must succeed without workflow_liveness.
-     Keep every public function name and signature; keep behavior identical
-     for direct script execution (validate-repo.py, validate-plan.py, ...).
-     Simplest change that satisfies this (AGENTS.md rule 3); no other edits
-     to the file.
-  4. add tests/test_validator_utils_liveness_import.py (new file, ASCII,
-     encoding="utf-8" on every file read) with three tests: (a) importing
-     `scripts._validator_utils` with only the repository root on sys.path
-     succeeds and `load_workflow_liveness(repo_root)` returns the overlay
-     (compare to yaml-loading skills/workflow-planner/references/
-     workflow-liveness.yaml); (b) a copy of _validator_utils.py in a tmp dir
-     WITHOUT workflow_liveness.py imports successfully (spec_from_file_location)
-     and calling load_workflow_liveness raises ImportError whose message
-     mentions `workflow_liveness`; (c) a copy WITH workflow_liveness.py beside
-     it resolves liveness via the sibling file (no scripts/ on sys.path).
-     Use subprocess or a fresh interpreter (`sys.executable -c ...`) where
-     module caching would otherwise mask the behavior; make the tests
-     deterministic on Windows (cp1252) and Linux.
-  5. validate, both under default code page and `PYTHONUTF8=1`, always with
-     `PYTHONPATH=src` and `-p no:cacheprovider`:
-     - the three previously failing tests now pass; the new test file passes;
-     - `python -m pytest tests/test_validator_utils.py
-        tests/test_mode_coverage_aggregation.py
-        tests/test_validator_utils_liveness_import.py tests/test_path_drift.py
-        tests/test_cli.py -q` -> no red;
-     - liveness suites: `python -m pytest tests -q -k liveness` -> same
-       pass/fail set as before the change (run before and after; report both);
-     - `python scripts/validate-repo.py` -> exit 0; `python
-       scripts/test-validators.py` -> same pass/total as before;
-     - `python scripts/validate-plan.py` and `python scripts/validate-repo.py`
-       executed directly still import _validator_utils and still enforce
-       liveness (cite the code path you checked, not just the exit code).
-  6. `git diff --stat` -> exactly 2 files (scripts/_validator_utils.py + the
-     new test); commit on campaign/agent-native-self-development with subject
-     prefix `campaign(R7):` and trailer
-     `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`; do NOT push;
-     do NOT edit CAMPAIGN-STATE.md.
-  7. write docs/campaigns/agent-native-self-development/R7-machinery-continuation.md
-     (second `campaign(R7):` commit): the reproduction; the repair and why it
-     is the simplest; exact before/after results of every command in step 5
-     under both code pages; what this record was sufficient for; what was
-     missing/wrong (flag, do not silently fix); files consulted beyond the
-     record; tool-call count; authority questions; anything skipped.
-AUTHORITY FOR R7 (sourced):     CHARTER.md ("bounded implementation",
-                                "test-harness improvement", "add appropriate
-                                regression tests"; "a local defect may be
-                                selected if resolving it materially advances a
-                                campaign capability"); CONTEXT.md "Authority
-                                model" (reversible implementation detail);
-                                AGENTS.md rules 3-4; ADR 0027 bounds the repair
-                                (fail-closed liveness must be preserved).
-NOT AUTHORIZED IN R7:           editing any other file under scripts/, src/,
-                                skills/, docs/, .github/; registries, overlays,
-                                contracts, ADRs; editing existing tests (the
-                                three failing tests must pass unmodified);
-                                weakening liveness enforcement; pushing; merging;
-                                tracker writes; editing CAMPAIGN-STATE.md.
-STOP CONDITION:                 both commits exist and the report is written; OR
-                                step-2 reproduction differs materially -> report
-                                and stop; OR the repair cannot keep
-                                validate-repo.py / test-validators.py results
-                                identical -> revert, report, stop.
-EXPECTED EVIDENCE OF PROGRESS:  commits `campaign(R7): ...`; the R7 report;
-                                dispatcher audit incl. exact-head CI and a fresh
-                                like-for-like full-suite run (baseline 54 failed /
-                                2 errors -> expect 51 failed / 2 errors, no NEW
-                                failure); D12 closed; G13 closed; U7 strengthened.
+CAMPAIGN CAPABILITY AFFECTED:   conditions 10-13; U10
+BOUNDED RESPONSIBILITY:
+  R8a (dispatcher, first): run the C11 full suite on the R7 head and compare
+      it with the comparison script against the clean-main baseline (expect
+      0 NEW failures; FIXED = D1, D2(a), the two mode-coverage tests); confirm
+      exact-head CI green on the pushed R7 head; write FINAL-REPORT.md in this
+      directory in the CHARTER.md "Final Campaign Report" format with the
+      final numbers; add section 16 (closure summary) to this file; commit
+      `campaign(R8):`; push.
+  R8b (fresh context, dispatched after R8a's commit): closure probe -- given
+      only this file's path, answer: (1) what is the campaign's disposition
+      and why, and does the repository evidence support it; (2) which
+      acceptance conditions are met, with what limitation each; (3) what
+      remains open and who owns each item (agent / owner / deferred); (4) what
+      a successor context should do first if the owner merges PR #268, and if
+      the owner does not; (5) anything FINAL-REPORT.md or this record claims
+      that the repository contradicts. Verdicts RECONSTRUCTED | PARTIAL |
+      FAILED per question with the reconstruction-failure classes; report
+      cost. Write R8-closure-probe.md; commit `campaign(R8):` with the
+      trailer; do NOT edit this record, FINAL-REPORT.md, or any product file;
+      do not push. The dispatcher audits it, records the result in section 16,
+      corrects FINAL-REPORT.md only for factual errors the probe proves, and
+      marks PR #268 ready for review.
+AUTHORITY FOR R8 (sourced):     CHARTER.md "Final Campaign Report", "Git and
+                                Change Discipline" (qualified PR head), "Owner
+                                Decisions"; marking the PR ready for review is a
+                                signal to the owner, not a merge.
+NOT AUTHORIZED IN R8:           merging; editing ADRs, contracts, registries,
+                                overlays, scripts, src/, Skills, tests; tracker
+                                writes beyond the PR itself; new product changes.
+STOP CONDITION:                 FINAL-REPORT.md committed; CI green on the final
+                                head; closure probe committed and audited; PR
+                                ready for review; disposition in section 16.
 ```
-
-After R7: **R8 = closure** (qualification, closure probe, final report) as
-specified in record v7: full like-for-like suite on the final head; CI;
-FINAL-REPORT.md; PR #268 ready for review; fresh-context closure probe
-answering disposition / conditions / open items / successor actions /
-contradictions; section 16.
 
 ---
 
@@ -392,13 +303,14 @@ on item 1; items 2-3 are recommendations):
 | D9 | Map row SE10 vs current probe output | INSUFFICIENT_EVIDENCE | leave |
 | D10 | Trial protocol step-4 selector | LOCAL_BUT_REAL | **fixed at R2 close-out** |
 | D11 | Two tests `rglob` the repo root | LOCAL_BUT_REAL (environment) | deferred; C11 |
-| D12 | `validate-mode-coverage.py` subprocess cannot import `workflow_liveness` | LOCAL_BUT_REAL | deferred |
+| D12 | `_validator_utils.py` hard top-level `import workflow_liveness` (fails when loaded as a package path or from a copied file) | LOCAL_BUT_REAL | **CLOSED (R7, `79e02c5`)** |
 | D13 | U+2713 prints; `config.py:133` encoding | LOCAL_BUT_REAL, low | deferred |
-| D14 | Local Windows/Python 3.14 baseline reds; Linux CI green | LOCAL_BUT_REAL (environment) | like-for-like diff only |
+| D14 | Local Windows/Python 3.14 baseline reds (54 failed / 2 errors with `PYTHONPATH=src`); Linux CI green. Campaign head after R7 expected: 52 failed / 1 error (D1, D2a, two mode-coverage tests fixed; D19 newly visible) -- R8a verifies | LOCAL_BUT_REAL (environment) | like-for-like diff only |
 | D15 | Boundary doc "retry" example is hypothetical | NO_ACTION_WARRANTED | none |
 | D16 | `docs/task-1-2-sessionstart-hook-testing.md` dated task doc | HISTORICAL_ONLY | no action |
 | D17 | `docs/mode-coverage.yaml`: the two pointed entries overstate `steps_completed` (1 vs 0/2 in their own run logs); unpointed "executed" lists (R6 section 6 item 6) | LOCAL_BUT_REAL | deferred; owner decision 3 |
 | D18 | Packaged `workflow-registry.yaml` carries 20 of 23 ids; packaged overlay 7 of 8 overrides (R6 section 8) -- consistent with ADR 0027's "shared workflow IDs" wording | INSUFFICIENT_EVIDENCE (intent) | owner decision 3 |
+| D19 | `tests/test_validator_utils.py::test_load_workflow_registry_loads_yaml` expects `{"workflows": [{"id": "test"}]}` but `load_workflow_registry` has annotated each workflow with `liveness` since ADR 0027 (`4b42263`); the test was masked by D12 and now fails on its own (R7 F2). One-line expectation update; editing existing tests was outside R7's grant | LOCAL_BUT_REAL | deferred; small separate decision (same class as U8) |
 
 ---
 
@@ -410,17 +322,17 @@ on item 1; items 2-3 are recommendations):
 | 2 | Role of active coding agent clear | MET | ADR 0013 + amendment |
 | 3 | Warrant / responsibility / capability / authority not conflated | MET | ADR 0026/0027; every fresh context respected every boundary (R2-R6) |
 | 4 | Durable artifacts carry continuation state across responsibilities | MET across five responsibility classes | R1-R6; operating map |
-| 5 | One realistic multi-responsibility task continued from durable state | MET: R0 -> R6 across seven contexts with this record as the only shared state; limitation: code surface so far test-only (-> R7), single dispatcher | R1-R6 reports |
+| 5 | One realistic multi-responsibility task continued from durable state | MET: R0 -> R7 across eight contexts with this record as the only shared state, incl. a product-machinery change with regression tests; limitation: one script + tests, no `src/`, single dispatcher | R1-R7 reports |
 | 6 | Development direction representable for consequential capability selection | LARGELY MET; limitation: one campaign, one repository | this record; operating map |
 | 7 | Role of deterministic scripts bounded and coherent | **MET (R5)** | boundary doc section |
 | 8 | Role of hooks defined and evidence-supported | **MET (R5)** | boundary doc "Hooks"; hook doc; CLAUDE.md |
 | 9 | Old workflow system has a clear disposition | **MET (R6)**: retained bounded role (1 KEEP), narrowed roles (2 DEMOTE), retirement candidates (2), historical (8), explicit reason for the rest remaining unresolved (10 INSUFFICIENT_EVIDENCE with the evidence limits stated) and the owner decisions implied | `docs/workflow-system-disposition.md` |
-| 10 | Existing useful functionality not destroyed | MET so far (`validate-repo.py` green; CI green on every pushed head through `89246f4`) | section 15; R7 full suite |
-| 11 | Tests, validators, contracts, docs, implementation agree sufficiently | LARGELY MET; residual pre-existing items D2(b), D8, D12, D17, D18 (none in CI) | section 12 |
+| 10 | Existing useful functionality not destroyed | MET so far (`validate-repo.py` green on every head; `test-validators.py` 78/78 unchanged by R7; CI green on every pushed head through `e702b31`; like-for-like suite at the R6 head: 0 NEW, 2 FIXED) | section 15; R8a |
+| 11 | Tests, validators, contracts, docs, implementation agree sufficiently | LARGELY MET; residual pre-existing items D2(b), D8, D17, D18, D19 (none in CI) | section 12 |
 | 12 | Repository passes appropriate complete qualification | PENDING R8 (full like-for-like suite; CI on final head) | C11 |
 | 13 | Remaining material limitations explicitly documented | PENDING R8 (FINAL-REPORT.md) | -- |
 
-Disposition after R6: **CONTINUE** (R7 = D12 machinery continuation; then R8 = closure).
+Disposition after R7: **CONTINUE** (R8 = closure).
 
 ---
 
@@ -442,6 +354,10 @@ Disposition after R6: **CONTINUE** (R7 = D12 machinery continuation; then R8 = c
 2026-09-02  R6  close-out: VERIFIED; record v7                          -> next: R7
 2026-09-02  --  re-specified: closure deferred one responsibility (G13);
                 R7 = D12 machinery continuation; R8 = closure; record v8   -> next: R7
+2026-09-02  R7  fresh-context product-machinery continuation: lazy
+                workflow_liveness resolver + regression tests; flagged the
+                record's wrong after-state prediction (D19)               -> audit
+2026-09-02  R7  close-out: VERIFIED; record v9                          -> next: R8
 ```
 
 ---
@@ -449,11 +365,12 @@ Disposition after R6: **CONTINUE** (R7 = D12 machinery continuation; then R8 = c
 ## 15. Remote / integration status (updated by the dispatcher, never assumed)
 
 ```text
-pushed:        5a89f2a (R6) -> origin/campaign/agent-native-self-development
+pushed:        1b47d06 (R7) -> origin/campaign/agent-native-self-development
                this close-out commit: pushed after this commit
 PR:            #268 (draft) https://github.com/ThorStarlord/sensemaking-skills/pull/268
 last main CI:  Validator Ecosystem completed/success @ f10b7da (2026-09-02T03:43Z)
-campaign CI:   b4335c3, 2adfeaf, 09bdf5e, ac47191, e35ead1, 89246f4: completed/success
-               5a89f2a: in progress at R6 close-out
+campaign CI:   b4335c3, 2adfeaf, 09bdf5e, ac47191, e35ead1, 89246f4, 5a89f2a,
+               eb6c461, e702b31: completed/success; 1b47d06 (R7 code): pending at
+               R7 close-out -- R8a verifies
 merged:        nothing (owner decision)
 ```
