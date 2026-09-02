@@ -67,6 +67,8 @@ result = orchestrator.run_workflow(
 # - result.fog_type: str - detected fog type (product_fog, ui_fog, etc.)
 ```
 
+Pass `execution_mode` explicitly when calling `SkillsOrchestrator.run_workflow`. Omitting it is deprecated. During the compatibility window, an omitted mode still behaves as `yolo_execution` and emits a `FutureWarning`; that fallback is not a stable product default and may be removed or changed only through a later versioned release decision.
+
 ---
 
 ## API Classes
@@ -166,7 +168,7 @@ Main orchestrator for running workflows.
 ```python
 from sensemaking_skills.runner import SkillsOrchestrator
 from sensemaking_skills.config import SkillsConfig
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 class SkillsOrchestrator:
     """Orchestrates skill execution and workflow chaining."""
@@ -183,7 +185,7 @@ class SkillsOrchestrator:
     def run_workflow(
         self,
         workflow_id: str,
-        execution_mode: str = "guided_execution",
+        execution_mode: Optional[str] = None,
         problem_statement: str = "",
         context_artifacts: Dict[str, str] = None,
     ) -> Dict[str, Any]:
@@ -192,7 +194,10 @@ class SkillsOrchestrator:
         
         Args:
             workflow_id: ID of workflow to run (e.g., "fast-path-workflow")
-            execution_mode: One of guided_execution, autonomous_execution, plan_only
+            execution_mode: Explicit execution mode. Callers should pass one of
+                plan_only, guided_execution, autonomous_execution, or yolo_execution.
+                Omitting this argument is deprecated; the current compatibility
+                fallback is yolo_execution and emits FutureWarning.
             problem_statement: User's problem description (optional)
             context_artifacts: Prior artifacts for chained workflows (optional)
         
@@ -568,7 +573,10 @@ logging.basicConfig(
 # Now run your code - you'll see detailed logs
 config = ConfigManager(repo_root=".").load()
 orchestrator = SkillsOrchestrator(config=config)
-result = orchestrator.run_workflow(workflow_id="fast-path-workflow")
+result = orchestrator.run_workflow(
+    workflow_id="fast-path-workflow",
+    execution_mode="guided_execution",
+)
 ```
 
 ---

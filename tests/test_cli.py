@@ -1,4 +1,7 @@
 """CLI integration tests."""
+import importlib.util
+from pathlib import Path
+
 import pytest
 from click.testing import CliRunner
 from sensemaking_skills.cli import cli
@@ -62,3 +65,20 @@ class TestCLIBasic:
         result = runner.invoke(cli, ["validate", "--artifact", "/nonexistent/path.md"])
         assert result.exit_code != 0
         assert "does not exist" in result.output.lower()
+
+
+def test_runner_implicit_execution_mode_deprecation_contract(tmp_path):
+    """Keep issue #264's focused runner contract in the load-bearing core gate."""
+    test_path = Path(__file__).with_name("test_runner_execution_mode_deprecation.py")
+    spec = importlib.util.spec_from_file_location(
+        "runner_execution_mode_deprecation_contract",
+        test_path,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    module.test_omitted_execution_mode_warns_once_and_preserves_yolo_behavior(tmp_path)
+    module.test_explicit_yolo_execution_preserves_behavior_without_deprecation_warning(tmp_path)
+    module.test_explicit_guided_execution_has_no_deprecation_warning(tmp_path)
+    module.test_parent_session_path_requests_yolo_explicitly(tmp_path)
