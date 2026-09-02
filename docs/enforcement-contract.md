@@ -1,5 +1,26 @@
 # Enforcement contract: the canonical gate
 
+> **Status addendum (2026-09-02).** Added during a MECH refresh of
+> `docs/semantic-control-map.md` rows SE1/SE2/SA13/SA9 (campaign R2); the
+> body below is retained verbatim as the 2026-08-12 record and its branch
+> language ("this branch", "merge awaiting separate authorization") is
+> historical. Established from git on 2026-09-02:
+>
+> - `feat/enforcement-gate` (tip `e1db7dc`, 2026-08-11) is on `main`'s
+>   first-parent history — there is no merge commit and no GitHub PR for it;
+>   the follow-up stabilization commit `63350d4` (2026-08-11,
+>   `feat/enforcement-stabilization` tip) likewise.
+> - Both jobs, `probe-gate` and `core-assertions`, are present in
+>   `.github/workflows/validation.yml` on `main`: at `0ffb564` (the PR #169
+>   merge, 2026-08-13, which already contained the gate), at the
+>   semantic-control-map trial start `df46871` (2026-08-31), and at `f10b7da`
+>   (2026-09-02), where `main` workflow run 33588124719 reports both jobs
+>   `success`.
+> - §5's "expected red on current main" is historical: `tests/test_path_drift.py`
+>   is green on `main` in that run, and `tests/test_cli.py` `test_cli_version`
+>   now asserts the current `0.2.2`. `tests/test_field_contract_agreement.py`
+>   remains in no CI step (§3 exclusion still in force).
+
 - **Date**: 2026-08-12
 - **Branch**: `feat/enforcement-gate` (based on `main` @ `08f091b`)
 - **Status**: accepted engineering direction (owner), implementation on
