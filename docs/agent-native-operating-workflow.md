@@ -46,7 +46,11 @@ The control loop belongs to the **active coding agent** (ADR 0013). The
 runtime/scripts are deterministic support machinery. Registered workflows
 (`fast-path-workflow`, `artifact-reconciliation`,
 `docs-contract-reconciliation`, ...) are potentially **subgraphs inside this
-loop**, not the whole loop.
+loop**, not the whole loop. The per-workflow disposition of all 23 registered
+workflows in campaign vocabulary, with the execution evidence behind each
+call, is recorded in [`workflow-system-disposition.md`](workflow-system-disposition.md)
+(non-authoritative; ADR 0027 and the liveness overlay remain the liveness
+authority).
 
 ```text
 USER REQUEST / WORK CLAIM
@@ -317,6 +321,89 @@ real agent-native continuation cannot reconstruct the intended prior report
 from durable repository state without relying on conversational/session
 memory.
 
+#### Responsibility-level continuation from a durable record (demonstrated 2026-09-02)
+
+The cross-run-identity status above is unchanged. A narrower form of
+continuation -- one bounded responsibility handed from one coding-agent
+context to a fresh one through a durable Markdown record -- has been
+demonstrated in real use inside the campaign directory
+[`docs/campaigns/agent-native-self-development/`](campaigns/agent-native-self-development/CAMPAIGN-STATE.md).
+Two fresh contexts (R1 and R2 below; five more followed, R3-R7, recorded in
+the same directory), given only the repository worktree and the path of
+`CAMPAIGN-STATE.md` (no conversation history, no Skill invocation, no
+workflow runtime), did the following:
+
+- **R1** ([report](campaigns/agent-native-self-development/R1-fresh-context-reconstruction.md))
+  reconstructed the mission, the capability state, why the current task had
+  been selected over the visible alternatives, what was established vs.
+  uncertain, and the warranted next action: questions Q1-Q5 `RECONSTRUCTED`,
+  authority (Q6) `PARTIAL`, five omissions listed (Q7); cost 39 files /
+  25 tool calls.
+- **R2** ([report](campaigns/agent-native-self-development/R2-continuation-trial.md))
+  performed a seven-step, three-file documentation responsibility from the
+  record alone: established the record's facts from git and CI before
+  writing, refreshed the named rows, ran the named validators, committed
+  under the required convention, declined plausible-but-unlisted edits
+  (report section 5 A2/A4/A5), and wrote a candid report; cost 9 files /
+  36 tool calls. Its verification step exposed one wrong fact in the record
+  (gate provenance, report M1/F1); it wrote the git-established facts and
+  flagged the conflict instead of silently correcting the record.
+
+Durable state that proved necessary (all of it in the record, none of it in
+conversation memory):
+
+- the mission;
+- a capability-state table with a repository evidence pointer per row;
+- known gaps and active constraints;
+- authority: every grant traced to a durable source, plus an explicit
+  not-authorized list;
+- a task spec with numbered steps, verification steps (not only
+  assertions), a stop condition, the commit convention, and the expected
+  evidence;
+- open decision-changing uncertainties and deferred findings;
+- remote / integration status (push, PR, CI) recorded, never assumed;
+- an append-only responsibility trace.
+
+Beyond the record, the fresh contexts needed only repository state, mostly
+named by the record (protocol docs, table conventions, git/CI facts; R2
+section 6 F7) -- no conversation state.
+
+Failure classes observed, and how each was repaired at the following
+close-out:
+
+- `AUTHORITY_AMBIGUITY` (R1 Q6, narrow: a merge rule sourced to an
+  out-of-repository standing instruction; push/PR delegation asserted only
+  by the record; no source for who authorizes implementing candidate
+  machinery on the branch) -> source every grant: the record now cites a
+  durable source per grant (its section 11) and the owner instruction is
+  committed verbatim (`CHARTER.md`).
+- `MISSING_DURABLE_STATE` (R1 Q7: the charter and a cited standing
+  instruction were not in the repository; push/PR status was not recorded;
+  some cited evidence lives only in GitHub issues) -> commit the authority
+  text; record push/CI status in the record; mark GitHub-only evidence as
+  such.
+- Not in the taxonomy: durable state that was present but *wrong* on one
+  fact (R2 M1). No schema would have caught it; the spec's own "establish
+  from git" step did. Task specs therefore carry verification steps.
+
+Not needed at this scale: a continuation schema, a validator, a new artifact
+type, or a hook. Both continuation events were explicit dispatches; the
+record plus the report sufficed; zero shape errors were observed. Reopen
+conditions (campaign record U5/U3): a fresh context fails on a *missing or
+malformed section* rather than a wrong fact; more than one dispatcher must
+produce such records; or a recurrent continuation event that a manual step
+keeps missing is observed (hook).
+
+Observed limitation at R1/R2: documentation-level responsibilities only.
+Subsequently demonstrated in the same campaign (2026-09-02):
+implementation-class continuation from durable state -- test repairs (R4,
+commit `769a180`) and a change to `scripts/_validator_utils.py` with
+regression tests (R7, commit `79e02c5`), both by fresh contexts, both green
+in exact-head CI; see the R4 and R7 reports in the campaign directory.
+Still untested: `src/` changes, larger surfaces, more than one dispatcher.
+Nothing here exercises the cross-run prior-report identity trigger above,
+which stays unresolved.
+
 ---
 
 ## 3. Artifact flow
@@ -380,15 +467,17 @@ diagnosis          != authorization
 | Repository diagnosis | `repo-sensemaker` + probe engine | REAL (ratified, ADR 0014) | diagnosis does not authorize repair |
 | Brief contract validation | `validate-artifact.py` / `validate-brief.py` / `validate-output.py` | REAL | structural PASS != analytically correct |
 | Human review | conversation/process boundary | RATIFIED product boundary, agent-mediated | not an automated gate |
-| Next responsibility selection | agent judgment + skill catalog | CONVENTION / unratified automation (ADR 0018 SUPERSEDED) | do not restore automatic routing by accident |
+| Next responsibility selection | agent judgment + skill catalog | CONVENTION / unratified automation (ADR 0018 SUPERSEDED); exercised by a fresh context in campaign R1 (report Q3 alternatives table, Q5) | do not restore automatic routing by accident |
 | Specialized analysis | individual Skills | REAL per Skill | Skill existence != product need |
 | Artifact validation | validators + `artifact-contracts.yaml` | REAL | schema != truth |
 | Output reconciliation | `output-reconciler` + `artifact-reconciliation` workflow | REAL + dogfooded (evidence 0018, 0020) | not needed after every trivial action |
 | Repair verification | `repair-verifier` + `docs-contract-reconciliation` step 3 | REAL + dogfooded (evidence 0019); `unevaluable` category UNRATIFIED | generic green != closure |
 | Promotion / durability | `promotion-criteria.md` + evidence 0019 doctrine | CONVENTION / partially formalized | promotion != canonicalization |
 | Authority handling | Skill rules + ADRs (0016 accepted; 0019/0022 PROPOSED; 0023 accepted) + agent discipline | DISTRIBUTED | findings do not grant mutation authority |
-| Continuation | typed inputs + durable artifacts | CONVENTION_CLOSED (retirement plan) | prior-report identity deliberately unresolved |
-| Stop conditions | this document (first consolidation) | CONVENTION (no machinery) | "no more things to investigate" is not done |
+| Continuation | typed inputs + durable artifacts | CONVENTION -- responsibility-level continuation DEMONSTRATED (campaign R1/R2, 2026-09-02); cross-run prior-report identity still CONVENTION_CLOSED; machinery not earned | prior-report identity deliberately unresolved |
+| Stop conditions | this document (first consolidation) | CONVENTION (no machinery); exercised by a fresh context in campaign R2 (report sections 5 A2/A4/A5 and 8: stopped at the spec's stop condition, declined unlisted edits) | "no more things to investigate" is not done |
+| Deterministic machinery | validators (`validate-output.py` -> `validate-artifact.py` + specialized), probe engine (`probe-repo.py`, `repo_probes.py`, `probe_relationships.py`), `gate_relationship_findings.py`, `workflow-runtime.py` + `run-ledger.py`, `validate-repo.py` + `workflow_liveness.py`, `probe_skill_distribution.py` -- roles consolidated in [`decision-orchestration-boundary.md`, "Deterministic machinery and hooks"](decision-orchestration-boundary.md#deterministic-machinery-and-hooks) | REAL as referees: contract validation, measured state, mechanical gate policy, path resolution + ledger, registry/liveness integrity, distribution drift, bounded execution coordination; used exactly so by the campaign fresh contexts R2-R4 (2026-09-02), every judgment left to the agent | scripts do not select responsibilities or uncertainties, decide stop/continue/escalate, grant authority or spawn a next workflow, interpret findings, or route from fog type to implementation |
+| Hooks | none executable (`.claude/settings.json` is `{}`); `.claude/hooks/sessionstart.md` is a Markdown description of a session-start convention; `CLAUDE.md` + the installed `using-sensemaking` skill are the actual bootstrap surface -- disposition in [`decision-orchestration-boundary.md`, "Hooks"](decision-orchestration-boundary.md#hooks) | NOT WARRANTED for continuation or liveness: R1-R4 continuations were explicit dispatches from a durable record, each producing its report, no missed event recorded; admissible future shape is mechanical only (detect artifact -> validate -> register provenance/state -> signal the agent to reassess); reopen condition = a recurrent continuation event a manual step keeps missing in real use | a hook is not a router: never `artifact X -> execute Skill Y` (ADR 0026; boundary-doc guardrail 4); the hook doc describes, it does not execute |
 
 ---
 
@@ -404,6 +493,14 @@ diagnosis          != authorization
   and product boundary; this document consolidates, it does not decide.
 - **Registered workflows stay subgraphs** (`artifact-reconciliation`,
   `docs-contract-reconciliation`) -- the loop is not one giant choreography.
+- **No continuation schema, validator, or hook** -- three record-mediated
+  handoffs (campaign R0 -> R1, R1 -> R2, R2 -> close-out audit; two of them
+  into fresh contexts) produced zero shape errors and one fact error, which
+  an in-spec verification step caught and no schema would have; the
+  machinery promotion rule (section 7) is not met. Reopen conditions as in
+  section 2 "CONTINUATION": a failure on a missing or malformed section
+  rather than a wrong fact; more than one producer of such records; or a
+  recurrent continuation event that a manual step keeps missing.
 
 ---
 

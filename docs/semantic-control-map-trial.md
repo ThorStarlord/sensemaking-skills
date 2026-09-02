@@ -41,8 +41,11 @@ Each row carries `Deriv` = `MECH` / `JUDG` / `MIX`.
      `artifact-contracts.yaml`.
   3. `grep -n 'pytest' .github/workflows/validation.yml`;
      `git branch -a --contains <feat/enforcement-gate tip>`.
-  4. `pytest -q tests/test_path_drift.py tests/test_cli.py::test_cli_version`
-     — record whether the reds are the **known** reds (SE2, SA12) or new.
+  4. `pytest -q tests/test_path_drift.py tests/test_cli.py`
+     — record whether any red is a **known** environment-only red (see SE2:
+     Windows cp1252 `UnicodeDecodeError`) or new. (Selector corrected
+     2026-09-02: `tests/test_cli.py::test_cli_version` no longer resolves; the
+     test is `TestCLIBasic::test_cli_version`.)
   5. `cat distribution-drift.yaml`.
   6. the ~10 per-row symbol/import/doc-name greps named in the rows.
 - **`JUDG` rows** and the **`INTERP:` half of `MIX` rows** are reviewed **only

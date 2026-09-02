@@ -23,6 +23,11 @@ Those are agent responsibilities, taught by the skill and the agent-native opera
 
 See `.claude/hooks/sessionstart.md` for full hook documentation and testing guide.
 
+No executable hook is configured (`.claude/settings.json` is `{}`); the bootstrap
+reaches agents through this file plus the installed `using-sensemaking` skill.
+Disposition of deterministic scripts and hooks:
+`docs/decision-orchestration-boundary.md`, section "Deterministic machinery and hooks".
+
 ---
 
 ## Agent skills
