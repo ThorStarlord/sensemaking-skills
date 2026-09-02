@@ -344,11 +344,19 @@ merged:        nothing from Campaign 3; nothing will be.
                           raised (C-8: warrant_gate.py:146 + ADR 0015:182).
                           controllers/A-selection.md committed (2fd1027).
                           PHASE 1 OUTCOME: NO_COUPLED_CAPABILITY_CURRENTLY_WARRANTED.
-2026-09-02  Controller A  CAMPAIGN-STATE v2 + FINAL-REPORT.md. Final campaign
-                          disposition: NO_COUPLED_CAPABILITY_CURRENTLY_WARRANTED.
-                          No handoff (nothing to hand off). No Controller B.
-                          Not merging; not ratifying; not opening/closing any
-                          owner-reserved item.
+2026-09-02  Controller A  CAMPAIGN-STATE v2 + FINAL-REPORT.md (6aedc22);
+                          SHA-backfill (3d81ab9). Final campaign disposition:
+                          NO_COUPLED_CAPABILITY_CURRENTLY_WARRANTED. No handoff
+                          (nothing to hand off). No Controller B. Not merging;
+                          not ratifying; not opening/closing any owner-reserved
+                          item.
+2026-09-02  Controller A  pushed branch campaign/durable-architectural-continuity
+                          -> origin; opened draft PR
+                          ThorStarlord/sensemaking-skills#271 (campaign-evidence
+                          surface, NOT for merge). CI on the docs-only diff:
+                          green (Repository validation, Probe Engine enforcement
+                          gate, Core assertions, Gate A Linux+Windows, phase 2-6
+                          all pass). Campaign 3 CLOSED.
 ```
 
 ## 17. HANDOFF PROVENANCE
