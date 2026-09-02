@@ -168,7 +168,7 @@ Main orchestrator for running workflows.
 ```python
 from sensemaking_skills.runner import SkillsOrchestrator
 from sensemaking_skills.config import SkillsConfig
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 class SkillsOrchestrator:
     """Orchestrates skill execution and workflow chaining."""
@@ -185,7 +185,7 @@ class SkillsOrchestrator:
     def run_workflow(
         self,
         workflow_id: str,
-        execution_mode: Optional[str] = None,
+        execution_mode: str = ...,  # omission is accepted temporarily but deprecated
         problem_statement: str = "",
         context_artifacts: Dict[str, str] = None,
     ) -> Dict[str, Any]:
