@@ -1,19 +1,29 @@
 # Campaign 2 durable semantic state — Durable Repository-Level Self-Development
 
 ```
-STATUS:     CLOSING (v6). Disposition **CAMPAIGN_COMPLETE** — see
-            docs/campaigns/durable-repo-self-development/FINAL-REPORT.md
-            (17-section format) and controllers/A-B-comparison.md (post-hoc
-            retrospective, written after Controller B's cycle completed).
-            Two strategic cycles done (Task A / Controller A; Task B / fresh
-            Controller B); A -> B semantic-controller succession demonstrated
-            with recorded isolation limits (EC-2). No Controller C (would not
-            change the central answer). Owner-reserved and carried forward:
-            merge of PR #269; ratifying any conclusion as product architecture;
-            the nine docs/workflow-system-disposition.md section 6 items; Goal A
-            authorization; the formal act of terminating Campaign 2.
-            A "frontier" or "next task" in this file is LAST ASSESSED CANDIDATE,
-            not a command.
+STATUS:     CLOSED (v7). Disposition **CAMPAIGN_COMPLETE**. Owner accepted the
+            disposition and integrated the work on 2026-09-02:
+              - PR #269 MERGED into main (merge commit 7e48cf0, mergedBy
+                ThorStarlord) after an independent narrow architectural/authority
+                review recommended MERGE (APPROVE) on Q1 (closure) and Q2
+                (doc-status);
+              - OWNER DECISION: the `<!-- doc-status: historical -->` marker is
+                left **NON-NORMATIVE** — a probe heuristic within the already-
+                owner-accepted "doc-surface discovery" Probe Engine capability
+                (adoption-finalization.md), NOT a ratified repository-wide
+                convention. No convention doc, no ADR, no template/CLAUDE/vocab
+                entry. Nothing beyond roadmap.md / goal.md should be instructed
+                to emit it unless the owner later blesses it.
+              - Campaign 2 is CLOSED. No Controller C.
+            Still owner-reserved (untouched by this campaign): the nine
+            docs/workflow-system-disposition.md section 6 items; Goal A execution
+            authorization; ratifying any *other* Campaign 2 conclusion as product
+            architecture. The FINAL-REPORT.md and controllers/*.md checkpoints
+            are preserved as-is (immutable campaign record).
+            Detail: FINAL-REPORT.md (17-section), controllers/A-B-comparison.md,
+            controllers/B-cycle-result.md.
+            A "frontier" or "next task" in this file is a historical LAST
+            ASSESSED CANDIDATE, not a command.
 AUTHORITY:  non-authoritative. Not an ADR, contract, schema, registry, validator
             input, or registered workflow. Nothing in scripts/, src/, tests/,
             or .github/ reads this file.
@@ -580,6 +590,16 @@ merged:        nothing from Campaign 2
                           and FINAL-REPORT.md. Disposition: **CAMPAIGN_COMPLETE**.
                           Not merging; not ratifying; not closing anything
                           owner-reserved.
+2026-09-02  Review        Independent narrow architectural/authority review of
+                          PR #269 (fresh-reviewer stance): Q1 ->
+                          CAMPAIGN_COMPLETE_WITH_EXPLICIT_EVIDENCE_CEILING (claim K
+                          deep coupled implementation NOT_DEMONSTRATED, an evidence
+                          ceiling); Q2 -> DOC_STATUS_NEW_CONVENTION_BUT_SAFE_AS_
+                          NON_NORMATIVE. Executive: APPROVE. No edits made
+                          (review-only).
+2026-09-02  Owner         MERGED PR #269 into main (7e48cf0). Decided doc-status
+                          stays NON-NORMATIVE. CLOSED Campaign 2. This v7 stamp
+                          records that; nothing else changed.
 ```
 
 ## 17. FAILURE OBSERVATIONS
@@ -876,3 +896,19 @@ standing integration/ratification boundary, exactly as at Campaign 1's close).
   U-5 resolved (no Controller C). PR #269 description updated with the
   disposition. No product surface changed by v6 (docs-only under
   `docs/campaigns/`).
+- **v7 (2026-09-02, owner close-out):** an independent narrow architectural /
+  authority review of PR #269 (fresh-reviewer stance; not Campaign 3) adjudicated
+  Q1 (closure proportionality) and Q2 (`doc-status` authority): Q1 →
+  `CAMPAIGN_COMPLETE_WITH_EXPLICIT_EVIDENCE_CEILING` (succession directly
+  demonstrated; deep coupled multi-surface implementation under succession — claim
+  K — `NOT_DEMONSTRATED`, Task B ≈ Campaign 1 depth, an evidence ceiling not an
+  unmet acceptance condition); Q2 → `DOC_STATUS_NEW_CONVENTION_BUT_SAFE_AS_NON_
+  NORMATIVE` (concept pre-ratified via `adoption-finalization.md` "doc-surface
+  discovery"; new syntax + head-of-file content read; one local consumer; no gate
+  / blocking-finding change; nothing documents it as a convention). Executive:
+  `MERGE_RECOMMENDATION: APPROVE`. **Owner then: merged PR #269 (7e48cf0); chose
+  to leave `doc-status` NON-NORMATIVE (no convention doc / no ratification);
+  closed Campaign 2.** This v7 stamp is the only post-merge change — a docs-only
+  update to this non-authoritative record so it stops describing PR #269 as
+  unmerged / merge as owner-reserved-pending. FINAL-REPORT.md and the
+  controllers/*.md checkpoints are left intact as the immutable campaign record.
