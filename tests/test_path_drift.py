@@ -151,7 +151,7 @@ class TestPathDrift(unittest.TestCase):
             if not skill_md.exists():
                 continue
 
-            content = skill_md.read_text()
+            content = skill_md.read_text(encoding="utf-8")
 
             # Pattern: bare fog type names (product, ui, architecture, docs)
             # NOT preceded by underscore or quotes from examples
@@ -225,7 +225,7 @@ class TestPathDrift(unittest.TestCase):
             self.skipTest("No validator YAML files found to check")
 
         for validator_path in validator_patterns:
-            content = Path(validator_path).read_text()
+            content = Path(validator_path).read_text(encoding="utf-8")
 
             # Should not reference workflow-orchestrator
             self.assertNotIn(
@@ -355,7 +355,7 @@ class TestCanonicalVocabularyUsage(unittest.TestCase):
     def test_vocabulary_documents_all_enum_values(self):
         """Verify vocabulary has entries for all critical enums."""
         vocab_path = self.repo_root / "docs" / "canonical-vocabulary.yaml"
-        content = vocab_path.read_text()
+        content = vocab_path.read_text(encoding="utf-8")
 
         required_sections = [
             "fog_types:",

@@ -19,8 +19,8 @@ src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
-from sensemaking_skills import SkillsOrchestrator, ConfigManager
-from sensemaking_skills.config import SkillsConfig
+from sensemaking_skills.config import ConfigManager, SkillsConfig
+from sensemaking_skills.runner import SkillsOrchestrator
 from sensemaking_skills.registry import WorkflowRegistry
 
 
