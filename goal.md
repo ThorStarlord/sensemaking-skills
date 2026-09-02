@@ -1,5 +1,15 @@
 # Goal: Sensemaking Skills
 
+> **HISTORICAL FRAMING (as of 2026-09-02).** This document describes an
+> autonomous goal-to-implementation router that classifies project type,
+> selects a workflow from the registry, and sequences skills. That is the
+> pre-ADR-0013 vision. The ratified model is different: the **active coding
+> agent owns the control loop** (ADR 0013) and the product boundary is the
+> validated, human-reviewed `repository_sensemaking_brief` (ADR 0014);
+> automatic routing is deferred. For the current product definition and scope
+> see [CONTEXT.md](CONTEXT.md); for the current development direction see
+> [STATUS.md](STATUS.md). Retained for history; not maintained.
+
 ## North Star
 
 Turn a high-level project goal into a fully executed implementation — with the user only providing the goal and reviewing the final output.
