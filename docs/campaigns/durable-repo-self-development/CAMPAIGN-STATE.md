@@ -1,20 +1,19 @@
 # Campaign 2 durable semantic state — Durable Repository-Level Self-Development
 
 ```
-STATUS:     ACTIVE (v5). Task A done + qualified. **Fresh Controller B has
-            taken over semantic control** at controllers/A-handoff.md
-            (handoff head 358b5a2), reconstructed + reverified the durable
-            state, committed its own checkpoint
-            (controllers/B-reconstruction-and-selection.md @ 4ccbc70, pushed)
-            BEFORE any Task B implementation, and executed **Task B**
-            (b77ad04): the probe engine's live-document classifier now honors
-            an explicit `<!-- doc-status: historical -->` marker, applied to
-            roadmap.md + goal.md, so Task A's human historical markings and the
-            deterministic drift machinery agree. Qualified (validate-repo 0;
-            probe gate PASS; test-validators 78/78; core-assertions 103p/1s).
-            Campaign closure assessed in controllers/B-cycle-result.md. A
-            predecessor "frontier" or "next task" in this file is LAST ASSESSED
-            CANDIDATE, not a command.
+STATUS:     CLOSING (v6). Disposition **CAMPAIGN_COMPLETE** — see
+            docs/campaigns/durable-repo-self-development/FINAL-REPORT.md
+            (17-section format) and controllers/A-B-comparison.md (post-hoc
+            retrospective, written after Controller B's cycle completed).
+            Two strategic cycles done (Task A / Controller A; Task B / fresh
+            Controller B); A -> B semantic-controller succession demonstrated
+            with recorded isolation limits (EC-2). No Controller C (would not
+            change the central answer). Owner-reserved and carried forward:
+            merge of PR #269; ratifying any conclusion as product architecture;
+            the nine docs/workflow-system-disposition.md section 6 items; Goal A
+            authorization; the formal act of terminating Campaign 2.
+            A "frontier" or "next task" in this file is LAST ASSESSED CANDIDATE,
+            not a command.
 AUTHORITY:  non-authoritative. Not an ADR, contract, schema, registry, validator
             input, or registered workflow. Nothing in scripts/, src/, tests/,
             or .github/ reads this file.
@@ -401,10 +400,12 @@ materially satisfied at an honest evidence level; a Controller C handoff is
   `<!-- doc-status: historical -->` marker the classifier honors (not a
   front-matter schema, not a path move, not a filename rule). Implemented +
   qualified.
-- **U-5 (open, low urgency)** Does the campaign warrant a Controller C? Controller
-  B's read: no — the central question is answerable after A → B + two cycles
-  (§10.2 BF-1); a C handoff would add succession-count evidence (n=2 → n=3) but
-  not change the central answer. Deferred to the final report / owner.
+- **U-5 — RESOLVED (final report).** No Controller C. After A → B + two strategic
+  cycles the central question is answerable at an honest evidence level; a C
+  handoff would add succession-count evidence (n=2 → n=3) but would not change
+  the central answer, and the owner instruction forbids another handoff "merely
+  to increase the count". Disposition `CAMPAIGN_COMPLETE`
+  (`FINAL-REPORT.md` §17).
 
 ## 12. OWNER / AUTHORITY BOUNDARIES
 
@@ -563,7 +564,22 @@ merged:        nothing from Campaign 2
                           controllers/B-cycle-result.md written. Closure read:
                           acceptance conditions materially satisfied at an honest
                           evidence level; Controller C optional, would not change
-                          the central answer.
+                          the central answer. Cycle-result commit 7e3f451;
+                          SHA-backfill f4f2f11.
+2026-09-02  B -> (done)   Controller B completed its cycle and did not hand off to
+                          a Controller C. Fresh-controller succession trace ends
+                          here: A -> B. Isolation honestly classified in
+                          controllers/A-handoff.md + A-B-comparison.md.
+2026-09-02  Lead ctrl     Post-B closure (permitted only after B's cycle
+            (was A)       completed): independently re-verified B's work at
+                          f4f2f11 (validate-repo 0; probe gate PASS, version
+                          finding no longer cites roadmap/goal, 27 obs;
+                          test-validators 78/78; core-assertions + probe_rel +
+                          stale-adr pytest 111 passed / 1 skipped; CI green on
+                          every campaign head). Wrote controllers/A-B-comparison.md
+                          and FINAL-REPORT.md. Disposition: **CAMPAIGN_COMPLETE**.
+                          Not merging; not ratifying; not closing anything
+                          owner-reserved.
 ```
 
 ## 17. FAILURE OBSERVATIONS
@@ -777,6 +793,21 @@ read and the final-report inputs in `controllers/B-cycle-result.md` and does
 **not** itself declare the campaign closed. `OWNER_DECISION_REQUIRED` for:
 merge of PR #269, and formal campaign termination.
 
+**Closure assessment (lead controller, post-B, v6).** Controller B's work was
+independently re-verified at `f4f2f11` (§14/§16 of `FINAL-REPORT.md`). The
+charter's closure rule is met: central question answerable at an honest evidence
+level; succession evidence exists; substantive advancement occurred (Task A +
+Task B); no remaining material gap is *necessary* to evaluate the Campaign 2
+question; broader limits are recorded as ceilings/deferred. **Disposition:
+`CAMPAIGN_COMPLETE`** (`FINAL-REPORT.md` §17). This is a campaign *closure
+assessment*, not an owner action — the merge of PR #269, ratification of any
+conclusion as product architecture, the nine workflow-system-disposition
+decisions, Goal A authorization, and the formal act of terminating Campaign 2
+remain owner-reserved and are carried forward. It is **not**
+`OWNER_DECISION_REQUIRED` as a disposition (no safe bounded campaign work is
+*blocked* by an owner decision — the residual owner actions are the repository's
+standing integration/ratification boundary, exactly as at Campaign 1's close).
+
 ---
 
 ### Version log
@@ -831,3 +862,17 @@ merge of PR #269, and formal campaign termination.
   evidence level (§20).** Disposition read: **CAMPAIGN_COMPLETE**, but formal
   campaign termination + PR #269 merge are `OWNER_DECISION_REQUIRED`. Full
   cycle result + final-report inputs: `controllers/B-cycle-result.md`.
+- **v6 (2026-09-02, lead controller, post-B closure):** permitted only after
+  Controller B's cycle completed. Independently re-verified B's work at `f4f2f11`
+  (validate-repo 0; probe gate PASS — `version` finding no longer cites
+  roadmap/goal, 27 obs; test-validators 78/78; core-assertions + probe_rel +
+  stale-adr pytest 111 passed / 1 skipped; `git diff` of
+  `scripts/probe_relationships.py` + tests reviewed; `00-user-intent.md` +
+  `CHANGELOG.md` confirmed untouched; CI green on every campaign head
+  `431ec43`/`358b5a2`/`4ccbc70`/`b77ad04`/`7e3f451`/`f4f2f11`). Wrote
+  `controllers/A-B-comparison.md` (post-hoc A/B retrospective) and
+  `FINAL-REPORT.md` (17-section format). **Disposition: `CAMPAIGN_COMPLETE`** —
+  not an owner action; merge / ratification / termination remain owner-reserved.
+  U-5 resolved (no Controller C). PR #269 description updated with the
+  disposition. No product surface changed by v6 (docs-only under
+  `docs/campaigns/`).
