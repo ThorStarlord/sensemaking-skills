@@ -1,9 +1,12 @@
 # Campaign 2 durable semantic state — Durable Repository-Level Self-Development
 
 ```
-STATUS:     ACTIVE (v3). Task A executed to its legitimate boundary (product
-            change committed + qualified). Next: Controller A mandatory handoff
-            to a genuinely fresh Controller B, then relinquish.
+STATUS:     ACTIVE (v4). Task A done + qualified (PR #269 draft, exact-head CI
+            green). Controller A has RELINQUISHED semantic control at the
+            controllers/A-handoff.md commit. Fresh Controller B is next: it owns
+            reconstruction, reverification, independent Task B selection, and its
+            own checkpoint. A predecessor "frontier" or "next task" in this file
+            is LAST ASSESSED CANDIDATE, not a command.
 AUTHORITY:  non-authoritative. Not an ADR, contract, schema, registry, validator
             input, or registered workflow. Nothing in scripts/, src/, tests/,
             or .github/ reads this file.
@@ -307,15 +310,14 @@ a Campaign 2 task only through the strategic selection gate.
 ## 15. RELEVANT OBSERVED INTEGRATION / CI STATE
 
 ```
-pushed:        3c55254 (bootstrap), a216293 (A selection), <A Task-A commit>
-               -> origin/campaign/durable-repo-self-development
-PR:            none yet (Controller B decides whether a draft PR helps; Task A is
-               reviewable but succession evidence stays on one branch lineage)
+pushed:        3c55254 (bootstrap), a216293 (A selection), 431ec43 (Task A),
+               + A-handoff commit -> origin/campaign/durable-repo-self-development
+PR:            #269 (DRAFT, not for merge) campaign/durable-repo-self-development
+               -> main. Opened by Controller A for exact-head CI qualification +
+               as a durable campaign-evidence surface. Merge = owner decision.
 origin/main:   06a57d1  (== campaign base; no drift, re-checked 2026-09-02 v3)
-campaign CI:   Task A commit is the first with a product-surface change
-               (STATUS.md/roadmap.md/goal.md/CONTEXT.md); exact-head
-               "Validator Ecosystem" result to be observed after push and
-               recorded here
+campaign CI:   "Validator Ecosystem" exact-head on 431ec43 (pull_request event,
+               PR #269): completed/success (GREEN). Task A qualified at PR head.
 local qual:    validate-repo.py exit 0; probe gate PASS (0 blocking; +2
                non-blocking evidence findings in the A1 doc, documented);
                test-validators.py 78/78; core-assertions pytest 99 passed / 1
@@ -339,13 +341,25 @@ merged:        nothing from Campaign 2
                           (controllers/A-task-A1-reconstruction-probe.md);
                           U-2 RESOLVED (limitation confirmed, product-surface,
                           not premise-invalidation); A3 smallest warranted change
-                          committed (STATUS.md refresh + reading path; historical
-                          headers on roadmap.md/goal.md; CONTEXT.md +1 row);
-                          A4 qualified (validate-repo 0, probe gate PASS,
-                          test-validators 78/78, core-assertions 99p/1s).
-                          -> next: mandatory handoff to a genuinely fresh
-                          Controller B (controllers/A-handoff.md), then Controller
-                          A relinquishes semantic control.
+                          committed 431ec43 (STATUS.md refresh + reading path;
+                          historical headers on roadmap.md/goal.md; CONTEXT.md +1
+                          row); A4 qualified (validate-repo 0, probe gate PASS,
+                          test-validators 78/78, core-assertions 99p/1s);
+                          draft PR #269 opened; exact-head CI GREEN on 431ec43.
+2026-09-02  A -> B        HANDOFF. controllers/A-handoff.md committed
+                          (pre-handoff invariant 11/11; full provenance; verbatim
+                          bootstrap). Handoff head = the A-handoff commit
+                          (SHA: <record after commit>). Isolation: context
+                          HARNESS-REPORTED; minimality/immutability/non-resumption
+                          CONTROLLER-ASSERTED; predecessor-process non-persistence
+                          SUCCESSION_ISOLATION_UNVERIFIED (EC-2). Controller A
+                          relinquishes semantic control; performs only the
+                          mechanical spawn of Controller B.
+                          -> next: Controller B reconstructs, reverifies,
+                          independently selects Task B, commits
+                          controllers/B-reconstruction-and-selection.md BEFORE
+                          implementation, executes Task B, writes B-cycle-result.md.
+                          B checkpoint SHA to be recorded here.
 ```
 
 ## 17. FAILURE OBSERVATIONS
