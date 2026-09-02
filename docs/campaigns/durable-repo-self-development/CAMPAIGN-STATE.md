@@ -1,7 +1,8 @@
 # Campaign 2 durable semantic state — Durable Repository-Level Self-Development
 
 ```
-STATUS:     ACTIVE (v1, bootstrap). No strategic task selected yet.
+STATUS:     ACTIVE (v2). Controller A reconstruction done; Task A selected;
+            Task A implementation not started.
 AUTHORITY:  non-authoritative. Not an ADR, contract, schema, registry, validator
             input, or registered workflow. Nothing in scripts/, src/, tests/,
             or .github/ reads this file.
@@ -71,12 +72,14 @@ STARTING ORIGIN/MAIN (campaign base):  06a57d1d182a32684275d343a9248429feedbfe6
    06a57d1  "Merge pull request #268 from ThorStarlord/campaign/agent-native-self-development"
    verified 2026-09-02 by `git fetch origin --prune; git rev-parse origin/main`.
 CAMPAIGN BASE:                          06a57d1  (campaign branch forked here)
-CURRENT ORIGIN/MAIN OBSERVATION:        06a57d1  (== base at bootstrap; no drift)
-CURRENT CAMPAIGN HEAD:                  <this bootstrap commit> (record SHA after commit)
+CURRENT ORIGIN/MAIN OBSERVATION:        06a57d1  (== base; no drift, re-checked 2026-09-02 v2)
+CAMPAIGN HEAD (bootstrap commit):       3c55254e0f3d2b4908179aaa0f4b20cb9dd67a8b  (pushed to origin)
+CURRENT CAMPAIGN HEAD:                  <A reconstruction+selection commit> (record SHA after commit)
 MAIN DRIFT SINCE CAMPAIGN START:        none
-CANDIDATE CHANGES NOT ON MAIN:          Campaign 2 scaffolding only
+CANDIDATE CHANGES NOT ON MAIN:          Campaign 2 scaffolding + Controller A checkpoint
    docs/campaigns/durable-repo-self-development/{OWNER-INSTRUCTION,CHARTER,
-   CAMPAIGN-STATE,STARTUP-PROVENANCE}.md + controllers/README.md
+   CAMPAIGN-STATE,STARTUP-PROVENANCE}.md + controllers/{README,
+   A-reconstruction-and-selection}.md
 RATIFICATION / MERGE STATUS:            nothing merged; no PR yet
 CAPABILITY CLAIMS THAT APPLY ONLY TO THE CANDIDATE:  none yet (no product change)
 CAPABILITY CLAIMS THAT APPLY TO INTEGRATED MAIN:     see section 5 (Campaign 1 result, merged in #268)
@@ -165,16 +168,18 @@ product capabilities.)
 
 ## 8. COMPLETED STRATEGIC TASKS
 
-None. (Bootstrap is setup, not a strategic task.)
+None completed yet. **Task A is SELECTED and specified** (not started) — see
+`controllers/A-reconstruction-and-selection.md` (immutable checkpoint).
 
 | Task | Controller | Selected because | Alternatives considered | Capability advanced | Evidence | Ceiling remaining |
 |---|---|---|---|---|---|---|
-| — | — | — | — | — | — | — |
+| A (in progress) | A | Development-direction reconstruction surface is the only candidate boundary that sits directly on the campaign's central question, is bounded/reversible, does not predetermine the solution, has concrete evidence the limitation exists, and stays warranted even if succession were already solved. | (1) *selected*: development-direction reconstruction surface; (2) promote artifact-mediated continuation to a product-offered pattern — thin, largely done by C1; (3) verification-bearing handoff as an explicit capability — folded into (1); (4) `repo-sensemaker` brief vs direction state — out of ratified scope (ADR 0014); (5) premise check — this is (1)'s internal decision-changing uncertainty, not a rival. | pending Task A | pending | EC-1..EC-5 carried; new context-cost evidence expected from A1 |
 
 ## 9. OPEN MATERIAL GAPS (relative to the campaign mission)
 
 `CONTROLLER INFERENCE` from Campaign 1's stated limitations + the owner
-instruction. Controller A's reconstruction refines this; not a task list.
+instruction. Refined by Controller A's reconstruction
+(`controllers/A-reconstruction-and-selection.md`). Not a task list.
 
 - **MG-1** No fresh context has taken over the **complete semantic
   campaign-controller** role (next-task selection included).
@@ -185,22 +190,39 @@ instruction. Controller A's reconstruction refines this; not a task list.
 - **MG-5** Strict minimality of durable continuation state untested (EC-1).
 - **MG-6** Unclear which part of Campaign 1's continuation capability belongs in
   the *product* vs exists only for campaign experimental control.
+- **MG-7** (Controller A) The repository's designated development-direction
+  surfaces (`STATUS.md` "single living status summary", `roadmap.md`) do not
+  reflect integrated reality (both predate the ADR 0013+ operating-map era and
+  both campaigns; `roadmap.md` says "Phase 2.3 / v0.2.1 Beta"); direction is
+  scattered across `CONTEXT.md` + operating map + research agenda +
+  `docs/campaigns/` + GitHub issues; there is no product representation of "the
+  current highest-leverage warranted development boundary and why." **This is the
+  boundary Task A investigates.**
 
 ## 10. LAST ASSESSED CAPABILITY FRONTIER
 
-Not yet assessed by any Campaign 2 controller. Controller A will record its
-independent assessment in `controllers/A-reconstruction-and-selection.md`.
-(For successors: a recorded frontier or `next_task` here is **LAST ASSESSED
-CANDIDATE**, not a command.)
+**Controller A, 2026-09-02 (LAST ASSESSED CANDIDATE — not a command; a successor
+owns the next decision and may reject this):** the highest-leverage unresolved
+*product* boundary for "repository-level development direction surviving
+independent controller replacement" is the **development-direction
+reconstruction surface** — the product has no current, coherent representation
+of where product development is and what the highest-leverage warranted boundary
+is; `STATUS.md`/`roadmap.md` are stale, direction is scattered. Full comparison
+of five candidate boundaries and the selection rationale:
+`controllers/A-reconstruction-and-selection.md` Part 2.
 
 ## 11. ACTIVE DECISION-CHANGING UNCERTAINTIES
 
 - **U-1** What is the strongest defensible controller-isolation level achievable
-  with the available fresh-context mechanism? (preflight item 12 / EC-2)
-- **U-2** Is there a *product* capability gap for repository-level development
-  direction that is genuinely distinct from campaign instrumentation, and
-  distinct from the nearest visible repository defect? (central question)
-- Further uncertainties are added by Controller A's reconstruction.
+  with the available fresh-context mechanism? (preflight item 12 / EC-2;
+  STARTUP-PROVENANCE records the current assessment.)
+- **U-2** Is repository-level development direction genuinely NOT reconstructible
+  by an independent controller from current durable evidence (product change
+  warranted), or already cheaply reconstructible (→ `CAMPAIGN_PREMISE_INVALIDATED`
+  candidate, or frontier elsewhere)? Sub-uncertainty: if warranted, is the
+  smallest sufficient change a refresh + stated reconstruction convention on
+  existing surfaces, or larger? **Task A resolves this with evidence (A1).**
+- Further uncertainties are added as Task A / Controller B proceed.
 
 ## 12. OWNER / AUTHORITY BOUNDARIES
 
@@ -241,10 +263,12 @@ a Campaign 2 task only through the strategic selection gate.
 ## 15. RELEVANT OBSERVED INTEGRATION / CI STATE
 
 ```
-pushed:        (bootstrap commit pushed after creation — record result here)
-PR:            none yet
-origin/main:   06a57d1  (== campaign base; no drift at bootstrap)
-campaign CI:   not yet run on any campaign head
+pushed:        3c55254 (bootstrap) -> origin/campaign/durable-repo-self-development
+PR:            none yet (draft PR deferred until Task A produces reviewable change)
+origin/main:   06a57d1  (== campaign base; no drift, re-checked 2026-09-02 v2)
+campaign CI:   not yet run on any campaign head (bootstrap + A checkpoint are
+               docs-only under docs/campaigns/; CI "validate" job runs
+               validate-repo.py which does read docs/ structure — observed on push)
 merged:        nothing from Campaign 2
 ```
 
@@ -254,11 +278,15 @@ merged:        nothing from Campaign 2
 2026-09-02  Controller A  bootstrap: preflight complete; worktree + branch
                           campaign/durable-repo-self-development @ 06a57d1;
                           OWNER-INSTRUCTION/CHARTER/CAMPAIGN-STATE/
-                          STARTUP-PROVENANCE + controllers/ committed.
-                          -> next: Controller A reconstruction + Task A selection
-                          (controllers/A-reconstruction-and-selection.md), then
-                          execute Task A, then mandatory handoff to fresh
-                          Controller B.
+                          STARTUP-PROVENANCE + controllers/ committed (3c55254,
+                          pushed).
+2026-09-02  Controller A  reconstruction + Task A selection committed
+                          (controllers/A-reconstruction-and-selection.md).
+                          Selected boundary: development-direction reconstruction
+                          surface. -> next: execute Task A (A1 reconstruction
+                          probe -> A2 decide smallest warranted change -> A3
+                          implement -> A4 validate -> A5 update state), then
+                          mandatory handoff to a genuinely fresh Controller B.
 ```
 
 ## 17. FAILURE OBSERVATIONS
@@ -289,8 +317,10 @@ no handoff has occurred. See EC-1. Any eventual sufficiency result stays
 
 ## 20. CAMPAIGN ACCEPTANCE STATUS
 
-Bootstrap. 0 of 19 acceptance conditions evaluated. No strategic task, no
-handoff, no succession yet.
+Early. No strategic task completed, no handoff, no succession yet. Toward the 19
+conditions: Controller A has produced an immutable reconstruction + selection
+checkpoint (contributes to condition 9's analog for A; the binding instance is
+Controller B's). Nothing else evaluable yet.
 
 ---
 
@@ -298,5 +328,11 @@ handoff, no succession yet.
 
 - **v1 (2026-09-02, Controller A, bootstrap):** campaign scaffolding created;
   preflight recorded; integrated product state + Campaign 1 result reconstructed
-  from durable docs; no strategic task selected. Next: Controller A reconstruction
-  checkpoint.
+  from durable docs; no strategic task selected.
+- **v2 (2026-09-02, Controller A, reconstruction + selection):** full
+  reconstruction + five-candidate strategic-boundary comparison committed to
+  `controllers/A-reconstruction-and-selection.md`; **Task A selected** —
+  investigate development-direction reconstructibility, classify any failure,
+  deliver the smallest warranted product change (or a verified "no new mechanism
+  warranted"). MG-7 added. Task A implementation not started. Next: execute Task
+  A (A1 reconstruction probe first).
