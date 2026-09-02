@@ -3,7 +3,7 @@
 ```
 DATE:        2026-09-02
 BRANCH:      campaign/durable-architectural-continuity  (base: origin/main @ 969e8eb)
-CAMPAIGN HEAD AT REPORT:  <this report's commit> (follows CAMPAIGN-STATE v2;
+CAMPAIGN HEAD AT REPORT:  6aedc22 (+ a trailing docs-only SHA-backfill commit) (follows CAMPAIGN-STATE v2;
              b677ffb bootstrap, 2fd1027 Phase 1 selection).
 AUTHORITY:   non-authoritative campaign report. Not an ADR, contract, schema,
              registry, validator input, or registered workflow. Nothing in
@@ -377,7 +377,7 @@ formalization gate (recurring + stable semantics + material omission/error cost
 ```
 CAMPAIGN BASE:            origin/main @ 969e8eb47144ffdeb27a8d9df02b6a292586e842
 CURRENT origin/main:      969e8eb  (no drift; re-checked 2026-09-02)
-FINAL CANDIDATE HEAD:     <this report's commit>  (b677ffb bootstrap ->
+FINAL CANDIDATE HEAD:     6aedc22 (+ a trailing docs-only SHA-backfill commit)  (b677ffb bootstrap ->
                           2fd1027 Phase 1 -> CAMPAIGN-STATE v2 -> this report)
 TARGETED TESTS:           none run and none needed — no product surface (src/,
                           scripts/, skills/, tests/, .github/, contracts,

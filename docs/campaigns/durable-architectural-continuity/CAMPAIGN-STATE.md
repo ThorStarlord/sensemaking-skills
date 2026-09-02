@@ -64,8 +64,11 @@ STARTING ORIGIN/MAIN (Campaign 3 base):  969e8eb47144ffdeb27a8d9df02b6a292586e84
    verified 2026-09-02: `git fetch origin --prune; git rev-parse origin/main`.
 CAMPAIGN BASE:                            969e8eb  (branch forked here)
 CURRENT ORIGIN/MAIN OBSERVATION:          969e8eb  (== base; no drift as of 2026-09-02)
-CURRENT CAMPAIGN HEAD:                    <this v2 commit> (follows 2fd1027 =
-   controllers/A-selection.md; b677ffb = bootstrap)
+CURRENT CAMPAIGN HEAD:                    6aedc22 (CAMPAIGN-STATE v2 +
+   FINAL-REPORT). Chain: b677ffb bootstrap -> 2fd1027 Phase 1 selection ->
+   6aedc22 v2 + report. A trailing docs-only SHA-backfill commit follows and
+   fills this line + §15 + the FINAL-REPORT header/§19 (no semantic-state
+   change).
 MAIN DRIFT SINCE CAMPAIGN START:          none (re-checked 2026-09-02:
    `git log 969e8eb..origin/main` empty)
 CANDIDATE CHANGES NOT ON MAIN:            only the Campaign 3 instrumentation dir
@@ -311,12 +314,14 @@ context so a controller does not mistake them for a capability frontier:
 
 ```
 commits:       b677ffb (bootstrap), 2fd1027 (Controller A Phase 1 selection),
-               <this v2 commit>, + FINAL-REPORT commit.
-pushed:        <to be pushed to origin/campaign/durable-architectural-continuity>
-PR:            draft campaign-evidence PR to be opened (NOT for merge).
+               6aedc22 (CAMPAIGN-STATE v2 + FINAL-REPORT), + a trailing
+               docs-only SHA-backfill commit.
+pushed:        origin/campaign/durable-architectural-continuity (see §16 trace).
+PR:            draft campaign-evidence PR (NOT for merge) — see §16 trace.
 origin/main:   969e8eb  (== campaign base; no drift 2026-09-02).
-campaign CI:   n/a until pushed; only docs/campaigns/** touched (no product
-               surface), so no product qualification is at stake.
+campaign CI:   only docs/campaigns/** touched (no product surface), so no
+               product qualification is at stake; the "Validator Ecosystem"
+               jobs do not depend on docs/campaigns/**.
 merged:        nothing from Campaign 3; nothing will be.
 ```
 
