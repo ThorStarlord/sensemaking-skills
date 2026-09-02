@@ -1,7 +1,7 @@
 # Campaign: reliable agent-native, artifact-mediated self-development
 
 ```
-STATUS:    CLOSING (v10: R8a done; R8b closure probe pending). Disposition in section 16.
+STATUS:    CLOSED (v11). Disposition CAMPAIGN_COMPLETE; see section 16.
 AUTHORITY: non-authoritative. Not an ADR, not a contract, not a validator input,
            not a registered workflow, not a research-agenda ratification.
 CHARTER:   docs/campaigns/agent-native-self-development/CHARTER.md
@@ -139,9 +139,9 @@ Linux CI is the referee for cross-platform claims. Candidate runs: `5a89f2a`
 ## 5. CURRENTLY DEMONSTRATED CAPABILITIES
 
 - Pre-campaign: agent-native brief production + validation on two repositories; responsibility selection without routing; claim reconciliation and repair verification; fail-closed authority on auto-invoke and liveness; probe-engine enforcement in CI.
-- **(R1-R6)** Six consecutive record-mediated continuations into fresh contexts across five responsibility classes (reconstruction; mechanical; judgment-docs; implementation-class code + tests; multi-file architecture reconciliation; evidence-gathering + classification). Each fresh context respected every stated authority boundary, verified before acting, wrote narrower than the spec where evidence said less, and corrected the record from repository evidence where it was wrong.
+- **(R1-R7)** Seven consecutive record-mediated continuations into fresh contexts across six responsibility classes (reconstruction; mechanical; judgment-docs; implementation-class code + tests; multi-file architecture reconciliation; evidence-gathering + classification; product machinery + regression tests). Each fresh context respected every stated authority boundary, verified before acting, wrote narrower than the spec where evidence said less, and corrected the record from repository evidence where it was wrong.
 - **(R7)** A fresh context changed the product's own deterministic machinery from the record alone: verified the defect against code and git, applied the simplest repair that preserved every public signature and ADR 0027's fail-closed liveness behavior, added fresh-interpreter regression tests, proved like-for-like equivalence of the validator harness, and refused to edit an existing test to make the record's predicted outcome come true.
-- **(count basis)** Eight record-mediated handoffs (R0 -> R1 -> ... -> R7, each returning for audit); seven into fresh contexts; zero shape errors in the record; twenty-one record errors/overstatements caught by verification steps (R2: 1; R3: 2; R4: 2; R5: 3; R6: 9; R7: 5 incl. a wrong after-state prediction) -- none caused a wrong action; the ones that mattered were method errors in dispatcher-computed evidence, which the fresh contexts' verify-before-use steps caught.
+- **(count basis)** Eight record-mediated handoffs (R0 -> R1 -> ... -> R7, each returning for audit); seven into fresh contexts; zero shape errors in the record; twenty-two record errors/overstatements caught by verification steps by the dispatcher's tally (R2: 1; R3: 2; R4: 2; R5: 3; R6: 9; R7: 5 incl. a wrong after-state prediction; the reports' own flag lists group items differently) -- none caused a wrong action; the ones that mattered were method errors in dispatcher-computed evidence, which the fresh contexts' verify-before-use steps caught.
 - **(substrate)** Isolated sub-agent direct worktree writes persisted seven times (R1-R7) in this harness.
 
 ---
@@ -159,7 +159,7 @@ Linux CI is the referee for cross-platform claims. Candidate runs: `5a89f2a`
 | G7 | Authority grants unsourced | 5, 13 | CAMPAIGN_RELEVANT | **CLOSED** (R1 close-out) |
 | G8 | GitHub-only evidence | 5, 13 | DEFERRED | documented limitation |
 | G9 | Operating map did not represent continuation | 4, 6, 11 | CAMPAIGN_BLOCKING | **CLOSED (R3)** |
-| G10 | Dispatcher-computed claims in task specs need verification by the continuing context (16 instances caught) | 5 | CAMPAIGN_RELEVANT | mitigated by C9; this is the pattern working; residual risk: a wrong dispatcher claim that a spec does not ask to verify |
+| G10 | Dispatcher-computed claims in task specs need verification by the continuing context (22 instances caught by the dispatcher's tally) | 5 | CAMPAIGN_RELEVANT | mitigated by C9; this is the pattern working; residual risk: a wrong dispatcher claim that a spec does not ask to verify |
 | G11 | Two `active` workflows route every step to a deprecated Skill | 9 | CAMPAIGN_RELEVANT | **CLOSED as a recorded disposition (R6: RETIRE_CANDIDATE)**; overlay change = owner decision 3 |
 | G12 | Final qualification of the campaign branch and the final report | 12, 13 | CAMPAIGN_BLOCKING | **R8a DONE**: like-for-like suite 0 NEW / 4 FIXED; CI green through `4336a53`; `FINAL-REPORT.md` committed; R8b closure probe + PR ready pending |
 | G13 | Code change from durable state was test-only (R4) | 5, 11 | CAMPAIGN_RELEVANT | **CLOSED (R7)**: `scripts/_validator_utils.py` repaired + regression tests; limitation: one script, no `src/` change |
@@ -273,12 +273,12 @@ STOP CONDITION:                 FINAL-REPORT.md committed; CI green on the final
 Owner decisions required (the campaign's terminal state is OWNER_DECISION_REQUIRED
 on item 1; items 2-3 are recommendations):
 
-1. **Merge authority for PR #268** (the whole campaign branch; docs + two
-   test-file repairs; no ADR, contract, registry, overlay, script, or `src/`
-   change).
-2. **Whether to record the R1-R6 substrate observation on Issue #255**
-   (isolated sub-agent direct worktree writes persisted six times in this
-   harness).
+1. **Merge authority for PR #268** (the whole campaign branch: documentation, one
+   script `scripts/_validator_utils.py`, three test files; no ADR, contract,
+   registry, overlay, or `src/` change).
+2. **Whether to record the R1-R8 substrate observation on Issue #255**
+   (isolated sub-agent direct worktree writes persisted eight times in this
+   harness, incl. the closure probe).
 3. **Liveness-overlay and registry decisions implied by
    `docs/workflow-system-disposition.md` section 6** (nine items), foremost:
    `product-discovery-sprint` and `product-strategy-sprint` ->
@@ -306,7 +306,7 @@ on item 1; items 2-3 are recommendations):
 | D11 | Two tests `rglob` the repo root | LOCAL_BUT_REAL (environment) | deferred; C11 |
 | D12 | `_validator_utils.py` hard top-level `import workflow_liveness` (fails when loaded as a package path or from a copied file) | LOCAL_BUT_REAL | **CLOSED (R7, `79e02c5`)** |
 | D13 | U+2713 prints; `config.py:133` encoding | LOCAL_BUT_REAL, low | deferred |
-| D14 | Local Windows/Python 3.14 baseline reds (54 failed / 2 errors with `PYTHONPATH=src`); Linux CI green. Campaign head after R7 expected: 52 failed / 1 error (D1, D2a, two mode-coverage tests fixed; D19 newly visible) -- R8a verifies | LOCAL_BUT_REAL (environment) | like-for-like diff only |
+| D14 | Local Windows/Python 3.14 baseline reds (54 failed / 2 errors with `PYTHONPATH=src`); Linux CI green. Campaign head after R7 **measured (R8a): 51 failed / 1 error** -- D1, D2a, and both mode-coverage tests fixed; D19 was already counted as a failure in the baseline (then by import error, now by its own assertion), so it does not change the count; the record's earlier "52" prediction was off by one for that reason (R8b finding 5) | LOCAL_BUT_REAL (environment) | like-for-like diff only |
 | D15 | Boundary doc "retry" example is hypothetical | NO_ACTION_WARRANTED | none |
 | D16 | `docs/task-1-2-sessionstart-hook-testing.md` dated task doc | HISTORICAL_ONLY | no action |
 | D17 | `docs/mode-coverage.yaml`: the two pointed entries overstate `steps_completed` (1 vs 0/2 in their own run logs); unpointed "executed" lists (R6 section 6 item 6) | LOCAL_BUT_REAL | deferred; owner decision 3 |
@@ -317,12 +317,12 @@ on item 1; items 2-3 are recommendations):
 
 ## 13. CAMPAIGN ACCEPTANCE STATUS
 
-| # | Condition | Status after R6 | Basis |
+| # | Condition | Status at closure (R8) | Basis |
 |---|---|---|---|
 | 1 | Top-level semantic control model explicit and coherent | MET | CONTEXT.md, boundary doc (+R5 section), ADR 0013 |
 | 2 | Role of active coding agent clear | MET | ADR 0013 + amendment |
 | 3 | Warrant / responsibility / capability / authority not conflated | MET | ADR 0026/0027; every fresh context respected every boundary (R2-R6) |
-| 4 | Durable artifacts carry continuation state across responsibilities | MET across five responsibility classes | R1-R6; operating map |
+| 4 | Durable artifacts carry continuation state across responsibilities | MET across six responsibility classes | R1-R7; operating map |
 | 5 | One realistic multi-responsibility task continued from durable state | MET: R0 -> R7 across eight contexts with this record as the only shared state, incl. a product-machinery change with regression tests; limitation: one script + tests, no `src/`, single dispatcher | R1-R7 reports |
 | 6 | Development direction representable for consequential capability selection | LARGELY MET; limitation: one campaign, one repository | this record; operating map |
 | 7 | Role of deterministic scripts bounded and coherent | **MET (R5)** | boundary doc section |
@@ -389,7 +389,11 @@ LIKE-FOR-LIKE:          baseline main@f10b7da 2712 passed / 54 failed / 2 errors
                         -> campaign 1b47d06 2723 passed / 51 failed / 1 error;
                         0 NEW failures; 4 FIXED (D1, D2a, two mode-coverage tests)
 INTEGRATION:            not merged; owner decision 1 (PR #268)
-CLOSURE PROBE (R8b):    pending at v10 -- result appended below when audited
+CLOSURE PROBE (R8b):    DONE (commit 034be79): Q1 disposition, Q2 conditions,
+                        Q3 open items/owners, Q5 contradictions RECONSTRUCTED;
+                        Q4 successor guidance PARTIAL (MISSING_DURABLE_STATE:
+                        branch-only bookkeeping and dispatcher succession were
+                        unstated -- fixed in this commit). 26 files / 28 calls
 ```
 
 Acceptance conditions: 1-3 MET (pre-existing); 4, 5, 7, 8, 9 MET on the
@@ -405,5 +409,45 @@ Successor guidance: if the owner merges, the next warranted product work is
 the owner-decided subset of the nine disposition items and the two small test
 expectation fixes (D2b, D19); if the owner does not merge, the branch remains a
 qualified, reversible candidate and this record + FINAL-REPORT.md are the
-durable evidence. Either way, the semantic-control-map trial closes on its
-own schedule (min 2026-09-28) with the events this campaign logged.
+durable evidence. Note (R8b finding 3): the trial-log events and the six
+MECH-refreshed semantic-control-map rows exist only on this branch until
+PR #268 is merged; if the owner does not merge, they must be carried over
+separately or the trial (min close 2026-09-28) closes without them. The
+dispatcher context of this campaign does not persist; a successor is any
+fresh context started from this file.
+
+### R8b closure probe -- audit and corrections (dispatcher, closure commit)
+
+The probe (`R8-closure-probe.md`) independently checked: 22 commits over
+`main @ f10b7da`; a 23-file diff with nothing under `src/`, ADRs, registries,
+or `.github/`; exact-head CI green on all 11 recorded heads and on `5a53273`;
+`validate-repo.py` exit 0; the lazy resolver, regression tests, D19
+expectation, disposition counts, and trial dates as described. It did not
+re-run the Windows suite (outside its tool grant). Its five findings, all
+verified by the dispatcher and corrected in this commit:
+
+1. Owner decision 1 said "no script change" -- wrong since R7; corrected.
+   Decision 2 said "six times"; now eight (R1-R8).
+2. The operating map's R3-era sentence said implementation-class continuation
+   was untested -- false since R4/R7; corrected in
+   `docs/agent-native-operating-workflow.md` (dispatcher documentation
+   reconciliation, same authority as R3/R5; docs-only).
+3. Successor guidance implied the trial-log events survive regardless of the
+   merge -- they exist only on this branch; corrected above.
+4. The "twenty-one" tally did not match its own sub-counts (22) and G10 said
+   16 through R6 (17); both replaced with the dispatcher's tally and the caveat
+   that the reports group items differently.
+5. D14 still carried the "expected 52" prediction after R8a measured 51;
+   reconciled with the reason (D19 already counted in the baseline).
+
+Verdict on U10: RESOLVED -- a fresh context reconstructed disposition,
+condition status, open items, and their owners from durable state alone; the
+one PARTIAL was a missing statement, repaired above, not a missing artifact.
+
+```text
+FINAL DISPOSITION:  CAMPAIGN_COMPLETE
+FINAL HEADS:        product changes end at 1b47d06; campaign record ends at this
+                    closure commit (docs-only); CI result for it: PR #268 checks
+OWNER:              merge decision on PR #268 (standing); Issue #255 note
+                    (optional); disposition-doc items (nine)
+```

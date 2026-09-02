@@ -328,7 +328,8 @@ continuation -- one bounded responsibility handed from one coding-agent
 context to a fresh one through a durable Markdown record -- has been
 demonstrated in real use inside the campaign directory
 [`docs/campaigns/agent-native-self-development/`](campaigns/agent-native-self-development/CAMPAIGN-STATE.md).
-Two fresh contexts, given only the repository worktree and the path of
+Two fresh contexts (R1 and R2 below; five more followed, R3-R7, recorded in
+the same directory), given only the repository worktree and the path of
 `CAMPAIGN-STATE.md` (no conversation history, no Skill invocation, no
 workflow runtime), did the following:
 
@@ -393,10 +394,15 @@ malformed section* rather than a wrong fact; more than one dispatcher must
 produce such records; or a recurrent continuation event that a manual step
 keeps missing is observed (hook).
 
-Observed limitation: documentation-level responsibilities only.
-Implementation-class continuation (code + tests + CI) from durable state is
-untested (campaign record U7). Nothing here exercises the cross-run
-prior-report identity trigger above, which stays unresolved.
+Observed limitation at R1/R2: documentation-level responsibilities only.
+Subsequently demonstrated in the same campaign (2026-09-02):
+implementation-class continuation from durable state -- test repairs (R4,
+commit `769a180`) and a change to `scripts/_validator_utils.py` with
+regression tests (R7, commit `79e02c5`), both by fresh contexts, both green
+in exact-head CI; see the R4 and R7 reports in the campaign directory.
+Still untested: `src/` changes, larger surfaces, more than one dispatcher.
+Nothing here exercises the cross-run prior-report identity trigger above,
+which stays unresolved.
 
 ---
 

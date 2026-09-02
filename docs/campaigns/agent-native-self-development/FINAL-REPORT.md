@@ -36,8 +36,9 @@ Achieved, with the limitations in section 9:
   architecture reconciliation; evidence-gathering + classification; and a
   change to the product's own deterministic machinery with regression tests.
 - The record proved sufficient in every case. Zero shape failures were
-  observed. The record's *facts* were wrong or overstated in twenty-one
-  places, and every one was caught by the continuing context because the
+  observed. The record's *facts* were wrong or overstated in twenty-two
+  places (dispatcher tally: R2 1, R3 2, R4 2, R5 3, R6 9, R7 5; the
+  reports' own flag lists group items differently), and every one was caught by the continuing context because the
   specs carried verification steps and fresh contexts were told to prefer
   repository evidence over the record. None caused a wrong action; twice a
   fresh context declined to force the record's predicted outcome (R4 D2b
@@ -249,12 +250,19 @@ substantive questions; R2-R7 performed responsibilities of increasing kind
 from the record alone; each report's "What the record was sufficient for"
 section lists what it needed and its "Files beyond the record" section shows
 that everything else was repository state, mostly named by the record. The
-closure probe (R8b) result is recorded in `CAMPAIGN-STATE.md` section 16.
+closure probe (R8b, `R8-closure-probe.md`, commit `034be79`) reconstructed
+the disposition, the acceptance-condition status, and the open items and
+their owners (RECONSTRUCTED x4); the successor-guidance question was PARTIAL
+(`MISSING_DURABLE_STATE`: the record had not said that the trial-log events
+and refreshed map rows exist only on the unmerged branch, nor that the
+dispatcher context does not persist). It found five stale or inconsistent
+claims in the record, this report, and the operating map; all were docs-only
+and were corrected at closure (record section 16).
 
 **Failure classes observed**: `AUTHORITY_AMBIGUITY` (narrow; R1) and
 `MISSING_DURABLE_STATE` (R1) -- both repaired by making state durable; plus a
 class the charter's taxonomy lacks: **durable state present but wrong**
-(twenty-one instances, mostly dispatcher-computed evidence and predicted
+(twenty-two instances by the dispatcher's tally, mostly dispatcher-computed evidence and predicted
 outcomes), caught every time by in-spec verification. Not observed:
 `CAPABILITY_DISCOVERY_FAILURE`, `PRODUCT_DIRECTION_AMBIGUITY`,
 `INCIDENTAL_CONTEXT_LOSS`.
