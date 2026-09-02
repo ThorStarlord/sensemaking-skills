@@ -46,7 +46,11 @@ The control loop belongs to the **active coding agent** (ADR 0013). The
 runtime/scripts are deterministic support machinery. Registered workflows
 (`fast-path-workflow`, `artifact-reconciliation`,
 `docs-contract-reconciliation`, ...) are potentially **subgraphs inside this
-loop**, not the whole loop.
+loop**, not the whole loop. The per-workflow disposition of all 23 registered
+workflows in campaign vocabulary, with the execution evidence behind each
+call, is recorded in [`workflow-system-disposition.md`](workflow-system-disposition.md)
+(non-authoritative; ADR 0027 and the liveness overlay remain the liveness
+authority).
 
 ```text
 USER REQUEST / WORK CLAIM
