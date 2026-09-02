@@ -94,7 +94,9 @@ A TASK-A COMMIT:                        431ec43  (pushed)  [placeholder <A Task-
 A -> B HANDOFF COMMIT:                  358b5a2  (pushed)  = handoff head
 B RECONSTRUCTION+SELECTION CHECKPOINT:  4ccbc70  (pushed)  committed BEFORE Task B impl / any predecessor feedback
 B TASK-B COMMIT:                        b77ad04  (pushed)
-CURRENT CAMPAIGN HEAD:                  <this CAMPAIGN-STATE v5 + B-cycle-result commit — record SHA after commit>
+CURRENT CAMPAIGN HEAD:                  7e3f451 (CAMPAIGN-STATE v5 + B-cycle-result); a
+   trailing SHA-backfill commit follows (fills this line + the §15 CI conclusion +
+   B-cycle-result's `<this commit>` self-references — no semantic-state change)
 MAIN DRIFT SINCE CAMPAIGN START:        none (re-checked by Controller B 2026-09-02: origin/main still 06a57d1)
 CANDIDATE CHANGES NOT ON MAIN:
    PRODUCT SURFACE (Task A): STATUS.md (refreshed into a current-direction +
@@ -486,13 +488,19 @@ PR:            #269 (DRAFT, not for merge) campaign/durable-repo-self-developmen
                as a durable campaign-evidence surface. Merge = owner decision.
 origin/main:   06a57d1  (== campaign base; no drift — Controller B re-fetched
                2026-09-02: `git log 06a57d1..origin/main` empty)
-campaign CI:   "Validator Ecosystem" (pull_request event, PR #269):
-                 - 431ec43 (Task A head): completed/success (GREEN)
-                 - 358b5a2 (A->B handoff head): completed/success (GREEN) --
+campaign CI:   "Validator Ecosystem" (pull_request event, PR #269) -- all GREEN:
+                 - 431ec43 (Task A head): completed/success
+                 - 358b5a2 (A->B handoff head): completed/success
                    [Controller B correction: CAMPAIGN-STATE v4 recorded CI for
                    431ec43 only; the handoff commit is also green]
-                 - b77ad04 (Task B head): pushed; exact-head CI result to be
-                   observed by Controller B after push (record here)
+                 - 4ccbc70 (B reconstruction+selection checkpoint): completed/success
+                 - 7e3f451 (v5 + B-cycle-result): completed/success -- all 20
+                   jobs green incl. "Probe Engine enforcement gate", "Core
+                   assertions", "Repository validation", "Conditional
+                   representation (exact-head merge contract)", Gate A
+                   Linux+Windows, phase 2-6. (b77ad04 = Task B code head was
+                   superseded by 7e3f451 before its own PR run started; 7e3f451
+                   contains every b77ad04 change.)
 local qual (b77ad04 worktree, Controller B, RUN):
                validate-repo.py exit 0; probe gate PASS (0 blocking; non-blocking
                evidence findings only); test-validators.py 78/78; core-assertions

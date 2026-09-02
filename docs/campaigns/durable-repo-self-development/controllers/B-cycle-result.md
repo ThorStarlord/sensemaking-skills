@@ -10,7 +10,9 @@ INPUTS:       controllers/B-reconstruction-and-selection.md (the pre-impl
               runs; CAMPAIGN-STATE.md v5.
 COMMITS:      B reconstruction+selection checkpoint : 4ccbc70  (pushed)
               Task B implementation                : b77ad04  (pushed)
-              CAMPAIGN-STATE v5 + this file         : <this commit>
+              CAMPAIGN-STATE v5 + this file         : 7e3f451  (pushed)
+              (a trailing SHA-backfill commit fills the two `<this commit>`
+               references below + the §15 CI conclusions; no content change)
 HANDOFF HEAD RECEIVED:  358b5a2   ORIGIN/MAIN AT CYCLE:  06a57d1  (no drift)
 ```
 
@@ -239,7 +241,7 @@ INTEGRATED (origin/main)  : 06a57d1  — unchanged since campaign start. The
                             Task A + Task B limitations still describe main
                             (its probe still classifies roadmap.md/goal.md as
                             live; STATUS.md there is still the pre-Task-A file).
-CANDIDATE (campaign head)  : <this commit> on campaign/durable-repo-self-development.
+CANDIDATE (campaign head)  : 7e3f451 (+ trailing SHA-backfill) on campaign/durable-repo-self-development.
                             Product-surface delta vs main: STATUS.md, CONTEXT.md
                             (+1 row), roadmap.md, goal.md (Task A headers + Task B
                             marker), scripts/probe_relationships.py,
