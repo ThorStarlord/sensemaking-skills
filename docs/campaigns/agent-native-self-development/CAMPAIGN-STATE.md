@@ -1,7 +1,7 @@
 # Campaign: reliable agent-native, artifact-mediated self-development
 
 ```
-STATUS:    ACTIVE development-campaign record (living document, v9 after R7; R8 = closure)
+STATUS:    CLOSING (v10: R8a done; R8b closure probe pending). Disposition in section 16.
 AUTHORITY: non-authoritative. Not an ADR, not a contract, not a validator input,
            not a registered workflow, not a research-agenda ratification.
 CHARTER:   docs/campaigns/agent-native-self-development/CHARTER.md
@@ -105,8 +105,9 @@ tests -q -p no:cacheprovider --ignore=tests/integration
 against the same command on a clean `main @ f10b7da` worktree. Baseline
 (Windows, Python 3.14): **2712 passed / 54 failed / 2 errors / 16 skipped /
 5 xfailed** (failure set persisted by the dispatcher, 41 unique entries).
-Linux CI is the referee for cross-platform claims. Candidate run: in progress
-at R6 close-out (R7).
+Linux CI is the referee for cross-platform claims. Candidate runs: `5a89f2a`
+(after R6) 2718 / 53 / 1, 0 NEW, 2 FIXED; **`1b47d06` (after R7) 2723 passed /
+51 failed / 1 error, 0 NEW, 4 FIXED** (D1; D2a; both mode-coverage tests).
 
 ---
 
@@ -160,7 +161,7 @@ at R6 close-out (R7).
 | G9 | Operating map did not represent continuation | 4, 6, 11 | CAMPAIGN_BLOCKING | **CLOSED (R3)** |
 | G10 | Dispatcher-computed claims in task specs need verification by the continuing context (16 instances caught) | 5 | CAMPAIGN_RELEVANT | mitigated by C9; this is the pattern working; residual risk: a wrong dispatcher claim that a spec does not ask to verify |
 | G11 | Two `active` workflows route every step to a deprecated Skill | 9 | CAMPAIGN_RELEVANT | **CLOSED as a recorded disposition (R6: RETIRE_CANDIDATE)**; overlay change = owner decision 3 |
-| G12 | Final qualification of the campaign branch (full like-for-like suite; CI on the final head; PR readiness) and the final report | 12, 13 | CAMPAIGN_BLOCKING | OPEN -> R8 |
+| G12 | Final qualification of the campaign branch and the final report | 12, 13 | CAMPAIGN_BLOCKING | **R8a DONE**: like-for-like suite 0 NEW / 4 FIXED; CI green through `4336a53`; `FINAL-REPORT.md` committed; R8b closure probe + PR ready pending |
 | G13 | Code change from durable state was test-only (R4) | 5, 11 | CAMPAIGN_RELEVANT | **CLOSED (R7)**: `scripts/_validator_utils.py` repaired + regression tests; limitation: one script, no `src/` change |
 
 ---
@@ -327,12 +328,12 @@ on item 1; items 2-3 are recommendations):
 | 7 | Role of deterministic scripts bounded and coherent | **MET (R5)** | boundary doc section |
 | 8 | Role of hooks defined and evidence-supported | **MET (R5)** | boundary doc "Hooks"; hook doc; CLAUDE.md |
 | 9 | Old workflow system has a clear disposition | **MET (R6)**: retained bounded role (1 KEEP), narrowed roles (2 DEMOTE), retirement candidates (2), historical (8), explicit reason for the rest remaining unresolved (10 INSUFFICIENT_EVIDENCE with the evidence limits stated) and the owner decisions implied | `docs/workflow-system-disposition.md` |
-| 10 | Existing useful functionality not destroyed | MET so far (`validate-repo.py` green on every head; `test-validators.py` 78/78 unchanged by R7; CI green on every pushed head through `e702b31`; like-for-like suite at the R6 head: 0 NEW, 2 FIXED) | section 15; R8a |
+| 10 | Existing useful functionality not destroyed | **MET**: `validate-repo.py` green on every head; `test-validators.py` 78/78 unchanged by R7; CI green on every pushed head through `4336a53`; like-for-like suite at the R7 head: 0 NEW, 4 FIXED | section 15; FINAL-REPORT.md section 6 |
 | 11 | Tests, validators, contracts, docs, implementation agree sufficiently | LARGELY MET; residual pre-existing items D2(b), D8, D17, D18, D19 (none in CI) | section 12 |
-| 12 | Repository passes appropriate complete qualification | PENDING R8 (full like-for-like suite; CI on final head) | C11 |
-| 13 | Remaining material limitations explicitly documented | PENDING R8 (FINAL-REPORT.md) | -- |
+| 12 | Repository passes appropriate complete qualification | **MET** for a qualified PR head: exact-head CI green on all 11 pushed heads; like-for-like full suite 2723 / 51 / 1 vs baseline 2712 / 54 / 2 with 0 NEW failures; not integrated (owner decision) | FINAL-REPORT.md section 6 |
+| 13 | Remaining material limitations explicitly documented | **MET**: FINAL-REPORT.md section 9 (product limitations; engineering debt; unvalidated hypotheses; owner decisions; environment blockers; intentionally deferred) + this file sections 6, 8, 11, 12 | FINAL-REPORT.md |
 
-Disposition after R7: **CONTINUE** (R8 = closure).
+Disposition after R8a: **CAMPAIGN_COMPLETE** (see section 16; R8b probe result appended there when audited).
 
 ---
 
@@ -358,6 +359,8 @@ Disposition after R7: **CONTINUE** (R8 = closure).
                 workflow_liveness resolver + regression tests; flagged the
                 record's wrong after-state prediction (D19)               -> audit
 2026-09-02  R7  close-out: VERIFIED; record v9                          -> next: R8
+2026-09-02  R8a dispatcher closure: like-for-like suite (0 NEW / 4 FIXED);
+                CI green through 4336a53; FINAL-REPORT.md; record v10    -> next: R8b
 ```
 
 ---
@@ -365,12 +368,42 @@ Disposition after R7: **CONTINUE** (R8 = closure).
 ## 15. Remote / integration status (updated by the dispatcher, never assumed)
 
 ```text
-pushed:        1b47d06 (R7) -> origin/campaign/agent-native-self-development
-               this close-out commit: pushed after this commit
+pushed:        4336a53 (R7 close-out) -> origin/campaign/agent-native-self-development
+               this R8a commit: pushed after this commit
 PR:            #268 (draft) https://github.com/ThorStarlord/sensemaking-skills/pull/268
 last main CI:  Validator Ecosystem completed/success @ f10b7da (2026-09-02T03:43Z)
 campaign CI:   b4335c3, 2adfeaf, 09bdf5e, ac47191, e35ead1, 89246f4, 5a89f2a,
-               eb6c461, e702b31: completed/success; 1b47d06 (R7 code): pending at
-               R7 close-out -- R8a verifies
+               eb6c461, e702b31, 1b47d06, 4336a53: completed/success (11 heads)
 merged:        nothing (owner decision)
 ```
+
+---
+
+## 16. Closure summary (R8)
+
+```text
+DISPOSITION:            CAMPAIGN_COMPLETE  (FINAL-REPORT.md section 10)
+QUALIFIED HEAD:         1b47d06 (last product change) / 4336a53 (last record change
+                        before closure) -- exact-head CI green on both
+LIKE-FOR-LIKE:          baseline main@f10b7da 2712 passed / 54 failed / 2 errors
+                        -> campaign 1b47d06 2723 passed / 51 failed / 1 error;
+                        0 NEW failures; 4 FIXED (D1, D2a, two mode-coverage tests)
+INTEGRATION:            not merged; owner decision 1 (PR #268)
+CLOSURE PROBE (R8b):    pending at v10 -- result appended below when audited
+```
+
+Acceptance conditions: 1-3 MET (pre-existing); 4, 5, 7, 8, 9 MET on the
+product surface with stated limitations; 6 LARGELY MET (one campaign, one
+repository); 10, 12 MET for a qualified PR head; 11 LARGELY MET (residual
+pre-existing items D2b, D8, D17, D18, D19, none in CI); 13 MET.
+
+Owner decisions (section 11): merge PR #268; optional Issue #255 note; the
+nine registry/overlay/documentation items implied by
+`docs/workflow-system-disposition.md` section 6.
+
+Successor guidance: if the owner merges, the next warranted product work is
+the owner-decided subset of the nine disposition items and the two small test
+expectation fixes (D2b, D19); if the owner does not merge, the branch remains a
+qualified, reversible candidate and this record + FINAL-REPORT.md are the
+durable evidence. Either way, the semantic-control-map trial closes on its
+own schedule (min 2026-09-28) with the events this campaign logged.
