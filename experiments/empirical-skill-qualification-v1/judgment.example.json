@@ -1,0 +1,14 @@
+{
+  "case_id": "Q-001",
+  "evidence_grounding_preferred": "A",
+  "decision_quality_preferred": "A",
+  "material_difference": "yes",
+  "regression_detected": "no",
+  "baseline_mechanical_valid": true,
+  "candidate_mechanical_valid": true,
+  "candidate_boundary_regression": false,
+  "original_failure_applicable": true,
+  "original_failure_improved": true,
+  "correct_negative_preserved": true,
+  "rationale": "Variant A closes the pre-registered failure pressure without introducing a material regression."
+}
