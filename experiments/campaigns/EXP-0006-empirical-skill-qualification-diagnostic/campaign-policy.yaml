@@ -13,7 +13,7 @@ allowed_models: []
 allowed_artifact_types:
 - "repository_sensemaking_brief"
 allowed_configuration_ids:
-- "0000000000000000000000000000000000000000000000000000000000000000"
+- "a9afc09eab45ae629ab2840f0333752947c879fa8e235dbfdcd4a7ddb45e6a3a"
 max_attempt_slots: 3
 max_provider_invocations: 3
 max_attempts_per_configuration: 3
@@ -31,4 +31,4 @@ preservation_requirements: "Preserve every GitHub-durable approval receipt, stat
 logging_requirements: "GitHub Issue #274 is the campaign tracker and future agent-recorded approval audit locator. GitHub commit history, exact-SHA target evidence, attempt artifacts, state transitions, exact-head validation workflow identifiers, and the final diagnostic synthesis form the audit trail. No unrecorded retry, repair, candidate execution, Q/T access, or external provider API is permitted."
 prepared_by: "campaign-preparation-agent"
 prepared_at: "2026-09-04T21:55:12+00:00"
-policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"
+policy_digest: "f95ea737c52f9bb7cf3b60108e5a9bd945bcbdb4b40adbea33de04ced27f013f"
