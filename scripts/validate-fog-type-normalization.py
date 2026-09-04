@@ -4,7 +4,9 @@
 This validator:
 1. Accepts aliases (ui, product, docs, architecture, integration)
 2. Normalizes to canonical forms (ui_fog, product_fog, etc.)
-3. Rejects unknown fog type values
+3. Rejects unrecognized fog type values, EXCEPT the intent-neutral sentinel
+   `user_implied_fog_type: unknown` (legal per canonical-vocabulary.yaml
+   routing_fields; never legal for primary_fog_type, the diagnosis)
 
 Used by artifact producers (repo-sensemaker, workflow-planner) to ensure
 downstream consumers always receive canonical fog type values.
@@ -79,6 +81,14 @@ def validate_fog_type_normalization(artifact_path: str, repo_root: str) -> list[
         if field in machine_data:
             value = machine_data[field]
             if value is None:
+                continue
+
+            # `unknown` is a legal terminal value for user_implied_fog_type only
+            # (canonical-vocabulary.yaml routing_fields): it means the user's
+            # stated intent is fog-neutral. It is not a fog type and needs no
+            # alias normalization. primary_fog_type (the diagnosis) is never
+            # `unknown` and still fails below.
+            if field == "user_implied_fog_type" and str(value).strip().lower() == "unknown":
                 continue
 
             try:

@@ -46,8 +46,11 @@ When analyzing a repository, **always compare** what the user intends with what 
    machine fields per `artifact-contracts.yaml`; none grants automatic-routing
    authority):
    - `source_intent_ref`: Reference to 00-user-intent.md
-   - `user_implied_fog_type`: What the user's problem statement suggests
-   - `primary_fog_type`: What the codebase actually signals
+   - `user_implied_fog_type`: What the user's problem statement suggests — one of
+     the four fog types, or `unknown` when the intent is fog-neutral (implies no
+     particular fog type). `unknown` is legal for this field only.
+   - `primary_fog_type`: What the codebase actually signals (always one of the
+     four fog types; never `unknown`)
    - `diagnosis_conflict`: Boolean (user_implied != primary?)
    - `escalation_recommended`: Boolean (true if high uncertainty or conflict)
 
@@ -185,7 +188,7 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 
 ## Boundary Rules
 1. **No Implementation**: Do not execute workflows or implement changes. The output of this skill is a diagnostic artifact.
-2. **Registry Grounding**: Every `recommended_workflow_id` MUST be verified against `skills/workflow-planner/references/workflow-registry.yaml`. Do not invent or "hallucinate" workflow IDs from semantic context. If no matching workflow exists, set `escalation_recommended: true` and emit `recommended_workflow_id: null` to truthfully express no supported recommendation (valid no-match state per ADR 0014). Do not fabricate a closest structural match merely to satisfy validation.
+2. **Registry grounding AND target availability**: A non-null `recommended_workflow_id` MUST satisfy *both* checks. (a) **Exists in the toolchain**: it is a live id in `skills/workflow-planner/references/workflow-registry.yaml` — do not invent or "hallucinate" workflow IDs from semantic context. (b) **Available from the analysed target**: the recommended workflow is actually an execution vehicle reachable from the target's context — i.e. the target repository is Sensemaking-configured and vendors `workflow-planner` plus the workflow's constituent skills (check for `skills/workflow-planner/`, a `skills/VENDORED.yaml`, `sensemaking-config.yaml`, or an equivalent marker), or the workflow is being run within the Sensemaking toolchain itself against the target. A workflow that exists in the registry but is **not** available from the target is a **no-match**, not a recommendation: do not silently collapse "exists in the Sensemaking toolchain" into "available in the target repository". In the no-match case (whether because nothing matches semantically, or because the match is not available from the target), set `escalation_recommended: true` and emit `recommended_workflow_id: null` (valid no-match state per ADR 0014); if the toolchain workflow is still a useful conceptual pointer, name it in the Section 11/12 prose and state plainly that it is a Sensemaking-toolchain workflow **not vendored/available in the analysed target repository**. Do not fabricate a closest structural match, and never imply target-local availability you have not verified.
 3. **Clarification policy**: Ask no questions when repository evidence is sufficient. When unresolved owner intent would materially change the recommendation, ask a neutral, high-information clarification that gathers intent rather than advocating one option. Resolve empirical uncertainty through probes rather than asking the owner to guess. This policy applies regardless of execution mode, but *how* it's carried out differs: in conversational invocation, apply it directly — see "Interact" below, which is this policy's full worked-out procedure (uncertainty classification, the neutral-clarification discipline, the one-question default). In automated runtime execution there is no owner to ask (see Execution Protocol step 8) — the equivalent signal is `escalation_recommended: true`, optionally sharpened by Section 15's `uncertainty`/`owner_intent_state` fields, which is what a later conversational consumer (a human, or this skill re-invoked conversationally) uses to actually ask.
 
 ## References

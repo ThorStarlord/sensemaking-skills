@@ -145,7 +145,16 @@ verified it, or state explicitly that the claim is documented but not
 independently verified.
 
 ## 12. Recommended workflow
-One workflow candidate from the official `workflow-registry.yaml`. Do not invent workflow IDs.
+One workflow candidate from the official `workflow-registry.yaml` — and only if
+that workflow is actually available as an execution vehicle from the analysed
+target (the target vendors `workflow-planner` and the workflow's skills, e.g. a
+`skills/workflow-planner/` dir / `skills/VENDORED.yaml` / `sensemaking-config.yaml`,
+or the workflow runs within the Sensemaking toolchain against the target).
+"Exists in the toolchain registry" is not "available in the target repository".
+If a registry workflow fits conceptually but is not available in the target, name
+it here as a pointer, say plainly it is not vendored/available in the target, and
+set `recommended_workflow_id: null` with `escalation_recommended: true` in
+Section 13. Do not invent workflow IDs.
 
 ## 13. Machine-readable handoff
 
@@ -160,7 +169,7 @@ escalation_recommended: true | false
 evidence:
   - "path/to/file.ext (lines L10-L15): short citation supporting the diagnosis"
   - "path/to/other_file.ext: short citation supporting the diagnosis"
-recommended_workflow_id: # MUST match an ID in workflow-registry.yaml
+recommended_workflow_id: # MUST match an ID in workflow-registry.yaml AND be available from the target (else null + escalation; see Section 12)
 recommended_execution_mode: plan_only | guided_execution
 weakest_boundary:
 weakness_type: # one of the 7 registered types in weakness-types.md, or "Other"
@@ -191,6 +200,12 @@ non-null `recommended_workflow_id` (a NO_CHANGE terminal never routes a workflow
 validator rejects the combination as `NO_CHANGE_WORKFLOW_CONFLICT`). NORMAL ACTION
 briefs require a valid `recommended_workflow_id` (a real `workflow-registry.yaml` id).
 A missing/null `recommended_workflow_id` alone NEVER implies NO_CHANGE.
+
+`user_implied_fog_type` records the fog type the **user's stated intent** implies —
+an input characterization, not the diagnosis. Use `unknown` when the intent is
+fog-neutral (implies no particular fog type); it is a legal value for this field
+only. `primary_fog_type` (the diagnosis) is always one of the four canonical fog
+types and is never `unknown`.
 
 `weakness_type` is required metadata but non-blocking (D2): a missing or
 unrecognized value is a validator warning, not an error, and never
