@@ -1,14 +1,15 @@
 {
   "case_id": "Q-001",
+  "variant_a_mechanical_valid": true,
+  "variant_b_mechanical_valid": true,
   "evidence_grounding_preferred": "A",
   "decision_quality_preferred": "A",
+  "boundary_compliance_preferred": "tie",
   "material_difference": "yes",
-  "regression_detected": "no",
-  "baseline_mechanical_valid": true,
-  "candidate_mechanical_valid": true,
-  "candidate_boundary_regression": false,
+  "regression_signal": "none",
   "original_failure_applicable": true,
-  "original_failure_improved": true,
-  "correct_negative_preserved": true,
-  "rationale": "Variant A closes the pre-registered failure pressure without introducing a material regression."
+  "original_failure_preferred": "A",
+  "correct_negative_applicable": false,
+  "correct_negative_preservation_preferred": "tie",
+  "rationale": "Variant A closes the pre-registered failure pressure without a detected material regression."
 }
