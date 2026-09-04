@@ -65,8 +65,23 @@ routing_fields:
     type: enum
     values: [product_fog, ui_fog, architecture_fog, docs_fog]
     required: true
-    description: "The dominant fog type identified in the repository"
+    description: "The dominant fog type identified in the repository (the diagnosis). Always one of the four fog_types; never `unknown`."
     example: "ui_fog"
+
+  - field: user_implied_fog_type
+    type: enum
+    # The fog type the USER'S STATED INTENT implies -- an input characterisation,
+    # not the diagnosis. `unknown` is legal for THIS field only and means the
+    # intent is fog-neutral (implies no particular fog type); it is not a fog
+    # type and must never appear as primary_fog_type. Producer surfaces that
+    # already enumerate this domain: skills/repo-sensemaker/references/
+    # repo-analysis-template.md Section 13, and scripts/brief_skeleton.py.
+    # This is the single source of truth both validate-artifact.py and
+    # validate-fog-type-normalization.py read; keep them in agreement with it.
+    values: [product_fog, ui_fog, architecture_fog, docs_fog, unknown]
+    required: false
+    description: "Fog type implied by the user's stated intent (not the diagnosis). `unknown` = intent is fog-neutral."
+    example: "unknown"
 
   # secondary_fog_types (ranked/subordinate non-primary fog types) was retired
   # 2026-09-01: no demonstrated product decision ever depended on ranking

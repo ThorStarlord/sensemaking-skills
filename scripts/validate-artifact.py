@@ -87,12 +87,19 @@ def _validate_enum_fields(yaml_data, artifact_id, vocab, errors):
                     )
                 )
 
-    # Validate fog type aliases are normalized
+    # Validate the DIAGNOSIS fog field against the canonical fog-type set.
+    # `user_implied_fog_type` is deliberately NOT checked here: it is an intent
+    # characterisation, not the diagnosis, and its legal domain (the four fog
+    # types PLUS the intent-neutral sentinel `unknown`) is declared in
+    # canonical-vocabulary.yaml `routing_fields` and enforced by the
+    # registry-driven loop above. Running it through the diagnosis-only fog
+    # normalizer here is what rejected the template-legal value
+    # `user_implied_fog_type: unknown` (Goal A PF-1).
     fog_type_normalizer = build_fog_type_normalizer(vocab)
     if not fog_type_normalizer:
         return
 
-    for field in ["primary_fog_type", "user_implied_fog_type"]:
+    for field in ["primary_fog_type"]:
         if field in yaml_data:
             value = yaml_data[field]
             if value and value not in fog_type_normalizer:
