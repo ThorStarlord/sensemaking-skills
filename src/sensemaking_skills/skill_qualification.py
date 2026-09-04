@@ -2,7 +2,8 @@
 
 This module does not invoke models, authorize experiments, mutate Skills, or make
 promotion decisions. It only validates frozen case manifests, creates reproducible
-blind A/B assignments, and summarizes already-recorded evaluator judgments.
+blind A/B assignments, unblinds committed judgments, and summarizes normalized
+candidate-vs-baseline judgments.
 """
 
 from __future__ import annotations
@@ -25,9 +26,17 @@ REQUIRED_CASE_FIELDS = (
     "forbidden_assumptions",
     "expected_boundary_behavior",
 )
-VALID_PREFERENCES = {"A", "B", "tie", "cannot_determine"}
+BLIND_PREFERENCES = {"A", "B", "tie", "cannot_determine"}
+NORMALIZED_PREFERENCES = {"candidate", "baseline", "tie", "cannot_determine"}
+REGRESSION_SIGNALS = {"none", "A", "B", "both", "cannot_determine"}
+NORMALIZED_REGRESSION_SIGNALS = {
+    "none",
+    "candidate",
+    "baseline",
+    "both",
+    "cannot_determine",
+}
 VALID_MATERIALITY = {"yes", "no", "cannot_determine"}
-VALID_REGRESSION = {"yes", "no"}
 VALID_DISPOSITIONS = {
     "IMPROVED",
     "EQUIVALENT",
@@ -71,7 +80,9 @@ def validate_case_manifest(manifest: Mapping[str, Any]) -> None:
     not a product artifact validator and does not judge whether a case is good.
     """
     if manifest.get("classification") != "EXPLORATORY_NOT_CANONICAL_EVIDENCE":
-        raise QualificationError("manifest classification must be EXPLORATORY_NOT_CANONICAL_EVIDENCE")
+        raise QualificationError(
+            "manifest classification must be EXPLORATORY_NOT_CANONICAL_EVIDENCE"
+        )
 
     splits = manifest.get("splits")
     if not isinstance(splits, Mapping):
@@ -88,28 +99,32 @@ def validate_case_manifest(manifest: Mapping[str, Any]) -> None:
             missing = [field for field in REQUIRED_CASE_FIELDS if field not in case]
             if missing:
                 raise QualificationError(
-                    f"case {case.get('case_id', index)!r} missing required fields: {', '.join(missing)}"
+                    f"case {case.get('case_id', index)!r} missing required fields: "
+                    f"{', '.join(missing)}"
                 )
             case_id = case["case_id"]
             if not isinstance(case_id, str) or not case_id.strip():
                 raise QualificationError("case_id must be a non-empty string")
             if case_id in seen:
                 raise QualificationError(
-                    f"case_id {case_id!r} appears in both {seen[case_id]!r} and {split_name!r}"
+                    f"case_id {case_id!r} appears in both {seen[case_id]!r} "
+                    f"and {split_name!r}"
                 )
             seen[case_id] = split_name
 
     unexpected = set(splits) - set(REQUIRED_SPLITS)
     if unexpected:
-        raise QualificationError(f"unexpected split names: {', '.join(sorted(unexpected))}")
+        raise QualificationError(
+            f"unexpected split names: {', '.join(sorted(unexpected))}"
+        )
 
 
 def build_blind_assignments(case_ids: Iterable[str], seed: str) -> list[BlindAssignment]:
     """Create reproducible per-case baseline/candidate A/B assignments.
 
     Assignment is derived independently per case from SHA-256(seed + NUL + case_id),
-    avoiding order dependence. The caller should preserve the returned map separately
-    from evaluator packets until judgments are committed.
+    avoiding order dependence. Preserve the assignment map separately from evaluator
+    packets until judgments are committed.
     """
     if not seed:
         raise QualificationError("blinding seed must be non-empty")
@@ -131,102 +146,260 @@ def build_blind_assignments(case_ids: Iterable[str], seed: str) -> list[BlindAss
     return result
 
 
-def unblind_preference(preference: str, assignment: BlindAssignment) -> str:
-    """Translate an evaluator's A/B preference to baseline/candidate identity."""
-    if preference not in VALID_PREFERENCES:
-        raise QualificationError(f"invalid preference: {preference}")
+def _unblind_preference(preference: str, assignment: BlindAssignment) -> str:
+    if preference not in BLIND_PREFERENCES:
+        raise QualificationError(f"invalid blind preference: {preference}")
     if preference in {"tie", "cannot_determine"}:
         return preference
     return assignment.variant_a if preference == "A" else assignment.variant_b
 
 
-def validate_judgment(judgment: Mapping[str, Any]) -> None:
+def _unblind_variant_signal(signal: str, assignment: BlindAssignment) -> str:
+    if signal not in REGRESSION_SIGNALS:
+        raise QualificationError(f"invalid regression signal: {signal}")
+    if signal in {"none", "both", "cannot_determine"}:
+        return signal
+    return assignment.variant_a if signal == "A" else assignment.variant_b
+
+
+def validate_blind_judgment(judgment: Mapping[str, Any]) -> None:
+    """Validate an evaluator record that contains no baseline/candidate identities."""
     required = {
         "case_id",
+        "variant_a_mechanical_valid",
+        "variant_b_mechanical_valid",
         "evidence_grounding_preferred",
         "decision_quality_preferred",
+        "boundary_compliance_preferred",
         "material_difference",
-        "regression_detected",
-        "baseline_mechanical_valid",
-        "candidate_mechanical_valid",
-        "candidate_boundary_regression",
-        "original_failure_improved",
-        "correct_negative_preserved",
+        "regression_signal",
+        "original_failure_applicable",
+        "original_failure_preferred",
+        "correct_negative_applicable",
+        "correct_negative_preservation_preferred",
+        "rationale",
     }
     missing = sorted(required - set(judgment))
     if missing:
-        raise QualificationError(f"judgment missing required fields: {', '.join(missing)}")
-    for key in ("evidence_grounding_preferred", "decision_quality_preferred"):
-        if judgment[key] not in VALID_PREFERENCES:
-            raise QualificationError(f"invalid {key}: {judgment[key]}")
-    if judgment["material_difference"] not in VALID_MATERIALITY:
-        raise QualificationError("invalid material_difference")
-    if judgment["regression_detected"] not in VALID_REGRESSION:
-        raise QualificationError("invalid regression_detected")
-    for key in (
+        raise QualificationError(
+            f"blind judgment missing required fields: {', '.join(missing)}"
+        )
+
+    forbidden_identity_fields = {
         "baseline_mechanical_valid",
         "candidate_mechanical_valid",
         "candidate_boundary_regression",
-        "original_failure_improved",
-        "correct_negative_preserved",
+        "candidate_regression",
+        "baseline_regression",
+    }
+    leaked = sorted(forbidden_identity_fields & set(judgment))
+    if leaked:
+        raise QualificationError(
+            "blind judgment leaks baseline/candidate identity fields: "
+            + ", ".join(leaked)
+        )
+
+    for key in (
+        "variant_a_mechanical_valid",
+        "variant_b_mechanical_valid",
+        "original_failure_applicable",
+        "correct_negative_applicable",
     ):
         if not isinstance(judgment[key], bool):
             raise QualificationError(f"{key} must be boolean")
 
+    for key in (
+        "evidence_grounding_preferred",
+        "decision_quality_preferred",
+        "boundary_compliance_preferred",
+        "original_failure_preferred",
+        "correct_negative_preservation_preferred",
+    ):
+        if judgment[key] not in BLIND_PREFERENCES:
+            raise QualificationError(f"invalid {key}: {judgment[key]}")
+
+    if judgment["material_difference"] not in VALID_MATERIALITY:
+        raise QualificationError("invalid material_difference")
+    if judgment["regression_signal"] not in REGRESSION_SIGNALS:
+        raise QualificationError("invalid regression_signal")
+    if not isinstance(judgment["rationale"], str):
+        raise QualificationError("rationale must be a string")
+
+
+def unblind_judgment(
+    judgment: Mapping[str, Any], assignment: BlindAssignment
+) -> dict[str, Any]:
+    """Convert a committed A/B evaluator judgment to baseline/candidate identities."""
+    validate_blind_judgment(judgment)
+    if judgment["case_id"] != assignment.case_id:
+        raise QualificationError("judgment case_id does not match blind assignment")
+
+    mechanical_by_variant = {
+        assignment.variant_a: judgment["variant_a_mechanical_valid"],
+        assignment.variant_b: judgment["variant_b_mechanical_valid"],
+    }
+    normalized = {
+        "case_id": judgment["case_id"],
+        "baseline_mechanical_valid": mechanical_by_variant["baseline"],
+        "candidate_mechanical_valid": mechanical_by_variant["candidate"],
+        "evidence_grounding_preferred": _unblind_preference(
+            judgment["evidence_grounding_preferred"], assignment
+        ),
+        "decision_quality_preferred": _unblind_preference(
+            judgment["decision_quality_preferred"], assignment
+        ),
+        "boundary_compliance_preferred": _unblind_preference(
+            judgment["boundary_compliance_preferred"], assignment
+        ),
+        "material_difference": judgment["material_difference"],
+        "regression_on": _unblind_variant_signal(
+            judgment["regression_signal"], assignment
+        ),
+        "original_failure_applicable": judgment["original_failure_applicable"],
+        "original_failure_preferred": _unblind_preference(
+            judgment["original_failure_preferred"], assignment
+        ),
+        "correct_negative_applicable": judgment["correct_negative_applicable"],
+        "correct_negative_preservation_preferred": _unblind_preference(
+            judgment["correct_negative_preservation_preferred"], assignment
+        ),
+        "rationale": judgment["rationale"],
+    }
+    validate_normalized_judgment(normalized)
+    return normalized
+
+
+def validate_normalized_judgment(judgment: Mapping[str, Any]) -> None:
+    required = {
+        "case_id",
+        "baseline_mechanical_valid",
+        "candidate_mechanical_valid",
+        "evidence_grounding_preferred",
+        "decision_quality_preferred",
+        "boundary_compliance_preferred",
+        "material_difference",
+        "regression_on",
+        "original_failure_applicable",
+        "original_failure_preferred",
+        "correct_negative_applicable",
+        "correct_negative_preservation_preferred",
+        "rationale",
+    }
+    missing = sorted(required - set(judgment))
+    if missing:
+        raise QualificationError(
+            f"normalized judgment missing required fields: {', '.join(missing)}"
+        )
+    for key in (
+        "baseline_mechanical_valid",
+        "candidate_mechanical_valid",
+        "original_failure_applicable",
+        "correct_negative_applicable",
+    ):
+        if not isinstance(judgment[key], bool):
+            raise QualificationError(f"{key} must be boolean")
+    for key in (
+        "evidence_grounding_preferred",
+        "decision_quality_preferred",
+        "boundary_compliance_preferred",
+        "original_failure_preferred",
+        "correct_negative_preservation_preferred",
+    ):
+        if judgment[key] not in NORMALIZED_PREFERENCES:
+            raise QualificationError(f"invalid {key}: {judgment[key]}")
+    if judgment["material_difference"] not in VALID_MATERIALITY:
+        raise QualificationError("invalid material_difference")
+    if judgment["regression_on"] not in NORMALIZED_REGRESSION_SIGNALS:
+        raise QualificationError("invalid regression_on")
+    if not isinstance(judgment["rationale"], str):
+        raise QualificationError("rationale must be a string")
+
 
 def classify_candidate(judgments: Iterable[Mapping[str, Any]]) -> str:
-    """Classify a candidate using pre-registered fail-closed constraints.
-
-    This is deliberately not a scalar score. A candidate cannot be IMPROVED if it
-    introduces any mechanical failure, material regression signal, authority/boundary
-    regression, fails to improve the original failure pressure, or breaks a correct
-    negative. Among surviving cases, directional preferences are used only to
-    distinguish IMPROVED/EQUIVALENT/MIXED/INCONCLUSIVE.
-    """
+    """Classify a candidate with non-scalar, fail-closed qualification constraints."""
     rows = list(judgments)
     if not rows:
-        raise QualificationError("at least one judgment is required")
+        raise QualificationError("at least one normalized judgment is required")
     for row in rows:
-        validate_judgment(row)
+        validate_normalized_judgment(row)
 
-    if any(not row["candidate_mechanical_valid"] for row in rows):
+    # Hard regressions dominate directional preferences.
+    if any(
+        row["baseline_mechanical_valid"] and not row["candidate_mechanical_valid"]
+        for row in rows
+    ):
         return "REGRESSED"
-    if any(row["candidate_boundary_regression"] for row in rows):
+    if any(row["regression_on"] in {"candidate", "both"} for row in rows):
         return "REGRESSED"
-    if any(row["regression_detected"] == "yes" for row in rows):
+    if any(row["boundary_compliance_preferred"] == "baseline" for row in rows):
         return "REGRESSED"
-    if any(not row["correct_negative_preserved"] for row in rows):
+    if any(
+        row["correct_negative_applicable"]
+        and row["correct_negative_preservation_preferred"] == "baseline"
+        for row in rows
+    ):
         return "REGRESSED"
 
-    applicable_original = [row for row in rows if "original_failure_improved" in row]
-    if applicable_original and not any(row["original_failure_improved"] for row in applicable_original):
+    applicable_original = [row for row in rows if row["original_failure_applicable"]]
+    if applicable_original and not any(
+        row["original_failure_preferred"] == "candidate" for row in applicable_original
+    ):
+        if any(
+            row["original_failure_preferred"] == "baseline"
+            for row in applicable_original
+        ):
+            return "REGRESSED"
+        if any(
+            row["original_failure_preferred"] == "cannot_determine"
+            for row in applicable_original
+        ):
+            return "INCONCLUSIVE"
         return "EQUIVALENT"
 
     directional: list[str] = []
     for row in rows:
-        for key in ("evidence_grounding_preferred", "decision_quality_preferred"):
+        for key in (
+            "evidence_grounding_preferred",
+            "decision_quality_preferred",
+            "boundary_compliance_preferred",
+        ):
             pref = row[key]
-            if pref in {"A", "B"}:
+            if pref in {"candidate", "baseline"}:
+                directional.append(pref)
+        if row["original_failure_applicable"]:
+            pref = row["original_failure_preferred"]
+            if pref in {"candidate", "baseline"}:
+                directional.append(pref)
+        if row["correct_negative_applicable"]:
+            pref = row["correct_negative_preservation_preferred"]
+            if pref in {"candidate", "baseline"}:
                 directional.append(pref)
 
-    if not directional:
-        return "INCONCLUSIVE" if any(
-            row["evidence_grounding_preferred"] == "cannot_determine"
-            or row["decision_quality_preferred"] == "cannot_determine"
-            for row in rows
-        ) else "EQUIVALENT"
-
-    # Judgments stored after unblinding should encode candidate as A and baseline as B.
-    # This convention keeps aggregation deterministic while evaluator packets remain blind.
-    candidate_wins = directional.count("A")
-    baseline_wins = directional.count("B")
-    if candidate_wins and not baseline_wins:
-        return "IMPROVED"
-    if baseline_wins and not candidate_wins:
-        return "REGRESSED"
-    if candidate_wins == baseline_wins:
+    if "baseline" in directional and "candidate" in directional:
         return "MIXED"
-    return "MIXED"
+    if "baseline" in directional:
+        return "REGRESSED"
+    if "candidate" in directional:
+        return "IMPROVED"
+
+    if any(
+        "cannot_determine"
+        in {
+            row["evidence_grounding_preferred"],
+            row["decision_quality_preferred"],
+            row["boundary_compliance_preferred"],
+            row["original_failure_preferred"]
+            if row["original_failure_applicable"]
+            else "tie",
+            row["correct_negative_preservation_preferred"]
+            if row["correct_negative_applicable"]
+            else "tie",
+            row["regression_on"],
+        }
+        for row in rows
+    ):
+        return "INCONCLUSIVE"
+    return "EQUIVALENT"
 
 
 def load_json(path: str | Path) -> Any:
