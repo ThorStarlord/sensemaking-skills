@@ -1,0 +1,34 @@
+policy_schema_version: "1"
+campaign_id: "EXP-0006-empirical-skill-qualification-diagnostic"
+classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"
+execution_mode: "coding_agent_native"
+execution_surface: "github_connector"
+external_provider_api_prohibited: true
+allowed_framework_shas:
+- "969e8eb47144ffdeb27a8d9df02b6a292586e842"
+allowed_targets:
+- repository: "https://github.com/ThorStarlord/auteur.git"
+  sha: "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
+allowed_models: []
+allowed_artifact_types:
+- "repository_sensemaking_brief"
+allowed_configuration_ids:
+- "0000000000000000000000000000000000000000000000000000000000000000"
+max_attempt_slots: 3
+max_provider_invocations: 3
+max_attempts_per_configuration: 3
+concurrency_ceiling: 1
+token_ceiling: null
+cost_ceiling: null
+validity_window:
+  not_before: "2026-09-04T21:50:00+00:00"
+  not_after: "2026-09-11T23:59:59+00:00"
+target_mutation_prohibited: true
+fallback_prohibited: true
+repair_prohibited: true
+automatic_merge_prohibited: true
+preservation_requirements: "Preserve every GitHub-durable approval receipt, state transition, raw request, raw output, repository_sensemaking_brief, validation result, and terminal attempt outcome, including failed, interrupted, validation-failed, or aborted attempts. Preserve all three slots without selection."
+logging_requirements: "GitHub Issue #274 is the campaign tracker and future agent-recorded approval audit locator. GitHub commit history, exact-SHA target evidence, attempt artifacts, state transitions, exact-head validation workflow identifiers, and the final diagnostic synthesis form the audit trail. No unrecorded retry, repair, candidate execution, Q/T access, or external provider API is permitted."
+prepared_by: "campaign-preparation-agent"
+prepared_at: "2026-09-04T21:55:12+00:00"
+policy_digest: "0000000000000000000000000000000000000000000000000000000000000000"
