@@ -161,7 +161,7 @@ def test_exp0006_intended_connector_native_receipt_shape_validates_synthetically
         "policy_digest": raw_policy["policy_digest"],
         "approval_source": "active_human_conversation",
         "approval_text": "approve",
-        "approved_at": "2026-09-05T12:05:00+00:00",
+        "approved_at": "2026-09-05T11:55:00+00:00",
         "maximum_attempts": 3,
         "concurrency": 1,
         "automatic_merge": "prohibited",
