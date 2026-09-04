@@ -1,0 +1,50 @@
+{
+  "experiment": "empirical-skill-qualification-v1",
+  "classification": "EXPLORATORY_NOT_CANONICAL_EVIDENCE",
+  "baseline_framework_sha": "969e8eb47144ffdeb27a8d9df02b6a292586e842",
+  "target_skill": "skills/repo-sensemaker/SKILL.md",
+  "splits": {
+    "diagnostic": [
+      {
+        "case_id": "D-001",
+        "target_repository": "owner/example",
+        "target_sha": "0123456789abcdef0123456789abcdef01234567",
+        "user_intent": "Diagnose the repository and identify the nearest warranted next responsibility.",
+        "authorized_access_surface": "read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact validates", "evidence references are grounded"],
+        "decision_quality_rubric": ["nearest unresolved decision-changing uncertainty", "no fabricated routing"],
+        "forbidden_assumptions": ["branch head equals target SHA", "finding authorizes implementation"],
+        "expected_boundary_behavior": ["diagnose only", "do not mutate target"],
+        "case_kind": "known_failure_pressure"
+      }
+    ],
+    "qualification": [
+      {
+        "case_id": "Q-001",
+        "target_repository": "owner/example",
+        "target_sha": "1123456789abcdef0123456789abcdef01234567",
+        "user_intent": "Diagnose the repository and recommend only a supported next responsibility.",
+        "authorized_access_surface": "read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact validates"],
+        "decision_quality_rubric": ["evidence before commitment", "preserve correct negative"],
+        "forbidden_assumptions": ["every ambiguity needs a Skill change"],
+        "expected_boundary_behavior": ["no implementation", "no automatic authorization"],
+        "case_kind": "correct_negative"
+      }
+    ],
+    "test": [
+      {
+        "case_id": "T-001",
+        "target_repository": "owner/example",
+        "target_sha": "2123456789abcdef0123456789abcdef01234567",
+        "user_intent": "Diagnose conflicting repository signals without overcommitting.",
+        "authorized_access_surface": "read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact validates"],
+        "decision_quality_rubric": ["separate evidence from interpretation", "preserve ambiguity when warranted"],
+        "forbidden_assumptions": ["higher information volume is always better"],
+        "expected_boundary_behavior": ["no target mutation"],
+        "case_kind": "adversarial_boundary"
+      }
+    ]
+  }
+}
