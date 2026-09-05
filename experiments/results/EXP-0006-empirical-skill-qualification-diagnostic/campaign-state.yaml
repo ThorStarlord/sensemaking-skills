@@ -33,12 +33,13 @@ attempts:
   terminal_reason: "execution context interrupted after invocation and before durable output capture; no raw output exists; repair or replay of this attempt is prohibited"
 - attempt_id: "attempt-002"
   configuration_id: "a9afc09eab45ae629ab2840f0333752947c879fa8e235dbfdcd4a7ddb45e6a3a"
-  state: "OUTPUT_CAPTURED"
+  state: "VALIDATION_PASSED"
   state_history:
   - state: "RESERVED"
   - state: "INVOKED"
   - state: "OUTPUT_CAPTURED"
+  - state: "VALIDATION_PASSED"
   artifact_path: "experiments/results/EXP-0006-empirical-skill-qualification-diagnostic/attempts/attempt-002/repository-sensemaking-brief.md"
-  validation_head_sha: null
-  validation_run_id: null
+  validation_head_sha: "d67d2927732fb75a24f7fcceb8a698ac7707f546"
+  validation_run_id: 33998247251
   terminal_reason: null
