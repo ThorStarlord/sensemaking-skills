@@ -45,11 +45,12 @@ attempts:
   terminal_reason: null
 - attempt_id: "attempt-003"
   configuration_id: "a9afc09eab45ae629ab2840f0333752947c879fa8e235dbfdcd4a7ddb45e6a3a"
-  state: "INVOKED"
+  state: "OUTPUT_CAPTURED"
   state_history:
   - state: "RESERVED"
   - state: "INVOKED"
-  artifact_path: null
+  - state: "OUTPUT_CAPTURED"
+  artifact_path: "experiments/results/EXP-0006-empirical-skill-qualification-diagnostic/attempts/attempt-003/repository-sensemaking-brief.md"
   validation_head_sha: null
   validation_run_id: null
   terminal_reason: null

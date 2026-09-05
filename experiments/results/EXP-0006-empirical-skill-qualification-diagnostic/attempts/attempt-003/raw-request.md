@@ -1,0 +1,1 @@
+I'm considering the next major development step for this repository. Please inspect the repository and tell me what the project actually is now, where the most consequential uncertainty or weakness is, and what I should investigate or decide next. Do not implement changes.
