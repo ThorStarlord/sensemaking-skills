@@ -31,3 +31,12 @@ attempts:
   validation_head_sha: null
   validation_run_id: null
   terminal_reason: "execution context interrupted after invocation and before durable output capture; no raw output exists; repair or replay of this attempt is prohibited"
+- attempt_id: "attempt-002"
+  configuration_id: "a9afc09eab45ae629ab2840f0333752947c879fa8e235dbfdcd4a7ddb45e6a3a"
+  state: "RESERVED"
+  state_history:
+  - state: "RESERVED"
+  artifact_path: null
+  validation_head_sha: null
+  validation_run_id: null
+  terminal_reason: null
