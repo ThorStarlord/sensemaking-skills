@@ -1,0 +1,57 @@
+state_schema_version: "1"
+campaign_id: "EXP-0006-empirical-skill-qualification-diagnostic"
+classification: "EXPLORATORY_NOT_CANONICAL_EVIDENCE"
+execution_mode: "coding_agent_native"
+execution_surface: "github_connector"
+durability_backend: "github_results_branch_v1"
+validation_backend: "github_actions_exact_head"
+invocation_boundary: "before_first_experiment_scoped_target_read"
+results_branch: "experiment/exp-0006-results"
+results_pr_number: 276
+target_repository: "https://github.com/ThorStarlord/auteur.git"
+target_sha: "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
+framework_sha: "969e8eb47144ffdeb27a8d9df02b6a292586e842"
+configuration_id: "a9afc09eab45ae629ab2840f0333752947c879fa8e235dbfdcd4a7ddb45e6a3a"
+max_attempt_slots: 3
+concurrency_ceiling: 1
+external_provider_api_prohibited: true
+target_mutation_prohibited: true
+fallback_prohibited: true
+repair_prohibited: true
+automatic_merge_prohibited: true
+attempts:
+- attempt_id: "attempt-001"
+  configuration_id: "a9afc09eab45ae629ab2840f0333752947c879fa8e235dbfdcd4a7ddb45e6a3a"
+  state: "PROVIDER_FAILED"
+  state_history:
+  - state: "RESERVED"
+  - state: "INVOKED"
+  - state: "PROVIDER_FAILED"
+  artifact_path: null
+  validation_head_sha: null
+  validation_run_id: null
+  terminal_reason: "execution context interrupted after invocation and before durable output capture; no raw output exists; repair or replay of this attempt is prohibited"
+- attempt_id: "attempt-002"
+  configuration_id: "a9afc09eab45ae629ab2840f0333752947c879fa8e235dbfdcd4a7ddb45e6a3a"
+  state: "VALIDATION_PASSED"
+  state_history:
+  - state: "RESERVED"
+  - state: "INVOKED"
+  - state: "OUTPUT_CAPTURED"
+  - state: "VALIDATION_PASSED"
+  artifact_path: "experiments/results/EXP-0006-empirical-skill-qualification-diagnostic/attempts/attempt-002/repository-sensemaking-brief.md"
+  validation_head_sha: "d67d2927732fb75a24f7fcceb8a698ac7707f546"
+  validation_run_id: 33998247251
+  terminal_reason: null
+- attempt_id: "attempt-003"
+  configuration_id: "a9afc09eab45ae629ab2840f0333752947c879fa8e235dbfdcd4a7ddb45e6a3a"
+  state: "VALIDATION_PASSED"
+  state_history:
+  - state: "RESERVED"
+  - state: "INVOKED"
+  - state: "OUTPUT_CAPTURED"
+  - state: "VALIDATION_PASSED"
+  artifact_path: "experiments/results/EXP-0006-empirical-skill-qualification-diagnostic/attempts/attempt-003/repository-sensemaking-brief.md"
+  validation_head_sha: "df2d0f11bb2cadc6c993536d881ded6328861b00"
+  validation_run_id: 33999109480
+  terminal_reason: null

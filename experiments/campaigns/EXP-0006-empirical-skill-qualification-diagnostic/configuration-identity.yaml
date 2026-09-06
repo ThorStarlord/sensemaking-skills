@@ -1,0 +1,23 @@
+configuration_schema_version: "1"
+campaign_id: "EXP-0006-empirical-skill-qualification-diagnostic"
+framework_sha: "969e8eb47144ffdeb27a8d9df02b6a292586e842"
+target_repository: "https://github.com/ThorStarlord/auteur.git"
+target_sha: "0653defb05625f2fcde0ac32eac6e59ccf7eeb90"
+model_identifier: "github_connector"
+prompt_or_skill_revision: "969e8eb47144ffdeb27a8d9df02b6a292586e842"
+validator_revision: "969e8eb47144ffdeb27a8d9df02b6a292586e842"
+artifact_type: "repository_sensemaking_brief"
+execution_parameters:
+  durability_backend: "github_results_branch_v1"
+  validation_backend: "github_actions_exact_head"
+  invocation_boundary: "before_first_experiment_scoped_target_read"
+  target_access_mode: "github_connector_read_only"
+  probe_backend: "github_connector_exact_sha_v1"
+  approval_reference_kind: "agent_recorded_github_issue_comment"
+  approval_audit_repository: "ThorStarlord/sensemaking-skills"
+  approval_audit_issue_number: 274
+  diagnostic_case_id: "D-001"
+  diagnostic_user_intent: "I'm considering the next major development step for this repository. Please inspect the repository and tell me what the project actually is now, where the most consequential uncertainty or weakness is, and what I should investigate or decide next. Do not implement changes."
+  candidate_execution_prohibited: true
+  holdout_access_prohibited: true
+configuration_id: "a9afc09eab45ae629ab2840f0333752947c879fa8e235dbfdcd4a7ddb45e6a3a"
