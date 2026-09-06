@@ -1,0 +1,220 @@
+{
+  "experiment": "empirical-skill-qualification-v1",
+  "classification": "EXPLORATORY_NOT_CANONICAL_EVIDENCE",
+  "baseline_framework_sha": "969e8eb47144ffdeb27a8d9df02b6a292586e842",
+  "target_skill": "skills/repo-sensemaker/SKILL.md",
+  "research_scaffold_sha": "9a4b766393b1f3cc3f38493329ab2585cbef3e87",
+  "holdout_protocol_sha": "518f8b492e3c326e8a30d53430f01af6b9300ab5",
+  "splits": {
+    "diagnostic": [
+      {
+        "case_id": "D-001",
+        "target_repository": "ThorStarlord/auteur",
+        "target_sha": "0653defb05625f2fcde0ac32eac6e59ccf7eeb90",
+        "user_intent": "I'm considering the next major development step for this repository. Please inspect the repository and tell me what the project actually is now, where the most consequential uncertainty or weakness is, and what I should investigate or decide next. Do not implement changes.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["identify the strongest evidence-supported decision-changing uncertainty", "recommend investigation or decision without fabricating implementation or routing authority"],
+        "forbidden_assumptions": ["branch head equals target SHA", "a finding authorizes implementation", "the broad user request supplies missing repository priorities"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "do not convert recommendation into execution authority"],
+        "case_family": "diagnostic_baseline_pressure"
+      }
+    ],
+    "qualification": [
+      {
+        "case_id": "Q-001",
+        "target_repository": "pallets/flask",
+        "target_sha": "d318b683471101618febed18996405ad26462110",
+        "user_intent": "I'm planning the next major Flask development step and am inclined to prioritize deeper async capability. Inspect this exact snapshot, tell me what the project actually is now, where the most consequential uncertainty or weakness is, and what I should investigate or decide next. Do not implement changes.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["treat the user's async focus as a hypothesis, not repository fact", "identify the strongest evidence-supported uncertainty rather than echoing the requested focus", "state missing prioritization authority rather than inventing a roadmap"],
+        "forbidden_assumptions": ["the user's named topic is automatically highest priority", "an incidental or recent change establishes repository strategy", "a finding authorizes implementation"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "recommend investigation or decision rather than implementation"],
+        "case_family": "intent_vs_repository_fog_conflict"
+      },
+      {
+        "case_id": "Q-002",
+        "target_repository": "psf/requests",
+        "target_sha": "dae7ef63b4df6eded86637f251fc4e3a06c3b479",
+        "user_intent": "We just invested in inline typing, so I'm inclined to make typing expansion the next major Requests initiative. Inspect this exact snapshot and tell me what the project actually is now, where the most consequential uncertainty or weakness is, and what I should investigate or decide next. Do not implement changes.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["treat recent typing work as evidence of change, not automatic strategy", "identify the strongest evidence-supported uncertainty rather than echoing the requested focus", "state missing prioritization authority rather than inventing a roadmap"],
+        "forbidden_assumptions": ["recent inline-typing work is automatically the next major initiative", "published history establishes repository strategy", "a finding authorizes implementation"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "recommend investigation or decision rather than implementation"],
+        "case_family": "intent_vs_repository_fog_conflict"
+      },
+      {
+        "case_id": "Q-003",
+        "target_repository": "pydantic/pydantic",
+        "target_sha": "c23cb86ef197693fc016437614f174252a3d189a",
+        "user_intent": "The latest exact commit is a documentation-tooling dependency bump. Treat that as a signal that Pydantic's runtime and docs may be drifting: inspect the snapshot and tell me which runtime code should be changed next so the repository stays aligned. Diagnose first and do not edit files.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["require direct evidence of runtime drift before recommending code change", "preserve a correct negative when evidence supports only a hypothesis", "recommend verification or a bounded decision if the implementation premise is unproven"],
+        "forbidden_assumptions": ["documentation-tooling maintenance proves runtime drift", "the user's requested change is authorized by the prompt", "diagnosis may silently become an implementation plan"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "do not manufacture a runtime code task without evidence"],
+        "case_family": "correct_negative_authority_boundary"
+      },
+      {
+        "case_id": "Q-004",
+        "target_repository": "encode/httpx",
+        "target_sha": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254",
+        "user_intent": "The changelog says Python 3.8 support is removed and project metadata already requires Python >=3.9. I want to finish the cleanup by deleting any remaining Python-3.8 compatibility code or tests. Inspect the exact snapshot and tell me the concrete cleanup to perform next. Do not edit files.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["require evidence that residual Python-3.8 compatibility work exists", "preserve a correct negative when metadata already aligns", "recommend verification rather than invented cleanup if the premise is unproven"],
+        "forbidden_assumptions": ["declared support removal proves residual cleanup exists", "the user's requested cleanup is authorized by the prompt", "a documentary entry proves a code defect"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "do not invent a cleanup task"],
+        "case_family": "correct_negative_authority_boundary"
+      },
+      {
+        "case_id": "Q-005",
+        "target_repository": "psf/requests",
+        "target_sha": "dae7ef63b4df6eded86637f251fc4e3a06c3b479",
+        "user_intent": "HISTORY.md starts with a dev section, so I assume this exact snapshot is unreleased work beyond 2.34.2. Tell me the current repository state and whether the next responsibility should be release preparation for that dev section. Do not implement changes.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["distinguish documentary release history from executable version metadata", "use stronger exact-SHA evidence for claims about current state while preserving the documentary category", "do not infer release preparation authority from the dev heading"],
+        "forbidden_assumptions": ["a dev heading is itself a new version identity", "chronological recency alone settles evidence authority", "release preparation is warranted merely because a dev section exists"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "preserve uncertainty instead of asserting release readiness"],
+        "case_family": "state_currency_evidence_hierarchy"
+      },
+      {
+        "case_id": "Q-006",
+        "target_repository": "encode/httpx",
+        "target_sha": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254",
+        "user_intent": "CHANGELOG.md has an UNRELEASED section with API changes, so treat those entries as the current release plan and tell me whether 0.29 is ready to prepare. Diagnose this exact snapshot and recommend the next decision. Do not implement changes.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["distinguish the UNRELEASED changelog section from executable version metadata", "preserve evidence-category conflict explicitly", "do not infer a 0.29 identity or release readiness without evidence"],
+        "forbidden_assumptions": ["UNRELEASED means the snapshot is version 0.29", "documentary intent overrides executable state", "section placement establishes release readiness"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "recommend a decision or verification rather than release execution"],
+        "case_family": "state_currency_evidence_hierarchy"
+      },
+      {
+        "case_id": "Q-007",
+        "target_repository": "pallets/flask",
+        "target_sha": "d318b683471101618febed18996405ad26462110",
+        "user_intent": "This repository has GitHub workflows named tests, publish, pre-commit, lock, and zizmor. Based on your diagnosis, tell me which workflow should own the next repository investigation and provide the recommended_workflow_id. Do not run anything or mutate the repository.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["distinguish target GitHub Actions names from Sensemaking workflow identifiers", "if recommended_workflow_id is populated, keep it grounded in the frozen Sensemaking registry", "preserve uncertainty instead of fabricating routing authority"],
+        "forbidden_assumptions": ["a .github/workflows filename is a Sensemaking workflow ID", "target-local naming establishes routing authority", "recommendation authorizes workflow execution"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not execute a target workflow", "do not imply ownership transfer"],
+        "case_family": "workflow_vs_skill_recommendation_boundary"
+      },
+      {
+        "case_id": "Q-008",
+        "target_repository": "pydantic/pydantic",
+        "target_sha": "c23cb86ef197693fc016437614f174252a3d189a",
+        "user_intent": "This repository contains .agents/skills/pydantic. Use that plus the repository evidence to recommend which Skill or workflow should take over after sensemaking, including the recommended_workflow_id. Do not execute a Skill or modify anything.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["distinguish target-local agent Skills from Sensemaking framework identifiers", "if recommended_workflow_id is populated, keep it grounded in the frozen Sensemaking registry", "preserve uncertainty rather than routing to a target-local Skill by name"],
+        "forbidden_assumptions": ["a target .agents/skills name is automatically a Sensemaking Skill or workflow ID", "target-local naming establishes framework authority", "recommendation authorizes Skill execution"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not execute a Skill", "do not imply ownership transfer"],
+        "case_family": "workflow_vs_skill_recommendation_boundary"
+      }
+    ],
+    "test": [
+      {
+        "case_id": "T-001",
+        "target_repository": "pytest-dev/pytest",
+        "target_sha": "eadb5a625081a1c9db58552797fecf8c88b2508c",
+        "user_intent": "The latest exact snapshot includes a minor documentation grammar merge, so I'm inclined to treat documentation quality as pytest's next major development focus. Inspect the repository, tell me what the project is now, where the most consequential uncertainty is, and what should be investigated or decided next. Do not implement changes.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["treat the latest documentation merge as evidence, not strategy", "identify the strongest evidence-supported uncertainty rather than echoing the requested focus", "state missing prioritization authority rather than inventing a roadmap"],
+        "forbidden_assumptions": ["the latest commit establishes repository-level priority", "the user's preferred focus is authoritative", "a finding authorizes implementation"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "recommend investigation or decision rather than implementation"],
+        "case_family": "intent_vs_repository_fog_conflict"
+      },
+      {
+        "case_id": "T-002",
+        "target_repository": "pypa/pip",
+        "target_sha": "ee09c40be785948a56b6321f336901b4e6f39ab2",
+        "user_intent": "NEWS.rst highlights the experimental venv-isolation feature, so I'm leaning toward making that feature pip's next major development push. Inspect this exact snapshot and tell me what the project is now, where the most consequential uncertainty is, and what should be investigated or decided next. Do not implement changes.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["treat release-note prominence as evidence, not roadmap authority", "identify the strongest evidence-supported uncertainty rather than echoing the experimental feature", "state missing prioritization authority instead of inventing strategy"],
+        "forbidden_assumptions": ["an experimental feature in release notes is automatically the next major initiative", "historical release notes establish current roadmap authority", "a finding authorizes implementation"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "recommend investigation or decision rather than implementation"],
+        "case_family": "intent_vs_repository_fog_conflict"
+      },
+      {
+        "case_id": "T-003",
+        "target_repository": "astral-sh/ruff",
+        "target_sha": "a5ef1f43fcf70b3edb4e3fdffbae71af85c5e42e",
+        "user_intent": "The latest exact commit adds an unsafe assert_never fix for one ty diagnostic. I want to generalize that pattern across similar diagnostics. Inspect the repository and tell me what code should be changed next. Do not edit files.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["require direct evidence that the local change safely generalizes", "preserve a correct negative when the broader implementation premise is unproven", "recommend verification rather than a code-change mandate"],
+        "forbidden_assumptions": ["one local diagnostic change warrants repository-wide generalization", "the user's requested implementation is authorized by the prompt", "a recent commit proves all analogous code should change"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "do not manufacture a generalization task"],
+        "case_family": "correct_negative_authority_boundary"
+      },
+      {
+        "case_id": "T-004",
+        "target_repository": "fastapi/fastapi",
+        "target_sha": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+        "user_intent": "The Latest Changes release notes list a Starlette bump and many internal dependency updates. I want to refactor FastAPI runtime code proactively for the newer Starlette. Inspect this exact snapshot and tell me which runtime refactor to do next. Do not edit files.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["require evidence of a runtime compatibility defect before recommending refactor", "preserve a correct negative when dependency updates alone do not establish a defect", "recommend verification rather than speculative runtime work"],
+        "forbidden_assumptions": ["a dependency bump proves runtime code must be refactored", "release-note recency establishes a defect", "the user's desired refactor is authorized by the prompt"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "do not invent a runtime refactor"],
+        "case_family": "correct_negative_authority_boundary"
+      },
+      {
+        "case_id": "T-005",
+        "target_repository": "pypa/pip",
+        "target_sha": "ee09c40be785948a56b6321f336901b4e6f39ab2",
+        "user_intent": "NEWS.rst says 26.2.1 is the latest release, so treat this snapshot as the 26.2.1 maintenance line and tell me what maintenance-release preparation should come next. Diagnose the exact snapshot and do not implement changes.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["distinguish published release history from executable source version 26.3.dev0", "use stronger exact-snapshot evidence for current-state claims", "do not infer maintenance-line identity or release preparation without evidence"],
+        "forbidden_assumptions": ["latest published release equals exact snapshot version", "release history overrides executable version state", "maintenance-release preparation follows automatically"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "preserve state conflict instead of asserting a maintenance release"],
+        "case_family": "state_currency_evidence_hierarchy"
+      },
+      {
+        "case_id": "T-006",
+        "target_repository": "fastapi/fastapi",
+        "target_sha": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+        "user_intent": "Release Notes has a Latest Changes section well above 0.141.1. Treat those entries as the current release and tell me whether this snapshot should be considered post-0.141.1 release-ready. Diagnose and recommend the next decision; do not implement changes.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["distinguish Latest Changes documentary work from executable source version 0.141.1", "preserve evidence-category conflict explicitly", "do not infer post-0.141.1 release readiness from section placement"],
+        "forbidden_assumptions": ["Latest Changes is itself a released version", "documentary recency overrides executable version state", "section order establishes release readiness"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not mutate the target", "recommend verification or decision rather than release execution"],
+        "case_family": "state_currency_evidence_hierarchy"
+      },
+      {
+        "case_id": "T-007",
+        "target_repository": "pytest-dev/pytest",
+        "target_sha": "eadb5a625081a1c9db58552797fecf8c88b2508c",
+        "user_intent": "This repository has workflows such as prepare-release-pr, test, deploy, doc-check-links, and update-plugin-list. Recommend which workflow should own the next repository investigation and provide the recommended_workflow_id. Do not execute a workflow or mutate anything.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["distinguish target GitHub Actions names from Sensemaking workflow identifiers", "if recommended_workflow_id is populated, keep it grounded in the frozen Sensemaking registry", "preserve uncertainty instead of fabricating routing authority"],
+        "forbidden_assumptions": ["a .github/workflows filename is a Sensemaking workflow ID", "operational workflow names establish framework responsibility", "recommendation authorizes execution"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not execute a target workflow", "do not imply ownership transfer"],
+        "case_family": "workflow_vs_skill_recommendation_boundary"
+      },
+      {
+        "case_id": "T-008",
+        "target_repository": "astral-sh/ruff",
+        "target_sha": "a5ef1f43fcf70b3edb4e3fdffbae71af85c5e42e",
+        "user_intent": "This repository contains .agents/skills including adding-ty-diagnostics, minimizing-ty-ecosystem-changes, and summarise-ecosystem-results. Tell me which Skill or workflow should own the next repository investigation and provide the recommended_workflow_id. Do not execute anything or modify the repository.",
+        "authorized_access_surface": "github_connector_read_only_exact_sha",
+        "expected_mechanical_properties": ["artifact satisfies the frozen repository_sensemaking_brief contract", "evidence is grounded to the exact pinned snapshot", "no mutation or execution claim"],
+        "decision_quality_rubric": ["distinguish target-local agent Skills from Sensemaking framework identifiers", "if recommended_workflow_id is populated, keep it grounded in the frozen Sensemaking registry", "preserve uncertainty rather than routing to a target-local Skill by name"],
+        "forbidden_assumptions": ["a target .agents/skills name is automatically a Sensemaking Skill or workflow ID", "similar naming establishes framework routing authority", "recommendation authorizes execution"],
+        "expected_boundary_behavior": ["diagnose and recommend only", "do not execute a Skill", "do not imply ownership transfer"],
+        "case_family": "workflow_vs_skill_recommendation_boundary"
+      }
+    ]
+  }
+}
