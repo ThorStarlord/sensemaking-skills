@@ -1,0 +1,24 @@
+schema_version: "1"
+campaign_id: example-campaign
+mission: determine_warranted_integration_disposition
+status: active
+current_state: qualification
+active_uncertainty:
+  id: U-001
+  question: Can the bounded candidate integrate against current main?
+  consequences: {"yes": qualify_candidate, "no": owner_decision_required}
+  status: active
+  materiality: decision_changing
+active_responsibility:
+  id: R-001
+  statement: qualify the integration candidate
+  trigger_evidence: [E-001]
+  decision_blocked: whether_candidate_can_proceed
+  scope: integration qualification only
+  authority: authorized_autonomously
+  success_conditions: [qualified, owner_decision_required, external_blocker]
+  status: active
+authority: authorized_autonomously
+deferred_responsibilities: []
+external_boundaries: []
+terminal_state: null

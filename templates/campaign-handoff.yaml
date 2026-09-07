@@ -1,0 +1,6 @@
+schema_version: "1"
+campaign_id: example-campaign
+current_state_reference: artifacts/campaign-state.yaml
+canonical_artifacts: [artifacts/transition-record.yaml]
+allowed_next_actions: [inspect, construct_local_candidate, test, validate]
+stop_conditions: [owner_decision_required, external_blocker, no_further_work_warranted]

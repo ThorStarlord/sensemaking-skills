@@ -1,0 +1,9 @@
+schema_version: "1"
+id: T-001
+from_state: qualification
+to_state: owner_decision_required
+evidence: [E-002]
+decision: candidate conflicts with current main
+next_responsibility: null
+terminal_state: owner_decision_required
+authority: authorized_autonomously
