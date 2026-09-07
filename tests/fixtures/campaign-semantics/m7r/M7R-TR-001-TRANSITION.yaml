@@ -1,0 +1,12 @@
+schema_version: "1"
+id: TR-M7R-001
+from_state: integration_assessment
+to_state: candidate_construction
+evidence:
+  - M7R-EV-001-IDENTITY-AND-DELTA.md
+  - M7R-MV-001-IDENTITY-AND-DELTA.md
+decision: exact candidate is a direct child of the exact frozen base and its unchanged delta applies cleanly; behavioral qualification is not yet established
+next_responsibility: R-M7R-002
+terminal_state: null
+authority: authorized_autonomously
+

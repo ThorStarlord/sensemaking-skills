@@ -1,0 +1,32 @@
+schema_version: "1"
+campaign_id: m7r-clause-b-adaptive-2026-09-07
+mission: determine and execute the warranted path for integrating the bounded Clause-B candidate
+status: active
+current_state: candidate_qualification
+active_uncertainty:
+  id: U-M7R-003
+  question: Does the exact isolated candidate pass candidate-specific and proportionate regression validation without requiring unauthorized semantic change?
+  status: active
+  materiality: decision_changing
+active_responsibility:
+  id: R-M7R-003
+  statement: qualify the exact isolated candidate with bounded local mechanical and behavioral checks
+  scope: candidate-specific tests, directly affected regressions, structural validation, and proportionate broader tests only
+  authority: authorized_autonomously
+  status: active
+resolved_questions: [clause_a_current_repair_question, clause_b_contract_ambiguity, sidecar_capture_cause, controller_ownership, candidate_delta_applicability, exact_candidate_construction]
+deferred_responsibilities:
+  - responsibility_id: PF6
+    status: deferred
+    reason: not the nearest decision-changing uncertainty
+external_boundaries:
+  - id: EB-CODEX-CONTROLLER
+    capability: asynchronous_validator_sidecar_capture
+    owner: runtime_orchestration
+    repository_owned: false
+    accessible: false
+    implication: repository-side controller repair is not warranted
+established_facts: [CLAUSE_B_VALIDATION_INCONCLUSIVE, A2_AGENT_EVALUATED_MIXED, DELTA_APPLICABLE_AND_CLEAN, EXACT_CANDIDATE_CONSTRUCTED]
+authority: authorized_autonomously
+terminal_state: null
+

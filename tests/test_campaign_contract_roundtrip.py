@@ -15,7 +15,11 @@ from sensemaking_skills.campaign_semantics.io import (
 
 
 ROOT = Path(__file__).parents[1]
-M7R = Path(r"H:\GithubRepositories\sensemaking-skills-m7-replication\m7r-execution")
+# Minimal frozen representative M7R campaign corpus, vendored as a test fixture
+# (3 states + 3 transitions + 1 trace). These are the real M7R replication
+# artifacts the contract's historical-shape compatibility was qualified against;
+# they carry no private or machine-specific content.
+M7R = Path(__file__).parent / "fixtures" / "campaign-semantics" / "m7r"
 
 
 def test_real_m7r_states_round_trip_semantically():

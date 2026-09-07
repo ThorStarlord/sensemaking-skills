@@ -1,0 +1,71 @@
+schema_version: "1"
+replication_id: M7R-001
+campaign_id: m7r-clause-b-adaptive-2026-09-07
+initial_state: integration_assessment
+terminal_state: qualified_pr_ready
+events:
+  - sequence: 1
+    event_type: instrument_preflight
+    responsibility: null
+    artifacts: [M7R-E01-EXECUTION-PREFLIGHT.md]
+    outcome: preflight_passed
+  - sequence: 2
+    event_type: fresh_context_reconstruction
+    responsibility: R-M7R-001
+    artifacts: [M7R-E02-FRESH-CONTEXT-RECONSTRUCTION.md, M7R-RR-001-RESPONSIBILITY.md]
+    outcome: active responsibility accepted without preloading a historical path
+  - sequence: 3
+    event_type: evidence_and_validation
+    responsibility: R-M7R-001
+    artifacts: [M7R-EV-001-IDENTITY-AND-DELTA.md, M7R-MV-001-IDENTITY-AND-DELTA.md]
+    outcome: DELTA_APPLICABLE_AND_CLEAN
+  - sequence: 4
+    event_type: transition
+    responsibility: R-M7R-001
+    artifacts: [M7R-TR-001-TRANSITION.yaml, M7R-CS-001-CAMPAIGN-STATE.yaml]
+    from_state: integration_assessment
+    to_state: candidate_construction
+  - sequence: 5
+    event_type: responsibility_selected
+    responsibility: R-M7R-002
+    artifacts: [M7R-RR-002-RESPONSIBILITY.md]
+    outcome: exact isolated candidate construction selected
+  - sequence: 6
+    event_type: invalid_episode
+    responsibility: R-M7R-002
+    artifacts: [M7R-IV-001-ARCHIVE-CONSTRUCTION-EPISODE.md]
+    outcome: archive construction abandoned because it did not preserve full tree identity
+  - sequence: 7
+    event_type: evidence_and_validation
+    responsibility: R-M7R-002
+    artifacts: [M7R-EV-002-EXACT-CANDIDATE-CONSTRUCTION.md, M7R-MV-002-EXACT-CANDIDATE-CONSTRUCTION.md]
+    outcome: EXACT_CANDIDATE_CONSTRUCTED
+  - sequence: 8
+    event_type: transition
+    responsibility: R-M7R-002
+    artifacts: [M7R-TR-002-TRANSITION.yaml, M7R-CS-002-CAMPAIGN-STATE.yaml]
+    from_state: candidate_construction
+    to_state: candidate_qualification
+  - sequence: 9
+    event_type: responsibility_selected
+    responsibility: R-M7R-003
+    artifacts: [M7R-RR-003-RESPONSIBILITY.md]
+    outcome: bounded local qualification selected
+  - sequence: 10
+    event_type: invalid_episode
+    responsibility: R-M7R-003
+    artifacts: [M7R-IV-002-ROOT-PYTEST-EPISODE.md]
+    outcome: root-wide discovery excluded as a qualification signal
+  - sequence: 11
+    event_type: evidence_and_validation
+    responsibility: R-M7R-003
+    artifacts: [M7R-EV-003-CANDIDATE-QUALIFICATION.md, M7R-MV-003-CANDIDATE-QUALIFICATION.md]
+    outcome: QUALIFICATION_SUFFICIENT
+  - sequence: 12
+    event_type: terminal_transition
+    responsibility: R-M7R-003
+    artifacts: [M7R-TR-003-TRANSITION.yaml, M7R-E03-FINAL-CAMPAIGN-STATE.yaml]
+    from_state: candidate_qualification
+    to_state: qualified_pr_ready
+    outcome: stopped at first legitimate terminal state
+
