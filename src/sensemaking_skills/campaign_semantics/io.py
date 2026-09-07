@@ -1,7 +1,8 @@
 """Explicit YAML boundaries for campaign-semantic artifacts.
 
-Inputs may use the small set of historical representation variants recorded by
-M9. Outputs always use dataclass field names and enum values.
+Inputs may use the small set of historical representation variants observed in
+real campaign artifacts. Outputs always use dataclass field names and enum
+values.
 """
 
 from __future__ import annotations

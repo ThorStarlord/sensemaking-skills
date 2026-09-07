@@ -63,14 +63,16 @@ the explicit loaders and emitted through the matching `dump_*` functions in
 `campaign_semantics.io`; callers should not construct a second ad-hoc schema.
 
 The contract boundary normalizes observed representation variants, including
-M7R state snapshots, handoff state references, and enum values. Round-trip
-qualification means semantic equality after load → dump → load, not byte
-identity. Unknown decision-relevant fields and malformed known fields fail;
+historical campaign state snapshots, handoff state references, and enum values.
+Round-trip qualification means semantic equality after load → dump → load, not
+byte identity. Unknown decision-relevant fields and malformed known fields fail;
 the observed `owner_routing` state metadata is retained explicitly.
 
 Run the bounded drift gate with:
 
-`PYTHONPATH=src python scripts/campaign-contract-roundtrip.py --m7r-root <M7R>/m7r-execution`
+`PYTHONPATH=src python scripts/campaign-contract-roundtrip.py --m7r-root tests/fixtures/campaign-semantics/m7r`
 
-The M7R fixtures are read-only empirical inputs. This boundary does not execute
-campaigns, grant authority, schedule work, or decide semantic responsibility.
+The vendored fixtures under `tests/fixtures/campaign-semantics/m7r/` are a
+minimal frozen representative campaign corpus used as read-only empirical
+inputs. This boundary does not execute campaigns, grant authority, schedule
+work, or decide semantic responsibility.

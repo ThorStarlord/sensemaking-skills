@@ -1,4 +1,4 @@
-"""Mechanical M9 contract-consumption and round-trip gate."""
+"""Mechanical campaign-contract consumption and round-trip gate."""
 from __future__ import annotations
 
 import argparse
