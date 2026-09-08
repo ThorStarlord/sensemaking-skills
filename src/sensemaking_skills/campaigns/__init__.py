@@ -13,6 +13,12 @@ from .artifacts import (
     ArtifactAdmissionResult,
     ArtifactAdmissionService,
 )
+from .decisions import (
+    AdvanceDecision,
+    CampaignDecisionService,
+    CloseDecision,
+    DeferDecision,
+)
 from .errors import (
     ArtifactValidationRejectedError,
     ArtifactValidatorError,
@@ -33,6 +39,7 @@ from .store import CampaignStore
 from .workspace import CampaignWorkspace
 
 __all__ = [
+    "AdvanceDecision",
     "ArtifactAdmission",
     "ArtifactAdmissionContractError",
     "ArtifactAdmissionResult",
@@ -40,6 +47,7 @@ __all__ = [
     "ArtifactValidationRejectedError",
     "ArtifactValidatorError",
     "CampaignAlreadyExistsError",
+    "CampaignDecisionService",
     "CampaignDiagnostic",
     "CampaignIdentityError",
     "CampaignIntegrityError",
@@ -51,4 +59,6 @@ __all__ = [
     "CampaignValidationResult",
     "CampaignWorkspace",
     "CampaignWorkspaceError",
+    "CloseDecision",
+    "DeferDecision",
 ]
