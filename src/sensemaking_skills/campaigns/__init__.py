@@ -5,7 +5,17 @@ means and supplies lifecycle decisions. This package validates and persists the
 durable structural consequences of those decisions.
 """
 
+from .admission import (
+    ArtifactAdmission,
+    ArtifactAdmissionContractError,
+)
+from .artifacts import (
+    ArtifactAdmissionResult,
+    ArtifactAdmissionService,
+)
 from .errors import (
+    ArtifactValidationRejectedError,
+    ArtifactValidatorError,
     CampaignAlreadyExistsError,
     CampaignIdentityError,
     CampaignIntegrityError,
@@ -23,6 +33,12 @@ from .store import CampaignStore
 from .workspace import CampaignWorkspace
 
 __all__ = [
+    "ArtifactAdmission",
+    "ArtifactAdmissionContractError",
+    "ArtifactAdmissionResult",
+    "ArtifactAdmissionService",
+    "ArtifactValidationRejectedError",
+    "ArtifactValidatorError",
     "CampaignAlreadyExistsError",
     "CampaignDiagnostic",
     "CampaignIdentityError",
