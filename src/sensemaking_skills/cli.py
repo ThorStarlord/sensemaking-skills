@@ -297,17 +297,40 @@ def test(repos):
 @cli.command(name="setup-skills")
 @click.option(
     "--target",
-    type=click.Choice(["agents", "claude-superpowers", "all", "custom"]),
-    default="agents",
-    help=(
-        "Installation target: agents (default), claude-superpowers, all, or custom"
+    type=click.Choice(
+        [
+            "agents",
+            "generic",
+            "claude",
+            "codex",
+            "opencode",
+            "claude-superpowers",
+            "all",
+            "custom",
+        ]
     ),
+    default="agents",
+    show_default=True,
+    help="Explicit harness/discovery target. No harness auto-detection is performed.",
+)
+@click.option(
+    "--scope",
+    type=click.Choice(["user", "project"]),
+    default="user",
+    show_default=True,
+    help="Use user/global or project-local discovery roots.",
+)
+@click.option(
+    "--project-root",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=None,
+    help="Explicit project root; required with --scope=project for harness targets.",
 )
 @click.option(
     "--skills-dir",
     type=click.Path(),
     default=None,
-    help="Custom skills directory (required if --target=custom)",
+    help="Exact custom skills directory (only with --target=custom).",
 )
 @click.option(
     "--dry-run",
@@ -325,21 +348,33 @@ def test(repos):
     is_flag=True,
     help="Print detailed output",
 )
-def setup_skills(target, skills_dir, dry_run, force, verbose):
-    r"""
-    Install sensemaking-skills SKILL.md files to agent-discoverable locations.
+def setup_skills(
+    target,
+    scope,
+    project_root,
+    skills_dir,
+    dry_run,
+    force,
+    verbose,
+):
+    """
+    Install exact packaged Skill trees to explicitly selected harness roots.
 
-    Makes skills available to Claude Code, OpenCode, and other agents.
+    Examples:
+        sensemaking-skills setup-skills --target claude
+        sensemaking-skills setup-skills --target codex
+        sensemaking-skills setup-skills --target opencode
+        sensemaking-skills setup-skills --target generic
+        sensemaking-skills setup-skills --target claude --scope project --project-root .
 
-    Default target is ~/.agents/skills (or C:\Users\*\.agents\skills on Windows).
-
-    After installation, agents can invoke:
-        /skill using-sensemaking
-        /skill repo-sensemaker
-        /skill workflow-planner
+    The command maps an explicit target/scope to a documented filesystem root.
+    It does not detect the active harness, select a Skill, invoke a Skill, or
+    grant execution authority.
     """
     success = run_setup_skills(
         target=target,
+        scope=scope,
+        project_root=project_root,
         skills_dir=skills_dir,
         dry_run=dry_run,
         force=force,
