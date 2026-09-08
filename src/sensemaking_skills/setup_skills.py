@@ -74,7 +74,7 @@ def get_claude_personal_skills_dir() -> Path:
 
 
 def get_codex_skills_dir() -> Path:
-    """Return the declared Codex user Skill discovery root."""
+    """Return the declared Codex personal Skill discovery root."""
     return resolve_harness_destinations("codex", scope="user")[0].path
 
 
@@ -208,6 +208,11 @@ def _resolve_destinations(
             )
         return [("claude-superpowers-legacy", get_claude_code_skills_dir())]
 
+    if scope == "user" and project_root is not None:
+        raise SkillsSetupError(
+            "--project-root is only valid when --scope=project"
+        )
+
     try:
         resolved = resolve_harness_destinations(
             target,
@@ -243,10 +248,12 @@ def setup_skills(
     """Install packaged Skill trees to explicitly selected discovery roots.
 
     Canonical P10 targets:
-    - ``generic`` / compatibility alias ``agents``: ``.agents/skills``;
-    - ``claude``: ``.claude/skills``;
-    - ``codex``: ``.agents/skills``;
-    - ``opencode``: native OpenCode Skill root;
+    - ``generic`` / compatibility alias ``agents``: user/project
+      ``.agents/skills``;
+    - ``claude``: user/project ``.claude/skills``;
+    - ``codex``: personal ``$CODEX_HOME/skills`` (default ``~/.codex/skills``)
+      and project ``.agents/skills``;
+    - ``opencode``: native OpenCode Skill roots;
     - ``all``: all unique canonical roots (plus the legacy Superpowers cache
       for user scope to preserve pre-P10 behavior);
     - ``custom``: exact caller-supplied directory.
