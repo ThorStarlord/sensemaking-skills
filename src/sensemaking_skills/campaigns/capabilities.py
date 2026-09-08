@@ -189,7 +189,7 @@ def load_capability_registry(
     )
 
     data = _load_yaml_mapping(catalog_path, label="capability registry")
-    schema_version = str(data.get("schema_version", ""))
+    schema_version = data.get("schema_version")
     if schema_version != CATALOG_SCHEMA_VERSION:
         raise CapabilityCatalogError(
             f"unsupported capability registry schema_version {schema_version!r}"
@@ -343,9 +343,10 @@ class CampaignCapabilityService:
         *,
         registry: CapabilityRegistry | None = None,
     ) -> CapabilityInspection:
-        responsibility_type = _nonempty_text(
-            responsibility_type, field="responsibility_type"
-        )
+        if not isinstance(responsibility_type, str) or not responsibility_type.strip():
+            raise CampaignTransactionError("responsibility_type must be non-empty")
+        responsibility_type = responsibility_type.strip()
+
         snapshot = self.lifecycle.resume()
         responsibility = snapshot.state.active_responsibility
         if responsibility is None:
