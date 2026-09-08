@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import os
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from .errors import CampaignWorkspaceError
@@ -15,13 +16,22 @@ class CampaignWorkspace:
     v0.3 deliberately requires a workspace outside the target repository when a
     target path is supplied.  Read-only repository sensemaking must not become a
     repository mutation merely because durable campaign state is enabled.
+
+    ``requested_root`` preserves the lexical path the caller supplied (made
+    absolute without resolving filesystem aliases). ``root`` is the physically
+    resolved path used for storage and containment checks. Keeping both prevents
+    a dangling symlink at the requested path from disappearing during
+    normalization and then being mistaken for an unused workspace location.
     """
 
     root: Path
     target_repo: Path | None = None
+    requested_root: Path = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "root", Path(self.root).expanduser().resolve())
+        requested_root = Path(os.path.abspath(Path(self.root).expanduser()))
+        object.__setattr__(self, "requested_root", requested_root)
+        object.__setattr__(self, "root", requested_root.resolve())
         if self.target_repo is not None:
             object.__setattr__(
                 self,

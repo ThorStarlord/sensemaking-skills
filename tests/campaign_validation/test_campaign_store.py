@@ -29,6 +29,13 @@ def _state(*, campaign_id="CMP-1", current_state="initialized"):
     )
 
 
+def _symlink_or_skip(link, target, *, target_is_directory=False):
+    try:
+        link.symlink_to(target, target_is_directory=target_is_directory)
+    except (OSError, NotImplementedError) as exc:
+        pytest.skip(f"symlink capability unavailable: {exc}")
+
+
 def test_initialize_creates_isolated_roundtrippable_workspace(tmp_path):
     target = tmp_path / "target"
     target.mkdir()
@@ -71,6 +78,19 @@ def test_initialize_refuses_existing_workspace_without_overwriting(tmp_path):
         CampaignStore(workspace).initialize(_state())
 
     assert marker.read_text(encoding="utf-8") == "preserve"
+
+
+def test_initialize_refuses_broken_symlink_workspace_entry(tmp_path):
+    workspace = tmp_path / "CMP-1"
+    missing_target = tmp_path / "missing-workspace-target"
+    _symlink_or_skip(workspace, missing_target, target_is_directory=True)
+
+    store = CampaignStore(workspace)
+    with pytest.raises(CampaignAlreadyExistsError):
+        store.initialize(_state())
+
+    assert workspace.is_symlink()
+    assert not missing_target.exists()
 
 
 def test_replacement_state_preserves_campaign_identity(tmp_path):
@@ -170,6 +190,31 @@ def test_evidence_refs_are_workspace_relative_and_stable(tmp_path):
         "artifacts/brief.md",
         "evidence/probe/report.yaml",
     )
+
+
+def test_evidence_refs_reject_symlinked_file_escape(tmp_path):
+    store = CampaignStore(tmp_path / "CMP-1")
+    store.initialize(_state())
+    outside = tmp_path / "outside-secret.txt"
+    outside.write_text("secret", encoding="utf-8")
+    link = store.workspace.artifacts_dir / "leaked.txt"
+    _symlink_or_skip(link, outside)
+
+    with pytest.raises(CampaignWorkspaceError, match="physically contained"):
+        store.evidence_refs()
+
+
+def test_evidence_refs_reject_symlinked_directory_escape(tmp_path):
+    store = CampaignStore(tmp_path / "CMP-1")
+    store.initialize(_state())
+    outside = tmp_path / "outside-evidence"
+    outside.mkdir()
+    (outside / "secret.txt").write_text("secret", encoding="utf-8")
+    link = store.workspace.evidence_dir / "linked"
+    _symlink_or_skip(link, outside, target_is_directory=True)
+
+    with pytest.raises(CampaignWorkspaceError, match="physically contained"):
+        store.evidence_refs()
 
 
 def test_contract_corruption_fails_closed_on_load(tmp_path):

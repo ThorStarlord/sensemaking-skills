@@ -16,6 +16,7 @@ from typing import Any, Mapping
 
 import yaml
 
+from sensemaking_skills import path_containment as pc
 from sensemaking_skills.campaign_semantics import (
     CampaignHandoff,
     CampaignPolicy,
@@ -43,6 +44,42 @@ from .errors import (
 from .workspace import CampaignWorkspace
 
 _SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+
+
+def _assert_physically_contained(path: Path, root: Path) -> None:
+    """Fail closed unless ``path`` resolves physically beneath ``root``.
+
+    This reuses the repository's shared path-containment primitive so evidence
+    enumeration cannot turn a symlink or Windows reparse point into an escape
+    from the campaign workspace.
+    """
+    try:
+        resolved, failure = pc.resolve_containment(path, root)
+    except Exception as exc:  # pragma: no cover - defensive fail-closed guard
+        raise CampaignWorkspaceError(
+            f"could not establish physical containment for {path}: {exc}"
+        ) from exc
+
+    if failure is not None or resolved is None:
+        raise CampaignWorkspaceError(
+            "campaign evidence path is not physically contained: "
+            f"path={path} root={root} failure={failure}"
+        )
+
+    try:
+        real_root = root.resolve(strict=False)
+    except OSError as exc:
+        raise CampaignWorkspaceError(
+            f"could not resolve campaign evidence root {root}: {exc}"
+        ) from exc
+
+    canon_resolved = pc.canonicalize_path(resolved)
+    canon_root = pc.canonicalize_path(real_root)
+    if canon_resolved.relative_to_root(canon_root) is None:
+        raise CampaignWorkspaceError(
+            "campaign evidence path is outside its physical root: "
+            f"path={path} resolved={resolved} root={real_root}"
+        )
 
 
 def _validated_state_payload(state: CampaignState) -> dict[str, Any]:
@@ -152,9 +189,10 @@ class CampaignStore:
     ) -> None:
         """Create an isolated workspace as one directory-level commit."""
         self.workspace.assert_isolated_from_target()
-        if self.root.exists():
+        if os.path.lexists(self.workspace.requested_root):
             raise CampaignAlreadyExistsError(
-                f"campaign workspace already exists: {self.root}"
+                "campaign workspace already exists: "
+                f"{self.workspace.requested_root}"
             )
 
         state_payload = _validated_state_payload(state)
@@ -298,6 +336,9 @@ class CampaignStore:
         self._require_initialized()
         refs: list[str] = []
         for directory in (self.workspace.artifacts_dir, self.workspace.evidence_dir):
-            for path in sorted(p for p in directory.rglob("*") if p.is_file()):
-                refs.append(path.relative_to(self.root).as_posix())
+            _assert_physically_contained(directory, self.root)
+            for path in sorted(directory.rglob("*")):
+                _assert_physically_contained(path, directory)
+                if path.is_file():
+                    refs.append(path.relative_to(self.root).as_posix())
         return tuple(refs)
