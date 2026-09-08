@@ -374,17 +374,24 @@ class ArtifactAdmissionService:
         # Artifact copy first, receipt last. An interruption between these writes
         # leaves only an unadmitted orphan, which CampaignStore deliberately does
         # not expose as evidence.
-        self._write_content_addressed_artifact(
-            destination=artifact_destination,
-            root=self.store.workspace.artifacts_dir,
-            data=source_bytes,
-            digest=artifact_digest,
-        )
-        self._write_receipt(
-            admission_path,
-            admission,
-            root=self.store.workspace.admissions_dir,
-        )
+        try:
+            self._write_content_addressed_artifact(
+                destination=artifact_destination,
+                root=self.store.workspace.artifacts_dir,
+                data=source_bytes,
+                digest=artifact_digest,
+            )
+            self._write_receipt(
+                admission_path,
+                admission,
+                root=self.store.workspace.admissions_dir,
+            )
+        except (CampaignWorkspaceError, CampaignIntegrityError):
+            raise
+        except OSError as exc:
+            raise CampaignWorkspaceError(
+                f"could not persist artifact admission: {exc}"
+            ) from exc
 
         refs = set(self.store.evidence_refs())
         if artifact_ref not in refs or admission_ref not in refs:
