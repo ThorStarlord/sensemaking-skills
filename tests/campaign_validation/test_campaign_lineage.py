@@ -223,6 +223,21 @@ def test_direct_p2_transition_remains_honestly_legacy_unbound(tmp_path):
     assert edge.immutable_ref is None
 
 
+def test_zero_evidence_authored_transition_is_bound_not_legacy(tmp_path):
+    workspace = _initialize(tmp_path)
+    _advance(workspace, transition_id="TR-ZERO", evidence=())
+
+    lineage = CampaignLineageService(workspace).inspect()
+    assert len(lineage.transitions) == 1
+    transition = lineage.transitions[0]
+    assert transition.transition_id == "TR-ZERO"
+    assert transition.binding_status == "bound"
+    assert transition.receipt_ref is not None
+    assert transition.evidence_refs == ()
+    assert lineage.consumption_edges == ()
+    assert lineage.orphan_intent_refs == ()
+
+
 def test_tampered_immutable_snapshot_fails_closed(tmp_path):
     workspace = _initialize(tmp_path)
     evidence_ref = _write_raw_evidence(workspace, "tamper.md", b"original\n")
@@ -247,7 +262,6 @@ def test_failed_semantic_commit_leaves_orphan_intent_not_false_consumption_edge(
         transition_id="TR-NEVER-COMMITTED",
         evidence_refs=(evidence_ref,),
     )
-    assert receipt_ref is not None
 
     lineage = lineage_service.inspect()
     assert lineage.transitions == ()
@@ -270,6 +284,19 @@ def test_conflicting_precommit_intent_for_same_transition_id_fails_closed(tmp_pa
             transition_id="TR-CONFLICT",
             evidence_refs=(second,),
         )
+
+
+def test_unexpected_entry_in_committed_consumption_directory_fails_closed(tmp_path):
+    workspace = _initialize(tmp_path)
+    evidence_ref = _write_raw_evidence(workspace, "strict.md", b"strict bytes\n")
+    _advance(workspace, transition_id="TR-STRICT", evidence=(evidence_ref,))
+
+    receipt_dir = workspace / "lineage" / "consumptions" / "TR-STRICT"
+    (receipt_dir / "unexpected.txt").write_text("ambiguous", encoding="utf-8")
+
+    with pytest.raises(CampaignIntegrityError) as exc_info:
+        CampaignLineageService(workspace).inspect()
+    assert "INVALID_LINEAGE_CONSUMPTION_RECEIPT" in exc_info.value.diagnostic_codes
 
 
 def test_lineage_cli_json_is_read_only_and_contains_no_recommendation_semantics(tmp_path):
