@@ -270,6 +270,10 @@ class CampaignStore:
             raise CampaignIdentityError(
                 "campaign handoff and state must use the same campaign_id"
             )
+        if handoff.current_state != current:
+            raise CampaignIdentityError(
+                "campaign handoff current_state must equal campaign-state.yaml"
+            )
         _atomic_write_yaml(
             self.workspace.handoff_path,
             _validated_handoff_payload(handoff),
@@ -279,9 +283,14 @@ class CampaignStore:
         self._require_initialized()
         if not self.workspace.handoff_path.is_file():
             raise CampaignNotInitializedError("campaign handoff has not been written")
+        current = self.load_state()
         handoff = load_campaign_handoff(self.workspace.handoff_path)
-        if handoff.campaign_id != self.load_state().campaign_id:
+        if handoff.campaign_id != current.campaign_id:
             raise CampaignIdentityError("stored campaign handoff has the wrong campaign_id")
+        if handoff.current_state != current:
+            raise CampaignIdentityError(
+                "stored campaign handoff current_state does not match campaign-state.yaml"
+            )
         return handoff
 
     def evidence_refs(self) -> tuple[str, ...]:

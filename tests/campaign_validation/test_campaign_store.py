@@ -5,6 +5,7 @@ import yaml
 
 from sensemaking_skills.campaign_semantics import (
     Authority,
+    CampaignHandoff,
     CampaignPolicy,
     CampaignState,
     TransitionRecord,
@@ -127,6 +128,34 @@ def test_trace_events_append_without_replacing_prior_events(tmp_path):
         {"event": "created"},
         {"event": "artifact_validated", "artifact": "brief.md"},
     )
+
+
+def test_handoff_snapshot_must_equal_current_campaign_state(tmp_path):
+    store = CampaignStore(tmp_path / "CMP-1")
+    store.initialize(_state())
+    current = store.load_state()
+    handoff = CampaignHandoff(
+        campaign_id=current.campaign_id,
+        current_state=current,
+        canonical_artifacts=(),
+        allowed_next_actions=("inspect_repository",),
+        stop_conditions=(),
+    )
+
+    store.write_handoff(handoff)
+    assert store.load_handoff() == handoff
+
+    stale_handoff = CampaignHandoff(
+        campaign_id=current.campaign_id,
+        current_state=_state(current_state="stale"),
+        canonical_artifacts=(),
+        allowed_next_actions=("inspect_repository",),
+        stop_conditions=(),
+    )
+    with pytest.raises(CampaignIdentityError, match="current_state"):
+        store.write_handoff(stale_handoff)
+
+    assert store.load_handoff() == handoff
 
 
 def test_evidence_refs_are_workspace_relative_and_stable(tmp_path):
