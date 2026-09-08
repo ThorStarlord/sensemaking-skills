@@ -40,6 +40,12 @@ from .lineage import (
     TransitionLineage,
     load_consumption_receipt,
 )
+from .reconciliation import (
+    CampaignReconciliationResult,
+    CampaignReconciliationService,
+    ReconciliationAdmission,
+    ReconciliationEvidence,
+)
 from .service import (
     CampaignDiagnostic,
     CampaignService,
@@ -66,6 +72,8 @@ __all__ = [
     "CampaignLineageResult",
     "CampaignLineageService",
     "CampaignNotInitializedError",
+    "CampaignReconciliationResult",
+    "CampaignReconciliationService",
     "CampaignService",
     "CampaignSnapshot",
     "CampaignStore",
@@ -79,6 +87,8 @@ __all__ = [
     "DeferDecision",
     "EvidenceBinding",
     "LineageEvidence",
+    "ReconciliationAdmission",
+    "ReconciliationEvidence",
     "TransitionLineage",
     "load_consumption_receipt",
 ]
