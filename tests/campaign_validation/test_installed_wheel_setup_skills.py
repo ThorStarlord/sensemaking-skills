@@ -24,6 +24,7 @@ Like tests/campaign_validation/test_installed_wheel_smoke.py, this is slow
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import venv
@@ -39,6 +40,7 @@ CANONICAL_REFERENCES = [
     "skills/repo-sensemaker/references/weakness-types.md",
 ]
 PACKAGED_SKILL = "sensemaking_skills/skill_trees/repo-sensemaker/SKILL.md"
+PACKAGED_CAPABILITY_CATALOG = "sensemaking_skills/defaults/capability-registry.yaml"
 
 
 def _venv_python(venv_dir: Path) -> Path:
@@ -175,3 +177,65 @@ def test_setup_skills_reports_drift_and_requires_force(tmp_path):
     assert forced.returncode == 0, forced.stdout + forced.stderr
     assert installed.read_bytes() == original, (
         "--force must replace the divergent copy with the canonical one")
+
+
+def test_installed_wheel_supports_p6_capability_inspection_without_source_checkout(tmp_path):
+    wheel, venv_dir, work_dir = _build_and_install_wheel(tmp_path)
+
+    with zipfile.ZipFile(wheel) as z:
+        assert PACKAGED_CAPABILITY_CATALOG in z.namelist(), (
+            f"wheel {wheel.name} missing {PACKAGED_CAPABILITY_CATALOG}"
+        )
+
+    cli_path = str(_venv_script(venv_dir, "sensemaking-skills"))
+    workspace = work_dir / "CMP-P6-WHEEL"
+
+    initialized = subprocess.run(
+        [
+            cli_path, "campaign", "init",
+            "--workspace", str(workspace),
+            "--campaign-id", "CMP-P6-WHEEL",
+            "--mission", "prove packaged P6 capability inspection",
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert initialized.returncode == 0, initialized.stdout + initialized.stderr
+
+    advanced = subprocess.run(
+        [
+            cli_path, "campaign", "advance",
+            "--workspace", str(workspace),
+            "--transition-id", "TR-P6-WHEEL",
+            "--to-state", "architecture_review_needed",
+            "--decision", "the agent explicitly authored an architecture review responsibility",
+            "--responsibility-id", "R-P6-WHEEL",
+            "--responsibility-statement", "inspect architecture-review capabilities",
+            "--decision-blocked", "which capability, if any, the agent should select",
+            "--scope", "installed-wheel P6 proof",
+            "--authority", "authorized_autonomously",
+            "--success-condition", "capability metadata is inspectable from the wheel",
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert advanced.returncode == 0, advanced.stdout + advanced.stderr
+
+    inspected = subprocess.run(
+        [
+            cli_path, "campaign", "capabilities",
+            "--workspace", str(workspace),
+            "--responsibility-type", "architecture_review",
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert inspected.returncode == 0, inspected.stdout + inspected.stderr
+    payload = json.loads(inspected.stdout)
+    assert payload["code"] == "CAMPAIGN_CAPABILITIES"
+    assert payload["candidate_count"] == 1
+    assert payload["candidates"][0]["id"] == "architectural-review"
+    assert payload["candidates"][0]["availability"] == "external"
+    encoded = json.dumps(payload).lower()
+    assert "recommended_capability" not in encoded
+    assert "rank" not in encoded
