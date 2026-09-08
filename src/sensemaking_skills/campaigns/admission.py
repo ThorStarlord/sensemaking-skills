@@ -132,8 +132,10 @@ def dump_artifact_admission(admission: ArtifactAdmission) -> dict[str, Any]:
 
 
 def load_artifact_admission(value: Any) -> ArtifactAdmission:
+    source_path: Path | None = None
     if isinstance(value, (str, Path)):
-        with Path(value).open(encoding="utf-8") as handle:
+        source_path = Path(value)
+        with source_path.open(encoding="utf-8") as handle:
             value = yaml.safe_load(handle)
     if not isinstance(value, Mapping):
         raise ArtifactAdmissionContractError("artifact admission must be a mapping")
@@ -189,6 +191,12 @@ def load_artifact_admission(value: Any) -> ArtifactAdmission:
         raise ArtifactAdmissionContractError(
             "validation_result no longer matches validation_result_sha256"
         )
+
+    if source_path is not None:
+        if source_path.suffix != ".yaml" or source_path.stem != canonical_json_digest(data):
+            raise ArtifactAdmissionContractError(
+                "artifact admission receipt filename no longer matches receipt payload"
+            )
 
     return ArtifactAdmission(
         campaign_id=campaign_id,
