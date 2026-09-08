@@ -4,7 +4,7 @@
 **Last updated:** 2026-09-08  
 **Current phase:** Productization / implementation  
 **Primary program:** Sensemaking Skills v0.3 campaign-based productization  
-**Current frontier:** P6 — real capability registry
+**Current frontier:** P7 — durable handoff/resume UX
 
 This is the repository's living status summary. It points at authoritative design sources and current implementation direction; it is not itself an ADR or an execution authorization.
 
@@ -60,13 +60,13 @@ The productization pivot began at:
 main@5c2c807542f7e150d4a031430f59e297ed816b24
 ```
 
-The current integrated implementation frontier after P5 is:
+The current integrated implementation frontier after P6 is:
 
 ```text
-main@d1b925a17620fc98b2bbcdc528feb32feacc9d6e
+main@488358afaf9e34e58d467df9493b89ba281ea344
 ```
 
-That `main` contains the exact qualified P5 tree and therefore includes the cumulative P0–P5 productization work.
+That merge has parents `b4c3c1205cb821038aa648e1ab5f7bf08109f81c` and exact-qualified P6 head `08fda8ade6d43dd8832288b402f83d8da4d1a9ad`, and its tree is exactly the qualified P6 tree `ad121976c863953f3ee2a332187bc0fb2b67c814`.
 
 ## What is implemented
 
@@ -147,7 +147,7 @@ sensemaking-skills campaign defer
 sensemaking-skills campaign close
 ```
 
-P5 now preserves the semantic control boundary explicitly:
+P5 preserves the semantic control boundary explicitly:
 
 ```text
 admitted / durable evidence
@@ -172,6 +172,41 @@ Key properties:
 
 See [`docs/campaign-decisions.md`](docs/campaign-decisions.md).
 
+### P6 — Real capability registry — MERGED
+
+Implemented:
+
+```text
+sensemaking-skills campaign capabilities
+```
+
+P6 exposes real declared Skill/workflow capability metadata without semantic routing:
+
+```text
+active responsibility
+        ↓
+AGENT supplies responsibility classification
+        ↓
+deterministic capability lookup
+        ↓
+unranked candidates + availability + required-authority metadata
+        ↓
+AGENT chooses one / none / ordinary work
+```
+
+Key properties:
+
+- catalog membership, runtime availability, and execution authority remain separate facts;
+- current agent-native Skills are `external` rather than falsely claimed installed;
+- workflow identities/liveness are cross-checked and `compatibility_only` workflows are unavailable;
+- live Skill identities must actually ship;
+- Skill output and mutation declarations are qualification-checked against canonical metadata;
+- malformed catalog data fails closed;
+- an unmapped responsibility classification returns an honest empty candidate set;
+- no P6 surface ranks, recommends, selects, invokes, or authorizes a capability.
+
+See [`docs/capability-registry.md`](docs/capability-registry.md).
+
 ## Current productization objective
 
 The v0.3 north-star outcome is:
@@ -193,45 +228,43 @@ user goal
 → handoff / continue / stop
 ```
 
-## Current implementation frontier — P6
+## Current implementation frontier — P7
 
-The next bounded slice is **P6 — Real capability registry**.
+The next bounded slice is **P7 — Durable handoff/resume UX**.
 
-The purpose is to expose real Skill/workflow capability metadata to the active coding agent without turning deterministic machinery into a router.
+The purpose is to productize the existing P2 handoff-generation and reconstruction primitives so a fresh coding-agent context can safely resume a Campaign from durable repository-independent state rather than prior chat memory.
 
 Required control shape:
 
 ```text
-active responsibility
+current durable campaign state
         ↓
-AGENT supplies responsibility classification
+deterministic handoff generation
         ↓
-deterministic capability lookup
+self-contained reconstruction pointers + integrity bindings
         ↓
-unranked candidates + availability + authority metadata
+fresh agent / process
         ↓
-AGENT chooses one / none / ordinary work
+strict resume validation
+        ↓
+AGENT reconstructs context and decides next action
 ```
 
-P6 should reuse the existing `Capability`, `CapabilityAvailability`, `RegisteredCapability`, `CapabilityRegistry`, and `AvailabilityStatus` contracts. It should populate them from explicit current Skill/workflow metadata and liveness declarations rather than infer capability suitability from free-form prose.
-
-P6 must preserve:
+P7 should reuse the canonical `CampaignHandoff` contract and existing `CampaignService.generate_handoff()` / `CampaignService.resume()` primitives. It should add first-class user surfaces such as:
 
 ```text
-warranted responsibility
-!= available capability
-!= authorized capability
+sensemaking-skills campaign handoff
+sensemaking-skills campaign resume
 ```
 
-It must **not**:
+P7 must preserve:
 
-- infer responsibility type from the responsibility statement;
-- rank candidates;
-- emit a recommended/best capability;
-- invoke a Skill/workflow automatically;
-- treat catalog membership as availability;
-- treat availability as proof of execution authorization;
-- resurrect proposed/deprecated/compatibility-only entries as current capabilities.
+- current state remains the authority; the handoff is not a second source of truth;
+- stale or tampered handoffs fail closed;
+- handoff/resume does not infer unstored conversation context;
+- active responsibility, authority, evidence refs, deferrals, terminal state, and transition history remain reconstructible;
+- handoff generation and resume do not recommend a next responsibility/capability or grant authority;
+- a genuinely fresh process can continue from durable campaign data without the old conversation.
 
 ## Semantic-control invariant
 
@@ -253,6 +286,7 @@ Deterministic machinery:
   What are their mechanical availability/liveness properties?
   What authority metadata is declared?
   Is the transition structurally reconstructible?
+  Does the handoff bind exactly to the reconstructible current state?
 ```
 
 Therefore:
@@ -262,6 +296,7 @@ validator passed != conclusion is true
 warranted responsibility != available capability
 available capability != authorized capability
 recommendation != execution authority
+handoff != semantic recommendation
 ```
 
 And:
@@ -272,12 +307,11 @@ Campaign Controller != semantic router
 
 ## Remaining v0.3 sequence
 
-1. **P6 — Real capability registry** — CURRENT, without automatic ranking/routing.
-2. **P7 — Durable handoff/resume UX**.
-3. **P8 — Artifact/evidence lineage**.
-4. **P9 — Reconciliation lifecycle**.
-5. **P10 — Harness adapters**.
-6. **P11 — External golden-path qualification and v0.3 release**.
+1. **P7 — Durable handoff/resume UX** — CURRENT.
+2. **P8 — Artifact/evidence lineage**.
+3. **P9 — Reconciliation lifecycle**.
+4. **P10 — Harness adapters**.
+5. **P11 — External golden-path qualification and v0.3 release**.
 
 ## Research and experiment disposition
 
@@ -344,6 +378,7 @@ with deterministic state reconstruction and without requiring the prior conversa
 | Canonical Sensemaking Campaign product model | `docs/sensemaking-campaign.md` |
 | Active v0.3 delivery plan | `docs/productization-v0.3.md` |
 | Agent-authored campaign decisions | `docs/campaign-decisions.md` |
+| Capability registry inspection | `docs/capability-registry.md` |
 | SkillOpt influence/adaptation and research boundary | `docs/research/skillopt-adaptation.md` |
 | Agent-native operating model | `docs/agent-native-operating-workflow.md` |
 | Decision vs orchestration boundary | `docs/decision-orchestration-boundary.md` |
