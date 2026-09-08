@@ -76,13 +76,16 @@ The JSON surface is intended for coding agents and other deterministic consumers
 
 ## Exit semantics
 
+The P3 campaign commands define the following campaign-specific exit contract:
+
 | Exit | Meaning |
 |---:|---|
 | `0` | command completed successfully / campaign is valid |
 | `2` | Click command-line usage error |
 | `3` | persisted campaign is invalid or its semantic contract cannot be reconstructed |
 | `4` | workspace/lifecycle precondition failure such as missing, existing, isolated-path, identity, or transaction state |
-| `130` | interrupted by the user |
+
+P3 does not define a new campaign-specific interrupt exit code; interruption behavior remains part of the existing top-level Click entrypoint rather than this campaign protocol.
 
 Unexpected internal failures continue to use the CLI's generic non-zero failure path.
 
