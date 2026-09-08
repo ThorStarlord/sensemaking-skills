@@ -1,8 +1,13 @@
 """Durable file-backed storage for campaign-semantic artifacts.
 
 Storage is intentionally non-semantic: it validates typed contracts, preserves
-append-only history, and writes current snapshots atomically.  Selecting the
-next responsibility or capability remains an agent decision.
+append-only history, and writes current snapshots atomically. Selecting the next
+responsibility or capability remains an agent decision.
+
+P2 adds a small durable transaction journal. Publishing a fully prepared journal
+directory is the commit-intent boundary; live files are then materialized in an
+idempotent order with ``campaign-state.yaml`` last. A crash after commit intent
+is recoverable without guessing semantic intent.
 """
 
 from __future__ import annotations
@@ -39,6 +44,7 @@ from .errors import (
     CampaignAlreadyExistsError,
     CampaignIdentityError,
     CampaignNotInitializedError,
+    CampaignTransactionError,
     CampaignWorkspaceError,
 )
 from .workspace import CampaignWorkspace
@@ -47,12 +53,7 @@ _SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 
 
 def _assert_physically_contained(path: Path, root: Path) -> None:
-    """Fail closed unless ``path`` resolves physically beneath ``root``.
-
-    This reuses the repository's shared path-containment primitive so evidence
-    enumeration cannot turn a symlink or Windows reparse point into an escape
-    from the campaign workspace.
-    """
+    """Fail closed unless ``path`` resolves physically beneath ``root``."""
     try:
         resolved, failure = pc.resolve_containment(path, root)
     except Exception as exc:  # pragma: no cover - defensive fail-closed guard
@@ -62,7 +63,7 @@ def _assert_physically_contained(path: Path, root: Path) -> None:
 
     if failure is not None or resolved is None:
         raise CampaignWorkspaceError(
-            "campaign evidence path is not physically contained: "
+            "campaign path is not physically contained: "
             f"path={path} root={root} failure={failure}"
         )
 
@@ -70,14 +71,14 @@ def _assert_physically_contained(path: Path, root: Path) -> None:
         real_root = root.resolve(strict=False)
     except OSError as exc:
         raise CampaignWorkspaceError(
-            f"could not resolve campaign evidence root {root}: {exc}"
+            f"could not resolve campaign root {root}: {exc}"
         ) from exc
 
     canon_resolved = pc.canonicalize_path(resolved)
     canon_root = pc.canonicalize_path(real_root)
     if canon_resolved.relative_to_root(canon_root) is None:
         raise CampaignWorkspaceError(
-            "campaign evidence path is outside its physical root: "
+            "campaign path is outside its physical root: "
             f"path={path} resolved={resolved} root={real_root}"
         )
 
@@ -115,12 +116,7 @@ def _validated_handoff_payload(handoff: CampaignHandoff) -> dict[str, Any]:
 def _write_yaml(path: Path, payload: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="\n") as handle:
-        yaml.safe_dump(
-            dict(payload),
-            handle,
-            sort_keys=False,
-            allow_unicode=True,
-        )
+        yaml.safe_dump(dict(payload), handle, sort_keys=False, allow_unicode=True)
         handle.flush()
         os.fsync(handle.fileno())
 
@@ -131,12 +127,7 @@ def _atomic_write_yaml(path: Path, payload: Mapping[str, Any]) -> None:
     tmp_path = Path(tmp_name)
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
-            yaml.safe_dump(
-                dict(payload),
-                handle,
-                sort_keys=False,
-                allow_unicode=True,
-            )
+            yaml.safe_dump(dict(payload), handle, sort_keys=False, allow_unicode=True)
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(tmp_path, path)
@@ -150,23 +141,34 @@ def _exclusive_write_yaml(path: Path, payload: Mapping[str, Any]) -> None:
     try:
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
     except FileExistsError as exc:
-        raise CampaignWorkspaceError(f"append-only record already exists: {path.name}") from exc
+        raise CampaignWorkspaceError(
+            f"append-only record already exists: {path.name}"
+        ) from exc
     with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
-        yaml.safe_dump(
-            dict(payload),
-            handle,
-            sort_keys=False,
-            allow_unicode=True,
-        )
+        yaml.safe_dump(dict(payload), handle, sort_keys=False, allow_unicode=True)
         handle.flush()
         os.fsync(handle.fileno())
+
+
+def _trace_is_one_event_extension(current: CampaignTrace, prepared: CampaignTrace) -> bool:
+    return (
+        prepared.campaign_id == current.campaign_id
+        and prepared.schema_version == current.schema_version
+        and prepared.replication_id == current.replication_id
+        and prepared.initial_state == current.initial_state
+        and prepared.extensions == current.extensions
+        and len(prepared.events) == len(current.events) + 1
+        and prepared.events[:-1] == current.events
+    )
 
 
 class CampaignStore:
     """Persist one campaign without selecting or executing campaign work."""
 
     def __init__(self, workspace: str | Path, *, target_repo: str | Path | None = None):
-        self.workspace = CampaignWorkspace(Path(workspace), Path(target_repo) if target_repo is not None else None)
+        self.workspace = CampaignWorkspace(
+            Path(workspace), Path(target_repo) if target_repo is not None else None
+        )
 
     @property
     def root(self) -> Path:
@@ -213,6 +215,7 @@ class CampaignStore:
         )
         try:
             (staging / "transitions").mkdir()
+            (staging / ".transactions").mkdir()
             (staging / "artifacts").mkdir()
             (staging / "evidence").mkdir()
             _write_yaml(staging / "campaign-state.yaml", state_payload)
@@ -255,11 +258,7 @@ class CampaignStore:
         return policy
 
     def append_transition(self, transition: TransitionRecord) -> Path:
-        """Append one immutable transition record.
-
-        P1 intentionally does not update CampaignState here.  P2's service layer
-        will own the atomic state+transition lifecycle operation.
-        """
+        """Append one immutable transition outside a P2 lifecycle transaction."""
         self._require_initialized()
         if not _SAFE_ID.fullmatch(transition.id):
             raise CampaignWorkspaceError(
@@ -342,3 +341,204 @@ class CampaignStore:
                 if path.is_file():
                     refs.append(path.relative_to(self.root).as_posix())
         return tuple(refs)
+
+    def commit_lifecycle(
+        self,
+        *,
+        state: CampaignState,
+        transition: TransitionRecord,
+        trace: CampaignTrace,
+    ) -> Path:
+        """Commit transition+trace+state with durable, crash-recoverable intent."""
+        self._require_initialized()
+        self.recover_lifecycle_transactions()
+        current = self.load_state()
+        if not _SAFE_ID.fullmatch(transition.id):
+            raise CampaignTransactionError("unsafe transition id for lifecycle commit")
+        if state.campaign_id != current.campaign_id or trace.campaign_id != current.campaign_id:
+            raise CampaignIdentityError("lifecycle transaction campaign identity mismatch")
+
+        state_payload = _validated_state_payload(state)
+        transition_payload = _validated_transition_payload(transition)
+        trace_payload = _validated_trace_payload(trace)
+
+        final_transition = self.workspace.transitions_dir / f"{transition.id}.yaml"
+        if os.path.lexists(final_transition):
+            raise CampaignTransactionError(
+                f"transition id already committed: {transition.id}"
+            )
+
+        transactions_dir = self.workspace.transactions_dir
+        transactions_dir.mkdir(parents=True, exist_ok=True)
+        _assert_physically_contained(transactions_dir, self.root)
+        transaction_dir = transactions_dir / transition.id
+        if os.path.lexists(transaction_dir):
+            raise CampaignTransactionError(
+                f"pending lifecycle transaction already exists: {transition.id}"
+            )
+
+        staging = Path(
+            tempfile.mkdtemp(prefix=f".{transition.id}.staging-", dir=transactions_dir)
+        )
+        published = False
+        try:
+            _write_yaml(staging / "campaign-state.yaml", state_payload)
+            _write_yaml(staging / "transition.yaml", transition_payload)
+            _write_yaml(staging / "trace.yaml", trace_payload)
+            try:
+                os.replace(staging, transaction_dir)
+            except OSError as exc:
+                raise CampaignTransactionError(
+                    f"could not publish lifecycle commit intent for {transition.id}: {exc}"
+                ) from exc
+            published = True
+        finally:
+            if not published and staging.exists():
+                shutil.rmtree(staging)
+
+        try:
+            self._apply_lifecycle_transaction(transaction_dir)
+        except Exception as exc:
+            if isinstance(exc, CampaignTransactionError):
+                detail = str(exc)
+            else:
+                detail = repr(exc)
+            raise CampaignTransactionError(
+                "lifecycle commit intent is durable but materialization is pending; "
+                f"resume/recovery must complete transition {transition.id}: {detail}"
+            ) from exc
+        return final_transition
+
+    def recover_lifecycle_transactions(self) -> tuple[str, ...]:
+        """Complete every published P2 transaction idempotently."""
+        self._require_initialized()
+        transactions_dir = self.workspace.transactions_dir
+        transactions_dir.mkdir(parents=True, exist_ok=True)
+        _assert_physically_contained(transactions_dir, self.root)
+
+        # Unpublished staging directories carry no commit intent.
+        for entry in tuple(transactions_dir.iterdir()):
+            if entry.name.startswith(".") and ".staging-" in entry.name:
+                if entry.is_symlink():
+                    entry.unlink()
+                elif entry.is_dir():
+                    shutil.rmtree(entry)
+                else:
+                    entry.unlink()
+
+        recovered: list[str] = []
+        for transaction_dir in sorted(
+            entry for entry in transactions_dir.iterdir() if not entry.name.startswith(".")
+        ):
+            if (
+                transaction_dir.is_symlink()
+                or not transaction_dir.is_dir()
+                or not _SAFE_ID.fullmatch(transaction_dir.name)
+            ):
+                raise CampaignTransactionError(
+                    f"invalid transaction journal entry: {transaction_dir.name}"
+                )
+            _assert_physically_contained(transaction_dir, transactions_dir)
+            try:
+                self._apply_lifecycle_transaction(transaction_dir)
+            except Exception as exc:
+                raise CampaignTransactionError(
+                    f"failed to recover lifecycle transaction {transaction_dir.name}: {exc}"
+                ) from exc
+            recovered.append(transaction_dir.name)
+        return tuple(recovered)
+
+    def _apply_lifecycle_transaction(self, transaction_dir: Path) -> None:
+        _assert_physically_contained(transaction_dir, self.workspace.transactions_dir)
+        state_path = transaction_dir / "campaign-state.yaml"
+        transition_path = transaction_dir / "transition.yaml"
+        trace_path = transaction_dir / "trace.yaml"
+        for prepared_path in (state_path, transition_path, trace_path):
+            _assert_physically_contained(prepared_path, transaction_dir)
+            if not prepared_path.is_file():
+                raise CampaignTransactionError(
+                    f"prepared lifecycle artifact is missing: {prepared_path.name}"
+                )
+
+        prepared_state = load_campaign_state(state_path)
+        prepared_transition = load_transition_record(transition_path)
+        prepared_trace = load_campaign_trace(trace_path)
+        current_state = self.load_state()
+        current_trace = self.load_trace()
+
+        if prepared_transition.id != transaction_dir.name:
+            raise CampaignTransactionError("transaction directory/id mismatch")
+        if not (
+            prepared_state.campaign_id
+            == prepared_trace.campaign_id
+            == current_state.campaign_id
+        ):
+            raise CampaignIdentityError(
+                "prepared lifecycle artifacts disagree on campaign_id"
+            )
+        if (
+            current_state != prepared_state
+            and current_state.current_state != prepared_transition.from_state
+        ):
+            raise CampaignTransactionError(
+                "live campaign state is neither the transaction source nor the exact prepared state"
+            )
+
+        final_transition = self.workspace.transitions_dir / f"{prepared_transition.id}.yaml"
+        _assert_physically_contained(final_transition, self.workspace.transitions_dir)
+        if os.path.lexists(final_transition):
+            if not final_transition.is_file():
+                raise CampaignTransactionError("committed transition path is not a file")
+            if load_transition_record(final_transition) != prepared_transition:
+                raise CampaignTransactionError(
+                    "committed transition id has divergent content"
+                )
+        else:
+            _exclusive_write_yaml(
+                final_transition,
+                _validated_transition_payload(prepared_transition),
+            )
+
+        if current_trace != prepared_trace:
+            if not _trace_is_one_event_extension(current_trace, prepared_trace):
+                raise CampaignTransactionError(
+                    "prepared trace is not an exact one-event extension of live trace"
+                )
+            _atomic_write_yaml(
+                self.workspace.trace_path,
+                _validated_trace_payload(prepared_trace),
+            )
+
+        # Any existing handoff snapshots the pre-transition state. Absence is valid.
+        if os.path.lexists(self.workspace.handoff_path):
+            if self.workspace.handoff_path.is_dir():
+                raise CampaignTransactionError(
+                    "campaign handoff path is unexpectedly a directory"
+                )
+            self.workspace.handoff_path.unlink()
+
+        # Publish the authoritative current-state snapshot last. Therefore an
+        # observed advanced state always has its transition and trace history.
+        current_state = self.load_state()
+        if current_state != prepared_state:
+            if current_state.current_state != prepared_transition.from_state:
+                raise CampaignTransactionError(
+                    "campaign state diverged during lifecycle commit"
+                )
+            _atomic_write_yaml(
+                self.workspace.state_path,
+                _validated_state_payload(prepared_state),
+            )
+
+        if self.load_state() != prepared_state:
+            raise CampaignTransactionError(
+                "campaign state verification failed after commit"
+            )
+        if load_transition_record(final_transition) != prepared_transition:
+            raise CampaignTransactionError(
+                "transition verification failed after commit"
+            )
+        if self.load_trace() != prepared_trace:
+            raise CampaignTransactionError("trace verification failed after commit")
+
+        shutil.rmtree(transaction_dir)

@@ -1,24 +1,38 @@
-"""File-backed campaign workspace primitives.
+"""File-backed campaign workspace and deterministic lifecycle primitives.
 
-This package persists campaign-semantic artifacts without taking semantic control
-away from the active coding agent.  The agent decides what repository evidence
-means; this package only preserves, validates, and reconstructs durable state.
+The active coding agent retains semantic control: it decides what evidence
+means and supplies lifecycle decisions. This package validates and persists the
+durable structural consequences of those decisions.
 """
 
 from .errors import (
     CampaignAlreadyExistsError,
     CampaignIdentityError,
+    CampaignIntegrityError,
     CampaignNotInitializedError,
+    CampaignTransactionError,
     CampaignWorkspaceError,
+)
+from .service import (
+    CampaignDiagnostic,
+    CampaignService,
+    CampaignSnapshot,
+    CampaignValidationResult,
 )
 from .store import CampaignStore
 from .workspace import CampaignWorkspace
 
 __all__ = [
     "CampaignAlreadyExistsError",
+    "CampaignDiagnostic",
     "CampaignIdentityError",
+    "CampaignIntegrityError",
     "CampaignNotInitializedError",
+    "CampaignService",
+    "CampaignSnapshot",
     "CampaignStore",
+    "CampaignTransactionError",
+    "CampaignValidationResult",
     "CampaignWorkspace",
     "CampaignWorkspaceError",
 ]
