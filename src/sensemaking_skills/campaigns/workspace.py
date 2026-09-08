@@ -72,6 +72,11 @@ class CampaignWorkspace:
     def evidence_dir(self) -> Path:
         return self.root / "evidence"
 
+    @property
+    def admissions_dir(self) -> Path:
+        """Append-only P4 receipts that grant validated artifacts evidence status."""
+        return self.root / "admissions"
+
     def assert_isolated_from_target(self) -> None:
         """Fail closed if campaign state would live inside the target repo."""
         if self.target_repo is None:
