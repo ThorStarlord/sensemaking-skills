@@ -43,6 +43,7 @@ def _emit_decision_success(
     if output_json:
         payload = status_payload(snapshot)
         payload["code"] = code
+        payload["state"] = canonicalize(snapshot.state)
         payload["transition"] = canonicalize(transition)
         json_echo(payload)
         return
@@ -56,6 +57,17 @@ def _emit_decision_success(
             click.echo(f"  - {evidence}")
     else:
         click.echo("Decision evidence: none")
+    if code == "CAMPAIGN_DEFERRED" and snapshot.state.deferred_responsibilities:
+        deferred = snapshot.state.deferred_responsibilities[-1]
+        click.echo(f"Deferred responsibility: {deferred.responsibility_id}")
+        click.echo(f"Reason: {deferred.reason}")
+        click.echo("Reopen when:")
+        for condition in deferred.reopen_when:
+            click.echo(f"  - {condition}")
+        if deferred.not_reopened_by:
+            click.echo("Not reopened by:")
+            for condition in deferred.not_reopened_by:
+                click.echo(f"  - {condition}")
 
 
 def register_campaign_decision_commands(
