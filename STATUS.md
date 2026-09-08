@@ -4,7 +4,7 @@
 **Last updated:** 2026-09-08  
 **Current phase:** Productization / implementation  
 **Primary program:** Sensemaking Skills v0.3 campaign-based productization  
-**Current frontier:** P5 — agent-authored campaign decisions
+**Current frontier:** P6 — real capability registry
 
 This is the repository's living status summary. It points at authoritative design sources and current implementation direction; it is not itself an ADR or an execution authorization.
 
@@ -60,13 +60,13 @@ The productization pivot began at:
 main@5c2c807542f7e150d4a031430f59e297ed816b24
 ```
 
-The current integrated implementation frontier after P4 is:
+The current integrated implementation frontier after P5 is:
 
 ```text
-main@79b3aca042a4a526b35e09284e0093159f271bb1
+main@d1b925a17620fc98b2bbcdc528feb32feacc9d6e
 ```
 
-That current `main` contains the exact qualified P4 tree and therefore includes the cumulative P0–P4 productization work.
+That `main` contains the exact qualified P5 tree and therefore includes the cumulative P0–P5 productization work.
 
 ## What is implemented
 
@@ -137,11 +137,46 @@ file exists
 
 Files merely placed under `artifacts/` are not automatically evidence. Raw `evidence/` semantics remain explicitly separate.
 
+### P5 — Agent-authored decisions — MERGED
+
+Implemented:
+
+```text
+sensemaking-skills campaign advance
+sensemaking-skills campaign defer
+sensemaking-skills campaign close
+```
+
+P5 now preserves the semantic control boundary explicitly:
+
+```text
+admitted / durable evidence
+        ↓
+AGENT judgment
+        ↓
+typed decision contract
+        ↓
+existing CampaignService primitive
+        ↓
+recoverable state + transition + trace
+```
+
+Key properties:
+
+- `advance` persists exactly one explicit next responsibility supplied by the agent;
+- trigger evidence must already satisfy the campaign evidence contract and is bound to the installing transition;
+- `defer` preserves its reason and optional reopening contract;
+- `close` persists an explicit terminal classification and later advance fails closed;
+- JSON surfaces expose exact replacement state plus committed transition;
+- no P5 command ranks/selects capabilities, interprets artifact semantics, grants authority, or creates a second persistence path.
+
+See [`docs/campaign-decisions.md`](docs/campaign-decisions.md).
+
 ## Current productization objective
 
 The v0.3 north-star outcome is:
 
-> A coding agent can start a durable Sensemaking Campaign on a real repository, consume validated agent-native diagnostic artifacts, record the warranted responsibility and authority, perform bounded work, validate/reconcile the result, hand the campaign to a fresh agent, and continue or terminate without relying on prior conversation memory.
+> A coding agent can start a durable Sensemaking Campaign on a real repository, consume validated agent-native diagnostic artifacts, record the warranted responsibility and authority, inspect available capabilities, perform bounded work, validate/reconcile the result, hand the campaign to a fresh agent, and continue or terminate without relying on prior conversation memory.
 
 The intended lifecycle is:
 
@@ -151,41 +186,52 @@ user goal
 → repository sensemaking
 → validated artifact admission
 → agent authors responsibility/authority decision
-→ bounded capability / ordinary coding
+→ capability inspection
+→ agent-selected bounded capability / ordinary coding
 → validation / reconciliation
 → durable transition
 → handoff / continue / stop
 ```
 
-## Current implementation frontier — P5
+## Current implementation frontier — P6
 
-The next bounded slice is **P5 — Agent-authored decisions**.
+The next bounded slice is **P6 — Real capability registry**.
 
-Target commands:
+The purpose is to expose real Skill/workflow capability metadata to the active coding agent without turning deterministic machinery into a router.
 
-```text
-sensemaking-skills campaign advance
-sensemaking-skills campaign defer
-sensemaking-skills campaign close
-```
-
-The purpose is to let the active agent persist an explicit semantic decision using already-admitted evidence and explicit authority while reusing P2's deterministic lifecycle commit/reconstruction boundary.
-
-P5 must preserve:
+Required control shape:
 
 ```text
-admitted evidence
+active responsibility
         ↓
-AGENT judgment
+AGENT supplies responsibility classification
         ↓
-explicit decision contract
+deterministic capability lookup
         ↓
-CampaignService
+unranked candidates + availability + authority metadata
         ↓
-durable transition
+AGENT chooses one / none / ordinary work
 ```
 
-It must **not** turn artifact fields, capability metadata, or validator output into automatic semantic routing.
+P6 should reuse the existing `Capability`, `CapabilityAvailability`, `RegisteredCapability`, `CapabilityRegistry`, and `AvailabilityStatus` contracts. It should populate them from explicit current Skill/workflow metadata and liveness declarations rather than infer capability suitability from free-form prose.
+
+P6 must preserve:
+
+```text
+warranted responsibility
+!= available capability
+!= authorized capability
+```
+
+It must **not**:
+
+- infer responsibility type from the responsibility statement;
+- rank candidates;
+- emit a recommended/best capability;
+- invoke a Skill/workflow automatically;
+- treat catalog membership as availability;
+- treat availability as proof of execution authorization;
+- resurrect proposed/deprecated/compatibility-only entries as current capabilities.
 
 ## Semantic-control invariant
 
@@ -195,6 +241,7 @@ The implementation must preserve this separation:
 Agent:
   What does the evidence mean?
   Which responsibility is warranted?
+  How should that responsibility be classified for capability inspection?
   Which available capability should be selected?
   Does the result justify advance, defer, or close?
 
@@ -202,9 +249,10 @@ Deterministic machinery:
   Is the representation valid?
   Is state persisted safely?
   Does referenced evidence satisfy the current evidence contract?
-  Does authority metadata permit the claimed action?
+  What registered capabilities declare compatibility?
+  What are their mechanical availability/liveness properties?
+  What authority metadata is declared?
   Is the transition structurally reconstructible?
-  What durable evidence and history exist?
 ```
 
 Therefore:
@@ -224,13 +272,12 @@ Campaign Controller != semantic router
 
 ## Remaining v0.3 sequence
 
-1. **P5 — Agent-authored decisions** — CURRENT.
-2. **P6 — Real capability registry**, without automatic ranking/routing.
-3. **P7 — Durable handoff/resume UX**.
-4. **P8 — Artifact/evidence lineage**.
-5. **P9 — Reconciliation lifecycle**.
-6. **P10 — Harness adapters**.
-7. **P11 — External golden-path qualification and v0.3 release**.
+1. **P6 — Real capability registry** — CURRENT, without automatic ranking/routing.
+2. **P7 — Durable handoff/resume UX**.
+3. **P8 — Artifact/evidence lineage**.
+4. **P9 — Reconciliation lifecycle**.
+5. **P10 — Harness adapters**.
+6. **P11 — External golden-path qualification and v0.3 release**.
 
 ## Research and experiment disposition
 
@@ -296,6 +343,7 @@ with deterministic state reconstruction and without requiring the prior conversa
 | Product definition, principles, authority model | `CONTEXT.md` |
 | Canonical Sensemaking Campaign product model | `docs/sensemaking-campaign.md` |
 | Active v0.3 delivery plan | `docs/productization-v0.3.md` |
+| Agent-authored campaign decisions | `docs/campaign-decisions.md` |
 | SkillOpt influence/adaptation and research boundary | `docs/research/skillopt-adaptation.md` |
 | Agent-native operating model | `docs/agent-native-operating-workflow.md` |
 | Decision vs orchestration boundary | `docs/decision-orchestration-boundary.md` |
