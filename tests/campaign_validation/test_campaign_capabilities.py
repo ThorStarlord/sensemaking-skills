@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 from click.testing import CliRunner
 
 from sensemaking_skills.campaign_semantics import Authority, CampaignState, Responsibility
@@ -27,6 +28,9 @@ from sensemaking_skills.campaigns.capabilities import (
     load_capability_registry,
 )
 from sensemaking_skills.cli import CAMPAIGN_WORKSPACE_EXIT, cli
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _initialize_active(workspace: Path, *, authority: Authority = Authority.AUTHORIZED_AUTONOMOUSLY) -> None:
@@ -76,6 +80,34 @@ def test_default_catalog_loads_real_skill_and_workflow_identities() -> None:
     assert "compatibility_only" in compatibility.availability_reason
 
 
+def test_packaged_skill_capability_outputs_match_canonical_skill_registry() -> None:
+    catalog = yaml.safe_load(
+        (REPO_ROOT / "src/sensemaking_skills/defaults/capability-registry.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    skill_registry = yaml.safe_load(
+        (REPO_ROOT / "skills/workflow-planner/references/skill-registry.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    canonical: dict[str, dict] = {}
+    for ecosystem in skill_registry["ecosystems"].values():
+        for skill in ecosystem.get("skills", []):
+            canonical[skill["id"]] = skill
+
+    for item in catalog["capabilities"]:
+        if item["kind"] != "skill":
+            continue
+        assert item["id"] in canonical, (
+            f"P6 capability {item['id']!r} is not a canonical Skill registry identity"
+        )
+        assert item["output_artifact"] == canonical[item["id"]].get("artifact"), (
+            f"P6 output contract drift for {item['id']!r}"
+        )
+
+
 def test_proposed_and_deprecated_skill_identities_do_not_masquerade_as_available() -> None:
     registry = load_capability_registry()
 
@@ -90,7 +122,7 @@ def test_proposed_and_deprecated_skill_identities_do_not_masquerade_as_available
 def test_catalog_rejects_duplicate_ids_fail_closed(tmp_path: Path) -> None:
     catalog = tmp_path / "capability-registry.yaml"
     catalog.write_text(
-        """schema_version: \"1\"\ncapabilities:\n  - &item\n    id: duplicate\n    kind: skill\n    source: test\n    accepted_responsibility_types: [test]\n    output_artifact: result\n    mutates_repository: false\n    authority: authorized_autonomously\n    availability: unknown\n    returns_control: true\n  - <<: *item\n""",
+        """schema_version: \"1\"\ncapabilities:\n  - &item\n    id: duplicate\n    kind: skill\n    source: test\n    accepted_responsibility_types: [test]\n    output_artifact: result\n    mutates_repository: false\n    authority: authorized_autonomously\n    availability: unknown\n    availability_reason: test identity is intentionally unresolved\n    returns_control: true\n  - <<: *item\n""",
         encoding="utf-8",
     )
 
@@ -101,11 +133,44 @@ def test_catalog_rejects_duplicate_ids_fail_closed(tmp_path: Path) -> None:
 def test_catalog_rejects_unknown_fields_fail_closed(tmp_path: Path) -> None:
     catalog = tmp_path / "capability-registry.yaml"
     catalog.write_text(
-        """schema_version: \"1\"\ncapabilities:\n  - id: malformed\n    kind: skill\n    source: test\n    accepted_responsibility_types: [test]\n    output_artifact: result\n    mutates_repository: false\n    authority: authorized_autonomously\n    availability: unknown\n    returns_control: true\n    semantic_score: 0.99\n""",
+        """schema_version: \"1\"\ncapabilities:\n  - id: malformed\n    kind: skill\n    source: test\n    accepted_responsibility_types: [test]\n    output_artifact: result\n    mutates_repository: false\n    authority: authorized_autonomously\n    availability: unknown\n    availability_reason: test identity is intentionally unresolved\n    returns_control: true\n    semantic_score: 0.99\n""",
         encoding="utf-8",
     )
 
     with pytest.raises(CapabilityCatalogError, match="unknown fields"):
+        load_capability_registry(catalog_path=catalog)
+
+
+def test_catalog_rejects_live_skill_identity_without_shipped_implementation(tmp_path: Path) -> None:
+    catalog = tmp_path / "capability-registry.yaml"
+    catalog.write_text(
+        """schema_version: \"1\"\ncapabilities:\n  - id: invented-live-skill\n    kind: skill\n    source: test\n    accepted_responsibility_types: [test]\n    output_artifact: result\n    mutates_repository: false\n    authority: authorized_autonomously\n    availability: external\n    availability_reason: claimed external capability for qualification\n    returns_control: true\n""",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(CapabilityCatalogError, match="no current shipped Skill implementation"):
+        load_capability_registry(catalog_path=catalog)
+
+
+def test_catalog_requires_reason_for_non_available_status(tmp_path: Path) -> None:
+    catalog = tmp_path / "capability-registry.yaml"
+    catalog.write_text(
+        """schema_version: \"1\"\ncapabilities:\n  - id: repo-sensemaker\n    kind: skill\n    source: test\n    accepted_responsibility_types: [test]\n    output_artifact: repository_sensemaking_brief\n    mutates_repository: false\n    authority: authorized_autonomously\n    availability: external\n    returns_control: true\n""",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(CapabilityCatalogError, match="availability_reason is required"):
+        load_capability_registry(catalog_path=catalog)
+
+
+def test_catalog_rejects_non_string_availability_reason(tmp_path: Path) -> None:
+    catalog = tmp_path / "capability-registry.yaml"
+    catalog.write_text(
+        """schema_version: \"1\"\ncapabilities:\n  - id: repo-sensemaker\n    kind: skill\n    source: test\n    accepted_responsibility_types: [test]\n    output_artifact: repository_sensemaking_brief\n    mutates_repository: false\n    authority: authorized_autonomously\n    availability: external\n    availability_reason: [not, text]\n    returns_control: true\n""",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(CapabilityCatalogError, match="availability_reason must be a string"):
         load_capability_registry(catalog_path=catalog)
 
 
