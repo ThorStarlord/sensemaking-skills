@@ -24,10 +24,12 @@ validators check structural integrity only.
 - **Dependencies** are explicitly `task`, `evidence`, or `authority`.
 - **Terminal states** include `goal_achieved`, `no_further_work_warranted`,
   `owner_decision_required`, `authority_boundary_reached`, `external_blocker`,
-  `evidence_insufficient`, `invalid_execution`, and `deferred`.
-- **Deferred responsibility** requires a reason and reopening condition; an
-  external boundary records its owner, evidence, implication, and reopening
-  condition.
+  `evidence_insufficient`, `invalid_execution`, `deferred`, and
+  `qualified_pr_ready`.
+- **Deferred responsibility** requires a responsibility id and a reason; a
+  reopening condition is optional. An external boundary requires its id,
+  capability, owner, ownership flag, accessibility, and implication; evidence
+  and a reopening condition are optional.
 
 ## Artifacts and boundaries
 
@@ -65,14 +67,28 @@ the explicit loaders and emitted through the matching `dump_*` functions in
 The contract boundary normalizes observed representation variants, including
 historical campaign state snapshots, handoff state references, and enum values.
 Round-trip qualification means semantic equality after load → dump → load, not
-byte identity. Unknown decision-relevant fields and malformed known fields fail;
-the observed `owner_routing` state metadata is retained explicitly.
+byte identity.
+
+Strictness is uniform. Every loader — `load_campaign_state`,
+`load_transition_record`, `load_campaign_policy`, `load_campaign_trace`,
+`load_campaign_handoff`, `load_responsibility` — and every nested
+decision-relevant record (responsibility, uncertainty, dependency, deferred
+responsibility, external boundary) rejects unknown fields with `ContractError`
+rather than dropping them, requires `schema_version` to be `"1"`, and raises
+`ContractError` (never a bare `KeyError`) for missing or malformed known fields.
+The only sanctioned extension is `owner_routing` on a campaign state, retained
+under `extensions`. A `Campaign Handoff`'s `campaign_id` must equal the
+`campaign_id` of its resolved current state. Campaign trace events and campaign
+policy `known_transitions` entries are deliberately opaque maps.
 
 Run the bounded drift gate with:
 
 `PYTHONPATH=src python scripts/campaign-contract-roundtrip.py --m7r-root tests/fixtures/campaign-semantics/m7r`
 
-The vendored fixtures under `tests/fixtures/campaign-semantics/m7r/` are a
-minimal frozen representative campaign corpus used as read-only empirical
-inputs. This boundary does not execute campaigns, grant authority, schedule
-work, or decide semantic responsibility.
+It round-trips the vendored historical corpus and every shipped template
+(`campaign-state`, `transition-record`, `campaign-policy`, `campaign-handoff`)
+through its production loader. The vendored fixtures under
+`tests/fixtures/campaign-semantics/m7r/` are a minimal frozen representative
+campaign corpus used as read-only empirical inputs. This boundary does not
+execute campaigns, grant authority, schedule work, or decide semantic
+responsibility.

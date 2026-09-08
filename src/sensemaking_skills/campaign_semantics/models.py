@@ -239,11 +239,19 @@ def validate_reconstruction(
             diagnostics.append(ValidationDiagnostic("TERMINAL_STATE_HAS_ACTIVE_RESPONSIBILITY", "terminal state cannot retain executable responsibility"))
     if state.active_responsibility and state.authority is None:
         diagnostics.append(ValidationDiagnostic("MISSING_AUTHORITY", "active responsibility requires an authority classification"))
-    responsibility_ids = set()
+    # A TASK dependency may legitimately point at any responsibility the state
+    # still knows about: the active one, any additional active one, or a
+    # deferred one. Only a dependency on an id the state cannot account for is
+    # a defect.
+    known_responsibility_ids: set[str] = set()
     if state.active_responsibility:
-        responsibility_ids.add(state.active_responsibility.id)
-        for dependency in state.active_responsibility.dependencies:
-            if dependency.type is DependencyType.TASK and dependency.requires not in responsibility_ids:
+        known_responsibility_ids.add(state.active_responsibility.id)
+    known_responsibility_ids.update(r.id for r in state.additional_active_responsibilities)
+    known_responsibility_ids.update(d.responsibility_id for d in state.deferred_responsibilities)
+    checked = [r for r in (state.active_responsibility, *state.additional_active_responsibilities) if r is not None]
+    for responsibility in checked:
+        for dependency in responsibility.dependencies:
+            if dependency.type is DependencyType.TASK and dependency.requires not in known_responsibility_ids:
                 diagnostics.append(ValidationDiagnostic("MISSING_TASK_DEPENDENCY", f"responsibility dependency {dependency.requires!r} does not exist"))
             if dependency.type is DependencyType.EVIDENCE and dependency.requires not in existing_evidence:
                 diagnostics.append(ValidationDiagnostic("MISSING_EVIDENCE_DEPENDENCY", f"evidence dependency {dependency.requires!r} does not exist"))
