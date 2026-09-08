@@ -3,7 +3,7 @@
 **Status:** ACTIVE owner direction  
 **Effective:** 2026-09-08  
 **Base at pivot:** `main@5c2c807542f7e150d4a031430f59e297ed816b24`  
-**Current integrated frontier:** P4 merged at `main@79b3aca042a4a526b35e09284e0093159f271bb1`  
+**Current integrated frontier:** P5 merged at `main@d1b925a17620fc98b2bbcdc528feb32feacc9d6e`  
 **Primary objective:** turn the ratified agent-native control model into a usable campaign-based engineering product.  
 **Canonical product model:** [`sensemaking-campaign.md`](sensemaking-campaign.md)
 
@@ -58,6 +58,7 @@ start a Sensemaking Campaign
 → diagnose a repository with the existing agent-native Skill path
 → preserve the validated artifact
 → record the warranted responsibility and authority
+→ inspect available capabilities
 → perform bounded work
 → validate/reconcile the result
 → record a durable transition
@@ -101,8 +102,8 @@ For the version-independent product definition and full trust model, see [`sense
 | **P2 — Campaign service** | **MERGED** | Deterministic lifecycle service with recoverable transition commits, reconstruction, defer/terminate, handoff, and resume primitives. |
 | **P3 — Campaign CLI foundation** | **MERGED** | `campaign init/status/validate/history` with human and JSON surfaces plus stable exit semantics. |
 | **P4 — Validated artifact ingestion** | **MERGED** | Canonically validated, content-addressed artifact admission with append-only receipts; raw artifact files do not automatically become evidence. |
-| **P5 — Agent-authored decisions** | **CURRENT** | Add explicit `campaign advance/defer/close` decision surfaces without semantic routing. |
-| **P6 — Real capability registry** | PLANNED | Expose responsibility-to-capability metadata while preserving availability/authority separation. |
+| **P5 — Agent-authored decisions** | **MERGED** | Explicit `campaign advance/defer/close` decisions persist agent judgment without semantic routing. |
+| **P6 — Real capability registry** | **CURRENT** | Expose responsibility-to-capability metadata while preserving availability/authority separation and agent-owned selection. |
 | **P7 — Durable handoff/resume** | PLANNED | Productize fresh-agent reconstruction as a first-class user experience. |
 | **P8 — Artifact/evidence lineage** | PLANNED | Add stable provenance and consumption links across artifacts, evidence, decisions, and transitions. |
 | **P9 — Reconciliation lifecycle** | PLANNED | Connect reconciliation/repair-verification outputs to explicit campaign transitions. |
@@ -213,15 +214,9 @@ file under artifacts/
 
 See [`artifact-ingestion.md`](artifact-ingestion.md) for the implemented P4 contract.
 
-## 7. Current implementation frontier — P5
+### P5 — Agent-authored decisions — MERGED
 
-The next bounded implementation slice is **P5 — Agent-authored decisions**.
-
-### Goal
-
-Allow the active coding agent to explicitly persist a semantic campaign decision after inspecting admitted evidence, current responsibility, authority, and campaign state.
-
-Target product surfaces:
+Implemented:
 
 ```text
 sensemaking-skills campaign advance
@@ -229,59 +224,102 @@ sensemaking-skills campaign defer
 sensemaking-skills campaign close
 ```
 
-### Required boundary
-
-The active agent supplies the decision. Deterministic machinery validates and persists it.
+P5 makes the semantic decision boundary explicit:
 
 ```text
-admitted evidence
+admitted / durable evidence
         ↓
 agent semantic judgment
         ↓
-explicit decision contract
+typed advance / defer / close decision
         ↓
-CampaignService
+existing CampaignService lifecycle primitive
         ↓
-TransitionRecord + CampaignState + trace
+recoverable CampaignState + TransitionRecord + trace
 ```
 
-P5 must **not**:
+Important P5 invariants include:
 
-- infer which responsibility is warranted;
-- infer whether evidence semantically supports a conclusion;
-- rank or select a Skill/capability;
-- convert artifact fields into automatic routing;
-- grant execution authority;
-- create a semantic truth validator.
+- `advance` installs exactly one explicit next responsibility supplied by the agent;
+- responsibility trigger evidence is bound to the installing transition and must already satisfy the campaign evidence contract;
+- `defer` preserves the canonical optional reopening contract instead of fabricating a condition;
+- `close` persists an explicit `TerminalState` and later advance attempts fail closed;
+- JSON success surfaces expose the exact replacement state and committed transition;
+- P5 reuses P2 recovery/transaction machinery rather than creating another persistence path;
+- no P5 command emits an automatic semantic recommendation or capability selection.
 
-### P5 acceptance direction
+See [`campaign-decisions.md`](campaign-decisions.md) for the implemented P5 contract.
 
-A complete P5 slice should prove at least:
+## 7. Current implementation frontier — P6
 
-1. the agent can explicitly author `advance`, `defer`, and `close` decisions;
-2. referenced evidence must already satisfy the current evidence contract;
-3. authority metadata remains explicit and mechanically coherent;
-4. a terminal campaign cannot be advanced accidentally;
-5. decision persistence uses P2's recoverable lifecycle commit rather than a second write path;
-6. a fresh process reconstructs the same authored decision and history;
-7. CLI JSON output is stable enough for an agent harness to consume without prose scraping;
-8. no command emits an automatic semantic recommendation.
+The next bounded implementation slice is **P6 — Real capability registry**.
 
-Stop P5 before capability selection/routing logic. That belongs to the later capability-registry integration and still remains agent-controlled.
+### Goal
 
-## 8. Remaining planned milestones
-
-### P6 — Real capability registry
-
-Populate responsibility-to-capability metadata while preserving the distinction:
+Allow the active coding agent to inspect real capability metadata relevant to an explicitly classified responsibility while preserving the permanent separation:
 
 ```text
 warranted responsibility
-!= capability availability
-!= execution authority
+!= available capability
+!= authorized capability
 ```
 
-No ranking or automatic routing is introduced.
+P6 should answer:
+
+> Which registered capabilities claim compatibility with this agent-classified responsibility, and what are their current availability and authority properties?
+
+P6 must **not** answer:
+
+> Which capability should the agent choose?
+
+### Required boundary
+
+The agent remains responsible for semantic classification and selection. Deterministic machinery may load, normalize, validate, and enumerate declared capability metadata.
+
+```text
+active responsibility
+        ↓
+agent supplies responsibility classification
+        ↓
+capability metadata lookup
+        ↓
+unranked inspectable candidates
+        ↓
+agent chooses one / none / ordinary work
+```
+
+### P6 implementation direction
+
+Reuse the existing campaign-semantic capability contracts rather than create another capability model:
+
+- `Capability`;
+- `CapabilityAvailability`;
+- `RegisteredCapability`;
+- `CapabilityRegistry`;
+- `AvailabilityStatus`.
+
+Populate them from current Skill/workflow metadata and liveness declarations through a bounded adapter/loader. Prefer explicit declarative metadata over semantic inference from prose such as `purpose` or responsibility statements.
+
+Initial product surface should be read-oriented and agent-consumable, for example:
+
+```text
+sensemaking-skills campaign capabilities
+```
+
+The exact command contract is implementation-owned, but qualification must prove that enumeration is deterministic and unranked, empty results are honest, liveness/availability remain fail closed, and authority metadata is exposed without manufacturing authorization.
+
+### P6 must not
+
+- infer a responsibility type from free-form responsibility prose;
+- rank candidates;
+- emit a `best` or `recommended` capability;
+- invoke a Skill/workflow automatically;
+- treat catalog membership as availability;
+- treat availability as execution authorization;
+- promote proposed/deprecated/compatibility-only entries into current capability availability;
+- create semantic routing inside Python.
+
+## 8. Remaining planned milestones
 
 ### P7 — Durable handoff/resume
 
