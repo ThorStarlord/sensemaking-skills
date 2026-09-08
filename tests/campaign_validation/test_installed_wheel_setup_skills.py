@@ -239,3 +239,79 @@ def test_installed_wheel_supports_p6_capability_inspection_without_source_checko
     encoded = json.dumps(payload).lower()
     assert "recommended_capability" not in encoded
     assert "rank" not in encoded
+
+
+def test_installed_wheel_supports_p7_handoff_and_fresh_resume_without_source_checkout(tmp_path):
+    wheel, venv_dir, work_dir = _build_and_install_wheel(tmp_path)
+    cli_path = str(_venv_script(venv_dir, "sensemaking-skills"))
+    workspace = work_dir / "CMP-P7-WHEEL"
+
+    campaign_help = subprocess.run(
+        [cli_path, "campaign", "--help"],
+        capture_output=True, text=True, timeout=60, cwd=str(work_dir),
+    )
+    assert campaign_help.returncode == 0, campaign_help.stdout + campaign_help.stderr
+    assert "handoff" in campaign_help.stdout
+    assert "resume" in campaign_help.stdout
+
+    initialized = subprocess.run(
+        [
+            cli_path, "campaign", "init",
+            "--workspace", str(workspace),
+            "--campaign-id", "CMP-P7-WHEEL",
+            "--mission", "prove packaged P7 fresh-context reconstruction",
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert initialized.returncode == 0, initialized.stdout + initialized.stderr
+
+    advanced = subprocess.run(
+        [
+            cli_path, "campaign", "advance",
+            "--workspace", str(workspace),
+            "--transition-id", "TR-P7-WHEEL",
+            "--to-state", "handoff_ready",
+            "--decision", "the agent explicitly authored the responsibility before handoff",
+            "--responsibility-id", "R-P7-WHEEL",
+            "--responsibility-statement", "continue from durable campaign context",
+            "--decision-blocked", "what the fresh agent should decide next",
+            "--scope", "installed-wheel P7 proof",
+            "--authority", "authorized_autonomously",
+            "--success-condition", "fresh process reconstructs the exact durable context",
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert advanced.returncode == 0, advanced.stdout + advanced.stderr
+
+    handed_off = subprocess.run(
+        [
+            cli_path, "campaign", "handoff",
+            "--workspace", str(workspace),
+            "--allowed-next-action", "fresh_agent_decides",
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert handed_off.returncode == 0, handed_off.stdout + handed_off.stderr
+    handoff_payload = json.loads(handed_off.stdout)
+    assert handoff_payload["code"] == "CAMPAIGN_HANDOFF_WRITTEN"
+    assert len(handoff_payload["reconstruction_sha256"]) == 64
+
+    resumed = subprocess.run(
+        [
+            cli_path, "campaign", "resume",
+            "--workspace", str(workspace),
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert resumed.returncode == 0, resumed.stdout + resumed.stderr
+    payload = json.loads(resumed.stdout)
+    assert payload["code"] == "CAMPAIGN_RESUMED"
+    assert payload["campaign_id"] == "CMP-P7-WHEEL"
+    assert payload["state"]["current_state"] == "handoff_ready"
+    assert payload["state"]["active_responsibility"]["id"] == "R-P7-WHEEL"
+    assert payload["handoff"]["allowed_next_actions"] == ["fresh_agent_decides"]
+    assert payload["reconstruction_sha256"] == handoff_payload["reconstruction_sha256"]
