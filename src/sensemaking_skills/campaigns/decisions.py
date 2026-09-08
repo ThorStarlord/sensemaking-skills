@@ -4,6 +4,11 @@ This module packages semantic decisions supplied by the active coding agent and
 translates them into the existing deterministic ``CampaignService`` lifecycle
 operations. It does not inspect artifact contents, infer responsibility, rank
 capabilities, or decide whether a campaign should advance, defer, or close.
+
+P8 adds a mechanical precommit lineage step. Before the existing P2 lifecycle
+primitive commits an authored decision, the exact supplied evidence refs are
+bound to immutable identities. The lineage intent does not authorize or justify
+the decision; it only preserves what bytes the agent explicitly cited.
 """
 
 from __future__ import annotations
@@ -18,6 +23,7 @@ from sensemaking_skills.campaign_semantics import (
 )
 
 from .errors import CampaignTransactionError
+from .lineage import CampaignLineageService
 from .service import CampaignService, CampaignSnapshot
 
 
@@ -71,6 +77,7 @@ class CampaignDecisionService:
         target_repo: str | Path | None = None,
     ) -> None:
         self.lifecycle = CampaignService(workspace, target_repo=target_repo)
+        self.lineage = CampaignLineageService(workspace)
 
     def advance(self, authored: AdvanceDecision) -> CampaignSnapshot:
         """Advance using the exact responsibility and evidence supplied by the agent."""
@@ -140,6 +147,14 @@ class CampaignDecisionService:
             terminal_state=None,
             authority=current.authority,
         )
+
+        # Append-only P8 intent is prepared before the P2 commit. If the later
+        # lifecycle write fails, the uncommitted lineage intent is an auditable
+        # orphan and is never treated as a consumed-evidence edge.
+        self.lineage.prepare_consumption(
+            transition_id=authored.transition_id,
+            evidence_refs=authored.evidence,
+        )
         return self.lifecycle.record_transition(
             new_state=new_state,
             transition=transition,
@@ -151,6 +166,10 @@ class CampaignDecisionService:
         _require_text(authored.to_state, field="to_state")
         _require_text(authored.decision, field="decision")
         _require_text(authored.reason, field="reason")
+        self.lineage.prepare_consumption(
+            transition_id=authored.transition_id,
+            evidence_refs=authored.evidence,
+        )
         return self.lifecycle.defer_responsibility(
             transition_id=authored.transition_id,
             to_state=authored.to_state,
@@ -166,6 +185,10 @@ class CampaignDecisionService:
         _require_text(authored.transition_id, field="transition_id")
         _require_text(authored.to_state, field="to_state")
         _require_text(authored.decision, field="decision")
+        self.lineage.prepare_consumption(
+            transition_id=authored.transition_id,
+            evidence_refs=authored.evidence,
+        )
         return self.lifecycle.terminate(
             transition_id=authored.transition_id,
             to_state=authored.to_state,
