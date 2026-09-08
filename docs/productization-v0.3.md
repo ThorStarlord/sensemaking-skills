@@ -3,17 +3,17 @@
 **Status:** ACTIVE owner direction  
 **Effective:** 2026-09-08  
 **Base at pivot:** `main@5c2c807542f7e150d4a031430f59e297ed816b24`  
-**Current integrated frontier:** P6 merged at `main@488358afaf9e34e58d467df9493b89ba281ea344`  
+**Current integrated frontier:** P7 merged at `main@250a30ddd55e100a311a5ab17650a0f3176de605`  
 **Primary objective:** turn the ratified agent-native control model into a usable campaign-based engineering product.  
 **Canonical product model:** [`sensemaking-campaign.md`](sensemaking-campaign.md)
 
-This document is the **versioned v0.3 delivery plan**. The durable definition of what a Sensemaking Campaign is belongs in [`sensemaking-campaign.md`](sensemaking-campaign.md).
+This document is the **versioned v0.3 delivery plan**. The durable definition of a Sensemaking Campaign belongs in [`sensemaking-campaign.md`](sensemaking-campaign.md).
 
 ## 1. Development-regime change
 
-The repository is moving from research/experiment-first development to implementation/productization-first development.
+The repository is implementation/productization-first.
 
-The default loop is now:
+The default loop is:
 
 ```text
 identify a user-visible capability
@@ -24,29 +24,35 @@ identify a user-visible capability
 → ship the slice
 ```
 
-Formal experiments are no longer the normal next step. Use them only when two or more consequential product decisions remain plausible, ordinary implementation/dogfood evidence cannot reasonably distinguish them, and the distinction would materially change architecture or product direction.
-
-Existing research artifacts remain evidence. They are not deleted, relabeled, or retroactively promoted. Incomplete experiments may be stopped by owner direction without manufacturing a candidate or a terminal scientific result.
+Formal experiments are reserved for consequential product uncertainties that implementation and dogfood evidence cannot reasonably resolve. Existing research remains evidence and keeps its actual claim ceilings.
 
 ## 2. Product boundary preserved
 
-This pivot does **not** reverse the accepted agent-native control model.
+The productization program does not reverse the accepted agent-native control model.
 
 - The active coding agent owns semantic control.
-- Deterministic Python machinery owns representation, persistence, validation, provenance, authority checks, and structural reconstruction.
+- Deterministic Python owns representation, persistence, validation, provenance, authority checks, integrity, and structural reconstruction.
 - A validator passing does not make a semantic conclusion true.
-- Capability availability does not select a capability.
-- Capability availability does not grant authority.
-- Recommendation does not authorize execution.
+- Capability availability does not select or authorize a capability.
+- A handoff does not decide what the fresh agent should do next.
+- Provenance/lineage does not establish semantic warrant.
 
-The campaign layer must therefore consume agent-authored/agent-produced decisions and validated artifacts; it must not reproduce repository diagnosis or semantic routing inside Python.
-
-The durable product-level invariant is:
+The durable invariant remains:
 
 ```text
 warranted responsibility
 != capability availability
 != execution authority
+```
+
+and for P8:
+
+```text
+provenance
+!= semantic truth
+
+consumed evidence
+!= sufficient evidence
 ```
 
 ## 3. v0.3 north-star outcome
@@ -55,25 +61,27 @@ A coding agent can:
 
 ```text
 start a Sensemaking Campaign
-→ diagnose a repository with the existing agent-native Skill path
-→ preserve the validated artifact
-→ record the warranted responsibility and authority
+→ diagnose a repository through the agent-native Skill path
+→ preserve and admit validated artifacts
+→ record warranted responsibility and authority
 → inspect available capabilities
 → perform bounded work
+→ record durable evidence
 → validate/reconcile the result
 → record a durable transition
-→ hand the campaign to a fresh agent
+→ inspect why that transition cites its evidence
+→ hand the Campaign to a fresh agent
 → resume without conversation memory
 → continue or terminate honestly
 ```
 
-A fresh agent should be able to reconstruct the active campaign from durable campaign state plus referenced canonical artifacts, not from the prior chat transcript.
+A fresh agent should reconstruct the active Campaign from durable Campaign state and referenced canonical artifacts, not the previous chat transcript.
 
 ## 4. Campaign architecture
 
-`campaign_semantics` remains the domain contract: what campaign state, responsibility, uncertainty, authority, transitions, handoffs, traces, and capability availability mean.
+`campaign_semantics` remains the domain contract for Campaign state, responsibility, uncertainty, authority, transitions, handoffs, traces, and capability availability.
 
-The v0.3 product layer is built around it:
+The product layer remains:
 
 ```text
 agent semantic judgment
@@ -89,43 +97,34 @@ campaign_semantics typed contracts
 filesystem workspace
 ```
 
-The store does not select work. The service does not become a semantic router. Registered capabilities remain inspectable candidates only.
-
-For the version-independent product definition and full trust model, see [`sensemaking-campaign.md`](sensemaking-campaign.md).
+Lineage is a read-only reconstruction of identities, provenance, and explicit consumption links already present in durable Campaign records. It must not become a second decision system.
 
 ## 5. Milestone status
 
 | Milestone | Status | Outcome |
 |---|---|---|
-| **P0 — Productization pivot** | **MERGED** | Implementation-first direction made durable; experiment-first program stopped as default. |
-| **P1 — Durable campaign workspace** | **MERGED** | Isolated file-backed campaign persistence with strict typed I/O and fail-closed filesystem boundaries. |
+| **P0 — Productization pivot** | **MERGED** | Implementation-first direction made durable; experiment-first development stopped as default. |
+| **P1 — Durable campaign workspace** | **MERGED** | Isolated file-backed Campaign persistence with strict typed I/O and fail-closed filesystem boundaries. |
 | **P2 — Campaign service** | **MERGED** | Deterministic lifecycle service with recoverable transition commits, reconstruction, defer/terminate, handoff, and resume primitives. |
 | **P3 — Campaign CLI foundation** | **MERGED** | `campaign init/status/validate/history` with human and JSON surfaces plus stable exit semantics. |
 | **P4 — Validated artifact ingestion** | **MERGED** | Canonically validated, content-addressed artifact admission with append-only receipts; raw artifact files do not automatically become evidence. |
 | **P5 — Agent-authored decisions** | **MERGED** | Explicit `campaign advance/defer/close` decisions persist agent judgment without semantic routing. |
-| **P6 — Real capability registry** | **MERGED** | Read-only, agent-classified capability inspection with explicit liveness, availability, and authority separation. |
-| **P7 — Durable handoff/resume** | **CURRENT** | Productize fresh-agent reconstruction as a first-class user experience. |
-| **P8 — Artifact/evidence lineage** | PLANNED | Add stable provenance and consumption links across artifacts, evidence, decisions, and transitions. |
-| **P9 — Reconciliation lifecycle** | PLANNED | Connect reconciliation/repair-verification outputs to explicit campaign transitions. |
+| **P6 — Real capability registry** | **MERGED** | Read-only agent-classified capability inspection with liveness, availability, and authority separation. |
+| **P7 — Durable handoff/resume** | **MERGED** | Fresh-context reconstruction with integrity-bound handoff and installed-wheel proof. |
+| **P8 — Artifact/evidence lineage** | **CURRENT** | Add stable evidence identity/provenance and explicit decision-consumption reconstruction. |
+| **P9 — Reconciliation lifecycle** | PLANNED | Connect reconciliation/repair-verification outputs to explicit Campaign transitions. |
 | **P10 — Harness adapters** | PLANNED | Improve setup for Claude Code, Codex, OpenCode, and generic agent environments. |
-| **P11 — v0.3 qualification/release** | PLANNED | Prove the external golden path and ship the first usable campaign-based release. |
+| **P11 — v0.3 qualification/release** | PLANNED | Prove the external golden path and ship the first usable Campaign-based release. |
 
 ## 6. Implemented milestone contracts
 
 ### P0 — Productization pivot — MERGED
 
-Delivered:
-
-- productization direction made durable;
-- formal experiment execution removed as the default product-development program;
-- prior research preserved with actual claim ceilings;
-- incomplete research branches stopped without manufacturing results.
+Delivered implementation-first direction while preserving historical research and claim ceilings.
 
 ### P1 — Durable campaign workspace — MERGED
 
-The file-backed campaign workspace is isolated from the target repository by contract for v0.3.
-
-Current control/evidence shape includes:
+Current workspace shape includes:
 
 ```text
 CMP-XXXX/
@@ -139,30 +138,11 @@ CMP-XXXX/
 └── evidence/
 ```
 
-Storage invariants include:
-
-- `campaign-state.yaml` is a replaceable current snapshot;
-- transition records are append-only;
-- trace history is append-preserving;
-- state replacement is atomic;
-- initialization does not overwrite an existing workspace;
-- when a target repository is supplied, the campaign workspace must not live inside that repository;
-- persisted semantic artifacts pass the existing strict campaign-semantic loader before acceptance;
-- physical path containment fails closed on symlink/reparse escapes.
+Important invariants include isolated workspace placement, strict typed Campaign I/O, append-only transition history, atomic state replacement, fail-closed physical containment, and non-overwrite initialization.
 
 ### P2 — Campaign service — MERGED
 
-Implemented deterministic lifecycle operations:
-
-- initialize;
-- validate;
-- record transition + replacement state through a durable transaction/recovery boundary;
-- defer responsibility;
-- terminate;
-- generate handoff;
-- resume/reconstruct.
-
-The service validates contracts and authority metadata but does not decide which responsibility is semantically warranted.
+Implemented deterministic initialize/validate/transition/defer/terminate/handoff/resume operations with durable commit intent and crash recovery. The service validates mechanically decidable contracts but never decides which responsibility is semantically warranted.
 
 ### P3 — Campaign CLI foundation — MERGED
 
@@ -175,7 +155,7 @@ sensemaking-skills campaign validate
 sensemaking-skills campaign history
 ```
 
-Read-oriented commands expose human-readable and machine-readable (`--json`) output. CLI reconstruction goes through `CampaignService`, not a second history implementation.
+CLI reconstruction goes through `CampaignService`, not a second history implementation.
 
 ### P4 — Validated artifact ingestion — MERGED
 
@@ -185,19 +165,19 @@ Implemented:
 sensemaking-skills campaign ingest
 ```
 
-The trust boundary is:
+Trust boundary:
 
 ```text
 artifact bytes
 → canonical validate-and-report.py router
-→ selected specialized or generic validator
+→ selected validator
 → valid=true
-→ content-addressed artifact copy
+→ content-addressed artifact
 → append-only admission receipt
-→ campaign evidence
+→ Campaign evidence
 ```
 
-Important invariants:
+Important invariant:
 
 ```text
 file under artifacts/
@@ -205,14 +185,7 @@ file under artifacts/
 != admitted campaign evidence
 ```
 
-- raw `evidence/` files preserve the earlier direct-evidence semantics;
-- files merely dropped under `artifacts/` are not admitted evidence;
-- validation is performed on an immutable snapshot of the exact bytes later copied;
-- admission receipts bind artifact digest, validator identity, router/validator digests, validation result, and campaign identity;
-- receipt is written last, so an interrupted write can leave an orphan artifact but cannot create false evidence status;
-- pre-P4 arbitrary artifact files are not silently grandfathered as validated evidence.
-
-See [`artifact-ingestion.md`](artifact-ingestion.md) for the implemented P4 contract.
+Admission receipts bind exact artifact digest, validator identity, router/validator digests, validation result, and Campaign identity. See [`artifact-ingestion.md`](artifact-ingestion.md).
 
 ### P5 — Agent-authored decisions — MERGED
 
@@ -231,24 +204,14 @@ admitted / durable evidence
         ↓
 agent semantic judgment
         ↓
-typed advance / defer / close decision
+typed decision
         ↓
-existing CampaignService lifecycle primitive
+CampaignService lifecycle primitive
         ↓
 recoverable CampaignState + TransitionRecord + trace
 ```
 
-Important P5 invariants include:
-
-- `advance` installs exactly one explicit next responsibility supplied by the agent;
-- responsibility trigger evidence is bound to the installing transition and must already satisfy the campaign evidence contract;
-- `defer` preserves the canonical optional reopening contract instead of fabricating a condition;
-- `close` persists an explicit `TerminalState` and later advance attempts fail closed;
-- JSON success surfaces expose the exact replacement state and committed transition;
-- P5 reuses P2 recovery/transaction machinery rather than creating another persistence path;
-- no P5 command emits an automatic semantic recommendation or capability selection.
-
-See [`campaign-decisions.md`](campaign-decisions.md) for the implemented P5 contract.
+Transition evidence is explicit durable consumption context supplied by the authored decision. P5 does not rank/select capabilities or infer semantic conclusions. See [`campaign-decisions.md`](campaign-decisions.md).
 
 ### P6 — Real capability registry — MERGED
 
@@ -258,131 +221,168 @@ Implemented:
 sensemaking-skills campaign capabilities
 ```
 
-P6 exposes declared capability metadata only after the active coding agent explicitly supplies a responsibility classification:
+P6 exposes declared capability metadata only after the agent supplies a responsibility classification. Results are deterministic and unranked; availability is not authority; capability inspection never selects or invokes work. See [`capability-registry.md`](capability-registry.md).
 
-```text
-active responsibility
-        ↓
-agent-supplied responsibility type
-        ↓
-strict capability metadata lookup
-        ↓
-deterministically ordered, unranked candidates
-        ↓
-agent chooses one / none / ordinary work
-```
+### P7 — Durable handoff/resume — MERGED
 
-Important P6 invariants include:
-
-- capability catalog membership does not imply runtime availability;
-- availability does not imply execution authority;
-- current agent-native Skills remain `external` until harness-specific detection is productized;
-- workflow capability identities are cross-checked against workflow catalog/liveness metadata;
-- `compatibility_only` workflows are mechanically unavailable;
-- live Skill identities must correspond to shipped Skill implementations;
-- capability artifact/mutation declarations are qualification-checked against canonical Skill metadata;
-- unknown responsibility classifications return an honest empty candidate set;
-- no response field ranks, recommends, selects, or invokes a capability;
-- malformed catalog data fails closed.
-
-See [`capability-registry.md`](capability-registry.md) for the implemented P6 contract.
-
-## 7. Current implementation frontier — P7
-
-The next bounded implementation slice is **P7 — Durable handoff/resume**.
-
-### Goal
-
-Turn the P2 handoff-generation and resume/reconstruction primitives into a first-class user experience that allows a fresh coding-agent context to continue a Campaign without prior chat memory.
-
-P7 should answer:
-
-> What durable campaign facts must a fresh agent read to reconstruct the current state, evidence boundary, active responsibility, authority, and continuation context safely?
-
-P7 must **not** answer:
-
-> What should the fresh agent decide next?
-
-### Required boundary
-
-The handoff is a durable reconstruction artifact, not a semantic recommendation or hidden conversation summary.
-
-```text
-current durable campaign state
-        ↓
-deterministic handoff generation
-        ↓
-self-contained reconstruction pointers + integrity bindings
-        ↓
-fresh agent / fresh process
-        ↓
-strict resume validation
-        ↓
-agent reconstructs context and decides next action
-```
-
-### P7 implementation direction
-
-Reuse the existing P2 `CampaignService.generate_handoff()` and `CampaignService.resume()` primitives and the canonical `CampaignHandoff` contract. Do not create another handoff state machine.
-
-Initial product surfaces should be explicit, stable, and machine-readable, for example:
+Implemented:
 
 ```text
 sensemaking-skills campaign handoff
 sensemaking-skills campaign resume
 ```
 
-Qualification should prove at least:
+P7 reuses the canonical P2 `CampaignHandoff` and `CampaignService` primitives rather than introducing another handoff state machine.
 
-- a handoff binds to the exact current campaign state rather than stale state;
-- a fresh process can resume from workspace + handoff without prior conversation memory;
-- stale/tampered handoffs fail closed;
-- terminal campaigns reconstruct honestly;
-- active responsibility, authority, evidence references, deferred responsibilities, terminal state, and transition history remain reconstructible through the existing contracts;
-- generating or reading a handoff does not mutate semantic campaign state or fabricate a next decision;
-- JSON output is stable and sufficient for an agent/harness adapter to consume.
+The P7 reconstruction checksum binds:
 
-### P7 must not
+```text
+protocol identity
+CampaignState
+ordered TransitionRecords
+CampaignTrace
+current evidence refs
+optional CampaignPolicy
+CampaignHandoff
+```
 
-- summarize or infer unstored chat context;
-- recommend the next responsibility/capability;
-- reinterpret evidence semantics;
+The checksum is stored as a YAML comment, leaving the semantic `CampaignHandoff` schema unchanged. It detects stale/edited/unbound handoffs under the existing filesystem trust model but is not a signature or authority grant.
+
+P7 proves fresh service/process reconstruction and installed-wheel `init → advance → handoff → resume` outside a source checkout. It never infers unstored conversation context, a next responsibility, capability choice, or authority.
+
+See [`campaign-handoff-resume.md`](campaign-handoff-resume.md).
+
+## 7. Current implementation frontier — P8
+
+The next bounded implementation slice is **P8 — Artifact/evidence lineage**.
+
+### Goal
+
+Make durable Campaign history answer:
+
+> What exact evidence supported this authored decision/transition, what immutable identity does each evidence item have, and what provenance establishes how it entered the Campaign?
+
+P8 must expose identity/provenance/consumption facts without deciding whether the evidence was semantically persuasive or sufficient.
+
+### Existing facts P8 should reuse
+
+P8 should build on the contracts already shipped:
+
+- P4 content-addressed admitted artifacts;
+- P4 append-only admission receipts;
+- raw `evidence/` files protected by the existing physical-containment boundary;
+- P5 `TransitionRecord.evidence` as explicit transition-consumption references;
+- responsibility trigger evidence where it remains durably represented;
+- trace transition/state digest bindings;
+- P7 reconstruction of current state/history/evidence refs.
+
+Do not create a parallel semantic ledger if these records already contain the required fact.
+
+### Required control shape
+
+```text
+durable evidence
+        ↓
+stable ref + SHA-256 identity + provenance classification
+        ↓
+agent-authored decision references evidence
+        ↓
+TransitionRecord.evidence preserves explicit consumption
+        ↓
+deterministic read-only lineage reconstruction
+```
+
+### Initial product surface
+
+Prefer a read-only agent-consumable surface such as:
+
+```text
+sensemaking-skills campaign lineage --workspace <CMP> [--json]
+```
+
+A useful lineage envelope should distinguish at least:
+
+- raw Campaign evidence;
+- admitted artifacts;
+- admission receipts;
+- exact SHA-256 identity of evidence bytes;
+- artifact/admission relationship;
+- transition ID and transition digest;
+- explicit transition → evidence consumption edges.
+
+If provenance cannot be established mechanically, fail closed rather than guess.
+
+### P8 must preserve
+
+```text
+artifact exists
+!= artifact admitted
+
+admitted artifact
+!= semantic truth
+
+transition cites evidence
+!= evidence sufficient
+
+lineage
+!= recommendation
+```
+
+### P8 must not
+
+- interpret artifact findings;
+- infer whether cited evidence logically supports the decision;
+- invent consumption edges that are not present in durable Campaign records;
+- rank evidence;
+- rank/select capabilities;
 - grant authority;
-- silently refresh a stale handoff during resume;
-- create a second source of truth beside `campaign-state.yaml`, transition history, trace, and referenced campaign artifacts;
-- weaken existing reconstruction/integrity validation for UX convenience.
+- rewrite historical transitions;
+- make lineage a second source of semantic truth;
+- grandfather arbitrary `artifacts/` files as evidence;
+- weaken P4 admission validation or P2 reconstruction integrity.
+
+### Qualification direction
+
+A qualified P8 candidate should prove at least:
+
+1. raw `evidence/` files receive stable content digests without changing their existing evidence semantics;
+2. admitted artifacts expose the exact P4 artifact digest and admission receipt provenance;
+3. orphan/unadmitted files under `artifacts/` do not appear as evidence lineage;
+4. transition → evidence edges come exactly from `TransitionRecord.evidence`;
+5. each transition exposes the digest already bound in the Campaign trace, or fails if trace integrity is defective;
+6. digest drift in raw/admitted evidence is detected under the existing trust model;
+7. lineage output is deterministic and read-only;
+8. no output field implies recommendation, ranking, semantic sufficiency, or authority;
+9. a fresh process can reconstruct lineage from durable Campaign files alone;
+10. the installed distribution exposes the product surface without requiring a source checkout.
 
 ## 8. Remaining planned milestones
 
-### P8 — Artifact/evidence lineage
-
-Add stable artifact identities/digests and consumption/provenance links so a campaign can answer why a decision was made and which immutable evidence supported it.
-
 ### P9 — Reconciliation lifecycle
 
-Connect existing output-reconciliation and repair-verification responsibilities to campaign transitions without treating mechanical validation as semantic truth.
+Connect existing output-reconciliation and repair-verification responsibilities to explicit Campaign transitions without treating mechanical validation as semantic truth.
 
 ### P10 — Harness adapters
 
-Improve setup for Claude Code, Codex, OpenCode, and generic agent Skill locations without placing agent-specific semantics inside the campaign core.
+Improve setup for Claude Code, Codex, OpenCode, and generic agent Skill locations without placing agent-specific semantics inside the Campaign core.
 
 ### P11 — v0.3 qualification/release
-
-v0.3 means the first usable campaign-based Sensemaking release, not completion of every research direction.
 
 Required golden path:
 
 ```text
 start
-→ consume diagnosis
-→ record responsibility
-→ bind authority
-→ inspect available capability
-→ record work evidence
+→ repository diagnosis
+→ validated artifact admission
+→ agent-authored responsibility/authority decision
+→ available capability inspection
+→ bounded work
+→ durable evidence
 → transition
+→ lineage inspection
 → handoff
-→ fresh-agent resume
-→ stop honestly
+→ fresh-context resume
+→ justified continuation or terminal stop
 ```
 
 ## 9. Explicit non-goals for v0.3
@@ -395,22 +395,22 @@ Do not build unless later product pressure warrants it:
 - critic/voting swarm;
 - self-modifying Skills;
 - autonomous SkillOpt loop;
-- campaign server/database/cloud service;
+- Campaign server/database/cloud service;
 - generic semantic truth validator;
 - automatic external mutation authority;
-- full multi-repository campaign engine.
+- full multi-repository Campaign engine.
 
 ## 10. Experiment disposition
 
-Research and experimental scaffolds remain available as laboratories and historical evidence. They are not the default active program.
+Research and experimental scaffolds remain laboratories/historical evidence rather than the default active program.
 
-In particular, EXP-0006 stopped at its actual completed boundary under the owner productization pivot. Preserve its diagnostic attempts, holdout freeze, contamination audit, and claim ceilings. Do not manufacture a Skill candidate merely to exercise the qualification mechanism.
+EXP-0006 remains stopped at its actual completed boundary under the owner productization pivot. Preserve its diagnostic attempts, frozen holdout identity/integrity record, contamination audit, and claim ceilings. Do not manufacture a Skill candidate merely to exercise the qualification mechanism.
 
-The provenance and disposition of SkillOpt-influenced Skill-quality ideas are recorded in [`research/skillopt-adaptation.md`](research/skillopt-adaptation.md). That note does not insert Skill optimization into the v0.3 milestone sequence, authorize EXP-0006, or change the Campaign product boundary.
+The provenance/disposition of SkillOpt-influenced Skill-quality ideas remains recorded in [`research/skillopt-adaptation.md`](research/skillopt-adaptation.md). That note does not insert Skill optimization into the v0.3 milestone sequence or alter the Campaign boundary.
 
 ## 11. Definition of v0.3 done
 
-The first campaign-based release is ready when a real external-repository run can demonstrate:
+The first Campaign-based release is ready when a real external-repository run demonstrates:
 
 ```text
 start
@@ -421,9 +421,10 @@ start
 → bounded work
 → durable evidence
 → transition
+→ lineage inspection
 → handoff
 → fresh-context resume
 → justified continuation or terminal stop
 ```
 
-with deterministic reconstruction and **without manual campaign/artifact repair or prior conversation memory as hidden input**.
+with deterministic reconstruction and **without manual Campaign/artifact repair or prior conversation memory as hidden input**.

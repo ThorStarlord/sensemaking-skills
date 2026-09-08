@@ -4,7 +4,7 @@
 **Last updated:** 2026-09-08  
 **Current phase:** Productization / implementation  
 **Primary program:** Sensemaking Skills v0.3 campaign-based productization  
-**Current frontier:** P7 — durable handoff/resume UX
+**Current frontier:** P8 — artifact/evidence lineage
 
 This is the repository's living status summary. It points at authoritative design sources and current implementation direction; it is not itself an ADR or an execution authorization.
 
@@ -12,15 +12,11 @@ This is the repository's living status summary. It points at authoritative desig
 
 Sensemaking Skills is an **agent-native engineering sensemaking and control layer for software-engineering agents**.
 
-The central product abstraction is the **Sensemaking Campaign**: a durable engineering decision process carried across agent sessions. The canonical product model is:
+The central product abstraction is the **Sensemaking Campaign**: a durable engineering decision process carried across agent sessions. The canonical product model is [`docs/sensemaking-campaign.md`](docs/sensemaking-campaign.md).
 
-[`docs/sensemaking-campaign.md`](docs/sensemaking-campaign.md)
+The active coding agent owns semantic control. Deterministic machinery owns representation, persistence, validation, provenance, authority checks, structural reconstruction, and mechanically decidable integrity constraints. The system is not a centralized semantic router, autonomous project manager, or universal multi-agent orchestrator.
 
-The active coding agent owns the semantic control loop. Sensemaking constrains and preserves that loop with repository evidence, bounded responsibilities, durable artifacts, deterministic validators, reconciliation, repair verification, authority boundaries, typed campaign state, and reconstructible transition history.
-
-It is not a centralized semantic router, autonomous project manager, or universal multi-agent orchestrator.
-
-Current architectural authority remains grounded in the accepted ADRs and current operating docs, especially:
+Current architectural authority remains grounded in accepted ADRs and current operating docs, especially:
 
 - ADR 0013 — the active coding agent owns the top-level control loop;
 - ADR 0014 — the evidence-grounded repository-sensemaking brief is the ratified core product boundary and automatic downstream routing is deferred;
@@ -33,9 +29,9 @@ Current architectural authority remains grounded in the accepted ADRs and curren
 
 ## Owner productization decision — 2026-09-08
 
-The repository moved from **research/experiment-first development** to **implementation/productization-first development**.
+The repository moved from research/experiment-first development to implementation/productization-first development.
 
-The default development loop is now:
+The default loop is:
 
 ```text
 identify a user-visible capability
@@ -46,11 +42,9 @@ identify a user-visible capability
 → ship the slice
 ```
 
-Formal experiments are no longer the normal next step. They are reserved for consequential product uncertainties that ordinary implementation and dogfood evidence cannot resolve.
+Formal experiments are reserved for consequential uncertainties that ordinary implementation and dogfood evidence cannot resolve.
 
-The versioned active delivery plan is:
-
-[`docs/productization-v0.3.md`](docs/productization-v0.3.md)
+The versioned delivery plan is [`docs/productization-v0.3.md`](docs/productization-v0.3.md).
 
 ## Integrated implementation baseline
 
@@ -60,13 +54,27 @@ The productization pivot began at:
 main@5c2c807542f7e150d4a031430f59e297ed816b24
 ```
 
-The current integrated implementation frontier after P6 is:
+The current integrated implementation frontier after P7 is:
 
 ```text
-main@488358afaf9e34e58d467df9493b89ba281ea344
+main@250a30ddd55e100a311a5ab17650a0f3176de605
 ```
 
-That merge has parents `b4c3c1205cb821038aa648e1ab5f7bf08109f81c` and exact-qualified P6 head `08fda8ade6d43dd8832288b402f83d8da4d1a9ad`, and its tree is exactly the qualified P6 tree `ad121976c863953f3ee2a332187bc0fb2b67c814`.
+That merge has parents:
+
+```text
+previous main
+0f2dcd61951d3d9020c587b6f21996cb3517eec7
+
+exact-qualified P7 head
+f791deb1f7bce85af9e615d65534549a54cc2ae0
+```
+
+and its tree is exactly the qualified P7 tree:
+
+```text
+67f5f1527748c1a005f328c52c6185058989ad7e
+```
 
 ## What is implemented
 
@@ -74,12 +82,12 @@ That merge has parents `b4c3c1205cb821038aa648e1ab5f7bf08109f81c` and exact-qual
 
 - implementation-first direction is durable;
 - formal experiments are no longer the default active program;
-- prior research remains preserved as evidence with its actual claim ceilings.
+- prior research remains preserved with actual claim ceilings.
 
 ### P1 — Durable campaign workspace — MERGED
 
 - isolated file-backed Campaign workspace;
-- strict typed campaign load/dump boundaries;
+- strict typed Campaign load/dump boundaries;
 - atomic current-state replacement;
 - append-only transitions and append-preserving trace;
 - fail-closed physical path containment;
@@ -137,6 +145,8 @@ file exists
 
 Files merely placed under `artifacts/` are not automatically evidence. Raw `evidence/` semantics remain explicitly separate.
 
+See [`docs/artifact-ingestion.md`](docs/artifact-ingestion.md).
+
 ### P5 — Agent-authored decisions — MERGED
 
 Implemented:
@@ -147,7 +157,7 @@ sensemaking-skills campaign defer
 sensemaking-skills campaign close
 ```
 
-P5 preserves the semantic control boundary explicitly:
+P5 preserves:
 
 ```text
 admitted / durable evidence
@@ -156,18 +166,17 @@ AGENT judgment
         ↓
 typed decision contract
         ↓
-existing CampaignService primitive
+CampaignService
         ↓
 recoverable state + transition + trace
 ```
 
 Key properties:
 
-- `advance` persists exactly one explicit next responsibility supplied by the agent;
-- trigger evidence must already satisfy the campaign evidence contract and is bound to the installing transition;
+- `advance` persists one explicit next responsibility supplied by the agent;
+- trigger evidence must satisfy the Campaign evidence contract and is bound to the installing transition;
 - `defer` preserves its reason and optional reopening contract;
-- `close` persists an explicit terminal classification and later advance fails closed;
-- JSON surfaces expose exact replacement state plus committed transition;
+- `close` persists an explicit terminal classification;
 - no P5 command ranks/selects capabilities, interprets artifact semantics, grants authority, or creates a second persistence path.
 
 See [`docs/campaign-decisions.md`](docs/campaign-decisions.md).
@@ -199,19 +208,57 @@ Key properties:
 - catalog membership, runtime availability, and execution authority remain separate facts;
 - current agent-native Skills are `external` rather than falsely claimed installed;
 - workflow identities/liveness are cross-checked and `compatibility_only` workflows are unavailable;
-- live Skill identities must actually ship;
-- Skill output and mutation declarations are qualification-checked against canonical metadata;
 - malformed catalog data fails closed;
-- an unmapped responsibility classification returns an honest empty candidate set;
 - no P6 surface ranks, recommends, selects, invokes, or authorizes a capability.
 
 See [`docs/capability-registry.md`](docs/capability-registry.md).
+
+### P7 — Durable handoff/resume UX — MERGED
+
+Implemented:
+
+```text
+sensemaking-skills campaign handoff
+sensemaking-skills campaign resume
+```
+
+P7 turns the existing P2 handoff/reconstruction primitives into a first-class fresh-context product surface:
+
+```text
+current durable Campaign
+        ↓
+canonical P2 handoff generation
+        ↓
+P7 reconstruction integrity binding
+        ↓
+fresh agent / fresh process
+        ↓
+canonical P2 reconstruction
+        ↓
+P7 binding verification
+        ↓
+AGENT decides what to do next
+```
+
+Key properties:
+
+- semantic `CampaignHandoff` schema remains unchanged;
+- the P7 SHA-256 reconstruction binding covers state, ordered transitions, trace, current evidence refs, optional policy, and handoff guidance;
+- the binding is an integrity checksum under the existing filesystem trust model, not a signature or authority grant;
+- valid-shape edits to handoff guidance fail closed;
+- unbound legacy/P2 handoffs are not silently treated as P7-bound handoffs;
+- a lifecycle transition invalidates the old handoff;
+- terminal Campaigns resume honestly without fabricated executable work;
+- fresh-process and installed-wheel qualification prove resume without prior chat context;
+- handoff guidance is context only and is never recommendation, selection, invocation, or execution authority.
+
+See [`docs/campaign-handoff-resume.md`](docs/campaign-handoff-resume.md).
 
 ## Current productization objective
 
 The v0.3 north-star outcome is:
 
-> A coding agent can start a durable Sensemaking Campaign on a real repository, consume validated agent-native diagnostic artifacts, record the warranted responsibility and authority, inspect available capabilities, perform bounded work, validate/reconcile the result, hand the campaign to a fresh agent, and continue or terminate without relying on prior conversation memory.
+> A coding agent can start a durable Sensemaking Campaign on a real repository, consume validated diagnostic artifacts, record warranted responsibility and authority, inspect available capabilities, perform bounded work, validate/reconcile the result, hand the Campaign to a fresh agent, and continue or terminate without relying on prior conversation memory.
 
 The intended lifecycle is:
 
@@ -225,46 +272,58 @@ user goal
 → agent-selected bounded capability / ordinary coding
 → validation / reconciliation
 → durable transition
-→ handoff / continue / stop
+→ handoff
+→ fresh-context resume
+→ continue / stop
 ```
 
-## Current implementation frontier — P7
+## Current implementation frontier — P8
 
-The next bounded slice is **P7 — Durable handoff/resume UX**.
+The next bounded slice is **P8 — Artifact/evidence lineage**.
 
-The purpose is to productize the existing P2 handoff-generation and reconstruction primitives so a fresh coding-agent context can safely resume a Campaign from durable repository-independent state rather than prior chat memory.
+P8 should make the Campaign able to answer mechanically:
+
+> Which immutable evidence supported this decision/transition, what is the exact identity of that evidence, and what provenance establishes how it entered the Campaign?
 
 Required control shape:
 
 ```text
-current durable campaign state
+durable evidence / admitted artifact
         ↓
-deterministic handoff generation
+stable identity + digest + provenance
         ↓
-self-contained reconstruction pointers + integrity bindings
+agent-authored decision references evidence
         ↓
-fresh agent / process
+transition persists the consumption link
         ↓
-strict resume validation
-        ↓
-AGENT reconstructs context and decides next action
+read-only lineage reconstruction
 ```
 
-P7 should reuse the canonical `CampaignHandoff` contract and existing `CampaignService.generate_handoff()` / `CampaignService.resume()` primitives. It should add first-class user surfaces such as:
+P8 should reuse current facts wherever possible:
+
+- P4 content-addressed artifacts and admission receipts;
+- raw `evidence/` records under the existing physical-containment contract;
+- P5 `TransitionRecord.evidence` consumption references;
+- trace transition digests;
+- current Campaign reconstruction.
+
+P8 must preserve:
 
 ```text
-sensemaking-skills campaign handoff
-sensemaking-skills campaign resume
+provenance != semantic truth
+consumed evidence != sufficient evidence
+artifact identity != recommendation
+lineage != semantic inference
 ```
 
-P7 must preserve:
+It must not:
 
-- current state remains the authority; the handoff is not a second source of truth;
-- stale or tampered handoffs fail closed;
-- handoff/resume does not infer unstored conversation context;
-- active responsibility, authority, evidence refs, deferrals, terminal state, and transition history remain reconstructible;
-- handoff generation and resume do not recommend a next responsibility/capability or grant authority;
-- a genuinely fresh process can continue from durable campaign data without the old conversation.
+- infer why evidence is persuasive;
+- invent evidence-consumption links not explicitly present in durable records;
+- rank evidence or capabilities;
+- mutate historical transition meaning;
+- treat a validator pass as proof that the evidence supports a conclusion;
+- create a second semantic decision log beside transitions/trace.
 
 ## Semantic-control invariant
 
@@ -274,18 +333,17 @@ The implementation must preserve this separation:
 Agent:
   What does the evidence mean?
   Which responsibility is warranted?
-  How should that responsibility be classified for capability inspection?
+  Which evidence should support an authored decision?
   Which available capability should be selected?
   Does the result justify advance, defer, or close?
 
 Deterministic machinery:
   Is the representation valid?
   Is state persisted safely?
-  Does referenced evidence satisfy the current evidence contract?
-  What registered capabilities declare compatibility?
-  What are their mechanical availability/liveness properties?
-  What authority metadata is declared?
-  Is the transition structurally reconstructible?
+  Does referenced evidence satisfy the Campaign evidence contract?
+  What immutable identity/digest/provenance does each evidence ref have?
+  Which transition explicitly consumed which evidence refs?
+  Is history reconstructible?
   Does the handoff bind exactly to the reconstructible current state?
 ```
 
@@ -297,6 +355,7 @@ warranted responsibility != available capability
 available capability != authorized capability
 recommendation != execution authority
 handoff != semantic recommendation
+lineage != semantic warrant
 ```
 
 And:
@@ -307,33 +366,16 @@ Campaign Controller != semantic router
 
 ## Remaining v0.3 sequence
 
-1. **P7 — Durable handoff/resume UX** — CURRENT.
-2. **P8 — Artifact/evidence lineage**.
-3. **P9 — Reconciliation lifecycle**.
-4. **P10 — Harness adapters**.
-5. **P11 — External golden-path qualification and v0.3 release**.
+1. **P8 — Artifact/evidence lineage** — CURRENT.
+2. **P9 — Reconciliation lifecycle**.
+3. **P10 — Harness adapters**.
+4. **P11 — External golden-path qualification and v0.3 release**.
 
 ## Research and experiment disposition
 
-Prior research remains useful evidence and is preserved. It is no longer the default active product program.
+Prior research remains useful evidence and is preserved. It is not the default active product program.
 
-### EXP-0006 / Empirical Skill Qualification v1
-
-The experiment stopped at the actual completed boundary under the owner's productization pivot.
-
-Preserve:
-
-- the three D attempts and their exact outcomes;
-- the frozen Q/T holdout identity and integrity record;
-- the candidate-context contamination audit;
-- the fact that no candidate was authored before the contamination event;
-- all existing exploratory/non-canonical claim ceilings.
-
-Do not manufacture a Skill candidate or continue Q/T execution merely to complete the experimental mechanism. Do not relabel incomplete work as a completed scientific conclusion.
-
-### Goal A and other research lanes
-
-Goal A, the standing normal-use evidence lane, control-model studies, and other research artifacts remain available as evidence/research surfaces. They are not the primary development queue unless a later owner decision explicitly reactivates them.
+EXP-0006 / Empirical Skill Qualification v1 remains stopped at its actual completed boundary under the owner productization pivot. Preserve the D attempts, frozen Q/T holdout identity/integrity record, contamination audit, and actual claim ceilings. Do not manufacture a candidate or continue Q/T execution merely to complete the mechanism.
 
 ## Explicit non-goals for v0.3
 
@@ -363,12 +405,13 @@ start
 → inspect available capability
 → record work evidence
 → transition
+→ inspect evidence lineage
 → handoff
 → resume in a fresh context
 → stop honestly
 ```
 
-with deterministic state reconstruction and without requiring the prior conversation as hidden input or manually repairing campaign/artifact state.
+with deterministic reconstruction and without requiring prior conversation as hidden input or manually repairing Campaign/artifact state.
 
 ## Where to look
 
@@ -379,6 +422,7 @@ with deterministic state reconstruction and without requiring the prior conversa
 | Active v0.3 delivery plan | `docs/productization-v0.3.md` |
 | Agent-authored campaign decisions | `docs/campaign-decisions.md` |
 | Capability registry inspection | `docs/capability-registry.md` |
+| Durable handoff/resume | `docs/campaign-handoff-resume.md` |
 | SkillOpt influence/adaptation and research boundary | `docs/research/skillopt-adaptation.md` |
 | Agent-native operating model | `docs/agent-native-operating-workflow.md` |
 | Decision vs orchestration boundary | `docs/decision-orchestration-boundary.md` |
