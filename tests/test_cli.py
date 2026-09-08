@@ -30,6 +30,7 @@ class TestCLIBasic:
         assert "analyze" in result.output
         assert "validate" in result.output
         assert "test" in result.output
+        assert "campaign" in result.output
 
     def test_analyze_help(self, runner):
         """Test analyze subcommand help."""
@@ -48,6 +49,14 @@ class TestCLIBasic:
         result = runner.invoke(cli, ["test", "--help"])
         assert result.exit_code == 0
         assert "--repos" in result.output
+
+    def test_campaign_help_exposes_p3_commands(self, runner):
+        result = runner.invoke(cli, ["campaign", "--help"])
+        assert result.exit_code == 0
+        assert "init" in result.output
+        assert "status" in result.output
+        assert "validate" in result.output
+        assert "history" in result.output
 
     def test_analyze_without_repo(self, runner):
         """Test analyze without --repo returns error."""
