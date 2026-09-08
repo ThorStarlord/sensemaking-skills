@@ -61,9 +61,10 @@ def _emit_decision_success(
         deferred = snapshot.state.deferred_responsibilities[-1]
         click.echo(f"Deferred responsibility: {deferred.responsibility_id}")
         click.echo(f"Reason: {deferred.reason}")
-        click.echo("Reopen when:")
-        for condition in deferred.reopen_when:
-            click.echo(f"  - {condition}")
+        if deferred.reopen_when:
+            click.echo("Reopen when:")
+            for condition in deferred.reopen_when:
+                click.echo(f"  - {condition}")
         if deferred.not_reopened_by:
             click.echo("Not reopened by:")
             for condition in deferred.not_reopened_by:
@@ -196,7 +197,6 @@ def register_campaign_decision_commands(
     @click.option(
         "--reopen-when",
         multiple=True,
-        required=True,
         help="Condition that can reopen this responsibility; repeatable",
     )
     @click.option(
