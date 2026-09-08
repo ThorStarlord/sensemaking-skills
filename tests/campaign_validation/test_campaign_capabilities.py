@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -58,6 +59,18 @@ def _initialize_active(workspace: Path, *, authority: Authority = Authority.AUTH
             ),
         )
     )
+
+
+def _mapping_keys(value: Any) -> tuple[str, ...]:
+    keys: list[str] = []
+    if isinstance(value, dict):
+        for key, nested in value.items():
+            keys.append(str(key))
+            keys.extend(_mapping_keys(nested))
+    elif isinstance(value, list):
+        for nested in value:
+            keys.extend(_mapping_keys(nested))
+    return tuple(keys)
 
 
 def test_default_catalog_loads_real_skill_and_workflow_identities() -> None:
@@ -122,7 +135,7 @@ def test_proposed_and_deprecated_skill_identities_do_not_masquerade_as_available
 def test_catalog_rejects_duplicate_ids_fail_closed(tmp_path: Path) -> None:
     catalog = tmp_path / "capability-registry.yaml"
     catalog.write_text(
-        """schema_version: \"1\"\ncapabilities:\n  - &item\n    id: duplicate\n    kind: skill\n    source: test\n    accepted_responsibility_types: [test]\n    output_artifact: result\n    mutates_repository: false\n    authority: authorized_autonomously\n    availability: unknown\n    availability_reason: test identity is intentionally unresolved\n    returns_control: true\n  - <<: *item\n""",
+        """schema_version: \"1\"\ncapabilities:\n  - &item\n    id: repo-sensemaker\n    kind: skill\n    source: test\n    accepted_responsibility_types: [test]\n    output_artifact: repository_sensemaking_brief\n    mutates_repository: false\n    authority: authorized_autonomously\n    availability: external\n    availability_reason: shipped Skill used to exercise duplicate detection\n    returns_control: true\n  - <<: *item\n""",
         encoding="utf-8",
     )
 
@@ -217,7 +230,7 @@ def test_service_returns_deterministic_unranked_candidate_order(tmp_path: Path) 
     assert [item.capability.id for item in result.candidates] == ["alpha", "zeta"]
 
 
-def test_cli_exposes_candidates_without_ranking_or_recommendation(tmp_path: Path) -> None:
+def test_cli_exposes_candidates_without_routing_fields(tmp_path: Path) -> None:
     workspace = tmp_path / "campaign"
     _initialize_active(workspace)
     runner = CliRunner()
@@ -246,12 +259,10 @@ def test_cli_exposes_candidates_without_ranking_or_recommendation(tmp_path: Path
     assert payload["candidates"][0]["availability"] == "external"
     assert payload["candidates"][0]["required_authority"] == "authorized_autonomously"
 
-    encoded = json.dumps(payload).lower()
-    assert "recommend" not in encoded
-    assert "rank" not in encoded
-    assert "score" not in encoded
-    assert "best" not in encoded
-    assert "selected" not in encoded
+    forbidden_key_markers = ("recommend", "rank", "score", "best", "selected")
+    for key in _mapping_keys(payload):
+        lowered = key.lower()
+        assert all(marker not in lowered for marker in forbidden_key_markers), key
 
 
 def test_cli_unknown_responsibility_type_is_honest_empty_success(tmp_path: Path) -> None:
