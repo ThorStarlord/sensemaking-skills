@@ -4,7 +4,7 @@
 **Last updated:** 2026-09-08  
 **Current phase:** Productization / implementation  
 **Primary program:** Sensemaking Skills v0.3 campaign-based productization  
-**Current frontier:** P8 — artifact/evidence lineage
+**Current frontier:** P9 — reconciliation lifecycle
 
 This is the repository's living status summary. It points at authoritative design sources and current implementation direction; it is not itself an ADR or an execution authorization.
 
@@ -54,53 +54,41 @@ The productization pivot began at:
 main@5c2c807542f7e150d4a031430f59e297ed816b24
 ```
 
-The current integrated implementation frontier after P7 is:
+The current integrated implementation frontier after P8 is:
 
 ```text
-main@250a30ddd55e100a311a5ab17650a0f3176de605
+main@e1b900c32d932d5e4b5c0366c0972143c36b1982
 ```
 
 That merge has parents:
 
 ```text
 previous main
-0f2dcd61951d3d9020c587b6f21996cb3517eec7
+842bf7d14cff71ec96efa270fa54adbe4243f586
 
-exact-qualified P7 head
-f791deb1f7bce85af9e615d65534549a54cc2ae0
+exact-qualified P8 head
+5baf360027c7c6e46d95f17fa03608e9303dd55d
 ```
 
-and its tree is exactly the qualified P7 tree:
+and its tree is exactly the qualified P8 tree:
 
 ```text
-67f5f1527748c1a005f328c52c6185058989ad7e
+77b2b076d4082b7aa66fdd98b88c92e12d3091a8
 ```
 
 ## What is implemented
 
 ### P0 — Productization pivot — MERGED
 
-- implementation-first direction is durable;
-- formal experiments are no longer the default active program;
-- prior research remains preserved with actual claim ceilings.
+Implementation-first direction is durable. Prior research remains preserved with its actual claim ceilings.
 
 ### P1 — Durable campaign workspace — MERGED
 
-- isolated file-backed Campaign workspace;
-- strict typed Campaign load/dump boundaries;
-- atomic current-state replacement;
-- append-only transitions and append-preserving trace;
-- fail-closed physical path containment;
-- non-overwrite initialization and campaign identity checks.
+Isolated file-backed Campaign persistence, strict typed load/dump boundaries, atomic current-state replacement, append-only transitions, append-preserving trace, fail-closed physical path containment, and non-overwrite initialization.
 
 ### P2 — Campaign service — MERGED
 
-- deterministic lifecycle service;
-- recoverable transition + state commit intent;
-- validation and reconstruction;
-- defer/terminate primitives;
-- handoff generation and resume/reconstruction;
-- transition/state digest binding.
+Deterministic lifecycle service with recoverable transition + state commit intent, structural validation/reconstruction, defer/terminate primitives, handoff generation, resume, and transition/state digest binding.
 
 ### P3 — Campaign CLI foundation — MERGED
 
@@ -113,8 +101,6 @@ sensemaking-skills campaign validate
 sensemaking-skills campaign history
 ```
 
-Read-oriented commands expose human-readable and JSON surfaces with stable failure classes.
-
 ### P4 — Validated artifact ingestion — MERGED
 
 Implemented:
@@ -123,7 +109,7 @@ Implemented:
 sensemaking-skills campaign ingest
 ```
 
-P4 establishes the trust boundary:
+Trust boundary:
 
 ```text
 artifact bytes
@@ -132,7 +118,7 @@ artifact bytes
 → valid=true
 → content-addressed artifact
 → append-only admission receipt
-→ campaign evidence
+→ Campaign evidence
 ```
 
 Therefore:
@@ -140,10 +126,8 @@ Therefore:
 ```text
 file exists
 != validated artifact
-!= admitted campaign evidence
+!= admitted Campaign evidence
 ```
-
-Files merely placed under `artifacts/` are not automatically evidence. Raw `evidence/` semantics remain explicitly separate.
 
 See [`docs/artifact-ingestion.md`](docs/artifact-ingestion.md).
 
@@ -160,24 +144,14 @@ sensemaking-skills campaign close
 P5 preserves:
 
 ```text
-admitted / durable evidence
-        ↓
-AGENT judgment
-        ↓
-typed decision contract
-        ↓
-CampaignService
-        ↓
-recoverable state + transition + trace
+durable evidence
+→ AGENT judgment
+→ typed decision contract
+→ CampaignService
+→ recoverable state + transition + trace
 ```
 
-Key properties:
-
-- `advance` persists one explicit next responsibility supplied by the agent;
-- trigger evidence must satisfy the Campaign evidence contract and is bound to the installing transition;
-- `defer` preserves its reason and optional reopening contract;
-- `close` persists an explicit terminal classification;
-- no P5 command ranks/selects capabilities, interprets artifact semantics, grants authority, or creates a second persistence path.
+No P5 command ranks/selects capabilities, interprets artifact semantics, grants authority, or creates a second persistence path.
 
 See [`docs/campaign-decisions.md`](docs/campaign-decisions.md).
 
@@ -189,27 +163,7 @@ Implemented:
 sensemaking-skills campaign capabilities
 ```
 
-P6 exposes real declared Skill/workflow capability metadata without semantic routing:
-
-```text
-active responsibility
-        ↓
-AGENT supplies responsibility classification
-        ↓
-deterministic capability lookup
-        ↓
-unranked candidates + availability + required-authority metadata
-        ↓
-AGENT chooses one / none / ordinary work
-```
-
-Key properties:
-
-- catalog membership, runtime availability, and execution authority remain separate facts;
-- current agent-native Skills are `external` rather than falsely claimed installed;
-- workflow identities/liveness are cross-checked and `compatibility_only` workflows are unavailable;
-- malformed catalog data fails closed;
-- no P6 surface ranks, recommends, selects, invokes, or authorizes a capability.
+Catalog membership, runtime availability, and execution authority remain separate facts. Results are deterministic and unranked; P6 never selects or invokes work.
 
 See [`docs/capability-registry.md`](docs/capability-registry.md).
 
@@ -222,37 +176,49 @@ sensemaking-skills campaign handoff
 sensemaking-skills campaign resume
 ```
 
-P7 turns the existing P2 handoff/reconstruction primitives into a first-class fresh-context product surface:
+P7 integrity-binds fresh-context reconstruction without changing the semantic `CampaignHandoff` schema or inventing next action, responsibility, capability, or authority.
+
+See [`docs/campaign-handoff-resume.md`](docs/campaign-handoff-resume.md).
+
+### P8 — Artifact/evidence lineage — MERGED
+
+Implemented:
 
 ```text
-current durable Campaign
+sensemaking-skills campaign lineage
+```
+
+P8 makes exact evidence identity and explicit transition consumption reconstructible without making lineage a semantic decision system.
+
+Control shape:
+
+```text
+durable Campaign evidence
         ↓
-canonical P2 handoff generation
+exact byte identity + provenance
         ↓
-P7 reconstruction integrity binding
+append-only precommit consumption intent
         ↓
-fresh agent / fresh process
+existing P2 lifecycle commit
         ↓
-canonical P2 reconstruction
+TransitionRecord.evidence + trace digest
         ↓
-P7 binding verification
-        ↓
-AGENT decides what to do next
+read-only lineage reconstruction
 ```
 
 Key properties:
 
-- semantic `CampaignHandoff` schema remains unchanged;
-- the P7 SHA-256 reconstruction binding covers state, ordered transitions, trace, current evidence refs, optional policy, and handoff guidance;
-- the binding is an integrity checksum under the existing filesystem trust model, not a signature or authority grant;
-- valid-shape edits to handoff guidance fail closed;
-- unbound legacy/P2 handoffs are not silently treated as P7-bound handoffs;
-- a lifecycle transition invalidates the old handoff;
-- terminal Campaigns resume honestly without fabricated executable work;
-- fresh-process and installed-wheel qualification prove resume without prior chat context;
-- handoff guidance is context only and is never recommendation, selection, invocation, or execution authority.
+- raw `evidence/**` cited by an authored decision is snapshotted by SHA-256 before lifecycle commit;
+- P4 admitted artifacts reuse their existing content-addressed identity and admission provenance;
+- cited admission receipts preserve exact consumed bytes plus validator/artifact provenance;
+- unadmitted files under `artifacts/` remain non-evidence;
+- every P8-authored `advance`, `defer`, or `close` decision gets a bound consumption receipt, including explicit zero-evidence decisions;
+- pre-P8/direct-P2 transitions without receipts remain honestly `legacy_unbound`;
+- orphan precommit intents never become false committed consumption edges;
+- tampered/ambiguous lineage fails closed;
+- `campaign lineage` is read-only and contains no recommendation, ranking, semantic-sufficiency, or authority inference.
 
-See [`docs/campaign-handoff-resume.md`](docs/campaign-handoff-resume.md).
+See [`docs/campaign-lineage.md`](docs/campaign-lineage.md).
 
 ## Current productization objective
 
@@ -270,82 +236,114 @@ user goal
 → agent authors responsibility/authority decision
 → capability inspection
 → agent-selected bounded capability / ordinary coding
-→ validation / reconciliation
+→ work evidence
+→ reconciliation / repair verification
+→ agent authors continuation/defer/close decision
 → durable transition
+→ lineage inspection
 → handoff
 → fresh-context resume
 → continue / stop
 ```
 
-## Current implementation frontier — P8
+## Current implementation frontier — P9
 
-The next bounded slice is **P8 — Artifact/evidence lineage**.
+The next bounded slice is **P9 — Reconciliation lifecycle**.
 
-P8 should make the Campaign able to answer mechanically:
+P9 should connect the repository's existing `output-reconciler` and `repair-verifier` artifact semantics to the durable Campaign lifecycle without allowing either artifact or its validator to decide the Campaign transition automatically.
 
-> Which immutable evidence supported this decision/transition, what is the exact identity of that evidence, and what provenance establishes how it entered the Campaign?
-
-Required control shape:
+Existing research/product concepts already distinguish:
 
 ```text
-durable evidence / admitted artifact
-        ↓
-stable identity + digest + provenance
-        ↓
-agent-authored decision references evidence
-        ↓
-transition persists the consumption link
-        ↓
-read-only lineage reconstruction
+mechanical validation
+!= reconciliation
+!= repair verification
+!= semantic continuation decision
 ```
 
-P8 should reuse current facts wherever possible:
-
-- P4 content-addressed artifacts and admission receipts;
-- raw `evidence/` records under the existing physical-containment contract;
-- P5 `TransitionRecord.evidence` consumption references;
-- trace transition digests;
-- current Campaign reconstruction.
-
-P8 must preserve:
+The intended P9 control shape is:
 
 ```text
-provenance != semantic truth
-consumed evidence != sufficient evidence
-artifact identity != recommendation
-lineage != semantic inference
+bounded work / work claim
+        ↓
+agent selects reconciliation responsibility
+        ↓
+reconciliation_report is produced and admitted through P4
+        ↓
+optional authorized repair
+        ↓
+repair_verification_report is produced and admitted through P4
+        ↓
+AGENT interprets the admitted reconciliation evidence
+        ↓
+explicit Campaign advance / defer / close decision
+        ↓
+P8 records exact evidence consumption lineage
+```
+
+P9 should make the intermediate reconciliation state mechanically inspectable and require an explicit agent-authored disposition. It must not map artifact fields such as `verified`, `disputed`, `closed`, or `remaining` directly to a Campaign transition.
+
+A useful initial surface should remain narrow and deterministic, for example:
+
+```text
+sensemaking-skills campaign reconciliation --workspace <CMP> [--json]
+```
+
+or an equivalent typed service that reports mechanically present reconciliation evidence and whether an explicit disposition is still required.
+
+P9 should reuse:
+
+- P4 admitted artifact receipts and exact artifact identity;
+- P5 authored decisions;
+- P6 capability metadata for `output_reconciliation` / `repair_verification` responsibilities;
+- P8 evidence-consumption lineage;
+- existing `reconciliation_report` and `repair_verification_report` artifact contracts;
+- existing semantic vocabulary distinguishing validation, reconciliation, and verification.
+
+P9 must preserve:
+
+```text
+reconciliation report admitted
+!= reconciliation semantically accepted
+
+repair verification report admitted
+!= repair sufficient
+
+finding closed mechanically
+!= Campaign goal achieved
+
+finding remaining
+!= automatic defer/close
 ```
 
 It must not:
 
-- infer why evidence is persuasive;
-- invent evidence-consumption links not explicitly present in durable records;
-- rank evidence or capabilities;
-- mutate historical transition meaning;
-- treat a validator pass as proof that the evidence supports a conclusion;
-- create a second semantic decision log beside transitions/trace.
+- parse a reconciliation verdict into an automatic Campaign decision;
+- grant repair authority from a finding or recommendation;
+- infer that all `verified` claims justify continuation;
+- infer that all `remaining` findings require closure;
+- bypass P4 artifact admission;
+- create a second transition log;
+- weaken P8 lineage or P2 reconstruction;
+- turn `output-reconciler` or `repair-verifier` into a semantic router.
 
 ## Semantic-control invariant
 
-The implementation must preserve this separation:
-
-```text
 Agent:
-  What does the evidence mean?
-  Which responsibility is warranted?
-  Which evidence should support an authored decision?
-  Which available capability should be selected?
-  Does the result justify advance, defer, or close?
+
+- What does reconciliation evidence mean?
+- Is repair warranted and authorized?
+- Is repair verification sufficient for the blocked decision?
+- Should the Campaign advance, defer, or close?
 
 Deterministic machinery:
-  Is the representation valid?
-  Is state persisted safely?
-  Does referenced evidence satisfy the Campaign evidence contract?
-  What immutable identity/digest/provenance does each evidence ref have?
-  Which transition explicitly consumed which evidence refs?
-  Is history reconstructible?
-  Does the handoff bind exactly to the reconstructible current state?
-```
+
+- Is the reconciliation/verification artifact admitted evidence?
+- What exact artifact identity/provenance does it have?
+- Which reconciliation stage is mechanically represented?
+- Is an explicit disposition recorded?
+- Which transition explicitly consumed the evidence?
+- Is history reconstructible?
 
 Therefore:
 
@@ -356,6 +354,7 @@ available capability != authorized capability
 recommendation != execution authority
 handoff != semantic recommendation
 lineage != semantic warrant
+reconciliation evidence != Campaign decision
 ```
 
 And:
@@ -366,10 +365,9 @@ Campaign Controller != semantic router
 
 ## Remaining v0.3 sequence
 
-1. **P8 — Artifact/evidence lineage** — CURRENT.
-2. **P9 — Reconciliation lifecycle**.
-3. **P10 — Harness adapters**.
-4. **P11 — External golden-path qualification and v0.3 release**.
+1. **P9 — Reconciliation lifecycle** — CURRENT.
+2. **P10 — Harness adapters**.
+3. **P11 — External golden-path qualification and v0.3 release**.
 
 ## Research and experiment disposition
 
@@ -404,6 +402,8 @@ start
 → bind authority
 → inspect available capability
 → record work evidence
+→ reconcile / verify repair
+→ explicitly disposition the reconciliation
 → transition
 → inspect evidence lineage
 → handoff
@@ -423,6 +423,7 @@ with deterministic reconstruction and without requiring prior conversation as hi
 | Agent-authored campaign decisions | `docs/campaign-decisions.md` |
 | Capability registry inspection | `docs/capability-registry.md` |
 | Durable handoff/resume | `docs/campaign-handoff-resume.md` |
+| Artifact/evidence lineage | `docs/campaign-lineage.md` |
 | SkillOpt influence/adaptation and research boundary | `docs/research/skillopt-adaptation.md` |
 | Agent-native operating model | `docs/agent-native-operating-workflow.md` |
 | Decision vs orchestration boundary | `docs/decision-orchestration-boundary.md` |
