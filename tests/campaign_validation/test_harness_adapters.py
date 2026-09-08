@@ -33,15 +33,29 @@ def test_user_scope_adapter_roots_are_explicit_and_deterministic(tmp_path: Path)
     expected = {
         "generic": home / ".agents" / "skills",
         "claude": home / ".claude" / "skills",
-        "codex": home / ".agents" / "skills",
+        "codex": home / ".codex" / "skills",
         "opencode": home / ".config" / "opencode" / "skills",
     }
     for target, path in expected.items():
-        result = resolve_harness_destinations(target, scope="user", home=home)
+        result = resolve_harness_destinations(
+            target, scope="user", home=home, env={}
+        )
         assert len(result) == 1
         assert result[0].adapter_ids == (target,)
         assert result[0].scope == "user"
         assert result[0].path == path.absolute()
+
+
+def test_codex_user_scope_honors_explicit_codex_home(tmp_path: Path):
+    home = tmp_path / "home"
+    codex_home = tmp_path / "configured-codex-home"
+    result = resolve_harness_destinations(
+        "codex",
+        scope="user",
+        home=home,
+        env={"CODEX_HOME": str(codex_home)},
+    )
+    assert result[0].path == (codex_home / "skills").absolute()
 
 
 def test_project_scope_adapter_roots_are_explicit_and_deterministic(tmp_path: Path):
@@ -71,15 +85,38 @@ def test_agents_alias_preserves_generic_adapter_identity(tmp_path: Path):
     assert canonical_harness_id("agents") == "generic"
     assert get_harness_adapter("agents") is get_harness_adapter("generic")
 
-    agents = resolve_harness_destinations("agents", home=home)
-    generic = resolve_harness_destinations("generic", home=home)
+    agents = resolve_harness_destinations("agents", home=home, env={})
+    generic = resolve_harness_destinations("generic", home=home, env={})
     assert agents == generic
     assert agents[0].adapter_ids == ("generic",)
 
 
-def test_all_deduplicates_shared_generic_and_codex_root(tmp_path: Path):
+def test_all_user_scope_preserves_distinct_native_personal_roots(tmp_path: Path):
     home = tmp_path / "home"
-    result = resolve_harness_destinations("all", scope="user", home=home)
+    result = resolve_harness_destinations(
+        "all", scope="user", home=home, env={}
+    )
+
+    assert [item.adapter_ids for item in result] == [
+        ("generic",),
+        ("claude",),
+        ("codex",),
+        ("opencode",),
+    ]
+    assert [item.path for item in result] == [
+        (home / ".agents" / "skills").absolute(),
+        (home / ".claude" / "skills").absolute(),
+        (home / ".codex" / "skills").absolute(),
+        (home / ".config" / "opencode" / "skills").absolute(),
+    ]
+
+
+def test_all_project_scope_deduplicates_generic_and_codex_shared_root(tmp_path: Path):
+    project = tmp_path / "project"
+    project.mkdir()
+    result = resolve_harness_destinations(
+        "all", scope="project", project_root=project
+    )
 
     assert [item.adapter_ids for item in result] == [
         ("generic", "codex"),
@@ -87,9 +124,9 @@ def test_all_deduplicates_shared_generic_and_codex_root(tmp_path: Path):
         ("opencode",),
     ]
     assert [item.path for item in result] == [
-        (home / ".agents" / "skills").absolute(),
-        (home / ".claude" / "skills").absolute(),
-        (home / ".config" / "opencode" / "skills").absolute(),
+        (project / ".agents" / "skills").absolute(),
+        (project / ".claude" / "skills").absolute(),
+        (project / ".opencode" / "skills").absolute(),
     ]
 
 
