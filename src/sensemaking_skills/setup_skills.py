@@ -1,28 +1,29 @@
 r"""
-Setup command to install sensemaking-skills SKILL.md files to agent-discoverable locations.
+Setup command to install sensemaking-skills SKILL.md files to explicit
+agent-discoverable locations.
 
-This module handles copying SKILL.md files from the package to:
-- ~/.agents/skills (or C:\Users\*\.agents\skills on Windows)
-- Claude Code/Superpowers plugin cache (optional)
+P10 adds first-class filesystem adapters for:
+- portable Agent Skills / generic agents;
+- Claude Code;
+- Codex;
+- OpenCode;
+- explicit custom directories.
 
-Skills are copied with their original folder names:
-- using-sensemaking/SKILL.md
-- repo-sensemaker/SKILL.md
-- workflow-planner/SKILL.md
+The setup layer never auto-detects the active harness. The caller chooses the
+harness and user/project scope explicitly; deterministic code only maps that
+choice to a declared filesystem discovery root and copies exact packaged Skill
+trees there.
 
-Source resolution (Task P1-F):
+Source resolution:
 1. Packaged skill trees (``sensemaking_skills/skill_trees``) -- the
-   wheel-installed case. The wheel is built from the single authoritative
-   repository-root ``skills/`` tree (see ``setup.py``'s ``build_py``), so a
-   wheel-installed user needs no repository-layout assumption.
-2. Repository-root ``skills/`` -- the editable-install / source-checkout case.
+   wheel-installed case.
+2. Repository-root ``skills/`` -- editable/source-checkout development.
 
-Drift detection: an existing destination is never silently overwritten.
-States are reported explicitly:
-- current  -> already matches the packaged version (no action);
-- missing  -> installed;
-- different -> reported as drift; only an explicit ``--force`` replaces it.
+Drift detection remains fail closed: existing divergent copies are reported and
+are never silently overwritten. Only ``--force`` replaces them.
 """
+
+from __future__ import annotations
 
 import hashlib
 import shutil
@@ -30,22 +31,18 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+from .harness_adapters import (
+    HarnessAdapterError,
+    resolve_harness_destinations,
+)
+
 
 class SkillsSetupError(Exception):
     """Raised when skill setup fails."""
-    pass
 
 
 def get_package_skills_dir() -> Path:
-    """Get the path to the skills directory to install from.
-
-    Priority 1: packaged skill trees inside the installed package
-    (``sensemaking_skills/skill_trees``), resolved via importlib.resources
-    with no repository-layout assumption -- this is the wheel-installed case.
-
-    Priority 2: repository-root ``skills/`` -- the editable-install /
-    source-checkout case, where packaged trees do not exist (dev usage).
-    """
+    """Get the Skill source directory without assuming a source checkout."""
     try:
         from importlib.resources import files
 
@@ -55,67 +52,71 @@ def get_package_skills_dir() -> Path:
     except Exception:
         pass
 
-    # Editable install / source checkout fallback.
-    package_dir = Path(__file__).parent.parent.parent  # Go up from src/sensemaking_skills/
+    package_dir = Path(__file__).parent.parent.parent
     skills_dir = package_dir / "skills"
-
     if not skills_dir.exists():
         raise SkillsSetupError(
             f"Skills directory not found at {skills_dir}. "
             "This may indicate an incomplete installation."
         )
-
     return skills_dir
 
 
 def get_agents_skills_dir() -> Path:
-    """Get the default .agents/skills directory for the current platform."""
-    home = Path.home()
-    agents_skills = home / ".agents" / "skills"
-    return agents_skills
+    """Backward-compatible portable Agent Skills user directory."""
+    destination = resolve_harness_destinations("generic", scope="user")[0]
+    return destination.path
+
+
+def get_claude_personal_skills_dir() -> Path:
+    """Return the declared Claude Code personal Skill discovery root."""
+    return resolve_harness_destinations("claude", scope="user")[0].path
+
+
+def get_codex_skills_dir() -> Path:
+    """Return the declared Codex user Skill discovery root."""
+    return resolve_harness_destinations("codex", scope="user")[0].path
+
+
+def get_opencode_skills_dir() -> Path:
+    """Return the declared OpenCode native global Skill discovery root."""
+    return resolve_harness_destinations("opencode", scope="user")[0].path
 
 
 def get_claude_code_skills_dir() -> Path:
-    """Get the Claude Code / Superpowers plugin skills directory."""
-    # This is the Superpowers plugin cache path
+    """Backward-compatible legacy Claude/Superpowers plugin-cache target.
+
+    This is intentionally *not* the P10 Claude Code adapter. The first-class
+    Claude adapter uses ``~/.claude/skills``. This function remains only so the
+    pre-P10 ``claude-superpowers`` target keeps its old behavior.
+    """
     home = Path.home()
-
-    if sys.platform == "win32":
-        # Windows path
-        claude_path = (
-            home / ".claude" / "plugins" / "cache" / "claude-plugins-official"
-            / "superpowers" / "5.1.0" / "skills"
-        )
-    else:
-        # macOS/Linux path
-        claude_path = (
-            home / ".claude" / "plugins" / "cache" / "claude-plugins-official"
-            / "superpowers" / "5.1.0" / "skills"
-        )
-
-    return claude_path
+    return (
+        home
+        / ".claude"
+        / "plugins"
+        / "cache"
+        / "claude-plugins-official"
+        / "superpowers"
+        / "5.1.0"
+        / "skills"
+    )
 
 
 def find_skills_in_package(skills_dir: Path) -> List[str]:
-    """Find all skill folders in the package skills directory."""
+    """Find Skill folders in deterministic name order."""
     if not skills_dir.exists():
         return []
-
     skill_names = []
     for item in skills_dir.iterdir():
         if item.is_dir() and (item / "SKILL.md").exists():
             skill_names.append(item.name)
-
     return sorted(skill_names)
 
 
-def _skill_tree_fingerprint(skill_dir: Path) -> dict:
-    """Map every file's relative path to its SHA-256 content hash.
-
-    Used to compare an installed skill tree against the packaged source so
-    drift can be reported instead of silently assumed healthy.
-    """
-    fingerprint = {}
+def _skill_tree_fingerprint(skill_dir: Path) -> dict[str, str]:
+    """Map every regular file in a Skill tree to its SHA-256 digest."""
+    fingerprint: dict[str, str] = {}
     if not skill_dir.is_dir():
         return fingerprint
     for path in sorted(skill_dir.rglob("*")):
@@ -126,18 +127,10 @@ def _skill_tree_fingerprint(skill_dir: Path) -> dict:
 
 
 def skill_state(src_skill: Path, dest_skill: Path) -> str:
-    """Classify an existing destination relative to the packaged source.
-
-    Returns one of:
-    - "current"   -- every packaged file exists with identical content
-    - "different" -- destination exists but diverges from the packaged source
-    - "missing"   -- destination does not exist
-    """
+    """Classify destination as ``missing``, ``current``, or ``different``."""
     if not dest_skill.exists():
         return "missing"
-    src_fp = _skill_tree_fingerprint(src_skill)
-    dest_fp = _skill_tree_fingerprint(dest_skill)
-    if src_fp == dest_fp:
+    if _skill_tree_fingerprint(src_skill) == _skill_tree_fingerprint(dest_skill):
         return "current"
     return "different"
 
@@ -147,17 +140,9 @@ def copy_skill(
     dest_skills_dir: Path,
     skill_name: str,
     dry_run: bool = False,
-    force: bool = False
+    force: bool = False,
 ) -> Tuple[bool, str]:
-    """
-    Copy a single skill to the destination directory.
-
-    Drift-aware: an existing destination that already matches the packaged
-    source is reported as current (no action); one that diverges is reported
-    as drift and is NOT overwritten unless ``force`` is set.
-
-    Returns: (success, message)
-    """
+    """Copy one Skill tree with explicit drift handling."""
     src_skill = src_skill_dir / skill_name
     dest_skill = dest_skills_dir / skill_name
 
@@ -165,18 +150,15 @@ def copy_skill(
         return False, f"Source SKILL.md not found: {src_skill / 'SKILL.md'}"
 
     state = skill_state(src_skill, dest_skill)
-
     if state == "current":
         return True, f"Current (already matches packaged version): {skill_name}"
 
-    if state == "different":
-        if not force:
-            return (
-                False,
-                f"Different from packaged version: {skill_name} "
-                f"(installed copy diverged; use --force to overwrite)",
-            )
-        # Fall through to replace below (force requested).
+    if state == "different" and not force:
+        return (
+            False,
+            f"Different from packaged version: {skill_name} "
+            "(installed copy diverged; use --force to overwrite)",
+        )
 
     if dest_skill.exists() and not force:
         return False, f"Destination already exists: {dest_skill} (use --force to overwrite)"
@@ -190,122 +172,164 @@ def copy_skill(
             shutil.rmtree(dest_skill)
         shutil.copytree(src_skill, dest_skill)
         return True, f"Copied {skill_name} -> {dest_skill}"
-    except Exception as e:
-        return False, f"Failed to copy {skill_name}: {e}"
+    except Exception as exc:
+        return False, f"Failed to copy {skill_name}: {exc}"
+
+
+def _resolve_destinations(
+    *,
+    target: str,
+    scope: str,
+    skills_dir: str | None,
+    project_root: str | Path | None,
+) -> list[tuple[str, Path]]:
+    """Resolve the explicit setup request; infer no harness from the machine."""
+    if target == "custom":
+        if scope != "user":
+            raise SkillsSetupError(
+                "--scope applies to harness adapters; use --target=custom "
+                "with the exact --skills-dir instead"
+            )
+        if project_root is not None:
+            raise SkillsSetupError(
+                "--project-root is not valid with --target=custom"
+            )
+        if not skills_dir:
+            raise SkillsSetupError("--skills-dir required when using custom target")
+        return [("custom", Path(skills_dir).expanduser().absolute())]
+
+    if skills_dir is not None:
+        raise SkillsSetupError("--skills-dir is only valid with --target=custom")
+
+    if target == "claude-superpowers":
+        if scope != "user" or project_root is not None:
+            raise SkillsSetupError(
+                "legacy claude-superpowers target supports user scope only"
+            )
+        return [("claude-superpowers-legacy", get_claude_code_skills_dir())]
+
+    try:
+        resolved = resolve_harness_destinations(
+            target,
+            scope=scope,
+            project_root=(Path(project_root) if project_root is not None else None),
+        )
+    except HarnessAdapterError as exc:
+        raise SkillsSetupError(str(exc)) from exc
+
+    destinations = [(item.label, item.path) for item in resolved]
+
+    # Preserve the old `--target all` behavior as a compatibility superset:
+    # user-scope `all` still includes the historical Superpowers cache while
+    # also adding the first-class Claude/Codex/OpenCode roots. Project-scope
+    # `all` contains only project-native P10 adapters.
+    if target == "all" and scope == "user":
+        legacy = get_claude_code_skills_dir().expanduser().absolute()
+        if all(path != legacy for _, path in destinations):
+            destinations.append(("claude-superpowers-legacy", legacy))
+
+    return destinations
 
 
 def setup_skills(
     target: str = "agents",
-    skills_dir: str = None,
+    skills_dir: str | None = None,
     dry_run: bool = False,
     force: bool = False,
-    verbose: bool = False
+    verbose: bool = False,
+    scope: str = "user",
+    project_root: str | Path | None = None,
 ) -> bool:
+    """Install packaged Skill trees to explicitly selected discovery roots.
+
+    Canonical P10 targets:
+    - ``generic`` / compatibility alias ``agents``: ``.agents/skills``;
+    - ``claude``: ``.claude/skills``;
+    - ``codex``: ``.agents/skills``;
+    - ``opencode``: native OpenCode Skill root;
+    - ``all``: all unique canonical roots (plus the legacy Superpowers cache
+      for user scope to preserve pre-P10 behavior);
+    - ``custom``: exact caller-supplied directory.
+
+    ``scope=user`` selects user/global roots. ``scope=project`` requires an
+    explicit project root and selects project-local discovery roots. No active
+    harness is detected automatically.
     """
-    Install sensemaking-skills SKILL.md files to agent-discoverable locations.
-
-    Args:
-        target: Which location(s) to install to:
-            - "agents" (default): ~/.agents/skills
-            - "claude-superpowers": Claude Code Superpowers cache
-            - "all": Both locations
-            - "custom": Use --skills-dir path
-        skills_dir: Custom destination directory (if target="custom")
-        dry_run: Show what would be done without actually doing it
-        force: Overwrite existing skills (including divergent ones)
-        verbose: Print detailed output
-
-    Returns: True if successful, False otherwise
-    """
-
     try:
-        # Get source skills directory
         package_skills_dir = get_package_skills_dir()
         skill_names = find_skills_in_package(package_skills_dir)
-
         if not skill_names:
             raise SkillsSetupError(f"No skills found in {package_skills_dir}")
 
+        destinations = _resolve_destinations(
+            target=target,
+            scope=scope,
+            skills_dir=skills_dir,
+            project_root=project_root,
+        )
+        if not destinations:
+            raise SkillsSetupError(f"No destination resolved for target: {target}")
+
         if verbose:
             print(f"Found {len(skill_names)} skills: {', '.join(skill_names)}")
+            print(f"Explicit target: {target}")
+            print(f"Scope: {scope}")
 
-        # Determine destination directories
-        destinations = []
-
-        if target in ("agents", "all"):
-            destinations.append(("agents", get_agents_skills_dir()))
-
-        if target in ("claude-superpowers", "all"):
-            destinations.append(("claude-superpowers", get_claude_code_skills_dir()))
-
-        if target == "custom":
-            if not skills_dir:
-                raise SkillsSetupError("--skills-dir required when using custom target")
-            destinations.append(("custom", Path(skills_dir)))
-
-        if not destinations:
-            raise SkillsSetupError(f"Unknown target: {target}")
-
-        # Install to each destination
         all_success = True
-
         for dest_name, dest_dir in destinations:
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print(f"Installing to: {dest_name}")
+            print(f"Scope: {scope}")
             print(f"Directory: {dest_dir}")
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
 
-            # Create directory if needed
             if not dry_run and not dest_dir.exists():
                 dest_dir.mkdir(parents=True, exist_ok=True)
                 if verbose:
                     print(f"Created directory: {dest_dir}")
 
-            # Copy each skill
             for skill_name in skill_names:
                 success, message = copy_skill(
                     package_skills_dir,
                     dest_dir,
                     skill_name,
                     dry_run=dry_run,
-                    force=force
+                    force=force,
                 )
-
-                status = "OK" if success else "FAIL"
                 symbol = "+" if success else "x"
                 print(f"  [{symbol}] {message}")
-
                 if not success:
                     all_success = False
 
-        # Print summary
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("Summary")
-        print(f"{'='*60}")
-
+        print(f"{'=' * 60}")
         if dry_run:
             print("[DRY-RUN MODE] No files were actually installed.")
-
         print(f"Skills to install: {', '.join(skill_names)}")
         print(f"Target locations: {len(destinations)}")
+        print(f"Requested adapter target: {target}")
+        print(f"Requested scope: {scope}")
 
         if all_success:
             print("\nStatus: SUCCESS")
-            print("\nYou can now invoke skills from your agents:")
-            for skill_name in skill_names:
-                print(f"  /skill {skill_name}")
-            print("\nNote: Agents also need sensemaking-skills Python package installed:")
+            print(
+                "\nReload/restart the selected harness if needed; use its "
+                "normal Skill discovery/invocation surface."
+            )
+            print("The setup command does not select or invoke any Skill.")
+            print("\nThe Python package is still required for Skill helper commands:")
             print("  pip install sensemaking-skills")
         else:
             print("\nStatus: PARTIAL FAILURE - Some installations failed")
-            print("Existing divergent skill copies are reported above and are")
+            print("Existing divergent Skill copies are reported above and are")
             print("NOT overwritten. Use --force to deliberately replace them.")
 
         return all_success
 
-    except SkillsSetupError as e:
-        print(f"Error: {e}", file=sys.stderr)
+    except SkillsSetupError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
         return False
-    except Exception as e:
-        print(f"Unexpected error: {e}", file=sys.stderr)
+    except Exception as exc:
+        print(f"Unexpected error: {exc}", file=sys.stderr)
         return False
