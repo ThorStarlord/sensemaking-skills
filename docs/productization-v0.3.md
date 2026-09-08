@@ -3,7 +3,7 @@
 **Status:** ACTIVE owner direction  
 **Effective:** 2026-09-08  
 **Base at pivot:** `main@5c2c807542f7e150d4a031430f59e297ed816b24`  
-**Current integrated frontier:** P5 merged at `main@d1b925a17620fc98b2bbcdc528feb32feacc9d6e`  
+**Current integrated frontier:** P6 merged at `main@488358afaf9e34e58d467df9493b89ba281ea344`  
 **Primary objective:** turn the ratified agent-native control model into a usable campaign-based engineering product.  
 **Canonical product model:** [`sensemaking-campaign.md`](sensemaking-campaign.md)
 
@@ -103,8 +103,8 @@ For the version-independent product definition and full trust model, see [`sense
 | **P3 — Campaign CLI foundation** | **MERGED** | `campaign init/status/validate/history` with human and JSON surfaces plus stable exit semantics. |
 | **P4 — Validated artifact ingestion** | **MERGED** | Canonically validated, content-addressed artifact admission with append-only receipts; raw artifact files do not automatically become evidence. |
 | **P5 — Agent-authored decisions** | **MERGED** | Explicit `campaign advance/defer/close` decisions persist agent judgment without semantic routing. |
-| **P6 — Real capability registry** | **CURRENT** | Expose responsibility-to-capability metadata while preserving availability/authority separation and agent-owned selection. |
-| **P7 — Durable handoff/resume** | PLANNED | Productize fresh-agent reconstruction as a first-class user experience. |
+| **P6 — Real capability registry** | **MERGED** | Read-only, agent-classified capability inspection with explicit liveness, availability, and authority separation. |
+| **P7 — Durable handoff/resume** | **CURRENT** | Productize fresh-agent reconstruction as a first-class user experience. |
 | **P8 — Artifact/evidence lineage** | PLANNED | Add stable provenance and consumption links across artifacts, evidence, decisions, and transitions. |
 | **P9 — Reconciliation lifecycle** | PLANNED | Connect reconciliation/repair-verification outputs to explicit campaign transitions. |
 | **P10 — Harness adapters** | PLANNED | Improve setup for Claude Code, Codex, OpenCode, and generic agent environments. |
@@ -250,80 +250,109 @@ Important P5 invariants include:
 
 See [`campaign-decisions.md`](campaign-decisions.md) for the implemented P5 contract.
 
-## 7. Current implementation frontier — P6
+### P6 — Real capability registry — MERGED
 
-The next bounded implementation slice is **P6 — Real capability registry**.
-
-### Goal
-
-Allow the active coding agent to inspect real capability metadata relevant to an explicitly classified responsibility while preserving the permanent separation:
-
-```text
-warranted responsibility
-!= available capability
-!= authorized capability
-```
-
-P6 should answer:
-
-> Which registered capabilities claim compatibility with this agent-classified responsibility, and what are their current availability and authority properties?
-
-P6 must **not** answer:
-
-> Which capability should the agent choose?
-
-### Required boundary
-
-The agent remains responsible for semantic classification and selection. Deterministic machinery may load, normalize, validate, and enumerate declared capability metadata.
-
-```text
-active responsibility
-        ↓
-agent supplies responsibility classification
-        ↓
-capability metadata lookup
-        ↓
-unranked inspectable candidates
-        ↓
-agent chooses one / none / ordinary work
-```
-
-### P6 implementation direction
-
-Reuse the existing campaign-semantic capability contracts rather than create another capability model:
-
-- `Capability`;
-- `CapabilityAvailability`;
-- `RegisteredCapability`;
-- `CapabilityRegistry`;
-- `AvailabilityStatus`.
-
-Populate them from current Skill/workflow metadata and liveness declarations through a bounded adapter/loader. Prefer explicit declarative metadata over semantic inference from prose such as `purpose` or responsibility statements.
-
-Initial product surface should be read-oriented and agent-consumable, for example:
+Implemented:
 
 ```text
 sensemaking-skills campaign capabilities
 ```
 
-The exact command contract is implementation-owned, but qualification must prove that enumeration is deterministic and unranked, empty results are honest, liveness/availability remain fail closed, and authority metadata is exposed without manufacturing authorization.
+P6 exposes declared capability metadata only after the active coding agent explicitly supplies a responsibility classification:
 
-### P6 must not
+```text
+active responsibility
+        ↓
+agent-supplied responsibility type
+        ↓
+strict capability metadata lookup
+        ↓
+deterministically ordered, unranked candidates
+        ↓
+agent chooses one / none / ordinary work
+```
 
-- infer a responsibility type from free-form responsibility prose;
-- rank candidates;
-- emit a `best` or `recommended` capability;
-- invoke a Skill/workflow automatically;
-- treat catalog membership as availability;
-- treat availability as execution authorization;
-- promote proposed/deprecated/compatibility-only entries into current capability availability;
-- create semantic routing inside Python.
+Important P6 invariants include:
+
+- capability catalog membership does not imply runtime availability;
+- availability does not imply execution authority;
+- current agent-native Skills remain `external` until harness-specific detection is productized;
+- workflow capability identities are cross-checked against workflow catalog/liveness metadata;
+- `compatibility_only` workflows are mechanically unavailable;
+- live Skill identities must correspond to shipped Skill implementations;
+- capability artifact/mutation declarations are qualification-checked against canonical Skill metadata;
+- unknown responsibility classifications return an honest empty candidate set;
+- no response field ranks, recommends, selects, or invokes a capability;
+- malformed catalog data fails closed.
+
+See [`capability-registry.md`](capability-registry.md) for the implemented P6 contract.
+
+## 7. Current implementation frontier — P7
+
+The next bounded implementation slice is **P7 — Durable handoff/resume**.
+
+### Goal
+
+Turn the P2 handoff-generation and resume/reconstruction primitives into a first-class user experience that allows a fresh coding-agent context to continue a Campaign without prior chat memory.
+
+P7 should answer:
+
+> What durable campaign facts must a fresh agent read to reconstruct the current state, evidence boundary, active responsibility, authority, and continuation context safely?
+
+P7 must **not** answer:
+
+> What should the fresh agent decide next?
+
+### Required boundary
+
+The handoff is a durable reconstruction artifact, not a semantic recommendation or hidden conversation summary.
+
+```text
+current durable campaign state
+        ↓
+deterministic handoff generation
+        ↓
+self-contained reconstruction pointers + integrity bindings
+        ↓
+fresh agent / fresh process
+        ↓
+strict resume validation
+        ↓
+agent reconstructs context and decides next action
+```
+
+### P7 implementation direction
+
+Reuse the existing P2 `CampaignService.generate_handoff()` and `CampaignService.resume()` primitives and the canonical `CampaignHandoff` contract. Do not create another handoff state machine.
+
+Initial product surfaces should be explicit, stable, and machine-readable, for example:
+
+```text
+sensemaking-skills campaign handoff
+sensemaking-skills campaign resume
+```
+
+Qualification should prove at least:
+
+- a handoff binds to the exact current campaign state rather than stale state;
+- a fresh process can resume from workspace + handoff without prior conversation memory;
+- stale/tampered handoffs fail closed;
+- terminal campaigns reconstruct honestly;
+- active responsibility, authority, evidence references, deferred responsibilities, terminal state, and transition history remain reconstructible through the existing contracts;
+- generating or reading a handoff does not mutate semantic campaign state or fabricate a next decision;
+- JSON output is stable and sufficient for an agent/harness adapter to consume.
+
+### P7 must not
+
+- summarize or infer unstored chat context;
+- recommend the next responsibility/capability;
+- reinterpret evidence semantics;
+- grant authority;
+- silently refresh a stale handoff during resume;
+- create a second source of truth beside `campaign-state.yaml`, transition history, trace, and referenced campaign artifacts;
+- weaken existing reconstruction/integrity validation for UX convenience.
 
 ## 8. Remaining planned milestones
-
-### P7 — Durable handoff/resume
-
-Make `campaign handoff` and `campaign resume` a first-class experience. A fresh coding-agent context must be able to reconstruct the current campaign from durable state and referenced artifacts without requiring prior chat memory.
 
 ### P8 — Artifact/evidence lineage
 
