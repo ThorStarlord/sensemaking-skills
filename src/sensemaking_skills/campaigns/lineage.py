@@ -7,15 +7,14 @@ semantically warrants a transition.
 P8 adds two durable structures lazily beneath an existing campaign workspace:
 
 ``lineage/evidence/<sha256>``
-    Content-addressed snapshots for evidence whose original workspace path is
-    not already content-addressed by the Campaign contract.
+    Content-addressed snapshots for consumed evidence whose original workspace
+    path is not already content-addressed by the Campaign contract.
 
 ``lineage/consumptions/<transition-id>/<receipt-digest>.yaml``
     Append-only precommit intent binding one transition id to the exact evidence
-    bytes supplied by the agent-authored decision. The receipt filename is the
-    canonical payload digest. A lifecycle failure may leave an orphan intent;
-    lineage only treats a receipt as consumption when the transition itself is
-    durably committed.
+    refs and bytes supplied by the agent-authored decision. A lifecycle failure
+    may leave an orphan intent; lineage only treats a receipt as consumption
+    when the transition itself is durably committed.
 
 The P4 artifact store remains authoritative for admitted artifacts. P8 does not
 grandfather arbitrary ``artifacts/`` files as evidence and does not create a
@@ -47,7 +46,7 @@ from .errors import (
     CampaignTransactionError,
     CampaignWorkspaceError,
 )
-from .service import CampaignService, CampaignSnapshot
+from .service import CampaignService
 from .store import CampaignStore
 
 
@@ -154,7 +153,12 @@ def _assert_physically_contained(path: Path, root: Path) -> None:
             "campaign lineage path is not physically contained: "
             f"path={path} root={root} failure={failure}"
         )
-    real_root = root.resolve(strict=False)
+    try:
+        real_root = root.resolve(strict=False)
+    except OSError as exc:
+        raise CampaignWorkspaceError(
+            f"could not resolve lineage root {root}: {exc}"
+        ) from exc
     if (
         pc.canonicalize_path(resolved).relative_to_root(
             pc.canonicalize_path(real_root)
@@ -164,6 +168,33 @@ def _assert_physically_contained(path: Path, root: Path) -> None:
         raise CampaignWorkspaceError(
             f"campaign lineage path escapes its physical root: {path}"
         )
+
+
+def _ensure_directory(path: Path, parent: Path) -> None:
+    """Create one lineage directory or fail closed on aliases/non-directories."""
+    if os.path.lexists(path):
+        if path.is_symlink() or not path.is_dir():
+            raise CampaignIntegrityError(
+                f"lineage path is not a regular directory: {path.name}",
+                diagnostic_codes=("LINEAGE_DIRECTORY_INVALID",),
+            )
+    else:
+        try:
+            path.mkdir()
+        except OSError as exc:
+            raise CampaignWorkspaceError(
+                f"could not create lineage directory {path}: {exc}"
+            ) from exc
+    _assert_physically_contained(path, parent)
+
+
+def _safe_workspace_ref(ref: str, *, field: str) -> PurePosixPath:
+    if not isinstance(ref, str) or not ref:
+        raise CampaignLineageContractError(f"{field} must be a non-empty string")
+    parsed = PurePosixPath(ref)
+    if parsed.is_absolute() or ".." in parsed.parts or "." in parsed.parts:
+        raise CampaignLineageContractError(f"{field} must be workspace-relative")
+    return parsed
 
 
 def _binding_payload(binding: EvidenceBinding) -> dict[str, Any]:
@@ -207,6 +238,8 @@ def _load_binding(value: Any, *, path: str) -> EvidenceBinding:
     immutable_ref = _require_text(
         data["immutable_ref"], field=f"{path}.immutable_ref"
     )
+    _safe_workspace_ref(source_ref, field=f"{path}.source_ref")
+    _safe_workspace_ref(immutable_ref, field=f"{path}.immutable_ref")
     digest = _require_text(data["sha256"], field=f"{path}.sha256")
     if not _SHA256_RE.fullmatch(digest):
         raise CampaignLineageContractError(f"{path}.sha256 must be lowercase SHA-256")
@@ -216,15 +249,6 @@ def _load_binding(value: Any, *, path: str) -> EvidenceBinding:
     provenance = data["provenance"]
     if not isinstance(provenance, Mapping):
         raise CampaignLineageContractError(f"{path}.provenance must be a mapping")
-    for ref_name, ref_value in (
-        ("source_ref", source_ref),
-        ("immutable_ref", immutable_ref),
-    ):
-        parsed = PurePosixPath(ref_value)
-        if parsed.is_absolute() or ".." in parsed.parts:
-            raise CampaignLineageContractError(
-                f"{path}.{ref_name} must be workspace-relative"
-            )
     return EvidenceBinding(
         source_ref=source_ref,
         immutable_ref=immutable_ref,
@@ -241,7 +265,9 @@ def load_consumption_receipt(value: Any) -> ConsumptionReceipt:
         with source_path.open(encoding="utf-8") as handle:
             value = yaml.safe_load(handle)
     if not isinstance(value, Mapping):
-        raise CampaignLineageContractError("lineage consumption receipt must be a mapping")
+        raise CampaignLineageContractError(
+            "lineage consumption receipt must be a mapping"
+        )
     data = dict(value)
     unknown = sorted(set(data) - _RECEIPT_FIELDS)
     missing = sorted(_RECEIPT_FIELDS - set(data))
@@ -264,6 +290,11 @@ def load_consumption_receipt(value: Any) -> ConsumptionReceipt:
         _load_binding(item, path=f"evidence_bindings[{index}]")
         for index, item in enumerate(raw_bindings)
     )
+    source_refs = tuple(binding.source_ref for binding in bindings)
+    if len(source_refs) != len(set(source_refs)):
+        raise CampaignLineageContractError(
+            "lineage receipt may not bind the same evidence ref more than once"
+        )
     receipt = ConsumptionReceipt(
         campaign_id=campaign_id,
         transition_id=transition_id,
@@ -281,11 +312,14 @@ def load_consumption_receipt(value: Any) -> ConsumptionReceipt:
 
 
 def _exclusive_write_yaml(path: Path, payload: Mapping[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     try:
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
     except FileExistsError:
         return
+    except OSError as exc:
+        raise CampaignWorkspaceError(
+            f"could not create lineage receipt {path}: {exc}"
+        ) from exc
     with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
         yaml.safe_dump(dict(payload), handle, sort_keys=False, allow_unicode=True)
         handle.flush()
@@ -295,13 +329,11 @@ def _exclusive_write_yaml(path: Path, payload: Mapping[str, Any]) -> None:
 def _write_snapshot(root: Path, source: Path, digest: str) -> str:
     lineage_root = root / "lineage"
     evidence_root = lineage_root / "evidence"
-    lineage_root.mkdir(exist_ok=True)
-    evidence_root.mkdir(exist_ok=True)
-    _assert_physically_contained(lineage_root, root)
-    _assert_physically_contained(evidence_root, lineage_root)
+    _ensure_directory(lineage_root, root)
+    _ensure_directory(evidence_root, lineage_root)
     path = evidence_root / digest
     _assert_physically_contained(path, evidence_root)
-    if path.exists():
+    if os.path.lexists(path):
         if path.is_symlink() or not path.is_file() or sha256_file(path) != digest:
             raise CampaignIntegrityError(
                 "content-addressed lineage evidence snapshot is invalid",
@@ -318,11 +350,15 @@ def _write_snapshot(root: Path, source: Path, digest: str) -> str:
     try:
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
     except FileExistsError:
-        if sha256_file(path) != digest:
+        if path.is_symlink() or not path.is_file() or sha256_file(path) != digest:
             raise CampaignIntegrityError(
                 "lineage evidence snapshot collision",
                 diagnostic_codes=("LINEAGE_IMMUTABLE_EVIDENCE_INVALID",),
             )
+    except OSError as exc:
+        raise CampaignWorkspaceError(
+            f"could not create lineage evidence snapshot {path}: {exc}"
+        ) from exc
     else:
         with os.fdopen(fd, "wb") as handle:
             handle.write(data)
@@ -360,7 +396,15 @@ def _resolve_evidence(
     snapshot_mutable_source: bool,
 ) -> EvidenceBinding:
     root = store.root
-    source = root / PurePosixPath(ref)
+    try:
+        relative = _safe_workspace_ref(ref, field="evidence_ref")
+    except CampaignLineageContractError as exc:
+        raise CampaignIntegrityError(
+            f"invalid Campaign evidence ref in lineage: {ref!r}",
+            diagnostic_codes=("LINEAGE_EVIDENCE_REFERENCE_INVALID",),
+        ) from exc
+    source = root / relative
+    _assert_physically_contained(source, root)
     if source.is_symlink() or not source.is_file():
         raise CampaignIntegrityError(
             f"lineage evidence source is missing or not a regular file: {ref}",
@@ -443,6 +487,28 @@ def _receipt_ref(root: Path, path: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
+def _strict_receipt_paths(directory: Path, parent: Path) -> tuple[Path, ...]:
+    """Return receipt files while rejecting every ambiguous filesystem entry."""
+    if not os.path.lexists(directory):
+        return ()
+    if directory.is_symlink() or not directory.is_dir():
+        raise CampaignIntegrityError(
+            "lineage transition receipt path is invalid",
+            diagnostic_codes=("INVALID_LINEAGE_CONSUMPTION_RECEIPT",),
+        )
+    _assert_physically_contained(directory, parent)
+    paths: list[Path] = []
+    for path in sorted(directory.iterdir()):
+        _assert_physically_contained(path, directory)
+        if path.is_symlink() or not path.is_file() or path.suffix != ".yaml":
+            raise CampaignIntegrityError(
+                "lineage consumption directory contains an invalid entry",
+                diagnostic_codes=("INVALID_LINEAGE_CONSUMPTION_RECEIPT",),
+            )
+        paths.append(path)
+    return tuple(paths)
+
+
 class CampaignLineageService:
     """Prepare immutable evidence consumption and reconstruct read-only lineage."""
 
@@ -455,17 +521,24 @@ class CampaignLineageService:
         *,
         transition_id: str,
         evidence_refs: tuple[str, ...],
-    ) -> str | None:
+    ) -> str:
         """Persist append-only evidence intent before the semantic lifecycle commit.
 
-        An orphan receipt is harmless if the later transition fails. Retrying the
+        An explicit zero-evidence decision still receives a receipt with an empty
+        binding list. That distinguishes a P8-authored decision that cited no
+        evidence from a pre-P8/direct-P2 transition whose evidence consumption
+        was never bound.
+
+        A failed later lifecycle write may leave an orphan receipt. Retrying the
         same transition id is idempotent only when the exact evidence binding is
         unchanged; a conflicting intent fails closed.
         """
-        if not evidence_refs:
-            return None
         if not _SAFE_ID.fullmatch(transition_id):
             raise CampaignTransactionError("unsafe transition id for lineage receipt")
+        if len(evidence_refs) != len(set(evidence_refs)):
+            raise CampaignTransactionError(
+                "lineage consumption evidence refs must not contain duplicates"
+            )
 
         snapshot = self.lifecycle.resume()
         available = set(snapshot.evidence_refs)
@@ -495,14 +568,11 @@ class CampaignLineageService:
         lineage_root = self.store.root / "lineage"
         consumptions_root = lineage_root / "consumptions"
         transition_root = consumptions_root / transition_id
-        lineage_root.mkdir(exist_ok=True)
-        consumptions_root.mkdir(exist_ok=True)
-        transition_root.mkdir(exist_ok=True)
-        _assert_physically_contained(lineage_root, self.store.root)
-        _assert_physically_contained(consumptions_root, lineage_root)
-        _assert_physically_contained(transition_root, consumptions_root)
+        _ensure_directory(lineage_root, self.store.root)
+        _ensure_directory(consumptions_root, lineage_root)
+        _ensure_directory(transition_root, consumptions_root)
 
-        existing = sorted(transition_root.glob("*.yaml"))
+        existing = _strict_receipt_paths(transition_root, consumptions_root)
         for path in existing:
             try:
                 loaded = load_consumption_receipt(path)
@@ -515,8 +585,25 @@ class CampaignLineageService:
                 raise CampaignTransactionError(
                     "transition id already has a different lineage consumption intent"
                 )
+
         path = transition_root / f"{digest}.yaml"
+        _assert_physically_contained(path, transition_root)
         _exclusive_write_yaml(path, payload)
+
+        # Close the create/exist race: whatever now occupies the content-addressed
+        # name must parse to exactly the payload we intended.
+        try:
+            persisted = load_consumption_receipt(path)
+        except (CampaignLineageContractError, OSError, yaml.YAMLError) as exc:
+            raise CampaignIntegrityError(
+                "persisted lineage consumption intent is invalid",
+                diagnostic_codes=("INVALID_LINEAGE_CONSUMPTION_RECEIPT",),
+            ) from exc
+        if _receipt_payload(persisted) != payload:
+            raise CampaignIntegrityError(
+                "persisted lineage consumption intent differs from prepared intent",
+                diagnostic_codes=("LINEAGE_CONSUMPTION_RECEIPT_MISMATCH",),
+            )
         return _receipt_ref(self.store.root, path)
 
     def inspect(self) -> CampaignLineageResult:
@@ -596,7 +683,11 @@ class CampaignLineageService:
                 )
             )
             for binding in receipt.evidence_bindings:
-                immutable = self.store.root / PurePosixPath(binding.immutable_ref)
+                immutable_relative = _safe_workspace_ref(
+                    binding.immutable_ref, field="immutable_ref"
+                )
+                immutable = self.store.root / immutable_relative
+                _assert_physically_contained(immutable, self.store.root)
                 if immutable.is_symlink() or not immutable.is_file():
                     raise CampaignIntegrityError(
                         "immutable lineage evidence is missing",
@@ -605,14 +696,23 @@ class CampaignLineageService:
                 if sha256_file(immutable) != binding.sha256:
                     raise CampaignIntegrityError(
                         "immutable lineage evidence no longer matches its consumption digest",
-                        diagnostic_codes=("LINEAGE_IMMUTABLE_EVIDENCE_DIGEST_MISMATCH",),
+                        diagnostic_codes=(
+                            "LINEAGE_IMMUTABLE_EVIDENCE_DIGEST_MISMATCH",
+                        ),
                     )
-                source = self.store.root / PurePosixPath(binding.source_ref)
-                source_matches = (
-                    source.is_file()
-                    and not source.is_symlink()
-                    and sha256_file(source) == binding.sha256
+                source_relative = _safe_workspace_ref(
+                    binding.source_ref, field="source_ref"
                 )
+                source = self.store.root / source_relative
+                try:
+                    _assert_physically_contained(source, self.store.root)
+                    source_matches = (
+                        source.is_file()
+                        and not source.is_symlink()
+                        and sha256_file(source) == binding.sha256
+                    )
+                except CampaignWorkspaceError:
+                    source_matches = False
                 edges.append(
                     ConsumptionEdge(
                         transition_id=transition.id,
@@ -627,7 +727,10 @@ class CampaignLineageService:
                     )
                 )
 
-        orphan_refs = self._orphan_intents(committed_ids)
+        orphan_refs = self._orphan_intents(
+            committed_ids,
+            campaign_id=snapshot.state.campaign_id,
+        )
         return CampaignLineageResult(
             campaign_id=snapshot.state.campaign_id,
             evidence=evidence_records,
@@ -658,15 +761,9 @@ class CampaignLineageService:
     def _receipt_for_transition(
         self, transition_id: str
     ) -> tuple[str | None, ConsumptionReceipt | None]:
-        root = self.store.root / "lineage" / "consumptions" / transition_id
-        if not root.exists():
-            return None, None
-        if root.is_symlink() or not root.is_dir():
-            raise CampaignIntegrityError(
-                "lineage transition receipt path is invalid",
-                diagnostic_codes=("INVALID_LINEAGE_CONSUMPTION_RECEIPT",),
-            )
-        paths = sorted(root.glob("*.yaml"))
+        consumptions_root = self.store.root / "lineage" / "consumptions"
+        root = consumptions_root / transition_id
+        paths = _strict_receipt_paths(root, consumptions_root)
         if not paths:
             return None, None
         if len(paths) != 1:
@@ -688,14 +785,54 @@ class CampaignLineageService:
             )
         return _receipt_ref(self.store.root, paths[0]), receipt
 
-    def _orphan_intents(self, committed_ids: set[str]) -> tuple[str, ...]:
-        root = self.store.root / "lineage" / "consumptions"
-        if not root.exists():
+    def _orphan_intents(
+        self,
+        committed_ids: set[str],
+        *,
+        campaign_id: str,
+    ) -> tuple[str, ...]:
+        lineage_root = self.store.root / "lineage"
+        consumptions_root = lineage_root / "consumptions"
+        if not os.path.lexists(consumptions_root):
             return ()
+        if consumptions_root.is_symlink() or not consumptions_root.is_dir():
+            raise CampaignIntegrityError(
+                "lineage consumptions root is invalid",
+                diagnostic_codes=("LINEAGE_DIRECTORY_INVALID",),
+            )
+        _assert_physically_contained(consumptions_root, lineage_root)
+
         refs: list[str] = []
-        for directory in sorted(root.iterdir()):
-            if directory.name in committed_ids or not directory.is_dir():
-                continue
-            for path in sorted(directory.glob("*.yaml")):
-                refs.append(_receipt_ref(self.store.root, path))
+        for directory in sorted(consumptions_root.iterdir()):
+            _assert_physically_contained(directory, consumptions_root)
+            if (
+                directory.is_symlink()
+                or not directory.is_dir()
+                or not _SAFE_ID.fullmatch(directory.name)
+            ):
+                raise CampaignIntegrityError(
+                    "lineage consumptions root contains an invalid entry",
+                    diagnostic_codes=("INVALID_LINEAGE_CONSUMPTION_RECEIPT",),
+                )
+            paths = _strict_receipt_paths(directory, consumptions_root)
+            for path in paths:
+                try:
+                    receipt = load_consumption_receipt(path)
+                except (CampaignLineageContractError, OSError, yaml.YAMLError) as exc:
+                    raise CampaignIntegrityError(
+                        "lineage consumption intent is invalid",
+                        diagnostic_codes=("INVALID_LINEAGE_CONSUMPTION_RECEIPT",),
+                    ) from exc
+                if receipt.transition_id != directory.name:
+                    raise CampaignIntegrityError(
+                        "lineage receipt transition id does not match its directory",
+                        diagnostic_codes=("LINEAGE_TRANSITION_ID_MISMATCH",),
+                    )
+                if receipt.campaign_id != campaign_id:
+                    raise CampaignIntegrityError(
+                        "lineage receipt belongs to a different campaign",
+                        diagnostic_codes=("LINEAGE_CAMPAIGN_ID_MISMATCH",),
+                    )
+                if directory.name not in committed_ids:
+                    refs.append(_receipt_ref(self.store.root, path))
         return tuple(refs)
