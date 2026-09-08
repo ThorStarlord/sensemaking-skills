@@ -112,9 +112,15 @@ Required agent-authored fields include:
 - transition id and target state;
 - decision rationale;
 - deferral reason;
-- at least one `reopen_when` condition;
+- optional `reopen_when` conditions;
 - optional `not_reopened_by` conditions;
 - optional durable evidence refs.
+
+The reopening condition remains optional because that is the existing canonical
+`DeferredResponsibility` contract. P5 packages that contract; it does not tighten
+it. When the agent knows a concrete reopening condition it should record one,
+but an honest deferral with no currently knowable reopening trigger remains
+representable as `reopen_when: []`.
 
 The command delegates to the existing P2 `defer_responsibility` primitive. That
 primitive moves the active responsibility into `deferred_responsibilities`,
@@ -153,8 +159,11 @@ CAMPAIGN_DEFERRED
 CAMPAIGN_CLOSED
 ```
 
-With `--json`, each success response contains the normal durable campaign status
-plus the exact committed transition under `transition`.
+With `--json`, each success response contains the normal durable campaign status,
+the exact replacement campaign state under `state`, and the exact committed
+transition under `transition`. This exposes defer reason/reopening metadata and
+other decision-relevant replacement-state fields without requiring an agent
+harness to scrape YAML or prose.
 
 The commands reuse the existing campaign error taxonomy. Structurally invalid
 or impossible lifecycle decisions remain `CAMPAIGN_TRANSACTION_ERROR` and use
@@ -258,8 +267,8 @@ A qualified P5 candidate must prove at least:
 2. `advance` persists exactly one agent-authored next responsibility and authority;
 3. referenced evidence must satisfy the current evidence contract;
 4. an orphan `artifacts/` file cannot support a decision;
-5. `defer` preserves its reason and reopening contract;
+5. `defer` preserves its reason and optional reopening contract, including `reopen_when: []`;
 6. `close` persists the selected `TerminalState` and blocks later advance;
 7. all decisions use P2 lifecycle recovery/reconstruction;
 8. fresh-process status/history reconstruct the exact authored transition;
-9. human/JSON surfaces expose state and committed decision without emitting a semantic recommendation.
+9. human/JSON surfaces expose exact replacement state and committed decision without emitting a semantic recommendation.
