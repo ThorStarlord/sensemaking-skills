@@ -1,161 +1,202 @@
 # Status
 
-**Version**: 0.2.2 (see [pyproject.toml](pyproject.toml), [CHANGELOG.md](CHANGELOG.md))
-**Last updated**: 2026-09-02 (post PR #268 — Campaign 1 closure merged)
+**Version:** 0.2.2  
+**Last updated:** 2026-09-08  
+**Current phase:** Productization / implementation  
+**Primary program:** Sensemaking Skills v0.3 campaign-based productization
 
-This file is the **single living status summary at the repo root**: what the
-product is, where development currently is, and how to reconstruct that picture
-without prior conversation context. It points at the authoritative documents;
-it does not duplicate them. Dated phase/completion/deployment reports are
-archived under `docs/archive/phase-reports/` and are not updated here.
+This is the repository's living status summary. It points at authoritative design sources and current implementation direction; it is not itself an ADR or an execution authorization.
 
 ## What the product is
 
-An **agent-native engineering sensemaking and control layer for
-software-engineering agents** (see [CONTEXT.md](CONTEXT.md)). An active coding
-agent owns the recursive control loop (ADR 0013); Sensemaking constrains it with
-repository evidence, bounded responsibilities, durable artifacts, validators,
-reconciliation, repair verification, and authority boundaries. The ratified
-external product scope is the validated, human-reviewed
-`repository_sensemaking_brief` (ADR 0014). It is **not** a general
-project-goal-to-implementation router, an autonomous multi-repo orchestrator, or
-a general development operating system.
+Sensemaking Skills is an **agent-native engineering sensemaking and control layer for software-engineering agents**.
 
-## Current product-validation priority
+The active coding agent owns the semantic control loop. Sensemaking constrains that loop with repository evidence, bounded responsibilities, durable artifacts, deterministic validators, reconciliation, repair verification, authority boundaries, and now typed campaign state.
 
-**Goal A — External Product Validation** is the current product-validation
-strategy. Canonical protocol:
-[docs/research/goal-a-external-product-validation-protocol.md](docs/research/goal-a-external-product-validation-protocol.md).
+It is not a centralized semantic router, autonomous project manager, or universal multi-agent orchestrator.
+
+Current architectural authority remains grounded in the accepted ADRs and current operating docs, especially:
+
+- ADR 0013 — the active coding agent owns the top-level control loop;
+- ADR 0014 — the evidence-grounded repository-sensemaking brief is the ratified core product boundary and automatic downstream routing is deferred;
+- ADR 0015 addendum — representation sufficiency / MODEL_WARRANT;
+- ADR 0023 — experiment authorization separation;
+- ADR 0026 / 0027 — execution authority is distinct from recommendation/selection, and workflow catalog identity is distinct from liveness;
+- `docs/agent-native-operating-workflow.md` — current operating map;
+- `docs/decision-orchestration-boundary.md` — semantic decision vs deterministic orchestration boundary.
+
+## Owner productization decision — 2026-09-08
+
+The repository is moving from **research/experiment-first development** to **implementation/productization-first development**.
+
+The default development loop is now:
 
 ```text
-Goal A       = ACTIVE   (A1 = ACTIVE, absolute product utility)
-A2           = DEFERRED / UNAUTHORIZED
-Goal B / E3  = FROZEN / DEFERRED
+identify a user-visible capability
+→ implement the smallest complete vertical slice
+→ validate deterministically
+→ dogfood in ordinary engineering use
+→ repair observed friction
+→ ship the slice
 ```
 
-Protocol approval does **not** authorize episode execution. The first A1 episode
-is **paused at an execution-substrate boundary** (an isolated producer sub-agent
-cannot persist its own frozen brief, prove pinned provenance, or re-run the
-probe engine; three substrates falsified). The stop boundary is durably recorded
-as `experiments/evidence/0023-goal-a-run1-stop-boundary/` and tracked live in
-**Issue #255**; the current owner rule is to halt Goal A in this environment
-rather than build another harness. Resuming needs an owner/environment decision,
-not a repo-code change. Reassessment:
-[docs/research/goal-a-execution-readiness-reassessment-2026-08-31.md](docs/research/goal-a-execution-readiness-reassessment-2026-08-31.md).
+Formal experiments are no longer the normal next step. They are reserved for consequential product uncertainties that ordinary implementation and dogfood evidence cannot resolve.
 
-## Current development direction
+The detailed active plan is:
 
-### Ratified / operative (do not re-decide without an ADR)
+[`docs/productization-v0.3.md`](docs/productization-v0.3.md)
 
-- **ADR 0013** — active coding agent owns the top-level control loop.
-- **ADR 0014** — product boundary = validated, human-reviewed
-  `repository_sensemaking_brief`; automatic downstream routing deferred.
-- **ADR 0026 / 0027** — execution authority is separate from
-  recommendation/selection; workflow registry identity is separate from
-  liveness; consumers fail closed.
-- **ADR 0015 addendum** — `representation_sufficiency` → `MODEL_WARRANT` gate.
-- **ADR 0023** — two-lane experiment authorization.
-- **Campaign 1** (agent-native, artifact-mediated self-development) —
-  `CAMPAIGN_COMPLETE`, merged in **PR #268**. On the product surface: the
-  responsibility-level continuation subsection in the operating map; the
-  deterministic-machinery + hooks disposition in
-  `docs/decision-orchestration-boundary.md`;
-  `docs/workflow-system-disposition.md` (23 workflows classified); a lazy
-  `workflow_liveness` resolver in `scripts/_validator_utils.py`. No ADR /
-  contract / registry / `src/` change. Report:
-  [docs/campaigns/agent-native-self-development/FINAL-REPORT.md](docs/campaigns/agent-native-self-development/FINAL-REPORT.md).
+## Current implementation baseline
 
-### In flight
+`main` at the productization pivot is:
 
-- **Goal A / A1 episode** — see above; owner/environment decision pending
-  (Issue #255).
-- **Issue #218** — standing normal-use control-model evidence lane.
-- **Issue #226** — blind gate-separation study of the compressed control
-  hypothesis (`C6R`); `C6R` frozen until the preregistered result.
-- **Semantic Control Map trial** — [docs/semantic-control-map.md](docs/semantic-control-map.md)
-  + [docs/semantic-control-map-trial.md](docs/semantic-control-map-trial.md);
-  EXPERIMENTAL, `CORE_PERSISTENCE_RATIFIED = false`, min close ~2026-09-28;
-  nothing may depend on the map.
-- **Campaign 2** (durable repository-level self-development) —
-  `docs/campaigns/durable-repo-self-development/`; owner-launched; in progress.
-- **Nine workflow-system-disposition owner decisions** —
-  `docs/workflow-system-disposition.md` section 6; recorded, none applied.
+`5c2c807542f7e150d4a031430f59e297ed816b24`
 
-### Deferred / explicitly out of scope
+That merge integrated PR #277, adding the typed campaign-semantic contract and strict I/O boundary:
 
-- A2 (incremental value vs baseline); Goal B / research-grade E3.
-- Automatic fog-type→implementation routing as product behavior; a universal
-  centralized orchestrator; one workflow encoding the whole loop; automatic
-  external-mutation authority (`CONTEXT.md` "Current product boundaries and
-  open edges").
-- Domain-general control core / domain packs / decision-theory machinery —
-  research questions only, non-ratified
-  ([docs/research/control-model-research-agenda.md](docs/research/control-model-research-agenda.md)).
-- New validator / schema / hook / runtime machinery — behind the "repeated
-  real-use pressure + mechanically expressible boundary" gate
-  (`CONTEXT.md` principle 10).
-- PyPI publication / GA / "production deployment" — **not** a current goal;
-  the plans in `roadmap.md` and the `CHANGELOG.md` "Deployment Timeline" footer
-  are historical and superseded; ADR 0021 ("production readiness requirements")
-  is SUPERSEDED, never Accepted.
+- `CampaignState`;
+- `Responsibility`;
+- `Uncertainty`;
+- `Authority`;
+- typed dependencies;
+- `TransitionRecord`;
+- `CampaignPolicy`;
+- `CampaignHandoff`;
+- `CampaignTrace`;
+- `CapabilityRegistry` / availability semantics;
+- strict campaign YAML load/dump boundaries;
+- semantic round-trip qualification.
 
-### Highest-leverage warranted next boundary
+Those types are deliberately structural. They do not judge semantic sufficiency and do not take control away from the coding agent.
 
-Owner/environment decision on the Goal A execution substrate (Issue #255) — the
-product's central unvalidated hypothesis (brief usefulness beyond this repo)
-cannot advance without it, and it is not a repo-code deliverable. The
-in-authority engineering backlog is deliberately small (the nine
-workflow-system-disposition decisions; test-expectation debt D2b / D19; the
-`docs/` reconstruction surface itself). The repository posture is **harden only
-where pressured** — `CONTEXT.md` principle 10; Campaign 1 closed with "no
-further product change is warranted by current evidence"; the research agenda's
-2026-08-30 meta-finding records that sensemaking loops have saturated.
+## Current productization objective
 
-## Reconstructing current development direction
+The v0.3 north-star outcome is:
 
-A fresh maintainer or coding-agent controller with no prior context should be
-able to reconstruct the picture above from these sources, in this order:
+> A coding agent can start a durable Sensemaking Campaign on a real repository, consume validated agent-native diagnostic artifacts, record the warranted responsibility and authority, perform bounded work, validate/reconcile the result, hand the campaign to a fresh agent, and continue or terminate without relying on prior conversation memory.
 
-1. **[CONTEXT.md](CONTEXT.md)** — product definition, top operating rule, core
-   principles, authority model, "Current evidence strategy: Goal A", and
-   "Current product boundaries and open edges" (what is *not* ratified).
-2. **This file** — the ratified / in-flight / deferred summary and the
-   highest-leverage next boundary, each pointing at its authoritative source.
-3. **[docs/adr/](docs/adr/)** — read the `**Status**` line of every ADR you
-   cite. ADRs 0017–0021 (and 0018) are **SUPERSEDED / never Accepted** — a
-   title match is not a decision; see `docs/adr/README.md` for the status
-   lifecycle.
-4. **[docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md)**
-   and **[docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md)**
-   — the current control model and the decision-vs-orchestration ownership
-   boundary.
-5. **[docs/campaigns/](docs/campaigns/)** — each campaign's `CAMPAIGN-STATE.md`
-   / `FINAL-REPORT.md` is the freshest strategic narrative for its scope
-   (non-authoritative campaign records — evidence, not ratification).
-6. **GitHub** — open issues (`gh issue list`) for live workstreams (#218, #226,
-   #255) and recent merged PRs (`gh pr list --state merged`) for what most
-   recently changed.
+The intended lifecycle is:
 
-Do **not** anchor on: `roadmap.md`, `goal.md`, `00-user-intent.md`, or the
-`CHANGELOG.md` "Deployment Timeline" footer — all predate the ADR 0013
-agent-native pivot and describe a superseded PyPI/GA/autonomous-router plan.
-Root `docs/*.md` files prefixed `PHASE-`, `STAGE-`, `WEEK1-`, `UI-ROUTING-`, or
-`task-` are historical working notes, not current design; the current design
-docs are those listed under "Where to look" below, and the report archive is
-`docs/archive/phase-reports/`.
+```text
+user goal
+→ campaign init
+→ repository sensemaking
+→ validated artifact
+→ agent chooses responsibility
+→ campaign records decision + authority
+→ bounded capability / ordinary coding
+→ validation / reconciliation
+→ durable transition
+→ handoff / continue / stop
+```
+
+## Current implementation boundary
+
+The immediate build sequence is deliberately vertical and bounded:
+
+1. **P0 — Productization pivot**: make the new development regime durable and stop treating formal experiment execution as the active program.
+2. **P1 — Durable campaign workspace**: file-backed, isolated campaign persistence around the already-merged `campaign_semantics` types.
+3. **P2 — Campaign service**: deterministic lifecycle operations, including atomic state+transition commits.
+4. **P3 — Campaign CLI foundation**: real `campaign init/status/validate/history` commands.
+5. **P4/P5 — Artifact ingestion + agent-authored transition decisions**.
+6. **P6 — Real capability registry**, without automatic routing.
+7. **P7 — Durable handoff/resume**.
+8. **P8/P9 — Artifact lineage + reconciliation lifecycle**.
+9. **P10/P11 — harness adapters + v0.3 release qualification**.
+
+## Semantic-control invariant
+
+The implementation must preserve this separation:
+
+```text
+Agent:
+  What does the evidence mean?
+  Which responsibility is warranted?
+  Which available capability should be selected?
+
+Deterministic machinery:
+  Is the representation valid?
+  Is state persisted safely?
+  Does authority metadata permit the claimed action?
+  Is the transition structurally reconstructible?
+  What durable evidence and history exist?
+```
+
+Therefore:
+
+```text
+validator passed != conclusion is true
+capability exists != capability should be selected
+capability available != execution authorized
+recommendation != execution authority
+```
+
+## Research and experiment disposition
+
+Prior research remains useful evidence and is preserved. It is no longer the default active product program.
+
+### EXP-0006 / Empirical Skill Qualification v1
+
+The experiment may stop at the actual completed boundary under the owner's productization pivot.
+
+Preserve:
+
+- the three D attempts and their exact outcomes;
+- the frozen Q/T holdout identity and integrity record;
+- the candidate-context contamination audit;
+- the fact that no candidate was authored before the contamination event;
+- all existing exploratory/non-canonical claim ceilings.
+
+Do not manufacture a Skill candidate or continue Q/T execution merely to complete the experimental mechanism. Do not relabel incomplete work as a completed scientific conclusion.
+
+### Goal A and other research lanes
+
+Goal A, the standing normal-use evidence lane, control-model studies, and other research artifacts remain available as evidence/research surfaces. They are not the primary development queue unless a later owner decision explicitly reactivates them.
+
+## Explicit non-goals for v0.3
+
+Do not build by default:
+
+- centralized semantic routing;
+- HTN/generic planning;
+- Skill ranking;
+- critic/voting swarms;
+- self-modifying Skills;
+- autonomous SkillOpt optimization;
+- campaign server/database/cloud backend;
+- universal semantic truth validation;
+- automatic external mutation authority;
+- full multi-repository campaign control.
+
+## Definition of v0.3 success
+
+The first campaign-based release is successful when a real agent can:
+
+```text
+start
+→ consume diagnosis
+→ record responsibility
+→ bind authority
+→ inspect available capability
+→ record work evidence
+→ transition
+→ handoff
+→ resume in a fresh context
+→ stop honestly
+```
+
+with deterministic state reconstruction and without requiring the prior conversation as hidden input.
 
 ## Where to look
 
-| Topic | Location |
-| :--- | :--- |
-| Architecture, principles, authority model, glossary, source-of-truth map | [CONTEXT.md](CONTEXT.md) |
-| Current end-to-end operating map | [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md) |
-| Decision vs orchestration ownership boundary | [docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md) |
-| Per-workflow disposition (23 registered workflows) | [docs/workflow-system-disposition.md](docs/workflow-system-disposition.md) |
-| Non-ratified research directions | [docs/research/control-model-research-agenda.md](docs/research/control-model-research-agenda.md) |
-| Product-validation strategy (Goal A) | [docs/research/goal-a-external-product-validation-protocol.md](docs/research/goal-a-external-product-validation-protocol.md), Issue #255 |
-| Development campaigns (non-authoritative records) | [docs/campaigns/](docs/campaigns/) |
-| Design decisions (read the Status line) | [docs/adr/](docs/adr/), [docs/adr/README.md](docs/adr/README.md) |
-| Usage and install | [README.md](README.md), [GETTING_STARTED.md](GETTING_STARTED.md), [INSTALLATION.md](INSTALLATION.md) |
-| Change history (released versions only) | [CHANGELOG.md](CHANGELOG.md) |
-| Historical phase/completion reports | [docs/archive/phase-reports/](docs/archive/phase-reports/) |
+| Topic | Source |
+|---|---|
+| Product definition, principles, authority model | `CONTEXT.md` |
+| Active v0.3 productization plan | `docs/productization-v0.3.md` |
+| Agent-native operating model | `docs/agent-native-operating-workflow.md` |
+| Decision vs orchestration boundary | `docs/decision-orchestration-boundary.md` |
+| Campaign semantic contract | `docs/campaign-semantics.md`, `src/sensemaking_skills/campaign_semantics/` |
+| Workflow catalog/liveness | `docs/workflow-system-disposition.md`, ADR 0027 |
+| Design decisions | `docs/adr/` — always read each ADR's status |
+| Historical research/evidence | `experiments/`, `docs/research/`, `docs/campaigns/` |
+| Installation and usage | `README.md`, `GETTING_STARTED.md`, `INSTALLATION.md` |
