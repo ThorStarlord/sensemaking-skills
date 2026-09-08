@@ -339,6 +339,8 @@ Research and experimental scaffolds remain available as laboratories and histori
 
 In particular, EXP-0006 stopped at its actual completed boundary under the owner productization pivot. Preserve its diagnostic attempts, holdout freeze, contamination audit, and claim ceilings. Do not manufacture a Skill candidate merely to exercise the qualification mechanism.
 
+The provenance and disposition of SkillOpt-influenced Skill-quality ideas are recorded in [`research/skillopt-adaptation.md`](research/skillopt-adaptation.md). That note does not insert Skill optimization into the v0.3 milestone sequence, authorize EXP-0006, or change the Campaign product boundary.
+
 ## 11. Definition of v0.3 done
 
 The first campaign-based release is ready when a real external-repository run can demonstrate:
