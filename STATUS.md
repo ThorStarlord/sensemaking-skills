@@ -296,6 +296,7 @@ with deterministic state reconstruction and without requiring the prior conversa
 | Product definition, principles, authority model | `CONTEXT.md` |
 | Canonical Sensemaking Campaign product model | `docs/sensemaking-campaign.md` |
 | Active v0.3 delivery plan | `docs/productization-v0.3.md` |
+| SkillOpt influence/adaptation and research boundary | `docs/research/skillopt-adaptation.md` |
 | Agent-native operating model | `docs/agent-native-operating-workflow.md` |
 | Decision vs orchestration boundary | `docs/decision-orchestration-boundary.md` |
 | Campaign semantic contract | `docs/campaign-semantics.md`, `src/sensemaking_skills/campaign_semantics/` |
