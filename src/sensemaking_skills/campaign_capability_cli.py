@@ -1,4 +1,4 @@
-"""Click command registration for P6 capability inspection."""
+"""Click command registration for campaign capability and handoff surfaces."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from typing import Any
 
 import click
 
+from .campaign_handoff_cli import register_campaign_handoff_commands
 from .campaign_semantics import ContractError
 from .campaign_semantics.registry import RegisteredCapability
 from .campaigns import CampaignWorkspaceError
@@ -66,7 +67,7 @@ def register_campaign_capability_commands(
     emit_error: ErrorEmitter,
     json_echo: JsonEcho,
 ) -> None:
-    """Register P6 read-only capability inspection on the campaign group."""
+    """Register P6 inspection and compose P7 handoff/resume commands."""
 
     @campaign.command(name="capabilities")
     @click.option(
@@ -140,3 +141,12 @@ def register_campaign_capability_commands(
                 + ("yes" if candidate["mutates_repository"] else "no")
             )
             click.echo(f"  Output artifact: {candidate['output_artifact']}")
+
+    # cli.py already delegates campaign extension registration through this hook.
+    # Compose the P7 commands here without creating a second top-level Click group
+    # or changing any P6 capability-selection semantics.
+    register_campaign_handoff_commands(
+        campaign,
+        emit_error=emit_error,
+        json_echo=json_echo,
+    )
