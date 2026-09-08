@@ -8,6 +8,8 @@ authority, or alter Campaign semantics.
 
 from __future__ import annotations
 
+import os
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -25,8 +27,27 @@ class HarnessAdapter:
     user_relative: tuple[str, ...]
     project_relative: tuple[str, ...]
     notes: str
+    user_home_env: str | None = None
+    user_home_suffix: tuple[str, ...] = ()
 
-    def user_skills_dir(self, *, home: Path | None = None) -> Path:
+    def user_skills_dir(
+        self,
+        *,
+        home: Path | None = None,
+        env: Mapping[str, str] | None = None,
+    ) -> Path:
+        """Resolve the declared user root without detecting an active harness.
+
+        Most adapters are relative to the user's home. Codex additionally
+        documents ``CODEX_HOME`` as the configurable home for personal skills;
+        honoring that explicit configuration is path resolution, not harness
+        auto-detection.
+        """
+        environment = os.environ if env is None else env
+        if self.user_home_env and environment.get(self.user_home_env):
+            root = Path(environment[self.user_home_env]).expanduser()
+            return root.joinpath(*self.user_home_suffix)
+
         root = Path.home() if home is None else Path(home)
         return root.joinpath(*self.user_relative)
 
@@ -47,10 +68,9 @@ class HarnessDestination:
         return "+".join(self.adapter_ids)
 
 
-# P10 deliberately encodes only documented Skill discovery roots. These paths
-# are versioned product metadata, not runtime detection. If a harness changes
-# its discovery contract, this registry and its qualification tests must change
-# explicitly rather than silently probing or guessing.
+# P10 deliberately encodes documented Skill discovery roots as versioned setup
+# metadata. If a harness changes its contract, this registry and qualification
+# evidence must change explicitly rather than silently probing or guessing.
 HARNESS_ADAPTERS: dict[str, HarnessAdapter] = {
     "generic": HarnessAdapter(
         id="generic",
@@ -69,9 +89,14 @@ HARNESS_ADAPTERS: dict[str, HarnessAdapter] = {
     "codex": HarnessAdapter(
         id="codex",
         label="Codex",
-        user_relative=(".agents", "skills"),
+        user_relative=(".codex", "skills"),
         project_relative=(".agents", "skills"),
-        notes="Codex Agent Skills user/project discovery roots.",
+        notes=(
+            "Codex personal skills live under CODEX_HOME/skills "
+            "(default ~/.codex/skills); repository skills use .agents/skills."
+        ),
+        user_home_env="CODEX_HOME",
+        user_home_suffix=("skills",),
     ),
     "opencode": HarnessAdapter(
         id="opencode",
@@ -116,13 +141,14 @@ def resolve_harness_destinations(
     scope: str = "user",
     project_root: Path | None = None,
     home: Path | None = None,
+    env: Mapping[str, str] | None = None,
 ) -> tuple[HarnessDestination, ...]:
     """Resolve explicit harness/scope metadata to unique filesystem roots.
 
-    `target="all"` expands the canonical adapter set and deduplicates shared
-    physical roots. Codex and the portable generic adapter intentionally share
-    `.agents/skills`, so `all` writes that location once while preserving both
-    logical adapter ids in the returned metadata.
+    `target="all"` expands the canonical adapter set and deduplicates any roots
+    that are physically identical for the requested scope. For example, Codex
+    and the portable generic adapter share the project-local `.agents/skills`
+    root, but they intentionally have different personal roots.
     """
     if scope not in {"user", "project"}:
         raise HarnessAdapterError(f"Unknown harness scope: {scope}")
@@ -147,13 +173,13 @@ def resolve_harness_destinations(
     for target_id in target_ids:
         adapter = get_harness_adapter(target_id)
         path = (
-            adapter.user_skills_dir(home=home)
+            adapter.user_skills_dir(home=home, env=env)
             if scope == "user"
             else adapter.project_skills_dir(root)  # type: ignore[arg-type]
         )
         # Lexical absolute paths are sufficient here; setup is explicitly
-        # user-directed and must not silently dereference/create through a
-        # different harness root merely because aliases or symlinks exist.
+        # user-directed and must not silently redirect to a different harness
+        # root merely because aliases or symlinks exist.
         path = path.expanduser().absolute()
         if path not in ids_by_path:
             ordered_paths.append(path)
