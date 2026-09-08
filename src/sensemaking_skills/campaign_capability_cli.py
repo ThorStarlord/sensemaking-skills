@@ -1,4 +1,4 @@
-"""Click command registration for campaign capability and handoff surfaces."""
+"""Click registration for Campaign capability, handoff, and lineage surfaces."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ from typing import Any
 import click
 
 from .campaign_handoff_cli import register_campaign_handoff_commands
+from .campaign_lineage_cli import register_campaign_lineage_commands
 from .campaign_semantics import ContractError
 from .campaign_semantics.registry import RegisteredCapability
 from .campaigns import CampaignWorkspaceError
@@ -67,7 +68,7 @@ def register_campaign_capability_commands(
     emit_error: ErrorEmitter,
     json_echo: JsonEcho,
 ) -> None:
-    """Register P6 inspection and compose P7 handoff/resume commands."""
+    """Register P6 inspection and compose later read/reconstruction surfaces."""
 
     @campaign.command(name="capabilities")
     @click.option(
@@ -142,10 +143,15 @@ def register_campaign_capability_commands(
             )
             click.echo(f"  Output artifact: {candidate['output_artifact']}")
 
-    # cli.py already delegates campaign extension registration through this hook.
-    # Compose the P7 commands here without creating a second top-level Click group
-    # or changing any P6 capability-selection semantics.
+    # cli.py delegates extension registration through this existing hook. These
+    # calls only register commands; they do not couple P6 selection semantics to
+    # P7/P8 behavior.
     register_campaign_handoff_commands(
+        campaign,
+        emit_error=emit_error,
+        json_echo=json_echo,
+    )
+    register_campaign_lineage_commands(
         campaign,
         emit_error=emit_error,
         json_echo=json_echo,
