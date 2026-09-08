@@ -99,6 +99,16 @@ class CampaignDecisionService:
                 "next responsibility must define at least one success condition"
             )
 
+        transition_evidence = set(authored.evidence)
+        unbound_trigger_evidence = sorted(
+            set(responsibility.trigger_evidence) - transition_evidence
+        )
+        if unbound_trigger_evidence:
+            raise CampaignTransactionError(
+                "next responsibility trigger evidence must be recorded on the "
+                "advance transition: " + ", ".join(unbound_trigger_evidence)
+            )
+
         snapshot = self.lifecycle.resume()
         available = set(snapshot.evidence_refs)
         missing_trigger_evidence = sorted(
