@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import pytest
@@ -194,8 +193,9 @@ def test_receipt_write_refuses_preexisting_symlink_escape(tmp_path):
         )
 
     assert list(outside.iterdir()) == []
-    # The validated artifact copy may exist, but without a receipt it is not evidence.
-    assert CampaignStore(workspace).evidence_refs() == ()
+    # A poisoned workspace must also fail closed during later evidence reads.
+    with pytest.raises(CampaignWorkspaceError, match="physically contained"):
+        CampaignStore(workspace).evidence_refs()
 
 
 def test_failed_receipt_write_leaves_only_unadmitted_orphan(tmp_path, monkeypatch):
