@@ -348,6 +348,8 @@ The Campaign product is deliberately **not** a license to build the following by
 
 These may be revisited only when concrete product pressure creates a consequential unresolved requirement.
 
+SkillOpt-derived Skill-quality research and the boundary between that optional laboratory and the Campaign product are documented in [`research/skillopt-adaptation.md`](research/skillopt-adaptation.md). That record is provenance only; it does not add optimizer behavior or product authority to the Campaign.
+
 ## 14. Relationship to Skills and harnesses
 
 Sensemaking Campaigns should work through existing coding-agent environments rather than requiring a proprietary autonomous runtime.
@@ -400,5 +402,6 @@ Use the surrounding documents for different questions:
 | Why is automatic downstream routing deferred? | ADR 0014 |
 | Where is the semantic-decision vs deterministic-orchestration boundary? | [`decision-orchestration-boundary.md`](decision-orchestration-boundary.md) |
 | What is the current agent-native operating workflow? | [`agent-native-operating-workflow.md`](agent-native-operating-workflow.md) |
+| Which SkillOpt ideas influenced Sensemaking, and which remain research/deferred? | [`research/skillopt-adaptation.md`](research/skillopt-adaptation.md) |
 
 Versioned implementation plans may change. This product model should change only when the owner changes what a Sensemaking Campaign **is** or which architectural invariants define the product.
