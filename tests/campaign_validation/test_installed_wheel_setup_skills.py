@@ -149,13 +149,10 @@ def test_setup_skills_reports_drift_and_requires_force(tmp_path):
     )
     assert setup.returncode == 0, setup.stdout + setup.stderr
 
-    # Simulate a stale/divergent installed copy (like the pre-repair 178d5f0
-    # 2026-05-22 global install that P1-R observed).
     installed = dest / "repo-sensemaker" / "SKILL.md"
     original = installed.read_bytes()
     installed.write_bytes(b"# stale divergent copy\n")
 
-    # Re-running WITHOUT --force must report the drift and leave the file.
     rerun = subprocess.run(
         [str(_venv_script(venv_dir, "sensemaking-skills")), "setup-skills",
          "--target", "custom", "--skills-dir", str(dest)],
@@ -168,7 +165,6 @@ def test_setup_skills_reports_drift_and_requires_force(tmp_path):
     assert installed.read_bytes() == b"# stale divergent copy\n", (
         "divergent copy must NOT be silently overwritten without --force")
 
-    # WITH --force the divergent copy is deliberately replaced.
     forced = subprocess.run(
         [str(_venv_script(venv_dir, "sensemaking-skills")), "setup-skills",
          "--target", "custom", "--skills-dir", str(dest), "--force"],
@@ -315,3 +311,89 @@ def test_installed_wheel_supports_p7_handoff_and_fresh_resume_without_source_che
     assert payload["state"]["active_responsibility"]["id"] == "R-P7-WHEEL"
     assert payload["handoff"]["allowed_next_actions"] == ["fresh_agent_decides"]
     assert payload["reconstruction_sha256"] == handoff_payload["reconstruction_sha256"]
+
+
+def test_installed_wheel_supports_p8_lineage_without_source_checkout(tmp_path):
+    wheel, venv_dir, work_dir = _build_and_install_wheel(tmp_path)
+    cli_path = str(_venv_script(venv_dir, "sensemaking-skills"))
+    workspace = work_dir / "CMP-P8-WHEEL"
+
+    campaign_help = subprocess.run(
+        [cli_path, "campaign", "--help"],
+        capture_output=True, text=True, timeout=60, cwd=str(work_dir),
+    )
+    assert campaign_help.returncode == 0, campaign_help.stdout + campaign_help.stderr
+    assert "lineage" in campaign_help.stdout
+
+    initialized = subprocess.run(
+        [
+            cli_path, "campaign", "init",
+            "--workspace", str(workspace),
+            "--campaign-id", "CMP-P8-WHEEL",
+            "--mission", "prove packaged P8 artifact and evidence lineage",
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert initialized.returncode == 0, initialized.stdout + initialized.stderr
+
+    evidence_ref = "evidence/brief.md"
+    evidence_bytes = b"installed-wheel P8 evidence\n"
+    evidence_path = workspace / evidence_ref
+    evidence_path.parent.mkdir(parents=True, exist_ok=True)
+    evidence_path.write_bytes(evidence_bytes)
+
+    advanced = subprocess.run(
+        [
+            cli_path, "campaign", "advance",
+            "--workspace", str(workspace),
+            "--transition-id", "TR-P8-WHEEL",
+            "--to-state", "lineage_ready",
+            "--decision", "the agent explicitly cites durable evidence",
+            "--evidence", evidence_ref,
+            "--responsibility-id", "R-P8-WHEEL",
+            "--responsibility-statement", "inspect exact evidence lineage",
+            "--decision-blocked", "whether lineage reconstructs exact consumed bytes",
+            "--scope", "installed-wheel P8 proof",
+            "--authority", "authorized_autonomously",
+            "--success-condition", "lineage is reconstructible from the installed distribution",
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert advanced.returncode == 0, advanced.stdout + advanced.stderr
+
+    inspected = subprocess.run(
+        [
+            cli_path, "campaign", "lineage",
+            "--workspace", str(workspace),
+            "--json",
+        ],
+        capture_output=True, text=True, timeout=120, cwd=str(work_dir),
+    )
+    assert inspected.returncode == 0, inspected.stdout + inspected.stderr
+    payload = json.loads(inspected.stdout)
+    assert payload["code"] == "CAMPAIGN_LINEAGE"
+    assert payload["campaign_id"] == "CMP-P8-WHEEL"
+    assert payload["transition_count"] == 1
+    assert payload["consumption_edge_count"] == 1
+    assert payload["transitions"][0]["binding_status"] == "bound"
+
+    edge = payload["consumption_edges"][0]
+    assert edge["evidence_ref"] == evidence_ref
+    assert edge["kind"] == "raw_evidence"
+    assert len(edge["consumed_sha256"]) == 64
+    assert edge["immutable_ref"] == f"lineage/evidence/{edge['consumed_sha256']}"
+    assert (workspace / edge["immutable_ref"]).read_bytes() == evidence_bytes
+    assert edge["source_matches_consumed_bytes"] is True
+
+    encoded = json.dumps(payload, sort_keys=True).lower()
+    for forbidden in (
+        "recommended_capability",
+        "recommended_action",
+        "selected_capability",
+        "evidence_sufficient",
+        "semantic_score",
+        "rank",
+    ):
+        assert forbidden not in encoded
