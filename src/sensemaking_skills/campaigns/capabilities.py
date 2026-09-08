@@ -1,9 +1,10 @@
 """Deterministic P6 capability inspection without semantic routing.
 
 The active coding agent supplies the responsibility classification. This module
-loads declared capability metadata, resolves workflow catalog/liveness facts,
-and enumerates compatible candidates. It never infers a responsibility type,
-ranks candidates, selects a capability, or grants execution authority.
+loads declared capability metadata, resolves current Skill/workflow identity and
+workflow liveness facts, and enumerates compatible candidates. It never infers
+a responsibility type, ranks candidates, selects a capability, or grants
+execution authority.
 """
 
 from __future__ import annotations
@@ -16,12 +17,17 @@ from typing import Any, Mapping
 import yaml
 
 from sensemaking_skills.campaign_semantics import Authority
+from sensemaking_skills.campaign_semantics.models import Capability
 from sensemaking_skills.campaign_semantics.registry import (
     AvailabilityStatus,
     CapabilityRegistry,
     RegisteredCapability,
 )
-from sensemaking_skills.campaign_semantics.models import Capability
+from sensemaking_skills.setup_skills import (
+    SkillsSetupError,
+    find_skills_in_package,
+    get_package_skills_dir,
+)
 
 from .errors import CampaignTransactionError
 from .service import CampaignService
@@ -65,6 +71,14 @@ def _nonempty_text(value: Any, *, field: str) -> str:
     return value.strip()
 
 
+def _optional_text(value: Any, *, field: str) -> str:
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        raise CapabilityCatalogError(f"{field} must be a string")
+    return value.strip()
+
+
 def _string_tuple(value: Any, *, field: str, required: bool = False) -> tuple[str, ...]:
     if value is None and not required:
         return ()
@@ -90,6 +104,16 @@ def _load_yaml_mapping(path: Path, *, label: str) -> Mapping[str, Any]:
 
 def _package_default_path(filename: str) -> Path:
     return Path(str(files("sensemaking_skills.defaults").joinpath(filename)))
+
+
+def _current_skill_ids() -> set[str]:
+    """Return Skill implementations actually shipped by this install/source tree."""
+    try:
+        return set(find_skills_in_package(get_package_skills_dir()))
+    except SkillsSetupError as exc:
+        raise CapabilityCatalogError(
+            f"cannot resolve current packaged Skill identities: {exc}"
+        ) from exc
 
 
 def _workflow_facts(
@@ -181,6 +205,7 @@ def load_capability_registry(
     if not isinstance(raw_capabilities, list):
         raise CapabilityCatalogError("capability registry 'capabilities' must be a list")
 
+    skill_ids = _current_skill_ids()
     workflow_ids, workflow_liveness = _workflow_facts(
         registry_path=workflow_registry_path,
         liveness_path=workflow_liveness_path,
@@ -250,9 +275,28 @@ def load_capability_registry(
             raise CapabilityCatalogError(
                 f"{prefix}.availability is not a known availability value"
             ) from exc
-        availability_reason = str(raw.get("availability_reason", ""))
+        availability_reason = _optional_text(
+            raw.get("availability_reason"), field=f"{prefix}.availability_reason"
+        )
+        if availability is not AvailabilityStatus.AVAILABLE and not availability_reason:
+            raise CapabilityCatalogError(
+                f"{prefix}.availability_reason is required when availability is "
+                f"{availability.value!r}"
+            )
 
-        if kind == "workflow":
+        if kind == "skill":
+            # Historical/proposed/deprecated identities may stay in the catalog as
+            # explicitly unavailable. Anything that claims a live/externally live
+            # status must correspond to an actual shipped Skill implementation.
+            if (
+                availability is not AvailabilityStatus.UNAVAILABLE
+                and capability_id not in skill_ids
+            ):
+                raise CapabilityCatalogError(
+                    f"Skill capability {capability_id!r} has no current shipped "
+                    "Skill implementation"
+                )
+        else:
             if capability_id not in workflow_ids:
                 raise CapabilityCatalogError(
                     f"workflow capability {capability_id!r} is absent from the workflow catalog"
