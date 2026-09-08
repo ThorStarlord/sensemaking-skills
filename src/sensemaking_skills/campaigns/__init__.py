@@ -29,6 +29,17 @@ from .errors import (
     CampaignTransactionError,
     CampaignWorkspaceError,
 )
+from .lineage import (
+    CampaignLineageContractError,
+    CampaignLineageResult,
+    CampaignLineageService,
+    ConsumptionEdge,
+    ConsumptionReceipt,
+    EvidenceBinding,
+    LineageEvidence,
+    TransitionLineage,
+    load_consumption_receipt,
+)
 from .service import (
     CampaignDiagnostic,
     CampaignService,
@@ -51,6 +62,9 @@ __all__ = [
     "CampaignDiagnostic",
     "CampaignIdentityError",
     "CampaignIntegrityError",
+    "CampaignLineageContractError",
+    "CampaignLineageResult",
+    "CampaignLineageService",
     "CampaignNotInitializedError",
     "CampaignService",
     "CampaignSnapshot",
@@ -60,5 +74,11 @@ __all__ = [
     "CampaignWorkspace",
     "CampaignWorkspaceError",
     "CloseDecision",
+    "ConsumptionEdge",
+    "ConsumptionReceipt",
     "DeferDecision",
+    "EvidenceBinding",
+    "LineageEvidence",
+    "TransitionLineage",
+    "load_consumption_receipt",
 ]
