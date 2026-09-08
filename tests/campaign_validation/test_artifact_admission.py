@@ -238,7 +238,7 @@ def test_failed_receipt_write_leaves_only_unadmitted_orphan(tmp_path, monkeypatc
         "_write_receipt",
         staticmethod(fail_receipt),
     )
-    with pytest.raises(OSError, match="simulated receipt persistence failure"):
+    with pytest.raises(CampaignWorkspaceError, match="could not persist artifact admission"):
         admission_service.admit(VALID_ARTIFACT, framework_root=REPO_ROOT)
 
     assert CampaignStore(workspace).evidence_refs() == ()
