@@ -119,6 +119,10 @@ def test_packaged_skill_capability_outputs_match_canonical_skill_registry() -> N
         assert item["output_artifact"] == canonical[item["id"]].get("artifact"), (
             f"P6 output contract drift for {item['id']!r}"
         )
+        if canonical[item["id"]].get("status") not in {"proposed", "deprecated"}:
+            assert item["mutates_repository"] == (
+                "write_files" in canonical[item["id"]].get("capabilities", [])
+            ), f"P6 mutation declaration drift for {item['id']!r}"
 
 
 def test_proposed_and_deprecated_skill_identities_do_not_masquerade_as_available() -> None:
@@ -130,6 +134,14 @@ def test_proposed_and_deprecated_skill_identities_do_not_masquerade_as_available
     assert tdd is not None and tdd.availability is AvailabilityStatus.UNAVAILABLE
     assert "proposed" in triage.availability_reason
     assert "deprecated" in tdd.availability_reason
+
+
+def test_catalog_rejects_non_string_schema_version(tmp_path: Path) -> None:
+    catalog = tmp_path / "capability-registry.yaml"
+    catalog.write_text("schema_version: 1\ncapabilities: []\n", encoding="utf-8")
+
+    with pytest.raises(CapabilityCatalogError, match="unsupported capability registry schema_version"):
+        load_capability_registry(catalog_path=catalog)
 
 
 def test_catalog_rejects_duplicate_ids_fail_closed(tmp_path: Path) -> None:
@@ -355,6 +367,30 @@ def test_cli_does_not_infer_type_from_responsibility_prose(tmp_path: Path) -> No
 
     assert result.exit_code == 2
     assert "--responsibility-type" in result.output
+
+
+def test_cli_blank_responsibility_type_is_precondition_error_not_catalog_error(tmp_path: Path) -> None:
+    workspace = tmp_path / "campaign"
+    _initialize_active(workspace)
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli,
+        [
+            "campaign",
+            "capabilities",
+            "--workspace",
+            str(workspace),
+            "--responsibility-type",
+            "   ",
+            "--json",
+        ],
+    )
+
+    assert result.exit_code == CAMPAIGN_WORKSPACE_EXIT
+    payload = json.loads(result.output)
+    assert payload["code"] == "CAMPAIGN_TRANSACTION_ERROR"
+    assert payload["message"] == "responsibility_type must be non-empty"
 
 
 def test_cli_without_active_responsibility_uses_existing_campaign_failure_class(tmp_path: Path) -> None:
