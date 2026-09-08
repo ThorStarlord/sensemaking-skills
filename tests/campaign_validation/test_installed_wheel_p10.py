@@ -111,8 +111,7 @@ def test_installed_wheel_exposes_explicit_p10_harness_adapters(tmp_path: Path):
         assert f"Requested adapter target: {target}" in result.stdout
         assert "Requested scope: project" in result.stdout
 
-        installed = relative_root / "repo-sensemaker" / "SKILL.md"
-        installed_path = project / installed
+        installed_path = project / relative_root / "repo-sensemaker" / "SKILL.md"
         assert installed_path.is_file(), installed_path
         assert installed_path.read_bytes() == (
             REPO_ROOT / "skills" / "repo-sensemaker" / "SKILL.md"
@@ -145,7 +144,6 @@ def test_installed_wheel_exposes_explicit_p10_harness_adapters(tmp_path: Path):
         Path(".claude/skills"),
         Path(".opencode/skills"),
     ):
-        assert (relative_root if relative_root.is_absolute() else all_project / relative_root)
         assert (all_project / relative_root / "using-sensemaking" / "SKILL.md").is_file()
 
     # Existing fail-closed drift behavior applies equally to a P10 harness root.
