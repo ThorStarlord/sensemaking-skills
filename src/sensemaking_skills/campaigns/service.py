@@ -9,13 +9,14 @@ be selected. Those remain agent judgments.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Mapping
+from typing import Any, Mapping
 
 from sensemaking_skills.campaign_semantics import (
-    Authority,
     CampaignHandoff,
     CampaignPolicy,
     CampaignState,
@@ -23,14 +24,23 @@ from sensemaking_skills.campaign_semantics import (
     DeferredResponsibility,
     TerminalState,
     TransitionRecord,
+    canonicalize,
     validate_reconstruction,
 )
 
-from .errors import (
-    CampaignIntegrityError,
-    CampaignTransactionError,
-)
+from .errors import CampaignIntegrityError, CampaignTransactionError
 from .store import CampaignStore
+
+
+def _artifact_digest(value: Any) -> str:
+    """Deterministically bind a semantic record to trace history."""
+    encoded = json.dumps(
+        canonicalize(value),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -177,6 +187,8 @@ class CampaignService:
                     "transition_id": transition.id,
                     "from_state": transition.from_state,
                     "to_state": transition.to_state,
+                    "transition_digest": _artifact_digest(transition),
+                    "state_digest": _artifact_digest(new_state),
                 },
             ),
             terminal_state=terminal_value,
@@ -491,6 +503,7 @@ class CampaignService:
         ordered: list[TransitionRecord] = []
         seen: set[str] = set()
         expected_state = trace.initial_state
+        final_state_digest: str | None = None
         for index, event in enumerate(trace.events):
             if not isinstance(event, Mapping):
                 diagnostics.append(
@@ -505,9 +518,18 @@ class CampaignService:
             transition_id = event.get("transition_id")
             from_state = event.get("from_state")
             to_state = event.get("to_state")
-            if not all(isinstance(value, str) and value for value in (
-                transition_id, from_state, to_state
-            )):
+            transition_digest = event.get("transition_digest")
+            state_digest = event.get("state_digest")
+            if not all(
+                isinstance(value, str) and value
+                for value in (
+                    transition_id,
+                    from_state,
+                    to_state,
+                    transition_digest,
+                    state_digest,
+                )
+            ):
                 diagnostics.append(
                     CampaignDiagnostic(
                         "INVALID_TRANSITION_TRACE_EVENT",
@@ -533,14 +555,18 @@ class CampaignService:
                     )
                 )
                 continue
-            if (
-                transition.from_state != from_state
-                or transition.to_state != to_state
-            ):
+            if transition.from_state != from_state or transition.to_state != to_state:
                 diagnostics.append(
                     CampaignDiagnostic(
                         "TRACE_TRANSITION_CONTENT_MISMATCH",
                         f"trace event for {transition_id!r} disagrees with transition record",
+                    )
+                )
+            if _artifact_digest(transition) != transition_digest:
+                diagnostics.append(
+                    CampaignDiagnostic(
+                        "TRANSITION_DIGEST_MISMATCH",
+                        f"transition {transition_id!r} no longer matches its trace digest",
                     )
                 )
             if expected_state is not None and transition.from_state != expected_state:
@@ -560,6 +586,7 @@ class CampaignService:
                     )
                 )
             ordered.append(transition)
+            final_state_digest = state_digest
 
         untraced = sorted(set(by_id) - seen)
         if untraced:
@@ -574,6 +601,13 @@ class CampaignService:
                 CampaignDiagnostic(
                     "CURRENT_STATE_NOT_RECONSTRUCTIBLE",
                     f"history ends at {expected_state!r}, current state is {state.current_state!r}",
+                )
+            )
+        if ordered and final_state_digest != _artifact_digest(state):
+            diagnostics.append(
+                CampaignDiagnostic(
+                    "CURRENT_STATE_DIGEST_MISMATCH",
+                    "current campaign state no longer matches the final trace digest",
                 )
             )
 

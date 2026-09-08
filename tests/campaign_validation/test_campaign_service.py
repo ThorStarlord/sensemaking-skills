@@ -3,6 +3,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+import yaml
 
 import sensemaking_skills.campaigns.store as store_module
 from sensemaking_skills.campaign_semantics import (
@@ -124,12 +125,13 @@ def test_record_transition_persists_reconstructible_state_history_and_trace(tmp_
 
     assert snapshot.state == new_state
     assert [record.id for record in snapshot.transitions] == ["TR-0001"]
-    assert snapshot.trace.events[-1] == {
-        "event": "transition_committed",
-        "transition_id": "TR-0001",
-        "from_state": "initialized",
-        "to_state": "sensemaking",
-    }
+    event = snapshot.trace.events[-1]
+    assert event["event"] == "transition_committed"
+    assert event["transition_id"] == "TR-0001"
+    assert event["from_state"] == "initialized"
+    assert event["to_state"] == "sensemaking"
+    assert len(event["transition_digest"]) == 64
+    assert len(event["state_digest"]) == 64
     assert service.validate().valid
     assert not any(service.store.workspace.transactions_dir.iterdir())
 
@@ -227,6 +229,41 @@ def test_crash_after_commit_intent_recovers_exact_transition(tmp_path, monkeypat
     assert [record.id for record in recovered.transitions] == ["TR-0001"]
     assert recovered.trace.events[-1]["transition_id"] == "TR-0001"
     assert not journal.exists()
+
+
+def test_transition_digest_detects_decision_record_drift(tmp_path):
+    service = CampaignService(tmp_path / "CMP-P2")
+    service.initialize(_state())
+    service.record_transition(
+        new_state=_state(current_state="sensemaking"),
+        transition=_transition(),
+    )
+
+    path = service.store.workspace.transitions_dir / "TR-0001.yaml"
+    payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    payload["decision"] = "silently changed after commit"
+    path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding="utf-8")
+
+    result = service.validate()
+    assert not result.valid
+    assert "TRANSITION_DIGEST_MISMATCH" in result.diagnostic_codes
+
+
+def test_final_state_digest_detects_valid_shape_state_drift(tmp_path):
+    service = CampaignService(tmp_path / "CMP-P2")
+    service.initialize(_state())
+    snapshot = service.record_transition(
+        new_state=_state(current_state="sensemaking"),
+        transition=_transition(),
+    )
+
+    service.store.save_state(
+        replace(snapshot.state, established_facts=("unrecorded post-commit mutation",))
+    )
+
+    result = service.validate()
+    assert not result.valid
+    assert "CURRENT_STATE_DIGEST_MISMATCH" in result.diagnostic_codes
 
 
 def test_defer_responsibility_moves_explicit_active_record_to_deferred(tmp_path):
