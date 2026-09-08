@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from sensemaking_skills.campaign_semantics import Authority, CampaignState, Responsibility
@@ -12,6 +13,7 @@ from sensemaking_skills.campaigns import (
     AdvanceDecision,
     CampaignDecisionService,
     CampaignService,
+    CampaignTransactionError,
     DeferDecision,
 )
 from sensemaking_skills.cli import cli
@@ -104,3 +106,41 @@ def test_defer_json_exposes_exact_replacement_state_and_optional_reopen_contract
     assert deferred["reason"] == "reopening evidence is not yet known"
     assert deferred["reopen_when"] == []
     assert deferred["not_reopened_by"] == []
+
+
+def test_advance_rejects_trigger_evidence_omitted_from_transition_record(tmp_path):
+    workspace = tmp_path / "campaign"
+    service = CampaignService(workspace)
+    service.initialize(
+        CampaignState(
+            campaign_id="CMP-P5-EVIDENCE-BINDING",
+            mission="bind responsibility trigger evidence to its advance decision",
+            status="active",
+            current_state="initialized",
+        )
+    )
+    evidence = service.store.workspace.evidence_dir / "brief.md"
+    evidence.write_text("durable trigger evidence", encoding="utf-8")
+
+    with pytest.raises(CampaignTransactionError, match="recorded on the advance transition"):
+        CampaignDecisionService(workspace).advance(
+            AdvanceDecision(
+                transition_id="TR-P5-UNBOUND-EVIDENCE",
+                to_state="bounded_work",
+                decision="this decision record is mechanically incomplete",
+                evidence=(),
+                next_responsibility=Responsibility(
+                    id="R-P5-EVIDENCE",
+                    statement="perform work triggered by durable evidence",
+                    trigger_evidence=("evidence/brief.md",),
+                    decision_blocked="whether the triggered work is complete",
+                    scope="P5 evidence-binding proof",
+                    authority=Authority.AUTHORIZED_AUTONOMOUSLY,
+                    success_conditions=("trigger evidence is auditable",),
+                ),
+            )
+        )
+
+    fresh = CampaignService(workspace).resume()
+    assert fresh.state.current_state == "initialized"
+    assert fresh.transitions == ()
