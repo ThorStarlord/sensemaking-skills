@@ -106,6 +106,18 @@ class ArtifactAdmissionService:
         return root, router
 
     @staticmethod
+    def _assert_write_path(path: Path, root: Path) -> None:
+        """Reject a write if an existing parent symlink/reparse point escapes root."""
+        try:
+            real_root = root.resolve(strict=True)
+            resolved_parent = path.parent.resolve(strict=False)
+            resolved_parent.relative_to(real_root)
+        except (OSError, ValueError) as exc:
+            raise CampaignWorkspaceError(
+                f"artifact admission write path escapes its physical root: {path}"
+            ) from exc
+
+    @staticmethod
     def _parse_validation_output(
         *,
         completed: subprocess.CompletedProcess[str],
@@ -197,10 +209,13 @@ class ArtifactAdmissionService:
     def _write_content_addressed_artifact(
         *,
         destination: Path,
+        root: Path,
         data: bytes,
         digest: str,
     ) -> None:
+        ArtifactAdmissionService._assert_write_path(destination, root)
         destination.parent.mkdir(parents=True, exist_ok=True)
+        ArtifactAdmissionService._assert_write_path(destination, root)
         if os.path.lexists(destination):
             if destination.is_symlink() or not destination.is_file():
                 raise CampaignIntegrityError(
@@ -236,9 +251,11 @@ class ArtifactAdmissionService:
             )
 
     @staticmethod
-    def _write_receipt(path: Path, admission: ArtifactAdmission) -> None:
+    def _write_receipt(path: Path, admission: ArtifactAdmission, *, root: Path) -> None:
         payload = dump_artifact_admission(admission)
+        ArtifactAdmissionService._assert_write_path(path, root)
         path.parent.mkdir(parents=True, exist_ok=True)
+        ArtifactAdmissionService._assert_write_path(path, root)
         if os.path.lexists(path):
             if path.is_symlink() or not path.is_file():
                 raise CampaignIntegrityError(
@@ -262,7 +279,7 @@ class ArtifactAdmissionService:
         try:
             fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
         except FileExistsError:
-            ArtifactAdmissionService._write_receipt(path, admission)
+            ArtifactAdmissionService._write_receipt(path, admission, root=root)
             return
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
             yaml.safe_dump(payload, handle, sort_keys=False, allow_unicode=True)
@@ -359,10 +376,15 @@ class ArtifactAdmissionService:
         # not expose as evidence.
         self._write_content_addressed_artifact(
             destination=artifact_destination,
+            root=self.store.workspace.artifacts_dir,
             data=source_bytes,
             digest=artifact_digest,
         )
-        self._write_receipt(admission_path, admission)
+        self._write_receipt(
+            admission_path,
+            admission,
+            root=self.store.workspace.admissions_dir,
+        )
 
         refs = set(self.store.evidence_refs())
         if artifact_ref not in refs or admission_ref not in refs:
