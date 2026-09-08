@@ -128,6 +128,10 @@ A successful JSON result uses:
 }
 ```
 
+The canonical router may dispatch either to a specialized validator or to the
+generic `validate-artifact.py` fallback. P4 uses the same unified JSON contract
+for both paths; it does not treat the fallback as a weaker admission mechanism.
+
 ## Failure taxonomy
 
 Campaign CLI exit codes from P3 remain unchanged. P4 adds two artifact-specific
@@ -139,6 +143,9 @@ failure classes:
 | `6` | `ARTIFACT_VALIDATOR_ERROR` | The canonical router/validator boundary could not be executed or trusted. This is not evidence that the artifact itself is invalid. |
 
 Workspace/integrity failures continue to use the P3 campaign exits (`3`/`4`).
+Persistence failures during the content-addressed copy or receipt write are
+classified as workspace failures rather than leaking as an unrelated generic
+process error.
 
 This distinction prevents an infrastructure failure from being mislabeled as a
 negative semantic or validation finding about the artifact.
@@ -170,6 +177,16 @@ P1–P3 campaign workspaces did not contain `admissions/`. On first access under
 P4+, an initialized legacy workspace receives one empty structural
 `admissions/` directory. This migration grants no evidence status and leaves
 existing raw `evidence/` refs unchanged.
+
+Pre-P4 files that happen to exist under `artifacts/` are **not** grandfathered
+as validated evidence. If an older campaign state or transition depended on one
+of those paths as evidence, P4 reconstruction fails closed until the relevant
+artifact can be canonically validated and admitted. The migration never creates
+a receipt retroactively and never infers that a historical file must have been
+valid merely because earlier code could see it.
+
+This is an intentional trust-boundary tightening rather than a silent backward-
+compatibility shortcut.
 
 ## Non-goals
 
