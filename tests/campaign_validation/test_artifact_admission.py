@@ -81,6 +81,32 @@ def test_valid_artifact_is_content_addressed_and_receipt_bound(tmp_path):
     assert set(service.resume().evidence_refs) == refs
 
 
+def test_generic_validator_fallback_can_admit_registered_artifact(tmp_path):
+    workspace = tmp_path / "campaign"
+    _initialize(workspace)
+    artifact = tmp_path / "discovery-findings.md"
+    artifact.write_text(
+        "# Discovery findings\n\n"
+        "## 13. Machine-readable handoff\n\n"
+        "```yaml\n"
+        "artifact_id: discovery_findings\n"
+        "```\n",
+        encoding="utf-8",
+    )
+
+    result = ArtifactAdmissionService(workspace).admit(
+        artifact,
+        framework_root=REPO_ROOT,
+    )
+
+    assert result.artifact_id == "discovery_findings"
+    assert result.admission.validator == "validate-artifact.py"
+    assert result.validation_result["valid"] is True
+    refs = set(CampaignStore(workspace).evidence_refs())
+    assert result.artifact_ref in refs
+    assert result.admission_ref in refs
+
+
 def test_invalid_artifact_is_rejected_before_any_evidence_is_admitted(tmp_path):
     workspace = tmp_path / "campaign"
     _initialize(workspace)
@@ -207,7 +233,11 @@ def test_failed_receipt_write_leaves_only_unadmitted_orphan(tmp_path, monkeypatc
     def fail_receipt(*args, **kwargs):
         raise OSError("simulated receipt persistence failure")
 
-    monkeypatch.setattr(ArtifactAdmissionService, "_write_receipt", staticmethod(fail_receipt))
+    monkeypatch.setattr(
+        ArtifactAdmissionService,
+        "_write_receipt",
+        staticmethod(fail_receipt),
+    )
     with pytest.raises(OSError, match="simulated receipt persistence failure"):
         admission_service.admit(VALID_ARTIFACT, framework_root=REPO_ROOT)
 
