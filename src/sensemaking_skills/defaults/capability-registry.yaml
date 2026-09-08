@@ -1,0 +1,195 @@
+# P6 capability metadata for deterministic campaign inspection.
+#
+# This file is a catalog/contract overlay, not a router. `accepted_responsibility_types`
+# are explicit declarations that the active coding agent may inspect after it has
+# already classified the warranted responsibility. Catalog membership, availability,
+# and authority remain separate facts.
+schema_version: "1"
+
+capabilities:
+  - id: repo-sensemaker
+    kind: skill
+    source: skills/repo-sensemaker/SKILL.md
+    accepted_responsibility_types: [repository_diagnosis]
+    output_artifact: repository_sensemaking_brief
+    completion_conditions:
+      - a repository_sensemaking_brief is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: agent-native Skill; harness-specific installed availability is deferred to P10
+    returns_control: true
+
+  - id: workflow-planner
+    kind: skill
+    source: skills/workflow-planner/SKILL.md
+    accepted_responsibility_types: [workflow_planning]
+    input_artifact: repository_sensemaking_brief
+    output_artifact: workflow_orchestration_plan
+    completion_conditions:
+      - a workflow_orchestration_plan is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: agent-native Skill; harness-specific installed availability is deferred to P10
+    returns_control: true
+
+  - id: architectural-review
+    kind: skill
+    source: skills/architectural-review/SKILL.md
+    accepted_responsibility_types: [architecture_review]
+    input_artifact: repository_sensemaking_brief
+    output_artifact: architectural_review_recommendation
+    completion_conditions:
+      - an evidence-grounded architectural recommendation is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: agent-native Skill; harness-specific installed availability is deferred to P10
+    returns_control: true
+
+  - id: docs-aligner
+    kind: skill
+    source: skills/docs-aligner/SKILL.md
+    accepted_responsibility_types: [documentation_alignment]
+    output_artifact: domain_alignment_report
+    completion_conditions:
+      - documentation alignment work returns control with a domain_alignment_report
+    mutates_repository: true
+    authority: owner_authorization_required
+    availability: external
+    availability_reason: agent-native mutating Skill; harness availability and actual owner authorization are separate
+    returns_control: true
+
+  - id: sensemaking-docs-reconciler
+    kind: skill
+    source: skills/sensemaking-docs-reconciler/SKILL.md
+    accepted_responsibility_types: [documentation_reconciliation]
+    output_artifact: docs_contract_reconciliation_report
+    completion_conditions:
+      - documentation reconciliation returns control with its report
+    mutates_repository: true
+    authority: owner_authorization_required
+    availability: external
+    availability_reason: agent-native mutating Skill; harness availability and actual owner authorization are separate
+    returns_control: true
+
+  - id: output-reconciler
+    kind: skill
+    source: skills/output-reconciler/SKILL.md
+    accepted_responsibility_types: [output_reconciliation]
+    output_artifact: reconciliation_report
+    completion_conditions:
+      - reconciliation findings are returned to the campaign agent
+    mutates_repository: true
+    authority: owner_authorization_required
+    availability: external
+    availability_reason: agent-native Skill that writes reconciliation artifacts; actual execution authorization is separate
+    returns_control: true
+
+  - id: repair-verifier
+    kind: skill
+    source: skills/repair-verifier/SKILL.md
+    accepted_responsibility_types: [repair_verification]
+    input_artifact: reconciliation_report
+    output_artifact: repair_verification_report
+    completion_conditions:
+      - repair verification findings are returned to the campaign agent
+    mutates_repository: true
+    authority: owner_authorization_required
+    availability: external
+    availability_reason: agent-native Skill that writes verification artifacts; actual execution authorization is separate
+    returns_control: true
+
+  - id: skill-maintainer
+    kind: skill
+    source: skills/skill-maintainer/SKILL.md
+    accepted_responsibility_types: [skill_maintenance]
+    input_artifact: usage_research_report
+    output_artifact: skill_improvement_plan
+    completion_conditions:
+      - a bounded skill_improvement_plan is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: agent-native Skill; autonomous Skill mutation is not part of this capability contract
+    returns_control: true
+
+  - id: usage-researcher
+    kind: skill
+    source: skills/usage-researcher/SKILL.md
+    accepted_responsibility_types: [skill_usage_research]
+    output_artifact: usage_research_report
+    completion_conditions:
+      - a usage_research_report is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: agent-native Skill; harness-specific installed availability is deferred to P10
+    returns_control: true
+
+  - id: handoff
+    kind: skill
+    source: skills/handoff/SKILL.md
+    accepted_responsibility_types: [session_handoff]
+    output_artifact: session_summary
+    completion_conditions:
+      - a session handoff summary is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: agent-native Skill; P7 will productize durable Campaign handoff separately
+    returns_control: true
+
+  - id: triage
+    kind: skill
+    source: skills/workflow-planner/references/skill-registry.yaml
+    accepted_responsibility_types: [issue_triage]
+    output_artifact: agent_brief
+    completion_conditions:
+      - an agent_brief would be returned if the capability becomes live
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: unavailable
+    availability_reason: proposed catalog identity; no current Skill implementation
+    returns_control: true
+
+  - id: tdd
+    kind: skill
+    source: skills/workflow-planner/references/skill-registry.yaml
+    accepted_responsibility_types: [implementation_execution]
+    input_artifact: agent_brief
+    output_artifact: code_patch
+    completion_conditions:
+      - a bounded implementation patch would be returned if the capability becomes live
+    mutates_repository: true
+    authority: owner_authorization_required
+    availability: unavailable
+    availability_reason: deprecated historical Skill identity; no current Skill implementation
+    returns_control: true
+
+  - id: fast-path-workflow
+    kind: workflow
+    source: src/sensemaking_skills/defaults/workflow-registry.yaml
+    accepted_responsibility_types: [repository_sensemaking_workflow]
+    output_artifact: workflow_orchestration_plan
+    completion_conditions:
+      - control returns to the campaign agent after the workflow result is produced
+    mutates_repository: false
+    authority: owner_authorization_required
+    availability: external
+    availability_reason: current workflow catalog identity; execution remains external to the Campaign core
+    returns_control: true
+
+  - id: implementation-workflow
+    kind: workflow
+    source: src/sensemaking_skills/defaults/workflow-registry.yaml
+    accepted_responsibility_types: [implementation_execution_workflow]
+    output_artifact: code_patch
+    completion_conditions:
+      - control would return to the campaign agent after the workflow result is produced
+    mutates_repository: true
+    authority: owner_authorization_required
+    availability: external
+    availability_reason: workflow availability is resolved against workflow-liveness.yaml
+    returns_control: true
