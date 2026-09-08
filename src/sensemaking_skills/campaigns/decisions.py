@@ -40,7 +40,7 @@ class DeferDecision:
     to_state: str
     decision: str
     reason: str
-    reopen_when: tuple[str, ...]
+    reopen_when: tuple[str, ...] = ()
     evidence: tuple[str, ...] = ()
     not_reopened_by: tuple[str, ...] = ()
 
@@ -141,10 +141,6 @@ class CampaignDecisionService:
         _require_text(authored.to_state, field="to_state")
         _require_text(authored.decision, field="decision")
         _require_text(authored.reason, field="reason")
-        if not authored.reopen_when:
-            raise CampaignTransactionError(
-                "defer decision must define at least one reopen condition"
-            )
         return self.lifecycle.defer_responsibility(
             transition_id=authored.transition_id,
             to_state=authored.to_state,
