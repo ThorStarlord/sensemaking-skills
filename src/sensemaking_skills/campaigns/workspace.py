@@ -14,7 +14,7 @@ class CampaignWorkspace:
     """Paths owned by one campaign.
 
     v0.3 deliberately requires a workspace outside the target repository when a
-    target path is supplied.  Read-only repository sensemaking must not become a
+    target path is supplied. Read-only repository sensemaking must not become a
     repository mutation merely because durable campaign state is enabled.
 
     ``requested_root`` preserves the lexical path the caller supplied (made
@@ -58,6 +58,11 @@ class CampaignWorkspace:
     @property
     def transitions_dir(self) -> Path:
         return self.root / "transitions"
+
+    @property
+    def transactions_dir(self) -> Path:
+        """Private durable journal for P2 lifecycle commits/recovery."""
+        return self.root / ".transactions"
 
     @property
     def artifacts_dir(self) -> Path:
