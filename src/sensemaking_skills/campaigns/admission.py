@@ -95,17 +95,21 @@ def _require_sha256(data: Mapping[str, Any], field: str) -> str:
     return value
 
 
-def _validate_artifact_ref(value: str, artifact_id: str) -> None:
+def _validate_artifact_ref(value: str, artifact_id: str, artifact_sha256: str) -> None:
     path = PurePosixPath(value)
     if path.is_absolute() or ".." in path.parts:
         raise ArtifactAdmissionContractError("artifact_ref must be workspace-relative")
-    if len(path.parts) < 3 or path.parts[0] != "artifacts":
+    if len(path.parts) != 3 or path.parts[0] != "artifacts":
         raise ArtifactAdmissionContractError(
-            "artifact_ref must live beneath the campaign artifacts/ directory"
+            "artifact_ref must be artifacts/<artifact_id>/<content-addressed-file>"
         )
     if path.parts[1] != artifact_id:
         raise ArtifactAdmissionContractError(
             "artifact_ref artifact-id directory must match artifact_id"
+        )
+    if not path.name.startswith(f"{artifact_sha256}."):
+        raise ArtifactAdmissionContractError(
+            "artifact_ref filename must be content-addressed by artifact_sha256"
         )
 
 
@@ -159,7 +163,7 @@ def load_artifact_admission(value: Any) -> ArtifactAdmission:
     router_sha256 = _require_sha256(data, "router_sha256")
     validator_sha256 = _require_sha256(data, "validator_sha256")
     validation_result_sha256 = _require_sha256(data, "validation_result_sha256")
-    _validate_artifact_ref(artifact_ref, artifact_id)
+    _validate_artifact_ref(artifact_ref, artifact_id, artifact_sha256)
 
     validation_result = data.get("validation_result")
     if not isinstance(validation_result, Mapping):
