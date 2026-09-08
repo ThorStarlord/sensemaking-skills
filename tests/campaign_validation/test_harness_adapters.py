@@ -12,7 +12,7 @@ from sensemaking_skills.harness_adapters import (
     get_harness_adapter,
     resolve_harness_destinations,
 )
-from sensemaking_skills import setup_skills as setup_module
+from sensemaking_skills import setup_skills as setup_skills_module
 
 
 def _make_fake_skill_source(tmp_path: Path) -> Path:
@@ -160,12 +160,14 @@ def test_project_setup_copies_exact_skill_trees_without_harness_detection(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     source = _make_fake_skill_source(tmp_path)
-    monkeypatch.setattr(setup_module, "get_package_skills_dir", lambda: source)
+    monkeypatch.setattr(
+        setup_skills_module, "get_package_skills_dir", lambda: source
+    )
 
     project = tmp_path / "project"
     project.mkdir()
 
-    assert setup_module.setup_skills(
+    assert setup_skills_module.setup_skills(
         target="claude",
         scope="project",
         project_root=project,
@@ -190,11 +192,13 @@ def test_project_setup_supports_codex_and_opencode_native_roots(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     source = _make_fake_skill_source(tmp_path)
-    monkeypatch.setattr(setup_module, "get_package_skills_dir", lambda: source)
+    monkeypatch.setattr(
+        setup_skills_module, "get_package_skills_dir", lambda: source
+    )
 
     codex_project = tmp_path / "codex-project"
     codex_project.mkdir()
-    assert setup_module.setup_skills(
+    assert setup_skills_module.setup_skills(
         target="codex", scope="project", project_root=codex_project
     )
     assert (
@@ -203,7 +207,7 @@ def test_project_setup_supports_codex_and_opencode_native_roots(
 
     opencode_project = tmp_path / "opencode-project"
     opencode_project.mkdir()
-    assert setup_module.setup_skills(
+    assert setup_skills_module.setup_skills(
         target="opencode", scope="project", project_root=opencode_project
     )
     assert (
@@ -219,11 +223,13 @@ def test_project_all_writes_each_unique_native_root_once(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ):
     source = _make_fake_skill_source(tmp_path)
-    monkeypatch.setattr(setup_module, "get_package_skills_dir", lambda: source)
+    monkeypatch.setattr(
+        setup_skills_module, "get_package_skills_dir", lambda: source
+    )
 
     project = tmp_path / "project"
     project.mkdir()
-    assert setup_module.setup_skills(
+    assert setup_skills_module.setup_skills(
         target="all", scope="project", project_root=project
     )
 
@@ -245,12 +251,14 @@ def test_setup_request_validation_is_explicit_and_fail_closed(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ):
     source = _make_fake_skill_source(tmp_path)
-    monkeypatch.setattr(setup_module, "get_package_skills_dir", lambda: source)
+    monkeypatch.setattr(
+        setup_skills_module, "get_package_skills_dir", lambda: source
+    )
 
     project = tmp_path / "project"
     project.mkdir()
 
-    assert not setup_module.setup_skills(
+    assert not setup_skills_module.setup_skills(
         target="claude",
         scope="project",
         project_root=project,
@@ -258,7 +266,14 @@ def test_setup_request_validation_is_explicit_and_fail_closed(
     )
     assert "--skills-dir is only valid" in capsys.readouterr().err
 
-    assert not setup_module.setup_skills(
+    assert not setup_skills_module.setup_skills(
+        target="claude",
+        scope="user",
+        project_root=project,
+    )
+    assert "--project-root is only valid" in capsys.readouterr().err
+
+    assert not setup_skills_module.setup_skills(
         target="custom",
         scope="project",
         project_root=project,
@@ -266,7 +281,7 @@ def test_setup_request_validation_is_explicit_and_fail_closed(
     )
     assert "--scope applies to harness adapters" in capsys.readouterr().err
 
-    assert not setup_module.setup_skills(
+    assert not setup_skills_module.setup_skills(
         target="claude-superpowers",
         scope="project",
         project_root=project,
@@ -278,11 +293,13 @@ def test_dry_run_creates_no_harness_directory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     source = _make_fake_skill_source(tmp_path)
-    monkeypatch.setattr(setup_module, "get_package_skills_dir", lambda: source)
+    monkeypatch.setattr(
+        setup_skills_module, "get_package_skills_dir", lambda: source
+    )
 
     project = tmp_path / "project"
     project.mkdir()
-    assert setup_module.setup_skills(
+    assert setup_skills_module.setup_skills(
         target="opencode",
         scope="project",
         project_root=project,
@@ -295,7 +312,9 @@ def test_divergent_harness_copy_requires_explicit_force(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     source = _make_fake_skill_source(tmp_path)
-    monkeypatch.setattr(setup_module, "get_package_skills_dir", lambda: source)
+    monkeypatch.setattr(
+        setup_skills_module, "get_package_skills_dir", lambda: source
+    )
 
     project = tmp_path / "project"
     project.mkdir()
@@ -304,15 +323,15 @@ def test_divergent_harness_copy_requires_explicit_force(
         "scope": "project",
         "project_root": project,
     }
-    assert setup_module.setup_skills(**kwargs)
+    assert setup_skills_module.setup_skills(**kwargs)
 
     installed = project / ".claude" / "skills" / "repo-sensemaker" / "SKILL.md"
     installed.write_text("# divergent\n", encoding="utf-8")
 
-    assert not setup_module.setup_skills(**kwargs)
+    assert not setup_skills_module.setup_skills(**kwargs)
     assert installed.read_text(encoding="utf-8") == "# divergent\n"
 
-    assert setup_module.setup_skills(**kwargs, force=True)
+    assert setup_skills_module.setup_skills(**kwargs, force=True)
     assert installed.read_bytes() == (
         source / "repo-sensemaker" / "SKILL.md"
     ).read_bytes()
