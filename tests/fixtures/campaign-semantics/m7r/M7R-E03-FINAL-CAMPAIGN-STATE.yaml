@@ -1,0 +1,26 @@
+schema_version: "1"
+campaign_id: m7r-clause-b-adaptive-2026-09-07
+mission: determine and execute the warranted path for integrating the bounded Clause-B candidate
+status: terminal
+current_state: qualified_pr_ready
+active_uncertainty: null
+active_responsibility: null
+resolved_questions: [clause_a_current_repair_question, clause_b_contract_ambiguity, sidecar_capture_cause, controller_ownership, candidate_delta_applicability, exact_candidate_construction, candidate_behavioral_qualification]
+deferred_responsibilities:
+  - responsibility_id: PF6
+    status: deferred
+    reason: not the nearest decision-changing uncertainty; no explicit reopen condition was met
+external_boundaries:
+  - id: EB-CODEX-CONTROLLER
+    capability: asynchronous_validator_sidecar_capture
+    owner: runtime_orchestration
+    repository_owned: false
+    accessible: false
+    implication: repository-side controller repair is not warranted
+established_facts: [CLAUSE_B_VALIDATION_INCONCLUSIVE, A2_AGENT_EVALUATED_MIXED, DELTA_APPLICABLE_AND_CLEAN, EXACT_CANDIDATE_CONSTRUCTED, QUALIFICATION_SUFFICIENT]
+authority: authorized_autonomously
+terminal_state: qualified_pr_ready
+owner_routing:
+  required_for: [public_pr_creation, public_push, merge, release]
+  route_to: repository_owner
+  action_taken: none

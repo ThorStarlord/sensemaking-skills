@@ -1,0 +1,13 @@
+schema_version: "1"
+id: TR-M7R-003
+from_state: candidate_qualification
+to_state: qualified_pr_ready
+evidence:
+  - M7R-EV-003-CANDIDATE-QUALIFICATION.md
+  - M7R-MV-003-CANDIDATE-QUALIFICATION.md
+  - M7R-IV-002-ROOT-PYTEST-EPISODE.md
+decision: exact candidate passes its bounded semantic checks, modified-result probe, structural checks, and the repository-declared stable regression gate; qualification is sufficient while non-supporting attempts remain explicitly retained
+next_responsibility: null
+terminal_state: qualified_pr_ready
+authority: authorized_autonomously
+

@@ -1,0 +1,13 @@
+schema_version: "1"
+id: TR-M7R-002
+from_state: candidate_construction
+to_state: candidate_qualification
+evidence:
+  - M7R-EV-002-EXACT-CANDIDATE-CONSTRUCTION.md
+  - M7R-MV-002-EXACT-CANDIDATE-CONSTRUCTION.md
+  - M7R-IV-001-ARCHIVE-CONSTRUCTION-EPISODE.md
+decision: an exact clean isolated candidate now exists; its behavioral qualification is the nearest unresolved decision-changing obligation
+next_responsibility: R-M7R-003
+terminal_state: null
+authority: authorized_autonomously
+

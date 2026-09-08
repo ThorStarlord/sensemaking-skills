@@ -55,6 +55,13 @@ class RepoSensemakerSkill(BaseSkill):
                 "message": "Repository analysis completed successfully",
                 "repo_summary": repo_summary,
                 "key_files_found": key_files,
+                "active_uncertainty": None,
+                "warranted_responsibility": None,
+                "responsibility_basis": None,
+                "capability_recommendation": "generic_repository_analysis",
+                "capability_availability": "available",
+                "authority": "authorized_autonomously",
+                "workflow_id": None,
             }
 
         except Exception as e:
@@ -65,6 +72,13 @@ class RepoSensemakerSkill(BaseSkill):
                 "message": f"Analysis failed: {e}",
                 "repo_summary": None,
                 "key_files_found": [],
+                "active_uncertainty": None,
+                "warranted_responsibility": None,
+                "responsibility_basis": None,
+                "capability_recommendation": None,
+                "capability_availability": "unavailable",
+                "authority": None,
+                "workflow_id": None,
             }
 
     def _analyze_repository_structure(self) -> Dict[str, Any]:

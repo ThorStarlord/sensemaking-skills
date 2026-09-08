@@ -1,0 +1,10 @@
+schema_version: "1"
+campaign_id: example-campaign
+mission: determine_warranted_integration_disposition
+known_transitions:
+  - {when: candidate_qualified, next: publication_review}
+dynamic_responsibility_policy:
+  - newly discovered evidence blocks the current decision
+  - responsibility is the smallest warranted unit
+authority_boundaries: {public_pr_creation: owner_authorization_required}
+stop_conditions: [owner_decision_required, external_blocker, no_further_work_warranted]
