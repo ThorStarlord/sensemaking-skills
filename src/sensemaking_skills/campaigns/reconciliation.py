@@ -13,9 +13,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
+import yaml
+
 from .admission import ArtifactAdmissionContractError, load_artifact_admission
 from .errors import CampaignIntegrityError
-from .lineage import CampaignLineageService
+from .lineage import CampaignLineageService, ConsumptionEdge
 
 
 RECONCILIATION_ARTIFACT_IDS = frozenset(
@@ -62,8 +64,10 @@ class CampaignReconciliationService:
     """Reconstruct reconciliation lifecycle state without semantic routing."""
 
     def __init__(self, workspace: str | Path) -> None:
-        self.workspace = Path(workspace)
         self.lineage = CampaignLineageService(workspace)
+        # Reuse the lifecycle/store canonical workspace root rather than resolving
+        # the caller-supplied spelling independently.
+        self.workspace = self.lineage.store.root
 
     def inspect(self) -> CampaignReconciliationResult:
         """Return admitted reconciliation evidence and explicit consumption state.
@@ -76,7 +80,7 @@ class CampaignReconciliationService:
         lineage = self.lineage.inspect()
         reports: list[ReconciliationEvidence] = []
 
-        edges_by_ref: dict[str, list] = {}
+        edges_by_ref: dict[str, list[ConsumptionEdge]] = {}
         for edge in lineage.consumption_edges:
             edges_by_ref.setdefault(edge.evidence_ref, []).append(edge)
 
@@ -158,11 +162,15 @@ class CampaignReconciliationService:
                 )
             )
 
-        ordered = tuple(sorted(reports, key=lambda item: (item.artifact_id, item.artifact_ref)))
+        ordered = tuple(
+            sorted(reports, key=lambda item: (item.artifact_id, item.artifact_ref))
+        )
         return CampaignReconciliationResult(
             campaign_id=lineage.campaign_id,
             reports=ordered,
-            disposition_required_count=sum(item.disposition_required for item in ordered),
+            disposition_required_count=sum(
+                item.disposition_required for item in ordered
+            ),
             disposition_recorded_count=sum(
                 item.disposition_status == "disposition_recorded" for item in ordered
             ),
@@ -189,6 +197,7 @@ class CampaignReconciliationService:
         if (
             parsed.is_absolute()
             or ".." in parsed.parts
+            or "." in parsed.parts
             or len(parsed.parts) != 3
             or parsed.parts[0] != "admissions"
             or parsed.parts[1] != artifact_id
@@ -201,7 +210,7 @@ class CampaignReconciliationService:
         path = self.workspace / parsed
         try:
             admission = load_artifact_admission(path)
-        except (ArtifactAdmissionContractError, OSError) as exc:
+        except (ArtifactAdmissionContractError, OSError, yaml.YAMLError) as exc:
             raise CampaignIntegrityError(
                 "reconciliation admission receipt is invalid",
                 diagnostic_codes=("INVALID_RECONCILIATION_ADMISSION",),
