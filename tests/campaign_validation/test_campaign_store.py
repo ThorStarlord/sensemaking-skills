@@ -53,6 +53,7 @@ def test_initialize_creates_isolated_roundtrippable_workspace(tmp_path):
     assert store.workspace.transitions_dir.is_dir()
     assert store.workspace.artifacts_dir.is_dir()
     assert store.workspace.evidence_dir.is_dir()
+    assert store.workspace.admissions_dir.is_dir()
     assert (target / "marker.txt").read_text(encoding="utf-8") == "target"
     assert sorted(path.name for path in target.iterdir()) == ["marker.txt"]
 
@@ -178,7 +179,7 @@ def test_handoff_snapshot_must_equal_current_campaign_state(tmp_path):
     assert store.load_handoff() == handoff
 
 
-def test_evidence_refs_are_workspace_relative_and_stable(tmp_path):
+def test_unadmitted_artifact_is_not_evidence_but_raw_evidence_is(tmp_path):
     store = CampaignStore(tmp_path / "CMP-1")
     store.initialize(_state())
     (store.workspace.artifacts_dir / "brief.md").write_text("brief", encoding="utf-8")
@@ -186,10 +187,7 @@ def test_evidence_refs_are_workspace_relative_and_stable(tmp_path):
     nested.mkdir()
     (nested / "report.yaml").write_text("ok: true\n", encoding="utf-8")
 
-    assert store.evidence_refs() == (
-        "artifacts/brief.md",
-        "evidence/probe/report.yaml",
-    )
+    assert store.evidence_refs() == ("evidence/probe/report.yaml",)
 
 
 def test_evidence_refs_reject_symlinked_file_escape(tmp_path):
