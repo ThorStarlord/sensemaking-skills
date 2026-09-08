@@ -19,6 +19,9 @@ import click
 from . import __version__
 from .campaign_semantics import CampaignState, ContractError, canonicalize
 from .campaigns import (
+    ArtifactAdmissionService,
+    ArtifactValidationRejectedError,
+    ArtifactValidatorError,
     CampaignAlreadyExistsError,
     CampaignIdentityError,
     CampaignIntegrityError,
@@ -33,6 +36,8 @@ from .setup_skills import setup_skills as run_setup_skills
 
 CAMPAIGN_INVALID_EXIT = 3
 CAMPAIGN_WORKSPACE_EXIT = 4
+ARTIFACT_INVALID_EXIT = 5
+ARTIFACT_VALIDATOR_EXIT = 6
 
 
 @click.group()
@@ -57,6 +62,10 @@ def _json_echo(payload: dict[str, Any]) -> None:
 
 
 def _campaign_error_code(exc: Exception) -> str:
+    if isinstance(exc, ArtifactValidationRejectedError):
+        return "ARTIFACT_VALIDATION_REJECTED"
+    if isinstance(exc, ArtifactValidatorError):
+        return "ARTIFACT_VALIDATOR_ERROR"
     if isinstance(exc, CampaignIntegrityError):
         return "CAMPAIGN_INTEGRITY_ERROR"
     if isinstance(exc, ContractError):
@@ -73,6 +82,10 @@ def _campaign_error_code(exc: Exception) -> str:
 
 
 def _campaign_error_exit(exc: Exception) -> int:
+    if isinstance(exc, ArtifactValidationRejectedError):
+        return ARTIFACT_INVALID_EXIT
+    if isinstance(exc, ArtifactValidatorError):
+        return ARTIFACT_VALIDATOR_EXIT
     if isinstance(exc, (CampaignIntegrityError, ContractError)):
         return CAMPAIGN_INVALID_EXIT
     return CAMPAIGN_WORKSPACE_EXIT
@@ -87,18 +100,26 @@ def _campaign_error_diagnostics(exc: Exception) -> list[str]:
 def _emit_campaign_error(exc: Exception, *, output_json: bool) -> None:
     code = _campaign_error_code(exc)
     diagnostics = _campaign_error_diagnostics(exc)
-    payload = {
+    payload: dict[str, Any] = {
         "ok": False,
         "code": code,
         "message": str(exc),
         "diagnostics": diagnostics,
     }
+    if isinstance(exc, ArtifactValidationRejectedError):
+        payload["validation_result"] = exc.validation_result
     if output_json:
         _json_echo(payload)
     else:
         click.echo(f"{code}: {exc}", err=True)
         for diagnostic in diagnostics:
             click.echo(f"  - {diagnostic}", err=True)
+        if isinstance(exc, ArtifactValidationRejectedError):
+            for error in exc.validation_result.get("errors", []):
+                if isinstance(error, dict):
+                    error_id = error.get("error_id", "validation_error")
+                    message = error.get("message", str(error))
+                    click.echo(f"  - {error_id}: {message}", err=True)
     raise click.exceptions.Exit(_campaign_error_exit(exc))
 
 
@@ -382,6 +403,80 @@ def campaign_init(
         _json_echo(payload)
     else:
         _echo_campaign_status(snapshot, heading="CAMPAIGN_INITIALIZED")
+
+
+@campaign.command(name="ingest")
+@click.option(
+    "--workspace",
+    required=True,
+    type=click.Path(path_type=Path),
+    help="Existing campaign workspace",
+)
+@click.option(
+    "--artifact",
+    required=True,
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    help="Artifact file to validate and admit",
+)
+@click.option(
+    "--framework-root",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Sensemaking framework checkout containing scripts/validate-and-report.py",
+)
+@click.option(
+    "--target-repo",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=None,
+    help="Repository the artifact is about, for target-aware validators",
+)
+@click.option(
+    "--probe-report",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    help="Explicit same-episode Probe Engine report for brief validation",
+)
+@click.option("--json", "output_json", is_flag=True, help="Emit JSON")
+def campaign_ingest(
+    workspace: Path,
+    artifact: Path,
+    framework_root: Path,
+    target_repo: Path | None,
+    probe_report: Path | None,
+    output_json: bool,
+):
+    """Canonically validate exact artifact bytes, then admit them as evidence."""
+    try:
+        result = ArtifactAdmissionService(workspace).admit(
+            artifact,
+            framework_root=framework_root,
+            target_repo=target_repo,
+            probe_report=probe_report,
+        )
+    except (CampaignWorkspaceError, ContractError) as exc:
+        _emit_campaign_error(exc, output_json=output_json)
+
+    payload = {
+        "ok": True,
+        "code": "ARTIFACT_ADMITTED",
+        "artifact_id": result.artifact_id,
+        "artifact_ref": result.artifact_ref,
+        "admission_ref": result.admission_ref,
+        "artifact_sha256": result.artifact_sha256,
+        "validator": result.admission.validator,
+        "validation_timestamp": result.admission.validation_timestamp,
+        "router_sha256": result.admission.router_sha256,
+        "validator_sha256": result.admission.validator_sha256,
+    }
+    if output_json:
+        _json_echo(payload)
+    else:
+        click.echo("ARTIFACT_ADMITTED")
+        click.echo(f"Artifact ID: {result.artifact_id}")
+        click.echo(f"Artifact ref: {result.artifact_ref}")
+        click.echo(f"Admission ref: {result.admission_ref}")
+        click.echo(f"Artifact SHA-256: {result.artifact_sha256}")
+        click.echo(f"Validator: {result.admission.validator}")
 
 
 @campaign.command(name="status")
