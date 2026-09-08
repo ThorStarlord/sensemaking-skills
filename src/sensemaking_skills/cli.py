@@ -31,6 +31,7 @@ from .campaigns import (
     CampaignTransactionError,
     CampaignWorkspaceError,
 )
+from .campaign_decision_cli import register_campaign_decision_commands
 from .setup_skills import setup_skills as run_setup_skills
 
 
@@ -584,6 +585,15 @@ def campaign_history(workspace: Path, output_json: bool):
             "Terminal state: "
             f"{_enum_value(transition.terminal_state) or 'none'}"
         )
+
+
+register_campaign_decision_commands(
+    campaign,
+    emit_error=_emit_campaign_error,
+    status_payload=_status_payload,
+    json_echo=_json_echo,
+    echo_status=_echo_campaign_status,
+)
 
 
 def main():
