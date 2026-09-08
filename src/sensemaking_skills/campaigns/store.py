@@ -8,6 +8,11 @@ P2 adds a small durable transaction journal. Publishing a fully prepared journal
 directory is the commit-intent boundary; live files are then materialized in an
 idempotent order with ``campaign-state.yaml`` last. A crash after commit intent
 is recoverable without guessing semantic intent.
+
+P4 distinguishes raw evidence from validated artifacts. Files under ``evidence/``
+remain ordinary durable evidence. Files under ``artifacts/`` become evidence only
+when an append-only admission receipt binds their exact digest to a successful
+canonical validator result.
 """
 
 from __future__ import annotations
@@ -40,9 +45,15 @@ from sensemaking_skills.campaign_semantics import (
     load_transition_record,
 )
 
+from .admission import (
+    ArtifactAdmissionContractError,
+    load_artifact_admission,
+    sha256_file,
+)
 from .errors import (
     CampaignAlreadyExistsError,
     CampaignIdentityError,
+    CampaignIntegrityError,
     CampaignNotInitializedError,
     CampaignTransactionError,
     CampaignWorkspaceError,
@@ -218,6 +229,7 @@ class CampaignStore:
             (staging / ".transactions").mkdir()
             (staging / "artifacts").mkdir()
             (staging / "evidence").mkdir()
+            (staging / "admissions").mkdir()
             _write_yaml(staging / "campaign-state.yaml", state_payload)
             _write_yaml(staging / "trace.yaml", trace_payload)
             if policy_payload is not None:
@@ -331,16 +343,74 @@ class CampaignStore:
         return handoff
 
     def evidence_refs(self) -> tuple[str, ...]:
-        """Return stable workspace-relative file references available as evidence."""
+        """Return durable evidence refs, requiring admission for artifact files."""
         self._require_initialized()
+        current = self.load_state()
         refs: list[str] = []
-        for directory in (self.workspace.artifacts_dir, self.workspace.evidence_dir):
-            _assert_physically_contained(directory, self.root)
-            for path in sorted(directory.rglob("*")):
-                _assert_physically_contained(path, directory)
-                if path.is_file():
-                    refs.append(path.relative_to(self.root).as_posix())
-        return tuple(refs)
+
+        # Raw evidence remains directly citable. Preserve the P1 physical-
+        # containment guard so symlink/reparse escapes fail closed.
+        evidence_dir = self.workspace.evidence_dir
+        _assert_physically_contained(evidence_dir, self.root)
+        for path in sorted(evidence_dir.rglob("*")):
+            _assert_physically_contained(path, evidence_dir)
+            if path.is_file():
+                refs.append(path.relative_to(self.root).as_posix())
+
+        # Scan artifacts for containment, but deliberately do not grant evidence
+        # status merely because a file exists here. P4 admission receipts below
+        # are the only authority that promotes an artifact into evidence.
+        artifacts_dir = self.workspace.artifacts_dir
+        _assert_physically_contained(artifacts_dir, self.root)
+        for path in sorted(artifacts_dir.rglob("*")):
+            _assert_physically_contained(path, artifacts_dir)
+
+        admissions_dir = self.workspace.admissions_dir
+        if not admissions_dir.is_dir():
+            raise CampaignIntegrityError(
+                "campaign admissions directory is missing",
+                diagnostic_codes=("ARTIFACT_ADMISSIONS_DIRECTORY_MISSING",),
+            )
+        _assert_physically_contained(admissions_dir, self.root)
+        for path in sorted(admissions_dir.rglob("*")):
+            _assert_physically_contained(path, admissions_dir)
+            if path.is_dir():
+                continue
+            if path.is_symlink() or not path.is_file() or path.suffix != ".yaml":
+                raise CampaignIntegrityError(
+                    "artifact admissions directory contains an invalid entry",
+                    diagnostic_codes=("INVALID_ARTIFACT_ADMISSION",),
+                )
+            try:
+                admission = load_artifact_admission(path)
+            except (ArtifactAdmissionContractError, OSError, yaml.YAMLError) as exc:
+                raise CampaignIntegrityError(
+                    "artifact admission receipt is invalid",
+                    diagnostic_codes=("INVALID_ARTIFACT_ADMISSION",),
+                ) from exc
+            if admission.campaign_id != current.campaign_id:
+                raise CampaignIntegrityError(
+                    "artifact admission belongs to a different campaign",
+                    diagnostic_codes=("ARTIFACT_ADMISSION_CAMPAIGN_ID_MISMATCH",),
+                )
+
+            artifact_path = self.root / admission.artifact_ref
+            _assert_physically_contained(artifact_path, artifacts_dir)
+            if artifact_path.is_symlink() or not artifact_path.is_file():
+                raise CampaignIntegrityError(
+                    "admitted artifact is missing or not a regular file",
+                    diagnostic_codes=("ADMITTED_ARTIFACT_MISSING",),
+                )
+            if sha256_file(artifact_path) != admission.artifact_sha256:
+                raise CampaignIntegrityError(
+                    "admitted artifact no longer matches its admission digest",
+                    diagnostic_codes=("ADMITTED_ARTIFACT_DIGEST_MISMATCH",),
+                )
+
+            refs.append(admission.artifact_ref)
+            refs.append(path.relative_to(self.root).as_posix())
+
+        return tuple(sorted(dict.fromkeys(refs)))
 
     def commit_lifecycle(
         self,

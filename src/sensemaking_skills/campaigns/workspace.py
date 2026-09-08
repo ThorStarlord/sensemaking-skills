@@ -72,6 +72,27 @@ class CampaignWorkspace:
     def evidence_dir(self) -> Path:
         return self.root / "evidence"
 
+    @property
+    def admissions_dir(self) -> Path:
+        """Return the P4 receipt directory, migrating P1-P3 workspaces safely.
+
+        P1-P3 campaign workspaces predate ``admissions/``. Once an initialized
+        campaign is opened by P4+, creating this one empty structural directory
+        is a deterministic compatibility migration; it grants no evidence
+        status by itself. Existing symlink/non-directory entries fail closed.
+        """
+        path = self.root / "admissions"
+        if os.path.lexists(path):
+            if path.is_symlink() or not path.is_dir():
+                raise CampaignWorkspaceError(
+                    "campaign admissions path must be a real directory: "
+                    f"{path}"
+                )
+            return path
+        if self.state_path.is_file():
+            path.mkdir()
+        return path
+
     def assert_isolated_from_target(self) -> None:
         """Fail closed if campaign state would live inside the target repo."""
         if self.target_repo is None:

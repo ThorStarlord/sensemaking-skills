@@ -1,8 +1,8 @@
-"""Campaign workspace and lifecycle errors."""
+"""Campaign workspace, lifecycle, and artifact-admission errors."""
 
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Any, Iterable, Mapping
 
 
 class CampaignWorkspaceError(RuntimeError):
@@ -36,3 +36,20 @@ class CampaignIntegrityError(CampaignWorkspaceError):
             else ""
         )
         super().__init__(f"{message}{suffix}")
+
+
+class ArtifactValidationRejectedError(CampaignWorkspaceError):
+    """Raised when the canonical validator runs successfully and rejects an artifact."""
+
+    def __init__(self, validation_result: Mapping[str, Any]):
+        self.validation_result = dict(validation_result)
+        artifact_id = self.validation_result.get("artifact_id", "unknown")
+        errors = self.validation_result.get("errors", [])
+        super().__init__(
+            f"canonical artifact validation rejected {artifact_id!r} "
+            f"with {len(errors) if isinstance(errors, list) else 'unknown'} error(s)"
+        )
+
+
+class ArtifactValidatorError(CampaignWorkspaceError):
+    """Raised when the canonical validation boundary cannot be executed or trusted."""
