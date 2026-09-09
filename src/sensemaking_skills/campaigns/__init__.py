@@ -65,6 +65,16 @@ from .target_snapshot import (
     capture_target_snapshot,
     target_snapshots_equivalent,
 )
+from .narrative import (
+    CampaignNarrativeContractError,
+    CampaignNarrativeVerificationService,
+    NarrativeVerificationReceipt,
+    NarrativeVerificationResult,
+    NarrativeVerificationStatus,
+    dump_narrative_verification_receipt,
+    load_narrative_claims,
+    load_narrative_verification_receipt,
+)
 from .store import CampaignStore
 from .workspace import CampaignWorkspace
 
@@ -84,6 +94,8 @@ __all__ = [
     "CampaignLineageContractError",
     "CampaignLineageResult",
     "CampaignLineageService",
+    "CampaignNarrativeContractError",
+    "CampaignNarrativeVerificationService",
     "CampaignNotInitializedError",
     "CampaignReconciliationResult",
     "CampaignReconciliationService",
@@ -104,13 +116,19 @@ __all__ = [
     "DeferDecision",
     "EvidenceBinding",
     "LineageEvidence",
+    "NarrativeVerificationReceipt",
+    "NarrativeVerificationResult",
+    "NarrativeVerificationStatus",
     "ReconciliationAdmission",
     "ReconciliationEvidence",
     "SchemaMigrationReceipt",
     "TransitionLineage",
     "capture_target_snapshot",
+    "dump_narrative_verification_receipt",
     "dump_schema_migration_receipt",
     "load_consumption_receipt",
+    "load_narrative_claims",
+    "load_narrative_verification_receipt",
     "load_schema_migration_receipt",
     "target_snapshots_equivalent",
 ]
