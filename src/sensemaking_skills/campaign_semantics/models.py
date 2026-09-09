@@ -6,6 +6,8 @@ from dataclasses import dataclass, field, fields, is_dataclass
 from enum import Enum
 from typing import Any, Mapping, Optional
 
+from .schema import CURRENT_SCHEMA_VERSION
+
 
 class _TextEnum(str, Enum):
     def __str__(self) -> str: return self.value
@@ -137,7 +139,7 @@ class CampaignState:
     authority: Optional[Authority] = None
     terminal_state: Optional[TerminalState] = None
     additional_active_responsibilities: tuple[Responsibility, ...] = ()
-    schema_version: str = "1"
+    schema_version: str = CURRENT_SCHEMA_VERSION
     extensions: Mapping[str, Any] = field(default_factory=dict)
 
 
@@ -151,7 +153,7 @@ class TransitionRecord:
     next_responsibility: Optional[str] = None
     terminal_state: Optional[TerminalState] = None
     authority: Optional[Authority] = None
-    schema_version: str = "1"
+    schema_version: str = CURRENT_SCHEMA_VERSION
 
 
 @dataclass(frozen=True)
@@ -162,7 +164,7 @@ class CampaignPolicy:
     authority_boundaries: Mapping[str, str] = field(default_factory=dict)
     stop_conditions: tuple[TerminalState, ...] = ()
     dynamic_responsibility_policy: tuple[str, ...] = ()
-    schema_version: str = "1"
+    schema_version: str = CURRENT_SCHEMA_VERSION
 
 
 @dataclass(frozen=True)
@@ -172,14 +174,14 @@ class CampaignHandoff:
     canonical_artifacts: tuple[str, ...]
     allowed_next_actions: tuple[str, ...]
     stop_conditions: tuple[TerminalState, ...]
-    schema_version: str = "1"
+    schema_version: str = CURRENT_SCHEMA_VERSION
 
 
 @dataclass(frozen=True)
 class CampaignTrace:
     campaign_id: str
     events: tuple[Mapping[str, Any], ...] = ()
-    schema_version: str = "1"
+    schema_version: str = CURRENT_SCHEMA_VERSION
     replication_id: Optional[str] = None
     initial_state: Optional[str] = None
     terminal_state: Optional[str] = None
