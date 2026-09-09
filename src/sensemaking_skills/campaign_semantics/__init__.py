@@ -18,6 +18,15 @@ from .io import (
     dump_campaign_trace, dump_transition_record, load_campaign_policy,
     load_campaign_handoff, load_campaign_state, load_campaign_trace, load_responsibility, load_transition_record,
 )
+from .schema import (
+    CURRENT_SCHEMA_VERSION,
+    LEGACY_SCHEMA_VERSION,
+    SUPPORTED_SCHEMA_VERSIONS,
+    SchemaMigrationError,
+    SchemaMigrationResult,
+    detect_schema_version,
+    migrate_payload,
+)
 
 __all__ = [
     "Authority", "CampaignConstitution", "CampaignHandoff", "CampaignPolicy", "CampaignState",
@@ -31,4 +40,6 @@ __all__ = [
     "load_responsibility", "dump_responsibility", "load_campaign_handoff", "dump_campaign_handoff",
     "load_campaign_policy", "dump_campaign_policy", "load_transition_record",
     "dump_transition_record", "load_campaign_trace", "dump_campaign_trace",
+    "CURRENT_SCHEMA_VERSION", "LEGACY_SCHEMA_VERSION", "SUPPORTED_SCHEMA_VERSIONS",
+    "SchemaMigrationError", "SchemaMigrationResult", "detect_schema_version", "migrate_payload",
 ]

@@ -1,20 +1,23 @@
 """Explicit YAML boundaries for campaign-semantic artifacts.
 
 Inputs may use the small set of historical representation variants observed in
-real campaign artifacts. Outputs always use dataclass field names and enum
-values.
+real campaign artifacts. Loaders deterministically upgrade supported historical
+representations in memory; outputs always use the current schema plus dataclass
+field names and enum values.
 
 Every public loader enforces the same contract uniformly, at the top level and
 inside every nested decision-relevant record:
 
 * unknown fields are rejected with ``ContractError`` -- never silently dropped;
-* ``schema_version`` must be ``"1"``;
+* supported legacy ``schema_version`` values are migrated only through the
+  explicit one-way migration registry;
 * missing or malformed known fields raise ``ContractError`` rather than leaking
   ``KeyError`` / ``TypeError``.
 
-The only sanctioned escape hatch is ``owner_routing`` on a campaign state, which
-is retained under ``extensions``. A ``CampaignHandoff``'s ``campaign_id`` must
-match the ``campaign_id`` of its resolved current state.
+Schema v2 canonicalizes the historical top-level ``owner_routing`` state
+extension under ``extensions`` and the handoff ``allowed_actions`` alias to
+``allowed_next_actions``. A ``CampaignHandoff``'s ``campaign_id`` must match the
+``campaign_id`` of its resolved current state.
 """
 
 from __future__ import annotations
@@ -31,6 +34,7 @@ from .models import (
     DependencyType, DeferredResponsibility, ExternalBoundary, Responsibility,
     TerminalState, TransitionRecord, Uncertainty, to_dict, validate_campaign_state,
 )
+from .schema import CURRENT_SCHEMA_VERSION, SchemaMigrationError, migrate_payload
 
 
 class ContractError(ValueError):
@@ -39,7 +43,7 @@ class ContractError(ValueError):
 
 T = TypeVar("T")
 
-_SCHEMA_VERSION = "1"
+_SCHEMA_VERSION = CURRENT_SCHEMA_VERSION
 
 _RESPONSIBILITY_FIELDS = {f.name for f in fields(Responsibility)}
 _UNCERTAINTY_FIELDS = {f.name for f in fields(Uncertainty)}
@@ -50,7 +54,7 @@ _STATE_FIELDS = {f.name for f in fields(CampaignState)}
 _TRANSITION_FIELDS = {f.name for f in fields(TransitionRecord)}
 _POLICY_FIELDS = {f.name for f in fields(CampaignPolicy)}
 _TRACE_FIELDS = {f.name for f in fields(CampaignTrace)}
-_HANDOFF_FIELDS = {f.name for f in fields(CampaignHandoff)} | {"current_state_reference", "allowed_actions"}
+_HANDOFF_FIELDS = {f.name for f in fields(CampaignHandoff)} | {"current_state_reference"}
 
 
 def canonicalize(value: Any) -> Any:
@@ -67,6 +71,21 @@ def _read(value: Any) -> dict[str, Any]:
     return dict(value)
 
 
+def _prepare(data: Mapping[str, Any], *, artifact_kind: str, path: str) -> dict[str, Any]:
+    try:
+        return migrate_payload(data, artifact_kind=artifact_kind).payload
+    except SchemaMigrationError as exc:
+        raise ContractError(f"schema migration failed at {path}: {exc}") from exc
+
+
+def _dump_current(value: Any, *, artifact_kind: str, path: str) -> dict[str, Any]:
+    data = to_dict(value)
+    try:
+        return migrate_payload(data, artifact_kind=artifact_kind).payload
+    except SchemaMigrationError as exc:
+        raise ContractError(f"schema migration failed at {path}: {exc}") from exc
+
+
 def _require(data: Mapping[str, Any], required: Iterable[str], *, path: str) -> None:
     missing = sorted(name for name in required if name not in data)
     if missing:
@@ -74,7 +93,7 @@ def _require(data: Mapping[str, Any], required: Iterable[str], *, path: str) -> 
 
 
 def _schema_version(data: Mapping[str, Any], *, path: str) -> str:
-    version = data.get("schema_version", _SCHEMA_VERSION)
+    version = data.get("schema_version")
     if version != _SCHEMA_VERSION:
         raise ContractError(f"unsupported schema_version at {path}: {version!r}")
     return version
@@ -185,13 +204,11 @@ def _boundary(value: Any, path: str) -> ExternalBoundary:
 
 
 def load_campaign_state(value: Any) -> CampaignState:
-    data = _read(value)
+    data = _prepare(_read(value), artifact_kind="campaign_state", path="campaign_state")
     _require(data, ("campaign_id", "mission", "status", "current_state"), path="campaign_state")
     schema_version = _schema_version(data, path="campaign_state")
-    extensions = {
-        **_mapping(data.get("extensions"), "campaign_state.extensions"),
-        **_reject_unknown(data, _STATE_FIELDS, path="campaign_state", allowed={"owner_routing"}),
-    }
+    _reject_unknown(data, _STATE_FIELDS, path="campaign_state")
+    extensions = _mapping(data.get("extensions"), "campaign_state.extensions")
     active = data.get("active_responsibility")
     state = CampaignState(
         campaign_id=data["campaign_id"], mission=data["mission"], status=data["status"], current_state=data["current_state"],
@@ -219,11 +236,11 @@ def load_campaign_state(value: Any) -> CampaignState:
 def dump_campaign_state(value: CampaignState) -> dict[str, Any]:
     if not isinstance(value, CampaignState):
         raise ContractError("dump_campaign_state expects CampaignState")
-    return to_dict(value)
+    return _dump_current(value, artifact_kind="campaign_state", path="campaign_state")
 
 
 def load_transition_record(value: Any) -> TransitionRecord:
-    data = _read(value)
+    data = _prepare(_read(value), artifact_kind="transition", path="transition")
     _require(data, ("id", "from_state", "to_state", "evidence", "decision"), path="transition")
     schema_version = _schema_version(data, path="transition")
     _reject_unknown(data, _TRANSITION_FIELDS, path="transition")
@@ -240,11 +257,11 @@ def load_transition_record(value: Any) -> TransitionRecord:
 def dump_transition_record(value: TransitionRecord) -> dict[str, Any]:
     if not isinstance(value, TransitionRecord):
         raise ContractError("dump_transition_record expects TransitionRecord")
-    return to_dict(value)
+    return _dump_current(value, artifact_kind="transition", path="transition")
 
 
 def load_campaign_policy(value: Any) -> CampaignPolicy:
-    data = _read(value)
+    data = _prepare(_read(value), artifact_kind="campaign_policy", path="campaign_policy")
     _require(data, ("campaign_id", "mission"), path="campaign_policy")
     schema_version = _schema_version(data, path="campaign_policy")
     _reject_unknown(data, _POLICY_FIELDS, path="campaign_policy")
@@ -267,11 +284,11 @@ def load_campaign_policy(value: Any) -> CampaignPolicy:
 def dump_campaign_policy(value: CampaignPolicy) -> dict[str, Any]:
     if not isinstance(value, CampaignPolicy):
         raise ContractError("dump_campaign_policy expects CampaignPolicy")
-    return to_dict(value)
+    return _dump_current(value, artifact_kind="campaign_policy", path="campaign_policy")
 
 
 def load_campaign_trace(value: Any) -> CampaignTrace:
-    data = _read(value)
+    data = _prepare(_read(value), artifact_kind="campaign_trace", path="campaign_trace")
     _require(data, ("campaign_id",), path="campaign_trace")
     schema_version = _schema_version(data, path="campaign_trace")
     events = data.get("events", [])
@@ -291,7 +308,7 @@ def load_campaign_trace(value: Any) -> CampaignTrace:
 def dump_campaign_trace(value: CampaignTrace) -> dict[str, Any]:
     if not isinstance(value, CampaignTrace):
         raise ContractError("dump_campaign_trace expects CampaignTrace")
-    return to_dict(value)
+    return _dump_current(value, artifact_kind="campaign_trace", path="campaign_trace")
 
 
 def load_responsibility(value: Any) -> Responsibility:
@@ -305,7 +322,7 @@ def dump_responsibility(value: Responsibility) -> dict[str, Any]:
 
 
 def load_campaign_handoff(value: Any, *, current_state: CampaignState | None = None) -> CampaignHandoff:
-    data = _read(value)
+    data = _prepare(_read(value), artifact_kind="campaign_handoff", path="campaign_handoff")
     _require(data, ("campaign_id", "stop_conditions"), path="campaign_handoff")
     schema_version = _schema_version(data, path="campaign_handoff")
     _reject_unknown(data, _HANDOFF_FIELDS, path="campaign_handoff")
@@ -325,7 +342,7 @@ def load_campaign_handoff(value: Any, *, current_state: CampaignState | None = N
             f"handoff campaign_id {data['campaign_id']!r} does not match "
             f"current_state campaign_id {state.campaign_id!r}"
         )
-    actions = data.get("allowed_next_actions", data.get("allowed_actions"))
+    actions = data.get("allowed_next_actions")
     if actions is None:
         raise ContractError("handoff requires allowed_next_actions")
     return CampaignHandoff(
@@ -343,4 +360,4 @@ def load_campaign_handoff(value: Any, *, current_state: CampaignState | None = N
 def dump_campaign_handoff(value: CampaignHandoff) -> dict[str, Any]:
     if not isinstance(value, CampaignHandoff):
         raise ContractError("dump_campaign_handoff expects CampaignHandoff")
-    return to_dict(value)
+    return _dump_current(value, artifact_kind="campaign_handoff", path="campaign_handoff")

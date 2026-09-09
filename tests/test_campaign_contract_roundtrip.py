@@ -166,10 +166,10 @@ def test_transition_record_rejects_unknown_fields(bad):
         load_transition_record(bad)
 
 
-def test_transition_record_rejects_unsupported_schema_version():
-    with pytest.raises(ContractError, match="schema_version"):
-        load_transition_record({"id": "t", "from_state": "a", "to_state": "b",
-                                "evidence": [], "decision": "d", "schema_version": "2"})
+def test_transition_record_accepts_current_schema_version():
+    model = load_transition_record({"id": "t", "from_state": "a", "to_state": "b",
+                                    "evidence": [], "decision": "d", "schema_version": "2"})
+    assert model.schema_version == "2"
 
 
 def test_campaign_policy_is_strict_and_raises_contracterror_not_keyerror():

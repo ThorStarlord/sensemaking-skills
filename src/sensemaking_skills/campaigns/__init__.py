@@ -46,6 +46,15 @@ from .reconciliation import (
     ReconciliationAdmission,
     ReconciliationEvidence,
 )
+from .schema_evolution import (
+    CampaignSchemaArtifactStatus,
+    CampaignSchemaEvolutionService,
+    CampaignSchemaStatus,
+    CampaignSchemaUpgradeResult,
+    SchemaMigrationReceipt,
+    dump_schema_migration_receipt,
+    load_schema_migration_receipt,
+)
 from .service import (
     CampaignDiagnostic,
     CampaignService,
@@ -74,6 +83,10 @@ __all__ = [
     "CampaignNotInitializedError",
     "CampaignReconciliationResult",
     "CampaignReconciliationService",
+    "CampaignSchemaArtifactStatus",
+    "CampaignSchemaEvolutionService",
+    "CampaignSchemaStatus",
+    "CampaignSchemaUpgradeResult",
     "CampaignService",
     "CampaignSnapshot",
     "CampaignStore",
@@ -89,6 +102,9 @@ __all__ = [
     "LineageEvidence",
     "ReconciliationAdmission",
     "ReconciliationEvidence",
+    "SchemaMigrationReceipt",
     "TransitionLineage",
+    "dump_schema_migration_receipt",
     "load_consumption_receipt",
+    "load_schema_migration_receipt",
 ]
