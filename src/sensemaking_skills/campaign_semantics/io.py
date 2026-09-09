@@ -16,12 +16,14 @@ inside every nested decision-relevant record:
 
 Schema v2 canonicalizes the historical top-level ``owner_routing`` state
 extension under ``extensions`` and the handoff ``allowed_actions`` alias to
-``allowed_next_actions``. A ``CampaignHandoff``'s ``campaign_id`` must match the
-``campaign_id`` of its resolved current state.
+``allowed_next_actions``. Target snapshot fields are additive v2 provenance:
+legacy target-unbound v2 bytes remain valid and serialize with their historical
+shape, while target-bound records carry strict first-class snapshot fields.
 """
 
 from __future__ import annotations
 
+import re
 from dataclasses import fields
 from enum import Enum
 from pathlib import Path
@@ -32,7 +34,8 @@ import yaml
 from .models import (
     Authority, CampaignHandoff, CampaignPolicy, CampaignState, CampaignTrace, Dependency,
     DependencyType, DeferredResponsibility, ExternalBoundary, Responsibility,
-    TerminalState, TransitionRecord, Uncertainty, to_dict, validate_campaign_state,
+    TargetSnapshot, TerminalState, TransitionRecord, Uncertainty, to_dict,
+    validate_campaign_state,
 )
 from .schema import CURRENT_SCHEMA_VERSION, SchemaMigrationError, migrate_payload
 
@@ -44,12 +47,14 @@ class ContractError(ValueError):
 T = TypeVar("T")
 
 _SCHEMA_VERSION = CURRENT_SCHEMA_VERSION
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 _RESPONSIBILITY_FIELDS = {f.name for f in fields(Responsibility)}
 _UNCERTAINTY_FIELDS = {f.name for f in fields(Uncertainty)}
 _DEFERRED_FIELDS = {f.name for f in fields(DeferredResponsibility)}
 _BOUNDARY_FIELDS = {f.name for f in fields(ExternalBoundary)}
 _DEPENDENCY_FIELDS = {f.name for f in fields(Dependency)}
+_TARGET_FIELDS = {f.name for f in fields(TargetSnapshot)}
 _STATE_FIELDS = {f.name for f in fields(CampaignState)}
 _TRANSITION_FIELDS = {f.name for f in fields(TransitionRecord)}
 _POLICY_FIELDS = {f.name for f in fields(CampaignPolicy)}
@@ -134,6 +139,14 @@ def _mapping(value: Any, field_name: str) -> dict[str, Any]:
     return dict(value)
 
 
+def _sha256(value: Any, field_name: str, *, optional: bool = False) -> str | None:
+    if value is None and optional:
+        return None
+    if not isinstance(value, str) or not _SHA256_RE.fullmatch(value):
+        raise ContractError(f"{field_name} must be lowercase SHA-256")
+    return value
+
+
 def _dependency(item: Any, path: str) -> Dependency:
     if not isinstance(item, Mapping):
         raise ContractError(f"{path} must be a mapping")
@@ -203,6 +216,44 @@ def _boundary(value: Any, path: str) -> ExternalBoundary:
     )
 
 
+def _target_snapshot(value: Any, path: str = "target_snapshot") -> TargetSnapshot:
+    if not isinstance(value, Mapping):
+        raise ContractError(f"{path} must be a mapping")
+    data = dict(value)
+    _reject_unknown(data, _TARGET_FIELDS, path=path)
+    _require(
+        data,
+        (
+            "repository_root", "repository_id", "identity_source", "head_sha",
+            "tree_sha", "worktree_sha256", "dirty",
+        ),
+        path=path,
+    )
+    for field_name in ("repository_root", "repository_id", "identity_source", "head_sha", "tree_sha"):
+        if not isinstance(data[field_name], str) or not data[field_name]:
+            raise ContractError(f"{path}.{field_name} must be a non-empty string")
+    if data["identity_source"] not in {"origin", "local_path"}:
+        raise ContractError(f"{path}.identity_source must be 'origin' or 'local_path'")
+    if data.get("vcs", "git") != "git":
+        raise ContractError(f"{path}.vcs must be 'git'")
+    if not re.fullmatch(r"[0-9a-f]{40,64}", data["head_sha"]):
+        raise ContractError(f"{path}.head_sha must be a lowercase Git object id")
+    if not re.fullmatch(r"[0-9a-f]{40,64}", data["tree_sha"]):
+        raise ContractError(f"{path}.tree_sha must be a lowercase Git object id")
+    if not isinstance(data["dirty"], bool):
+        raise ContractError(f"{path}.dirty must be boolean")
+    return TargetSnapshot(
+        repository_root=data["repository_root"],
+        repository_id=data["repository_id"],
+        identity_source=data["identity_source"],
+        head_sha=data["head_sha"],
+        tree_sha=data["tree_sha"],
+        worktree_sha256=_sha256(data["worktree_sha256"], f"{path}.worktree_sha256"),
+        dirty=data["dirty"],
+        vcs=data.get("vcs", "git"),
+    )
+
+
 def load_campaign_state(value: Any) -> CampaignState:
     data = _prepare(_read(value), artifact_kind="campaign_state", path="campaign_state")
     _require(data, ("campaign_id", "mission", "status", "current_state"), path="campaign_state")
@@ -210,6 +261,7 @@ def load_campaign_state(value: Any) -> CampaignState:
     _reject_unknown(data, _STATE_FIELDS, path="campaign_state")
     extensions = _mapping(data.get("extensions"), "campaign_state.extensions")
     active = data.get("active_responsibility")
+    target = data.get("target_snapshot")
     state = CampaignState(
         campaign_id=data["campaign_id"], mission=data["mission"], status=data["status"], current_state=data["current_state"],
         active_responsibility=_responsibility(active, "active_responsibility", state_snapshot=True) if active is not None else None,
@@ -221,6 +273,7 @@ def load_campaign_state(value: Any) -> CampaignState:
         authority=_enum(Authority, data.get("authority"), "authority"),
         terminal_state=_enum(TerminalState, data.get("terminal_state"), "terminal_state"),
         additional_active_responsibilities=tuple(_responsibility(item, f"additional_active_responsibilities[{i}]", state_snapshot=True) for i, item in enumerate(_tuple(data.get("additional_active_responsibilities"), "additional_active_responsibilities"))),
+        target_snapshot=_target_snapshot(target) if target is not None else None,
         schema_version=schema_version,
         extensions=extensions,
     )
@@ -250,6 +303,16 @@ def load_transition_record(value: Any) -> TransitionRecord:
         next_responsibility=data.get("next_responsibility"),
         terminal_state=_enum(TerminalState, data.get("terminal_state"), "transition.terminal_state"),
         authority=_enum(Authority, data.get("authority"), "transition.authority"),
+        from_target_snapshot_sha256=_sha256(
+            data.get("from_target_snapshot_sha256"),
+            "transition.from_target_snapshot_sha256",
+            optional=True,
+        ),
+        to_target_snapshot_sha256=_sha256(
+            data.get("to_target_snapshot_sha256"),
+            "transition.to_target_snapshot_sha256",
+            optional=True,
+        ),
         schema_version=schema_version,
     )
 

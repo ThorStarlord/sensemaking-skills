@@ -57,9 +57,13 @@ from .schema_evolution import (
 )
 from .service import (
     CampaignDiagnostic,
-    CampaignService,
     CampaignSnapshot,
     CampaignValidationResult,
+)
+from .target_snapshot import (
+    CampaignService,
+    capture_target_snapshot,
+    target_snapshots_equivalent,
 )
 from .store import CampaignStore
 from .workspace import CampaignWorkspace
@@ -104,7 +108,9 @@ __all__ = [
     "ReconciliationEvidence",
     "SchemaMigrationReceipt",
     "TransitionLineage",
+    "capture_target_snapshot",
     "dump_schema_migration_receipt",
     "load_consumption_receipt",
     "load_schema_migration_receipt",
+    "target_snapshots_equivalent",
 ]

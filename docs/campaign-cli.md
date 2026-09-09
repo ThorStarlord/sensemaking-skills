@@ -1,4 +1,4 @@
-# Campaign CLI — v0.3 P3
+# Campaign CLI — v0.3 P3+
 
 The campaign CLI exposes durable campaign state without taking semantic control away from the active coding agent.
 
@@ -24,7 +24,9 @@ sensemaking-skills campaign init \
 
 An optional `--target-repo` may be supplied. The workspace is rejected if it would live inside that target repository.
 
-`init` does not inspect the target repository and does not infer an uncertainty, responsibility, capability, or authority.
+When `--target-repo` is present, `init` **mechanically inspects** that Git worktree and persists a first-class target snapshot containing sanitized repository identity, HEAD/tree identity, and a deterministic tracked/untracked non-ignored worktree digest. This is provenance only: `init` still does not infer an uncertainty, responsibility, capability, authority, or semantic conclusion.
+
+See [`campaign-target-snapshot.md`](campaign-target-snapshot.md).
 
 ### `campaign status`
 
@@ -34,7 +36,9 @@ Reconstructs and displays the current durable campaign snapshot.
 sensemaking-skills campaign status --workspace /path/to/campaign
 ```
 
-It reports what durable state says. It does not recommend what the campaign should do next.
+For a target-bound Campaign, reconstruction also verifies that the live target repository still matches the last durably recorded target snapshot. Unrecorded repository drift therefore fails closed instead of silently allowing a stale Campaign context to masquerade as current state.
+
+It reports what durable state says. It does not recommend what the campaign should do next, and target drift does not automatically create a transition.
 
 ### `campaign validate`
 
@@ -44,7 +48,7 @@ Runs deterministic recovery/reconstruction validation.
 sensemaking-skills campaign validate --workspace /path/to/campaign
 ```
 
-Success prints `CAMPAIGN_VALID`. Structural/integrity failure prints `CAMPAIGN_INVALID` or a stable campaign error code and exits non-zero.
+Success prints `CAMPAIGN_VALID`. Structural/integrity failure prints `CAMPAIGN_INVALID` or a stable campaign error code and exits non-zero. Target-bound validation includes target transition-chain integrity and live target snapshot comparison.
 
 ### `campaign history`
 
@@ -54,7 +58,7 @@ Displays transition history in the canonical order reconstructed by `CampaignSer
 sensemaking-skills campaign history --workspace /path/to/campaign
 ```
 
-History order is not inferred from transition filenames.
+History order is not inferred from transition filenames. Target-bound transition records carry source/destination target snapshot SHA-256 values as mechanical provenance; those fields do not classify the repository change as correct or successful.
 
 ## JSON output
 
@@ -73,6 +77,8 @@ The JSON surface is intended for coding agents and other deterministic consumers
 - `CAMPAIGN_TRANSACTION_ERROR`
 - `CAMPAIGN_INTEGRITY_ERROR`
 - `CAMPAIGN_WORKSPACE_ERROR`
+
+Target-specific integrity diagnostics include `TARGET_REPOSITORY_UNAVAILABLE`, `TARGET_REPOSITORY_IDENTITY_MISMATCH`, `TARGET_SNAPSHOT_DRIFT`, and target transition-chain diagnostics documented in [`campaign-target-snapshot.md`](campaign-target-snapshot.md).
 
 ## Exit semantics
 
@@ -103,9 +109,10 @@ campaign_semantics
 
 Lifecycle-changing CLI surfaces must go through `CampaignService`; P3 does not bypass it by writing campaign state directly.
 
-The deterministic product layer may validate, persist, reconstruct, and expose decisions. It does not decide:
+The deterministic product layer may validate, persist, reconstruct, expose decisions, and capture target provenance. It does not decide:
 
 - what repository evidence means;
+- whether a repository change is correct;
 - which uncertainty is consequential;
 - which responsibility is warranted;
 - which capability is best;

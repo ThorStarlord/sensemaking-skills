@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sensemaking Campaign control layer** — durable typed Campaign state, append-only transitions/trace, validated artifact admission, explicit agent-authored decisions, capability inspection, handoff/resume, evidence lineage, reconciliation reconstruction, and harness setup adapters.
 - **Self-contained installed validation runtime** — wheel/sdist builds derive the canonical validator runtime from repository `scripts/`, `skills/`, and `docs/canonical-vocabulary.yaml`, so normal `campaign ingest` no longer requires a second Sensemaking source checkout.
 - **Campaign schema v2 compatibility** — current artifacts emit schema v2; historical v1 Campaign artifacts can be deterministically migrated in memory and qualified through append-only migration receipts without rewriting historical bytes.
+- **Durable target snapshot binding** — target-bound Campaigns persist sanitized repository identity, Git HEAD/tree, deterministic tracked/untracked worktree state, and transition source/destination snapshot digests; status/validation, lineage, and fresh-context handoff/resume fail closed on unrecorded target drift without turning provenance into semantic routing.
 - **Real-harness qualification verifier** — `sensemaking_skills.external_qualification` verifies frozen real-harness evidence packages with exact candidate/target/runtime identity, SHA-256 binding, lifecycle checkpoints, fresh-context handoff/resume integrity, and explicit PASS/FAIL/INVALID dispositions.
 - **Release-candidate distribution gate** — exact-head CI builds wheel and sdist, runs `twine check`, verifies exact artifact identities, clean-installs both distributions, checks schema-v2/core-lab boundaries, and uploads SHA-256-bound candidate artifacts.
 
@@ -28,10 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `reconciliation evidence != semantic disposition`
 - `lineage != semantic warrant`
 - `handoff != semantic recommendation`
+- `target snapshot bound != repository correct`
+- `repository changed != repair succeeded`
+- `target drift != automatic transition`
 - `Skill copied to discovery root != harness observed/invoked Skill`
 - `external qualification verifier PASS != semantic truth`
 
-The repository now contains the deterministic real-harness evidence verifier and its contract tests. A real-harness PASS result remains empirical evidence from a frozen external attempt; synthetic fixtures prove the verifier contract, not that such an empirical run has occurred.
+The repository contains the deterministic real-harness evidence verifier and its contract tests. A real-harness PASS result remains empirical evidence from a frozen external attempt; synthetic fixtures prove the verifier contract, not that such an empirical run has occurred.
 
 ## [0.2.2] - 2026-08-07
 
@@ -81,7 +85,7 @@ The repository now contains the deterministic real-harness evidence verifier and
 
 ## Release posture
 
-- **0.3.0** — first Campaign-based release baseline: shipped Campaign control layer, schema-v2 compatibility, product/lab packaging separation, deterministic harness setup, installed validator runtime, and exact-head release qualification.
+- **0.3.0** — first Campaign-based release baseline: shipped Campaign control layer, schema-v2 compatibility, durable target snapshot provenance, product/lab packaging separation, deterministic harness setup, installed validator runtime, and exact-head release qualification.
 - **0.2.2** — wheel Skill-tree distribution repair.
 - **0.2.1** — CLI/src-layout packaging.
 - **0.2.0** — packaging/documentation foundation.
