@@ -1,13 +1,14 @@
 # Sensemaking Skills v0.3 Productization and Release Plan
 
-**Status:** ACTIVE — P11 release qualification  
+**Status:** COMPLETE — P11 merged; post-P11 feature queue complete  
 **Effective:** 2026-09-09  
 **Release version:** `0.3.0`  
-**Current release base:** `main@36e9ea0e8e5bf0a56f5466113090978317bc0190`  
-**Current frontier:** P11 — v0.3 release baseline  
+**P11 release merge:** `main@eab146b1b97adf5a106a4dae6c5602370b430f9c`  
+**Current product-code milestone:** `main@24a88bf6311122dae1257999f5a7379cb0b095d5`  
+**Current frontier:** post-milestone qualification and operational dogfood  
 **Canonical product model:** [`sensemaking-campaign.md`](sensemaking-campaign.md)
 
-This document records the v0.3 delivery/release baseline. The durable definition of a Sensemaking Campaign remains in `sensemaking-campaign.md`.
+This document records the completed v0.3 delivery/release baseline and its historical qualification boundaries. The durable definition of a Sensemaking Campaign remains in `sensemaking-campaign.md`. Later documentation-only commits may move `main`; they require their own exact-head validation and do not retroactively change which product-code trees were qualified.
 
 ## 1. Product direction
 
@@ -76,9 +77,10 @@ The fresh agent reconstructs from durable Campaign state and canonical reference
 | P8 — Artifact/evidence lineage | MERGED | Exact identity/provenance and explicit transition-consumption reconstruction. |
 | P9 — Reconciliation lifecycle | MERGED | Mechanical report-disposition visibility without semantic auto-routing. |
 | P10 — Harness adapters | MERGED | Explicit deterministic setup roots for generic, Claude, Codex, and OpenCode environments. |
-| P11 — v0.3 release baseline | CURRENT | Current-main release hardening, self-contained installed validator runtime, release-contract reconciliation, and exact-head distribution qualification. |
+| P11 — v0.3 release baseline | MERGED | Current-main release hardening, self-contained installed validator runtime, release-contract reconciliation, and exact-head distribution qualification. |
+| Post-P11 Feature Queue | COMPLETE | CI authority reconciliation, v0.3 baseline rebuild, and durable target snapshot binding all merged. |
 
-## 5. Why the prior P11 candidate is superseded
+## 5. Why the prior P11 candidate was superseded
 
 PR #294 qualified a candidate rooted at:
 
@@ -86,18 +88,18 @@ PR #294 qualified a candidate rooted at:
 main@d833095ab9b37bd9a93d39d286b358061eb913e5
 ```
 
-After that candidate was created, current `main` gained four release-significant boundaries:
+After that candidate was created, `main` gained four release-significant boundaries:
 
 1. PR #295 — deterministic real-harness golden-path evidence verifier;
 2. PR #296 — Campaign schema-v2 evolution/compatibility;
 3. PR #297 — shipped product / retained research-lab packaging split;
 4. PR #298 — CI authority reconciliation after that split.
 
-Therefore the old candidate is not the release authority. v0.3 is rebuilt from current main rather than merging or mechanically rebasing #294.
+Therefore the old candidate was not the release authority. v0.3 was rebuilt from the newer main line rather than merging or mechanically rebasing #294.
 
 ## 6. P11 — v0.3 release baseline
 
-P11 carries forward only the still-valid release mechanics from the old candidate and requalifies them against current architecture.
+P11 carried forward only the still-valid release mechanics from the old candidate and requalified them against the current architecture of that release milestone.
 
 ### 6.1 Installed validator portability
 
@@ -168,7 +170,7 @@ The integration fixture proves the verifier contract. **real-harness PASS eviden
 
 ## 7. Exact-head release qualification
 
-A v0.3 candidate is mechanically qualified only when the same exact PR head is green in all relevant lanes.
+A v0.3 candidate is mechanically qualified only when the same exact candidate head is green in all lanes required for the claim being made. A green result from an older head is historical evidence only and cannot be borrowed by later documentation or code changes.
 
 ### Product Validation
 
@@ -241,6 +243,8 @@ Do not add by default:
 
 ## 11. v0.3 done condition
 
-The release baseline is ready to merge when the exact candidate head passes Product Validation, Lab Validation, and Release Candidate Distribution with no manually repaired Campaign or distribution state.
+The P11 release baseline was completed when its exact candidate head passed Product Validation, Lab Validation, and Release Candidate Distribution with no manually repaired Campaign or distribution state and was merged.
 
-After merge, tag/publication remains an explicit owner-gated release action.
+Post-P11 changes do not inherit that qualification automatically. Any later candidate that is used to make a current release or milestone qualification claim must independently pass the relevant exact-head validation lanes.
+
+Tag/publication remains an explicit owner-gated release action.
