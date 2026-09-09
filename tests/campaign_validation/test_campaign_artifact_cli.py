@@ -144,7 +144,8 @@ def test_campaign_ingest_distinguishes_artifact_rejection_from_explicit_runtime_
 def test_campaign_ingest_help_exposes_optional_framework_checkout_override(runner):
     result = runner.invoke(cli, ["campaign", "ingest", "--help"])
     assert result.exit_code == 0
-    assert "--framework-root" in result.output
-    assert "installed canonical validator runtime is used by default" in result.output
-    assert "--artifact" in result.output
-    assert "--target-repo" in result.output
+    normalized = " ".join(result.output.split())
+    assert "--framework-root" in normalized
+    assert "installed canonical validator runtime is used by default" in normalized
+    assert "--artifact" in normalized
+    assert "--target-repo" in normalized
