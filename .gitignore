@@ -132,3 +132,6 @@ dmypy.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Agent-local linked worktrees
+.claude/worktrees/

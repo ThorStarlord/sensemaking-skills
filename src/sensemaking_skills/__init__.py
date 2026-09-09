@@ -1,13 +1,20 @@
-"""Sensemaking Skills: agent-native repository sensemaking and Campaign control."""
-
-from importlib.metadata import PackageNotFoundError, version
+"""Sensemaking Skills package."""
 
 try:
-    __version__ = version("sensemaking-skills")
-except PackageNotFoundError:  # Source tree used without an installed distribution.
-    __version__ = "0+unknown"
+    from importlib.metadata import PackageNotFoundError, version
+except ImportError:  # pragma: no cover - Python 3.7 compatibility
+    from importlib_metadata import PackageNotFoundError, version  # type: ignore
 
-__author__ = "Dimmi Andreus"
-__email__ = "dimmi.andreus1@gmail.com"
+
+def _distribution_version() -> str:
+    """Return installed release metadata without creating a second authority."""
+    try:
+        return version("sensemaking-skills")
+    except PackageNotFoundError:  # source checkout without installed metadata
+        return "0+unknown"
+
+
+__version__ = _distribution_version()
+
 
 __all__ = ["__version__"]

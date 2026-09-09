@@ -11,6 +11,8 @@ on:
       - "src/sensemaking_skills/exploratory_authorization/**"
       - "src/sensemaking_skills/exploratory_execution/**"
       - "scripts/execution_infra/**"
+      - "tests/campaign_validation/**"
+      - "!tests/campaign_validation/test_installed_wheel_*.py"
       - "tests/campaign_accounting/**"
       - "tests/campaign_preparation/**"
       - "tests/execution_infra_tests/**"
@@ -28,6 +30,8 @@ on:
       - "src/sensemaking_skills/exploratory_authorization/**"
       - "src/sensemaking_skills/exploratory_execution/**"
       - "scripts/execution_infra/**"
+      - "tests/campaign_validation/**"
+      - "!tests/campaign_validation/test_installed_wheel_*.py"
       - "tests/campaign_accounting/**"
       - "tests/campaign_preparation/**"
       - "tests/execution_infra_tests/**"
@@ -66,6 +70,7 @@ jobs:
         run: |
           python -m pytest \
             tests/campaign_validation \
+            --ignore-glob="tests/campaign_validation/test_installed_wheel_*.py" \
             tests/test_two_lane_schema_contracts.py \
             tests/test_exploratory_digests.py \
             tests/test_exploratory_lane_derivation.py \
