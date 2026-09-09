@@ -5,101 +5,85 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-09-09
+
+### Added
+- **Sensemaking Campaign control layer** — durable typed Campaign state, append-only transitions/trace, validated artifact admission, explicit agent-authored decisions, capability inspection, handoff/resume, evidence lineage, reconciliation reconstruction, and harness setup adapters.
+- **Self-contained installed validation runtime** — wheel/sdist builds derive the canonical validator runtime from repository `scripts/`, `skills/`, and `docs/canonical-vocabulary.yaml`, so normal `campaign ingest` no longer requires a second Sensemaking source checkout.
+- **Campaign schema v2 compatibility** — current artifacts emit schema v2; historical v1 Campaign artifacts can be deterministically migrated in memory and qualified through append-only migration receipts without rewriting historical bytes.
+- **Real-harness qualification verifier** — `sensemaking_skills.external_qualification` verifies frozen real-harness evidence packages with exact candidate/target/runtime identity, SHA-256 binding, lifecycle checkpoints, fresh-context handoff/resume integrity, and explicit PASS/FAIL/INVALID dispositions.
+- **Release-candidate distribution gate** — exact-head CI builds wheel and sdist, runs `twine check`, verifies exact artifact identities, clean-installs both distributions, checks schema-v2/core-lab boundaries, and uploads SHA-256-bound candidate artifacts.
+
+### Changed
+- **Product/lab split** — the shipped wheel contains only the Campaign product/runtime surface; retained research/experiment packages and their dependencies remain source-only lab infrastructure.
+- **Release-version authority** — `[project].version` in `pyproject.toml` is the single literal release authority; runtime `sensemaking_skills.__version__` derives from installed distribution metadata.
+- **CI authority** — Product Validation owns shipped-package, installed-wheel, repository-contract, and filesystem-security claims; Lab Validation owns retained source-only research claims.
+- **Publishing workflow** — tagged builds use current GitHub Actions and run `twine check` before PyPI upload.
+- **Version** — release authority advances from `0.2.2` to `0.3.0`.
+
+### Claim ceiling
+- `validator passed != semantic truth`
+- `admitted evidence != warranted responsibility`
+- `available capability != selected or authorized capability`
+- `reconciliation evidence != semantic disposition`
+- `lineage != semantic warrant`
+- `handoff != semantic recommendation`
+- `Skill copied to discovery root != harness observed/invoked Skill`
+- `external qualification verifier PASS != semantic truth`
+
+The repository now contains the deterministic real-harness evidence verifier and its contract tests. A real-harness PASS result remains empirical evidence from a frozen external attempt; synthetic fixtures prove the verifier contract, not that such an empirical run has occurred.
+
 ## [0.2.2] - 2026-08-07
 
 ### Added
-- **Skill trees shipped in the wheel** — the built wheel now contains the
-  canonical SKILL.md trees under `sensemaking_skills/skill_trees/`, derived at
-  build time from the single authoritative repository-root `skills/` directory
-  (Task P1-F). The shipped 0.2.1 artifact contained no SKILL.md files, so the
-  documented `setup-skills` flow could not deliver the canonical
-  `repo-sensemaker` (Task P1-R: CONFIRMED).
-- **Drift detection in `setup-skills`** — an existing installed skill is
-  classified as `current` (matches packaged version, no action), `missing`
-  (installed), or `different` (reported as drift, NOT overwritten). Explicit
-  `--force` remains the deliberate-replacement mechanism.
-- **Packaged-resource resolution** — `setup-skills` now resolves its source
-  from installed package resources (`sensemaking_skills/skill_trees` via
-  `importlib.resources`) with a repository-root `skills/` fallback for
-  editable/source installs; no wheel-installed user needs a source-checkout
-  layout assumption.
-- **Installed-wheel distribution regression test** —
-  `tests/campaign_validation/test_installed_wheel_setup_skills.py` builds the
-  wheel, installs it into a fresh venv, runs the documented setup path into a
-  temporary destination, and verifies the installed `repo-sensemaker/SKILL.md`
-  and references match the release source byte-for-byte, that the CLI exposes
-  `setup-skills`, and that divergent copies are reported (not silently
-  overwritten) without `--force`.
+- **Skill trees shipped in the wheel** — the built wheel contains canonical `SKILL.md` trees under `sensemaking_skills/skill_trees/`, derived at build time from the authoritative repository-root `skills/` directory.
+- **Drift detection in `setup-skills`** — installed skills are classified as `current`, `missing`, or `different`; divergent installed bytes are not overwritten without explicit `--force`.
+- **Packaged-resource resolution** — `setup-skills` resolves source trees from installed package resources with a repository-root fallback for editable/source installs.
+- **Installed-wheel distribution regression test** — fresh-wheel tests verify setup surface, packaged Skill bytes, and fail-closed drift behavior.
 
 ### Changed
-- **Version bumped** from 0.2.1 to 0.2.2 (0.2.1 remains the published broken
-  artifact; a new version is required for the repair, per Task P1-F).
+- **Version bumped** from 0.2.1 to 0.2.2.
 
 ## [0.2.1] - 2026-05-25
 
 ### Added
 - **CLI interface** with Click
-  - `sensemaking-skills analyze` — Prepare repository for diagnosis
-  - `sensemaking-skills validate` — Validate brief and plan artifacts
-  - `sensemaking-skills test` — Run test automation
-- **Source layout** — Package moved to `src/sensemaking_skills/` following Python best practices
-- **CLI tests** — Integration tests for all CLI commands (8 tests, all passing)
-- **CLI documentation** — Usage examples in README and GETTING_STARTED
+  - `sensemaking-skills analyze`
+  - `sensemaking-skills validate`
+  - `sensemaking-skills test`
+- **Source layout** under `src/sensemaking_skills/`.
+- **CLI tests and documentation**.
 
 ### Changed
-- **Documentation** — Corrected to emphasize agent-native architecture
-  - Removed overpromising CLI syntax examples
-  - Added explicit fallbacks for skill installation
-  - Clarified Python scripts validate, don't diagnose
-- **Package structure** — Reorganized for PyPI publication readiness
-- **Version bumped** from 0.2.0 to 0.2.1
-
-### Technical
-- Added Click dependency (>=8.1.0) 
-- Updated setup.py with console_scripts entry point
-- Added [project.scripts] to pyproject.toml
-- Fixed package configuration in pyproject.toml for src layout
-- Corrected setuptools config to avoid package discovery issues
+- Documentation was corrected to emphasize agent-native architecture and honest CLI boundaries.
+- Packaging was reorganized for PyPI publication readiness.
+- Version advanced from 0.2.0 to 0.2.1.
 
 ## [0.2.0] - 2026-05-25
 
 ### Added
-- Honest documentation and packaging files
-- setup.py for development installation
-- pyproject.toml for PEP 518 compliance
-- INSTALLATION.md with real setup procedures
-- GETTING_STARTED.md with working examples
+- Honest documentation and packaging files.
+- `setup.py`, `pyproject.toml`, `INSTALLATION.md`, and `GETTING_STARTED.md`.
 
 ### Changed
-- README.md — Replaced aspirational content with honest state
-- Removed promises about non-existent features
-- Corrected documentation to match agent-native reality
+- Documentation was aligned with the actually implemented agent-native system.
 
 ## [0.1.0] - 2026-05-20
 
 ### Initial Release
-- Agent-native diagnostic framework
-- Scenario 5 budget exhaustion testing (proven)
-- Week 1 shadow mode deployment (real execution with 10 actual repositories)
-- Repository sensemaking brief artifact (14 sections)
-- Workflow orchestration plan artifact (10 sections)
-- Artifact validation with error recovery
-- Bounded retry logic (3 attempts max)
-- Graceful escalation on error budget exhaustion
+- Agent-native diagnostic framework.
+- Scenario 5 budget-exhaustion testing.
+- Week 1 shadow-mode execution across 10 repositories.
+- Repository sensemaking brief and workflow orchestration artifacts.
+- Validation, bounded retry, and escalation behavior.
 
 ---
 
-## Notes on Versioning
+## Release posture
 
-- **0.2.1** — CLI interface added, local testing complete, PyPI-ready (not yet published)
-- **0.2.0** — Documentation and packaging foundation
-- **0.1.0** — Initial agent-native framework (proven with Scenario 5)
-- **Future 0.3.0** — Full CLI with agent integration (after real-world CLI usage testing)
-- **Future 1.0.0** — Stable release with proven CLI and PyPI availability
-
-## Deployment Timeline
-
-**Phase 2.2** (Current): CLI development and local testing ✅
-**Phase 2.3**: PyPI publication readiness (distribution built, awaiting real-world CLI usage)
-**Phase 3**: Real-world CLI testing with users
-**Phase 4**: Production PyPI publication and full GA
+- **0.3.0** — first Campaign-based release baseline: shipped Campaign control layer, schema-v2 compatibility, product/lab packaging separation, deterministic harness setup, installed validator runtime, and exact-head release qualification.
+- **0.2.2** — wheel Skill-tree distribution repair.
+- **0.2.1** — CLI/src-layout packaging.
+- **0.2.0** — packaging/documentation foundation.
+- **0.1.0** — initial agent-native framework.
+- **Future 1.0.0** — stable release after broader runtime dogfood and compatibility evidence warrant stronger stability claims.
