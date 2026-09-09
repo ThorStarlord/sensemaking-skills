@@ -9,6 +9,10 @@ P8 adds a mechanical precommit lineage step. Before the existing P2 lifecycle
 primitive commits an authored decision, the exact supplied evidence refs are
 bound to immutable identities. The lineage intent does not authorize or justify
 the decision; it only preserves what bytes the agent explicitly cited.
+
+Target-bound Campaigns additionally capture repository snapshot provenance at
+the lifecycle commit. The agent still authors the decision; deterministic target
+machinery owns only the observed repository identity/state binding.
 """
 
 from __future__ import annotations
@@ -24,7 +28,8 @@ from sensemaking_skills.campaign_semantics import (
 
 from .errors import CampaignTransactionError
 from .lineage import CampaignLineageService
-from .service import CampaignService, CampaignSnapshot
+from .service import CampaignSnapshot
+from .target_snapshot import CampaignService
 
 
 @dataclass(frozen=True)
@@ -116,7 +121,11 @@ class CampaignDecisionService:
                 "advance transition: " + ", ".join(unbound_trigger_evidence)
             )
 
-        snapshot = self.lifecycle.resume()
+        # Work may legitimately have changed a bound target since the previous
+        # Campaign transition. Reconstruct durable history without treating that
+        # live drift as corruption; the lifecycle commit below will capture the
+        # exact destination snapshot mechanically.
+        snapshot = self.lifecycle.resume_for_transition()
         available = set(snapshot.evidence_refs)
         missing_trigger_evidence = sorted(
             set(responsibility.trigger_evidence) - available

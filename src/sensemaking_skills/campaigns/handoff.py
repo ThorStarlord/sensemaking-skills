@@ -8,6 +8,11 @@ comment does not create a second semantic schema: existing strict
 binding and recomputes it from durable state, trace, transitions, evidence,
 policy, and the handoff contract itself.
 
+For target-bound Campaigns, the embedded CampaignState carries the exact current
+target snapshot. Fresh-context resume also runs target-aware Campaign
+reconstruction, so stale/unrecorded repository drift fails closed before the
+handoff is accepted.
+
 The binding is an integrity checksum, not a cryptographic signature or authority
 grant. It detects accidental/stale/tampered durable content under the same trust
 model as the repository's other digest checks.
@@ -34,7 +39,8 @@ from .errors import (
     CampaignIntegrityError,
     CampaignTransactionError,
 )
-from .service import CampaignService, CampaignSnapshot
+from .service import CampaignSnapshot
+from .target_snapshot import CampaignService
 
 
 HANDOFF_REF = "campaign-handoff.yaml"

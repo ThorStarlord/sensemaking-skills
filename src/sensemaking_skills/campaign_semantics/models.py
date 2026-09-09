@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass, field, fields, is_dataclass
 from enum import Enum
 from typing import Any, Mapping, Optional
@@ -125,6 +127,28 @@ class ClaimEvidence:
 
 
 @dataclass(frozen=True)
+class TargetSnapshot:
+    """Mechanically observed identity/state of one Git target repository.
+
+    The record is provenance only. It does not say whether the repository state
+    is correct, whether work is warranted, or which capability should run.
+    ``repository_root`` is a durable locator hint; ``repository_id`` is derived
+    from a sanitized origin when available, otherwise from the canonical local
+    root. The worktree digest covers index/status plus tracked and untracked
+    non-ignored working-tree bytes.
+    """
+
+    repository_root: str
+    repository_id: str
+    identity_source: str
+    head_sha: str
+    tree_sha: str
+    worktree_sha256: str
+    dirty: bool
+    vcs: str = "git"
+
+
+@dataclass(frozen=True)
 class CampaignState:
     campaign_id: str
     mission: str
@@ -139,6 +163,7 @@ class CampaignState:
     authority: Optional[Authority] = None
     terminal_state: Optional[TerminalState] = None
     additional_active_responsibilities: tuple[Responsibility, ...] = ()
+    target_snapshot: Optional[TargetSnapshot] = None
     schema_version: str = CURRENT_SCHEMA_VERSION
     extensions: Mapping[str, Any] = field(default_factory=dict)
 
@@ -153,6 +178,8 @@ class TransitionRecord:
     next_responsibility: Optional[str] = None
     terminal_state: Optional[TerminalState] = None
     authority: Optional[Authority] = None
+    from_target_snapshot_sha256: Optional[str] = None
+    to_target_snapshot_sha256: Optional[str] = None
     schema_version: str = CURRENT_SCHEMA_VERSION
 
 
@@ -201,9 +228,26 @@ class ReconstructionResult:
     diagnostics: tuple[ValidationDiagnostic, ...] = ()
 
 
+_TARGET_OPTIONAL_FIELDS = {
+    "target_snapshot",
+    "from_target_snapshot_sha256",
+    "to_target_snapshot_sha256",
+}
+
+
 def _walk(value: Any) -> Any:
     if isinstance(value, Enum): return value.value
-    if is_dataclass(value): return {f.name: _walk(getattr(value, f.name)) for f in fields(value)}
+    if is_dataclass(value):
+        result: dict[str, Any] = {}
+        for item in fields(value):
+            resolved = _walk(getattr(value, item.name))
+            # Target binding was added additively to Campaign schema v2. Omit
+            # absent binding fields so pre-binding v2 bytes keep the exact
+            # canonical shape/digests they had before this feature.
+            if item.name in _TARGET_OPTIONAL_FIELDS and resolved is None:
+                continue
+            result[item.name] = resolved
+        return result
     if isinstance(value, Mapping): return {str(k): _walk(v) for k, v in value.items()}
     if isinstance(value, (tuple, list)): return [_walk(v) for v in value]
     return value
@@ -212,6 +256,17 @@ def _walk(value: Any) -> Any:
 def to_dict(value: Any) -> dict[str, Any]:
     """Serialize an artifact without losing enum values or nested records."""
     return _walk(value)
+
+
+def target_snapshot_sha256(snapshot: TargetSnapshot) -> str:
+    """Return the canonical SHA-256 identity of one target snapshot record."""
+    encoded = json.dumps(
+        to_dict(snapshot),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def validate_reconstruction(

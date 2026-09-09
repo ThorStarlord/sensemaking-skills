@@ -8,8 +8,8 @@ from .models import (
     Authority, CampaignConstitution, CampaignHandoff, CampaignPolicy, CampaignState, CampaignTrace,
     Capability, CapabilityAvailability,
     ClaimEvidence, Dependency, DependencyType, DeferredResponsibility,
-    ExternalBoundary, Responsibility, TerminalState, TransitionRecord,
-    Uncertainty, to_dict, validate_campaign_state, validate_reconstruction,
+    ExternalBoundary, Responsibility, TargetSnapshot, TerminalState, TransitionRecord,
+    Uncertainty, target_snapshot_sha256, to_dict, validate_campaign_state, validate_reconstruction,
 )
 from .registry import AvailabilityStatus, CapabilityRegistry, RegisteredCapability, RegistryDiagnostic
 from .io import (
@@ -32,9 +32,9 @@ __all__ = [
     "Authority", "CampaignConstitution", "CampaignHandoff", "CampaignPolicy", "CampaignState",
     "Capability", "CapabilityAvailability",
     "CampaignTrace", "ClaimEvidence", "Dependency", "DependencyType",
-    "DeferredResponsibility", "ExternalBoundary", "Responsibility",
+    "DeferredResponsibility", "ExternalBoundary", "Responsibility", "TargetSnapshot",
     "TerminalState", "TransitionRecord", "Uncertainty",
-    "to_dict", "validate_campaign_state", "validate_reconstruction",
+    "target_snapshot_sha256", "to_dict", "validate_campaign_state", "validate_reconstruction",
     "AvailabilityStatus", "CapabilityRegistry", "RegisteredCapability", "RegistryDiagnostic",
     "ContractError", "canonicalize", "load_campaign_state", "dump_campaign_state",
     "load_responsibility", "dump_responsibility", "load_campaign_handoff", "dump_campaign_handoff",
