@@ -1,0 +1,102 @@
+name: External Golden Path Qualification
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/sensemaking_skills/external_qualification.py"
+      - "tests/integration/test_external_golden_path_qualification.py"
+      - "tests/fixtures/external_golden_path/**"
+      - "docs/external-golden-path-verifier.md"
+      - ".github/workflows/external-golden-path.yml"
+  workflow_dispatch:
+    inputs:
+      attempt_dir:
+        description: "Repository-relative frozen external qualification attempt directory"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  qualification-contract:
+    name: Qualification contract tests
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Assert exact PR head checkout
+        run: |
+          resolved="$(git rev-parse HEAD)"
+          expected="${{ github.event.pull_request.head.sha }}"
+          echo "Resolved checkout SHA: $resolved"
+          echo "Expected exact head SHA: $expected"
+          test "$resolved" = "$expected"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install project and test dependency
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest
+
+      - name: Compile Python package
+        run: python -m compileall -q src/sensemaking_skills
+
+      - name: Run external qualification contract tests
+        run: python -m pytest tests/integration/test_external_golden_path_qualification.py -q
+
+  qualify-frozen-attempt:
+    name: Qualify frozen external attempt
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      ATTEMPT_DIR: ${{ inputs.attempt_dir }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Assert exact selected ref checkout
+        run: |
+          resolved="$(git rev-parse HEAD)"
+          expected="${{ github.sha }}"
+          echo "Resolved checkout SHA: $resolved"
+          echo "Expected exact selected SHA: $expected"
+          test "$resolved" = "$expected"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install exact checked-out package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .
+
+      - name: Verify frozen attempt package
+        id: qualify
+        shell: bash
+        run: |
+          set +e
+          python -m sensemaking_skills.external_qualification "$ATTEMPT_DIR" --json > external-qualification-result.json
+          status=$?
+          set -e
+          cat external-qualification-result.json
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Upload qualification result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-golden-path-qualification-${{ github.sha }}
+          path: external-qualification-result.json
+          if-no-files-found: error

@@ -1,0 +1,13 @@
+repository_diagnosis PASS
+artifact_admission PASS
+responsibility_authority_decision PASS
+capability_inspection PASS
+bounded_work PASS
+work_evidence PASS
+reconciliation PASS
+reconciliation_disposition PASS
+durable_transition PASS
+lineage_inspection PASS
+handoff PASS
+fresh_context_resume PASS
+terminal_or_continue PASS

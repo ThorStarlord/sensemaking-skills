@@ -1,0 +1,7 @@
+evidence_kind: native_skill_invocation
+harness: claude
+skill: repo-sensemaker
+session_id: session-initial-001
+invocation_id: inv-001
+observed_at: 2026-09-09T03:00:00Z
+source: claude_code_native_log

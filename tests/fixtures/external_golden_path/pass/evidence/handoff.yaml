@@ -1,0 +1,4 @@
+evidence_kind: campaign_handoff
+campaign_id: CMP-DOGFOOD-001
+source_session_id: session-initial-001
+handoff_id: handoff-001
