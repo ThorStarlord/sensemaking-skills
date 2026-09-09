@@ -1,346 +1,294 @@
-# Getting Started with Sensemaking Skills
+# Getting Started with Sensemaking Skills v0.3.0
 
-This guide shows how to use the system. There are two paths: agent-native (recommended for diagnostics) and CLI utilities.
+Sensemaking Skills has two cooperating surfaces:
+
+1. **agent-native Skills** for semantic repository diagnosis and bounded engineering work;
+2. **local Campaign/validation CLI** for durable state, evidence admission, provenance, reconstruction, and explicit decision contracts.
+
+The active coding agent owns semantic judgment. The CLI does not decide what responsibility, capability, or conclusion is correct.
 
 ---
 
 ## Prerequisites
 
 - Python 3.11+
-- No API keys or external credentials required for the CLI itself
+- A local repository/workspace
+- A compatible coding-agent harness if you want agent-native Skill execution
 
-**sensemaking-skills is a local-first Python utility.** The package itself is self-contained, reads files from your repository, validates artifacts, runs local scripts, and writes Markdown or JSON outputs. It does not make external API calls and does not require credentials.
-
-For full agent-driven diagnostics, use the included skill files with an agent-capable environment such as Claude Code.
-
----
-
-## Setup: Make Skills Available to Agents
-
-After installing the Python package, make the skills discoverable to your agents:
-
-```bash
-pip install sensemaking-skills
-sensemaking-skills setup-skills
-```
-
-This installs skill files to `~/.agents/skills` (or `C:\Users\*\.agents\skills` on Windows).
-
-Then agents can invoke:
-```
-/skill using-sensemaking
-/skill repo-sensemaker
-/skill workflow-planner
-```
+The core CLI is local-first. Normal Campaign use does not require an API key or a Sensemaking Skills source checkout after installation.
 
 ---
 
-## Quick Start (5 minutes)
+## Install
 
-### Via Claude Code or Agent (Recommended)
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/ThorStarlord/sensemaking-skills.git
-   cd sensemaking-skills
-   ```
-
-2. **Open the repository in Claude Code or your agent environment.**
-
-3. **Ask the agent to read the bootstrap skill:**
-   ```
-   Read the file `skills/using-sensemaking/SKILL.md` and follow its instructions.
-   ```
-
-4. **Ask the agent to run the diagnostic:**
-   ```
-   Use `skills/repo-sensemaker/SKILL.md` to analyze my repository at `/path/to/my/repo`.
-   Produce a `repository_sensemaking_brief` artifact and save it to `artifacts/`.
-   Then validate it by running `python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md`.
-   ```
-
-5. **Ask the agent to create the workflow plan:**
-   ```
-   Use `skills/workflow-planner/SKILL.md` to convert the brief into a `workflow_orchestration_plan`.
-   Validate it by running `python scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md`.
-   ```
-
-#### Optional: Install Skills into Claude Code
-
-If your Claude Code environment supports local skill installation:
+After v0.3.0 is published:
 
 ```bash
-mkdir -p ~/.claude/skills
-cp -R skills/* ~/.claude/skills/
+python -m pip install sensemaking-skills==0.3.0
+sensemaking-skills --version
 ```
 
-Restart Claude Code. If skill invocation works in your environment, you may be able to use:
+Expected:
 
-```
-/skill repo-sensemaker
-/skill workflow-planner
+```text
+0.3.0
 ```
 
-**If those commands don't work**, use the method above: ask the agent to read the SKILL.md files directly. Both methods work equally well.
+For source development:
+
+```bash
+git clone https://github.com/ThorStarlord/sensemaking-skills.git
+cd sensemaking-skills
+python -m venv .venv
+# activate the environment
+python -m pip install -e .
+```
 
 ---
 
-### Via CLI (New in 0.2.1)
+## Make Skills available to an agent
 
-If you've installed sensemaking-skills via `pip install -e .`:
+Sensemaking Skills does not auto-detect the active harness. Choose the target and scope explicitly.
+
+### Project scope
 
 ```bash
-# Prepare a repository for diagnosis
-sensemaking-skills analyze --repo /path/to/your/repo
-
-# Then open the repository in Claude Code and follow the agent-native path above
-
-# After the agent creates artifacts, validate them:
-sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
-
-# Run the test suite:
-sensemaking-skills test
+sensemaking-skills setup-skills --target generic --scope project --project-root /path/to/repo
+sensemaking-skills setup-skills --target claude --scope project --project-root /path/to/repo
+sensemaking-skills setup-skills --target codex --scope project --project-root /path/to/repo
+sensemaking-skills setup-skills --target opencode --scope project --project-root /path/to/repo
 ```
 
-**Note:** The CLI provides utilities for setup and validation. The actual diagnosis requires Claude Code and the agent-native skills.
+### User scope
 
-### Validate Artifacts with Python Scripts
+```bash
+sensemaking-skills setup-skills --target generic --scope user
+sensemaking-skills setup-skills --target claude --scope user
+sensemaking-skills setup-skills --target codex --scope user
+sensemaking-skills setup-skills --target opencode --scope user
+```
 
-You can also validate directly without the CLI:
+Installation proves only that the exact packaged Skill tree was placed in the declared discovery location:
 
-**Validate a brief:**
+```text
+Skill copied
+!= harness observed Skill
+!= Skill selected
+!= execution authorized
+```
+
+See `docs/harness-adapters.md` for exact paths and compatibility targets.
+
+---
+
+## Campaign quick start
+
+### 1. Initialize a durable Campaign
+
+Keep the Campaign workspace separate from the target repository when practical:
+
+```bash
+sensemaking-skills campaign init \
+  --workspace /path/to/CMP-0001 \
+  --campaign-id CMP-0001 \
+  --mission "Diagnose and resolve a bounded engineering problem"
+```
+
+Inspect it:
+
+```bash
+sensemaking-skills campaign status --workspace /path/to/CMP-0001 --json
+sensemaking-skills campaign validate --workspace /path/to/CMP-0001 --json
+sensemaking-skills campaign history --workspace /path/to/CMP-0001 --json
+```
+
+### 2. Diagnose the repository through an agent-native Skill
+
+Ask the active coding agent to use the packaged `repo-sensemaker` Skill against the target repository and produce a `repository_sensemaking_brief`.
+
+The legacy/simple Python helper is not a substitute for the agent-native semantic diagnosis path.
+
+### 3. Admit the validated brief as Campaign evidence
+
+```bash
+sensemaking-skills campaign ingest \
+  --workspace /path/to/CMP-0001 \
+  --artifact /path/to/repository_sensemaking_brief.md \
+  --target-repo /path/to/target \
+  --json
+```
+
+In v0.3.0, normal installed-distribution ingestion uses the packaged canonical validator runtime. No `--framework-root` is required.
+
+The trust boundary is:
+
+```text
+artifact file
+!= validated artifact
+!= admitted Campaign evidence
+```
+
+### 4. Record the agent-authored responsibility/authority decision
+
+Use the appropriate explicit P5 surface:
+
+```text
+campaign advance
+campaign defer
+campaign close
+```
+
+The agent supplies the semantic decision and cited evidence. Deterministic machinery validates and persists it.
+
+See `docs/campaign-decisions.md` for the exact options/contract.
+
+### 5. Inspect capabilities
+
+After the agent classifies the active responsibility:
+
+```bash
+sensemaking-skills campaign capabilities \
+  --workspace /path/to/CMP-0001 \
+  --responsibility-type architecture_review \
+  --json
+```
+
+The result is deterministic and unranked. The registry does not select a capability for the agent.
+
+### 6. Perform bounded work
+
+The active agent may use a registered Skill, ordinary coding, or honestly stop if authority/evidence is insufficient.
+
+Capture durable work evidence through the normal repository/test/artifact surfaces. Do not create a special Campaign-only execution backdoor.
+
+### 7. Reconcile and explicitly disposition the result
+
+Inspect admitted reconciliation evidence:
+
+```bash
+sensemaking-skills campaign reconciliation --workspace /path/to/CMP-0001 --json
+```
+
+Mechanical states include:
+
+```text
+disposition_required
+disposition_recorded
+legacy_unbound
+```
+
+A report does not automatically decide the Campaign transition. The active agent explicitly `advance`s, `defer`s, or `close`s and cites the relevant evidence when warranted.
+
+### 8. Inspect exact evidence lineage
+
+```bash
+sensemaking-skills campaign lineage --workspace /path/to/CMP-0001 --json
+```
+
+Lineage reconstructs exact bytes/provenance/consumption links. It does not claim semantic sufficiency.
+
+### 9. Handoff and resume
+
+```bash
+sensemaking-skills campaign handoff --workspace /path/to/CMP-0001 --json
+sensemaking-skills campaign resume --workspace /path/to/CMP-0001 --json
+```
+
+Resume reconstructs durable Campaign state in a fresh process. It does not invent the next semantic action.
+
+---
+
+## Standalone validation utilities
+
+Repository/source-development users may still call canonical scripts directly:
+
 ```bash
 python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md
-```
-
-**Validate a plan:**
-```bash
 python scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md
 ```
 
-**Run tests:**
-```bash
-python scripts/shadow-mode-runner.py
-```
+Installed Campaign users should prefer `campaign ingest`, which uses the self-contained packaged validator runtime and records admission provenance.
 
 ---
 
-## Real-World Workflow
+## Core artifacts
 
-### Scenario: Diagnose a Complex Monorepo
+### `repository_sensemaking_brief`
 
-**Your problem:** You inherited a complex monorepo with unclear architecture. You need to understand the core issue.
+An evidence-grounded repository diagnosis produced by `repo-sensemaker`.
 
-**Step 1: Prepare the repository**
-```bash
-sensemaking-skills analyze --repo /path/to/your/monorepo
-```
+### `workflow_orchestration_plan`
 
-Output: Instructions for the agent-led diagnosis workflow.
+A bounded workflow plan produced when planning is warranted. A plan is not automatic execution authority.
 
-**Step 2: Open in Claude Code and ask the agent to diagnose**
+### Reconciliation / repair-verification reports
+
+Evidence about bounded work outcomes. Their presence or validator success does not automatically determine the Campaign decision.
+
+---
+
+## Core trust boundaries
+
 ```text
-Read `skills/using-sensemaking/SKILL.md`.
-Then use `skills/repo-sensemaker/SKILL.md` to analyze /path/to/your/monorepo.
-Produce a `repository_sensemaking_brief` and save to `artifacts/`.
-```
-
-**Agent produces a brief that says:**
-```
-Fog Type: ARCHITECTURE_FOG
-Weakest Boundary: Tight coupling between services
-Recommended Workflow: architecture-implementation-workflow
-Evidence:
-  - File: src/services/auth/user.py (imports 8 other services)
-  - File: src/services/api/routes.py (orchestrates 5 services)
-  - Pattern: Circular dependencies detected
-```
-
-**Step 3: Validate the brief**
-```bash
-sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
-```
-
-**Step 4: Ask the agent to create an orchestration plan**
-```text
-Use `skills/workflow-planner/SKILL.md` to convert the brief into a `workflow_orchestration_plan`.
-```
-
-**Agent produces a plan that specifies:**
-```
-Selected Workflow: docs-contract-reconciliation
-Workflow Steps:
-  1. repo-sensemaker → Diagnose drift
-  2. sensemaking-docs-reconciler → Reconcile docs/registries/contracts
-  3. repair-verifier → Verify closure of the original findings
-  4. handoff → Durable continuation
-```
-
-**Step 5: Validate the plan**
-```bash
-sensemaking-skills validate --artifact artifacts/workflow_orchestration_plan.md
-```
-
-**Step 6: Follow the workflow**
-Ask the agent to execute each step in the orchestration plan.
-
----
-
-## Understanding the Artifacts
-
-### Repository Sensemaking Brief
-
-14-section diagnostic artifact that includes:
-1. Repository name and summary
-2. Fog type classification (ui_fog, product_fog, docs_fog, architecture_fog)
-3. Evidence citations (specific files and line numbers)
-4. Weakest boundary (most critical issue)
-5. Candidate workflows with justification
-6. Risk assessment
-7. Recommended next steps
-
-**Example brief location:**
-```
-artifacts/repository_sensemaking_brief.md
-```
-
-### Workflow Orchestration Plan
-
-10-section plan that specifies:
-1. Which workflow to execute
-2. Skill sequence and order
-3. Input/output artifacts for each step
-4. Approval gates (pause points)
-5. Success criteria
-6. Estimated time
-7. Rollback procedure
-8. Machine-readable YAML block
-
-**Example plan location:**
-```
-artifacts/workflow_orchestration_plan.md
-```
-
----
-
-## Validation & Error Recovery
-
-### Validating Artifacts
-
-All artifacts are validated against contracts to ensure quality:
-
-```bash
-# Validate a brief
-python scripts/validate-brief.py artifacts/repository_sensemaking_brief.md
-
-# Validate a plan
-python scripts/validate-plan.py artifacts/workflow_orchestration_plan.md
-
-# Both together
-python scripts/validate-and-report.py artifacts/
-```
-
-### Error Messages
-
-If validation fails, you get:
-```json
-{
-  "valid": false,
-  "artifact_id": "repository_sensemaking_brief",
-  "errors": [
-    {
-      "error_id": "repository_sensemaking_brief.fog_type.missing_field",
-      "error_type": "missing_field",
-      "field": "fog_type",
-      "message": "Required field 'fog_type' is missing",
-      "suggested_fixes": [
-        "Add fog_type with one of: ui_fog, product_fog, docs_fog, architecture_fog"
-      ]
-    }
-  ]
-}
-```
-
-### Bounded Retry Logic
-
-If an artifact fails validation:
-1. System suggests a fix
-2. You implement the fix
-3. System revalidates (up to 3 attempts)
-4. If still failing after 3 attempts, gracefully escalates with clear error message
-
-This prevents infinite loops while giving the system a chance to self-correct.
-
----
-
-## Common Workflows
-
-### Workflow 1: Quick Diagnosis
-```
-repo-sensemaker → (Read brief) → workflow-planner → (Review plan)
-Time: ~5 minutes
-Output: Diagnosis and recommended next steps
-```
-
-### Workflow 2: Full Analysis
-```
-problem-framer → unknowns-mapper → repo-sensemaker → workflow-planner
-Time: ~20 minutes
-Output: Problem frame, unknowns map, diagnosis, plan
-```
-
-### Workflow 3: Implementation
-```
-docs-contract-reconciliation (bounded subgraph) → validated artifacts
-Time: Days/weeks depending on scope
-Output: Reconciled docs/contracts and a repair-verification report
+validator passed != conclusion is true
+admitted evidence != warranted responsibility
+available capability != authorized capability
+reconciliation evidence != Campaign decision
+lineage != semantic warrant
+handoff != semantic recommendation
+Campaign Controller != semantic router
 ```
 
 ---
 
 ## Troubleshooting
 
-### "Skill not found"
-**Solution:** Make sure you copied skills to `~/.claude/skills/`
+### `Skill not found`
+
+First inspect whether you installed into the intended explicit adapter/scope:
+
 ```bash
-cp -r skills/* ~/.claude/skills/
+sensemaking-skills setup-skills --target <generic|claude|codex|opencode> --scope <user|project> ...
 ```
 
-### "Validation failed with missing fields"
-**Solution:** Check the error message for the exact field. The artifact contract defines what's required.
+A successful copy does not prove that the selected harness has loaded or exposed its native Skill mechanism. Consult that harness's runtime/discovery behavior if the files are present but not observed.
 
-### "No repositories found"
-**Solution:** Make sure `--repo` path exists and is readable:
-```bash
-ls -la /path/to/your/repo
-```
+### `campaign ingest` reports `ARTIFACT_VALIDATOR_ERROR`
 
-### "Timeout (script took >30s)"
-**Solution:** This is expected for large repos. The system respects a 30-second timeout to prevent hanging. Smaller repos run faster (~0.1-0.2s).
+This is a validator/runtime infrastructure error, not a semantic rejection of the artifact. Normal installed v0.3.0 use should not need `--framework-root`.
+
+### Artifact validation is rejected
+
+Treat the canonical validator errors as contract feedback. Do not manually edit Campaign receipts/artifacts to bypass admission.
+
+### Campaign validation/reconstruction fails
+
+Do not repair Campaign YAML/receipts by hand. Preserve the failing state and diagnose the product/integrity failure through the documented Campaign contracts.
 
 ---
 
-## Next Steps
+## What v0.3.0 does and does not claim
 
-1. **Try it on your repo:**
-   ```
-   /skill repo-sensemaker --repo /path/to/your/project
-   ```
+v0.3.0 mechanically qualifies the installed Campaign control layer and deterministic Skill installation adapters.
 
-2. **Read the diagnostic brief** — this is the main output
+It does **not** claim universal real-harness Skill discovery, universal external-repository success, or guaranteed fresh-agent semantic quality.
 
-3. **Follow the recommended workflow** from the orchestration plan
-
-4. **For implementation:** follow the registered bounded subgraph recommended by
-   the plan (e.g. `docs-contract-reconciliation` for docs/registry drift); the
-   agent performs the selected responsibility directly (ADR 0013).
+The stronger external golden path remains available as non-blocking post-release dogfood in `docs/v0.3-external-qualification-protocol.md`.
 
 ---
 
-## More Information
+## More information
 
-- **[README.md](README.md)** — Project overview
-- **[INSTALLATION.md](INSTALLATION.md)** — Detailed setup
-- **[CONTEXT.md](CONTEXT.md)** — Architecture and philosophy
-- **[API.md](API.md)** — Python API for direct integration
-
+- `README.md` — product overview and quick start
+- `INSTALLATION.md` — installation details
+- `STATUS.md` — exact current release/qualification state
+- `CONTEXT.md` — governing architecture and terminology
+- `docs/sensemaking-campaign.md` — canonical Campaign product model
+- `docs/productization-v0.3.md` — release plan and claim ceiling
+- `docs/artifact-ingestion.md` — validation/admission boundary
+- `docs/campaign-decisions.md` — authored decision contracts
+- `docs/capability-registry.md` — capability inspection
+- `docs/campaign-lineage.md` — lineage reconstruction
+- `docs/campaign-reconciliation.md` — reconciliation lifecycle
+- `docs/campaign-handoff-resume.md` — handoff/resume
+- `docs/harness-adapters.md` — coding-agent installation targets
