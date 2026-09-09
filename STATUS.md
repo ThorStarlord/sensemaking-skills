@@ -101,7 +101,9 @@ Append-only historical transition bytes are not rewritten merely to modernize re
 
 See `docs/campaign-schema-evolution.md`.
 
-## Shipped product / retained lab boundary
+## Shipped product / retained lab boundary — product/lab split
+
+The v0.3 product/lab split keeps the shipped Campaign runtime distinct from retained source-only research machinery.
 
 The core wheel contains the product/runtime surface and only its runtime dependencies (`click`, `PyYAML`). These research/lab packages remain source-only and are intentionally excluded from wheel discovery:
 
@@ -178,7 +180,7 @@ before qualification to enforce the product/lab/version/worktree boundary.
 
 ## Real-harness qualification verifier
 
-`sensemaking_skills.external_qualification` verifies frozen evidence from a real coding-agent harness attempt. It checks:
+The release includes the real-harness qualification verifier implemented by `sensemaking_skills.external_qualification`. It verifies frozen evidence from a real coding-agent harness attempt. It checks:
 
 - exact candidate, target, and runtime identities;
 - SHA-256-bound evidence files;
