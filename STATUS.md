@@ -4,7 +4,7 @@
 **Last updated:** 2026-09-08  
 **Current phase:** Productization / implementation  
 **Primary program:** Sensemaking Skills v0.3 campaign-based productization  
-**Current frontier:** P9 — reconciliation lifecycle
+**Current frontier:** P10 — harness adapters
 
 This is the repository's living status summary. It points at authoritative design sources and current implementation direction; it is not itself an ADR or an execution authorization.
 
@@ -54,26 +54,26 @@ The productization pivot began at:
 main@5c2c807542f7e150d4a031430f59e297ed816b24
 ```
 
-The current integrated implementation frontier after P8 is:
+The current integrated implementation frontier after P9 is:
 
 ```text
-main@e1b900c32d932d5e4b5c0366c0972143c36b1982
+main@0f306cb9f05a70f2b27a64c05f65749534f9f0e1
 ```
 
 That merge has parents:
 
 ```text
 previous main
-842bf7d14cff71ec96efa270fa54adbe4243f586
+54691b934eb67d5fbedec1706ff63031210044a8
 
-exact-qualified P8 head
-5baf360027c7c6e46d95f17fa03608e9303dd55d
+exact-qualified P9 head
+7364f1140587e71c391f59c0362227aa35a1500c
 ```
 
-and its tree is exactly the qualified P8 tree:
+and its tree is exactly the qualified P9 tree:
 
 ```text
-77b2b076d4082b7aa66fdd98b88c92e12d3091a8
+02401cef805a541affb6f29bc66da886ffd7e9ab
 ```
 
 ## What is implemented
@@ -220,6 +220,28 @@ Key properties:
 
 See [`docs/campaign-lineage.md`](docs/campaign-lineage.md).
 
+### P9 — Reconciliation lifecycle — MERGED
+
+Implemented:
+
+```text
+sensemaking-skills campaign reconciliation
+```
+
+P9 reconstructs admitted reconciliation/repair-verification evidence through P4 provenance and correlates it with exact P8 transition-consumption edges.
+
+Mechanical states are:
+
+```text
+disposition_required
+disposition_recorded
+legacy_unbound
+```
+
+`disposition_recorded` means an explicit Campaign transition consumed the exact report. It does not mean the report was correct, reconciliation is semantically complete, or the transition was the right decision. Verdict-like report content never automatically mutates Campaign state.
+
+See [`docs/campaign-reconciliation.md`](docs/campaign-reconciliation.md).
+
 ## Current productization objective
 
 The v0.3 north-star outcome is:
@@ -246,104 +268,85 @@ user goal
 → continue / stop
 ```
 
-## Current implementation frontier — P9
+## Current implementation frontier — P10
 
-The next bounded slice is **P9 — Reconciliation lifecycle**.
+The next bounded slice is **P10 — Harness adapters**.
 
-P9 should connect the repository's existing `output-reconciler` and `repair-verifier` artifact semantics to the durable Campaign lifecycle without allowing either artifact or its validator to decide the Campaign transition automatically.
+P10 improves Skill setup for Claude Code, Codex, OpenCode, and portable/generic Agent Skills locations without allowing agent-specific filesystem rules to become Campaign semantics.
 
-Existing research/product concepts already distinguish:
+The intended control shape is:
 
 ```text
-mechanical validation
-!= reconciliation
-!= repair verification
-!= semantic continuation decision
+caller explicitly selects harness + scope
+        ↓
+deterministic adapter resolves declared discovery root
+        ↓
+exact packaged Skill tree copied
+        ↓
+existing drift check
+        ↓
+explicit --force required for replacement
 ```
 
-The intended P9 control shape is:
+The first-class adapter roots are:
 
 ```text
-bounded work / work claim
-        ↓
-agent selects reconciliation responsibility
-        ↓
-reconciliation_report is produced and admitted through P4
-        ↓
-optional authorized repair
-        ↓
-repair_verification_report is produced and admitted through P4
-        ↓
-AGENT interprets the admitted reconciliation evidence
-        ↓
-explicit Campaign advance / defer / close decision
-        ↓
-P8 records exact evidence consumption lineage
+generic user       ~/.agents/skills
+generic project    <project>/.agents/skills
+
+Claude user        ~/.claude/skills
+Claude project     <project>/.claude/skills
+
+Codex user         $CODEX_HOME/skills (default ~/.codex/skills)
+Codex project      <project>/.agents/skills
+
+OpenCode user      ~/.config/opencode/skills
+OpenCode project   <project>/.opencode/skills
 ```
 
-P9 should make the intermediate reconciliation state mechanically inspectable and require an explicit agent-authored disposition. It must not map artifact fields such as `verified`, `disputed`, `closed`, or `remaining` directly to a Campaign transition.
+Compatibility remains for `agents`, `claude-superpowers`, `all`, and `custom`. Project scope requires an explicit existing `--project-root`; user-scope/project-scope options must not be silently mixed.
 
-A useful initial surface should remain narrow and deterministic, for example:
-
-```text
-sensemaking-skills campaign reconciliation --workspace <CMP> [--json]
-```
-
-or an equivalent typed service that reports mechanically present reconciliation evidence and whether an explicit disposition is still required.
-
-P9 should reuse:
-
-- P4 admitted artifact receipts and exact artifact identity;
-- P5 authored decisions;
-- P6 capability metadata for `output_reconciliation` / `repair_verification` responsibilities;
-- P8 evidence-consumption lineage;
-- existing `reconciliation_report` and `repair_verification_report` artifact contracts;
-- existing semantic vocabulary distinguishing validation, reconciliation, and verification.
-
-P9 must preserve:
+P10 must preserve:
 
 ```text
-reconciliation report admitted
-!= reconciliation semantically accepted
-
-repair verification report admitted
-!= repair sufficient
-
-finding closed mechanically
-!= Campaign goal achieved
-
-finding remaining
-!= automatic defer/close
+copied to declared discovery root
+!= harness observed Skill
+!= Skill selected
+!= execution authorized
+!= Campaign decision
 ```
 
 It must not:
 
-- parse a reconciliation verdict into an automatic Campaign decision;
-- grant repair authority from a finding or recommendation;
-- infer that all `verified` claims justify continuation;
-- infer that all `remaining` findings require closure;
-- bypass P4 artifact admission;
-- create a second transition log;
-- weaken P8 lineage or P2 reconstruction;
-- turn `output-reconciler` or `repair-verifier` into a semantic router.
+- detect the active coding-agent process;
+- infer a project root from cwd/git/editor state;
+- silently fall back among unrelated discovery roots;
+- select or invoke a Skill after copying it;
+- create or mutate Campaign state;
+- imply that copied Skills are semantically available, warranted, or authorized;
+- overwrite divergent installed Skill trees without explicit `--force`.
+
+See [`docs/harness-adapters.md`](docs/harness-adapters.md).
 
 ## Semantic-control invariant
 
 Agent:
 
+- What responsibility is warranted?
+- Which available capability, if any, should be selected?
+- Is execution authorized?
 - What does reconciliation evidence mean?
-- Is repair warranted and authorized?
-- Is repair verification sufficient for the blocked decision?
 - Should the Campaign advance, defer, or close?
 
 Deterministic machinery:
 
-- Is the reconciliation/verification artifact admitted evidence?
-- What exact artifact identity/provenance does it have?
-- Which reconciliation stage is mechanically represented?
-- Is an explicit disposition recorded?
-- Which transition explicitly consumed the evidence?
-- Is history reconstructible?
+- Is an artifact admitted evidence?
+- What exact identity/provenance does it have?
+- Which transition explicitly consumed it?
+- Is reconciliation disposition mechanically represented?
+- Which explicit harness/scope destination did the caller request?
+- Does the installed Skill tree match the packaged bytes?
+- Is Campaign history reconstructible?
 
 Therefore:
 
@@ -355,6 +358,7 @@ recommendation != execution authority
 handoff != semantic recommendation
 lineage != semantic warrant
 reconciliation evidence != Campaign decision
+harness discovery path != Skill selection or authority
 ```
 
 And:
@@ -365,9 +369,8 @@ Campaign Controller != semantic router
 
 ## Remaining v0.3 sequence
 
-1. **P9 — Reconciliation lifecycle** — CURRENT.
-2. **P10 — Harness adapters**.
-3. **P11 — External golden-path qualification and v0.3 release**.
+1. **P10 — Harness adapters** — CURRENT.
+2. **P11 — External golden-path qualification and v0.3 release**.
 
 ## Research and experiment disposition
 
@@ -424,6 +427,8 @@ with deterministic reconstruction and without requiring prior conversation as hi
 | Capability registry inspection | `docs/capability-registry.md` |
 | Durable handoff/resume | `docs/campaign-handoff-resume.md` |
 | Artifact/evidence lineage | `docs/campaign-lineage.md` |
+| Reconciliation lifecycle | `docs/campaign-reconciliation.md` |
+| Coding-agent harness adapters | `docs/harness-adapters.md` |
 | SkillOpt influence/adaptation and research boundary | `docs/research/skillopt-adaptation.md` |
 | Agent-native operating model | `docs/agent-native-operating-workflow.md` |
 | Decision vs orchestration boundary | `docs/decision-orchestration-boundary.md` |

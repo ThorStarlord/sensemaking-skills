@@ -3,8 +3,8 @@
 **Status:** ACTIVE owner direction  
 **Effective:** 2026-09-08  
 **Base at pivot:** `main@5c2c807542f7e150d4a031430f59e297ed816b24`  
-**Current integrated frontier:** P8 merged at `main@e1b900c32d932d5e4b5c0366c0972143c36b1982`  
-**Current implementation frontier:** P9 — reconciliation lifecycle  
+**Current integrated frontier:** P9 merged at `main@0f306cb9f05a70f2b27a64c05f65749534f9f0e1`  
+**Current implementation frontier:** P10 — harness adapters  
 **Primary objective:** turn the ratified agent-native control model into a usable campaign-based engineering product.  
 **Canonical product model:** [`sensemaking-campaign.md`](sensemaking-campaign.md)
 
@@ -36,6 +36,7 @@ The productization program does not reverse the accepted agent-native control mo
 - A handoff does not decide what the fresh agent should do next.
 - Provenance/lineage does not establish semantic warrant.
 - Reconciliation evidence does not decide the Campaign transition.
+- Harness setup/discovery-root mapping does not establish runtime Skill availability, selection, or execution authority.
 
 The durable invariant remains:
 
@@ -56,6 +57,9 @@ consumed evidence
 
 reconciliation evidence
 != semantic disposition
+
+Skill copied to discovery root
+!= Skill selected or authorized
 ```
 
 ## 3. v0.3 north-star outcome
@@ -99,7 +103,7 @@ campaign_semantics typed contracts
 filesystem workspace
 ```
 
-Lineage is a reconstruction of identities, provenance, and explicit consumption links. Reconciliation lifecycle state may summarize mechanically present reconciliation evidence, but must never become a second semantic decision system.
+Lineage is a reconstruction of identities, provenance, and explicit consumption links. Reconciliation lifecycle state may summarize mechanically present reconciliation evidence, but must never become a second semantic decision system. Harness adapters remain packaging/setup infrastructure outside this semantic core.
 
 ## 5. Milestone status
 
@@ -114,8 +118,8 @@ Lineage is a reconstruction of identities, provenance, and explicit consumption 
 | **P6 — Real capability registry** | **MERGED** | Read-only agent-classified capability inspection with liveness, availability, and authority separation. |
 | **P7 — Durable handoff/resume** | **MERGED** | Fresh-context reconstruction with integrity-bound handoff and installed-wheel proof. |
 | **P8 — Artifact/evidence lineage** | **MERGED** | Exact evidence-byte identity, provenance, and explicit transition-consumption reconstruction. |
-| **P9 — Reconciliation lifecycle** | **CURRENT** | Connect admitted reconciliation/repair-verification evidence to explicit Campaign disposition without automatic semantic transitions. |
-| **P10 — Harness adapters** | PLANNED | Improve setup for Claude Code, Codex, OpenCode, and generic agent environments. |
+| **P9 — Reconciliation lifecycle** | **MERGED** | Admitted reconciliation/repair-verification evidence is mechanically correlated with explicit P8-bound Campaign disposition without semantic auto-routing. |
+| **P10 — Harness adapters** | **CURRENT** | Explicit Skill discovery-root setup for Claude Code, Codex, OpenCode, and portable/generic environments without harness auto-detection. |
 | **P11 — v0.3 qualification/release** | PLANNED | Prove the external golden path and ship the first usable Campaign-based release. |
 
 ## 6. Implemented milestone contracts
@@ -248,182 +252,142 @@ A P8-authored zero-evidence decision receives an explicit empty bound receipt. H
 
 See [`campaign-lineage.md`](campaign-lineage.md).
 
-## 7. Current implementation frontier — P9
+### P9 — Reconciliation lifecycle — MERGED
 
-The next bounded implementation slice is **P9 — Reconciliation lifecycle**.
+Implemented:
+
+```text
+sensemaking-skills campaign reconciliation
+```
+
+P9 is a read-only reconstruction over P4 admission provenance and P8 consumption edges. It identifies admitted `reconciliation_report` / `repair_verification_report` evidence and reports whether an explicit exact-byte-bound Campaign transition has consumed each report.
+
+Mechanical states are:
+
+```text
+disposition_required
+disposition_recorded
+legacy_unbound
+```
+
+`disposition_recorded` means only that an explicit Campaign transition consumed the exact report. It does not claim that the report was correct, reconciliation is semantically complete, or the transition was the right decision. Report verdict content never becomes an automatic transition rule.
+
+See [`campaign-reconciliation.md`](campaign-reconciliation.md).
+
+## 7. Current implementation frontier — P10
+
+The next bounded implementation slice is **P10 — Harness adapters**.
 
 ### Goal
 
-Make a durable Campaign able to answer mechanically:
+Make the packaged Skill trees installable into major coding-agent discovery roots through one explicit, deterministic setup surface while keeping harness-specific concerns outside Campaign semantics.
 
-> What reconciliation or repair-verification evidence currently exists for the work under review, and has an explicit agent-authored Campaign disposition consumed that evidence yet?
-
-P9 connects existing reconciliation artifacts to the Campaign control loop while preserving the distinction between measurement and semantic judgment.
-
-### Existing repository concepts P9 should reuse
-
-The repository already has two specialized agent-native responsibilities:
-
-1. `output-reconciler`
-   - responsibility type: `output_reconciliation`;
-   - output artifact: `reconciliation_report`;
-   - compares a work claim against durable repository evidence;
-   - classifies claims such as `verified`, `disputed`, or `omitted`;
-   - recommendations/dispositions remain evidence for a later decision, not automatic Campaign transitions.
-
-2. `repair-verifier`
-   - responsibility type: `repair_verification`;
-   - output artifact: `repair_verification_report`;
-   - re-measures original findings against fresh repository evidence;
-   - records `findings_closed` and `findings_remaining`;
-   - remaining findings require explicit handling rather than silent approval.
-
-P9 should also reuse:
-
-- P4 artifact admission as the only promotion path from artifact bytes to admitted Campaign evidence;
-- P5 explicit `advance`, `defer`, and `close` decisions;
-- P6 capability metadata for reconciliation and repair-verification responsibilities;
-- P8 exact evidence-consumption lineage;
-- current `TransitionRecord` and trace identity;
-- existing artifact IDs and artifact contracts rather than introducing competing formats.
-
-### Required control shape
+The required control shape is:
 
 ```text
-bounded work / durable work claim
+caller explicitly selects harness + scope
         ↓
-AGENT decides reconciliation is warranted
+deterministic adapter resolves declared discovery root
         ↓
-output-reconciler produces reconciliation_report
+exact packaged Skill tree copied
         ↓
-P4 validates + admits exact report
+existing drift check
         ↓
-optional authorized repair responsibility
-        ↓
-repair-verifier produces repair_verification_report
-        ↓
-P4 validates + admits exact report
-        ↓
-P9 mechanically reconstructs current reconciliation evidence/stage
-        ↓
-AGENT interprets that evidence
-        ↓
-explicit P5 advance / defer / close decision
-        ↓
-P8 binds exact consumed reconciliation evidence
+explicit --force required for replacement
 ```
+
+P10 must not detect which harness is running or infer which Skill should be used.
 
 ### Initial product surface
 
-Prefer a narrow read-only agent-consumable command:
+Extend the existing setup command rather than create a second installer:
 
 ```text
-sensemaking-skills campaign reconciliation \
-  --workspace <CMP> \
-  [--json]
+sensemaking-skills setup-skills \
+  --target agents|generic|claude|codex|opencode|claude-superpowers|all|custom \
+  [--scope user|project] \
+  [--project-root <repo>] \
+  [--skills-dir <custom-root>] \
+  [--dry-run] \
+  [--force]
 ```
 
-The command should reconstruct facts such as:
+### Adapter contract
 
-- admitted `reconciliation_report` evidence refs and exact artifact identity;
-- admitted `repair_verification_report` evidence refs and exact artifact identity;
-- whether each report has been explicitly consumed by a committed Campaign transition;
-- which transition consumed it, when mechanically reconstructible;
-- whether reconciliation evidence exists but no explicit Campaign disposition has yet consumed it;
-- whether an earlier report has been superseded mechanically by a later admitted report of the same artifact kind, if this can be established without semantic inference.
-
-If the implementation cannot establish a relation mechanically, it must report uncertainty/absence rather than infer it.
-
-### Disposition requirement
-
-P9 should make this state explicit:
+P10 should encode the currently documented discovery roots explicitly:
 
 ```text
-admitted reconciliation evidence
-+ no committed transition consumes it
-= disposition_required
+generic user       ~/.agents/skills
+generic project    <project>/.agents/skills
+
+Claude user        ~/.claude/skills
+Claude project     <project>/.claude/skills
+
+Codex user         $CODEX_HOME/skills (default ~/.codex/skills)
+Codex project      <project>/.agents/skills
+
+OpenCode user      ~/.config/opencode/skills
+OpenCode project   <project>/.opencode/skills
 ```
 
-This is a mechanical statement about durable records only. It does not prescribe what the disposition should be.
+`agents` remains a compatibility alias for `generic`. The historical `claude-superpowers`, `all`, and `custom` targets remain available.
 
-Once a P5 authored transition explicitly consumes the reconciliation evidence, P8 should remain the source of truth for the exact evidence-consumption edge.
+Codex `CODEX_HOME` is explicit environment configuration. Reading it is not active-harness detection.
 
-### Artifact verdict fields are not transition rules
-
-P9 must never implement mappings like:
+### P10 must preserve
 
 ```text
-all reconciliation claims verified
-→ auto-advance
-
-any disputed claim
-→ auto-defer
-
-all repair findings closed
-→ auto-close goal_achieved
-
-any finding remaining
-→ auto-close external_blocker
+copied to declared discovery root
+!= harness observed Skill
+!= Skill selected
+!= execution authorized
+!= Campaign decision
 ```
 
-Those are semantic decisions for the active coding agent.
-
-### P9 must preserve
+It must also preserve the existing fail-closed drift rule:
 
 ```text
-artifact validated
-!= artifact semantically accepted
-
-reconciliation report admitted
-!= reconciliation complete
-
-repair verification report admitted
-!= repair sufficient
-
-finding closed mechanically
-!= Campaign goal achieved
-
-finding remaining
-!= automatic defer/close
-
-reconciliation evidence available
-!= authority to repair
+missing -> copy
+current -> no-op success
+different -> preserve installed bytes + report failure
+--force -> explicit replacement
 ```
 
-### P9 must not
+Project scope requires an explicit existing `--project-root`; it must not infer the repository from cwd, git, an editor, or a running harness.
 
-- interpret reconciliation prose/findings into a semantic Campaign decision;
-- infer repair authorization from recommendations/findings;
-- automatically invoke `output-reconciler` or `repair-verifier`;
-- bypass P4 artifact admission;
-- mutate P8 consumption lineage during read-only inspection;
-- create a second semantic transition ledger;
-- alter P2 crash/recovery semantics;
+### P10 must not
+
+- auto-detect Claude Code, Codex, OpenCode, or another active agent process;
+- silently fall back among unrelated harness discovery roots;
+- select or invoke a Skill after copying it;
+- imply that copied Skills were observed by the current harness;
 - grant capability availability or execution authority;
-- treat validator success as evidence that the reconciliation conclusion is true.
+- create or mutate Campaign state;
+- place harness-specific filesystem semantics inside `campaign_semantics`;
+- bypass existing packaged Skill-tree drift checks;
+- overwrite a divergent Skill tree without explicit `--force`.
 
 ### Qualification direction
 
-A qualified P9 candidate should prove at least:
+A qualified P10 candidate should prove at least:
 
-1. admitted `reconciliation_report` evidence is mechanically discoverable by exact P4 provenance;
-2. admitted `repair_verification_report` evidence is mechanically discoverable by exact P4 provenance;
-3. an unadmitted file with either artifact-like name is ignored as reconciliation evidence;
-4. a report not consumed by any committed transition is reported as `disposition_required` (or an equivalent mechanically explicit state);
-5. after an explicit P5 transition consumes the report, P9 points to the exact P8-bound transition/evidence relation;
-6. verdict content such as `verified/disputed/closed/remaining` does not automatically change Campaign state;
-7. multiple reports are ordered/differentiated only by mechanically available durable provenance, never semantic preference;
-8. stale/tampered admission/lineage state fails closed through existing P4/P8 integrity checks;
-9. P9 inspection is deterministic and read-only;
-10. JSON output contains no recommended action, selected capability, inferred authority, semantic score, or automatic disposition;
-11. fresh-process reconstruction works from durable Campaign files alone;
-12. the installed wheel exposes the P9 surface without source checkout.
+1. `agents` remains a compatibility alias for `generic`;
+2. Claude user/project discovery roots resolve deterministically;
+3. Codex personal `$CODEX_HOME/skills` and project `.agents/skills` are represented separately;
+4. OpenCode native user/project roots resolve deterministically;
+5. project scope fails closed without an explicit existing project root;
+6. incompatible setup options fail closed rather than being silently ignored;
+7. `all` deduplicates shared project roots deterministically;
+8. exact complete packaged Skill trees are copied;
+9. divergent installed trees remain untouched without `--force`;
+10. dry-run creates no destination state;
+11. no setup path creates Campaign state or semantic selection/authority output;
+12. pre-P10 compatibility targets remain available;
+13. the installed wheel exposes the P10 setup surface without source checkout.
+
+See [`harness-adapters.md`](harness-adapters.md).
 
 ## 8. Remaining planned milestones
-
-### P10 — Harness adapters
-
-Improve setup for Claude Code, Codex, OpenCode, and generic agent Skill locations without placing agent-specific semantics inside the Campaign core.
 
 ### P11 — v0.3 qualification/release
 
