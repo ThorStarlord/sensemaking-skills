@@ -103,8 +103,9 @@ def test_installed_wheel_ingests_without_framework_checkout(tmp_path: Path):
 
     help_run = _run(cli, work_dir, "campaign", "ingest", "--help")
     assert help_run.returncode == 0, help_run.stdout + help_run.stderr
-    assert "--framework-root" in help_run.stdout
-    assert "installed canonical validator runtime is used by default" in help_run.stdout
+    normalized_help = " ".join(help_run.stdout.split())
+    assert "--framework-root" in normalized_help
+    assert "installed canonical validator runtime is used by default" in normalized_help
 
     valid = work_dir / "valid-recommendation.md"
     valid.write_bytes(VALID_ARTIFACT.read_bytes())
