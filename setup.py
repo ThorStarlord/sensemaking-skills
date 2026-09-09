@@ -68,7 +68,7 @@ class build_py(_build_py):
 
 setup(
     name="sensemaking-skills",
-    version="0.2.2",
+    version="0.3.0",
     description="Agent-native framework for repository diagnosis and workflow orchestration",
     long_description=long_description,
     long_description_content_type="text/markdown",
