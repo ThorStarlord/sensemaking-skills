@@ -29,6 +29,9 @@ def test_release_version_authorities_agree() -> None:
     setup_versions = re.findall(r'^\s*version="([^"]+)"', setup_text, flags=re.MULTILINE)
     assert setup_versions == [EXPECTED_VERSION]
 
+    package_json = __import__("json").loads(_read("package.json"))
+    assert package_json["version"] == EXPECTED_VERSION
+
     assert sensemaking_skills.__version__ == EXPECTED_VERSION
 
 
@@ -55,7 +58,7 @@ def test_external_harness_dogfood_is_explicitly_non_blocking() -> None:
 
     assert "NON-BLOCKING POST-RELEASE DOGFOOD PROTOCOL" in protocol
     assert "does not gate v0.3.0 publication" in protocol
-    assert "not a v0.3.0 release gate" in plan
+    assert "not a v0.3.0 blocking gate" in plan
     assert "not a v0.3.0 release gate" in status
 
 
