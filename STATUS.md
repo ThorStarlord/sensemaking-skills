@@ -9,6 +9,14 @@
 
 Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment; deterministic machinery owns representation, persistence, validation, provenance, integrity, authority checks, target identity, narrative/evidence binding, and reconstructible qualification evidence.
 
+## Release architecture continuity
+
+This handoff preserves the validated v0.3 release architecture rather than replacing it:
+
+- **Campaign schema v2** remains the current durable representation baseline. Historical v1 artifacts migrate deterministically without inventing semantics or rewriting append-only history.
+- The shipped **product/lab split** remains intact: Product Validation owns shipped/installed-product claims, while retained Lab Validation owns source-only research/lab claims.
+- The release includes the **real-harness qualification verifier**. Verifier and receipt success are mechanical evidence about exact frozen bytes; they are not semantic truth and do not by themselves prove that a live harness created the attempt.
+
 ## Current milestone handoff
 
 The most recent three-package milestone is complete:
