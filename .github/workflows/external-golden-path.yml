@@ -5,9 +5,14 @@ on:
     branches: [main]
     paths:
       - "src/sensemaking_skills/external_qualification.py"
+      - "src/sensemaking_skills/qualification_evidence.py"
       - "tests/integration/test_external_golden_path_qualification.py"
+      - "tests/integration/test_qualification_evidence.py"
+      - "tests/integration/test_qualification_evidence_cli.py"
       - "tests/fixtures/external_golden_path/**"
+      - "qualification-evidence/**"
       - "docs/external-golden-path-verifier.md"
+      - "docs/qualification-evidence.md"
       - ".github/workflows/external-golden-path.yml"
   workflow_dispatch:
     inputs:
@@ -51,7 +56,30 @@ jobs:
         run: python -m compileall -q src/sensemaking_skills
 
       - name: Run external qualification contract tests
-        run: python -m pytest tests/integration/test_external_golden_path_qualification.py -q
+        run: |
+          python -m pytest \
+            tests/integration/test_external_golden_path_qualification.py \
+            tests/integration/test_qualification_evidence.py \
+            tests/integration/test_qualification_evidence_cli.py \
+            -q
+
+      - name: Verify checked-in qualification evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          attempts=(qualification-evidence/attempts/*)
+          for attempt in "${attempts[@]}"; do
+            test -d "$attempt"
+            test -f "$attempt/attempt.yaml"
+            test -f "$attempt/qualification-evidence.json"
+            python -m sensemaking_skills.external_qualification \
+              "$attempt" \
+              --structural-only
+            python -m sensemaking_skills.qualification_evidence \
+              "$attempt" \
+              --verify "$attempt/qualification-evidence.json"
+          done
 
   qualify-frozen-attempt:
     name: Qualify frozen external attempt
@@ -89,8 +117,18 @@ jobs:
           python -m sensemaking_skills.external_qualification "$ATTEMPT_DIR" --json > external-qualification-result.json
           status=$?
           set -e
+
+          receipt_written=false
+          if [ "$status" -ne 2 ]; then
+            python -m sensemaking_skills.qualification_evidence \
+              "$ATTEMPT_DIR" \
+              --output external-qualification-evidence.json
+            receipt_written=true
+          fi
+
           cat external-qualification-result.json
           echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          echo "receipt_written=$receipt_written" >> "$GITHUB_OUTPUT"
           exit "$status"
 
       - name: Upload qualification result
@@ -99,4 +137,12 @@ jobs:
         with:
           name: external-golden-path-qualification-${{ github.sha }}
           path: external-qualification-result.json
+          if-no-files-found: error
+
+      - name: Upload qualification evidence receipt
+        if: always() && steps.qualify.outputs.receipt_written == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-golden-path-evidence-${{ github.sha }}
+          path: external-qualification-evidence.json
           if-no-files-found: error
