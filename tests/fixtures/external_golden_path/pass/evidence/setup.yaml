@@ -1,0 +1,6 @@
+evidence_kind: skill_setup
+harness: claude
+adapter_target: claude
+adapter_scope: project
+skill: repo-sensemaker
+destination: /tmp/example-repo/.claude/skills/repo-sensemaker

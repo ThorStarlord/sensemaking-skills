@@ -1,0 +1,5 @@
+evidence_kind: fresh_context_resume
+campaign_id: CMP-DOGFOOD-001
+session_id: session-fresh-002
+handoff_sha256: 12bf7d4ed34376d1a0f81b38c2c45c22c02936e1cdc22bd0644a4b064996f3b8
+prior_chat_supplied: false

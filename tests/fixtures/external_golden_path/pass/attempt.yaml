@@ -1,0 +1,127 @@
+protocol: v0.3-external-golden-path-dogfood-v1
+attempt_id: DOGFOOD-QUAL-001
+started_at: 2026-09-09T03:00:00Z
+sensemaking_candidate:
+  commit_sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  tree_sha: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  distribution_filename: sensemaking_skills-0.3.0-py3-none-any.whl
+  distribution_sha256: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  version: 0.3.0
+runtime:
+  os: ubuntu-24.04
+  python: 3.11.13
+  harness: claude
+  harness_version: 1.0.0
+  adapter_target: claude
+  adapter_scope: project
+external_target:
+  repository: example/external-repository
+  branch: main
+  commit_sha: dddddddddddddddddddddddddddddddddddddddd
+  tree_sha: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  engineering_goal: Repair one bounded failing validation case.
+campaign:
+  campaign_id: CMP-DOGFOOD-001
+  workspace: /tmp/sensemaking-campaigns/CMP-DOGFOOD-001
+  workspace_outside_target_repo: true
+operator_policy:
+  manual_campaign_repair_allowed: false
+  manual_artifact_repair_allowed: false
+  manual_validator_output_repair_allowed: false
+  prior_chat_supplied_to_fresh_agent: false
+harness_evidence:
+  native_skill: repo-sensemaker
+  native_invocation_observed: true
+  setup_receipt:
+    path: evidence/setup.yaml
+    sha256: d68c923106b684b02fb82fc3c2fae924205ba1b63bc0f5e1f8920660b927a440
+  invocation_receipt:
+    path: evidence/native-invocation.yaml
+    sha256: 2452d70d4dee654a7ae118666331194a75551cefacdbf742f13cdb25b254cec1
+lifecycle:
+  steps:
+    - id: repository_diagnosis
+      status: PASS
+      evidence:
+        - path: evidence/native-invocation.yaml
+          sha256: 2452d70d4dee654a7ae118666331194a75551cefacdbf742f13cdb25b254cec1
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: artifact_admission
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: responsibility_authority_decision
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: capability_inspection
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: bounded_work
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: work_evidence
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: reconciliation
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: reconciliation_disposition
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: durable_transition
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: lineage_inspection
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: handoff
+      status: PASS
+      evidence:
+        - path: evidence/handoff.yaml
+          sha256: 12bf7d4ed34376d1a0f81b38c2c45c22c02936e1cdc22bd0644a4b064996f3b8
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: fresh_context_resume
+      status: PASS
+      evidence:
+        - path: evidence/resume.yaml
+          sha256: 1bf74c45bc469eabc3fb09446787df5ecd1340322e623f2228842ab8a5fceb8d
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+    - id: terminal_or_continue
+      status: PASS
+      evidence:
+        - path: evidence/lifecycle.txt
+          sha256: c66fb0b28f03bebac2962da88f3fb3502d8f3a378030fd8276e9646afc3827a7
+fresh_context:
+  source_session_id: session-initial-001
+  resume_session_id: session-fresh-002
+  original_session_ended: true
+  prior_chat_supplied: false
+  handoff_receipt:
+    path: evidence/handoff.yaml
+    sha256: 12bf7d4ed34376d1a0f81b38c2c45c22c02936e1cdc22bd0644a4b064996f3b8
+  resume_receipt:
+    path: evidence/resume.yaml
+    sha256: 1bf74c45bc469eabc3fb09446787df5ecd1340322e623f2228842ab8a5fceb8d
+outcome:
+  classification: PASS
+  notes: Synthetic contract fixture proving the qualification verifier surface.
