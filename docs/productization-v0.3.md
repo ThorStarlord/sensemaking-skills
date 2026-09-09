@@ -3,9 +3,9 @@
 **Status:** ACTIVE owner direction  
 **Effective:** 2026-09-08  
 **Base at pivot:** `main@5c2c807542f7e150d4a031430f59e297ed816b24`  
-**Current integrated frontier:** P9 merged at `main@0f306cb9f05a70f2b27a64c05f65749534f9f0e1`  
-**Current implementation frontier:** P10 — harness adapters  
-**Primary objective:** turn the ratified agent-native control model into a usable campaign-based engineering product.  
+**Current integrated frontier:** P10 merged at `main@d833095ab9b37bd9a93d39d286b358061eb913e5`  
+**Current implementation frontier:** P11 — external golden-path qualification and v0.3 release  
+**Primary objective:** turn the ratified agent-native control model into the first usable Campaign-based release.  
 **Canonical product model:** [`sensemaking-campaign.md`](sensemaking-campaign.md)
 
 This document is the versioned v0.3 delivery plan. The durable definition of a Sensemaking Campaign belongs in [`sensemaking-campaign.md`](sensemaking-campaign.md).
@@ -37,6 +37,7 @@ The productization program does not reverse the accepted agent-native control mo
 - Provenance/lineage does not establish semantic warrant.
 - Reconciliation evidence does not decide the Campaign transition.
 - Harness setup/discovery-root mapping does not establish runtime Skill availability, selection, or execution authority.
+- Packaging a validator runtime does not create new semantic validator authority.
 
 The durable invariant remains:
 
@@ -103,7 +104,7 @@ campaign_semantics typed contracts
 filesystem workspace
 ```
 
-Lineage is a reconstruction of identities, provenance, and explicit consumption links. Reconciliation lifecycle state may summarize mechanically present reconciliation evidence, but must never become a second semantic decision system. Harness adapters remain packaging/setup infrastructure outside this semantic core.
+Lineage is a reconstruction of identities, provenance, and explicit consumption links. Reconciliation lifecycle state may summarize mechanically present reconciliation evidence, but must never become a second semantic decision system. Harness adapters and release packaging remain infrastructure outside this semantic core.
 
 ## 5. Milestone status
 
@@ -119,8 +120,8 @@ Lineage is a reconstruction of identities, provenance, and explicit consumption 
 | **P7 — Durable handoff/resume** | **MERGED** | Fresh-context reconstruction with integrity-bound handoff and installed-wheel proof. |
 | **P8 — Artifact/evidence lineage** | **MERGED** | Exact evidence-byte identity, provenance, and explicit transition-consumption reconstruction. |
 | **P9 — Reconciliation lifecycle** | **MERGED** | Admitted reconciliation/repair-verification evidence is mechanically correlated with explicit P8-bound Campaign disposition without semantic auto-routing. |
-| **P10 — Harness adapters** | **CURRENT** | Explicit Skill discovery-root setup for Claude Code, Codex, OpenCode, and portable/generic environments without harness auto-detection. |
-| **P11 — v0.3 qualification/release** | PLANNED | Prove the external golden path and ship the first usable Campaign-based release. |
+| **P10 — Harness adapters** | **MERGED** | Explicit Skill discovery-root setup for Claude Code, Codex, OpenCode, and portable/generic environments without harness auto-detection. |
+| **P11 — v0.3 qualification/release** | **CURRENT** | Make the distribution self-contained, prove the frozen external golden path through a real harness, prove fresh-context resume, then qualify/release v0.3.0. |
 
 ## 6. Implemented milestone contracts
 
@@ -174,6 +175,8 @@ file under artifacts/
 != validated artifact
 != admitted Campaign evidence
 ```
+
+P11 release hardening derives the same canonical repository validator code/contracts into the built wheel so installed ingestion no longer needs a separate framework checkout in normal use. The admission receipt continues to bind the exact router and selected validator bytes that actually ran.
 
 See [`artifact-ingestion.md`](artifact-ingestion.md).
 
@@ -242,13 +245,7 @@ TransitionRecord.evidence + trace digest
 read-only lineage reconstruction
 ```
 
-P8 distinguishes:
-
-- raw `evidence/**` — exact consumed bytes are snapshotted by SHA-256;
-- admitted artifacts — reuse P4 content-addressed identity and admission provenance;
-- admission receipts — preserve exact consumed receipt bytes plus validator/artifact provenance.
-
-A P8-authored zero-evidence decision receives an explicit empty bound receipt. Historical/direct-P2 transitions without P8 receipts remain `legacy_unbound`. Orphan precommit intents do not create false committed consumption edges.
+P8 distinguishes raw evidence, admitted artifacts, and admission receipts while preserving exact byte identity and historical claim ceilings. A P8-authored zero-evidence decision receives an explicit empty bound receipt. Historical/direct-P2 transitions without receipts remain `legacy_unbound`. Orphan precommit intents do not create false committed consumption edges.
 
 See [`campaign-lineage.md`](campaign-lineage.md).
 
@@ -274,67 +271,23 @@ legacy_unbound
 
 See [`campaign-reconciliation.md`](campaign-reconciliation.md).
 
-## 7. Current implementation frontier — P10
+### P10 — Harness adapters — MERGED
 
-The next bounded implementation slice is **P10 — Harness adapters**.
-
-### Goal
-
-Make the packaged Skill trees installable into major coding-agent discovery roots through one explicit, deterministic setup surface while keeping harness-specific concerns outside Campaign semantics.
-
-The required control shape is:
+Implemented explicit setup targets through the existing `setup-skills` command:
 
 ```text
-caller explicitly selects harness + scope
-        ↓
-deterministic adapter resolves declared discovery root
-        ↓
-exact packaged Skill tree copied
-        ↓
-existing drift check
-        ↓
-explicit --force required for replacement
+agents/generic
+claude
+codex
+opencode
+claude-superpowers
+all
+custom
 ```
 
-P10 must not detect which harness is running or infer which Skill should be used.
+Canonical adapter roots distinguish user and project scope. Codex user scope honors `$CODEX_HOME/skills` while project scope uses `.agents/skills`; OpenCode project scope uses `.opencode/skills`; Claude project scope uses `.claude/skills`.
 
-### Initial product surface
-
-Extend the existing setup command rather than create a second installer:
-
-```text
-sensemaking-skills setup-skills \
-  --target agents|generic|claude|codex|opencode|claude-superpowers|all|custom \
-  [--scope user|project] \
-  [--project-root <repo>] \
-  [--skills-dir <custom-root>] \
-  [--dry-run] \
-  [--force]
-```
-
-### Adapter contract
-
-P10 should encode the currently documented discovery roots explicitly:
-
-```text
-generic user       ~/.agents/skills
-generic project    <project>/.agents/skills
-
-Claude user        ~/.claude/skills
-Claude project     <project>/.claude/skills
-
-Codex user         $CODEX_HOME/skills (default ~/.codex/skills)
-Codex project      <project>/.agents/skills
-
-OpenCode user      ~/.config/opencode/skills
-OpenCode project   <project>/.opencode/skills
-```
-
-`agents` remains a compatibility alias for `generic`. The historical `claude-superpowers`, `all`, and `custom` targets remain available.
-
-Codex `CODEX_HOME` is explicit environment configuration. Reading it is not active-harness detection.
-
-### P10 must preserve
+P10 is deterministic setup infrastructure only:
 
 ```text
 copied to declared discovery root
@@ -344,71 +297,175 @@ copied to declared discovery root
 != Campaign decision
 ```
 
-It must also preserve the existing fail-closed drift rule:
-
-```text
-missing -> copy
-current -> no-op success
-different -> preserve installed bytes + report failure
---force -> explicit replacement
-```
-
-Project scope requires an explicit existing `--project-root`; it must not infer the repository from cwd, git, an editor, or a running harness.
-
-### P10 must not
-
-- auto-detect Claude Code, Codex, OpenCode, or another active agent process;
-- silently fall back among unrelated harness discovery roots;
-- select or invoke a Skill after copying it;
-- imply that copied Skills were observed by the current harness;
-- grant capability availability or execution authority;
-- create or mutate Campaign state;
-- place harness-specific filesystem semantics inside `campaign_semantics`;
-- bypass existing packaged Skill-tree drift checks;
-- overwrite a divergent Skill tree without explicit `--force`.
-
-### Qualification direction
-
-A qualified P10 candidate should prove at least:
-
-1. `agents` remains a compatibility alias for `generic`;
-2. Claude user/project discovery roots resolve deterministically;
-3. Codex personal `$CODEX_HOME/skills` and project `.agents/skills` are represented separately;
-4. OpenCode native user/project roots resolve deterministically;
-5. project scope fails closed without an explicit existing project root;
-6. incompatible setup options fail closed rather than being silently ignored;
-7. `all` deduplicates shared project roots deterministically;
-8. exact complete packaged Skill trees are copied;
-9. divergent installed trees remain untouched without `--force`;
-10. dry-run creates no destination state;
-11. no setup path creates Campaign state or semantic selection/authority output;
-12. pre-P10 compatibility targets remain available;
-13. the installed wheel exposes the P10 setup surface without source checkout.
-
 See [`harness-adapters.md`](harness-adapters.md).
 
-## 8. Remaining planned milestones
+## 7. Current implementation frontier — P11
 
-### P11 — v0.3 qualification/release
+P11 is **v0.3 external qualification and release**. It is not a new semantic product layer.
 
-Required golden path:
+### Goal
+
+Prove that the integrated P0–P10 product can complete its canonical lifecycle from a real installed distribution, on a real external repository, through a real supported coding-agent harness, and across a genuine fresh-context boundary.
+
+Required release sequence:
+
+```text
+P10 integrated
+→ remove release-portability blockers
+→ freeze qualification protocol
+→ freeze exact candidate/target/harness attempt
+→ real external golden path
+→ fresh-context reconstruction proof
+→ repair observed blockers through new attempts
+→ freeze v0.3.0 release metadata
+→ build + exact-head qualify final distribution
+→ merge
+→ release
+→ clean production-install verification
+```
+
+### P11-A — P10 integration — COMPLETE
+
+P10 was merged from exact-qualified head:
+
+```text
+d1676b6f0209eee4c5e2c9fdb7aae07baaa74a1a
+```
+
+into:
+
+```text
+main@d833095ab9b37bd9a93d39d286b358061eb913e5
+```
+
+The merge tree is exactly the qualified P10 tree:
+
+```text
+6143b47f31ccdab2e1bde9be12a31bef9864e71f
+```
+
+### P11-B — Self-contained artifact validation — IMPLEMENTED / REQUALIFICATION PENDING
+
+The pre-P11 release blocker was:
+
+```text
+pip install sensemaking-skills
+→ campaign ingest still required --framework-root
+→ separate Sensemaking source checkout required
+```
+
+P11 changes deployment to:
+
+```text
+canonical repository scripts/ + skills/
+→ build-time derived validator_runtime/
+→ installed wheel
+→ campaign ingest without --framework-root
+→ canonical router / selected validator
+→ unchanged P4 admission receipt/provenance
+```
+
+The repository-root `scripts/` and `skills/` trees remain the single maintained sources. Build-time derivation avoids a second hand-maintained validator implementation.
+
+An explicit `--framework-root` remains an authoritative development/compatibility override. If it is malformed, ingestion fails closed rather than silently falling back to the installed runtime.
+
+A preliminary exact-head Validator Ecosystem run on the repaired portability bytes passed both Python campaign lanes with **569 tests**, plus the existing Two-Lane/path-containment and installed-distribution regressions. The current branch also includes the frozen protocol/status reconciliation, so it must receive a new exact-head run before P11-B is called frozen/qualified.
+
+### P11-C — External golden-path protocol — FROZEN
+
+The qualification authority is:
+
+[`v0.3-external-qualification-protocol.md`](v0.3-external-qualification-protocol.md)
+
+It requires each attempt to freeze, before substantive execution:
+
+- Sensemaking candidate commit/tree;
+- wheel filename and SHA-256;
+- runtime OS/Python;
+- real coding-agent harness identity/version;
+- P10 adapter target/scope;
+- external repository branch/commit/tree;
+- bounded engineering goal;
+- Campaign identity/workspace;
+- prohibition on manual Campaign/artifact/validator repair;
+- fresh-context rule forbidding prior-chat reasoning from being supplied to the new agent.
+
+A changed candidate or target starts a new attempt. A failed run is preserved as FAIL; product repair occurs on new bytes/new attempt identity. The attempt is never edited in place into a PASS.
+
+### P11-D — External golden path — REQUIRED NEXT
+
+The real attempt must execute:
 
 ```text
 start
-→ repository diagnosis
-→ validated artifact admission
+→ repository diagnosis via real agent-native repo-sensemaker Skill
+→ validated artifact admission from installed distribution
 → agent-authored responsibility/authority decision
-→ available capability inspection
+→ capability inspection
 → bounded work
 → durable evidence
 → reconciliation / repair verification
 → explicit reconciliation disposition
-→ transition
+→ durable transition
 → lineage inspection
 → handoff
 → fresh-context resume
 → justified continuation or terminal stop
 ```
+
+The target must be a real repository other than `sensemaking-skills` and remain frozen for the attempt.
+
+P10 filesystem setup alone does not satisfy the harness requirement. P11 needs evidence that a real supported harness actually observed/invoked the Skill through its native Skill mechanism.
+
+### P11-E — Fresh-context proof — REQUIRED
+
+After handoff, the original semantic context ends. The fresh agent may receive the target repository, Campaign workspace, installed candidate, and durable handoff reference. It may not receive the old chat transcript, private reasoning summary, or manual semantic coaching that substitutes for durable Campaign state.
+
+An honest stop such as `evidence_insufficient`, `owner_decision_required`, or `authority_boundary_reached` can be valid if warranted. Qualification does not force work merely to produce activity.
+
+### P11-F — Release freeze after PASS
+
+Only after a real external PASS:
+
+1. reconcile package version consistently to `0.3.0`;
+2. update README, STATUS, CHANGELOG, productization docs, and publishing instructions;
+3. build wheel + sdist;
+4. run metadata/distribution checks;
+5. run the complete exact-head Validator Ecosystem;
+6. freeze candidate SHA/tree and distribution digests;
+7. record the successful external attempt identity/evidence;
+8. mark the P11 PR ready only after all qualification evidence is durable.
+
+### P11 must preserve
+
+```text
+validator passed != semantic truth
+admitted evidence != warranted responsibility
+capability availability != selection or authority
+reconciliation evidence != semantic disposition
+lineage != semantic warrant
+handoff != semantic recommendation
+Skill copied != harness observed/invoked Skill
+```
+
+### P11 must not
+
+- introduce a central semantic router;
+- rank or auto-select capabilities;
+- make validator output a semantic transition rule;
+- repair a failed qualification workspace/artifact manually and call it PASS;
+- smuggle prior-agent reasoning across the fresh-context boundary;
+- claim all repositories/harnesses from one qualifying run;
+- bump/release `0.3.0` before the real golden-path PASS;
+- infer release or merge authority from CI success alone.
+
+## 8. P11 external qualification claim ceiling
+
+A successful attempt supports only:
+
+> One exact Sensemaking Skills candidate completed the canonical Campaign golden path on one frozen external repository through one real supported coding-agent harness, with deterministic reconstruction, no manual Campaign/artifact repair, and no prior conversation memory supplied to the fresh-context agent.
+
+The protocol explicitly rejects stronger generalization.
 
 ## 9. Explicit non-goals for v0.3
 
@@ -455,3 +512,5 @@ start
 ```
 
 with deterministic reconstruction and **without manual Campaign/artifact repair or prior conversation memory as hidden input**.
+
+The required qualification authority is [`v0.3-external-qualification-protocol.md`](v0.3-external-qualification-protocol.md).
