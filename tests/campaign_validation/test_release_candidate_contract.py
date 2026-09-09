@@ -35,11 +35,15 @@ def test_release_version_authorities_agree() -> None:
 def test_live_release_docs_identify_v030() -> None:
     readme = _read("README.md")
     status = _read("STATUS.md")
+    getting_started = _read("GETTING_STARTED.md")
+    installation = _read("INSTALLATION.md")
     changelog = _read("CHANGELOG.md")
     publishing = _read("docs/PUBLISHING.md")
 
     assert "**Version:** 0.3.0" in readme
     assert "**Version:** 0.3.0" in status
+    assert "Getting Started with Sensemaking Skills v0.3.0" in getting_started
+    assert "Installation & Setup Guide — Sensemaking Skills v0.3.0" in installation
     assert "## [0.3.0] - 2026-09-09" in changelog
     assert "# Publishing Sensemaking Skills v0.3.0" in publishing
 
@@ -66,6 +70,13 @@ def test_v030_claim_ceiling_preserves_harness_distinction() -> None:
     assert "Skill copied to discovery root" in combined
     assert "harness observed Skill" in combined
     assert "universal real-harness Skill discovery" in combined
+
+
+def test_sdist_manifest_carries_validator_runtime_sources() -> None:
+    manifest = _read("MANIFEST.in")
+    assert "recursive-include skills *" in manifest
+    assert "recursive-include scripts *" in manifest
+    assert "include docs/canonical-vocabulary.yaml" in manifest
 
 
 def test_release_candidate_workflow_qualifies_both_distribution_forms() -> None:
