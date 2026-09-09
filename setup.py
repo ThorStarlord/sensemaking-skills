@@ -13,28 +13,57 @@ long_description = readme_file.read_text(encoding="utf-8") if readme_file.exists
 
 
 class build_py(_build_py):
-    """Derive packaged skill trees from the canonical repo-root ``skills/``.
+    """Derive packaged runtime trees from canonical repository sources.
 
-    The repository-root ``skills/`` directory is the SINGLE authoritative
-    source of the SKILL.md trees (repo-sensemaker, workflow-planner, ...).
-    This build step copies them into the built package as
-    ``sensemaking_skills/skill_trees/`` so the wheel actually contains them
-    (Task P1-R: the shipped 0.2.1 wheel contained zero SKILL.md files). The
-    packaged copy is derived at build time -- never a second manually
-    maintained copy.
+    The repository-root ``skills/`` and ``scripts/`` directories remain the
+    SINGLE authoritative sources. Build-time copies make those exact bytes
+    available to an installed wheel without introducing manually maintained
+    duplicate Skill or validator implementations.
     """
 
     def run(self):
         super().run()
-        src = Path(__file__).resolve().parent / "skills"
-        if not src.is_dir():
-            self.warn(f"skills/ not found at {src}; skill trees will not be packaged")
-            return
-        dest = Path(self.build_lib) / "sensemaking_skills" / "skill_trees"
-        if dest.exists():
-            shutil.rmtree(dest)
-        shutil.copytree(src, dest)
-        self.announce(f"packaged canonical skill trees into {dest}", level=2)
+        repo_root = Path(__file__).resolve().parent
+
+        skills_src = repo_root / "skills"
+        if not skills_src.is_dir():
+            raise RuntimeError(
+                f"canonical skills/ tree not found at {skills_src}; refusing incomplete build"
+            )
+
+        # Existing P1-R distribution contract: ship the canonical Skill trees.
+        skill_dest = Path(self.build_lib) / "sensemaking_skills" / "skill_trees"
+        if skill_dest.exists():
+            shutil.rmtree(skill_dest)
+        shutil.copytree(skills_src, skill_dest)
+        self.announce(f"packaged canonical skill trees into {skill_dest}", level=2)
+
+        # P11 release-portability contract: derive a self-contained validator
+        # runtime from the SAME canonical scripts/contracts used in checkout
+        # development. The runtime mirrors the repository-relative paths that
+        # the existing validators intentionally resolve through --repo-root.
+        scripts_src = repo_root / "scripts"
+        vocabulary_src = repo_root / "docs" / "canonical-vocabulary.yaml"
+        if not scripts_src.is_dir():
+            raise RuntimeError(
+                f"canonical scripts/ tree not found at {scripts_src}; refusing incomplete build"
+            )
+        if not vocabulary_src.is_file():
+            raise RuntimeError(
+                "canonical vocabulary not found at "
+                f"{vocabulary_src}; refusing incomplete validator runtime"
+            )
+
+        runtime_dest = Path(self.build_lib) / "sensemaking_skills" / "validator_runtime"
+        if runtime_dest.exists():
+            shutil.rmtree(runtime_dest)
+        shutil.copytree(scripts_src, runtime_dest / "scripts")
+        shutil.copytree(skills_src, runtime_dest / "skills")
+        (runtime_dest / "docs").mkdir(parents=True, exist_ok=True)
+        shutil.copy2(vocabulary_src, runtime_dest / "docs" / vocabulary_src.name)
+        self.announce(
+            f"packaged canonical validator runtime into {runtime_dest}", level=2
+        )
 
 
 setup(
