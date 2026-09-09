@@ -69,8 +69,8 @@ def validate() -> list[str]:
         errors.append("package.json must not model Python dependencies as npm devDependencies")
 
     init_text = (ROOT / "src" / "sensemaking_skills" / "__init__.py").read_text(encoding="utf-8")
-    if re.search(r"__version__\s*=\s*['\"]\d+\.\d+\.\d+", init_text):
-        errors.append("__init__.py must derive __version__ from installed distribution metadata")
+    if re.search(r"__version__\s*=\s*['\"]", init_text):
+        errors.append("__init__.py must derive __version__ from installed distribution metadata without a literal fallback declaration")
 
     tracked = subprocess.run(
         ["git", "ls-files", "src/sensemaking_skills.egg-info"],
@@ -95,6 +95,20 @@ def validate() -> list[str]:
         errors.append("lab workflow must remain explicitly dispatchable")
     if "requirements-lab.txt" not in lab_workflow:
         errors.append("lab workflow must install the source-only lab dependency manifest")
+    if '--ignore-glob="tests/campaign_validation/test_installed_wheel_*.py"' not in lab_workflow:
+        errors.append("lab workflow must leave installed-wheel qualification to Product Validation")
+
+    worktree_entries = subprocess.run(
+        ["git", "ls-files", "--stage", "--", ".claude/worktrees"],
+        cwd=ROOT, capture_output=True, text=True, check=False,
+    )
+    if worktree_entries.returncode != 0:
+        errors.append("unable to inspect tracked .claude/worktrees entries")
+    elif any(line.startswith("160000 ") for line in worktree_entries.stdout.splitlines()):
+        errors.append("ephemeral .claude/worktrees gitlinks must not be tracked")
+    ignored_paths = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+    if ".claude/worktrees/" not in ignored_paths:
+        errors.append(".gitignore must exclude ephemeral .claude/worktrees/")
 
     return errors
 
