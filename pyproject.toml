@@ -5,20 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sensemaking-skills"
 version = "0.2.2"
-description = "Agent-native framework for repository diagnosis and workflow orchestration"
+description = "Agent-native Campaign control layer and repository sensemaking toolkit"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "click>=8.1.0",
     "PyYAML>=6.0,<7.0",
-    "jsonschema>=4.18,<5.0",
-    "rfc8785>=0.1.4,<0.2",
 ]
 license = {text = "MIT"}
 authors = [
     {name = "Dimmi Andreus", email = "dimmi.andreus1@gmail.com"}
 ]
-keywords = ["agent", "ai", "diagnosis", "workflow", "orchestration", "repository"]
+keywords = ["agent", "ai", "diagnosis", "campaign", "sensemaking", "repository"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
@@ -44,7 +42,12 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+exclude = [
+    "sensemaking_skills.campaign_accounting*",
+    "sensemaking_skills.campaign_validation*",
+    "sensemaking_skills.exploratory_authorization*",
+    "sensemaking_skills.exploratory_execution*",
+]
 
 [tool.setuptools.package-data]
 sensemaking_skills = ["skills/**/*", "skill_trees/**/*", "examples/**/*", "docs/**/*", "defaults/*.yaml"]
-"sensemaking_skills.campaign_validation.schemas" = ["*.json"]

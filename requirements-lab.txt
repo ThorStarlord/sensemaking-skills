@@ -1,0 +1,6 @@
+# Source-only research/lab dependencies.
+# These are intentionally not runtime dependencies of the shipped core wheel.
+jsonschema>=4.18,<5.0
+rfc8785>=0.1.4,<0.2
+pytest>=8.0,<10.0
+pytest-subtests>=0.13,<1.0
