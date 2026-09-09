@@ -1,346 +1,135 @@
-# Getting Started with Sensemaking Skills
+# Getting Started with Sensemaking Skills v0.3.0
 
-This guide shows how to use the system. There are two paths: agent-native (recommended for diagnostics) and CLI utilities.
-
----
+Sensemaking Skills combines agent-native Skills with a local Campaign CLI. The agent supplies semantic judgment; the CLI makes state, evidence, provenance, and explicit decisions durable and mechanically checkable.
 
 ## Prerequisites
 
 - Python 3.11+
-- No API keys or external credentials required for the CLI itself
+- A repository/workspace to work on
+- A coding-agent harness if you want native Skill execution
 
-**sensemaking-skills is a local-first Python utility.** The package itself is self-contained, reads files from your repository, validates artifacts, runs local scripts, and writes Markdown or JSON outputs. It does not make external API calls and does not require credentials.
-
-For full agent-driven diagnostics, use the included skill files with an agent-capable environment such as Claude Code.
-
----
-
-## Setup: Make Skills Available to Agents
-
-After installing the Python package, make the skills discoverable to your agents:
+## Install
 
 ```bash
-pip install sensemaking-skills
-sensemaking-skills setup-skills
+python -m pip install sensemaking-skills==0.3.0
+sensemaking-skills --version
 ```
 
-This installs skill files to `~/.agents/skills` (or `C:\Users\*\.agents\skills` on Windows).
+Expected output includes `0.3.0`.
 
-Then agents can invoke:
-```
-/skill using-sensemaking
-/skill repo-sensemaker
-/skill workflow-planner
-```
-
----
-
-## Quick Start (5 minutes)
-
-### Via Claude Code or Agent (Recommended)
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/ThorStarlord/sensemaking-skills.git
-   cd sensemaking-skills
-   ```
-
-2. **Open the repository in Claude Code or your agent environment.**
-
-3. **Ask the agent to read the bootstrap skill:**
-   ```
-   Read the file `skills/using-sensemaking/SKILL.md` and follow its instructions.
-   ```
-
-4. **Ask the agent to run the diagnostic:**
-   ```
-   Use `skills/repo-sensemaker/SKILL.md` to analyze my repository at `/path/to/my/repo`.
-   Produce a `repository_sensemaking_brief` artifact and save it to `artifacts/`.
-   Then validate it by running `python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md`.
-   ```
-
-5. **Ask the agent to create the workflow plan:**
-   ```
-   Use `skills/workflow-planner/SKILL.md` to convert the brief into a `workflow_orchestration_plan`.
-   Validate it by running `python scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md`.
-   ```
-
-#### Optional: Install Skills into Claude Code
-
-If your Claude Code environment supports local skill installation:
+For source development:
 
 ```bash
-mkdir -p ~/.claude/skills
-cp -R skills/* ~/.claude/skills/
+git clone https://github.com/ThorStarlord/sensemaking-skills.git
+cd sensemaking-skills
+python -m venv .venv
+# activate the environment
+python -m pip install -e .
 ```
 
-Restart Claude Code. If skill invocation works in your environment, you may be able to use:
+## Install Skills for a harness
 
-```
-/skill repo-sensemaker
-/skill workflow-planner
-```
-
-**If those commands don't work**, use the method above: ask the agent to read the SKILL.md files directly. Both methods work equally well.
-
----
-
-### Via CLI (New in 0.2.1)
-
-If you've installed sensemaking-skills via `pip install -e .`:
+Sensemaking Skills does not auto-detect the active harness. Choose the target and scope explicitly.
 
 ```bash
-# Prepare a repository for diagnosis
-sensemaking-skills analyze --repo /path/to/your/repo
+# user scope
+sensemaking-skills setup-skills --target generic --scope user
+sensemaking-skills setup-skills --target claude --scope user
+sensemaking-skills setup-skills --target codex --scope user
+sensemaking-skills setup-skills --target opencode --scope user
 
-# Then open the repository in Claude Code and follow the agent-native path above
-
-# After the agent creates artifacts, validate them:
-sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
-
-# Run the test suite:
-sensemaking-skills test
+# project scope
+sensemaking-skills setup-skills --target claude --scope project --project-root /path/to/repo
 ```
 
-**Note:** The CLI provides utilities for setup and validation. The actual diagnosis requires Claude Code and the agent-native skills.
+Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless `--force` is explicit.
 
-### Validate Artifacts with Python Scripts
+## Start a Campaign
 
-You can also validate directly without the CLI:
-
-**Validate a brief:**
 ```bash
-python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md
+sensemaking-skills campaign init \
+  --workspace /tmp/CMP-0001 \
+  --campaign-id CMP-0001 \
+  --mission "diagnose and repair the repository boundary"
+
+sensemaking-skills campaign status --workspace /tmp/CMP-0001
 ```
 
-**Validate a plan:**
+## Diagnose with the agent-native Skill path
+
+Ask the active coding agent to use `repo-sensemaker` against the target repository and produce a canonical artifact such as a `repository_sensemaking_brief`.
+
+The Skill performs semantic diagnosis. Deterministic scripts/CLI validate and persist the result; they do not replace the agent's judgment.
+
+## Admit validated evidence
+
+Installed v0.3 distributions carry the canonical validator runtime:
+
 ```bash
-python scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md
+sensemaking-skills campaign ingest \
+  --workspace /tmp/CMP-0001 \
+  --artifact /path/to/repository_sensemaking_brief.md
 ```
 
-**Run tests:**
+For development, `--framework-root /path/to/sensemaking-skills` may explicitly select a source checkout. A bad explicit override fails closed.
+
+## Inspect capabilities
+
 ```bash
-python scripts/shadow-mode-runner.py
+sensemaking-skills campaign capabilities \
+  --workspace /tmp/CMP-0001 \
+  --responsibility architectural_review
 ```
 
----
+Capability results are deterministic and unranked. Availability is not selection or execution authority.
 
-## Real-World Workflow
+## Record an agent-authored decision
 
-### Scenario: Diagnose a Complex Monorepo
+Use the explicit decision commands after the active agent has made the semantic judgment:
 
-**Your problem:** You inherited a complex monorepo with unclear architecture. You need to understand the core issue.
-
-**Step 1: Prepare the repository**
 ```bash
-sensemaking-skills analyze --repo /path/to/your/monorepo
+sensemaking-skills campaign advance --help
+sensemaking-skills campaign defer --help
+sensemaking-skills campaign close --help
 ```
 
-Output: Instructions for the agent-led diagnosis workflow.
+## Inspect evidence lineage and reconciliation
 
-**Step 2: Open in Claude Code and ask the agent to diagnose**
+```bash
+sensemaking-skills campaign lineage --workspace /tmp/CMP-0001
+sensemaking-skills campaign reconciliation --workspace /tmp/CMP-0001
+```
+
+These commands reconstruct mechanical provenance/disposition state; they do not decide what the evidence means.
+
+## Handoff and resume
+
+```bash
+sensemaking-skills campaign handoff --workspace /tmp/CMP-0001
+sensemaking-skills campaign resume --workspace /tmp/CMP-0001
+```
+
+The durable handoff allows a fresh context to reconstruct the Campaign without relying on the previous chat transcript.
+
+## Schema compatibility
+
+Current Campaign artifacts use schema version 2. Historical v1 artifacts can be inspected and deterministically qualified through the schema-evolution surface documented in `docs/campaign-schema-evolution.md`.
+
+## Real-harness qualification
+
+A real coding-agent harness attempt can be frozen into the evidence package described in `docs/external-golden-path-verifier.md` and verified with the `sensemaking_skills.external_qualification` module.
+
+Synthetic fixtures validate the verifier itself; they are not substitutes for a real empirical harness run.
+
+## Important boundaries
+
 ```text
-Read `skills/using-sensemaking/SKILL.md`.
-Then use `skills/repo-sensemaker/SKILL.md` to analyze /path/to/your/monorepo.
-Produce a `repository_sensemaking_brief` and save to `artifacts/`.
+validator passed != semantic truth
+available capability != selected or authorized capability
+handoff != recommendation
+lineage != warrant
+Skill installed != Skill observed/invoked by the harness
+external verifier PASS != universal compatibility
 ```
 
-**Agent produces a brief that says:**
-```
-Fog Type: ARCHITECTURE_FOG
-Weakest Boundary: Tight coupling between services
-Recommended Workflow: architecture-implementation-workflow
-Evidence:
-  - File: src/services/auth/user.py (imports 8 other services)
-  - File: src/services/api/routes.py (orchestrates 5 services)
-  - Pattern: Circular dependencies detected
-```
-
-**Step 3: Validate the brief**
-```bash
-sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
-```
-
-**Step 4: Ask the agent to create an orchestration plan**
-```text
-Use `skills/workflow-planner/SKILL.md` to convert the brief into a `workflow_orchestration_plan`.
-```
-
-**Agent produces a plan that specifies:**
-```
-Selected Workflow: docs-contract-reconciliation
-Workflow Steps:
-  1. repo-sensemaker → Diagnose drift
-  2. sensemaking-docs-reconciler → Reconcile docs/registries/contracts
-  3. repair-verifier → Verify closure of the original findings
-  4. handoff → Durable continuation
-```
-
-**Step 5: Validate the plan**
-```bash
-sensemaking-skills validate --artifact artifacts/workflow_orchestration_plan.md
-```
-
-**Step 6: Follow the workflow**
-Ask the agent to execute each step in the orchestration plan.
-
----
-
-## Understanding the Artifacts
-
-### Repository Sensemaking Brief
-
-14-section diagnostic artifact that includes:
-1. Repository name and summary
-2. Fog type classification (ui_fog, product_fog, docs_fog, architecture_fog)
-3. Evidence citations (specific files and line numbers)
-4. Weakest boundary (most critical issue)
-5. Candidate workflows with justification
-6. Risk assessment
-7. Recommended next steps
-
-**Example brief location:**
-```
-artifacts/repository_sensemaking_brief.md
-```
-
-### Workflow Orchestration Plan
-
-10-section plan that specifies:
-1. Which workflow to execute
-2. Skill sequence and order
-3. Input/output artifacts for each step
-4. Approval gates (pause points)
-5. Success criteria
-6. Estimated time
-7. Rollback procedure
-8. Machine-readable YAML block
-
-**Example plan location:**
-```
-artifacts/workflow_orchestration_plan.md
-```
-
----
-
-## Validation & Error Recovery
-
-### Validating Artifacts
-
-All artifacts are validated against contracts to ensure quality:
-
-```bash
-# Validate a brief
-python scripts/validate-brief.py artifacts/repository_sensemaking_brief.md
-
-# Validate a plan
-python scripts/validate-plan.py artifacts/workflow_orchestration_plan.md
-
-# Both together
-python scripts/validate-and-report.py artifacts/
-```
-
-### Error Messages
-
-If validation fails, you get:
-```json
-{
-  "valid": false,
-  "artifact_id": "repository_sensemaking_brief",
-  "errors": [
-    {
-      "error_id": "repository_sensemaking_brief.fog_type.missing_field",
-      "error_type": "missing_field",
-      "field": "fog_type",
-      "message": "Required field 'fog_type' is missing",
-      "suggested_fixes": [
-        "Add fog_type with one of: ui_fog, product_fog, docs_fog, architecture_fog"
-      ]
-    }
-  ]
-}
-```
-
-### Bounded Retry Logic
-
-If an artifact fails validation:
-1. System suggests a fix
-2. You implement the fix
-3. System revalidates (up to 3 attempts)
-4. If still failing after 3 attempts, gracefully escalates with clear error message
-
-This prevents infinite loops while giving the system a chance to self-correct.
-
----
-
-## Common Workflows
-
-### Workflow 1: Quick Diagnosis
-```
-repo-sensemaker → (Read brief) → workflow-planner → (Review plan)
-Time: ~5 minutes
-Output: Diagnosis and recommended next steps
-```
-
-### Workflow 2: Full Analysis
-```
-problem-framer → unknowns-mapper → repo-sensemaker → workflow-planner
-Time: ~20 minutes
-Output: Problem frame, unknowns map, diagnosis, plan
-```
-
-### Workflow 3: Implementation
-```
-docs-contract-reconciliation (bounded subgraph) → validated artifacts
-Time: Days/weeks depending on scope
-Output: Reconciled docs/contracts and a repair-verification report
-```
-
----
-
-## Troubleshooting
-
-### "Skill not found"
-**Solution:** Make sure you copied skills to `~/.claude/skills/`
-```bash
-cp -r skills/* ~/.claude/skills/
-```
-
-### "Validation failed with missing fields"
-**Solution:** Check the error message for the exact field. The artifact contract defines what's required.
-
-### "No repositories found"
-**Solution:** Make sure `--repo` path exists and is readable:
-```bash
-ls -la /path/to/your/repo
-```
-
-### "Timeout (script took >30s)"
-**Solution:** This is expected for large repos. The system respects a 30-second timeout to prevent hanging. Smaller repos run faster (~0.1-0.2s).
-
----
-
-## Next Steps
-
-1. **Try it on your repo:**
-   ```
-   /skill repo-sensemaker --repo /path/to/your/project
-   ```
-
-2. **Read the diagnostic brief** — this is the main output
-
-3. **Follow the recommended workflow** from the orchestration plan
-
-4. **For implementation:** follow the registered bounded subgraph recommended by
-   the plan (e.g. `docs-contract-reconciliation` for docs/registry drift); the
-   agent performs the selected responsibility directly (ADR 0013).
-
----
-
-## More Information
-
-- **[README.md](README.md)** — Project overview
-- **[INSTALLATION.md](INSTALLATION.md)** — Detailed setup
-- **[CONTEXT.md](CONTEXT.md)** — Architecture and philosophy
-- **[API.md](API.md)** — Python API for direct integration
-
+For current release state, see `STATUS.md` and `docs/productization-v0.3.md`.

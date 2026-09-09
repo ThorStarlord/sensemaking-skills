@@ -1,167 +1,79 @@
-# Publishing to PyPI
+# Publishing Sensemaking Skills v0.3.0
 
-This document describes how to publish sensemaking-skills to PyPI.
+This document defines the publication boundary for the first Campaign-based release.
 
-## Current Status
+## Release authority
 
-- ✅ **0.2.1 is ready for PyPI** (CLI tested locally, all tests passing)
-- ⏳ **0.2.1 should be tested in real projects** before production PyPI publication
-- 🔜 **Distribution files created** and verified with twine
+The sole literal release version is `pyproject.toml` `[project].version`.
 
-## Prerequisites
+A release candidate must be qualified from one exact commit by:
 
-- PyPI account: https://pypi.org/
-- Test PyPI account: https://test.pypi.org/ (optional, for safety)
-- `twine` installed: `pip install twine`
-- `build` installed: `pip install build`
+1. Product Validation;
+2. Lab Validation;
+3. Release Candidate Distribution.
 
-## Current Status
+The exact candidate head must be green in all required lanes before merge. Merge qualification does not itself publish to PyPI.
 
-Distributions have been built and verified:
+## Candidate distribution gate
+
+`.github/workflows/release-candidate.yml`:
+
+- checks out the exact PR head;
+- validates the product/lab boundary;
+- runs release-contract, Campaign schema-evolution, and external-verifier tests;
+- builds both wheel and sdist;
+- runs `python -m twine check dist/*`;
+- requires exact `0.3.0` artifact identities;
+- records SHA-256 digests;
+- clean-installs both distributions;
+- verifies CLI version/Campaign surface, schema v2, shipped/lab separation, packaged Skills, and packaged validator runtime;
+- uploads the exact candidate distributions as a workflow artifact.
+
+## Merge
+
+Merge only the qualified exact head. If the candidate head moves, the previous qualification does not transfer to the new bytes.
+
+After merge, verify that `main` contains the qualified tree/changes and that the merge ancestry is the intended one.
+
+## Tag
+
+Tagging is an explicit owner release action. The tag should identify the intended merged release commit, for example:
 
 ```bash
-$ python -m build
-Successfully built sensemaking_skills-0.2.1.tar.gz and sensemaking_skills-0.2.1-py3-none-any.whl
-
-$ python -m twine check dist/*
-Checking dist/sensemaking_skills-0.2.1-py3-none-any.whl: PASSED
-Checking dist/sensemaking_skills-0.2.1.tar.gz: PASSED
+git tag v0.3.0 <release-commit>
+git push origin v0.3.0
 ```
 
-## Publication Process
+Do not tag an unqualified or stale candidate.
 
-### Step 1: Verify Build (Already Done)
+## PyPI publish workflow
+
+`.github/workflows/publish.yml` triggers on `v*` tags. It:
+
+1. checks out the tagged commit;
+2. builds distributions;
+3. runs `twine check`;
+4. uploads only after metadata validation succeeds.
+
+The workflow requires the configured `PYPI_API_TOKEN` secret.
+
+## Post-publish verification
+
+From a clean environment:
 
 ```bash
-python -m build
-python -m twine check dist/*
-```
-
-Expected: Both distributions pass metadata checks.
-
-### Step 2: Publish to Test PyPI (Recommended Safety Check)
-
-```bash
-python -m twine upload --repository testpypi dist/* --verbose
-```
-
-Then test installation:
-```bash
-pip install -i https://test.pypi.org/simple/ sensemaking-skills==0.2.1
+python -m venv /tmp/sensemaking-v030
+# activate it
+python -m pip install --upgrade pip
+python -m pip install sensemaking-skills==0.3.0
 sensemaking-skills --version
-# or
-python -m sensemaking_skills.cli --version
+sensemaking-skills campaign --help
 ```
 
-### Step 3: Publish to Production PyPI
+Verify the installed product still exposes Campaign schema v2 and does not expose retained source-only lab packages.
 
-```bash
-python -m twine upload dist/* --verbose
-```
+## Real-harness empirical evidence
 
-### Step 4: Verify Production Publication
+The deterministic external qualification verifier ships in v0.3. A frozen real-harness attempt may be verified independently of publication timing.
 
-```bash
-# Wait 1-2 minutes for PyPI to index
-pip install sensemaking-skills==0.2.1
-sensemaking-skills --version
-```
-
-## Environment Setup for Publishing
-
-Set up PyPI API token (one-time):
-
-```bash
-# Create ~/.pypirc file
-cat > ~/.pypirc << 'PYPIRC'
-[distutils]
-index-servers =
-    pypi
-    testpypi
-
-[pypi]
-username = __token__
-password = pypi_YOUR_API_TOKEN_HERE
-
-[testpypi]
-repository = https://test.pypi.org/legacy/
-username = __token__
-password = pypi_YOUR_TEST_TOKEN_HERE
-PYPIRC
-```
-
-Or use environment variable:
-
-```bash
-export TWINE_USERNAME=__token__
-export TWINE_PASSWORD=pypi_YOUR_API_TOKEN_HERE
-python -m twine upload dist/*
-```
-
-## Release Checklist
-
-Before publishing:
-
-- [ ] All tests pass: `pytest tests/ -v`
-- [ ] CLI works: `python -m sensemaking_skills.cli --help`
-- [ ] README.md updated with new version info
-- [ ] CHANGELOG.md updated with release notes
-- [ ] Version bumped in setup.py and pyproject.toml
-- [ ] Git commits made and pushed
-- [ ] Distribution builds successfully: `python -m build`
-- [ ] Distribution checks pass: `python -m twine check dist/*`
-- [ ] Optional: Tested on Test PyPI first
-
-## Future Automation
-
-Once stable, use GitHub Actions to automate PyPI publication:
-
-```yaml
-# .github/workflows/publish.yml
-name: Publish to PyPI
-
-on:
-  release:
-    types: [published]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      
-      - name: Install build tools
-        run: pip install build twine
-      
-      - name: Build distribution
-        run: python -m build
-      
-      - name: Check distribution
-        run: python -m twine check dist/*
-      
-      - name: Publish to PyPI
-        run: python -m twine upload dist/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-```
-
-## Important Notes
-
-- **Evidence discipline:** Don't publish until CLI is tested in real projects
-- **Semantic versioning:** Current version is 0.2.1 (beta)
-- **First stable:** Version 1.0.0 should come after real-world CLI testing and user feedback
-- **Security:** Never commit PyPI credentials to git; use GitHub Actions secrets or environment variables
-- **Backup tokens:** Keep API tokens safe and rotate them periodically
-
-## Rollback Procedure
-
-If an issue is discovered after publishing:
-
-1. Publish a patched version (e.g., 0.2.2) with the fix
-2. Mark previous version as broken (if needed)
-3. Document the issue in CHANGELOG.md
-
-Note: You cannot delete or unpublish versions from PyPI after a brief window, so careful testing before publication is essential.
+A synthetic verifier fixture is not a real harness run. A real-harness PASS supports only the bounded claim encoded by that exact frozen evidence package; it does not establish universal harness compatibility or semantic truth.

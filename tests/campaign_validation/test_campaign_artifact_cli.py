@@ -1,4 +1,4 @@
-"""P4 CLI integration tests for validated artifact ingestion."""
+"""P4/P11 CLI integration tests for validated artifact ingestion."""
 
 from __future__ import annotations
 
@@ -43,12 +43,15 @@ def _init(runner: CliRunner, workspace: Path) -> None:
     assert result.exit_code == 0, result.output
 
 
-def test_campaign_ingest_admits_valid_artifact_and_status_reports_evidence(
+def test_campaign_ingest_admits_valid_artifact_with_default_runtime_and_status_reports_evidence(
     runner, tmp_path
 ):
     workspace = tmp_path / "campaign"
     _init(runner, workspace)
 
+    # In editable/source-checkout development the default runtime resolves the
+    # canonical checkout. Installed-wheel coverage below proves the same command
+    # uses the packaged build-derived runtime without a framework checkout.
     result = runner.invoke(
         cli,
         [
@@ -58,8 +61,6 @@ def test_campaign_ingest_admits_valid_artifact_and_status_reports_evidence(
             str(workspace),
             "--artifact",
             str(VALID_ARTIFACT),
-            "--framework-root",
-            str(REPO_ROOT),
             "--json",
         ],
     )
@@ -83,7 +84,7 @@ def test_campaign_ingest_admits_valid_artifact_and_status_reports_evidence(
     assert payload["admission_ref"] in status_payload["evidence_refs"]
 
 
-def test_campaign_ingest_distinguishes_artifact_rejection_from_validator_failure(
+def test_campaign_ingest_distinguishes_artifact_rejection_from_explicit_runtime_failure(
     runner, tmp_path
 ):
     workspace = tmp_path / "campaign"
@@ -140,9 +141,11 @@ def test_campaign_ingest_distinguishes_artifact_rejection_from_validator_failure
     assert json.loads(status.output)["evidence_count"] == 0
 
 
-def test_campaign_ingest_help_exposes_explicit_framework_checkout(runner):
+def test_campaign_ingest_help_exposes_optional_framework_checkout_override(runner):
     result = runner.invoke(cli, ["campaign", "ingest", "--help"])
     assert result.exit_code == 0
-    assert "--framework-root" in result.output
-    assert "--artifact" in result.output
-    assert "--target-repo" in result.output
+    normalized = " ".join(result.output.split())
+    assert "--framework-root" in normalized
+    assert "installed canonical validator runtime is used by default" in normalized
+    assert "--artifact" in normalized
+    assert "--target-repo" in normalized

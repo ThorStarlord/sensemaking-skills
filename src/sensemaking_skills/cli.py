@@ -457,9 +457,13 @@ def campaign_init(
 )
 @click.option(
     "--framework-root",
-    required=True,
+    required=False,
+    default=None,
     type=click.Path(exists=True, file_okay=False, path_type=Path),
-    help="Sensemaking framework checkout containing scripts/validate-and-report.py",
+    help=(
+        "Optional Sensemaking source-checkout override for validator development; "
+        "the installed canonical validator runtime is used by default"
+    ),
 )
 @click.option(
     "--target-repo",
@@ -477,7 +481,7 @@ def campaign_init(
 def campaign_ingest(
     workspace: Path,
     artifact: Path,
-    framework_root: Path,
+    framework_root: Path | None,
     target_repo: Path | None,
     probe_report: Path | None,
     output_json: bool,

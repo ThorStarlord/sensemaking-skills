@@ -49,6 +49,7 @@ jobs:
             tests/campaign_validation/test_artifact_admission.py \
             tests/campaign_validation/test_campaign_*.py \
             tests/campaign_validation/test_harness_adapters.py \
+            tests/campaign_validation/test_release_candidate_contract.py \
             tests/campaign_validation/test_repo_sensemaker_connector_probe_contract.py \
             tests/campaign_validation/test_workflow_liveness_contract.py \
             tests/integration/test_external_golden_path_qualification.py \
@@ -87,6 +88,7 @@ jobs:
         run: |
           python -m pytest tests/campaign_validation/test_installed_wheel_p9.py -q -rs
           python -m pytest tests/campaign_validation/test_installed_wheel_p10.py -q -rs
+          python -m pytest tests/campaign_validation/test_installed_wheel_p11.py -q -rs
           python -m pytest tests/campaign_validation/test_installed_wheel_setup_skills.py -q -rs
 
       - name: Assert tests did not mutate tracked state

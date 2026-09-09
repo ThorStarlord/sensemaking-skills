@@ -1,457 +1,246 @@
-# Sensemaking Skills v0.3 Productization Plan
+# Sensemaking Skills v0.3 Productization and Release Plan
 
-**Status:** ACTIVE owner direction  
-**Effective:** 2026-09-08  
-**Base at pivot:** `main@5c2c807542f7e150d4a031430f59e297ed816b24`  
-**Current integrated frontier:** P9 merged at `main@0f306cb9f05a70f2b27a64c05f65749534f9f0e1`  
-**Current implementation frontier:** P10 — harness adapters  
-**Primary objective:** turn the ratified agent-native control model into a usable campaign-based engineering product.  
+**Status:** ACTIVE — P11 release qualification  
+**Effective:** 2026-09-09  
+**Release version:** `0.3.0`  
+**Current release base:** `main@36e9ea0e8e5bf0a56f5466113090978317bc0190`  
+**Current frontier:** P11 — v0.3 release baseline  
 **Canonical product model:** [`sensemaking-campaign.md`](sensemaking-campaign.md)
 
-This document is the versioned v0.3 delivery plan. The durable definition of a Sensemaking Campaign belongs in [`sensemaking-campaign.md`](sensemaking-campaign.md).
+This document records the v0.3 delivery/release baseline. The durable definition of a Sensemaking Campaign remains in `sensemaking-campaign.md`.
 
-## 1. Development-regime change
+## 1. Product direction
 
-The repository is implementation/productization-first.
+Sensemaking Skills is implementation/productization-first:
 
 ```text
-identify a user-visible capability
-→ implement the smallest complete vertical slice
-→ validate deterministically
+identify user-visible capability
+→ implement smallest complete vertical slice
+→ validate mechanically decidable contracts
 → dogfood in ordinary engineering use
 → repair observed friction
-→ ship the slice
+→ ship the bounded slice
 ```
 
-Formal experiments are reserved for consequential product uncertainties that implementation and dogfood evidence cannot reasonably resolve. Existing research remains evidence and keeps its actual claim ceilings.
+Formal experiments remain appropriate for consequential uncertainties that implementation and ordinary dogfood cannot resolve. Historical research keeps its actual claim ceilings.
 
-## 2. Product boundary preserved
+## 2. Product boundary
 
-The productization program does not reverse the accepted agent-native control model.
-
-- The active coding agent owns semantic control.
-- Deterministic Python owns representation, persistence, validation, provenance, authority checks, integrity, and structural reconstruction.
-- A validator passing does not make a semantic conclusion true.
-- Capability availability does not select or authorize a capability.
-- A handoff does not decide what the fresh agent should do next.
-- Provenance/lineage does not establish semantic warrant.
-- Reconciliation evidence does not decide the Campaign transition.
-- Harness setup/discovery-root mapping does not establish runtime Skill availability, selection, or execution authority.
-
-The durable invariant remains:
+The active coding agent owns semantic control. Deterministic machinery owns persistence, representation, validation, provenance, authority checks, structural reconstruction, and mechanically decidable integrity.
 
 ```text
-warranted responsibility
-!= capability availability
-!= execution authority
+warranted responsibility != available capability != execution authority
+validator passed != semantic truth
+provenance != semantic warrant
+reconciliation evidence != Campaign decision
+handoff != semantic recommendation
+Skill copied to discovery root != Skill selected or authorized
+external verifier PASS != semantic truth
 ```
 
-and:
+No v0.3 release mechanism may become a centralized semantic router.
+
+## 3. v0.3 north-star lifecycle
 
 ```text
-provenance
-!= semantic truth
-
-consumed evidence
-!= sufficient evidence
-
-reconciliation evidence
-!= semantic disposition
-
-Skill copied to discovery root
-!= Skill selected or authorized
-```
-
-## 3. v0.3 north-star outcome
-
-A coding agent can:
-
-```text
-start a Sensemaking Campaign
-→ diagnose a repository through the agent-native Skill path
-→ preserve and admit validated artifacts
-→ record warranted responsibility and authority
+start Campaign
+→ repository diagnosis through agent-native Skill path
+→ preserve/admit validated artifacts
+→ record agent-authored responsibility and authority
 → inspect available capabilities
 → perform bounded work
-→ record durable evidence
-→ reconcile/verify the result
-→ explicitly disposition that evidence
-→ record a durable transition
-→ inspect exact transition/evidence lineage
-→ hand the Campaign to a fresh agent
-→ resume without conversation memory
+→ preserve durable evidence
+→ reconcile / repair-verify result
+→ explicitly disposition evidence
+→ record durable transition
+→ inspect exact evidence lineage
+→ hand off Campaign
+→ resume in fresh context
 → continue or terminate honestly
 ```
 
-A fresh agent should reconstruct the active Campaign from durable Campaign state and referenced canonical artifacts, not the previous chat transcript.
+The fresh agent reconstructs from durable Campaign state and canonical referenced evidence rather than prior conversation memory.
 
-## 4. Campaign architecture
-
-`campaign_semantics` remains the domain contract for Campaign state, responsibility, uncertainty, authority, transitions, handoffs, traces, and capability availability.
-
-```text
-agent semantic judgment
-        ↓
-validated artifact / explicit decision
-        ↓
-CampaignService
-        ↓
-CampaignStore
-        ↓
-campaign_semantics typed contracts
-        ↓
-filesystem workspace
-```
-
-Lineage is a reconstruction of identities, provenance, and explicit consumption links. Reconciliation lifecycle state may summarize mechanically present reconciliation evidence, but must never become a second semantic decision system. Harness adapters remain packaging/setup infrastructure outside this semantic core.
-
-## 5. Milestone status
+## 4. Integrated milestones
 
 | Milestone | Status | Outcome |
 |---|---|---|
-| **P0 — Productization pivot** | **MERGED** | Implementation-first direction made durable; experiment-first development stopped as default. |
-| **P1 — Durable campaign workspace** | **MERGED** | Isolated file-backed Campaign persistence with strict typed I/O and fail-closed filesystem boundaries. |
-| **P2 — Campaign service** | **MERGED** | Deterministic lifecycle service with recoverable transition commits, reconstruction, defer/terminate, handoff, and resume primitives. |
-| **P3 — Campaign CLI foundation** | **MERGED** | `campaign init/status/validate/history` with human and JSON surfaces plus stable exit semantics. |
-| **P4 — Validated artifact ingestion** | **MERGED** | Canonically validated, content-addressed artifact admission with append-only receipts; raw artifact files do not automatically become evidence. |
-| **P5 — Agent-authored decisions** | **MERGED** | Explicit `campaign advance/defer/close` decisions persist agent judgment without semantic routing. |
-| **P6 — Real capability registry** | **MERGED** | Read-only agent-classified capability inspection with liveness, availability, and authority separation. |
-| **P7 — Durable handoff/resume** | **MERGED** | Fresh-context reconstruction with integrity-bound handoff and installed-wheel proof. |
-| **P8 — Artifact/evidence lineage** | **MERGED** | Exact evidence-byte identity, provenance, and explicit transition-consumption reconstruction. |
-| **P9 — Reconciliation lifecycle** | **MERGED** | Admitted reconciliation/repair-verification evidence is mechanically correlated with explicit P8-bound Campaign disposition without semantic auto-routing. |
-| **P10 — Harness adapters** | **CURRENT** | Explicit Skill discovery-root setup for Claude Code, Codex, OpenCode, and portable/generic environments without harness auto-detection. |
-| **P11 — v0.3 qualification/release** | PLANNED | Prove the external golden path and ship the first usable Campaign-based release. |
+| P0 — Productization pivot | MERGED | Implementation-first direction and preserved research claim ceilings. |
+| P1 — Durable Campaign workspace | MERGED | File-backed typed state, append-only history, path containment, atomic replacement. |
+| P2 — Campaign service | MERGED | Recoverable lifecycle commits, validation/reconstruction, handoff/resume primitives. |
+| P3 — Campaign CLI foundation | MERGED | `init/status/validate/history`. |
+| P4 — Validated artifact ingestion | MERGED | Canonical validation, content-addressed artifacts, append-only admission receipts. |
+| P5 — Agent-authored decisions | MERGED | `advance/defer/close` persist explicit semantic judgment. |
+| P6 — Capability registry | MERGED | Deterministic unranked capability/availability inspection. |
+| P7 — Durable handoff/resume | MERGED | Fresh-context reconstruction with integrity binding. |
+| P8 — Artifact/evidence lineage | MERGED | Exact identity/provenance and explicit transition-consumption reconstruction. |
+| P9 — Reconciliation lifecycle | MERGED | Mechanical report-disposition visibility without semantic auto-routing. |
+| P10 — Harness adapters | MERGED | Explicit deterministic setup roots for generic, Claude, Codex, and OpenCode environments. |
+| P11 — v0.3 release baseline | CURRENT | Current-main release hardening, self-contained installed validator runtime, release-contract reconciliation, and exact-head distribution qualification. |
 
-## 6. Implemented milestone contracts
+## 5. Why the prior P11 candidate is superseded
 
-### P0 — Productization pivot — MERGED
-
-Delivered implementation-first direction while preserving historical research and claim ceilings.
-
-### P1 — Durable campaign workspace — MERGED
-
-Current workspace foundations include current state, optional policy/handoff, trace, transitions, artifacts, admissions, and raw evidence under strict physical-containment rules.
-
-### P2 — Campaign service — MERGED
-
-Implemented deterministic initialize/validate/transition/defer/terminate/handoff/resume operations with durable commit intent and crash recovery. The service validates mechanically decidable contracts but never decides which responsibility is semantically warranted.
-
-### P3 — Campaign CLI foundation — MERGED
-
-Implemented:
+PR #294 qualified a candidate rooted at:
 
 ```text
-sensemaking-skills campaign init
-sensemaking-skills campaign status
-sensemaking-skills campaign validate
-sensemaking-skills campaign history
+main@d833095ab9b37bd9a93d39d286b358061eb913e5
 ```
 
-CLI reconstruction goes through `CampaignService`, not a second history implementation.
+After that candidate was created, current `main` gained four release-significant boundaries:
 
-### P4 — Validated artifact ingestion — MERGED
+1. PR #295 — deterministic real-harness golden-path evidence verifier;
+2. PR #296 — Campaign schema-v2 evolution/compatibility;
+3. PR #297 — shipped product / retained research-lab packaging split;
+4. PR #298 — CI authority reconciliation after that split.
 
-Implemented:
+Therefore the old candidate is not the release authority. v0.3 is rebuilt from current main rather than merging or mechanically rebasing #294.
+
+## 6. P11 — v0.3 release baseline
+
+P11 carries forward only the still-valid release mechanics from the old candidate and requalifies them against current architecture.
+
+### 6.1 Installed validator portability
+
+Normal installed use of:
 
 ```text
 sensemaking-skills campaign ingest
 ```
 
-```text
-artifact bytes
-→ canonical validate-and-report.py router
-→ selected validator
-→ valid=true
-→ content-addressed artifact
-→ append-only admission receipt
-→ Campaign evidence
-```
+must not require a second Sensemaking Skills source checkout.
 
-Important invariant:
+Builds derive a canonical validator runtime from the same repository sources used during development:
 
 ```text
-file under artifacts/
-!= validated artifact
-!= admitted Campaign evidence
+scripts/                         → sensemaking_skills/validator_runtime/scripts/
+skills/                          → sensemaking_skills/validator_runtime/skills/
+docs/canonical-vocabulary.yaml   → sensemaking_skills/validator_runtime/docs/
 ```
 
-See [`artifact-ingestion.md`](artifact-ingestion.md).
+This is build-derived duplication, not a second manually maintained implementation.
 
-### P5 — Agent-authored decisions — MERGED
+`--framework-root` remains an explicit development/compatibility override. Once explicitly supplied, an invalid override fails closed rather than falling back silently.
 
-Implemented:
+### 6.2 Release-version authority
+
+The single literal release version is:
 
 ```text
-sensemaking-skills campaign advance
-sensemaking-skills campaign defer
-sensemaking-skills campaign close
+pyproject.toml [project].version = 0.3.0
 ```
+
+`setup.py` contains only the build hook. `package.json` remains private repository tooling metadata and must not declare the Python product version. Runtime `sensemaking_skills.__version__` comes from installed distribution metadata.
+
+### 6.3 Campaign schema v2
+
+The release baseline includes Campaign schema v2.
+
+Historical v1 artifacts can undergo deterministic **v1 -> v2** representation migration. The migration layer may normalize sanctioned representation differences but may not:
+
+- reinterpret evidence;
+- choose work;
+- infer responsibility;
+- grant authority;
+- rewrite append-only historical bytes merely to modernize serialization.
+
+Append-only migration receipts bind exact legacy bytes to exact current representations.
+
+### 6.4 Product/lab split
+
+The wheel ships only the core Campaign product/runtime surface. Retained research packages remain source-only:
 
 ```text
-durable evidence
-→ agent semantic judgment
-→ typed decision
-→ CampaignService lifecycle primitive
-→ recoverable CampaignState + TransitionRecord + trace
+campaign_validation
+campaign_accounting
+exploratory_authorization
+exploratory_execution
 ```
 
-Transition evidence is explicit durable consumption context supplied by the authored decision. P5 does not rank/select capabilities or infer semantic conclusions. See [`campaign-decisions.md`](campaign-decisions.md).
+Product CI owns installed-wheel claims. Lab CI owns retained research claims and must not accidentally rerun installed-wheel product suites in a source-only environment.
 
-### P6 — Real capability registry — MERGED
+### 6.5 Real-harness qualification
 
-Implemented:
+The release includes `sensemaking_skills.external_qualification` and protocol `v0.3-external-golden-path-dogfood-v1`.
+
+The verifier can qualify a frozen real external attempt by checking exact candidate/target/runtime identities, SHA-256-bound evidence, Skill setup and native invocation evidence, Campaign lifecycle checkpoints, no-manual-repair/no-prior-chat boundaries, and fresh-context handoff/resume integrity.
+
+The integration fixture proves the verifier contract. **real-harness PASS evidence is empirical** and must come from a real frozen harness attempt; release CI does not manufacture that empirical event from a synthetic fixture.
+
+## 7. Exact-head release qualification
+
+A v0.3 candidate is mechanically qualified only when the same exact PR head is green in all relevant lanes.
+
+### Product Validation
+
+- Python 3.11 and 3.12 Campaign product suites;
+- schema-evolution and external-verifier integration contracts;
+- product/lab boundary validator;
+- installed wheel smoke and P9/P10/P11 regressions;
+- repository/Skill contract validator and Probe Engine gate;
+- Linux/Windows filesystem-security suites.
+
+### Lab Validation
+
+- retained source-only research/lab suites on Python 3.11/3.12;
+- Windows path-confinement proofs;
+- installed-wheel product tests excluded from the broad campaign-validation selector.
+
+### Release Candidate Distribution
+
+The exact-head release lane must:
+
+1. assert exact-head checkout;
+2. run release-baseline contracts;
+3. prove Campaign schema-v2 and external-verifier contracts;
+4. prove product/lab boundary validity;
+5. build wheel and sdist;
+6. run `twine check`;
+7. assert exact `0.3.0` artifact names;
+8. record SHA-256 distribution digests;
+9. clean-install wheel and sdist;
+10. verify CLI version and Campaign surface;
+11. verify schema version 2 in installed distributions;
+12. verify source-only lab modules are absent from the wheel;
+13. verify packaged Skill trees and canonical validator runtime;
+14. upload the exact candidate artifacts.
+
+## 8. Publication boundary
+
+Qualification authorizes the code/release baseline, not automatic PyPI publication. Tagged publication remains a separate explicit owner action.
+
+The tag workflow must build from the tag, run `twine check`, and only then upload with the configured PyPI token.
+
+## 9. External empirical evidence after release-baseline qualification
+
+The deterministic verifier is part of v0.3. A real external harness attempt may be frozen and qualified before or after publication depending on owner release policy.
+
+Regardless of timing:
 
 ```text
-sensemaking-skills campaign capabilities
+fixture PASS != real harness PASS
+real harness PASS != semantic truth
+real harness PASS != universal harness compatibility
 ```
 
-P6 exposes declared capability metadata only after the agent supplies a responsibility classification. Results are deterministic and unranked; availability is not authority; capability inspection never selects or invokes work. See [`capability-registry.md`](capability-registry.md).
+A real PASS supports only the bounded claim encoded by its frozen evidence package.
 
-### P7 — Durable handoff/resume — MERGED
+## 10. Explicit non-goals for v0.3
 
-Implemented:
+Do not add by default:
 
-```text
-sensemaking-skills campaign handoff
-sensemaking-skills campaign resume
-```
-
-P7 reuses canonical P2 handoff/reconstruction primitives and integrity-binds fresh-context reconstruction without changing the semantic `CampaignHandoff` schema. See [`campaign-handoff-resume.md`](campaign-handoff-resume.md).
-
-### P8 — Artifact/evidence lineage — MERGED
-
-Implemented:
-
-```text
-sensemaking-skills campaign lineage
-```
-
-P8 records/reconstructs mechanically verifiable provenance and explicit evidence consumption while leaving semantic judgment to the active agent.
-
-```text
-durable Campaign evidence
-        ↓
-exact byte identity + provenance
-        ↓
-append-only precommit consumption intent
-        ↓
-existing P2 lifecycle commit
-        ↓
-TransitionRecord.evidence + trace digest
-        ↓
-read-only lineage reconstruction
-```
-
-P8 distinguishes:
-
-- raw `evidence/**` — exact consumed bytes are snapshotted by SHA-256;
-- admitted artifacts — reuse P4 content-addressed identity and admission provenance;
-- admission receipts — preserve exact consumed receipt bytes plus validator/artifact provenance.
-
-A P8-authored zero-evidence decision receives an explicit empty bound receipt. Historical/direct-P2 transitions without P8 receipts remain `legacy_unbound`. Orphan precommit intents do not create false committed consumption edges.
-
-See [`campaign-lineage.md`](campaign-lineage.md).
-
-### P9 — Reconciliation lifecycle — MERGED
-
-Implemented:
-
-```text
-sensemaking-skills campaign reconciliation
-```
-
-P9 is a read-only reconstruction over P4 admission provenance and P8 consumption edges. It identifies admitted `reconciliation_report` / `repair_verification_report` evidence and reports whether an explicit exact-byte-bound Campaign transition has consumed each report.
-
-Mechanical states are:
-
-```text
-disposition_required
-disposition_recorded
-legacy_unbound
-```
-
-`disposition_recorded` means only that an explicit Campaign transition consumed the exact report. It does not claim that the report was correct, reconciliation is semantically complete, or the transition was the right decision. Report verdict content never becomes an automatic transition rule.
-
-See [`campaign-reconciliation.md`](campaign-reconciliation.md).
-
-## 7. Current implementation frontier — P10
-
-The next bounded implementation slice is **P10 — Harness adapters**.
-
-### Goal
-
-Make the packaged Skill trees installable into major coding-agent discovery roots through one explicit, deterministic setup surface while keeping harness-specific concerns outside Campaign semantics.
-
-The required control shape is:
-
-```text
-caller explicitly selects harness + scope
-        ↓
-deterministic adapter resolves declared discovery root
-        ↓
-exact packaged Skill tree copied
-        ↓
-existing drift check
-        ↓
-explicit --force required for replacement
-```
-
-P10 must not detect which harness is running or infer which Skill should be used.
-
-### Initial product surface
-
-Extend the existing setup command rather than create a second installer:
-
-```text
-sensemaking-skills setup-skills \
-  --target agents|generic|claude|codex|opencode|claude-superpowers|all|custom \
-  [--scope user|project] \
-  [--project-root <repo>] \
-  [--skills-dir <custom-root>] \
-  [--dry-run] \
-  [--force]
-```
-
-### Adapter contract
-
-P10 should encode the currently documented discovery roots explicitly:
-
-```text
-generic user       ~/.agents/skills
-generic project    <project>/.agents/skills
-
-Claude user        ~/.claude/skills
-Claude project     <project>/.claude/skills
-
-Codex user         $CODEX_HOME/skills (default ~/.codex/skills)
-Codex project      <project>/.agents/skills
-
-OpenCode user      ~/.config/opencode/skills
-OpenCode project   <project>/.opencode/skills
-```
-
-`agents` remains a compatibility alias for `generic`. The historical `claude-superpowers`, `all`, and `custom` targets remain available.
-
-Codex `CODEX_HOME` is explicit environment configuration. Reading it is not active-harness detection.
-
-### P10 must preserve
-
-```text
-copied to declared discovery root
-!= harness observed Skill
-!= Skill selected
-!= execution authorized
-!= Campaign decision
-```
-
-It must also preserve the existing fail-closed drift rule:
-
-```text
-missing -> copy
-current -> no-op success
-different -> preserve installed bytes + report failure
---force -> explicit replacement
-```
-
-Project scope requires an explicit existing `--project-root`; it must not infer the repository from cwd, git, an editor, or a running harness.
-
-### P10 must not
-
-- auto-detect Claude Code, Codex, OpenCode, or another active agent process;
-- silently fall back among unrelated harness discovery roots;
-- select or invoke a Skill after copying it;
-- imply that copied Skills were observed by the current harness;
-- grant capability availability or execution authority;
-- create or mutate Campaign state;
-- place harness-specific filesystem semantics inside `campaign_semantics`;
-- bypass existing packaged Skill-tree drift checks;
-- overwrite a divergent Skill tree without explicit `--force`.
-
-### Qualification direction
-
-A qualified P10 candidate should prove at least:
-
-1. `agents` remains a compatibility alias for `generic`;
-2. Claude user/project discovery roots resolve deterministically;
-3. Codex personal `$CODEX_HOME/skills` and project `.agents/skills` are represented separately;
-4. OpenCode native user/project roots resolve deterministically;
-5. project scope fails closed without an explicit existing project root;
-6. incompatible setup options fail closed rather than being silently ignored;
-7. `all` deduplicates shared project roots deterministically;
-8. exact complete packaged Skill trees are copied;
-9. divergent installed trees remain untouched without `--force`;
-10. dry-run creates no destination state;
-11. no setup path creates Campaign state or semantic selection/authority output;
-12. pre-P10 compatibility targets remain available;
-13. the installed wheel exposes the P10 setup surface without source checkout.
-
-See [`harness-adapters.md`](harness-adapters.md).
-
-## 8. Remaining planned milestones
-
-### P11 — v0.3 qualification/release
-
-Required golden path:
-
-```text
-start
-→ repository diagnosis
-→ validated artifact admission
-→ agent-authored responsibility/authority decision
-→ available capability inspection
-→ bounded work
-→ durable evidence
-→ reconciliation / repair verification
-→ explicit reconciliation disposition
-→ transition
-→ lineage inspection
-→ handoff
-→ fresh-context resume
-→ justified continuation or terminal stop
-```
-
-## 9. Explicit non-goals for v0.3
-
-Do not build unless later product pressure warrants it:
-
-- centralized semantic router;
-- HTN/generic planner;
-- Skill ranking algorithm;
-- critic/voting swarm;
+- centralized semantic routing;
+- generic HTN planning;
+- Skill ranking/automatic selection;
+- critic/voting swarms;
 - self-modifying Skills;
-- autonomous SkillOpt loop;
-- Campaign server/database/cloud service;
-- generic semantic truth validator;
+- autonomous Skill optimization;
+- Campaign server/database/cloud backend;
+- universal semantic truth validation;
 - automatic external mutation authority;
-- full multi-repository Campaign engine.
+- full multi-repository Campaign control.
 
-## 10. Experiment disposition
+## 11. v0.3 done condition
 
-Research and experimental scaffolds remain laboratories/historical evidence rather than the default active program.
+The release baseline is ready to merge when the exact candidate head passes Product Validation, Lab Validation, and Release Candidate Distribution with no manually repaired Campaign or distribution state.
 
-EXP-0006 remains stopped at its actual completed boundary under the owner productization pivot. Preserve its diagnostic attempts, frozen holdout identity/integrity record, contamination audit, and claim ceilings. Do not manufacture a Skill candidate merely to exercise the qualification mechanism.
-
-The provenance/disposition of SkillOpt-influenced Skill-quality ideas remains recorded in [`research/skillopt-adaptation.md`](research/skillopt-adaptation.md). That note does not insert Skill optimization into the v0.3 milestone sequence or alter the Campaign boundary.
-
-## 11. Definition of v0.3 done
-
-The first Campaign-based release is ready when a real external-repository run demonstrates:
-
-```text
-start
-→ repository diagnosis
-→ validated artifact admission
-→ agent-authored responsibility/authority decision
-→ available capability inspection
-→ bounded work
-→ durable evidence
-→ reconciliation / repair verification
-→ explicit reconciliation disposition
-→ transition
-→ lineage inspection
-→ handoff
-→ fresh-context resume
-→ justified continuation or terminal stop
-```
-
-with deterministic reconstruction and **without manual Campaign/artifact repair or prior conversation memory as hidden input**.
+After merge, tag/publication remains an explicit owner-gated release action.

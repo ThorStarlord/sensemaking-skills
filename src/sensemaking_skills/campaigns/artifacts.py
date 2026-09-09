@@ -4,7 +4,8 @@ The active agent decides whether an artifact should be produced and what it
 means. This service performs only the deterministic trust boundary:
 
 1. snapshot the exact source bytes;
-2. invoke the repository's canonical ``scripts/validate-and-report.py``;
+2. invoke the canonical validator runtime (installed distribution by default,
+   explicit framework checkout as a development/compatibility override);
 3. reject invalid artifacts or validator execution failures;
 4. copy the validated bytes content-addressed beneath ``artifacts/``;
 5. write an append-only admission receipt last.
@@ -87,21 +88,57 @@ class ArtifactAdmissionService:
         return resolved
 
     @staticmethod
-    def _require_framework_root(framework_root: str | Path) -> tuple[Path, Path]:
-        root = Path(framework_root).expanduser().resolve()
+    def _default_framework_root() -> Path:
+        """Resolve the canonical validator runtime without semantic fallback.
+
+        Installed wheels carry a build-derived ``validator_runtime`` beneath
+        the package. Editable/source-checkout development may use the repository
+        root directly when that generated runtime is absent. Both paths contain
+        the same canonical script/contract sources; arbitrary directories are
+        never searched.
+        """
+        package_root = Path(__file__).resolve().parents[1]
+        packaged = package_root / "validator_runtime"
+        if packaged.is_dir():
+            return packaged
+
+        source_checkout = Path(__file__).resolve().parents[3]
+        if (source_checkout / "scripts" / "validate-and-report.py").is_file():
+            return source_checkout
+
+        raise ArtifactValidatorError(
+            "canonical validator runtime is unavailable; reinstall the package "
+            "or provide an explicit --framework-root development checkout"
+        )
+
+    @staticmethod
+    def _require_framework_root(
+        framework_root: str | Path | None,
+    ) -> tuple[Path, Path]:
+        requested = (
+            ArtifactAdmissionService._default_framework_root()
+            if framework_root is None
+            else Path(framework_root).expanduser()
+        )
+        try:
+            root = requested.resolve(strict=True)
+        except OSError as exc:
+            raise ArtifactValidatorError(
+                f"could not resolve validator runtime root: {requested}: {exc}"
+            ) from exc
         if not root.is_dir():
-            raise ArtifactValidatorError(f"framework root is not a directory: {root}")
+            raise ArtifactValidatorError(f"validator runtime root is not a directory: {root}")
         router = root / "scripts" / "validate-and-report.py"
         if router.is_symlink() or not router.is_file():
             raise ArtifactValidatorError(
                 "canonical validator router is unavailable at "
-                f"{router}; P4 requires a Sensemaking framework checkout"
+                f"{router}; reinstall the package or provide a valid framework checkout"
             )
         try:
-            router.resolve(strict=True).relative_to(root.resolve(strict=True))
+            router.resolve(strict=True).relative_to(root)
         except (OSError, ValueError) as exc:
             raise ArtifactValidatorError(
-                f"canonical validator router escapes framework root: {router}"
+                f"canonical validator router escapes validator runtime root: {router}"
             ) from exc
         return root, router
 
@@ -290,7 +327,7 @@ class ArtifactAdmissionService:
         self,
         artifact_path: str | Path,
         *,
-        framework_root: str | Path,
+        framework_root: str | Path | None = None,
         target_repo: str | Path | None = None,
         probe_report: str | Path | None = None,
     ) -> ArtifactAdmissionResult:

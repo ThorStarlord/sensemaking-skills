@@ -1,7 +1,9 @@
-# Validated artifact ingestion — P4
+# Validated artifact ingestion — P4 + P11 release portability
 
 P4 connects agent-produced Sensemaking artifacts to durable campaign evidence
-without granting epistemic status merely because a file exists.
+without granting epistemic status merely because a file exists. P11 makes that
+same canonical validation boundary available from the installed distribution so
+a release user does not need a separate Sensemaking source checkout.
 
 ## Trust boundary
 
@@ -79,8 +81,9 @@ artifact-byte drift, campaign-id mismatch, unsafe refs, missing artifact bytes,
 and symlink/reparse escapes.
 
 The router/validator digests are historical provenance. P4 does not require the
-current checkout to retain those exact validator bytes merely to read a past
-campaign; it records which exact validator bytes granted admission at the time.
+current installation to retain those exact validator bytes merely to read a
+past campaign; it records which exact validator bytes granted admission at the
+time.
 
 ## Crash ordering
 
@@ -98,11 +101,12 @@ No P4 receipt means no P4 artifact evidence.
 
 ## CLI
 
+Normal installed-distribution use requires no framework checkout:
+
 ```bash
 sensemaking-skills campaign ingest \
   --workspace /path/to/CMP-0001 \
   --artifact /path/to/repository_sensemaking_brief.md \
-  --framework-root /path/to/sensemaking-skills \
   --target-repo /path/to/target \
   --json
 ```
@@ -110,6 +114,21 @@ sensemaking-skills campaign ingest \
 `--target-repo` is optional and is forwarded to target-aware validators.
 `--probe-report` is also optional and preserves the existing same-episode Probe
 Engine authority path used by `validate-brief.py`.
+
+For validator development or compatibility testing, an explicit source checkout
+may override the installed runtime:
+
+```bash
+sensemaking-skills campaign ingest \
+  --workspace /path/to/CMP-0001 \
+  --artifact /path/to/artifact.md \
+  --framework-root /path/to/sensemaking-skills \
+  --json
+```
+
+An explicit override is authoritative. If it is malformed or missing the
+canonical router, ingestion fails closed; the CLI does not silently substitute
+the packaged runtime after the caller selected a checkout.
 
 A successful JSON result uses:
 
@@ -150,26 +169,43 @@ process error.
 This distinction prevents an infrastructure failure from being mislabeled as a
 negative semantic or validation finding about the artifact.
 
-## Current framework-checkout requirement
+## Installed validator runtime
 
-P4 intentionally reuses the repository's existing validator ecosystem rather
-than creating a second validator implementation. Those validator entrypoints
-currently live under the repository-level `scripts/` tree rather than inside
-the installed Python package.
+The repository-root `scripts/` and `skills/` trees remain the canonical sources
+for validator implementation and contracts. P11 does **not** introduce a second
+manually maintained validator implementation.
 
-For P4, `campaign ingest` therefore requires an explicit `--framework-root`
-pointing at a Sensemaking source checkout containing:
+During wheel construction, the existing custom `build_py` step derives a
+self-contained runtime beneath the built package:
 
 ```text
-scripts/validate-and-report.py
-scripts/<selected-validator>.py
+sensemaking_skills/validator_runtime/
+├── scripts/   # exact build-time copy of canonical repository scripts/
+├── skills/    # exact build-time copy of canonical repository skills/
+└── docs/
+    └── canonical-vocabulary.yaml
 ```
 
-If that boundary is unavailable, ingestion fails closed with
-`ARTIFACT_VALIDATOR_ERROR`. It never silently falls back to accepting the file.
-Packaging the canonical validators into a self-contained installed distribution
-is a later release-hardening concern; P4 does not duplicate them to hide this
-constraint.
+`campaign ingest` uses that installed runtime by default. In editable/source
+checkout development, when the generated runtime is not present, the service
+uses the one exact repository root containing the imported package. It does not
+search arbitrary directories or pick a "nearby" validator checkout.
+
+The admission receipt continues hashing the exact router and selected validator
+bytes that actually ran. Packaging therefore changes deployment portability,
+not the P4 provenance or trust model.
+
+The release qualification must prove that an installed wheel can:
+
+```text
+campaign init
+→ campaign ingest without --framework-root
+→ validator accept/reject exact bytes
+→ preserve router/validator SHA-256 provenance
+→ reconstruct admitted evidence
+```
+
+from a working directory outside the Sensemaking source checkout.
 
 ## Compatibility with P1–P3 workspaces
 
@@ -190,7 +226,7 @@ compatibility shortcut.
 
 ## Non-goals
 
-P4 does **not**:
+P4/P11 portability does **not**:
 
 - interpret artifact semantics;
 - choose a responsibility or capability;
@@ -199,8 +235,9 @@ P4 does **not**:
 - make every artifact directory entry trustworthy;
 - replace artifact-specific validators;
 - create a semantic truth validator;
-- package the root validator scripts into the wheel.
+- silently fall back from an explicitly selected bad framework checkout;
+- maintain a second hand-edited validator implementation inside the package.
 
 P5 may use admitted artifact refs as inputs to explicit **agent-authored**
-decisions. That future step must preserve the same separation: validated
-evidence is available to judgment; it is not judgment itself.
+decisions. That step preserves the same separation: validated evidence is
+available to judgment; it is not judgment itself.

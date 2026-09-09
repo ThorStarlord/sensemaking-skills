@@ -3,6 +3,8 @@ include LICENSE
 include INSTALLATION.md
 include EXTENDING.md
 include API.md
+include docs/canonical-vocabulary.yaml
 recursive-include src/sensemaking_skills/defaults *
 recursive-include templates *
 recursive-include skills *
+recursive-include scripts *

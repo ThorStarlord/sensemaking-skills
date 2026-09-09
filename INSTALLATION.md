@@ -1,384 +1,131 @@
-# Installation & Setup Guide
+# Installation & Setup Guide — Sensemaking Skills v0.3.0
 
-This guide covers setting up **sensemaking-skills** for development and use with Claude Code.
+This guide covers installation of the Campaign-based v0.3 product and explicit setup of its agent-native Skills.
 
----
+## Requirements
 
-## Current State
+- Python 3.11 or 3.12
+- `pip`
+- A coding-agent harness only if you want native Skill discovery/execution
 
-**What this is:**
-- ✅ Agent-native framework (Claude Code + Python scripts)
-- ✅ Artifact-driven diagnostic system
-- ✅ Proven in production testing (Scenario 5, Week 1 shadow mode)
+The core installed package is local-first and does not require a server or cloud account.
 
-**What this is NOT (yet):**
-- ❌ CLI tool (`sensemaking-skills` command)
-- ❌ PyPI package (`pip install sensemaking-skills`)
-- ❌ Standalone service
+## Install from PyPI
 
----
+After publication:
 
-## Prerequisites
-
-- **Python 3.11+** (required)
-- **Git** (for cloning repository)
-- **Claude Code** (recommended for agent-native invocation)
-- ~500 MB disk space (including sample test artifacts)
-
-Verify Python version:
 ```bash
-python3 --version
+python -m pip install sensemaking-skills==0.3.0
+sensemaking-skills --version
 ```
 
-Expected output: `Python 3.11.x` or higher
+Expected version: `0.3.0`.
 
----
-
-## Installation Steps
-
-### Step 1: Clone the Repository
+## Install from source
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
 cd sensemaking-skills
+python -m venv .venv
+# activate the environment
+python -m pip install -e .
 ```
 
-### Step 2: Create Virtual Environment (Recommended)
+## What the wheel contains
+
+The v0.3 wheel contains the shipped Campaign/runtime surface, build-derived Skill trees, and the build-derived canonical validator runtime used by normal `campaign ingest` operations.
+
+The wheel intentionally does **not** contain retained research-lab packages:
+
+```text
+sensemaking_skills.campaign_validation
+sensemaking_skills.campaign_accounting
+sensemaking_skills.exploratory_authorization
+sensemaking_skills.exploratory_execution
+```
+
+Those remain repository/source-lab infrastructure.
+
+## Install Skills into harness discovery roots
+
+Harness and scope selection are explicit.
+
+### Generic Agent Skills
 
 ```bash
-python3 -m venv venv
+sensemaking-skills setup-skills --target generic --scope user
+sensemaking-skills setup-skills --target generic --scope project --project-root /path/to/repo
 ```
 
-Activate it:
-- **Windows (PowerShell):**
-  ```powershell
-  .\venv\Scripts\Activate.ps1
-  ```
-- **Windows (cmd):**
-  ```cmd
-  venv\Scripts\activate.bat
-  ```
-- **macOS/Linux:**
-  ```bash
-  source venv/bin/activate
-  ```
-
-### Step 3: Install in Development Mode
+### Claude Code
 
 ```bash
-pip install -e .
+sensemaking-skills setup-skills --target claude --scope user
+sensemaking-skills setup-skills --target claude --scope project --project-root /path/to/repo
 ```
 
-This installs the package in editable mode, allowing you to modify source files without reinstalling.
-
-### Step 4: Verify Installation
+### Codex
 
 ```bash
-python3 -c "import sys; print('Python path:', sys.executable); print('Version:', sys.version)"
+sensemaking-skills setup-skills --target codex --scope user
+sensemaking-skills setup-skills --target codex --scope project --project-root /path/to/repo
 ```
 
-Test the validation scripts:
-```bash
-python3 scripts/validate-brief.py --help
-python3 scripts/validate-plan.py --help
-python3 scripts/shadow-mode-runner.py --help
-```
+Codex user scope honors explicit `CODEX_HOME` configuration and otherwise uses the documented default.
 
----
-
-## Invocation Paths
-
-### Path 1: Claude Code / Agent (Recommended)
-
-This is the primary use case. The agent reads skill instruction files and executes workflows.
-
-**Setup:**
-1. Open this repository in Claude Code or your agent environment
-2. Ask the agent to read `skills/using-sensemaking/SKILL.md`
-
-**Usage:**
-Ask the agent to use the skills. Example:
-```
-Read skills/repo-sensemaker/SKILL.md and diagnose /path/to/my/repo.
-Then read skills/workflow-planner/SKILL.md to create a plan.
-Validate both artifacts using scripts/validate-and-report.py.
-```
-
-**Optional: Install Skills into Claude Code**
-
-If your Claude Code environment supports local skill installation, you can copy skills:
+### OpenCode
 
 ```bash
-mkdir -p ~/.claude/skills
-cp -R skills/* ~/.claude/skills/
+sensemaking-skills setup-skills --target opencode --scope user
+sensemaking-skills setup-skills --target opencode --scope project --project-root /path/to/repo
 ```
 
-Restart Claude Code if needed. Depending on your setup, you may be able to invoke:
-```
-/skill repo-sensemaker
-/skill workflow-planner
-```
+Use `--dry-run` to preview and `--force` only when you explicitly intend to replace a divergent installed Skill tree.
 
-**If those commands don't work**, use the method above: ask the agent to read the SKILL.md files directly. Both work equally well.
-
-See **GETTING_STARTED.md** for detailed examples.
-
-### Path 2: Validate Artifacts with Python Scripts
-
-Python scripts validate artifacts produced by agents. They do not run diagnostics—the agent does that.
-
-**Validate a brief:**
-```bash
-python3 scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md
-```
-
-**Validate a plan:**
-```bash
-python3 scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md
-```
-
-**Run individual validators:**
-```bash
-python3 scripts/validate-brief.py artifacts/repository_sensemaking_brief.md --json
-python3 scripts/validate-plan.py artifacts/workflow_orchestration_plan.md --json
-```
-
-**Run tests:**
-```bash
-python3 scripts/shadow-mode-runner.py
-```
-
----
-
-## Project Structure
-
-```
-sensemaking-skills/
-├── skills/                    # Agent-executable skills
-│   ├── using-sensemaking/     # Bootstrap skill (load this first)
-│   ├── repo-sensemaker/       # Repository diagnosis
-│   └── workflow-planner/      # Workflow orchestration
-├── scripts/                   # Standalone Python tools
-│   ├── validate-brief.py      # Brief validation
-│   ├── validate-plan.py       # Plan validation
-│   └── shadow-mode-runner.py  # Test runner
-├── artifacts/                 # Output artifacts (generated)
-├── logs/                      # Execution logs
-├── tests/                     # Test suite
-├── docs/                      # Documentation
-└── setup.py                   # Package metadata (enables pip install -e .)
-```
-
----
-
-## Common Workflows
-
-### Quick Diagnosis (5 minutes)
-
-In Claude Code, ask the agent:
-
-```
-Read skills/using-sensemaking/SKILL.md.
-Then use skills/repo-sensemaker/SKILL.md to diagnose /path/to/my/repo.
-Save the brief to artifacts/ and validate it with:
-python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md
-```
-
-Expected output: `artifacts/repository_sensemaking_brief.md`
-
-### Full Analysis with Workflow Plan
-
-In Claude Code, ask the agent:
-
-```
-Read skills/using-sensemaking/SKILL.md.
-Use skills/repo-sensemaker/SKILL.md to analyze /path/to/my/repo.
-Use skills/workflow-planner/SKILL.md to create a plan based on the brief.
-Validate both artifacts:
-  python scripts/validate-and-report.py artifacts/repository_sensemaking_brief.md
-  python scripts/validate-and-report.py artifacts/workflow_orchestration_plan.md
-```
-
-Expected outputs:
-- `artifacts/repository_sensemaking_brief.md`
-- `artifacts/workflow_orchestration_plan.md`
-
-### Running Tests
+## Verify the Campaign CLI
 
 ```bash
-# Run all tests
-python3 -m pytest tests/ -v
-
-# Run specific test
-python3 -m pytest tests/test_validate_brief.py::test_valid_brief -v
-
-# Run with coverage
-python3 -m pytest tests/ --cov=scripts --cov-report=html
+sensemaking-skills campaign --help
+sensemaking-skills campaign init --help
+sensemaking-skills campaign ingest --help
+sensemaking-skills campaign capabilities --help
+sensemaking-skills campaign lineage --help
+sensemaking-skills campaign reconciliation --help
+sensemaking-skills campaign handoff --help
+sensemaking-skills campaign resume --help
 ```
 
----
+## Validator runtime
 
-## Configuration
-
-### Environment Variables
-
-Optional configuration (not required for basic use):
+Normal installed use does not need a source checkout:
 
 ```bash
-# Logging level (DEBUG, INFO, WARNING, ERROR)
-export SENSEMAKING_LOG_LEVEL=INFO
-
-# Artifact output directory (default: artifacts/)
-export SENSEMAKING_ARTIFACTS_DIR=./artifacts
-
-# Timeout for diagnostic operations (seconds, default: 300)
-export SENSEMAKING_TIMEOUT=300
+sensemaking-skills campaign ingest \
+  --workspace /path/to/CMP-0001 \
+  --artifact /path/to/artifact.md
 ```
 
----
+For development/compatibility testing you may explicitly provide:
+
+```bash
+--framework-root /path/to/sensemaking-skills
+```
+
+An invalid explicit override fails closed; it is never silently replaced with another runtime.
+
+## Schema version
+
+v0.3 emits Campaign schema version 2 and can deterministically read/qualify supported v1 representations. See `docs/campaign-schema-evolution.md`.
+
+## Development/lab dependencies
+
+The shipped product dependencies are intentionally small. To run retained research/lab suites from a source checkout, install `requirements-lab.txt` separately according to the repository CI workflow.
 
 ## Troubleshooting
 
-### Python Version Error
+- **`0+unknown` from a raw source import:** install the project/distribution so `importlib.metadata` can resolve `sensemaking-skills` version metadata.
+- **Skill tree differs:** run setup with `--dry-run`; use `--force` only if replacement is intentional.
+- **Project-scoped setup fails:** provide an explicit existing `--project-root`; the tool does not infer it from cwd/editor/git state.
+- **Artifact validation runtime error:** reinstall the package or explicitly select a valid source checkout with `--framework-root`.
 
-**Error:** `python3: command not found` or wrong version
-
-**Solution:**
-```bash
-# Check installed Python versions
-python --version
-python3 --version
-
-# Use the correct version
-python3.11 -m venv venv  # explicit version
-```
-
-### Import Errors
-
-**Error:** `ModuleNotFoundError: No module named 'sensemaking'`
-
-**Solution:**
-```bash
-# Ensure virtual environment is activated
-source venv/bin/activate  # macOS/Linux
-# or
-venv\Scripts\activate.ps1  # Windows PowerShell
-
-# Reinstall in editable mode
-pip install -e .
-```
-
-### Script Execution Permission Denied
-
-**Error:** `Permission denied: scripts/validate-brief.py`
-
-**Solution:**
-```bash
-# Make scripts executable
-chmod +x scripts/*.py
-
-# Or run with python3
-python3 scripts/validate-brief.py artifacts/brief.md
-```
-
-### Artifact Validation Fails
-
-**Error:** Validation script reports invalid artifact
-
-**Solution:**
-1. Check artifact format matches contract (see `CONTEXT.md`)
-2. Verify required fields are present
-3. Run with verbose output:
-   ```bash
-   python3 scripts/validate-brief.py artifacts/brief.md --verbose
-   ```
-4. Check validation rules in `scripts/validate-brief.py` for detailed error messages
-
-### Skills Not Loading
-
-**Issue:** Skill invocation (`/skill using-sensemaking`) doesn't work or skills don't appear
-
-**Solution:**
-1. Ensure repository is open in Claude Code
-2. Check `.claude/hooks/sessionstart.md` exists
-3. Restart Claude Code session
-4. **Fallback:** Ask the agent to read the skill files directly:
-   ```
-   Read the file skills/using-sensemaking/SKILL.md and follow its instructions.
-   ```
-   This method works in all environments, regardless of skill registration setup.
-
----
-
-## Development Setup
-
-### Creating a Feature Branch
-
-```bash
-git checkout -b feature/your-feature-name
-```
-
-### Running Tests Before Commit
-
-```bash
-# Run full test suite
-python3 -m pytest tests/ -v
-
-# Run with coverage report
-python3 -m pytest tests/ --cov=scripts --cov-report=term-missing
-```
-
-### Committing Changes
-
-```bash
-git add scripts/ skills/ tests/ docs/
-git commit -m "feat: description of changes"
-git push origin feature/your-feature-name
-```
-
-Then create a pull request.
-
----
-
-## Updating the Package
-
-To get the latest changes:
-
-```bash
-git pull origin main
-```
-
-If you have local changes:
-```bash
-git stash
-git pull origin main
-git stash pop
-```
-
----
-
-## Next Steps
-
-1. **Read GETTING_STARTED.md** for real usage examples
-2. **Read CONTEXT.md** for domain knowledge (fog types, artifact contracts)
-3. **Explore skills/** directory to understand skill structure
-4. **Run tests** to verify everything works: `python3 -m pytest tests/ -v`
-
----
-
-## Getting Help
-
-- **Technical issues:** Check logs/ directory for execution logs
-- **Validation errors:** Run with `--verbose` flag
-- **Questions about fog types:** See CONTEXT.md Sections 2-3
-- **Artifact format questions:** See `skills/workflow-planner/references/artifact-contracts.yaml`
-
----
-
-## Version Info
-
-- **Package:** sensemaking-skills
-- **Version:** 0.2.0
-- **Python:** 3.11+
-- **Status:** Beta (Production-ready, agent-native)
-- **Last Updated:** 2026-05-25
+For architecture and release state, see `README.md`, `STATUS.md`, and `docs/productization-v0.3.md`.
