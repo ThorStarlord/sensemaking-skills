@@ -1,6 +1,6 @@
 """Sensemaking Skills: Agent-native repository diagnosis framework."""
 
-__version__ = "0.2.2"
+__version__ = "0.3.0"
 __author__ = "Dimmi Andreus"
 __email__ = "dimmi.andreus1@gmail.com"
 
