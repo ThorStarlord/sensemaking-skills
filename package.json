@@ -1,7 +1,7 @@
 {
   "name": "sensemaking-skills",
-  "version": "0.2.2",
-  "description": "Autonomous diagnostic framework for complex sensemaking tasks",
+  "version": "0.3.0",
+  "description": "Agent-native engineering sensemaking and control layer for software-engineering agents",
   "type": "module",
   "scripts": {
     "validate:skills": "python scripts/validate-skill-hygiene.py",
@@ -12,7 +12,7 @@
   "keywords": [
     "sensemaking",
     "diagnostic",
-    "autonomous",
+    "campaign",
     "skills",
     "workflow"
   ],
