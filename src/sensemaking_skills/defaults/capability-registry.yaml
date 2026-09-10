@@ -208,6 +208,61 @@ capabilities:
     availability_reason: canonical agent-native PM Skill; experiment execution remains separately authorized
     returns_control: true
 
+  - id: to-prd
+    kind: skill
+    source: skills/to-prd/SKILL.md
+    accepted_responsibility_types: [product_specification]
+    output_artifact: prd
+    completion_conditions:
+      - a scope-aware evidence-aware prd is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PRD capability; upstream prd methodology is merged here rather than creating a duplicate authority
+    returns_control: true
+
+  - id: user-stories
+    kind: skill
+    source: skills/user-stories/SKILL.md
+    accepted_responsibility_types: [delivery_specification]
+    input_artifact: prd
+    output_artifact: story_list
+    completion_conditions:
+      - a traceable story_list is returned without invented estimates or scope promotion
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical agent-native PM Skill; detailed implementation estimates remain engineering-owned
+    returns_control: true
+
+  - id: acceptance-criteria
+    kind: skill
+    source: skills/acceptance-criteria/SKILL.md
+    accepted_responsibility_types: [delivery_specification]
+    input_artifact: story_list
+    output_artifact: criteria_list
+    completion_conditions:
+      - a specified criteria_list is returned without claiming test execution
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical agent-native PM Skill; test execution and pass evidence are separate
+    returns_control: true
+
+  - id: pre-mortem
+    kind: skill
+    source: skills/pre-mortem/SKILL.md
+    accepted_responsibility_types: [risk_and_readiness]
+    input_artifact: prd
+    output_artifact: risk_analysis
+    completion_conditions:
+      - an evidence-status-aware risk_analysis recommendation is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical agent-native PM Skill; recommendation does not grant launch or external-action authority
+    returns_control: true
+
   - id: triage
     kind: skill
     source: skills/workflow-planner/references/skill-registry.yaml
