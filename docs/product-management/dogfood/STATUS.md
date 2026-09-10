@@ -8,7 +8,7 @@
 **Checked-in second-harness portability attempts:** 0  
 **Current functional empirical PASS:** NONE  
 **Current portability empirical PASS:** NONE  
-**External native-harness action required:** YES
+**External native-harness action required for stronger support/promotion claims:** YES
 
 ## What repository evidence proves
 
@@ -40,7 +40,15 @@ Preserved evidence lives under:
 
 `docs/product-management/dogfood/preflights/2026-09-10-chess-mentor-engine/`
 
-## Required next evidence
+## Qualification-debt policy
+
+Native-harness and second-harness validation remain required for the corresponding stronger claims, but they no longer block separately authorized repository implementation of additional PM capability waves.
+
+Repository-qualified capabilities may therefore accumulate while these fields remain `NONE`/`pending`. They must not be described as native-harness-qualified, portability-qualified, or promoted until actual evidence exists.
+
+See `../qualification-levels.md`.
+
+## Required future empirical evidence
 
 Follow `docs/product-management/dogfood-runbook.md`:
 
@@ -49,4 +57,4 @@ Follow `docs/product-management/dogfood-runbook.md`:
 3. run an equivalent bounded responsibility through a second supported native harness;
 4. preserve the exact attempt evidence and classify the result honestly.
 
-Until that evidence exists, do not claim `FUNCTIONAL_PASS_PORTABILITY_PASS` and do not automatically unlock migration of the remaining deferred PM capabilities.
+Until that evidence exists, do not claim `FUNCTIONAL_PASS_PORTABILITY_PASS`. Continued repository implementation does not retire this qualification debt.
