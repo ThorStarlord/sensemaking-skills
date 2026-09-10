@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: stakeholder-update
+domain: product-management
+responsibilities: [communication]
+consumes: []
+produces: [stakeholder_update]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false
