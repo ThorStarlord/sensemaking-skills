@@ -129,7 +129,7 @@ Evidence may include:
 - issues/PRs;
 - artifact bytes;
 - owner statements;
-- ratified ADRs.
+- ratified architecture decisions.
 
 The catalog does not need to be a new runtime store initially. Existing Campaign evidence and Skill artifacts may serve this role.
 
@@ -208,7 +208,7 @@ Observed claim:
   package web imports auth/internal.py
 
 Ratified claim:
-  ADR-12 says web may depend only on auth/public.py
+  architecture decision D1 says web may depend only on auth/public.py
 
 Contradiction:
   observed dependency conflicts with ratified dependency rule
