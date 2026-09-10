@@ -82,14 +82,21 @@ def test_valid_artifact_is_content_addressed_and_receipt_bound(tmp_path):
 
 
 def test_generic_validator_fallback_can_admit_registered_artifact(tmp_path):
+    """Keep generic admission coverage on an artifact not promoted to a specialized validator.
+
+    `discovery_findings` moved to the PM-specific validator in the Customer
+    Discovery milestone, so the generic-fallback invariant is exercised with
+    `session_summary` instead of preserving an obsolete validation route.
+    """
     workspace = tmp_path / "campaign"
     _initialize(workspace)
-    artifact = tmp_path / "discovery-findings.md"
+    artifact = tmp_path / "session-summary.md"
     artifact.write_text(
-        "# Discovery findings\n\n"
+        "# Session summary\n\n"
         "## 13. Machine-readable handoff\n\n"
         "```yaml\n"
-        "artifact_id: discovery_findings\n"
+        "artifact_id: session_summary\n"
+        "source_intent_ref: intent-1\n"
         "```\n",
         encoding="utf-8",
     )
@@ -99,7 +106,7 @@ def test_generic_validator_fallback_can_admit_registered_artifact(tmp_path):
         framework_root=REPO_ROOT,
     )
 
-    assert result.artifact_id == "discovery_findings"
+    assert result.artifact_id == "session_summary"
     assert result.admission.validator == "validate-artifact.py"
     assert result.validation_result["valid"] is True
     refs = set(CampaignStore(workspace).evidence_refs())
