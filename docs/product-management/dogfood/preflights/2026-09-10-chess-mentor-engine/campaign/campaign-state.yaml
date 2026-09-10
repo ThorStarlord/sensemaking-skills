@@ -1,0 +1,17 @@
+campaign_id: PM-DOGFOOD-PREFLIGHT-001
+mission: Determine the next evidence-worthy user problem to investigate in Chess Mentor
+  Engine after the M17-M19 milestone, using repository evidence only and without external
+  customer outreach.
+status: terminal
+current_state: discovery_preflight_complete
+active_responsibility: null
+active_uncertainty: null
+established_facts: []
+resolved_questions: []
+deferred_responsibilities: []
+external_boundaries: []
+authority: authorized_autonomously
+terminal_state: evidence_insufficient
+additional_active_responsibilities: []
+schema_version: '2'
+extensions: {}

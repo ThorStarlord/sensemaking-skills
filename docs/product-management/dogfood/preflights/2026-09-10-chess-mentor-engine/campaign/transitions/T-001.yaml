@@ -1,0 +1,12 @@
+id: T-001
+from_state: initialized
+to_state: problem_discovery_active
+evidence: []
+decision: The current repository documents a technically qualified mentor-analysis
+  pipeline but leaves product-level questions about end-user UX, model-output quality,
+  and tutoring efficacy unresolved. A bounded problem-discovery responsibility is
+  warranted before choosing a new PM direction.
+next_responsibility: R-PM-001
+terminal_state: null
+authority: null
+schema_version: '2'

@@ -1,0 +1,37 @@
+# p7_reconstruction_sha256: 8efe4d89feae93d2efd97a514dd29e482757570512e1c9ce56c846d9304fc99d
+campaign_id: PM-DOGFOOD-PREFLIGHT-001
+current_state:
+  campaign_id: PM-DOGFOOD-PREFLIGHT-001
+  mission: Determine the next evidence-worthy user problem to investigate in Chess
+    Mentor Engine after the M17-M19 milestone, using repository evidence only and
+    without external customer outreach.
+  status: terminal
+  current_state: discovery_preflight_complete
+  active_responsibility: null
+  active_uncertainty: null
+  established_facts: []
+  resolved_questions: []
+  deferred_responsibilities: []
+  external_boundaries: []
+  authority: authorized_autonomously
+  terminal_state: evidence_insufficient
+  additional_active_responsibilities: []
+  schema_version: '2'
+  extensions: {}
+canonical_artifacts:
+- admissions/discovery_findings/37b257bed48d94e73e49b07d44355dc1352ef94fb24e43d7a969796defb19af1.yaml
+- artifacts/discovery_findings/371a19e90390d24c9f235e41c3e6061f27243e1960d6b48183173a6afc02206c.md
+- campaign-state.yaml
+- trace.yaml
+- transitions/T-001.yaml
+- transitions/T-002.yaml
+allowed_next_actions:
+- Run Gate A with the canonical discovery Skill through a real supported coding-agent
+  harness against this or another real product repository; preserve native setup and
+  invocation evidence.
+- Collect direct user/operator task evidence comparing candidate-to-session workflow
+  friction with mentor-output trust/quality before choosing the next product milestone.
+stop_conditions:
+- evidence_insufficient
+- external_blocker
+schema_version: '2'
