@@ -30,11 +30,11 @@ The historical Wayfinder PM registry is not execution authority. Native-harness 
 | pricing | deprecated `pricing` | `pricing_model` | `commercial_strategy` | ADAPT | 4 | REPOSITORY_QUALIFIED | pending | pending | Pricing remains proposed; observed prices/economics require evidence and no price-change authority is granted. |
 | customer-journey | deprecated `customer-journey` | `journey_map` | `customer_understanding` | ADAPT | 5 | REPOSITORY_QUALIFIED | pending | pending | Bounded stage model; observed journey, emotion, metric, and critical-moment claims require evidence/currentness. |
 | ideal-customer-profile | no authoritative live PM counterpart | `ideal_customer_profile` | `customer_understanding` | ADAPT | 5 | REPOSITORY_QUALIFIED | pending | pending | New current-domain evidence-aware ICP; customer-fit and numeric claims remain provisional without evidence. |
-| launch-checklist | deprecated `launch-checklist` | `readiness_report` | `risk_and_readiness` | DEFER | 6 | CANDIDATE | pending | pending | Checklist completion is not launch authorization. |
-| gtm | deprecated `gtm` | `gtm_plan` | `commercial_strategy` | DEFER | 6 | CANDIDATE | pending | pending | External execution remains separately authorized. |
-| battlecard | deprecated `battlecard` | `battlecard` | `commercial_strategy` | DEFER | 6 | CANDIDATE | pending | pending | Claims need current source evidence. |
-| release-notes | deprecated `release-notes` | `feature_announcement` | `communication` | DEFER | 6 | CANDIDATE | pending | pending | Drafting may be automated; publication is external action. |
-| stakeholder-update | deprecated `stakeholder-update` | `stakeholder_update` | `communication` | DEFER | 6 | CANDIDATE | pending | pending | Campaign state should be cited when available. |
+| launch-checklist | deprecated `launch-checklist` | `readiness_report` | `risk_and_readiness` | ADAPT | 6 | REPOSITORY_QUALIFIED | pending | pending | Evidence-backed readiness checks remain distinct from launch authorization or execution. |
+| gtm | deprecated `gtm` | `gtm_plan` | `commercial_strategy` | ADAPT | 6 | REPOSITORY_QUALIFIED | pending | pending | Positioning/channel/timeline plans remain proposed unless evidence/authority supports stronger states; external tactics are not executed. |
+| battlecard | deprecated `battlecard` | `battlecard` | `commercial_strategy` | ADAPT | 6 | REPOSITORY_QUALIFIED | pending | pending | Competitive claims carry source/currentness status; talk tracks remain proposed. |
+| release-notes | deprecated `release-notes` | `feature_announcement` | `communication` | ADAPT | 6 | REPOSITORY_QUALIFIED | pending | pending | Shipped/beta claims require release evidence; generated communication remains an unpublished draft. |
+| stakeholder-update | deprecated `stakeholder-update` | `stakeholder_update` | `communication` | ADAPT | 6 | REPOSITORY_QUALIFIED | pending | pending | Claims preserve evidence/derivation/ratification status; proposed owners are not assignments and the draft is not sent. |
 
 ## Migration rule
 
