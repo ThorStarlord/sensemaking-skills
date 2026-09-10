@@ -126,6 +126,14 @@ jobs:
           python scripts/validate-probe-report.py "$RUNNER_TEMP/probe-report.yaml" --repo-root .
           python scripts/gate_relationship_findings.py --report "$RUNNER_TEMP/probe-report.yaml"
 
+      - name: Semantic manifest and domain-pack conformance
+        run: |
+          sensemaking-skills semantic conformance \
+            --manifests-dir skill-manifests \
+            --domain-packs-dir domain-packs \
+            --repo-root . \
+            --json
+
       - name: Stable repository assertion suite
         run: |
           python -m pytest \
@@ -137,6 +145,9 @@ jobs:
             tests/test_path_drift.py \
             tests/test_cli.py \
             tests/test_semantic_reasoning_profile.py \
+            tests/test_semantic_substrate.py \
+            tests/test_semantic_conformance.py \
+            tests/test_semantic_cli.py \
             -q
 
       - name: Assert verification did not mutate tracked state
