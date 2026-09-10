@@ -405,6 +405,68 @@ capabilities:
     availability_reason: canonical PM analysis Skill; profile generation does not establish validated customer fit or GTM authority
     returns_control: true
 
+  - id: launch-checklist
+    kind: skill
+    source: skills/launch-checklist/SKILL.md
+    accepted_responsibility_types: [risk_and_readiness]
+    output_artifact: readiness_report
+    completion_conditions: [an evidence-status-aware readiness_report and bounded recommendation are returned without launching anything]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM analysis Skill; readiness recommendation and catalog availability do not grant launch authority
+    returns_control: true
+
+  - id: gtm
+    kind: skill
+    source: skills/gtm/SKILL.md
+    accepted_responsibility_types: [commercial_strategy]
+    input_artifact: strategy_doc
+    output_artifact: gtm_plan
+    completion_conditions: [a proposed evidence-aware gtm_plan is returned without executing external tactics]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM planning Skill; outreach, publishing, spend, scheduling, and campaign activation remain separate external actions
+    returns_control: true
+
+  - id: battlecard
+    kind: skill
+    source: skills/battlecard/SKILL.md
+    accepted_responsibility_types: [commercial_strategy]
+    input_artifact: market_analysis
+    output_artifact: battlecard
+    completion_conditions: [a currentness-bounded evidence-aware draft battlecard is returned to the campaign agent]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM analysis Skill; talk tracks remain proposed and do not establish competitive truth
+    returns_control: true
+
+  - id: release-notes
+    kind: skill
+    source: skills/release-notes/SKILL.md
+    accepted_responsibility_types: [communication]
+    output_artifact: feature_announcement
+    completion_conditions: [a source-backed draft feature_announcement is returned without publication]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM communication Skill; release intent is not shipment evidence and publication remains separate external action
+    returns_control: true
+
+  - id: stakeholder-update
+    kind: skill
+    source: skills/stakeholder-update/SKILL.md
+    accepted_responsibility_types: [communication]
+    output_artifact: stakeholder_update
+    completion_conditions: [a currentness- and evidence-aware draft stakeholder_update is returned without distribution]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM communication Skill; reporting does not ratify decisions, assign owners, or send messages
+    returns_control: true
+
   - id: triage
     kind: skill
     source: skills/workflow-planner/references/skill-registry.yaml
