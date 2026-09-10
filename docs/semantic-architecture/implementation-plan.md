@@ -1,523 +1,27 @@
 # Semantic Architecture Implementation Plan
 
-**Status:** Active plan for semantic-foundation work  
-**Current milestone:** Documentation foundation only  
+**Status:** Active  
+**Completed milestone:** Semantic foundation + Phase 9 first Reasoning Model operationalization pilots  
+**Current frontier:** Phase 10 bounded common-envelope experiment  
 **Implementation principle:** Formalize from demonstrated reasoning pressure; do not manufacture runtime machinery to make the ontology look complete.
 
 ## Objective
 
 Create a shared semantic foundation that lets Sensemaking Skills reason consistently about unfamiliar repositories while preserving evidence lineage, currentness, uncertainty, semantic authority, and the existing agent/deterministic control boundary.
 
-The plan deliberately separates **documentation completion** from **executable promotion**.
-
-## Definition of done for the foundation milestone
-
-The foundation milestone is complete when the repository contains:
-
-- a semantic constitution;
-- a problem statement;
-- competency questions;
-- an inventory of existing concepts;
-- a layered ontology;
-- product-change taxonomy;
-- relation and epistemic semantics;
-- a reasoning model;
-- execution integration architecture;
-- reference scenarios;
-- this implementation/promotion plan;
-- a milestone handoff explaining what remains non-executable.
-
-Completion of this milestone does **not** mean the ontology has been encoded into schemas or a graph runtime.
-
----
-
-# Phase 0 — Preserve architecture boundary
-
-## Goal
-
-Ensure semantic formalization does not undo the product's strongest existing invariant.
-
-## Deliverables
-
-- `constitution.md`
-- explicit mapping to Campaign semantic-control boundary
-- prohibited-inference catalog
-
-## Gate
-
-PASS only if the documents preserve:
+The plan separates:
 
 ```text
-agent semantic judgment
-!= deterministic validation / persistence / provenance
+documented vocabulary
+-> ontology semantics
+-> observed cross-Skill reuse
+-> bounded executable representation
+-> possible later control-plane promotion
 ```
 
-## Completed in foundation milestone
+A later phase does not retroactively turn earlier documentation into runtime authority.
 
-Yes.
-
----
-
-# Phase 1 — Problem definition
-
-## Goal
-
-Define the concrete failure mode that motivates shared semantics.
-
-## Deliverables
-
-- `problem-statement.md`
-- examples of cross-Skill semantic inconsistency
-- explicit non-goals
-- primary design question
-
-## Gate
-
-The initiative must be justified by inconsistent reasoning semantics, not by a generic desire for a knowledge graph.
-
-## Completed in foundation milestone
-
-Yes.
-
----
-
-# Phase 2 — Competency questions
-
-## Goal
-
-Define what the model must be able to express before choosing ontology breadth.
-
-## Deliverables
-
-- `competency-questions.md`
-- grouped questions covering intent, currentness, structure, architecture, contracts, evidence, uncertainty, responsibility, change, product, documentation, and handoff
-- initial high-priority subset
-
-## Gate
-
-Every new Level-2 ontology concept should map to at least one competency question.
-
-## Completed in foundation milestone
-
-Yes: initial inventory contains 78 questions.
-
----
-
-# Phase 3 — Existing concept inventory and reconciliation
-
-## Goal
-
-Derive the semantic model from what Sensemaking already means rather than creating a competing vocabulary.
-
-## Evidence sources
-
-At minimum:
-
-```text
-src/sensemaking_skills/campaign_semantics/
-src/sensemaking_skills/campaigns/
-docs/sensemaking-campaign.md
-docs/decision-orchestration-boundary.md
-repo-sensemaker
-architectural-review
-problem-framer
-unknowns-mapper
-output-reconciler
-repair-verifier
-docs-aligner
-PM domain docs/Skills
-artifact contracts
-validators
-```
-
-## Deliverables
-
-- `concept-inventory.md`
-- mapping of existing Campaign concepts to ontology layers
-- list of implicit recurring repository concepts
-- list of Skill-local diagnostic terms not yet suitable for canonicalization
-
-## Gate
-
-No new canonical term may duplicate an existing executable concept without an explicit reconciliation decision.
-
-## Completed in foundation milestone
-
-Baseline complete. Future Skill-by-Skill reconciliation remains incremental work.
-
----
-
-# Phase 4 — Layered ontology
-
-## Goal
-
-Define a minimal shared ontology without flattening distinct semantic domains.
-
-## Layers
-
-```text
-1. Intent
-2. Repository / Software System
-3. Evidence
-4. Knowledge / Epistemics
-5. Engineering Work
-6. Product
-```
-
-## Deliverables
-
-- `ontology.md`
-- canonical namespace rule for `SoftwareCapability`, `SensemakingCapability`, `ProductCapability`
-- cross-layer relation examples
-
-## Gate
-
-The ontology must express the reference scenarios without requiring domain-specific concepts in the foundation unnecessarily.
-
-## Completed in foundation milestone
-
-Yes at Level 2 documentation status.
-
----
-
-# Phase 5 — Relationship and epistemic model
-
-## Goal
-
-Define how claims and relations are established, supported, contradicted, scoped, and superseded.
-
-## Deliverables
-
-- `relations-and-epistemics.md`
-- epistemic statuses
-- relation-establishment classes
-- relation dictionary
-- temporal/currentness rules
-- contradiction model
-- absence-claim rule
-- invalid-inference catalog
-
-## Gate
-
-Every relation considered for executable promotion must state:
-
-```text
-meaning
-allowed subjects/objects
-establishment method
-required evidence
-currentness/scope behavior
-prohibited inference
-```
-
-## Completed in foundation milestone
-
-Yes at Level 2 documentation status.
-
----
-
-# Phase 6 — Reasoning architecture
-
-## Goal
-
-Define the canonical reasoning lifecycle from intent/target binding through handoff.
-
-## Deliverables
-
-- `reasoning-model.md`
-- stage ownership: deterministic vs agent vs human/authority
-- bounded semantic-map construction
-- stopping rule
-
-## Gate
-
-The reasoning architecture must not contain a hidden semantic router. The agent selects consequential uncertainty, warranted responsibility, semantically appropriate capability, and decision disposition.
-
-## Completed in foundation milestone
-
-Yes at design level.
-
----
-
-# Phase 7 — Integration architecture
-
-## Goal
-
-Define how shared semantics should influence existing product surfaces before adding new infrastructure.
-
-## Deliverables
-
-- `execution-integration.md`
-- probe boundary
-- Skill adoption policy
-- artifact integration policy
-- validator boundary
-- Campaign schema boundary
-- capability-registry boundary
-- handoff guidance
-- domain-extension pattern
-- deferred Repository Semantic Map concept
-
-## Gate
-
-No Campaign schema or runtime change is justified merely because the ontology contains a concept.
-
-## Completed in foundation milestone
-
-Yes at design level.
-
----
-
-# Phase 8 — Reference scenarios
-
-## Goal
-
-Test whether the ontology reduces ambiguity in concrete reasoning situations.
-
-## Initial scenarios
-
-```text
-A architecture drift
-B missing capability vs missing implementation
-C documentation/code contradiction
-D failed repair despite changed repository
-E product enhancement proposal
-F fresh-context continuation
-G passing test with insufficient coverage
-H capability available but unauthorized
-I absence claim from incomplete search
-J vocabulary drift across Skills
-K multi-source contradiction
-L enabler mistaken for user feature
-```
-
-## Deliverables
-
-- `reference-scenarios.md`
-
-## Gate
-
-The model should reduce hidden inference jumps, not merely name more entities.
-
-## Completed in foundation milestone
-
-Yes.
-
----
-
-# Phase 9 — Skill semantic-alignment pilots
-
-**Status:** Next empirical phase; NOT completed by documentation alone.
-
-## Goal
-
-Test the semantic model against real Skill behavior before creating universal schemas.
-
-## Recommended pilots
-
-### Pilot A — `repo-sensemaker`
-
-Test:
-
-- target/currentness semantics;
-- observation vs inference;
-- evidence-backed claims;
-- contradiction/currentness handling;
-- unknowns/uncertainty representation.
-
-### Pilot B — `architectural-review`
-
-Test:
-
-- Component/Layer/Boundary/Contract/Dependency relations;
-- observed dependency vs inferred architectural violation;
-- ratified intent;
-- cross-boundary reasoning.
-
-### Pilot C — `repair-verifier` or `output-reconciler`
-
-Test:
-
-- Change vs Outcome vs Repair;
-- validation scope;
-- changed != succeeded;
-- supersession/reconciliation.
-
-## Deliverables
-
-For each pilot:
-
-```text
-before/after semantic vocabulary audit
-competency questions exercised
-ambiguities removed
-new concepts requested
-concepts unused
-operator/agent friction
-invalid inferences prevented
-```
-
-## Promotion gate
-
-Do not create common executable semantic fields until at least two pilots demonstrate stable reuse.
-
----
-
-# Phase 10 — Common artifact-semantic envelope experiment
-
-**Status:** Deferred pending Phase 9 evidence.
-
-## Hypothesis
-
-Several analytical artifacts may benefit from a shared minimal envelope containing:
-
-```text
-target/currentness
-material claims
-claim epistemic status
-evidence refs
-counter-evidence / contradictions
-uncertainties
-explicit limits
-```
-
-## Test
-
-Implement the envelope only in a bounded experiment across two or more artifact types.
-
-## Rejection criterion
-
-Reject or narrow the envelope if it produces boilerplate, duplicates domain-specific artifact fields, or encourages claims to be generated merely to satisfy schema.
-
----
-
-# Phase 11 — Mechanical semantic probes
-
-**Status:** Deferred pending stable demand.
-
-## Candidate deterministic relations
-
-Only relations with strong mechanical boundaries are candidates, for example:
-
-```text
-TargetSnapshot identity
-file containment
-language-level imports/exports
-manifest dependencies
-artifact digests
-known-membership boundary crossing
-complete-scope exact search
-```
-
-## Requirements
-
-Every probe must declare:
-
-- source and scope;
-- completeness properties;
-- currentness;
-- blind spots;
-- exact mechanical claim established.
-
-## Rejection criterion
-
-Do not implement a probe whose output name hides semantic interpretation behind a mechanical-sounding label.
-
----
-
-# Phase 12 — Repository Semantic Map experiment
-
-**Status:** Explicitly deferred.
-
-## Trigger
-
-Start only if multiple Skills repeatedly reconstruct the same repository entities/relations and durable sharing would materially reduce inconsistency or duplicated work.
-
-## Candidate bounded artifact
-
-```text
-RepositorySemanticMap
-- target_snapshot
-- scope
-- entities
-- relations
-- claims
-- contradictions
-- unresolved_uncertainties
-- evidence_refs
-```
-
-## Non-goal
-
-The map is not intended to be a complete repository graph or source of truth.
-
-## Success criterion
-
-A fresh Skill/agent can consume the map and answer target competency questions with less duplicated investigation **without losing evidence lineage or over-trusting stale derived context**.
-
----
-
-# Phase 13 — Campaign/control-plane promotion
-
-**Status:** Explicitly deferred.
-
-## Trigger
-
-A semantic concept should enter Campaign schema only when:
-
-1. it must survive across sessions to preserve a consequential decision state;
-2. at least two real workflows demonstrate the need;
-3. its semantics are stable;
-4. migration behavior can avoid semantic invention;
-5. mechanical validation boundaries are clear.
-
-## Examples
-
-Potential future candidates might include structured claim status or contradiction references. `Component`, `Feature`, or every repository relation are unlikely to belong directly in Campaign state without stronger evidence.
-
----
-
-# Phase 14 — Domain-pack extraction
-
-**Status:** Deferred.
-
-## Trigger
-
-At least two domain implementations demonstrate a stable pattern such as:
-
-```text
-foundation semantics
-+ responsibility vocabulary
-+ capability manifests
-+ artifact contracts
-+ validators
-+ domain Skills
-```
-
-PM is one candidate domain but is insufficient alone to prove a generic Domain Pack abstraction.
-
----
-
-# Phase 15 — Ontology conformance and drift checks
-
-**Status:** Deferred.
-
-Possible future checks:
-
-- canonical term duplicated under different names;
-- one Skill locally redefines a canonical term;
-- relation used outside documented subject/object range;
-- Level-1 taxonomy described as runtime-enforced;
-- documentation claims executable support absent from code;
-- deprecated term remains in active contracts.
-
-These checks should focus on consistency, not semantic truth.
-
----
-
-# Promotion ladder
-
-The default lifecycle for a new concept is:
+## Permanent promotion ladder
 
 ```text
 observed vocabulary need
@@ -531,12 +35,12 @@ Level 2: ontology entity/relation
         |
         | repeated cross-Skill burden
         | stable semantics
-        | mechanically expressible boundary
+        | mechanically expressible subset
         v
-Level 3: executable contract
+Level 3: executable semantic contract
 ```
 
-## Level 1 -> Level 2 gate
+### Level 1 -> Level 2 gate
 
 Require:
 
@@ -546,37 +50,307 @@ Require:
 - no canonical duplicate;
 - useful relations to existing concepts.
 
-## Level 2 -> Level 3 gate
+### Level 2 -> Level 3 gate
 
 Require:
 
-- evidence from at least two real workflows unless safety/integrity requires earlier action;
+- evidence from at least two contrasting real workflow/Skill situations unless safety/integrity requires earlier action;
 - stable semantic meaning;
 - identified mechanical subset;
 - explicit validator scope;
-- migration/backward-compatibility consideration;
+- migration/backward-compatibility consideration when durable state is affected;
 - negative/rejection cases;
 - no transfer of semantic authority to deterministic machinery.
 
 ---
 
-# Work-package strategy
+# Phase status map
 
-Once Phase 9 begins, work should proceed in small packages driven by evidence:
-
-```text
-Package 1: align one Skill + record findings
-Package 2: align second contrasting Skill + reconcile vocabulary
-Package 3: extract smallest repeated semantic contract
-```
-
-Do not schedule ontology implementation by document section (for example, "implement every entity in ontology.md"). That would optimize for ontology completeness instead of product usefulness.
+| Phase | Name | Status |
+|---:|---|---|
+| 0 | Preserve architecture boundary | COMPLETE |
+| 1 | Problem definition | COMPLETE |
+| 2 | Competency questions | COMPLETE |
+| 3 | Existing concept inventory/reconciliation | BASELINE COMPLETE; incremental |
+| 4 | Layered ontology | COMPLETE at Level 2 |
+| 5 | Relationship and epistemic model | COMPLETE at Level 2 |
+| 6 | Reasoning architecture | COMPLETE at design level |
+| 7 | Integration architecture | COMPLETE at design level |
+| 8 | Reference scenarios | COMPLETE |
+| 9 | Reasoning Model operationalization / Skill semantic-alignment pilots | FIRST THREE PILOTS COMPLETE |
+| 10 | Common artifact-semantic envelope experiment | ACTIVE |
+| 11 | Mechanical semantic probes | DEFERRED pending repeated demand |
+| 12 | Repository Semantic Map experiment | DEFERRED |
+| 13 | Campaign/control-plane promotion | DEFERRED |
+| 14 | Domain-pack extraction | DEFERRED |
+| 15 | Ontology conformance/drift checks | DEFERRED |
 
 ---
 
-# Metrics for future experiments
+# Phases 0–8 — Foundation
 
-Track qualitative/quantitative evidence such as:
+The foundation milestone established:
+
+- `constitution.md` and the semantic-control boundary;
+- `problem-statement.md`;
+- 78 initial competency questions;
+- `concept-inventory.md` reconciled with existing Campaign semantics;
+- the six-layer Intent / Repository-System / Evidence / Knowledge / Work / Product ontology;
+- `SoftwareCapability`, `SensemakingCapability`, and `ProductCapability` namespace separation;
+- relationship/epistemic rules and prohibited inferences;
+- the canonical staged Reasoning Model;
+- execution-integration boundaries;
+- 12 reference scenarios.
+
+These remain documentation/ontology authority except where an existing executable product contract or a separately promoted Level-3 contract implements a mechanical subset.
+
+---
+
+# Phase 9 — Reasoning Model Operationalization & Skill Semantic-Alignment Pilots
+
+**Status:** First three contrasting pilots COMPLETE.
+
+## Goal
+
+Test the Reasoning Model against real Skill contracts before creating broad common schemas.
+
+## Pilot A — `repo-sensemaker`
+
+Tested:
+
+- target/currentness semantics;
+- observation vs inference;
+- evidence-backed claims;
+- contradiction/currentness handling;
+- consequential uncertainty;
+- absence/completeness;
+- explicit limits.
+
+Result: the Skill already had strong evidence mechanics; the primary gain was explicit epistemic vocabulary and separation of fog/weakness classification from the specific decision-changing uncertainty.
+
+Evidence: `pilots/pilot-a-repo-sensemaker.md` and `pilots/pilot-a-profile.yaml`.
+
+## Pilot B — `architectural-review`
+
+Tested:
+
+- inherited currentness/evidence;
+- Component/Layer/Boundary/Contract/Dependency semantics;
+- observed dependency vs inferred architectural violation;
+- ratified/documented intent;
+- current defect vs proposal-contingent risk.
+
+Result: the common warrant/provenance core transferred successfully even though the Skill inherits rather than re-collects repository evidence. Architecture-specific concepts remain local.
+
+Evidence: `pilots/pilot-b-architectural-review.md` and `pilots/pilot-b-profile.yaml`.
+
+## Pilot C — `repair-verifier` + `output-reconciler`
+
+Tested:
+
+- Change vs Outcome vs Repair;
+- fresh post-change currentness;
+- like-for-like validation scope;
+- changed != succeeded;
+- `closed/remaining` and `verified/disputed/omitted` as local enums rather than ontology replacements;
+- explicit verification limits.
+
+Result: the common core transferred into post-change reasoning. Over-broad `prove repair worked` and universal `verified` language was narrowed to the actual verification scope.
+
+Evidence: `pilots/pilot-c-repair-reconciliation.md` and `pilots/pilot-c-profile.yaml`.
+
+## Stable common core found
+
+Across all pilots:
+
+```text
+target/currentness
+observations or inherited observations
+material claims
+epistemic status
+evidence refs
+bounded scope / claim limits
+uncertainty
+explicit limits / non-claims
+```
+
+Not common-core concepts:
+
+```text
+fog/weakness taxonomies
+Component/Layer/Boundary/Contract
+domain verdict enums
+repair closed/remaining
+reconciliation verified/disputed/omitted
+Campaign transition shape
+```
+
+## Phase 9 promotion decision
+
+The repeated core warrants one **experimental Level-3 representation contract**: `semantic_reasoning_profile` v1.
+
+The standalone validator may check representation shape, IDs, enums, evidence-ref requirements, currentness evidence presence, and explicit-limit presence. It may not judge semantic truth, evidence sufficiency, uncertainty priority, responsibility warrant, architectural correctness, repair success, or Campaign disposition.
+
+The profile is intentionally not registered for Campaign admission.
+
+---
+
+# Phase 10 — Common Artifact-Semantic Envelope Experiment
+
+**Status:** ACTIVE after Phase 9 extraction.
+
+## Hypothesis
+
+Several analytical workflows may benefit from a shared semantic envelope containing:
+
+```text
+target/currentness
+observations
+material claims
+claim epistemic status
+evidence refs
+claim limits
+uncertainties
+explicit limits
+```
+
+The current `semantic_reasoning_profile` is a companion artifact that lets us test this hypothesis without modifying canonical domain artifact schemas.
+
+## Current executable experiment
+
+- Contract: `common-semantic-contract.md`.
+- Validator: `scripts/validate-semantic-reasoning-profile.py`.
+- Regression/rejection coverage: `tests/test_semantic_reasoning_profile.py`.
+- Dogfood fixtures: the three checked-in Phase 9 profiles.
+
+## Questions Phase 10 must answer
+
+1. Does the profile materially reduce duplicated semantic reconstruction across later Skills/sessions?
+2. Does it catch missing currentness/evidence/limits that otherwise change decisions?
+3. Is a companion artifact enough, or do selected fields need to live in canonical analytical artifacts?
+4. Does the profile create fake boilerplate claims/uncertainties merely to satisfy structure?
+5. What is its token and coordination overhead?
+6. Does fresh-context reconstruction improve when this profile is present?
+
+## Promotion outcomes
+
+After repeated real episodes, choose one:
+
+```text
+A. Keep as companion reasoning/audit profile.
+B. Embed a smaller subset into multiple analytical artifacts.
+C. Narrow or retire it because duplication/overhead exceeds value.
+```
+
+Do not assume B is the desired outcome.
+
+## Rejection criterion
+
+Reject or narrow the envelope if it produces boilerplate, duplicates domain-specific artifact fields, encourages fabricated claims/uncertainties, or transfers semantic authority to validators.
+
+---
+
+# Phase 11 — Mechanical Semantic Probes
+
+**Status:** Deferred pending stable demand.
+
+Potential mechanical relations include:
+
+```text
+TargetSnapshot identity
+file containment
+language-level imports/exports
+manifest dependencies
+artifact digests
+known-membership boundary crossing
+complete-scope exact search
+```
+
+Every probe must declare source/scope, completeness guarantee, currentness, blind spots, and the exact mechanical claim established. Do not name a mechanical output as if it established semantic architectural judgment.
+
+---
+
+# Phase 12 — Repository Semantic Map Experiment
+
+**Status:** Deferred.
+
+Trigger only if multiple Skills repeatedly reconstruct the same repository entities/relations and durable sharing would materially reduce inconsistency or duplicated work.
+
+Candidate bounded artifact:
+
+```text
+RepositorySemanticMap
+- target_snapshot
+- scope
+- entities
+- relations
+- claims
+- contradictions
+- unresolved_uncertainties
+- evidence_refs
+```
+
+It must never become a complete repository source of truth.
+
+Phase 9 did **not** provide sufficient evidence for this experiment yet.
+
+---
+
+# Phase 13 — Campaign / Control-Plane Promotion
+
+**Status:** Deferred.
+
+A semantic concept should enter Campaign schema only when:
+
+1. it must survive across sessions to preserve consequential decision state;
+2. at least two real workflows demonstrate the need;
+3. semantics are stable;
+4. migration can avoid semantic invention;
+5. mechanical validation boundaries are clear.
+
+The Phase 9 profile is not automatically Campaign evidence and is not registered with the Campaign artifact router.
+
+---
+
+# Phase 14 — Domain-Pack Extraction
+
+**Status:** Deferred.
+
+Trigger only after at least two domain implementations demonstrate a stable pattern such as:
+
+```text
+foundation semantics
++ responsibility vocabulary
++ capability manifests
++ artifact contracts
++ validators
++ domain Skills
+```
+
+A single PM domain remains insufficient evidence for a generic Domain Pack abstraction.
+
+---
+
+# Phase 15 — Ontology Conformance and Drift Checks
+
+**Status:** Deferred.
+
+Potential future checks may detect:
+
+- canonical term duplicated under a new name;
+- Skill-local redefinition of canonical vocabulary;
+- relation used outside documented subject/object range;
+- Level-1/2 concept described as runtime-enforced;
+- documentation claiming executable support absent from code;
+- deprecated term remaining in active contracts.
+
+Such checks must validate consistency, not semantic truth.
+
+---
+
+# Metrics
+
+Track:
 
 ```text
 ambiguous terms encountered
@@ -590,19 +364,16 @@ artifact boilerplate introduced
 validator overreach caught
 new concepts requested by real tasks
 ontology concepts never used
+token / coordination overhead
 ```
 
 The goal is not maximum ontology coverage. The goal is **more consistent warranted reasoning per unit of coordination overhead**.
 
----
+# Current next step
 
-# Immediate next step after this foundation milestone
+Run Phase 10 with additional real repository episodes using the now-executable companion profile. Do not build a central reasoning engine, universal semantic graph, or Campaign schema expansion merely because the first three pilots completed.
 
-Do not create a universal semantic schema.
-
-Run **Phase 9 Pilot A (`repo-sensemaker`)** on a real repository episode and produce an evidence record showing where the shared model improves or complicates reasoning. Then run a contrasting architecture or repair pilot before extracting executable common fields.
-
-This preserves the repository's existing discipline:
+Preserve the development loop:
 
 ```text
 observe
