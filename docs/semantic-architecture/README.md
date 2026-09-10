@@ -1,12 +1,12 @@
 # Sensemaking Semantic Architecture
 
-**Status:** Canonical semantic foundation; Phase 9 and Phase 10 complete; first bounded Phase 15 liveness rule qualified; post-Phase-10 build-first substrate implemented as a candidate  
-**Scope:** Repository reasoning, evidence semantics, work/product semantics, bounded mechanical observations, cross-Skill provenance, conformance, and Campaign projections  
+**Status:** Canonical semantic foundation; Phase 9 and Phase 10 complete; bounded Phase 15 liveness qualified; post-Phase-10 build-first substrate B1–B6 repository-qualified  
+**Scope:** Repository reasoning, evidence semantics, work/product semantics, bounded mechanical observations, cross-Skill provenance, conformance, Campaign observability, and portability  
 **Semantic authority:** The active agent/human owns interpretation and warrant; executable semantic machinery implements only documented mechanical subsets
 
 ## Purpose
 
-Sensemaking needs a shared semantic model so different Skills can reason about repositories with the same meanings for repository structure, evidence, claims, uncertainty, responsibility, capability, authority, change, and validation.
+Sensemaking needs a shared semantic model so different Skills can reason about repositories with consistent meanings for repository structure, evidence, claims, uncertainty, responsibility, capability, authority, change, and validation.
 
 The goal is not an ontology of every software concept. It is the **minimal-but-sufficient semantic architecture needed to reason reliably about an unfamiliar repository, preserve provenance, and state the limits of what has actually been established**.
 
@@ -69,6 +69,7 @@ No lower layer automatically receives semantic authority from an upper-layer con
 | [`phase-10-handoff.md`](phase-10-handoff.md) | Phase 10 qualification handoff. |
 | [`phase-15/README.md`](phase-15/README.md) | Qualified bounded Skill-registry liveness pilot. |
 | [`phase-15-handoff.md`](phase-15-handoff.md) | Phase 15 liveness qualification evidence. |
+| [`build-first-handoff.md`](build-first-handoff.md) | B1–B6 exact-head qualification and continuation handoff. |
 
 Campaign observability, Resume Capsule, replay/graph, semantic companion integration, and portable bundles are documented in [`../campaign-observability-and-portability.md`](../campaign-observability-and-portability.md).
 
@@ -89,7 +90,7 @@ Level-3 representation valid != semantic conclusion true
 
 Phase 9 produced `semantic_reasoning_profile` v1. Phase 10 retained it as an **optional companion** while rejecting mandatory universal embedding. The qualified Phase 15 liveness pilot added a narrow conformance rule over explicit Skill-registry/tree consistency.
 
-The build-first candidate adds further Level-3 mechanics only where the boundary is mechanical: repository observations, target consistency, bounded map derivation, hash-chain integrity, manifest/domain cross-reference conformance, Campaign provenance projections, and bundle integrity.
+PR #327 then repository-qualified further Level-3 mechanics where the boundary is directly mechanical: repository observations, target consistency, bounded map derivation, cross-Skill hash-chain integrity, manifest/domain cross-reference conformance, Campaign provenance projections, and bundle integrity.
 
 ## Phase 9 — Reasoning Model operationalization
 
@@ -114,39 +115,29 @@ Skill-local semantics remain local rather than being flattened into a universal 
 
 Phase 10 tested the companion profile on Chess Mentor Engine, the React incremental game, and ViralFactory PM risk reasoning.
 
-The qualified decision remains:
+Qualified decision:
 
 > Keep `semantic_reasoning_profile` as an optional companion audit/reconstruction artifact.
 
-The strongest positive signal was currentness-sensitive cross-artifact reconstruction; the strongest negative signal was duplication where a domain artifact already carried evidence/currentness/uncertainty/limits. Therefore the profile remains selective and outside Campaign artifact admission.
+The strongest positive signal was currentness-sensitive cross-artifact reconstruction; the strongest negative signal was duplication where a domain artifact already carried evidence/currentness/uncertainty/limits. The profile therefore remains selective and outside Campaign artifact admission.
 
 The later build-first policy does **not** erase Phase 10. It changes the prospective development gate: additional experiments are deferred while mechanically clear construction runway remains.
 
 ## Qualified Phase 15 baseline — registry liveness
 
-The existing `validate-skill-registry-liveness.py` rule remains qualified and checks only narrow consistency failures such as a live canonical Skill being described as merely proposed/no-current-implementation, wrong/broken canonical Skill paths, and duplicate registry IDs.
+The existing `validate-skill-registry-liveness.py` rule remains qualified. It checks only narrow consistency failures such as a live canonical Skill being described as merely proposed/no-current-implementation, wrong/broken canonical Skill paths, and duplicate registry IDs.
 
-It remains a bounded conformance rule with `semantic_truth_established: false`. The build-first manifest/domain conformance layer runs **beside** it rather than replacing it.
+It remains a bounded conformance rule with `semantic_truth_established: false`.
 
-## Build-first policy
+## Post-Phase-10 build-first substrate — repository-qualified
 
-The active decision rule is:
+PR #327 qualified the B1–B6 build-first track on exact candidate `1f180cb6a61a060ed9b46b005f0b539b18d21198` with Product Validation `34471983343`, Release Candidate Distribution `34471983250`, and Lab Validation `34471983249`, then merged as `9e1e0356486f16d113ce7e182d2ef00e0110f857`.
 
-```text
-Can the next architecture be justified primarily
-from existing contracts + a known missing capability?
-
-YES -> build and mechanically qualify
-NO  -> invoke additional empirical validation
-```
-
-Mechanical verification remains continuous. See `build-first-policy.md` for the Construction Diminishing-Returns Gate.
-
-## Build-first executable substrate candidate
+See `build-first-handoff.md` for exact scope, rejection evidence, and non-claims.
 
 ### Mechanical observations
 
-Current v0 probes cover:
+Repository-qualified v0 probes cover:
 
 ```text
 regular-file containment
@@ -157,27 +148,37 @@ exact UTF-8 literal search
 
 Every observation preserves target ref, evidence refs, source/method, scope, completeness, and currentness. A probe establishes only its declared mechanical fact.
 
+```text
+import syntax present != runtime dependency established
+import syntax present != architecture violation
+zero exact matches in bounded scope != universal absence
+```
+
 ### Repository Semantic Map v0
 
-A bounded map combines **supplied** observations into `repository_locator` entities and `DERIVED` mechanical relations. It rejects mixed target refs and explicitly remains incomplete.
+A repository-qualified bounded map combines **supplied** observations into `repository_locator` entities and `DERIVED` mechanical relations. It rejects mixed target refs and remains explicitly incomplete.
 
-It does not infer `Component`, `Layer`, `Boundary`, architecture quality, importance, or a recommended change.
+It does not infer `Component`, `Layer`, `Boundary`, architecture quality, importance, or recommended work.
 
 ### Cross-Skill semantic companion
 
-An optional append-only SHA-256 hash chain preserves explicit artifact/evidence/claim/uncertainty references between Skills. It stores provenance references, not hidden chain of thought.
+`SemanticStateStore` provides an optional append-only SHA-256 chain preserving explicit artifact/evidence/claim/uncertainty references between Skills. It stores provenance references, not hidden chain of thought.
 
-Campaigns can carry this as `semantic-state.jsonl` without changing Campaign schema v2. Repository-bound Campaigns bind new entries to the current TargetSnapshot digest; targetless Campaigns require an explicit target ref.
+Campaigns can carry this as `semantic-state.jsonl` without changing **Campaign schema v2**. Repository-bound Campaign entries bind to the current TargetSnapshot digest; targetless Campaigns require an explicit target ref.
 
 ### Skill/domain conformance
 
-`skill-manifests/` describes deterministic Skill interfaces. `domain-packs/` provides reference manifests for a bounded Engineering slice and the completed Product Management migration.
+`skill-manifests/` describes deterministic Skill interfaces. `domain-packs/` provides repository-qualified reference manifests for a bounded Engineering slice and the completed Product Management migration.
 
-The new checker validates manifest/domain shape and cross-reference consistency while explicitly rejecting fields that imply deterministic semantic truth, auto-routing, automatic Skill selection, or automatic uncertainty ranking.
+The manifest/domain checker runs beside the qualified registry-liveness checker. It validates shape, canonical Skill existence, semantic vocabulary, pack/manifest domain agreement, responsibility/artifact coverage, and references while rejecting fields that imply deterministic semantic truth, auto-routing, automatic Skill selection, or automatic uncertainty ranking.
+
+```text
+manifest valid != Skill should run
+```
 
 ### Campaign observability and portability
 
-New projections/transport commands include:
+Repository-qualified commands include:
 
 ```text
 campaign inspect
@@ -193,23 +194,48 @@ campaign bundle-verify
 campaign bundle-import
 ```
 
-These inspect, connect, project, or transport durable state; they do not determine a warranted next action. Replay refuses to invent historic full-state snapshots not stored by Campaign v2. Bundles verify byte/path integrity, not semantic correctness.
+`resume-context` is a deterministic Resume Capsule. Replay refuses to invent historical full-state snapshots not stored by Campaign v2. Graph output records provenance relations, not semantic support or causality.
+
+Portable Campaign bundles preserve exact workspace bytes plus SHA-256/size bindings and fail closed on unsafe paths, symlinks, duplicate/undeclared/missing members, digest/size mismatch, unsupported format/version, and output destinations inside the source workspace.
+
+```text
+bundle valid != Campaign semantically correct
+```
 
 ## Domain Pack status
 
-The build-first candidate extracts **reference manifests**, not a plugin runtime:
+Current repository-qualified reference manifests:
 
 ```text
 domain-packs/engineering.yaml
 domain-packs/product-management.yaml
 ```
 
-Engineering is deliberately represented by the first bounded semantic-alignment slice, not by a claim that every engineering Skill has been normalized. Product Management references the completed 27-Skill repository-qualified migration and its existing qualification policy.
+Engineering is deliberately represented by the first bounded semantic-alignment slice rather than a claim that every engineering Skill has been normalized. Product Management references the completed 27-Skill repository-qualified migration and existing qualification policy.
+
+A Domain Pack is a reference contract shape, not a plugin runtime or semantic router.
+
+## Build-first policy
+
+The active decision rule is:
 
 ```text
-Domain Pack membership != support/promotion qualification
-Domain Pack membership != automatic routing authority
+Can the next architecture be justified primarily
+from existing contracts + a known missing capability?
+
+YES -> build and mechanically qualify
+NO  -> invoke additional empirical validation
 ```
+
+Mechanical verification remains continuous. Additional empirical experiments are deferred while a concrete missing capability has a clear mechanical contract.
+
+See `build-first-policy.md` for the Construction Diminishing-Returns Gate.
+
+## Construction Diminishing-Returns Gate
+
+Additional empirical validation becomes required when construction can no longer resolve its own architecture questions. Signals include competing designs with no contract-based discriminator, abstraction without new capability, speculative durable fields, formalization outpacing consumption, maintenance dominating capability growth, persistent placement ambiguity, behavioral-value questions becoming decisive, or pressure to transfer semantic judgment into deterministic machinery.
+
+Completing B1–B6 does not automatically mean the gate has been reached.
 
 ## Authority boundary
 
@@ -229,19 +255,26 @@ semantic profile valid != reasoning semantically correct
 registry liveness valid != Skill semantically correct
 semantic map relation != architecture judgment
 manifest valid != Skill should run
+Domain Pack membership != routing authority
 bundle valid != Campaign semantically correct
 provenance edge != semantic support
 ```
 
-## Construction Diminishing-Returns Gate
+## Empirical status of B1–B6
 
-Additional empirical validation becomes required when construction can no longer resolve its own architecture questions. Signals include competing designs with no contract-based discriminator, abstraction without new capability, speculative durable fields, formalization outpacing consumption, maintenance dominating capability growth, persistent placement ambiguity, behavioral-value questions becoming decisive, or pressure to transfer semantic judgment into deterministic machinery.
+B1–B6 are repository-qualified implementation capabilities. Their CI qualification does **not** establish that they reduce coordination cost or improve real native-agent task quality. That later product-value question remains intentionally deferred until the Construction Diminishing-Returns Gate or an explicit owner decision.
 
-Completing the current build package does not automatically mean the gate has been reached.
+This distinction preserves:
+
+```text
+repository implementation qualified
+!=
+real-agent product value empirically established
+```
 
 ## Non-goals
 
-This initiative does **not** authorize:
+This architecture does **not** authorize:
 
 - a universal ontology of all software engineering;
 - a complete repository knowledge graph;
@@ -254,10 +287,10 @@ This initiative does **not** authorize:
 - replacing source evidence with a generated semantic map;
 - a central Reasoning Engine;
 - mandatory use of `semantic_reasoning_profile` in every artifact;
-- claiming that this build-first substrate was empirically validated by the historical Phase 10 episodes.
+- claiming that B1–B6 were empirically validated by the historical Phase 10 episodes.
 
 ## Current frontier
 
-The build-first candidate extends the already-qualified Phase 10/Phase 15 baseline with bounded mechanical substrate, map/state sharing, Campaign observability, broader conformance, reference Domain Packs, and portability ergonomics while preserving Campaign schema v2.
+The repository now has a broad mechanically bounded semantic substrate, map/state sharing, Campaign observability, conformance, Domain Pack references, and portability ergonomics while preserving Campaign schema v2 and Phase 10 Outcome A.
 
-After exact-head qualification, further construction should come from a concrete remaining product/integrity gap. When the next architecture instead depends on a behavioral value question, stop building and invoke the additional empirical-validation program defined by the diminishing-returns policy.
+Further construction should come from a concrete missing product/integrity capability. When the next architecture instead depends on a behavioral-value question, stop building and invoke the empirical-validation program defined by the diminishing-returns policy.
