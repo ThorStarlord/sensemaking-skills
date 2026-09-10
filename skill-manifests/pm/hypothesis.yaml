@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: hypothesis
+domain: product-management
+responsibilities: [product_hypothesis]
+consumes: []
+produces: [hypothesis_statement]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false
