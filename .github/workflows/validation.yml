@@ -137,6 +137,7 @@ jobs:
             tests/test_path_drift.py \
             tests/test_cli.py \
             tests/test_semantic_reasoning_profile.py \
+            tests/test_skill_registry_liveness.py \
             -q
 
       - name: Assert verification did not mutate tracked state
