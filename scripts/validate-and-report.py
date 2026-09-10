@@ -52,6 +52,11 @@ _PM_ARTIFACT_IDS = {
     "opportunity_map",
     "hypothesis_statement",
 }
+_PM_FEATURE_DEFINITION_IDS = {
+    "story_list",
+    "criteria_list",
+    "risk_analysis",
+}
 
 
 class ArtifactIdExtraction:
@@ -224,6 +229,8 @@ def select_validator(artifact_id: str | None) -> str:
         return "scripts/validate-architectural-review-recommendation.py"
     if artifact_id in _PM_ARTIFACT_IDS:
         return "scripts/validate-pm-artifact.py"
+    if artifact_id in _PM_FEATURE_DEFINITION_IDS:
+        return "scripts/validate-pm-feature-definition.py"
     return "scripts/validate-artifact.py"
 
 

@@ -1,139 +1,53 @@
 ---
 name: to-prd
-description: convert opportunity maps and discovery findings into a product requirements document (PRD) with scope expansion tracking.
+description: Convert evidence-backed product opportunities, hypotheses, discovery findings, or an explicitly authorized product direction into a Product Requirements Document while preserving the user's goal, evidence strength, scope boundaries, success measures, risks, dependencies, and approval state. Use for product_specification responsibility. Produce prd; do not create a second PRD authority or present proposed metrics and roadmap dates as observed facts.
 ---
 
 # to-prd
 
-## Workflow
+Satisfy a `product_specification` responsibility by producing the canonical `prd` artifact.
 
-1. **Consume Input**: Review opportunity map and domain alignment report.
-2. **Extract User Goal**: Reference the source intent to understand what user originally asked for.
-3. **Identify Scope**: Determine if the PRD addresses the user's goal alone or includes expansion.
-4. **Document Goal Preservation**: Record how the user's goal is preserved (exact match, core with expansion, etc.)
-5. **Propose Expansions**: If discovery revealed opportunities beyond stated goal, propose them for user approval.
-6. **Produce PRD**: Generate the Product Requirements Document with features, acceptance criteria, and expansion details.
+`to-prd` is the single current PRD capability. The upstream `prd` methodology is adapted into this Skill rather than becoming a competing `prd` Skill identity.
 
-## Output Format
+## Inputs
 
-Every response must follow the [Product Requirements Document](references/prd-template.md) structure.
+Require a product problem/opportunity or hypothesis, intended audience, proposed solution direction, and source user intent. Prefer durable `hypothesis_statement`, `opportunity_map`, `discovery_findings`, persona evidence, and relevant constraints when available.
 
-**CRITICAL**: Every PRD MUST include the **Machine-Readable Handoff** YAML block. PRDs without this block are invalid and violate the artifact contract.
+## Procedure
 
-## Stage 3: Scope Expansion Tracking
+1. Read [references/methodology.md](references/methodology.md) for the adapted PRD method.
+2. Read [references/prd-template.md](references/prd-template.md) for the canonical artifact structure.
+3. Restate the source user goal and identify what evidence supports the problem, audience, and why-now claim.
+4. Separate observed evidence, owner intent, estimates, proposed targets, and assumptions. Never invent baselines, market size, dates, effort, or approval.
+5. Define solution scope in user terms, including core features and explicit out-of-scope boundaries.
+6. Define measurable outcomes and success criteria. Unknown baselines or targets stay unknown/proposed rather than being fabricated.
+7. Record constraints, dependencies, risks, and open questions that affect delivery or decision quality.
+8. Preserve the existing scope-expansion contract. Any material expansion beyond the user's stated goal remains proposed until explicitly authorized.
+9. Include user stories or scenarios only at the level needed to make requirements understandable; detailed story decomposition belongs to `user-stories`.
+10. Render the canonical template including exactly one machine-readable handoff and return control to the active agent.
 
-**Scope Expansion Fields** track whether features beyond the user's stated goal are being included in the PRD.
+## Scope expansion
 
-### How to Determine Scope Expansion
+Use the canonical fields:
 
-**Step 1: Extract User Goal**
-- Read `source_intent_ref` → `00-user-intent.md`
-- Note the user's original problem statement
-- Identify what the user explicitly asked for (stated goal)
-
-**Step 2: Compare Against Discovery**
-- Review opportunity map: What did discovery reveal?
-- Are there features beyond the user's stated goal?
-- Did interviews reveal "nice-to-have" features not mentioned by user?
-
-**Step 3: Document Goal Preservation**
-- If PRD addresses ONLY the stated goal: `user_goal_preserved_as: exact_match`
-- If PRD addresses goal PLUS identified opportunities: `user_goal_preserved_as: core_with_expansion`
-- If PRD significantly diverges from goal: `user_goal_preserved_as: diverged` (escalate to user)
-
-**Step 4: Propose or Document Expansions**
-If `user_goal_preserved_as: core_with_expansion`:
-- List each proposed feature beyond the stated goal
-- Explain the discovery rationale (e.g., "5/8 users mentioned...")
-- Estimate effort/risk for each expansion
-- Set `scope_expansion_proposed: true`
-- Set `scope_expansion_requires_approval: true` (user must approve)
-- Set `scope_expansion_status: pending_user_approval`
-
-If expansions were already approved by user:
-- List approved expansions with approval timestamp
-- Set `scope_expansion_status: approved_by_user`
-- Include all approved features in the PRD
-
-**Step 5: Emit Machine-Readable Fields**
 ```yaml
-source_intent_ref: ../../00-user-intent.md
+source_intent_ref: "..."
 user_goal_preserved_as: exact_match | core_with_expansion | diverged
 scope_expansion_proposed: true | false
 scope_expansion_requires_approval: true | false
 scope_expansion_status: exact_match | pending_user_approval | approved_by_user | diverged
 ```
 
-### Three Scenarios
+If the proposed specification materially exceeds or contradicts the user's stated goal, do not silently normalize the expansion into core scope.
 
-**Scenario A: Exact Match (No Expansion)**
-```
-User goal: "Task list management"
-Discovery finds: Need for priorities
-PRD includes: Task creation, priority management, completion tracking
----
-user_goal_preserved_as: exact_match
-scope_expansion_proposed: false
-scope_expansion_requires_approval: false
-scope_expansion_status: exact_match
-```
+## Stop or downgrade
 
-**Scenario B: Core + Expansion Proposed (Requires Approval)**
-```
-User goal: "Task list management"
-Discovery finds: Need for priorities + due dates + recurring tasks (user didn't mention these)
-PRD includes: Core (task creation, priority, completion) + proposes due dates and recurring (not yet approved)
----
-user_goal_preserved_as: core_with_expansion
-scope_expansion_proposed: true
-scope_expansion_requires_approval: true
-scope_expansion_status: pending_user_approval
-```
+- If the problem/audience evidence is weak, produce a clearly provisional specification rather than claiming validation.
+- If success cannot be measured, preserve the measurement gap as an open question.
+- If a required dependency or owner decision is unknown, surface it rather than inventing resolution.
+- If scope expansion requires approval, stop at the approval boundary; do not authorize implementation of the expansion.
+- If the request is really story decomposition or acceptance definition, return control so the active agent can select `user-stories` or `acceptance-criteria`.
 
-**Scenario C: Expansion Approved (Included in Development)**
-```
-User goal: "Task list management"
-User approved: Due dates + recurring tasks in workflow-planner gate
-PRD includes: All features (core + due dates + recurring)
----
-user_goal_preserved_as: core_with_expansion
-scope_expansion_proposed: true
-scope_expansion_requires_approval: false  (already approved, no longer needs approval)
-scope_expansion_status: approved_by_user
-```
+## Boundary
 
-### When to Escalate (Divergence)
-
-If discovery suggests features that contradict or significantly diverge from the user's stated goal:
-- Example: User asked for "simple task list" but discovery reveals "complex workflow engine" needed
-- Action: Set `user_goal_preserved_as: diverged` and escalate to workflow-planner or user
-- Do not force expansion; let user decide if new direction is acceptable
-
-## PRD Structure
-
-Every PRD must include these sections:
-
-1. **Executive Summary** — What this PRD delivers
-2. **User Goal** — The goal as user stated it (exact quote from intent)
-3. **Goal Preservation & Expansion** — How this PRD addresses the goal and what (if anything) is proposed beyond it
-4. **Features** — Organized by core features first, then approved expansions
-5. **Out of Scope** — Explicitly listed to manage expectations
-6. **Acceptance Criteria** — Testable requirements (organized by core + expansions if applicable)
-7. **Non-Functional Requirements** — Performance, accessibility, browser support, etc.
-8. **Approval Gate** (if expansion proposed) — Request user approval for expansion features
-9. **Machine-Readable Handoff** — YAML block with all required fields
-
-## Validation Rules
-
-- PRD must have a valid `source_intent_ref` pointing to 00-user-intent.md
-- `user_goal_preserved_as` must be one of: exact_match, core_with_expansion, diverged
-- If `scope_expansion_proposed: true`, then `scope_expansion_requires_approval` must be true (expansion always needs approval before dev starts)
-- If `scope_expansion_status: pending_user_approval`, PRD should include approval gate asking user to decide
-- If `scope_expansion_status: approved_by_user`, approval timestamps should be documented
-- Machine-readable section must be present and parseable YAML
-
-## References
-
-- [Product Requirements Document Template](references/prd-template.md)
-- [Artifact Contracts](../workflow-planner/references/artifact-contracts.yaml)
-- [Intent Contract](../workflow-planner/references/artifact-contracts.yaml#user_intent)
+`PRD != proof of customer demand`, `target metric != observed baseline`, `roadmap proposal != delivery commitment`, and `scope proposal != authority to expand scope`.
