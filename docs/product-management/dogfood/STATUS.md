@@ -3,6 +3,7 @@
 **Protocol:** `pm-customer-discovery-v1`  
 **Repository implementation:** COMPLETE through merged Packages 1–3  
 **Implementation merge frontier:** `main@e7d213e07976a2f269b1479fcc36decdcf0cdeb4` (PR #309 merge)  
+**Checked-in non-qualifying preflights:** 1  
 **Checked-in real-harness functional attempts:** 0  
 **Checked-in second-harness portability attempts:** 0  
 **Current functional empirical PASS:** NONE  
@@ -19,6 +20,25 @@ The Package 3 final candidate `897e5850a4ab229eeb2c00e23d91339c3bf8e884` passed 
 - the same canonical PM Skill bytes can be installed through generic/Codex, Claude, and OpenCode project adapter roots.
 
 These are repository/structural claims. They are not evidence that a real Claude Code, Codex, OpenCode, or other supported coding-agent harness natively discovered and invoked the Skills.
+
+## Non-qualifying preflight evidence
+
+A repository-side preflight was executed on 2026-09-10 using the exact qualified release-candidate distribution from head `707cf3084e82c10fbff20496950f83d9e5450c15` and repository evidence from `ThorStarlord/Chess-Mentor-Engine@4139e4dda567feeadb5684f51c4a265dfae07330`.
+
+The preflight:
+
+- initialized a durable Campaign and advanced into explicit `problem_discovery` responsibility;
+- exposed the unranked canonical `discovery` capability candidate;
+- produced a contract-valid `discovery_findings` artifact;
+- admitted the exact bytes through `validate-pm-artifact.py`;
+- closed with `evidence_insufficient` rather than turning repository roadmap evidence into customer truth;
+- wrote a handoff, passed `campaign validate`, reconstructed successfully through `campaign resume`, and preserved transition/evidence lineage.
+
+The environment had no Codex, Claude Code, or OpenCode executable and no configured OpenAI/Anthropic API credential. The artifact therefore was not produced through a supported harness's native Skill discovery/invocation path. This preflight is deliberately **not** counted as a real-harness attempt or empirical PASS.
+
+Preserved evidence lives under:
+
+`docs/product-management/dogfood/preflights/2026-09-10-chess-mentor-engine/`
 
 ## Required next evidence
 

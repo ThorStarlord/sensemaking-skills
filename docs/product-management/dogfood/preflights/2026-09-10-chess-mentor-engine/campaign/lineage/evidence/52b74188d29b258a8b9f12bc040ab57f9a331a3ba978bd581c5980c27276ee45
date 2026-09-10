@@ -1,0 +1,17 @@
+campaign_id: PM-DOGFOOD-PREFLIGHT-001
+artifact_id: discovery_findings
+artifact_ref: artifacts/discovery_findings/371a19e90390d24c9f235e41c3e6061f27243e1960d6b48183173a6afc02206c.md
+artifact_sha256: 371a19e90390d24c9f235e41c3e6061f27243e1960d6b48183173a6afc02206c
+validator: validate-pm-artifact.py
+validation_timestamp: '2026-09-10T08:11:45.150877Z'
+router_sha256: 9c3f97a2055ba9b5c64ebcd5a8ed47ed0dd9103e4d2b98ad3d1b46a1b346457b
+validator_sha256: 6799d552214348aa7b227c1fdc152ff184a9aa857bb47f7a7c4a6f44a593bc2d
+validation_result_sha256: 8947b857909fbe32bc9488fa2f25fd56a8a1382e66c935c595cfc9e68a331025
+validation_result:
+  valid: true
+  artifact_id: discovery_findings
+  artifact_path: /tmp/sensemaking-artifact-admission-2qcely03/artifact.md
+  validator: validate-pm-artifact.py
+  errors: []
+  validation_timestamp: '2026-09-10T08:11:45.150877Z'
+schema_version: '1'

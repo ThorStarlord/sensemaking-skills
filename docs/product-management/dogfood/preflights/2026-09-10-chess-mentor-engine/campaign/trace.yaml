@@ -1,0 +1,19 @@
+campaign_id: PM-DOGFOOD-PREFLIGHT-001
+events:
+- event: transition_committed
+  transition_id: T-001
+  from_state: initialized
+  to_state: problem_discovery_active
+  transition_digest: 196123c5f20bc248695e59eb0ec5f6deacb5bd39cee500f6e5195df0fa98558a
+  state_digest: fad056743c2a9fd0579435da46a40b14c1143a37917ceb7fcdae140d8cc47d29
+- event: transition_committed
+  transition_id: T-002
+  from_state: problem_discovery_active
+  to_state: discovery_preflight_complete
+  transition_digest: d17bb23c445207f1902be69170ea1fb733b5645a72d72d3e6e40fe98a2f1e0ef
+  state_digest: 0a1d363179dd3fa17ecc2c969221fe157361877661ef47fc7601c3559b08e8d3
+schema_version: '2'
+replication_id: null
+initial_state: initialized
+terminal_state: evidence_insufficient
+extensions: {}

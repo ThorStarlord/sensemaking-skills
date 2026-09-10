@@ -1,0 +1,22 @@
+campaign_id: PM-DOGFOOD-PREFLIGHT-001
+transition_id: T-002
+evidence_bindings:
+- source_ref: artifacts/discovery_findings/371a19e90390d24c9f235e41c3e6061f27243e1960d6b48183173a6afc02206c.md
+  immutable_ref: artifacts/discovery_findings/371a19e90390d24c9f235e41c3e6061f27243e1960d6b48183173a6afc02206c.md
+  sha256: 371a19e90390d24c9f235e41c3e6061f27243e1960d6b48183173a6afc02206c
+  kind: admitted_artifact
+  provenance:
+    artifact_id: discovery_findings
+    admission_refs:
+    - admissions/discovery_findings/37b257bed48d94e73e49b07d44355dc1352ef94fb24e43d7a969796defb19af1.yaml
+- source_ref: admissions/discovery_findings/37b257bed48d94e73e49b07d44355dc1352ef94fb24e43d7a969796defb19af1.yaml
+  immutable_ref: lineage/evidence/52b74188d29b258a8b9f12bc040ab57f9a331a3ba978bd581c5980c27276ee45
+  sha256: 52b74188d29b258a8b9f12bc040ab57f9a331a3ba978bd581c5980c27276ee45
+  kind: admission_receipt
+  provenance:
+    artifact_id: discovery_findings
+    artifact_ref: artifacts/discovery_findings/371a19e90390d24c9f235e41c3e6061f27243e1960d6b48183173a6afc02206c.md
+    artifact_sha256: 371a19e90390d24c9f235e41c3e6061f27243e1960d6b48183173a6afc02206c
+    validator: validate-pm-artifact.py
+    validation_timestamp: '2026-09-10T08:11:45.150877Z'
+schema_version: '1'
