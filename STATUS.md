@@ -2,11 +2,11 @@
 
 **Version:** 0.3.0  
 **Last updated:** 2026-09-10  
-**Current phase:** Parallel PM repository expansion and Semantic Architecture Phase 10 experimentation; engineering and PM empirical external qualification remain pending  
+**Current phase:** PM upstream source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 experimentation active; engineering and PM empirical external qualification remain pending  
 **Primary program:** Sensemaking Campaign productization with agent-agnostic domain capabilities and evidence-governed repository reasoning  
 **Current implementation frontier:** Use Git `main` HEAD as exact repository identity; this status file intentionally does not self-pin a commit that becomes stale when the file itself changes  
 **Current semantic frontier:** Phase 9 first Reasoning Model operationalization is complete; Phase 10 tests the experimental common semantic envelope in additional real repository episodes  
-**Current PM frontier:** Waves 1–4 are `REPOSITORY_QUALIFIED`; continue Wave 5 Customer Modeling under the existing qualification policy
+**Current PM frontier:** Waves 1–6 are `REPOSITORY_QUALIFIED`; the pinned 27-command source migration is complete and the next PM frontier is native-harness/portability qualification plus evidence-derived product improvement
 
 Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. Its Campaign substrate supports agent-agnostic Product Management capabilities and an evidence-governed Semantic Architecture for consistent repository reasoning. The active coding agent owns semantic judgment; deterministic machinery owns representation, persistence, validation, provenance, integrity, authority checks, target identity, evidence binding, and reconstructible state.
 
@@ -14,7 +14,7 @@ Sensemaking Skills is an **agent-native engineering sensemaking and control laye
 
 PR #314 established the documentation-first semantic foundation. PR #318 completed the first contrasting **Reasoning Model Operationalization & Skill Semantic-Alignment** milestone.
 
-The architecture now has four explicit layers:
+The architecture has four explicit layers:
 
 ```text
 Semantic Model
@@ -72,24 +72,17 @@ decision-relevant uncertainty
 explicit limits / non-claims
 ```
 
-Skill-local vocabularies remain local: fog/weakness taxonomies, architecture `Component`/`Layer`/`Boundary`/`Contract`, architectural verdict enums, repair `closed/remaining`, reconciliation `verified/disputed/omitted`, and Campaign transitions are **not** flattened into one generic schema.
+Skill-local vocabularies remain local: fog/weakness taxonomies, architecture `Component`/`Layer`/`Boundary`/`Contract`, architectural verdict enums, repair `closed/remaining`, reconciliation `verified/disputed/omitted`, PM artifact-local statuses, and Campaign transitions are **not** flattened into one generic schema.
 
-PR #318 aligned the four Skills to this reasoning discipline and added the first new experimental Level-3 contract: `semantic_reasoning_profile` v1.
+PR #318 aligned the four engineering Skills to this reasoning discipline and added the first experimental Level-3 contract: `semantic_reasoning_profile` v1.
 
 ### Experimental Level 3 — `semantic_reasoning_profile`
 
-The standalone validator `scripts/validate-semantic-reasoning-profile.py` can mechanically check:
-
-- required fields and shapes;
-- IDs and enum values;
-- evidence-reference representation;
-- currentness evidence presence for pinned/verified/inherited states;
-- evidence presence for evidence-grounded claim statuses;
-- explicit limits/non-claims.
+The standalone validator `scripts/validate-semantic-reasoning-profile.py` can mechanically check required fields/shapes, IDs/enums, evidence-reference representation, currentness evidence for pinned/verified/inherited states, evidence presence for evidence-grounded claim statuses, and explicit limits/non-claims.
 
 It explicitly cannot decide semantic truth, evidence sufficiency, uncertainty priority, warranted responsibility, capability selection, architectural correctness, repair success, or Campaign disposition.
 
-Its structured output preserves the boundary:
+Its structured output preserves:
 
 ```text
 semantic_truth_established: false
@@ -115,15 +108,7 @@ B. be embedded selectively in multiple analytical artifacts; or
 C. be narrowed/retired if coordination overhead exceeds value.
 ```
 
-Additional real repository episodes should measure:
-
-- repeated semantic reconstruction;
-- claims missing currentness/evidence;
-- unsupported inference jumps;
-- fresh-context usefulness;
-- artifact boilerplate;
-- token/coordination overhead;
-- validator overreach.
+Additional real repository episodes should measure repeated semantic reconstruction, claims missing currentness/evidence, unsupported inference jumps, fresh-context usefulness, artifact boilerplate, token/coordination overhead, and validator overreach.
 
 Do **not** implement a central reasoning engine, universal repository semantic graph, or Campaign semantic-profile promotion merely because Phase 9 completed. Repository Semantic Map and Campaign-level semantic promotion remain evidence-gated later phases.
 
@@ -141,7 +126,7 @@ CANDIDATE
 
 Repository qualification requires canonical Skill/artifact contracts where applicable, rejection coverage, Campaign integration, packaging/install proof, and exact-head CI. Native-harness and second-harness evidence remain required for stronger support/promotion claims.
 
-The governing policy remains:
+The governing policy is:
 
 ```text
 dogfood before promotion
@@ -149,15 +134,15 @@ dogfood before promotion
 dogfood before expansion
 ```
 
-Missing empirical qualification is visible qualification debt. It is not silently treated as PASS.
+Missing empirical qualification remains visible qualification debt. It is not silently treated as PASS.
 
-## Repository-qualified PM waves
+## PM source-methodology migration — repository complete
 
-Current authoritative maturity is recorded in `docs/product-management/capability-migration-matrix.md`.
+`docs/product-management/capability-migration-matrix.md` is the authoritative per-capability maturity ledger.
+
+All six planned waves are now repository-qualified against the pinned upstream methodology source `lucasgaravelli/pm-skills-claude-code@21cbb2903d740d10fc65c667aea97d3ee8657349`.
 
 ### Wave 1 — Customer Discovery
-
-Repository-qualified:
 
 ```text
 persona
@@ -167,9 +152,7 @@ opportunity-tree
 hypothesis
 ```
 
-### Wave 2 — Feature Definition
-
-PR #313 repository-qualified:
+### Wave 2 — Feature Definition — PR #313
 
 ```text
 to-prd (upstream prd methodology MERGED)
@@ -178,9 +161,9 @@ acceptance-criteria
 pre-mortem
 ```
 
-### Wave 3 — Strategy & Prioritization
+The upstream `prd` command does not become a second PRD execution authority; useful methodology was merged into canonical `to-prd`.
 
-PR #316 repository-qualified:
+### Wave 3 — Strategy & Prioritization — PR #316
 
 ```text
 competitive-analysis
@@ -194,9 +177,7 @@ lean-canvas
 
 The contracts preserve source currency, evidence state, arithmetic where mechanical, proposed-vs-ratified status, and authority boundaries while leaving semantic prioritization/strategy judgment with the agent.
 
-### Wave 4 — Experimentation / PMF / Pricing
-
-PR #317 repository-qualified:
+### Wave 4 — Experimentation / PMF / Pricing — PR #317
 
 ```text
 experiment-design
@@ -207,16 +188,57 @@ pricing
 
 These contracts distinguish experiment design from observed results, require evidence for empirical analysis/measurement claims, and keep pricing recommendations separate from authority to change prices.
 
-### Next PM wave
-
-Wave 5 remains `CANDIDATE`:
+### Wave 5 — Customer Modeling — PR #320
 
 ```text
 customer-journey
 ideal-customer-profile
 ```
 
-Wave 6 GTM/Communication remains deferred after that.
+The contracts bind evidence/currentness to customer-model claims. Observed journey, emotion, metric, critical-moment, profile, behavior, job, pain, indicator, or disqualifier claims require supporting evidence; unsupported customer fit remains hypothesis/inference/unknown rather than fabricated truth.
+
+Wave 5 was reconciled after the Semantic Architecture foundation. Artifact-local evidence states reuse its epistemic distinctions where useful without promoting the Level-2 ontology into a universal runtime schema.
+
+The first Wave 5 candidate exposed a real Campaign-registry identity gap for `ideal-customer-profile`; the repaired exact candidate `c09ccbfe532ef07887e5204315aea31e71d644aa` passed Product Validation, Lab Validation, and Release Candidate Distribution before PR #320 merged as `9f4a2d5b5b35669661dadc580cb495675791ba59`.
+
+### Wave 6 — Launch / GTM / Enablement / Communication — PR #321
+
+```text
+launch-checklist
+gtm
+battlecard
+release-notes
+stakeholder-update
+```
+
+The contracts preserve the boundary between analysis/drafting and external action:
+
+```text
+readiness assessment != launch authorization
+GTM plan != campaign execution
+battlecard claim != competitive truth without source/currentness
+release announcement draft != publication
+stakeholder next-step proposal != assignment
+```
+
+The exact Wave 6 candidate `245a276e574b84f55af30cac9550d387f49ef9b0` passed Product Validation, Lab Validation, and Release Candidate Distribution before merge as `d433d7d6c34cc8a529b35b2bbfec2a1426c8c3f9`.
+
+### PM repository implementation state
+
+For the pinned 27-command migration:
+
+```text
+source inventory reconciled: COMPLETE
+agent-agnostic canonical adaptation: COMPLETE
+artifact/validator integration: COMPLETE where mechanically warranted
+Campaign capability registration: COMPLETE
+repository qualification: COMPLETE through Wave 6
+native-harness qualification: PENDING
+portability qualification: PENDING
+promotion: PENDING
+```
+
+There is no implied Wave 7 for this source migration. New PM implementation should derive from real dogfood defects, new product requirements, or separately authorized methodology.
 
 ## Empirical qualification gates remain open
 
@@ -240,7 +262,9 @@ Current functional PM empirical PASS: NONE
 Current PM portability empirical PASS: NONE
 ```
 
-Repository-local validation, Campaign admission, wheel packaging, and adapter parity do not substitute for real native-harness discovery/invocation. These gaps limit stronger support/promotion claims rather than separately authorized repository implementation.
+Repository-local validation, Campaign admission, wheel packaging, and adapter parity do not substitute for real native-harness discovery/invocation. These gaps now limit stronger support/promotion claims rather than repository implementation.
+
+The next PM program should run the existing dogfood protocol through at least one real supported harness, verify fresh-context continuation from durable state, then repeat a bounded equivalent responsibility through a second supported harness before claiming portability or promotion.
 
 ### Semantic-architecture empirical limit
 
@@ -281,6 +305,10 @@ native-harness qualified != portability qualified
 portability qualified != promoted
 canonical capability != harness representation
 Skill copied to discovery root != harness observed or invoked Skill
+checklist complete != launch authorization
+GTM plan != campaign execution
+release draft != publication
+proposed owner != assignment
 lineage != semantic warrant
 handoff != semantic recommendation
 ```
@@ -297,11 +325,13 @@ The Campaign Controller is not a semantic router. The Reasoning Model is not a c
 - `docs/semantic-architecture/relations-and-epistemics.md` — relation and epistemic semantics.
 - `docs/semantic-architecture/reasoning-model.md` — evidence-governed reasoning lifecycle.
 - `docs/semantic-architecture/execution-integration.md` — integration boundaries.
-- `docs/semantic-architecture/implementation-plan.md` — current phase plan and promotion gates.
+- `docs/semantic-architecture/implementation-plan.md` — current semantic phase plan and promotion gates.
 - `docs/semantic-architecture/pilots/README.md` — Phase 9 pilot index.
 - `docs/semantic-architecture/common-semantic-contract.md` — experimental Level-3 profile contract.
 - `docs/semantic-architecture/phase-9-handoff.md` — qualified Phase 9 handoff.
 - `docs/product-management/capability-migration-matrix.md` — PM capability dispositions/maturity.
+- `docs/product-management/milestone-handoff.md` — full six-wave PM source-migration handoff.
+- `docs/product-management/artifact-contracts.md` — current PM validation boundary index.
 - `docs/product-management/qualification-levels.md` — PM maturity and qualification-debt policy.
 - `docs/product-management/dogfood/STATUS.md` — PM empirical qualification status.
 - `qualification-evidence/STATUS.md` — engineering empirical external-qualification status.
