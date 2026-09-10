@@ -6,7 +6,6 @@ import json
 
 from sensemaking_skills.semantic_architecture import (
     Completeness,
-    SemanticObservation,
     SemanticStateEntry,
     SemanticStateStore,
     build_repository_semantic_map,
@@ -144,3 +143,24 @@ def test_cross_skill_semantic_state_rejects_future_parent(tmp_path):
         assert "parent" in str(exc)
     else:
         raise AssertionError("state log accepted a parent that does not exist")
+
+
+def test_cross_skill_semantic_state_detects_self_parent_on_reconstruction(tmp_path):
+    path = tmp_path / "state.jsonl"
+    store = SemanticStateStore(path)
+    store.append(
+        SemanticStateEntry(
+            entry_id="S1",
+            source_skill="repo-sensemaker",
+            artifact_ref="brief.md",
+            target_ref="sha:a",
+        )
+    )
+    record = json.loads(path.read_text(encoding="utf-8").strip())
+    record["entry"]["parent_entry_ids"] = ["S1"]
+    # Deliberately recomputing the record digest is unnecessary: reconstruction
+    # should diagnose both content tamper and the independently invalid parent.
+    path.write_text(json.dumps(record, sort_keys=True) + "\n", encoding="utf-8")
+
+    codes = {item.code for item in store.validate()}
+    assert "SEMANTIC_STATE_INVALID_PARENT" in codes
