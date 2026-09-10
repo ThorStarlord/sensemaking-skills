@@ -3,7 +3,8 @@
 **Date:** 2026-09-10  
 **Milestone:** Agent-Agnostic Product Management — Customer Discovery vertical slice  
 **Repository implementation state:** COMPLETE  
-**Empirical native-harness qualification state:** PENDING
+**Empirical native-harness qualification state:** PENDING  
+**Post-milestone policy:** additional repository implementation may proceed; empirical dogfood gates stronger support/promotion claims rather than implementation expansion.
 
 ## Objective delivered
 
@@ -45,9 +46,7 @@ The first Package 3 candidate `e88bb904fa23cea80ab0ca2aa076b4dc351c9a53` correct
 
 The repair did **not** weaken the PM validator. The generic-fallback coverage was moved to `session_summary`, which remains a generic-validator artifact, while `discovery_findings` retained the stronger specialized PM contract. Candidate `897e5850...` then passed all product, lab, and distribution lanes.
 
-This failure is useful evidence that the new validator boundary actually changed the intended contract rather than being a no-op wrapper.
-
-## Repository-side capabilities now present
+## Repository-side capabilities delivered
 
 ### Canonical PM Skills
 
@@ -61,7 +60,7 @@ Each has one harness-independent semantic implementation and progressive methodo
 
 ### PM artifact validation
 
-`scripts/validate-pm-artifact.py` validates the five current PM artifact identities:
+`scripts/validate-pm-artifact.py` validates the five first-slice PM artifact identities:
 
 - `persona_definition`
 - `discovery_findings`
@@ -69,9 +68,7 @@ Each has one harness-independent semantic implementation and progressive methodo
 - `opportunity_map`
 - `hypothesis_statement`
 
-`scripts/validate-and-report.py` routes exactly those PM IDs to the specialized validator while retaining the existing specialized routes and generic fallback for other artifacts.
-
-The PM validator checks only mechanically decidable representation/evidence-shape contracts, including required sections/fields, evidence-status constraints, source traceability, frequency integrity, opportunity scoring from declared inputs, and prohibition on encoding a proposed hypothesis as a completed result.
+`scripts/validate-and-report.py` routes those PM IDs to the specialized validator while retaining existing specialized routes and generic fallback for other artifacts.
 
 ### Campaign integration
 
@@ -85,11 +82,9 @@ Repository tests install the same canonical PM Skill bytes through the existing 
 
 It does **not** prove native harness discovery/invocation.
 
-### Bounded Customer Discovery workflow
+### Non-qualifying preflight
 
-`docs/product-management/customer-discovery-workflow.md` defines an agent-native workflow envelope by responsibility rather than native command syntax. User authorization can cover bounded continuation through the sequence while evidence, responsibility, scope, and authority remain sufficient.
-
-No deprecated Wayfinder semantic router was reactivated.
+PR #311 preserved one repository-side preflight against Chess Mentor Engine. It exercised Campaign responsibility, unranked capability inspection, a contract-valid `discovery_findings` artifact, specialized validation/admission, lineage, handoff, validation, and reconstruction. Because no supported native coding-agent executable was available, the preflight remains explicitly non-qualifying and the real-harness attempt count stays zero.
 
 ## Upstream provenance
 
@@ -101,27 +96,43 @@ commit 21cbb2903d740d10fc65c667aea97d3ee8657349
 MIT / Flowgrammers 2026
 ```
 
-All 27 upstream commands are preserved in the migration ledger. The first five are implemented adaptations; the remaining commands stay deferred until evidence warrants the next migration wave.
+All 27 upstream commands remain preserved in the migration ledger. The first five are repository-qualified adaptations.
 
-## What is deliberately NOT complete
+## Qualification claim ceiling
 
-The repository currently has zero checked-in real native-harness PM attempts.
-
-Therefore the following claims are **not** established:
+The following claims are still **not** established:
 
 - a real supported coding-agent harness natively discovered/invoked the PM Skills;
-- a full real Customer Discovery Campaign completes without manual artifact repair;
-- a fresh coding-agent context can reconstruct and continue that PM Campaign from durable state in real use;
+- a full real Customer Discovery Campaign completes without hidden manual repair;
+- a fresh native coding-agent context reconstructs and continues that PM Campaign from durable state in real use;
 - a second harness preserves the same canonical PM contract in native execution;
-- the remaining 22 upstream PM commands should all migrate unchanged.
+- repository-qualified PM output is necessarily strategically correct or empirically validated.
 
-## Next action
+## Post-milestone policy amendment
 
-Follow `docs/product-management/dogfood-runbook.md` and preserve the first real attempt exactly as observed.
+The initial handoff treated native-harness dogfood as a gate before any PM expansion. After the repository-side architecture and preflight demonstrated that further capability implementation can be isolated behind the same contracts, the program now uses a more precise maturity model:
 
-If functional and portability dogfood pass, derive the next PM capability wave from that evidence. If either fails or is invalid, preserve the result and implement only the smallest defect exposed by the run.
+```text
+CANDIDATE
+-> REPOSITORY_QUALIFIED
+-> NATIVE_HARNESS_QUALIFIED
+-> PORTABILITY_QUALIFIED
+-> PROMOTED
+```
 
-There is deliberately no pre-authorized Package 4.
+Repository CI and deterministic contracts remain mandatory. Native-harness and portability evidence are deferred qualification debt until performed.
+
+Therefore:
+
+```text
+dogfood before promotion
+!=
+dogfood before expansion
+```
+
+Additional separately authorized PM waves may proceed to `REPOSITORY_QUALIFIED`. They must not be described with stronger support/promotion claims until the corresponding empirical evidence exists.
+
+See `qualification-levels.md` for the normative policy.
 
 ## Governing distinctions
 
@@ -133,5 +144,7 @@ available capability != selected capability
 artifact valid != conclusion true
 artifact admitted != claim warranted
 workflow authorized != external mutation authorized
-repository implementation complete != empirical portability qualified
+repository qualified != native-harness qualified
+native-harness qualified != portability qualified
+portability qualified != promoted
 ```
