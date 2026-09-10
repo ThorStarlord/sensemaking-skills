@@ -87,7 +87,7 @@ The PM milestone extends rather than replaces the validated v0.3 release archite
 - The shipped product/lab split remains intact.
 - Product Validation owns shipped/installed-product claims; retained Lab Validation owns source-only research/lab claims.
 - Release Candidate Distribution proves build/install/package identities on exact candidate heads.
-- The engineering external golden-path verifier remains separate from PM dogfood.
+- The **real-harness qualification verifier** remains the engineering v0.3 mechanism for checking frozen external attempt packages; it remains separate from PM dogfood.
 - Tagging/publication of v0.3.0 remains an explicit owner decision.
 
 ## Product and semantic boundaries
