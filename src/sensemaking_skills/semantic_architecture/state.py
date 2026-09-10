@@ -107,7 +107,8 @@ class SemanticStateStore:
                     SemanticDiagnostic("SEMANTIC_STATE_DIGEST_MISMATCH", f"line {index} digest mismatch", str(self.path))
                 )
             entry_id = record["entry"].get("entry_id")
-            if not isinstance(entry_id, str) or not entry_id:
+            entry_id_valid = isinstance(entry_id, str) and bool(entry_id)
+            if not entry_id_valid:
                 diagnostics.append(
                     SemanticDiagnostic("SEMANTIC_STATE_ENTRY_ID_REQUIRED", f"line {index} requires entry_id", str(self.path))
                 )
@@ -115,13 +116,18 @@ class SemanticStateStore:
                 diagnostics.append(
                     SemanticDiagnostic("SEMANTIC_STATE_DUPLICATE_ENTRY_ID", f"duplicate entry_id {entry_id!r}", str(self.path))
                 )
-            else:
-                seen_ids.add(entry_id)
+
             parents = record["entry"].get("parent_entry_ids", [])
             if not isinstance(parents, list) or any(parent not in seen_ids for parent in parents):
                 diagnostics.append(
-                    SemanticDiagnostic("SEMANTIC_STATE_INVALID_PARENT", f"line {index} references a missing/future parent", str(self.path))
+                    SemanticDiagnostic("SEMANTIC_STATE_INVALID_PARENT", f"line {index} references a missing/future/self parent", str(self.path))
                 )
+
+            # A parent may refer only to an entry that was validly present before
+            # the current record. Add this ID after parent validation so a
+            # self-parent cannot satisfy its own dependency.
+            if entry_id_valid and entry_id not in seen_ids:
+                seen_ids.add(entry_id)
             records.append(record)
             previous_digest = record.get("entry_digest")
         return records, tuple(diagnostics)
