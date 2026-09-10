@@ -1,0 +1,60 @@
+artifact_id: semantic_reasoning_profile
+schema_version: 1
+pilot_id: pilot-c-repair-reconciliation
+source_skill: repair-verifier+output-reconciler
+target:
+  repository: ThorStarlord/sensemaking-skills
+  ref: 8109b0a7133abb8363f808d01292f5f7375d766f
+  access_mode: github_exact_sha
+currentness:
+  status: pinned_snapshot
+  evidence_refs:
+    - https://github.com/ThorStarlord/sensemaking-skills/commit/8109b0a7133abb8363f808d01292f5f7375d766f
+observations:
+  - id: O1
+    statement: repair-verifier re-runs the repository probe and classifies each original finding as closed or remaining.
+    method: direct_read
+    evidence_refs:
+      - skills/repair-verifier/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+  - id: O2
+    statement: output-reconciler audits work claims against durable artifacts and compares candidate failures like-for-like with the baseline before attribution.
+    method: direct_read
+    evidence_refs:
+      - skills/output-reconciler/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+claims:
+  - id: C1
+    statement: changed repository state, non-reproduction of a finding, validator success, intended outcome, and semantic repair success are distinct claims with potentially different evidence requirements.
+    epistemic_status: INFERRED
+    evidence_refs:
+      - skills/repair-verifier/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+      - skills/output-reconciler/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+      - docs/semantic-architecture/reasoning-model.md@8109b0a7133abb8363f808d01292f5f7375d766f
+    scope: post-change verification and reconciliation
+    limits:
+      - exact evidence required depends on the original success condition
+  - id: C2
+    statement: target/currentness observations material claims epistemic status uncertainty and explicit limits form a stable cross-Skill comparison core across diagnosis architecture review and post-change verification.
+    epistemic_status: INFERRED
+    evidence_refs:
+      - docs/semantic-architecture/pilots/pilot-a-profile.yaml
+      - docs/semantic-architecture/pilots/pilot-b-profile.yaml
+      - skills/repair-verifier/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+      - skills/output-reconciler/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+    scope: Phase 9 cross-Skill semantic comparison
+    limits:
+      - does not justify replacing domain artifact enums or schemas
+      - does not justify Campaign schema promotion
+uncertainties:
+  - id: U1
+    question: should the experimental common semantic profile eventually be embedded in canonical analytical artifacts or remain an external companion record?
+    decision_relevance: determines the appropriate Phase 10 integration boundary and whether artifact schemas should evolve
+    evidence_needed:
+      - repeated use of the profile in later real repository episodes
+      - measured boilerplate and coordination overhead
+      - evidence of duplicated semantic reconstruction across artifact families
+    status: active
+explicit_limits:
+  - no native external coding-agent harness was used
+  - verified closed disputed and remaining remain local artifact classifications rather than replacements for epistemic status
+  - the common profile does not decide repair success or claim truth
+  - no Repository Semantic Map or Campaign schema change is authorized by this pilot
