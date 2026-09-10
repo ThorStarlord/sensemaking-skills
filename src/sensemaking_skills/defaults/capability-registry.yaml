@@ -141,6 +141,73 @@ capabilities:
     availability_reason: agent-native Skill; P7 will productize durable Campaign handoff separately
     returns_control: true
 
+  - id: persona
+    kind: skill
+    source: skills/persona/SKILL.md
+    accepted_responsibility_types: [customer_understanding]
+    output_artifact: persona_definition
+    completion_conditions:
+      - a persona_definition with evidence-aware claim strength is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical agent-native PM Skill; actual harness discovery and invocation remain separate evidence
+    returns_control: true
+
+  - id: discovery
+    kind: skill
+    source: skills/discovery/SKILL.md
+    accepted_responsibility_types: [problem_discovery]
+    output_artifact: discovery_findings
+    completion_conditions:
+      - discovery_findings with explicit unresolved evidence gaps are returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical agent-native PM Skill; actual harness discovery and invocation remain separate evidence
+    returns_control: true
+
+  - id: interview-synthesis
+    kind: skill
+    source: skills/interview-synthesis/SKILL.md
+    accepted_responsibility_types: [research_synthesis]
+    output_artifact: synthesis_report
+    completion_conditions:
+      - a traceable synthesis_report is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical agent-native PM Skill; source interviews must still be supplied within authority
+    returns_control: true
+
+  - id: opportunity-tree
+    kind: skill
+    source: skills/opportunity-tree/SKILL.md
+    accepted_responsibility_types: [opportunity_mapping]
+    input_artifact: synthesis_report
+    output_artifact: opportunity_map
+    completion_conditions:
+      - an evidence-aware opportunity_map is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical agent-native PM Skill; capability availability does not establish evidence sufficiency
+    returns_control: true
+
+  - id: hypothesis
+    kind: skill
+    source: skills/hypothesis/SKILL.md
+    accepted_responsibility_types: [product_hypothesis]
+    input_artifact: opportunity_map
+    output_artifact: hypothesis_statement
+    completion_conditions:
+      - a falsifiable proposed hypothesis_statement is returned to the campaign agent
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical agent-native PM Skill; experiment execution remains separately authorized
+    returns_control: true
+
   - id: triage
     kind: skill
     source: skills/workflow-planner/references/skill-registry.yaml
