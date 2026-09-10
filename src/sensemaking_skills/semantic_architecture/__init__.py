@@ -27,6 +27,14 @@ from .probes import (
     probe_manifest_dependencies,
     probe_python_imports,
 )
+from .reference_audit import (
+    IntegrityEffect,
+    ReferenceClass,
+    ReferenceResolution,
+    SemanticReferenceAuditItem,
+    SemanticReferenceAuditResult,
+    audit_semantic_references,
+)
 from .state import SemanticStateStore
 
 __all__ = [
@@ -35,16 +43,22 @@ __all__ = [
     "ConformanceResult",
     "Currentness",
     "DomainPackManifest",
+    "IntegrityEffect",
     "ObservationKind",
+    "ReferenceClass",
+    "ReferenceResolution",
     "RepositorySemanticMap",
     "SemanticDiagnostic",
     "SemanticMapEntity",
     "SemanticMapRelation",
     "SemanticObservation",
     "SemanticProbeResult",
+    "SemanticReferenceAuditItem",
+    "SemanticReferenceAuditResult",
     "SemanticStateEntry",
     "SemanticStateStore",
     "SkillContractManifest",
+    "audit_semantic_references",
     "build_repository_semantic_map",
     "probe_exact_search",
     "probe_file_containment",
