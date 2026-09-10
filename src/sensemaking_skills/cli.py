@@ -33,6 +33,8 @@ from .campaigns import (
 )
 from .campaign_capability_cli import register_campaign_capability_commands
 from .campaign_decision_cli import register_campaign_decision_commands
+from .campaign_observability_cli import register_campaign_observability_commands
+from .semantic_cli import register_semantic_commands
 from .setup_skills import setup_skills as run_setup_skills
 
 
@@ -640,6 +642,14 @@ register_campaign_decision_commands(
     json_echo=_json_echo,
     echo_status=_echo_campaign_status,
 )
+
+register_campaign_observability_commands(
+    campaign,
+    emit_error=_emit_campaign_error,
+    json_echo=_json_echo,
+)
+
+register_semantic_commands(cli)
 
 
 def main():
