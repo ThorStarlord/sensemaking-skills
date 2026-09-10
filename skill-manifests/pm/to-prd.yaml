@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: to-prd
+domain: product-management
+responsibilities: [product_specification]
+consumes: []
+produces: [prd]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false
