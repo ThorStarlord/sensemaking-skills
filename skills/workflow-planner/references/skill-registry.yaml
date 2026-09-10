@@ -165,10 +165,15 @@ ecosystems:
       - id: customer-journey
         purpose: map user flow and friction points
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/customer-journey/."
         artifact: journey_map
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/customer-journey", input_artifact: persona_definition, output_artifact: journey_map }
+      - id: ideal-customer-profile
+        purpose: model evidence-aware ideal customer fit and disqualifiers
+        artifact: ideal_customer_profile
+        availability: { type: local, executable_by_orchestrator: false, requires_installed_skill: true }
+        status_note: "CURRENT agent-agnostic canonical implementation lives under skills/ideal-customer-profile/; no historical Wayfinder identity or Claude invocation is execution authority."
       - id: prd
         purpose: synthesize requirements into a spec
         status: deprecated

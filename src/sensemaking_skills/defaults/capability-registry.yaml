@@ -380,6 +380,31 @@ capabilities:
     availability_reason: canonical PM analysis Skill; price changes and publication remain separately authorized external actions
     returns_control: true
 
+  - id: customer-journey
+    kind: skill
+    source: skills/customer-journey/SKILL.md
+    accepted_responsibility_types: [customer_understanding]
+    input_artifact: persona_definition
+    output_artifact: journey_map
+    completion_conditions: [an evidence-status-aware bounded journey_map is returned to the campaign agent]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM analysis Skill; journey evidence availability and semantic customer truth remain separate
+    returns_control: true
+
+  - id: ideal-customer-profile
+    kind: skill
+    source: skills/ideal-customer-profile/SKILL.md
+    accepted_responsibility_types: [customer_understanding]
+    output_artifact: ideal_customer_profile
+    completion_conditions: [an evidence-aware ideal_customer_profile or explicit hypothesis is returned to the campaign agent]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM analysis Skill; profile generation does not establish validated customer fit or GTM authority
+    returns_control: true
+
   - id: triage
     kind: skill
     source: skills/workflow-planner/references/skill-registry.yaml
