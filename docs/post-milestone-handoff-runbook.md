@@ -1,11 +1,69 @@
 # Post-Milestone Handoff Runbook — Packages #302–#304
 
-**Status:** current handoff companion to `STATUS.md`  
+**Status:** finalized handoff companion to `STATUS.md`  
 **Applies to:** Post-Milestone Release Contract Reconciliation, Narrative Verification Receipts, Durable Qualification Evidence Receipts  
 **Product version:** 0.3.0  
-**Repository baseline before this documentation handoff:** `main@cd183827b438107dafd65f48fa23145b2e21fbdd`
+**Repository baseline before this documentation refresh:** `main@de1013fc675f8981b24749ff068427f0140e08ba`
 
 This runbook captures the new operational surfaces added after the earlier v0.3 Feature Queue (#298–#300). For full Product Validation, Lab Validation, Release Candidate Distribution, target snapshot, harness setup, filesystem-security, and worktree procedures, continue to use `docs/milestone-runbook.md`.
+
+---
+
+## 0. Quick command index
+
+Use this section as the shortest reproducible path for the milestone-specific tools and rejection suites. The detailed contract and interpretation rules remain in the sections below.
+
+### Narrative verification positive + rejection coverage
+
+```bash
+python -m pytest \
+  tests/campaign_validation/test_campaign_narrative_verification.py \
+  -q
+```
+
+### Structural verification of a frozen external attempt
+
+```bash
+python -m sensemaking_skills.external_qualification \
+  <attempt-dir> \
+  --structural-only
+```
+
+### Full external-attempt verification
+
+```bash
+python -m sensemaking_skills.external_qualification \
+  <attempt-dir> \
+  --json
+```
+
+### Generate a qualification evidence receipt
+
+```bash
+python -m sensemaking_skills.qualification_evidence \
+  <attempt-dir> \
+  --output <attempt-dir>/qualification-evidence.json
+```
+
+### Verify an existing qualification evidence receipt
+
+```bash
+python -m sensemaking_skills.qualification_evidence \
+  <attempt-dir> \
+  --verify <attempt-dir>/qualification-evidence.json
+```
+
+### External qualification + receipt positive/rejection suites
+
+```bash
+python -m pytest \
+  tests/integration/test_external_golden_path_qualification.py \
+  tests/integration/test_qualification_evidence.py \
+  tests/integration/test_qualification_evidence_cli.py \
+  -q
+```
+
+These commands prove repository contracts. They do **not** manufacture a genuine real-harness attempt or an empirical PASS.
 
 ---
 
@@ -241,7 +299,7 @@ The next evidence-producing step is external to repository-local implementation.
 10. Generate the qualification evidence receipt for the exact frozen bytes.
 11. Preserve PASS, FAIL, or INVALID honestly.
 
-Current empirical state at the time of this handoff:
+Current empirical state at the time of this finalized handoff:
 
 ```text
 Checked-in real-harness attempts: 0
