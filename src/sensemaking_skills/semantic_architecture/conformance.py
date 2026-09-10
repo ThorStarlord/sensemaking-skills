@@ -53,7 +53,22 @@ def _nonempty_strings(value: Any) -> bool:
     return isinstance(value, list) and all(isinstance(item, str) and item.strip() for item in value)
 
 
-def _skill_manifest_diagnostics(path: Path, data: Any) -> list[SemanticDiagnostic]:
+def _duplicates(values: list[str]) -> set[str]:
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+    for value in values:
+        if value in seen:
+            duplicates.add(value)
+        seen.add(value)
+    return duplicates
+
+
+def _skill_manifest_diagnostics(
+    path: Path,
+    data: Any,
+    *,
+    repo_root: Path | None,
+) -> list[SemanticDiagnostic]:
     diagnostics: list[SemanticDiagnostic] = []
     if not isinstance(data, dict):
         return [SemanticDiagnostic("SKILL_MANIFEST_MAPPING_REQUIRED", "manifest must be a mapping", str(path))]
@@ -77,6 +92,16 @@ def _skill_manifest_diagnostics(path: Path, data: Any) -> list[SemanticDiagnosti
     for field in ("responsibilities", "consumes", "produces", "semantic_concepts"):
         if field in data and not _nonempty_strings(data.get(field)):
             diagnostics.append(SemanticDiagnostic("SKILL_MANIFEST_STRING_LIST_REQUIRED", f"{field} must be a list of non-empty strings", str(path)))
+        values = data.get(field)
+        if isinstance(values, list):
+            for duplicate in sorted(_duplicates([item for item in values if isinstance(item, str)])):
+                diagnostics.append(
+                    SemanticDiagnostic(
+                        "SKILL_MANIFEST_DUPLICATE_LIST_VALUE",
+                        f"{field} contains duplicate value {duplicate!r}",
+                        str(path),
+                    )
+                )
     if "repository_mutation" in data and not isinstance(data.get("repository_mutation"), bool):
         diagnostics.append(SemanticDiagnostic("SKILL_MANIFEST_BOOLEAN_REQUIRED", "repository_mutation must be boolean", str(path)))
     concepts = data.get("semantic_concepts", [])
@@ -99,10 +124,27 @@ def _skill_manifest_diagnostics(path: Path, data: Any) -> list[SemanticDiagnosti
                 str(path),
             )
         )
+    if repo_root is not None:
+        skill_id = data.get("skill_id")
+        if isinstance(skill_id, str) and skill_id.strip():
+            skill_file = repo_root / "skills" / skill_id / "SKILL.md"
+            if not skill_file.is_file():
+                diagnostics.append(
+                    SemanticDiagnostic(
+                        "SKILL_MANIFEST_SKILL_MISSING",
+                        f"canonical Skill file does not exist: skills/{skill_id}/SKILL.md",
+                        str(path),
+                    )
+                )
     return diagnostics
 
 
-def _domain_pack_diagnostics(path: Path, data: Any, *, repo_root: Path | None) -> list[SemanticDiagnostic]:
+def _domain_pack_diagnostics(
+    path: Path,
+    data: Any,
+    *,
+    repo_root: Path | None,
+) -> list[SemanticDiagnostic]:
     diagnostics: list[SemanticDiagnostic] = []
     if not isinstance(data, dict):
         return [SemanticDiagnostic("DOMAIN_PACK_MAPPING_REQUIRED", "domain pack must be a mapping", str(path))]
@@ -123,8 +165,18 @@ def _domain_pack_diagnostics(path: Path, data: Any, *, repo_root: Path | None) -
         if not isinstance(data.get(field), str) or not data.get(field, "").strip():
             diagnostics.append(SemanticDiagnostic("DOMAIN_PACK_TEXT_REQUIRED", f"{field} must be non-empty text", str(path)))
     for field in ("skill_manifests", "responsibility_vocabulary", "artifact_contracts"):
-        if field in data and not _nonempty_strings(data.get(field)):
+        values = data.get(field)
+        if field in data and not _nonempty_strings(values):
             diagnostics.append(SemanticDiagnostic("DOMAIN_PACK_STRING_LIST_REQUIRED", f"{field} must be a list of non-empty strings", str(path)))
+        if isinstance(values, list):
+            for duplicate in sorted(_duplicates([item for item in values if isinstance(item, str)])):
+                diagnostics.append(
+                    SemanticDiagnostic(
+                        "DOMAIN_PACK_DUPLICATE_LIST_VALUE",
+                        f"{field} contains duplicate value {duplicate!r}",
+                        str(path),
+                    )
+                )
     if repo_root is not None:
         for field in ("capability_ledger", "qualification_policy"):
             value = data.get(field)
@@ -132,9 +184,51 @@ def _domain_pack_diagnostics(path: Path, data: Any, *, repo_root: Path | None) -
                 diagnostics.append(SemanticDiagnostic("DOMAIN_PACK_REFERENCE_MISSING", f"{field} reference does not exist: {value}", str(path)))
         manifests = data.get("skill_manifests", [])
         if isinstance(manifests, list):
+            pack_domain = data.get("domain_id")
+            pack_responsibilities = set(data.get("responsibility_vocabulary", [])) if isinstance(data.get("responsibility_vocabulary"), list) else set()
+            pack_artifacts = set(data.get("artifact_contracts", [])) if isinstance(data.get("artifact_contracts"), list) else set()
             for value in manifests:
-                if isinstance(value, str) and value and not (repo_root / value).is_file():
+                if not isinstance(value, str) or not value:
+                    continue
+                manifest_path = repo_root / value
+                if not manifest_path.is_file():
                     diagnostics.append(SemanticDiagnostic("DOMAIN_PACK_MANIFEST_MISSING", f"skill manifest does not exist: {value}", str(path)))
+                    continue
+                try:
+                    manifest = _load_yaml(manifest_path)
+                except (OSError, UnicodeError, yaml.YAMLError) as exc:
+                    diagnostics.append(SemanticDiagnostic("DOMAIN_PACK_MANIFEST_PARSE_FAILED", f"could not parse {value}: {exc}", str(path)))
+                    continue
+                if not isinstance(manifest, dict):
+                    continue
+                if manifest.get("domain") != pack_domain:
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            "DOMAIN_PACK_MANIFEST_DOMAIN_MISMATCH",
+                            f"manifest {value} declares domain {manifest.get('domain')!r}, expected {pack_domain!r}",
+                            str(path),
+                        )
+                    )
+                responsibilities = set(manifest.get("responsibilities", [])) if isinstance(manifest.get("responsibilities"), list) else set()
+                missing_responsibilities = sorted(responsibilities - pack_responsibilities)
+                for responsibility in missing_responsibilities:
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            "DOMAIN_PACK_RESPONSIBILITY_UNDECLARED",
+                            f"manifest {value} uses responsibility {responsibility!r} absent from pack vocabulary",
+                            str(path),
+                        )
+                    )
+                produces = set(manifest.get("produces", [])) if isinstance(manifest.get("produces"), list) else set()
+                missing_artifacts = sorted(produces - pack_artifacts)
+                for artifact in missing_artifacts:
+                    diagnostics.append(
+                        SemanticDiagnostic(
+                            "DOMAIN_PACK_ARTIFACT_UNDECLARED",
+                            f"manifest {value} produces {artifact!r} absent from pack artifact_contracts",
+                            str(path),
+                        )
+                    )
     return diagnostics
 
 
@@ -158,7 +252,7 @@ def validate_conformance(
         except (OSError, UnicodeError, yaml.YAMLError) as exc:
             diagnostics.append(SemanticDiagnostic("SKILL_MANIFEST_PARSE_FAILED", str(exc), str(path)))
             continue
-        diagnostics.extend(_skill_manifest_diagnostics(path, data))
+        diagnostics.extend(_skill_manifest_diagnostics(path, data, repo_root=repository))
         if isinstance(data, dict) and isinstance(data.get("skill_id"), str):
             skill_id = data["skill_id"]
             if skill_id in skill_ids:
