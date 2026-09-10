@@ -1,0 +1,23 @@
+schema_version: 1
+skill_id: repair-verifier
+domain: engineering
+responsibilities:
+  - repair_verification
+consumes:
+  - docs_contract_reconciliation_report
+  - repository_sensemaking_brief
+  - repository_state
+produces:
+  - repair_verification_report
+semantic_concepts:
+  - TargetSnapshot
+  - Observation
+  - Evidence
+  - Claim
+  - EpistemicStatus
+  - Uncertainty
+  - Change
+  - Outcome
+  - Validation
+  - Artifact
+repository_mutation: false
