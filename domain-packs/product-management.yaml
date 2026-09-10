@@ -1,0 +1,76 @@
+schema_version: 1
+domain_id: product-management
+capability_ledger: docs/product-management/capability-migration-matrix.md
+skill_manifests:
+  - skill-manifests/pm/persona.yaml
+  - skill-manifests/pm/discovery.yaml
+  - skill-manifests/pm/interview-synthesis.yaml
+  - skill-manifests/pm/opportunity-tree.yaml
+  - skill-manifests/pm/hypothesis.yaml
+  - skill-manifests/pm/to-prd.yaml
+  - skill-manifests/pm/user-stories.yaml
+  - skill-manifests/pm/acceptance-criteria.yaml
+  - skill-manifests/pm/pre-mortem.yaml
+  - skill-manifests/pm/competitive-analysis.yaml
+  - skill-manifests/pm/strategy.yaml
+  - skill-manifests/pm/prioritize.yaml
+  - skill-manifests/pm/north-star.yaml
+  - skill-manifests/pm/okr.yaml
+  - skill-manifests/pm/roadmap.yaml
+  - skill-manifests/pm/lean-canvas.yaml
+  - skill-manifests/pm/experiment-design.yaml
+  - skill-manifests/pm/ab-test-analysis.yaml
+  - skill-manifests/pm/measure-pmf.yaml
+  - skill-manifests/pm/pricing.yaml
+  - skill-manifests/pm/customer-journey.yaml
+  - skill-manifests/pm/ideal-customer-profile.yaml
+  - skill-manifests/pm/launch-checklist.yaml
+  - skill-manifests/pm/gtm.yaml
+  - skill-manifests/pm/battlecard.yaml
+  - skill-manifests/pm/release-notes.yaml
+  - skill-manifests/pm/stakeholder-update.yaml
+responsibility_vocabulary:
+  - customer_understanding
+  - problem_discovery
+  - research_synthesis
+  - opportunity_mapping
+  - product_hypothesis
+  - product_specification
+  - delivery_specification
+  - risk_and_readiness
+  - market_understanding
+  - product_strategy
+  - prioritization
+  - experimentation
+  - product_measurement
+  - commercial_strategy
+  - communication
+artifact_contracts:
+  - persona_definition
+  - discovery_findings
+  - synthesis_report
+  - opportunity_map
+  - hypothesis_statement
+  - prd
+  - story_list
+  - criteria_list
+  - risk_analysis
+  - market_analysis
+  - strategy_doc
+  - prioritized_list
+  - north_star_metric
+  - okr_list
+  - roadmap
+  - business_canvas
+  - experiment_plan
+  - test_results
+  - pmf_report
+  - pricing_model
+  - journey_map
+  - ideal_customer_profile
+  - readiness_report
+  - gtm_plan
+  - battlecard
+  - feature_announcement
+  - stakeholder_update
+qualification_policy: docs/product-management/qualification-levels.md

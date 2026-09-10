@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: strategy
+domain: product-management
+responsibilities: [product_strategy]
+consumes: []
+produces: [strategy_doc]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false

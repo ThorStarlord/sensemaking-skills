@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: ideal-customer-profile
+domain: product-management
+responsibilities: [customer_understanding]
+consumes: []
+produces: [ideal_customer_profile]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false

@@ -1,0 +1,19 @@
+schema_version: 1
+domain_id: engineering
+capability_ledger: src/sensemaking_skills/campaigns/capabilities.py
+skill_manifests:
+  - skill-manifests/repo-sensemaker.yaml
+  - skill-manifests/architectural-review.yaml
+  - skill-manifests/repair-verifier.yaml
+  - skill-manifests/output-reconciler.yaml
+responsibility_vocabulary:
+  - repository_sensemaking
+  - architectural_review
+  - repair_verification
+  - output_reconciliation
+artifact_contracts:
+  - repository_sensemaking_brief
+  - architectural_review_recommendation
+  - repair_verification_report
+  - reconciliation_report
+qualification_policy: docs/semantic-architecture/constitution.md

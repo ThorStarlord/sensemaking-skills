@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: lean-canvas
+domain: product-management
+responsibilities: [product_strategy]
+consumes: []
+produces: [business_canvas]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false

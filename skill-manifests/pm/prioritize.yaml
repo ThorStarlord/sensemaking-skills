@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: prioritize
+domain: product-management
+responsibilities: [prioritization]
+consumes: []
+produces: [prioritized_list]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false

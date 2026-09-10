@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: pre-mortem
+domain: product-management
+responsibilities: [risk_and_readiness]
+consumes: []
+produces: [risk_analysis]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false
