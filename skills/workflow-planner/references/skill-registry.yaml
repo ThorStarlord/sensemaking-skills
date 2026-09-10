@@ -226,7 +226,7 @@ ecosystems:
       - id: pricing
         purpose: design monetization and packaging
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/pricing/."
         artifact: pricing_model
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/pricing", input_artifact: market_analysis, output_artifact: pricing_model }
@@ -240,21 +240,21 @@ ecosystems:
       - id: experiment-design
         purpose: plan validation tests for hypotheses
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/experiment-design/."
         artifact: experiment_plan
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/experiment-design", input_artifact: hypothesis_statement, output_artifact: experiment_plan }
       - id: measure-pmf
         purpose: audit product-market fit signals
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/measure-pmf/."
         artifact: pmf_report
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/measure-pmf", input_artifact: okr_list, output_artifact: pmf_report }
       - id: ab-test-analysis
         purpose: evaluate results of split tests
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/ab-test-analysis/."
         artifact: test_results
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/ab-test-analysis", input_artifact: experiment_plan, output_artifact: test_results }
@@ -268,35 +268,35 @@ ecosystems:
       - id: launch-checklist
         purpose: verify operational readiness for release
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/launch-checklist/."
         artifact: readiness_report
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/launch-checklist", input_artifact: prd, output_artifact: readiness_report }
       - id: release-notes
         purpose: communicate value to users and stakeholders
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/release-notes/."
         artifact: feature_announcement
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/release-notes", input_artifact: prd, output_artifact: feature_announcement }
       - id: stakeholder-update
         purpose: communicate progress and blockers
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/stakeholder-update/."
         artifact: stakeholder_update
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/stakeholder-update", input_artifact: okr_list, output_artifact: stakeholder_update }
       - id: gtm
         purpose: define go-to-market execution plan
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/gtm/."
         artifact: gtm_plan
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/gtm", input_artifact: strategy_doc, output_artifact: gtm_plan }
       - id: battlecard
         purpose: summarize competitive talk tracks
         status: deprecated
-        status_note: "HISTORICAL/DEPRECATED - no current implementation yet; wayfinder-era skill."
+        status_note: "HISTORICAL/DEPRECATED - invocation metadata is wayfinder-era; current canonical implementation lives under skills/battlecard/."
         artifact: battlecard
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/battlecard", input_artifact: market_analysis, output_artifact: battlecard }
