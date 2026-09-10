@@ -80,6 +80,40 @@ The artifact binds a segment and evidence window and separates observed customer
 
 The validator does not decide which segment is truly ideal, infer causality from high-value correlations, make disqualifier recommendations into sales policy, or validate willingness-to-pay, LTV, CAC, churn, buying-cycle, or other customer facts merely because the fields are present.
 
+## Launch, GTM, Enablement, and Communication routed identities
+
+`scripts/validate-pm-launch-communication.py` validates:
+
+- `readiness_report`
+- `gtm_plan`
+- `battlecard`
+- `feature_announcement`
+- `stakeholder_update`
+
+### `readiness_report`
+
+The report distinguishes `unknown`, `planned`, `evidence_backed_complete`, `blocked`, and `not_applicable` readiness checks. Completion requires evidence and not-applicable checks require a reason. A `go` recommendation cannot coexist with unresolved launch-blocking checks. Rollback triggers remain proposals.
+
+A readiness assessment never grants launch authority and does not prove a rollback mechanism is configured or tested.
+
+### `gtm_plan`
+
+Observed positioning claims and baselines require evidence. Channels and messages cite declared positioning claims where used. Targets and timeline commitments remain proposed unless an authority reference establishes ratification. The plan cannot represent outreach, publication, campaign activation, ad spend, scheduling, or other external tactics as executed.
+
+### `battlecard`
+
+Observed competitive claims require source evidence under an explicit cutoff. Comparison records reference declared `us` and `competitor` claims and remain interpretations rather than observations. Talk tracks remain proposed enablement language. Missing competitor evidence cannot be turned into an advantage claim.
+
+### `feature_announcement`
+
+The artifact remains a draft. `shipped` and `beta` availability require observed release evidence; tickets, PRDs, or planned work are insufficient. Coming-soon items remain planned, and ratified future commitments require authority evidence. Publication permission, if supplied, does not convert the draft into a published state.
+
+### `stakeholder_update`
+
+Consequential claims may distinguish `observed`, `derived`, `inferred`, `hypothesized`, `ratified`, and `unresolved`. Observed/derived claims require evidence, derived claims record their derivation rule, and ratified claims/decisions/commitments require authority references. Proposed owners and dates are not assignments. The artifact remains a draft and cannot claim distribution.
+
+The validator establishes representation, source/currentness, and authority-reference integrity only. It does not establish launch readiness, GTM effectiveness, competitive superiority, successful shipment, stakeholder agreement, or external execution.
+
 ## Admission boundary
 
 `ArtifactAdmissionService` invokes the canonical router over an immutable snapshot. A routed specialized PM artifact produces an admission receipt bound to exact artifact bytes, router bytes, selected validator bytes, and exact structured validation result.
@@ -88,4 +122,4 @@ The validator does not decide which segment is truly ideal, infer causality from
 
 ## Qualification boundary
 
-Passing these validators and Campaign admission may contribute to `REPOSITORY_QUALIFIED`. It does not establish native-harness qualification, portability qualification, customer truth, PMF, statistical significance, pricing effectiveness, implementation completion, test execution, or real-world success.
+Passing these validators and Campaign admission may contribute to `REPOSITORY_QUALIFIED`. It does not establish native-harness qualification, portability qualification, customer truth, PMF, statistical significance, pricing effectiveness, implementation completion, test execution, publication/distribution, launch execution, or real-world success.
