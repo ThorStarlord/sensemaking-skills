@@ -1,7 +1,7 @@
 # Product Management capability migration matrix
 
 **Upstream authority:** `lucasgaravelli/pm-skills-claude-code@21cbb2903d740d10fc65c667aea97d3ee8657349`  
-**Disposition vocabulary:** `ADAPT` means the capability is selected for Sensemaking adaptation; `DEFER` means provenance is preserved but implementation is not yet authorized.  
+**Disposition vocabulary:** `ADAPT` means the capability is selected for Sensemaking adaptation; `MERGE` means useful upstream methodology is incorporated into an existing canonical capability rather than creating duplicate authority; `DEFER` means provenance is preserved but implementation is not yet authorized.  
 **Maturity vocabulary:** `CANDIDATE`, `REPOSITORY_QUALIFIED`, `NATIVE_HARNESS_QUALIFIED`, `PORTABILITY_QUALIFIED`, `PROMOTED`.
 
 The historical Wayfinder PM registry is not execution authority. A historical entry is recorded only to avoid accidentally recreating or contradicting an old identity.
@@ -15,10 +15,10 @@ Native-harness dogfood is a **promotion/support-claim gate**, not a blanket impl
 | interview-synthesis | deprecated `interview-synthesis` | `synthesis_report` | `research_synthesis` | ADAPT | 1 | REPOSITORY_QUALIFIED | pending | pending | Material findings trace to supplied source evidence. |
 | opportunity-tree | deprecated `opportunity-tree` | `opportunity_map` | `opportunity_mapping` | ADAPT | 1 | REPOSITORY_QUALIFIED | pending | pending | Opportunities without evidence remain assumptions. |
 | hypothesis | deprecated `hypothesis` | `hypothesis_statement` | `product_hypothesis` | ADAPT | 1 | REPOSITORY_QUALIFIED | pending | pending | Must be falsifiable and evidence-aware. |
-| prd | deprecated `prd` plus current `to-prd` adjacent capability | `prd` | `product_specification` | DEFER | 2 | CANDIDATE | pending | pending | Reconcile upstream methodology into current `to-prd`; do not create duplicate PRD authority. |
-| user-stories | deprecated `user-stories` | `story_list` | `delivery_specification` | DEFER | 2 | CANDIDATE | pending | pending | Candidate feature-definition wave. |
-| acceptance-criteria | deprecated `acceptance-criteria` | `criteria_list` | `delivery_specification` | DEFER | 2 | CANDIDATE | pending | pending | Candidate feature-definition wave. |
-| pre-mortem | deprecated `pre-mortem` | `risk_analysis` | `risk_and_readiness` | DEFER | 2 | CANDIDATE | pending | pending | Candidate feature-definition/risk wave. |
+| prd | deprecated `prd` plus current `to-prd` adjacent capability | `prd` | `product_specification` | MERGE | 2 | REPOSITORY_QUALIFIED | pending | pending | Upstream PRD methodology merged into canonical `to-prd`; no duplicate `prd` Skill authority. |
+| user-stories | deprecated `user-stories` | `story_list` | `delivery_specification` | ADAPT | 2 | REPOSITORY_QUALIFIED | pending | pending | Agent-agnostic story decomposition with traceability and no invented estimates. |
+| acceptance-criteria | deprecated `acceptance-criteria` | `criteria_list` | `delivery_specification` | ADAPT | 2 | REPOSITORY_QUALIFIED | pending | pending | Specified behavior is distinct from executed/passing tests. |
+| pre-mortem | deprecated `pre-mortem` | `risk_analysis` | `risk_and_readiness` | ADAPT | 2 | REPOSITORY_QUALIFIED | pending | pending | Hypothetical failure modes remain distinct from observed risks and launch authority. |
 | competitive-analysis | deprecated `competitive-analysis` | `market_analysis` | `market_understanding` | DEFER | 3 | CANDIDATE | pending | pending | Requires source-currency rules for market evidence. |
 | strategy | no current implementation; no authoritative live PM counterpart | `strategy_doc` | `product_strategy` | DEFER | 3 | CANDIDATE | pending | pending | Design against current Campaign semantics rather than legacy command shape. |
 | prioritize | deprecated `prioritize` | `prioritized_list` | `prioritization` | DEFER | 3 | CANDIDATE | pending | pending | Ranking remains model judgment; formulas may be deterministic inputs only. |
@@ -50,8 +50,8 @@ For every capability that moves from `DEFER` to implementation:
 6. Add positive and rejection validation where mechanically warranted.
 7. Register it in the current Campaign capability catalog, not the deprecated router.
 8. Prove Campaign admission and handoff behavior where applicable.
-9. Require exact-head repository CI before assigning `REPOSITORY_QUALIFIED`.
+9. Require exact-head repository CI before assigning `REPOSITORY_QUALIFIED` on the merged branch.
 10. Track native-harness and portability validation as explicit qualification debt until performed.
 11. Do not assign stronger support/promotion claims than the preserved evidence warrants.
 
-A wave number is sequencing guidance, not semantic routing authority. Separate user/program authorization may advance a wave before native-harness qualification, but empirical qualification remains required for the stronger claim states.
+Rows marked `REPOSITORY_QUALIFIED` in an open candidate PR become authoritative only if that exact candidate head passes the required repository CI and is merged. A wave number is sequencing guidance, not semantic routing authority. Separate user/program authorization may advance a wave before native-harness qualification, but empirical qualification remains required for the stronger claim states.
