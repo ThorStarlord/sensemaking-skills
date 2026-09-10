@@ -1,13 +1,32 @@
 # PM Customer Discovery dogfood status
 
 **Protocol:** `pm-customer-discovery-v1`  
-**Repository implementation:** Package 1 and Package 2 merged; Package 3 integration candidate in progress when this record was authored.  
+**Repository implementation:** COMPLETE through merged Packages 1–3  
+**Implementation merge frontier:** `main@e7d213e07976a2f269b1479fcc36decdcf0cdeb4` (PR #309 merge)  
 **Checked-in real-harness functional attempts:** 0  
 **Checked-in second-harness portability attempts:** 0  
 **Current functional empirical PASS:** NONE  
 **Current portability empirical PASS:** NONE  
-**External harness action required:** YES
+**External native-harness action required:** YES
 
-Repository tests may demonstrate that the same canonical Skill bytes can be installed through multiple harness adapters. That is structural portability evidence, not proof that two native coding-agent harnesses actually discovered and invoked the Skills.
+## What repository evidence proves
 
-After Package 3 merges, follow `docs/product-management/dogfood-runbook.md`. Preserve the first genuine run whether it passes, fails, or is invalid.
+The Package 3 final candidate `897e5850a4ab229eeb2c00e23d91339c3bf8e884` passed Product Validation, Lab Validation, and Release Candidate Distribution. Repository tests prove, among other mechanical contracts:
+
+- the five PM artifact IDs route through the specialized PM validator;
+- valid PM artifacts can be admitted as exact Campaign evidence and invalid ones fail closed;
+- PM capabilities are declared in the current Campaign capability catalog by explicit responsibility type without semantic ranking;
+- the same canonical PM Skill bytes can be installed through generic/Codex, Claude, and OpenCode project adapter roots.
+
+These are repository/structural claims. They are not evidence that a real Claude Code, Codex, OpenCode, or other supported coding-agent harness natively discovered and invoked the Skills.
+
+## Required next evidence
+
+Follow `docs/product-management/dogfood-runbook.md`:
+
+1. run a real Customer Discovery responsibility/Campaign on one supported native harness;
+2. perform a fresh-context reconstruction from durable repository/Campaign state without prior chat;
+3. run an equivalent bounded responsibility through a second supported native harness;
+4. preserve the exact attempt evidence and classify the result honestly.
+
+Until that evidence exists, do not claim `FUNCTIONAL_PASS_PORTABILITY_PASS` and do not automatically unlock migration of the remaining deferred PM capabilities.

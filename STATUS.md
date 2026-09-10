@@ -2,75 +2,44 @@
 
 **Version:** 0.3.0  
 **Last updated:** 2026-09-10  
-**Current phase:** finalized post-milestone handoff; repository implementation complete, empirical external qualification pending  
-**Primary program:** Sensemaking Campaign productization  
-**Current `main` at handoff finalization:** `de1013fc675f8981b24749ff068427f0140e08ba`  
-**Current frontier:** no pending repository work package; next decision depends on real-harness evidence
+**Current phase:** PM Customer Discovery repository milestone complete; engineering and PM empirical external qualification remain pending  
+**Primary program:** Sensemaking Campaign productization with separately authorized agent-agnostic PM domain pilot  
+**Current implementation frontier:** `main@e7d213e07976a2f269b1479fcc36decdcf0cdeb4` (merge of PR #309)  
+**Current frontier:** no pre-authorized repository implementation package; next work depends on real-harness evidence or another separately authorized objective
 
-Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment; deterministic machinery owns representation, persistence, validation, provenance, integrity, authority checks, target identity, narrative/evidence binding, and reconstructible qualification evidence.
+Sensemaking Skills is an **agent-native engineering sensemaking and control layer** whose Campaign substrate now has one repository-implemented, coding-agent-agnostic Product Management vertical slice. The active coding agent owns semantic judgment; deterministic machinery owns representation, persistence, validation, provenance, integrity, authority checks, target identity, evidence binding, and reconstructible state.
 
-## Handoff finalization
+## Current PM Customer Discovery milestone
 
-This handoff was revalidated on 2026-09-10 against `main@de1013fc675f8981b24749ff068427f0140e08ba`, the merge of PR #305. This documentation refresh does not change product code and does not cause later commits to inherit earlier exact-head qualification claims.
+The separately authorized PM milestone is repository-complete.
 
-The milestone remains complete. The next repository change must be justified by genuine external dogfood evidence (or another separately authorized objective), not by inventing a fourth implementation package.
-
-## Release architecture continuity
-
-This handoff preserves the validated v0.3 release architecture rather than replacing it:
-
-- **Campaign schema v2** remains the current durable representation baseline. Historical v1 artifacts migrate deterministically without inventing semantics or rewriting append-only history.
-- The shipped **product/lab split** remains intact: Product Validation owns shipped/installed-product claims, while retained Lab Validation owns source-only research/lab claims.
-- The release includes the **real-harness qualification verifier**. Verifier and receipt success are mechanical evidence about exact frozen bytes; they are not semantic truth and do not by themselves prove that a live harness created the attempt.
-
-## Current milestone handoff
-
-The most recent three-package milestone is complete:
-
-| Package | PR | Exact candidate head | Merge commit | Delivered |
+| Package | PR | Exact final candidate head | Merge commit | Delivered |
 |---|---:|---|---|---|
-| Package 1 — Post-Milestone Release Contract Reconciliation | #302 | `2cb50eae32516f716d9c62846876e67b1f5741ec` | `7e539dd88742fc7fca27e7a1368682047719bcda` | Reconciled stale v0.3/P11 release documentation, restored product/lab and real-harness contract wording, and preserved exact-head qualification boundaries. |
-| Package 2 — Narrative Verification Receipts | #303 | `a3cede49449ad2857bc348c7ba06877acc113ac0` | `732ea14752510dc05352ddcc004010a3e2d9284c` | Added append-only receipts that bind exact current Campaign narrative claims to exact durable evidence bytes without claiming semantic truth or authorizing transitions. |
-| Package 3 — Durable Qualification Evidence Receipts | #304 | `86f9a2ec96ed58ce096c71184f03a6ff839f3473` | `cd183827b438107dafd65f48fa23145b2e21fbdd` | Added content-bound receipts for structurally valid frozen external attempts plus CI verification for future checked-in qualification evidence. |
+| Package 1 — Agent-Agnostic PM Domain Contract & Migration Ledger | #307 | `967bff480d8681290bc294608695677c06bdb4f5` | `539f85e9f55bae6e1e2b1d190aa5c7395ea19d5f` | Pinned the 27-command upstream provenance, defined PM responsibility/evidence/automation semantics, accepted ADR 0028, and made harness independence a product invariant. |
+| Package 2 — Canonical Customer Discovery Capabilities | #308 | `9235e4e550956d9767c2602216eee54274792077` | `a65e596e8afe4e6991be0bbaea4b9427a2ee6de7` | Added canonical `persona`, `discovery`, `interview-synthesis`, `opportunity-tree`, and `hypothesis` Skill trees with evidence-aware methodology/output contracts and no Claude/Codex/OpenCode semantic coupling. |
+| Package 3 — Artifact, Campaign & Adapter Integration | #309 | `897e5850a4ab229eeb2c00e23d91339c3bf8e884` | `e7d213e07976a2f269b1479fcc36decdcf0cdeb4` | Added specialized PM artifact validation, Campaign capability registration and admission coverage, multi-adapter canonical-byte parity tests, bounded Customer Discovery workflow semantics, and real-harness dogfood protocol. |
 
-All three packages are merged. There is no fourth implementation package implied by this handoff.
+Package 3's final exact candidate passed Product Validation, Lab Validation, and Release Candidate Distribution. Its first candidate (`e88bb904...`) exposed one stale regression test that still expected `discovery_findings` to use the generic validator; the repair moved generic-fallback coverage to `session_summary` rather than weakening the new PM contract.
 
-## Evidence verified for this milestone
+The canonical PM responsibility slice is:
 
-### Package 1
+```text
+customer_understanding
+-> problem_discovery
+-> research_synthesis
+-> opportunity_mapping
+-> product_hypothesis
+```
 
-Exact head `2cb50eae32516f716d9c62846876e67b1f5741ec` completed successfully in:
+The implemented Skills are agent-agnostic semantic sources. Existing harness setup machinery renders/copies those same canonical trees into supported discovery roots. Structural parity is tested; native invocation is not yet empirically proven.
 
-- Product Validation;
-- Release Candidate Distribution.
+See `docs/product-management/milestone-handoff.md` for the full PM handoff and `docs/product-management/dogfood/STATUS.md` for empirical status.
 
-The package was documentation-only and preserved the rule that later heads cannot borrow an earlier candidate's qualification.
+## Two independent empirical gates remain
 
-### Package 2
+### 1. Engineering v0.3 external golden path
 
-Exact head `a3cede49449ad2857bc348c7ba06877acc113ac0` completed successfully in:
-
-- Product Validation;
-- Lab Validation;
-- Release Candidate Distribution.
-
-The dedicated `tests/campaign_validation/test_campaign_narrative_verification.py` suite includes positive and rejection coverage for exact narrative membership, unknown fields/scopes, missing evidence, orphan artifacts, unsafe or duplicate receipt IDs, evidence deletion/mutation, receipt tampering, historical-state behavior, and non-mutation of Campaign lifecycle state.
-
-### Package 3
-
-Exact head `86f9a2ec96ed58ce096c71184f03a6ff839f3473` completed successfully in:
-
-- Product Validation;
-- External Golden Path Qualification;
-- Release Candidate Distribution.
-
-The qualification-evidence contract rejects structurally invalid attempts, append-only overwrite attempts, receipt tampering, and mutated attempt/evidence bytes. Structurally valid recorded failures remain `qualified: false` evidence rather than being rewritten into PASS.
-
-## Pending human / empirical gates
-
-Repository-side qualification machinery is complete, but empirical qualification is **not** complete.
-
-Current repository-owned evidence status remains:
+The existing engineering qualification status remains unchanged:
 
 ```text
 Checked-in real-harness attempts: 0
@@ -78,29 +47,48 @@ Current empirical PASS: NONE
 Human/external action required for empirical PASS: YES
 ```
 
-A synthetic fixture, green contract test, generated receipt, or repository-local transformation is **not** evidence that a real coding-agent harness performed the run.
+A real empirical PASS still requires an actual supported external coding-agent harness attempt frozen under `v0.3-external-golden-path-dogfood-v1` and verified against the exact frozen attempt bytes.
 
-A real empirical PASS requires an actual external coding-agent harness attempt frozen under:
+### 2. PM Customer Discovery functional + portability dogfood
+
+The PM milestone also has zero checked-in native-harness attempts:
 
 ```text
-v0.3-external-golden-path-dogfood-v1
+Checked-in real-harness functional PM attempts: 0
+Checked-in second-harness portability attempts: 0
+Current functional PM empirical PASS: NONE
+Current PM portability empirical PASS: NONE
+External native-harness action required: YES
 ```
 
-and then verified against the exact frozen attempt bytes.
+Repository-local validator tests, Campaign admission tests, wheel packaging, and canonical-byte adapter parity are not substitutes for real native harness discovery/invocation.
 
-Other owner-controlled gates remain separate:
+Follow `docs/product-management/dogfood-runbook.md`: run one real Customer Discovery responsibility/Campaign, run a fresh-context reconstruction without prior chat, then execute an equivalent bounded responsibility through a second supported harness. Preserve PASS, FAIL, or INVALID honestly.
 
-- tagging/publication of v0.3.0 is an explicit owner decision;
-- any milestone/release claim that requires retained Lab Validation must use the intended exact head;
-- a real-harness failure or INVALID result must be preserved honestly rather than repaired into a PASS artifact.
+Until that evidence exists, do not automatically migrate the remaining deferred PM commands.
 
-## Recommended next priorities
+## Prior completed v0.3 post-milestone
 
-These are recommendations for the next milestone session, not pre-authorized implementation packages.
+The preceding three-package milestone also remains complete:
 
-1. **Run one genuine external golden-path dogfood attempt.** Use a real supported coding-agent harness against an external repository, complete the canonical Campaign lifecycle without prior-chat/manual-repair shortcuts, freeze the evidence package, generate the qualification receipt, and preserve the recorded outcome.
-2. **Turn the empirical result into the next milestone decision.** If the attempt passes, check in the frozen evidence and requalify the exact evidence PR head. If it fails or is invalid, preserve that result and derive the smallest repository improvement from the observed failure rather than broadening scope speculatively.
-3. **Evaluate operator ergonomics only after dogfood.** Narrative verification currently ships as a Python service/API (`CampaignNarrativeVerificationService`), not a new `sensemaking-skills campaign ...` CLI subcommand. Add a first-class CLI only if real usage demonstrates that it is the next warranted boundary.
+| Package | PR | Exact candidate head | Merge commit | Delivered |
+|---|---:|---|---|---|
+| Post-Milestone Release Contract Reconciliation | #302 | `2cb50eae32516f716d9c62846876e67b1f5741ec` | `7e539dd88742fc7fca27e7a1368682047719bcda` | Reconciled stale v0.3/P11 release documentation and preserved exact-head/product-lab qualification boundaries. |
+| Narrative Verification Receipts | #303 | `a3cede49449ad2857bc348c7ba06877acc113ac0` | `732ea14752510dc05352ddcc004010a3e2d9284c` | Added append-only receipts binding exact current Campaign narrative claims to exact durable evidence bytes without claiming semantic truth. |
+| Durable Qualification Evidence Receipts | #304 | `86f9a2ec96ed58ce096c71184f03a6ff839f3473` | `cd183827b438107dafd65f48fa23145b2e21fbdd` | Added content-bound receipts for structurally valid frozen external attempts plus CI verification for future checked-in qualification evidence. |
+
+The subsequent #305/#306 documentation handoff finalized that milestone before the separately authorized PM objective began.
+
+## Release architecture continuity
+
+The PM milestone extends rather than replaces the validated v0.3 release architecture:
+
+- Campaign schema v2 remains the current durable representation baseline.
+- The shipped product/lab split remains intact.
+- Product Validation owns shipped/installed-product claims; retained Lab Validation owns source-only research/lab claims.
+- Release Candidate Distribution proves build/install/package identities on exact candidate heads.
+- The engineering external golden-path verifier remains separate from PM dogfood.
+- Tagging/publication of v0.3.0 remains an explicit owner decision.
 
 ## Product and semantic boundaries
 
@@ -111,44 +99,40 @@ warranted responsibility != available capability != authorized capability
 validator passed != semantic truth
 admitted evidence != warranted conclusion
 narrative claim bound to evidence != evidence proves claim
-narrative verification receipt != warranted transition
 qualification receipt != real-harness origin proof
-synthetic fixture PASS != empirical real-harness PASS
+synthetic or structural PASS != empirical native-harness PASS
+canonical PM capability != harness representation
+Skill copied to discovery root != harness observed or invoked Skill
 lineage != semantic warrant
 handoff != semantic recommendation
 ```
 
 The Campaign Controller is not a semantic router.
 
-## Current product baseline
+## Current recommended next priorities
 
-The earlier v0.3 product-code baseline remains the completed Feature-3 merge from the preceding milestone:
+These are evidence-gated next actions, not pre-authorized implementation packages:
 
-```text
-24a88bf6311122dae1257999f5a7379cb0b095d5
-```
+1. **Run genuine engineering external golden-path dogfood** under the existing `v0.3-external-golden-path-dogfood-v1` protocol.
+2. **Run genuine PM Customer Discovery dogfood** under `docs/product-management/dogfood-runbook.md`, including fresh-context reconstruction and second-harness portability evidence.
+3. **Derive repository changes from observed failures/results.** PASS can justify promotion/next-wave decisions; FAIL/INVALID must be preserved and should produce only the smallest evidenced repair.
+4. **Do not bulk-migrate the remaining PM commands yet.** The migration ledger preserves them as deferred candidates until empirical PM evidence exists.
 
-That preceding milestone delivered CI Authority Reconciliation (#298), v0.3 Release Baseline Rebuild (#299), and Durable Target Snapshot Binding (#300). The current #302–#304 milestone builds on that baseline with release-document reconciliation, narrative verification receipts, and qualification evidence receipts.
+## Operator handoff / canonical sources
 
-## Operator handoff / commands
-
-Use `docs/post-milestone-handoff-runbook.md` for the newly added Package 2/3 service usage, qualification-evidence commands, focused positive/rejection test suites, checked-in evidence protocol, and the empirical handoff procedure. Its quick-command index is the shortest path for future engineers to reproduce the milestone-specific checks.
-
-Use `docs/milestone-runbook.md` for the earlier v0.3 Product Validation, Lab Validation, Release Candidate Distribution, target-bound Campaign, harness setup, filesystem-security, and worktree procedures.
-
-When prose and a checked-in workflow disagree about exact CI commands, the workflow is executable authority and the documentation should be reconciled.
-
-## Canonical sources
-
-- `STATUS.md` — current milestone state and next-session handoff.
-- `docs/post-milestone-handoff-runbook.md` — Packages #302–#304 operational commands and evidence protocol.
-- `qualification-evidence/STATUS.md` — empirical external-qualification status.
-- `docs/campaign-narrative-verification.md` — narrative verification receipt contract.
-- `docs/qualification-evidence.md` — qualification evidence receipt contract.
-- `docs/external-golden-path-verifier.md` — external attempt package/verifier protocol.
+- `STATUS.md` — current cross-program state.
+- `docs/product-management/milestone-handoff.md` — completed PM package evidence and next-action handoff.
+- `docs/product-management/dogfood-runbook.md` — PM real-harness/fresh-context/second-harness protocol.
+- `docs/product-management/dogfood/STATUS.md` — PM empirical qualification status.
+- `docs/product-management/capability-migration-matrix.md` — all 27 upstream PM command dispositions.
+- `docs/adr/0028-agent-agnostic-product-management-domain.md` — PM architectural authority.
+- `docs/post-milestone-handoff-runbook.md` — earlier #302–#304 operational commands and evidence protocol.
+- `qualification-evidence/STATUS.md` — engineering empirical external-qualification status.
+- `docs/external-golden-path-verifier.md` — engineering external attempt/verifier protocol.
 - `docs/milestone-runbook.md` — v0.3 baseline operations and qualification runbook.
 - `docs/sensemaking-campaign.md` — canonical Campaign product model.
 - `.github/workflows/validation.yml` — Product Validation authority.
 - `.github/workflows/lab-validation.yml` — retained Lab Validation authority.
 - `.github/workflows/release-candidate.yml` — release distribution authority.
-- `.github/workflows/external-golden-path.yml` — external qualification/evidence authority.
+
+When prose and checked-in executable validation disagree, the executable contract is authority and the documentation should be reconciled.
