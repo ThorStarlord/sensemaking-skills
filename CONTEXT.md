@@ -312,6 +312,8 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 | Resource | Purpose |
 | --- | --- |
 | `STATUS.md` | current development direction: what is ratified, in flight, and deferred; the highest-leverage next boundary; how to reconstruct this picture without prior context |
+| `docs/product-strategy.md` | current product purpose, user, boundary, principles, hypotheses, non-goals, and strategic frontier |
+| `docs/product-operating-model.md` | current value stream, responsibility ownership, governance loop, and runtime boundary |
 | `docs/agent-native-operating-workflow.md` | current top-level operating map |
 | `docs/decision-orchestration-boundary.md` | current decision/orchestration ownership boundary |
 | `docs/canonical-vocabulary.yaml` | canonical enumerated vocabulary |

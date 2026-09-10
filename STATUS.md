@@ -355,6 +355,8 @@ Choose the next package only from a concrete missing product/integrity capabilit
 ## Canonical sources
 
 - `STATUS.md` — current cross-program state.
+- `docs/product-strategy.md` — current product purpose, boundary, hypotheses, and strategic authority.
+- `docs/product-operating-model.md` — current value stream, responsibility ownership, and runtime boundary.
 - `docs/semantic-architecture/README.md` — Semantic Architecture index.
 - `docs/semantic-architecture/implementation-plan.md` — historical phases + active build-first track.
 - `docs/semantic-architecture/build-first-policy.md` — construction authorization and diminishing-returns gate.
