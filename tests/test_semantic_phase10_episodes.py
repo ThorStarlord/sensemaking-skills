@@ -17,9 +17,27 @@ PROFILES = (
 )
 
 
-def _run(script: Path, artifact: Path) -> tuple[subprocess.CompletedProcess[str], dict]:
+def _run_semantic(artifact: Path) -> tuple[subprocess.CompletedProcess[str], dict]:
     completed = subprocess.run(
-        [sys.executable, str(script), str(artifact), "--repo-root", str(ROOT), "--json"],
+        [sys.executable, str(SEMANTIC_VALIDATOR), str(artifact), "--json"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return completed, json.loads(completed.stdout)
+
+
+def _run_pm(artifact: Path) -> tuple[subprocess.CompletedProcess[str], dict]:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(PM_VALIDATOR),
+            str(artifact),
+            "--repo-root",
+            str(ROOT),
+            "--json",
+        ],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -30,7 +48,7 @@ def _run(script: Path, artifact: Path) -> tuple[subprocess.CompletedProcess[str]
 
 def test_phase10_profiles_validate_without_claiming_semantic_truth() -> None:
     for profile in PROFILES:
-        completed, payload = _run(SEMANTIC_VALIDATOR, profile)
+        completed, payload = _run_semantic(profile)
         assert completed.returncode == 0, (profile, completed.stdout, completed.stderr)
         assert payload["valid"] is True
         assert payload["semantic_truth_established"] is False
@@ -39,7 +57,7 @@ def test_phase10_profiles_validate_without_claiming_semantic_truth() -> None:
 
 def test_phase10_pm_risk_artifact_uses_existing_domain_contract() -> None:
     artifact = PHASE10 / "episode-3-viralfactory-risk-analysis.md"
-    completed, payload = _run(PM_VALIDATOR, artifact)
+    completed, payload = _run_pm(artifact)
     assert completed.returncode == 0, (completed.stdout, completed.stderr)
     assert payload["valid"] is True
     assert payload["artifact_id"] == "risk_analysis"
