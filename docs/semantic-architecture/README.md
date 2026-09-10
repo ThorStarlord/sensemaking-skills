@@ -1,8 +1,8 @@
 # Sensemaking Semantic Architecture
 
-**Status:** Canonical semantic-design foundation v0; Phase 9 first operationalization pilots completed  
+**Status:** Canonical semantic-design foundation v0; Phase 9 operationalization and Phase 10 common-envelope experiment complete  
 **Scope:** Repository reasoning, evidence semantics, work semantics, and product-change vocabulary  
-**Executable status:** Existing Campaign contracts plus one experimental `semantic_reasoning_profile` Level-3 representation; ontology concepts are otherwise documentation unless explicitly mapped to executable machinery
+**Executable status:** Existing Campaign contracts plus one experimental `semantic_reasoning_profile` Level-3 representation retained as an optional companion artifact; ontology concepts are otherwise documentation unless explicitly mapped to executable machinery
 
 ## Purpose
 
@@ -47,7 +47,7 @@ Sensemaking Semantic Architecture
     +-- handoff
 ```
 
-The Capability / Skill Layer is shown explicitly because Phase 9 demonstrated that operationalizing the Reasoning Model happens first through bounded Skill methodology, not by creating a central reasoning engine.
+The Capability / Skill Layer is explicit because operationalizing the Reasoning Model happens first through bounded Skill methodology, not through a central reasoning engine.
 
 ## Document map
 
@@ -55,23 +55,26 @@ The Capability / Skill Layer is shown explicitly because Phase 9 demonstrated th
 |---|---|
 | [`constitution.md`](constitution.md) | Permanent guardrails for semantic formalization. |
 | [`problem-statement.md`](problem-statement.md) | Why a shared semantic architecture is needed and what failure modes it addresses. |
-| [`competency-questions.md`](competency-questions.md) | Questions the semantic model must eventually support. These are the primary acceptance tests for ontology scope. |
+| [`competency-questions.md`](competency-questions.md) | Questions the semantic model must eventually support; primary acceptance tests for ontology scope. |
 | [`concept-inventory.md`](concept-inventory.md) | Existing repository vocabulary and its current sources of authority. |
 | [`ontology.md`](ontology.md) | Layered ontology of intent, software systems, evidence, knowledge, work, and product concepts. |
 | [`product-change-taxonomy.md`](product-change-taxonomy.md) | Descriptive taxonomy for how product changes differ and create value. |
 | [`relations-and-epistemics.md`](relations-and-epistemics.md) | Relationship semantics, evidence requirements, epistemic status, and prohibited inference. |
 | [`reasoning-model.md`](reasoning-model.md) | Evidence-governed reasoning lifecycle. |
-| [`execution-integration.md`](execution-integration.md) | How the semantic model maps to probes, Skills, artifacts, validators, Campaigns, and harnesses. |
+| [`execution-integration.md`](execution-integration.md) | Mapping to probes, Skills, artifacts, validators, Campaigns, and harnesses. |
 | [`reference-scenarios.md`](reference-scenarios.md) | Concrete scenarios used to test whether the model is useful. |
-| [`implementation-plan.md`](implementation-plan.md) | Phased plan and promotion gates from vocabulary to ontology to executable contracts. |
+| [`implementation-plan.md`](implementation-plan.md) | Phase states and promotion gates from vocabulary to executable contracts. |
 | [`pilots/README.md`](pilots/README.md) | Phase 9 Reasoning Model operationalization and cross-Skill comparison. |
-| [`common-semantic-contract.md`](common-semantic-contract.md) | First experimental Level-3 `semantic_reasoning_profile` representation contract. |
-| [`phase-9-handoff.md`](phase-9-handoff.md) | Phase 9 delivered work, boundaries, and Phase 10 frontier. |
+| [`common-semantic-contract.md`](common-semantic-contract.md) | Experimental Level-3 `semantic_reasoning_profile` representation contract. |
+| [`phase-9-handoff.md`](phase-9-handoff.md) | Phase 9 delivered work and Phase 10 entry boundary. |
+| [`phase-10/README.md`](phase-10/README.md) | Preregistered Phase 10 real-repository experiment. |
+| [`phase-10/results.md`](phase-10/results.md) | Phase 10 evidence synthesis and Outcome A decision. |
+| [`phase-10-handoff.md`](phase-10-handoff.md) | Qualified Phase 10 handoff, evidence, and deferred-phase dispositions. |
 | [`milestone-handoff.md`](milestone-handoff.md) | Original semantic-foundation milestone handoff. |
 
 ## Three levels of formalization
 
-Sensemaking distinguishes three different levels. A concept MUST NOT silently cross levels.
+Sensemaking distinguishes three levels. A concept MUST NOT silently cross them.
 
 ### Level 1 — Vocabulary
 
@@ -89,11 +92,11 @@ Example: `ProductChange reinforces ProductCapability` is an ontology relation on
 
 Schema fields, validators, deterministic probes, registries, or runtime invariants that encode only a mechanically decidable subset of semantics.
 
-A Level-3 validator can answer questions such as `is this representation structurally valid?`; it does not automatically answer `is this semantic conclusion true?`.
+A Level-3 validator can answer `is this representation structurally valid?`; it does not automatically answer `is this semantic conclusion true?`.
 
 Phase 9 produced the first new bounded example: `semantic_reasoning_profile` v1 has an executable standalone validator for representation shape, evidence-reference requirements, currentness status, IDs, and epistemic enums. It is **not** registered into Campaign admission and explicitly cannot establish semantic truth.
 
-Promotion is one-way only in the sense of authority: a Level 1 or Level 2 concept MUST NOT be treated as if Level 3 machinery enforces it.
+Phase 10 retained that contract but rejected mandatory embedding based on observed duplication pressure. Retention of a Level-3 companion contract is not promotion into the control plane.
 
 ## Phase 9 result — Reasoning Model operationalization
 
@@ -125,12 +128,39 @@ explicit limits / non-claims
 
 Skill-specific semantics such as fog/weakness taxonomies, `Component`/`Layer`/`Boundary`, architectural decision enums, repair `closed/remaining`, and reconciliation `verified/disputed/omitted` remain local rather than being flattened into the common contract.
 
-The Reasoning Model is therefore now:
+## Phase 10 result — keep the common profile companion-level
+
+Phase 10 tested the same profile in three additional real-repository reasoning episodes:
+
+```text
+Chess Mentor Engine
+    repo-sensemaker / direct diagnosis
+
+React incremental game
+    output-reconciler / immutable snapshot + live PR currentness
+
+ViralFactory
+    PM pre-mortem / canonical risk_analysis + companion profile
+```
+
+The result is **Outcome A**:
+
+> Keep `semantic_reasoning_profile` as an optional companion audit/reconstruction artifact.
+
+The strongest positive evidence came from currentness-sensitive reconciliation: an immutable exact-SHA handoff and mutable live PR metadata must not be silently collapsed into one current-state claim.
+
+The strongest negative embedding evidence came from PM `risk_analysis`: the domain artifact already represents evidence status, evidence refs, uncertainty, mitigation, recommendation boundaries, and unresolved questions. Copying the whole common profile into that schema would create duplicate canonical representation.
+
+Therefore the profile is useful primarily when reasoning crosses artifacts, evidence surfaces, Skills, domains, or fresh contexts. It is not a required envelope for every analytical artifact.
+
+The Reasoning Model maturity is now:
 
 ```text
 specified                         yes
 first cross-Skill adoption        yes
-machine representation experiment yes
+cross-domain companion experiment yes
+optional companion profile        retained
+mandatory artifact embedding      not warranted
 central reasoning engine          no / not warranted
 Campaign-schema promotion         deferred
 Repository Semantic Map           deferred
@@ -169,6 +199,8 @@ capability available != capability warranted
 repository changed != repair succeeded
 ontology term documented != runtime-enforced concept
 semantic profile valid != reasoning semantically correct
+companion reconstruction value != Campaign promotion warrant
+Phase N complete != Phase N+1 authorized
 ```
 
 ## Ontology admission rule
@@ -181,7 +213,7 @@ A candidate concept should enter the shared ontology only when all of the follow
 4. its relationship to evidence and authority is clear;
 5. it does not duplicate an existing canonical concept under another name.
 
-Executable promotion requires additional evidence described in [`implementation-plan.md`](implementation-plan.md).
+Executable promotion requires the additional evidence described in [`implementation-plan.md`](implementation-plan.md).
 
 ## Non-goals
 
@@ -195,7 +227,8 @@ This initiative does **not** authorize:
 - ontology-driven autonomous mutation authority;
 - replacing source evidence with a generated semantic map;
 - encoding the entire ontology in YAML/JSON before real Skills demonstrate the need;
-- a central Reasoning Engine that ranks uncertainty, selects responsibility/capability, or decides Campaign disposition.
+- a central Reasoning Engine that ranks uncertainty, selects responsibility/capability, or decides Campaign disposition;
+- mandatory use of `semantic_reasoning_profile` in every domain artifact.
 
 ## Relationship to the Campaign
 
@@ -222,8 +255,18 @@ responsibility / capability / authority
 Campaign decision and durable transition
 ```
 
-The ontology does not replace Campaign evidence. The experimental semantic profile does not automatically become Campaign state. Both exist to make evidence-linked reasoning more consistent while preserving the existing control-plane boundary.
+The ontology does not replace Campaign evidence. The experimental semantic profile remains outside Campaign state. Both exist to make evidence-linked reasoning more consistent while preserving the existing control-plane boundary.
 
 ## Current frontier
 
-Phase 10 is a bounded envelope experiment: use the common profile in additional real repository episodes and measure whether it should remain a companion artifact, be selectively embedded in analytical artifacts, or be narrowed/retired because of coordination overhead. Campaign promotion and Repository Semantic Map work remain evidence-gated.
+Phase 10 is complete. No later semantic phase is automatically active.
+
+The next architecture package must be justified by observed repository/product pressure and the relevant trigger in [`implementation-plan.md`](implementation-plan.md). In particular:
+
+- Phase 11 waits for repeated demand for a new mechanical semantic relation;
+- Phase 12 waits for repeated costly reconstruction of the same repository entities/relations;
+- Phase 13 waits for demonstrated consequential cross-session control-plane state;
+- Phase 14 waits for at least two genuinely independent domain implementations exposing a reusable domain-pack boundary;
+- Phase 15 waits for observed ontology/conformance drift that creates maintenance defects.
+
+Preserving the current architecture unchanged is a valid outcome when none of those triggers is demonstrated.
