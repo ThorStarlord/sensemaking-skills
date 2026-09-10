@@ -66,7 +66,7 @@ def test_resume_context_is_deterministic_projection_not_recommendation(tmp_path)
     assert payload["recent_transitions"][-1]["id"] == "T2"
     assert payload["semantic_companion"]["present"] is False
     assert payload["semantic_recommendation_included"] is False
-    assert "next warranted" not in result.output.lower()
+    assert "recommended_next_action" not in payload
 
 
 def test_campaign_semantic_companion_is_additive_and_visible_in_resume(tmp_path):
@@ -245,6 +245,18 @@ def test_campaign_bundle_roundtrip_preserves_exact_workspace_bytes(tmp_path):
     assert imported_files == source_files
     assert "semantic-state.jsonl" in imported_files
     assert CampaignService(imported).validate().valid
+
+
+def test_campaign_bundle_refuses_destination_inside_workspace(tmp_path):
+    workspace = _campaign(tmp_path)
+    output = workspace / "exports" / "campaign.zip"
+    try:
+        CampaignBundleService(workspace).export(output)
+    except ValueError as exc:
+        assert "outside the workspace" in str(exc)
+    else:
+        raise AssertionError("bundle export accepted a destination inside the workspace")
+    assert not output.exists()
 
 
 def test_campaign_bundle_rejects_path_traversal(tmp_path):
