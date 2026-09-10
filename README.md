@@ -22,11 +22,13 @@ The installed product includes:
 - deterministic, unranked capability inspection;
 - integrity-bound handoff/resume;
 - evidence lineage and reconciliation reconstruction;
-- durable target repository snapshot binding with transition source/destination provenance and drift detection;
+- durable target repository snapshot binding with drift detection;
 - explicit harness setup adapters for generic Agent Skills, Claude Code, Codex, and OpenCode;
 - Campaign schema v2 with deterministic v1 -> v2 representation migration;
-- a build-derived canonical validator runtime so `campaign ingest` works from the installed distribution;
-- a deterministic real-harness evidence verifier for frozen external qualification attempts.
+- a build-derived canonical validator runtime;
+- a deterministic real-harness evidence verifier for frozen external qualification attempts;
+- a bounded mechanical Semantic Architecture substrate for repository observations;
+- Campaign observability projections, Resume Capsule, replay/provenance graph, and portable integrity bundles.
 
 The shipped wheel deliberately excludes retained research-lab packages (`campaign_validation`, `campaign_accounting`, `exploratory_authorization`, `exploratory_execution`). Those remain source-only repository/lab infrastructure.
 
@@ -47,12 +49,15 @@ Deterministic machinery owns mechanically decidable contracts:
 - provenance and exact-byte identity;
 - target repository snapshot identity and drift detection;
 - capability metadata/availability representation;
+- bounded repository observations with declared scope/completeness/currentness;
 - path containment and integrity checks;
 - schema representation migration;
 - handoff binding;
+- manifest/domain cross-reference conformance;
+- Campaign provenance projections and portable-bundle integrity;
 - release/evidence-package verification.
 
-The durable invariants are:
+The durable invariants include:
 
 ```text
 warranted responsibility != available capability != authorized capability
@@ -62,12 +67,11 @@ lineage != semantic warrant
 handoff != semantic recommendation
 Skill copied to discovery root != harness observed or invoked Skill
 verifier PASS != semantic truth
-
-target snapshot bound != repository correct
+semantic profile valid != reasoning semantically correct
+semantic map relation != architecture judgment
+manifest valid != Skill should run
+bundle valid != Campaign semantically correct
 repository changed != repair succeeded
-target identity != warranted responsibility
-target drift != automatic transition
-target provenance != capability selection or execution authority
 ```
 
 ## Installation
@@ -75,12 +79,6 @@ target provenance != capability selection or execution authority
 ```bash
 python -m pip install sensemaking-skills==0.3.0
 sensemaking-skills --version
-```
-
-Expected:
-
-```text
-0.3.0
 ```
 
 For source development:
@@ -112,15 +110,13 @@ Target inspection is mechanical only. Initialization records repository identity
 
 ### Admit a validated artifact
 
-The installed package carries the canonical validator runtime, so `--framework-root` is no longer required for normal installed use:
-
 ```bash
 sensemaking-skills campaign ingest \
   --workspace /path/to/campaigns/CMP-0001 \
   --artifact /path/to/repository_sensemaking_brief.md
 ```
 
-`--framework-root` remains an explicit development/compatibility override. If supplied, a bad override fails closed rather than silently falling back to the packaged runtime.
+The installed package carries the canonical validator runtime. `--framework-root` remains an explicit development/compatibility override and fails closed if invalid.
 
 ### Record an explicit agent decision
 
@@ -132,8 +128,6 @@ sensemaking-skills campaign close --help
 
 These commands persist an agent-authored semantic decision. They do not infer the decision from validator output or repository drift.
 
-For a target-bound Campaign, bounded work may legitimately change the repository before the next explicit decision. The lifecycle transition records the prior and destination target snapshot digests. Unrecorded drift is detected rather than silently accepted.
-
 ### Inspect lineage and reconciliation
 
 ```bash
@@ -144,71 +138,178 @@ sensemaking-skills campaign reconciliation --workspace /path/to/campaigns/CMP-00
 
 Target/evidence lineage records provenance; it does not prove a repository change was correct.
 
-### Handoff and resume
+## Campaign observability and fresh-context reconstruction
+
+The additive observability surface projects existing Campaign v2 state without becoming a semantic router:
+
+```bash
+sensemaking-skills campaign inspect --workspace /path/to/campaigns/CMP-0001
+sensemaking-skills campaign explain --workspace /path/to/campaigns/CMP-0001 --ref T1
+sensemaking-skills campaign diff --workspace /path/to/campaigns/CMP-0001 --from-transition T1 --to-transition T2
+sensemaking-skills campaign resume-context --workspace /path/to/campaigns/CMP-0001
+sensemaking-skills campaign replay --workspace /path/to/campaigns/CMP-0001 --at-transition T1
+sensemaking-skills campaign graph --workspace /path/to/campaigns/CMP-0001 --format mermaid
+```
+
+`resume-context` is a deterministic **Resume Capsule**. It reconstructs durable declared state and optional companion references; it does not emit a recommended next action.
+
+Replay is intentionally bounded by Campaign schema v2: it reconstructs transition prefixes and recorded evidence, not historical full-state snapshots that were never stored.
+
+## Optional cross-Skill semantic companion
+
+A Campaign can carry an append-only semantic-reference companion without changing Campaign schema v2:
+
+```bash
+sensemaking-skills campaign semantic-state-append \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --entry-id S1 \
+  --source-skill repo-sensemaker \
+  --artifact-ref repository_sensemaking_brief.md \
+  --claim-ref C1
+
+sensemaking-skills campaign semantic-state --workspace /path/to/campaigns/CMP-0001
+```
+
+Repository-bound Campaigns derive the companion target identity from the current TargetSnapshot digest. Targetless Campaigns require an explicit `--target-ref`.
+
+The companion carries artifact/evidence/claim/uncertainty provenance references, not hidden chain of thought. Its hash chain can establish structural integrity, not semantic truth.
+
+Phase 10 separately retained `semantic_reasoning_profile` as an **optional** companion audit/reconstruction artifact; the profile is not mandatory and is not promoted into Campaign artifact admission.
+
+## Mechanical Semantic Architecture CLI
+
+The installed package provides mechanically bounded repository probes:
+
+```bash
+sensemaking-skills semantic probe \
+  --repo /path/to/repo \
+  --target-ref sha:abc123 \
+  --kind python-imports \
+  --output /tmp/imports.json
+
+sensemaking-skills semantic probe \
+  --repo /path/to/repo \
+  --target-ref sha:abc123 \
+  --kind manifest-dependencies \
+  --output /tmp/dependencies.json
+
+sensemaking-skills semantic probe \
+  --repo /path/to/repo \
+  --target-ref sha:abc123 \
+  --kind exact-search \
+  --pattern "needle" \
+  --output /tmp/search.json
+```
+
+Current v0 probe families are regular-file containment, Python import syntax, supported manifest dependency declarations, and exact UTF-8 literal search.
+
+Probe observations preserve source/method, target ref, scope, completeness, currentness, and evidence refs. They do not turn imports into architecture violations, dependency declarations into runtime-use claims, or zero exact matches into universal absence.
+
+### Bounded Repository Semantic Map
+
+One or more probe outputs can be combined without inventing architecture:
+
+```bash
+sensemaking-skills semantic map-build \
+  --map-id MAP-1 \
+  --target-ref sha:abc123 \
+  --observations /tmp/imports.json \
+  --observations /tmp/dependencies.json \
+  --output /tmp/semantic-map.json
+```
+
+The v0 map uses generic repository locators and `DERIVED` mechanical relations. It rejects mixed target refs and explicitly remains incomplete.
+
+## Skill Contract Manifests and Domain Packs
+
+Repository-owned `skill-manifests/` make a Skill's deterministic shell machine-readable: identity, domain, declared responsibilities, canonical inputs/outputs, shared semantic concepts, and repository mutation declaration.
+
+`domain-packs/` currently provides reference manifests for a bounded Engineering slice and the completed Product Management migration.
+
+Conformance can be checked with:
+
+```bash
+sensemaking-skills semantic conformance \
+  --manifests-dir skill-manifests \
+  --domain-packs-dir domain-packs \
+  --repo-root .
+```
+
+Conformance rejects missing Skill files, duplicate IDs/list values, unknown canonical semantic concepts, pack/manifest mismatches, and fields that would imply semantic truth/routing authority.
+
+A valid manifest does not mean the Skill is warranted for the current task.
+
+## Portable Campaign bundles
+
+Campaign workspaces can be exported as exact-byte integrity bundles:
+
+```bash
+sensemaking-skills campaign bundle-export \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --output /path/outside/workspace/CMP-0001.zip
+
+sensemaking-skills campaign bundle-verify --bundle /path/CMP-0001.zip
+sensemaking-skills campaign bundle-import --bundle /path/CMP-0001.zip --workspace /new/path/CMP-0001
+```
+
+Bundles contain exact workspace bytes plus a deterministic SHA-256/size manifest. Verification rejects unsafe paths, symlinks, duplicate/undeclared/missing files, digest/size mismatch, and unsupported format/version. Export destinations inside the source workspace are rejected.
+
+Bundle integrity does not establish semantic Campaign correctness or prove the original target repository remains available.
+
+## Handoff and resume
 
 ```bash
 sensemaking-skills campaign handoff --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign resume --workspace /path/to/campaigns/CMP-0001
 ```
 
-A handoff reconstructs durable context; it does not recommend the next semantic action. Target-bound fresh-context resume also verifies that the live target repository still matches the durable current snapshot.
-
-See `docs/campaign-target-snapshot.md` for the target provenance contract.
+A handoff reconstructs durable context; it does not recommend the next semantic action. Target-bound fresh-context resume verifies that the live target repository still matches the durable current snapshot.
 
 ## Make Skills discoverable to coding-agent harnesses
 
 Harness selection is explicit; Sensemaking Skills does not auto-detect the running agent.
 
 ```bash
-# user scope
 sensemaking-skills setup-skills --target generic --scope user
 sensemaking-skills setup-skills --target claude --scope user
 sensemaking-skills setup-skills --target codex --scope user
 sensemaking-skills setup-skills --target opencode --scope user
-
-# project scope
 sensemaking-skills setup-skills --target claude --scope project --project-root /path/to/repo
 ```
 
-Setup preserves drift protection: missing trees are copied, matching trees are left alone, divergent trees are reported and preserved unless `--force` is explicit.
-
-Copying a Skill into a discovery root is not evidence that a harness observed or natively invoked it.
+Setup preserves drift protection. Copying a Skill into a discovery root is not evidence that a harness observed or natively invoked it.
 
 ## Campaign schema compatibility
 
-Current Campaign artifacts use **schema version 2**. Historical v1 artifacts are accepted only through deterministic one-way representation migration. Migration does not reinterpret evidence, select work, or grant authority, and append-only historical transition bytes are not rewritten merely to modernize serialization.
+Current Campaign artifacts use **schema version 2**. Historical v1 artifacts are accepted only through deterministic one-way representation migration. Migration does not reinterpret evidence, select work, or grant authority.
 
-Durable target binding is additive within schema v2. Historical Campaigns with no target fields remain honestly target-unbound; the system does not invent past repository provenance.
+The optional semantic companion is a workspace-level additive artifact and does not introduce Campaign schema v3.
 
-See `docs/campaign-schema-evolution.md` and `docs/campaign-target-snapshot.md`.
+## Semantic Architecture development policy
+
+Phase 10 already ran a bounded real-repository common-envelope experiment and retained `semantic_reasoning_profile` as an optional companion (**Outcome A**).
+
+The subsequent owner-authorized policy is build-first: additional empirical experiments may be deferred while a concrete missing capability has a clear mechanical contract. Mechanical verification remains continuous.
+
+The **Construction Diminishing-Returns Gate** stops further speculative construction when architecture can no longer resolve competing designs, formalization outpaces consumption, maintenance dominates capability growth, or the decisive question becomes behavioral value rather than mechanical correctness.
+
+See `docs/semantic-architecture/README.md`, `docs/semantic-architecture/implementation-plan.md`, and `docs/semantic-architecture/build-first-policy.md`.
 
 ## Real-harness qualification
 
-The package includes `sensemaking_skills.external_qualification`, which verifies a frozen evidence package from a real coding-agent harness run. The verifier checks exact candidate/target/runtime identities, evidence digests, Skill installation vs native invocation evidence, Campaign lifecycle checkpoints, no-manual-repair/no-prior-chat boundaries, and fresh-context handoff/resume integrity.
+The package includes `sensemaking_skills.external_qualification`, the **real-harness qualification verifier** for frozen evidence packages from actual coding-agent harness runs. A synthetic fixture can prove the verifier contract but cannot manufacture real-harness origin evidence.
 
-A synthetic fixture proves the verifier contract. **A real-harness PASS result is empirical evidence and must come from a real frozen external attempt.** The repository does not convert a fixture PASS into a claim that a real harness performed the run.
-
-See `docs/external-golden-path-verifier.md`.
+Repository, semantic, PM, and installed-wheel qualification do not substitute for required native-harness/portability evidence when a stronger support claim depends on it.
 
 ## Release qualification
 
 v0.3 release candidates are qualified on the exact PR head by three complementary authority lanes:
 
 1. **Product Validation** — Python 3.11/3.12 Campaign product, installed wheel, repository contracts, and filesystem security.
-2. **Lab Validation** — retained source-only research/lab suites, kept separate from shipped-product authority.
-3. **Release Candidate Distribution** — wheel + sdist build, `twine check`, exact artifact names, fresh installs, schema-v2/product-lab assertions, installed validator-runtime checks, and candidate artifact digests.
+2. **Lab Validation** — retained source-only research/lab suites, separate from shipped-product authority.
+3. **Release Candidate Distribution** — wheel + sdist build, exact artifact/install assertions, installed validator runtime, and candidate digests.
 
-Product Validation and Release Candidate Distribution run for PRs to `main`; Lab Validation is path-filtered and also supports manual dispatch. When a milestone/release claim explicitly depends on retained-lab qualification and it did not auto-trigger, an operator must dispatch Lab Validation for the intended ref.
-
-Tagged publication remains a separate owner action and independently runs `twine check` before upload.
-
-## Milestone operations runbook
-
-The completed CI/release/target-snapshot milestone is consolidated in:
-
-- `docs/milestone-runbook.md` — exact local validation commands, release qualification protocol, target-bound Campaign operations, human-only gates, failure interpretation, worktree policy, and version/package authority.
-
-When runbook prose and a checked-in workflow disagree about exact commands, the workflow is executable authority and the documentation should be reconciled.
+Tagged publication remains a separate owner action.
 
 ## What this is not
 
@@ -216,6 +317,7 @@ When runbook prose and a checked-in workflow disagree about exact commands, the 
 - Not an autonomous project manager.
 - Not a universal planner or capability-ranking engine.
 - Not a semantic truth validator.
+- Not a complete repository knowledge graph.
 - Not a cloud service.
 - Not automatic external mutation authority.
 - Not a claim that copied Skills were observed or invoked by a harness.
@@ -226,34 +328,42 @@ When runbook prose and a checked-in workflow disagree about exact commands, the 
 ```text
 src/sensemaking_skills/
   campaign_semantics/       typed Campaign contracts + schema evolution
-  campaigns/                durable workspace/service/admission/lineage/target snapshots
-  commands/                 CLI implementation surfaces
+  campaigns/                durable workspace/service/admission/lineage/target snapshots/bundles
+  semantic_architecture/    bounded probes/map/state/conformance substrate
+  semantic_cli.py           mechanical semantic CLI registration
+  campaign_observability_cli.py Campaign projections/companion/portability
   external_qualification.py frozen real-harness evidence verifier
   skill_trees/              build-derived installed Skill trees
   validator_runtime/        build-derived installed validator runtime
 skills/                     canonical agent-native Skill sources
+skill-manifests/            repository-owned deterministic Skill interface manifests
+domain-packs/               repository-owned domain reference manifests
 scripts/                    canonical validation/probe tooling
 tests/                      product, installed-wheel, integration, and retained-lab tests
-docs/                       canonical product, architecture, release, and runbook docs
+docs/                       canonical product, semantic architecture, release, and runbook docs
 experiments/                retained research evidence/lab material
 ```
 
 ## Canonical documentation
 
 - `STATUS.md` — current release/product state.
-- `docs/milestone-runbook.md` — post-milestone operating and qualification runbook.
+- `docs/milestone-runbook.md` — operating and qualification runbook.
 - `docs/sensemaking-campaign.md` — canonical Campaign product model.
-- `docs/campaign-target-snapshot.md` — durable target repository provenance and drift contract.
-- `docs/productization-v0.3.md` — v0.3 delivery/release baseline.
-- `docs/campaign-schema-evolution.md` — schema v2 compatibility contract.
+- `docs/campaign-target-snapshot.md` — target provenance and drift contract.
+- `docs/campaign-observability-and-portability.md` — observability, semantic companion, Resume Capsule, replay/graph, and bundles.
+- `docs/semantic-architecture/README.md` — Semantic Architecture index.
+- `docs/semantic-architecture/implementation-plan.md` — build-first semantic roadmap.
+- `docs/semantic-architecture/build-first-policy.md` — diminishing-returns gate.
+- `docs/semantic-architecture/mechanical-semantic-substrate.md` — probes/map/state contracts.
+- `docs/semantic-architecture/skill-contract-manifests-and-domain-packs.md` — manifest/domain conformance.
+- `docs/product-management/capability-migration-matrix.md` — completed PM capability migration/maturity ledger.
+- `docs/product-management/qualification-levels.md` — PM qualification policy.
 - `docs/product-lab-boundary.md` — shipped product vs retained lab boundary.
 - `docs/external-golden-path-verifier.md` — real-harness evidence verification protocol.
-- `docs/harness-adapters.md` — deterministic harness setup roots.
-- `docs/artifact-ingestion.md` — validated artifact admission and installed runtime.
 
 ## Development
 
-For the exact locally reproducible Product Validation, Lab Validation, release-candidate, repository-probe, installed-wheel, and filesystem-security commands, use `docs/milestone-runbook.md`. The checked-in workflows remain the executable CI authority:
+For locally reproducible Product Validation, Lab Validation, release-candidate, repository-probe, installed-wheel, and filesystem-security commands, use `docs/milestone-runbook.md`. The checked-in workflows remain executable CI authority:
 
 ```text
 .github/workflows/validation.yml
@@ -263,7 +373,5 @@ For the exact locally reproducible Product Validation, Lab Validation, release-c
 ```
 
 The release version is declared only in `pyproject.toml`; `sensemaking_skills.__version__` derives it from installed distribution metadata.
-
-Keep local Claude worktrees beneath ignored `.claude/worktrees/`; do not commit nested worktree gitlinks. `python scripts/validate-product-boundary.py` enforces this boundary before qualification.
 
 License: MIT.
