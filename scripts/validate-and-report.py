@@ -57,6 +57,15 @@ _PM_FEATURE_DEFINITION_IDS = {
     "criteria_list",
     "risk_analysis",
 }
+_PM_STRATEGY_IDS = {
+    "market_analysis",
+    "strategy_doc",
+    "prioritized_list",
+    "north_star_metric",
+    "okr_list",
+    "roadmap",
+    "business_canvas",
+}
 
 
 class ArtifactIdExtraction:
@@ -231,6 +240,8 @@ def select_validator(artifact_id: str | None) -> str:
         return "scripts/validate-pm-artifact.py"
     if artifact_id in _PM_FEATURE_DEFINITION_IDS:
         return "scripts/validate-pm-feature-definition.py"
+    if artifact_id in _PM_STRATEGY_IDS:
+        return "scripts/validate-pm-strategy.py"
     return "scripts/validate-artifact.py"
 
 
