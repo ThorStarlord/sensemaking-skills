@@ -2,7 +2,7 @@
 
 ## Authority
 
-Concise human contracts live beside each canonical Skill at `skills/<skill>/references/output-contract.md`. The canonical validation router selects specialized deterministic validators where PM machine-contract invariants add value.
+Concise human contracts live beside each canonical Skill in that Skill's `references/` directory. The canonical validation router selects specialized deterministic validators where PM machine-contract invariants add value.
 
 Historical Wayfinder entries in `skills/workflow-planner/references/artifact-contracts.yaml` preserve compatibility/provenance. They do not become semantic authority merely because an identifier is reused.
 
@@ -28,57 +28,65 @@ It may not decide whether a persona is representative, a finding is important, a
 - `criteria_list`
 - `risk_analysis`
 
-### `story_list`
+`story_list` preserves bounded source traceability, scope status, story identity, user/capability intent, acceptance intent, dependencies, and unresolved questions. The validator does not estimate effort or choose priority.
 
-The machine contract preserves:
+`criteria_list` preserves source traceability and explicit Given/When/Then behavior. `status` remains `specified`; pass/execution evidence belongs elsewhere.
 
-- one bounded source artifact reference;
-- aggregate scope status (`approved`, `proposed`, or `mixed`);
-- unique story identities;
-- user/capability intent (`actor` where meaningful, `want`, `value`);
-- source traceability;
-- acceptance intent;
-- dependencies;
-- per-story scope status;
-- unresolved questions.
-
-The validator does not estimate effort, choose priority, or establish that a story is valuable.
-
-### `criteria_list`
-
-The machine contract preserves:
-
-- one bounded source artifact reference;
-- unique scenario identities;
-- source story/requirement traceability;
-- scenario category;
-- explicit Given / When / Then behavior;
-- `status: specified`;
-- unresolved questions.
-
-A criteria artifact may specify expected behavior. It cannot claim `passed`, QA approval, or automated-test execution without separate execution evidence.
-
-### `risk_analysis`
-
-The machine contract preserves:
-
-- one bounded source artifact reference;
-- unique risk identities;
-- risk class (`tiger`, `paper_tiger`, `elephant`);
-- evidence status (`observed`, `inferred`, `hypothetical`, `unknown`);
-- evidence refs;
-- urgency, impact, probability, mitigation, owner role, success criterion, and escalation signal;
-- an agent-authored recommendation plus conditions and unresolved questions.
-
-A purely hypothetical item cannot be encoded as a current Tiger. This is an evidence-shape constraint, not a claim that the validator knows real-world risk probability.
-
-`go`, `go_with_conditions`, `no_go`, and `insufficient_evidence` are analysis outcomes only. They grant no launch or external-action authority.
+`risk_analysis` preserves risk class, evidence status, urgency, impact/probability, mitigation, ownership role, escalation signal, and an agent-authored recommendation. A purely hypothetical item cannot be encoded as a current Tiger, and the recommendation grants no launch authority.
 
 ## PRD authority
 
 `prd` remains produced by the existing canonical `to-prd` Skill. Upstream `prd` methodology is merged into `to-prd`; no second current `prd` capability is created.
 
 The existing PRD scope-expansion contract remains authoritative. Existing PRD validation is retained; Wave 2 does not silently replace its historical contract with a competing PM artifact identity.
+
+## Strategy and Prioritization routed identities
+
+`scripts/validate-pm-strategy.py` validates:
+
+- `market_analysis`
+- `strategy_doc`
+- `prioritized_list`
+- `north_star_metric`
+- `okr_list`
+- `roadmap`
+- `business_canvas`
+
+These checks intentionally constrain representation without turning frameworks into semantic routers.
+
+### `market_analysis`
+
+Observed competitor claims require source references and an explicit evidence cutoff. Inferred and unknown claims remain distinguishable. The validator does not decide which competitor matters or which positioning is correct.
+
+### `strategy_doc`
+
+The generated strategy status is `proposed`. Choices, non-choices, measures, roadmap themes, assumptions, and risks remain agent-authored analysis. An observed metric baseline requires evidence; the Skill cannot self-ratify strategy.
+
+### `prioritized_list`
+
+When complete numeric RICE inputs are declared, the validator recomputes:
+
+```text
+(reach * impact * confidence) / effort
+```
+
+It does not require the semantic recommended order to equal raw score order. Dependencies, evidence strength, risk, strategic fit, and other trade-offs remain agent judgment.
+
+### `north_star_metric`
+
+Candidate identity and selection references must resolve, and an observed baseline requires evidence. Candidate scores are assessments, not measurements; the selected NSM remains `proposed` until separately ratified.
+
+### `okr_list`
+
+Objective and KR identities are unique. KRs are encoded as outcomes rather than delivery outputs; observed baselines require evidence and targets remain proposed. The validator does not require a dogmatic number of KRs or certify target quality.
+
+### `roadmap`
+
+Initiative identities and dependencies are checked. Timing may be unknown, estimated, or committed; `committed` timing requires an explicit authority reference. A roadmap remains a planning artifact rather than execution authority.
+
+### `business_canvas`
+
+All nine Lean Canvas blocks are represented with evidence states. Blocks marked observed require evidence refs. The overall canvas remains a hypothesis map; it cannot self-declare validation.
 
 ## Admission boundary
 
@@ -93,4 +101,4 @@ The existing PRD scope-expansion contract remains authoritative. Existing PRD va
 
 ## Qualification boundary
 
-Passing these validators and Campaign admission may contribute to `REPOSITORY_QUALIFIED`. It does not establish native-harness qualification, portability qualification, customer truth, strategic correctness, implementation completion, test execution, or launch readiness in the real world.
+Passing these validators and Campaign admission may contribute to `REPOSITORY_QUALIFIED`. It does not establish native-harness qualification, portability qualification, customer truth, strategic correctness, implementation completion, test execution, or real-world success.

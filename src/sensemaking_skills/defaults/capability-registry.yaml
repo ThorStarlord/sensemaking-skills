@@ -12,8 +12,7 @@ capabilities:
     source: skills/repo-sensemaker/SKILL.md
     accepted_responsibility_types: [repository_diagnosis]
     output_artifact: repository_sensemaking_brief
-    completion_conditions:
-      - a repository_sensemaking_brief is returned to the campaign agent
+    completion_conditions: [a repository_sensemaking_brief is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -26,8 +25,7 @@ capabilities:
     accepted_responsibility_types: [workflow_planning]
     input_artifact: repository_sensemaking_brief
     output_artifact: workflow_orchestration_plan
-    completion_conditions:
-      - a workflow_orchestration_plan is returned to the campaign agent
+    completion_conditions: [a workflow_orchestration_plan is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -40,8 +38,7 @@ capabilities:
     accepted_responsibility_types: [architecture_review]
     input_artifact: repository_sensemaking_brief
     output_artifact: architectural_review_recommendation
-    completion_conditions:
-      - an evidence-grounded architectural recommendation is returned to the campaign agent
+    completion_conditions: [an evidence-grounded architectural recommendation is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -53,8 +50,7 @@ capabilities:
     source: skills/docs-aligner/SKILL.md
     accepted_responsibility_types: [documentation_alignment]
     output_artifact: domain_alignment_report
-    completion_conditions:
-      - documentation alignment work returns control with a domain_alignment_report
+    completion_conditions: [documentation alignment work returns control with a domain_alignment_report]
     mutates_repository: true
     authority: owner_authorization_required
     availability: external
@@ -66,8 +62,7 @@ capabilities:
     source: skills/sensemaking-docs-reconciler/SKILL.md
     accepted_responsibility_types: [documentation_reconciliation]
     output_artifact: docs_contract_reconciliation_report
-    completion_conditions:
-      - documentation reconciliation returns control with its report
+    completion_conditions: [documentation reconciliation returns control with its report]
     mutates_repository: true
     authority: owner_authorization_required
     availability: external
@@ -79,8 +74,7 @@ capabilities:
     source: skills/output-reconciler/SKILL.md
     accepted_responsibility_types: [output_reconciliation]
     output_artifact: reconciliation_report
-    completion_conditions:
-      - reconciliation findings are returned to the campaign agent
+    completion_conditions: [reconciliation findings are returned to the campaign agent]
     mutates_repository: true
     authority: owner_authorization_required
     availability: external
@@ -93,8 +87,7 @@ capabilities:
     accepted_responsibility_types: [repair_verification]
     input_artifact: reconciliation_report
     output_artifact: repair_verification_report
-    completion_conditions:
-      - repair verification findings are returned to the campaign agent
+    completion_conditions: [repair verification findings are returned to the campaign agent]
     mutates_repository: true
     authority: owner_authorization_required
     availability: external
@@ -107,8 +100,7 @@ capabilities:
     accepted_responsibility_types: [skill_maintenance]
     input_artifact: usage_research_report
     output_artifact: skill_improvement_plan
-    completion_conditions:
-      - a bounded skill_improvement_plan is returned to the campaign agent
+    completion_conditions: [a bounded skill_improvement_plan is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -120,8 +112,7 @@ capabilities:
     source: skills/usage-researcher/SKILL.md
     accepted_responsibility_types: [skill_usage_research]
     output_artifact: usage_research_report
-    completion_conditions:
-      - a usage_research_report is returned to the campaign agent
+    completion_conditions: [a usage_research_report is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -133,12 +124,11 @@ capabilities:
     source: skills/handoff/SKILL.md
     accepted_responsibility_types: [session_handoff]
     output_artifact: session_summary
-    completion_conditions:
-      - a session handoff summary is returned to the campaign agent
+    completion_conditions: [a session handoff summary is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
-    availability_reason: agent-native Skill; P7 will productize durable Campaign handoff separately
+    availability_reason: agent-native Skill; P7 productizes durable Campaign handoff separately
     returns_control: true
 
   - id: persona
@@ -146,8 +136,7 @@ capabilities:
     source: skills/persona/SKILL.md
     accepted_responsibility_types: [customer_understanding]
     output_artifact: persona_definition
-    completion_conditions:
-      - a persona_definition with evidence-aware claim strength is returned to the campaign agent
+    completion_conditions: [a persona_definition with evidence-aware claim strength is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -159,8 +148,7 @@ capabilities:
     source: skills/discovery/SKILL.md
     accepted_responsibility_types: [problem_discovery]
     output_artifact: discovery_findings
-    completion_conditions:
-      - discovery_findings with explicit unresolved evidence gaps are returned to the campaign agent
+    completion_conditions: [discovery_findings with explicit unresolved evidence gaps are returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -172,8 +160,7 @@ capabilities:
     source: skills/interview-synthesis/SKILL.md
     accepted_responsibility_types: [research_synthesis]
     output_artifact: synthesis_report
-    completion_conditions:
-      - a traceable synthesis_report is returned to the campaign agent
+    completion_conditions: [a traceable synthesis_report is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -186,8 +173,7 @@ capabilities:
     accepted_responsibility_types: [opportunity_mapping]
     input_artifact: synthesis_report
     output_artifact: opportunity_map
-    completion_conditions:
-      - an evidence-aware opportunity_map is returned to the campaign agent
+    completion_conditions: [an evidence-aware opportunity_map is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -200,8 +186,7 @@ capabilities:
     accepted_responsibility_types: [product_hypothesis]
     input_artifact: opportunity_map
     output_artifact: hypothesis_statement
-    completion_conditions:
-      - a falsifiable proposed hypothesis_statement is returned to the campaign agent
+    completion_conditions: [a falsifiable proposed hypothesis_statement is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -213,8 +198,7 @@ capabilities:
     source: skills/to-prd/SKILL.md
     accepted_responsibility_types: [product_specification]
     output_artifact: prd
-    completion_conditions:
-      - a scope-aware evidence-aware prd is returned to the campaign agent
+    completion_conditions: [a scope-aware evidence-aware prd is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -227,8 +211,7 @@ capabilities:
     accepted_responsibility_types: [delivery_specification]
     input_artifact: prd
     output_artifact: story_list
-    completion_conditions:
-      - a traceable story_list is returned without invented estimates or scope promotion
+    completion_conditions: [a traceable story_list is returned without invented estimates or scope promotion]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -241,8 +224,7 @@ capabilities:
     accepted_responsibility_types: [delivery_specification]
     input_artifact: story_list
     output_artifact: criteria_list
-    completion_conditions:
-      - a specified criteria_list is returned without claiming test execution
+    completion_conditions: [a specified criteria_list is returned without claiming test execution]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
@@ -255,12 +237,96 @@ capabilities:
     accepted_responsibility_types: [risk_and_readiness]
     input_artifact: prd
     output_artifact: risk_analysis
-    completion_conditions:
-      - an evidence-status-aware risk_analysis recommendation is returned to the campaign agent
+    completion_conditions: [an evidence-status-aware risk_analysis recommendation is returned to the campaign agent]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
     availability_reason: canonical agent-native PM Skill; recommendation does not grant launch or external-action authority
+    returns_control: true
+
+  - id: competitive-analysis
+    kind: skill
+    source: skills/competitive-analysis/SKILL.md
+    accepted_responsibility_types: [market_understanding]
+    output_artifact: market_analysis
+    completion_conditions: [a source-aware market_analysis is returned to the campaign agent]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM Skill; current market evidence availability remains separate from capability availability
+    returns_control: true
+
+  - id: strategy
+    kind: skill
+    source: skills/strategy/SKILL.md
+    accepted_responsibility_types: [product_strategy]
+    output_artifact: strategy_doc
+    completion_conditions: [a proposed evidence-aware strategy_doc is returned to the campaign agent]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM Skill; owner ratification is separate from strategy generation
+    returns_control: true
+
+  - id: prioritize
+    kind: skill
+    source: skills/prioritize/SKILL.md
+    accepted_responsibility_types: [prioritization]
+    output_artifact: prioritized_list
+    completion_conditions: [a transparent prioritized_list with trade-offs is returned to the campaign agent]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM Skill; arithmetic and capability availability do not establish semantic priority
+    returns_control: true
+
+  - id: north-star
+    kind: skill
+    source: skills/north-star/SKILL.md
+    accepted_responsibility_types: [product_strategy]
+    output_artifact: north_star_metric
+    completion_conditions: [a proposed north_star_metric with evidence-aware inputs is returned to the campaign agent]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM Skill; metric adoption and causal validation are separate
+    returns_control: true
+
+  - id: okr
+    kind: skill
+    source: skills/okr/SKILL.md
+    accepted_responsibility_types: [product_strategy]
+    output_artifact: okr_list
+    completion_conditions: [a proposed outcome-oriented okr_list is returned to the campaign agent]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM Skill; targets and owners are not treated as achieved results or assignments
+    returns_control: true
+
+  - id: roadmap
+    kind: skill
+    source: skills/roadmap/SKILL.md
+    accepted_responsibility_types: [product_strategy]
+    input_artifact: prioritized_list
+    output_artifact: roadmap
+    completion_conditions: [an evidence-aware roadmap with explicit proposal and commitment status is returned]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM Skill; roadmap generation grants no execution authority
+    returns_control: true
+
+  - id: lean-canvas
+    kind: skill
+    source: skills/lean-canvas/SKILL.md
+    accepted_responsibility_types: [product_strategy]
+    output_artifact: business_canvas
+    completion_conditions: [a hypothesis-preserving business_canvas is returned to the campaign agent]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM Skill; business-model hypotheses remain distinct from empirical validation
     returns_control: true
 
   - id: triage
@@ -268,8 +334,7 @@ capabilities:
     source: skills/workflow-planner/references/skill-registry.yaml
     accepted_responsibility_types: [issue_triage]
     output_artifact: agent_brief
-    completion_conditions:
-      - an agent_brief would be returned if the capability becomes live
+    completion_conditions: [an agent_brief would be returned if the capability becomes live]
     mutates_repository: false
     authority: authorized_autonomously
     availability: unavailable
@@ -282,8 +347,7 @@ capabilities:
     accepted_responsibility_types: [implementation_execution]
     input_artifact: agent_brief
     output_artifact: code_patch
-    completion_conditions:
-      - a bounded implementation patch would be returned if the capability becomes live
+    completion_conditions: [a bounded implementation patch would be returned if the capability becomes live]
     mutates_repository: true
     authority: owner_authorization_required
     availability: unavailable
@@ -295,8 +359,7 @@ capabilities:
     source: src/sensemaking_skills/defaults/workflow-registry.yaml
     accepted_responsibility_types: [repository_sensemaking_workflow]
     output_artifact: workflow_orchestration_plan
-    completion_conditions:
-      - control returns to the campaign agent after the workflow result is produced
+    completion_conditions: [control returns to the campaign agent after the workflow result is produced]
     mutates_repository: false
     authority: owner_authorization_required
     availability: external
@@ -308,8 +371,7 @@ capabilities:
     source: src/sensemaking_skills/defaults/workflow-registry.yaml
     accepted_responsibility_types: [implementation_execution_workflow]
     output_artifact: code_patch
-    completion_conditions:
-      - control would return to the campaign agent after the workflow result is produced
+    completion_conditions: [control would return to the campaign agent after the workflow result is produced]
     mutates_repository: true
     authority: owner_authorization_required
     availability: external
