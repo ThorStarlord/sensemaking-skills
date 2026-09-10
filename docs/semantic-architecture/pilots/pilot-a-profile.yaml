@@ -1,0 +1,55 @@
+artifact_id: semantic_reasoning_profile
+schema_version: 1
+pilot_id: pilot-a-repo-sensemaker
+source_skill: repo-sensemaker
+target:
+  repository: ThorStarlord/sensemaking-skills
+  ref: 8109b0a7133abb8363f808d01292f5f7375d766f
+  access_mode: github_exact_sha
+currentness:
+  status: pinned_snapshot
+  evidence_refs:
+    - https://github.com/ThorStarlord/sensemaking-skills/commit/8109b0a7133abb8363f808d01292f5f7375d766f
+observations:
+  - id: O1
+    statement: repo-sensemaker requires a state-currency probe before synthesis and distinguishes documented state from independently verified current state.
+    method: direct_read
+    evidence_refs:
+      - skills/repo-sensemaker/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+  - id: O2
+    statement: existing evidence rules require file grounding, logic traces, taxonomy verification, and explicit handling of incomplete probe measurements.
+    method: direct_read
+    evidence_refs:
+      - skills/repo-sensemaker/references/evidence-rules.md@8109b0a7133abb8363f808d01292f5f7375d766f
+claims:
+  - id: C1
+    statement: the highest-value Phase 9 change for repo-sensemaker is shared epistemic labeling rather than a new universal repository schema.
+    epistemic_status: INFERRED
+    evidence_refs:
+      - skills/repo-sensemaker/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+      - skills/repo-sensemaker/references/evidence-rules.md@8109b0a7133abb8363f808d01292f5f7375d766f
+      - docs/semantic-architecture/reasoning-model.md@8109b0a7133abb8363f808d01292f5f7375d766f
+    scope: repo-sensemaker Phase 9 alignment
+    limits:
+      - does not establish that every analytical Skill needs the same artifact schema
+      - does not establish semantic correctness of any diagnosis
+  - id: C2
+    statement: fog classification and weakness classification should remain distinct from the specific consequential uncertainty governing the next decision.
+    epistemic_status: INFERRED
+    evidence_refs:
+      - skills/repo-sensemaker/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+      - docs/semantic-architecture/reasoning-model.md@8109b0a7133abb8363f808d01292f5f7375d766f
+    scope: repo-sensemaker diagnostic reasoning
+    limits:
+      - fog and weakness taxonomies remain useful and are not deprecated
+uncertainties:
+  - id: U1
+    question: will the same target/currentness, claim-status, uncertainty, and explicit-limit fields remain useful in an architectural review with inherited evidence rather than direct repository diagnosis?
+    decision_relevance: determines whether the Pilot A comparison core is cross-Skill semantics or repo-sensemaker-specific ceremony
+    evidence_needed:
+      - Phase 9 Pilot B architectural-review comparison
+    status: active
+explicit_limits:
+  - no native external coding-agent harness was exercised
+  - the pilot does not authorize Campaign schema changes
+  - semantic labels describe warrant and do not represent truth probabilities

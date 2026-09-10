@@ -1,8 +1,8 @@
 # Sensemaking Semantic Architecture
 
-**Status:** Canonical semantic-design foundation, v0  
+**Status:** Canonical semantic-design foundation v0; Phase 9 first operationalization pilots completed  
 **Scope:** Repository reasoning, evidence semantics, work semantics, and product-change vocabulary  
-**Executable status:** Documentation only unless a concept is explicitly mapped to an existing executable contract
+**Executable status:** Existing Campaign contracts plus one experimental `semantic_reasoning_profile` Level-3 representation; ontology concepts are otherwise documentation unless explicitly mapped to executable machinery
 
 ## Purpose
 
@@ -34,14 +34,20 @@ Sensemaking Semantic Architecture
 |   +-- responsibility -> capability
 |   +-- result -> decision
 |
-+-- Execution Integration
++-- Capability / Skill Layer
+|   +-- repo-sensemaker
+|   +-- architectural-review
+|   +-- repair-verifier / output-reconciler
+|   +-- domain Skills
+|
++-- Executable Substrate
     +-- probes
-    +-- Skills
-    +-- artifacts
-    +-- validators
-    +-- Campaigns
+    +-- artifacts / validators
+    +-- Campaigns / provenance
     +-- handoff
 ```
+
+The Capability / Skill Layer is shown explicitly because Phase 9 demonstrated that operationalizing the Reasoning Model happens first through bounded Skill methodology, not by creating a central reasoning engine.
 
 ## Document map
 
@@ -58,7 +64,10 @@ Sensemaking Semantic Architecture
 | [`execution-integration.md`](execution-integration.md) | How the semantic model maps to probes, Skills, artifacts, validators, Campaigns, and harnesses. |
 | [`reference-scenarios.md`](reference-scenarios.md) | Concrete scenarios used to test whether the model is useful. |
 | [`implementation-plan.md`](implementation-plan.md) | Phased plan and promotion gates from vocabulary to ontology to executable contracts. |
-| [`milestone-handoff.md`](milestone-handoff.md) | What this milestone establishes and what remains intentionally deferred. |
+| [`pilots/README.md`](pilots/README.md) | Phase 9 Reasoning Model operationalization and cross-Skill comparison. |
+| [`common-semantic-contract.md`](common-semantic-contract.md) | First experimental Level-3 `semantic_reasoning_profile` representation contract. |
+| [`phase-9-handoff.md`](phase-9-handoff.md) | Phase 9 delivered work, boundaries, and Phase 10 frontier. |
+| [`milestone-handoff.md`](milestone-handoff.md) | Original semantic-foundation milestone handoff. |
 
 ## Three levels of formalization
 
@@ -78,11 +87,54 @@ Example: `ProductChange reinforces ProductCapability` is an ontology relation on
 
 ### Level 3 — Executable semantic contract
 
-Schema fields, validators, deterministic probes, registries, or runtime invariants.
+Schema fields, validators, deterministic probes, registries, or runtime invariants that encode only a mechanically decidable subset of semantics.
 
-Example: a relation becomes executable only when machinery needs to store or mechanically verify it and the boundary is deterministic enough to encode safely.
+A Level-3 validator can answer questions such as `is this representation structurally valid?`; it does not automatically answer `is this semantic conclusion true?`.
+
+Phase 9 produced the first new bounded example: `semantic_reasoning_profile` v1 has an executable standalone validator for representation shape, evidence-reference requirements, currentness status, IDs, and epistemic enums. It is **not** registered into Campaign admission and explicitly cannot establish semantic truth.
 
 Promotion is one-way only in the sense of authority: a Level 1 or Level 2 concept MUST NOT be treated as if Level 3 machinery enforces it.
+
+## Phase 9 result — Reasoning Model operationalization
+
+The first contrasting pilots covered:
+
+```text
+repo-sensemaker
+    direct diagnosis / currentness
+
+architectural-review
+    inherited evidence / architecture judgment
+
+repair-verifier + output-reconciler
+    post-change verification / reconciliation
+```
+
+Across all three, the stable common core was:
+
+```text
+target/currentness
+observations or inherited observations
+material claims
+epistemic status
+evidence references
+bounded scope / claim limits
+uncertainty
+explicit limits / non-claims
+```
+
+Skill-specific semantics such as fog/weakness taxonomies, `Component`/`Layer`/`Boundary`, architectural decision enums, repair `closed/remaining`, and reconciliation `verified/disputed/omitted` remain local rather than being flattened into the common contract.
+
+The Reasoning Model is therefore now:
+
+```text
+specified                         yes
+first cross-Skill adoption        yes
+machine representation experiment yes
+central reasoning engine          no / not warranted
+Campaign-schema promotion         deferred
+Repository Semantic Map           deferred
+```
 
 ## Authority boundary
 
@@ -103,7 +155,8 @@ Deterministic machinery owns:
 - exact-byte provenance;
 - declared capability metadata;
 - authority metadata checks;
-- reconstructible transition history.
+- reconstructible transition history;
+- validation of explicitly promoted mechanical semantic representations.
 ```
 
 Therefore:
@@ -115,6 +168,7 @@ relation detected != architectural intent established
 capability available != capability warranted
 repository changed != repair succeeded
 ontology term documented != runtime-enforced concept
+semantic profile valid != reasoning semantically correct
 ```
 
 ## Ontology admission rule
@@ -140,7 +194,8 @@ This initiative does **not** authorize:
 - confidence scores treated as truth probabilities;
 - ontology-driven autonomous mutation authority;
 - replacing source evidence with a generated semantic map;
-- encoding the entire ontology in YAML/JSON before real Skills demonstrate the need.
+- encoding the entire ontology in YAML/JSON before real Skills demonstrate the need;
+- a central Reasoning Engine that ranks uncertainty, selects responsibility/capability, or decides Campaign disposition.
 
 ## Relationship to the Campaign
 
@@ -167,4 +222,8 @@ responsibility / capability / authority
 Campaign decision and durable transition
 ```
 
-The ontology does not replace Campaign evidence. It makes evidence-linked reasoning more consistent.
+The ontology does not replace Campaign evidence. The experimental semantic profile does not automatically become Campaign state. Both exist to make evidence-linked reasoning more consistent while preserving the existing control-plane boundary.
+
+## Current frontier
+
+Phase 10 is a bounded envelope experiment: use the common profile in additional real repository episodes and measure whether it should remain a companion artifact, be selectively embedded in analytical artifacts, or be narrowed/retired because of coordination overhead. Campaign promotion and Repository Semantic Map work remain evidence-gated.
