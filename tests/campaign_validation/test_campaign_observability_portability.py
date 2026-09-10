@@ -64,8 +64,87 @@ def test_resume_context_is_deterministic_projection_not_recommendation(tmp_path)
     assert payload["code"] == "CAMPAIGN_RESUME_CONTEXT"
     assert payload["current_state"] == "verify"
     assert payload["recent_transitions"][-1]["id"] == "T2"
+    assert payload["semantic_companion"]["present"] is False
     assert payload["semantic_recommendation_included"] is False
     assert "next warranted" not in result.output.lower()
+
+
+def test_campaign_semantic_companion_is_additive_and_visible_in_resume(tmp_path):
+    workspace = _campaign(tmp_path)
+    runner = CliRunner()
+
+    missing_target = runner.invoke(
+        cli,
+        [
+            "campaign",
+            "semantic-state-append",
+            "--workspace",
+            str(workspace),
+            "--entry-id",
+            "S1",
+            "--source-skill",
+            "repo-sensemaker",
+            "--artifact-ref",
+            "brief.md",
+            "--json",
+        ],
+    )
+    assert missing_target.exit_code != 0
+    assert "--target-ref is required" in missing_target.output
+
+    appended = runner.invoke(
+        cli,
+        [
+            "campaign",
+            "semantic-state-append",
+            "--workspace",
+            str(workspace),
+            "--entry-id",
+            "S1",
+            "--source-skill",
+            "repo-sensemaker",
+            "--artifact-ref",
+            "brief.md",
+            "--target-ref",
+            "external:product-evidence-set-1",
+            "--claim-ref",
+            "C1",
+            "--json",
+        ],
+    )
+    assert appended.exit_code == 0, appended.output
+    append_payload = json.loads(appended.output)
+    assert append_payload["campaign_schema_changed"] is False
+    assert append_payload["semantic_truth_established"] is False
+
+    semantic = runner.invoke(
+        cli,
+        ["campaign", "semantic-state", "--workspace", str(workspace), "--json"],
+    )
+    assert semantic.exit_code == 0, semantic.output
+    semantic_payload = json.loads(semantic.output)
+    assert semantic_payload["code"] == "CAMPAIGN_SEMANTIC_STATE_VALID"
+    assert semantic_payload["records"][0]["entry"]["claim_refs"] == ["C1"]
+
+    resumed = runner.invoke(
+        cli,
+        ["campaign", "resume-context", "--workspace", str(workspace), "--json"],
+    )
+    assert resumed.exit_code == 0, resumed.output
+    resume_payload = json.loads(resumed.output)
+    assert resume_payload["semantic_companion"]["present"] is True
+    assert resume_payload["semantic_companion"]["valid"] is True
+    assert resume_payload["semantic_companion"]["entry_count"] == 1
+
+    explained = runner.invoke(
+        cli,
+        ["campaign", "explain", "--workspace", str(workspace), "--ref", "C1", "--json"],
+    )
+    assert explained.exit_code == 0, explained.output
+    assert any(
+        item["kind"] == "semantic_claim_ref"
+        for item in json.loads(explained.output)["matches"]
+    )
 
 
 def test_inspect_explain_diff_replay_and_graph_are_provenance_only(tmp_path):
@@ -76,6 +155,7 @@ def test_inspect_explain_diff_replay_and_graph_are_provenance_only(tmp_path):
     assert inspect.exit_code == 0, inspect.output
     inspected = json.loads(inspect.output)
     assert inspected["semantic_truth_established"] is False
+    assert inspected["semantic_companion"]["schema_in_campaign_state"] is False
     assert [item["id"] for item in inspected["transitions"]] == ["T1", "T2"]
 
     explain = runner.invoke(
@@ -123,6 +203,27 @@ def test_inspect_explain_diff_replay_and_graph_are_provenance_only(tmp_path):
 
 def test_campaign_bundle_roundtrip_preserves_exact_workspace_bytes(tmp_path):
     workspace = _campaign(tmp_path)
+    runner = CliRunner()
+    append = runner.invoke(
+        cli,
+        [
+            "campaign",
+            "semantic-state-append",
+            "--workspace",
+            str(workspace),
+            "--entry-id",
+            "S1",
+            "--source-skill",
+            "repo-sensemaker",
+            "--artifact-ref",
+            "brief.md",
+            "--target-ref",
+            "external:test",
+            "--json",
+        ],
+    )
+    assert append.exit_code == 0, append.output
+
     bundle = tmp_path / "campaign.sensemaking.zip"
     exported = CampaignBundleService(workspace).export(bundle)
     verification = CampaignBundleService.verify(exported)
@@ -142,6 +243,7 @@ def test_campaign_bundle_roundtrip_preserves_exact_workspace_bytes(tmp_path):
         if path.is_file()
     }
     assert imported_files == source_files
+    assert "semantic-state.jsonl" in imported_files
     assert CampaignService(imported).validate().valid
 
 
