@@ -76,6 +76,13 @@ _PM_CUSTOMER_MODEL_IDS = {
     "journey_map",
     "ideal_customer_profile",
 }
+_PM_LAUNCH_COMMUNICATION_IDS = {
+    "readiness_report",
+    "gtm_plan",
+    "battlecard",
+    "feature_announcement",
+    "stakeholder_update",
+}
 
 
 class ArtifactIdExtraction:
@@ -256,6 +263,8 @@ def select_validator(artifact_id: str | None) -> str:
         return "scripts/validate-pm-measurement.py"
     if artifact_id in _PM_CUSTOMER_MODEL_IDS:
         return "scripts/validate-pm-customer-model.py"
+    if artifact_id in _PM_LAUNCH_COMMUNICATION_IDS:
+        return "scripts/validate-pm-launch-communication.py"
     return "scripts/validate-artifact.py"
 
 
