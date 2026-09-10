@@ -1,10 +1,11 @@
 # Experimental Common Semantic Contract — `semantic_reasoning_profile` v1
 
-**Status:** Experimental Level 3 contract  
+**Status:** Experimental Level 3 contract; retained as an optional companion artifact after Phase 10 Outcome A  
 **Derived from:** Phase 9 Pilots A, B, and C  
+**Further tested by:** Phase 10 Chess Mentor Engine, React incremental game, and ViralFactory episodes  
 **Validator:** `scripts/validate-semantic-reasoning-profile.py`  
 **Campaign admission:** Not registered  
-**Purpose:** Mechanically validate the smallest cross-Skill reasoning representation demonstrated by the first three semantic-alignment pilots.
+**Purpose:** Mechanically validate the smallest cross-Skill reasoning representation demonstrated by the semantic-alignment pilots, for selective cross-artifact audit/reconstruction use.
 
 ## Decision
 
@@ -27,7 +28,13 @@ uncertainties
 explicit limits
 ```
 
-That repetition is sufficient to implement a **standalone representation validator**. It is not sufficient to change Campaign state, force the profile into every Skill artifact, or create a Repository Semantic Map.
+That repetition was sufficient to implement a **standalone representation validator**. Phase 10 then tested whether the representation should remain companion-level or be embedded into canonical domain artifacts.
+
+The qualified Phase 10 decision is **Outcome A**:
+
+> Keep `semantic_reasoning_profile` v1 as an optional companion reasoning/audit/reconstruction artifact.
+
+Phase 10 did **not** find sufficient evidence to change Campaign state, force the profile into every Skill artifact, or create a Repository Semantic Map.
 
 ## Why this is Level 3
 
@@ -63,6 +70,8 @@ profile validator PASS
 ```
 
 ## Contract
+
+The v1 schema is unchanged by Phase 10.
 
 ```yaml
 artifact_id: semantic_reasoning_profile
@@ -131,12 +140,12 @@ That acceptance behavior is important: the validator must not pretend it can und
 
 ## Relationship to canonical Skill artifacts
 
-The profile is a **companion artifact** during the experiment:
+The profile remains a **companion artifact**:
 
 ```text
-canonical Skill artifact
+canonical Skill/domain artifact
         +
-semantic_reasoning_profile
+optional semantic_reasoning_profile
 ```
 
 It does not replace:
@@ -144,36 +153,66 @@ It does not replace:
 - `repository_sensemaking_brief`;
 - `architectural_review_recommendation`;
 - `repair_verification_report`;
-- `reconciliation_report`.
+- `reconciliation_report`;
+- PM or other domain-specific artifacts such as `risk_analysis`.
 
 Domain-specific enums and schemas remain authoritative for their local artifacts.
 
+## When to use the companion profile
+
+Phase 10 demonstrated enough value to retain optional use when one or more of these conditions applies:
+
+- reasoning spans multiple artifacts or evidence surfaces with different currentness semantics;
+- a fresh context needs a compact warrant/provenance index;
+- an experiment or review compares reasoning across Skills/domains;
+- local domain vocabulary makes cross-domain audit unnecessarily expensive.
+
+The React Phase 10 episode showed the clearest positive case: an exact-SHA handoff and live mutable PR metadata needed separate currentness treatment before continuation.
+
+## When not to require it
+
+Do not require the profile merely because an analytical artifact exists.
+
+Phase 10 showed substantial duplication when strong domain artifacts already contain the relevant semantics. In particular, PM `risk_analysis` already represents evidence status, evidence refs, uncertainty, mitigations, recommendation boundaries, and unresolved questions. Repeating those fields in a second mandatory representation would add ceremony without increasing semantic authority.
+
+The profile should therefore remain absent when:
+
+- the canonical artifact already carries the decision-changing evidence/currentness/uncertainty/limits;
+- no cross-artifact or fresh-context reconstruction need exists; and
+- the second representation would mostly restate domain-local semantics.
+
 ## Relationship to Campaigns
 
-This contract is intentionally **not added to `validate-and-report.py` routing or the Campaign capability/admission catalog** in this milestone.
+This contract remains intentionally **outside `validate-and-report.py` routing and the Campaign capability/admission catalog**.
 
-Before Campaign promotion, later evidence must show that the profile or a subset of it must survive across sessions as consequential control-plane state rather than merely comparative/debugging evidence.
+Phase 10 demonstrated reconstruction value, but not that Campaign correctness requires this profile or any subset of it to survive as consequential control-plane state.
 
-## Phase 10 experiment
+Before Campaign promotion, later evidence must independently show that a stable subset must survive across sessions as consequential state rather than merely comparative/debugging evidence.
 
-Phase 10 should now answer:
+## Phase 10 evidence
 
-> Should the common semantic core remain an external companion profile, or should selected fields be embedded in multiple canonical analytical artifacts?
+Phase 10 used three additional real-repository episodes:
 
-Measure:
+- Chess Mentor Engine — direct `repo-sensemaker` reasoning;
+- React incremental game — `output-reconciler` currentness reconciliation across immutable repository snapshot and live PR metadata;
+- ViralFactory — PM `pre-mortem`, comparing canonical `risk_analysis` with the companion profile.
 
-- duplicated reasoning reconstruction;
-- boilerplate added;
-- cross-Skill ambiguity reduced;
-- fresh-context usefulness;
-- claim/currentness/evidence omissions caught;
-- validator overreach incidents;
-- token/coordination overhead.
+The experiment found:
 
-Do not broaden the schema just because the ontology contains more concepts.
+- selective cross-artifact/fresh-context reconstruction value;
+- one material currentness-sensitive case in the React episode;
+- moderate-to-high duplication with strong local artifacts;
+- no reason to transfer semantic judgment into the validator;
+- no repeated missing field across at least two domain artifacts sufficient to justify selective embedding.
 
-## Promotion / rejection criteria
+See `phase-10/results.md` and `phase-10-handoff.md`.
 
-Promote or embed fields only if repeated real episodes show material value. Narrow or retire the profile if it mostly duplicates domain artifacts or encourages agents to create fake claims/uncertainties to satisfy structure.
+## Future promotion / rejection criteria
 
-The success criterion is **more consistent warranted reasoning per unit of coordination overhead**, not ontology coverage.
+Reconsider selective embedding only if at least two later contrasting domain artifacts repeatedly omit the same decision-changing field and companion reconstruction is insufficient or operationally costly.
+
+Narrow or retire the profile if later evidence shows it mostly duplicates domain artifacts, encourages fake claims/uncertainties, or costs more coordination than it saves.
+
+Do not broaden the schema merely because the ontology contains more concepts.
+
+The success criterion remains **more consistent warranted reasoning per unit of coordination overhead**, not ontology coverage.

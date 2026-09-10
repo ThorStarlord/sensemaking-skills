@@ -1,8 +1,8 @@
 # Semantic Architecture Implementation Plan
 
-**Status:** Active  
-**Completed milestone:** Semantic foundation + Phase 9 first Reasoning Model operationalization pilots  
-**Current frontier:** Phase 10 bounded common-envelope experiment  
+**Status:** Active architecture program; Phase 10 complete  
+**Completed milestones:** semantic foundation; Phase 9 Reasoning Model operationalization; Phase 10 common-envelope experiment  
+**Current frontier:** evidence-derived only — no later phase is automatically authorized  
 **Implementation principle:** Formalize from demonstrated reasoning pressure; do not manufacture runtime machinery to make the ontology look complete.
 
 ## Objective
@@ -77,8 +77,8 @@ Require:
 | 6 | Reasoning architecture | COMPLETE at design level |
 | 7 | Integration architecture | COMPLETE at design level |
 | 8 | Reference scenarios | COMPLETE |
-| 9 | Reasoning Model operationalization / Skill semantic-alignment pilots | FIRST THREE PILOTS COMPLETE |
-| 10 | Common artifact-semantic envelope experiment | ACTIVE |
+| 9 | Reasoning Model operationalization / Skill semantic-alignment pilots | COMPLETE for first three contrasting pilots |
+| 10 | Common artifact-semantic envelope experiment | COMPLETE — Outcome A: optional companion profile |
 | 11 | Mechanical semantic probes | DEFERRED pending repeated demand |
 | 12 | Repository Semantic Map experiment | DEFERRED |
 | 13 | Campaign/control-plane promotion | DEFERRED |
@@ -108,7 +108,7 @@ These remain documentation/ontology authority except where an existing executabl
 
 # Phase 9 — Reasoning Model Operationalization & Skill Semantic-Alignment Pilots
 
-**Status:** First three contrasting pilots COMPLETE.
+**Status:** COMPLETE for the first three contrasting pilots.
 
 ## Goal
 
@@ -116,15 +116,7 @@ Test the Reasoning Model against real Skill contracts before creating broad comm
 
 ## Pilot A — `repo-sensemaker`
 
-Tested:
-
-- target/currentness semantics;
-- observation vs inference;
-- evidence-backed claims;
-- contradiction/currentness handling;
-- consequential uncertainty;
-- absence/completeness;
-- explicit limits.
+Tested target/currentness semantics, observation versus inference, evidence-backed claims, contradiction/currentness handling, consequential uncertainty, absence/completeness, and explicit limits.
 
 Result: the Skill already had strong evidence mechanics; the primary gain was explicit epistemic vocabulary and separation of fog/weakness classification from the specific decision-changing uncertainty.
 
@@ -132,13 +124,7 @@ Evidence: `pilots/pilot-a-repo-sensemaker.md` and `pilots/pilot-a-profile.yaml`.
 
 ## Pilot B — `architectural-review`
 
-Tested:
-
-- inherited currentness/evidence;
-- Component/Layer/Boundary/Contract/Dependency semantics;
-- observed dependency vs inferred architectural violation;
-- ratified/documented intent;
-- current defect vs proposal-contingent risk.
+Tested inherited currentness/evidence, Component/Layer/Boundary/Contract/Dependency semantics, observed dependency versus inferred architectural violation, ratified/documented intent, and current defect versus proposal-contingent risk.
 
 Result: the common warrant/provenance core transferred successfully even though the Skill inherits rather than re-collects repository evidence. Architecture-specific concepts remain local.
 
@@ -146,14 +132,7 @@ Evidence: `pilots/pilot-b-architectural-review.md` and `pilots/pilot-b-profile.y
 
 ## Pilot C — `repair-verifier` + `output-reconciler`
 
-Tested:
-
-- Change vs Outcome vs Repair;
-- fresh post-change currentness;
-- like-for-like validation scope;
-- changed != succeeded;
-- `closed/remaining` and `verified/disputed/omitted` as local enums rather than ontology replacements;
-- explicit verification limits.
+Tested Change versus Outcome versus Repair, fresh post-change currentness, like-for-like validation scope, changed != succeeded, local `closed/remaining` and `verified/disputed/omitted` enums, and explicit verification limits.
 
 Result: the common core transferred into post-change reasoning. Over-broad `prove repair worked` and universal `verified` language was narrowed to the actual verification scope.
 
@@ -161,7 +140,7 @@ Evidence: `pilots/pilot-c-repair-reconciliation.md` and `pilots/pilot-c-profile.
 
 ## Stable common core found
 
-Across all pilots:
+Across the Phase 9 pilots:
 
 ```text
 target/currentness
@@ -187,19 +166,19 @@ Campaign transition shape
 
 ## Phase 9 promotion decision
 
-The repeated core warrants one **experimental Level-3 representation contract**: `semantic_reasoning_profile` v1.
+The repeated core warranted one **experimental Level-3 representation contract**: `semantic_reasoning_profile` v1.
 
 The standalone validator may check representation shape, IDs, enums, evidence-ref requirements, currentness evidence presence, and explicit-limit presence. It may not judge semantic truth, evidence sufficiency, uncertainty priority, responsibility warrant, architectural correctness, repair success, or Campaign disposition.
 
-The profile is intentionally not registered for Campaign admission.
+The profile was intentionally not registered for Campaign admission.
 
 ---
 
 # Phase 10 — Common Artifact-Semantic Envelope Experiment
 
-**Status:** ACTIVE after Phase 9 extraction.
+**Status:** COMPLETE — repository-qualified Outcome A.
 
-## Hypothesis
+## Hypothesis tested
 
 Several analytical workflows may benefit from a shared semantic envelope containing:
 
@@ -214,39 +193,89 @@ uncertainties
 explicit limits
 ```
 
-The current `semantic_reasoning_profile` is a companion artifact that lets us test this hypothesis without modifying canonical domain artifact schemas.
+Phase 10 tested the existing `semantic_reasoning_profile` as a companion artifact without modifying canonical domain artifact schemas.
 
-## Current executable experiment
+## Experiment design
 
-- Contract: `common-semantic-contract.md`.
-- Validator: `scripts/validate-semantic-reasoning-profile.py`.
-- Regression/rejection coverage: `tests/test_semantic_reasoning_profile.py`.
-- Dogfood fixtures: the three checked-in Phase 9 profiles.
+The experiment preregistered three contrasting real-repository episodes under `phase-10/`:
 
-## Questions Phase 10 must answer
+1. `repo-sensemaker` reasoning on Chess Mentor Engine — direct diagnosis/currentness.
+2. `output-reconciler` reasoning on the React incremental game — exact-SHA handoff evidence plus independently mutable live PR metadata.
+3. PM `pre-mortem` reasoning on ViralFactory — a canonical `risk_analysis` artifact compared directly with the companion semantic profile.
 
-1. Does the profile materially reduce duplicated semantic reconstruction across later Skills/sessions?
-2. Does it catch missing currentness/evidence/limits that otherwise change decisions?
-3. Is a companion artifact enough, or do selected fields need to live in canonical analytical artifacts?
-4. Does the profile create fake boilerplate claims/uncertainties merely to satisfy structure?
-5. What is its token and coordination overhead?
-6. Does fresh-context reconstruction improve when this profile is present?
-
-## Promotion outcomes
-
-After repeated real episodes, choose one:
+The decision rule allowed three outcomes:
 
 ```text
 A. Keep as companion reasoning/audit profile.
-B. Embed a smaller subset into multiple analytical artifacts.
+B. Embed a smaller demonstrated subset into multiple analytical artifacts.
 C. Narrow or retire it because duplication/overhead exceeds value.
 ```
 
-Do not assume B is the desired outcome.
+Outcome B required at least two contrasting episodes to show the same missing decision-changing semantic field that their canonical domain artifacts did not already represent adequately.
 
-## Rejection criterion
+## Phase 10 findings
 
-Reject or narrow the envelope if it produces boilerplate, duplicates domain-specific artifact fields, encourages fabricated claims/uncertainties, or transfers semantic authority to validators.
+### Cross-artifact reconstruction
+
+The profile materially improved domain-neutral reconstruction. A fresh reader can recover target/currentness, observed facts, material interpretations, unresolved questions, and non-claims without first learning each domain artifact's local taxonomy.
+
+### Currentness pressure
+
+The React episode produced the strongest value signal. Immutable exact-SHA repository evidence and mutable live PR metadata had to be kept separate before a continuation decision could be trusted:
+
+```text
+immutable snapshot evidence
+!=
+live mutable metadata
+```
+
+That distinction was decision-relevant, but `output-reconciler` already models currentness locally.
+
+### Duplication pressure
+
+The ViralFactory episode produced the strongest negative embedding signal. The canonical PM `risk_analysis` already represents evidence status, evidence refs, observed versus hypothetical risk, uncertainty, mitigations, recommendation boundaries, and unresolved questions. Embedding the whole common profile would create a second representation of substantially the same semantics.
+
+Chess Mentor Engine likewise already had strong claim-ceiling/evidence documentation; the profile mainly compressed and normalized it.
+
+### Boilerplate and overhead
+
+Mandatory use could encourage duplicate observations/claims/uncertainties merely to satisfy a second schema. Exact token cost was not instrumented, so Phase 10 makes no fake precision claim. Qualitatively, companion coordination cost is moderate and justified selectively, not universally.
+
+### Validator boundary
+
+No episode required deterministic semantic judgment. The existing validator remained representation-only and continued to emit:
+
+```text
+semantic_truth_established: false
+```
+
+The PM risk artifact continued to use its existing PM validator rather than a generic semantic replacement.
+
+## Phase 10 decision — Outcome A
+
+Keep `semantic_reasoning_profile` v1 as an **optional companion audit/reconstruction artifact**.
+
+Use it when at least one of these conditions exists:
+
+- reasoning spans multiple artifacts/surfaces with different currentness semantics;
+- a fresh context needs a compact warrant/provenance index;
+- an experiment/review compares reasoning across Skills or domains;
+- local domain vocabulary makes cross-domain audit unnecessarily expensive.
+
+Do not require it when a strong domain artifact already represents the decision-changing evidence/currentness/uncertainty/limits and no cross-artifact reconstruction need exists.
+
+### Not promoted
+
+Phase 10 does not authorize:
+
+- Campaign admission of the profile;
+- Campaign schema changes;
+- a mandatory universal artifact envelope;
+- Repository Semantic Map work;
+- a central reasoning engine;
+- automatic semantic routing/capability ranking.
+
+See `phase-10/results.md` and `phase-10-handoff.md` for experiment and qualification evidence.
 
 ---
 
@@ -267,6 +296,8 @@ complete-scope exact search
 ```
 
 Every probe must declare source/scope, completeness guarantee, currentness, blind spots, and the exact mechanical claim established. Do not name a mechanical output as if it established semantic architectural judgment.
+
+**Phase 10 disposition:** remain deferred. The three new episodes did not demonstrate repeated demand for a new mechanical relation family that current probes/contracts cannot provide.
 
 ---
 
@@ -292,7 +323,7 @@ RepositorySemanticMap
 
 It must never become a complete repository source of truth.
 
-Phase 9 did **not** provide sufficient evidence for this experiment yet.
+Phase 9 and Phase 10 did **not** provide sufficient evidence for this experiment. The common profile's reconstruction value is not equivalent to repeated durable entity/relation reconstruction.
 
 ---
 
@@ -308,7 +339,7 @@ A semantic concept should enter Campaign schema only when:
 4. migration can avoid semantic invention;
 5. mechanical validation boundaries are clear.
 
-The Phase 9 profile is not automatically Campaign evidence and is not registered with the Campaign artifact router.
+Phase 10 showed that the common profile can help fresh-context reconstruction, but did not show that Campaign correctness depends on persisting this profile as control-plane state. It therefore remains outside Campaign artifact admission.
 
 ---
 
@@ -316,7 +347,7 @@ The Phase 9 profile is not automatically Campaign evidence and is not registered
 
 **Status:** Deferred.
 
-Trigger only after at least two domain implementations demonstrate a stable pattern such as:
+Trigger only after at least two independently implemented domain systems demonstrate a stable pattern such as:
 
 ```text
 foundation semantics
@@ -327,7 +358,7 @@ foundation semantics
 + domain Skills
 ```
 
-A single PM domain remains insufficient evidence for a generic Domain Pack abstraction.
+The PM domain is one clear implementation. Core engineering Skills are not automatically a second domain pack merely because they share the repository. A separate reconciliation must establish that at least two domain implementations genuinely expose the same reusable package boundary before extraction is authorized.
 
 ---
 
@@ -344,13 +375,13 @@ Potential future checks may detect:
 - documentation claiming executable support absent from code;
 - deprecated term remaining in active contracts.
 
-Such checks must validate consistency, not semantic truth.
+Such checks must validate consistency, not semantic truth. Trigger this phase only from observed maintenance/drift defects rather than because earlier phase numbers are complete.
 
 ---
 
 # Metrics
 
-Track:
+Continue tracking when future real work provides evidence:
 
 ```text
 ambiguous terms encountered
@@ -371,7 +402,9 @@ The goal is not maximum ontology coverage. The goal is **more consistent warrant
 
 # Current next step
 
-Run Phase 10 with additional real repository episodes using the now-executable companion profile. Do not build a central reasoning engine, universal semantic graph, or Campaign schema expansion merely because the first three pilots completed.
+Do **not** advance automatically to Phase 11, 12, 13, 14, or 15.
+
+Reconcile current repository/product pressure and authorize the smallest next package only when a deferred-phase trigger is demonstrated. Preserving the architecture unchanged is a valid result when no trigger is present.
 
 Preserve the development loop:
 
