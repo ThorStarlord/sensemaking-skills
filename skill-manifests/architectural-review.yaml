@@ -1,0 +1,20 @@
+schema_version: 1
+skill_id: architectural-review
+domain: engineering
+responsibilities:
+  - architectural_review
+consumes:
+  - repository_sensemaking_brief
+  - proposed_direction
+produces:
+  - architectural_review_recommendation
+semantic_concepts:
+  - TargetSnapshot
+  - Evidence
+  - Claim
+  - EpistemicStatus
+  - Uncertainty
+  - Responsibility
+  - Decision
+  - Artifact
+repository_mutation: false
