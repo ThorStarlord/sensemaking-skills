@@ -13,6 +13,11 @@ from .artifacts import (
     ArtifactAdmissionResult,
     ArtifactAdmissionService,
 )
+from .bundle import (
+    CampaignBundleDiagnostic,
+    CampaignBundleService,
+    CampaignBundleVerification,
+)
 from .decisions import (
     AdvanceDecision,
     CampaignDecisionService,
@@ -87,6 +92,9 @@ __all__ = [
     "ArtifactValidationRejectedError",
     "ArtifactValidatorError",
     "CampaignAlreadyExistsError",
+    "CampaignBundleDiagnostic",
+    "CampaignBundleService",
+    "CampaignBundleVerification",
     "CampaignDecisionService",
     "CampaignDiagnostic",
     "CampaignIdentityError",
