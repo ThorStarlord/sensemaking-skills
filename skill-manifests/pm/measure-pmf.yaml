@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: measure-pmf
+domain: product-management
+responsibilities: [product_measurement]
+consumes: []
+produces: [pmf_report]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false
