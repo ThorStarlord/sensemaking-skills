@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: user-stories
+domain: product-management
+responsibilities: [delivery_specification]
+consumes: []
+produces: [story_list]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false

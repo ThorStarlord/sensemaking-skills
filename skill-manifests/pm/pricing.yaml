@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: pricing
+domain: product-management
+responsibilities: [commercial_strategy]
+consumes: []
+produces: [pricing_model]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false

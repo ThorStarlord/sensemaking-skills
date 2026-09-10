@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: discovery
+domain: product-management
+responsibilities: [problem_discovery]
+consumes: []
+produces: [discovery_findings]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false

@@ -1,0 +1,22 @@
+schema_version: 1
+skill_id: repo-sensemaker
+domain: engineering
+responsibilities:
+  - repository_sensemaking
+consumes:
+  - user_intent
+  - repository_state
+  - prior_evidence
+produces:
+  - repository_sensemaking_brief
+semantic_concepts:
+  - Intent
+  - TargetSnapshot
+  - Observation
+  - Evidence
+  - Claim
+  - EpistemicStatus
+  - Uncertainty
+  - Responsibility
+  - Artifact
+repository_mutation: false

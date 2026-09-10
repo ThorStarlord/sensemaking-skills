@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: acceptance-criteria
+domain: product-management
+responsibilities: [delivery_specification]
+consumes: []
+produces: [criteria_list]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false

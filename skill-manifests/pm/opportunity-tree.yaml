@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: opportunity-tree
+domain: product-management
+responsibilities: [opportunity_mapping]
+consumes: []
+produces: [opportunity_map]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false
