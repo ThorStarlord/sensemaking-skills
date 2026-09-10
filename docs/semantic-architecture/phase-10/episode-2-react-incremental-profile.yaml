@@ -1,0 +1,62 @@
+artifact_id: semantic_reasoning_profile
+schema_version: 1
+pilot_id: phase-10-episode-2-react-incremental
+source_skill: output-reconciler
+target:
+  repository: ThorStarlord/React_incremental_game_prototype
+  ref: d2c6a156833266fa633c704749aa99ee3ba72881
+  access_mode: github_exact_sha
+currentness:
+  status: pinned_snapshot
+  evidence_refs:
+    - https://github.com/ThorStarlord/React_incremental_game_prototype/commit/d2c6a156833266fa633c704749aa99ee3ba72881
+observations:
+  - id: O1
+    statement: The pinned STATUS handoff says M25 is the product authority, human product validation is deferred and unproven, M26 is not authorized, and no valid V2 participant evidence was collected.
+    method: direct_read
+    evidence_refs:
+      - STATUS.md@d2c6a156833266fa633c704749aa99ee3ba72881
+  - id: O2
+    statement: Live PR metadata queried during this episode shows PR 66 is still open and draft, with no Observation 001 and no participant evidence recorded in its current body.
+    method: git_metadata
+    evidence_refs:
+      - https://github.com/ThorStarlord/React_incremental_game_prototype/pull/66
+  - id: O3
+    statement: Live PR metadata queried during this episode shows PR 68 is still open and unmerged and records only the prelaunch participant-isolation stop with no participant evidence or V2 verdict.
+    method: git_metadata
+    evidence_refs:
+      - https://github.com/ThorStarlord/React_incremental_game_prototype/pull/68
+claims:
+  - id: C1
+    statement: The handoff's product-evidence ceiling remains consistent with the live PR state observed during this episode; there is still no preserved V2 participant corpus that warrants M26 implementation.
+    epistemic_status: DERIVED
+    evidence_refs:
+      - STATUS.md@d2c6a156833266fa633c704749aa99ee3ba72881
+      - https://github.com/ThorStarlord/React_incremental_game_prototype/pull/66
+      - https://github.com/ThorStarlord/React_incremental_game_prototype/pull/68
+    scope: currentness reconciliation between the pinned handoff snapshot and live PR 66/68 metadata at episode query time
+    limits:
+      - does not prove no human evidence exists outside the repository and inspected PR surfaces
+      - does not establish that M26 should never be authorized
+  - id: C2
+    statement: Separating immutable repository-snapshot evidence from live PR metadata is decision-relevant here because trusting the handoff's historical PR-state sentences without re-querying could produce a stale continuation decision.
+    epistemic_status: INFERRED
+    evidence_refs:
+      - STATUS.md@d2c6a156833266fa633c704749aa99ee3ba72881
+      - https://github.com/ThorStarlord/React_incremental_game_prototype/pull/66
+      - https://github.com/ThorStarlord/React_incremental_game_prototype/pull/68
+    scope: fresh-context continuation from the post-M25 handoff
+    limits:
+      - current live metadata happened to agree with the handoff's substantive evidence ceiling in this episode
+uncertainties:
+  - id: U1
+    question: Has any valid fresh human or isolated synthetic participant evidence been created outside the inspected repository snapshot and PR 66/68 surfaces?
+    decision_relevance: new valid participant evidence could change the product-direction gate and potentially authorize evidence-backed M26 work
+    evidence_needed:
+      - newly preserved participant records or an explicit human product-validation artifact with provenance
+      - a superseding product-direction decision if one exists
+    status: active
+explicit_limits:
+  - live PR metadata is time-varying and was observed separately from immutable exact-SHA repository content
+  - this episode did not inspect private/off-repository human research or unpublished participant evidence
+  - the reconciliation supports the current evidence ceiling only within the inspected snapshot and live PR surfaces
