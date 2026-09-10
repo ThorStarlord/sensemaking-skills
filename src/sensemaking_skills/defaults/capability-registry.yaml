@@ -329,6 +329,57 @@ capabilities:
     availability_reason: canonical PM Skill; business-model hypotheses remain distinct from empirical validation
     returns_control: true
 
+  - id: experiment-design
+    kind: skill
+    source: skills/experiment-design/SKILL.md
+    accepted_responsibility_types: [experimentation]
+    input_artifact: hypothesis_statement
+    output_artifact: experiment_plan
+    completion_conditions: [a preregistered experiment_plan is returned without claiming execution or results]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM analysis Skill; external experiment execution remains separately authorized
+    returns_control: true
+
+  - id: ab-test-analysis
+    kind: skill
+    source: skills/ab-test-analysis/SKILL.md
+    accepted_responsibility_types: [experimentation]
+    input_artifact: experiment_plan
+    output_artifact: test_results
+    completion_conditions: [test_results preserve observation evidence, uncertainty, guardrails, and a bounded recommendation]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM analysis Skill; measured conclusions require supplied observation evidence
+    returns_control: true
+
+  - id: measure-pmf
+    kind: skill
+    source: skills/measure-pmf/SKILL.md
+    accepted_responsibility_types: [product_measurement]
+    output_artifact: pmf_report
+    completion_conditions: [a segment-scoped pmf_report preserves evidence and measurement status]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM analysis Skill; capability availability does not establish PMF evidence sufficiency
+    returns_control: true
+
+  - id: pricing
+    kind: skill
+    source: skills/pricing/SKILL.md
+    accepted_responsibility_types: [commercial_strategy]
+    input_artifact: market_analysis
+    output_artifact: pricing_model
+    completion_conditions: [an evidence-aware proposed pricing_model is returned without changing external pricing]
+    mutates_repository: false
+    authority: authorized_autonomously
+    availability: external
+    availability_reason: canonical PM analysis Skill; price changes and publication remain separately authorized external actions
+    returns_control: true
+
   - id: triage
     kind: skill
     source: skills/workflow-planner/references/skill-registry.yaml
