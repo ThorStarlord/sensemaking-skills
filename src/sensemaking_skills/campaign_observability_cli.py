@@ -13,9 +13,12 @@ from typing import Any, Callable
 
 import click
 
-from .campaign_semantics import ContractError, canonicalize
+from .campaign_semantics import ContractError, canonicalize, target_snapshot_sha256
 from .campaigns import CampaignService, CampaignWorkspaceError
 from .campaigns.bundle import CampaignBundleService
+from .semantic_architecture import SemanticStateEntry, SemanticStateStore
+
+SEMANTIC_STATE_FILENAME = "semantic-state.jsonl"
 
 
 def _enum(value: Any) -> Any:
@@ -39,6 +42,31 @@ def _changed_fields(left: dict[str, Any], right: dict[str, Any]) -> dict[str, di
 
 def _mermaid_id(value: str) -> str:
     return "N_" + re.sub(r"[^A-Za-z0-9_]", "_", value)
+
+
+def _semantic_store(workspace: Path) -> SemanticStateStore:
+    return SemanticStateStore(workspace / SEMANTIC_STATE_FILENAME)
+
+
+def _semantic_summary(workspace: Path) -> dict[str, Any]:
+    records, diagnostics = _semantic_store(workspace).load_raw()
+    latest = records[-1]["entry"] if records else None
+    return {
+        "present": bool(records) or (workspace / SEMANTIC_STATE_FILENAME).exists(),
+        "valid": not diagnostics,
+        "entry_count": len(records),
+        "latest_entry": latest,
+        "diagnostics": [canonicalize(item) for item in diagnostics],
+        "schema_in_campaign_state": False,
+        "semantic_truth_established": False,
+    }
+
+
+def _campaign_target_ref(snapshot: Any) -> str | None:
+    target = snapshot.state.target_snapshot
+    if target is None:
+        return None
+    return f"target-snapshot-sha256:{target_snapshot_sha256(target)}"
 
 
 def register_campaign_observability_commands(
@@ -68,6 +96,7 @@ def register_campaign_observability_commands(
             "evidence_refs": list(snapshot.evidence_refs),
             "policy": canonicalize(snapshot.policy) if snapshot.policy is not None else None,
             "handoff": canonicalize(snapshot.handoff) if snapshot.handoff is not None else None,
+            "semantic_companion": _semantic_summary(workspace),
             "semantic_recommendation_included": False,
             "semantic_truth_established": False,
         }
@@ -102,11 +131,32 @@ def register_campaign_observability_commands(
         for index, event in enumerate(snapshot.trace.events):
             if isinstance(event, dict) and reference in {str(value) for value in event.values()}:
                 matches.append({"kind": "trace_event", "index": index, "value": dict(event)})
+
+        semantic_records, semantic_diagnostics = _semantic_store(workspace).load_raw()
+        for record in semantic_records:
+            entry = record["entry"]
+            if entry.get("entry_id") == reference:
+                matches.append({"kind": "semantic_state_entry", "value": entry, "entry_digest": record.get("entry_digest")})
+            for field, kind in (
+                ("artifact_ref", "semantic_artifact_ref"),
+                ("semantic_profile_ref", "semantic_profile_ref"),
+            ):
+                if entry.get(field) == reference:
+                    matches.append({"kind": kind, "entry_id": entry.get("entry_id")})
+            for field, kind in (
+                ("evidence_refs", "semantic_evidence_ref"),
+                ("claim_refs", "semantic_claim_ref"),
+                ("uncertainty_refs", "semantic_uncertainty_ref"),
+            ):
+                if reference in entry.get(field, []):
+                    matches.append({"kind": kind, "entry_id": entry.get("entry_id")})
+
         payload = {
-            "ok": bool(matches),
+            "ok": bool(matches) and not semantic_diagnostics,
             "code": "CAMPAIGN_REFERENCE_EXPLAINED" if matches else "CAMPAIGN_REFERENCE_NOT_FOUND",
             "reference": reference,
             "matches": matches,
+            "semantic_companion_diagnostics": [canonicalize(item) for item in semantic_diagnostics],
             "semantic_recommendation_included": False,
             "semantic_truth_established": False,
         }
@@ -116,6 +166,8 @@ def register_campaign_observability_commands(
             click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
         if not matches:
             raise click.exceptions.Exit(2)
+        if semantic_diagnostics:
+            raise click.exceptions.Exit(3)
 
     @campaign_group.command(name="diff")
     @click.option("--workspace", required=True, type=click.Path(path_type=Path))
@@ -139,6 +191,105 @@ def register_campaign_observability_commands(
             json_echo(payload)
         else:
             click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+    @campaign_group.command(name="semantic-state-append")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--entry-id", required=True)
+    @click.option("--source-skill", required=True)
+    @click.option("--artifact-ref", required=True)
+    @click.option(
+        "--target-ref",
+        default=None,
+        help="Required for targetless Campaigns; bound repository Campaigns derive and enforce their current TargetSnapshot digest",
+    )
+    @click.option("--profile-ref", default=None)
+    @click.option("--evidence-ref", "evidence_refs", multiple=True)
+    @click.option("--claim-ref", "claim_refs", multiple=True)
+    @click.option("--uncertainty-ref", "uncertainty_refs", multiple=True)
+    @click.option("--parent", "parent_entry_ids", multiple=True)
+    @click.option("--note", "notes", multiple=True)
+    @click.option("--json", "output_json", is_flag=True)
+    def campaign_semantic_state_append(
+        workspace: Path,
+        entry_id: str,
+        source_skill: str,
+        artifact_ref: str,
+        target_ref: str | None,
+        profile_ref: str | None,
+        evidence_refs: tuple[str, ...],
+        claim_refs: tuple[str, ...],
+        uncertainty_refs: tuple[str, ...],
+        parent_entry_ids: tuple[str, ...],
+        notes: tuple[str, ...],
+        output_json: bool,
+    ) -> None:
+        """Append companion semantic refs bound to current Campaign target when present."""
+        snapshot = resume(workspace, output_json)
+        bound_target = _campaign_target_ref(snapshot)
+        if bound_target is not None:
+            if target_ref is not None and target_ref != bound_target:
+                raise click.ClickException(
+                    "--target-ref does not match the Campaign's current TargetSnapshot digest"
+                )
+            resolved_target = bound_target
+        else:
+            if target_ref is None or not target_ref.strip():
+                raise click.ClickException(
+                    "--target-ref is required when the Campaign has no bound TargetSnapshot"
+                )
+            resolved_target = target_ref.strip()
+        try:
+            digest = _semantic_store(workspace).append(
+                SemanticStateEntry(
+                    entry_id=entry_id,
+                    source_skill=source_skill,
+                    artifact_ref=artifact_ref,
+                    target_ref=resolved_target,
+                    semantic_profile_ref=profile_ref,
+                    evidence_refs=evidence_refs,
+                    claim_refs=claim_refs,
+                    uncertainty_refs=uncertainty_refs,
+                    parent_entry_ids=parent_entry_ids,
+                    notes=notes,
+                )
+            )
+        except ValueError as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = {
+            "ok": True,
+            "code": "CAMPAIGN_SEMANTIC_STATE_APPENDED",
+            "entry_id": entry_id,
+            "entry_digest": digest,
+            "target_ref": resolved_target,
+            "campaign_schema_changed": False,
+            "semantic_truth_established": False,
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True))
+
+    @campaign_group.command(name="semantic-state")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--json", "output_json", is_flag=True)
+    def campaign_semantic_state(workspace: Path, output_json: bool) -> None:
+        """Show/validate the optional Campaign semantic companion chain."""
+        resume(workspace, output_json)
+        records, diagnostics = _semantic_store(workspace).load_raw()
+        payload = {
+            "ok": not diagnostics,
+            "code": "CAMPAIGN_SEMANTIC_STATE_VALID" if not diagnostics else "CAMPAIGN_SEMANTIC_STATE_INVALID",
+            "records": records,
+            "diagnostics": [canonicalize(item) for item in diagnostics],
+            "campaign_schema_changed": False,
+            "semantic_truth_established": False,
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+        if diagnostics:
+            raise click.exceptions.Exit(3)
 
     @campaign_group.command(name="resume-context")
     @click.option("--workspace", required=True, type=click.Path(path_type=Path))
@@ -168,8 +319,9 @@ def register_campaign_observability_commands(
             "evidence_refs": list(snapshot.evidence_refs),
             "recent_transitions": [canonicalize(item) for item in recent],
             "handoff": canonicalize(snapshot.handoff) if snapshot.handoff is not None else None,
+            "semantic_companion": _semantic_summary(workspace),
             "semantic_recommendation_included": False,
-            "explicit_limit": "This capsule reconstructs durable declared state; it does not decide the next warranted action.",
+            "explicit_limit": "This capsule reconstructs durable declared state and optional companion semantic refs; it does not decide the next warranted action.",
         }
         if output_json:
             json_echo(payload)
@@ -233,17 +385,36 @@ def register_campaign_observability_commands(
             for evidence in transition.evidence:
                 nodes.setdefault(evidence, {"id": evidence, "kind": "evidence", "label": evidence})
                 edges.append({"from": transition.id, "to": evidence, "relation": "references_evidence"})
+
+        semantic_records, semantic_diagnostics = _semantic_store(workspace).load_raw()
+        for record in semantic_records:
+            entry = record["entry"]
+            entry_id = str(entry.get("entry_id"))
+            nodes[entry_id] = {"id": entry_id, "kind": "semantic_state_entry", "label": entry_id}
+            edges.append({"from": campaign_id, "to": entry_id, "relation": "has_semantic_companion_entry"})
+            for parent in entry.get("parent_entry_ids", []):
+                edges.append({"from": str(parent), "to": entry_id, "relation": "semantic_parent_of"})
+            artifact = entry.get("artifact_ref")
+            if isinstance(artifact, str) and artifact:
+                nodes.setdefault(artifact, {"id": artifact, "kind": "artifact_ref", "label": artifact})
+                edges.append({"from": entry_id, "to": artifact, "relation": "references_artifact"})
+
         if output_format == "json":
             json_echo(
                 {
-                    "ok": True,
+                    "ok": not semantic_diagnostics,
                     "code": "CAMPAIGN_PROVENANCE_GRAPH",
                     "nodes": list(nodes.values()),
                     "edges": edges,
+                    "semantic_companion_diagnostics": [canonicalize(item) for item in semantic_diagnostics],
                     "semantic_truth_established": False,
                 }
             )
+            if semantic_diagnostics:
+                raise click.exceptions.Exit(3)
             return
+        if semantic_diagnostics:
+            raise click.ClickException("semantic companion state is invalid; refuse to render provenance graph")
         click.echo("graph TD")
         for node in nodes.values():
             click.echo(f'  {_mermaid_id(node["id"])}["{node["label"].replace(chr(34), chr(39))}"]')
