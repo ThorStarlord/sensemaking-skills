@@ -9,16 +9,40 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "validate-semantic-reasoning-profile.py"
-PILOT_PROFILES = (
+PM_VALIDATOR = ROOT / "scripts" / "validate-pm-feature-definition.py"
+PHASE10 = ROOT / "docs" / "semantic-architecture" / "phase-10"
+CHECKED_IN_PROFILES = (
     ROOT / "docs" / "semantic-architecture" / "pilots" / "pilot-a-profile.yaml",
     ROOT / "docs" / "semantic-architecture" / "pilots" / "pilot-b-profile.yaml",
     ROOT / "docs" / "semantic-architecture" / "pilots" / "pilot-c-profile.yaml",
+    PHASE10 / "episode-1-chess-mentor-profile.yaml",
+    PHASE10 / "episode-2-react-incremental-profile.yaml",
+    PHASE10 / "episode-3-viralfactory-profile.yaml",
 )
 
 
 def _run(path: Path) -> tuple[subprocess.CompletedProcess[str], dict]:
     completed = subprocess.run(
         [sys.executable, str(SCRIPT), str(path), "--json"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    payload = json.loads(completed.stdout)
+    return completed, payload
+
+
+def _run_pm(path: Path) -> tuple[subprocess.CompletedProcess[str], dict]:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(PM_VALIDATOR),
+            str(path),
+            "--repo-root",
+            str(ROOT),
+            "--json",
+        ],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -72,13 +96,22 @@ def _write(tmp_path: Path, payload: dict) -> Path:
     return path
 
 
-def test_checked_in_phase9_profiles_validate() -> None:
-    for profile in PILOT_PROFILES:
+def test_checked_in_semantic_profiles_validate() -> None:
+    for profile in CHECKED_IN_PROFILES:
         completed, payload = _run(profile)
         assert completed.returncode == 0, (profile, completed.stdout, completed.stderr)
         assert payload["valid"] is True
         assert payload["semantic_truth_established"] is False
         assert payload["validator"] == "validate-semantic-reasoning-profile.py"
+
+
+def test_phase10_pm_risk_artifact_keeps_domain_validator_authority() -> None:
+    artifact = PHASE10 / "episode-3-viralfactory-risk-analysis.md"
+    completed, payload = _run_pm(artifact)
+    assert completed.returncode == 0, (artifact, completed.stdout, completed.stderr)
+    assert payload["valid"] is True
+    assert payload["artifact_id"] == "risk_analysis"
+    assert payload["validator"] == "validate-pm-feature-definition.py"
 
 
 def test_inferred_claim_requires_evidence(tmp_path: Path) -> None:
