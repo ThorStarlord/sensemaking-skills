@@ -72,6 +72,10 @@ _PM_MEASUREMENT_IDS = {
     "pmf_report",
     "pricing_model",
 }
+_PM_CUSTOMER_MODEL_IDS = {
+    "journey_map",
+    "ideal_customer_profile",
+}
 
 
 class ArtifactIdExtraction:
@@ -250,6 +254,8 @@ def select_validator(artifact_id: str | None) -> str:
         return "scripts/validate-pm-strategy.py"
     if artifact_id in _PM_MEASUREMENT_IDS:
         return "scripts/validate-pm-measurement.py"
+    if artifact_id in _PM_CUSTOMER_MODEL_IDS:
+        return "scripts/validate-pm-customer-model.py"
     return "scripts/validate-artifact.py"
 
 
