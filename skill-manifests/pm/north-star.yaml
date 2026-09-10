@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: north-star
+domain: product-management
+responsibilities: [product_strategy]
+consumes: []
+produces: [north_star_metric]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false
