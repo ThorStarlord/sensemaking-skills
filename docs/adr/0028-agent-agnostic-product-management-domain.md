@@ -1,7 +1,8 @@
 # ADR 0028: Product Management is an agent-agnostic Campaign domain
 
 **Status:** Accepted  
-**Date:** 2026-09-10
+**Date:** 2026-09-10  
+**Amended:** 2026-09-10 — repository qualification now gates implementation expansion; empirical dogfood gates stronger support/promotion claims.
 
 ## Context
 
@@ -42,7 +43,7 @@ PM capabilities are added to the current Campaign capability catalog as declared
 
 `lucasgaravelli/pm-skills-claude-code@21cbb2903d740d10fc65c667aea97d3ee8657349` is pinned as methodological provenance. Adapted capabilities evolve independently after import. The upstream list of 27 is a candidate inventory, not a required permanent taxonomy.
 
-### Pilot
+### Initial slice
 
 The first implementation slice is:
 
@@ -52,7 +53,33 @@ expressed canonically as responsibilities:
 
 `customer_understanding -> problem_discovery -> research_synthesis -> opportunity_mapping -> product_hypothesis`.
 
-Expansion is gated by empirical dogfood.
+That slice is repository-implemented and has one preserved non-qualifying repository-side preflight. Native-harness and portability qualification remain pending.
+
+### Qualification and expansion policy
+
+PM maturity is explicitly separated into:
+
+```text
+CANDIDATE
+-> REPOSITORY_QUALIFIED
+-> NATIVE_HARNESS_QUALIFIED
+-> PORTABILITY_QUALIFIED
+-> PROMOTED
+```
+
+Repository qualification requires the relevant canonical Skill, artifact contracts, deterministic validation/rejection coverage, Campaign integration where applicable, packaging/install proof, and exact-head CI.
+
+Native-harness qualification requires preserved evidence from an actual supported coding-agent harness. Portability qualification requires an equivalent bounded responsibility through a second supported harness.
+
+The program therefore adopts:
+
+```text
+dogfood before promotion
+!=
+dogfood before expansion
+```
+
+Empirical qualification is **not** silently waived. It is tracked as qualification debt and limits support/product claims. Separately authorized PM waves may continue to repository-qualified status before that debt is retired.
 
 ## Invariants
 
@@ -65,6 +92,9 @@ artifact admitted != claim warranted
 methodology applied != empirical validation
 workflow authorized != external mutation authorized
 canonical capability != harness representation
+repository qualified != native-harness qualified
+native-harness qualified != portability qualified
+portability qualified != promoted
 ```
 
 ## Consequences
@@ -74,13 +104,16 @@ Positive:
 - one PM semantic source can be exposed through multiple supported harnesses;
 - Campaign evidence, lineage, handoff, and authority semantics remain reusable;
 - the project avoids rebuilding the old Wayfinder semantic router;
-- PM methodology can evolve independently from its Claude-specific source representation.
+- PM methodology can evolve independently from its Claude-specific source representation;
+- repository implementation can continue without misrepresenting missing empirical evidence as PASS;
+- qualification debt becomes explicit rather than an implicit blocker or an invisible omission.
 
 Costs:
 
 - adapters and real-harness qualification remain necessary;
 - some upstream prompts must be decomposed rather than copied verbatim;
-- capability migration is deliberately slower than bulk prompt import.
+- repository-qualified capabilities may accumulate empirical qualification debt that must be managed before stronger support claims;
+- capability migration still requires exact-head CI and contract discipline rather than bulk prompt import.
 
 ## Rejected alternatives
 
@@ -96,6 +129,14 @@ Rejected because replacing Claude coupling with Codex coupling does not create p
 
 Rejected because command text alone does not provide evidence semantics, artifact integrity, Campaign admission, or empirically tested portability.
 
+### Block all PM implementation until native-harness dogfood completes
+
+Rejected as unnecessarily strong after the repository-side Campaign/validation architecture proved internally coherent. Native-harness evidence remains mandatory for corresponding support/promotion claims, but not for separately authorized repository implementation.
+
+### Treat missing dogfood as passed
+
+Rejected. Deferred empirical validation remains visible qualification debt and cannot be upgraded into native-harness or portability PASS without actual preserved evidence.
+
 ## Follow-up authority
 
-`docs/product-management/` owns PM-domain explanatory contracts. Existing Campaign, capability, harness-adapter, artifact-admission, and authority documents remain authoritative for shared infrastructure.
+`docs/product-management/` owns PM-domain explanatory contracts. `docs/product-management/qualification-levels.md` owns the PM maturity/claim policy. Existing Campaign, capability, harness-adapter, artifact-admission, and authority documents remain authoritative for shared infrastructure.
