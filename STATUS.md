@@ -228,7 +228,7 @@ Current empirical PASS: NONE
 Human/external action required for empirical PASS: YES
 ```
 
-A real PASS still requires an actual supported external coding-agent harness attempt frozen under the canonical external golden-path protocol.
+A real PASS still requires an actual supported external coding-agent harness attempt frozen under the canonical external golden-path protocol. The **real-harness qualification verifier** remains the v0.3 mechanism for mechanically checking a frozen external attempt package; it cannot manufacture real-harness origin evidence.
 
 ### PM native-harness and portability qualification
 
