@@ -1,7 +1,10 @@
 # Semantic Architecture Phase 9 Handoff
 
-**Status:** Implementation candidate complete on branch; qualification requires exact-head CI before merge  
-**Milestone:** Reasoning Model Operationalization & Skill Semantic-Alignment Pilots
+**Status:** COMPLETE — merged and exact-head qualified  
+**Milestone:** Reasoning Model Operationalization & Skill Semantic-Alignment Pilots  
+**Implementation PR:** #318  
+**Qualified candidate head:** `d8fbcd7876ad5821c2627e40d417ff652af2588a`  
+**Merge commit:** `7262f4b23a9e3626835107c8076e6c2671ff5870`
 
 ## Delivered
 
@@ -27,7 +30,7 @@
 - preserved domain artifact enums rather than replacing them with generic ontology statuses;
 - recorded Pilot C report and profile;
 - extracted `semantic_reasoning_profile` v1 as an **experimental Level-3 representation contract**;
-- added standalone validator and negative/rejection tests;
+- added standalone validator and positive/negative/rejection tests;
 - added the semantic-profile test to Repository and Skill contract CI.
 
 ## Cross-Skill result
@@ -56,7 +59,9 @@ reconciliation verified/disputed/omitted
 Campaign transition representation
 ```
 
-## First Level-3 extraction
+This is a deliberate result: the common layer captures **warrant and provenance**, while domain artifacts retain their task-specific semantics.
+
+## First new Level-3 extraction
 
 `semantic_reasoning_profile` v1 is executable only in the narrow sense that its representation can be deterministically validated.
 
@@ -70,25 +75,83 @@ The validator may establish:
 - evidence presence for evidence-grounded claim statuses;
 - explicit limit presence.
 
-The validator explicitly does **not** establish semantic truth, evidence sufficiency, uncertainty priority, responsibility warrant, architectural quality, repair success, or Campaign disposition.
+The validator explicitly does **not** establish:
+
+- semantic truth;
+- evidence sufficiency;
+- uncertainty priority;
+- responsibility warrant;
+- appropriate capability selection;
+- architectural quality or violation;
+- repair success;
+- Campaign disposition.
+
+The structured JSON result explicitly carries:
+
+```text
+semantic_truth_established: false
+```
+
+Therefore:
+
+```text
+semantic profile valid
+!=
+reasoning semantically correct
+```
 
 The profile is not registered with Campaign artifact admission in this milestone.
 
 ## Reasoning Model maturity after Phase 9
 
 ```text
-Specified reasoning lifecycle          DONE
-Skill-level methodological adoption     DONE for first contrasting pilots
-Cross-Skill comparison instrument       DONE
-Experimental mechanical core            DONE
-Central reasoning engine                NOT WANTED / NOT WARRANTED
-Campaign semantic-profile promotion     DEFERRED
-Repository Semantic Map                 DEFERRED
+Specified reasoning lifecycle           DONE
+Skill-level methodological adoption      DONE for first contrasting pilots
+Cross-Skill comparison instrument        DONE
+Experimental mechanical core             DONE
+Central reasoning engine                 NOT WANTED / NOT WARRANTED
+Campaign semantic-profile promotion      DEFERRED
+Repository Semantic Map                  DEFERRED
 ```
 
-## Next phase — Phase 10 bounded envelope experiment
+The operational architecture is now:
 
-Use the profile in additional real repository episodes and determine whether the common fields should:
+```text
+Semantic Model
+      |
+      v
+Reasoning Model
+      |
+      v
+bounded Skills / capabilities
+      |
+      v
+mechanical executable subset
+      |
+      v
+Campaign / provenance / handoff
+```
+
+The Reasoning Model remains a protocol for disciplined agent judgment, not a central autonomous reasoning service.
+
+## Qualification evidence
+
+The exact candidate head `d8fbcd7876ad5821c2627e40d417ff652af2588a` passed before merge:
+
+- Product Validation run `34462233882` — SUCCESS;
+- Release Candidate Distribution run `34462233821` — SUCCESS;
+- Campaign product suites on Python 3.11 and 3.12 — SUCCESS;
+- installed core wheel regressions — SUCCESS;
+- Repository and Skill contracts — SUCCESS;
+- canonical Probe Engine relationship gate — SUCCESS;
+- stable repository assertion suite including `tests/test_semantic_reasoning_profile.py` — SUCCESS;
+- Linux and Windows filesystem-security gates — SUCCESS.
+
+No failing gate was bypassed.
+
+## Next phase — Phase 10 bounded common-envelope experiment
+
+Use the executable companion profile in additional real repository episodes and determine whether the common fields should:
 
 1. remain a companion audit/reasoning artifact;
 2. be embedded selectively in multiple analytical artifact contracts; or
@@ -106,14 +169,14 @@ Track:
 
 Do not promote the profile into Campaign state until durable cross-session control-plane value is demonstrated independently.
 
-## Qualification
+## Explicit non-claims
 
-Before merge, require exact candidate-head:
+Phase 9 does **not** prove:
 
-- repository structural validation;
-- Canonical Probe Engine relationship gate;
-- stable repository assertion suite including `tests/test_semantic_reasoning_profile.py`;
-- existing Product Validation suites;
-- Release Candidate Distribution.
+- native external-harness task-quality improvement;
+- that the common profile belongs in every Skill artifact;
+- that the repository needs a complete semantic graph;
+- that `Component`, `Layer`, `Boundary`, or other architecture concepts need universal executable schemas;
+- that a central reasoning engine is warranted.
 
-Any failing gate should be repaired rather than bypassed.
+The milestone establishes a **qualified first operationalization of the Reasoning Model and a bounded Level-3 representation contract**. Phase 10 must now test its product value in further episodes.
