@@ -24,10 +24,10 @@ The historical Wayfinder PM registry is not execution authority. Native-harness 
 | okr | deprecated `okr` | `okr_list` | `product_strategy` | ADAPT | 3 | REPOSITORY_QUALIFIED | pending | pending | Outcome-shaped KRs; no fabricated progress or baseline. |
 | roadmap | deprecated `roadmap` | `roadmap` | `product_strategy` | ADAPT | 3 | REPOSITORY_QUALIFIED | pending | pending | Committed timing requires explicit authority evidence. |
 | lean-canvas | deprecated `lean-canvas` | `business_canvas` | `product_strategy` | ADAPT | 3 | REPOSITORY_QUALIFIED | pending | pending | Canvas is explicitly a hypothesis map. |
-| experiment-design | deprecated `experiment-design` | `experiment_plan` | `experimentation` | DEFER | 4 | CANDIDATE | pending | pending | Design is not experiment evidence. |
-| ab-test-analysis | deprecated `ab-test-analysis` | `test_results` | `experimentation` | DEFER | 4 | CANDIDATE | pending | pending | Requires actual observation/statistical inputs. |
-| measure-pmf | deprecated `measure-pmf` | `pmf_report` | `product_measurement` | DEFER | 4 | CANDIDATE | pending | pending | No survey evidence means no measured-PMF claim. |
-| pricing | deprecated `pricing` | `pricing_model` | `commercial_strategy` | DEFER | 4 | CANDIDATE | pending | pending | Recommendation is not authority to change price. |
+| experiment-design | deprecated `experiment-design` | `experiment_plan` | `experimentation` | ADAPT | 4 | REPOSITORY_QUALIFIED | pending | pending | Designed plans cannot encode results or imply external execution. |
+| ab-test-analysis | deprecated `ab-test-analysis` | `test_results` | `experimentation` | ADAPT | 4 | REPOSITORY_QUALIFIED | pending | pending | Analyzed conclusions require actual observation evidence; otherwise insufficient. |
+| measure-pmf | deprecated `measure-pmf` | `pmf_report` | `product_measurement` | ADAPT | 4 | REPOSITORY_QUALIFIED | pending | pending | Measured PMF requires empirical evidence; framework thresholds are heuristics. |
+| pricing | deprecated `pricing` | `pricing_model` | `commercial_strategy` | ADAPT | 4 | REPOSITORY_QUALIFIED | pending | pending | Pricing remains proposed; observed prices/economics require evidence and no price-change authority is granted. |
 | customer-journey | deprecated `customer-journey` | `journey_map` | `customer_understanding` | DEFER | 5 | CANDIDATE | pending | pending | Candidate customer-modeling wave. |
 | ideal-customer-profile | no authoritative live PM counterpart | `ideal_customer_profile` | `customer_understanding` | DEFER | 5 | CANDIDATE | pending | pending | New current-domain design if authorized. |
 | launch-checklist | deprecated `launch-checklist` | `readiness_report` | `risk_and_readiness` | DEFER | 6 | CANDIDATE | pending | pending | Checklist completion is not launch authorization. |
