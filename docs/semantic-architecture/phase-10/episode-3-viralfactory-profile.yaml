@@ -1,0 +1,68 @@
+artifact_id: semantic_reasoning_profile
+schema_version: 1
+pilot_id: phase-10-episode-3-viralfactory
+source_skill: pre-mortem
+target:
+  repository: ThorStarlord/ViralFactory
+  ref: 2cb5d4358b9a2d10b828ceda481de7f43de2d0eb
+  access_mode: github_exact_sha
+currentness:
+  status: pinned_snapshot
+  evidence_refs:
+    - https://github.com/ThorStarlord/ViralFactory/commit/2cb5d4358b9a2d10b828ceda481de7f43de2d0eb
+observations:
+  - id: O1
+    statement: The exact snapshot records the Deal to Critique to RenderJob to RenderArtifact to DashboardState chain as repository-qualified while production activation still requires target-environment human/operator evidence.
+    method: direct_read
+    evidence_refs:
+      - STATUS.md@2cb5d4358b9a2d10b828ceda481de7f43de2d0eb
+  - id: O2
+    statement: The canonical factory contract records live marketplace-specific source adapters as not yet canonical and a live LLM provider call inside the factory package as not live.
+    method: direct_read
+    evidence_refs:
+      - docs/architecture/FACTORY-PIPELINE-CONTRACT.md@2cb5d4358b9a2d10b828ceda481de7f43de2d0eb
+  - id: O3
+    statement: The handoff records repository-wide raw TypeScript debt as pre-existing and outside the qualified Package 3 scope while scoped TypeScript qualification, production build, frontend tests, and factory/dashboard CI passed.
+    method: direct_read
+    evidence_refs:
+      - STATUS.md@2cb5d4358b9a2d10b828ceda481de7f43de2d0eb
+claims:
+  - id: C1
+    statement: Repository evidence is insufficient to call the current factory production-activated because the decision-changing missing evidence lives in the target deployment environment rather than the Git tree.
+    epistemic_status: DERIVED
+    evidence_refs:
+      - STATUS.md@2cb5d4358b9a2d10b828ceda481de7f43de2d0eb
+      - docs/architecture/FACTORY-PIPELINE-CONTRACT.md@2cb5d4358b9a2d10b828ceda481de7f43de2d0eb
+    scope: production-activation readiness for the existing qualified factory chain
+    limits:
+      - does not establish that the target environment is misconfigured
+      - does not authorize deployment or migration changes
+  - id: C2
+    statement: Adding live source or model-provider integrations before target-environment activation evidence could make later failures harder to attribute by introducing new external variables before the existing chain is proven in staging.
+    epistemic_status: HYPOTHESIZED
+    evidence_refs:
+      - STATUS.md@2cb5d4358b9a2d10b828ceda481de7f43de2d0eb
+      - docs/architecture/FACTORY-PIPELINE-CONTRACT.md@2cb5d4358b9a2d10b828ceda481de7f43de2d0eb
+    scope: sequencing risk for the next ViralFactory milestone
+    limits:
+      - no failure from such expansion has been observed
+      - the hypothesis does not establish that live integrations should be rejected permanently
+uncertainties:
+  - id: U1
+    question: Are the factory migrations, service configuration, real renderer and Storage path, and deployed authenticated dashboard projection valid in the intended target environment?
+    decision_relevance: these observations determine whether repository-qualified factory contracts are actually activated in the target environment
+    evidence_needed:
+      - preserved target-environment migration and configuration evidence
+      - durable staging render and Storage artifact evidence
+      - authenticated deployed /factory verification
+    status: active
+  - id: U2
+    question: Does the pre-existing repository-wide TypeScript debt affect the deployed factory activation path in practice?
+    decision_relevance: observed target impact would change the debt from a bounded paper tiger into a consequential activation defect
+    evidence_needed:
+      - target smoke or runtime evidence linking a listed type error to the factory surface
+    status: active
+explicit_limits:
+  - no target Supabase environment, credentials, real durable staging render, or deployed SaaS session was available on the read-only GitHub surface
+  - the profile does not establish production readiness or authorize live source/provider expansion
+  - repository qualification and target-environment activation remain distinct evidence states

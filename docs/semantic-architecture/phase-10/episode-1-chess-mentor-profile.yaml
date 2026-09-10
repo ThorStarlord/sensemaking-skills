@@ -1,0 +1,61 @@
+artifact_id: semantic_reasoning_profile
+schema_version: 1
+pilot_id: phase-10-episode-1-chess-mentor
+source_skill: repo-sensemaker
+target:
+  repository: ThorStarlord/Chess-Mentor-Engine
+  ref: 4139e4dda567feeadb5684f51c4a265dfae07330
+  access_mode: github_exact_sha
+currentness:
+  status: pinned_snapshot
+  evidence_refs:
+    - https://github.com/ThorStarlord/Chess-Mentor-Engine/commit/4139e4dda567feeadb5684f51c4a265dfae07330
+observations:
+  - id: O1
+    statement: The exact snapshot records M17 through M19 as implemented, qualified on exact candidate heads, and merged, with no remaining software qualification gate for that milestone.
+    method: direct_read
+    evidence_refs:
+      - STATUS.md@4139e4dda567feeadb5684f51c4a265dfae07330
+      - docs/product/repository-build-status.md@4139e4dda567feeadb5684f51c4a265dfae07330
+  - id: O2
+    statement: M19 binds model-authored language to exact request and grounding provenance while explicitly labeling the result request_bound_not_semantically_verified.
+    method: direct_read
+    evidence_refs:
+      - docs/product/repository-build-status.md@4139e4dda567feeadb5684f51c4a265dfae07330
+  - id: O3
+    statement: The handoff recommends a model-output evaluation harness before adopting a production model provider and keeps semantic correctness, pedagogical quality, and tutoring efficacy outside the qualified claim ceiling.
+    method: direct_read
+    evidence_refs:
+      - STATUS.md@4139e4dda567feeadb5684f51c4a265dfae07330
+claims:
+  - id: C1
+    statement: The highest-value next repository reasoning boundary is evaluation of M19 model output against the already-qualified grounding and claim ceiling, not another provenance-binding layer.
+    epistemic_status: INFERRED
+    evidence_refs:
+      - STATUS.md@4139e4dda567feeadb5684f51c4a265dfae07330
+      - docs/product/repository-build-status.md@4139e4dda567feeadb5684f51c4a265dfae07330
+    scope: next-milestone diagnosis for the pinned Chess Mentor Engine snapshot
+    limits:
+      - does not establish which semantic evaluator design is correct
+      - does not establish that model prose is incorrect or unsafe
+  - id: C2
+    statement: The repository deliberately separates software qualification and provenance evidence from semantic or pedagogical correctness of generated coaching.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - STATUS.md@4139e4dda567feeadb5684f51c4a265dfae07330
+      - docs/product/repository-build-status.md@4139e4dda567feeadb5684f51c4a265dfae07330
+    scope: M19 claim and authority boundary
+    limits:
+      - does not establish empirical tutoring efficacy
+uncertainties:
+  - id: U1
+    question: Which parts of M19 output evaluation can be mechanically checked against M16 grounding and which require semantic evaluator judgment?
+    decision_relevance: determines the safe boundary of a future evaluation harness and prevents a validator from being mistaken for semantic truth authority
+    evidence_needed:
+      - representative M19 output samples bound to exact M16 grounding
+      - candidate evaluator criteria with positive and overclaiming examples
+    status: active
+explicit_limits:
+  - no local Probe Engine or repository test suite was run on the target because this episode used read-only exact-SHA GitHub evidence
+  - no production model provider or real tutoring session was exercised
+  - this profile does not authorize the recommended next milestone or establish model-output quality
