@@ -1,13 +1,19 @@
 # Status
 
 **Version:** 0.3.0  
-**Last updated:** 2026-09-09  
-**Current phase:** post-milestone handoff; repository implementation complete, empirical external qualification pending  
+**Last updated:** 2026-09-10  
+**Current phase:** finalized post-milestone handoff; repository implementation complete, empirical external qualification pending  
 **Primary program:** Sensemaking Campaign productization  
-**Current `main` before this handoff:** `cd183827b438107dafd65f48fa23145b2e21fbdd`  
+**Current `main` at handoff finalization:** `de1013fc675f8981b24749ff068427f0140e08ba`  
 **Current frontier:** no pending repository work package; next decision depends on real-harness evidence
 
 Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment; deterministic machinery owns representation, persistence, validation, provenance, integrity, authority checks, target identity, narrative/evidence binding, and reconstructible qualification evidence.
+
+## Handoff finalization
+
+This handoff was revalidated on 2026-09-10 against `main@de1013fc675f8981b24749ff068427f0140e08ba`, the merge of PR #305. This documentation refresh does not change product code and does not cause later commits to inherit earlier exact-head qualification claims.
+
+The milestone remains complete. The next repository change must be justified by genuine external dogfood evidence (or another separately authorized objective), not by inventing a fourth implementation package.
 
 ## Release architecture continuity
 
@@ -126,7 +132,7 @@ That preceding milestone delivered CI Authority Reconciliation (#298), v0.3 Rele
 
 ## Operator handoff / commands
 
-Use `docs/post-milestone-handoff-runbook.md` for the newly added Package 2/3 service usage, qualification-evidence commands, focused positive/rejection test suites, checked-in evidence protocol, and the empirical handoff procedure.
+Use `docs/post-milestone-handoff-runbook.md` for the newly added Package 2/3 service usage, qualification-evidence commands, focused positive/rejection test suites, checked-in evidence protocol, and the empirical handoff procedure. Its quick-command index is the shortest path for future engineers to reproduce the milestone-specific checks.
 
 Use `docs/milestone-runbook.md` for the earlier v0.3 Product Validation, Lab Validation, Release Candidate Distribution, target-bound Campaign, harness setup, filesystem-security, and worktree procedures.
 
