@@ -1,0 +1,54 @@
+artifact_id: semantic_reasoning_profile
+schema_version: 1
+pilot_id: pilot-b-architectural-review
+source_skill: architectural-review
+target:
+  repository: ThorStarlord/sensemaking-skills
+  ref: 8109b0a7133abb8363f808d01292f5f7375d766f
+  access_mode: inherited_artifact
+currentness:
+  status: inherited_currentness
+  evidence_refs:
+    - repository_sensemaking_brief target/currentness contract at skills/repo-sensemaker/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+observations:
+  - id: O1
+    statement: architectural-review consumes repository_sensemaking_brief and is explicitly forbidden from re-diagnosing the repository.
+    method: direct_read
+    evidence_refs:
+      - skills/architectural-review/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+  - id: O2
+    statement: the pre-alignment Skill instructed the reviewer to trust the brief as authoritative for fog classification and evidence while returning investigate_first when the brief is insufficient.
+    method: direct_read
+    evidence_refs:
+      - skills/architectural-review/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+claims:
+  - id: C1
+    statement: currentness and epistemic warrant must survive downstream artifact consumption rather than being reset when architectural-review receives the brief.
+    epistemic_status: INFERRED
+    evidence_refs:
+      - skills/architectural-review/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+      - docs/semantic-architecture/reasoning-model.md@8109b0a7133abb8363f808d01292f5f7375d766f
+    scope: architectural-review inherited evidence handling
+    limits:
+      - does not authorize architectural-review to re-probe or re-diagnose the repository
+  - id: C2
+    statement: a dependency relation alone is insufficient to establish an architectural violation without an applicable boundary, contract, or ratified intent.
+    epistemic_status: INFERRED
+    evidence_refs:
+      - docs/semantic-architecture/ontology.md@8109b0a7133abb8363f808d01292f5f7375d766f
+      - docs/semantic-architecture/relations-and-epistemics.md@8109b0a7133abb8363f808d01292f5f7375d766f
+      - skills/architectural-review/SKILL.md@8109b0a7133abb8363f808d01292f5f7375d766f
+    scope: architecture relation reasoning
+    limits:
+      - does not define a universal architectural-boundary detector
+uncertainties:
+  - id: U1
+    question: will the same common fields remain useful when the Skill verifies post-change outcomes rather than recommending a proposed architecture?
+    decision_relevance: determines whether the common profile describes general Sensemaking reasoning or only pre-implementation analysis
+    evidence_needed:
+      - Phase 9 Pilot C repair-verifier/output-reconciler comparison
+    status: active
+explicit_limits:
+  - architectural-review inherits repository currentness rather than measuring it independently
+  - architecture-specific Component Layer Boundary Contract and DependencyRelation concepts are not promoted into the common profile
+  - validator success cannot establish architectural correctness
