@@ -1,7 +1,8 @@
 """Installed-wheel product-boundary smoke test.
 
 Build the real wheel, prove source-only lab packages and their dependencies are
-absent, then exercise an ordinary Campaign from an isolated installed venv.
+absent, then exercise an ordinary Campaign plus the shipped semantic/portability
+substrate from an isolated installed venv.
 """
 
 from __future__ import annotations
@@ -33,7 +34,11 @@ _SMOKE_SCRIPT = textwrap.dedent(
 
     import sensemaking_skills
     from sensemaking_skills.campaign_semantics import CampaignState
-    from sensemaking_skills.campaigns import CampaignService
+    from sensemaking_skills.campaigns import CampaignBundleService, CampaignService
+    from sensemaking_skills.semantic_architecture import (
+        build_repository_semantic_map,
+        probe_exact_search,
+    )
 
     assert sensemaking_skills.__version__ != "0+unknown"
 
@@ -50,6 +55,29 @@ _SMOKE_SCRIPT = textwrap.dedent(
     assert snapshot.state.campaign_id == "CMP-WHEEL"
     assert snapshot.state.schema_version == "2"
     assert service.resume().state.current_state == "initialized"
+
+    semantic_target = workspace.parent / "semantic-target"
+    semantic_target.mkdir()
+    (semantic_target / "note.txt").write_text("needle\n", encoding="utf-8")
+    probe = probe_exact_search(
+        semantic_target,
+        target_ref="sha:wheel",
+        pattern="needle",
+    )
+    assert probe.semantic_truth_established is False
+    semantic_map = build_repository_semantic_map(
+        map_id="MAP-WHEEL",
+        target_ref="sha:wheel",
+        observations=probe.observations,
+    )
+    assert semantic_map.relations
+    assert semantic_map.semantic_truth_established is False
+
+    bundle_path = workspace.parent / "campaign.zip"
+    CampaignBundleService(workspace).export(bundle_path)
+    bundle_result = CampaignBundleService.verify(bundle_path)
+    assert bundle_result.valid
+    assert bundle_result.semantic_truth_established is False
 
     for module_name in (
         "sensemaking_skills.campaign_accounting",
@@ -100,6 +128,14 @@ def test_installed_wheel_contains_product_but_not_source_only_lab(tmp_path):
         names = archive.namelist()
         for prefix in LAB_PREFIXES:
             assert not any(name.startswith(prefix) for name in names), prefix
+        assert any(
+            name.endswith("sensemaking_skills/semantic_architecture/__init__.py")
+            for name in names
+        )
+        assert any(
+            name.endswith("sensemaking_skills/campaigns/bundle.py")
+            for name in names
+        )
         metadata_names = [name for name in names if name.endswith(".dist-info/METADATA")]
         assert len(metadata_names) == 1
         metadata = archive.read(metadata_names[0]).decode("utf-8").lower()
