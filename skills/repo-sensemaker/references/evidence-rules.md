@@ -14,12 +14,21 @@ To maintain diagnostic rigor, all claims in a **Repository Sensemaking Brief** m
 10. **Excerpt Format Matches the Consumer's Validator Generation**: Evidence line references come in two accepted forms (bare numbers vs `Lx`/`Lx-Ly`), and not every validator generation accepts both — a brief that passes the canonical validator can fail a target's vendored validator (and vice versa). Know which generation the target validator runs and emit that format; never assume two consumers agree on citation syntax. (See Evidence 0017, finding 2.)
 11. **A Catalog Entry Is Not a Finding**: A probe that catalogs a condition without emitting a finding (e.g. duplicate ADR ids present in `relationships.adr.catalog` while `relationships.adr.findings` is empty) leaves detection to the model's semantic review. Treat empty `findings` as "no known defect flagged", not "no defect": check raw catalog data against known defect classes (duplicate ids, missing/unrecognized statuses) before concluding a negative. (See Evidence 0017, finding 3.)
 12. **Guards Must Cover the Artifacts They Claim to Protect**: A validator check that scans only a subset of the surface it claims to guard (auteur's `file:///` check walked `examples/` only, so a stale root `HANDOFF.md` with machine-specific links passed every check) is an unguarded escape hatch. When a brief flags an artifact, verify the guard's scan surface actually includes it before citing the guard as coverage. (See Evidence 0017, finding 4.)
+13. **Observation Is Not Inference**: A direct read or deterministic probe establishes only its bounded observation. Keep semantic interpretations such as architectural intent, root cause, product value, or repair success separate and explicitly inferential unless independently ratified.
+14. **Material Claims Carry Epistemic Status**: For decision-changing claims, use the shared semantic vocabulary where it improves clarity: `OBSERVED`, `DERIVED`, `INFERRED`, `HYPOTHESIZED`, `RATIFIED`, `CONTRADICTED`, `SUPERSEDED`, or `UNRESOLVED`. These labels describe warrant, not numeric probability.
+15. **Currentness Is Part of Warrant**: A material claim about present repository state must inherit the mandatory state-currency boundary or be clearly marked documented/unverified. A correct historical claim is not automatically a current claim.
+16. **Absence Requires Completeness**: Zero matches establish bounded absence only when the search/probe contract establishes the searched scope as complete for the claim. Otherwise report `no match observed in searched scope`, not `does not exist`.
+17. **Preserve Explicit Limits**: Every consequential conclusion should preserve material blind spots and non-claims: inaccessible surfaces, unmeasured metrics, inherited assumptions, unresolved contradictions, or evidence that would change the conclusion.
+
+Rules 13-17 operationalize the shared Reasoning Model for Phase 9 without changing the `repository_sensemaking_brief` schema. Apply them through the existing evidence, Logic trace, state-currency, representation-sufficiency, and optional extended-analysis surfaces. See [semantic-reasoning-alignment.md](semantic-reasoning-alignment.md).
 
 ## Provenance of rules 6-12
 
 Rules 6-8 were added after Evidence 0016 (`experiments/evidence/0016-auteur-remediation-postmortem.md`), a postmortem of the first full brief -> remediation cycle on the external `auteur` repository. Rule 6 fixes a false-positive vocabulary-drift flag (9 structure layers vs 5 semantic layers); Rule 7 fixes a reversed architecture-decision record 013 deduplication in the external Auteur repository that broke 9 load-bearing references and missed a 10th; Rule 8 fixes a file-count-vs-case-count comparison in the HANDOFF staleness finding.
 
 Rules 9-12 were added after Evidence 0017 (`experiments/evidence/0017-auteur-repo-sensemaking-brief/EVIDENCE.md`), the direct-invoked dogfood record of the second auteur brief. Rule 9 fixes a false "clean" `context_entropy.ce` caused by a probe timeout; Rule 10 fixes cross-validator excerpt-format drift (bare numbers vs `Lx`/`Lx-Ly`); Rule 11 fixes the duplicate-ADR condition being cataloged but not flagged; Rule 12 fixes the root-handoff `file:///` escape from a guard that only scanned `examples/`.
+
+Rules 13-17 were added in Phase 9 Pilot A to align repo-sensemaker with the repository-wide semantic architecture. They formalize distinctions that the Skill already used inconsistently in prose and do not create new routing or mutation authority.
 
 ## Citation Format: Two Output Modes
 
@@ -67,4 +76,6 @@ If unsure, default to **investigative** — a downstream skill can transform inv
 ## Related
 
 - [Repository Sensemaking Brief Template](repo-analysis-template.md) — Section 7 (Evidence)
+- [Semantic reasoning alignment](semantic-reasoning-alignment.md) — Phase 9 observation/claim/currentness discipline
+- [Reasoning Model](../../../docs/semantic-architecture/reasoning-model.md) — repository-wide semantic lifecycle
 - [Artifact Contracts: repository_sensemaking_brief](../../workflow-planner/references/artifact-contracts.yaml) — Consumer requirements
