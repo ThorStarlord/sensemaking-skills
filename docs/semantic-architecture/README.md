@@ -1,8 +1,8 @@
 # Sensemaking Semantic Architecture
 
-**Status:** Canonical semantic-design foundation v0; Phase 9 operationalization and Phase 10 common-envelope experiment complete  
-**Scope:** Repository reasoning, evidence semantics, work semantics, and product-change vocabulary  
-**Executable status:** Existing Campaign contracts plus one experimental `semantic_reasoning_profile` Level-3 representation retained as an optional companion artifact; ontology concepts are otherwise documentation unless explicitly mapped to executable machinery
+**Status:** Canonical semantic-design foundation v0; Phase 9 operationalization and Phase 10 common-envelope experiment complete; first bounded Phase 15 conformance rule qualified  
+**Scope:** Repository reasoning, evidence semantics, work semantics, product-change vocabulary, and evidence-triggered conformance checks  
+**Executable status:** Existing Campaign contracts; optional companion `semantic_reasoning_profile` Level-3 representation; bounded Skill-registry liveness conformance. Other ontology concepts remain documentation unless explicitly mapped to executable machinery.
 
 ## Purpose
 
@@ -43,6 +43,7 @@ Sensemaking Semantic Architecture
 +-- Executable Substrate
     +-- probes
     +-- artifacts / validators
+    +-- bounded conformance checks
     +-- Campaigns / provenance
     +-- handoff
 ```
@@ -70,6 +71,8 @@ The Capability / Skill Layer is explicit because operationalizing the Reasoning 
 | [`phase-10/README.md`](phase-10/README.md) | Preregistered Phase 10 real-repository experiment. |
 | [`phase-10/results.md`](phase-10/results.md) | Phase 10 evidence synthesis and Outcome A decision. |
 | [`phase-10-handoff.md`](phase-10-handoff.md) | Qualified Phase 10 handoff, evidence, and deferred-phase dispositions. |
+| [`phase-15/README.md`](phase-15/README.md) | Bounded Skill-registry liveness conformance pilot. |
+| [`phase-15-handoff.md`](phase-15-handoff.md) | Qualification evidence and incremental Phase 15 boundary. |
 | [`milestone-handoff.md`](milestone-handoff.md) | Original semantic-foundation milestone handoff. |
 
 ## Three levels of formalization
@@ -90,13 +93,15 @@ Example: `ProductChange reinforces ProductCapability` is an ontology relation on
 
 ### Level 3 — Executable semantic contract
 
-Schema fields, validators, deterministic probes, registries, or runtime invariants that encode only a mechanically decidable subset of semantics.
+Schema fields, validators, deterministic probes, registries, or bounded conformance invariants that encode only a mechanically decidable subset of semantics.
 
-A Level-3 validator can answer `is this representation structurally valid?`; it does not automatically answer `is this semantic conclusion true?`.
+A Level-3 validator can answer `is this representation or declared relation mechanically consistent?`; it does not automatically answer `is this semantic conclusion true?`.
 
 Phase 9 produced the first new bounded example: `semantic_reasoning_profile` v1 has an executable standalone validator for representation shape, evidence-reference requirements, currentness status, IDs, and epistemic enums. It is **not** registered into Campaign admission and explicitly cannot establish semantic truth.
 
 Phase 10 retained that contract but rejected mandatory embedding based on observed duplication pressure. Retention of a Level-3 companion contract is not promotion into the control plane.
+
+The first Phase 15 pilot added a second kind of Level-3 behavior: a narrow conformance rule that compares explicit Skill-registry liveness claims with canonical Skill-tree existence. It validates consistency only and likewise emits `semantic_truth_established: false`.
 
 ## Phase 9 result — Reasoning Model operationalization
 
@@ -153,17 +158,39 @@ The strongest negative embedding evidence came from PM `risk_analysis`: the doma
 
 Therefore the profile is useful primarily when reasoning crosses artifacts, evidence surfaces, Skills, domains, or fresh contexts. It is not a required envelope for every analytical artifact.
 
-The Reasoning Model maturity is now:
+## Phase 15 first result — trigger-driven liveness conformance
+
+After Phase 10 closed, the next-phase audit found no demonstrated trigger for Phases 11–14, but repeated maintenance work had exposed one narrow conformance defect class: compatibility Skill-registry liveness notes could lag the canonical Skill tree.
+
+PR #325 qualified `scripts/validate-skill-registry-liveness.py` and its rejection suite. The checker can reject:
 
 ```text
-specified                         yes
-first cross-Skill adoption        yes
-cross-domain companion experiment yes
-optional companion profile        retained
-mandatory artifact embedding      not warranted
-central reasoning engine          no / not warranted
-Campaign-schema promotion         deferred
-Repository Semantic Map           deferred
+status: proposed while skills/<id>/SKILL.md exists
+an explicit no-current-implementation note while that SKILL.md exists
+a wrong current-canonical skills/<id>/ reference
+a broken current-canonical skills/<id>/ reference
+duplicate registry Skill IDs
+```
+
+It intentionally accepts a historical `status: deprecated` entry when the note correctly distinguishes old invocation metadata from a current canonical Skill implementation.
+
+This pilot establishes a bounded consistency relation, not semantic Skill truth, qualification, or native-harness support.
+
+Phase 15 is now **incremental / trigger-driven**: one rule is qualified; later rules require their own observed defect and qualification evidence.
+
+## Reasoning and conformance maturity
+
+```text
+Reasoning Model specified                  yes
+first cross-Skill adoption                 yes
+cross-domain companion experiment          yes
+optional companion profile                 retained
+mandatory artifact embedding               not warranted
+first bounded conformance drift rule        qualified
+broad semantic linter                       not warranted
+central reasoning engine                    no / not warranted
+Campaign-schema semantic promotion          deferred
+Repository Semantic Map                     deferred
 ```
 
 ## Authority boundary
@@ -184,6 +211,7 @@ Deterministic machinery owns:
 - persistence and integrity;
 - exact-byte provenance;
 - declared capability metadata;
+- bounded consistency checks over explicit contracts;
 - authority metadata checks;
 - reconstructible transition history;
 - validation of explicitly promoted mechanical semantic representations.
@@ -199,8 +227,11 @@ capability available != capability warranted
 repository changed != repair succeeded
 ontology term documented != runtime-enforced concept
 semantic profile valid != reasoning semantically correct
+registry liveness valid != Skill semantically correct
+canonical Skill tree exists != native harness observed/invoked Skill
 companion reconstruction value != Campaign promotion warrant
 Phase N complete != Phase N+1 authorized
+one Phase 15 rule qualified != broad Phase 15 authorized
 ```
 
 ## Ontology admission rule
@@ -228,7 +259,9 @@ This initiative does **not** authorize:
 - replacing source evidence with a generated semantic map;
 - encoding the entire ontology in YAML/JSON before real Skills demonstrate the need;
 - a central Reasoning Engine that ranks uncertainty, selects responsibility/capability, or decides Campaign disposition;
-- mandatory use of `semantic_reasoning_profile` in every domain artifact.
+- mandatory use of `semantic_reasoning_profile` in every domain artifact;
+- a generic documentation/prose truth checker;
+- broad conformance rules without observed maintenance defects.
 
 ## Relationship to the Campaign
 
@@ -255,11 +288,11 @@ responsibility / capability / authority
 Campaign decision and durable transition
 ```
 
-The ontology does not replace Campaign evidence. The experimental semantic profile remains outside Campaign state. Both exist to make evidence-linked reasoning more consistent while preserving the existing control-plane boundary.
+The ontology does not replace Campaign evidence. The experimental semantic profile remains outside Campaign state. The Phase 15 liveness checker is a repository CI conformance rule, not Campaign state or routing authority.
 
 ## Current frontier
 
-Phase 10 is complete. No later semantic phase is automatically active.
+Phase 10 is complete and the first evidence-triggered Phase 15 conformance rule is qualified. No broad later semantic phase is automatically active.
 
 The next architecture package must be justified by observed repository/product pressure and the relevant trigger in [`implementation-plan.md`](implementation-plan.md). In particular:
 
@@ -267,6 +300,6 @@ The next architecture package must be justified by observed repository/product p
 - Phase 12 waits for repeated costly reconstruction of the same repository entities/relations;
 - Phase 13 waits for demonstrated consequential cross-session control-plane state;
 - Phase 14 waits for at least two genuinely independent domain implementations exposing a reusable domain-pack boundary;
-- Phase 15 waits for observed ontology/conformance drift that creates maintenance defects.
+- additional Phase 15 rules wait for new observed maintenance/conformance defects.
 
 Preserving the current architecture unchanged is a valid outcome when none of those triggers is demonstrated.

@@ -1,9 +1,10 @@
 # Semantic Architecture Implementation Plan
 
-**Status:** Active architecture program; Phase 10 complete  
+**Status:** Active architecture program; Phase 10 complete; first bounded Phase 15 conformance pilot qualified  
 **Completed milestones:** semantic foundation; Phase 9 Reasoning Model operationalization; Phase 10 common-envelope experiment  
-**Current frontier:** evidence-derived only — no later phase is automatically authorized  
-**Implementation principle:** Formalize from demonstrated reasoning pressure; do not manufacture runtime machinery to make the ontology look complete.
+**Qualified incremental checks:** Phase 15 Skill-registry liveness conformance  
+**Current frontier:** evidence-derived only — no later or additional phase package is automatically authorized  
+**Implementation principle:** Formalize from demonstrated reasoning or maintenance pressure; do not manufacture runtime machinery to make the ontology look complete.
 
 ## Objective
 
@@ -14,17 +15,17 @@ The plan separates:
 ```text
 documented vocabulary
 -> ontology semantics
--> observed cross-Skill reuse
--> bounded executable representation
+-> observed cross-Skill reuse or maintenance defect
+-> bounded executable representation/check
 -> possible later control-plane promotion
 ```
 
-A later phase does not retroactively turn earlier documentation into runtime authority.
+A later phase does not retroactively turn earlier documentation into runtime authority. Phase numbers are organizational labels, not automatic sequencing authority.
 
 ## Permanent promotion ladder
 
 ```text
-observed vocabulary need
+observed vocabulary / maintenance need
         |
         v
 Level 1: shared term
@@ -33,11 +34,11 @@ Level 1: shared term
         v
 Level 2: ontology entity/relation
         |
-        | repeated cross-Skill burden
+        | repeated cross-Skill burden or bounded consistency defect
         | stable semantics
         | mechanically expressible subset
         v
-Level 3: executable semantic contract
+Level 3: executable semantic contract / conformance rule
 ```
 
 ### Level 1 -> Level 2 gate
@@ -54,7 +55,7 @@ Require:
 
 Require:
 
-- evidence from at least two contrasting real workflow/Skill situations unless safety/integrity requires earlier action;
+- evidence from at least two contrasting real workflow/Skill situations unless safety/integrity or a repeated repository-maintenance defect warrants a narrower earlier check;
 - stable semantic meaning;
 - identified mechanical subset;
 - explicit validator scope;
@@ -83,7 +84,7 @@ Require:
 | 12 | Repository Semantic Map experiment | DEFERRED |
 | 13 | Campaign/control-plane promotion | DEFERRED |
 | 14 | Domain-pack extraction | DEFERRED |
-| 15 | Ontology conformance/drift checks | DEFERRED |
+| 15 | Ontology conformance/drift checks | INCREMENTAL — first bounded registry-liveness rule qualified; further rules evidence-gated |
 
 ---
 
@@ -297,7 +298,7 @@ complete-scope exact search
 
 Every probe must declare source/scope, completeness guarantee, currentness, blind spots, and the exact mechanical claim established. Do not name a mechanical output as if it established semantic architectural judgment.
 
-**Phase 10 disposition:** remain deferred. The three new episodes did not demonstrate repeated demand for a new mechanical relation family that current probes/contracts cannot provide.
+**Current disposition:** remain deferred. The Phase 10 episodes and subsequent Phase 15 liveness defect did not demonstrate repeated demand for a new repository relation family. The liveness checker is a conformance rule over existing Skill identity/tree semantics, not a new repository semantic probe family.
 
 ---
 
@@ -323,7 +324,7 @@ RepositorySemanticMap
 
 It must never become a complete repository source of truth.
 
-Phase 9 and Phase 10 did **not** provide sufficient evidence for this experiment. The common profile's reconstruction value is not equivalent to repeated durable entity/relation reconstruction.
+Phase 9, Phase 10, and the bounded Phase 15 liveness pilot do **not** provide sufficient evidence for this experiment.
 
 ---
 
@@ -339,7 +340,7 @@ A semantic concept should enter Campaign schema only when:
 4. migration can avoid semantic invention;
 5. mechanical validation boundaries are clear.
 
-Phase 10 showed that the common profile can help fresh-context reconstruction, but did not show that Campaign correctness depends on persisting this profile as control-plane state. It therefore remains outside Campaign artifact admission.
+Phase 10 showed that the common profile can help fresh-context reconstruction, but did not show that Campaign correctness depends on persisting this profile as control-plane state. The Phase 15 liveness gate is repository conformance, not Campaign state. Both remain outside Campaign artifact admission.
 
 ---
 
@@ -364,18 +365,51 @@ The PM domain is one clear implementation. Core engineering Skills are not autom
 
 # Phase 15 — Ontology Conformance and Drift Checks
 
-**Status:** Deferred.
+**Status:** INCREMENTAL — first bounded rule qualified; further expansion evidence-gated.
 
-Potential future checks may detect:
+## Trigger observed
 
-- canonical term duplicated under a new name;
-- Skill-local redefinition of canonical vocabulary;
-- relation used outside documented subject/object range;
-- Level-1/2 concept described as runtime-enforced;
-- documentation claiming executable support absent from code;
-- deprecated term remaining in active contracts.
+After Phase 10, a fresh frontier audit found repeated maintenance drift around Skill liveness/status metadata:
 
-Such checks must validate consistency, not semantic truth. Trigger this phase only from observed maintenance/drift defects rather than because earlier phase numbers are complete.
+- status/hand-off state had lagged actual PM implementation state;
+- Wave 5 qualification exposed a missing canonical registry identity for a live Skill;
+- the PM domain handoff had to repair historical registry notes that still said several now-live Skills had no current implementation.
+
+Existing capability tests already covered identity/output and availability contracts. The uncovered mechanically decidable class was narrower: **compatibility Skill-registry liveness prose could contradict the canonical `skills/<id>/SKILL.md` tree**.
+
+## Qualified first rule
+
+PR #325 introduced `scripts/validate-skill-registry-liveness.py` and `tests/test_skill_registry_liveness.py`, wired into Product Validation's `Repository and Skill contracts` lane.
+
+The rule checks only:
+
+```text
+duplicate registry Skill IDs
+status: proposed while canonical skills/<id>/SKILL.md exists
+explicit no-current-implementation note while that SKILL.md exists
+wrong current-canonical skills/<id>/ path
+broken current-canonical skills/<id>/ path
+```
+
+It explicitly permits `status: deprecated` to describe historical invocation metadata while a current canonical Skill exists, provided the note identifies that current implementation correctly.
+
+The structured validator result preserves:
+
+```text
+semantic_truth_established: false
+```
+
+Exact candidate `1ff498b8fd57c85d590db249a43e8c17a13f5bda` passed Product Validation run `34470534713` and Release Candidate Distribution run `34470534631` before merging as PR #325 / `d24e9bda18225bf7aa338df1decb5c201474a66e`.
+
+## Expansion boundary
+
+Phase 15 is **not globally complete** and is not automatically the next broad workstream.
+
+Potential later checks such as canonical-term duplication, Skill-local redefinition, relation subject/object misuse, Level-1/2 terms falsely described as runtime-enforced, or deprecated vocabulary leaking into active contracts remain unimplemented and unauthorized until a real maintenance defect demonstrates their value.
+
+Every later rule needs its own bounded mechanical claim, negative/rejection cases, and qualification evidence.
+
+See `phase-15/README.md` and `phase-15-handoff.md`.
 
 ---
 
@@ -395,6 +429,7 @@ artifact boilerplate introduced
 validator overreach caught
 new concepts requested by real tasks
 ontology concepts never used
+contract/liveness drift incidents
 token / coordination overhead
 ```
 
@@ -402,7 +437,7 @@ The goal is not maximum ontology coverage. The goal is **more consistent warrant
 
 # Current next step
 
-Do **not** advance automatically to Phase 11, 12, 13, 14, or 15.
+Do **not** advance automatically to another Phase 15 rule or to Phase 11, 12, 13, or 14.
 
 Reconcile current repository/product pressure and authorize the smallest next package only when a deferred-phase trigger is demonstrated. Preserving the architecture unchanged is a valid result when no trigger is present.
 
@@ -411,7 +446,7 @@ Preserve the development loop:
 ```text
 observe
 -> hypothesize
--> bounded experiment
+-> bounded experiment/check
 -> evidence
 -> smallest warranted formalization
 ```
