@@ -61,6 +61,25 @@ The generated model remains `status: proposed`. Observed current prices, competi
 
 Pricing analysis never grants authority to change or publish a price.
 
+## Customer Modeling routed identities
+
+`scripts/validate-pm-customer-model.py` validates:
+
+- `journey_map`
+- `ideal_customer_profile`
+
+### `journey_map`
+
+The artifact binds a named persona/segment, journey scope, and evidence window before representing stages and critical moments. Stage and critical-moment identities/order/reference relationships are mechanically checked. Any journey emotion, metric, or critical moment marked `observed` requires evidence references. A purely hypothesis-based journey cannot silently contain observed claims; mixed evidence/hypothesis artifacts use `status: mixed`.
+
+The local artifact evidence states intentionally correspond to the Semantic Architecture distinction among observation, inference, hypothesis, and unresolved knowledge, without promoting the Level-2 ontology into a universal Campaign schema. The validator does not decide whether an emotion is representative, whether an Aha Moment is causal, whether the stage model is complete, or whether a recommendation deserves priority.
+
+### `ideal_customer_profile`
+
+The artifact binds a segment and evidence window and separates observed customer claims from inference/hypothesis/unknown status across profile characteristics, behaviors, jobs, pains, ideal indicators, and disqualifiers. Observed customer claims require evidence. GTM implications remain `proposed`, may cite known customer-claim IDs, and cannot establish external sales/marketing authority.
+
+The validator does not decide which segment is truly ideal, infer causality from high-value correlations, make disqualifier recommendations into sales policy, or validate willingness-to-pay, LTV, CAC, churn, buying-cycle, or other customer facts merely because the fields are present.
+
 ## Admission boundary
 
 `ArtifactAdmissionService` invokes the canonical router over an immutable snapshot. A routed specialized PM artifact produces an admission receipt bound to exact artifact bytes, router bytes, selected validator bytes, and exact structured validation result.
