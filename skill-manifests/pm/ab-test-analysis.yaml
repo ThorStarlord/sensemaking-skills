@@ -1,0 +1,8 @@
+schema_version: 1
+skill_id: ab-test-analysis
+domain: product-management
+responsibilities: [experimentation]
+consumes: []
+produces: [test_results]
+semantic_concepts: [Intent, Evidence, Claim, EpistemicStatus, Uncertainty, Responsibility, ProductCapability, Artifact]
+repository_mutation: false
