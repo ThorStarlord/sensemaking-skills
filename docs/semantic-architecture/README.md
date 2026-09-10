@@ -1,16 +1,14 @@
 # Sensemaking Semantic Architecture
 
-**Status:** Canonical semantic-design foundation v0; Phase 9 operationalization and Phase 10 common-envelope experiment complete; first bounded Phase 15 conformance rule qualified  
-**Scope:** Repository reasoning, evidence semantics, work semantics, product-change vocabulary, and evidence-triggered conformance checks  
-**Executable status:** Existing Campaign contracts; optional companion `semantic_reasoning_profile` Level-3 representation; bounded Skill-registry liveness conformance. Other ontology concepts remain documentation unless explicitly mapped to executable machinery.
+**Status:** Canonical semantic foundation; Phase 9 and Phase 10 complete; first bounded Phase 15 liveness rule qualified; post-Phase-10 build-first substrate implemented as a candidate  
+**Scope:** Repository reasoning, evidence semantics, work/product semantics, bounded mechanical observations, cross-Skill provenance, conformance, and Campaign projections  
+**Semantic authority:** The active agent/human owns interpretation and warrant; executable semantic machinery implements only documented mechanical subsets
 
 ## Purpose
 
 Sensemaking needs a shared semantic model so different Skills can reason about repositories with the same meanings for repository structure, evidence, claims, uncertainty, responsibility, capability, authority, change, and validation.
 
-This directory defines that shared model without moving semantic control out of the active agent.
-
-The central design problem is not to describe every software concept. It is to define the **minimal-but-sufficient semantic model needed to reason reliably about an unfamiliar repository, preserve the provenance of that reasoning, and state the limits of what has actually been established**.
+The goal is not an ontology of every software concept. It is the **minimal-but-sufficient semantic architecture needed to reason reliably about an unfamiliar repository, preserve provenance, and state the limits of what has actually been established**.
 
 ## Canonical hierarchy
 
@@ -18,13 +16,11 @@ The central design problem is not to describe every software concept. It is to d
 Sensemaking Semantic Architecture
 |
 +-- Semantic Model
-|   +-- Foundational concepts
-|   +-- Repository ontology
-|   +-- Software-architecture ontology
-|   +-- Evidence and epistemic ontology
-|   +-- Engineering-work ontology
-|   +-- Product ontology
-|       +-- Product-change taxonomy
+|   +-- foundational concepts
+|   +-- repository / software-architecture ontology
+|   +-- evidence and epistemic ontology
+|   +-- engineering-work ontology
+|   +-- product ontology / product-change taxonomy
 |
 +-- Reasoning Model
 |   +-- observation -> evidence
@@ -32,93 +28,74 @@ Sensemaking Semantic Architecture
 |   +-- claim -> uncertainty
 |   +-- uncertainty -> responsibility
 |   +-- responsibility -> capability
-|   +-- result -> decision
+|   +-- result -> validation -> decision
 |
 +-- Capability / Skill Layer
-|   +-- repo-sensemaker
-|   +-- architectural-review
-|   +-- repair-verifier / output-reconciler
-|   +-- domain Skills
+|   +-- bounded Skill methodology
+|   +-- Skill Contract Manifests
+|   +-- Domain Pack reference manifests
 |
 +-- Executable Substrate
-    +-- probes
-    +-- artifacts / validators
-    +-- bounded conformance checks
-    +-- Campaigns / provenance
-    +-- handoff
+    +-- mechanical probes
+    +-- bounded Repository Semantic Map
+    +-- cross-Skill semantic companion state
+    +-- artifacts / validators / conformance checks
+    +-- Campaign persistence / observability / portability
 ```
 
-The Capability / Skill Layer is explicit because operationalizing the Reasoning Model happens first through bounded Skill methodology, not through a central reasoning engine.
+No lower layer automatically receives semantic authority from an upper-layer concept.
 
 ## Document map
 
 | Document | Role |
 |---|---|
-| [`constitution.md`](constitution.md) | Permanent guardrails for semantic formalization. |
-| [`problem-statement.md`](problem-statement.md) | Why a shared semantic architecture is needed and what failure modes it addresses. |
-| [`competency-questions.md`](competency-questions.md) | Questions the semantic model must eventually support; primary acceptance tests for ontology scope. |
-| [`concept-inventory.md`](concept-inventory.md) | Existing repository vocabulary and its current sources of authority. |
-| [`ontology.md`](ontology.md) | Layered ontology of intent, software systems, evidence, knowledge, work, and product concepts. |
-| [`product-change-taxonomy.md`](product-change-taxonomy.md) | Descriptive taxonomy for how product changes differ and create value. |
-| [`relations-and-epistemics.md`](relations-and-epistemics.md) | Relationship semantics, evidence requirements, epistemic status, and prohibited inference. |
+| [`constitution.md`](constitution.md) | Permanent semantic/evidence/authority guardrails. |
+| [`problem-statement.md`](problem-statement.md) | Why a shared semantic architecture is needed. |
+| [`competency-questions.md`](competency-questions.md) | Ontology acceptance questions. |
+| [`concept-inventory.md`](concept-inventory.md) | Existing canonical vocabulary and authority sources. |
+| [`ontology.md`](ontology.md) | Layered Level-2 ontology. |
+| [`product-change-taxonomy.md`](product-change-taxonomy.md) | Product-change taxonomy. |
+| [`relations-and-epistemics.md`](relations-and-epistemics.md) | Relationship/evidence/epistemic semantics. |
 | [`reasoning-model.md`](reasoning-model.md) | Evidence-governed reasoning lifecycle. |
-| [`execution-integration.md`](execution-integration.md) | Mapping to probes, Skills, artifacts, validators, Campaigns, and harnesses. |
-| [`reference-scenarios.md`](reference-scenarios.md) | Concrete scenarios used to test whether the model is useful. |
-| [`implementation-plan.md`](implementation-plan.md) | Phase states and promotion gates from vocabulary to executable contracts. |
-| [`pilots/README.md`](pilots/README.md) | Phase 9 Reasoning Model operationalization and cross-Skill comparison. |
-| [`common-semantic-contract.md`](common-semantic-contract.md) | Experimental Level-3 `semantic_reasoning_profile` representation contract. |
-| [`phase-9-handoff.md`](phase-9-handoff.md) | Phase 9 delivered work and Phase 10 entry boundary. |
-| [`phase-10/README.md`](phase-10/README.md) | Preregistered Phase 10 real-repository experiment. |
-| [`phase-10/results.md`](phase-10/results.md) | Phase 10 evidence synthesis and Outcome A decision. |
-| [`phase-10-handoff.md`](phase-10-handoff.md) | Qualified Phase 10 handoff, evidence, and deferred-phase dispositions. |
-| [`phase-15/README.md`](phase-15/README.md) | Bounded Skill-registry liveness conformance pilot. |
-| [`phase-15-handoff.md`](phase-15-handoff.md) | Qualification evidence and incremental Phase 15 boundary. |
-| [`milestone-handoff.md`](milestone-handoff.md) | Original semantic-foundation milestone handoff. |
+| [`execution-integration.md`](execution-integration.md) | Integration boundaries. |
+| [`reference-scenarios.md`](reference-scenarios.md) | Reference competency scenarios. |
+| [`implementation-plan.md`](implementation-plan.md) | Historical phases plus active build-first track. |
+| [`build-first-policy.md`](build-first-policy.md) | Post-Phase-10 policy and diminishing-returns gate. |
+| [`mechanical-semantic-substrate.md`](mechanical-semantic-substrate.md) | Probes, Repository Semantic Map v0, and cross-Skill state. |
+| [`skill-contract-manifests-and-domain-packs.md`](skill-contract-manifests-and-domain-packs.md) | Skill/domain manifests and conformance. |
+| [`pilots/README.md`](pilots/README.md) | Phase 9 pilot evidence. |
+| [`common-semantic-contract.md`](common-semantic-contract.md) | `semantic_reasoning_profile` Level-3 contract. |
+| [`phase-10/results.md`](phase-10/results.md) | Qualified Phase 10 evidence and Outcome A. |
+| [`phase-10-handoff.md`](phase-10-handoff.md) | Phase 10 qualification handoff. |
+| [`phase-15/README.md`](phase-15/README.md) | Qualified bounded Skill-registry liveness pilot. |
+| [`phase-15-handoff.md`](phase-15-handoff.md) | Phase 15 liveness qualification evidence. |
+
+Campaign observability, Resume Capsule, replay/graph, semantic companion integration, and portable bundles are documented in [`../campaign-observability-and-portability.md`](../campaign-observability-and-portability.md).
 
 ## Three levels of formalization
 
-Sensemaking distinguishes three levels. A concept MUST NOT silently cross them.
-
-### Level 1 — Vocabulary
-
-Shared definitions for agents and humans.
-
-Example: `reinforcing product change` is a useful phrase even if no runtime field represents it.
-
-### Level 2 — Ontology
-
-Explicit entities, relationships, constraints, and epistemic meaning.
-
-Example: `ProductChange reinforces ProductCapability` is an ontology relation once repeated reasoning needs that distinction.
-
-### Level 3 — Executable semantic contract
-
-Schema fields, validators, deterministic probes, registries, or bounded conformance invariants that encode only a mechanically decidable subset of semantics.
-
-A Level-3 validator can answer `is this representation or declared relation mechanically consistent?`; it does not automatically answer `is this semantic conclusion true?`.
-
-Phase 9 produced the first new bounded example: `semantic_reasoning_profile` v1 has an executable standalone validator for representation shape, evidence-reference requirements, currentness status, IDs, and epistemic enums. It is **not** registered into Campaign admission and explicitly cannot establish semantic truth.
-
-Phase 10 retained that contract but rejected mandatory embedding based on observed duplication pressure. Retention of a Level-3 companion contract is not promotion into the control plane.
-
-The first Phase 15 pilot added a second kind of Level-3 behavior: a narrow conformance rule that compares explicit Skill-registry liveness claims with canonical Skill-tree existence. It validates consistency only and likewise emits `semantic_truth_established: false`.
-
-## Phase 9 result — Reasoning Model operationalization
-
-The first contrasting pilots covered:
-
 ```text
-repo-sensemaker
-    direct diagnosis / currentness
-
-architectural-review
-    inherited evidence / architecture judgment
-
-repair-verifier + output-reconciler
-    post-change verification / reconciliation
+Level 1 — Vocabulary
+Level 2 — Ontology
+Level 3 — Executable semantic contract / bounded conformance rule
 ```
 
-Across all three, the stable common core was:
+A Level-3 mechanism implements only a mechanically decidable subset.
+
+```text
+Level-2 relation documented != Level-3 relation automatically derivable
+Level-3 representation valid != semantic conclusion true
+```
+
+Phase 9 produced `semantic_reasoning_profile` v1. Phase 10 retained it as an **optional companion** while rejecting mandatory universal embedding. The qualified Phase 15 liveness pilot added a narrow conformance rule over explicit Skill-registry/tree consistency.
+
+The build-first candidate adds further Level-3 mechanics only where the boundary is mechanical: repository observations, target consistency, bounded map derivation, hash-chain integrity, manifest/domain cross-reference conformance, Campaign provenance projections, and bundle integrity.
+
+## Phase 9 — Reasoning Model operationalization
+
+The first contrasting pilots covered `repo-sensemaker`, `architectural-review`, and `repair-verifier` + `output-reconciler`.
+
+Their stable warrant/provenance core was:
 
 ```text
 target/currentness
@@ -131,91 +108,114 @@ uncertainty
 explicit limits / non-claims
 ```
 
-Skill-specific semantics such as fog/weakness taxonomies, `Component`/`Layer`/`Boundary`, architectural decision enums, repair `closed/remaining`, and reconciliation `verified/disputed/omitted` remain local rather than being flattened into the common contract.
+Skill-local semantics remain local rather than being flattened into a universal schema.
 
-## Phase 10 result — keep the common profile companion-level
+## Phase 10 — qualified Outcome A
 
-Phase 10 tested the same profile in three additional real-repository reasoning episodes:
+Phase 10 tested the companion profile on Chess Mentor Engine, the React incremental game, and ViralFactory PM risk reasoning.
 
-```text
-Chess Mentor Engine
-    repo-sensemaker / direct diagnosis
-
-React incremental game
-    output-reconciler / immutable snapshot + live PR currentness
-
-ViralFactory
-    PM pre-mortem / canonical risk_analysis + companion profile
-```
-
-The result is **Outcome A**:
+The qualified decision remains:
 
 > Keep `semantic_reasoning_profile` as an optional companion audit/reconstruction artifact.
 
-The strongest positive evidence came from currentness-sensitive reconciliation: an immutable exact-SHA handoff and mutable live PR metadata must not be silently collapsed into one current-state claim.
+The strongest positive signal was currentness-sensitive cross-artifact reconstruction; the strongest negative signal was duplication where a domain artifact already carried evidence/currentness/uncertainty/limits. Therefore the profile remains selective and outside Campaign artifact admission.
 
-The strongest negative embedding evidence came from PM `risk_analysis`: the domain artifact already represents evidence status, evidence refs, uncertainty, mitigation, recommendation boundaries, and unresolved questions. Copying the whole common profile into that schema would create duplicate canonical representation.
+The later build-first policy does **not** erase Phase 10. It changes the prospective development gate: additional experiments are deferred while mechanically clear construction runway remains.
 
-Therefore the profile is useful primarily when reasoning crosses artifacts, evidence surfaces, Skills, domains, or fresh contexts. It is not a required envelope for every analytical artifact.
+## Qualified Phase 15 baseline — registry liveness
 
-## Phase 15 first result — trigger-driven liveness conformance
+The existing `validate-skill-registry-liveness.py` rule remains qualified and checks only narrow consistency failures such as a live canonical Skill being described as merely proposed/no-current-implementation, wrong/broken canonical Skill paths, and duplicate registry IDs.
 
-After Phase 10 closed, the next-phase audit found no demonstrated trigger for Phases 11–14, but repeated maintenance work had exposed one narrow conformance defect class: compatibility Skill-registry liveness notes could lag the canonical Skill tree.
+It remains a bounded conformance rule with `semantic_truth_established: false`. The build-first manifest/domain conformance layer runs **beside** it rather than replacing it.
 
-PR #325 qualified `scripts/validate-skill-registry-liveness.py` and its rejection suite. The checker can reject:
+## Build-first policy
+
+The active decision rule is:
 
 ```text
-status: proposed while skills/<id>/SKILL.md exists
-an explicit no-current-implementation note while that SKILL.md exists
-a wrong current-canonical skills/<id>/ reference
-a broken current-canonical skills/<id>/ reference
-duplicate registry Skill IDs
+Can the next architecture be justified primarily
+from existing contracts + a known missing capability?
+
+YES -> build and mechanically qualify
+NO  -> invoke additional empirical validation
 ```
 
-It intentionally accepts a historical `status: deprecated` entry when the note correctly distinguishes old invocation metadata from a current canonical Skill implementation.
+Mechanical verification remains continuous. See `build-first-policy.md` for the Construction Diminishing-Returns Gate.
 
-This pilot establishes a bounded consistency relation, not semantic Skill truth, qualification, or native-harness support.
+## Build-first executable substrate candidate
 
-Phase 15 is now **incremental / trigger-driven**: one rule is qualified; later rules require their own observed defect and qualification evidence.
+### Mechanical observations
 
-## Reasoning and conformance maturity
+Current v0 probes cover:
 
 ```text
-Reasoning Model specified                  yes
-first cross-Skill adoption                 yes
-cross-domain companion experiment          yes
-optional companion profile                 retained
-mandatory artifact embedding               not warranted
-first bounded conformance drift rule        qualified
-broad semantic linter                       not warranted
-central reasoning engine                    no / not warranted
-Campaign-schema semantic promotion          deferred
-Repository Semantic Map                     deferred
+regular-file containment
+Python import syntax
+supported manifest dependency declarations
+exact UTF-8 literal search
+```
+
+Every observation preserves target ref, evidence refs, source/method, scope, completeness, and currentness. A probe establishes only its declared mechanical fact.
+
+### Repository Semantic Map v0
+
+A bounded map combines **supplied** observations into `repository_locator` entities and `DERIVED` mechanical relations. It rejects mixed target refs and explicitly remains incomplete.
+
+It does not infer `Component`, `Layer`, `Boundary`, architecture quality, importance, or a recommended change.
+
+### Cross-Skill semantic companion
+
+An optional append-only SHA-256 hash chain preserves explicit artifact/evidence/claim/uncertainty references between Skills. It stores provenance references, not hidden chain of thought.
+
+Campaigns can carry this as `semantic-state.jsonl` without changing Campaign schema v2. Repository-bound Campaigns bind new entries to the current TargetSnapshot digest; targetless Campaigns require an explicit target ref.
+
+### Skill/domain conformance
+
+`skill-manifests/` describes deterministic Skill interfaces. `domain-packs/` provides reference manifests for a bounded Engineering slice and the completed Product Management migration.
+
+The new checker validates manifest/domain shape and cross-reference consistency while explicitly rejecting fields that imply deterministic semantic truth, auto-routing, automatic Skill selection, or automatic uncertainty ranking.
+
+### Campaign observability and portability
+
+New projections/transport commands include:
+
+```text
+campaign inspect
+campaign explain
+campaign diff
+campaign semantic-state-append
+campaign semantic-state
+campaign resume-context
+campaign replay
+campaign graph
+campaign bundle-export
+campaign bundle-verify
+campaign bundle-import
+```
+
+These inspect, connect, project, or transport durable state; they do not determine a warranted next action. Replay refuses to invent historic full-state snapshots not stored by Campaign v2. Bundles verify byte/path integrity, not semantic correctness.
+
+## Domain Pack status
+
+The build-first candidate extracts **reference manifests**, not a plugin runtime:
+
+```text
+domain-packs/engineering.yaml
+domain-packs/product-management.yaml
+```
+
+Engineering is deliberately represented by the first bounded semantic-alignment slice, not by a claim that every engineering Skill has been normalized. Product Management references the completed 27-Skill repository-qualified migration and its existing qualification policy.
+
+```text
+Domain Pack membership != support/promotion qualification
+Domain Pack membership != automatic routing authority
 ```
 
 ## Authority boundary
 
-The semantic architecture preserves the Campaign control boundary:
+The active agent/human owns semantic interpretation, consequential uncertainty selection, warranted responsibility selection, semantic capability selection, and judgment about whether evidence warrants a conclusion or repair success.
 
-```text
-Agent owns:
-- semantic interpretation;
-- consequential uncertainty selection;
-- warranted responsibility selection;
-- semantic capability selection;
-- judgment about whether evidence justifies a conclusion.
-
-Deterministic machinery owns:
-- repository identity and mechanically observable state;
-- structural validation;
-- persistence and integrity;
-- exact-byte provenance;
-- declared capability metadata;
-- bounded consistency checks over explicit contracts;
-- authority metadata checks;
-- reconstructible transition history;
-- validation of explicitly promoted mechanical semantic representations.
-```
+Deterministic machinery may own repository identity/mechanical observation, declared probe scope/completeness, structural validation, persistence/integrity, exact-byte provenance, bounded conformance checks, authority metadata checks, reconstructible history, and bundle integrity.
 
 Therefore:
 
@@ -225,81 +225,39 @@ artifact valid != claim true
 relation detected != architectural intent established
 capability available != capability warranted
 repository changed != repair succeeded
-ontology term documented != runtime-enforced concept
 semantic profile valid != reasoning semantically correct
 registry liveness valid != Skill semantically correct
-canonical Skill tree exists != native harness observed/invoked Skill
-companion reconstruction value != Campaign promotion warrant
-Phase N complete != Phase N+1 authorized
-one Phase 15 rule qualified != broad Phase 15 authorized
+semantic map relation != architecture judgment
+manifest valid != Skill should run
+bundle valid != Campaign semantically correct
+provenance edge != semantic support
 ```
 
-## Ontology admission rule
+## Construction Diminishing-Returns Gate
 
-A candidate concept should enter the shared ontology only when all of the following are true:
+Additional empirical validation becomes required when construction can no longer resolve its own architecture questions. Signals include competing designs with no contract-based discriminator, abstraction without new capability, speculative durable fields, formalization outpacing consumption, maintenance dominating capability growth, persistent placement ambiguity, behavioral-value questions becoming decisive, or pressure to transfer semantic judgment into deterministic machinery.
 
-1. it answers at least one demonstrated competency question;
-2. at least two meaningful reasoning situations need the distinction, unless the distinction protects a critical safety/authority boundary;
-3. its meaning can be stated independently of one Skill implementation;
-4. its relationship to evidence and authority is clear;
-5. it does not duplicate an existing canonical concept under another name.
-
-Executable promotion requires the additional evidence described in [`implementation-plan.md`](implementation-plan.md).
+Completing the current build package does not automatically mean the gate has been reached.
 
 ## Non-goals
 
 This initiative does **not** authorize:
 
 - a universal ontology of all software engineering;
-- a mandatory knowledge graph for every Campaign;
+- a complete repository knowledge graph;
 - automatic semantic routing;
 - automatic architecture judgment;
+- automatic uncertainty ranking;
+- automatic Skill selection;
 - confidence scores treated as truth probabilities;
-- ontology-driven autonomous mutation authority;
+- ontology-driven mutation authority;
 - replacing source evidence with a generated semantic map;
-- encoding the entire ontology in YAML/JSON before real Skills demonstrate the need;
-- a central Reasoning Engine that ranks uncertainty, selects responsibility/capability, or decides Campaign disposition;
-- mandatory use of `semantic_reasoning_profile` in every domain artifact;
-- a generic documentation/prose truth checker;
-- broad conformance rules without observed maintenance defects.
-
-## Relationship to the Campaign
-
-The Campaign remains the durable decision process. The semantic architecture supplies a shared language for what Campaign participants mean.
-
-The intended relationship is:
-
-```text
-repository / external source
-        |
-        v
-observations and evidence
-        |
-        v
-shared semantic vocabulary
-        |
-        v
-agent-authored claims and uncertainty
-        |
-        v
-responsibility / capability / authority
-        |
-        v
-Campaign decision and durable transition
-```
-
-The ontology does not replace Campaign evidence. The experimental semantic profile remains outside Campaign state. The Phase 15 liveness checker is a repository CI conformance rule, not Campaign state or routing authority.
+- a central Reasoning Engine;
+- mandatory use of `semantic_reasoning_profile` in every artifact;
+- claiming that this build-first substrate was empirically validated by the historical Phase 10 episodes.
 
 ## Current frontier
 
-Phase 10 is complete and the first evidence-triggered Phase 15 conformance rule is qualified. No broad later semantic phase is automatically active.
+The build-first candidate extends the already-qualified Phase 10/Phase 15 baseline with bounded mechanical substrate, map/state sharing, Campaign observability, broader conformance, reference Domain Packs, and portability ergonomics while preserving Campaign schema v2.
 
-The next architecture package must be justified by observed repository/product pressure and the relevant trigger in [`implementation-plan.md`](implementation-plan.md). In particular:
-
-- Phase 11 waits for repeated demand for a new mechanical semantic relation;
-- Phase 12 waits for repeated costly reconstruction of the same repository entities/relations;
-- Phase 13 waits for demonstrated consequential cross-session control-plane state;
-- Phase 14 waits for at least two genuinely independent domain implementations exposing a reusable domain-pack boundary;
-- additional Phase 15 rules wait for new observed maintenance/conformance defects.
-
-Preserving the current architecture unchanged is a valid outcome when none of those triggers is demonstrated.
+After exact-head qualification, further construction should come from a concrete remaining product/integrity gap. When the next architecture instead depends on a behavioral value question, stop building and invoke the additional empirical-validation program defined by the diminishing-returns policy.
