@@ -71,6 +71,11 @@ class CampaignBundleService:
     def export(self, destination: str | Path) -> Path:
         if not self.workspace.is_dir():
             raise ValueError(f"campaign workspace does not exist: {self.workspace}")
+
+        output = Path(destination).resolve()
+        if output == self.workspace or self.workspace in output.parents:
+            raise ValueError("campaign bundle destination must be outside the workspace")
+
         files: list[tuple[str, bytes]] = []
         for path in sorted(self.workspace.rglob("*"), key=lambda value: value.as_posix()):
             if path.is_symlink():
@@ -95,7 +100,6 @@ class CampaignBundleService:
             json.dumps(manifest, sort_keys=True, indent=2, ensure_ascii=False) + "\n"
         ).encode("utf-8")
 
-        output = Path(destination).resolve()
         output.parent.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(output, "w") as archive:
             _write_deterministic_member(archive, MANIFEST_NAME, manifest_bytes)
