@@ -1,14 +1,14 @@
 # Campaign Observability and Portability
 
-**Status:** Executable additive product capability  
+**Status:** Executable additive product capability candidate  
 **Campaign schema:** remains v2  
-**Semantic authority:** unchanged; commands project or transport durable state and provenance only
+**Semantic authority:** unchanged; commands project, connect, or transport durable state and provenance only
 
 ## Purpose
 
-Campaign durability becomes more useful when a fresh agent/operator can inspect, reconstruct, compare, visualize, and transport the state without manually reading every workspace file.
+Campaign durability becomes more useful when a fresh agent/operator can inspect, reconstruct, compare, visualize, and transport state without manually reading every workspace file.
 
-This feature family adds deterministic projections over existing Campaign v2 state. It does not add a new semantic planner or infer a next action.
+This feature family adds deterministic projections over existing Campaign v2 state plus an optional companion semantic-reference log. It does not add a semantic planner or infer a next action.
 
 ## `campaign inspect`
 
@@ -18,33 +18,51 @@ Produces the mechanically reconstructible Campaign snapshot:
 - trace-ordered transitions;
 - evidence refs;
 - policy when present;
-- handoff when present.
+- handoff when present;
+- summary of the optional `semantic-state.jsonl` companion.
 
-The JSON result explicitly reports:
-
-```text
-semantic_recommendation_included: false
-semantic_truth_established: false
-```
+The result explicitly reports that no semantic recommendation/truth is established.
 
 ## `campaign explain --ref`
 
-Looks up an **exact durable identifier/reference** and reports where it occurs in reconstructed state/history, including supported cases such as:
+Looks up an **exact durable identifier/reference** and reports where it occurs in reconstructed Campaign or companion state, including supported cases such as:
 
-- active responsibility ID;
-- active uncertainty ID;
-- deferred responsibility ID;
-- transition ID;
-- evidence ref consumed by transitions;
-- matching trace event values.
+- active responsibility/uncertainty IDs;
+- deferred responsibility IDs;
+- transition IDs;
+- transition evidence refs;
+- matching trace-event values;
+- semantic companion entry IDs;
+- companion artifact/profile/evidence/claim/uncertainty refs.
 
-This is provenance explanation, not semantic explanation. It can answer “where was this ref recorded/used?” but not “was this decision good?”
+This is provenance explanation, not semantic explanation. It can answer “where was this ref recorded or consumed?” but not “was this claim or decision correct?”
 
 ## `campaign diff`
 
-Compares two exact transition records field-by-field.
+Compares two exact transition records field-by-field. It does not claim that changed metadata represents improvement or regression.
 
-It does not claim that changed metadata represents improvement or regression. The active agent interprets the significance of the diff.
+## Campaign semantic companion
+
+Commands:
+
+```text
+campaign semantic-state-append
+campaign semantic-state
+```
+
+The companion is stored as `semantic-state.jsonl` in the Campaign workspace but is **not a field in `CampaignState`**. Campaign schema therefore remains v2.
+
+Each entry can reference a source Skill, artifact, evidence, claims, uncertainties, parent semantic entries, and an optional `semantic_reasoning_profile`. Entries are append-only and SHA-256 chained.
+
+For repository-bound Campaigns, new entries derive their target identity from the current TargetSnapshot digest. A caller-supplied target ref that disagrees is rejected. Targetless Campaigns require an explicit target ref.
+
+```text
+semantic companion chain valid
+!=
+referenced claim true
+```
+
+Because the companion is a workspace file, portable Campaign bundles carry it automatically without a Campaign schema migration.
 
 ## Resume Capsule — `campaign resume-context`
 
@@ -63,23 +81,16 @@ external boundaries
 evidence refs
 recent transitions
 handoff when present
+semantic companion summary when present
 ```
 
-It deliberately does **not** emit “recommended next step.”
+It deliberately does **not** emit a recommended next action.
 
-The capsule's explicit limit is:
-
-> This capsule reconstructs durable declared state; it does not decide the next warranted action.
-
-This command is designed to reduce manual fresh-context reconstruction while preserving the Campaign principle that the active agent owns semantic judgment.
+Its explicit limit states that the capsule reconstructs durable declared state and optional companion references; the active agent still decides what action is warranted.
 
 ## Replay — `campaign replay`
 
-`campaign replay --at-transition <id>` reconstructs the trace prefix through an exact transition and reports:
-
-- transition prefix;
-- state label at that cursor;
-- cumulative transition evidence refs.
+`campaign replay --at-transition <id>` reconstructs the trace prefix through an exact transition and reports the transition prefix, state label at that cursor, and cumulative transition evidence refs.
 
 Campaign schema v2 does not store a complete `CampaignState` snapshot after every historical transition. Replay therefore explicitly reports:
 
@@ -87,21 +98,22 @@ Campaign schema v2 does not store a complete `CampaignState` snapshot after ever
 historic_full_state_reconstructed: false
 ```
 
-It must not fabricate old state fields from the present state.
+It must not fabricate old state fields from present state.
 
 ## Provenance graph — `campaign graph`
 
-Outputs either JSON or Mermaid for mechanically established Campaign relations:
+Outputs JSON or Mermaid for mechanically established relations such as:
 
 ```text
 Campaign contains_transition Transition
 Transition followed_by Transition
 Transition references_evidence EvidenceRef
+Campaign has_semantic_companion_entry SemanticStateEntry
+SemanticStateEntry semantic_parent_of SemanticStateEntry
+SemanticStateEntry references_artifact ArtifactRef
 ```
 
-The graph is intentionally a provenance graph, not a semantic causal graph.
-
-It does not infer that evidence supports a decision, only that a transition record references that evidence.
+The graph is a provenance graph, not a semantic causal graph. A recorded reference edge does not establish that evidence semantically supports a conclusion.
 
 ## Portable Campaign Bundles
 
@@ -120,8 +132,11 @@ A bundle is a deterministic ZIP containing exact Campaign workspace bytes plus `
 - deterministic member ordering and timestamps;
 - symlink refusal;
 - reserved manifest-name protection;
-- exact workspace bytes preserved;
+- export destination must be outside the source workspace;
+- exact captured workspace bytes preserved;
 - no semantic-success claim.
+
+Rejecting an in-workspace destination prevents the export operation from creating a new workspace file that is absent from the manifest it just generated.
 
 ### Verification properties
 
@@ -147,7 +162,7 @@ bundle valid != imported Campaign should act on a new repository
 
 ### Import properties
 
-Import first verifies the bundle, requires a new destination, writes only declared safe members, and removes a partially created destination if extraction fails.
+Import verifies first, requires a new destination, writes only declared safe members, and removes a partially created destination if extraction fails.
 
 After import, normal `campaign validate` remains the authority for Campaign reconstruction integrity.
 
@@ -157,6 +172,7 @@ Together:
 
 ```text
 Campaign workspace
+    -> optional semantic companion
     -> bundle export
     -> another machine/session
     -> bundle verification/import
@@ -178,4 +194,5 @@ These features do not:
 - reproduce hidden chain of thought;
 - reconstruct historical full-state snapshots not stored by Campaign v2;
 - assert semantic truth from archive integrity;
-- turn provenance edges into causal/architectural claims.
+- turn provenance edges into causal/architectural claims;
+- promote the Phase 10 companion profile into Campaign admission.
