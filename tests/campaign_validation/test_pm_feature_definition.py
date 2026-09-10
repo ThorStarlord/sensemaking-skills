@@ -236,9 +236,10 @@ def test_campaign_catalog_exposes_wave2_without_duplicate_prd_authority() -> Non
         assert item.returns_control is True
 
     assert registry.get("prd") is None
-    prd_producers = [
-        item.capability.capability_id
-        for item in registry.entries
-        if item.capability.output_artifact == "prd" and item.availability != "unavailable"
-    ]
+    prd_producers = []
+    for capability_id in registry.ids():
+        item = registry.get(capability_id)
+        assert item is not None
+        if item.capability.output_artifact == "prd" and item.availability.value != "unavailable":
+            prd_producers.append(capability_id)
     assert prd_producers == ["to-prd"]
