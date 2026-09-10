@@ -1,0 +1,23 @@
+schema_version: 1
+skill_id: output-reconciler
+domain: engineering
+responsibilities:
+  - output_reconciliation
+consumes:
+  - work_claim
+  - repository_sensemaking_brief
+  - prior_evidence
+produces:
+  - reconciliation_report
+semantic_concepts:
+  - TargetSnapshot
+  - Evidence
+  - Claim
+  - EpistemicStatus
+  - Uncertainty
+  - Change
+  - Outcome
+  - Validation
+  - Decision
+  - Artifact
+repository_mutation: false
