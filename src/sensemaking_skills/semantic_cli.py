@@ -16,6 +16,7 @@ from .semantic_architecture import (
     SemanticStateEntry,
     SemanticStateStore,
     build_repository_semantic_map,
+    build_semantic_catalog,
     probe_exact_search,
     probe_file_containment,
     probe_manifest_dependencies,
@@ -266,4 +267,50 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         }
         _emit(payload, output_json=output_json)
         if not result.valid:
+            raise click.exceptions.Exit(3)
+
+    @semantic_group.command(name="catalog")
+    @click.option("--manifests-dir", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--domain-packs-dir", default=None, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--repo-root", default=None, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--skill-id", default=None, help="Optional exact Skill manifest id filter")
+    @click.option("--domain-id", default=None, help="Optional exact Domain Pack/domain filter")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_catalog(
+        manifests_dir: Path,
+        domain_packs_dir: Path | None,
+        repo_root: Path | None,
+        skill_id: str | None,
+        domain_id: str | None,
+        output_json: bool,
+    ) -> None:
+        """Inspect declared Skill/Domain Pack metadata without selecting a capability."""
+        normalized_skill = skill_id.strip() if skill_id else None
+        normalized_domain = domain_id.strip() if domain_id else None
+        if skill_id is not None and not normalized_skill:
+            raise click.ClickException("--skill-id must be non-empty when supplied")
+        if domain_id is not None and not normalized_domain:
+            raise click.ClickException("--domain-id must be non-empty when supplied")
+        result = build_semantic_catalog(
+            manifests_dir,
+            domain_packs_dir=domain_packs_dir,
+            repo_root=repo_root,
+            skill_id=normalized_skill,
+            domain_id=normalized_domain,
+        )
+        payload = {
+            "ok": not result.diagnostics,
+            "code": "SEMANTIC_CATALOG",
+            "skill_manifest_count": len(result.skill_manifests),
+            "domain_pack_count": len(result.domain_packs),
+            "skill_manifests": list(result.skill_manifests),
+            "domain_packs": list(result.domain_packs),
+            "catalog_diagnostics": [to_dict(item) for item in result.diagnostics],
+            "repository_conformance_valid": result.conformance_valid,
+            "selection_performed": False,
+            "semantic_truth_established": False,
+            "explicit_limit": "Catalog inspection exposes declared metadata only; it does not select, rank, or warrant a Skill/capability.",
+        }
+        _emit(payload, output_json=output_json)
+        if result.diagnostics:
             raise click.exceptions.Exit(3)

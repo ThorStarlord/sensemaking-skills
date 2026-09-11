@@ -123,6 +123,9 @@ jobs:
       - name: Strategic state contract validation
         run: python scripts/validate-strategic-state.py --repo-root .
 
+      - name: Strategic candidate-directions boundary validation
+        run: python scripts/validate-candidate-directions.py --repo-root .
+
       - name: Canonical Probe Engine gate
         run: |
           python scripts/probe-repo.py --repo-root . --output "$RUNNER_TEMP/probe-report.yaml"
@@ -148,6 +151,7 @@ jobs:
             tests/test_path_drift.py \
             tests/test_cli.py \
             tests/test_operations_runbook_authority.py \
+            tests/test_candidate_directions_validation.py \
             tests/test_semantic_reasoning_profile.py \
             tests/test_skill_registry_liveness.py \
             tests/test_strategic_state_validation.py \
@@ -155,6 +159,7 @@ jobs:
             tests/test_semantic_reference_audit.py \
             tests/test_semantic_conformance.py \
             tests/test_semantic_cli.py \
+            tests/test_semantic_catalog.py \
             -q
 
       - name: Assert verification did not mutate tracked state
