@@ -10,9 +10,48 @@ An agent-native engineering sensemaking and control layer for software-engineeri
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
 
+## Control architecture
+
+Sensemaking now distinguishes four scopes of reasoning and durable state:
+
+```text
+LEVEL 4 — PRODUCT THESIS / STRATEGY REVISION
+What product should this be, for whom, and why?
+                    |
+                    v
+LEVEL 3 — STRATEGIC REPOSITORY EVOLUTION
+What should change in the product/repository next?
+                    |
+                    v
+LEVEL 2 — RESPONSIBILITY / CAMPAIGN
+What bounded responsibility resolves the selected decision?
+                    |
+                    v
+LEVEL 1 — EXECUTION
+What concrete steps correctly perform the bounded work?
+```
+
+These are **reasoning/control scopes, not four runtime engines**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, identity, bounded conformance, and reconstruction.
+
+The governing rule is:
+
+> **Lower levels may execute decisions delegated from higher levels, but they may not silently redefine commitments owned by the higher level.**
+
+The current authority surfaces are:
+
+- `docs/product-strategy.md` — Level-4 product thesis and strategic authority;
+- `STATUS.md` — Level-3 Strategic Repository Evolution state;
+- `docs/strategic-outer-loop.md` — canonical four-level control model;
+- `docs/strategic-state-contract.md` — Level-3 durable state contract;
+- `docs/product-thesis-revision.md` — Level-4 revision and owner-ratification contract;
+- `docs/sensemaking-campaign.md` — canonical Level-2 Campaign model;
+- ordinary branch/task/test state — Level-1 execution evidence.
+
+The Strategic Frontier is decision-relevant possibility state, **not a backlog**. Selecting a strategic boundary does not automatically authorize implementation. Level 3 may escalate a thesis-level contradiction to Level 4, but it does not silently rewrite the product thesis.
+
 ## What v0.3 ships
 
-The core abstraction is a **Sensemaking Campaign**: a durable engineering decision process that survives agent/session boundaries.
+The installed v0.3 package primarily supplies the **Level-2/Level-1 durable and mechanical substrate** used by the active agent. Its core durable abstraction is a **Sensemaking Campaign**: a bounded engineering decision process that survives agent/session boundaries.
 
 The installed product includes:
 
@@ -30,6 +69,8 @@ The installed product includes:
 - a bounded mechanical Semantic Architecture substrate for repository observations;
 - Campaign observability projections, Resume Capsule, replay/provenance graph, and portable integrity bundles.
 
+The Level-3/Level-4 Strategic Outer Loop foundation is currently a **repository documentation/authority architecture**, not a shipped autonomous strategic runtime. Installing the package does not create a `StrategicPlanner`, automatically rank the Strategic Frontier, revise product strategy, or generate Campaigns without agent judgment.
+
 The shipped wheel deliberately excludes retained research-lab packages (`campaign_validation`, `campaign_accounting`, `exploratory_authorization`, `exploratory_execution`). Those remain source-only repository/lab infrastructure.
 
 ## Product boundary
@@ -41,6 +82,8 @@ The active coding agent owns semantic control:
 - Is execution authorized?
 - What does evidence mean?
 - Should the Campaign advance, defer, or close?
+- At Level 3, which strategic boundary, if any, is worth selecting next?
+- Does new evidence require Level-4 thesis review rather than ordinary repository work?
 
 Deterministic machinery owns mechanically decidable contracts:
 
@@ -72,6 +115,10 @@ semantic map relation != architecture judgment
 manifest valid != Skill should run
 bundle valid != Campaign semantically correct
 repository changed != repair succeeded
+product thesis != strategic state
+Strategic Frontier != backlog
+strategic boundary selected != implementation authorized
+Level-3 state != Level-4 strategy authority
 ```
 
 ## Installation
@@ -293,6 +340,8 @@ The subsequent owner-authorized policy is build-first: additional empirical expe
 
 The **Construction Diminishing-Returns Gate** stops further speculative construction when architecture can no longer resolve competing designs, formalization outpaces consumption, maintenance dominates capability growth, or the decisive question becomes behavioral value rather than mechanical correctness.
 
+The Strategic Outer Loop uses the same discipline: higher-scope concepts should first be carried by existing authority surfaces, and new deterministic machinery must not be added merely to mirror the conceptual model.
+
 See `docs/semantic-architecture/README.md`, `docs/semantic-architecture/implementation-plan.md`, and `docs/semantic-architecture/build-first-policy.md`.
 
 ## Real-harness qualification
@@ -315,6 +364,9 @@ Tagged publication remains a separate owner action.
 
 - Not a centralized semantic router.
 - Not an autonomous project manager.
+- Not an `OuterLoopEngine` or deterministic `StrategicPlanner`.
+- Not an automatic Strategic Frontier ranking system.
+- Not an automatic product-thesis revision mechanism.
 - Not a universal planner or capability-ranking engine.
 - Not a semantic truth validator.
 - Not a complete repository knowledge graph.
@@ -340,18 +392,26 @@ skill-manifests/            repository-owned deterministic Skill interface manif
 domain-packs/               repository-owned domain reference manifests
 scripts/                    canonical validation/probe tooling
 tests/                      product, installed-wheel, integration, and retained-lab tests
-docs/                       canonical product, semantic architecture, release, and runbook docs
+docs/                       canonical product, strategic, semantic architecture, release, and runbook docs
 experiments/                retained research evidence/lab material
 ```
 
 ## Canonical documentation
 
-- `STATUS.md` — current release/product state.
+Read the repository from higher-scope authority into bounded execution:
+
+- `docs/product-strategy.md` — Level-4 product thesis, boundary, hypotheses, and strategic authority.
+- `STATUS.md` — current Level-3 Strategic Repository Evolution state and cross-program status.
+- `docs/strategic-outer-loop.md` — canonical four-level control model and Level-3/Level-4 relationship.
+- `docs/strategic-state-contract.md` — Level-3 durable strategic-state contract.
+- `docs/product-thesis-revision.md` — Level-4 strategy revision and owner-ratification contract.
+- `docs/product-operating-model.md` — value stream, responsibility ownership, governance, delegation, and escalation.
+- `docs/agent-native-operating-workflow.md` — Level-2 agent-native responsibility/Campaign operating map.
 - `docs/milestone-runbook.md` — operating and qualification runbook.
 - `docs/sensemaking-campaign.md` — canonical Campaign product model.
 - `docs/campaign-target-snapshot.md` — target provenance and drift contract.
 - `docs/campaign-observability-and-portability.md` — observability, semantic companion, Resume Capsule, replay/graph, and bundles.
-- `docs/semantic-architecture/README.md` — Semantic Architecture index.
+- `docs/semantic-architecture/README.md` — Semantic Architecture index; orthogonal semantic/layer view.
 - `docs/semantic-architecture/implementation-plan.md` — build-first semantic roadmap.
 - `docs/semantic-architecture/build-first-policy.md` — diminishing-returns gate.
 - `docs/semantic-architecture/mechanical-semantic-substrate.md` — probes/map/state contracts.

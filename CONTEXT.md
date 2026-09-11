@@ -2,79 +2,88 @@
 
 ## Current product definition
 
-Sensemaking Skills is an **agent-native engineering sensemaking and control layer for software-engineering agents**. It helps an active coding agent move from repository uncertainty to **evidence-grounded, warranted next action**.
+Sensemaking Skills is an **agent-native engineering sensemaking and control layer for software-engineering agents**. It helps an active coding agent move from repository uncertainty to **evidence-grounded, warranted next action** while preserving durable state across different scopes of repository development.
 
-The product-level question is not "which predefined workflow node runs next?" It is:
+The repository now distinguishes four control scopes:
+
+```text
+LEVEL 4 — PRODUCT THESIS / STRATEGY REVISION
+What product should this be, for whom, and why?
+                    |
+                    v
+LEVEL 3 — STRATEGIC REPOSITORY EVOLUTION
+What should change in the product/repository next?
+                    |
+                    v
+LEVEL 2 — RESPONSIBILITY / CAMPAIGN
+What bounded responsibility resolves the selected decision?
+                    |
+                    v
+LEVEL 1 — EXECUTION
+What concrete steps correctly perform the bounded work?
+```
+
+These are reasoning/control scopes, **not four runtime engines**. The active coding agent owns semantic judgment across the scopes permitted by current authority. Deterministic machinery supports mechanically decidable representation, validation, provenance, persistence, integrity, target identity, conformance, and reconstruction.
+
+The core control law is:
+
+> **Lower levels may execute decisions delegated from higher levels, but they may not silently redefine commitments owned by the higher level.**
+
+At Level 2, the product-level question remains:
 
 > **Given the current goal, evidence, uncertainty, and authority, what responsibility is warranted next?**
 
 A responsibility is **warranted** when it is supported by the current evidence, appropriate to the unresolved uncertainty, and permitted by the current authority/scope.
 
-The active coding agent owns the recursive control loop (ADR 0013). Sensemaking constrains that loop with repository evidence, bounded responsibilities, durable artifacts, validators, reconciliation, repair verification, and authority boundaries.
+The active coding agent owns the recursive semantic control loop (ADR 0013). Sensemaking constrains that loop with repository evidence, bounded responsibilities, durable artifacts, validators, reconciliation, repair verification, authority boundaries, and higher-scope strategic state.
 
 ### Lifecycle positioning
 
-Sensemaking is **cross-cutting, not an SDLC stage**. Software-engineering work
-contains nested feedback loops (discovery/definition/design/build/verify, and
-smaller loops inside each). The Sensemaking decision layer can operate across
-transitions where current evidence could change the warranted responsibility.
+Sensemaking is **cross-cutting, not an SDLC stage**. Software-engineering work contains nested feedback loops (discovery/definition/design/build/verify, and smaller loops inside each). The Sensemaking decision layer can operate across transitions where current evidence could change the warranted responsibility.
 
-New evidence may warrant a responsibility conventionally considered earlier,
-later, or sideways in a lifecycle. These are evidence-grounded responsibility
-transitions, not backward/forward commands. Local mechanical iteration stays
-inside the selected responsibility until evidence puts that responsibility itself
-in question.
+New evidence may warrant a responsibility conventionally considered earlier, later, or sideways in a lifecycle. These are evidence-grounded responsibility transitions, not backward/forward commands. Local mechanical iteration stays inside the selected responsibility until evidence puts that responsibility itself in question.
 
-This clarification does not broaden product scope. The current product definition
-remains an engineering sensemaking/control layer for software-engineering agents,
-and the ratified external product scope remains the validated, human-reviewed
-`repository_sensemaking_brief` defined by ADR 0014. It does not ratify
-Sensemaking as a general product-development operating system.
+The Strategic Repository Evolution loop operates above bounded Campaign work. It evaluates product/repository capability state against current strategy, maintains the Strategic Frontier, selects or declines a repository-level responsibility, delegates bounded work downward, and reassesses after qualified results. It is not a roadmap processor and does not automatically rank work.
+
+This clarification does not silently broaden external product scope. The current product definition remains an engineering sensemaking/control layer for software-engineering agents, and the ratified external product scope remains the validated, human-reviewed `repository_sensemaking_brief` defined by ADR 0014 unless Level-4 authority explicitly revises it.
 
 See:
-- [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md) — current end-to-end operating map
+- [docs/product-strategy.md](docs/product-strategy.md) — Level-4 product thesis and strategic authority
+- [docs/strategic-outer-loop.md](docs/strategic-outer-loop.md) — canonical four-level control model
+- [docs/strategic-state-contract.md](docs/strategic-state-contract.md) — Level-3 durable strategic-state contract
+- [docs/product-thesis-revision.md](docs/product-thesis-revision.md) — Level-4 revision and owner-ratification contract
+- [docs/product-operating-model.md](docs/product-operating-model.md) — value stream, ownership, delegation, and escalation
+- [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md) — Level-2 agent-native responsibility/Campaign operating map
 - [docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md) — decision vs. orchestration ownership
 - [docs/research/control-model-research-agenda.md](docs/research/control-model-research-agenda.md) — explicitly non-ratified research directions
 
-## Current evidence strategy: Goal A
+## Empirical qualification context
 
-The current product-validation priority is **Goal A — External Product
-Validation**. The canonical approved protocol is
-[docs/research/goal-a-external-product-validation-protocol.md](docs/research/goal-a-external-product-validation-protocol.md).
+The repository still retains the Goal A external-product-validation protocol and related evidence ceilings, but **new empirical experiments are currently deferred by owner direction**. Repository construction and mechanical qualification may continue when a concrete product/integrity/reconstruction capability has a mechanically bounded contract.
+
+The canonical Goal A protocol remains [docs/research/goal-a-external-product-validation-protocol.md](docs/research/goal-a-external-product-validation-protocol.md). Its admissibility and claim ceilings remain valid; deferral does not convert missing empirical evidence into a PASS.
 
 ```text
-Goal A       = ACTIVE
-A1           = ACTIVE  (absolute product utility)
-A2           = DEFERRED / UNAUTHORIZED
-Goal B / E3  = FROZEN / DEFERRED
+Goal A protocol = CANONICAL
+new Goal A execution = DEFERRED BY OWNER DIRECTION
+A2 comparative work = DEFERRED / UNAUTHORIZED
+native-harness / portability evidence = STILL OPEN
 ```
 
 Keep distinct:
 
-- **ratified current product scope** = validated, human-reviewed
-  `repository_sensemaking_brief` (ADR 0014);
-- **broader orchestration/control architecture** = informs research and
-  architecture, but **is not** silently ratified external product scope.
+- **ratified current external product scope** = validated, human-reviewed `repository_sensemaking_brief` (ADR 0014);
+- **broader orchestration/control architecture** = informs repository development and architecture, but is not silently promoted into external product scope;
+- **repository qualification** = proves repository/mechanical contracts at an exact candidate state;
+- **native-harness/product-value evidence** = remains unestablished where the relevant protocol requires it.
 
-Goal A validates only the ratified product scope, through constructed
-external product-validation episodes against 2 structurally different
-repositories × 2 fresh runs, with independent evidence audit and an
-**independent usefulness evaluation** — an independent evaluator (distinct
-from the producer; preferably distinct from the evidence auditor when
-operationally practical) renders the canonical `evaluator_usefulness` judgment.
-Actual human decision-owner usefulness review is **optional / deferred** and is
-**not required for A1**; A1 establishes no human decision-owner usefulness,
-human decision impact, human reuse intent, or actual human decision-change
-claim. Protocol approval does **not** authorize episode execution, and Goal B /
-research-grade E3 remains FROZEN / DEFERRED. Issue #218
-(`docs/research/normal-use-evidence-lane.md`) remains the
-**separate** normal-use evidence lane.
+The owner-directed build-first rule does not delete empirical questions. It says those questions need not control the current construction phase while existing contracts can still resolve a concrete mechanical/reconstruction boundary.
 
-## Top operating rule
+## Top operating rule — Level 2
 
 > **Resolve the nearest unresolved decision-changing uncertainty before committing to the eventual solution.**
 
-The practical loop is:
+The practical Level-2 loop is:
 
 ```text
 GOAL / AUTHORIZED SCOPE
@@ -89,6 +98,22 @@ GOAL / AUTHORIZED SCOPE
 
 This loop is recursive. New evidence may change the responsibility, the expected solution, or whether action is warranted at all.
 
+Level 3 sits above this loop:
+
+```text
+CURRENT PRODUCT STRATEGY
+  -> CURRENT CAPABILITY / REPOSITORY STATE
+  -> STRATEGIC FRONTIER
+  -> select or decline a strategic boundary
+  -> warranted repository-level responsibility
+  -> bounded Campaign / task
+  -> qualified result + evidence
+  -> update Level-3 state
+  -> reassess
+```
+
+Level 4 activates only when evidence challenges a product-thesis commitment or the owner changes strategic intent.
+
 ## Core principles
 
 1. **Responsibility before Skill** — decide what class of engineering work is warranted before choosing a Skill, tool, workflow, or patch.
@@ -100,24 +125,48 @@ This loop is recursive. New evidence may change the responsibility, the expected
 7. **Repair requires finding-specific verification** — generic green CI is not proof that the diagnosed finding was closed.
 8. **Authority is explicit** — distinguish what the agent may know, decide, act on, and publish/merge.
 9. **Stop when the next action is stable** — do not investigate every possible uncertainty once remaining uncertainty cannot change the warranted next action.
-10. **Harden only where pressured** — formalize new machinery when repeated real use exposes a stable, mechanically expressible failure boundary.
+10. **Harden only where pressured** — formalize new machinery when a stable, mechanically expressible boundary is actually justified.
+11. **Strategic Frontier is not backlog** — a Level-3 possibility is not automatic work or authorization.
+12. **Higher-level commitments are not silently rewritten** — Level 1 cannot redefine Level 2, Level 2 cannot redefine Level 3, and Level 3 cannot silently redefine Level 4.
 
 ## Architecture and ownership
 
+### Human owner
+
+The human owner retains authority for mission, strategic intent, major product-thesis changes, authority grants, claim-ceiling expansion, and reserved merge/release/publication decisions.
+
 ### Active coding agent
 
-The active software-engineering/coding agent owns the top-level loop. It:
+The active software-engineering/coding agent owns semantic judgment within authorized scope. It:
 - maintains the current goal and authorized scope;
 - interprets repository state and artifacts;
+- at Level 3, reconstructs current strategic state and selects or declines a strategic boundary;
 - identifies decision-changing uncertainty;
-- selects the next responsibility;
+- selects the next warranted responsibility;
 - chooses an appropriate bounded capability;
 - interprets resulting evidence;
-- decides whether continuation, stopping, escalation, or an owner decision is warranted.
+- decides whether continuation, stopping, escalation, or an owner decision is warranted;
+- escalates thesis-level contradictions rather than silently rewriting Level-4 commitments.
 
-### Sensemaking decision layer
+### Level 4 — Product Thesis / Strategy Revision
 
-The Sensemaking decision layer answers **what responsibility should happen next**. It does not require a complete predetermined path to the final solution.
+Level 4 owns the slower-changing product commitments: purpose, primary user, problem, JTBD, value proposition, product boundary, strategic principles, major non-goals, success measures, strategic bets, and evidence ceilings.
+
+The authority surface is `docs/product-strategy.md`; revision semantics are defined in `docs/product-thesis-revision.md`. Major strategy changes require the authority specified there, including explicit owner ratification for owner-reserved commitments.
+
+### Level 3 — Strategic Repository Evolution
+
+Level 3 answers **what should change in the product/repository next, if anything**. It works from current strategy, capability/repository state, material gaps/contradictions/opportunities, and the Strategic Frontier.
+
+`STATUS.md` is the current operational projection of Level-3 state. The conceptual contract is `docs/strategic-state-contract.md`.
+
+Level 3 may select product-definition, product-design, architecture, domain-model, capability-development, implementation, integrity/hardening, simplification/removal, qualification, documentation-reconciliation, migration, or no-change responsibilities. These are responsibility classes, not fixed lifecycle stages.
+
+### Level 2 — Sensemaking decision / Campaign layer
+
+The Level-2 Sensemaking decision layer answers **what bounded responsibility should happen next** for the selected decision. It does not require a complete predetermined path to the final solution.
+
+A Sensemaking Campaign is the durable Level-2 representation for bounded responsibility state, transitions, evidence, authority, artifacts, handoff, and continuation. Campaign machinery does not become a Level-3 strategic planner merely because strategic state exists above it.
 
 ### Skills
 
@@ -135,11 +184,11 @@ Representative responsibilities include:
 
 Ordinary coding work is also a valid bounded responsibility when the task is already mechanically narrow and sufficiently evidenced.
 
-### Execution and orchestration
+### Execution and orchestration — Level 1 support
 
 Execution/orchestration answers **how an already-selected responsibility is coordinated and performed**. It may invoke a Skill, sequence deterministic substeps, resolve artifact paths, collect outputs, retry established execution steps, and return results to the active agent.
 
-Registered workflows are bounded subgraphs inside the larger agent-owned loop. They are not the product-level controller.
+Registered workflows are bounded subgraphs inside the larger agent-owned loop. They are not the product-level controller and they are not the Strategic Outer Loop.
 
 > **Decision selects the work. Orchestration coordinates the work. Evidence determines what becomes warranted next.**
 
@@ -164,17 +213,7 @@ The brief is decision support, not repair authorization.
 
 ### MODEL_WARRANT authority (canonical; see ADR 0015 addendum)
 
-Whether the brief's existing evidence environment is **sufficient for the current
-consequential reasoning problem** is a task-relative judgment. `representation_sufficiency`
-is that authoritative judgment supplied by the producer and mapped deterministically to
-`MODEL_WARRANT` (sufficient -> NO; contract-valid insufficient_bounded -> PARTIAL;
-inconclusive/missing/malformed -> INCONCLUSIVE; FULL deferred). Mechanical signals
-(behavioral flow, provenance spread, self-derived) are diagnostic evidence to that
-judgment, not independent vetoes. `MODEL_WARRANT` and the repository-action outcome are
-orthogonal; `NO_CHANGE` is affirmative-only; INCONCLUSIVE gates before representation
-materialization, action routing, and NO_CHANGE terminalization. Absence of evidence is
-never treated as insufficiency. The agent-mediated external product path is demonstrated
-on one fresh repository; product-wide GA and standard-CLI real-executor E2E are NOT claimed.
+Whether the brief's existing evidence environment is **sufficient for the current consequential reasoning problem** is a task-relative judgment. `representation_sufficiency` is that authoritative judgment supplied by the producer and mapped deterministically to `MODEL_WARRANT` (sufficient -> NO; contract-valid insufficient_bounded -> PARTIAL; inconclusive/missing/malformed -> INCONCLUSIVE; FULL deferred). Mechanical signals (behavioral flow, provenance spread, self-derived) are diagnostic evidence to that judgment, not independent vetoes. `MODEL_WARRANT` and the repository-action outcome are orthogonal; `NO_CHANGE` is affirmative-only; INCONCLUSIVE gates before representation materialization, action routing, and NO_CHANGE terminalization. Absence of evidence is never treated as insufficiency. The agent-mediated external product path is demonstrated on one fresh repository; product-wide GA and standard-CLI real-executor E2E are NOT claimed.
 
 ## Evidence model
 
@@ -225,7 +264,7 @@ The canonical artifact contracts live in `skills/workflow-planner/references/art
 
 Validation is deterministic/mechanical. It can establish that required fields exist, controlled vocabulary is valid, references resolve, paths satisfy contracts, and artifact structure is correct.
 
-It cannot prove that the right evidence was selected, that a conclusion follows, that a recommendation is useful, or that the original engineering problem is solved.
+It cannot prove that the right evidence was selected, that a conclusion follows, that a recommendation is useful, that the Strategic Frontier is correctly prioritized, or that the original engineering problem is solved.
 
 ### Reconciliation
 
@@ -246,7 +285,7 @@ implemented != validated != reconciled != repair-verified != authorized != integ
 Treat authority as a parallel control track:
 
 - **Can KNOW?** Inspect repository facts; use bounded probes for empirical facts; do not infer external reality without evidence.
-- **Can DECIDE?** Reversible implementation details may be agent-decidable within scope; owner preference, policy, and canonical authority remain owner/ADR decisions.
+- **Can DECIDE?** Reversible implementation details may be agent-decidable within scope; owner preference, policy, and owner-reserved product-thesis commitments remain owner decisions.
 - **Can ACT?** Local reversible work depends on scope; external mutations require explicit authority.
 - **Can PUBLISH / MERGE / DEPLOY?** Requires explicit authorization where the environment or project policy requires it.
 
@@ -259,9 +298,13 @@ implemented    != verified
 validated      != owner-ratified
 promoted       != merged
 merged         != original-finding closure
+product thesis != strategic state
+Strategic Frontier != backlog
+strategic boundary selected != implementation authorized
+Level-3 state != Level-4 strategy authority
 ```
 
-A correct terminal state can be: **the remaining uncertainty is no longer technical; it is an owner or publication decision.**
+A correct terminal state can be: **the remaining uncertainty is no longer technical; it is an owner, strategic, or publication decision.**
 
 ## Stop and continuation conditions
 
@@ -279,7 +322,7 @@ Stop when:
 - repository safety requires stopping;
 - authorized scope is exhausted.
 
-Not every cycle ends in code. Valid outcomes include discovery, recommendation, reconciliation, retirement, escalation, owner handoff, or a decision not to change anything.
+Not every cycle ends in code. Valid outcomes include discovery, recommendation, reconciliation, retirement, escalation, owner handoff, strategy review, or a decision not to change anything.
 
 Durable continuation should prefer:
 
@@ -301,7 +344,7 @@ The repository contains historical and current workflow/runtime machinery. Prese
 
 - ADRs 0001-0012 document important validation, artifact, routing, invocation, and runtime mechanics and their history.
 - ADR 0013 establishes the active agent as the primary control-loop owner.
-- ADR 0014 settles the current product boundary around evidence-grounded, human-reviewed repository sensemaking and defers automatic downstream routing.
+- ADR 0014 settles the current external product boundary around evidence-grounded, human-reviewed repository sensemaking and defers automatic downstream routing.
 - Registered workflows can remain useful bounded subgraphs or compatibility paths.
 - Runtime support for a route does not give that route product-level authority.
 
@@ -311,24 +354,32 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 
 | Resource | Purpose |
 | --- | --- |
-| `STATUS.md` | current development direction: what is ratified, in flight, and deferred; the highest-leverage next boundary; how to reconstruct this picture without prior context |
-| `docs/product-strategy.md` | current product purpose, user, boundary, principles, hypotheses, non-goals, and strategic frontier |
-| `docs/product-operating-model.md` | current value stream, responsibility ownership, governance loop, and runtime boundary |
-| `docs/agent-native-operating-workflow.md` | current top-level operating map |
+| `docs/product-strategy.md` | Level-4 product thesis: purpose, user, problem/JTBD, value, boundary, principles, non-goals, strategic bets, success measures, and evidence ceilings |
+| `STATUS.md` | current Level-3 Strategic Repository Evolution state: capability state, Strategic Frontier, active boundary/responsibility, deferrals, evidence ceilings, and reassessment status |
+| `docs/strategic-outer-loop.md` | canonical four-level control model and Level-3/Level-4 relationship |
+| `docs/strategic-state-contract.md` | Level-3 durable state semantics and required projection contents |
+| `docs/product-thesis-revision.md` | Level-4 strategy revision, escalation, disposition, and owner-ratification contract |
+| `docs/product-operating-model.md` | current value stream, responsibility ownership, governance loop, delegation, escalation, and runtime boundary |
+| `docs/agent-native-operating-workflow.md` | current Level-2 agent-native responsibility/Campaign operating map |
 | `docs/decision-orchestration-boundary.md` | current decision/orchestration ownership boundary |
 | `docs/canonical-vocabulary.yaml` | canonical enumerated vocabulary |
 | `skills/workflow-planner/references/artifact-contracts.yaml` | artifact and machine-field contracts |
 | `skills/workflow-planner/references/workflow-registry.yaml` | registered workflow/subgraph definitions |
 | `skills/workflow-planner/references/skill-registry.yaml` | registered Skill/capability catalog |
 | `skills/repo-sensemaker/references/evidence-rules.md` | repository-sensemaking evidence discipline |
+| `docs/semantic-architecture/README.md` | semantic-model/reasoning/capability/substrate architecture; orthogonal to the four control scopes |
 | `docs/research/control-model-research-agenda.md` | non-ratified research hypotheses |
-| `docs/research/goal-a-external-product-validation-protocol.md` | current product-validation protocol (Goal A) — ACTIVE |
+| `docs/research/goal-a-external-product-validation-protocol.md` | canonical external product-validation protocol; new execution currently deferred by owner direction |
 | `docs/adr/` | ratified/proposed architecture decisions and historical rationale |
 
 ## Domain language
 
 - **Sensemaking**: the broader decision/evidence/authority layer that moves engineering uncertainty toward warranted action.
 - **Sensemaking Skills**: this repository/distribution and its bounded responsibility implementations/support machinery.
+- **Product Thesis**: the Level-4 slower-changing commitments about product purpose, user, problem/JTBD, value, product boundary, strategic principles, major non-goals, success measures, strategic bets, and evidence ceilings.
+- **Strategic Repository Evolution**: Level-3 reasoning over current product/repository capability state to determine what repository-level responsibility, if any, is warranted next under the current product thesis.
+- **Strategic Frontier**: the currently material set of decision-relevant product/repository gaps, contradictions, opportunities, and unresolved boundaries. It is not a backlog and does not authorize work by itself.
+- **Thesis Review**: Level-3 escalation when evidence challenges a Level-4 commitment or when the owner changes strategic intent; the outcome may reaffirm, reinterpret, revise, retire, or supersede strategy under the applicable authority.
 - **Responsibility**: the class of work warranted by the current uncertainty/evidence state.
 - **Skill**: a bounded implementation of a responsibility with declared inputs/outputs.
 - **Workflow** (use qualified forms): `workflow-definition` (registry entry in `workflow-registry.yaml`), `workflow-recommendation` (`recommended_workflow_id` in brief), `workflow-selection` (`chosen_workflow_id` in plan), `workflow-execution` (runtime invocation). Bare `workflow` is ambiguous — always qualify.
@@ -348,25 +399,34 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 - **Reconciliation** (`claim-reconciliation`): comparison of `work_claim` against durable evidence → `reconciliation_report` (`verified | disputed | omitted`).
 - **Repair verification** (`finding-repair-verification`): finding-specific post-change check via fresh probe → `repair_verification_report` (`closed | remaining`).
 - **Authority boundary**: point where knowing/understanding is possible but deciding, acting, publishing, or merging is not authorized.
-- **Harden Only Where Pressured**: formalize machinery after repeated real-use pressure exposes a stable failure boundary.
+- **Harden Only Where Pressured**: formalize machinery after a stable, mechanically expressible failure/reconstruction/integrity boundary is justified; do not create runtime machinery merely to mirror a conceptual diagram.
 
 ## Current product boundaries and open edges
 
 Current, ratified/operationally grounded:
-- agent-native top-level loop;
+- agent-native semantic control by the active coding agent;
+- canonical four-level control architecture as repository documentation/authority model;
+- Level-4 product strategy authority and Level-3 strategic-state projection;
 - repository sensemaking + Brief;
 - bounded Skills and artifact contracts;
 - deterministic validation;
 - output reconciliation;
 - repair verification;
-- authority-aware stopping/escalation discipline.
+- authority-aware stopping/escalation discipline;
+- Campaign persistence, provenance, observability, handoff, and bounded portability;
+- repository-qualified Semantic Architecture substrate and PM source-capability migration within their stated evidence ceilings.
 
-Not automatically ratified merely because related machinery exists:
+Not automatically ratified merely because related machinery or concepts exist:
+- an `OuterLoopEngine` or deterministic `StrategicPlanner`;
+- automatic Strategic Frontier ranking;
+- automatic product-thesis revision;
+- automatic Campaign generation from Level-3 state;
 - deterministic fog-type routing as product control policy;
 - a universal centralized orchestrator;
 - one registered workflow that encodes the whole Sensemaking loop;
 - automatic external mutation/publication authority;
 - domain-general research-agent control semantics;
-- new decision-theory/control-model machinery from the research agenda.
+- new decision-theory/control-model machinery from the research agenda;
+- B7 Semantic Reference Resolution/Audit until its separate branch/PR is integrated.
 
-The product should deepen through normal engineering use: preserve observations, identify repeated failure boundaries, and formalize only when the evidence warrants it.
+The product should deepen through repository-grounded construction while architecture remains informative. Preserve observations, identify concrete failure/reconstruction/integrity boundaries, and formalize only mechanically bounded support. When the decisive question becomes behavioral product value rather than repository/mechanical correctness, stop construction at that boundary unless the owner explicitly reauthorizes empirical work.

@@ -45,6 +45,31 @@ Sensemaking Semantic Architecture
 
 No lower layer automatically receives semantic authority from an upper-layer concept.
 
+## Relationship to the four control levels
+
+The semantic hierarchy above answers **where semantic responsibility and implementation live**. The repository's four control levels answer **at what decision scope the active agent is operating**.
+
+The control model is defined in [`../strategic-outer-loop.md`](../strategic-outer-loop.md):
+
+```text
+Level 4 — Product Thesis / Strategy Revision
+Level 3 — Strategic Repository Evolution
+Level 2 — Responsibility / Campaign
+Level 1 — Execution
+```
+
+These views are orthogonal, not competing architectures. For example, the Reasoning Model can inform Level-2 Campaign work and Level-3 strategic reassessment, while executable Campaign persistence remains substrate machinery even when the Campaign sits inside a higher-scope strategic decision.
+
+```text
+semantic layer != control level
+four semantic layers != four control-loop stages
+Level-3 strategic state != Level-3 executable semantic contract
+```
+
+The duplicated word `Level` comes from two different taxonomies: semantic formalization levels are defined below as Vocabulary / Ontology / Executable Contract, while control levels are decision scopes. Do not infer equivalence from the numbering.
+
+The Strategic Outer Loop is not a semantic router or deterministic planner. It uses semantic/evidence concepts while leaving frontier selection, strategy interpretation, and warrant to the active agent/human under authority.
+
 ## Document map
 
 | Document | Role |
@@ -73,6 +98,8 @@ No lower layer automatically receives semantic authority from an upper-layer con
 
 Campaign observability, Resume Capsule, replay/graph, semantic companion integration, and portable bundles are documented in [`../campaign-observability-and-portability.md`](../campaign-observability-and-portability.md).
 
+Higher-scope product/repository control is documented in [`../strategic-outer-loop.md`](../strategic-outer-loop.md), [`../strategic-state-contract.md`](../strategic-state-contract.md), [`../product-thesis-revision.md`](../product-thesis-revision.md), and [`../product-strategy.md`](../product-strategy.md).
+
 ## Three levels of formalization
 
 ```text
@@ -87,6 +114,8 @@ A Level-3 mechanism implements only a mechanically decidable subset.
 Level-2 relation documented != Level-3 relation automatically derivable
 Level-3 representation valid != semantic conclusion true
 ```
+
+These formalization levels are separate from the four control levels described above.
 
 Phase 9 produced `semantic_reasoning_profile` v1. Phase 10 retained it as an **optional companion** while rejecting mandatory universal embedding. The qualified Phase 15 liveness pilot added a narrow conformance rule over explicit Skill-registry/tree consistency.
 
@@ -287,10 +316,14 @@ This architecture does **not** authorize:
 - replacing source evidence with a generated semantic map;
 - a central Reasoning Engine;
 - mandatory use of `semantic_reasoning_profile` in every artifact;
-- claiming that B1–B6 were empirically validated by the historical Phase 10 episodes.
+- claiming that B1–B6 were empirically validated by the historical Phase 10 episodes;
+- treating the four control levels as semantic-layer implementations;
+- using semantic formalization levels to infer strategic authority.
 
 ## Current frontier
 
 The repository now has a broad mechanically bounded semantic substrate, map/state sharing, Campaign observability, conformance, Domain Pack references, and portability ergonomics while preserving Campaign schema v2 and Phase 10 Outcome A.
 
-Further construction should come from a concrete missing product/integrity capability. When the next architecture instead depends on a behavioral-value question, stop building and invoke the empirical-validation program defined by the diminishing-returns policy.
+The separate Strategic Outer Loop foundation defines Level-3/Level-4 repository control and product-thesis authority using existing documentation surfaces; it does not add a semantic router or autonomous strategic runtime.
+
+Further semantic construction should come from a concrete missing product/integrity capability. When the next architecture instead depends on a behavioral-value question, stop building at that boundary and invoke empirical validation only when required by policy or explicit owner direction.
