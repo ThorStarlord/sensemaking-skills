@@ -1,12 +1,12 @@
 # Getting Started with Sensemaking Skills v0.3.0
 
-Sensemaking Skills combines agent-native Skills with a local Campaign CLI. The agent supplies semantic judgment; the CLI makes state, evidence, provenance, explicit decisions, and repository identity durable and mechanically checkable.
+Sensemaking Skills combines agent-native Skills with an optional local Campaign CLI. The active coding agent supplies semantic judgment; deterministic tooling makes state, evidence, provenance, explicit decisions, and repository identity durable and mechanically checkable **when that durability is useful**.
 
-**Documentation role:** this is the canonical **human how-to-use entry point** for Sensemaking Skills. Start here when you want to install the product, understand the normal usage sequence, or perform your first Campaign. It intentionally points to deeper references rather than duplicating their contracts.
+**Documentation role:** this is the canonical **human how-to-use entry point** for Sensemaking Skills. Start here when you want to install the product, understand the normal usage sequence, or decide whether a task needs repository sensemaking or durable Campaign state. It intentionally points to deeper references rather than duplicating their contracts.
 
 Use the adjacent references by audience:
 
-- **Workflow composition / canonical golden paths:** `docs/agent-workflow-golden-path-v1.md`.
+- **Workflow composition / canonical Campaign golden paths:** `docs/agent-workflow-golden-path-v1.md`.
 - **Coding agent instructions:** `skills/using-sensemaking/SKILL.md`.
 - **Deeper Level-2 responsibility/authority model:** `docs/agent-native-operating-workflow.md`.
 - **Maintainer/operator validation and qualification:** `docs/operations-runbook.md`.
@@ -60,9 +60,83 @@ sensemaking-skills setup-skills --target claude --scope project --project-root /
 
 Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless `--force` is explicit.
 
-## See the current golden paths
+## Choose how much Sensemaking you need
 
-The CLI exposes static navigation for composing existing Campaign surfaces. It does not choose a flow or execute its steps. The canonical workflow-composition reference is `docs/agent-workflow-golden-path-v1.md`.
+You do not need to create a Campaign for every task. The coding agent should use the lightest process that preserves the required engineering invariants.
+
+```text
+Known narrow change, locally evidenced, one context
+-> direct bounded work + relevant tests
+
+Correct repository responsibility is uncertain
+-> use the Sensemaking control loop; repo-sensemaker may be useful
+
+Material completed-work or repair claim
+-> stronger evidence / reconciliation / finding-specific verification when warranted
+
+Repository-specific decision state must survive fresh contexts,
+agents, machines, or a long-running responsibility
+-> use a Campaign for durability and reconstruction
+```
+
+The current product model separates several reasons for stronger support:
+
+- **user supervision capability** affects how much explanation/scaffolding is useful;
+- **desired delegation** affects how much repository-answerable judgment the agent should exercise within granted authority;
+- **decision complexity** affects investigation/sensemaking rigor;
+- **consequentiality** affects caution, evidence, validation, and reconciliation;
+- **continuation complexity** affects whether durable Campaign state is worth its cost.
+
+These are qualitative agent judgments, not scores, modes, or routing rules.
+
+```text
+more guidance != more visible machinery
+large task != Campaign required
+high consequentiality != Campaign required
+desired delegation != granted authority
+```
+
+For the detailed agent-facing interpretation, see `skills/using-sensemaking/references/adaptive-guidance-v0.md`.
+
+## Diagnose when repository sensemaking is warranted
+
+Ask the active coding agent to use `using-sensemaking` as its control discipline. When repository-wide evidence could materially change the next responsibility, `repo-sensemaker` can produce a canonical `repository_sensemaking_brief`.
+
+Typical reasons include:
+
+- repository reality may contradict the apparent task;
+- ownership or architecture boundaries are unclear;
+- docs, tests, implementation, and plans may disagree;
+- the task crosses unfamiliar subsystems;
+- the next responsibility cannot be selected safely from the request alone.
+
+Skip repository-wide diagnosis when the task is already mechanically narrow and locally evidenced.
+
+The Skill performs semantic diagnosis. Deterministic scripts/CLI validate and persist results; they do not replace the agent's judgment.
+
+## Start a Campaign when durable continuation is warranted
+
+A Campaign is the central durable Level-2 abstraction. Use it when repository-specific decision state needs to survive agent/session boundaries or otherwise become reconstructible. A Campaign is **not** the universal entry point for Sensemaking.
+
+For a directly initialized Campaign:
+
+```bash
+sensemaking-skills campaign init \
+  --workspace /tmp/CMP-0001 \
+  --campaign-id CMP-0001 \
+  --mission "diagnose and repair the repository boundary" \
+  --target-repo /path/to/repository
+
+sensemaking-skills campaign status --workspace /tmp/CMP-0001
+```
+
+Initialization records repository identity/state and creates durable structure. It does not infer the uncertainty, responsibility, capability selection, or authority.
+
+For repository-level strategic work, inspect Level-3 state first and use `campaign strategy handoff` only after the active agent has explicitly selected a current frontier item and responsibility.
+
+## See the current Campaign golden paths
+
+When Campaign durability is warranted, the CLI exposes static navigation for composing existing Campaign surfaces. It does not choose a flow or execute its steps. The canonical workflow-composition reference is `docs/agent-workflow-golden-path-v1.md`.
 
 ```bash
 sensemaking-skills campaign workflow list
@@ -78,29 +152,8 @@ The same agent-facing reference ships at `skills/using-sensemaking/references/go
 flow shown != flow recommended
 step listed != step authorized
 golden path != workflow engine
+Campaign flow catalog != mandatory Sensemaking choreography
 ```
-
-## Start a Campaign
-
-For a directly initialized Campaign:
-
-```bash
-sensemaking-skills campaign init \
-  --workspace /tmp/CMP-0001 \
-  --campaign-id CMP-0001 \
-  --mission "diagnose and repair the repository boundary" \
-  --target-repo /path/to/repository
-
-sensemaking-skills campaign status --workspace /tmp/CMP-0001
-```
-
-For repository-level strategic work, inspect Level-3 state first and use `campaign strategy handoff` only after the active agent has explicitly selected a current frontier item and responsibility.
-
-## Diagnose with the agent-native Skill path
-
-Ask the active coding agent to use `repo-sensemaker` against the target repository and produce a canonical artifact such as a `repository_sensemaking_brief` when repository-wide sensemaking is warranted.
-
-The Skill performs semantic diagnosis. Deterministic scripts/CLI validate and persist the result; they do not replace the agent's judgment.
 
 ## Admit validated evidence
 
