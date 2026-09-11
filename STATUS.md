@@ -223,6 +223,8 @@ Current empirical PASS: NONE
 Human/external action required for empirical PASS: YES
 ```
 
+The **real-harness qualification verifier** remains part of the v0.3 release baseline and can mechanically validate a properly frozen genuine attempt package; it cannot manufacture real-harness origin evidence or substitute repository-local proof for an external run.
+
 ### Product Management native-harness / portability
 
 ```text
