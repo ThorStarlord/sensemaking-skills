@@ -17,6 +17,13 @@ loop and coordinates Level-1 execution
 > an executable orchestration contract and does not own Strategic Frontier or
 > product-thesis decisions.
 
+The Level-4 Persona & Adaptive Guidance Model v0 is documented in
+[`product-strategy.md`](product-strategy.md),
+[`product-operating-model.md`](product-operating-model.md), and its
+[design preflight](persona-adaptive-guidance-design-preflight.md). It changes how
+the agent reasons about appropriate scaffolding and ceremony; it does not add a
+routing engine or new runtime state.
+
 ---
 
 ## 0. Why this document exists
@@ -136,6 +143,61 @@ Skip it when the task is already mechanically narrow and locally evidenced
 Otherwise `repo-sensemaker` becomes mandatory ceremony. The closest formal
 statement of this policy is `repo-sensemaker`'s Boundary Rule 3 (clarification
 policy) and its "Interact" section.
+
+#### Adaptive ceremony and scaffolding
+
+The entry decision is not only about task size. The active agent should reason
+about five contextual factors from the Persona & Adaptive Guidance Model v0:
+
+- **user supervision capability** — how much explanation/scaffolding is useful
+  for this decision;
+- **desired delegation** — how much engineering judgment the user wants the
+  agent to exercise independently, within granted authority;
+- **decision complexity** — how difficult it is to determine the warranted
+  responsibility;
+- **consequentiality** — how costly, irreversible, or authority-sensitive a
+  wrong responsibility/action would be;
+- **continuation complexity** — how much repository-specific decision state must
+  survive time, sessions, agents, machines, or handoffs.
+
+These factors influence presentation and rigor, not deterministic routing.
+Examples of proportional use:
+
+```text
+narrow + locally evidenced + low consequence
+-> direct bounded work + relevant tests
+
+ambiguous repository responsibility
+-> repository sensemaking / bounded evidence
+
+high consequence
+-> stronger evidence, validation, reconciliation, or repair verification
+   when those responsibilities are actually relevant
+
+high continuation complexity
+-> durable Campaign state / provenance / resume support when transient
+   context would otherwise be unreliable
+
+lower user supervision capability
+-> proactively surface missing considerations in clearer language
+   without exposing unnecessary internal machinery
+```
+
+Do **not** infer `Campaign required`, `Skill X required`, or `owner approval
+required` from a score or persona label. No user-expertise score, complexity
+score, consequentiality score, beginner/expert mode, or automatic Campaign
+threshold exists.
+
+Most importantly:
+
+```text
+desired delegation != granted authority
+```
+
+A user asking the agent to handle the engineering independently can justify the
+agent resolving repository-answerable questions without needless escalation. It
+does not manufacture permission to merge, release, deploy, publish, perform a
+destructive external mutation, or cross another reserved authority boundary.
 
 ### REPO-SENSEMAKER
 
@@ -531,6 +593,12 @@ architecture, not a new autonomous runtime capability.
   section 2 "CONTINUATION": a failure on a missing or malformed section
   rather than a wrong fact; more than one producer of such records; or a
   recurrent continuation event that a manual step keeps missing.
+
+The adaptive guidance reinterpretation adds another explicit non-goal: these
+contextual factors are not a hidden workflow router. A future mechanism must not
+turn user supervision capability, desired delegation, decision complexity,
+consequentiality, or continuation complexity into automatic semantic selection
+without separate evidence and authority.
 
 ---
 

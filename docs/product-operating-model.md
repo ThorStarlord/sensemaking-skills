@@ -8,6 +8,8 @@ This is a compact value-stream and responsibility map. The more detailed
 operating guide remains [agent-native-operating-workflow.md](agent-native-operating-workflow.md).
 The canonical higher-scope control model is
 [strategic-outer-loop.md](strategic-outer-loop.md).
+The Level-4 Persona & Adaptive Guidance Model v0 interpretation is frozen in
+[persona-adaptive-guidance-design-preflight.md](persona-adaptive-guidance-design-preflight.md).
 
 ## Four-level control architecture
 
@@ -72,6 +74,100 @@ continue / owner decision / defer / stop
 
 This is a recursive loop, not a fixed lifecycle. New evidence may warrant a
 responsibility conventionally considered earlier, later, or sideways.
+
+## Adaptive guidance and rigor
+
+Sensemaking uses one stable doctrine while allowing the active coding agent to
+adapt how much scaffolding, process rigor, and durability are warranted by the
+situation. This is semantic agent judgment, not a routing algorithm.
+
+The primary design persona is a **high-delegation agent-assisted builder /
+repository owner**, beginner-first and expert-capable. The same person may have
+different effective expertise in different decisions, and an expert may still
+choose high delegation because they want leverage rather than instruction.
+
+Five situational factors clarify the adaptation:
+
+| Factor | Meaning | Primarily influences |
+| --- | --- | --- |
+| **User supervision capability** | The user's contextual ability to spot omissions, understand repository constraints, and evaluate agent judgment | Scaffolding and explanation |
+| **Desired delegation** | How much engineering judgment the user wants the agent to exercise independently | Agent decision ownership within granted authority |
+| **Decision complexity** | How difficult it is to determine the warranted repository responsibility | Sensemaking and investigation rigor |
+| **Consequentiality** | Cost, irreversibility, authority sensitivity, or damage potential of a wrong responsibility/action | Caution, evidence, validation, reconciliation |
+| **Continuation complexity** | How much repository-specific decision state must survive time, sessions, agents, machines, or handoffs | Campaign durability, provenance, handoff, resume |
+
+Conceptually:
+
+```text
+user supervision capability
+        -> scaffolding
+
+desired delegation
+        -> agent decision ownership within authority
+
+decision complexity + consequentiality
+        -> process rigor
+
+continuation complexity
+        -> durability / Campaign value
+```
+
+These factors are independent enough that one must not stand in for another.
+For example, a technically difficult implementation may have low decision
+complexity, a one-line change may be highly consequential, and a beginner-facing
+task may need more guidance without needing Campaign state.
+
+### Opinionated principles, adaptive ceremony
+
+Sensemaking is intentionally opinionated about engineering invariants:
+repository reality over stale planning, evidence before unsupported commitment,
+responsibility before capability, explicit authority, bounded claims, and
+correct stopping. Those principles do not become optional because a task is
+small or the user is experienced.
+
+The ceremony used to express them is adaptive. A narrow locally evidenced task
+may need only direct work and tests. An ambiguous repository responsibility may
+need repository sensemaking. Higher consequentiality may justify stronger
+validation/reconciliation. High continuation complexity may justify Campaign
+state and provenance.
+
+```text
+stable doctrine
+!= mandatory full pipeline
+```
+
+### Progressive disclosure
+
+More user guidance does not require more visible machinery. A beginner may need
+the agent to proactively surface a missing dependency or authority boundary in
+plain language while Campaign/provenance details remain internal unless useful.
+An expert may prefer concise evidence and direct access to the mechanical
+surfaces.
+
+```text
+more scaffolding
+!= more visible machinery
+```
+
+No beginner/expert runtime mode, competence score, task-complexity score,
+consequentiality score, or automatic Campaign threshold is authorized by this
+model.
+
+### Desired delegation is not authority
+
+The user may want the coding agent to make many engineering decisions without
+manual routing. That desired delegation does not create authority to merge,
+release, deploy, publish, perform destructive external mutations, or cross any
+other reserved boundary.
+
+```text
+desired delegation
+!= granted authority
+```
+
+The active agent should resolve repository-answerable questions itself when
+that judgment is delegated, while still escalating owner intent and reserved
+actions at the appropriate boundary.
 
 ## Strategic Repository Evolution — Level 3
 
@@ -150,6 +246,11 @@ Major owner-reserved strategic changes require explicit owner ratification.
 The active agent owns the recursive semantic loop. Execution/orchestration
 coordinates an already-selected responsibility and must not silently replace it
 with a materially different one.
+
+The adaptive guidance model changes neither this ownership table nor the
+semantic/mechanical boundary. It helps the active agent decide how much
+scaffolding and durable support is useful; it does not transfer judgment to
+runtime machinery.
 
 ## Governance loop
 
