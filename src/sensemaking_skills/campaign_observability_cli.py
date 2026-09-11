@@ -16,6 +16,7 @@ import click
 from .campaign_semantics import ContractError, canonicalize, target_snapshot_sha256
 from .campaigns import CampaignService, CampaignWorkspaceError
 from .campaigns.bundle import CampaignBundleService
+from .campaigns.provenance_graph import CampaignProvenanceGraphService
 from .campaigns.resume_capsule import build_resume_capsule
 from .semantic_architecture import (
     IntegrityEffect,
@@ -406,56 +407,41 @@ def register_campaign_observability_commands(
     @click.option("--workspace", required=True, type=click.Path(path_type=Path))
     @click.option("--format", "output_format", type=click.Choice(["json", "mermaid"]), default="json", show_default=True)
     def campaign_graph(workspace: Path, output_format: str) -> None:
-        """Render deterministic provenance edges between Campaign records."""
-        snapshot = resume(workspace, output_json=(output_format == "json"))
-        nodes: dict[str, dict[str, str]] = {}
-        edges: list[dict[str, str]] = []
-        campaign_id = snapshot.state.campaign_id
-        nodes[campaign_id] = {"id": campaign_id, "kind": "campaign", "label": campaign_id}
-        previous: str | None = None
-        for transition in snapshot.transitions:
-            nodes[transition.id] = {"id": transition.id, "kind": "transition", "label": transition.id}
-            edges.append({"from": campaign_id, "to": transition.id, "relation": "contains_transition"})
-            if previous is not None:
-                edges.append({"from": previous, "to": transition.id, "relation": "followed_by"})
-            previous = transition.id
-            for evidence in transition.evidence:
-                nodes.setdefault(evidence, {"id": evidence, "kind": "evidence", "label": evidence})
-                edges.append({"from": transition.id, "to": evidence, "relation": "references_evidence"})
-
-        semantic_records, semantic_diagnostics = _semantic_store(workspace).load_raw()
-        for record in semantic_records:
-            entry = record["entry"]
-            entry_id = str(entry.get("entry_id"))
-            nodes[entry_id] = {"id": entry_id, "kind": "semantic_state_entry", "label": entry_id}
-            edges.append({"from": campaign_id, "to": entry_id, "relation": "has_semantic_companion_entry"})
-            for parent in entry.get("parent_entry_ids", []):
-                edges.append({"from": str(parent), "to": entry_id, "relation": "semantic_parent_of"})
-            artifact = entry.get("artifact_ref")
-            if isinstance(artifact, str) and artifact:
-                nodes.setdefault(artifact, {"id": artifact, "kind": "artifact_ref", "label": artifact})
-                edges.append({"from": entry_id, "to": artifact, "relation": "references_artifact"})
-
+        """Render the same mechanically validated provenance graph used by graph-integrity."""
+        try:
+            graph = CampaignProvenanceGraphService(workspace).build()
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=(output_format == "json"))
+            return
+        diagnostics = [
+            {"code": item.code, "detail": item.detail}
+            for item in graph.diagnostics
+        ]
         if output_format == "json":
             json_echo(
                 {
-                    "ok": not semantic_diagnostics,
+                    "ok": graph.valid,
                     "code": "CAMPAIGN_PROVENANCE_GRAPH",
-                    "nodes": list(nodes.values()),
-                    "edges": edges,
-                    "semantic_companion_diagnostics": [canonicalize(item) for item in semantic_diagnostics],
+                    "nodes": list(graph.nodes),
+                    "edges": list(graph.edges),
+                    "integrity_valid": graph.valid,
+                    "diagnostics": diagnostics,
                     "semantic_truth_established": False,
+                    "explicit_limit": "Provenance graph integrity does not establish semantic causality or correctness.",
                 }
             )
-            if semantic_diagnostics:
+            if not graph.valid:
                 raise click.exceptions.Exit(3)
             return
-        if semantic_diagnostics:
-            raise click.ClickException("semantic companion state is invalid; refuse to render provenance graph")
+        if not graph.valid:
+            rendered = "; ".join(f"{item['code']}: {item['detail']}" for item in diagnostics)
+            raise click.ClickException(
+                "provenance graph integrity is invalid; refuse to render Mermaid: " + rendered
+            )
         click.echo("graph TD")
-        for node in nodes.values():
+        for node in graph.nodes:
             click.echo(f'  {_mermaid_id(node["id"])}["{node["label"].replace(chr(34), chr(39))}"]')
-        for edge in edges:
+        for edge in graph.edges:
             click.echo(
                 f'  {_mermaid_id(edge["from"])} -->|{edge["relation"]}| {_mermaid_id(edge["to"])}'
             )
