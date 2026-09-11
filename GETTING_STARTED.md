@@ -2,6 +2,22 @@
 
 Sensemaking Skills combines agent-native Skills with a local Campaign CLI. The agent supplies semantic judgment; the CLI makes state, evidence, provenance, explicit decisions, and repository identity durable and mechanically checkable.
 
+**Documentation role:** this is the canonical **human how-to-use entry point** for Sensemaking Skills. Start here when you want to install the product, understand the normal usage sequence, or perform your first Campaign. It intentionally points to deeper references rather than duplicating their contracts.
+
+Use the adjacent references by audience:
+
+- **Workflow composition / canonical golden paths:** `docs/agent-workflow-golden-path-v1.md`.
+- **Coding agent instructions:** `skills/using-sensemaking/SKILL.md`.
+- **Deeper Level-2 responsibility/authority model:** `docs/agent-native-operating-workflow.md`.
+- **Maintainer/operator validation and qualification:** `docs/operations-runbook.md`.
+
+```text
+GETTING_STARTED.md = human how-to entry point
+!= workflow engine
+!= semantic routing authority
+!= operations/qualification runbook
+```
+
 ## Prerequisites
 
 - Python 3.11+
@@ -46,7 +62,7 @@ Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless
 
 ## See the current golden paths
 
-The CLI exposes static navigation for composing existing Campaign surfaces. It does not choose a flow or execute its steps.
+The CLI exposes static navigation for composing existing Campaign surfaces. It does not choose a flow or execute its steps. The canonical workflow-composition reference is `docs/agent-workflow-golden-path-v1.md`.
 
 ```bash
 sensemaking-skills campaign workflow list
