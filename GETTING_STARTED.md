@@ -98,6 +98,30 @@ desired delegation != granted authority
 
 For the detailed agent-facing interpretation, see `skills/using-sensemaking/references/adaptive-guidance-v0.md`.
 
+## Delegate a complete repository mission
+
+For high-delegation development, you can give the coding agent a **terminal product-scope mission** rather than manually sequencing every intermediate feature, refactor, or repair.
+
+Prefer an **authoritative product scope** over vague phrases such as "all features" or "everything in the repository." Product strategy may define purpose/user/JTBD while PRDs, accepted product/design decisions, capability contracts, and acceptance criteria define required realization.
+
+Ready-to-copy example:
+
+```text
+Goal: Build this repository until every feature and capability explicitly required by the current authoritative product scope is implemented and satisfies its applicable acceptance and repository-qualification criteria.
+
+Operating policy: Use Sensemaking to determine the warranted repository responsibility at each step. Reconstruct current repository reality before assuming documented work is still missing. Resolve decision-changing uncertainty before implementation. Use repo-sensemaker when repository-wide diagnosis could materially change the next responsibility. Use durable Campaign state when continuation complexity makes transient context unreliable. After each bounded responsibility, reconcile the resulting capability state and reassess what, if anything, is warranted next.
+
+Scope discipline: Treat only current authoritative product commitments as requirements. Do not convert backlog items, candidate directions, speculative improvements, historical plans, stale issues, or optional future capabilities into required work unless an authoritative product/repository decision has promoted them.
+
+Authority discipline: Desired delegation does not expand granted authority. Do not silently revise product-thesis commitments, perform reserved external actions, merge, release, deploy, publish, or make destructive changes unless those actions are authorized.
+
+Stop conditions: Stop when all authoritative requirements are satisfied or legitimately dispositioned and no unresolved decision-changing gap prevents claiming scope completion; when no further repository change is warranted; when progress requires a reserved owner/product-thesis decision; or when an external blocker prevents further authorized work.
+```
+
+This prompt delegates **intermediate engineering judgment**, not unlimited authority. The agent may move through product/design clarification, architecture/domain reconciliation, implementation, documentation/integrity repair, and qualification when those responsibilities are warranted, but it should not manufacture work merely to keep the mission active.
+
+For shorter goal patterns, repair missions, architecture/design reconciliation, long-running delegation, and prompt anti-patterns, see `skills/using-sensemaking/references/delegated-goal-patterns.md`.
+
 ## Diagnose when repository sensemaking is warranted
 
 Ask the active coding agent to use `using-sensemaking` as its control discipline. When repository-wide evidence could materially change the next responsibility, `repo-sensemaker` can produce a canonical `repository_sensemaking_brief`.
