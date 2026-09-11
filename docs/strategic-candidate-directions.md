@@ -60,17 +60,17 @@ STATUS.md reconciliation
 
 ## 3. Reconciliation snapshot
 
-As of the third 2026-09-11 owner-directed build-first closeout, repository-qualified baselines now include:
+Repository-qualified baselines include:
 
 - Campaign Preflight, Doctor, observability, replay, provenance, bundles, semantic-reference audit, and completion receipts;
 - Resume Capsule v1/v2, capability context, uncertainty lifecycle/relationships, bundle inspection, inventory, and nondestructive archive markers;
 - read-only Level-3 strategy inspect/diff and explicit strategy handoff;
 - explicit multi-repository target identity, drift verification, refresh, portable rebinding, and caller-authored cross-repository relationships;
-- four static agent-facing golden paths that describe composition without routing or execution;
+- four static agent-facing Campaign golden paths that describe composition without routing or execution;
 - bounded shared companion IO for recent locator/relation/completion records;
 - Skill Contract Manifests, Domain Packs, semantic conformance, and `semantic catalog`.
 
-The owner-ratified Persona & Adaptive Guidance Model v0 now also clarifies the primary design persona and five contextual reasoning factors: user supervision capability, desired delegation, decision complexity, consequentiality, and continuation complexity. These are product/agent-judgment concepts, not a new executable substrate.
+The owner-ratified Persona & Adaptive Guidance Model v0 clarifies the primary design persona and five contextual reasoning factors: user supervision capability, desired delegation, decision complexity, consequentiality, and continuation complexity. Adaptive Guidance Existing Product Reconciliation v0 subsequently aligned the shipped `using-sensemaking` Skill, public onboarding, Campaign product framing, and Golden Path references with that model without changing runtime semantics.
 
 Campaign schema remains v2. None of these baselines establishes native-harness usefulness, empirical portability, comparative superiority, semantic correctness, or automatic planning authority.
 
@@ -80,7 +80,7 @@ Campaign schema remains v2. None of these baselines establishes native-harness u
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-`campaign resume-profile --profile minimal|working|audit` provides deterministic progressive disclosure. `campaign workflow list/show` now exposes static single-repository, fresh-context, transferred-Campaign, and multi-repository composition paths with explicit decision gates.
+`campaign resume-profile --profile minimal|working|audit` provides deterministic progressive disclosure. `campaign workflow list/show` exposes static single-repository, fresh-context, transferred-Campaign, and multi-repository composition paths with explicit decision gates.
 
 ```text
 progressive disclosure != semantic summarization
@@ -120,17 +120,35 @@ continuation complexity
 -> durability / Campaign value
 ```
 
-The preferred current behavior is **adaptive agent judgment using the existing product**, not formal rigor modes. A narrow, locally evidenced responsibility may not need a Campaign. Ambiguous repository work may benefit from repository sensemaking. Higher consequentiality may warrant stronger validation/reconciliation. High continuation complexity is the clearest reason to introduce durable Campaign state, provenance, and resume/handoff surfaces.
+Adaptive Guidance Existing Product Reconciliation v0 then tested this interpretation against the shipped product. Its audit found **presentation mismatches but no behavior-level mismatch**. The shipped guidance now explicitly supports:
+
+```text
+clear/local/one-context work
+-> bounded work without Campaign ceremony
+
+uncertain repository responsibility
+-> repository sensemaking when useful
+
+consequential claim / repair
+-> stronger reconciliation or finding-specific verification when warranted
+
+continuation-heavy work
+-> durable Campaign state
+```
+
+This currently weakens rather than strengthens the case for formal runtime tiers: existing mechanics already allow proportional use, and the observed burden was resolved through agent/user guidance rather than alternate Campaign semantics.
 
 Potential `LIGHT` / `STANDARD` / `QUALIFIED` presentation remains illustrative only. The risk is creating multiple truth systems, weakening evidence because of a label, or turning contextual semantic judgment into a routing threshold.
 
-**Reopen trigger:** repeated real-use evidence that the existing one-model Campaign semantics either (a) impose avoidable ceremony on otherwise appropriate work, or (b) cannot express a recurring mechanically bounded consumption/qualification profile without manual reconstruction.
+**Reopen trigger:** repeated normal-use evidence that aligned guidance is insufficient because the existing one-model Campaign semantics themselves (a) mechanically impose avoidable ceremony on otherwise appropriate work, or (b) cannot express a recurring mechanically bounded continuation/qualification profile without manual reconstruction.
 
 **Non-goals:** incompatible Campaign models, weaker truth/evidence standards, user-expertise scoring, complexity/consequentiality scoring, automatic Campaign thresholds, or deterministic flow selection.
 
 ```text
 adaptive guidance model
 != formal Campaign tier system
+presentation burden repaired
+!= runtime tier warranted
 ```
 
 ## 5. Campaign portability and lifecycle candidates
@@ -154,7 +172,7 @@ rebind != target refresh
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-Export/verify/import plus pre-import inspection/resume/graph and target rebinding now provide a coherent deterministic transferred-Campaign path.
+Export/verify/import plus pre-import inspection/resume/graph and target rebinding provide a coherent deterministic transferred-Campaign path.
 
 **Remaining candidates:** network transport/remote storage/synchronization if a concrete need or owner direction warrants them.
 
@@ -162,7 +180,7 @@ Export/verify/import plus pre-import inspection/resume/graph and target rebindin
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-Terminal Campaigns can now produce a recalculable `completion-receipt.json` bound to durable workspace bytes and an optional nondestructive `archive-receipt.json`. Inventory hides valid archived Campaigns by default and can include them explicitly.
+Terminal Campaigns can produce a recalculable `completion-receipt.json` bound to durable workspace bytes and an optional nondestructive `archive-receipt.json`. Inventory hides valid archived Campaigns by default and can include them explicitly.
 
 ```text
 completion receipt != semantic success
@@ -307,7 +325,7 @@ generate provenance != publish provenance
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-Recent target-rebind, multi-target-rebind, target-relation, and completion/archive modules now share a bounded `companion_io.py` for canonical JSON hashing, atomic JSON replacement, and fsync'd JSONL append.
+Recent target-rebind, multi-target-rebind, target-relation, and completion/archive modules share a bounded `companion_io.py` for canonical JSON hashing, atomic JSON replacement, and fsync'd JSONL append.
 
 The schemas and semantics remain independently owned.
 
@@ -352,7 +370,7 @@ bulk historical-document deletion
 new empirical experiment without owner direction
 ```
 
-Completed surfaces such as target rebinding, dependency declarations, completion/archive, and static golden paths are no longer listed as missing work.
+Completed surfaces such as target rebinding, dependency declarations, completion/archive, static golden paths, and adaptive-guidance presentation alignment are no longer listed as missing work.
 
 ## 12. Candidate review discipline
 
@@ -380,13 +398,16 @@ stable enough semantics
 
 This document intentionally declares **no current implementation priority**.
 
-`STATUS.md` is authoritative for the current Level-3 frontier and warranted responsibility. The owner-directed Portable Target Rebinding, Cross-Repository Dependency Declarations, Campaign Completion & Archival, Agent Workflow / Golden Path, and Surface Simplification & Contract Consolidation sequence is complete; finishing it does not automatically promote another candidate. The Persona & Adaptive Guidance Model v0 reinterpretation likewise does not promote Progressive Campaign Rigor or another runtime candidate merely because the product model now explains when different amounts of ceremony could be useful.
+`STATUS.md` is authoritative for the current Level-3 frontier and warranted responsibility. The owner-directed Portable Target Rebinding, Cross-Repository Dependency Declarations, Campaign Completion & Archival, Agent Workflow / Golden Path, Surface Simplification & Contract Consolidation, Persona & Adaptive Guidance Model v0, and Adaptive Guidance Existing Product Reconciliation v0 work do not automatically promote another candidate.
+
+The latest reconciliation specifically found no behavior-level defect requiring formal Campaign tiers: the observed proportionality mismatch was in shipped guidance and was repaired there.
 
 ```text
 candidate inventory exists
 != repository has pending work
 != candidate ordering is priority
 != adaptive product model requires adaptive runtime
+!= aligned guidance requires a rigor-mode system
 != absence of current work means product is finished
 ```
 
