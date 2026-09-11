@@ -8,15 +8,14 @@ outside this companion's authority.
 
 from __future__ import annotations
 
-import hashlib
 import json
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
 from sensemaking_skills.campaign_semantics import TargetSnapshot, target_snapshot_sha256
 
+from .companion_io import atomic_write_json, mapping_sha256
 from .errors import CampaignWorkspaceError
 from .target_snapshot import CampaignService, capture_target_snapshot, target_snapshots_equivalent
 
@@ -39,14 +38,6 @@ class TargetRebindVerification:
     locator_sha256: str | None
     diagnostics: tuple[TargetRebindDiagnostic, ...]
     semantic_truth_established: bool = False
-
-
-def _canonical_bytes(value: Mapping[str, Any]) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-
-
-def _sha256(value: Mapping[str, Any]) -> str:
-    return hashlib.sha256(_canonical_bytes(value)).hexdigest()
 
 
 def _core_payload(
@@ -111,7 +102,7 @@ def _load_locator(
         if not isinstance(data.get(field), str) or not data.get(field):
             diagnostics.append(TargetRebindDiagnostic("TARGET_REBIND_LOCATOR_INVALID", f"{field} must be non-empty text"))
     core = {key: data[key] for key in required if key != "locator_sha256" and key in data}
-    if data.get("locator_sha256") != _sha256(core):
+    if data.get("locator_sha256") != mapping_sha256(core):
         diagnostics.append(TargetRebindDiagnostic("TARGET_REBIND_DIGEST_MISMATCH", "locator_sha256 does not match companion content"))
     return data, diagnostics
 
@@ -193,10 +184,8 @@ class PrimaryTargetRebindService:
             previous_repository_root=previous_root,
             repository_root=actual.repository_root,
         )
-        payload = {**core, "locator_sha256": _sha256(core)}
-        temp = self.path.with_suffix(".json.tmp")
-        temp.write_text(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
-        os.replace(temp, self.path)
+        payload = {**core, "locator_sha256": mapping_sha256(core)}
+        atomic_write_json(self.path, payload)
         return self.verify()
 
     def verify(self) -> TargetRebindVerification:
