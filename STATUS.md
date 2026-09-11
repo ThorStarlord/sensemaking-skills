@@ -2,13 +2,13 @@
 
 **Version:** 0.3.0  
 **Last updated:** 2026-09-11  
-**Current phase:** Product Management source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 complete with Outcome A; bounded Phase 15 registry-liveness conformance qualified; post-Phase-10 build-first semantic substrate B1–B6 repository-qualified; Strategic Outer Loop Levels 3–4 documentation foundation repository-integrated  
+**Current phase:** Product Management source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 complete with Outcome A; bounded Phase 15 registry-liveness conformance qualified; post-Phase-10 build-first semantic substrate B1–B7 repository-qualified; Strategic Outer Loop Levels 3–4 documentation foundation repository-integrated  
 **Primary program:** Sensemaking Campaign productization with agent-agnostic domain capabilities, evidence-governed repository reasoning, and durable strategic repository evolution  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this file intentionally does not self-pin a commit that becomes stale when it changes  
-**Current semantic frontier:** post-foundation reassessment is required before any new outer-loop runtime package; continue only from a concrete product/integrity/reconstruction capability with a mechanically bounded contract; additional empirical experiments remain deferred until explicit owner direction or a future gate makes behavioral evidence decisive  
+**Current semantic frontier:** B7 Semantic Reference Resolution/Audit is integrated and repository-qualified; a fresh post-B7 Level-3 reassessment is required before selecting any further semantic or outer-loop construction package; additional empirical experiments remain deferred until explicit owner direction or a future gate makes behavioral evidence decisive  
 **Current PM frontier:** Waves 1–6 are `REPOSITORY_QUALIFIED`; the pinned 27-command source migration is complete; native-harness/portability qualification remains pending
 
-Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, target identity, authority metadata checks, bounded conformance, and reconstructible state.
+Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, target identity, authority metadata checks, bounded conformance, reference resolution under existing authoritative namespaces, and reconstructible state.
 
 ## Strategic Repository Evolution state — Level 3
 
@@ -26,75 +26,85 @@ Sensemaking Skills is an **agent-native engineering sensemaking and control laye
 
 - Campaign/Responsibility semantics, authority boundaries, artifact admission, durable transitions, reconciliation, handoff, and target identity are established product machinery.
 - Semantic Architecture Phase 9/10 and bounded Phase 15 are repository-qualified within their stated evidence ceilings.
-- Build-first semantic substrate B1–B6 is repository-qualified: mechanical observations, bounded semantic map, optional semantic companion state, Skill manifests, Domain Packs, Campaign observability, and bundle portability.
+- Build-first semantic substrate B1–B7 is repository-qualified: mechanical observations, bounded semantic map, optional semantic companion state, Skill manifests, Domain Packs, Campaign observability/portability, and bounded semantic-reference resolution/audit.
+- B7 reuses existing Campaign evidence/admission authority and renders audit results through `campaign semantic-state` and `campaign explain`; it does not add Campaign schema v3, Resume Capsule changes, currentness inference, semantic routing, or a universal reference registry.
 - Product Management Waves 1–6 are repository-qualified across all 27 pinned source capabilities; native-harness and portability evidence remain pending.
-- The Strategic Outer Loop documentation foundation is repository-integrated: the four-level control model, Level-3 state contract, Level-4 revision contract, product strategy authority, operating model, and this Level-3 projection are now mutually linked.
-- This integration is a documentation/authority-reconciliation claim, not evidence of a new autonomous strategic runtime.
+- The Strategic Outer Loop documentation foundation is repository-integrated: the four-level control model, Level-3 state contract, Level-4 revision contract, product strategy authority, operating model, and this Level-3 projection are mutually linked.
+- This integration remains a documentation/authority-reconciliation claim, not evidence of a new autonomous strategic runtime.
 
 ### Material limitations and evidence ceilings
 
 - Repository qualification does not establish native-harness usefulness, portability, comparative superiority, or general autonomous software development.
 - The active agent owns semantic frontier selection; no deterministic `StrategicPlanner`, outer-loop router, or automatic product-thesis revision mechanism is authorized.
-- Level-3/Level-4 durable state is initially carried by existing Markdown authority surfaces; no new schema has been justified.
-- B7 Semantic Reference Resolution/Audit is being developed separately from this outer-loop foundation and must not be treated as integrated `main` capability until its own merge occurs.
+- Level-3/Level-4 durable state is initially carried by existing Markdown authority surfaces; no new strategic-state schema has been justified.
+- B7 reference resolution establishes only mechanically bounded addressability/integrity under existing authorities. `resolved != current`, `reference audit pass != semantic truth`, and `not_addressable != invalid`.
 
 ### Strategic Frontier
 
 Current material frontier items are:
 
-1. **Strategic outer-loop foundation — COMPLETE / INTEGRATED.** The canonical four-level control model, Level-3 strategic-state contract, and Level-4 product-thesis revision semantics are on `main` without a planning engine or new schema.
-2. **B7 semantic-reference integrity — PARALLEL / NOT INTEGRATED.** A separate bounded implementation candidate exists outside this tranche; its status must be read from its own branch/PR until merged.
+1. **Strategic outer-loop foundation — COMPLETE / INTEGRATED.** The canonical four-level control model, Level-3 strategic-state contract, and Level-4 product-thesis revision semantics are on `main` without a planning engine or new strategic-state schema.
+2. **B7 semantic-reference integrity — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** The standalone audit primitive, Campaign rendering adapters, preflight authority, negative cases, and exact-head qualification are integrated while preserving Campaign schema v2 and semantic non-authority.
 3. **Native-harness / portability qualification — DEFERRED BY OWNER DIRECTION.** Existing protocols and evidence ceilings remain valid, but additional empirical experiments are not the current construction priority.
-4. **Further outer-loop machinery — CANDIDATE / NOT AUTHORIZED.** Mechanical validation, `strategy inspect/diff`, Level-3→Campaign mechanics, and Level-4 reconciliation mechanics require a fresh post-foundation decision; they are not an automatic roadmap.
+4. **Further semantic/outer-loop machinery — CANDIDATE / NOT AUTHORIZED.** Mechanical strategic-state validation, `strategy inspect/diff`, Level-3→Campaign mechanics, Level-4 reconciliation mechanics, or other construction requires a fresh post-B7 decision; none is an automatic roadmap item.
 
 ### Current highest-leverage boundary
 
-**No new outer-loop boundary is selected yet.** The previous boundary—making product-thesis authority, strategic repository-evolution state, bounded Campaign responsibility, and execution state reconstructibly distinct—has been closed by the integrated documentation foundation.
+**No new semantic or outer-loop boundary is selected yet.** The prior two bounded responsibilities—the Strategic Outer Loop documentation foundation and B7 Semantic Reference Resolution/Audit—are closed and integrated.
 
-The next Level-3 act is reassessment, not automatic continuation. A future outer-loop package must identify a concrete consumed reconstruction/integrity gap whose mechanical behavior can be specified without semantic ranking, automatic strategy selection, or unmeasured product-value assumptions.
+The next Level-3 act is a fresh reassessment from current repository state. A future package must identify a concrete consumed reconstruction/integrity gap whose mechanical behavior can be specified without semantic ranking, automatic strategy selection, invented universal identities, or unmeasured product-value assumptions.
 
 ### Current decision-changing uncertainty
 
-Which, if any, post-foundation outer-loop capability has a sufficiently concrete mechanically decidable need to warrant construction now?
+Which, if any, post-B7 capability has a sufficiently concrete mechanically decidable need to warrant construction now?
 
 No answer is ratified in this status. Absence of a selected next package is intentional and is not a failure of the loop.
 
 ### Current warranted repository-level responsibility
 
-**None automatically selected after foundation closeout.** The documentation-first responsibility is complete. Before Package 4 or any equivalent runtime work, Level 3 must reconstruct the new state and select or decline a next responsibility from current evidence.
+**None automatically selected after B7 closeout.** Before any new runtime or validator package, Level 3 must reconstruct the new state and select or decline a next responsibility from current evidence.
 
 Possible future candidates remain only candidates:
 
 ```text
-mechanical strategic-state validation
+mechanical strategic-state consistency validation
 read-only strategy inspect/diff
 Level-3 -> Campaign handoff mechanics
 Level-4 escalation/reconciliation mechanics
-no further outer-loop machinery
+no further construction
 ```
 
 ### Completed evidence and reassessment
 
-Foundation completion evidence:
+Strategic Outer Loop foundation evidence:
 
 - canonical `docs/strategic-outer-loop.md` exists;
 - Level-3 `docs/strategic-state-contract.md` exists and `STATUS.md` adopts the role;
 - Level-4 `docs/product-thesis-revision.md` exists and `docs/product-strategy.md` adopts the role;
 - `docs/product-operating-model.md` reconciles the four scopes and governance loop;
 - PR #331 exact candidate head passed Product Validation and Release Candidate Distribution before merge;
-- the merged diff contains documentation/contract changes only and no runtime/schema/router/planner implementation.
+- PR #333 reconciled README/CONTEXT/Level-2/Semantic Architecture entrypoints and passed Product Validation + Release Candidate Distribution before merge;
+- the foundation and entrypoint reconciliation added no runtime strategic planner/schema/router behavior.
 
-The required next action is **strategic reassessment**, not execution of a predeclared Package 4.
+B7 completion evidence:
+
+- `docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md` concludes `BUILD B7` under a mandatory abort gate;
+- PR #330 exact candidate `8369d750c893f143830db6ccc69c8fa80d321dd4` passed Product Validation `34565797654`, Release Candidate Distribution `34565797661`, and Lab Validation `34565797689` before merge;
+- PR #330 merged as `6203be05636b12e012a87940429041ff24af821d`;
+- the implementation keeps reference occurrence, resolution, currentness, support, and semantic truth distinct.
+
+The required next action is **fresh post-B7 strategic reassessment**, not execution of a predeclared B8 or Package 4.
 
 ### Authority / owner direction
 
 - Owner authorized the documentation-first outer-loop construction and explicitly deferred new experiments for now.
+- Owner subsequently authorized execution of the bounded B7 integration/reconciliation and the complete next-step sequence without per-package approval; this does not waive each package's mechanical/semantic scope limits or exact-head qualification gates.
 - Product-thesis changes that materially alter primary user, problem/JTBD, external product boundary, major non-goals, public claim ceilings, or merge/release authority remain owner-reserved decisions.
 - Repository-level implementation may proceed within current strategy only when bounded by existing authority and evidence.
 
 ### Thesis review state
 
-`THESIS_REVIEW_REQUIRED`: **NO** at foundation closeout. The integrated work clarifies the control hierarchy and durable authority surfaces; it does not change the product purpose, primary user, or ratified external product boundary.
+`THESIS_REVIEW_REQUIRED`: **NO**. B7 and the outer-loop foundation clarify/increase bounded repository mechanics without changing the product purpose, primary user, ratified external product boundary, or major Level-4 commitment.
 
 ## Semantic Architecture state
 
@@ -114,7 +124,7 @@ Capability / Skill Layer
 Executable Substrate
   = mechanically decidable contracts, probes, validators,
     conformance, Campaign persistence, provenance, observability,
-    and portability
+    reference resolution, and portability
 ```
 
 Formalization remains:
@@ -182,9 +192,11 @@ wrong or broken current-canonical skills/<id>/ path
 
 The checker preserves `semantic_truth_established: false` and does not establish Skill quality, selection, native-harness support, or promotion.
 
-### Post-Phase-10 build-first substrate — B1–B6 repository-qualified
+### Post-Phase-10 build-first substrate — B1–B7 repository-qualified
 
-PR #327 implemented the owner-authorized build-first continuation strategy on top of the qualified Phase 10 and Phase 15 baseline.
+#### B1–B6 — PR #327
+
+PR #327 implemented the first owner-authorized build-first continuation strategy on top of the qualified Phase 10 and Phase 15 baseline.
 
 Exact candidate head:
 
@@ -195,18 +207,16 @@ Exact candidate head:
 Exact-head qualification:
 
 ```text
-Product Validation            run 34471983343  PASS
+Product Validation             run 34471983343  PASS
 Release Candidate Distribution run 34471983250  PASS
-Lab Validation                run 34471983249  PASS
+Lab Validation                 run 34471983249  PASS
 ```
 
 PR #327 merged as `9e1e0356486f16d113ce7e182d2ef00e0110f857`.
 
-The build-first packages are:
-
 #### B1 — Mechanical Semantic Substrate
 
-Shipped package `sensemaking_skills.semantic_architecture` now provides mechanically bounded observations for:
+Shipped package `sensemaking_skills.semantic_architecture` provides mechanically bounded observations for:
 
 ```text
 regular-file containment
@@ -243,7 +253,7 @@ semantic map relation != architecture judgment
 
 Campaigns may carry the companion as `semantic-state.jsonl`. **Campaign schema v2 remains unchanged.** Repository-bound Campaign entries derive their target identity from the current TargetSnapshot digest; targetless Campaigns require an explicit target ref.
 
-New Campaign commands:
+Campaign commands include:
 
 ```text
 campaign inspect
@@ -260,7 +270,7 @@ campaign graph
 
 #### B4 — Skill Contract Manifests + bounded conformance
 
-Repository-owned `skill-manifests/` now describe deterministic Skill interfaces: Skill identity, domain, declared responsibilities, canonical input/output identities, shared semantic concepts, and repository-mutation declaration.
+Repository-owned `skill-manifests/` describe deterministic Skill interfaces: Skill identity, domain, declared responsibilities, canonical input/output identities, shared semantic concepts, and repository-mutation declaration.
 
 The conformance checker runs beside the already-qualified Phase 15 registry-liveness rule and checks:
 
@@ -282,7 +292,7 @@ manifest valid != Skill should run
 
 #### B5 — Domain Pack reference architecture
 
-Two repository-level reference manifests now exist:
+Two repository-level reference manifests exist:
 
 ```text
 domain-packs/engineering.yaml
@@ -300,7 +310,7 @@ Domain Pack membership != automatic routing authority
 
 #### B6 — Portability and ergonomics
 
-Campaign observability now includes Resume Capsule, exact-reference explanation, transition diff, bounded replay, and JSON/Mermaid provenance graph.
+Campaign observability includes Resume Capsule, exact-reference occurrence explanation, transition diff, bounded replay, and JSON/Mermaid provenance graph.
 
 Portable Campaign commands:
 
@@ -318,9 +328,53 @@ bundle valid != Campaign semantically correct
 
 The installed-wheel smoke test proves the semantic substrate and Campaign bundle implementation ship in the core wheel while retained source-only lab packages remain excluded.
 
+#### B7 — Semantic Reference Resolution & Integrity Audit v0
+
+PR #330 implemented the bounded package authorized by `docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md`.
+
+Exact candidate head:
+
+```text
+8369d750c893f143830db6ccc69c8fa80d321dd4
+```
+
+Exact-head qualification:
+
+```text
+Product Validation             run 34565797654  PASS
+Release Candidate Distribution run 34565797661  PASS
+Lab Validation                 run 34565797689  PASS
+```
+
+PR #330 merged as `6203be05636b12e012a87940429041ff24af821d`.
+
+The standalone `semantic_architecture.reference_audit` primitive resolves only identities supported by existing authoritative Campaign/semantic-state contracts. Campaign integrations render audit results through `campaign semantic-state` and `campaign explain --ref`.
+
+The result separates:
+
+```text
+resolution       = resolved | dangling | ambiguous | not_addressable
+reference class  = campaign_internal | legacy_opaque | unknown
+integrity effect = pass | fail | informational
+```
+
+Campaign evidence/admitted artifact refs can be resolved mechanically; established internal missing refs can be diagnosed as dangling; opaque claim/profile/legacy refs remain `not_addressable` when no resolver exists. `AMBIGUOUS` remains reserved but is not emitted by v0 authorities.
+
+B7 preserves:
+
+```text
+reference occurrence != reference resolution
+not_addressable != invalid
+resolved != current
+reference resolution != semantic support
+reference audit pass != semantic truth
+```
+
+B7 does not introduce Campaign schema v3, Resume Capsule changes, a universal semantic-reference registry, currentness inference, decision-chain inference, authority-precedence inference, routing/ranking, or semantic truth scoring.
+
 ### Build-first policy / Construction Diminishing-Returns Gate
 
-The post-Phase-10 owner decision is now canonical in `docs/semantic-architecture/build-first-policy.md`:
+The post-Phase-10 owner decision is canonical in `docs/semantic-architecture/build-first-policy.md`:
 
 > **Build while architecture remains informative. Validate empirically when architecture stops being informative.**
 
@@ -339,9 +393,9 @@ persistent placement ambiguity
 pressure to transfer semantic judgment into deterministic machinery
 ```
 
-Completing B1–B6 does **not** itself mean the gate has been reached.
+Completing B1–B7 does **not** itself mean the gate has been reached. B7 nevertheless requires a fresh post-B7 reassessment rather than an assumed B8/B9 queue.
 
-No new empirical product-value experiment was required to repository-qualify B1–B6. This is a repository implementation/verification claim only; it does not assert that the new layers have already demonstrated real-world agent-work value.
+No new empirical product-value experiment was required to repository-qualify B1–B7. This is a repository implementation/verification claim only; it does not assert that the new layers have demonstrated real-world agent-work value.
 
 ## Product Management source migration — repository complete
 
@@ -390,7 +444,7 @@ Repository-local validation, Campaign admission, wheel packaging, connector-side
 
 ### Build-first semantic empirical limit
 
-B1–B6 are repository-qualified mechanical/product capabilities. Their Product Validation/Release/Lab PASS does **not** establish that mechanical probes, maps, semantic companion state, Resume Capsules, Domain Packs, or bundles reduce coordination cost in repeated native agent work. Further empirical validation is intentionally deferred until the diminishing-returns gate or explicit owner direction.
+B1–B7 are repository-qualified mechanical/product capabilities. Their Product Validation/Release/Lab PASS does **not** establish that mechanical probes, maps, semantic companion state, Resume Capsules, Domain Packs, bundles, or semantic-reference auditing reduce coordination cost or improve repeated native-agent work. Further empirical validation is intentionally deferred until the diminishing-returns gate or explicit owner direction.
 
 ## Release architecture continuity
 
@@ -400,7 +454,7 @@ B1–B6 are repository-qualified mechanical/product capabilities. Their Product 
 - Lab Validation owns retained source-only research/lab claims.
 - Release Candidate Distribution proves exact candidate build/install/package identities.
 - `semantic_reasoning_profile` remains optional and outside Campaign artifact admission.
-- Skill-registry liveness and manifest/domain conformance remain bounded repository checks, not semantic routers.
+- Skill-registry liveness, manifest/domain conformance, and B7 reference audit remain bounded repository checks, not semantic routers.
 - tagging/publication of v0.3.0 remains an explicit owner decision.
 
 ## Product and semantic boundaries
@@ -418,6 +472,10 @@ manifest valid != Skill should run
 Domain Pack membership != routing authority
 provenance edge != semantic support
 bundle valid != Campaign semantically correct
+reference occurrence != reference resolution
+reference resolved != current
+reference audit pass != semantic truth
+not_addressable != invalid
 repository changed != repair succeeded
 document says X != X is current
 immutable snapshot evidence != live mutable metadata
@@ -438,9 +496,9 @@ The Campaign Controller is not a semantic router. The Reasoning Model is not a c
 
 ## Current next step
 
-Reassess the integrated Strategic Outer Loop foundation from current `main` before selecting any new outer-loop package. **Package 4 is not pre-authorized by completion of Packages 1–3.**
+Perform the **fresh post-B7 Level-3 reassessment** required by the B7 preflight before selecting any new semantic or outer-loop package. There is no implied B8.
 
-Choose a next package only if a concrete missing product/integrity/reconstruction capability has a mechanically bounded contract and an identifiable consumer or integrity need. If the next meaningful choice requires semantic ranking, automatic strategy selection, or unmeasured product-value assumptions, stop construction at that boundary rather than inventing a `StrategicPlanner`.
+Choose a next package only if a concrete missing product/integrity/reconstruction capability has a mechanically bounded contract and an identifiable consumer or integrity need. If the next meaningful choice requires semantic ranking, automatic strategy selection, invented universal identities, or unmeasured product-value assumptions, stop construction at that boundary rather than inventing new machinery.
 
 ## Canonical sources
 
@@ -455,13 +513,14 @@ Choose a next package only if a concrete missing product/integrity/reconstructio
 - `docs/semantic-architecture/build-first-policy.md` — construction authorization and diminishing-returns gate.
 - `docs/semantic-architecture/mechanical-semantic-substrate.md` — probes/map/state contracts.
 - `docs/semantic-architecture/skill-contract-manifests-and-domain-packs.md` — manifest/domain conformance.
+- `docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md` — B7 construction authority, resolver matrix, and abort gate.
 - `docs/semantic-architecture/common-semantic-contract.md` — optional companion semantic profile contract.
 - `docs/semantic-architecture/phase-10/results.md` — qualified Phase 10 evidence/Outcome A.
 - `docs/semantic-architecture/phase-10-handoff.md` — Phase 10 qualification handoff.
 - `docs/semantic-architecture/phase-15/README.md` — bounded registry-liveness pilot.
 - `docs/semantic-architecture/phase-15-handoff.md` — Phase 15 liveness qualification evidence.
-- `docs/semantic-architecture/build-first-handoff.md` — B1–B6 exact-head qualification handoff.
-- `docs/campaign-observability-and-portability.md` — observability/semantic companion/portability commands.
+- `docs/semantic-architecture/build-first-handoff.md` — B1–B7 exact-head qualification handoff.
+- `docs/campaign-observability-and-portability.md` — observability/semantic companion/B7 reference-audit/portability commands.
 - `docs/product-management/capability-migration-matrix.md` — PM capability maturity ledger.
 - `docs/product-management/milestone-handoff.md` — complete six-wave PM source migration handoff.
 - `docs/product-management/dogfood/STATUS.md` — PM empirical qualification status.
