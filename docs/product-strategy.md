@@ -19,6 +19,10 @@ The 2026-09-11 Persona & Adaptive Guidance Model v0 clarification is an
 owner-ratified Level-4 `REINTERPRET`, not a product-category pivot. Its design
 preflight is [`persona-adaptive-guidance-design-preflight.md`](persona-adaptive-guidance-design-preflight.md).
 
+The 2026-09-11 Product Boundary Reconciliation v1 is an owner-ratified Level-4
+`SUPERSEDE`: ADR 0029 is now the current product-boundary authority, while ADR
+0014 remains historical evidence for the narrower July 2026 boundary.
+
 ## 1. Product purpose
 
 Sensemaking Skills exists to improve repository-level decisions when a capable
@@ -155,10 +159,10 @@ Comparative superiority over a capable direct agent remains unestablished.
 | General autonomous software development | Not established |
 
 The current external product-validation priority is Goal A/A1. Its protocol,
-admissibility rules, and independent evaluator semantics remain canonical. The
-2026-08-31 reassessment records that the next compliant run remains paused at a
-harness artifact-finalization/provenance boundary; this is not a product verdict
-and does not authorize a run.
+admissibility rules, and independent evaluator semantics remain canonical for
+the narrower brief/diagnosis claim they were designed to test. Superseding ADR
+0014 as the current product boundary does not retroactively broaden that
+protocol's evidentiary scope.
 
 Current repository construction may continue under the ratified build-first
 policy when architecture/integrity remains mechanically informative. New
@@ -174,6 +178,8 @@ outer-loop foundation and require explicit owner direction when resumed.
 - Opinionated engineering guidance for high-delegation agent-assisted work.
 - Artifact-mediated agent continuation.
 - Bounded adaptive work around selected responsibilities.
+- Optional durable Campaign support when continuation complexity warrants it.
+- Bounded multi-repository target/relationship support without automatic orchestration.
 - Durable strategic-state reconstruction for repository evolution, while the
   active agent retains semantic control.
 
@@ -187,14 +193,16 @@ outer-loop foundation and require explicit owner direction when resumed.
 - A replacement for GitHub or CI.
 - Automatic architecture authority.
 - Automatic product-strategy revision authority.
-- Autonomous merge or release authority.
+- Autonomous merge, release, deployment, or publication authority.
+- General-purpose cross-repository transaction coordination.
 - A user-competence scoring or grading system.
 
-The broader agent-native control architecture in `CONTEXT.md` is an internal
-architectural model. The ratified external product scope remains the validated,
-human-reviewed `repository_sensemaking_brief` defined by ADR 0014. The
-four-level control model does **not** silently expand that external product
-boundary.
+The current external product boundary is ratified by
+[`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md).
+ADR 0014 remains historical evidence for the narrower July 2026 boundary and
+for experiments/protocols that were explicitly conducted against that earlier
+scope. The broader current boundary does not expand empirical claim ceilings or
+turn every available product surface into mandatory ceremony.
 
 ## 7. Strategic principles
 
@@ -237,10 +245,11 @@ central deterministic semantic router, HTN planner, generic autonomous-agent
 platform, mandatory multi-agent swarm, automatic critic voting, semantic truth
 oracle, `OuterLoopEngine`, automatic Strategic Frontier ranking, automatic
 product-thesis revision, autonomous Campaign generation, autonomous merge or
-release authority, user-expertise scoring, deterministic task-complexity or
-consequentiality scoring, automatic persona inference, beginner/expert runtime
-modes, automatic Campaign thresholds, or campaign/strategy infrastructure larger
-than demonstrated need.
+release authority, cross-repository transaction/deployment coordinator,
+user-expertise scoring, deterministic task-complexity or consequentiality
+scoring, automatic persona inference, beginner/expert runtime modes, automatic
+Campaign thresholds, or campaign/strategy infrastructure larger than
+demonstrated need.
 
 Reconsider a non-goal only when repository/product evidence shows that its
 absence is decision-changing and a smaller intervention cannot address the
@@ -343,9 +352,12 @@ The detailed contract is
 
 The Persona & Adaptive Guidance Model v0 change uses `REINTERPRET`: the existing
 primary-user commitment remains materially the same, while its high-delegation,
-beginner-first/expert-capable meaning is made explicit. Product purpose,
-external product boundary, strategic non-goals, Campaign schema, and empirical
-claim ceilings are not expanded by this reinterpretation.
+beginner-first/expert-capable meaning is made explicit.
+
+Product Boundary Reconciliation v1 uses `SUPERSEDE`: ADR 0014 remains historical
+and ADR 0029 becomes the current boundary authority. Product purpose, agent-owned
+semantic judgment, major strategic non-goals, Campaign schema, and empirical
+claim ceilings are not expanded by the act of supersession itself.
 
 The active agent may identify thesis-level tension, gather evidence, formulate
 alternatives, and draft a recommendation. Major changes to product mission,
@@ -366,6 +378,9 @@ underlying record.
 
 ## 14. Authority and related documents
 
+- Current product-boundary authority: [ADR 0029](adr/0029-current-product-boundary.md)
+- Product-boundary reconciliation record: [product-boundary-reconciliation-v1.md](product-boundary-reconciliation-v1.md)
+- Historical July 2026 product boundary: [ADR 0014](adr/0014-product-boundary.md)
 - Persona/adaptive-guidance reinterpretation preflight: [persona-adaptive-guidance-design-preflight.md](persona-adaptive-guidance-design-preflight.md)
 - Four-level control model: [strategic-outer-loop.md](strategic-outer-loop.md)
 - Level-3 state contract: [strategic-state-contract.md](strategic-state-contract.md)
@@ -373,7 +388,7 @@ underlying record.
 - Non-authoritative future possibilities: [strategic-candidate-directions.md](strategic-candidate-directions.md) — idea memory only; not Strategic Frontier membership or implementation authorization
 - Current operating model: [product-operating-model.md](product-operating-model.md)
 - Current Level-3 status and development direction: [STATUS.md](../STATUS.md)
-- Architecture authority: [ADR index](adr/README.md), especially ADRs 0013 and 0014
+- Architecture authority: [ADR index](adr/README.md), especially ADRs 0013 and 0029
 - Operating workflow: [agent-native-operating-workflow.md](agent-native-operating-workflow.md)
 - Research hypotheses: [control-model research agenda](research/control-model-research-agenda.md)
 - Goal A protocol: [external product-validation protocol](research/goal-a-external-product-validation-protocol.md)
