@@ -181,29 +181,82 @@ product mission / current strategy
         ↓
 current product + repository capability state
         ↓
-material gaps / contradictions / opportunities
+material observations / gaps / contradictions / opportunities
         ↓
 Strategic Frontier
+        ↓
+STRATEGIC DECISION TO SUPPORT
+        ↓
+qualitative comparison of credible boundaries
         ↓
 select or decline one current strategic boundary
         ↓
 identify decision-changing strategic uncertainty
         ↓
+identify sufficient evidence when needed
+        ↓
 select one warranted repository-level responsibility
         ↓
-delegate bounded Campaign / work package
+choose the smallest warranted intervention
+        ↓
+delegate bounded Campaign / work package when useful
         ↓
 receive qualified result + evidence
         ↓
-update strategic state
+strategic adjudication + state reconciliation
         ↓
-reassess mission / frontier
-        ↓
-continue / defer / owner decision / thesis review / stop
+continue / defer / reject / no change /
+owner decision / thesis review / stop
 ```
 
-The Strategic Frontier is not a backlog. A frontier item is a decision-relevant
-possibility, not automatic work or authorization.
+### Strategic decision before responsibility
+
+The **Strategic Decision to Support** answers:
+
+> What consequential repository/product decision becomes better informed if the
+> selected boundary is resolved?
+
+This keeps Level 3 responsibility-first without allowing "interesting issue"
+to jump directly to implementation.
+
+```text
+boundary observed
+!= strategic decision selected
+!= responsibility warranted
+!= implementation authorized
+```
+
+### Qualitative selection lenses
+
+When several credible boundaries compete, the active agent may reason through:
+
+- mission relevance;
+- decision value;
+- blocking power;
+- evidence sufficiency / resolvability;
+- consequence of error;
+- deferral cost;
+- reversibility;
+- authority availability;
+- logical dependency;
+- smallest warranted intervention.
+
+These lenses make judgment reconstructible without turning it into a formula.
+
+```text
+qualitative comparison != deterministic ranking
+agent judgment != unexplained intuition
+high decision complexity != high strategic priority
+high consequentiality != high strategic priority
+```
+
+The adaptive-guidance factors answer primarily **how much scaffolding, rigor,
+and durability selected work warrants**. They are not substitutes for the
+Level-3 strategic-selection lenses that answer **which repository boundary, if
+any, matters now**.
+
+The Strategic Frontier remains decision-relevant possibility state, not a
+backlog. A frontier item is not automatic work or authorization.
 
 `STATUS.md` is the current operational projection of Level-3 state. Its
 conceptual contract is
@@ -240,7 +293,7 @@ Major owner-reserved strategic changes require explicit owner ratification.
 | Boundary | Owns |
 | --- | --- |
 | Human owner | Mission, strategic intent, major product decisions, authority grants, claim-ceiling expansion, reserved merge/release decisions |
-| Active coding agent | Semantic interpretation, evidence-informed responsibility selection, strategic-frontier selection within authority, capability selection, bounded implementation reasoning, continuation/stopping |
+| Active coding agent | Semantic interpretation, evidence-informed strategic-decision framing, frontier selection within authority, responsibility/capability selection, bounded implementation reasoning, continuation/stopping |
 | Skills | Specialized reasoning protocols, artifact contracts, bounded capabilities |
 | Artifacts | Durable state, evidence transfer, handoff, traceability |
 | Deterministic machinery | Hashes, schemas, identities, invariants, mechanical validation, tests, qualification checks |
@@ -266,7 +319,9 @@ Identify a consequential problem, gap, contradiction, or opportunity
         ↓
 Classify evidence and evidence ceilings
         ↓
-Form or revise a bounded product/repository hypothesis when needed
+State the strategic decision that is actually at stake
+        ↓
+Compare credible boundaries qualitatively
         ↓
 Choose the smallest warranted intervention, analysis, or validation
         ↓
@@ -295,7 +350,7 @@ Information can travel upward without granting authority upward or downward.
 ```text
 Level 4 commitment
     ↓
-Level 3 repository responsibility
+Level 3 strategic decision + repository responsibility
     ↓
 Level 2 bounded Campaign responsibility
     ↓
@@ -303,7 +358,7 @@ Level 1 action
 
 Level 1/2 result + evidence
     ↑
-Level 3 capability-state reconciliation
+Level 3 capability-state / strategic-decision reconciliation
     ↑
 Level 4 thesis review only when material
 ```
@@ -345,7 +400,12 @@ Every proposed feature or strategic change should connect strategy to a
 consequential decision and sufficient evidence:
 
 ```text
-strategic fit → decision value → evidence → smallest warranted intervention
+strategic fit
+-> strategic decision to support
+-> decision value
+-> decision-changing uncertainty
+-> sufficient evidence
+-> smallest warranted intervention
 ```
 
 If the chain is missing, the work remains a hypothesis, deferred direction, or
