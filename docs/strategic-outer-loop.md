@@ -1,6 +1,8 @@
 # Strategic Outer Loop and Four-Level Control Model
 
 **Status:** canonical conceptual model for repository-development scope  
+**Version:** v0  
+**Construction state:** frozen operational baseline; reopen only from concrete repository/product pressure or explicit owner direction  
 **Authority:** product strategy + ADRs 0013/0014; does not override executable contracts  
 **Scope:** how Sensemaking separates product-thesis, repository-evolution, bounded responsibility, and execution reasoning
 
@@ -39,6 +41,13 @@ What concrete steps correctly perform the bounded work?
 
 These levels describe **scope of reasoning and durable state**, not four
 runtime engines. The active coding agent remains the semantic controller.
+
+Outer Loop v0 is now a frozen operational baseline. "Frozen" means the current
+architecture should be **used** during normal repository evolution rather than
+extended merely because additional machinery can be imagined. It does not mean
+the product can never change. Reopen this control architecture only when a new
+concrete integrity/reconstruction burden, mechanically explicit product need,
+or owner direction makes revision decision-changing.
 
 ## 2. Core control law
 
@@ -396,3 +405,28 @@ remain sufficient at the current evidence boundary.
 Reopen a later step only from new concrete product/integrity/reconstruction
 pressure or explicit owner direction. Do not infer authorization from sequence
 numbering or from the existence of this conceptual model.
+
+## 12. v0 freeze and normal-use policy
+
+Outer Loop v0 is complete as an architecture/operating contract and is now
+**frozen as the default control baseline**.
+
+Normal development should use the model to choose repository responsibilities;
+it should not treat development of the model itself as the default frontier.
+
+```text
+use outer loop
+-> inspect current strategy/repository state
+-> select or decline one repository-level responsibility
+-> perform bounded Level-2/Level-1 work
+-> qualify
+-> reconcile STATUS.md
+-> reassess
+```
+
+The first repository-wide normal-use audit under this freeze is recorded in
+[`strategic-repository-evolution-audit-2026-09-11.md`](strategic-repository-evolution-audit-2026-09-11.md).
+
+Natural-use evidence may reopen outer-loop construction when repeated concrete
+friction appears. Do not create a separate experimental evidence program merely
+to keep the outer loop under construction.
