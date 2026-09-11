@@ -10,6 +10,28 @@ An agent-native engineering sensemaking and control layer for software-engineeri
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
 
+## How to use Sensemaking
+
+Choose the entry point for your role instead of reading every document:
+
+| If you are... | Start here | What it owns |
+| --- | --- | --- |
+| A human/new user trying to use Sensemaking | [`GETTING_STARTED.md`](GETTING_STARTED.md) | Canonical human how-to and first-use walkthrough |
+| Looking for the canonical Campaign lifecycle/composition | [`docs/agent-workflow-golden-path-v1.md`](docs/agent-workflow-golden-path-v1.md) | Canonical workflow-composition reference; static guidance, not routing |
+| A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
+| Trying to understand the deeper responsibility/authority model | [`docs/agent-native-operating-workflow.md`](docs/agent-native-operating-workflow.md) | Level-2 reasoning, artifact, authority, validation, and stopping model |
+| Maintaining, validating, or qualifying the repository | [`docs/operations-runbook.md`](docs/operations-runbook.md) | Current operator/qualification runbook |
+
+```text
+GETTING_STARTED.md = how to use
+agent-workflow-golden-path-v1.md = how surfaces compose
+using-sensemaking/SKILL.md = how the coding agent operates
+agent-native-operating-workflow.md = why the Level-2 loop works this way
+operations-runbook.md = how maintainers operate and qualify it
+```
+
+Do not create a parallel `HOW_TO_USE.md` or generic `workflow.md` for the same material. The goal is one clear entry point per audience rather than duplicated instruction surfaces.
+
 ## Control architecture
 
 Sensemaking now distinguishes four scopes of reasoning and durable state:
@@ -42,7 +64,7 @@ The current authority surfaces are:
 - `docs/product-strategy.md` — Level-4 product thesis and strategic authority;
 - `STATUS.md` — Level-3 Strategic Repository Evolution state;
 - `docs/strategic-outer-loop.md` — canonical four-level control model;
-- `docs/strategic-state-contract.md` — Level-3 durable state contract;
+- `docs/strategic-state-contract.md` — Level-3 durable strategic-state contract;
 - `docs/product-thesis-revision.md` — Level-4 revision and owner-ratification contract;
 - `docs/sensemaking-campaign.md` — canonical Level-2 Campaign model;
 - ordinary branch/task/test state — Level-1 execution evidence.
@@ -420,8 +442,11 @@ experiments/                retained research evidence/lab material
 
 ## Canonical documentation
 
-Read the repository from higher-scope authority into bounded execution:
+Read the repository from higher-scope authority into bounded execution. For ordinary usage, start with the audience map near the top of this README rather than reading this entire authority list.
 
+- `GETTING_STARTED.md` — canonical human how-to-use entry point and first-use walkthrough.
+- `skills/using-sensemaking/SKILL.md` — canonical agent-facing usage instructions.
+- `docs/agent-workflow-golden-path-v1.md` — canonical workflow-composition reference; static guidance only.
 - `docs/product-strategy.md` — Level-4 product thesis, boundary, hypotheses, and strategic authority.
 - `STATUS.md` — current Level-3 Strategic Repository Evolution state and cross-program status.
 - `docs/strategic-outer-loop.md` — canonical four-level control model and Level-3/Level-4 relationship.
