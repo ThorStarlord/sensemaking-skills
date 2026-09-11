@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -11,7 +12,14 @@ import click
 from .campaign_semantics import ContractError
 from .campaigns import CampaignWorkspaceError
 from .campaigns.capabilities import CapabilityCatalogError
+from .campaigns.doctor import CampaignDoctorService, doctor_payload
 from .campaigns.preflight import CampaignPreflightService
+from .campaigns.provenance import (
+    CampaignProvenanceService,
+    provenance_payload,
+    render_provenance_markdown,
+)
+from .campaigns.provenance_graph import CampaignProvenanceGraphService
 from .campaigns.uncertainty_history import ALLOWED_STATUSES, UncertaintyHistoryService
 
 
@@ -19,6 +27,7 @@ ErrorEmitter = Callable[..., None]
 JsonEcho = Callable[[dict[str, Any]], None]
 PREFLIGHT_INVALID_EXIT = 3
 HISTORY_INVALID_EXIT = 3
+OPERABILITY_INVALID_EXIT = 3
 
 
 def _check_payload(check: Any) -> dict[str, Any]:
@@ -204,8 +213,90 @@ def register_campaign_productization_commands(
         if output_json:
             json_echo(payload)
         else:
-            import json
-
             click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
         if not result.valid:
             raise click.exceptions.Exit(HISTORY_INVALID_EXIT)
+
+    @campaign.command(name="doctor")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option(
+        "--responsibility-type",
+        default=None,
+        help="Optional agent-supplied type for capability-catalog diagnostics; never inferred",
+    )
+    @click.option("--json", "output_json", is_flag=True)
+    def campaign_doctor(
+        workspace: Path,
+        responsibility_type: str | None,
+        output_json: bool,
+    ) -> None:
+        """Classify mechanical failures into deterministic diagnostic paths."""
+        normalized_type = responsibility_type.strip() if responsibility_type else None
+        if responsibility_type is not None and not normalized_type:
+            raise click.ClickException("--responsibility-type must be non-empty when supplied")
+        try:
+            result = CampaignDoctorService(workspace).inspect(normalized_type)
+        except CapabilityCatalogError as exc:
+            raise click.ClickException(str(exc)) from exc
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        payload = doctor_payload(result)
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+        if not result.clean:
+            raise click.exceptions.Exit(OPERABILITY_INVALID_EXIT)
+
+    @campaign.command(name="provenance")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option(
+        "--format",
+        "output_format",
+        type=click.Choice(["json", "markdown"]),
+        default="markdown",
+        show_default=True,
+    )
+    def campaign_provenance(workspace: Path, output_format: str) -> None:
+        """Render local Campaign provenance; never publish it to GitHub."""
+        try:
+            value = CampaignProvenanceService(workspace).inspect()
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=(output_format == "json"))
+            return
+        if output_format == "json":
+            payload = provenance_payload(value)
+            json_echo({"ok": True, "code": "CAMPAIGN_PROVENANCE", **payload})
+        else:
+            click.echo(render_provenance_markdown(value), nl=False)
+
+    @campaign.command(name="graph-integrity")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--json", "output_json", is_flag=True)
+    def campaign_graph_integrity(workspace: Path, output_json: bool) -> None:
+        """Validate mechanically reconstructible provenance graph integrity."""
+        try:
+            graph = CampaignProvenanceGraphService(workspace).build()
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        payload = {
+            "ok": graph.valid,
+            "code": "CAMPAIGN_GRAPH_INTEGRITY_VALID" if graph.valid else "CAMPAIGN_GRAPH_INTEGRITY_INVALID",
+            "campaign_id": graph.campaign_id,
+            "node_count": len(graph.nodes),
+            "edge_count": len(graph.edges),
+            "diagnostics": [
+                {"code": item.code, "detail": item.detail}
+                for item in graph.diagnostics
+            ],
+            "semantic_truth_established": False,
+            "explicit_limit": "Graph integrity establishes recorded provenance structure only; it does not establish semantic causality or correctness.",
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+        if not graph.valid:
+            raise click.exceptions.Exit(OPERABILITY_INVALID_EXIT)
