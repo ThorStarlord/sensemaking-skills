@@ -78,6 +78,13 @@ def test_multi_target_identity_and_drift_are_mechanical_companions(tmp_path: Pat
     assert verified.exit_code == 0, verified.output
     assert json.loads(verified.output)["ok"] is True
 
+    preflight = runner.invoke(cli, ["campaign", "preflight", "--workspace", str(workspace), "--json"])
+    assert preflight.exit_code == 0, preflight.output
+    preflight_payload = json.loads(preflight.output)
+    multi_check = next(item for item in preflight_payload["checks"] if item["id"] == "multi_target_integrity")
+    assert multi_check["status"] == "pass"
+    assert multi_check["data"]["target_count"] == 2
+
     # Multi-target state is a companion and does not silently replace the v2
     # primary target contract.
     campaign_state = CampaignService(workspace).resume().state
@@ -99,6 +106,13 @@ def test_multi_target_drift_fails_closed_then_explicit_refresh_records_it(tmp_pa
     drift_payload = json.loads(drifted.output)
     assert any(item["code"] == "MULTI_TARGET_SNAPSHOT_DRIFT" for item in drift_payload["diagnostics"])
 
+    preflight = runner.invoke(cli, ["campaign", "preflight", "--workspace", str(workspace), "--json"])
+    assert preflight.exit_code == 3, preflight.output
+    preflight_payload = json.loads(preflight.output)
+    multi_check = next(item for item in preflight_payload["checks"] if item["id"] == "multi_target_integrity")
+    assert multi_check["status"] == "fail"
+    assert any(value.startswith("MULTI_TARGET_SNAPSHOT_DRIFT:") for value in multi_check["diagnostics"])
+
     refreshed = runner.invoke(cli, ["campaign", "multi-target", "refresh", "--workspace", str(workspace), "--alias", "frontend", "--json"])
     assert refreshed.exit_code == 0, refreshed.output
     refresh_payload = json.loads(refreshed.output)
@@ -108,6 +122,8 @@ def test_multi_target_drift_fails_closed_then_explicit_refresh_records_it(tmp_pa
 
     verified = runner.invoke(cli, ["campaign", "multi-target", "verify", "--workspace", str(workspace), "--alias", "frontend", "--json"])
     assert verified.exit_code == 0, verified.output
+    preflight_after = runner.invoke(cli, ["campaign", "preflight", "--workspace", str(workspace), "--json"])
+    assert preflight_after.exit_code == 0, preflight_after.output
 
 
 def test_multi_target_rejects_duplicate_repository_identity_and_tampering(tmp_path: Path) -> None:
