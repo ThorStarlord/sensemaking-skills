@@ -12,6 +12,7 @@ import click
 from .campaign_semantics import Authority, ContractError
 from .campaigns import CampaignWorkspaceError
 from .campaigns.multi_target import MultiTargetService
+from .campaigns.multi_target_rebind import MultiTargetRebindService
 
 
 ErrorEmitter = Callable[..., None]
@@ -148,6 +149,33 @@ def register_campaign_multi_target_commands(
             **result,
             "refresh_selected_by_tool": False,
             "semantic_recommendation_included": False,
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+    @multi_target_group.command(name="rebind")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--alias", required=True, help="Exact existing target alias selected by the caller")
+    @click.option("--target-repo", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--json", "output_json", is_flag=True)
+    def multi_target_rebind(workspace: Path, alias: str, target_repo: Path, output_json: bool) -> None:
+        """Rebind one explicit target alias to an equivalent local repository path."""
+        try:
+            result = MultiTargetRebindService(workspace).rebind(alias=alias, target_repo=target_repo)
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        except ValueError as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = {
+            "ok": True,
+            "code": "CAMPAIGN_MULTI_TARGET_REBOUND",
+            **result,
+            "rebind_selected_by_tool": False,
+            "semantic_recommendation_included": False,
+            "explicit_limit": "Multi-target rebind accepts an exact caller-selected alias/path and verifies identity/state; it does not discover repositories or refresh changed target state.",
         }
         if output_json:
             json_echo(payload)
