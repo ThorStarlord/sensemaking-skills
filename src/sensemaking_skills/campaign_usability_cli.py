@@ -219,11 +219,14 @@ def register_campaign_usability_commands(
 
     @campaign.command(name="inventory")
     @click.option("--root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--include-archived", is_flag=True, help="Include Campaigns carrying a valid archive marker")
     @click.option("--json", "output_json", is_flag=True)
-    def campaign_inventory(root: Path, output_json: bool) -> None:
+    def campaign_inventory(root: Path, include_archived: bool, output_json: bool) -> None:
         """List Campaign workspaces and mechanical health without prioritization."""
         try:
-            payload = inventory_payload(inspect_campaign_root(root))
+            entries = inspect_campaign_root(root, include_archived=include_archived)
+            payload = inventory_payload(entries)
+            payload["include_archived"] = include_archived
         except ValueError as exc:
             raise click.ClickException(str(exc)) from exc
         if output_json:
