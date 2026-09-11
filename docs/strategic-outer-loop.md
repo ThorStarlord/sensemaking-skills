@@ -3,7 +3,7 @@
 **Status:** canonical conceptual model for repository-development scope  
 **Version:** v0  
 **Reasoning precision:** Strategic Outer Loop Precision v1 clarification over the frozen v0 control architecture  
-**Construction state:** frozen control architecture; reasoning semantics may be clarified from concrete pressure or explicit owner direction  
+**Construction state:** frozen operational baseline; reasoning semantics may be clarified from concrete pressure or explicit owner direction  
 **Authority:** product strategy + ADRs 0013/0029; does not override executable contracts  
 **Scope:** how Sensemaking separates product-thesis, repository-evolution, bounded responsibility, and execution reasoning
 
