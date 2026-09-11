@@ -10,6 +10,7 @@ import click
 
 from .campaign_handoff_cli import register_campaign_handoff_commands
 from .campaign_lineage_cli import register_campaign_lineage_commands
+from .campaign_productization_cli import register_campaign_productization_commands
 from .campaign_reconciliation_cli import register_campaign_reconciliation_commands
 from .campaign_semantics import ContractError
 from .campaign_semantics.registry import RegisteredCapability
@@ -146,7 +147,7 @@ def register_campaign_capability_commands(
 
     # cli.py delegates extension registration through this existing hook. These
     # calls only register commands; they do not couple P6 selection semantics to
-    # P7/P8/P9 behavior.
+    # later lifecycle, reconstruction, or productization behavior.
     register_campaign_handoff_commands(
         campaign,
         emit_error=emit_error,
@@ -158,6 +159,11 @@ def register_campaign_capability_commands(
         json_echo=json_echo,
     )
     register_campaign_reconciliation_commands(
+        campaign,
+        emit_error=emit_error,
+        json_echo=json_echo,
+    )
+    register_campaign_productization_commands(
         campaign,
         emit_error=emit_error,
         json_echo=json_echo,
