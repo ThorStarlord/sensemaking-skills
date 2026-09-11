@@ -183,6 +183,12 @@ search hit != frontier entry
 frontier entry != authorization to implement
 ```
 
+Non-authoritative possibilities that may inform a future Level-3 or Level-4
+reassessment are preserved in
+[`strategic-candidate-directions.md`](strategic-candidate-directions.md). Their
+presence there is idea memory only: it does not add them to the Strategic
+Frontier, establish priority, or authorize implementation.
+
 ### 5.2 Repository-level responsibility classes
 
 These are conceptual classes, not a new runtime enum:
