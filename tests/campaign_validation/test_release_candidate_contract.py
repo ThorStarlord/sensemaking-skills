@@ -61,8 +61,8 @@ def test_canonical_campaign_docs_reject_stale_schema_and_product_boundary_author
     semantics = _read("docs/campaign-semantics.md")
     campaign = _read("docs/sensemaking-campaign.md")
 
-    assert f'requires `schema_version` to be `"{CURRENT_SCHEMA_VERSION}"`' in semantics
-    assert 'requires `schema_version` to be `"1"`' not in semantics
+    assert f'`schema_version` to be `"{CURRENT_SCHEMA_VERSION}"`' in semantics
+    assert '`schema_version` to be `"1"`' not in semantics
     assert "historical v1" in semantics.lower()
 
     assert "Current product boundary and routing/planning non-goals" in campaign
