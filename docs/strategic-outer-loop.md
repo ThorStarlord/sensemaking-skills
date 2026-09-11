@@ -370,13 +370,13 @@ only explicitly ratified, mechanically decidable representation contracts.
 
 ## 11. Construction sequence and authorization state
 
-The construction sequence remains incremental rather than a presumed roadmap:
+The construction sequence is intentionally **not** a standing roadmap:
 
 ```text
 1. Canonical four-level control model                  [integrated]
 2. Level-3 strategic-state contract                    [integrated]
 3. Level-4 product-thesis revision contract            [integrated]
-4. Strategic State Contract Validation v0              [authorized by strategic-state-validation-design-preflight.md]
+4. Strategic State Contract Validation v0              [integrated / repository-qualified]
 5. Read-only strategy inspect/diff                     [not authorized]
 6. Level-3 -> Campaign handoff mechanics               [not authorized]
 7. Level-4 escalation/reconciliation mechanics         [not authorized]
@@ -385,7 +385,14 @@ The construction sequence remains incremental rather than a presumed roadmap:
 Step 4 was authorized only after the fresh post-B7 reassessment found a concrete
 mechanically decidable representation-integrity boundary and recorded it in
 [`strategic-state-validation-design-preflight.md`](strategic-state-validation-design-preflight.md).
+It was implemented as the repository-local `scripts/validate-strategic-state.py`
+validator and integrated into Product Validation.
 
-That authorization is narrow: repository-local Level-3 section/pointer/thesis-marker/frontier-identity validation only. It does not authorize a strategy CLI, semantic priority checks, GitHub currentness inference, a strategic-state schema, or any later step.
+The post-step-4 Level-3 reassessment found no comparably concrete current
+mechanical failure/reconstruction boundary for steps 5–7. They therefore remain
+ideas, not pending work. Existing Markdown authority and agent-owned reasoning
+remain sufficient at the current evidence boundary.
 
-After step 4 is implemented and qualified, Level 3 must reassess again. Step 5 does not become authorized merely because step 4 exists.
+Reopen a later step only from new concrete product/integrity/reconstruction
+pressure or explicit owner direction. Do not infer authorization from sequence
+numbering or from the existence of this conceptual model.
