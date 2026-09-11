@@ -70,6 +70,8 @@ As of the third 2026-09-11 owner-directed build-first closeout, repository-quali
 - bounded shared companion IO for recent locator/relation/completion records;
 - Skill Contract Manifests, Domain Packs, semantic conformance, and `semantic catalog`.
 
+The owner-ratified Persona & Adaptive Guidance Model v0 now also clarifies the primary design persona and five contextual reasoning factors: user supervision capability, desired delegation, decision complexity, consequentiality, and continuation complexity. These are product/agent-judgment concepts, not a new executable substrate.
+
 Campaign schema remains v2. None of these baselines establishes native-harness usefulness, empirical portability, comparative superiority, semantic correctness, or automatic planning authority.
 
 ## 4. Agent ergonomics candidates
@@ -102,9 +104,34 @@ Current mechanical observability includes `inspect`, `explain`, `diff`, semantic
 
 **Current reconciliation:** `LONG_HORIZON` + `REQUIRES_EVIDENCE`.
 
-Potential LIGHT/STANDARD/QUALIFIED presentation remains illustrative only. The risk is creating multiple truth systems or weakening evidence based on labels.
+The Persona & Adaptive Guidance Model v0 supplies the conceptual reason that process ceremony may vary without creating multiple truth systems:
 
-**Non-goal:** incompatible Campaign models or weaker truth standards.
+```text
+user supervision capability
+-> scaffolding / explanation
+
+desired delegation
+-> agent decision ownership within granted authority
+
+decision complexity + consequentiality
+-> process rigor
+
+continuation complexity
+-> durability / Campaign value
+```
+
+The preferred current behavior is **adaptive agent judgment using the existing product**, not formal rigor modes. A narrow, locally evidenced responsibility may not need a Campaign. Ambiguous repository work may benefit from repository sensemaking. Higher consequentiality may warrant stronger validation/reconciliation. High continuation complexity is the clearest reason to introduce durable Campaign state, provenance, and resume/handoff surfaces.
+
+Potential `LIGHT` / `STANDARD` / `QUALIFIED` presentation remains illustrative only. The risk is creating multiple truth systems, weakening evidence because of a label, or turning contextual semantic judgment into a routing threshold.
+
+**Reopen trigger:** repeated real-use evidence that the existing one-model Campaign semantics either (a) impose avoidable ceremony on otherwise appropriate work, or (b) cannot express a recurring mechanically bounded consumption/qualification profile without manual reconstruction.
+
+**Non-goals:** incompatible Campaign models, weaker truth/evidence standards, user-expertise scoring, complexity/consequentiality scoring, automatic Campaign thresholds, or deterministic flow selection.
+
+```text
+adaptive guidance model
+!= formal Campaign tier system
+```
 
 ## 5. Campaign portability and lifecycle candidates
 
@@ -230,6 +257,8 @@ All six planned waves and all 27 capabilities from the pinned source are reposit
 
 Retained research/accounting machinery exists, but ordinary repository construction is not to be silently converted into an experiment program.
 
+The adaptive-guidance reinterpretation makes coordination overhead more interpretable: visible ceremony should not scale merely because the user is less expert, while durable machinery should earn its cost from decision/consequentiality/continuation pressure. That is a product hypothesis, not measured evidence.
+
 **Reopen trigger:** explicit owner direction to resume measurement/research.
 
 ### 8.2 Harness Conformance / portability evidence
@@ -316,6 +345,9 @@ universal semantic-reference registry
 universal causal/decision graph
 Sensemaking Protocol product-category pivot
 Campaign schema v3 merely for convenience
+user expertise / task complexity / consequentiality scoring
+automatic persona inference or beginner/expert runtime modes
+automatic Campaign rigor thresholds
 bulk historical-document deletion
 new empirical experiment without owner direction
 ```
@@ -348,12 +380,13 @@ stable enough semantics
 
 This document intentionally declares **no current implementation priority**.
 
-`STATUS.md` is authoritative for the current Level-3 frontier and warranted responsibility. The owner-directed Portable Target Rebinding, Cross-Repository Dependency Declarations, Campaign Completion & Archival, Agent Workflow / Golden Path, and Surface Simplification & Contract Consolidation sequence is complete; finishing it does not automatically promote another candidate.
+`STATUS.md` is authoritative for the current Level-3 frontier and warranted responsibility. The owner-directed Portable Target Rebinding, Cross-Repository Dependency Declarations, Campaign Completion & Archival, Agent Workflow / Golden Path, and Surface Simplification & Contract Consolidation sequence is complete; finishing it does not automatically promote another candidate. The Persona & Adaptive Guidance Model v0 reinterpretation likewise does not promote Progressive Campaign Rigor or another runtime candidate merely because the product model now explains when different amounts of ceremony could be useful.
 
 ```text
 candidate inventory exists
 != repository has pending work
 != candidate ordering is priority
+!= adaptive product model requires adaptive runtime
 != absence of current work means product is finished
 ```
 
