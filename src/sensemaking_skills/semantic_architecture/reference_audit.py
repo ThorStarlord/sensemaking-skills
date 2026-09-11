@@ -198,6 +198,42 @@ def _audit_evidence_ref(
     )
 
 
+def _audit_target_ref(
+    *,
+    entry_id: str,
+    reference: str,
+    campaign_target_ref: str | None,
+) -> SemanticReferenceAuditItem:
+    if campaign_target_ref is None:
+        return _item(
+            entry_id=entry_id,
+            field="target_ref",
+            reference=reference,
+            resolution=ReferenceResolution.NOT_ADDRESSABLE,
+            reference_class=ReferenceClass.UNKNOWN,
+            resolver="none",
+            detail="no Campaign target authority was supplied",
+        )
+    if reference == campaign_target_ref:
+        return _item(
+            entry_id=entry_id,
+            field="target_ref",
+            reference=reference,
+            resolution=ReferenceResolution.RESOLVED,
+            reference_class=ReferenceClass.CAMPAIGN_INTERNAL,
+            resolver="campaign.target_snapshot",
+        )
+    return _item(
+        entry_id=entry_id,
+        field="target_ref",
+        reference=reference,
+        resolution=ReferenceResolution.DANGLING,
+        reference_class=ReferenceClass.CAMPAIGN_INTERNAL,
+        resolver="campaign.target_snapshot",
+        detail="target ref does not match the authoritative Campaign TargetSnapshot ref",
+    )
+
+
 def _audit_unaddressable(
     *,
     entry_id: str,
@@ -225,6 +261,7 @@ def audit_semantic_references(
     *,
     campaign_evidence_refs: Iterable[str] | None = None,
     active_uncertainty_ids: Iterable[str] | None = None,
+    campaign_target_ref: str | None = None,
 ) -> SemanticReferenceAuditResult:
     """Audit outbound semantic references without inventing missing namespaces.
 
@@ -254,6 +291,16 @@ def audit_semantic_references(
                     entry_id=entry_id,
                     reference=artifact_ref,
                     campaign_evidence_refs=evidence_refs,
+                )
+            )
+
+        target_ref = entry.get("target_ref")
+        if isinstance(target_ref, str) and target_ref:
+            items.append(
+                _audit_target_ref(
+                    entry_id=entry_id,
+                    reference=target_ref,
+                    campaign_target_ref=campaign_target_ref,
                 )
             )
 

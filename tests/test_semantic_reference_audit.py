@@ -54,6 +54,44 @@ def test_audit_resolves_campaign_evidence_and_admitted_artifact_refs():
     assert result.semantic_truth_established is False
 
 
+def test_audit_resolves_matching_campaign_target_ref():
+    result = audit_semantic_references(
+        [_entry(target_ref="target-snapshot-sha256:abc123")],
+        campaign_evidence_refs=(),
+        active_uncertainty_ids=(),
+        campaign_target_ref="target-snapshot-sha256:abc123",
+    )
+    fields = _by_field(result)
+    assert fields["target_ref"].resolution is ReferenceResolution.RESOLVED
+    assert fields["target_ref"].reference_class is ReferenceClass.CAMPAIGN_INTERNAL
+    assert fields["target_ref"].integrity_effect is IntegrityEffect.PASS
+
+
+def test_audit_marks_mismatching_campaign_target_ref_dangling_and_failed():
+    result = audit_semantic_references(
+        [_entry(target_ref="target-snapshot-sha256:old")],
+        campaign_evidence_refs=(),
+        active_uncertainty_ids=(),
+        campaign_target_ref="target-snapshot-sha256:current",
+    )
+    fields = _by_field(result)
+    assert fields["target_ref"].resolution is ReferenceResolution.DANGLING
+    assert fields["target_ref"].integrity_effect is IntegrityEffect.FAIL
+    assert not result.integrity_ok
+
+
+def test_audit_leaves_target_ref_not_addressable_without_campaign_authority():
+    result = audit_semantic_references(
+        [_entry(target_ref="external:target")],
+        campaign_evidence_refs=(),
+        active_uncertainty_ids=(),
+    )
+    fields = _by_field(result)
+    assert fields["target_ref"].resolution is ReferenceResolution.NOT_ADDRESSABLE
+    assert fields["target_ref"].integrity_effect is IntegrityEffect.INFORMATIONAL
+    assert result.integrity_ok
+
+
 def test_audit_marks_missing_campaign_local_refs_dangling_but_opaque_refs_informational():
     result = audit_semantic_references(
         [
@@ -80,7 +118,7 @@ def test_audit_marks_missing_campaign_local_refs_dangling_but_opaque_refs_inform
     assert fields["semantic_profile_ref"].resolution is ReferenceResolution.NOT_ADDRESSABLE
     assert not result.integrity_ok
     assert result.dangling_count == 1
-    assert result.not_addressable_count == 4
+    assert result.not_addressable_count == 5
 
 
 def test_audit_resolves_only_currently_represented_uncertainty_without_inventing_namespace():

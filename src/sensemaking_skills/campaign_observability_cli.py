@@ -83,6 +83,7 @@ def _campaign_reference_audit(snapshot: Any, records: list[dict[str, Any]]):
         records,
         campaign_evidence_refs=snapshot.evidence_refs,
         active_uncertainty_ids=active_uncertainty_ids,
+        campaign_target_ref=_campaign_target_ref(snapshot),
     )
 
 
@@ -156,6 +157,7 @@ def register_campaign_observability_commands(
                 matches.append({"kind": "semantic_state_entry", "value": entry, "entry_digest": record.get("entry_digest")})
             for field, kind in (
                 ("artifact_ref", "semantic_artifact_ref"),
+                ("target_ref", "semantic_target_ref"),
                 ("semantic_profile_ref", "semantic_profile_ref"),
             ):
                 if entry.get(field) == reference:
