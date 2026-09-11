@@ -2,6 +2,7 @@
 
 **Status:** canonical conceptual contract for Level-4 strategy revision  
 **Primary authority surface:** `docs/product-strategy.md`  
+**Current product-boundary authority:** `docs/adr/0029-current-product-boundary.md`  
 **Authority:** human owner for product mission, strategic intent, major product decisions, product-boundary expansion, and claim-ceiling expansion  
 **Runtime status:** documentation contract only; no autonomous strategy-revision machinery is authorized
 
@@ -52,6 +53,13 @@ accumulated material evidence / owner direction
       |
 identify thesis-level tension or contradiction
       |
+is a thesis commitment now decision-changing?
+      |
+   no ---> preserve material tension when recurrence could matter
+      |     and return control to Level 3
+      |
+     yes
+      |
 identify affected strategic commitment
       |
 formulate bounded alternatives
@@ -62,9 +70,9 @@ reaffirm / reinterpret / revise / retire / supersede
       |
 obtain owner ratification when required
       |
-update canonical product strategy
+update canonical product strategy / authority record
       |
-reconcile Level-3 strategic state
+mandatory Level-3 reconciliation
       |
 return control to Strategic Repository Evolution
 ```
@@ -97,7 +105,43 @@ These are explanatory categories, not a required runtime enum.
 Ordinary capability gaps, implementation defects, architecture reconciliations,
 and feature changes normally remain Level 3.
 
-## 5. Escalation from Level 3
+## 5. Thesis tension before thesis review
+
+Not every product-level signal immediately warrants Level-4 activation. A weak
+or ambiguous signal may matter only if it recurs across independent Level-3 or
+Level-2 work.
+
+A **Thesis Tension** is a durable, attributed observation that an existing
+product-thesis commitment may be generating repeated friction or ambiguity, but
+the evidence is not yet strong enough to make revision decision-changing.
+
+A useful documentation-level record contains:
+
+```text
+THESIS TENSION
+AFFECTED STRATEGY COMMITMENT
+OBSERVED INCIDENTS / EVIDENCE
+CURRENT INTERPRETATION
+WHY LEVEL-4 REVIEW IS NOT YET REQUIRED
+WHAT RECURRENCE / EVIDENCE WOULD TRIGGER REVIEW
+ATTRIBUTED AUTHOR
+```
+
+This is not a runtime object, score, or automatic counter. It may live in
+`STATUS.md`, a dated Level-3 audit, an ADR/review note, or another current
+authority-linked record when recurrence itself could affect a future decision.
+
+```text
+thesis tension != thesis contradiction
+thesis tension exists != thesis review required
+one weak signal != automatic escalation
+repeated weak signals may become material evidence
+```
+
+Do not preserve every minor disagreement as a tension. Preserve it only when a
+fresh agent losing the recurrence would materially weaken later thesis review.
+
+## 6. Escalation from Level 3
 
 A Level-3 controller should escalate rather than rewrite strategy when the
 current repository-level decision depends on changing a thesis commitment.
@@ -109,6 +153,7 @@ THESIS_REVIEW_REQUIRED
 AFFECTED_STRATEGY_COMMITMENT
 CURRENT COMMITMENT
 EVIDENCE / CONTRADICTION
+RELATED THESIS TENSIONS, WHEN MATERIAL
 WHY LEVEL 3 CANNOT RESOLVE IT
 ALTERNATIVES
 RECOMMENDED OPTION, IF ANY
@@ -118,7 +163,36 @@ DOWNSTREAM STATE LIKELY AFFECTED
 
 A recommendation does not itself change strategy.
 
-## 6. Revision dispositions
+## 7. Active work while Level 4 is unresolved
+
+When Level 3 declares thesis review required, it must identify which current
+responsibilities/Campaigns depend materially on the challenged commitment.
+
+```text
+THESIS REVIEW REQUIRED
+        |
+identify dependency on affected commitment
+        |
+        +-- thesis-dependent strategic advancement
+        |      -> suspend until Level-4 disposition + Level-3 reconciliation
+        |
+        +-- independently warranted bounded work
+               -> may continue if still within authority and unaffected
+```
+
+This is a **dependency-sensitive hold**, not a global repository freeze.
+
+A thesis-dependent Campaign may still preserve state, gather already-authorized
+non-prejudicial evidence, or perform safe mechanical maintenance when those
+actions do not assume the disputed strategic commitment. It must not silently
+advance the strategic rationale as if review had already resolved.
+
+```text
+review pending != all work forbidden
+review pending != old thesis safe to assume
+```
+
+## 8. Revision dispositions
 
 Level-4 review should end in one explicit disposition.
 
@@ -155,12 +229,14 @@ Retirement should preserve history and rationale rather than deleting evidence.
 A new commitment replaces an earlier one.
 
 Supersession should identify both the old and new authority surfaces or
-statements and preserve the reason for replacement.
+statements and preserve the reason for replacement. Product Boundary
+Reconciliation v1 is the current concrete example: ADR 0014 remains historical
+while ADR 0029 carries the operative product boundary.
 
 These dispositions describe semantic revision outcomes. They do not authorize a
 new generic lifecycle type in runtime code.
 
-## 7. Authority and ratification
+## 9. Authority and ratification
 
 The active agent may:
 
@@ -185,7 +261,7 @@ The active agent may not silently:
 When those decisions are owner-reserved, canonical strategy changes require
 explicit owner ratification.
 
-## 8. Revision record
+## 10. Revision record
 
 A consequential strategy revision should preserve enough durable information to
 reconstruct why the product thesis changed.
@@ -205,11 +281,11 @@ EFFECTIVE STRATEGY VERSION OR STATE
 DOWNSTREAM RECONCILIATION REQUIRED
 ```
 
-This may initially live in Git history, an ADR, an owner-decision record, or the
-strategy document itself. This contract does not require a new strategy event
-store.
+This may live in Git history, an ADR, an owner-decision record, a dedicated
+Level-4 review, or the strategy document itself. This contract does not require
+a new strategy event store.
 
-## 9. Product-strategy revision semantics
+## 11. Product-strategy revision semantics
 
 `docs/product-strategy.md` remains the current strategy authority. It should
 make three things explicit:
@@ -223,23 +299,26 @@ Strategy should contain current commitments plus appropriate evidence ceilings.
 Historical alternatives belong in version history, ADRs, or dated decision
 records when retaining them inline would confuse current authority.
 
-## 10. Downstream reconciliation
+## 12. Mandatory downstream reconciliation
 
-After a Level-4 change, Level 3 must reassess rather than blindly continue the
-previous frontier.
+After every material Level-4 disposition, Level 3 must reassess rather than
+blindly continue the previous frontier. Reconciliation occurs **before
+thesis-dependent strategic work resumes**.
 
 At minimum reconsider:
 
 - current Strategic Frontier;
+- current Strategic Decision to Support;
 - current highest-leverage boundary;
 - active repository-level responsibility;
 - deferred and rejected directions;
 - capability-state relevance;
-- architecture assumptions tied to the old thesis;
-- open Campaigns whose mission depends on the changed commitment;
+- architecture assumptions tied to the reviewed commitment;
+- open Campaigns whose mission depends on the reviewed commitment;
 - public documentation and claim ceilings.
 
-Possible Level-3 classifications include:
+For each materially affected responsibility/Campaign/direction, use an
+attributed semantic classification such as:
 
 ```text
 STILL_RELEVANT
@@ -250,10 +329,18 @@ SUPERSEDED
 OWNER_DECISION_REQUIRED
 ```
 
-These remain attributed semantic judgments unless a narrower mechanical rule is
-explicitly ratified.
+Then explicitly decide whether to continue, revise, close, supersede, defer, or
+seek owner authority.
 
-## 11. What Level 4 does not do
+```text
+Level-4 disposition != automatic Level-3 work plan
+Level-4 disposition -> Level-3 reassessment -> new/continued responsibility only if warranted
+```
+
+These classifications remain semantic judgments unless a narrower mechanical
+rule is independently justified.
+
+## 13. What Level 4 does not do
 
 Level 4 does not directly:
 
@@ -269,7 +356,7 @@ Level 4 does not directly:
 A Level-4 decision supplies commitments. Level 3 determines what repository
 evolution, if any, those commitments warrant.
 
-## 12. Mechanical future boundary
+## 14. Mechanical future boundary
 
 Future tooling may validate representation facts such as:
 
@@ -282,17 +369,19 @@ Future tooling may validate representation facts such as:
 It must not decide:
 
 ```text
+whether a thesis tension is strategically material
 whether the product thesis is correct
 whether a user segment is strategically better
 whether a non-goal should be reversed
 whether evidence warrants strategy revision
 which strategy alternative should be selected
+which active Campaign depends semantically on a challenged commitment
 ```
 
 No strategy validator or runtime engine is authorized merely by this contract.
 
-## 13. Construction policy
+## 15. Construction policy
 
-The current repository direction is to establish durable Level-4 semantics in
-existing documentation first. Further machinery should be added only when a
-concrete, mechanically decidable integrity or reconstruction need appears.
+The repository keeps durable Level-4 semantics in existing documentation/ADR
+authority first. Further machinery should be added only when a concrete,
+mechanically decidable integrity or reconstruction need appears.

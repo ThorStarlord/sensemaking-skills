@@ -29,8 +29,8 @@ repository-level responsibility within granted authority.
 
 Level 3 does not own product-thesis commitments such as the primary user,
 problem, JTBD, external product boundary, or major strategic non-goals. When
-those commitments become decision-changing, Level 3 records
-`THESIS_REVIEW_REQUIRED` and escalates to Level 4.
+those commitments become decision-changing, Level 3 records thesis review as
+required and escalates to Level 4.
 
 Likewise:
 
@@ -40,13 +40,14 @@ strategic frontier != backlog
 active frontier != automatic authorization
 qualitative comparison != deterministic ranking
 strategic decision stated != implementation authorized
+thesis tension != thesis review required
 repository-qualified != product-value demonstrated
 strategic-state contract valid != strategy correct
 ```
 
 ## 3. Required reconstruction questions
 
-A valid Level-3 state surface should let a fresh reader answer these questions:
+A valid Level-3 state surface should let a fresh reader answer:
 
 1. What current product mission/strategy governs this repository?
 2. What product/repository capabilities are currently established?
@@ -54,37 +55,32 @@ A valid Level-3 state surface should let a fresh reader answer these questions:
 4. What recent changes materially altered the capability state?
 5. What unresolved boundaries currently form the Strategic Frontier?
 6. What consequential **Strategic Decision to Support** is current, if any?
-7. Which boundary is currently highest leverage for that decision, if one has been selected?
-8. Why was that boundary selected over nearby credible alternatives?
-9. What decision-changing uncertainty makes that boundary consequential?
-10. What evidence could change the strategic decision or make the responsibility premature?
+7. Which boundary is highest leverage for that decision, if one is selected?
+8. Why was that boundary preferred to nearby credible alternatives?
+9. What decision-changing uncertainty could make that selection wrong or premature?
+10. What evidence could change the strategic decision?
 11. What repository-level responsibility is currently warranted?
 12. Why is the proposed intervention the smallest sufficient one?
-13. What Campaign, work package, or branch is executing that responsibility?
+13. What Campaign/work package/branch is executing it?
 14. What evidence would establish completion or invalidate the rationale?
 15. What authority is available and what authority is reserved?
 16. Which directions are deferred, rejected, superseded, or outside scope?
-17. Is Level-4 product-thesis review required?
-18. What condition causes Level-3 reassessment or stopping?
+17. Are there recurring thesis tensions whose recurrence could matter later?
+18. Is Level-4 product-thesis review required now?
+19. If review is active, which work depends on the challenged commitment?
+20. What condition causes Level-3 reassessment or stopping?
 
-If the answers require reconstructing hidden conversation context, the durable
-strategic state is incomplete.
+If the answers require hidden conversation context, durable strategic state is
+incomplete.
 
-The v0 validator does **not** mechanically answer these semantic reconstruction
-questions. It checks only stable representation anchors that make the
-human/agent-authored answers addressable.
+The validator does **not** mechanically answer these semantic reconstruction
+questions. It checks only stable representation anchors.
 
 ## 4. Canonical Level-3 concepts
-
-`STATUS.md` should preserve the following conceptual state. Headings may remain
-optimized for readability except for stable mechanical anchors explicitly
-listed in Section 8.
 
 ### 4.1 Product mission and strategy reference
 
 Record the current Level-4 authority rather than duplicating its entire text.
-
-Minimum content:
 
 ```text
 CURRENT PRODUCT STRATEGY
@@ -93,52 +89,34 @@ CURRENT PRODUCT-BOUNDARY AUTHORITY
 STRATEGY AUTHORITY / VERSION OR DATE
 ```
 
-If Level 3 needs to challenge that authority, record an escalation; do not
-silently rewrite the strategy summary into a new thesis.
+If Level 3 challenges that authority, record escalation rather than silently
+rewriting the thesis.
 
 ### 4.2 Current product/repository capability state
 
 Summarize capabilities that materially affect current repository evolution.
-
-Prefer status statements with evidence ceilings such as:
-
-```text
-implemented
-repository-qualified
-native-harness qualified
-portable
-ratified
-integrated on main
-```
-
-Avoid compressing distinct qualification states into one word such as
-"complete" when stronger claims remain unestablished.
+Preserve meaningful evidence ceilings such as `implemented`,
+`repository-qualified`, `native-harness qualified`, `portable`, `ratified`, or
+`integrated on main`; do not compress distinct qualification states into one
+ambiguous word.
 
 ### 4.3 Material limitations and evidence ceilings
 
-Record limitations that could change the next strategic decision.
-
-Examples:
-
-- implementation exists but is not integrated;
-- repository qualification exists but native-harness evidence does not;
-- architecture is documented but not mechanically enforced;
-- a current capability cannot address a named repository class;
-- authority for a consequential action is reserved.
-
-Do not turn every known limitation into an active frontier item.
+Record limitations that could change the next strategic decision. Do not turn
+every known limitation into an active frontier item.
 
 ### 4.4 Strategic Frontier
 
-The Strategic Frontier is the set of currently material unresolved boundaries
-that could meaningfully change progress toward the product mission.
+The Strategic Frontier is the currently material set of unresolved
+product/repository boundaries that could meaningfully change progress toward the
+product mission.
 
-Each frontier item should preserve, in prose or a compact table:
+Each material item should preserve:
 
 ```text
 FRONTIER ID OR NAME
 BOUNDARY / QUESTION
-WHY IT MATTERS TO THE PRODUCT MISSION
+WHY IT MATTERS TO PRODUCT MISSION
 DECISION IT COULD AFFECT
 EVIDENCE BASIS
 CURRENT DISPOSITION
@@ -146,84 +124,47 @@ EVIDENCE CEILING / UNKNOWN
 REOPEN OR ESCALATION CONDITION, WHEN RELEVANT
 ```
 
-Recommended dispositions:
-
-```text
-ACTIVE
-CANDIDATE
-DEFERRED
-REJECTED
-NO_CHANGE_WARRANTED
-SUPERSEDED
-OWNER_DECISION_REQUIRED
-THESIS_REVIEW_REQUIRED
-```
-
-These are documentation-level vocabulary in this contract. They are not new
-Campaign enums and the v0 validator does not impose them as a closed runtime
-enum.
+Documentation-level dispositions may include `ACTIVE`, `CANDIDATE`, `DEFERRED`,
+`REJECTED`, `NO_CHANGE_WARRANTED`, `SUPERSEDED`, `OWNER_DECISION_REQUIRED`, and
+`THESIS_REVIEW_REQUIRED`. They are not Campaign runtime enums.
 
 ### 4.5 Strategic decision to support
 
 Before selecting a boundary for active repository work, state the consequential
-strategic decision that resolving the boundary is meant to improve.
-
-Minimum conceptual shape:
+strategic decision that resolving it is meant to improve.
 
 ```text
 STRATEGIC DECISION TO SUPPORT
 MATERIAL ALTERNATIVES / OPTIONS, WHEN RELEVANT
 WHAT CHANGES IF THE DECISION GOES ONE WAY VS ANOTHER
-WHY THE DECISION MATTERS TO THE PRODUCT MISSION
+WHY THE DECISION MATTERS TO PRODUCT MISSION
 ```
 
-This is semantic context authored by the agent/owner. It is not a runtime enum,
-score, or automatically derived field.
-
-A frontier entry without a meaningful decision it can change is usually an idea
-or backlog item rather than current strategic work.
+This is agent/owner-authored semantic context, not a score or automatic field.
+A frontier entry with no meaningful decision it can change is normally idea
+memory or backlog rather than current strategic work.
 
 ### 4.6 Current highest-leverage boundary and comparison rationale
 
-When Level 3 selects a current strategic focus, state exactly one primary
-boundary and explain why it is currently preferred to nearby credible
-alternatives **as an attributed agent judgment**.
+When Level 3 selects a focus, state one primary boundary and enough attributed
+rationale to reconstruct why it is preferred now.
 
-Qualitative comparison may consider:
-
-```text
-mission relevance
-decision value
-blocking power
-evidence sufficiency / resolvability
-consequence of error
-deferral cost
-reversibility
-authority availability
-dependency
-smallest warranted intervention
-```
-
-These are reasoning lenses, not weights. Do not mechanically sum them, infer a
-priority score, or assume one factor always dominates.
-
-Record:
+Qualitative lenses may include mission relevance, decision value, blocking
+power, evidence sufficiency/resolvability, consequence of error, deferral cost,
+reversibility, authority availability, dependency, and smallest warranted
+intervention.
 
 ```text
-CURRENT STRATEGIC BOUNDARY
-STRATEGIC DECISION SERVED
-WHY IT IS MATERIAL NOW
-CREDIBLE ALTERNATIVES CONSIDERED, WHEN CONSEQUENTIAL
-WHY THE SELECTED BOUNDARY IS PREFERRED NOW
-ATTRIBUTED SELECTOR
+qualitative comparison != deterministic ranking
+agent judgment != unexplained intuition
 ```
 
-If no single boundary is warranted, say so rather than manufacturing one.
+If no boundary is warranted, say so.
 
 ### 4.7 Strategic decision-changing uncertainty
 
-Record the unresolved question that could make the selected strategic decision,
-boundary, or repository-level responsibility wrong or premature.
+Record the unresolved question that could make the strategic decision, boundary,
+or responsibility wrong or premature.
 
 ```text
 UNCERTAINTY
@@ -232,15 +173,9 @@ CHEAPEST SUFFICIENT EVIDENCE, IF KNOWN
 WHAT WOULD CHANGE THE CURRENT DECISION / RESPONSIBILITY
 ```
 
-The Level-3 uncertainty may be broader than a Level-2 Campaign uncertainty.
-The latter should remain bounded to the delegated responsibility.
-
 ### 4.8 Current warranted repository-level responsibility
 
-Record the semantic responsibility selected by the active agent, not merely the
-implementation task.
-
-Minimum shape:
+Record the semantic responsibility rather than merely an implementation task.
 
 ```text
 RESPONSIBILITY
@@ -253,37 +188,15 @@ SMALLEST WARRANTED INTERVENTION
 SUCCESS / CLOSURE CONDITIONS
 ```
 
-Possible responsibility classes include product-definition clarification,
-product design, architecture reconciliation, capability development, hardening,
-simplification/removal, qualification, migration, and ordinary implementation.
-These classes remain conceptual unless a later contract explicitly promotes
-them.
-
 ### 4.9 Active execution vehicle
 
-Name the bounded Campaign, work package, branch, issue, or other execution unit
-that currently owns the delegated responsibility.
-
-```text
-ACTIVE CAMPAIGN / WORK PACKAGE
-BASE / TARGET STATE WHEN RELEVANT
-STATUS
-```
-
-A Level-3 state surface should distinguish:
-
-```text
-selected responsibility
-!= branch exists
-!= PR open
-!= PR qualified
-!= merged on main
-```
+Name the Campaign, work package, branch, issue, or other bounded execution unit.
+Distinguish selected responsibility from branch existence, PR state,
+qualification, and merge state.
 
 ### 4.10 Expected evidence and reassessment condition
 
-Record what evidence would cause Level 3 to close, revise, or abandon the
-current responsibility.
+Record:
 
 ```text
 EXPECTED EVIDENCE OF PROGRESS
@@ -291,14 +204,11 @@ REJECTION / INVALIDATION EVIDENCE
 REASSESSMENT CONDITION
 ```
 
-This prevents the outer loop from continuing merely because implementation can
-continue.
+This prevents continuation merely because implementation can continue.
 
 ### 4.11 Authority and owner decisions
 
-Record both available and reserved authority.
-
-Examples:
+Record both available and reserved authority:
 
 ```text
 AUTHORIZED NOW
@@ -307,82 +217,92 @@ EXTERNAL AUTHORITY REQUIRED
 PROHIBITED / OUTSIDE PRODUCT BOUNDARY
 ```
 
-Do not infer that broad Campaign authority automatically authorizes every
-strategic change.
-
 ### 4.12 Deferred, rejected, and superseded directions
 
-Preserve consequential non-active directions when their absence would cause a
-fresh agent to reopen already-resolved work.
+Preserve consequential non-active directions only when forgetting them would
+cause repeated/reopened work. The goal is durable decision memory, not backlog
+accumulation.
 
-For each material item record:
+### 4.13 Thesis tension
+
+A **Thesis Tension** records a material but not-yet-decision-changing signal
+about a Level-4 commitment when recurrence itself could matter later.
 
 ```text
-DIRECTION
-DISPOSITION
-WHY
-REOPEN WHEN
-NOT REOPENED BY, WHEN USEFUL
+AFFECTED STRATEGY COMMITMENT
+OBSERVED INCIDENTS / EVIDENCE
+CURRENT INTERPRETATION
+WHY LEVEL-4 REVIEW IS NOT YET REQUIRED
+WHAT RECURRENCE / EVIDENCE WOULD TRIGGER REVIEW
+ATTRIBUTED AUTHOR
 ```
 
-The goal is durable decision memory, not backlog accumulation.
+```text
+thesis tension != thesis contradiction
+thesis tension exists != thesis review required
+repeated weak signals may become material evidence
+```
 
-### 4.13 Level-4 escalation state
+Do not preserve every minor disagreement. Preserve only tensions whose loss
+would weaken later strategy reconstruction.
 
-When repository evolution exposes a product-thesis question, record:
+### 4.14 Level-4 escalation and dependent-work state
+
+When repository evolution exposes a decision-changing product-thesis question,
+record:
 
 ```text
 THESIS_REVIEW_REQUIRED
 AFFECTED STRATEGY COMMITMENT
+CURRENT COMMITMENT
 EVIDENCE / CONTRADICTION
+RELATED THESIS TENSIONS, WHEN MATERIAL
 WHY LEVEL 3 CANNOT RESOLVE IT
 AVAILABLE ALTERNATIVES
 AUTHORITY REQUIRED
+AFFECTED ACTIVE RESPONSIBILITIES / CAMPAIGNS
 ```
 
-The canonical Level-4 process is defined in
-[`product-thesis-revision.md`](product-thesis-revision.md).
+If review is required, classify active work by dependency on the challenged
+commitment:
+
+```text
+THESIS_DEPENDENT
+-> strategic advancement is held until Level-4 disposition + Level-3 reconciliation
+
+UNAFFECTED
+-> may continue if independently warranted and authorized
+```
+
+This is semantic agent judgment, not automatic dependency inference.
 
 ## 5. Strategic state lifecycle
-
-The normal Level-3 lifecycle is:
 
 ```text
 reconstruct strategy + repository state
 -> identify frontier
--> state the strategic decision to support
+-> state strategic decision to support
 -> compare credible boundaries qualitatively
--> select or decline a strategic boundary
+-> select or decline a boundary
 -> identify decision-changing uncertainty / sufficient evidence
 -> select one repository-level responsibility
 -> choose smallest warranted intervention
 -> delegate bounded execution
 -> receive qualified result/evidence
--> reconcile capability state and decision
+-> reconcile capability state + strategic decision
+-> preserve material thesis tension or escalate when needed
 -> update frontier
 -> reassess mission
 ```
 
-Possible outcomes include:
-
-```text
-CONTINUE
-NO_FURTHER_REPOSITORY_WORK_WARRANTED
-DEFER
-REJECT
-NO_CHANGE
-OWNER_DECISION_REQUIRED
-THESIS_REVIEW_REQUIRED
-EXTERNAL_BLOCKER
-STOP
-```
-
-These labels describe conceptual outcomes, not new runtime terminal states.
+Possible outcomes include `CONTINUE`, `NO_FURTHER_REPOSITORY_WORK_WARRANTED`,
+`DEFER`, `REJECT`, `NO_CHANGE`, `OWNER_DECISION_REQUIRED`,
+`THESIS_REVIEW_REQUIRED`, `EXTERNAL_BLOCKER`, and `STOP`. These are conceptual
+outcomes, not runtime terminal-state additions.
 
 ## 6. Level-3 to Level-2 handoff
 
-When a Strategic Frontier item becomes active work, the handoff into a bounded
-Campaign or work package should preserve:
+A handoff should preserve:
 
 ```text
 STRATEGIC BOUNDARY
@@ -398,44 +318,53 @@ INVALIDATION EVIDENCE
 STOP CONDITIONS
 ```
 
-Level 2 may narrow implementation details but should not silently substitute a
+Level 2 may narrow implementation details but must not silently substitute a
 materially different strategic responsibility.
 
-## 7. Currentness and reconciliation
+## 7. Currentness and Level-4 reconciliation
 
 `STATUS.md` represents current Level-3 operational state. Historical roadmaps,
-campaign reports, handoffs, dated audits, and research artifacts may remain
-valuable evidence but must not compete silently with this surface for
-current-direction authority.
-
-The preferred shape is:
+Campaign reports, handoffs, dated audits, ADRs, and research artifacts may
+remain valuable evidence but must not compete silently for current direction.
 
 ```text
 STATUS.md = current strategic projection
 linked ADRs / handoffs / qualification records = durable historical evidence
 ```
 
-When strategy changes at Level 4, Level 3 must reconcile:
+After every material Level-4 disposition, Level 3 must reconcile before
+thesis-dependent strategic work resumes. At minimum reconsider:
 
-- current frontier items;
-- active and deferred responsibilities;
-- strategic decisions that depended on the old commitment;
-- architecture assumptions;
-- capability-state claims;
-- historical directions that now require supersession markers.
+- Strategic Frontier;
+- Strategic Decision to Support;
+- highest-leverage boundary;
+- active/deferred responsibilities;
+- capability-state relevance;
+- architecture assumptions tied to the reviewed commitment;
+- open Campaigns whose mission depends on it;
+- public documentation and claim ceilings.
 
-Semantic classifications such as "still relevant" or "contradictory" remain
-agent-authored unless an explicit mechanical rule exists.
+For each materially affected item, record an attributed classification such as:
 
-The v0 validator does not query GitHub or infer that a PR merge makes a prose
-status stale. External integration/currentness remains an agent reconciliation
-responsibility unless a future explicit machine-addressable contract is
-independently justified.
+```text
+STILL_RELEVANT
+STALE
+SUSPECT
+CONTRADICTORY
+SUPERSEDED
+OWNER_DECISION_REQUIRED
+```
+
+Then explicitly continue, revise, close, supersede, defer, or seek authority.
+
+```text
+Level-4 disposition != automatic Level-3 work plan
+Level-4 disposition -> Level-3 reassessment -> responsibility only if warranted
+```
+
+The validator does not query remote state or make these semantic classifications.
 
 ## 8. Bounded mechanical validator v0
-
-The design authority for the validator is
-[`strategic-state-validation-design-preflight.md`](strategic-state-validation-design-preflight.md).
 
 Repository implementation:
 
@@ -443,13 +372,9 @@ Repository implementation:
 scripts/validate-strategic-state.py
 ```
 
-The v0 validator currently checks only:
-
-- required authority surfaces exist;
-- required Level-3 Markdown anchors occur exactly once;
-- canonical pointers in `### Current product strategy` resolve;
-- `THESIS_REVIEW_REQUIRED` occurs exactly once in the thesis-review section and uses literal `YES` or `NO`;
-- normalized numbered/bold Strategic Frontier item identities are unique.
+It currently checks only required authority surfaces, required Markdown anchors,
+canonical pointers, the single YES/NO thesis-review marker, and Strategic
+Frontier identity uniqueness.
 
 Current stable v0 anchors are:
 
@@ -468,49 +393,22 @@ Current stable v0 anchors are:
 ```
 
 Strategic Outer Loop Precision v1 makes `Strategic Decision to Support`
-conceptually required for reconstructible selection reasoning. Whether it should
-become an additional stable mechanical anchor is deliberately reassessed after
-the semantic model is integrated rather than assumed here.
+conceptually required. Whether it becomes an additional mechanical anchor is
+reassessed only after semantic integration.
 
-The validator emits structured diagnostics and always preserves:
+The validator always preserves:
 
 ```text
 semantic_truth_established: false
 ```
 
-It deliberately does **not** decide:
-
-```text
-which frontier is highest leverage
-whether a strategic decision is important
-whether comparison rationale is persuasive
-whether strategy is good
-whether a feature should exist
-whether architecture is correct
-whether evidence semantically warrants a responsibility
-whether a remote PR/branch is merged or current
-```
-
-A strategically questionable statement can therefore be mechanically valid.
-That is intentional.
+It deliberately does not decide frontier leverage, strategic-decision value,
+comparison quality, thesis-tension materiality, work dependency on a thesis,
+strategy quality, architecture correctness, or responsibility warrant.
 
 ## 9. Implementation and evolution rule
 
-Run the current validator directly with:
-
-```bash
-python scripts/validate-strategic-state.py --repo-root .
-python scripts/validate-strategic-state.py --repo-root . --json
-```
-
-Product Validation invokes it in the repository-contract lane and runs its
-negative/rejection suite. It remains repository validation infrastructure, not
-a semantic strategy judge.
-
-Future checks may be added only when they are independently mechanically
-justified. Do not broaden this validator merely because the conceptual Level-3
-contract contains richer semantic fields.
-
-In particular, do not add a strategic priority score, remote/GitHub currentness
-query, frontier router, semantic decision judge, or responsibility selector as
-an implementation shortcut.
+Future checks may be added only when independently mechanically justified. Do
+not add a strategic priority score, remote-currentness query, frontier router,
+semantic decision judge, thesis-tension counter, automatic escalation detector,
+or responsibility selector as an implementation shortcut.
