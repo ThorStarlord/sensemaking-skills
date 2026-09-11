@@ -57,6 +57,19 @@ def test_schema_and_external_qualification_contracts_are_in_release_baseline() -
     assert "verifier PASS != semantic truth" in readme
 
 
+def test_canonical_campaign_docs_reject_stale_schema_and_product_boundary_authority() -> None:
+    semantics = _read("docs/campaign-semantics.md")
+    campaign = _read("docs/sensemaking-campaign.md")
+
+    assert f'requires `schema_version` to be `"{CURRENT_SCHEMA_VERSION}"`' in semantics
+    assert 'requires `schema_version` to be `"1"`' not in semantics
+    assert "historical v1" in semantics.lower()
+
+    assert "Current product boundary and routing/planning non-goals" in campaign
+    assert "ADR 0029" in campaign
+    assert "Why is automatic downstream routing deferred? | ADR 0014" not in campaign
+
+
 def test_sdist_manifest_carries_validator_runtime_sources() -> None:
     manifest = _read("MANIFEST.in")
     assert "recursive-include skills *" in manifest
