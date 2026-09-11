@@ -1,11 +1,11 @@
 # Status
 
 **Version:** 0.3.0  
-**Last updated:** 2026-09-10  
-**Current phase:** Product Management source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 complete with Outcome A; bounded Phase 15 registry-liveness conformance qualified; post-Phase-10 build-first semantic substrate B1–B6 repository-qualified; Strategic Outer Loop Levels 3–4 documentation foundation in construction  
+**Last updated:** 2026-09-11  
+**Current phase:** Product Management source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 complete with Outcome A; bounded Phase 15 registry-liveness conformance qualified; post-Phase-10 build-first semantic substrate B1–B6 repository-qualified; Strategic Outer Loop Levels 3–4 documentation foundation repository-integrated  
 **Primary program:** Sensemaking Campaign productization with agent-agnostic domain capabilities, evidence-governed repository reasoning, and durable strategic repository evolution  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this file intentionally does not self-pin a commit that becomes stale when it changes  
-**Current semantic frontier:** continue from concrete product/integrity or strategic-reconstruction capabilities while architecture remains informative; additional empirical experiments are deferred until an explicit owner decision or a future gate makes behavioral evidence decisive  
+**Current semantic frontier:** post-foundation reassessment is required before any new outer-loop runtime package; continue only from a concrete product/integrity/reconstruction capability with a mechanically bounded contract; additional empirical experiments remain deferred until explicit owner direction or a future gate makes behavioral evidence decisive  
 **Current PM frontier:** Waves 1–6 are `REPOSITORY_QUALIFIED`; the pinned 27-command source migration is complete; native-harness/portability qualification remains pending
 
 Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, target identity, authority metadata checks, bounded conformance, and reconstructible state.
@@ -28,7 +28,8 @@ Sensemaking Skills is an **agent-native engineering sensemaking and control laye
 - Semantic Architecture Phase 9/10 and bounded Phase 15 are repository-qualified within their stated evidence ceilings.
 - Build-first semantic substrate B1–B6 is repository-qualified: mechanical observations, bounded semantic map, optional semantic companion state, Skill manifests, Domain Packs, Campaign observability, and bundle portability.
 - Product Management Waves 1–6 are repository-qualified across all 27 pinned source capabilities; native-harness and portability evidence remain pending.
-- The strategic outer-loop concept has prior bounded campaign evidence, but this current tranche is a documentation/authority reconciliation, not a claim of a new autonomous strategic runtime.
+- The Strategic Outer Loop documentation foundation is repository-integrated: the four-level control model, Level-3 state contract, Level-4 revision contract, product strategy authority, operating model, and this Level-3 projection are now mutually linked.
+- This integration is a documentation/authority-reconciliation claim, not evidence of a new autonomous strategic runtime.
 
 ### Material limitations and evidence ceilings
 
@@ -41,58 +42,59 @@ Sensemaking Skills is an **agent-native engineering sensemaking and control laye
 
 Current material frontier items are:
 
-1. **Strategic outer-loop foundation — ACTIVE.** Canonicalize the four-level control model, Level-3 strategic-state contract, and Level-4 product-thesis revision semantics without introducing a planning engine or new schema.
+1. **Strategic outer-loop foundation — COMPLETE / INTEGRATED.** The canonical four-level control model, Level-3 strategic-state contract, and Level-4 product-thesis revision semantics are on `main` without a planning engine or new schema.
 2. **B7 semantic-reference integrity — PARALLEL / NOT INTEGRATED.** A separate bounded implementation candidate exists outside this tranche; its status must be read from its own branch/PR until merged.
 3. **Native-harness / portability qualification — DEFERRED BY OWNER DIRECTION.** Existing protocols and evidence ceilings remain valid, but additional empirical experiments are not the current construction priority.
-4. **Further outer-loop machinery — NOT YET AUTHORIZED.** Mechanical validation, `strategy inspect/diff`, Level-3→Campaign mechanics, and Level-4 reconciliation mechanics require a new post-foundation decision rather than automatic continuation.
+4. **Further outer-loop machinery — CANDIDATE / NOT AUTHORIZED.** Mechanical validation, `strategy inspect/diff`, Level-3→Campaign mechanics, and Level-4 reconciliation mechanics require a fresh post-foundation decision; they are not an automatic roadmap.
 
 ### Current highest-leverage boundary
 
-**Boundary:** make product-thesis authority, strategic repository-evolution state, bounded Campaign responsibility, and execution state reconstructibly distinct while keeping one active agent as the semantic controller.
+**No new outer-loop boundary is selected yet.** The previous boundary—making product-thesis authority, strategic repository-evolution state, bounded Campaign responsibility, and execution state reconstructibly distinct—has been closed by the integrated documentation foundation.
 
-**Why now:** the repository already contains both inner-loop and outer-loop concepts across self-development campaigns, the operating model, strategy documents, Campaign machinery, and PM capability work. The current gap is not absence of concepts; it is lack of one canonical relationship among their scopes and authority surfaces.
+The next Level-3 act is reassessment, not automatic continuation. A future outer-loop package must identify a concrete consumed reconstruction/integrity gap whose mechanical behavior can be specified without semantic ranking, automatic strategy selection, or unmeasured product-value assumptions.
 
 ### Current decision-changing uncertainty
 
-Can Levels 3 and 4 be made sufficiently explicit using existing Markdown authority surfaces, or does construction immediately require a new durable runtime/schema?
+Which, if any, post-foundation outer-loop capability has a sufficiently concrete mechanically decidable need to warrant construction now?
 
-Current decision: **use existing surfaces first**. New machinery is not warranted merely to mirror the conceptual model.
+No answer is ratified in this status. Absence of a selected next package is intentional and is not a failure of the loop.
 
 ### Current warranted repository-level responsibility
 
-Create and reconcile the documentation foundation for:
+**None automatically selected after foundation closeout.** The documentation-first responsibility is complete. Before Package 4 or any equivalent runtime work, Level 3 must reconstruct the new state and select or decline a next responsibility from current evidence.
+
+Possible future candidates remain only candidates:
 
 ```text
-Level 4 — Product Thesis / Strategy Revision
-Level 3 — Strategic Repository Evolution
-Level 2 — Responsibility / Campaign
-Level 1 — Execution
+mechanical strategic-state validation
+read-only strategy inspect/diff
+Level-3 -> Campaign handoff mechanics
+Level-4 escalation/reconciliation mechanics
+no further outer-loop machinery
 ```
 
-Success means the scopes, delegation/escalation rules, authority ownership, Strategic Frontier semantics, Level-3 state contract, and Level-4 revision dispositions are explicit and mutually consistent without changing Campaign schema/runtime behavior.
+### Completed evidence and reassessment
 
-### Expected evidence and reassessment
+Foundation completion evidence:
 
-Expected completion evidence:
+- canonical `docs/strategic-outer-loop.md` exists;
+- Level-3 `docs/strategic-state-contract.md` exists and `STATUS.md` adopts the role;
+- Level-4 `docs/product-thesis-revision.md` exists and `docs/product-strategy.md` adopts the role;
+- `docs/product-operating-model.md` reconciles the four scopes and governance loop;
+- PR #331 exact candidate head passed Product Validation and Release Candidate Distribution before merge;
+- the merged diff contains documentation/contract changes only and no runtime/schema/router/planner implementation.
 
-- canonical outer-loop/control-model document exists;
-- Level-3 strategic-state contract exists and `STATUS.md` adopts the role;
-- Level-4 revision contract exists and `product-strategy.md` adopts the role;
-- `product-operating-model.md` reconciles the four scopes and governance loop;
-- repository validation/CI for the exact candidate head remains green;
-- no runtime/schema/router/planner change appears in the diff.
-
-After this foundation is qualified, reassess whether a mechanically decidable outer-loop integrity capability is concrete enough to justify a next package. Do **not** assume a runtime Package 4 is automatically warranted.
+The required next action is **strategic reassessment**, not execution of a predeclared Package 4.
 
 ### Authority / owner direction
 
-- Owner has authorized this documentation-first outer-loop construction and explicitly deferred new experiments for now.
+- Owner authorized the documentation-first outer-loop construction and explicitly deferred new experiments for now.
 - Product-thesis changes that materially alter primary user, problem/JTBD, external product boundary, major non-goals, public claim ceilings, or merge/release authority remain owner-reserved decisions.
 - Repository-level implementation may proceed within current strategy only when bounded by existing authority and evidence.
 
 ### Thesis review state
 
-`THESIS_REVIEW_REQUIRED`: **NO** for this tranche. The work clarifies the control hierarchy and durable authority surfaces; it does not currently require changing the product purpose, primary user, or ratified external product boundary.
+`THESIS_REVIEW_REQUIRED`: **NO** at foundation closeout. The integrated work clarifies the control hierarchy and durable authority surfaces; it does not change the product purpose, primary user, or ratified external product boundary.
 
 ## Semantic Architecture state
 
@@ -436,9 +438,9 @@ The Campaign Controller is not a semantic router. The Reasoning Model is not a c
 
 ## Current next step
 
-Qualify and reconcile the documentation-first Strategic Outer Loop foundation. **Do not interpret completion of the Level-3/Level-4 conceptual contracts as automatic authorization for new outer-loop runtime machinery.**
+Reassess the integrated Strategic Outer Loop foundation from current `main` before selecting any new outer-loop package. **Package 4 is not pre-authorized by completion of Packages 1–3.**
 
-After qualification, choose any next package only from a concrete missing product/integrity/reconstruction capability with a mechanically bounded contract. If the next meaningful choice requires semantic ranking, automatic strategy selection, or unmeasured product-value assumptions, stop construction at that boundary rather than inventing a `StrategicPlanner`.
+Choose a next package only if a concrete missing product/integrity/reconstruction capability has a mechanically bounded contract and an identifiable consumer or integrity need. If the next meaningful choice requires semantic ranking, automatic strategy selection, or unmeasured product-value assumptions, stop construction at that boundary rather than inventing a `StrategicPlanner`.
 
 ## Canonical sources
 
