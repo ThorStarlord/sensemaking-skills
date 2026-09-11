@@ -237,6 +237,7 @@ Repository-local validation, Campaign mechanics, multi-target verification, pack
 ## Release architecture continuity
 
 - **Campaign schema v2** remains the durable Campaign representation baseline.
+- The shipped **product/lab split** remains intact; Product Validation and retained Lab Validation continue to own distinct claim classes.
 - `multi-targets.json`, `multi-target-history.jsonl`, uncertainty companions, semantic companion state, and strategy handoff metadata are additive bounded companions/extensions, not alternate Campaign truth systems.
 - Product Validation owns shipped-product and repository-contract claims.
 - Retained Lab Validation owns source-only compatibility claims and mechanically asserts that it creates no operative experiment state.
