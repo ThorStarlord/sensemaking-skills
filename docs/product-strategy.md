@@ -15,6 +15,10 @@ Major strategy changes follow
 execution of this strategy is governed by the Strategic Repository Evolution
 Loop in [`strategic-outer-loop.md`](strategic-outer-loop.md).
 
+The 2026-09-11 Persona & Adaptive Guidance Model v0 clarification is an
+owner-ratified Level-4 `REINTERPRET`, not a product-category pivot. Its design
+preflight is [`persona-adaptive-guidance-design-preflight.md`](persona-adaptive-guidance-design-preflight.md).
+
 ## 1. Product purpose
 
 Sensemaking Skills exists to improve repository-level decisions when a capable
@@ -37,29 +41,52 @@ the wrong responsibility: implementing prematurely, solving a local symptom,
 following stale architecture, inventing work, making claims beyond evidence,
 or continuing when the right outcome is to stop or ask the owner.
 
+For the primary user, another failure mode is **missing-question risk**: the user
+may not know, remember, or want to enumerate every engineering consideration the
+coding agent should resolve before acting. Sensemaking should therefore supply
+opinionated engineering judgment about the process without inventing owner
+intent or exceeding authority.
+
 ## 3. Primary user and anti-persona
 
-### Primary user: AI-native repository owner / maintainer
+### Primary user: high-delegation agent-assisted builder / repository owner
 
-This person uses coding agents for significant engineering work and wants to
-delegate repository-level goals without manually selecting every intermediate
-step. They worry about premature implementation, stale context, ignored
-uncertainty, authority crossings, and unsupported completion claims.
+This person uses coding agents for significant engineering work, can define a
+desired product or repository outcome, and wants to delegate substantial
+repository-level engineering judgment without manually selecting every
+intermediate question, responsibility, or implementation step.
+
+The product is **beginner-first, expert-capable**:
+
+- a beginner may value Sensemaking because they cannot reliably detect every
+  missing engineering consideration or supervise every repository decision;
+- an experienced engineer may value the same control layer because they can
+  supervise those decisions but prefer to delegate them, especially for
+  unfamiliar, consequential, or long-horizon repository work.
+
+The common design pressure is therefore **high desired delegation**, not a
+permanent lack of expertise. Expertise is contextual: the same person may be
+expert in one technology, unfamiliar with another, authoritative about product
+intent, and unfamiliar with the current repository.
 
 The desired outcome is:
 
 > I can give a capable coding agent a repository-level goal and bounded
-> authority, and it can establish what responsibility is warranted, execute
-> bounded work, validate it, preserve durable state, and stop when human
-> judgment is required.
+> authority, and it can surface considerations I may not know or want to
+> specify, establish what responsibility is warranted, execute bounded work,
+> validate it, preserve durable state when needed, and stop when human judgment
+> or reserved authority is required.
 
 ### Secondary users
 
+- Experienced software engineers using coding agents for complex or
+  long-running repository work.
 - Technical decision owner or reviewer.
 - Sensemaking Skill author or contributor.
 - A possible future engineering-team lead.
 
-These users matter, but the product is not optimized around them yet.
+These users matter, but the product remains designed around high-delegation
+repository work rather than around a fixed expertise label.
 
 ### Anti-persona
 
@@ -68,35 +95,54 @@ already obvious: changing a button label, fixing a typo, renaming a method, or
 adding a known test. It should not add ceremony where no consequential
 uncertainty exists.
 
+Nor should it force a knowledgeable user to consume beginner-oriented
+explanation when concise evidence and control surfaces are sufficient. More
+scaffolding and more visible machinery are not the same thing.
+
 ## 4. Job to Be Done
 
-> When I face a consequential repository problem whose correct next engineering
-> responsibility is uncertain, help my coding agent establish relevant
-> evidence, determine the warranted responsibility, execute bounded work when
-> authorized, and stop or escalate when appropriate.
+> When I delegate a consequential repository goal whose correct next engineering
+> responsibility is uncertain, help my coding agent surface relevant
+> considerations, establish sufficient evidence, determine the warranted
+> responsibility, exercise the judgment I delegated within granted authority,
+> execute bounded work when authorized, preserve decision context when the work
+> spans contexts, and stop or escalate when appropriate.
 
 Triggering situations include an unfamiliar repository, ambiguous architecture
 problem, large refactor, modernization effort, uncertain roadmap,
 contradictory documentation, technical-debt prioritization, repeated local
 fixes, or long-running multi-context development.
 
+The user should not need to know in advance that a repository brief, Campaign,
+reconciliation pass, or other Sensemaking surface is the appropriate mechanism.
+The active coding agent remains responsible for judging which level of support
+is warranted; automatic routing is not implied.
+
 ## 5. Value proposition
 
-Sensemaking adds durable repository-specific decision structure around a capable
-coding agent:
+Sensemaking adds repository-specific decision structure around a capable coding
+agent:
 
 ```text
-evidence discipline
+opinionated engineering guidance
++ evidence discipline
 + explicit uncertainty
 + warranted responsibility
 + authority boundaries
-+ durable state
++ durable state when needed
 + specialized capabilities
 + mechanical qualification
 ```
 
 It does not replace agent intelligence. It aims to make repository-level agent
-judgment more grounded, durable, bounded, and reconstructible.
+judgment more grounded, durable, bounded, reconstructible, and easier to
+delegate.
+
+Marginal value does not require a different final patch on every task. It may
+also come from surfacing a consideration the user did not know to request,
+reducing an avoidable wrong turn, preserving decision context, respecting an
+authority boundary, or reaching justified closure with less user routing.
+Comparative superiority over a capable direct agent remains unestablished.
 
 ### Evidence ceilings
 
@@ -125,6 +171,7 @@ outer-loop foundation and require explicit owner direction when resumed.
 
 - Repository decision support.
 - Repository sensemaking.
+- Opinionated engineering guidance for high-delegation agent-assisted work.
 - Artifact-mediated agent continuation.
 - Bounded adaptive work around selected responsibilities.
 - Durable strategic-state reconstruction for repository evolution, while the
@@ -141,6 +188,7 @@ outer-loop foundation and require explicit owner direction when resumed.
 - Automatic architecture authority.
 - Automatic product-strategy revision authority.
 - Autonomous merge or release authority.
+- A user-competence scoring or grading system.
 
 The broader agent-native control architecture in `CONTEXT.md` is an internal
 architectural model. The ratified external product scope remains the validated,
@@ -170,6 +218,17 @@ boundary.
     silently redefine them.
 14. Product-thesis revision is slower and more authority-sensitive than ordinary
     repository evolution.
+15. **Opinionated about engineering invariants, adaptive about process,
+    progressive in disclosure.** Stable principles should proactively protect
+    evidence, responsibility, authority, and closure boundaries, while visible
+    ceremony and durable machinery should scale only when the situation warrants
+    them.
+16. **Higher desired delegation increases the amount of judgment the user wants
+    the agent to exercise; it does not increase the agent's granted authority.**
+17. Beginner-first guidance should surface missing considerations without
+    requiring the user to understand Sensemaking's internal machinery. Experts
+    should be able to consume concise evidence/control surfaces without losing
+    the same invariants.
 
 ## 8. Strategic non-goals
 
@@ -178,8 +237,10 @@ central deterministic semantic router, HTN planner, generic autonomous-agent
 platform, mandatory multi-agent swarm, automatic critic voting, semantic truth
 oracle, `OuterLoopEngine`, automatic Strategic Frontier ranking, automatic
 product-thesis revision, autonomous Campaign generation, autonomous merge or
-release authority, or campaign/strategy infrastructure larger than demonstrated
-need.
+release authority, user-expertise scoring, deterministic task-complexity or
+consequentiality scoring, automatic persona inference, beginner/expert runtime
+modes, automatic Campaign thresholds, or campaign/strategy infrastructure larger
+than demonstrated need.
 
 Reconsider a non-goal only when repository/product evidence shows that its
 absence is decision-changing and a smaller intervention cannot address the
@@ -192,6 +253,8 @@ problem. Major reversal of a strategic non-goal is a Level-4 decision.
 | Repository sensemaking improves ambiguous repository decisions | Supported, bounded |
 | Durable artifacts support fresh-context continuation | Supported |
 | Responsibility-first thinking is better than workflow-first thinking | Emerging hypothesis |
+| Opinionated guidance can add value by surfacing considerations a high-delegation user did not know or want to specify | Product hypothesis; not comparatively established |
+| Adaptive process rigor can reduce unnecessary ceremony while preserving stable engineering invariants | Product hypothesis; no formal routing/tiers authorized |
 | Durable Level-3 strategic state can reduce development-direction reconstruction ambiguity | Supported in bounded self-development campaigns; broader value not established |
 | Adaptive campaign execution reduces owner routing | Not yet demonstrated |
 | Campaign State materially improves continuation | Hypothesis |
@@ -202,19 +265,24 @@ problem. Major reversal of a strategic non-goal is a Level-4 decision.
 
 ## 10. Success measures
 
-Measure decision quality rather than inventory:
+Measure decision quality and delegation quality rather than inventory:
 
 - grounded central diagnosis;
 - appropriate next responsibility;
+- useful surfacing of decision-relevant considerations the user did not need to
+  enumerate explicitly;
 - honest uncertainty handling;
 - correct evidence-dependent transitions before owner intervention;
 - reduced manual routing of ordinary next steps where evidence eventually
   supports that claim;
+- proportional use of scaffolding, process rigor, and durable machinery rather
+  than mandatory ceremony;
 - correct escalation, deferment, no-change, and thesis-review decisions;
 - correct reconstruction by a fresh agent;
 - correct distinction between Level-4 thesis state, Level-3 strategic state,
   Level-2 Campaign state, and Level-1 execution state;
 - decision-bearing claims supported by appropriate evidence;
+- correct separation of desired delegation from granted authority;
 - owner preference for the Sensemaking-assisted result over asking a strong
   coding agent directly, when/if comparative validation is explicitly resumed.
 
@@ -232,12 +300,19 @@ The major unresolved product question remains:
 > improve the primary user's ability to delegate ambiguous repository work
 > without manual task-by-task routing?
 
-That question is **not** a prerequisite for repository-grounded construction.
-The documentation-first Strategic Outer Loop foundation is now integrated; it
-makes Level-4 product-thesis authority and Level-3 repository-evolution state
-explicit without adding automatic planning authority. Any subsequent outer-loop
-runtime package must be selected afresh by Level 3 from a concrete
-mechanically-decidable reconstruction or integrity need.
+The Persona & Adaptive Guidance Model v0 sharpens that question rather than
+answering it empirically. The primary user is now explicitly interpreted as a
+high-delegation agent-assisted builder, while the amount of scaffolding, process
+rigor, and durable Campaign machinery is expected to vary with contextual
+supervision capability and the problem's decision, consequentiality, and
+continuation characteristics. These are agent-reasoned factors, not a routing
+schema.
+
+That unresolved product question is **not** a prerequisite for
+repository-grounded construction. The Strategic Outer Loop foundation remains
+integrated and frozen as a control baseline. Any subsequent runtime package must
+still be selected afresh by Level 3 from concrete pressure, an explicit owner
+direction, or a mechanically decidable reconstruction/integrity need.
 
 Any candidate product commitment should still answer:
 
@@ -266,6 +341,12 @@ SUPERSEDE
 The detailed contract is
 [`product-thesis-revision.md`](product-thesis-revision.md).
 
+The Persona & Adaptive Guidance Model v0 change uses `REINTERPRET`: the existing
+primary-user commitment remains materially the same, while its high-delegation,
+beginner-first/expert-capable meaning is made explicit. Product purpose,
+external product boundary, strategic non-goals, Campaign schema, and empirical
+claim ceilings are not expanded by this reinterpretation.
+
 The active agent may identify thesis-level tension, gather evidence, formulate
 alternatives, and draft a recommendation. Major changes to product mission,
 primary user, external product boundary, strategic non-goals, or public claim
@@ -285,6 +366,7 @@ underlying record.
 
 ## 14. Authority and related documents
 
+- Persona/adaptive-guidance reinterpretation preflight: [persona-adaptive-guidance-design-preflight.md](persona-adaptive-guidance-design-preflight.md)
 - Four-level control model: [strategic-outer-loop.md](strategic-outer-loop.md)
 - Level-3 state contract: [strategic-state-contract.md](strategic-state-contract.md)
 - Level-4 revision contract: [product-thesis-revision.md](product-thesis-revision.md)
