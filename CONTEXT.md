@@ -54,6 +54,7 @@ See:
 - [docs/product-thesis-revision.md](docs/product-thesis-revision.md) — Level-4 revision and owner-ratification contract
 - [docs/product-operating-model.md](docs/product-operating-model.md) — value stream, ownership, delegation, and escalation
 - [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md) — Level-2 agent-native responsibility/Campaign operating map
+- [docs/operations-runbook.md](docs/operations-runbook.md) — current operator-facing validation, qualification, Campaign, and release runbook; checked-in workflows remain executable authority
 - [docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md) — decision vs. orchestration ownership
 - [docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md](docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md) — B7 reference-resolution boundaries and construction authority
 - [docs/research/control-model-research-agenda.md](docs/research/control-model-research-agenda.md) — explicitly non-ratified research directions
@@ -369,6 +370,7 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 | `docs/product-thesis-revision.md` | Level-4 strategy revision, escalation, disposition, and owner-ratification contract |
 | `docs/product-operating-model.md` | current value stream, responsibility ownership, governance loop, delegation, escalation, and runtime boundary |
 | `docs/agent-native-operating-workflow.md` | current Level-2 agent-native responsibility/Campaign operating map |
+| `docs/operations-runbook.md` | current operator-facing local validation/qualification/Campaign/release runbook; checked-in workflows remain executable authority |
 | `docs/decision-orchestration-boundary.md` | current decision/orchestration ownership boundary |
 | `docs/canonical-vocabulary.yaml` | canonical enumerated vocabulary |
 | `skills/workflow-planner/references/artifact-contracts.yaml` | artifact and machine-field contracts |
@@ -442,4 +444,4 @@ Not automatically ratified merely because related machinery or concepts exist:
 - domain-general research-agent control semantics;
 - new decision-theory/control-model machinery from the research agenda.
 
-The product should deepen through repository-grounded construction while architecture remains informative. Preserve observations, identify concrete failure/reconstruction/integrity boundaries, and formalize only mechanically bounded support. After B7, reassess from current Level-3 state rather than assuming another semantic package. When the decisive question becomes behavioral product value rather than repository/mechanical correctness, stop construction at that boundary unless the owner explicitly reauthorizes empirical work.
+The product should deepen through repository-grounded construction while architecture remains informative. Preserve observations, identify concrete failure/reconstruction/integrity boundaries, and formalize only mechanically bounded support. The Strategic Outer Loop v0 control model is now a frozen operational baseline: use it during normal repository evolution, and reopen outer-loop construction only from new concrete pressure or explicit owner direction. When the decisive question becomes behavioral product value rather than repository/mechanical correctness, stop construction at that boundary unless the owner explicitly reauthorizes empirical work.
