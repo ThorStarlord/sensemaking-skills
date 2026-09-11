@@ -57,6 +57,7 @@ work in terminal state. It does not judge reasoning or semantic sufficiency.
 Central routing, an HTN executor, custom runtime, campaign database, semantic
 truth validator, critic swarm, automatic voting, generic planner, and
 self-modifying policy remain non-goals until empirical evidence warrants them.
+
 # Campaign semantic contract boundary
 
 Campaign artifacts are represented by the typed records in
@@ -74,12 +75,15 @@ Strictness is uniform. Every loader — `load_campaign_state`,
 `load_campaign_handoff`, `load_responsibility` — and every nested
 decision-relevant record (responsibility, uncertainty, dependency, deferred
 responsibility, external boundary) rejects unknown fields with `ContractError`
-rather than dropping them, requires `schema_version` to be `"1"`, and raises
-`ContractError` (never a bare `KeyError`) for missing or malformed known fields.
-The only sanctioned extension is `owner_routing` on a campaign state, retained
-under `extensions`. A `Campaign Handoff`'s `campaign_id` must equal the
-`campaign_id` of its resolved current state. Campaign trace events and campaign
-policy `known_transitions` entries are deliberately opaque maps.
+rather than dropping them. The canonical post-migration contract requires
+`schema_version` to be `"2"`; historical v1 representations are accepted only
+through the explicit one-way migration registry and are normalized in memory to
+v2, while unknown future versions fail closed. Missing or malformed known fields
+raise `ContractError` rather than a bare `KeyError` or `TypeError`. The only
+sanctioned extension is `owner_routing` on a campaign state, retained under
+`extensions`. A `Campaign Handoff`'s `campaign_id` must equal the `campaign_id`
+of its resolved current state. Campaign trace events and campaign policy
+`known_transitions` entries are deliberately opaque maps.
 
 Run the bounded drift gate with:
 
