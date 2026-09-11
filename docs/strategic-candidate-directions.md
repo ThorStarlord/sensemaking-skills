@@ -311,6 +311,20 @@ Multi-Repository Campaigns v1 intentionally does not promise transaction atomici
 
 **Non-goal:** infer deployment topology from repository membership.
 
+### 10.4 Sensemaking as an implementation-independent protocol
+
+**Idea:** treat Campaign, Capability, Evidence, Authority, Handoff, and related mechanical contracts as an implementation-independent protocol, with the current Python package as one reference implementation rather than the product category itself.
+
+**Current reconciliation:** `LONG_HORIZON` + `REQUIRES_LEVEL_4_REVIEW`.
+
+Harness independence is already an architectural principle, but implementation independence is not a current product requirement. Nothing in the usability/strategy/multi-repository sequence establishes a need for a second implementation or a public standard.
+
+**Reopen trigger:** a concrete independent implementation/consumer need or explicit owner strategy direction.
+
+**Level-4 boundary:** repositioning the product as a protocol/ecosystem would materially change external product boundaries and should not occur through ordinary Level-3 implementation.
+
+**Non-goal:** prematurely freeze unstable implementation details into a public standard.
+
 ## 11. Ideas deliberately not promoted
 
 These remain non-authorized unless a later Level-3/Level-4 decision explicitly changes their disposition:
@@ -326,6 +340,7 @@ automatic repository discovery/scope expansion
 cross-repository transaction/deployment coordinator
 universal semantic-reference registry
 universal causal/decision graph
+Sensemaking Protocol product-category pivot
 new Campaign schema merely for convenience
 bulk historical-document deletion
 new empirical experiment without owner direction
