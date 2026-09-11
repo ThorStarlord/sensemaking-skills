@@ -11,6 +11,7 @@ SCRIPT = ROOT / "scripts" / "validate-strategic-state.py"
 
 REQUIRED_SURFACES = (
     "docs/product-strategy.md",
+    "docs/adr/0029-current-product-boundary.md",
     "docs/strategic-outer-loop.md",
     "docs/strategic-state-contract.md",
     "docs/product-thesis-revision.md",
@@ -38,7 +39,12 @@ def _error_ids(payload: dict) -> set[str]:
     return {error["error_id"] for error in payload["errors"]}
 
 
-def _minimal_status(*, thesis: str = "NO", frontier: str | None = None) -> str:
+def _minimal_status(
+    *,
+    thesis: str = "NO",
+    frontier: str | None = None,
+    decision: str = "Decide whether any repository change is warranted.",
+) -> str:
     if frontier is None:
         frontier = (
             "1. **Foundation — COMPLETE / INTEGRATED.** Present.\n"
@@ -54,6 +60,7 @@ def _minimal_status(*, thesis: str = "NO", frontier: str | None = None) -> str:
 - **Control model:** `docs/strategic-outer-loop.md`.
 - **Level-3 contract:** `docs/strategic-state-contract.md`.
 - **Level-4 revision contract:** `docs/product-thesis-revision.md`.
+- **Current product-boundary authority:** `docs/adr/0029-current-product-boundary.md`.
 
 ### Current capability state
 
@@ -70,6 +77,10 @@ Repository qualification is not semantic truth.
 ### Current highest-leverage boundary
 
 No current boundary is selected.
+
+### Current strategic decision to support
+
+{decision}
 
 ### Current decision-changing uncertainty
 
@@ -135,9 +146,32 @@ def test_missing_required_authority_surface_fails(tmp_path: Path) -> None:
     assert "STRATEGIC_STATE_POINTER_BROKEN" in ids
 
 
+def test_missing_current_product_boundary_authority_fails(tmp_path: Path) -> None:
+    _write_valid_repo(tmp_path)
+    (tmp_path / "docs/adr/0029-current-product-boundary.md").unlink()
+
+    completed, payload = _run(tmp_path)
+    assert completed.returncode == 1
+    ids = _error_ids(payload)
+    assert "STRATEGIC_STATE_REQUIRED_SURFACE_MISSING" in ids
+    assert "STRATEGIC_STATE_POINTER_BROKEN" in ids
+
+
 def test_missing_required_section_fails(tmp_path: Path) -> None:
     status = _minimal_status().replace(
         "### Current capability state\n\nCurrent mechanically represented capability state.\n\n",
+        "",
+    )
+    _write_valid_repo(tmp_path, status=status)
+
+    completed, payload = _run(tmp_path)
+    assert completed.returncode == 1
+    assert "STRATEGIC_STATE_SECTION_MISSING" in _error_ids(payload)
+
+
+def test_missing_strategic_decision_section_fails(tmp_path: Path) -> None:
+    status = _minimal_status().replace(
+        "### Current strategic decision to support\n\nDecide whether any repository change is warranted.\n\n",
         "",
     )
     _write_valid_repo(tmp_path, status=status)
@@ -163,6 +197,18 @@ def test_duplicate_required_section_fails(tmp_path: Path) -> None:
 def test_missing_canonical_pointer_fails(tmp_path: Path) -> None:
     status = _minimal_status().replace(
         "- **Control model:** `docs/strategic-outer-loop.md`.\n",
+        "",
+    )
+    _write_valid_repo(tmp_path, status=status)
+
+    completed, payload = _run(tmp_path)
+    assert completed.returncode == 1
+    assert "STRATEGIC_STATE_POINTER_MISSING" in _error_ids(payload)
+
+
+def test_missing_product_boundary_pointer_fails(tmp_path: Path) -> None:
+    status = _minimal_status().replace(
+        "- **Current product-boundary authority:** `docs/adr/0029-current-product-boundary.md`.\n",
         "",
     )
     _write_valid_repo(tmp_path, status=status)
@@ -261,7 +307,9 @@ def test_no_active_boundary_is_valid(tmp_path: Path) -> None:
 
 
 def test_semantically_questionable_prose_is_not_scored(tmp_path: Path) -> None:
-    status = _minimal_status().replace(
+    status = _minimal_status(
+        decision="This is definitely the most important decision in the universe."
+    ).replace(
         "Current mechanically represented capability state.",
         "This strategy is definitely the best strategy in the universe.",
     )

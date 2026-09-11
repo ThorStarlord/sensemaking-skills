@@ -4,7 +4,7 @@
 This validator is intentionally narrow. It validates repository-local
 representation integrity for the current ``STATUS.md`` authority surface. It
 does not establish strategy quality, currentness relative to remote systems,
-frontier priority, responsibility warrant, or semantic truth.
+frontier priority, decision value, responsibility warrant, or semantic truth.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ DEFAULT_STATUS = Path("STATUS.md")
 
 REQUIRED_SURFACES = (
     Path("docs/product-strategy.md"),
+    Path("docs/adr/0029-current-product-boundary.md"),
     Path("docs/strategic-outer-loop.md"),
     Path("docs/strategic-state-contract.md"),
     Path("docs/product-thesis-revision.md"),
@@ -33,6 +34,7 @@ REQUIRED_HEADINGS = (
     "### Material limitations and evidence ceilings",
     "### Strategic Frontier",
     "### Current highest-leverage boundary",
+    "### Current strategic decision to support",
     "### Current decision-changing uncertainty",
     "### Current warranted repository-level responsibility",
     "### Authority / owner direction",
@@ -45,6 +47,7 @@ CANONICAL_POINTERS = {
     "Control model": "docs/strategic-outer-loop.md",
     "Level-3 contract": "docs/strategic-state-contract.md",
     "Level-4 revision contract": "docs/product-thesis-revision.md",
+    "Current product-boundary authority": "docs/adr/0029-current-product-boundary.md",
 }
 
 CHECKS = (
@@ -184,7 +187,7 @@ def validate_strategic_state(*, repo_root: Path) -> dict[str, Any]:
     if strategy_section is not None:
         for label, expected_path in CANONICAL_POINTERS.items():
             pointer_re = re.compile(
-                rf"^\s*-\s+\*\*{re.escape(label)}:\*\*\s+`([^`]+)`\.?\s*$",
+                rf"^\s*-\s+\*\*{re.escape(label)}:\*\*\s+`([^`]+)`(?:;[^\n]*)?\.?\s*$",
                 re.MULTILINE,
             )
             values = pointer_re.findall(strategy_section)

@@ -1,7 +1,8 @@
 """Read-only Level-3 strategy projections and explicit Campaign handoff.
 
 These surfaces transport already-authored strategic state. They do not rank the
-Strategic Frontier, choose a responsibility, or revise the product thesis.
+Strategic Frontier, choose a strategic decision/responsibility, or revise the
+product thesis.
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ _REQUIRED_SECTIONS = (
     "### Material limitations and evidence ceilings",
     "### Strategic Frontier",
     "### Current highest-leverage boundary",
+    "### Current strategic decision to support",
     "### Current decision-changing uncertainty",
     "### Current warranted repository-level responsibility",
     "### Authority / owner direction",
@@ -85,11 +87,13 @@ def _status_projection(status_path: Path) -> dict[str, Any]:
         "missing_sections": missing,
         "strategic_frontier": frontier,
         "highest_leverage_boundary": sections["Current highest-leverage boundary"],
+        "strategic_decision_to_support": sections["Current strategic decision to support"],
         "decision_changing_uncertainty": sections["Current decision-changing uncertainty"],
         "warranted_responsibility": sections["Current warranted repository-level responsibility"],
         "thesis_review_required": thesis_match.group(1).upper() if thesis_match else None,
         "sections": sections,
         "semantic_ranking_performed": False,
+        "strategic_decision_selected_by_tool": False,
         "semantic_recommendation_included": False,
         "semantic_truth_established": False,
     }
@@ -151,9 +155,12 @@ def register_campaign_strategy_commands(
             "changed_sections": changed_sections,
             "frontier_from": before["strategic_frontier"],
             "frontier_to": after["strategic_frontier"],
+            "strategic_decision_from": before["strategic_decision_to_support"],
+            "strategic_decision_to": after["strategic_decision_to_support"],
             "thesis_review_from": before["thesis_review_required"],
             "thesis_review_to": after["thesis_review_required"],
             "semantic_ranking_performed": False,
+            "strategic_decision_selected_by_tool": False,
             "better_state_selected": False,
             "semantic_truth_established": False,
         }
@@ -200,6 +207,8 @@ def register_campaign_strategy_commands(
         if not status_path.is_file():
             raise click.ClickException(f"STATUS.md not found under {repo_root}")
         projection = _status_projection(status_path)
+        if not projection["required_sections_present"]:
+            raise click.ClickException("STATUS.md does not satisfy required strategy projection sections")
         frontier_names = {item["name"] for item in projection["strategic_frontier"]}
         if frontier_item not in frontier_names:
             raise click.ClickException("--frontier-item must exactly match one current Strategic Frontier item")
@@ -226,6 +235,7 @@ def register_campaign_strategy_commands(
                 "strategy_handoff": {
                     "status_sha256": projection["status_sha256"],
                     "frontier_item": frontier_item,
+                    "strategic_decision_to_support": projection["strategic_decision_to_support"],
                     "responsibility_type": responsibility_type.strip(),
                     "selection_source": "explicit_agent_or_owner_input",
                 }
@@ -242,9 +252,11 @@ def register_campaign_strategy_commands(
             "source_status_sha256": projection["status_sha256"],
             "source_status_path": str(status_path),
             "frontier_item": frontier_item,
+            "strategic_decision_to_support": projection["strategic_decision_to_support"],
             "responsibility_id": responsibility_id,
             "responsibility_type": responsibility_type.strip(),
             "selection_performed_by_tool": False,
+            "strategic_decision_selected_by_tool": False,
             "authorization_inferred_by_tool": False,
             "semantic_truth_established": False,
         }
@@ -255,10 +267,12 @@ def register_campaign_strategy_commands(
             "campaign_id": snapshot.state.campaign_id,
             "workspace": str(workspace.resolve()),
             "frontier_item": frontier_item,
+            "strategic_decision_to_support": projection["strategic_decision_to_support"],
             "responsibility_id": responsibility_id,
             "responsibility_type": responsibility_type.strip(),
             "source_status_sha256": projection["status_sha256"],
             "selection_performed_by_tool": False,
+            "strategic_decision_selected_by_tool": False,
             "semantic_recommendation_included": False,
         }
         if output_json:
