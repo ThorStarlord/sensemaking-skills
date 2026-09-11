@@ -12,11 +12,13 @@ from .campaign_semantics import ContractError
 from .campaigns import CampaignWorkspaceError
 from .campaigns.capabilities import CapabilityCatalogError
 from .campaigns.preflight import CampaignPreflightService
+from .campaigns.uncertainty_history import ALLOWED_STATUSES, UncertaintyHistoryService
 
 
 ErrorEmitter = Callable[..., None]
 JsonEcho = Callable[[dict[str, Any]], None]
 PREFLIGHT_INVALID_EXIT = 3
+HISTORY_INVALID_EXIT = 3
 
 
 def _check_payload(check: Any) -> dict[str, Any]:
@@ -112,3 +114,98 @@ def register_campaign_productization_commands(
             click.echo(payload["explicit_limit"])
         if not result.ready:
             raise click.exceptions.Exit(PREFLIGHT_INVALID_EXIT)
+
+    @campaign.command(name="uncertainty-record")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--event-id", required=True, help="Unique append-only lifecycle event id")
+    @click.option("--uncertainty-id", required=True, help="Agent-supplied uncertainty identity")
+    @click.option("--status", required=True, type=click.Choice(sorted(ALLOWED_STATUSES)))
+    @click.option("--transition-id", default=None, help="Optional exact Campaign transition id")
+    @click.option("--evidence-ref", "evidence_refs", multiple=True, help="Campaign-authoritative evidence ref")
+    @click.option("--superseded-by", default=None, help="Replacement uncertainty id for status=superseded")
+    @click.option("--note", default=None, help="Optional explicit lifecycle note; not a semantic ranking")
+    @click.option("--json", "output_json", is_flag=True)
+    def campaign_uncertainty_record(
+        workspace: Path,
+        event_id: str,
+        uncertainty_id: str,
+        status: str,
+        transition_id: str | None,
+        evidence_refs: tuple[str, ...],
+        superseded_by: str | None,
+        note: str | None,
+        output_json: bool,
+    ) -> None:
+        """Append an agent-authored uncertainty lifecycle observation."""
+        try:
+            service = UncertaintyHistoryService(workspace)
+            digest = service.append(
+                event_id=event_id,
+                uncertainty_id=uncertainty_id,
+                status=status,
+                transition_id=transition_id,
+                evidence_refs=evidence_refs,
+                superseded_by=superseded_by,
+                note=note,
+            )
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        except ValueError as exc:
+            raise click.ClickException(str(exc)) from exc
+
+        payload = {
+            "ok": True,
+            "code": "CAMPAIGN_UNCERTAINTY_HISTORY_APPENDED",
+            "event_id": event_id,
+            "uncertainty_id": uncertainty_id,
+            "status": status,
+            "event_digest": digest,
+            "campaign_schema_changed": False,
+            "semantic_recommendation_included": False,
+            "semantic_truth_established": False,
+            "explicit_limit": "Uncertainty history records agent-authored lifecycle state; it does not select or rank uncertainty.",
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(f"CAMPAIGN_UNCERTAINTY_HISTORY_APPENDED {event_id} {digest}")
+            click.echo(payload["explicit_limit"])
+
+    @campaign.command(name="uncertainty-history")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--json", "output_json", is_flag=True)
+    def campaign_uncertainty_history(workspace: Path, output_json: bool) -> None:
+        """Inspect and validate append-only uncertainty lifecycle history."""
+        try:
+            result = UncertaintyHistoryService(workspace).load()
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        payload = {
+            "ok": result.valid,
+            "code": (
+                "CAMPAIGN_UNCERTAINTY_HISTORY_VALID"
+                if result.valid
+                else "CAMPAIGN_UNCERTAINTY_HISTORY_INVALID"
+            ),
+            "campaign_id": result.campaign_id,
+            "records": list(result.records),
+            "latest_statuses": dict(result.latest_statuses),
+            "diagnostics": [
+                {"code": item.code, "detail": item.detail, "line": item.line}
+                for item in result.diagnostics
+            ],
+            "campaign_schema_changed": False,
+            "semantic_recommendation_included": False,
+            "semantic_truth_established": False,
+            "explicit_limit": "CampaignState.active_uncertainty remains current authority; history does not select or rank uncertainty.",
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            import json
+
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+        if not result.valid:
+            raise click.exceptions.Exit(HISTORY_INVALID_EXIT)

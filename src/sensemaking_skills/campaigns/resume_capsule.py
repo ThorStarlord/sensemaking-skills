@@ -8,6 +8,7 @@ from typing import Any, Mapping
 from sensemaking_skills.campaign_semantics import canonicalize, target_snapshot_sha256
 
 from .preflight import CampaignPreflightService
+from .uncertainty_history import UncertaintyHistoryService
 
 
 def _enum(value: Any) -> Any:
@@ -75,6 +76,23 @@ def _preflight_projection(workspace: Path) -> dict[str, Any]:
     }
 
 
+def _uncertainty_history_projection(workspace: Path, *, compact: bool) -> dict[str, Any]:
+    summary = UncertaintyHistoryService(workspace).summary()
+    if not compact:
+        return summary
+    return {
+        "present": bool(summary["present"]),
+        "valid": bool(summary["valid"]),
+        "event_count": int(summary["event_count"]),
+        "uncertainty_count": int(summary["uncertainty_count"]),
+        "latest_statuses": dict(summary["latest_statuses"]),
+        "diagnostic_count": len(summary["diagnostics"]),
+        "schema_in_campaign_state": False,
+        "semantic_recommendation_included": False,
+        "semantic_truth_established": False,
+    }
+
+
 def build_resume_capsule(
     *,
     workspace: Path,
@@ -103,6 +121,7 @@ def build_resume_capsule(
         "current_state": state.current_state,
         "authority": _enum(state.authority),
         "terminal_state": _enum(state.terminal_state),
+        "uncertainty_history": _uncertainty_history_projection(workspace, compact=compact),
         "semantic_recommendation_included": False,
         "semantic_truth_established": False,
         "explicit_limit": "This capsule reconstructs durable declared state and deterministic mechanical summaries; it does not decide the next warranted action.",
