@@ -1,9 +1,11 @@
 # ADR 0014: Product Boundary of Sensemaking Skills
 
-**Status**: ACCEPTED (revised, narrowed) — ratified 2026-07-26 by explicit
-owner decision (D1) recorded in `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`
-**Date**: 2026-07-25 (revised 2026-07-26)
-**Resolves**: Issue #29
+**Status**: SUPERSEDED — 2026-09-11 by ADR 0029  
+**Date**: 2026-07-25 (revised 2026-07-26; superseded 2026-09-11)  
+**Historical resolution for**: Issue #29  
+**Superseded by**: ADR 0029 — Current Product Boundary of Sensemaking Skills
+
+> **Currentness note:** this ADR remains authoritative historical evidence for the owner-ratified July 2026 product boundary. It is no longer the current product-boundary authority. Current product-scope decisions are governed by ADR 0029 and `docs/product-strategy.md`.
 
 **2026-07-26 revision, owner-ratified**: following closure of the auteur
 external-validation campaign (PR #67/#69/#70/#72/#73/#75/#77/#78) and the
@@ -153,6 +155,8 @@ tracker-sync or deployment in-scope (which would require a new ADR revision
 here, not a reinterpretation of this one).
 
 ## Status rationale
+
+**2026-09-11 update — superseded by ADR 0029.** The July decision remains historical evidence, but ADR 0029 now carries the current product boundary after explicit owner ratification of Strategic Outer Loop Precision v1.
 
 **2026-07-26 update — promoted to Accepted (narrowed).** The owner
 explicitly ratified interpretation A as D1 in
