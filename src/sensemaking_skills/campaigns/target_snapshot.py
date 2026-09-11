@@ -206,7 +206,14 @@ class CampaignService(BaseCampaignService):
         return super().initialize(state, policy=policy)
 
     def _target_path(self, snapshot: TargetSnapshot) -> Path:
-        return self._explicit_target if self._explicit_target is not None else Path(snapshot.repository_root)
+        if self._explicit_target is not None:
+            return self._explicit_target
+        # Imported lazily to keep the locator companion downstream from the
+        # canonical snapshot implementation while allowing durable path reuse.
+        from .target_rebind import resolve_rebound_target_path
+
+        rebound = resolve_rebound_target_path(self.store.root, snapshot)
+        return rebound if rebound is not None else Path(snapshot.repository_root)
 
     @staticmethod
     def _history_diagnostics(snapshot: CampaignSnapshot) -> list[CampaignDiagnostic]:
@@ -320,8 +327,8 @@ class CampaignService(BaseCampaignService):
         expected = current.target_snapshot
         if expected is None and self._explicit_target is None:
             return None
-        path = self._explicit_target if self._explicit_target is not None else Path(expected.repository_root)  # type: ignore[union-attr]
-        actual = capture_target_snapshot(path)
+        path = self._explicit_target if expected is None else self._target_path(expected)
+        actual = capture_target_snapshot(path)  # type: ignore[arg-type]
         if expected is not None and (
             actual.repository_id != expected.repository_id
             or actual.identity_source != expected.identity_source
