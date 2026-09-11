@@ -1,7 +1,7 @@
 # Reasoning Model
 
-**Status:** Canonical semantic reasoning lifecycle, v0  
-**Purpose:** Define how Sensemaking should move from repository state to evidence-grounded decisions without turning deterministic infrastructure into a semantic controller.
+**Status:** Canonical semantic reasoning lifecycle, v1 control-scope integration  
+**Purpose:** Define how Sensemaking moves from repository/product state to evidence-grounded decisions without turning deterministic infrastructure into a semantic controller.
 
 ## Core loop
 
@@ -9,7 +9,7 @@
 Intent + Target
       |
       v
-Bound current repository state
+Bound current state
       |
       v
 Collect observations
@@ -18,13 +18,16 @@ Collect observations
 Construct evidence catalog
       |
       v
-Identify entities and relations
+Identify entities and relations as needed
       |
       v
 Author claims with epistemic status
       |
       v
 Detect contradiction / uncertainty
+      |
+      v
+Agent identifies the decision being supported
       |
       v
 Agent selects consequential uncertainty
@@ -48,38 +51,38 @@ Mechanical validation + admission
 Agent judges semantic result
       |
       v
-Advance / defer / close
+Author scope-appropriate decision
       |
       v
-Persist transition + handoff
+Persist/reconcile durable state when warranted
+```
+
+This semantic lifecycle can operate at more than one control scope. The
+Strategic Outer Loop answers **at what decision scope the agent is reasoning**;
+this Reasoning Model answers **how evidence is transformed into bounded semantic
+judgment at that scope**.
+
+```text
+semantic reasoning model != control level
+same reasoning grammar != same authority
+Level-3 decision != Level-4 thesis decision
 ```
 
 ## Stage 0 — Bind intent and scope
 
-Inputs:
+Inputs may include user/owner request, Campaign mission, strategic decision,
+explicit constraints, authority boundary, and target repository/product state.
 
-- user/owner request;
-- Campaign mission if one exists;
-- explicit constraints;
-- authority boundary;
-- target repository.
+Outputs include a bounded Goal/Mission or decision, scope, explicit success
+conditions where applicable, authority, and a currentness/identity boundary.
 
-Outputs:
-
-- Goal/Mission;
-- scope boundary;
-- initial SuccessConditions where explicit;
-- TargetSnapshot or equivalent currentness boundary.
-
-### Authority split
-
-Deterministic machinery may bind target identity and state. The agent interprets the user's semantic goal. Explicit user/owner intent should be preserved separately from agent inference.
+Deterministic machinery may bind identity and state. The agent interprets
+semantic intent. Explicit user/owner intent remains distinct from agent
+inference.
 
 ## Stage 1 — Collect observations
 
-The agent or a bounded probe gathers source-grounded observations.
-
-Examples:
+The agent or bounded probe gathers source-grounded observations, for example:
 
 ```text
 file path exists
@@ -88,27 +91,14 @@ README states architecture rule
 workflow invokes command X
 test T passes
 Git worktree is dirty
+owner ratified ADR 0029
+repeated Campaigns hit the same product-boundary ambiguity
 ```
 
-Observations should preserve:
+Observations preserve source, method, scope, currentness, and exact
+bytes/identity when relevant.
 
-- source;
-- method;
-- scope;
-- currentness;
-- exact bytes/identity where relevant.
-
-### Rule
-
-Do not embed a strong semantic conclusion in an observation merely because it is convenient.
-
-Bad:
-
-```text
-Observation: architecture is tightly coupled.
-```
-
-Better:
+Do not hide semantic conclusions inside observations merely because convenient.
 
 ```text
 Observed: package A imports 17 internal modules from package B.
@@ -117,25 +107,18 @@ Inferred claim: this may represent broad coupling across the stated A/B boundary
 
 ## Stage 2 — Construct the evidence catalog
 
-Evidence is organized so later claims can cite what informed them.
+Evidence may include observations, probe results, source excerpts, test/runtime
+output, commits, issues/PRs, artifact bytes, owner statements, ratified ADRs,
+Campaign results, and product/repository behavior records.
 
-Evidence may include:
-
-- observations;
-- probe results;
-- source excerpts;
-- test/runtime output;
-- historical commits;
-- issues/PRs;
-- artifact bytes;
-- owner statements;
-- ratified architecture decisions.
-
-The catalog does not need to be a new runtime store initially. Existing Campaign evidence and Skill artifacts may serve this role.
+The catalog does not require a new runtime store. Existing Campaign evidence,
+ADRs, handoffs, STATUS, and Skill artifacts may carry the evidence appropriate
+to the current control scope.
 
 ## Stage 3 — Build a bounded semantic map
 
-The agent identifies only the entities and relations necessary to answer current competency questions.
+Identify only entities/relations required by the current decision. The semantic
+map is demand-driven, not exhaustive.
 
 Example:
 
@@ -150,46 +133,34 @@ dependency: web -> auth-service
 crossesBoundary -> application/domain boundary
 ```
 
-### Rule
-
-The semantic map is demand-driven, not exhaustive. Do not model the entire repository when the decision concerns one bounded subsystem.
+At Level 3 or 4, the bounded map may instead relate product commitments,
+capabilities, strategic boundaries, decisions, evidence ceilings, and affected
+responsibilities without pretending those relations are mechanically inferred.
 
 ## Stage 4 — Author claims
 
-Claims connect evidence to meaning.
-
-A useful claim states:
-
-```text
-subject
-proposition
-evidence
-scope/currentness
-epistemic status
-counter-evidence or uncertainty when material
-```
+Claims connect evidence to meaning. A useful claim states subject, proposition,
+evidence, scope/currentness, epistemic status, and counter-evidence/uncertainty
+when material.
 
 Example:
 
 ```text
 Claim:
-  The web package bypasses the public auth interface and depends directly
-  on auth implementation details.
-
+  The web package bypasses the public auth interface.
 Evidence:
-  import observations E12-E18
-  public-interface declaration E19
-
+  import observations E12-E18 + public-interface declaration E19
 Status:
   INFERRED
-
 Currentness:
   target snapshot S04
 ```
 
-## Stage 5 — Detect contradictions and uncertainties
+At Level 3 a claim may be "a material repository boundary exists." At Level 4
+a claim may be "a ratified product commitment may no longer match current
+product behavior." The broader scope does not make the claim more certain.
 
-Sensemaking should distinguish:
+## Stage 5 — Detect contradictions and uncertainties
 
 ```text
 Contradiction
@@ -199,66 +170,57 @@ Uncertainty
 = unresolved question whose answer could affect a decision
 ```
 
-A contradiction may generate an uncertainty, but they are not identical.
+A contradiction may generate uncertainty, but they are not identical. A
+repeated weak product-level signal may be preserved as a Thesis Tension without
+yet becoming a decision-changing Level-4 contradiction.
 
-Example:
+## Stage 6 — Identify the decision being supported
+
+Before selecting an uncertainty/responsibility, state the decision whose answer
+could change.
+
+At Level 2 this may already be represented by `decision_blocked`. At Level 3 it
+is the **Strategic Decision to Support**. At Level 4 it is the thesis question
+about an affected strategic commitment.
 
 ```text
-Observed claim:
-  package web imports auth/internal.py
-
-Ratified claim:
-  architecture decision D1 says web may depend only on auth/public.py
-
-Contradiction:
-  observed dependency conflicts with ratified dependency rule
-
-Uncertainty:
-  is internal.py usage temporary compatibility code or unintended drift?
+observation != decision
+boundary != decision
+uncertainty is consequential because it can change a decision
 ```
 
-## Stage 6 — Select consequential uncertainty
+Making the decision explicit prevents hidden jumps from interesting evidence to
+unwarranted work.
+
+## Stage 7 — Select consequential uncertainty
 
 This remains an **agent semantic responsibility**.
 
-The agent asks:
+Ask:
 
-1. Could any credible unresolved uncertainty change the next action, scope, authority path, or stop/continue decision?
-2. Which uncertainty has the highest decision relevance now?
+1. Could a credible unresolved uncertainty change the decision, scope, authority path, or stop/continue result?
+2. Which uncertainty is decision-relevant now?
 3. What evidence could materially change the answer?
 
-Do not automatically rank uncertainty by a generic score until repeated evidence demonstrates a safe, useful model.
+Do not automatically rank uncertainty with a generic score.
 
-## Stage 7 — Select warranted responsibility
+## Stage 8 — Select warranted responsibility
 
-The agent translates the decision-changing uncertainty or established condition into a bounded responsibility.
+Translate the decision-changing uncertainty or established condition into a
+bounded responsibility.
 
-Examples:
+Examples include `repository_sensemaking`, `architectural_review`,
+`problem_framing`, `repair_verification`, `documentation_alignment`,
+`product_specification`, and `research_synthesis`.
 
-```text
-repository_sensemaking
-architectural_review
-problem_framing
-repair_verification
-documentation_alignment
-product_specification
-research_synthesis
-```
+A responsibility identifies the decision supported, scope, trigger evidence,
+authority, success conditions, and dependencies. At Level 3 it additionally
+serves a selected strategic boundary and should be the smallest intervention
+sufficient for the strategic decision.
 
-A responsibility should identify:
+## Stage 9 — Inspect capability and authority
 
-- what decision is blocked;
-- scope;
-- trigger evidence;
-- authority;
-- success conditions;
-- dependencies.
-
-This aligns directly with the existing Campaign `Responsibility` contract.
-
-## Stage 8 — Inspect capability and authority
-
-Only after selecting the responsibility should the agent inspect available capabilities.
+Only after responsibility selection should the agent inspect capabilities.
 
 ```text
 warranted responsibility
@@ -266,91 +228,69 @@ warranted responsibility
 != authorized capability
 ```
 
-Deterministic capability lookup may report declared compatibility and availability. The agent decides which available capability is semantically appropriate. Authority is checked independently.
+Deterministic lookup may report declared compatibility/availability. The agent
+selects semantic appropriateness. Authority is independent.
 
-## Stage 9 — Perform bounded work
+## Stage 10 — Perform bounded work
 
-The chosen Skill/tool/engineering action operates within the declared responsibility and authority scope.
+The selected Skill/tool/engineering action operates within the responsibility
+and authority scope. Outputs may include an artifact, observations, repository
+change, external result, validation evidence, or no-result/blocker evidence.
 
-Possible outputs:
+A no-result can be valuable if it narrows uncertainty honestly.
 
-```text
-Artifact
-Observation set
-Repository Change
-External result
-Validation evidence
-No-result / blocker evidence
-```
+## Stage 11 — Validate mechanics and admit evidence
 
-A no-result may be semantically valuable if it narrows uncertainty honestly.
+Validators establish only declared mechanical contracts, such as required
+artifact structure, resolvable evidence refs, reconstructible transition chain,
+exact-byte digest, or target identity/currentness.
 
-## Stage 10 — Validate mechanics and admit evidence
+Validation is evidence for later semantic judgment; it is not the judgment.
 
-Validators establish only their declared contracts.
+## Stage 12 — Evaluate the result semantically
 
-Examples:
+Ask:
 
 ```text
-artifact has required structure
-artifact references resolvable evidence
-transition chain reconstructs
-exact bytes match recorded digest
-target snapshot matches expected identity
-```
-
-Validation result is evidence for later semantic judgment; it is not the judgment itself.
-
-## Stage 11 — Evaluate the result semantically
-
-The agent now asks:
-
-```text
-What did the new evidence actually establish?
+What did the evidence establish?
 What remains uncertain?
-Did the responsibility's success conditions become satisfied?
-Did the work introduce new contradictions?
-Does evidence justify advance, defer, or close?
+Did success/closure conditions become satisfied?
+Did new contradictions appear?
+Did the strategic or thesis rationale survive?
+What decision is now warranted?
 ```
-
-Important separation:
 
 ```text
 Capability execution completed
 != Responsibility satisfied
 != Goal achieved
+!= Strategic Decision resolved
+!= Product Thesis validated
 ```
 
-## Stage 12 — Author a decision and durable transition
+## Stage 13 — Author a scope-appropriate decision
 
-The agent chooses:
+At Level 2, common Campaign decisions are `advance`, `defer`, or `close`.
 
-```text
-advance
-defer
-close
-```
+At Level 3, outcomes may include continue, no-change, reject, defer, owner
+decision, thesis-review escalation, or stop.
 
-and cites the evidence informing that decision.
+At Level 4, explicit dispositions are `REAFFIRM`, `REINTERPRET`, `REVISE`,
+`RETIRE`, or `SUPERSEDE`, with owner ratification where authority is reserved.
 
-The deterministic Campaign layer persists the transition, checks integrity, and preserves the target/evidence lineage.
+Do not collapse these vocabularies into one universal runtime enum.
 
-## Stage 13 — Handoff and fresh-context reconstruction
+## Stage 14 — Persist / reconcile / hand off
 
-A later agent reconstructs:
+Persist only the durable state warranted by the current control scope:
 
-- mission and explicit intent;
-- current target state;
-- current responsibility;
-- current consequential uncertainty;
-- authority;
-- established/relevant claims;
-- evidence and contradictions;
-- transition history;
-- deferred work;
-- stop/continuation boundaries.
+- Level 2: Campaign transitions, evidence, handoff/resume state;
+- Level 3: current strategic projection in `STATUS.md` plus linked evidence;
+- Level 4: canonical product strategy, ADR/revision record, and downstream
+  reconciliation requirement.
 
-The later agent must not require the prior conversation to know why the Campaign is in its current state.
+A later agent should not require the previous conversation to know why the
+current decision state exists.
 
 ## Reasoning object flow
 
@@ -363,19 +303,136 @@ EvidenceSource
   -> Claim
   -> EpistemicStatus
   -> Contradiction / Uncertainty
+  -> DecisionBeingSupported
   -> Responsibility
   -> SensemakingCapability
   -> Artifact / Change / Evidence
   -> Validation
   -> Decision
-  -> Transition
+  -> DurableTransitionOrReconciliation
 ```
 
-Not every task requires every object. The chain exists to prevent hidden jumps in reasoning.
+`DecisionBeingSupported` is a conceptual reasoning role, not a new required
+runtime entity. Existing representations such as `decision_blocked`, Strategic
+Decision to Support, or affected Level-4 commitment may instantiate it.
+
+Not every task requires every object. The chain exists to prevent hidden jumps.
+
+## Level-3 instantiation — Strategic Repository Evolution
+
+At Level 3, the shared reasoning grammar becomes:
+
+```text
+OBSERVATION
+current product/repository capability condition
+        |
+        v
+EVIDENCE
+repository facts / qualified artifacts / owner decisions / evidence ceilings
+        |
+        v
+CLAIM
+one or more material strategic boundaries exist
+        |
+        v
+STRATEGIC DECISION TO SUPPORT
+what consequential repository/product decision depends on resolving them?
+        |
+        v
+QUALITATIVE COMPARISON
+mission relevance / decision value / blocking / resolvability /
+error consequence / deferral / reversibility / authority / dependency
+        |
+        v
+DECISION-CHANGING UNCERTAINTY
+what could make the boundary selection wrong or premature?
+        |
+        v
+WARRANTED REPOSITORY RESPONSIBILITY
+        |
+        v
+SMALLEST WARRANTED INTERVENTION + AUTHORITY
+        |
+        v
+LEVEL-2 / LEVEL-1 WORK
+        |
+        v
+VALIDATED RESULT / EVIDENCE
+        |
+        v
+STRATEGIC ADJUDICATION
+continue / close / defer / reject / no change /
+owner decision / thesis review / stop
+```
+
+The qualitative comparison is agent reasoning, not a deterministic score. The
+Strategic Frontier is decision-relevant possibility state, not an input queue.
+
+## Level-4 instantiation — Product Thesis / Strategy Revision
+
+At Level 4, the same grammar operates over slower-changing commitments:
+
+```text
+OBSERVATIONS
+repeated repository/product behavior + owner direction
+        |
+        v
+EVIDENCE
+qualified repository results / product evidence / owner statements
+        |
+        v
+CLAIM
+an existing product-thesis commitment may be wrong, stale, or ambiguous
+        |
+        +-- weak recurring signal -> preserve THESIS TENSION when useful
+        |
+        v
+THESIS DECISION TO SUPPORT
+is the affected commitment still the right strategic commitment?
+        |
+        v
+THESIS UNCERTAINTY / CONTRADICTION
+        |
+        v
+AFFECTED COMMITMENT + BOUNDED ALTERNATIVES
+        |
+        v
+ATTRIBUTED RECOMMENDATION
+        |
+        v
+OWNER RATIFICATION WHEN RESERVED
+        |
+        v
+REAFFIRM / REINTERPRET / REVISE / RETIRE / SUPERSEDE
+        |
+        v
+MANDATORY LEVEL-3 RECONCILIATION
+```
+
+The Semantic Reasoning Model does not decide which Level-4 alternative wins and
+does not grant owner authority. It only supplies a consistent evidence-to-
+decision grammar.
+
+## Relationship between semantic model and control model
+
+```text
+Semantic Architecture Reasoning Model
+= evidence-to-decision grammar
+
+Four-Level Control Model
+= decision scope + authority ownership
+
+Reasoning Model can instantiate at Level 2, 3, or 4
+!= those levels are the same thing
+```
+
+The same word `decision` therefore has scope-specific authority. A Level-3
+strategic decision cannot revise the product thesis; a Level-4 thesis disposition
+does not directly authorize implementation.
 
 ## Allowed deterministic derivations
 
-Examples suitable for deterministic implementation when supported by bounded probes/contracts:
+Suitable examples when supported by bounded contracts include:
 
 ```text
 Git metadata -> TargetSnapshot
@@ -385,6 +442,7 @@ schema validation -> structural PASS/FAIL
 known memberships + edge -> boundary-crossing relation
 transition log -> reconstructibility result
 complete-scope search + zero matches -> bounded absence observation
+Markdown anchor contract -> representation PASS/FAIL
 ```
 
 ## Semantic operations reserved to agent/human judgment
@@ -393,25 +451,31 @@ By default:
 
 ```text
 identify consequential uncertainty
-classify semantically meaningful Component
-infer SoftwareCapability realization
-interpret architectural intent unless ratified
+identify Strategic Decision to Support
+compare frontier candidates semantically
+classify meaningful Component / capability realization
+interpret architecture intent unless ratified
 judge whether dependency crossing is a violation
-select warranted Responsibility
-select semantically appropriate Capability
+select warranted Responsibility / Capability
 judge whether repair succeeded
 prioritize ProductChange
 judge whether evidence justifies closure
+classify Thesis Tension materiality
+judge whether Level-4 review is required
+select Level-4 disposition
 ```
 
-A future proposal may mechanize a narrower subset only with empirical evidence and an explicit authority decision.
+A future proposal may mechanize a narrower subset only with a separately
+justified mechanical contract and authority decision.
 
 ## Stopping rule
 
-Sensemaking should stop investigating when:
+Stop investigating when:
 
-1. the decision-changing uncertainty has enough evidence for a bounded decision;
-2. remaining uncertainty would not change the next action within current scope/authority; or
+1. decision-changing uncertainty has enough evidence for a bounded decision;
+2. remaining uncertainty would not change action within scope/authority; or
 3. further evidence is unavailable, outside authority, or not worth the current decision cost.
 
-This rule protects the system from turning ontology-driven reasoning into analysis paralysis.
+At Level 3, absence of a warranted strategic boundary is a valid stop. At Level
+4, absence of a decision-changing thesis issue is a reason to return control to
+Level 3 rather than manufacture strategy work.
