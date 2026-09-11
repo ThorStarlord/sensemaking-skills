@@ -1,6 +1,6 @@
 ---
 name: using-sensemaking
-description: Use Sensemaking Skills to turn repository uncertainty into evidence-grounded, warranted next action. Teaches when repository sensemaking is warranted, responsibility-before-Skill selection, artifact/evidence reading, validation, reconciliation, repair verification, authority boundaries, and stop/escalation decisions.
+description: Use Sensemaking Skills to turn repository uncertainty into evidence-grounded, warranted next action. Teaches when repository sensemaking is warranted, responsibility-before-Skill selection, adaptive scaffolding/rigor/durability, artifact/evidence reading, validation, reconciliation, repair verification, authority boundaries, and stop/escalation decisions.
 tags: [bootstrap, sensemaking, control, evidence, responsibility-selection]
 ---
 
@@ -20,14 +20,15 @@ Use this bootstrap to:
 2. identify the nearest unresolved uncertainty that could change the correct next action;
 3. obtain evidence from the right source;
 4. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
-5. perform bounded work through the appropriate capability;
-6. distinguish mechanical validation from analytical correctness and closure;
-7. reconcile consequential work claims with durable evidence;
-8. perform finding-specific repair verification when a prior finding was supposedly fixed;
-9. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
-10. decide whether to continue, stop, escalate, or ask the owner.
+5. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
+6. perform bounded work through the appropriate capability;
+7. distinguish mechanical validation from analytical correctness and closure;
+8. reconcile consequential work claims with durable evidence;
+9. perform finding-specific repair verification when a prior finding was supposedly fixed;
+10. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
+11. decide whether to continue, stop, escalate, or ask the owner.
 
-This Skill does **not** make every task require `repo-sensemaker`, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
+This Skill does **not** make every task require `repo-sensemaker` or a Campaign, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
 
 ## The recursive operating loop
 
@@ -57,6 +58,57 @@ Orient
 ```
 
 New evidence may change the expected solution. That is a feature, not a failure.
+
+## Adaptive guidance: use the lightest process that preserves the invariants
+
+Before deciding how much Sensemaking structure to use, make a qualitative judgment about five contextual factors:
+
+```text
+user supervision capability
+-> how much scaffolding/explanation is useful?
+
+desired delegation
+-> how much repository-answerable judgment should I exercise
+   within granted authority?
+
+decision complexity
+-> how much repository sensemaking/investigation is warranted?
+
+consequentiality
+-> how much evidence, validation, reconciliation, or caution is warranted?
+
+continuation complexity
+-> does repository-specific decision state need durable Campaign support?
+```
+
+Keep the doctrine stable while adapting the ceremony:
+
+```text
+clear + local + low consequence + one context
+-> direct bounded work + relevant tests
+
+responsibility uncertain / repository-wide evidence matters
+-> repository sensemaking
+
+consequential claim or repair
+-> stronger evidence / reconciliation / finding-specific verification when warranted
+
+state must survive fresh contexts
+-> durable Campaign state
+```
+
+Important non-identities:
+
+```text
+user supervision capability != permanent expertise class
+desired delegation != granted authority
+decision complexity != technical difficulty
+decision complexity != consequentiality
+continuation complexity != task size
+more scaffolding != more visible machinery
+```
+
+Do not score these factors, infer a permanent beginner/expert class, create a Campaign merely because a task is large, or translate them into automatic Skill/workflow routing. For examples and anti-patterns, read `references/adaptive-guidance-v0.md` when this decision is material.
 
 ---
 
@@ -438,6 +490,7 @@ When continuation is awkward, preserve the actual handoff and candidate evidence
 
 Read these when the task needs deeper detail:
 
+- `references/adaptive-guidance-v0.md` — contextual scaffolding, rigor, consequentiality, delegation, and Campaign-use examples
 - `../../CONTEXT.md` — current product/system context and terminology
 - `../../docs/agent-native-operating-workflow.md` — canonical v0 operating map
 - `../../docs/decision-orchestration-boundary.md` — decision vs. execution/orchestration ownership
@@ -452,14 +505,15 @@ Read these when the task needs deeper detail:
 ## Summary: your job as the active agent
 
 1. Establish the goal and authority boundary.
-2. Ask what uncertainty could change the correct next action.
-3. Resolve that uncertainty from the right evidence source.
-4. Select the responsibility before the Skill or solution.
-5. Perform bounded work through the appropriate capability.
-6. Validate mechanics without confusing PASS with truth or closure.
-7. Reconcile consequential work claims.
-8. Repair-verify original findings when relevant.
-9. Update the warrant from new evidence.
-10. Continue, stop, escalate, or ask the owner deliberately.
+2. Decide how much scaffolding, investigation rigor, verification, and durable state the situation warrants.
+3. Ask what uncertainty could change the correct next action.
+4. Resolve that uncertainty from the right evidence source.
+5. Select the responsibility before the Skill or solution.
+6. Perform bounded work through the appropriate capability.
+7. Validate mechanics without confusing PASS with truth or closure.
+8. Reconcile consequential work claims.
+9. Repair-verify original findings when relevant.
+10. Update the warrant from new evidence.
+11. Continue, stop, escalate, or ask the owner deliberately.
 
-**Most importantly:** the goal is not to follow a predetermined workflow. The goal is to move from uncertainty to warranted engineering action while keeping evidence, claims, and authority aligned.
+**Most importantly:** the goal is not to follow a predetermined workflow. The goal is to move from uncertainty to warranted engineering action while keeping evidence, claims, authority, and continuation proportional to the situation.

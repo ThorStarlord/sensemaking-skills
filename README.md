@@ -17,20 +17,50 @@ Choose the entry point for your role instead of reading every document:
 | If you are... | Start here | What it owns |
 | --- | --- | --- |
 | A human/new user trying to use Sensemaking | [`GETTING_STARTED.md`](GETTING_STARTED.md) | Canonical human how-to and first-use walkthrough |
-| Looking for the canonical Campaign lifecycle/composition | [`docs/agent-workflow-golden-path-v1.md`](docs/agent-workflow-golden-path-v1.md) | Canonical workflow-composition reference; static guidance, not routing |
+| Looking for the canonical Campaign lifecycle/composition | [`docs/agent-workflow-golden-path-v1.md`](docs/agent-workflow-golden-path-v1.md) | Canonical Campaign workflow-composition reference; static guidance, not routing |
 | A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
 | Trying to understand the deeper responsibility/authority model | [`docs/agent-native-operating-workflow.md`](docs/agent-native-operating-workflow.md) | Level-2 reasoning, artifact, authority, validation, and stopping model |
 | Maintaining, validating, or qualifying the repository | [`docs/operations-runbook.md`](docs/operations-runbook.md) | Current operator/qualification runbook |
 
 ```text
 GETTING_STARTED.md = how to use
-agent-workflow-golden-path-v1.md = how surfaces compose
+agent-workflow-golden-path-v1.md = how Campaign surfaces compose
 using-sensemaking/SKILL.md = how the coding agent operates
 agent-native-operating-workflow.md = why the Level-2 loop works this way
 operations-runbook.md = how maintainers operate and qualify it
 ```
 
 Do not create a parallel `HOW_TO_USE.md` or generic `workflow.md` for the same material. The goal is one clear entry point per audience rather than duplicated instruction surfaces.
+
+### Choose the lightest useful process
+
+Sensemaking is the control discipline; a Campaign is the central **durable** Level-2 abstraction when persistent decision context is useful. Not every Sensemaking task needs Campaign state.
+
+```text
+clear + locally evidenced + one context
+-> direct bounded work + relevant tests
+
+correct repository responsibility is uncertain
+-> apply using-sensemaking; repo-sensemaker may be useful
+
+material completed-work or repair claim
+-> stronger evidence / reconciliation / finding-specific verification when warranted
+
+repository-specific decision state must survive fresh contexts,
+agents, machines, or a long-running responsibility
+-> Campaign durability is likely useful
+```
+
+The active agent qualitatively considers user supervision capability, desired delegation, decision complexity, consequentiality, and continuation complexity. These affect scaffolding, investigation rigor, verification, and durability; they are **not** scores, modes, or automatic routing inputs.
+
+```text
+more scaffolding != more visible machinery
+desired delegation != granted authority
+large task != Campaign required
+high consequentiality != Campaign required
+```
+
+See `GETTING_STARTED.md` for the human first-use sequence and `skills/using-sensemaking/references/adaptive-guidance-v0.md` for the detailed agent-facing lens.
 
 ## Control architecture
 
@@ -66,7 +96,7 @@ The current authority surfaces are:
 - `docs/strategic-outer-loop.md` — canonical four-level control model;
 - `docs/strategic-state-contract.md` — Level-3 durable strategic-state contract;
 - `docs/product-thesis-revision.md` — Level-4 revision and owner-ratification contract;
-- `docs/sensemaking-campaign.md` — canonical Level-2 Campaign model;
+- `docs/sensemaking-campaign.md` — canonical Level-2 durable Campaign model;
 - ordinary branch/task/test state — Level-1 execution evidence.
 
 The Strategic Frontier is decision-relevant possibility state, **not a backlog**. Selecting a strategic boundary does not automatically authorize implementation. Level 3 may escalate a thesis-level contradiction to Level 4, but it does not silently rewrite the product thesis.
@@ -75,7 +105,7 @@ The Strategic Frontier is decision-relevant possibility state, **not a backlog**
 
 ## What v0.3 ships
 
-The installed v0.3 package primarily supplies the **Level-2/Level-1 durable and mechanical substrate** used by the active agent. Its core durable abstraction is a **Sensemaking Campaign**: a bounded engineering decision process that survives agent/session boundaries.
+The installed v0.3 package primarily supplies the **Level-2/Level-1 durable and mechanical substrate** used by the active agent. Its central durable Level-2 abstraction is a **Sensemaking Campaign**: a bounded engineering decision process that survives agent/session boundaries when continuation complexity warrants persistent state. Campaign availability does not make Campaign the universal entry point for Sensemaking.
 
 The installed product includes:
 
@@ -106,7 +136,8 @@ The active coding agent owns semantic control:
 - Which capability, if any, should be selected?
 - Is execution authorized?
 - What does evidence mean?
-- Should the Campaign advance, defer, or close?
+- Is durable Campaign state useful for this work?
+- Should the Campaign advance, defer, or close when a Campaign exists?
 - At Level 3, which strategic boundary, if any, is worth selecting next?
 - Does new evidence require Level-4 thesis review rather than ordinary repository work?
 
@@ -145,6 +176,7 @@ reference occurrence != reference resolution
 reference resolved != current
 reference audit pass != semantic truth
 not_addressable != invalid
+Campaign available != Campaign warranted
 product thesis != strategic state
 Strategic Frontier != backlog
 strategic boundary selected != implementation authorized
@@ -168,9 +200,9 @@ python -m venv .venv
 python -m pip install -e .
 ```
 
-## Campaign quick start
+## Campaign quick start when durability is warranted
 
-A Campaign workspace should live outside the target repository. Pass `--target-repo` when you want durable repository identity and working-tree provenance:
+A Campaign workspace should live outside the target repository. Use a Campaign when repository-specific decision state needs to survive agent/session boundaries or otherwise remain reconstructible; do not create one merely because a task is large or consequential. Pass `--target-repo` when you want durable repository identity and working-tree provenance:
 
 ```bash
 sensemaking-skills campaign init \
@@ -376,7 +408,7 @@ The optional semantic companion and B7 audit remain workspace-level/additive beh
 
 ## Semantic Architecture development policy
 
-Phase 10 already ran a bounded real-repository common-envelope experiment and retained `semantic_reasoning_profile` as an optional companion (**Outcome A**).
+Phase 10 already ran a bounded real-repository common-envelope experiment and retained `semantic_reasoning_profile` as an **optional** companion (**Outcome A**).
 
 The subsequent owner-authorized policy is build-first: additional empirical experiments may be deferred while a concrete missing capability has a clear mechanical contract. Mechanical verification remains continuous.
 
@@ -418,6 +450,7 @@ Tagged publication remains a separate owner action.
 - Not automatic external mutation authority.
 - Not a claim that copied Skills were observed or invoked by a harness.
 - Not a mechanism for silently rebinding an existing Campaign to a different target repository.
+- Not an automatic selector that turns expertise/complexity/consequentiality into Campaign or workflow choices.
 
 ## Repository structure
 
@@ -446,7 +479,8 @@ Read the repository from higher-scope authority into bounded execution. For ordi
 
 - `GETTING_STARTED.md` — canonical human how-to-use entry point and first-use walkthrough.
 - `skills/using-sensemaking/SKILL.md` — canonical agent-facing usage instructions.
-- `docs/agent-workflow-golden-path-v1.md` — canonical workflow-composition reference; static guidance only.
+- `skills/using-sensemaking/references/adaptive-guidance-v0.md` — detailed qualitative scaffolding/rigor/durability guidance for the active agent.
+- `docs/agent-workflow-golden-path-v1.md` — canonical Campaign workflow-composition reference; static guidance only.
 - `docs/product-strategy.md` — Level-4 product thesis, boundary, hypotheses, and strategic authority.
 - `STATUS.md` — current Level-3 Strategic Repository Evolution state and cross-program status.
 - `docs/strategic-outer-loop.md` — canonical four-level control model and Level-3/Level-4 relationship.
@@ -455,7 +489,7 @@ Read the repository from higher-scope authority into bounded execution. For ordi
 - `docs/product-operating-model.md` — value stream, responsibility ownership, governance, delegation, and escalation.
 - `docs/agent-native-operating-workflow.md` — Level-2 agent-native responsibility/Campaign operating map.
 - `docs/operations-runbook.md` — current operator-facing operations and qualification runbook; checked-in workflows remain executable authority.
-- `docs/sensemaking-campaign.md` — canonical Campaign product model.
+- `docs/sensemaking-campaign.md` — canonical durable Campaign product model.
 - `docs/campaign-target-snapshot.md` — target provenance and drift contract.
 - `docs/campaign-observability-and-portability.md` — observability, semantic companion, B7 reference audit, Resume Capsule, replay/graph, and bundles.
 - `docs/semantic-architecture/README.md` — Semantic Architecture index; orthogonal semantic/layer view.

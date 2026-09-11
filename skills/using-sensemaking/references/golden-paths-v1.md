@@ -1,6 +1,6 @@
 # Agent Workflow Golden Paths v1
 
-These are **composition examples, not a router**. The active coding agent owns whether a path applies, the decision-changing uncertainty, responsibility selection, capability selection, authority decisions, and terminal judgment.
+These are **Campaign composition examples, not a router and not the universal entry point for every Sensemaking task**. The active coding agent owns whether durable Campaign state is useful, whether a path applies, the decision-changing uncertainty, responsibility selection, capability selection, authority decisions, and terminal judgment.
 
 Use the CLI projection when useful:
 
@@ -11,6 +11,32 @@ sensemaking-skills campaign workflow show fresh-context
 sensemaking-skills campaign workflow show transferred-campaign
 sensemaking-skills campaign workflow show multi-repository
 ```
+
+## Before entering a Campaign path
+
+Use the lightest process that preserves the engineering invariants:
+
+```text
+clear, locally evidenced responsibility + one-context work
+-> bounded Sensemaking / ordinary work without Campaign ceremony
+
+repository responsibility is uncertain
+-> resolve the decision-changing uncertainty; repo-sensemaker may be useful
+
+repository-specific decision state must survive fresh contexts,
+agents, machines, or a long-running responsibility
+-> Campaign durability is likely useful
+```
+
+Decision complexity can warrant repository sensemaking without a Campaign. Consequentiality can warrant stronger validation/reconciliation without a Campaign. Campaign primarily earns its cost from **continuation complexity**.
+
+```text
+repository sensemaking warranted != Campaign required
+high consequentiality != Campaign required
+large task != Campaign required
+```
+
+For the full adaptive lens, read `adaptive-guidance-v0.md`.
 
 ## Single-repository consequential work
 
@@ -77,6 +103,7 @@ flow shown != flow recommended
 step listed != step authorized
 preflight PASS != should proceed
 capability compatible != capability selected
+Campaign path != mandatory Sensemaking choreography
 archive != success
 ```
 
