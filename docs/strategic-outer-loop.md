@@ -1,9 +1,9 @@
 # Strategic Outer Loop and Four-Level Control Model
 
 **Status:** canonical conceptual model for repository-development scope  
-**Version:** v0  
-**Construction state:** frozen operational baseline; reopen only from concrete repository/product pressure or explicit owner direction  
-**Authority:** product strategy + ADRs 0013/0014; does not override executable contracts  
+**Version:** v1 reasoning precision over frozen v0 control architecture  
+**Construction state:** frozen control architecture; reasoning semantics may be clarified from concrete pressure or explicit owner direction  
+**Authority:** product strategy + ADRs 0013/0029; does not override executable contracts  
 **Scope:** how Sensemaking separates product-thesis, repository-evolution, bounded responsibility, and execution reasoning
 
 ## 1. Purpose
@@ -42,12 +42,13 @@ What concrete steps correctly perform the bounded work?
 These levels describe **scope of reasoning and durable state**, not four
 runtime engines. The active coding agent remains the semantic controller.
 
-Outer Loop v0 is now a frozen operational baseline. "Frozen" means the current
-architecture should be **used** during normal repository evolution rather than
-extended merely because additional machinery can be imagined. It does not mean
-the product can never change. Reopen this control architecture only when a new
-concrete integrity/reconstruction burden, mechanically explicit product need,
-or owner direction makes revision decision-changing.
+Outer Loop v0 remains the frozen control-architecture baseline. "Frozen" means
+the architecture should be **used** during normal repository evolution rather
+than extended merely because additional machinery can be imagined. Strategic
+Outer Loop Precision v1 clarifies the reasoning inside that architecture; it
+does not create another control level or runtime engine. Reopen control
+architecture only when a concrete integrity/reconstruction burden, mechanically
+explicit product need, or owner direction makes revision decision-changing.
 
 ## 2. Core control law
 
@@ -120,42 +121,130 @@ report that upward rather than silently widening the task.
 Level 3 answers:
 
 > Given the product mission and the current repository/product capability state,
-> what consequential repository-level responsibility is warranted next?
+> what consequential repository-level responsibility is warranted next, if any?
 
 Canonical shape:
 
 ```text
-PRODUCT MISSION
+PRODUCT MISSION / CURRENT LEVEL-4 STRATEGY
       |
 CURRENT PRODUCT / REPOSITORY STATE
       |
 CURRENT CAPABILITY STATE + EVIDENCE CEILINGS
       |
-identify material gaps / contradictions / opportunities
+material observations / gaps / contradictions / opportunities
       |
-STRATEGIC FRONTIER
+CANDIDATE STRATEGIC BOUNDARIES / STRATEGIC FRONTIER
       |
-identify decision-changing strategic uncertainty
+identify the STRATEGIC DECISION TO SUPPORT
       |
-select ONE warranted repository-level responsibility
+qualitatively compare decision-relevant boundaries
       |
-create or select a bounded Campaign / work package
+select ONE boundary — or explicitly decline selection
+      |
+identify DECISION-CHANGING STRATEGIC UNCERTAINTY
+      |
+identify cheapest sufficient evidence when needed
+      |
+select ONE WARRANTED REPOSITORY-LEVEL RESPONSIBILITY
+      |
+choose the SMALLEST WARRANTED INTERVENTION
+      |
+create/select bounded Campaign / work package when useful
       |
 LEVEL 2 + LEVEL 1 execution
       |
 qualified result + durable evidence
       |
-update strategic state
+strategic adjudication + state reconciliation
       |
-reassess mission / frontier
-      |
-continue / defer / owner decision / Level-4 escalation / stop
+continue / defer / reject / no change / owner decision /
+Level-4 escalation / stop
 ```
 
-The Level-3 loop is recursive. It is not a phase-gated lifecycle and is not a
-backlog processor.
+The Level-3 loop is recursive. It is not a phase-gated lifecycle, a backlog
+processor, or a deterministic priority function.
 
-### 5.1 Strategic Frontier
+### 5.1 Strategic decision to support
+
+Before treating a frontier boundary as current work, Level 3 should state:
+
+> **What consequential strategic decision becomes better informed if this
+> boundary is resolved?**
+
+This is the **Strategic Decision to Support**. It is first-class reasoning
+context between a candidate boundary and the uncertainty/responsibility that
+follows.
+
+A useful record states:
+
+```text
+STRATEGIC DECISION TO SUPPORT
+OPTIONS OR MATERIAL ALTERNATIVES, WHEN RELEVANT
+WHAT CHANGES IF THE DECISION GOES ONE WAY VS ANOTHER
+WHY THE DECISION MATTERS TO THE PRODUCT MISSION
+```
+
+Example:
+
+```text
+BOUNDARY
+Adaptive guidance appears misaligned with current product use.
+
+STRATEGIC DECISION TO SUPPORT
+Do we need new runtime adaptation, or only shipped-guidance alignment?
+
+DECISION-CHANGING UNCERTAINTY
+Do current mechanics actually force inappropriate ceremony?
+
+RESULT
+No behavior-level mismatch.
+
+WARRANTED RESPONSIBILITY
+Align shipped guidance only.
+```
+
+The decision object prevents hidden jumps from "interesting repository fact" to
+"therefore build this feature."
+
+```text
+boundary observed != strategic decision selected
+strategic decision stated != implementation authorized
+```
+
+### 5.2 Qualitative frontier comparison
+
+When more than one materially credible boundary could support the current
+strategic decision, the active agent should compare them explicitly enough for a
+fresh reader to reconstruct the judgment.
+
+Use qualitative lenses, not scores:
+
+1. **Mission relevance** — would resolving this materially affect progress toward the current product mission?
+2. **Decision value** — what meaningful downstream decision becomes clearer?
+3. **Blocking power** — does this boundary block or invalidate several other decisions?
+4. **Evidence sufficiency / resolvability** — can the decision-changing uncertainty be resolved from available or reasonably obtainable evidence?
+5. **Consequence of error** — what happens if the repository acts on the wrong interpretation?
+6. **Deferral cost** — what happens if this boundary is deliberately left unresolved now?
+7. **Reversibility** — can a smaller or more reversible intervention support the decision?
+8. **Authority availability** — can the relevant responsibility actually be undertaken within current authority?
+9. **Dependency** — does another boundary logically need to be resolved first?
+10. **Smallest warranted intervention** — what is the least architecture/process necessary to support the decision?
+
+These lenses support attributed agent judgment. They are not weights, a closed
+rubric, or a mechanical ranking algorithm.
+
+```text
+qualitative comparison != deterministic ranking
+agent judgment != unexplained intuition
+high complexity != high strategic priority
+high consequentiality != high strategic priority
+```
+
+If no candidate has a sufficient current warrant, the correct result is to
+decline selection rather than manufacture a highest-leverage item.
+
+### 5.3 Strategic Frontier
 
 **Strategic Frontier** means:
 
@@ -166,6 +255,7 @@ A frontier entry is not automatically work. Possible dispositions include:
 
 ```text
 ACTIVE
+CANDIDATE
 DEFERRED
 REJECTED
 NO_CHANGE_WARRANTED
@@ -189,7 +279,7 @@ reassessment are preserved in
 presence there is idea memory only: it does not add them to the Strategic
 Frontier, establish priority, or authorize implementation.
 
-### 5.2 Repository-level responsibility classes
+### 5.4 Repository-level responsibility classes
 
 These are conceptual classes, not a new runtime enum:
 
@@ -211,7 +301,7 @@ These are conceptual classes, not a new runtime enum:
 Level 3 chooses the **kind of repository change that is warranted**, not merely
 which file or issue to edit next.
 
-### 5.3 Level-3 state authority
+### 5.5 Level-3 state authority
 
 `STATUS.md` is the current operational projection of the Strategic Repository
 Evolution Loop. Its detailed conceptual contract is defined in
@@ -224,17 +314,19 @@ product mission / strategy reference
 current capability state
 material limitations and evidence ceilings
 strategic frontier
-current highest-leverage boundary
+current highest-leverage boundary, if selected
+strategic decision to support
 strategic decision-changing uncertainty
 current warranted repository-level responsibility
 active Campaign / work package
-expected evidence
+expected evidence + invalidation evidence
 available / required authority
 deferred, rejected, and superseded directions
 reassessment / stopping state
 ```
 
-This is initially a documentation contract, not a Campaign schema extension.
+This remains primarily a documentation contract. Mechanization is justified
+only for stable representation facts, not strategic meaning.
 
 ## 6. Level 4 — Product Thesis / Strategy Revision Loop
 
@@ -261,16 +353,17 @@ evidence ceilings
 
 The canonical strategy authority remains
 [`product-strategy.md`](product-strategy.md). Revision behavior is defined in
-[`product-thesis-revision.md`](product-thesis-revision.md).
+[`product-thesis-revision.md`](product-thesis-revision.md), and the current
+product boundary is ratified by ADR 0029.
 
 Canonical shape:
 
 ```text
 CURRENT PRODUCT THESIS
       |
-accumulated material evidence
+accumulated material evidence / owner direction
       |
-thesis-level contradiction or owner direction?
+thesis-level tension or contradiction material to a decision?
       |
    no ------------------------------> return to Level 3
       |
@@ -284,7 +377,7 @@ reaffirm / reinterpret / revise / retire / supersede
       |
 owner ratification where strategy authority is reserved
       |
-new canonical strategy
+new / reaffirmed canonical strategy
       |
 reconcile Level-3 state and frontier
 ```
@@ -336,13 +429,15 @@ A useful Level-3-to-Level-2 handoff should include:
 
 ```text
 STRATEGIC BOUNDARY
-DECISION TO SUPPORT
+STRATEGIC DECISION TO SUPPORT
 DECISION-CHANGING UNCERTAINTY
 WHY THIS MATTERS TO PRODUCT MISSION
 BOUNDED REPOSITORY RESPONSIBILITY
+SMALLEST WARRANTED INTERVENTION
 AUTHORITY
 EXPECTED RESULT
 EXPECTED EVIDENCE
+INVALIDATION EVIDENCE
 STOP CONDITIONS
 ```
 
@@ -369,12 +464,11 @@ Authority-Execution planes. Those models answer different questions.
 This model does not authorize:
 
 - `OuterLoopEngine` or `StrategicPlanner` machinery;
-- deterministic frontier ranking;
+- deterministic frontier ranking or priority scoring;
 - automatic product-strategy revision;
 - automatic feature prioritization;
 - automatic Campaign generation from repository state;
-- automatic Level-4 escalation classification where semantic judgment is
-  required;
+- automatic Level-4 escalation classification where semantic judgment is required;
 - a universal decision graph;
 - central semantic routing;
 - autonomous merge, release, or publication authority;
@@ -385,37 +479,32 @@ only explicitly ratified, mechanically decidable representation contracts.
 
 ## 11. Construction sequence and authorization state
 
-The construction sequence is intentionally **not** a standing roadmap:
+The historical construction sequence is **not** a standing roadmap:
 
 ```text
 1. Canonical four-level control model                  [integrated]
 2. Level-3 strategic-state contract                    [integrated]
 3. Level-4 product-thesis revision contract            [integrated]
 4. Strategic State Contract Validation v0              [integrated / repository-qualified]
-5. Read-only strategy inspect/diff                     [not authorized]
-6. Level-3 -> Campaign handoff mechanics               [not authorized]
-7. Level-4 escalation/reconciliation mechanics         [not authorized]
+5. Read-only strategy inspect/diff                     [integrated / repository-qualified]
+6. Explicit Level-3 -> Campaign handoff mechanics      [integrated / repository-qualified]
+7. Level-4 semantic reconciliation automation          [not authorized]
 ```
 
-Step 4 was authorized only after the fresh post-B7 reassessment found a concrete
-mechanically decidable representation-integrity boundary and recorded it in
-[`strategic-state-validation-design-preflight.md`](strategic-state-validation-design-preflight.md).
-It was implemented as the repository-local `scripts/validate-strategic-state.py`
-validator and integrated into Product Validation.
+Steps 5 and 6 were later implemented as bounded mechanics after explicit owner
+direction. Their implementation does not authorize Step 7 and does not turn the
+Outer Loop into a planner. Product Boundary Reconciliation v1 subsequently
+superseded ADR 0014 with ADR 0029 without adding strategy automation.
 
-The post-step-4 Level-3 reassessment found no comparably concrete current
-mechanical failure/reconstruction boundary for steps 5–7. They therefore remain
-ideas, not pending work. Existing Markdown authority and agent-owned reasoning
-remain sufficient at the current evidence boundary.
-
-Reopen a later step only from new concrete product/integrity/reconstruction
+Reopen later machinery only from new concrete product/integrity/reconstruction
 pressure or explicit owner direction. Do not infer authorization from sequence
-numbering or from the existence of this conceptual model.
+numbering or conceptual completeness.
 
 ## 12. v0 freeze and normal-use policy
 
-Outer Loop v0 is complete as an architecture/operating contract and is now
-**frozen as the default control baseline**.
+The four-level control architecture remains frozen as the default control
+baseline. Strategic Outer Loop Precision v1 clarifies how Level 3 explains its
+selection reasoning without changing control ownership.
 
 Normal development should use the model to choose repository responsibilities;
 it should not treat development of the model itself as the default frontier.
@@ -423,15 +512,14 @@ it should not treat development of the model itself as the default frontier.
 ```text
 use outer loop
 -> inspect current strategy/repository state
+-> state the strategic decision to support
+-> compare material boundaries qualitatively
 -> select or decline one repository-level responsibility
 -> perform bounded Level-2/Level-1 work
 -> qualify
 -> reconcile STATUS.md
 -> reassess
 ```
-
-The first repository-wide normal-use audit under this freeze is recorded in
-[`strategic-repository-evolution-audit-2026-09-11.md`](strategic-repository-evolution-audit-2026-09-11.md).
 
 Natural-use evidence may reopen outer-loop construction when repeated concrete
 friction appears. Do not create a separate experimental evidence program merely
