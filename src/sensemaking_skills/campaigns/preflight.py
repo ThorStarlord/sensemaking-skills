@@ -1,9 +1,10 @@
 """Mechanical Campaign preflight aggregation.
 
 Preflight composes already-authoritative Campaign, target, admission, semantic-
-reference, capability metadata, and optional multi-target checks. It reports
-representation/integrity facts only. It never infers a responsibility type,
-ranks a capability, or says whether the agent should proceed.
+reference, capability metadata, optional multi-target checks, and optional
+caller-authored multi-target relation integrity. It reports representation and
+integrity facts only. It never infers a responsibility type, repository
+relationship, ranks a capability, or says whether the agent should proceed.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ from sensemaking_skills.semantic_architecture import (
 
 from .capabilities import CampaignCapabilityService
 from .multi_target import MULTI_TARGET_FILENAME, MultiTargetService
+from .multi_target_relations import MULTI_TARGET_RELATIONS_FILENAME, MultiTargetRelationService
 from .target_snapshot import CampaignService
 
 
@@ -143,6 +145,38 @@ class CampaignPreflightService:
                     data={
                         "target_count": len(multi_target.targets),
                         "target_set_sha256": multi_target.target_set_sha256,
+                    },
+                )
+            )
+
+        relation_path = self.workspace / MULTI_TARGET_RELATIONS_FILENAME
+        if not relation_path.exists():
+            checks.append(
+                CampaignPreflightCheck(
+                    id="multi_target_relation_integrity",
+                    status="not_applicable",
+                    detail="no optional cross-repository relation companion is present",
+                )
+            )
+        else:
+            relation_check = MultiTargetRelationService(self.workspace).inspect()
+            diagnostics = tuple(
+                f"{item.code}:{item.relation_id or '-'}:{item.line_number or '-'}"
+                for item in relation_check.diagnostics
+            )
+            checks.append(
+                CampaignPreflightCheck(
+                    id="multi_target_relation_integrity",
+                    status="pass" if relation_check.valid else "fail",
+                    detail=(
+                        "caller-authored cross-repository relation identities, aliases, evidence, hash chain, and ordering constraints are mechanically valid"
+                        if relation_check.valid
+                        else "cross-repository relation companion failed mechanical validation"
+                    ),
+                    diagnostics=diagnostics,
+                    data={
+                        "relation_count": len(relation_check.relations),
+                        "ordering_cycle_count": len(relation_check.ordering_cycles),
                     },
                 )
             )
