@@ -3,14 +3,19 @@
 **Status**: v0 operating guide -- grounded in current implementation and
 prior dogfood (evidence 0016-0020), subject to revision through real use.
 This is NOT a canonical orchestration specification.
-**Type**: workflow map -- not an ADR, not a registered workflow, not a Skill
+**Type**: Level-2 workflow map -- not an ADR, not a registered workflow, not a Skill
 **Authority**: ADR 0013 (agent-native orchestration is primary) + ADR 0014
 (product boundary: evidence-grounded, human-reviewed brief is the settled core)
-**Scope**: how an active coding agent uses Sensemaking Skills end to end
+**Scope**: how an active coding agent performs one bounded Responsibility/Campaign
+loop and coordinates Level-1 execution
 
-> **Top rule**: This document describes how the active coding agent uses
-> Sensemaking Skills. It is not itself an executable orchestration contract.
-> Stable subflows may be encoded independently when repeated use earns them.
+> **Scope rule**: This document describes the **Level-2 Responsibility / Campaign
+> operating loop** and its Level-1 execution support. For the relationship among
+> Level 4 Product Thesis / Strategy Revision, Level 3 Strategic Repository
+> Evolution, Level 2 Campaign responsibility, and Level 1 execution, see
+> [`strategic-outer-loop.md`](strategic-outer-loop.md). This document is not itself
+> an executable orchestration contract and does not own Strategic Frontier or
+> product-thesis decisions.
 
 ---
 
@@ -24,13 +29,16 @@ ADR 0013 ratified agent-native execution as primary, and the programmatic
 second-model runner was retired (`docs/2026-08-programmatic-runner-retirement-plan.md`,
 CLOSED 2026-08-13).
 
-What remained unanswered: one consolidated answer to
+What remained unanswered at this scope: one consolidated answer to
 
-> "I am a coding agent working in an unfamiliar repo. How do I actually use
-> Sensemaking Skills from beginning to end?"
+> "I am a coding agent working on a bounded repository responsibility. How do I
+> use Sensemaking Skills from uncertainty through durable result and handoff?"
 
-This document is that answer, expressed as a map. It models three
-synchronized views, because modeling only one hides the architecture:
+This document is that Level-2 answer, expressed as a map. Higher-scope product
+and repository-evolution decisions are defined by `strategic-outer-loop.md` and
+its Level-3/Level-4 authority surfaces.
+
+It models three synchronized views, because modeling only one hides the architecture:
 
 | View | What it answers | Example |
 |---|---|---|
@@ -42,13 +50,14 @@ synchronized views, because modeling only one hides the architecture:
 
 ## 1. The operating flow
 
-The control loop belongs to the **active coding agent** (ADR 0013). The
-runtime/scripts are deterministic support machinery. Registered workflows
+The Level-2 semantic control loop belongs to the **active coding agent** (ADR 0013).
+The runtime/scripts are deterministic support machinery. Registered workflows
 (`fast-path-workflow`, `artifact-reconciliation`,
 `docs-contract-reconciliation`, ...) are potentially **subgraphs inside this
-loop**, not the whole loop. The per-workflow disposition of all 23 registered
-workflows in campaign vocabulary, with the execution evidence behind each
-call, is recorded in [`workflow-system-disposition.md`](workflow-system-disposition.md)
+loop**, not the whole loop and not the Level-3 Strategic Repository Evolution
+loop. The per-workflow disposition of all 23 registered workflows in campaign
+vocabulary, with the execution evidence behind each call, is recorded in
+[`workflow-system-disposition.md`](workflow-system-disposition.md)
 (non-authoritative; ADR 0027 and the liveness overlay remain the liveness
 authority).
 
@@ -56,7 +65,7 @@ authority).
 USER REQUEST / WORK CLAIM
         |
         v
-ACTIVE CODING AGENT (owns the control loop; ADR 0013)
+ACTIVE CODING AGENT (owns the Level-2 control loop; ADR 0013)
         |
         v
 ENTRY / TRIAGE: would repository sensemaking materially change
@@ -100,6 +109,10 @@ validation                            repository_sensemaking_brief
                                              v
                                   STOP (stage stop conditions) or CONTINUE
 ```
+
+A Level-2 result may return evidence upward to Level 3. That upward evidence
+does not automatically select a new Strategic Frontier item or revise the
+product thesis.
 
 ---
 
@@ -291,9 +304,11 @@ Every stage answers "what means enough?":
 | Implementation | the scoped change exists and its relevant mechanical verification passes |
 | Reconciliation | material claims have dispositions and consequential omissions/findings are surfaced |
 | Repair verification | each scoped original finding is closed or remaining (with disposition) |
-| Overall session | next decision is explicit + useful artifacts are durable where warranted + no unresolved decision-blocking uncertainty remains |
+| Overall Level-2 cycle | next bounded decision is explicit + useful artifacts are durable where warranted + no unresolved decision-blocking uncertainty remains at this scope |
 
-"Done" is not "there are no more things I could investigate."
+"Done" is not "there are no more things I could investigate." Completion of a
+Level-2 responsibility also does not imply that Level 3 must immediately select
+another repository-level responsibility.
 
 ### CONTINUATION
 
@@ -457,6 +472,13 @@ implemented        != ratified
 diagnosis          != authorization
 ```
 
+Higher-scope authority adds one more rule:
+
+```text
+Level-2 result != authorization to rewrite Level-3 frontier
+Level-3 result != authorization to rewrite Level-4 product thesis
+```
+
 ---
 
 ## 5. Reality map
@@ -479,14 +501,22 @@ diagnosis          != authorization
 | Deterministic machinery | validators (`validate-output.py` -> `validate-artifact.py` + specialized), probe engine (`probe-repo.py`, `repo_probes.py`, `probe_relationships.py`), `gate_relationship_findings.py`, `workflow-runtime.py` + `run-ledger.py`, `validate-repo.py` + `workflow_liveness.py`, `probe_skill_distribution.py` -- roles consolidated in [`decision-orchestration-boundary.md`, "Deterministic machinery and hooks"](decision-orchestration-boundary.md#deterministic-machinery-and-hooks) | REAL as referees: contract validation, measured state, mechanical gate policy, path resolution + ledger, registry/liveness integrity, distribution drift, bounded execution coordination; used exactly so by the campaign fresh contexts R2-R4 (2026-09-02), every judgment left to the agent | scripts do not select responsibilities or uncertainties, decide stop/continue/escalate, grant authority or spawn a next workflow, interpret findings, or route from fog type to implementation |
 | Hooks | none executable (`.claude/settings.json` is `{}`); `.claude/hooks/sessionstart.md` is a Markdown description of a session-start convention; `CLAUDE.md` + the installed `using-sensemaking` skill are the actual bootstrap surface -- disposition in [`decision-orchestration-boundary.md`, "Hooks"](decision-orchestration-boundary.md#hooks) | NOT WARRANTED for continuation or liveness: R1-R4 continuations were explicit dispatches from a durable record, each producing its report, no missed event recorded; admissible future shape is mechanical only (detect artifact -> validate -> register provenance/state -> signal the agent to reassess); reopen condition = a recurrent continuation event a manual step keeps missing in real use | a hook is not a router: never `artifact X -> execute Skill Y` (ADR 0026; boundary-doc guardrail 4); the hook doc describes, it does not execute |
 
+The Level-3/Level-4 outer-loop foundation is intentionally outside this Reality
+map's runtime claims. It is currently a repository documentation/authority
+architecture, not a new autonomous runtime capability.
+
 ---
 
 ## 6. What is deliberately not here
 
-- **No new registered workflow** encoding the whole loop -- the top-level
-  flow contains real judgment (trigger, uncertainty source, owner intent,
-  next responsibility, authorization, stop) that is not stable mechanics yet
+- **No new registered workflow** encoding the whole loop -- the Level-2 flow
+  contains real judgment (trigger, uncertainty source, owner intent, next
+  responsibility, authorization, stop) that is not stable mechanics yet
   (ADR 0013).
+- **No Strategic Outer Loop implementation** -- Level 3 and Level 4 are defined
+  by `strategic-outer-loop.md`, `strategic-state-contract.md`, and
+  `product-thesis-revision.md`; this workflow does not rank the Strategic
+  Frontier, select repository strategy, or revise product thesis.
 - **No new master Skill** -- the bootstrap skill `using-sensemaking` already
   teaches the entry pattern; this document describes, it does not execute.
 - **No new ADR** -- ADR 0013 and ADR 0014 already ratify the architecture
@@ -506,9 +536,11 @@ diagnosis          != authorization
 
 ## 7. Using and revising this document
 
-Reading order for a new agent: section 1 (flow) -> section 2
-(responsibilities) -> section 3 (artifacts) -> section 4 (authority) ->
-section 5 (what is real vs. convention).
+Reading order for a new agent working at Level 2: section 1 (flow) -> section 2
+(responsibilities) -> section 3 (artifacts) -> section 4 (authority) -> section 5
+(what is real vs. convention). For repository-level strategic selection, read
+`STATUS.md` and `strategic-outer-loop.md` first; for product-thesis authority,
+read `product-strategy.md` and `product-thesis-revision.md`.
 
 Revision trigger: when a responsibility in the Reality map flips status --
 a convention earns machinery, or a deferred item reopens -- update this map
