@@ -8,6 +8,7 @@ from typing import Any
 
 import click
 
+from .campaign_completion_cli import register_campaign_completion_commands
 from .campaign_handoff_cli import register_campaign_handoff_commands
 from .campaign_lineage_cli import register_campaign_lineage_commands
 from .campaign_multi_target_cli import register_campaign_multi_target_commands
@@ -165,3 +166,4 @@ def register_campaign_capability_commands(
     register_campaign_strategy_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_target_rebind_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_multi_target_commands(campaign, emit_error=emit_error, json_echo=json_echo)
+    register_campaign_completion_commands(campaign, emit_error=emit_error, json_echo=json_echo)
