@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import stat
 from dataclasses import dataclass
 from pathlib import Path
@@ -18,6 +17,7 @@ from typing import Any, Mapping
 
 from sensemaking_skills.campaign_semantics import target_snapshot_sha256
 
+from .companion_io import atomic_write_json, mapping_sha256
 from .preflight import CampaignPreflightService
 from .provenance_graph import CampaignProvenanceGraphService
 from .target_snapshot import CampaignService
@@ -50,14 +50,6 @@ class ArchiveInspection:
     semantic_success_established: bool = False
 
 
-def _canonical_bytes(value: Mapping[str, Any]) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-
-
-def _digest(value: Mapping[str, Any]) -> str:
-    return hashlib.sha256(_canonical_bytes(value)).hexdigest()
-
-
 def _file_sha256(path: Path) -> str:
     hasher = hashlib.sha256()
     with path.open("rb") as handle:
@@ -85,7 +77,7 @@ def _workspace_manifest(workspace: Path) -> tuple[list[dict[str, Any]], str]:
             }
         )
     manifest_core: dict[str, Any] = {"files": entries}
-    return entries, _digest(manifest_core)
+    return entries, mapping_sha256(manifest_core)
 
 
 def _read_json(path: Path) -> Mapping[str, Any]:
@@ -96,14 +88,6 @@ def _read_json(path: Path) -> Mapping[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"{path.name} must contain one JSON object")
     return value
-
-
-def _atomic_json(path: Path, value: Mapping[str, Any]) -> None:
-    temp = path.with_name(f".{path.name}.tmp")
-    temp.write_text(json.dumps(dict(value), indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
-    with temp.open("rb") as handle:
-        os.fsync(handle.fileno())
-    os.replace(temp, path)
 
 
 def _receipt_core(workspace: Path) -> dict[str, Any]:
@@ -141,7 +125,7 @@ def _receipt_core(workspace: Path) -> dict[str, Any]:
 
 def _expected_receipt(workspace: Path) -> dict[str, Any]:
     core = _receipt_core(workspace)
-    return {**core, "receipt_sha256": _digest(core)}
+    return {**core, "receipt_sha256": mapping_sha256(core)}
 
 
 def inspect_archive_marker(workspace: str | Path) -> ArchiveInspection:
@@ -166,7 +150,7 @@ def inspect_archive_marker(workspace: str | Path) -> ArchiveInspection:
     if set(value) != required:
         diagnostics.append("ARCHIVE_FIELDS_INVALID")
     core = {key: value[key] for key in required if key != "archive_sha256" and key in value}
-    if value.get("archive_sha256") != _digest(core):
+    if value.get("archive_sha256") != mapping_sha256(core):
         diagnostics.append("ARCHIVE_DIGEST_MISMATCH")
     if value.get("archived") is not True:
         diagnostics.append("ARCHIVE_MARKER_INVALID")
@@ -202,7 +186,7 @@ class CampaignCompletionService:
 
     def closeout(self) -> CompletionInspection:
         expected = _expected_receipt(self.workspace)
-        _atomic_json(self.receipt_path, expected)
+        atomic_write_json(self.receipt_path, expected)
         return self.inspect_receipt()
 
     def inspect_receipt(self) -> CompletionInspection:
@@ -241,11 +225,11 @@ class CampaignCompletionService:
             "archived": True,
             "semantic_success_established": False,
         }
-        marker = {**core, "archive_sha256": _digest(core)}
+        marker = {**core, "archive_sha256": mapping_sha256(core)}
         if self.archive_path.exists():
             existing = _read_json(self.archive_path)
             if existing != marker:
                 raise ValueError("archive marker already exists with different content")
         else:
-            _atomic_json(self.archive_path, marker)
+            atomic_write_json(self.archive_path, marker)
         return inspect_archive_marker(self.workspace)
