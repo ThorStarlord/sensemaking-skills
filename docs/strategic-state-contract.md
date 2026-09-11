@@ -3,7 +3,7 @@
 **Status:** canonical conceptual contract for Level-3 strategic state  
 **Authority:** subordinate to `docs/product-strategy.md` and ratified ADRs  
 **Current operational surface:** `STATUS.md`  
-**Runtime status:** documentation contract only; no new schema or validator is implied
+**Runtime status:** bounded repository-local v0 representation validator implemented by `scripts/validate-strategic-state.py`; no strategic-state schema or semantic strategy validator is implied
 
 ## 1. Purpose
 
@@ -38,7 +38,7 @@ strategic state != product thesis
 strategic frontier != backlog
 active frontier != automatic authorization
 repository-qualified != product-value demonstrated
-implementation complete != integrated main
+strategic-state contract valid != strategy correct
 ```
 
 ## 3. Required reconstruction questions
@@ -63,10 +63,15 @@ A valid Level-3 state surface should let a fresh reader answer these questions:
 If the answers require reconstructing hidden conversation context, the durable
 strategic state is incomplete.
 
+The v0 validator does **not** mechanically answer these semantic reconstruction
+questions. It checks only the stable representation anchors that make the
+human/agent-authored answers addressable.
+
 ## 4. Canonical Level-3 sections
 
 `STATUS.md` should preserve the following conceptual sections, though headings
-may remain optimized for readability.
+may remain optimized for readability except for the stable v0 anchors listed in
+Section 8.
 
 ### 4.1 Product mission and strategy reference
 
@@ -146,7 +151,8 @@ THESIS_REVIEW_REQUIRED
 ```
 
 These are documentation-level vocabulary in this contract. They are not new
-Campaign enums.
+Campaign enums and the v0 validator does not impose them as a closed runtime
+enum.
 
 ### 4.5 Current highest-leverage boundary
 
@@ -355,18 +361,58 @@ When strategy changes at Level 4, Level 3 must reconcile:
 Semantic classifications such as "still relevant" or "contradictory" remain
 agent-authored unless an explicit mechanical rule exists.
 
-## 8. Mechanical future boundary
+The v0 validator does not query GitHub or infer that a PR merge makes a prose
+status stale. External integration/currentness remains an agent reconciliation
+responsibility unless a future explicit machine-addressable contract is
+independently justified.
 
-A future validator may check only mechanically decidable parts of this contract,
-for example:
+## 8. Bounded mechanical validator v0
 
-- required authority surfaces exist;
-- referenced files/ADRs/Campaigns resolve;
-- status metadata is structurally present;
-- declared current strategy pointers are unique and non-broken;
-- historical-in-place documents are not simultaneously declared current.
+The design authority for the validator is
+[`strategic-state-validation-design-preflight.md`](strategic-state-validation-design-preflight.md).
 
-It must not decide:
+Repository implementation:
+
+```text
+scripts/validate-strategic-state.py
+```
+
+The v0 validator checks only:
+
+- required authority surfaces exist:
+  `STATUS.md`, `docs/product-strategy.md`, `docs/strategic-outer-loop.md`,
+  `docs/strategic-state-contract.md`, and `docs/product-thesis-revision.md`;
+- required Level-3 Markdown anchors occur exactly once;
+- the canonical pointers in `### Current product strategy` occur exactly once,
+  name the expected repository-local paths, and resolve;
+- `THESIS_REVIEW_REQUIRED` occurs exactly once in the thesis-review section and
+  uses the literal `YES` or `NO`;
+- normalized numbered/bold Strategic Frontier item identities are unique within
+  the current frontier section.
+
+Stable v0 anchors are:
+
+```text
+## Strategic Repository Evolution state — Level 3
+### Current product strategy
+### Current capability state
+### Material limitations and evidence ceilings
+### Strategic Frontier
+### Current highest-leverage boundary
+### Current decision-changing uncertainty
+### Current warranted repository-level responsibility
+### Authority / owner direction
+### Thesis review state
+## Current next step
+```
+
+The validator emits structured diagnostics and always preserves:
+
+```text
+semantic_truth_established: false
+```
+
+It deliberately does **not** decide:
 
 ```text
 which frontier is highest leverage
@@ -374,14 +420,30 @@ whether strategy is good
 whether a feature should exist
 whether architecture is correct
 whether evidence semantically warrants a responsibility
+whether ACTIVE / COMPLETE / DEFERRED / CANDIDATE is the right disposition
+whether a remote PR/branch is merged or current
 ```
 
-No such validator is authorized merely by this document.
+A strategically questionable statement can therefore be mechanically valid.
+That is intentional.
 
-## 9. Initial implementation rule
+## 9. Implementation and evolution rule
 
-For the current construction tranche:
+Run the current validator directly with:
 
-> Improve durable strategic reconstruction in existing Markdown authority
-> surfaces first. Add new schema/runtime machinery only after a concrete
-> mechanically decidable integrity need appears.
+```bash
+python scripts/validate-strategic-state.py --repo-root .
+python scripts/validate-strategic-state.py --repo-root . --json
+```
+
+Product Validation invokes it in the repository-contract lane and runs its
+negative/rejection suite. It remains repository validation infrastructure, not
+a new shipped `sensemaking-skills strategy ...` CLI family.
+
+Future checks may be added only when they are independently mechanically
+justified. Do not broaden this validator merely because the conceptual Level-3
+contract contains richer semantic fields.
+
+In particular, do not add a new strategic-state schema, remote/GitHub
+currentness query, priority score, frontier router, or responsibility selector
+as an implementation shortcut.

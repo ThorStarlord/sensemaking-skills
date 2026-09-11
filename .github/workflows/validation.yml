@@ -120,6 +120,9 @@ jobs:
       - name: Repository structural validation
         run: python scripts/validate-repo.py
 
+      - name: Strategic state contract validation
+        run: python scripts/validate-strategic-state.py --repo-root .
+
       - name: Canonical Probe Engine gate
         run: |
           python scripts/probe-repo.py --repo-root . --output "$RUNNER_TEMP/probe-report.yaml"
@@ -146,6 +149,7 @@ jobs:
             tests/test_cli.py \
             tests/test_semantic_reasoning_profile.py \
             tests/test_skill_registry_liveness.py \
+            tests/test_strategic_state_validation.py \
             tests/test_semantic_substrate.py \
             tests/test_semantic_reference_audit.py \
             tests/test_semantic_conformance.py \
