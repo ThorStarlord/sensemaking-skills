@@ -8,9 +8,7 @@
 
 ## 1. Purpose and authority
 
-This document is the single current operator-facing runbook for ordinary repository validation, qualification, release-candidate checks, Campaign operation, and human gates.
-
-It is a **navigation and reproduction surface**, not an authority above executable CI.
+This is the single current operator-facing runbook for repository validation, Campaign operation, qualification, and release-candidate checks.
 
 ```text
 this runbook != semantic truth
@@ -19,7 +17,7 @@ this runbook != merge/release authorization
 local reproduction != hosted cross-platform CI proof
 ```
 
-When this runbook and checked-in workflow code disagree, the workflow/code is authority for what the repository currently executes. Reconcile this document rather than using prose to override executable behavior.
+When prose and executable behavior disagree, current checked-in code/workflows govern what the software actually enforces. Reconcile this runbook rather than using prose to override code.
 
 Current CI authorities:
 
@@ -29,20 +27,16 @@ Current CI authorities:
 .github/workflows/release-candidate.yml   Release Candidate Distribution
 ```
 
-Current strategic representation-integrity authorities:
+Current strategic representation guards:
 
 ```text
 scripts/validate-strategic-state.py
 scripts/validate-candidate-directions.py
 ```
 
-The first validates the mechanically ratified Level-3 state shape. The second guards only the explicit non-authority markers of the candidate-directions idea reservoir; it does not rank or promote candidates.
-
-Historical milestone runbooks are retained as milestone evidence only. They are not current operational authorities.
+Neither strategic validator decides strategy quality or priority.
 
 ## 2. Development setup
-
-From a clean source checkout:
 
 ```bash
 python -m venv .venv
@@ -52,24 +46,20 @@ python -m pip install -e . pytest pytest-subtests
 sensemaking-skills --version
 ```
 
-Current package version:
+Current package version: `0.3.0`.
 
-```text
-0.3.0
-```
-
-For retained lab compatibility checks, install lab dependencies separately:
+For retained lab compatibility checks only:
 
 ```bash
 python -m pip install -e . --no-deps
 python -m pip install "click>=8.1.0" "PyYAML>=6.0,<7.0" -r requirements-lab.txt
 ```
 
-Do not add source-only lab dependencies to the shipped core merely to simplify local testing.
+Do not add source-only lab dependencies to shipped core merely to simplify testing.
 
 ## 3. Product Validation
 
-`.github/workflows/validation.yml` is the exact executable authority. The commands below are the closest documented local reproduction of its current categories.
+`.github/workflows/validation.yml` is executable authority. Closest local reproduction follows.
 
 ### 3.1 Product/lab boundary
 
@@ -77,11 +67,9 @@ Do not add source-only lab dependencies to the shipped core merely to simplify l
 python scripts/validate-product-boundary.py
 ```
 
-This protects the shipped-product/lab boundary, release-version authority, installed-wheel ownership, and repository worktree/gitlink constraints.
-
 ### 3.2 Campaign product suite
 
-Run on Python 3.11 and 3.12 when reproducing the CI matrix:
+Run on Python 3.11 and 3.12 when reproducing the matrix:
 
 ```bash
 python -m pytest \
@@ -97,7 +85,7 @@ python -m pytest \
   -q
 ```
 
-The `test_campaign_*.py` family now includes repository/hermetic qualification for Campaign Preflight v0, Resume Capsule v1, Uncertainty History v0, Campaign Operability v1, and shared provenance-graph construction.
+The `test_campaign_*.py` family includes repository/hermetic coverage for preflight, Resume Capsule v1/v2, uncertainty history/relations, operability, bundle inspection, inventory, strategy ergonomics, and multi-target identity/drift behavior.
 
 ### 3.3 Installed-core-wheel regressions
 
@@ -109,11 +97,7 @@ python -m pytest tests/campaign_validation/test_installed_wheel_p11.py -q -rs
 python -m pytest tests/campaign_validation/test_installed_wheel_setup_skills.py -q -rs
 ```
 
-Installed-wheel tests belong to Product Validation, not the retained research lab.
-
 ### 3.4 Repository, strategic-state, candidate, and Skill contracts
-
-Run the current deterministic repository-level gates:
 
 ```bash
 python scripts/validate-repo.py
@@ -133,7 +117,7 @@ sensemaking-skills semantic conformance \
 
 Use an OS-appropriate temporary path instead of `/tmp` on Windows.
 
-For read-only Skill Manifest / Domain Pack discovery, use the catalog projection rather than reparsing YAML manually:
+Read-only manifest/Domain Pack discovery:
 
 ```bash
 sensemaking-skills semantic catalog \
@@ -143,16 +127,9 @@ sensemaking-skills semantic catalog \
   --json
 ```
 
-Optional exact discovery filters:
+`semantic catalog` does not replace conformance and does not select/rank a Skill.
 
-```text
---skill-id <skill-id>
---domain-id <domain-id>
-```
-
-`semantic catalog` does not replace `semantic conformance` and does not select or rank a Skill.
-
-Then run the current stable repository assertion set:
+Stable repository assertion set:
 
 ```bash
 python -m pytest \
@@ -176,20 +153,17 @@ python -m pytest \
   -q
 ```
 
-Important claim limits:
+Claim limits:
 
 ```text
 strategic-state validator PASS != strategy correct
 candidate-directions validator PASS != candidate prioritized
 semantic conformance PASS != Skill should run
 semantic catalog hit != Skill selected
-reference audit PASS != semantic truth
 repository tests PASS != native-harness qualification
 ```
 
 ### 3.5 Filesystem-security contracts
-
-Linux/macOS-style local reproduction:
 
 ```bash
 python -m pytest tests/test_gate_a_authorization_consumer.py -q
@@ -197,59 +171,78 @@ python -m pytest tests/test_gate_a_path_canonicalization.py -q
 python -m pytest tests/test_gate_a_physical_containment.py -q -rs
 ```
 
-The same contract family runs on a Windows CI runner. A local Unix run does not establish the hosted Windows result.
+The same family runs on hosted Windows. Local Unix proof is not hosted Windows proof.
 
 ### 3.6 Clean-tree rule
-
-After validation:
 
 ```bash
 git status --porcelain
 ```
 
-Expected: validation did not create tracked repository changes.
+Expected: validation created no tracked repository changes.
 
-## 4. Strategic Repository Evolution integrity
+## 4. Strategic Repository Evolution integrity and ergonomics
 
-`STATUS.md` is the current Level-3 operational projection. `docs/product-strategy.md` remains Level-4 product-thesis authority. `docs/strategic-candidate-directions.md` is non-authoritative idea memory.
+`STATUS.md` is current Level-3 state. `docs/product-strategy.md` is Level-4 product-thesis authority. `docs/strategic-candidate-directions.md` is non-authoritative idea memory.
 
-Validate the mechanically ratified Level-3 representation contract with:
+Mechanical representation validation:
 
 ```bash
 python scripts/validate-strategic-state.py --repo-root .
-```
-
-Validate only the candidate reservoir's explicit non-authority/navigation markers with:
-
-```bash
 python scripts/validate-candidate-directions.py --repo-root .
 ```
 
-These validators do **not** determine:
+Read current Level-3 representation without ranking it:
 
-- whether the strategy is good;
-- whether the active frontier is highest leverage;
-- whether a strategic disposition is semantically correct;
-- whether a candidate is valuable or prioritized;
-- whether a PR/issue is current in GitHub;
-- what repository responsibility should be selected next.
+```bash
+sensemaking-skills campaign strategy inspect \
+  --repo-root /path/to/repository \
+  --json
+```
 
-Outer Loop v0 remains agent-controlled. Explicit owner direction may authorize bounded repository-only/hermetic work without a new experiment, but it does not create empirical evidence.
+Compare two explicit status representations without deciding which is better:
 
-See:
+```bash
+sensemaking-skills campaign strategy diff \
+  --from-status /path/to/before-STATUS.md \
+  --to-status /path/to/after-STATUS.md \
+  --json
+```
+
+After an agent/owner has **already** selected an exact current frontier item and responsibility, transport that explicit decision into Campaign v2:
+
+```bash
+sensemaking-skills campaign strategy handoff \
+  --repo-root /path/to/repository \
+  --workspace /path/to/campaigns/CMP-0002 \
+  --campaign-id CMP-0002 \
+  --mission "Execute the explicitly selected repository responsibility" \
+  --frontier-item "<exact current Strategic Frontier item>" \
+  --responsibility-id R-42 \
+  --responsibility-type repository_diagnosis \
+  --responsibility-statement "<explicit statement>" \
+  --decision-blocked "<explicit blocked decision>" \
+  --scope repository \
+  --authority authorized_autonomously \
+  --success-condition "<explicit success condition>" \
+  --target-repo /path/to/target-repository \
+  --json
+```
+
+The command verifies occurrence of the supplied frontier identity and records the exact source `STATUS.md` SHA-256. It does not select frontier/responsibility/authority.
 
 ```text
-docs/strategic-outer-loop.md
-docs/strategic-state-contract.md
-docs/product-thesis-revision.md
-docs/strategic-candidate-directions.md
+strategy inspect != correct strategy
+strategy diff != better strategy
+frontier membership != warranted responsibility
+strategy handoff != responsibility selection
 ```
 
 ## 5. Campaign operating flow
 
-### 5.1 Initialize a target-bound Campaign
+### 5.1 Initialize and validate
 
-The Campaign workspace must live outside its target repository.
+A target-bound Campaign workspace must be outside the target repository tree.
 
 ```bash
 sensemaking-skills campaign init \
@@ -257,18 +250,12 @@ sensemaking-skills campaign init \
   --campaign-id CMP-0001 \
   --mission "Determine and execute the next warranted repository step" \
   --target-repo /path/to/target-repository
-```
 
-Then inspect/validate reconstruction:
-
-```bash
 sensemaking-skills campaign status --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign validate --workspace /path/to/campaigns/CMP-0001
 ```
 
-Target inspection records mechanical identity/current bytes. It does not diagnose the repository or select a responsibility.
-
-### 5.2 Admit validated evidence
+### 5.2 Admit evidence
 
 ```bash
 sensemaking-skills campaign ingest \
@@ -276,40 +263,41 @@ sensemaking-skills campaign ingest \
   --artifact /path/to/repository_sensemaking_brief.md
 ```
 
-Admission/validator success does not itself authorize a Campaign transition.
+Admission/validator success is not transition authorization.
 
-### 5.3 Preflight, observe, reconstruct, and diagnose
-
-Run a bounded mechanical preflight:
+### 5.3 Preflight, observability, and diagnostics
 
 ```bash
-sensemaking-skills campaign preflight \
-  --workspace /path/to/campaigns/CMP-0001
-```
-
-If the active agent has already supplied a responsibility classification, preflight may also enumerate unranked compatible capabilities:
-
-```bash
-sensemaking-skills campaign preflight \
-  --workspace /path/to/campaigns/CMP-0001 \
-  --responsibility-type repository_diagnosis
-```
-
-`preflight PASS != should proceed`.
-
-Inspect current observability/reference state:
-
-```bash
+sensemaking-skills campaign preflight --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign inspect --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign semantic-state --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign explain --workspace /path/to/campaigns/CMP-0001 --ref <exact-ref>
 sensemaking-skills campaign graph --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign graph-integrity --workspace /path/to/campaigns/CMP-0001
+sensemaking-skills campaign doctor --workspace /path/to/campaigns/CMP-0001 --json
 ```
 
-`campaign graph` and `campaign graph-integrity` consume the same shared provenance-graph service. Graph validity establishes recorded structural integrity, not semantic causality.
+When an explicit responsibility classification is already known:
 
-For fresh-context reconstruction:
+```bash
+sensemaking-skills campaign capability-context \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --responsibility-type repository_diagnosis \
+  --json
+```
+
+Preflight can use the same explicit classification via `--responsibility-type`. When a multi-target companion exists, preflight also verifies every declared target's current identity/snapshot.
+
+```text
+preflight PASS != should proceed
+capability compatibility != capability selection
+doctor finding != repair decision
+graph integrity != semantic causality
+```
+
+### 5.4 Resume Capsule v1 and v2
+
+Backward-compatible v1:
 
 ```bash
 sensemaking-skills campaign resume-context \
@@ -323,31 +311,37 @@ sensemaking-skills campaign resume-context \
   --json
 ```
 
-The compact Resume Capsule is a deterministic projection, not LLM summarization or a next-action recommendation.
-
-When a preflight failure needs a mechanical diagnostic path:
+Progressive-disclosure v2:
 
 ```bash
-sensemaking-skills campaign doctor \
+sensemaking-skills campaign resume-profile \
   --workspace /path/to/campaigns/CMP-0001 \
+  --profile minimal \
+  --json
+
+sensemaking-skills campaign resume-profile \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --profile working \
+  --max-items 10 \
+  --include-preflight \
+  --json
+
+sensemaking-skills campaign resume-profile \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --profile audit \
   --json
 ```
 
-Doctor may identify which inspection surface exposes the failed invariant. It does not choose or perform a semantic repair.
-
-B7 reference audit distinctions still apply:
+`--max-items` is deterministic tail-preserving bounding with omission counts.
 
 ```text
-resolved != current
-not_addressable != invalid
-reference audit PASS != semantic support
+progressive disclosure != semantic summarization
+bounded output != evidence ranking
 ```
 
-### 5.4 Preserve uncertainty lifecycle history
+### 5.5 Uncertainty lifecycle and explicit relationships
 
-`CampaignState.active_uncertainty` remains current authority for the one active uncertainty. The optional append-only history companion preserves agent-authored lifecycle observations without selecting what should become active.
-
-Record an event after the agent has made the semantic lifecycle judgment:
+Lifecycle history:
 
 ```bash
 sensemaking-skills campaign uncertainty-record \
@@ -355,28 +349,134 @@ sensemaking-skills campaign uncertainty-record \
   --event-id UE-12 \
   --uncertainty-id U-7 \
   --status resolved \
-  --transition-id T-21 \
-  --evidence-ref evidence/decision-record.md
-```
+  --transition-id T-21
 
-Inspect/validate the companion:
-
-```bash
 sensemaking-skills campaign uncertainty-history \
   --workspace /path/to/campaigns/CMP-0001 \
   --json
 ```
 
-Supported recorded lifecycle labels are `active`, `resolved`, `deferred`, `superseded`, and `abandoned`.
+Explicit relations:
 
-```text
-history valid != lifecycle judgment semantically correct
-history latest status != current active-uncertainty authority
+```bash
+sensemaking-skills campaign uncertainty-relate \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --relation-id UR-12 \
+  --uncertainty-id U-7 \
+  --relation depends_on \
+  --target U-8 \
+  --json
+
+sensemaking-skills campaign uncertainty-show \
+  --workspace /path/to/campaigns/CMP-0001 \
+  U-7 \
+  --json
+
+sensemaking-skills campaign uncertainty-graph \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --format json
 ```
 
-### 5.5 Render provenance locally
+Supported relation classes are explicit `depends_on`, `blocks_decision`, `introduced_by_transition`, `resolved_by_transition`, and `supersedes` records.
 
-For manual inclusion in an engineering review/PR description, render local provenance without calling GitHub:
+```text
+CampaignState.active_uncertainty = current authority
+history/relations = authored durable companions
+uncertainty graph != uncertainty ranking
+```
+
+### 5.6 Bundle transport and pre-import inspection
+
+Existing transport:
+
+```bash
+sensemaking-skills campaign bundle-export --workspace /path/to/campaigns/CMP-0001 --output /tmp/CMP-0001.zip
+sensemaking-skills campaign bundle-verify --bundle /tmp/CMP-0001.zip --json
+sensemaking-skills campaign bundle-import --bundle /tmp/CMP-0001.zip --workspace /path/to/imported/CMP-0001
+```
+
+Inspect before durable import:
+
+```bash
+sensemaking-skills campaign bundle-inspect --bundle /tmp/CMP-0001.zip --json
+sensemaking-skills campaign bundle-resume-context --bundle /tmp/CMP-0001.zip --profile working --json
+sensemaking-skills campaign bundle-graph --bundle /tmp/CMP-0001.zip --json
+```
+
+The projection uses an ephemeral internal workspace that is discarded after inspection.
+
+```text
+bundle verified != import authorized
+bundle projection != durable import
+```
+
+### 5.7 Campaign inventory
+
+```bash
+sensemaking-skills campaign inventory \
+  --root /path/to/campaigns \
+  --json
+```
+
+Inventory enumerates direct child Campaign workspaces, state, target identity, active responsibility, last transition, and mechanical integrity.
+
+```text
+inventory != prioritization
+```
+
+### 5.8 Multi-repository target sets
+
+Multi-repository responsibilities use an additive companion; Campaign schema remains v2 and the existing primary `target_snapshot` semantics remain unchanged.
+
+Bind explicitly selected repositories:
+
+```bash
+sensemaking-skills campaign multi-target add \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --alias frontend \
+  --target-repo /path/to/frontend \
+  --role "web client" \
+  --authority authorized_autonomously \
+  --json
+
+sensemaking-skills campaign multi-target add \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --alias backend \
+  --target-repo /path/to/backend \
+  --role "service API" \
+  --authority authorized_autonomously \
+  --json
+```
+
+Inspect and verify:
+
+```bash
+sensemaking-skills campaign multi-target inspect --workspace /path/to/campaigns/CMP-0001 --json
+sensemaking-skills campaign multi-target verify --workspace /path/to/campaigns/CMP-0001 --json
+sensemaking-skills campaign multi-target verify --workspace /path/to/campaigns/CMP-0001 --alias frontend --json
+```
+
+After authorized work changes one target and repository identity is still the same, explicitly record its new snapshot:
+
+```bash
+sensemaking-skills campaign multi-target refresh \
+  --workspace /path/to/campaigns/CMP-0001 \
+  --alias frontend \
+  --json
+```
+
+`multi-targets.json` carries target-set identity; `multi-target-history.jsonl` records refresh edges.
+
+```text
+repository supplied != repository discovered by tool
+multi-target verified != semantic correctness
+same Campaign != atomic deployment unit
+refresh != semantic approval
+```
+
+True cross-repository commit/deployment/rollback atomicity is not part of v1.
+
+### 5.9 Local provenance
 
 ```bash
 sensemaking-skills campaign provenance \
@@ -384,20 +484,18 @@ sensemaking-skills campaign provenance \
   --format markdown
 ```
 
-JSON is also available via `--format json`.
-
-The command explicitly reports that the projection has not been published.
+JSON is available with `--format json`.
 
 ```text
 generate provenance != publish provenance
 published provenance != semantic correctness
 ```
 
-Actual GitHub mutation remains a separate authority boundary.
+GitHub mutation remains separately authorized.
 
-### 5.6 Record semantic decisions explicitly
+### 5.10 Semantic transitions, handoff, and resume
 
-Use the Campaign lifecycle interfaces only after the active agent/human has made the semantic decision:
+Only after the active agent/human has made the semantic decision:
 
 ```bash
 sensemaking-skills campaign advance --help
@@ -405,18 +503,16 @@ sensemaking-skills campaign defer --help
 sensemaking-skills campaign close --help
 ```
 
-Target drift, validator PASS, capability availability, preflight status, doctor output, or history state never creates a semantic transition automatically.
-
-### 5.7 Handoff and resume
-
-After the latest durable transition and while the target is stable:
+Then produce/reconsume durable handoff as appropriate:
 
 ```bash
 sensemaking-skills campaign handoff --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign resume --workspace /path/to/campaigns/CMP-0001
 ```
 
-For deeper Campaign contracts see:
+Validators, drift checks, capability availability, strategy representation, inventory, and graph state never create a semantic transition automatically.
+
+Deeper contracts:
 
 ```text
 docs/sensemaking-campaign.md
@@ -428,11 +524,14 @@ docs/resume-capsule-v1.md
 docs/uncertainty-history.md
 docs/campaign-operability-v1.md
 docs/extensibility-and-simplification-v1.md
+docs/campaign-usability-composition-v1.md
+docs/strategic-outer-loop-ergonomics-v1.md
+docs/multi-repository-campaigns-v1.md
 ```
 
 ## 6. Retained Lab Validation
 
-`.github/workflows/lab-validation.yml` owns retained source-only research/lab compatibility claims and is path-filtered for PR/push events.
+`.github/workflows/lab-validation.yml` owns retained source-only research/lab compatibility claims.
 
 Closest local Linux/macOS reproduction:
 
@@ -458,15 +557,11 @@ python -m pytest tests/campaign_accounting/test_artifact_path_confinement.py -q
 python -m pytest tests/campaign_accounting/test_artifact_path_confinement_windows.py -q
 ```
 
-Running the retained compatibility suite does not create a new operative experiment. The workflow mechanically asserts that its tests do not create operative experiment state.
-
-Lab qualification does not substitute for native-harness product evidence.
+Running retained compatibility tests does not create a new operative experiment; the workflow explicitly checks that it does not create operative experiment state. Lab qualification is not native-harness evidence.
 
 ## 7. Release Candidate Distribution
 
-`.github/workflows/release-candidate.yml` is the exact-head distribution authority for v0.3.0.
-
-### 7.1 Local baseline contracts
+`.github/workflows/release-candidate.yml` is exact-head distribution authority for v0.3.0.
 
 ```bash
 python scripts/validate-product-boundary.py
@@ -475,50 +570,27 @@ python -m pytest \
   tests/campaign_validation/test_campaign_schema_evolution.py \
   tests/integration/test_external_golden_path_qualification.py \
   -q
-```
 
-### 7.2 Build and metadata checks
-
-```bash
 python -m pip install -e . pytest pytest-subtests build twine
 rm -rf build dist
 python -m build
 python -m twine check dist/*
 ```
 
-Current v0.3.0 artifact identities:
+Current artifacts:
 
 ```text
 sensemaking_skills-0.3.0-py3-none-any.whl
 sensemaking_skills-0.3.0.tar.gz
 ```
 
-The hosted workflow additionally proves fresh installation from both wheel and sdist and uploads the exact-head candidate artifacts.
-
-### 7.3 Exact-head rule
-
-Qualification applies only to the exact candidate head that passed it.
-
-If the head moves:
-
-1. treat older green runs as historical evidence;
-2. rerun qualification against the new exact head;
-3. do not borrow stale CI success for merge or publication claims.
+Qualification applies only to the exact candidate head that passed. If the head changes, rerun rather than borrowing stale green evidence.
 
 ## 8. Human/owner gates
 
-Deterministic validation cannot decide whether work is strategically warranted.
+Owner/human authority remains required for matters reserved by current contracts, including major Level-4 thesis changes, public claim expansion, live/destructive external operations, and empirical/native-harness work when those stronger claims are pursued.
 
-Owner/human authority remains required where the repository contract reserves it, including:
-
-- major Level-4 product-thesis changes;
-- expansion of product/public claim ceilings;
-- explicit merge/release/publication decisions when not already delegated;
-- acceptance of external/subjective production QA;
-- real credentials or destructive/live external actions;
-- resumption of empirical/native-harness experiments when the owner chooses to pursue claims that require them.
-
-Explicit owner direction may authorize bounded repository-only/hermetic construction without requiring a new experiment as a universal prerequisite.
+Explicit owner direction may authorize bounded repository-only/hermetic construction without a new experiment as a universal prerequisite.
 
 ```text
 owner direction to build != empirical product-value proof
@@ -527,10 +599,6 @@ validator passed != authorization beyond its declared scope
 
 ## 9. Native-harness / empirical evidence ceiling
 
-Repository qualification, Campaign admission, Domain Pack membership, installation, preflight/doctor output, local provenance, and connector-side reasoning do not prove native harness discovery/invocation or product-value superiority.
-
-Current distinction:
-
 ```text
 repository qualified
 != native-harness qualified
@@ -538,38 +606,29 @@ repository qualified
 != promoted / product-value established
 ```
 
-Real-harness PASS claims still require the canonical real external attempt protocol and its required provenance.
-
-Current owner direction defers new empirical/native-harness experiments and explicitly does **not** make them a prerequisite for bounded repository-only/hermetic construction. This changes the construction gate, not the empirical claim ceiling.
+Real-harness PASS claims still require their canonical external-attempt evidence. Current owner direction defers such experiments; repository/hermetic development may continue without pretending those claims are proven.
 
 ## 10. Historical milestone runbooks
 
-The following documents are retained as historical milestone records, not current operational authorities:
+These are retained as historical evidence, **not current operational authority**:
 
 ```text
 docs/milestone-runbook.md
 docs/post-milestone-handoff-runbook.md
 ```
 
-They preserve package ledgers, exact-head evidence, and milestone-specific interpretation. Current operators should begin here instead:
-
-```text
-docs/operations-runbook.md
-```
-
-Git history preserves the former detailed command reproductions when historical reconstruction requires them.
+Current operators start with `docs/operations-runbook.md`.
 
 ## 11. Normal repository-development entry sequence
-
-For consequential repository work:
 
 ```text
 1. docs/product-strategy.md          — Level 4: what/why
 2. STATUS.md                         — Level 3: current state/frontier
 3. relevant ADRs/contracts           — ratified boundaries
-4. active Campaign/work package      — Level 2 responsibility
-5. branch/code/tests                 — Level 1 execution
-6. this operations runbook           — current mechanical qualification path
+4. explicit strategy handoff if used — transport, not selection
+5. active Campaign/work package      — Level 2 responsibility
+6. branch/code/tests                 — Level 1 execution
+7. this operations runbook           — current mechanical qualification path
 ```
 
-After integration, reconcile Level-3 state and reassess. Do not automatically select another package merely because one appears next in an old phase, milestone document, or candidate reservoir.
+After integration, reconcile Level-3 state and reassess. Do not automatically select another package merely because one appears next in an old phase, historical milestone, or candidate reservoir.
