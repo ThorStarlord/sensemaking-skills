@@ -12,6 +12,7 @@ from .campaign_handoff_cli import register_campaign_handoff_commands
 from .campaign_lineage_cli import register_campaign_lineage_commands
 from .campaign_productization_cli import register_campaign_productization_commands
 from .campaign_reconciliation_cli import register_campaign_reconciliation_commands
+from .campaign_resume_v2_cli import register_campaign_resume_v2_commands
 from .campaign_semantics import ContractError
 from .campaign_semantics.registry import RegisteredCapability
 from .campaign_usability_cli import register_campaign_usability_commands
@@ -156,4 +157,5 @@ def register_campaign_capability_commands(
     register_campaign_lineage_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_reconciliation_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_productization_commands(campaign, emit_error=emit_error, json_echo=json_echo)
+    register_campaign_resume_v2_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_usability_commands(campaign, emit_error=emit_error, json_echo=json_echo)
