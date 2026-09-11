@@ -6,7 +6,7 @@
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
 **Version:** 0.3.0  
-**Status:** Beta; post-milestone v0.3 baseline  
+**Status:** Beta; Outer Loop v0 operational baseline  
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
 
@@ -48,6 +48,8 @@ The current authority surfaces are:
 - ordinary branch/task/test state — Level-1 execution evidence.
 
 The Strategic Frontier is decision-relevant possibility state, **not a backlog**. Selecting a strategic boundary does not automatically authorize implementation. Level 3 may escalate a thesis-level contradiction to Level 4, but it does not silently rewrite the product thesis.
+
+**Outer Loop v0 is now the frozen operational baseline.** Future outer-loop machinery is reopened only by concrete repository/product pressure or explicit owner direction; the existence of conceptual later steps is not a standing implementation roadmap.
 
 ## What v0.3 ships
 
@@ -427,7 +429,7 @@ Read the repository from higher-scope authority into bounded execution:
 - `docs/product-thesis-revision.md` — Level-4 strategy revision and owner-ratification contract.
 - `docs/product-operating-model.md` — value stream, responsibility ownership, governance, delegation, and escalation.
 - `docs/agent-native-operating-workflow.md` — Level-2 agent-native responsibility/Campaign operating map.
-- `docs/milestone-runbook.md` — operating and qualification runbook.
+- `docs/operations-runbook.md` — current operator-facing operations and qualification runbook; checked-in workflows remain executable authority.
 - `docs/sensemaking-campaign.md` — canonical Campaign product model.
 - `docs/campaign-target-snapshot.md` — target provenance and drift contract.
 - `docs/campaign-observability-and-portability.md` — observability, semantic companion, B7 reference audit, Resume Capsule, replay/graph, and bundles.
@@ -442,10 +444,13 @@ Read the repository from higher-scope authority into bounded execution:
 - `docs/product-management/qualification-levels.md` — PM qualification policy.
 - `docs/product-lab-boundary.md` — shipped product vs retained lab boundary.
 - `docs/external-golden-path-verifier.md` — real-harness evidence verification protocol.
+- `docs/strategic-repository-evolution-audit-2026-09-11.md` — current Level-3 repository-wide audit and Outer Loop v0 freeze decision.
+
+Historical milestone runbooks are retained for reconstruction only and are not current operational authorities.
 
 ## Development
 
-For locally reproducible Product Validation, Lab Validation, release-candidate, repository-probe, installed-wheel, and filesystem-security commands, use `docs/milestone-runbook.md`. The checked-in workflows remain executable CI authority:
+For the current locally reproducible Product Validation, Lab Validation, release-candidate, repository-contract, installed-wheel, filesystem-security, Campaign, and strategic-state commands, use `docs/operations-runbook.md`. The checked-in workflows remain executable CI authority:
 
 ```text
 .github/workflows/validation.yml
