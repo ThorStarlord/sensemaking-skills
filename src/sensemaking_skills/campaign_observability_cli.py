@@ -16,6 +16,7 @@ import click
 from .campaign_semantics import ContractError, canonicalize, target_snapshot_sha256
 from .campaigns import CampaignService, CampaignWorkspaceError
 from .campaigns.bundle import CampaignBundleService
+from .campaigns.resume_capsule import build_resume_capsule
 from .semantic_architecture import (
     IntegrityEffect,
     SemanticStateEntry,
@@ -339,35 +340,26 @@ def register_campaign_observability_commands(
     @campaign_group.command(name="resume-context")
     @click.option("--workspace", required=True, type=click.Path(path_type=Path))
     @click.option("--recent-transitions", type=click.IntRange(0, 50), default=5, show_default=True)
+    @click.option("--compact", is_flag=True, help="Emit a smaller deterministic projection with counts and stable identifiers")
+    @click.option("--include-preflight", is_flag=True, help="Include read-only Campaign Preflight v0 integrity status")
     @click.option("--json", "output_json", is_flag=True)
-    def campaign_resume_context(workspace: Path, recent_transitions: int, output_json: bool) -> None:
-        """Emit a deterministic fresh-context capsule from durable Campaign state."""
+    def campaign_resume_context(
+        workspace: Path,
+        recent_transitions: int,
+        compact: bool,
+        include_preflight: bool,
+        output_json: bool,
+    ) -> None:
+        """Emit Resume Capsule v1 from durable Campaign state."""
         snapshot = resume(workspace, output_json)
-        state = snapshot.state
-        recent = snapshot.transitions[-recent_transitions:] if recent_transitions else ()
-        payload = {
-            "ok": True,
-            "code": "CAMPAIGN_RESUME_CONTEXT",
-            "campaign_id": state.campaign_id,
-            "mission": state.mission,
-            "status": state.status,
-            "current_state": state.current_state,
-            "target_snapshot": canonicalize(state.target_snapshot) if state.target_snapshot is not None else None,
-            "active_responsibility": canonicalize(state.active_responsibility) if state.active_responsibility is not None else None,
-            "active_uncertainty": canonicalize(state.active_uncertainty) if state.active_uncertainty is not None else None,
-            "authority": _enum(state.authority),
-            "terminal_state": _enum(state.terminal_state),
-            "established_facts": list(state.established_facts),
-            "resolved_questions": list(state.resolved_questions),
-            "deferred_responsibilities": [canonicalize(item) for item in state.deferred_responsibilities],
-            "external_boundaries": [canonicalize(item) for item in state.external_boundaries],
-            "evidence_refs": list(snapshot.evidence_refs),
-            "recent_transitions": [canonicalize(item) for item in recent],
-            "handoff": canonicalize(snapshot.handoff) if snapshot.handoff is not None else None,
-            "semantic_companion": _semantic_summary(workspace),
-            "semantic_recommendation_included": False,
-            "explicit_limit": "This capsule reconstructs durable declared state and optional companion semantic refs; it does not decide the next warranted action.",
-        }
+        payload = build_resume_capsule(
+            workspace=workspace,
+            snapshot=snapshot,
+            semantic_summary=_semantic_summary(workspace),
+            recent_transitions=recent_transitions,
+            compact=compact,
+            include_preflight=include_preflight,
+        )
         if output_json:
             json_echo(payload)
         else:
