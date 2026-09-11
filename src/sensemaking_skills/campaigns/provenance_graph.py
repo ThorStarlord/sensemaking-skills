@@ -63,6 +63,10 @@ class CampaignProvenanceGraphService:
         def add_node(identifier: str, kind: str) -> None:
             existing = nodes.get(identifier)
             if existing is not None and existing["kind"] != kind:
+                compatible = {existing["kind"], kind} == {"evidence", "artifact_ref"}
+                if compatible:
+                    existing["kind"] = "artifact_evidence"
+                    return
                 diagnostics.append(
                     GraphIntegrityDiagnostic(
                         "GRAPH_NODE_ID_COLLISION",
