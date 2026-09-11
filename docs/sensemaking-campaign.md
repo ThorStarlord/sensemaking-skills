@@ -1,6 +1,6 @@
 # The Sensemaking Campaign
 
-**Status:** Canonical product model  
+**Status:** Canonical Level-2 durable product model  
 **Scope:** Durable product definition; version-independent  
 **Current implementation roadmap:** [`productization-v0.3.md`](productization-v0.3.md)
 
@@ -10,15 +10,17 @@ A **Sensemaking Campaign** is a durable engineering decision process carried acr
 
 It exists to make a long-running engineering effort reconstructible from repository evidence, explicit decisions, authority, validated artifacts, and append-preserving history rather than from hidden conversation memory.
 
-The Campaign is the central product abstraction around which Sensemaking Skills is being productized.
+The Campaign is the central **durable Level-2 abstraction** around which Sensemaking Skills' persistence, provenance, handoff, and reconstruction machinery is productized. It is **not** the universal entry point for every Sensemaking task.
 
-It does not replace the active coding agent's judgment. It makes that judgment explicit, bounded, durable, inspectable, and recoverable.
+The active agent can apply Sensemaking's control doctrine, use a diagnostic Skill such as `repo-sensemaker`, or perform narrow bounded work without creating Campaign state when continuation complexity does not warrant it. Campaign primarily earns its cost when repository-specific decision context must survive time, sessions, agents, machines, or handoffs.
+
+It does not replace the active coding agent's judgment. It makes that judgment explicit, bounded, durable, inspectable, and recoverable when durability is useful.
 
 ## 2. Product thesis
 
 Sensemaking Skills is an **agent-native engineering sensemaking and control layer for software-engineering agents**.
 
-The active coding agent owns semantic control. Sensemaking provides the durable and deterministic substrate around that control loop:
+The active coding agent owns semantic control. When durable Level-2 state is warranted, Sensemaking provides a deterministic substrate around that control loop:
 
 - repository evidence;
 - typed campaign state;
@@ -31,7 +33,7 @@ The active coding agent owns semantic control. Sensemaking provides the durable 
 - reconciliation and repair verification;
 - durable handoff across fresh agent contexts.
 
-The product therefore aims to make an existing coding agent reason and continue work more reliably. It does **not** aim to replace that agent with a centralized autonomous orchestrator.
+The product therefore aims to make an existing coding agent reason and continue work more reliably. It does **not** aim to replace that agent with a centralized autonomous orchestrator, and it does not require Campaign state merely because Sensemaking is being used.
 
 ## 3. Campaign definition
 
@@ -52,23 +54,43 @@ Campaign
 └── Terminal / continuation state
 ```
 
-The exact persisted representation may evolve, but these concepts define the product-level object being carried across sessions.
+The exact persisted representation may evolve, but these concepts define the durable product-level object being carried across sessions.
 
-## 4. Canonical lifecycle
+## 4. When Campaign is warranted and its canonical lifecycle
 
-The normal product lifecycle is:
+Campaign use is a semantic agent decision, not a size threshold or automatic mode. The Persona & Adaptive Guidance Model v0 distinguishes:
 
 ```text
-user goal
-→ campaign initialization
-→ repository sensemaking
+decision complexity
+-> may warrant stronger repository sensemaking
+
+consequentiality
+-> may warrant stronger evidence / validation / reconciliation
+
+continuation complexity
+-> primarily determines the value of durable Campaign state
+```
+
+Therefore:
+
+```text
+repository sensemaking warranted != Campaign required
+high consequentiality != Campaign required
+large task != Campaign required
+```
+
+When the agent decides durable Campaign state is warranted, the normal Campaign lifecycle is:
+
+```text
+Campaign warranted / initialized
+→ repository sensemaking when needed
 → consequential uncertainty identified
 → agent determines warranted responsibility
 → agent inspects bounded available capabilities
 → authority is made explicit
 → bounded work is performed
 → artifact / evidence is produced
-→ deterministic validation / reconciliation runs
+→ deterministic validation / reconciliation runs when warranted
 → agent authors a campaign decision
 → durable transition is recorded
 → continue / hand off / stop
@@ -82,6 +104,7 @@ The permanent control boundary is:
 
 ```text
 Agent:
+  Is Campaign durability useful for this work?
   What does the evidence mean?
   Which uncertainty is consequential?
   Which responsibility is warranted?
@@ -104,6 +127,7 @@ validator passed != semantic conclusion is true
 capability exists != capability should be selected
 capability available != execution authorized
 recommendation != execution authority
+Campaign available != Campaign warranted
 ```
 
 And critically:
@@ -227,7 +251,7 @@ What later artifact superseded or reconciled it?
 
 ## 9. Handoff and resumability
 
-Durable handoff is a defining product property, not merely a convenience command.
+Durable handoff is a defining Campaign property, not merely a convenience command.
 
 A fresh coding-agent context should be able to reconstruct the active campaign from:
 
@@ -249,14 +273,14 @@ Agent A works
 → Agent A context ends
 → Agent B resumes from the campaign
 → reconstruction validates
-→ Agent B continues from the same explicit decision state
+→ agent B continues from the same explicit decision state
 ```
 
 This is especially important for long-running engineering work where agent contexts are disposable but the engineering decision process must not be.
 
 ## 10. Product architecture
 
-The product architecture is intentionally agent-native:
+The product architecture is intentionally agent-native and progressively durable:
 
 ```text
                     USER
@@ -268,52 +292,57 @@ The product architecture is intentionally agent-native:
           ┌───────────┴───────────┐
           │                       │
           ▼                       ▼
-  Repository sensemaking     Ordinary work
+  Repository sensemaking     Ordinary bounded work
+   when decision-complex        when locally clear
           │                       │
           └───────────┬───────────┘
                       ▼
-             explicit decision /
-             validated artifact
+          explicit responsibility / evidence
                       │
-                      ▼
-               CampaignService
-                      │
-                      ▼
-                CampaignStore
-                      │
-                      ▼
-             campaign_semantics
-                      │
-                      ▼
-              durable workspace
+             agent asks whether durable
+             continuation is warranted
                       │
           ┌───────────┴───────────┐
+          │                       │
           ▼                       ▼
-       continue               terminal
-          │
-        handoff
+     no Campaign needed      Campaign warranted
+          │                       │
+          │                       ▼
+          │                CampaignService
+          │                       │
+          │                       ▼
+          │                 CampaignStore
+          │                       │
+          │                       ▼
+          │                campaign_semantics
+          │                       │
+          └───────────┬───────────┘
+                      ▼
+             continue / handoff / stop
 ```
 
-Skills and harness integrations sit around this core as bounded capabilities. They do not move semantic control into the deterministic campaign runtime.
+Skills and harness integrations sit around this control layer as bounded capabilities. They do not move semantic control into the deterministic campaign runtime.
 
 ## 11. Golden-path product experience
 
-The Campaign product should eventually support a coherent user journey resembling:
+When Campaign durability is warranted, the Campaign product should support a coherent journey resembling:
 
 ```text
 campaign init
-→ agent performs repository sensemaking
-→ campaign ingest <validated artifact>
+→ agent performs repository sensemaking when needed
+→ campaign ingest <validated artifact> when useful
 → agent records warranted responsibility + authority
 → agent selects/uses a bounded capability
 → work evidence is recorded
 → agent authors advance / defer / close decision
 → campaign transition is committed
-→ campaign handoff
+→ campaign handoff when continuation crosses context
 → fresh-agent resume
 ```
 
-Human-readable and machine-readable surfaces should expose the same durable state without forcing an agent to scrape prose or infer hidden state from filenames.
+For ordinary Sensemaking before this point, see `../GETTING_STARTED.md` and `../skills/using-sensemaking/SKILL.md`. Campaign Golden Paths compose existing durable surfaces; they are not a universal Sensemaking workflow.
+
+Human-readable and machine-readable Campaign surfaces should expose the same durable state without forcing an agent to scrape prose or infer hidden state from filenames.
 
 ## 12. Trust and reconstruction invariants
 
@@ -344,7 +373,9 @@ The Campaign product is deliberately **not** a license to build the following by
 - a campaign server/database/cloud backend without demonstrated need;
 - a generic semantic truth validator;
 - automatic external mutation authority;
-- full multi-repository campaign control before the single-repository product is proven.
+- automatic Campaign selection from expertise/complexity/consequentiality scores;
+- formal `LIGHT / STANDARD / HEAVY` Campaign modes without separate evidence and authority;
+- cross-repository transaction/deployment coordination without demonstrated need.
 
 These may be revisited only when concrete product pressure creates a consequential unresolved requirement.
 
@@ -368,11 +399,11 @@ Harness-specific details must remain outside the semantic core so the same Campa
 
 ## 15. Product success properties
 
-The Campaign model is successful when a real coding agent can:
+When Campaign durability is warranted, the Campaign model is successful when a real coding agent can:
 
 ```text
 start
-→ consume repository diagnosis
+→ consume repository diagnosis when needed
 → record responsibility
 → bind authority
 → inspect available capability
@@ -386,14 +417,18 @@ start
 
 and when a reviewer can reconstruct **why the campaign is in its current state** from durable repository/campaign evidence rather than from private conversation history.
 
+Campaign success is one part of Sensemaking product success; it does not imply every useful Sensemaking episode creates Campaign state.
+
 ## 16. Relationship to other repository documents
 
-This document defines the durable **product model**.
+This document defines the durable **Campaign product model**.
 
 Use the surrounding documents for different questions:
 
 | Question | Source |
 |---|---|
+| How do I start using Sensemaking, including when Campaign is warranted? | [`../GETTING_STARTED.md`](../GETTING_STARTED.md) |
+| How should a coding agent adapt scaffolding, rigor, and durability? | [`../skills/using-sensemaking/SKILL.md`](../skills/using-sensemaking/SKILL.md) and its `references/adaptive-guidance-v0.md` |
 | What is a Sensemaking Campaign? | This document |
 | What are we implementing for v0.3 right now? | [`productization-v0.3.md`](productization-v0.3.md) |
 | What is the repository's current development frontier? | [`../STATUS.md`](../STATUS.md) |
