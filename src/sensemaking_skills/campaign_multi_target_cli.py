@@ -13,6 +13,7 @@ from .campaign_semantics import Authority, ContractError
 from .campaigns import CampaignWorkspaceError
 from .campaigns.multi_target import MultiTargetService
 from .campaigns.multi_target_rebind import MultiTargetRebindService
+from .campaigns.multi_target_relations import RELATION_TYPES, MultiTargetRelationService
 
 
 ErrorEmitter = Callable[..., None]
@@ -35,6 +36,40 @@ def _verification_payload(result: Any) -> dict[str, Any]:
         "semantic_recommendation_included": False,
         "explicit_limit": "Multi-target integrity verifies recorded repository identity/state only; it does not establish cross-repository semantic correctness or atomicity.",
     }
+
+
+def _relations_payload(result: Any, *, code: str) -> dict[str, Any]:
+    return {
+        "ok": result.valid,
+        "code": code,
+        "campaign_id": result.campaign_id,
+        "relation_count": len(result.relations),
+        "relations": list(result.relations),
+        "ordering_cycles": [list(item) for item in result.ordering_cycles],
+        "diagnostics": [
+            {
+                "code": item.code,
+                "detail": item.detail,
+                "relation_id": item.relation_id,
+                "line_number": item.line_number,
+            }
+            for item in result.diagnostics
+        ],
+        "semantic_truth_established": False,
+        "semantic_recommendation_included": False,
+        "explicit_limit": "Cross-repository relations are caller-authored declarations. Mechanical validity does not establish architectural truth, execution order, or authorization.",
+    }
+
+
+def _relations_mermaid(graph: dict[str, Any]) -> str:
+    lines = ["flowchart LR"]
+    for node in graph["nodes"]:
+        safe = str(node).replace('"', "'")
+        lines.append(f'    {node}["{safe}"]')
+    for edge in graph["edges"]:
+        relation = str(edge["type"])
+        lines.append(f'    {edge["source"]} -->|"{relation}"| {edge["target"]}')
+    return "\n".join(lines)
 
 
 def register_campaign_multi_target_commands(
@@ -181,3 +216,86 @@ def register_campaign_multi_target_commands(
             json_echo(payload)
         else:
             click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+    @multi_target_group.command(name="relate")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--relation-id", required=True)
+    @click.option("--source-alias", required=True)
+    @click.option("--target-alias", required=True)
+    @click.option("--relation-type", required=True, type=click.Choice(RELATION_TYPES))
+    @click.option("--evidence-ref", "evidence_refs", multiple=True)
+    @click.option("--json", "output_json", is_flag=True)
+    def multi_target_relate(
+        workspace: Path,
+        relation_id: str,
+        source_alias: str,
+        target_alias: str,
+        relation_type: str,
+        evidence_refs: tuple[str, ...],
+        output_json: bool,
+    ) -> None:
+        """Append one explicit caller-authored relation between existing aliases."""
+        try:
+            digest = MultiTargetRelationService(workspace).append(
+                relation_id=relation_id,
+                source_alias=source_alias,
+                target_alias=target_alias,
+                relation_type=relation_type,
+                evidence_refs=evidence_refs,
+            )
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        except ValueError as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = {
+            "ok": True,
+            "code": "CAMPAIGN_MULTI_TARGET_RELATION_APPENDED",
+            "relation_id": relation_id,
+            "record_digest": digest,
+            "relation_selected_by_tool": False,
+            "semantic_truth_established": False,
+            "semantic_recommendation_included": False,
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+    @multi_target_group.command(name="dependency-check")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--json", "output_json", is_flag=True)
+    def multi_target_dependency_check(workspace: Path, output_json: bool) -> None:
+        """Validate relation identities, hash chain, evidence, aliases, and ordering cycles."""
+        try:
+            result = MultiTargetRelationService(workspace).inspect()
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        payload = _relations_payload(
+            result,
+            code=("CAMPAIGN_MULTI_TARGET_DEPENDENCIES_VALID" if result.valid else "CAMPAIGN_MULTI_TARGET_DEPENDENCIES_INVALID"),
+        )
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+        if not result.valid:
+            raise click.exceptions.Exit(INVALID_EXIT)
+
+    @multi_target_group.command(name="graph")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--format", "output_format", type=click.Choice(["json", "mermaid"]), default="json", show_default=True)
+    def multi_target_graph(workspace: Path, output_format: str) -> None:
+        """Render explicit target relationships without inferring architecture."""
+        try:
+            graph = MultiTargetRelationService(workspace).graph()
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=(output_format == "json"))
+            return
+        if output_format == "mermaid":
+            click.echo(_relations_mermaid(graph))
+        else:
+            json_echo({"ok": graph["valid"], "code": "CAMPAIGN_MULTI_TARGET_GRAPH", **graph})
+        if not graph["valid"]:
+            raise click.exceptions.Exit(INVALID_EXIT)
