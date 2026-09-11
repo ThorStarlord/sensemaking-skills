@@ -24,7 +24,7 @@ def _workspace(tmp_path):
             active_uncertainty=Uncertainty(
                 id="U-1",
                 question="Which bounded fact changes the current decision?",
-                consequences=("the next responsibility may change",),
+                consequences={"decision": "the next responsibility may change"},
             ),
         )
     )
