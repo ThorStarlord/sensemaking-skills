@@ -2,10 +2,10 @@
 
 **Version:** 0.3.0  
 **Last updated:** 2026-09-11  
-**Current phase:** Strategic Outer Loop v0 frozen as operational baseline; Operational Runbook Authority Consolidation v0 integrated and repository-qualified; B1–B7 and Strategic State Contract Validation v0 remain repository-qualified  
+**Current phase:** Owner-directed repository-only Campaign Productization v1, Campaign Operability v1, and Extensibility & Simplification v1 integrated and repository-qualified; Strategic Outer Loop v0 remains the frozen operational baseline  
 **Primary program:** Sensemaking Campaign productization with agent-agnostic domain capabilities, evidence-governed repository reasoning, and durable strategic repository evolution  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this file intentionally does not self-pin a commit that becomes stale when it changes  
-**Current semantic frontier:** the first repository-wide normal-use cycle under Outer Loop v0 closed a concrete operational-authority drift; post-integration reassessment finds no additional repository-level construction package currently warranted from a comparably concrete mechanical/reconstruction boundary  
+**Current semantic frontier:** the owner-directed no-new-experiment construction sequence is complete through Campaign productization, operability, developer ergonomics, candidate-boundary validation, and provenance-graph simplification; no additional repository-level construction package is selected by this closeout  
 **Current PM frontier:** Waves 1–6 are `REPOSITORY_QUALIFIED`; the pinned 27-command source migration is complete; native-harness/portability qualification remains pending
 
 Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, target identity, authority metadata checks, bounded conformance, reference resolution under existing authoritative namespaces, strategic-state representation validation, and reconstructible state.
@@ -22,30 +22,41 @@ Sensemaking Skills is an **agent-native engineering sensemaking and control laye
 - **Level-4 revision contract:** `docs/product-thesis-revision.md`.
 - **Current product purpose:** improve repository-level decisions when a capable coding agent cannot safely determine the correct next engineering responsibility from the user request alone.
 - **Outer-loop construction state:** v0 is a frozen operational baseline. Use it during normal repository evolution; reopen outer-loop construction only from concrete pressure or explicit owner direction.
+- **Current construction policy:** explicit owner direction may authorize bounded repository-only/hermetic construction without first requiring a new empirical/native-harness experiment. This does not upgrade empirical claim ceilings.
 
 ### Current capability state
 
 - Campaign/Responsibility semantics, authority boundaries, artifact admission, durable transitions, reconciliation, handoff, and target identity are established product machinery.
 - Semantic Architecture Phase 9/10 and bounded Phase 15 are repository-qualified within their stated evidence ceilings.
 - Build-first semantic substrate B1–B7 is repository-qualified: mechanical observations, bounded semantic map, optional semantic companion state, Skill manifests, Domain Packs, Campaign observability/portability, and bounded semantic-reference resolution/audit.
-- B7 reuses existing Campaign evidence/admission authority and renders audit results through `campaign semantic-state` and `campaign explain`; it does not add Campaign schema v3, Resume Capsule changes, currentness inference, semantic routing, or a universal reference registry.
-- Strategic State Contract Validation v0 is repository-integrated and repository-qualified. `scripts/validate-strategic-state.py` checks only required Level-3 anchors, canonical authority surfaces/pointers, thesis-review marker shape, and duplicate Strategic Frontier identities; Product Validation runs it in the repository-contract lane.
-- Strategic Outer Loop v0 is now explicitly frozen as the default control baseline in `docs/strategic-outer-loop.md`.
-- Operational Runbook Authority Consolidation v0 is integrated: `docs/operations-runbook.md` is the one current operator-facing local operations/qualification runbook, while checked-in CI workflows remain executable authority.
-- `docs/milestone-runbook.md` and `docs/post-milestone-handoff-runbook.md` are retained as historical milestone records rather than competing current operational authorities.
-- `tests/test_operations_runbook_authority.py` mechanically guards the current runbook/navigation/historical-status boundary through Product Validation.
+- B7 reuses existing Campaign evidence/admission authority and renders audit results through `campaign semantic-state` and `campaign explain`; it does not add Campaign schema v3, currentness inference, semantic routing, or a universal reference registry.
+- **Campaign Preflight v0** is repository-qualified. `campaign preflight` composes existing Campaign reconstruction, target, admission/evidence, handoff, semantic-reference, authority-metadata, and optional agent-supplied capability-catalog checks without deciding whether the agent should proceed.
+- **Resume Capsule v1** is repository-qualified. `campaign resume-context` retains its full deterministic projection and adds `--compact` plus optional `--include-preflight`; it does not summarize semantically or recommend a next action.
+- **Uncertainty History v0** is repository-qualified as append-only `uncertainty-history.jsonl`. `CampaignState.active_uncertainty` remains current authority; the companion preserves agent-authored lifecycle history with hash-chain and reference integrity without ranking or selecting uncertainties.
+- **Campaign Operability v1** is repository-qualified: `campaign doctor` exposes mechanical diagnostic paths without repair selection; `campaign provenance` renders local Markdown/JSON without GitHub publication; `campaign graph-integrity` checks mechanically reconstructible graph integrity.
+- **Extensibility & Simplification v1** is repository-qualified: `semantic catalog` adds read-only Skill Manifest/Domain Pack discovery while `semantic conformance` remains validation authority; `scripts/validate-candidate-directions.py` guards the candidate reservoir's non-authority markers; `campaign graph` and `campaign graph-integrity` now share `CampaignProvenanceGraphService` rather than constructing parallel graphs.
+- Campaign schema remains **v2** across this sequence.
+- Strategic State Contract Validation v0 remains repository-integrated and repository-qualified. `scripts/validate-strategic-state.py` checks only required Level-3 anchors, canonical authority surfaces/pointers, thesis-review marker shape, and duplicate Strategic Frontier identities; Product Validation runs it in the repository-contract lane.
+- Strategic Outer Loop v0 remains explicitly frozen as the default control baseline in `docs/strategic-outer-loop.md`.
+- `docs/operations-runbook.md` remains the one current operator-facing local operations/qualification runbook, while checked-in CI workflows remain executable authority.
+- `docs/milestone-runbook.md` and `docs/post-milestone-handoff-runbook.md` remain historical milestone records rather than competing current operational authorities.
 - Product Management Waves 1–6 remain repository-qualified across all 27 pinned source capabilities; native-harness and portability evidence remain pending.
 
 ### Material limitations and evidence ceilings
 
 - Repository qualification does not establish native-harness usefulness, portability, comparative superiority, or general autonomous software development.
-- The active agent owns semantic frontier selection; no deterministic `StrategicPlanner`, outer-loop router, or automatic product-thesis revision mechanism is authorized.
+- The active agent owns semantic frontier selection; no deterministic `StrategicPlanner`, outer-loop router, automatic responsibility selector, uncertainty ranker, or automatic product-thesis revision mechanism is authorized.
+- Explicit owner direction can warrant bounded repository construction; it does **not** manufacture behavioral evidence or convert missing empirical proof into PASS.
 - Level-3/Level-4 durable state remains carried by existing Markdown authority surfaces; Strategic State Contract Validation v0 does not introduce a strategic-state schema.
 - B7 reference resolution establishes only mechanically bounded addressability/integrity under existing authorities. `resolved != current`, `reference audit pass != semantic truth`, and `not_addressable != invalid`.
+- Campaign Preflight/Doctor/graph-integrity establish only their declared mechanical properties. `preflight PASS != should proceed`, `doctor clean != responsibility warranted`, and `graph integrity PASS != semantic causality/correctness`.
+- Uncertainty History records agent-authored lifecycle observations. `history valid != recorded lifecycle judgment semantically correct`, and history does not supersede `CampaignState.active_uncertainty` as current authority.
+- `semantic catalog` is a discovery projection. `catalog hit != Skill selection`, and aggregate conformance remains separate from semantic appropriateness.
+- `campaign provenance` is local rendering only. `generated provenance != published provenance != semantic correctness`.
 - Strategic State Contract Validation v0 establishes representation integrity only. `strategic-state contract valid != strategy correct`, `strategic-state contract valid != frontier correctly prioritized`, and validator PASS does not establish external/GitHub currentness.
 - `docs/operations-runbook.md` is a current navigation/reproduction surface, not authority above executable workflows. `local reproduction != hosted cross-platform CI proof`.
 - Historical documentation volume remains substantial. That is not itself a defect and does not authorize mass archival/deletion without a separate concrete warrant.
-- Additional empirical/native-harness experiments remain deferred by owner direction; missing empirical proof is not converted into a PASS.
+- Additional empirical/native-harness experiments remain deferred by owner direction and are **not a prerequisite for the current repository-only/hermetic construction policy**. Missing empirical proof remains missing.
 
 ### Strategic Frontier
 
@@ -54,39 +65,44 @@ Current material frontier items are:
 1. **Strategic outer-loop foundation — COMPLETE / INTEGRATED.** The canonical four-level control model, Level-3 strategic-state contract, and Level-4 product-thesis revision semantics are on `main` without a planning engine or new strategic-state schema.
 2. **B7 semantic-reference integrity — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** The standalone audit primitive, Campaign rendering adapters, preflight authority, negative cases, and exact-head qualification are integrated while preserving Campaign schema v2 and semantic non-authority.
 3. **Strategic State Contract Validation v0 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** The bounded repository validator, rejection suite, Product Validation gate, preflight authority, and contract reconciliation are integrated without a product strategy CLI, new schema, remote currentness query, or semantic ranking.
-4. **Operational Runbook Authority Consolidation v0 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** One current operator runbook now fronts the checked-in CI authorities; milestone runbooks are historical; README/CONTEXT navigation and a Product Validation regression guard preserve the boundary.
-5. **Native-harness / portability qualification — DEFERRED BY OWNER DIRECTION.** Existing protocols and evidence ceilings remain valid, but additional empirical experiments are not the current construction priority.
-6. **Later outer-loop machinery — DEFERRED / NOT CURRENTLY WARRANTED.** `strategy inspect/diff`, Level-3→Campaign mechanics, and Level-4 reconciliation mechanics remain possible future directions, but current evidence does not establish a concrete consumed mechanical integrity/reconstruction boundary that warrants building them now.
-7. **Broad documentation archival/removal — DEFERRED / NOT CURRENTLY WARRANTED.** The audit found substantial historical documentation volume, but mass deletion would require subjective usefulness judgments and is not justified merely by document count.
+4. **Operational Runbook Authority Consolidation v0 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** One current operator runbook fronts the checked-in CI authorities; milestone runbooks are historical; README/CONTEXT navigation and a Product Validation regression guard preserve the boundary.
+5. **Campaign Productization v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Campaign Preflight v0, Resume Capsule v1, and Uncertainty History v0 provide bounded mechanical readiness, compact reconstruction, and durable uncertainty lifecycle history without schema v3 or semantic selection.
+6. **Campaign Operability v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Mechanical doctor diagnostics, local provenance rendering, and provenance-graph integrity are integrated without automatic repair or GitHub publication.
+7. **Extensibility & Simplification v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Read-only semantic catalog ergonomics, candidate-reservoir authority validation, and shared provenance-graph construction are integrated without a second conformance authority or semantic routing.
+8. **Native-harness / portability qualification — DEFERRED BY OWNER DIRECTION.** Existing protocols and evidence ceilings remain valid, but additional empirical experiments are not the current construction priority or a default prerequisite for repository-only work.
+9. **Later outer-loop machinery — DEFERRED / NOT CURRENTLY WARRANTED.** `strategy inspect/diff`, Level-3→Campaign mechanics, and Level-4 reconciliation mechanics remain possible future directions, but this owner-directed productization sequence did not authorize them.
+10. **Broad documentation archival/removal — DEFERRED / NOT CURRENTLY WARRANTED.** Historical documentation remains useful evidence; mass deletion would require a separate concrete warrant.
 
 ### Current highest-leverage boundary
 
-**No new repository-level construction boundary is selected.** The boundary selected by the first repository-wide normal-use audit—fragmented/stale operational runbook authority—has been closed by Operational Runbook Authority Consolidation v0.
+**The owner-directed no-new-experiment construction sequence is complete. No additional repository-level construction boundary is selected by this closeout.**
 
-The post-integration reassessment considered:
+The earlier no-new-package state was legitimately reopened by explicit owner direction to continue building without experiments. That direction authorized bounded repository-only/hermetic work, not a general suspension of evidence/authority discipline. The selected sequence was:
 
-- read-only `strategy inspect/diff`;
-- Level-3→Campaign handoff mechanics;
-- Level-4 escalation/reconciliation mechanics;
-- broad documentation archival/deletion;
-- additional strategic-state machinery;
-- a new Semantic Architecture/capability feature.
+```text
+Campaign Preflight v0
+-> Resume Capsule v1
+-> Uncertainty History v0
+-> Campaign Operability v1
+-> Extensibility & Simplification v1
+-> documentation/status reconciliation
+```
 
-None currently has a concrete repeated mechanical failure or consumed reconstruction burden comparable to the runbook-authority mismatch that triggered the completed package. Existing authority surfaces and agent-owned reasoning remain sufficient at the current evidence boundary.
+The sequence stayed within the existing product thesis, Campaign schema v2, agent-owned semantic judgment, and repository/mechanical qualification boundary.
 
-This is a **no-new-package** decision, not a claim that the repository has no future work.
+This closeout does **not** automatically select the next candidate from `docs/strategic-candidate-directions.md`.
 
 ### Current decision-changing uncertainty
 
-What concrete natural-use product/integrity/reconstruction failure, if any, will next become consequential enough to warrant a bounded repository responsibility?
+What bounded repository/product integrity or usability responsibility, if any, should be selected next under future concrete pressure or explicit owner direction?
 
-Current repository evidence does not identify one. Because new empirical experiments are explicitly deferred, this uncertainty does not authorize speculative construction or a synthetic work queue.
+This closeout does not manufacture an answer. New experiments are not required merely to keep building repository-only/hermetic features, but neither are candidate ideas automatically authorized because experiments are deferred.
 
 ### Current warranted repository-level responsibility
 
-**No additional repository-level construction responsibility is currently warranted.**
+**No additional construction responsibility is selected after this productization closeout.**
 
-Normal repository development should now use the frozen Outer Loop v0 baseline rather than continue developing the outer loop itself.
+Future repository-only/hermetic work may be selected from a concrete mechanically expressible need or explicit owner direction while preserving current semantic/authority boundaries. A future empirical/native-harness claim still requires the evidence demanded by its own protocol.
 
 Do not automatically begin:
 
@@ -95,12 +111,13 @@ strategy inspect/diff
 Level-3 -> Campaign bridge
 Level-4 reconciliation machinery
 StrategicPlanner / OuterLoopEngine
+automatic responsibility selection
+automatic uncertainty ranking
 new strategic-state schema
+Campaign schema v3
 broad historical-document deletion
 new empirical experiment
 ```
-
-Reopen a bounded responsibility when normal repository use exposes a concrete decision-changing gap that can be addressed within current authority.
 
 ### Completed evidence and reassessment
 
@@ -130,43 +147,38 @@ First repository-wide normal-use cycle under Outer Loop v0:
 - The audit found a concrete current operator path in which README pointed to a milestone-era runbook whose copied repository-contract commands had fallen behind current Product Validation while a second milestone companion layered additional procedures on top.
 - The selected responsibility was `BUILD OPERATIONAL RUNBOOK AUTHORITY CONSOLIDATION v0`.
 - PR #338 exact candidate `9fe7a345e3c2ec6e2ad47a598ba18a6e8d7b14dc` passed Product Validation `34572669683` (#868) and Release Candidate Distribution `34572669672` (#65) before merge.
-- The Product Validation repository-contract lane passed `tests/test_operations_runbook_authority.py`, proving the new current-runbook navigation/historical-runbook boundary on the exact candidate head.
 - PR #338 merged as `5c66f3385e276667c2d7bb2c757acd1b3c6ce30a`.
 - No product runtime, Campaign schema, strategic planner, automatic routing, product-thesis change, or experiment was added.
 
-Natural-use evidence captured:
+Owner-directed repository-only productization sequence:
+
+- The owner explicitly directed that no additional experiments be used as a prerequisite for the requested construction sequence and authorized implementation without per-package approval.
+- **PR #341 / Campaign Preflight v0** merged as `80d94fa4956c6619226b7e2f6544267eeefe8a86` after Product Validation and Release Candidate Distribution passed on its exact candidate. The command composes existing mechanical authorities and retains the explicit `preflight PASS != should proceed` boundary.
+- **PR #342 / Resume Capsule v1** merged as `a2f9c94372dc4c2069da5468e52b05e0979ebbc5` after Product Validation, Release Candidate Distribution, and retained Lab Validation passed. Full projection remains default; `--compact` and `--include-preflight` are deterministic additions.
+- **PR #343 / Uncertainty History v0** initially exposed a test-fixture contract mismatch in retained Lab Validation (`Uncertainty.consequences` tuple vs canonical mapping). The fixture was corrected without changing runtime semantics; exact corrected head then passed Product Validation #879, Release Candidate Distribution #71, and Lab Validation #38 before merge as `130deed1deb01e2082fa82c90613812b87ca9c7d`.
+- **PR #344 / Campaign Operability v1** passed Product Validation #881, Release Candidate Distribution #72, and Lab Validation #40 before merge as `3e283f19f808f0d7cc826143f6f09d5f7cbb3b97`.
+- **PR #345 / Extensibility & Simplification v1** passed Product Validation #883, Release Candidate Distribution #73, and Lab Validation #42 before merge as `4dc4ef13af7e5250d2502ecdab58b936e90aa99b`.
+- No native-harness run, user experiment, comparative benchmark, new operative experiment state, Campaign schema migration, semantic planner, automatic uncertainty ranking, automatic responsibility selection, or GitHub provenance publication was introduced by the sequence.
+
+Post-sequence reassessment result:
 
 ```text
-README current-operator path
-+ milestone-era runbook claiming current authority
-+ later companion runbook
-+ newer executable CI gates
--> fragmented/stale operational reconstruction boundary
--> bounded consolidation responsibility
--> qualified fix
+OWNER-DIRECTED CONSTRUCTION SEQUENCE COMPLETE
+NO ADDITIONAL PACKAGE SELECTED BY THIS CLOSEOUT
+EMPIRICAL CLAIM CEILINGS UNCHANGED
 ```
-
-This is ordinary repository-use evidence, not an experiment. Future natural-use incidents should be recorded when they materially change a Level-3 decision; no separate evidence program is required.
-
-Post-integration reassessment result:
-
-```text
-NO ADDITIONAL REPOSITORY-LEVEL PACKAGE CURRENTLY WARRANTED
-```
-
-This conclusion is scoped to current evidence and may be reopened by a concrete repeated reconstruction/integrity failure, a mechanically explicit product requirement, or owner direction.
 
 ### Authority / owner direction
 
-- Owner authorized documentation-first outer-loop construction and explicitly deferred new experiments.
-- Owner authorized execution of the full post-Outer-Loop-v0 sequence without per-package approval: freeze v0, perform a repository-wide Level-3 audit, implement the selected bounded responsibility, qualify/integrate it, and reassess.
-- That sequence is complete through Operational Runbook Authority Consolidation v0 and this closeout.
+- Owner previously authorized documentation-first outer-loop construction and deferred new experiments.
+- Owner then explicitly clarified that they do **not** want more experiments and authorized implementation of the proposed repository-only/hermetic construction queue without waiting for per-package approval.
+- Explicit owner direction is therefore a valid Level-3 warrant for bounded construction within current strategy; it is not evidence for native-harness usefulness, portability, comparative superiority, or another empirical claim.
 - Product-thesis changes that materially alter primary user, problem/JTBD, external product boundary, major non-goals, public claim ceilings, or merge/release authority remain owner-reserved decisions.
-- Repository-level implementation may proceed within current strategy only when bounded by existing authority and evidence.
+- Repository-level implementation may proceed within current strategy when bounded by concrete mechanical/product scope and current authority; experiments are not a universal prerequisite.
 
 ### Thesis review state
 
-`THESIS_REVIEW_REQUIRED`: **NO**. The normal-use audit and runbook consolidation reduce repository operational-authority drift without changing product purpose, primary user, JTBD, external product boundary, major non-goals, or another Level-4 commitment.
+`THESIS_REVIEW_REQUIRED`: **NO**. Campaign Productization v1, Operability v1, and Extensibility & Simplification v1 improve bounded mechanical ergonomics/reconstruction/diagnostics without changing product purpose, primary user, JTBD, external product boundary, major non-goals, or public empirical claim ceilings.
 
 ## Semantic Architecture state
 
@@ -207,14 +219,21 @@ This Semantic Architecture layering is orthogonal to the four control levels. Le
 - **Bounded Phase 15:** `validate-skill-registry-liveness.py` repository-qualified for mechanically decidable registry-liveness contradictions.
 - **B1–B6 / PR #327:** repository-qualified mechanical observations, bounded semantic map, semantic companion state, Skill manifests, Domain Packs, Campaign observability and portability.
 - **B7 / PR #330:** repository-qualified semantic-reference resolution/audit under existing authoritative identities.
+- **Campaign Productization v1 / PRs #341–#343:** repository-qualified preflight composition, deterministic Resume Capsule v1 projections, and append-only uncertainty-history companion.
+- **Campaign Operability v1 / PR #344:** repository-qualified mechanical doctor, local provenance rendering, and provenance graph integrity.
+- **Extensibility & Simplification v1 / PR #345:** repository-qualified semantic catalog, candidate-reservoir authority guard, and shared graph construction.
 
 The build-first policy remains:
 
 > **Build while architecture remains informative. Validate empirically when architecture stops being informative.**
 
-The frozen Outer Loop v0 baseline adds a complementary operating rule:
+Owner direction now makes one additional scope rule explicit:
 
-> **Use the outer loop to develop the repository; do not keep developing the outer loop without new concrete pressure.**
+> **Repository-only/hermetic construction does not require a new empirical experiment as a universal gate. Preserve the evidence ceiling instead of manufacturing proof.**
+
+The frozen Outer Loop v0 baseline still adds:
+
+> **Use the outer loop to develop the repository; do not keep developing the outer loop without new concrete pressure or owner direction.**
 
 ## Product Management source migration — repository complete
 
@@ -243,7 +262,7 @@ Current empirical PASS: NONE
 Human/external action required for empirical PASS: YES
 ```
 
-A real PASS requires an actual supported external coding-agent harness attempt frozen under the canonical protocol. The real-harness qualification verifier can mechanically check a frozen attempt package; it cannot manufacture real-harness origin evidence.
+A real PASS still requires an actual supported external coding-agent harness attempt frozen under the canonical protocol. The real-harness qualification verifier can mechanically check a frozen attempt package; repository construction cannot manufacture real-harness origin evidence.
 
 ### Product Management native-harness / portability
 
@@ -255,23 +274,24 @@ Current functional PM empirical PASS: NONE
 Current PM portability empirical PASS: NONE
 ```
 
-Repository-local validation, Campaign admission, wheel packaging, connector-side reasoning, Domain Pack membership, and adapter parity do not substitute for real native-harness discovery/invocation when stronger support claims require it.
+Repository-local validation, Campaign admission, wheel packaging, connector-side reasoning, Domain Pack membership, adapter parity, Campaign Preflight/Doctor, and local provenance do not substitute for real native-harness discovery/invocation when a stronger support claim requires it.
 
-### Build-first / natural-use evidence limit
+### Build-first / repository-only evidence limit
 
-B1–B7, Strategic State Contract Validation v0, and Operational Runbook Authority Consolidation v0 are repository-qualified mechanical/product-support capabilities or repository contracts. Their CI PASS does **not** establish comparative product superiority or broad native-agent value.
+B1–B7, Strategic State Contract Validation v0, Operational Runbook Authority Consolidation v0, Campaign Productization v1, Campaign Operability v1, and Extensibility & Simplification v1 are repository-qualified mechanical/product-support capabilities or repository contracts. Their CI PASS does **not** establish comparative product superiority or broad native-agent value.
 
-The runbook-authority incident is natural-use evidence of a repository reconstruction/maintenance problem. It supports the bounded consolidation decision only; it is not an experiment and does not establish general product value.
+The repository can continue to build repository-only/hermetic capabilities from bounded owner direction or mechanically explicit need without pretending that such work answers separate behavioral questions.
 
 ## Release architecture continuity
 
 - **Campaign schema v2** remains the durable representation baseline.
 - The shipped **product/lab split** remains intact.
 - Product Validation owns shipped/installed-product and repository-contract claims.
-- Lab Validation owns retained source-only research/lab claims.
+- Lab Validation owns retained source-only research/lab compatibility claims; running retained tests does not create a new operative experiment.
 - Release Candidate Distribution proves exact candidate build/install/package identities.
 - `semantic_reasoning_profile` remains optional and outside Campaign artifact admission.
-- Skill-registry liveness, manifest/domain conformance, B7 reference audit, Strategic State Contract Validation v0, and the operations-runbook authority regression remain bounded repository checks, not semantic routers.
+- Skill-registry liveness, manifest/domain conformance, B7 reference audit, Strategic State Contract Validation v0, candidate-directions boundary validation, and the operations-runbook authority regression remain bounded repository checks, not semantic routers.
+- Campaign Preflight, Resume Capsule v1, Uncertainty History, Doctor, local provenance, graph integrity, and semantic catalog preserve agent-owned semantic judgment.
 - `docs/operations-runbook.md` is the current human/agent reproduction/navigation surface; checked-in CI workflows remain executable authority.
 - tagging/publication of v0.3.0 remains an explicit owner decision.
 
@@ -283,12 +303,19 @@ evidence != truth
 support != proof
 warranted responsibility != available capability != authorized capability
 validator passed != semantic truth
+preflight PASS != should proceed
+doctor clean != responsibility warranted
+uncertainty history valid != lifecycle judgment semantically correct
+uncertainty history != current active-uncertainty authority
+catalog hit != Skill selection
 semantic profile valid != reasoning semantically correct
 registry liveness valid != Skill semantically correct
 semantic map relation != architecture judgment
 manifest valid != Skill should run
 Domain Pack membership != routing authority
 provenance edge != semantic support
+graph integrity valid != semantic causality
+generated provenance != published provenance
 bundle valid != Campaign semantically correct
 reference occurrence != reference resolution
 reference resolved != current
@@ -296,6 +323,7 @@ reference audit pass != semantic truth
 not_addressable != invalid
 strategic-state contract valid != strategy correct
 strategic-state contract valid != frontier correctly prioritized
+candidate reservoir valid != candidate prioritized
 current runbook != executable CI authority
 local reproduction != hosted cross-platform CI proof
 repository changed != repair succeeded
@@ -311,6 +339,7 @@ handoff != semantic recommendation
 product thesis != strategic state
 strategic frontier != backlog
 strategic boundary selected != implementation authorized
+owner direction to build != empirical product-value proof
 Level-3 state != Level-4 strategy authority
 ```
 
@@ -318,28 +347,31 @@ The Campaign Controller is not a semantic router. The Reasoning Model is not a c
 
 ## Current next step
 
-Use the **frozen Outer Loop v0 operational baseline** during normal repository development:
+Continue repository development under the **frozen Outer Loop v0 + owner-directed build-first policy**:
 
 ```text
 read Level-4 strategy
 -> reconstruct Level-3 current state
--> identify a concrete decision-changing boundary, if any
--> select or decline one repository-level responsibility
+-> accept concrete repository pressure or explicit owner direction
+-> select or decline one bounded repository-level responsibility
 -> perform bounded Level-2/Level-1 work
--> mechanically qualify
+-> mechanically qualify repository/hermetic claims
+-> preserve empirical claim ceilings
 -> reconcile STATUS.md
--> reassess
+-> reassess / stop
 ```
 
-There is **no pre-authorized next construction package**. Natural use should now be allowed to reveal future pressure. When a concrete repeated integrity/reconstruction/product boundary becomes decision-changing, record it in the relevant audit/issue/ADR/status state and assess a bounded responsibility.
+There is **no automatically selected next construction package after this closeout**. `docs/strategic-candidate-directions.md` remains idea memory, not a queue. A future bounded package may be selected from explicit owner direction or a concrete mechanically expressible product/integrity/reconstruction need without requiring a new experiment merely for permission to build.
 
-Additional empirical experiments remain deferred by owner direction. Do not substitute speculative infrastructure for missing behavioral evidence if behavioral value later becomes the decisive question.
+Additional empirical/native-harness experiments remain deferred by owner direction. Resume them only if the owner chooses to pursue the stronger claims that require them; until then, leave those claims explicitly unestablished.
 
 ## Canonical sources
 
 - `STATUS.md` — current Level-3 Strategic Repository Evolution state and cross-program status.
 - `docs/product-strategy.md` — current Level-4 product thesis, boundary, hypotheses, and strategic authority.
 - `docs/strategic-outer-loop.md` — canonical four-level control model; Outer Loop v0 frozen operational baseline.
+- `docs/strategic-candidate-directions.md` — non-authoritative idea reservoir; candidate presence does not grant priority or implementation authority.
+- `scripts/validate-candidate-directions.py` — bounded representation validator for the candidate reservoir's non-authority markers.
 - `docs/strategic-repository-evolution-audit-2026-09-11.md` — first repository-wide normal-use Level-3 audit and Operational Runbook Authority Consolidation selection evidence.
 - `docs/strategic-state-contract.md` — Level-3 durable strategic-state contract and bounded executable validator semantics.
 - `docs/strategic-state-validation-design-preflight.md` — Strategic State Contract Validation v0 mechanical scope, negative cases, and abort gate.
@@ -348,6 +380,11 @@ Additional empirical experiments remain deferred by owner direction. Do not subs
 - `docs/product-thesis-revision.md` — Level-4 strategy revision and owner-ratification contract.
 - `docs/product-operating-model.md` — current value stream, responsibility ownership, and runtime/control boundary.
 - `docs/operations-runbook.md` — current operator-facing validation/qualification/Campaign/release runbook.
+- `docs/campaign-preflight.md` — Campaign Preflight v0 mechanical contract.
+- `docs/resume-capsule-v1.md` — Resume Capsule v1 deterministic projection contract.
+- `docs/uncertainty-history.md` — append-only uncertainty lifecycle companion contract.
+- `docs/campaign-operability-v1.md` — Doctor, local provenance, and graph-integrity contract.
+- `docs/extensibility-and-simplification-v1.md` — semantic catalog, candidate-boundary validator, and shared graph-construction closeout.
 - `tests/test_operations_runbook_authority.py` — regression guard for current runbook authority/navigation and historical milestone-runbook status.
 - `docs/milestone-runbook.md` — historical Features #298–#300 milestone record; not current operational authority.
 - `docs/post-milestone-handoff-runbook.md` — historical Packages #302–#304 handoff record; not current operational authority.
