@@ -2,10 +2,10 @@
 
 **Version:** 0.3.0  
 **Last updated:** 2026-09-11  
-**Current phase:** Persona & Adaptive Guidance Model v0 is owner-ratified as a Level-4 reinterpretation alongside the repository-qualified Campaign productization/usability/portability/completion baseline; Strategic Outer Loop v0 remains the frozen operational baseline  
-**Primary program:** Sensemaking Campaign productization with agent-owned semantic judgment, durable repository reasoning, explicit single/multi-repository scope, portable continuation, mechanically reconstructible completion, and opinionated guidance whose visible rigor adapts to the situation without automatic routing  
+**Current phase:** Persona & Adaptive Guidance Model v0 is owner-ratified and Adaptive Guidance Existing Product Reconciliation v0 is complete/integrated; Strategic Outer Loop v0 remains the frozen operational baseline  
+**Primary program:** Sensemaking Campaign productization with agent-owned semantic judgment, durable repository reasoning, explicit single/multi-repository scope, portable continuation, mechanically reconstructible completion, and shipped opinionated guidance whose visible rigor/durability adapt proportionally without automatic routing  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this file intentionally does not self-pin a commit that becomes stale when it changes  
-**Current semantic frontier:** the high-delegation agent-assisted builder is the clarified primary design persona; user supervision capability, desired delegation, decision complexity, consequentiality, and continuation complexity are contextual reasoning factors only; no runtime formalization is selected  
+**Current semantic frontier:** the high-delegation agent-assisted builder is the clarified primary design persona; the five adaptive factors are now propagated through shipped guidance while remaining contextual agent-judgment concepts rather than runtime selectors  
 **Current PM frontier:** Waves 1–6 are `REPOSITORY_QUALIFIED`; the pinned 27-command source migration is complete; native-harness/portability qualification remains pending and owner-deferred
 
 Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, target identity, authority metadata checks, bounded conformance, explicit relationship representation, and reconstructible state.
@@ -40,17 +40,19 @@ Sensemaking Skills is an **agent-native engineering sensemaking and control laye
 - **Portable Target Rebinding v1** is repository-qualified. `campaign target rebind` / `target verify-rebind` persist a verified primary-target locator companion without rewriting canonical Campaign snapshot provenance. `campaign multi-target rebind` updates an explicitly selected target alias only after exact identity/state equivalence and records append-only rebind history.
 - **Cross-Repository Dependency Declarations v1** is repository-qualified. `campaign multi-target relate`, `dependency-check`, and `graph` preserve caller-authored relationships among existing aliases. Alias/evidence/hash-chain validity and cycles in explicit ordering relations are mechanically checked; architecture and work order are not inferred.
 - **Campaign Completion & Archival v1** is repository-qualified. `campaign closeout` creates a recalculable receipt only after `campaign close` has already authored terminal state; `completion-receipt` verifies it against current durable workspace bytes; `archive` writes a nondestructive marker. `campaign inventory --include-archived` exposes archived Campaigns without equating archive with success.
-- **Agent Workflow / Golden Path v1** is repository-qualified. `campaign workflow list/show` exposes four static composition paths—single repository, fresh context, transferred Campaign, and multi repository—with explicit agent decision gates. The surface never selects a flow or executes its steps.
-- **Surface Simplification & Contract Consolidation v1** is repository-qualified. Recent rebinding/relation/completion companions now share bounded canonical JSON hashing, atomic JSON replacement, and fsync'd JSONL append primitives while retaining independent schemas and authority.
+- **Agent Workflow / Golden Path v1** is repository-qualified. `campaign workflow list/show` exposes four static Campaign composition paths—single repository, fresh context, transferred Campaign, and multi repository—with explicit agent decision gates. The surface never selects a flow or executes its steps.
+- **Documentation Entry-Point Consolidation v1** is integrated. README routes audiences to one canonical surface per concern: `GETTING_STARTED.md` for human first use, `using-sensemaking` for coding-agent instructions, Golden Path v1 for Campaign workflow composition, the deeper agent-native operating workflow for Level-2 reasoning, and the operations runbook for maintainer qualification.
+- **Surface Simplification & Contract Consolidation v1** is repository-qualified. Recent rebinding/relation/completion companions share bounded canonical JSON hashing, atomic JSON replacement, and fsync'd JSONL append primitives while retaining independent schemas and authority.
 - **Extensibility & Simplification v1** remains repository-qualified: `semantic catalog`, candidate-reservoir boundary validation, and shared provenance-graph construction remain integrated.
-- **Persona & Adaptive Guidance Model v0** is a documentation/strategy interpretation, not executable substrate. It clarifies how existing surfaces should be used proportionally without adding a new decision engine.
+- **Persona & Adaptive Guidance Model v0** is a product/strategy interpretation, not executable substrate. It clarifies how existing surfaces should be used proportionally without adding a new decision engine.
+- **Adaptive Guidance Existing Product Reconciliation v0** is complete/integrated. The shipped `using-sensemaking` Skill now carries the five-factor adaptive lens with a progressively loaded reference; README/Getting Started are Sensemaking-first and Campaign-when-warranted; the Campaign model is explicitly the central durable Level-2 abstraction rather than a universal entry point; Golden Paths remain static Campaign composition guidance with a qualitative pre-entry gate; the stale legacy `SKILL.md.template` is retained only as a non-authoritative compatibility pointer. Fresh mechanics reassessment found no behavior-level mismatch and introduced no runtime/API/schema change.
 - Campaign schema remains **v2**. New locator, relation, completion/archive, and multi-target records remain additive companions rather than alternate Campaign truth systems.
 - `docs/operations-runbook.md` remains the current operator-facing runbook; checked-in CI workflows remain executable authority.
 
 ### Material limitations and evidence ceilings
 
 - Repository qualification does not establish native-harness usefulness, portability in a genuine second harness, comparative superiority, or general autonomous software-development capability.
-- The adaptive-guidance interpretation does not establish that its five contextual factors improve outcomes, reduce coordination cost, or predict when Campaign is beneficial; those remain product hypotheses unless later evidence supports stronger claims.
+- The adaptive-guidance interpretation and product reconciliation do not establish that the five contextual factors improve outcomes, reduce coordination cost, or predict when Campaign is beneficial; those remain product hypotheses unless later evidence supports stronger claims.
 - The active agent owns semantic frontier selection. No deterministic `StrategicPlanner`, `OuterLoopEngine`, automatic responsibility selector, capability selector, uncertainty ranker, repository selector, workflow router, persona classifier, expertise scorer, complexity/consequentiality scorer, or automatic product-thesis revision mechanism is authorized.
 - Explicit owner direction can warrant bounded repository construction; it does **not** manufacture behavioral evidence or convert missing empirical proof into PASS.
 - Target rebinding verifies a caller-supplied path against already-recorded repository identity/state. `rebind valid != repository selected != work authorized`, and rebind does not bless drift.
@@ -75,45 +77,48 @@ Current material frontier items are:
 6. **Portable Target Rebinding v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Explicit same-identity/same-state path rebinding is integrated for primary and multi-target repositories without discovery or provenance rewriting.
 7. **Cross-Repository Dependency Declarations v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Explicit relation records, mechanical dependency checks, graph projection, and preflight integration are integrated without architecture inference.
 8. **Campaign Completion & Archival v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Terminal completion receipts, receipt verification, nondestructive archive markers, and archived inventory projection are integrated.
-9. **Agent Workflow / Golden Path v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Static non-routing composition guidance is integrated in CLI, Getting Started, and the `using-sensemaking` Skill distribution.
-10. **Surface Simplification & Contract Consolidation v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Recent companion IO duplication is consolidated behind tested mechanical primitives without semantic/schema unification.
-11. **Persona & Adaptive Guidance Model v0 — COMPLETE / OWNER_RATIFIED / DOCUMENTATION_ONLY.** Primary persona and contextual adaptation factors are clarified without runtime scoring, routing, new Campaign tiers, schema changes, or stronger empirical claims.
-12. **Native-harness / empirical portability qualification — DEFERRED BY OWNER DIRECTION.** Existing protocols remain valid; new experiments are not the current construction priority or universal build gate.
-13. **Progressive Campaign rigor tiers — DEFERRED / REQUIRES EVIDENCE.** The adaptive-guidance model explains why ceremony may vary but does not warrant LIGHT/STANDARD/QUALIFIED runtime tiers or automatic thresholds.
-14. **Cross-repository transaction/deployment coordination — DEFERRED / NOT AUTHORIZED.** Current multi-repository capability intentionally stops before commit/deploy/rollback atomicity.
-15. **Level-4 reconciliation automation / product-category expansion — DEFERRED / NOT AUTHORIZED.** Automatic thesis adjudication and a Sensemaking Protocol product pivot remain outside current Level-3 authority.
+9. **Agent Workflow / Golden Path v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Static non-routing Campaign composition guidance is integrated in CLI, Getting Started, and the `using-sensemaking` Skill distribution.
+10. **Documentation Entry-Point Consolidation v1 — COMPLETE / INTEGRATED.** Current audience-facing documentation roles are explicit and non-duplicative.
+11. **Surface Simplification & Contract Consolidation v1 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Recent companion IO duplication is consolidated behind tested mechanical primitives without semantic/schema unification.
+12. **Persona & Adaptive Guidance Model v0 — COMPLETE / OWNER_RATIFIED / DOCUMENTATION_ONLY.** Primary persona and contextual adaptation factors are clarified without runtime scoring, routing, new Campaign tiers, schema changes, or stronger empirical claims.
+13. **Adaptive Guidance Existing Product Reconciliation v0 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED SHIPPED GUIDANCE.** Product audit and guidance propagation are integrated; fresh mechanics reassessment found zero behavior-misaligned findings and no runtime package is selected.
+14. **Native-harness / empirical portability qualification — DEFERRED BY OWNER DIRECTION.** Existing protocols remain valid; new experiments are not the current construction priority or universal build gate.
+15. **Progressive Campaign rigor tiers — DEFERRED / REQUIRES EVIDENCE.** Existing mechanics already permit proportional use; the observed burden was repaired through shipped guidance, so formal LIGHT/STANDARD/QUALIFIED runtime tiers or automatic thresholds remain unwarranted.
+16. **Cross-repository transaction/deployment coordination — DEFERRED / NOT AUTHORIZED.** Current multi-repository capability intentionally stops before commit/deploy/rollback atomicity.
+17. **Level-4 reconciliation automation / product-category expansion — DEFERRED / NOT AUTHORIZED.** Automatic thesis adjudication and a Sensemaking Protocol product pivot remain outside current Level-3 authority.
 
 ### Current highest-leverage boundary
 
-**The Persona & Adaptive Guidance Model v0 reinterpretation is complete as a product/documentation clarification. No additional repository-level construction boundary is selected from it.**
+**Adaptive Guidance Existing Product Reconciliation v0 is complete. The existing product now teaches the Persona & Adaptive Guidance Model proportionally, and the fresh mechanics reassessment establishes no current behavior-level construction boundary.**
 
-The current interpretation is deliberately build-light:
+The current state is deliberately build-light:
 
 ```text
 high-delegation primary persona
--> contextual supervision/delegation/complexity/consequentiality/continuation factors
--> agent-reasoned scaffolding, rigor, and durability
--> existing Sensemaking surfaces used proportionally
--> no automatic routing or new runtime
+-> contextual supervision/delegation/decision-complexity/consequentiality/continuation factors
+-> shipped using-sensemaking + onboarding teach proportional support
+-> repository sensemaking when the responsibility is uncertain
+-> Campaign when durable continuation is useful
+-> stronger reconciliation/verification when claims or repairs are consequential
+-> no score, mode, router, or new runtime
 ```
-
-The earlier Portability, Completion & Workflow v1 sequence remains complete and repository-qualified.
 
 ### Current decision-changing uncertainty
 
-What concrete future repository/product pressure, if any, will show that the adaptive-guidance concepts need additional mechanically expressible product support rather than remaining agent judgment over the existing surfaces?
+What concrete future **normal-use** repository/product pressure, if any, will show that aligned guidance is insufficient and that the existing mechanics need an additional mechanically expressible capability?
 
-Current evidence does not establish a recurring failure or burden that warrants expertise scoring, complexity/consequentiality scoring, formal Campaign rigor tiers, automatic Campaign thresholds, or persona-based routing. The candidate reservoir remains idea memory, not priority.
+Current evidence does not establish a recurring behavior-level failure or burden that warrants expertise scoring, complexity/consequentiality scoring, formal Campaign rigor tiers, automatic Campaign thresholds, persona-based routing, or another Persona-model expansion. The candidate reservoir remains idea memory, not priority.
 
 ### Current warranted repository-level responsibility
 
-**No additional construction responsibility is selected after the Persona & Adaptive Guidance Model v0 reinterpretation.**
+**No additional construction responsibility is selected after Adaptive Guidance Existing Product Reconciliation v0.**
 
-Use the model during normal repository work. Future repository-only/hermetic work may be selected from explicit owner direction or concrete mechanically expressible product/integrity/reconstruction pressure while preserving current semantic and authority boundaries.
+Use the aligned product during ordinary repository work. Future repository-only/hermetic work may be selected from explicit owner direction or concrete mechanically expressible product/integrity/reconstruction pressure while preserving current semantic and authority boundaries.
 
 Do not automatically begin:
 
 ```text
+Persona & Adaptive Guidance Model v1
 StrategicPlanner / OuterLoopEngine
 automatic Strategic Frontier ranking
 automatic responsibility/capability/uncertainty selection
@@ -130,6 +135,7 @@ Sensemaking Protocol product-category pivot
 Campaign schema v3 merely for convenience
 broad historical-document deletion
 new empirical experiment
+unrelated candidate feature merely because this milestone closed
 ```
 
 ### Completed evidence and reassessment
@@ -140,10 +146,19 @@ Persona & Adaptive Guidance Model v0 reinterpretation:
 - Level-4 disposition is `REINTERPRET`: the existing AI-native repository-owner commitment is clarified rather than replaced.
 - Product purpose, external product boundary, strategic non-goals, Campaign schema v2, agent-owned semantic judgment, and empirical claim ceilings remain unchanged.
 - `docs/persona-adaptive-guidance-design-preflight.md` freezes the documentation scope and non-goals.
-- `docs/product-strategy.md`, `docs/product-operating-model.md`, `docs/agent-native-operating-workflow.md`, and `docs/strategic-candidate-directions.md` carry the current interpretation.
-- No runtime/schema/API change, scoring model, persona inference, automatic routing, formal Campaign tier system, or experiment is introduced.
 
-Prior owner-directed cycles remain documented in `docs/campaign-productization-v1-handoff.md` and `docs/campaign-usability-and-scale-v1-handoff.md`.
+Adaptive Guidance Existing Product Reconciliation v0:
+
+- **PR #359 / product reconciliation audit** exact head `f73794e5fb873210ac24500ad37f7e0fd94e3722` passed Product Validation #916 and Release Candidate Distribution #92 before merge as `9ac6dd22696d6d8cc4e321dd70f7dc1f31d28616`.
+- The audit classified current mismatches as presentation-level and selected a bounded shipped-guidance responsibility; no runtime/API/schema package was warranted.
+- **PR #360 / shipped guidance alignment** exact head `6c99323e66771803d352b5d563e2aa65c085fa80` passed Product Validation #919 and Release Candidate Distribution #94 before merge as `bce82e19101c4263437d97e7a53030e8e6b0ef64`.
+- PR #360 passed Campaign product tests, repository/Skill contracts, strategic-state and candidate-direction validation, installed-wheel/harness-adapter regressions, Linux/Windows filesystem-security checks, and fresh wheel/sdist distribution proofs.
+- The complete Skill-tree review found the obsolete distributed `skills/using-sensemaking/SKILL.md.template`; it was retired as a compatibility pointer to canonical `SKILL.md` rather than preserved as a second routing authority.
+- Fresh Package-3 mechanics reassessment confirmed: Skills and `repo-sensemaker` remain usable without Campaign state; Campaign initialization is explicit; preflight/Doctor remain mechanical; Resume emits no recommended action; Golden Paths select/execute nothing; reconciliation remains material-claim-triggered; repair verification remains finding-specific; completion requires an already-authored semantic terminal decision.
+- `BEHAVIOR_MISALIGNED` findings: **0**.
+- No runtime/API/schema change, scoring model, persona inference, automatic routing, formal Campaign tier system, or experiment was introduced by this milestone.
+
+Prior owner-directed cycles remain documented in `docs/campaign-productization-v1-handoff.md`, `docs/campaign-usability-and-scale-v1-handoff.md`, and `docs/campaign-portability-completion-v1-handoff.md`.
 
 Third owner-directed Portability, Completion & Workflow sequence:
 
@@ -152,36 +167,32 @@ Third owner-directed Portability, Completion & Workflow sequence:
 - **PR #353 / Campaign Completion & Archival v1** exact head `a7551b3e3e875fab05d5cca0674e52174e724609` passed Product Validation #903, Release Candidate Distribution #85, and retained Lab Validation #56 before merge as `2dd73303244d4f3474286c46baeee0c2bd7c303a`.
 - **PR #354 / Agent Workflow / Golden Path v1** exact head `db32709b1d3b518fcd59d76f2c901a66583c184c` passed Product Validation #905, Release Candidate Distribution #86, and retained Lab Validation #58 before merge as `3420fe92c198c43e4dfbb327bcd701fe16dc2d11`.
 - **PR #355 / Surface Simplification & Contract Consolidation v1** exact head `b49f92b8eda0a1e728a65abbfccc7f382e3f2fde` passed Product Validation #907, Release Candidate Distribution #87, and retained Lab Validation #60 before merge as `ddbdc6e22604d3291995bc1a157bff07180aa41b`.
-- No native-harness run, user experiment, comparative benchmark, new operative experiment state, semantic planner/router, automatic selection, external publication, deployment coordinator, or Campaign schema migration was introduced.
 
-Detailed evidence is preserved in `docs/campaign-portability-completion-v1-handoff.md`.
-
-Post-sequence reassessment:
+Post-reconciliation reassessment:
 
 ```text
-PORTABLE TARGET REBINDING v1 = COMPLETE / REPOSITORY_QUALIFIED
-CROSS-REPOSITORY DEPENDENCY DECLARATIONS v1 = COMPLETE / REPOSITORY_QUALIFIED
-CAMPAIGN COMPLETION & ARCHIVAL v1 = COMPLETE / REPOSITORY_QUALIFIED
-AGENT WORKFLOW / GOLDEN PATH v1 = COMPLETE / REPOSITORY_QUALIFIED
-SURFACE SIMPLIFICATION & CONTRACT CONSOLIDATION v1 = COMPLETE / REPOSITORY_QUALIFIED
-PERSONA & ADAPTIVE GUIDANCE MODEL v0 = COMPLETE / OWNER_RATIFIED / DOCUMENTATION_ONLY
+PERSONA & ADAPTIVE GUIDANCE MODEL v0 = COMPLETE / OWNER_RATIFIED
+ADAPTIVE GUIDANCE PRODUCT AUDIT = COMPLETE / INTEGRATED
+SHIPPED GUIDANCE ALIGNMENT = COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED
+FRESH MECHANICS REASSESSMENT = COMPLETE
+BEHAVIOR_MISALIGNED FINDINGS = 0
 CAMPAIGN SCHEMA = v2
 EMPIRICAL CLAIM CEILINGS = UNCHANGED
+PROGRESSIVE CAMPAIGN RIGOR TIERS = DEFERRED / REQUIRES EVIDENCE
 NEXT PACKAGE = NOT SELECTED
 ```
 
 ### Authority / owner direction
 
 - Owner explicitly does **not** want additional experiments as the current development path.
-- Owner explicitly ratified the Persona & Adaptive Guidance Model v0 recommendations and authorized implementing the full bounded documentation sequence without per-step approval.
-- Owner previously authorized the completed Portability, Completion & Workflow sequence.
+- Owner ratified Persona & Adaptive Guidance Model v0 and subsequently authorized the full Existing Product Reconciliation v0 sequence without waiting for per-package approval.
 - Explicit owner direction remains a valid Level-3 warrant for bounded repository-only/hermetic construction within the current product thesis.
 - Owner direction to build is not native-harness/product-value evidence and does not expand public empirical claims.
 - Desired delegation is not granted authority. Product-thesis changes that materially alter mission, external product boundary, major non-goals, public claim ceilings, or merge/release authority remain owner-reserved decisions.
 
 ### Thesis review state
 
-`THESIS_REVIEW_REQUIRED`: **NO**. The owner-ratified Level-4 review ended in `REINTERPRET`: it clarifies the existing primary-user commitment and how opinionated guidance should adapt to contextual supervision, delegation, decision complexity, consequentiality, and continuation complexity. It does not change the product purpose, external product boundary, agent-owned semantic judgment, Campaign schema v2, major non-goals, merge/release authority, or empirical claim ceilings.
+`THESIS_REVIEW_REQUIRED`: **NO**. Persona v0 remains an owner-ratified `REINTERPRET`, and the subsequent product reconciliation propagated that interpretation through existing shipped guidance without changing product purpose, external product boundary, agent-owned semantic judgment, Campaign schema v2, major non-goals, merge/release authority, or empirical claim ceilings.
 
 ## Semantic Architecture state
 
@@ -204,7 +215,7 @@ Executable Substrate
     explicit relation representation, and reconstructible completion
 ```
 
-The adaptive-guidance factors belong to the reasoning/product model, not the executable substrate. Cross-repository relation records do not become semantic dependency inference, golden paths do not become routing, shared companion IO does not become a shared semantic model, and contextual user/problem factors do not become hidden automatic selectors.
+The adaptive-guidance factors belong to the reasoning/product model, not the executable substrate. Cross-repository relation records do not become semantic dependency inference, Golden Paths do not become routing, shared companion IO does not become a shared semantic model, and contextual user/problem factors do not become hidden automatic selectors.
 
 ## Product Management source migration — repository complete
 
@@ -231,7 +242,7 @@ Current functional PM empirical PASS: NONE
 Current PM portability empirical PASS: NONE
 ```
 
-Repository-local validation, target rebinding, multi-target relations, completion receipts, golden-path navigation, packaging, retained compatibility tests, and the Persona & Adaptive Guidance Model v0 do not substitute for genuine native-harness evidence when a stronger claim requires it.
+Repository-local validation, target rebinding, multi-target relations, completion receipts, Golden Path navigation, packaging, retained compatibility tests, Persona v0, and guidance reconciliation do not substitute for genuine native-harness evidence when a stronger claim requires it.
 
 ## Release architecture continuity
 
@@ -285,11 +296,13 @@ decision complexity != consequentiality
 continuation complexity != task size
 more scaffolding != more visible machinery
 adaptive guidance != automatic routing
+Campaign available != Campaign warranted
+presentation burden repaired != runtime tier warranted
 ```
 
 ## Current next step
 
-Use the **frozen Outer Loop v0 + owner-directed build-first policy + Persona & Adaptive Guidance Model v0** during ordinary repository development:
+Use the **frozen Outer Loop v0 + Persona & Adaptive Guidance Model v0 + aligned shipped guidance** during ordinary repository development:
 
 ```text
 read Level-4 strategy
@@ -299,7 +312,8 @@ read Level-4 strategy
    consequentiality, and continuation complexity
 -> accept concrete repository pressure or explicit owner direction
 -> select or decline one bounded repository-level responsibility
--> use only as much scaffolding, Sensemaking ceremony, and durability as warranted
+-> use only as much scaffolding, repository sensemaking, verification,
+   and durable Campaign state as warranted
 -> use deterministic surfaces only to transport/validate explicit decisions
 -> perform bounded Level-2/Level-1 work
 -> mechanically qualify repository/hermetic claims
@@ -308,7 +322,7 @@ read Level-4 strategy
 -> reassess / stop
 ```
 
-There is **no automatically selected next construction package after this reinterpretation**. `docs/strategic-candidate-directions.md` remains idea memory rather than a queue. In particular, the new conceptual factors do not authorize formal Campaign rigor tiers, automatic thresholds, persona modes, scoring, or routing.
+There is **no automatically selected next construction package after this reconciliation**. `docs/strategic-candidate-directions.md` remains idea memory rather than a queue. In particular, the successful presentation repair does not authorize formal Campaign rigor tiers, automatic thresholds, persona modes, scoring, routing, Persona v1, or another feature wave.
 
 Future bounded repository-only/hermetic construction may proceed from explicit owner direction without requiring a new experiment merely for permission to build. Additional empirical/native-harness experiments remain deferred by owner direction. Resume them only if the owner later chooses to pursue claims that require them.
 
@@ -317,8 +331,13 @@ Future bounded repository-only/hermetic construction may proceed from explicit o
 - `STATUS.md` — current Level-3 Strategic Repository Evolution state and cross-program status.
 - `docs/product-strategy.md` — current Level-4 product thesis, primary persona, boundary, hypotheses, and strategic authority.
 - `docs/persona-adaptive-guidance-design-preflight.md` — owner-ratified Level-4 `REINTERPRET` scope, contextual adaptation model, and non-goals.
+- `docs/adaptive-guidance-product-reconciliation-v0.md` — completed audit, shipped-guidance alignment evidence, and fresh mechanics reassessment.
 - `docs/product-operating-model.md` — current value/authority model plus adaptive guidance and rigor interpretation.
-- `docs/agent-native-operating-workflow.md` — Level-2 operating flow and practical adaptive-ceremony guidance.
+- `skills/using-sensemaking/SKILL.md` — canonical coding-agent usage instructions.
+- `skills/using-sensemaking/references/adaptive-guidance-v0.md` — detailed qualitative scaffolding/rigor/durability guidance.
+- `GETTING_STARTED.md` — canonical human first-use path.
+- `docs/agent-workflow-golden-path-v1.md` — static non-routing Campaign workflow-composition reference.
+- `docs/agent-native-operating-workflow.md` — Level-2 operating flow and deeper responsibility/authority model.
 - `docs/strategic-outer-loop.md` — canonical four-level control model; Outer Loop v0 frozen operational baseline.
 - `docs/strategic-candidate-directions.md` — non-authoritative possibility reservoir.
 - `docs/strategic-state-contract.md` — Level-3 durable state contract.
@@ -330,7 +349,6 @@ Future bounded repository-only/hermetic construction may proceed from explicit o
 - `docs/portable-target-rebinding-v1.md` — explicit verified locator rebinding contract.
 - `docs/cross-repository-dependency-declarations-v1.md` — explicit target-relation contract.
 - `docs/campaign-completion-and-archival-v1.md` — terminal receipt/archive contract.
-- `docs/agent-workflow-golden-path-v1.md` — static non-routing workflow navigation contract.
 - `docs/surface-simplification-and-contract-consolidation-v1.md` — bounded companion IO consolidation contract.
 - `.github/workflows/validation.yml` — Product Validation executable authority.
 - `.github/workflows/lab-validation.yml` — retained Lab Validation executable authority.
