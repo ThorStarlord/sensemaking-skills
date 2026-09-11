@@ -7,14 +7,13 @@ infers repository relationships, architecture, work order, or authorization.
 
 from __future__ import annotations
 
-import hashlib
 import json
-import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
+from .companion_io import append_jsonl_fsync, mapping_sha256
 from .multi_target import MultiTargetService, _safe_alias
 from .target_snapshot import CampaignService
 
@@ -48,14 +47,6 @@ class MultiTargetRelationCheck:
     diagnostics: tuple[MultiTargetRelationDiagnostic, ...]
     ordering_cycles: tuple[tuple[str, ...], ...] = ()
     semantic_truth_established: bool = False
-
-
-def _canonical_bytes(value: Mapping[str, Any]) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-
-
-def _sha256(value: Mapping[str, Any]) -> str:
-    return hashlib.sha256(_canonical_bytes(value)).hexdigest()
 
 
 def _record_core(record: Mapping[str, Any]) -> dict[str, Any]:
@@ -214,7 +205,7 @@ class MultiTargetRelationService:
             if raw.get("semantic_truth_established") is not False:
                 diagnostics.append(MultiTargetRelationDiagnostic("MULTI_TARGET_RELATION_SEMANTIC_AUTHORITY_INVALID", "semantic_truth_established must remain false", relation_id, line_number))
             try:
-                expected_digest = _sha256(_record_core(raw))
+                expected_digest = mapping_sha256(_record_core(raw))
             except KeyError:
                 expected_digest = ""
             if raw.get("record_digest") != expected_digest:
@@ -272,15 +263,12 @@ class MultiTargetRelationService:
             "previous_digest": previous,
             "semantic_truth_established": False,
         }
-        record = {**core, "record_digest": _sha256(core)}
+        record = {**core, "record_digest": mapping_sha256(core)}
         prospective = [*current.relations, record]
         cycles = _ordering_cycles(prospective)
         if cycles:
             raise ValueError("refuse relation because ordering relations would contain a cycle: " + " -> ".join(cycles[0]))
-        with self.path.open("a", encoding="utf-8", newline="\n") as handle:
-            handle.write(json.dumps(record, sort_keys=True, ensure_ascii=False) + "\n")
-            handle.flush()
-            os.fsync(handle.fileno())
+        append_jsonl_fsync(self.path, record)
         return str(record["record_digest"])
 
     def graph(self) -> dict[str, Any]:
