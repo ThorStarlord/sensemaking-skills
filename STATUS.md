@@ -2,13 +2,97 @@
 
 **Version:** 0.3.0  
 **Last updated:** 2026-09-10  
-**Current phase:** Product Management source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 complete with Outcome A; bounded Phase 15 registry-liveness conformance qualified; post-Phase-10 build-first semantic substrate B1–B6 repository-qualified  
-**Primary program:** Sensemaking Campaign productization with agent-agnostic domain capabilities and evidence-governed repository reasoning  
+**Current phase:** Product Management source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 complete with Outcome A; bounded Phase 15 registry-liveness conformance qualified; post-Phase-10 build-first semantic substrate B1–B6 repository-qualified; Strategic Outer Loop Levels 3–4 documentation foundation in construction  
+**Primary program:** Sensemaking Campaign productization with agent-agnostic domain capabilities, evidence-governed repository reasoning, and durable strategic repository evolution  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this file intentionally does not self-pin a commit that becomes stale when it changes  
-**Current semantic frontier:** continue only from a concrete missing product/integrity capability while the Construction Diminishing-Returns Gate remains untriggered; additional empirical experiments are deferred until that gate or an explicit owner decision  
+**Current semantic frontier:** continue from concrete product/integrity or strategic-reconstruction capabilities while architecture remains informative; additional empirical experiments are deferred until an explicit owner decision or a future gate makes behavioral evidence decisive  
 **Current PM frontier:** Waves 1–6 are `REPOSITORY_QUALIFIED`; the pinned 27-command source migration is complete; native-harness/portability qualification remains pending
 
 Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, target identity, authority metadata checks, bounded conformance, and reconstructible state.
+
+## Strategic Repository Evolution state — Level 3
+
+`STATUS.md` is the current operational projection of the **Level-3 Strategic Repository Evolution Loop**. The product thesis and major strategic commitments remain Level-4 authority in `docs/product-strategy.md`; this file records where repository/product evolution currently stands under that strategy.
+
+### Current product strategy
+
+- **Level-4 authority:** `docs/product-strategy.md`.
+- **Control model:** `docs/strategic-outer-loop.md`.
+- **Level-3 contract:** `docs/strategic-state-contract.md`.
+- **Level-4 revision contract:** `docs/product-thesis-revision.md`.
+- **Current product purpose:** improve repository-level decisions when a capable coding agent cannot safely determine the correct next engineering responsibility from the user request alone.
+
+### Current capability state
+
+- Campaign/Responsibility semantics, authority boundaries, artifact admission, durable transitions, reconciliation, handoff, and target identity are established product machinery.
+- Semantic Architecture Phase 9/10 and bounded Phase 15 are repository-qualified within their stated evidence ceilings.
+- Build-first semantic substrate B1–B6 is repository-qualified: mechanical observations, bounded semantic map, optional semantic companion state, Skill manifests, Domain Packs, Campaign observability, and bundle portability.
+- Product Management Waves 1–6 are repository-qualified across all 27 pinned source capabilities; native-harness and portability evidence remain pending.
+- The strategic outer-loop concept has prior bounded campaign evidence, but this current tranche is a documentation/authority reconciliation, not a claim of a new autonomous strategic runtime.
+
+### Material limitations and evidence ceilings
+
+- Repository qualification does not establish native-harness usefulness, portability, comparative superiority, or general autonomous software development.
+- The active agent owns semantic frontier selection; no deterministic `StrategicPlanner`, outer-loop router, or automatic product-thesis revision mechanism is authorized.
+- Level-3/Level-4 durable state is initially carried by existing Markdown authority surfaces; no new schema has been justified.
+- B7 Semantic Reference Resolution/Audit is being developed separately from this outer-loop foundation and must not be treated as integrated `main` capability until its own merge occurs.
+
+### Strategic Frontier
+
+Current material frontier items are:
+
+1. **Strategic outer-loop foundation — ACTIVE.** Canonicalize the four-level control model, Level-3 strategic-state contract, and Level-4 product-thesis revision semantics without introducing a planning engine or new schema.
+2. **B7 semantic-reference integrity — PARALLEL / NOT INTEGRATED.** A separate bounded implementation candidate exists outside this tranche; its status must be read from its own branch/PR until merged.
+3. **Native-harness / portability qualification — DEFERRED BY OWNER DIRECTION.** Existing protocols and evidence ceilings remain valid, but additional empirical experiments are not the current construction priority.
+4. **Further outer-loop machinery — NOT YET AUTHORIZED.** Mechanical validation, `strategy inspect/diff`, Level-3→Campaign mechanics, and Level-4 reconciliation mechanics require a new post-foundation decision rather than automatic continuation.
+
+### Current highest-leverage boundary
+
+**Boundary:** make product-thesis authority, strategic repository-evolution state, bounded Campaign responsibility, and execution state reconstructibly distinct while keeping one active agent as the semantic controller.
+
+**Why now:** the repository already contains both inner-loop and outer-loop concepts across self-development campaigns, the operating model, strategy documents, Campaign machinery, and PM capability work. The current gap is not absence of concepts; it is lack of one canonical relationship among their scopes and authority surfaces.
+
+### Current decision-changing uncertainty
+
+Can Levels 3 and 4 be made sufficiently explicit using existing Markdown authority surfaces, or does construction immediately require a new durable runtime/schema?
+
+Current decision: **use existing surfaces first**. New machinery is not warranted merely to mirror the conceptual model.
+
+### Current warranted repository-level responsibility
+
+Create and reconcile the documentation foundation for:
+
+```text
+Level 4 — Product Thesis / Strategy Revision
+Level 3 — Strategic Repository Evolution
+Level 2 — Responsibility / Campaign
+Level 1 — Execution
+```
+
+Success means the scopes, delegation/escalation rules, authority ownership, Strategic Frontier semantics, Level-3 state contract, and Level-4 revision dispositions are explicit and mutually consistent without changing Campaign schema/runtime behavior.
+
+### Expected evidence and reassessment
+
+Expected completion evidence:
+
+- canonical outer-loop/control-model document exists;
+- Level-3 strategic-state contract exists and `STATUS.md` adopts the role;
+- Level-4 revision contract exists and `product-strategy.md` adopts the role;
+- `product-operating-model.md` reconciles the four scopes and governance loop;
+- repository validation/CI for the exact candidate head remains green;
+- no runtime/schema/router/planner change appears in the diff.
+
+After this foundation is qualified, reassess whether a mechanically decidable outer-loop integrity capability is concrete enough to justify a next package. Do **not** assume a runtime Package 4 is automatically warranted.
+
+### Authority / owner direction
+
+- Owner has authorized this documentation-first outer-loop construction and explicitly deferred new experiments for now.
+- Product-thesis changes that materially alter primary user, problem/JTBD, external product boundary, major non-goals, public claim ceilings, or merge/release authority remain owner-reserved decisions.
+- Repository-level implementation may proceed within current strategy only when bounded by existing authority and evidence.
+
+### Thesis review state
+
+`THESIS_REVIEW_REQUIRED`: **NO** for this tranche. The work clarifies the control hierarchy and durable authority surfaces; it does not currently require changing the product purpose, primary user, or ratified external product boundary.
 
 ## Semantic Architecture state
 
@@ -342,21 +426,28 @@ native-harness qualified != portability qualified
 portability qualified != promoted
 lineage != semantic warrant
 handoff != semantic recommendation
+product thesis != strategic state
+strategic frontier != backlog
+strategic boundary selected != implementation authorized
+Level-3 state != Level-4 strategy authority
 ```
 
-The Campaign Controller is not a semantic router. The Reasoning Model is not a central semantic controller.
+The Campaign Controller is not a semantic router. The Reasoning Model is not a central semantic controller. The Strategic Outer Loop is not a deterministic planner.
 
 ## Current next step
 
-The repository now has a broad mechanically bounded build-first substrate. **Do not interpret the completion of this batch as evidence that construction must stop.**
+Qualify and reconcile the documentation-first Strategic Outer Loop foundation. **Do not interpret completion of the Level-3/Level-4 conceptual contracts as automatic authorization for new outer-loop runtime machinery.**
 
-Choose the next package only from a concrete missing product/integrity capability. If the next meaningful architecture choice cannot be resolved from existing contracts without answering “would agents actually benefit from/use this?”, treat that as the Construction Diminishing-Returns Gate and switch to empirical validation instead of inventing another abstraction.
+After qualification, choose any next package only from a concrete missing product/integrity/reconstruction capability with a mechanically bounded contract. If the next meaningful choice requires semantic ranking, automatic strategy selection, or unmeasured product-value assumptions, stop construction at that boundary rather than inventing a `StrategicPlanner`.
 
 ## Canonical sources
 
-- `STATUS.md` — current cross-program state.
-- `docs/product-strategy.md` — current product purpose, boundary, hypotheses, and strategic authority.
-- `docs/product-operating-model.md` — current value stream, responsibility ownership, and runtime boundary.
+- `STATUS.md` — current Level-3 Strategic Repository Evolution state and cross-program status.
+- `docs/product-strategy.md` — current Level-4 product thesis, boundary, hypotheses, and strategic authority.
+- `docs/strategic-outer-loop.md` — canonical four-level control model and Level-3/Level-4 relationship.
+- `docs/strategic-state-contract.md` — Level-3 durable strategic-state contract.
+- `docs/product-thesis-revision.md` — Level-4 strategy revision and owner-ratification contract.
+- `docs/product-operating-model.md` — current value stream, responsibility ownership, and runtime/control boundary.
 - `docs/semantic-architecture/README.md` — Semantic Architecture index.
 - `docs/semantic-architecture/implementation-plan.md` — historical phases + active build-first track.
 - `docs/semantic-architecture/build-first-policy.md` — construction authorization and diminishing-returns gate.
