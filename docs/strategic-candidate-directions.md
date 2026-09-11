@@ -44,7 +44,7 @@ Use these dispositions when reconciling an idea against current repository state
 | `IMPLEMENTED_BASELINE` | The core idea already exists as current repository-qualified product/support machinery. |
 | `PARTIALLY_IMPLEMENTED` | Material pieces exist, but the broader idea still contains unimplemented scope. |
 | `CANDIDATE_EXTENSION` | A possible additive extension to an existing capability; not current work. |
-| `REQUIRES_EVIDENCE` | Do not promote without a concrete natural-use burden/failure or resumed empirical evidence. |
+| `REQUIRES_EVIDENCE` | Do not promote without a concrete natural-use burden/failure, mechanically explicit need, or owner direction. |
 | `DEFERRED_BY_OWNER_DIRECTION` | Relevant evidence work exists but is currently deferred by explicit owner direction. |
 | `LONG_HORIZON` | Strategically interesting, but too broad or insufficiently grounded for current Level-3 work. |
 | `REQUIRES_LEVEL_4_REVIEW` | Pursuing the idea may materially change ratified product-thesis commitments. |
@@ -84,11 +84,21 @@ For thesis-changing candidates, Level 3 escalates to Level 4 rather than silentl
 
 ## 3. Reconciliation snapshot
 
-The candidate inventory below was reconciled against `main` on 2026-09-11 after the first frozen Outer Loop v0 normal-use cycle.
+The candidate inventory below was reconciled against `main` on 2026-09-11 after the owner-directed Campaign Productization/Operability/Extensibility sequence.
 
-Several ideas that originally appeared as future possibilities are already implemented in the B1-B7 semantic/build-first substrate. In particular, the repository now contains repository-qualified Campaign observability/portability, Resume Capsule, replay, provenance graph, portable bundles, Skill Contract Manifests, Domain Packs, and bounded semantic-reference audit.
+The repository now contains repository-qualified:
 
-The Product Management source migration also progressed beyond the original Wave-2 proposal: all six planned waves and all 27 pinned upstream source capabilities are repository-qualified, while native-harness and portability qualification remain pending.
+- Campaign observability/portability, Resume Capsule v1, replay, provenance graph, portable bundles, and bounded semantic-reference audit;
+- Campaign Preflight v0;
+- append-only Uncertainty History v0;
+- mechanical Campaign Doctor diagnostics;
+- local Campaign provenance rendering and graph-integrity checks;
+- Skill Contract Manifests, Domain Packs, semantic conformance, and read-only `semantic catalog` discovery;
+- a bounded validator preserving this candidate reservoir's explicit non-authority markers.
+
+The Product Management source migration remains complete across all six planned waves and all 27 pinned upstream source capabilities. Native-harness and portability qualification remain pending and explicitly unestablished.
+
+The 2026-09-11 owner direction changed the **construction gate**, not the evidence ceiling: repository-only/hermetic capabilities may be built from explicit owner direction without a new experiment, while empirical/native-harness claims still require their own evidence.
 
 This document preserves the difference between an **implemented baseline** and a **possible next extension** so future agents do not rebuild existing machinery under a new name.
 
@@ -96,23 +106,23 @@ This document preserves the difference between an **implemented baseline** and a
 
 ### 4.1 Resume Capsule extensions
 
-**Original idea:** make durable Campaign state easy for a fresh agent to consume, optionally under token/context budgets.
+**Original idea:** make durable Campaign state easy for a fresh agent to consume, optionally under bounded context projections.
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-`campaign resume-context` is already the deterministic Resume Capsule. It projects mission, current state, target snapshot, responsibility, uncertainty, authority/terminal state, established facts, deferred work, evidence refs, recent transitions, handoff, and semantic companion summary without recommending a next action.
+`campaign resume-context` is now Resume Capsule v1. The full deterministic projection remains the default; `--compact` provides a smaller stable projection and `--include-preflight` can include bounded Campaign Preflight v0 status. `--recent-transitions` remains the deterministic history bound.
+
+Current v1 still does **not** recommend a next action or use LLM summarization.
 
 **Possible extensions:**
 
-- deterministic progressive-disclosure / size-budget modes;
-- selectively include reference-audit status when natural use shows it materially improves reconstruction;
-- explicit machine-readable profile for different consumption contexts, if one repeated consumer need emerges.
+- additional deterministic projection profiles only for a concrete consumer need;
+- selectively richer reference-audit details when mechanically available and useful;
+- other bounded output-shape controls that do not create a second truth source.
 
-**Current missing warrant:** no repeated natural-use evidence shows that Resume Capsule v0 is too large, too small, or missing reference-resolution data in a decision-changing way.
+**Reopen trigger:** a concrete reconstruction/consumer need or explicit owner direction that cannot be met cleanly by full/compact v1 projections.
 
-**Reopen trigger:** repeated fresh-context reconstruction burden attributable specifically to the current capsule shape.
-
-**Non-goal:** do not turn the capsule into semantic summarization, next-action recommendation, hidden chain-of-thought reconstruction, or a new Campaign schema merely for presentation.
+**Non-goal:** semantic summarization, next-action recommendation, hidden chain-of-thought reconstruction, or a new Campaign schema merely for presentation.
 
 ### 4.2 Campaign inspect / diff / explain ergonomics
 
@@ -127,38 +137,37 @@ campaign inspect
 campaign explain --ref
 campaign diff
 campaign semantic-state
+campaign doctor
 ```
 
-**Possible extensions:** only if natural use exposes a missing mechanically decidable projection or a recurring navigation failure.
+**Possible extensions:** only when a concrete mechanically decidable projection/diagnostic need is missing.
 
-**Reopen trigger:** repeated inability to reconstruct a mechanically available fact using the existing observability surface.
+**Reopen trigger:** repeated or owner-identified inability to reconstruct a mechanically available fact using the existing observability/doctor surfaces.
 
-**Non-goal:** no semantic ranking, recommendation, correctness judgment, or inferred causal explanation.
+**Non-goal:** semantic ranking, recommendation, correctness judgment, automatic repair, or inferred causal explanation.
 
 ### 4.3 One-command Campaign preflight
 
-**Idea:** expose a bounded preflight that aggregates existing mechanical checks before consequential Campaign work.
+**Original idea:** expose a bounded preflight that aggregates existing mechanical checks before consequential Campaign work.
 
-Potential checks might include:
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
 
-- Campaign/schema integrity;
-- target identity/snapshot consistency;
-- declared responsibility presence;
-- declared capability availability;
-- authority metadata sufficiency where mechanically decidable;
-- referenced evidence/admission integrity;
-- broken lineage/reference diagnostics;
-- duplicate transition identifiers or other existing fail-closed conditions.
+`campaign preflight` now composes existing Campaign reconstruction, target binding, evidence/admission, handoff, semantic-reference, authority-metadata, and optional agent-supplied capability-catalog checks.
 
-**Current reconciliation:** `CANDIDATE_EXTENSION` + `REQUIRES_EVIDENCE`.
+It deliberately preserves:
 
-The repository already has many individual validators, target checks, semantic-reference audit, Campaign validation, and operational qualification commands. It does not currently establish that another aggregator is needed.
+```text
+preflight PASS != responsibility warranted
+preflight PASS != capability semantically appropriate
+preflight PASS != native-harness availability
+preflight PASS != agent should proceed
+```
 
-**Current missing warrant:** no repeated operator/agent failure shows that manually composing existing checks causes wrong decisions, false closure, or material reconstruction burden.
+The responsibility type is never inferred from responsibility prose. When supplied, capability candidates are enumerated without ranking or selection.
 
-**Reopen trigger:** repeated natural-use evidence that the same mechanical pre-action checks are assembled incorrectly or omitted across Campaigns.
+**Possible extensions:** additional checks only when an existing authoritative invariant is mechanically decidable and a concrete consumer/owner need justifies adding it.
 
-**Non-goal:** a preflight may say declared mechanical prerequisites pass or fail; it must not conclude that the agent **should proceed**.
+**Non-goal:** semantic proceed/stop decision, responsibility inference, capability ranking, or automatic repair.
 
 ### 4.4 Progressive Campaign rigor
 
@@ -174,13 +183,13 @@ QUALIFIED  + exact provenance + qualification receipts
 
 **Current reconciliation:** `LONG_HORIZON` + `REQUIRES_EVIDENCE`.
 
-The repository already has policy/authority concepts and different qualification ceilings, but no current evidence warrants formalizing user-facing rigor tiers.
+The repository already has policy/authority concepts and different qualification ceilings, but no current owner direction or concrete mechanical requirement has authorized user-facing rigor tiers.
 
 **Risk:** tiers could accidentally create multiple truth systems or encourage weak evidence merely because a task was labeled "light."
 
-**Reopen trigger:** repeated evidence that the full current ceremony discourages use for otherwise appropriate consequential work, while the same semantic invariants could be preserved with fewer required surfaces.
+**Reopen trigger:** explicit owner direction or concrete evidence that the current contract density blocks legitimate use while core semantic invariants can remain unchanged.
 
-**Non-goal:** separate incompatible Campaign models.
+**Non-goal:** separate incompatible Campaign truth models.
 
 ## 5. Campaign observability and portability candidates
 
@@ -192,9 +201,7 @@ The repository already has policy/authority concepts and different qualification
 
 `campaign replay --at-transition` already reconstructs the trace prefix, state label at the cursor, and cumulative evidence refs. Campaign schema v2 does not store a full historical state snapshot for every transition, so the implementation correctly reports that historic full state was not reconstructed.
 
-**Possible extension:** richer historical reconstruction only if future durable state explicitly stores the necessary information and a concrete consumer need justifies the added persistence cost.
-
-**Reopen trigger:** repeated debugging/review failures caused by information that current v2 transition history genuinely does not preserve.
+**Possible extension:** richer historical reconstruction only if future durable state explicitly stores the necessary information and a concrete need or owner direction justifies the added persistence cost.
 
 **Non-goal:** fabricate historical full state from present state.
 
@@ -204,11 +211,9 @@ The repository already has policy/authority concepts and different qualification
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-`campaign graph` already emits JSON/Mermaid mechanically established provenance relations among Campaigns, transitions, evidence refs, semantic companion entries, artifacts, and parent relations.
+`campaign graph` emits JSON/Mermaid mechanically established provenance relations. `campaign graph-integrity` now validates the same graph construction for node-ID collisions, duplicate edges, missing endpoints, invalid semantic-reference state, and invalid uncertainty-history state. Both commands consume one `CampaignProvenanceGraphService`, eliminating the earlier duplicate construction path.
 
-**Possible extensions:** additional edge classes only when existing authoritative identities make them mechanically decidable and a real consumer requires them.
-
-**Reopen trigger:** repeated reconstruction burden around an already-authoritative relation that the graph does not expose.
+**Possible extensions:** additional edge classes only when existing authoritative identities make them mechanically decidable and a concrete consumer requires them.
 
 **Non-goal:** semantic causal graph, architectural truth graph, evidence-support inference, or universal decision graph.
 
@@ -226,11 +231,9 @@ campaign bundle-verify
 campaign bundle-import
 ```
 
-The implementation preserves exact workspace bytes, verifies manifest hashes/sizes, rejects unsafe archive members, and keeps transport integrity separate from semantic correctness.
+The implementation preserves exact workspace bytes, verifies manifest hashes/sizes, rejects unsafe archive members, and keeps transport integrity separate from semantic correctness. Current additive companion files, including uncertainty history, travel with workspace bytes without changing Campaign schema.
 
-**Possible extensions:** network transport, remote storage, target re-binding, or synchronization only if concrete use demonstrates a need.
-
-**Reopen trigger:** repeated portability failure after bundle verification/import caused by a missing mechanically expressible transport/reconstruction contract.
+**Possible extensions:** network transport, remote storage, target re-binding, or synchronization only if explicitly warranted.
 
 **Non-goal:** automatically locate or authorize action on a target repository after import.
 
@@ -251,21 +254,11 @@ qualification prepare
 
 **Current reconciliation:** `PARTIALLY_IMPLEMENTED` + `DEFERRED_BY_OWNER_DIRECTION`.
 
-The repository already has:
+The repository already has setup adapters, structural canonical-byte parity tests, an engineering external golden-path verifier, PM qualification protocols, and frozen-attempt evidence contracts. What remains unproven is native discovery/invocation and product-value/portability behavior in genuine supported harness runs.
 
-- setup adapters for supported harness discovery roots;
-- structural canonical-byte parity tests;
-- the engineering external golden-path verifier;
-- PM functional/fresh-context/second-harness protocols;
-- exact frozen-attempt qualification receipts and claim ceilings.
+The owner explicitly does not want additional experiments as the current construction path, so this remains deferred unless they later choose to pursue stronger native-harness claims.
 
-What remains unproven is native discovery/invocation and product-value/portability behavior in genuine supported harness runs. Additional empirical/native-harness experiments are currently deferred by owner direction.
-
-**Potential value:** make empirical qualification easier to conduct without weakening native-harness independence or turning Sensemaking into the agent runtime.
-
-**Reopen trigger:** owner resumes empirical qualification, or an authorized genuine attempt exposes repeated packaging/freeze/operator errors that a deterministic helper could remove.
-
-**Non-goal:** Sensemaking launching or semantically controlling the external coding agent merely to make qualification easier.
+**Non-goal:** Sensemaking launching or semantically controlling an external coding agent merely to create evidence.
 
 ### 6.2 Harness conformance matrix
 
@@ -287,43 +280,35 @@ second-harness portability
 
 **Current reconciliation:** `PARTIALLY_IMPLEMENTED` + `DEFERRED_BY_OWNER_DIRECTION`.
 
-Repository tests already establish installation/representation parity, while native-harness discovery/invocation and second-harness evidence remain open. Existing qualification protocols already preserve many of these distinctions.
-
-**Current missing warrant:** no qualifying corpus exists that demonstrates a recurring reporting/reconstruction problem requiring a new matrix schema.
-
-**Reopen trigger:** multiple authorized native-harness attempts whose results cannot be compared clearly using existing evidence records.
+Repository tests establish installation/representation parity, while native-harness discovery/invocation and second-harness evidence remain open. No new matrix is needed for the current no-experiment construction program.
 
 **Non-goal:** collapse semantic usefulness, native invocation, artifact validity, and portability into one numeric compatibility score.
 
 ## 7. Domain extensibility candidates
 
-### 7.1 Skill Contract Manifests
+### 7.1 Skill Contract Manifests and developer ergonomics
 
-**Original idea:** separate a Skill's machine-readable deterministic interface from its semantic methodology.
+**Original idea:** separate a Skill's machine-readable deterministic interface from its semantic methodology and make that interface easy to inspect.
 
-**Current reconciliation:** `SUPERSEDED_BY_IMPLEMENTATION`.
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
 
-Repository-owned `skill-manifests/` and semantic conformance already provide the deterministic shell for Skill identity/domain/responsibility/artifact relationships while leaving methodology in the Skill tree.
+Repository-owned `skill-manifests/` and semantic conformance provide the deterministic shell for Skill identity/domain/responsibility/artifact relationships. `semantic catalog` now adds read-only developer discovery/filtering and canonical Skill-path visibility while reusing aggregate conformance rather than creating another validator.
 
-**Possible extensions:** only from a repeated conformance defect or another mechanically decidable field required by a real consumer.
+**Possible extensions:** only from a concrete conformance/discovery defect or another mechanically decidable field required by a real consumer/owner direction.
 
-**Reopen trigger:** repeated mismatch that current manifest/conformance contracts cannot mechanically represent.
-
-**Non-goal:** encode semantic routing, ranking, confidence thresholds, or planner logic in manifests.
+**Non-goal:** encode semantic routing, ranking, confidence thresholds, planner logic, or automatic Skill scaffolding merely for inventory growth.
 
 ### 7.2 Domain Packs
 
 **Original idea:** organize reusable domain-specific responsibility/capability/artifact semantics above the Campaign core.
 
-**Current reconciliation:** `SUPERSEDED_BY_IMPLEMENTATION`.
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
 
-Domain Pack manifests and conformance are already part of the repository-qualified semantic substrate. Product Management provides a substantial agent-agnostic domain capability set.
+Domain Pack manifests and conformance are repository-qualified. Product Management supplies a substantial agent-agnostic domain capability set, and `semantic catalog` can inspect/filter Domain Pack metadata without treating pack membership as selection authority.
 
-**Possible extensions:** new domains or stronger pack contracts only when a concrete domain migration/use case demonstrates stable repeated semantics.
+**Possible extensions:** new domains or stronger pack contracts only when a concrete domain need, mechanically expressible maintenance problem, or explicit owner direction warrants them.
 
-**Reopen trigger:** a second concrete domain or maintenance problem exposes a missing mechanically expressible Domain Pack invariant.
-
-**Non-goal:** treat Domain Pack membership as native-harness qualification, portability qualification, promotion, or semantic appropriateness.
+**Non-goal:** treat Domain Pack membership as native-harness qualification, portability qualification, promotion, routing authority, or semantic appropriateness.
 
 ### 7.3 Product Management Wave 2 / additional PM migration
 
@@ -333,9 +318,7 @@ Domain Pack manifests and conformance are already part of the repository-qualifi
 
 The repository has already progressed through PM Waves 1-6. All 27 capabilities from the pinned upstream methodology source are repository-qualified. There is no implied Wave 7.
 
-**Future PM expansion candidate:** additional PM capability work should arise from native use, a new explicitly pinned methodological source, maintenance pressure, or owner direction rather than from completing an obsolete migration checklist.
-
-**Reopen trigger:** concrete user/domain evidence that a missing PM responsibility changes a repository/product decision and cannot be addressed by current capabilities.
+**Future PM expansion candidate:** additional PM capability work should arise from a new explicitly pinned methodological source, concrete maintenance/product need, or owner direction rather than from completing an obsolete migration checklist.
 
 **Non-goal:** bulk-migrate more commands merely to grow capability count.
 
@@ -345,46 +328,34 @@ The repository has already progressed through PM Waves 1-6. All 27 capabilities 
 
 **Idea:** understand how much ceremony/reconstruction cost Sensemaking introduces relative to the trust/reliability benefit it provides.
 
-Possible observations include:
+Possible observations include transitions per consequential task, artifact rejection/repair loops, operator interventions, fresh-context reconstruction failures, durable-state size, reconstruction cost, time to first warranted responsibility/action, and time from implementation to justified closure.
 
-- transitions per consequential task;
-- artifact rejection/repair loops;
-- operator interventions;
-- fresh-context reconstruction failures;
-- durable-state size;
-- time/tokens spent reconstructing state;
-- time to first warranted responsibility/action;
-- time from implementation to justified closure.
+**Current reconciliation:** `DEFERRED_BY_OWNER_DIRECTION`.
 
-**Current reconciliation:** `REQUIRES_EVIDENCE`.
+The repository contains retained research/accounting machinery, but the owner explicitly does not want more experiments as the current development path. Existing repository tests are qualification of mechanical contracts, not new product-value experiments.
 
-The repository contains retained research/accounting machinery, but historical/lab mechanisms are not automatically current product instrumentation. Existing owner direction also defers manufacturing new experiments merely to keep the research loop active.
+**Reopen trigger:** explicit owner direction to resume measurement/research or a concrete operational need for already-available accounting data.
 
-**Reopen trigger:** recurring natural-use complaints or observed burden where coordination cost itself becomes decision-changing.
+**Non-goal:** silently turn ordinary repository development into an experiment program.
 
-**Non-goal:** optimize a proxy metric at the expense of evidence quality, or instrument every task by default.
+### 8.2 Uncertainty Register / history
 
-### 8.2 Uncertainty Register
+**Original idea:** preserve multiple consequential uncertainties and their durable lifecycle without automatically ranking them.
 
-**Idea:** preserve multiple consequential uncertainties and their durable relations without automatically ranking them.
+**Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-Potential mechanically bounded fields:
+Uncertainty History v0 now persists agent-authored lifecycle events in append-only `uncertainty-history.jsonl`, with stable event/uncertainty IDs, transition/evidence reference validation, supersession shape, and hash-chain integrity. Resume Capsule v1 exposes a bounded summary.
+
+Critically:
 
 ```text
-uncertainty ID
-description
-introduced_at
-status
-dependencies
-referenced evidence
-resolution record
+CampaignState.active_uncertainty = current authority
+uncertainty history = lifecycle companion
+history valid != lifecycle judgment semantically correct
+history != uncertainty ranking/selection
 ```
 
-**Current reconciliation:** `PARTIALLY_IMPLEMENTED` + `REQUIRES_EVIDENCE`.
-
-Campaign state already has active uncertainty semantics, semantic companion entries may reference uncertainties, and normal-use research tracks uncertainty-selection episodes. There is no current warrant for a separate universal uncertainty registry or ranking engine.
-
-**Reopen trigger:** repeated Campaign reconstruction or decision-review failures caused specifically by losing non-active uncertainty identity/history that existing state cannot preserve cleanly.
+**Possible extension:** richer dependency/relationship fields only if a concrete need or owner direction justifies them without creating a universal ranking engine.
 
 **Non-goal:** deterministic uncertainty ranking or automatic selection of which uncertainty the agent should resolve next.
 
@@ -392,22 +363,11 @@ Campaign state already has active uncertainty semantics, semantic companion entr
 
 **Idea:** use durable Campaign evidence to evaluate engineering judgment, not only final code outcomes.
 
-Possible evaluation questions:
+**Current reconciliation:** `LONG_HORIZON` + `REQUIRES_LEVEL_4_REVIEW` for a general evaluation product.
 
-- Was the selected uncertainty decision-changing?
-- Was sufficient evidence gathered before action?
-- Did the agent exceed authority?
-- Were completion claims stronger than evidence?
-- Did a fresh agent reconstruct state correctly?
-- Did the agent stop appropriately?
+Campaigns provide structured evidence that could support analysis, but a general agent-evaluation platform is not current product scope. The owner has also deferred new experiments.
 
-**Current reconciliation:** `LONG_HORIZON` + `REQUIRES_EVIDENCE`.
-
-Campaigns already provide useful structured evidence for such analysis, and the research program studies aspects of responsibility/evidence/authority behavior. A general agent-evaluation product is not current product scope.
-
-**Reopen trigger:** a concrete internal/research consumer repeatedly uses Campaign records for evaluation and exposes a stable, mechanically bounded missing interface.
-
-**Potential Level-4 boundary:** turning Sensemaking into a general agent-evaluation platform may materially broaden the product category and should be reviewed before commitment.
+**Potential Level-4 boundary:** turning Sensemaking into a general agent-evaluation platform materially broadens the product category.
 
 **Non-goal:** semantic truth oracle or hidden reasoning capture.
 
@@ -415,28 +375,23 @@ Campaigns already provide useful structured evidence for such analysis, and the 
 
 ### 9.1 GitHub-native Campaign provenance
 
-**Idea:** surface selected Campaign provenance at ordinary engineering boundaries such as pull requests or checks.
+**Original idea:** surface selected Campaign provenance at engineering boundaries such as pull requests or checks.
 
-Possible generated metadata:
+**Current reconciliation:** `PARTIALLY_IMPLEMENTED` + `LONG_HORIZON` for external publication.
+
+`campaign provenance --format markdown|json` now renders local deterministic Campaign provenance including identity, responsibility metadata, target digests, transitions, evidence refs, preflight state, and uncertainty-history integrity.
+
+The implementation deliberately stops before external mutation:
 
 ```text
-Campaign ID
-responsibility
-before/after target identity
-evidence refs
-verification refs
-transition ID
+generate provenance != publish provenance
 ```
 
-**Current reconciliation:** `LONG_HORIZON` + `REQUIRES_EVIDENCE`.
+**Remaining candidate:** optional GitHub publication/check integration if separately authorized and concretely useful.
 
-The repository already tracks target identity, evidence, transitions, and exact-head qualification internally. There is no current evidence that publishing those projections to GitHub is required for product value.
+**Authority boundary:** posting comments, editing PR descriptions, creating checks, or merging remain distinct GitHub mutations and are not implied by local rendering.
 
-**Reopen trigger:** repeated reviewer/operator reconstruction burden at the PR boundary that existing Campaign inspection cannot address efficiently.
-
-**Authority boundary:** generating provenance is distinct from posting comments, creating checks, merging, or otherwise mutating GitHub; external mutation remains separately authorized.
-
-**Non-goal:** imply that a green provenance check semantically proves the change is correct.
+**Non-goal:** imply that a green provenance representation semantically proves the change is correct.
 
 ### 9.2 Multi-repository Campaigns
 
@@ -446,9 +401,26 @@ The repository already tracks target identity, evidence, transitions, and exact-
 
 Current Campaign target identity is intentionally simpler and strongly bound. Multi-target state would multiply identity, atomicity, authority, handoff, and verification complexity.
 
-**Reopen trigger:** repeated real work in which splitting a cross-repository responsibility into bounded single-target Campaigns causes material lost context, false closure, or reconstruction failure.
+**Reopen trigger:** concrete repeated cross-repository work or explicit owner direction showing that bounded single-target Campaigns cannot represent the responsibility safely.
 
 **Non-goal:** introduce multi-repo complexity solely because cross-repo work is theoretically possible.
+
+### 9.3 Campaign mechanical diagnostics
+
+**Original idea:** expose bounded diagnostics rather than forcing operators to manually map a failed mechanical check to the right inspection surface.
+
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
+
+`campaign doctor` now consumes Campaign Preflight v0 and maps mechanical failures to deterministic diagnostic classes/inspection commands. It does not mutate the Campaign or select a semantic repair.
+
+```text
+doctor finding != repair decision
+doctor clean != responsibility warranted
+```
+
+**Possible extensions:** additional diagnostic classes only when backed by an existing mechanically authoritative failure mode.
+
+**Non-goal:** automatic semantic repair selection or autonomous execution.
 
 ## 10. Product-category candidate
 
@@ -456,25 +428,21 @@ Current Campaign target identity is intentionally simpler and strongly bound. Mu
 
 **Idea:** treat Campaign/Capability/Evidence/Authority/Handoff contracts as an implementation-independent protocol, with the Python package as one reference implementation.
 
-Possible long-horizon implementations could include other languages or environments while preserving the same mechanically defined contracts.
-
 **Current reconciliation:** `LONG_HORIZON` + `REQUIRES_LEVEL_4_REVIEW`.
 
 The current product is a Python package plus agent-native Skills and repository contracts. Harness independence is already a strong architectural principle, but implementation independence is not a current product requirement.
 
 **Potential value:** stronger portability, ecosystem interoperability, and separation between semantic contracts and one runtime implementation.
 
-**Current missing warrant:** no repeated consumer requires a non-Python implementation, and no evidence shows that standardizing the protocol is more valuable than continuing to improve the reference product.
+**Current missing warrant:** no concrete independent implementation/consumer requires a non-Python implementation, and no owner direction currently changes the product category.
 
-**Reopen trigger:** at least one concrete independent implementation/consumer need, or explicit owner strategy direction.
-
-**Level-4 boundary:** making "Sensemaking Protocol" the product category would materially alter positioning/external product boundary and therefore requires thesis review rather than ordinary Level-3 implementation.
+**Level-4 boundary:** making "Sensemaking Protocol" the product category would materially alter positioning/external product boundary.
 
 **Non-goal:** prematurely freeze unstable implementation details into a public standard.
 
 ## 11. Ideas deliberately not promoted by this document
 
-The following may appear elsewhere as possible future directions but remain non-authorized unless current evidence changes:
+The following may appear elsewhere as possible future directions but remain non-authorized unless current evidence/need or owner direction changes:
 
 ```text
 strategy inspect/diff
@@ -482,6 +450,8 @@ Level-3 -> Campaign automation
 Level-4 reconciliation automation
 StrategicPlanner / OuterLoopEngine
 automatic Strategic Frontier ranking
+automatic responsibility selection
+automatic uncertainty ranking
 automatic product-thesis revision
 universal semantic-reference registry
 universal causal/decision graph
@@ -497,13 +467,14 @@ Their presence in this document or another design/history document is not a reas
 When reviewing this file during future Level-3 work:
 
 1. Reconcile the candidate against current `main` before assuming it is still missing.
-2. Identify the exact current consumer/problem.
-3. Ask what consequential decision would improve.
-4. Record direct/derived evidence separately from interpretation and hypothesis.
-5. Prefer the smallest intervention that addresses the observed boundary.
+2. Identify the exact current consumer/problem or explicit owner direction.
+3. Ask what consequential decision or concrete product capability would improve.
+4. Record direct/derived evidence separately from interpretation and hypothesis where evidence is being used.
+5. Prefer the smallest intervention that addresses the selected boundary.
 6. Check whether the candidate is actually Level 3 or requires Level-4 thesis review.
 7. Do not promote a candidate simply because it is attractive, old, frequently mentioned, or easy to implement.
-8. After implementation, update this file so the original candidate does not remain falsely presented as future work.
+8. Preserve empirical claim ceilings when construction proceeds from owner direction rather than behavioral evidence.
+9. After implementation, update this file so the original candidate does not remain falsely presented as future work.
 
 Useful promotion test:
 
@@ -521,7 +492,7 @@ Even after that test, Level 3 may still choose `NO_CHANGE_WARRANTED`, `DEFERRED`
 
 This document intentionally declares **no current implementation priority**.
 
-Current operational priority remains whatever `STATUS.md` identifies under the Strategic Frontier and current warranted repository-level responsibility. At the time of this reconciliation, the frozen Outer Loop v0 normal-use closeout found no additional repository-level construction package warranted from a concrete mechanical/reconstruction boundary.
+Current operational priority remains whatever `STATUS.md` identifies under the Strategic Frontier and current warranted repository-level responsibility. The owner-directed Campaign Productization/Operability/Extensibility sequence is now complete; this reservoir does not automatically promote another candidate merely because the previous sequence finished.
 
 Therefore:
 
