@@ -1,7 +1,6 @@
 ---
 name: using-sensemaking
 description: Use Sensemaking Skills to turn repository uncertainty or a broad delegated repository mission into evidence-grounded, warranted next action. Teaches when repository sensemaking is warranted, responsibility-before-Skill selection, adaptive scaffolding/rigor/durability, delegated-goal boundaries, validation, reconciliation, repair verification, authority boundaries, and stop/escalation decisions.
-tags: [bootstrap, sensemaking, control, evidence, responsibility-selection]
 ---
 
 # Using Sensemaking Skills: Agent-Native Control Loop
