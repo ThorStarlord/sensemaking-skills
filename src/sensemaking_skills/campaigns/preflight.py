@@ -1,9 +1,9 @@
 """Mechanical Campaign preflight aggregation.
 
 Preflight composes already-authoritative Campaign, target, admission, semantic-
-reference, and capability metadata checks. It reports representation/integrity
-facts only. It never infers a responsibility type, ranks a capability, or says
-whether the agent should proceed.
+reference, capability metadata, and optional multi-target checks. It reports
+representation/integrity facts only. It never infers a responsibility type,
+ranks a capability, or says whether the agent should proceed.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ from sensemaking_skills.semantic_architecture import (
 )
 
 from .capabilities import CampaignCapabilityService
+from .multi_target import MULTI_TARGET_FILENAME, MultiTargetService
 from .target_snapshot import CampaignService
 
 
@@ -109,11 +110,42 @@ class CampaignPreflightService:
                 detail=(
                     "live target identity/state matches the durably recorded TargetSnapshot"
                     if state.target_snapshot is not None
-                    else "Campaign is not target-bound"
+                    else "Campaign is not primary-target-bound"
                 ),
                 data={"target_ref": _target_ref(snapshot)},
             )
         )
+
+        multi_target_path = self.workspace / MULTI_TARGET_FILENAME
+        if not multi_target_path.exists():
+            checks.append(
+                CampaignPreflightCheck(
+                    id="multi_target_integrity",
+                    status="not_applicable",
+                    detail="no optional multi-repository target-set companion is present",
+                )
+            )
+        else:
+            multi_target = MultiTargetService(self.workspace).verify()
+            diagnostics = tuple(
+                f"{item.code}:{item.alias or '-'}" for item in multi_target.diagnostics
+            )
+            checks.append(
+                CampaignPreflightCheck(
+                    id="multi_target_integrity",
+                    status="pass" if multi_target.valid else "fail",
+                    detail=(
+                        "all declared multi-repository target identities and live snapshots match"
+                        if multi_target.valid
+                        else "multi-repository target-set integrity or live snapshot verification failed"
+                    ),
+                    diagnostics=diagnostics,
+                    data={
+                        "target_count": len(multi_target.targets),
+                        "target_set_sha256": multi_target.target_set_sha256,
+                    },
+                )
+            )
 
         if state.active_responsibility is None:
             authority_status = "not_applicable"
