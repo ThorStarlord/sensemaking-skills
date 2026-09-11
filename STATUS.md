@@ -2,13 +2,13 @@
 
 **Version:** 0.3.0  
 **Last updated:** 2026-09-11  
-**Current phase:** Product Management source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 complete with Outcome A; bounded Phase 15 registry-liveness conformance qualified; post-Phase-10 build-first semantic substrate B1–B7 repository-qualified; Strategic Outer Loop Levels 3–4 documentation foundation repository-integrated; Strategic State Contract Validation v0 authorized for implementation  
+**Current phase:** Product Management source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 complete with Outcome A; bounded Phase 15 registry-liveness conformance qualified; post-Phase-10 build-first semantic substrate B1–B7 repository-qualified; Strategic Outer Loop Levels 3–4 documentation foundation repository-integrated; Strategic State Contract Validation v0 repository-integrated and repository-qualified  
 **Primary program:** Sensemaking Campaign productization with agent-agnostic domain capabilities, evidence-governed repository reasoning, and durable strategic repository evolution  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this file intentionally does not self-pin a commit that becomes stale when it changes  
-**Current semantic frontier:** fresh post-B7 Level-3 reassessment selected Strategic State Contract Validation v0 as the next bounded mechanical package; additional empirical experiments remain deferred until explicit owner direction or a future gate makes behavioral evidence decisive  
+**Current semantic frontier:** post-validator Level-3 reassessment finds no additional outer-loop runtime package currently warranted from a concrete mechanically decidable integrity/reconstruction gap; additional empirical experiments remain deferred until explicit owner direction or a future gate makes behavioral evidence decisive  
 **Current PM frontier:** Waves 1–6 are `REPOSITORY_QUALIFIED`; the pinned 27-command source migration is complete; native-harness/portability qualification remains pending
 
-Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, target identity, authority metadata checks, bounded conformance, reference resolution under existing authoritative namespaces, and reconstructible state.
+Sensemaking Skills is an **agent-native engineering sensemaking and control layer**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, target identity, authority metadata checks, bounded conformance, reference resolution under existing authoritative namespaces, strategic-state representation validation, and reconstructible state.
 
 ## Strategic Repository Evolution state — Level 3
 
@@ -28,17 +28,18 @@ Sensemaking Skills is an **agent-native engineering sensemaking and control laye
 - Semantic Architecture Phase 9/10 and bounded Phase 15 are repository-qualified within their stated evidence ceilings.
 - Build-first semantic substrate B1–B7 is repository-qualified: mechanical observations, bounded semantic map, optional semantic companion state, Skill manifests, Domain Packs, Campaign observability/portability, and bounded semantic-reference resolution/audit.
 - B7 reuses existing Campaign evidence/admission authority and renders audit results through `campaign semantic-state` and `campaign explain`; it does not add Campaign schema v3, Resume Capsule changes, currentness inference, semantic routing, or a universal reference registry.
+- Strategic State Contract Validation v0 is repository-integrated and repository-qualified. `scripts/validate-strategic-state.py` checks only required Level-3 anchors, canonical authority surfaces/pointers, thesis-review marker shape, and duplicate Strategic Frontier identities; Product Validation runs it in the repository-contract lane.
 - Product Management Waves 1–6 are repository-qualified across all 27 pinned source capabilities; native-harness and portability evidence remain pending.
 - The Strategic Outer Loop documentation foundation is repository-integrated: the four-level control model, Level-3 state contract, Level-4 revision contract, product strategy authority, operating model, and this Level-3 projection are mutually linked.
-- Strategic State Contract Validation v0 is **authorized but not yet integrated**. Its preflight permits only repository-local Level-3 representation checks; it is not a strategy-quality or currentness engine.
 
 ### Material limitations and evidence ceilings
 
 - Repository qualification does not establish native-harness usefulness, portability, comparative superiority, or general autonomous software development.
 - The active agent owns semantic frontier selection; no deterministic `StrategicPlanner`, outer-loop router, or automatic product-thesis revision mechanism is authorized.
-- Level-3/Level-4 durable state remains carried by existing Markdown authority surfaces; the validator preflight does not authorize a new strategic-state schema.
+- Level-3/Level-4 durable state remains carried by existing Markdown authority surfaces; Strategic State Contract Validation v0 does not introduce a strategic-state schema.
 - B7 reference resolution establishes only mechanically bounded addressability/integrity under existing authorities. `resolved != current`, `reference audit pass != semantic truth`, and `not_addressable != invalid`.
-- Strategic State Contract Validation v0 may validate representation shape, canonical pointers, thesis-review marker form, and duplicate frontier identity. It cannot prove that a disposition such as ACTIVE, COMPLETE, DEFERRED, or CANDIDATE is semantically correct or current relative to external GitHub state.
+- Strategic State Contract Validation v0 establishes representation integrity only. `strategic-state contract valid != strategy correct`, `strategic-state contract valid != frontier correctly prioritized`, and validator PASS does not establish external/GitHub currentness.
+- The v0 validator cannot prove that a disposition such as ACTIVE, COMPLETE, DEFERRED, or CANDIDATE is semantically correct or current relative to external repository-management state unless a future explicit machine-addressable contract is independently justified.
 
 ### Strategic Frontier
 
@@ -46,80 +47,95 @@ Current material frontier items are:
 
 1. **Strategic outer-loop foundation — COMPLETE / INTEGRATED.** The canonical four-level control model, Level-3 strategic-state contract, and Level-4 product-thesis revision semantics are on `main` without a planning engine or new strategic-state schema.
 2. **B7 semantic-reference integrity — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** The standalone audit primitive, Campaign rendering adapters, preflight authority, negative cases, and exact-head qualification are integrated while preserving Campaign schema v2 and semantic non-authority.
-3. **Strategic State Contract Validation v0 — ACTIVE / AUTHORIZED FOR IMPLEMENTATION.** The fresh post-B7 reassessment found repeated Level-3 documentation synchronization pressure and a mechanically bounded representation-integrity subset. `docs/strategic-state-validation-design-preflight.md` concludes `BUILD`.
+3. **Strategic State Contract Validation v0 — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** The bounded repository validator, rejection suite, Product Validation gate, preflight authority, and contract reconciliation are integrated without a product strategy CLI, new schema, remote currentness query, or semantic ranking.
 4. **Native-harness / portability qualification — DEFERRED BY OWNER DIRECTION.** Existing protocols and evidence ceilings remain valid, but additional empirical experiments are not the current construction priority.
-5. **Later outer-loop machinery — CANDIDATE / NOT AUTHORIZED.** `strategy inspect/diff`, Level-3→Campaign mechanics, Level-4 reconciliation mechanics, or other construction require a fresh post-validator decision; none is an automatic roadmap item.
+5. **Later outer-loop machinery — DEFERRED / NOT CURRENTLY WARRANTED.** `strategy inspect/diff`, Level-3→Campaign mechanics, and Level-4 reconciliation mechanics remain possible future directions, but current evidence does not establish a concrete consumed mechanical integrity/reconstruction boundary that warrants building them now.
 
 ### Current highest-leverage boundary
 
-**Selected boundary:** mechanically reconstructible Level-3 strategic-state representation without transferring semantic strategy judgment into deterministic machinery.
+**No new outer-loop construction boundary is selected.** The previously selected boundary—mechanically reconstructible Level-3 strategic-state representation—has been closed by Strategic State Contract Validation v0.
 
-**Why it is material now:** two recent integrations required immediate follow-up reconciliation of strategic/current-state documentation: the Strategic Outer Loop foundation (#331→#332) and B7 integration (#330→#334). The current strategic-state contract already identifies a future mechanically decidable validation boundary, so this is no longer architecture in search of a consumer.
+The post-validator reassessment considered the remaining outer-loop candidates:
 
-**Alternatives considered:** `strategy inspect/diff`, Level-3→Campaign handoff mechanics, Level-4 reconciliation machinery, or no further construction. They remain unselected because they lack a comparably concrete current mechanical integrity boundary.
+- read-only `strategy inspect/diff`;
+- Level-3→Campaign handoff mechanics;
+- Level-4 escalation/reconciliation mechanics;
+- additional strategic-state machinery.
 
-**Attributed selector:** active coding agent under the owner-authorized Level-3 construction sequence.
+None currently has a mechanically demonstrated failure class or consumed reconstruction burden comparable to the two synchronization incidents that justified the validator. Existing Markdown authority and agent-owned reasoning remain sufficient at the present evidence boundary.
+
+This is a **no-new-package** decision, not a claim that the repository has no future work.
 
 ### Current decision-changing uncertainty
 
-Can the repository validate the **representation contract** of `STATUS.md`—required Level-3 anchors, canonical authority pointers, thesis-review marker shape, and duplicate Strategic Frontier identities—without interpreting strategy quality, owner intent, GitHub integration state, or whether the selected responsibility is semantically correct?
+Would one of the remaining outer-loop candidates materially reduce a real, repeated reconstruction/integrity burden without requiring semantic ranking or unmeasured assumptions about agent benefit?
 
-The completed preflight answers **YES** for that bounded subset. Any proposed implementation check that crosses into semantic/currentness inference must be omitted or trigger the preflight abort gate rather than expanding scope.
+Current repository evidence does **not** answer that affirmatively. Because the user has explicitly deferred new experiments, this uncertainty does not authorize speculative construction or empirical work now.
 
 ### Current warranted repository-level responsibility
 
-Implement **Strategic State Contract Validation v0** exactly within `docs/strategic-state-validation-design-preflight.md`.
+**No additional outer-loop construction responsibility is currently warranted.**
 
-Scope:
+Normal repository development may continue under the existing four-level control model. When a concrete new product/integrity/reconstruction gap appears, Level 3 should assess it directly and create a bounded preflight if mechanically warranted.
 
-```text
-standalone repository validator
-required strategic authority surfaces
-required Level-3 Markdown anchors
-canonical authority-pointer identity and file resolution
-THESIS_REVIEW_REQUIRED marker shape
-unique Strategic Frontier item identity
-stable diagnostics + semantic_truth_established: false
-Product Validation repository-contract integration
-negative/rejection tests
-```
-
-Not in scope:
+Do not automatically begin:
 
 ```text
 strategy inspect/diff
-frontier ranking
-responsibility selection
-GitHub/PR currentness inference
+Level-3 -> Campaign bridge
+Level-4 reconciliation machinery
+StrategicPlanner / OuterLoopEngine
 new strategic-state schema
-Level-3 -> Campaign automation
-Level-4 strategy revision automation
+new empirical experiment
 ```
 
-Success means the bounded validator exists, current repository state passes, required negative cases fail deterministically, Product Validation/Release qualification pass on the exact candidate head, and no semantic strategy decision has moved into code.
+### Completed evidence and reassessment
 
-### Expected evidence and reassessment
+Strategic Outer Loop foundation evidence:
 
-Expected completion evidence:
+- canonical `docs/strategic-outer-loop.md` exists;
+- Level-3 `docs/strategic-state-contract.md` exists and `STATUS.md` adopts the role;
+- Level-4 `docs/product-thesis-revision.md` exists and `docs/product-strategy.md` adopts the role;
+- `docs/product-operating-model.md` reconciles the four scopes and governance loop;
+- PR #331 exact candidate head passed Product Validation and Release Candidate Distribution before merge;
+- PR #333 reconciled README/CONTEXT/Level-2/Semantic Architecture entrypoints and passed Product Validation + Release Candidate Distribution before merge;
+- the foundation and entrypoint reconciliation added no runtime strategic planner/schema/router behavior.
 
-- `scripts/validate-strategic-state.py` implements only the ratified mechanical checks;
-- `tests/test_strategic_state_validation.py` covers positive and required rejection cases;
-- Product Validation repository-contract authority invokes the validator and includes its tests;
-- `docs/strategic-state-contract.md` is reconciled from “future validator” to the actual bounded implementation;
-- no product `strategy` CLI family, new schema, remote query, or semantic ranking appears in the diff;
-- exact candidate head passes all required CI;
-- after merge, Level 3 closes this responsibility and reassesses without assuming another package.
+B7 completion evidence:
+
+- `docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md` concludes `BUILD B7` under a mandatory abort gate;
+- PR #330 exact candidate `8369d750c893f143830db6ccc69c8fa80d321dd4` passed Product Validation `34565797654`, Release Candidate Distribution `34565797661`, and Lab Validation `34565797689` before merge;
+- PR #330 merged as `6203be05636b12e012a87940429041ff24af821d`;
+- PR #334 reconciled B7 integration state/documentation and passed Product Validation `34568676946` plus Release Candidate Distribution `34568676940` before merge;
+- the implementation keeps reference occurrence, resolution, currentness, support, and semantic truth distinct.
+
+Strategic State Contract Validation v0 evidence:
+
+- `docs/strategic-state-validation-design-preflight.md` records the fresh post-B7 Level-3 reassessment and concludes `BUILD` for a bounded representation-integrity validator;
+- PR #335 exact candidate `388108764ff05ad1d04029f97db3072936df4f38` passed Product Validation `34569123973` and Release Candidate Distribution `34569123974` before merging the preflight/authorization state;
+- PR #336 exact candidate `3c949525d923fd2be76f532a84a396ae077ee2c4` passed Product Validation `34569444654` and Release Candidate Distribution `34569444661` before merge;
+- the Product Validation repository-contract job passed both the direct `validate-strategic-state.py` gate and the stable repository assertion suite containing `tests/test_strategic_state_validation.py`;
+- PR #336 merged as `738803711fe8b8a742f3c4bf5c0099a66d672787`;
+- no product strategy CLI, strategic-state schema, external currentness query, frontier ranking, automatic responsibility selection, or experiment was added.
+
+Post-validator reassessment result:
+
+```text
+NO ADDITIONAL OUTER-LOOP PACKAGE CURRENTLY WARRANTED
+```
+
+This conclusion is scoped to current evidence. It may be reopened by a concrete repeated reconstruction/integrity failure, a new mechanically explicit product requirement, or owner direction.
 
 ### Authority / owner direction
 
 - Owner authorized the documentation-first outer-loop construction and explicitly deferred new experiments for now.
-- Owner subsequently authorized execution of the complete next-step sequence without per-package approval; this includes implementation of a preflight-approved strategic-state validator but does not waive the validator's abort/non-goal boundaries or exact-head qualification gate.
+- Owner subsequently authorized execution of the complete next-step sequence without per-package approval; that sequence is now complete through B7 integration, documentation reconciliation, post-B7 reassessment, strategic-state validator preflight, implementation, qualification, merge, and this post-validator reassessment.
 - Product-thesis changes that materially alter primary user, problem/JTBD, external product boundary, major non-goals, public claim ceilings, or merge/release authority remain owner-reserved decisions.
 - Repository-level implementation may proceed within current strategy only when bounded by existing authority and evidence.
 
 ### Thesis review state
 
-`THESIS_REVIEW_REQUIRED`: **NO**. The validator package hardens Level-3 representation integrity; it does not challenge the product purpose, primary user, ratified external product boundary, or another Level-4 commitment.
+`THESIS_REVIEW_REQUIRED`: **NO**. The completed work hardens repository/Level-3 representation without challenging the product purpose, primary user, ratified external product boundary, or another Level-4 commitment.
 
 ## Semantic Architecture state
 
@@ -139,7 +155,8 @@ Capability / Skill Layer
 Executable Substrate
   = mechanically decidable contracts, probes, validators,
     conformance, Campaign persistence, provenance, observability,
-    reference resolution, and portability
+    reference resolution, strategic-state representation validation,
+    and portability
 ```
 
 Formalization remains:
@@ -408,9 +425,9 @@ persistent placement ambiguity
 pressure to transfer semantic judgment into deterministic machinery
 ```
 
-Completing B1–B7 does **not** itself mean the gate has been reached. The post-B7 reassessment selected only the bounded strategic-state representation validator described above; it did not create a new semantic roadmap.
+Completing B1–B7 does **not** itself mean the gate has been reached. The strategic-state validator was independently justified by repeated representation-reconciliation pressure. After that package, no additional outer-loop package is currently warranted from a comparably concrete mechanical boundary.
 
-No new empirical product-value experiment was required to repository-qualify B1–B7 or authorize the strategic-state validator preflight. These are repository implementation/verification decisions only; they do not assert demonstrated real-world agent-work value.
+No new empirical product-value experiment was required to repository-qualify B1–B7 or Strategic State Contract Validation v0. These are repository implementation/verification claims only; they do not assert demonstrated real-world agent-work value.
 
 ## Product Management source migration — repository complete
 
@@ -459,7 +476,7 @@ Repository-local validation, Campaign admission, wheel packaging, connector-side
 
 ### Build-first semantic empirical limit
 
-B1–B7 are repository-qualified mechanical/product capabilities. Their Product Validation/Release/Lab PASS does **not** establish that mechanical probes, maps, semantic companion state, Resume Capsules, Domain Packs, bundles, or semantic-reference auditing reduce coordination cost or improve repeated native-agent work. Further empirical validation is intentionally deferred until the diminishing-returns gate or explicit owner direction.
+B1–B7 and the strategic-state validator are repository-qualified mechanical/product-support capabilities. Their Product Validation/Release/Lab PASS does **not** establish that probes, maps, semantic companion state, Resume Capsules, Domain Packs, bundles, semantic-reference auditing, or strategic-state validation reduce coordination cost or improve repeated native-agent work. Further empirical validation remains intentionally deferred until explicit owner direction or a future decision makes behavioral evidence decisive.
 
 ## Release architecture continuity
 
@@ -469,8 +486,8 @@ B1–B7 are repository-qualified mechanical/product capabilities. Their Product 
 - Lab Validation owns retained source-only research/lab claims.
 - Release Candidate Distribution proves exact candidate build/install/package identities.
 - `semantic_reasoning_profile` remains optional and outside Campaign artifact admission.
-- Skill-registry liveness, manifest/domain conformance, and B7 reference audit remain bounded repository checks, not semantic routers.
-- Strategic State Contract Validation v0, when implemented, is repository validation infrastructure rather than a shipped strategic runtime.
+- Skill-registry liveness, manifest/domain conformance, B7 reference audit, and Strategic State Contract Validation v0 remain bounded repository checks, not semantic routers.
+- Strategic State Contract Validation v0 is repository validation infrastructure rather than a shipped autonomous strategic runtime.
 - tagging/publication of v0.3.0 remains an explicit owner decision.
 
 ## Product and semantic boundaries
@@ -514,19 +531,21 @@ The Campaign Controller is not a semantic router. The Reasoning Model is not a c
 
 ## Current next step
 
-Implement **Strategic State Contract Validation v0** under `docs/strategic-state-validation-design-preflight.md`.
+Use the integrated Level-3/Level-4 architecture, Campaign substrate, B7 reference audit, and Strategic State Contract Validation v0 during normal repository evolution.
 
-The implementation must remain repository-local and mechanically bounded. If a proposed check requires interpreting whether a strategic disposition is correct, querying GitHub for currentness, ranking the Strategic Frontier, inferring owner intent, or introducing a new strategic-state schema, omit that check or stop under the preflight abort gate.
+There is **no pre-authorized next outer-loop construction package**. Do not automatically build `strategy inspect/diff`, a Level-3→Campaign bridge, Level-4 reconciliation machinery, a `StrategicPlanner`, or another strategic-state representation merely because they appear in the conceptual roadmap.
 
-After implementation and exact-head integration, update this Level-3 state and reassess from zero. No `strategy inspect/diff`, Level-3→Campaign bridge, Level-4 reconciliation machinery, or other follow-on package is pre-authorized.
+Reopen construction when a concrete product/integrity/reconstruction boundary can be specified mechanically from current authoritative state. Additional empirical experiments remain deferred by owner direction; do not substitute speculative construction for missing behavioral evidence if that later becomes the decisive question.
 
 ## Canonical sources
 
 - `STATUS.md` — current Level-3 Strategic Repository Evolution state and cross-program status.
 - `docs/product-strategy.md` — current Level-4 product thesis, boundary, hypotheses, and strategic authority.
 - `docs/strategic-outer-loop.md` — canonical four-level control model and Level-3/Level-4 relationship.
-- `docs/strategic-state-contract.md` — Level-3 durable strategic-state contract.
-- `docs/strategic-state-validation-design-preflight.md` — authorized Strategic State Contract Validation v0 mechanical scope, negative cases, and abort gate.
+- `docs/strategic-state-contract.md` — Level-3 durable strategic-state contract and bounded executable validator semantics.
+- `docs/strategic-state-validation-design-preflight.md` — Strategic State Contract Validation v0 mechanical scope, negative cases, and abort gate.
+- `scripts/validate-strategic-state.py` — executable repository-local Level-3 representation validator.
+- `tests/test_strategic_state_validation.py` — validator positive/negative contract suite.
 - `docs/product-thesis-revision.md` — Level-4 strategy revision and owner-ratification contract.
 - `docs/product-operating-model.md` — current value stream, responsibility ownership, and runtime/control boundary.
 - `docs/semantic-architecture/README.md` — Semantic Architecture index.
