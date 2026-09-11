@@ -1,5 +1,6 @@
 """Executable mechanical subset of the Sensemaking Semantic Architecture."""
 
+from .catalog import SemanticCatalogResult, build_semantic_catalog
 from .conformance import (
     CANONICAL_SEMANTIC_CONCEPTS,
     ConformanceResult,
@@ -48,6 +49,7 @@ __all__ = [
     "ReferenceClass",
     "ReferenceResolution",
     "RepositorySemanticMap",
+    "SemanticCatalogResult",
     "SemanticDiagnostic",
     "SemanticMapEntity",
     "SemanticMapRelation",
@@ -60,6 +62,7 @@ __all__ = [
     "SkillContractManifest",
     "audit_semantic_references",
     "build_repository_semantic_map",
+    "build_semantic_catalog",
     "probe_exact_search",
     "probe_file_containment",
     "probe_manifest_dependencies",
