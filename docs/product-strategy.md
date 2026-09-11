@@ -1,7 +1,7 @@
 # Sensemaking Skills Product Strategy
 
 **Status:** current product hypothesis and strategic authority  
-**Updated:** 2026-09-10  
+**Updated:** 2026-09-11  
 **Control level:** Level 4 — Product Thesis / Strategy Revision  
 **Scope:** public repository strategy; empirical claims retain the ceilings of their source evidence
 
@@ -232,10 +232,12 @@ The major unresolved product question remains:
 > improve the primary user's ability to delegate ambiguous repository work
 > without manual task-by-task routing?
 
-That question is **not** a prerequisite for the current documentation-first
-outer-loop construction. The current construction responsibility is to make the
-existing strategic/repository control semantics coherent and reconstructible
-without adding automatic planning authority.
+That question is **not** a prerequisite for repository-grounded construction.
+The documentation-first Strategic Outer Loop foundation is now integrated; it
+makes Level-4 product-thesis authority and Level-3 repository-evolution state
+explicit without adding automatic planning authority. Any subsequent outer-loop
+runtime package must be selected afresh by Level 3 from a concrete
+mechanically-decidable reconstruction or integrity need.
 
 Any candidate product commitment should still answer:
 
