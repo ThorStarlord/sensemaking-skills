@@ -2,28 +2,19 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
-import os
 from pathlib import Path
 from typing import Any
 
 from sensemaking_skills.campaign_semantics import canonicalize, target_snapshot_sha256
 
+from .companion_io import append_jsonl_fsync, atomic_write_json, mapping_sha256
 from .multi_target import MultiTargetService, _manifest_payload, _safe_alias, _snapshot_from_dict
 from .target_snapshot import capture_target_snapshot, target_snapshots_equivalent
 
 
 MULTI_TARGET_REBIND_HISTORY_FILENAME = "multi-target-rebind-history.jsonl"
 MULTI_TARGET_REBIND_VERSION = "1"
-
-
-def _canonical_bytes(value: dict[str, Any]) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-
-
-def _sha256(value: dict[str, Any]) -> str:
-    return hashlib.sha256(_canonical_bytes(value)).hexdigest()
 
 
 class MultiTargetRebindService:
@@ -72,9 +63,7 @@ class MultiTargetRebindService:
         entry["snapshot"] = canonicalize(actual)
         entry["snapshot_sha256"] = target_snapshot_sha256(actual)
         manifest = _manifest_payload(inspected.campaign_id, targets)
-        temp = self.targets.manifest_path.with_suffix(".json.tmp")
-        temp.write_text(json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
-        os.replace(temp, self.targets.manifest_path)
+        atomic_write_json(self.targets.manifest_path, manifest)
 
         record: dict[str, Any] = {
             "schema_version": MULTI_TARGET_REBIND_VERSION,
@@ -88,11 +77,8 @@ class MultiTargetRebindService:
             "previous_digest": self._last_digest(),
             "semantic_truth_established": False,
         }
-        record["record_digest"] = _sha256(record)
-        with self.history_path.open("a", encoding="utf-8", newline="\n") as handle:
-            handle.write(json.dumps(record, sort_keys=True, ensure_ascii=False) + "\n")
-            handle.flush()
-            os.fsync(handle.fileno())
+        record["record_digest"] = mapping_sha256(record)
+        append_jsonl_fsync(self.history_path, record)
 
         return {
             "campaign_id": inspected.campaign_id,
