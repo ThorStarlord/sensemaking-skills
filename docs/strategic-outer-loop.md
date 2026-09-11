@@ -365,23 +365,27 @@ This model does not authorize:
 - autonomous merge, release, or publication authority;
 - a new Campaign schema merely to mirror this document.
 
-The active agent owns semantic selection. Deterministic machinery may later
-validate only explicitly ratified, mechanically decidable representation
-contracts.
+The active agent owns semantic selection. Deterministic machinery may validate
+only explicitly ratified, mechanically decidable representation contracts.
 
-## 11. Initial construction sequence
+## 11. Construction sequence and authorization state
 
-The current construction sequence is deliberately documentation-first:
+The construction sequence remains incremental rather than a presumed roadmap:
 
 ```text
-1. Canonical four-level control model                  [this document]
-2. Level-3 strategic-state contract                    [strategic-state-contract.md]
-3. Level-4 product-thesis revision contract            [product-thesis-revision.md]
-4. Mechanical outer-loop validation                    [not yet authorized]
-5. Read-only strategy inspect/diff                     [not yet authorized]
-6. Level-3 -> Campaign handoff mechanics               [not yet authorized]
-7. Level-4 escalation/reconciliation mechanics         [not yet authorized]
+1. Canonical four-level control model                  [integrated]
+2. Level-3 strategic-state contract                    [integrated]
+3. Level-4 product-thesis revision contract            [integrated]
+4. Strategic State Contract Validation v0              [authorized by strategic-state-validation-design-preflight.md]
+5. Read-only strategy inspect/diff                     [not authorized]
+6. Level-3 -> Campaign handoff mechanics               [not authorized]
+7. Level-4 escalation/reconciliation mechanics         [not authorized]
 ```
 
-Completing steps 1-3 does not automatically authorize step 4. Future machinery
-must still satisfy the repository's build-first and authority rules.
+Step 4 was authorized only after the fresh post-B7 reassessment found a concrete
+mechanically decidable representation-integrity boundary and recorded it in
+[`strategic-state-validation-design-preflight.md`](strategic-state-validation-design-preflight.md).
+
+That authorization is narrow: repository-local Level-3 section/pointer/thesis-marker/frontier-identity validation only. It does not authorize a strategy CLI, semantic priority checks, GitHub currentness inference, a strategic-state schema, or any later step.
+
+After step 4 is implemented and qualified, Level 3 must reassess again. Step 5 does not become authorized merely because step 4 exists.
