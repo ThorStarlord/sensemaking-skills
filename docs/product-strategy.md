@@ -288,6 +288,7 @@ underlying record.
 - Four-level control model: [strategic-outer-loop.md](strategic-outer-loop.md)
 - Level-3 state contract: [strategic-state-contract.md](strategic-state-contract.md)
 - Level-4 revision contract: [product-thesis-revision.md](product-thesis-revision.md)
+- Non-authoritative future possibilities: [strategic-candidate-directions.md](strategic-candidate-directions.md) — idea memory only; not Strategic Frontier membership or implementation authorization
 - Current operating model: [product-operating-model.md](product-operating-model.md)
 - Current Level-3 status and development direction: [STATUS.md](../STATUS.md)
 - Architecture authority: [ADR index](adr/README.md), especially ADRs 0013 and 0014
