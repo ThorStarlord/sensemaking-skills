@@ -23,7 +23,7 @@ LEVEL 1 — EXECUTION
 What concrete steps correctly perform the bounded work?
 ```
 
-These are reasoning/control scopes, **not four runtime engines**. The active coding agent owns semantic judgment across the scopes permitted by current authority. Deterministic machinery supports mechanically decidable representation, validation, provenance, persistence, integrity, target identity, conformance, and reconstruction.
+These are reasoning/control scopes, **not four runtime engines**. The active coding agent owns semantic judgment across the scopes permitted by current authority. Deterministic machinery supports mechanically decidable representation, validation, provenance, persistence, integrity, target identity, conformance, reference resolution under existing authoritative namespaces, and reconstruction.
 
 The core control law is:
 
@@ -55,6 +55,7 @@ See:
 - [docs/product-operating-model.md](docs/product-operating-model.md) — value stream, ownership, delegation, and escalation
 - [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md) — Level-2 agent-native responsibility/Campaign operating map
 - [docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md) — decision vs. orchestration ownership
+- [docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md](docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md) — B7 reference-resolution boundaries and construction authority
 - [docs/research/control-model-research-agenda.md](docs/research/control-model-research-agenda.md) — explicitly non-ratified research directions
 
 ## Empirical qualification context
@@ -128,6 +129,7 @@ Level 4 activates only when evidence challenges a product-thesis commitment or t
 10. **Harden only where pressured** — formalize new machinery when a stable, mechanically expressible boundary is actually justified.
 11. **Strategic Frontier is not backlog** — a Level-3 possibility is not automatic work or authorization.
 12. **Higher-level commitments are not silently rewritten** — Level 1 cannot redefine Level 2, Level 2 cannot redefine Level 3, and Level 3 cannot silently redefine Level 4.
+13. **Reference resolution is not semantic warrant** — B7 may establish addressability/integrity under existing authorities; it does not establish currentness, relevance, support, or truth.
 
 ## Architecture and ownership
 
@@ -262,9 +264,11 @@ The canonical artifact contracts live in `skills/workflow-planner/references/art
 
 ### Validation
 
-Validation is deterministic/mechanical. It can establish that required fields exist, controlled vocabulary is valid, references resolve, paths satisfy contracts, and artifact structure is correct.
+Validation is deterministic/mechanical. It can establish that required fields exist, controlled vocabulary is valid, references resolve under declared contracts, paths satisfy contracts, and artifact structure is correct.
 
 It cannot prove that the right evidence was selected, that a conclusion follows, that a recommendation is useful, that the Strategic Frontier is correctly prioritized, or that the original engineering problem is solved.
+
+B7 reference audit is one bounded instance of mechanical validation: it can establish addressability/integrity only where current authoritative resolver context exists.
 
 ### Reconciliation
 
@@ -298,6 +302,10 @@ implemented    != verified
 validated      != owner-ratified
 promoted       != merged
 merged         != original-finding closure
+reference occurrence != reference resolution
+reference resolution != semantic support
+resolved       != current
+not_addressable != invalid
 product thesis != strategic state
 Strategic Frontier != backlog
 strategic boundary selected != implementation authorized
@@ -368,6 +376,9 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 | `skills/workflow-planner/references/skill-registry.yaml` | registered Skill/capability catalog |
 | `skills/repo-sensemaker/references/evidence-rules.md` | repository-sensemaking evidence discipline |
 | `docs/semantic-architecture/README.md` | semantic-model/reasoning/capability/substrate architecture; orthogonal to the four control scopes |
+| `docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md` | B7 reference-resolution scope, authoritative resolver matrix, negative cases, and abort boundary |
+| `docs/semantic-architecture/build-first-handoff.md` | B1–B7 repository qualification and continuation handoff |
+| `docs/campaign-observability-and-portability.md` | Campaign observability, semantic companion, B7 reference audit rendering, Resume Capsule, replay/graph, and bundles |
 | `docs/research/control-model-research-agenda.md` | non-ratified research hypotheses |
 | `docs/research/goal-a-external-product-validation-protocol.md` | canonical external product-validation protocol; new execution currently deferred by owner direction |
 | `docs/adr/` | ratified/proposed architecture decisions and historical rationale |
@@ -396,6 +407,7 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 - **Gate** (`gate_id`): human approval checkpoint (`review_repository_brief`, `review_workflow_plan`, etc.) with outcomes `approved | denied | needs_revision | none`; sentinel `none` means no gate required.
 - **Execution Mode**: `plan_only | prompt_chain | guided_execution (default) | autonomous_execution | yolo_execution (compatibility-only)`; determines `gates_honored` and auto-approval criteria.
 - **Validation** (`mechanical-validation`): deterministic contract checking. `Validation != evidence sufficiency != usefulness`.
+- **Semantic reference audit**: B7 mechanical resolution/integrity check over existing authoritative reference families. It distinguishes `resolved`, `dangling`, `ambiguous`, and `not_addressable` without inferring currentness, support, relevance, or truth.
 - **Reconciliation** (`claim-reconciliation`): comparison of `work_claim` against durable evidence → `reconciliation_report` (`verified | disputed | omitted`).
 - **Repair verification** (`finding-repair-verification`): finding-specific post-change check via fresh probe → `repair_verification_report` (`closed | remaining`).
 - **Authority boundary**: point where knowing/understanding is possible but deciding, acting, publishing, or merging is not authorized.
@@ -414,7 +426,8 @@ Current, ratified/operationally grounded:
 - repair verification;
 - authority-aware stopping/escalation discipline;
 - Campaign persistence, provenance, observability, handoff, and bounded portability;
-- repository-qualified Semantic Architecture substrate and PM source-capability migration within their stated evidence ceilings.
+- B7 semantic-reference resolution/audit under existing Campaign/semantic-state authorities;
+- repository-qualified Semantic Architecture B1–B7 substrate and PM source-capability migration within their stated evidence ceilings.
 
 Not automatically ratified merely because related machinery or concepts exist:
 - an `OuterLoopEngine` or deterministic `StrategicPlanner`;
@@ -424,9 +437,9 @@ Not automatically ratified merely because related machinery or concepts exist:
 - deterministic fog-type routing as product control policy;
 - a universal centralized orchestrator;
 - one registered workflow that encodes the whole Sensemaking loop;
+- a universal semantic-reference registry or universal Claim/Evidence identity layer;
 - automatic external mutation/publication authority;
 - domain-general research-agent control semantics;
-- new decision-theory/control-model machinery from the research agenda;
-- B7 Semantic Reference Resolution/Audit until its separate branch/PR is integrated.
+- new decision-theory/control-model machinery from the research agenda.
 
-The product should deepen through repository-grounded construction while architecture remains informative. Preserve observations, identify concrete failure/reconstruction/integrity boundaries, and formalize only mechanically bounded support. When the decisive question becomes behavioral product value rather than repository/mechanical correctness, stop construction at that boundary unless the owner explicitly reauthorizes empirical work.
+The product should deepen through repository-grounded construction while architecture remains informative. Preserve observations, identify concrete failure/reconstruction/integrity boundaries, and formalize only mechanically bounded support. After B7, reassess from current Level-3 state rather than assuming another semantic package. When the decisive question becomes behavioral product value rather than repository/mechanical correctness, stop construction at that boundary unless the owner explicitly reauthorizes empirical work.
