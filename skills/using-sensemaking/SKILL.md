@@ -1,7 +1,6 @@
 ---
 name: using-sensemaking
-description: Use Sensemaking Skills to turn repository uncertainty into evidence-grounded, warranted next action. Teaches when repository sensemaking is warranted, responsibility-before-Skill selection, adaptive scaffolding/rigor/durability, artifact/evidence reading, validation, reconciliation, repair verification, authority boundaries, and stop/escalation decisions.
-tags: [bootstrap, sensemaking, control, evidence, responsibility-selection]
+description: Use Sensemaking Skills to turn repository uncertainty or a broad delegated repository mission into evidence-grounded, warranted next action. Teaches when repository sensemaking is warranted, responsibility-before-Skill selection, adaptive scaffolding/rigor/durability, delegated-goal boundaries, validation, reconciliation, repair verification, authority boundaries, and stop/escalation decisions.
 ---
 
 # Using Sensemaking Skills: Agent-Native Control Loop
@@ -109,6 +108,23 @@ more scaffolding != more visible machinery
 ```
 
 Do not score these factors, infer a permanent beginner/expert class, create a Campaign merely because a task is large, or translate them into automatic Skill/workflow routing. For examples and anti-patterns, read `references/adaptive-guidance-v0.md` when this decision is material.
+
+## Delegated repository goals and terminal missions
+
+A user may delegate a **broad repository outcome** rather than one preselected implementation task, for example: complete the currently authoritative product scope or determine and implement the next warranted repository improvement.
+
+When the mission's scope, authority, or stopping boundary is material, read `references/delegated-goal-patterns.md`. Treat the user's prompt as a delegation contract whose intermediate responsibilities remain evidence-driven.
+
+For broad missions:
+
+```text
+authoritative desired state
++ evidence-driven responsibility selection
++ granted authority
++ legitimate terminal conditions
+```
+
+Do not translate “build the repository,” “continue autonomously,” or similar high-delegation wording into unlimited scope, automatic backlog execution, permanent Campaign creation, product-thesis revision, or reserved external-action authority. Reassess after bounded responsibilities and stop when the authoritative terminal condition is satisfied or further work is unwarranted, blocked, or owner-reserved.
 
 ---
 
@@ -491,6 +507,7 @@ When continuation is awkward, preserve the actual handoff and candidate evidence
 Read these when the task needs deeper detail:
 
 - `references/adaptive-guidance-v0.md` — contextual scaffolding, rigor, consequentiality, delegation, and Campaign-use examples
+- `references/delegated-goal-patterns.md` — broad delegated repository missions, copyable goal contracts, terminal conditions, and prompt anti-patterns
 - `../../CONTEXT.md` — current product/system context and terminology
 - `../../docs/agent-native-operating-workflow.md` — canonical v0 operating map
 - `../../docs/decision-orchestration-boundary.md` — decision vs. execution/orchestration ownership
