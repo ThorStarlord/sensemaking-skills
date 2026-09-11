@@ -14,6 +14,7 @@ from .campaign_productization_cli import register_campaign_productization_comman
 from .campaign_reconciliation_cli import register_campaign_reconciliation_commands
 from .campaign_semantics import ContractError
 from .campaign_semantics.registry import RegisteredCapability
+from .campaign_usability_cli import register_campaign_usability_commands
 from .campaigns import CampaignWorkspaceError
 from .campaigns.capabilities import CampaignCapabilityService, CapabilityCatalogError
 
@@ -151,10 +152,8 @@ def register_campaign_capability_commands(
                 click.echo(f"- {candidate['id']} [{candidate['availability']}] -> {candidate['output_artifact']}")
             click.echo(payload["explicit_limit"])
 
-    # cli.py delegates extension registration through this existing hook. These
-    # calls only register commands; they do not couple P6 selection semantics to
-    # later lifecycle, reconstruction, or productization behavior.
     register_campaign_handoff_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_lineage_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_reconciliation_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_productization_commands(campaign, emit_error=emit_error, json_echo=json_echo)
+    register_campaign_usability_commands(campaign, emit_error=emit_error, json_echo=json_echo)
