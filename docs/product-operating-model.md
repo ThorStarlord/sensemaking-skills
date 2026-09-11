@@ -1,13 +1,15 @@
 # Sensemaking Skills Product Operating Model
 
 **Status:** current operating model  
-**Authority:** product strategy plus ADRs 0013/0014  
+**Authority:** product strategy plus ADRs 0013/0029  
 **Scope:** how value is delivered and who owns each reasoning/control boundary
 
 This is a compact value-stream and responsibility map. The more detailed
 operating guide remains [agent-native-operating-workflow.md](agent-native-operating-workflow.md).
 The canonical higher-scope control model is
 [strategic-outer-loop.md](strategic-outer-loop.md).
+The current product boundary is [ADR 0029](adr/0029-current-product-boundary.md);
+ADR 0014 is retained as historical evidence for the narrower July 2026 boundary.
 The Level-4 Persona & Adaptive Guidance Model v0 interpretation is frozen in
 [persona-adaptive-guidance-design-preflight.md](persona-adaptive-guidance-design-preflight.md).
 
@@ -211,6 +213,7 @@ conceptual contract is
 
 Level 4 asks whether the product thesis itself remains the right commitment.
 The canonical authority surface is [product-strategy.md](product-strategy.md).
+The current product-boundary decision is ADR 0029.
 
 It reasons over slower-changing commitments such as product purpose, primary
 user, problem, JTBD, value proposition, product boundary, strategic principles,
