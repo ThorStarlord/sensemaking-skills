@@ -43,12 +43,13 @@ Sensemaking is **cross-cutting, not an SDLC stage**. Software-engineering work c
 
 New evidence may warrant a responsibility conventionally considered earlier, later, or sideways in a lifecycle. These are evidence-grounded responsibility transitions, not backward/forward commands. Local mechanical iteration stays inside the selected responsibility until evidence puts that responsibility itself in question.
 
-The Strategic Repository Evolution loop operates above bounded Campaign work. It evaluates product/repository capability state against current strategy, maintains the Strategic Frontier, selects or declines a repository-level responsibility, delegates bounded work downward, and reassesses after qualified results. It is not a roadmap processor and does not automatically rank work.
+The Strategic Repository Evolution loop operates above bounded Campaign work. It evaluates product/repository capability state against current strategy, maintains the Strategic Frontier, states the **Strategic Decision to Support**, qualitatively compares credible boundaries, selects or declines one boundary/responsibility, delegates bounded work downward, and reassesses after qualified results. It is not a roadmap processor and does not automatically rank work.
 
-This clarification does not silently broaden external product scope. The current product definition remains an engineering sensemaking/control layer for software-engineering agents, and the ratified external product scope remains the validated, human-reviewed `repository_sensemaking_brief` defined by ADR 0014 unless Level-4 authority explicitly revises it.
+The current ratified product boundary is ADR 0029: Sensemaking is an agent-native repository decision-support and control layer with optional durable Campaign and continuation/reconstruction surfaces while semantic selection remains agent-owned. ADR 0014 is preserved as historical evidence for the narrower July 2026 boundary around the validated, human-reviewed `repository_sensemaking_brief`; historical Goal A evidence remains bounded to the scope under which it was produced.
 
 See:
 - [docs/product-strategy.md](docs/product-strategy.md) — Level-4 product thesis and strategic authority
+- [docs/adr/0029-current-product-boundary.md](docs/adr/0029-current-product-boundary.md) — current ratified product-boundary authority
 - [docs/strategic-outer-loop.md](docs/strategic-outer-loop.md) — canonical four-level control model
 - [docs/strategic-state-contract.md](docs/strategic-state-contract.md) — Level-3 durable strategic-state contract
 - [docs/product-thesis-revision.md](docs/product-thesis-revision.md) — Level-4 revision and owner-ratification contract
@@ -63,10 +64,10 @@ See:
 
 The repository still retains the Goal A external-product-validation protocol and related evidence ceilings, but **new empirical experiments are currently deferred by owner direction**. Repository construction and mechanical qualification may continue when a concrete product/integrity/reconstruction capability has a mechanically bounded contract.
 
-The canonical Goal A protocol remains [docs/research/goal-a-external-product-validation-protocol.md](docs/research/goal-a-external-product-validation-protocol.md). Its admissibility and claim ceilings remain valid; deferral does not convert missing empirical evidence into a PASS.
+The canonical Goal A protocol remains [docs/research/goal-a-external-product-validation-protocol.md](docs/research/goal-a-external-product-validation-protocol.md). Its admissibility and claim ceilings remain valid for the narrower product claim it was designed to test; ADR 0029 does not retroactively broaden that evidence. Deferral does not convert missing empirical evidence into a PASS.
 
 ```text
-Goal A protocol = CANONICAL
+Goal A protocol = CANONICAL FOR ITS DECLARED CLAIM/SCOPE
 new Goal A execution = DEFERRED BY OWNER DIRECTION
 A2 comparative work = DEFERRED / UNAUTHORIZED
 native-harness / portability evidence = STILL OPEN
@@ -74,8 +75,8 @@ native-harness / portability evidence = STILL OPEN
 
 Keep distinct:
 
-- **ratified current external product scope** = validated, human-reviewed `repository_sensemaking_brief` (ADR 0014);
-- **broader orchestration/control architecture** = informs repository development and architecture, but is not silently promoted into external product scope;
+- **current ratified product boundary** = agent-native repository decision-support/control layer defined by ADR 0029;
+- **historical July 2026 product boundary** = validated, human-reviewed `repository_sensemaking_brief` under ADR 0014, which remains the relevant scope for historical evidence produced under that decision;
 - **repository qualification** = proves repository/mechanical contracts at an exact candidate state;
 - **native-harness/product-value evidence** = remains unestablished where the relevant protocol requires it.
 
@@ -106,15 +107,19 @@ Level 3 sits above this loop:
 CURRENT PRODUCT STRATEGY
   -> CURRENT CAPABILITY / REPOSITORY STATE
   -> STRATEGIC FRONTIER
-  -> select or decline a strategic boundary
+  -> STRATEGIC DECISION TO SUPPORT
+  -> qualitatively compare credible boundaries
+  -> select or decline one boundary
+  -> DECISION-CHANGING UNCERTAINTY
   -> warranted repository-level responsibility
-  -> bounded Campaign / task
+  -> smallest warranted intervention
+  -> bounded Campaign / task when useful
   -> qualified result + evidence
   -> update Level-3 state
-  -> reassess
+  -> reassess / stop / escalate
 ```
 
-Level 4 activates only when evidence challenges a product-thesis commitment or the owner changes strategic intent.
+Level 4 activates only when evidence makes a product-thesis commitment decision-changing or the owner changes strategic intent. Material recurring weak signals may be preserved as **Thesis Tension** without automatically triggering Level-4 review.
 
 ## Core principles
 
@@ -131,6 +136,8 @@ Level 4 activates only when evidence challenges a product-thesis commitment or t
 11. **Strategic Frontier is not backlog** — a Level-3 possibility is not automatic work or authorization.
 12. **Higher-level commitments are not silently rewritten** — Level 1 cannot redefine Level 2, Level 2 cannot redefine Level 3, and Level 3 cannot silently redefine Level 4.
 13. **Reference resolution is not semantic warrant** — B7 may establish addressability/integrity under existing authorities; it does not establish currentness, relevance, support, or truth.
+14. **Strategic decision before strategic responsibility** — a Level-3 boundary should connect to a consequential Strategic Decision to Support before it becomes current work.
+15. **Qualitative comparison is not scoring** — make frontier judgment reconstructible without converting semantic priority into a deterministic formula.
 
 ## Architecture and ownership
 
@@ -143,23 +150,26 @@ The human owner retains authority for mission, strategic intent, major product-t
 The active software-engineering/coding agent owns semantic judgment within authorized scope. It:
 - maintains the current goal and authorized scope;
 - interprets repository state and artifacts;
-- at Level 3, reconstructs current strategic state and selects or declines a strategic boundary;
+- at Level 3, reconstructs current strategic state, states the Strategic Decision to Support, qualitatively compares credible boundaries, and selects or declines a current boundary;
 - identifies decision-changing uncertainty;
-- selects the next warranted responsibility;
+- selects the next warranted responsibility and smallest warranted intervention;
 - chooses an appropriate bounded capability;
 - interprets resulting evidence;
 - decides whether continuation, stopping, escalation, or an owner decision is warranted;
-- escalates thesis-level contradictions rather than silently rewriting Level-4 commitments.
+- preserves material recurring Thesis Tension when useful;
+- escalates decision-changing thesis contradictions rather than silently rewriting Level-4 commitments.
 
 ### Level 4 — Product Thesis / Strategy Revision
 
 Level 4 owns the slower-changing product commitments: purpose, primary user, problem, JTBD, value proposition, product boundary, strategic principles, major non-goals, success measures, strategic bets, and evidence ceilings.
 
-The authority surface is `docs/product-strategy.md`; revision semantics are defined in `docs/product-thesis-revision.md`. Major strategy changes require the authority specified there, including explicit owner ratification for owner-reserved commitments.
+The authority surface is `docs/product-strategy.md`; the current product-boundary decision is ADR 0029; revision semantics are defined in `docs/product-thesis-revision.md`. Major strategy changes require the authority specified there, including explicit owner ratification for owner-reserved commitments.
+
+When review is required, thesis-dependent strategic advancement is held until a Level-4 disposition and mandatory Level-3 reconciliation; independently warranted unaffected work may continue within authority.
 
 ### Level 3 — Strategic Repository Evolution
 
-Level 3 answers **what should change in the product/repository next, if anything**. It works from current strategy, capability/repository state, material gaps/contradictions/opportunities, and the Strategic Frontier.
+Level 3 answers **what should change in the product/repository next, if anything**. It works from current strategy, capability/repository state, material gaps/contradictions/opportunities, the Strategic Frontier, the Strategic Decision to Support, and decision-changing uncertainty.
 
 `STATUS.md` is the current operational projection of Level-3 state. The conceptual contract is `docs/strategic-state-contract.md`.
 
@@ -353,7 +363,8 @@ The repository contains historical and current workflow/runtime machinery. Prese
 
 - ADRs 0001-0012 document important validation, artifact, routing, invocation, and runtime mechanics and their history.
 - ADR 0013 establishes the active agent as the primary control-loop owner.
-- ADR 0014 settles the current external product boundary around evidence-grounded, human-reviewed repository sensemaking and defers automatic downstream routing.
+- ADR 0014 is historical/superseded product-boundary evidence for the July 2026 brief-centered scope.
+- ADR 0029 settles the current product boundary around agent-native repository decision support/control while preserving non-goals against automatic routing/planning and autonomous external authority.
 - Registered workflows can remain useful bounded subgraphs or compatibility paths.
 - Runtime support for a route does not give that route product-level authority.
 
@@ -364,10 +375,11 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 | Resource | Purpose |
 | --- | --- |
 | `docs/product-strategy.md` | Level-4 product thesis: purpose, user, problem/JTBD, value, boundary, principles, non-goals, strategic bets, success measures, and evidence ceilings |
-| `STATUS.md` | current Level-3 Strategic Repository Evolution state: capability state, Strategic Frontier, active boundary/responsibility, deferrals, evidence ceilings, and reassessment status |
+| `docs/adr/0029-current-product-boundary.md` | current owner-ratified product-boundary authority; supersedes ADR 0014 for current scope decisions |
+| `STATUS.md` | current Level-3 Strategic Repository Evolution projection: capability state, Strategic Frontier, Strategic Decision to Support, selected boundary/responsibility, evidence/authority limits, thesis-review state, and reassessment status |
 | `docs/strategic-outer-loop.md` | canonical four-level control model and Level-3/Level-4 relationship |
 | `docs/strategic-state-contract.md` | Level-3 durable state semantics and required projection contents |
-| `docs/product-thesis-revision.md` | Level-4 strategy revision, escalation, disposition, and owner-ratification contract |
+| `docs/product-thesis-revision.md` | Level-4 strategy revision, Thesis Tension, escalation, disposition, owner-ratification, and downstream reconciliation contract |
 | `docs/product-operating-model.md` | current value stream, responsibility ownership, governance loop, delegation, escalation, and runtime boundary |
 | `docs/agent-native-operating-workflow.md` | current Level-2 agent-native responsibility/Campaign operating map |
 | `docs/operations-runbook.md` | current operator-facing local validation/qualification/Campaign/release runbook; checked-in workflows remain executable authority |
@@ -378,11 +390,12 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 | `skills/workflow-planner/references/skill-registry.yaml` | registered Skill/capability catalog |
 | `skills/repo-sensemaker/references/evidence-rules.md` | repository-sensemaking evidence discipline |
 | `docs/semantic-architecture/README.md` | semantic-model/reasoning/capability/substrate architecture; orthogonal to the four control scopes |
+| `docs/semantic-architecture/reasoning-model.md` | shared evidence-to-decision reasoning grammar and its Level-3/Level-4 instantiations |
 | `docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md` | B7 reference-resolution scope, authoritative resolver matrix, negative cases, and abort boundary |
 | `docs/semantic-architecture/build-first-handoff.md` | B1–B7 repository qualification and continuation handoff |
 | `docs/campaign-observability-and-portability.md` | Campaign observability, semantic companion, B7 reference audit rendering, Resume Capsule, replay/graph, and bundles |
 | `docs/research/control-model-research-agenda.md` | non-ratified research hypotheses |
-| `docs/research/goal-a-external-product-validation-protocol.md` | canonical external product-validation protocol; new execution currently deferred by owner direction |
+| `docs/research/goal-a-external-product-validation-protocol.md` | canonical external product-validation protocol for its declared historical claim/scope; new execution currently deferred by owner direction |
 | `docs/adr/` | ratified/proposed architecture decisions and historical rationale |
 
 ## Domain language
@@ -392,7 +405,9 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 - **Product Thesis**: the Level-4 slower-changing commitments about product purpose, user, problem/JTBD, value, product boundary, strategic principles, major non-goals, success measures, strategic bets, and evidence ceilings.
 - **Strategic Repository Evolution**: Level-3 reasoning over current product/repository capability state to determine what repository-level responsibility, if any, is warranted next under the current product thesis.
 - **Strategic Frontier**: the currently material set of decision-relevant product/repository gaps, contradictions, opportunities, and unresolved boundaries. It is not a backlog and does not authorize work by itself.
-- **Thesis Review**: Level-3 escalation when evidence challenges a Level-4 commitment or when the owner changes strategic intent; the outcome may reaffirm, reinterpret, revise, retire, or supersede strategy under the applicable authority.
+- **Strategic Decision to Support**: the consequential Level-3 repository/product decision that resolving a candidate boundary is intended to improve. It is agent-authored semantic context, not a priority score or automatic selector.
+- **Thesis Tension**: a material recurring signal that a Level-4 commitment may be generating ambiguity/friction but is not yet decision-changing enough to require thesis review; recurrence may become evidence, but tension is not automatic escalation.
+- **Thesis Review**: Level-3 escalation when evidence makes a Level-4 commitment decision-changing or when the owner changes strategic intent; the outcome may reaffirm, reinterpret, revise, retire, or supersede strategy under the applicable authority.
 - **Responsibility**: the class of work warranted by the current uncertainty/evidence state.
 - **Skill**: a bounded implementation of a responsibility with declared inputs/outputs.
 - **Workflow** (use qualified forms): `workflow-definition` (registry entry in `workflow-registry.yaml`), `workflow-recommendation` (`recommended_workflow_id` in brief), `workflow-selection` (`chosen_workflow_id` in plan), `workflow-execution` (runtime invocation). Bare `workflow` is ambiguous — always qualify.
@@ -418,23 +433,26 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 ## Current product boundaries and open edges
 
 Current, ratified/operationally grounded:
+- ADR 0029 current product boundary: agent-native repository decision support/control with agent-owned semantic selection;
 - agent-native semantic control by the active coding agent;
 - canonical four-level control architecture as repository documentation/authority model;
 - Level-4 product strategy authority and Level-3 strategic-state projection;
+- Level-3 Strategic Decision to Support, qualitative frontier comparison, and smallest-warranted-intervention reasoning;
+- Thesis Tension plus dependency-sensitive Level-4 review hold and mandatory downstream reconciliation;
 - repository sensemaking + Brief;
 - bounded Skills and artifact contracts;
 - deterministic validation;
 - output reconciliation;
 - repair verification;
 - authority-aware stopping/escalation discipline;
-- Campaign persistence, provenance, observability, handoff, and bounded portability;
+- Campaign persistence, provenance, observability, handoff, bounded portability, explicit multi-repository target/relationship representation, and reconstructible completion;
 - B7 semantic-reference resolution/audit under existing Campaign/semantic-state authorities;
 - repository-qualified Semantic Architecture B1–B7 substrate and PM source-capability migration within their stated evidence ceilings.
 
 Not automatically ratified merely because related machinery or concepts exist:
 - an `OuterLoopEngine` or deterministic `StrategicPlanner`;
-- automatic Strategic Frontier ranking;
-- automatic product-thesis revision;
+- automatic Strategic Frontier ranking or strategic-decision scoring;
+- automatic product-thesis revision or Thesis Tension escalation;
 - automatic Campaign generation from Level-3 state;
 - deterministic fog-type routing as product control policy;
 - a universal centralized orchestrator;
@@ -444,4 +462,4 @@ Not automatically ratified merely because related machinery or concepts exist:
 - domain-general research-agent control semantics;
 - new decision-theory/control-model machinery from the research agenda.
 
-The product should deepen through repository-grounded construction while architecture remains informative. Preserve observations, identify concrete failure/reconstruction/integrity boundaries, and formalize only mechanically bounded support. The Strategic Outer Loop v0 control model is now a frozen operational baseline: use it during normal repository evolution, and reopen outer-loop construction only from new concrete pressure or explicit owner direction. When the decisive question becomes behavioral product value rather than repository/mechanical correctness, stop construction at that boundary unless the owner explicitly reauthorizes empirical work.
+The product should deepen through repository-grounded construction while architecture remains informative. Preserve observations, identify concrete failure/reconstruction/integrity boundaries, and formalize only mechanically bounded support. The Strategic Outer Loop v0 control model remains a **frozen operational baseline**: use it during normal repository evolution, and reopen outer-loop construction only from new concrete pressure or explicit owner direction. When the decisive question becomes behavioral product value rather than repository/mechanical correctness, stop construction at that boundary unless the owner explicitly reauthorizes empirical work.
