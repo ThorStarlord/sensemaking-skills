@@ -1,12 +1,12 @@
 # Campaign Observability and Portability
 
-**Status:** Executable additive product capability candidate  
+**Status:** Repository-qualified additive product capability  
 **Campaign schema:** remains v2  
-**Semantic authority:** unchanged; commands project, connect, or transport durable state and provenance only
+**Semantic authority:** unchanged; commands project, connect, audit, or transport durable state and provenance only
 
 ## Purpose
 
-Campaign durability becomes more useful when a fresh agent/operator can inspect, reconstruct, compare, visualize, and transport state without manually reading every workspace file.
+Campaign durability becomes more useful when a fresh agent/operator can inspect, reconstruct, compare, visualize, audit, and transport state without manually reading every workspace file.
 
 This feature family adds deterministic projections over existing Campaign v2 state plus an optional companion semantic-reference log. It does not add a semantic planner or infer a next action.
 
@@ -35,7 +35,14 @@ Looks up an **exact durable identifier/reference** and reports where it occurs i
 - semantic companion entry IDs;
 - companion artifact/profile/evidence/claim/uncertainty refs.
 
-This is provenance explanation, not semantic explanation. It can answer “where was this ref recorded or consumed?” but not “was this claim or decision correct?”
+After B7 Semantic Reference Resolution & Integrity Audit v0, matching semantic-companion references also render their mechanically established reference-audit result when an authoritative resolver exists. This keeps two questions separate:
+
+```text
+reference occurrence != reference resolution
+reference resolution != semantic support
+```
+
+A Campaign-internal ref may resolve, be dangling, or remain not addressable under current contracts. The command does not infer evidence relevance, currentness, semantic support, or whether a decision was correct.
 
 ## `campaign diff`
 
@@ -64,6 +71,49 @@ referenced claim true
 
 Because the companion is a workspace file, portable Campaign bundles carry it automatically without a Campaign schema migration.
 
+## B7 semantic-reference audit
+
+B7 adds a standalone mechanical reference-audit primitive in `sensemaking_skills.semantic_architecture.reference_audit`. Campaign observability is a rendering adapter over that primitive; it is not the owner of reference semantics.
+
+The audit separates three dimensions:
+
+```text
+resolution
+  resolved | dangling | ambiguous | not_addressable
+
+reference class
+  campaign_internal | legacy_opaque | unknown
+
+integrity effect
+  pass | fail | informational
+```
+
+`AMBIGUOUS` is reserved by the result vocabulary but is not emitted by the current v0 resolvers because existing authorities do not mechanically produce multiple valid matches.
+
+Current authoritative resolution is deliberately bounded:
+
+- `parent_entry_ids` reuse `SemanticStateStore` parent integrity;
+- Campaign `evidence_refs` resolve through existing Campaign evidence/admission authority;
+- exact admitted artifact refs resolve through that same authority rather than a new registry;
+- an exact current `active_uncertainty.id` may resolve from Campaign state;
+- opaque claim/profile refs remain `not_addressable` when no canonical resolver exists;
+- target identity may be reported without inferring currentness.
+
+Important distinctions:
+
+```text
+not_addressable != invalid
+resolved != current
+reference resolved != claim warranted
+reference audit pass != semantic truth
+```
+
+`campaign semantic-state` renders chain diagnostics plus aggregate/detail reference-audit results. A corrupt companion chain prevents trustworthy outbound audit and surfaces the existing structural diagnostics rather than weakening `SemanticStateStore.validate()`.
+
+B7 deliberately does **not** change Resume Capsule behavior, create Campaign schema v3, introduce a universal reference registry, create universal Claim/Evidence objects, or infer currentness, decision relevance, authority precedence, routing, or semantic truth.
+
+The canonical design authority is `semantic-architecture/b7-semantic-reference-audit-design-preflight.md`.
+
 ## Resume Capsule — `campaign resume-context`
 
 Produces a compact deterministic fresh-context projection containing:
@@ -87,6 +137,8 @@ semantic companion summary when present
 It deliberately does **not** emit a recommended next action.
 
 Its explicit limit states that the capsule reconstructs durable declared state and optional companion references; the active agent still decides what action is warranted.
+
+B7 does not add reference-resolution details to Resume Capsule v0.
 
 ## Replay — `campaign replay`
 
@@ -173,6 +225,7 @@ Together:
 ```text
 Campaign workspace
     -> optional semantic companion
+    -> optional B7 reference audit during inspection
     -> bundle export
     -> another machine/session
     -> bundle verification/import
@@ -193,6 +246,8 @@ These features do not:
 - select a responsibility or Skill;
 - reproduce hidden chain of thought;
 - reconstruct historical full-state snapshots not stored by Campaign v2;
-- assert semantic truth from archive integrity;
-- turn provenance edges into causal/architectural claims;
-- promote the Phase 10 companion profile into Campaign admission.
+- assert semantic truth from archive or reference integrity;
+- turn provenance or resolution edges into causal/architectural claims;
+- promote the Phase 10 companion profile into Campaign admission;
+- infer currentness from reference resolution;
+- create a universal semantic-reference namespace or registry.

@@ -67,7 +67,8 @@ The installed product includes:
 - a build-derived canonical validator runtime;
 - a deterministic real-harness evidence verifier for frozen external qualification attempts;
 - a bounded mechanical Semantic Architecture substrate for repository observations;
-- Campaign observability projections, Resume Capsule, replay/provenance graph, and portable integrity bundles.
+- Campaign observability projections, Resume Capsule, replay/provenance graph, and portable integrity bundles;
+- B7 semantic-reference resolution/audit over existing Campaign evidence/admission identities, rendered through `campaign semantic-state` and `campaign explain`.
 
 The Level-3/Level-4 Strategic Outer Loop foundation is currently a **repository documentation/authority architecture**, not a shipped autonomous strategic runtime. Installing the package does not create a `StrategicPlanner`, automatically rank the Strategic Frontier, revise product strategy, or generate Campaigns without agent judgment.
 
@@ -98,6 +99,7 @@ Deterministic machinery owns mechanically decidable contracts:
 - handoff binding;
 - manifest/domain cross-reference conformance;
 - Campaign provenance projections and portable-bundle integrity;
+- reference-resolution integrity under existing authoritative namespaces;
 - release/evidence-package verification.
 
 The durable invariants include:
@@ -115,6 +117,10 @@ semantic map relation != architecture judgment
 manifest valid != Skill should run
 bundle valid != Campaign semantically correct
 repository changed != repair succeeded
+reference occurrence != reference resolution
+reference resolved != current
+reference audit pass != semantic truth
+not_addressable != invalid
 product thesis != strategic state
 Strategic Frontier != backlog
 strategic boundary selected != implementation authorized
@@ -220,6 +226,18 @@ sensemaking-skills campaign semantic-state --workspace /path/to/campaigns/CMP-00
 Repository-bound Campaigns derive the companion target identity from the current TargetSnapshot digest. Targetless Campaigns require an explicit `--target-ref`.
 
 The companion carries artifact/evidence/claim/uncertainty provenance references, not hidden chain of thought. Its hash chain can establish structural integrity, not semantic truth.
+
+B7 adds a separate outbound reference audit. `campaign semantic-state` reports chain diagnostics plus reference-audit totals/details, while `campaign explain --ref` can render the audit result for matching semantic-companion references. Existing Campaign evidence/admission authority is reused rather than duplicated.
+
+The audit distinguishes `resolved`, `dangling`, `ambiguous`, and `not_addressable`, and keeps addressability separate from semantic meaning. Opaque legacy/claim/profile references remain informational when no authoritative resolver exists.
+
+```text
+not_addressable != invalid
+resolved != current
+reference resolution != semantic support
+```
+
+B7 does not change Resume Capsule behavior or Campaign schema v2.
 
 Phase 10 separately retained `semantic_reasoning_profile` as an **optional** companion audit/reconstruction artifact; the profile is not mandatory and is not promoted into Campaign artifact admission.
 
@@ -330,7 +348,7 @@ Setup preserves drift protection. Copying a Skill into a discovery root is not e
 
 Current Campaign artifacts use **schema version 2**. Historical v1 artifacts are accepted only through deterministic one-way representation migration. Migration does not reinterpret evidence, select work, or grant authority.
 
-The optional semantic companion is a workspace-level additive artifact and does not introduce Campaign schema v3.
+The optional semantic companion and B7 audit remain workspace-level/additive behavior and do not introduce Campaign schema v3.
 
 ## Semantic Architecture development policy
 
@@ -342,7 +360,7 @@ The **Construction Diminishing-Returns Gate** stops further speculative construc
 
 The Strategic Outer Loop uses the same discipline: higher-scope concepts should first be carried by existing authority surfaces, and new deterministic machinery must not be added merely to mirror the conceptual model.
 
-See `docs/semantic-architecture/README.md`, `docs/semantic-architecture/implementation-plan.md`, and `docs/semantic-architecture/build-first-policy.md`.
+See `docs/semantic-architecture/README.md`, `docs/semantic-architecture/implementation-plan.md`, `docs/semantic-architecture/build-first-policy.md`, and `docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md`.
 
 ## Real-harness qualification
 
@@ -368,7 +386,9 @@ Tagged publication remains a separate owner action.
 - Not an automatic Strategic Frontier ranking system.
 - Not an automatic product-thesis revision mechanism.
 - Not a universal planner or capability-ranking engine.
+- Not a universal semantic-reference registry.
 - Not a semantic truth validator.
+- Not a currentness inference engine.
 - Not a complete repository knowledge graph.
 - Not a cloud service.
 - Not automatic external mutation authority.
@@ -381,9 +401,9 @@ Tagged publication remains a separate owner action.
 src/sensemaking_skills/
   campaign_semantics/       typed Campaign contracts + schema evolution
   campaigns/                durable workspace/service/admission/lineage/target snapshots/bundles
-  semantic_architecture/    bounded probes/map/state/conformance substrate
+  semantic_architecture/    bounded probes/map/state/reference-audit/conformance substrate
   semantic_cli.py           mechanical semantic CLI registration
-  campaign_observability_cli.py Campaign projections/companion/portability
+  campaign_observability_cli.py Campaign projections/companion/reference audit/portability
   external_qualification.py frozen real-harness evidence verifier
   skill_trees/              build-derived installed Skill trees
   validator_runtime/        build-derived installed validator runtime
@@ -410,10 +430,12 @@ Read the repository from higher-scope authority into bounded execution:
 - `docs/milestone-runbook.md` — operating and qualification runbook.
 - `docs/sensemaking-campaign.md` — canonical Campaign product model.
 - `docs/campaign-target-snapshot.md` — target provenance and drift contract.
-- `docs/campaign-observability-and-portability.md` — observability, semantic companion, Resume Capsule, replay/graph, and bundles.
+- `docs/campaign-observability-and-portability.md` — observability, semantic companion, B7 reference audit, Resume Capsule, replay/graph, and bundles.
 - `docs/semantic-architecture/README.md` — Semantic Architecture index; orthogonal semantic/layer view.
 - `docs/semantic-architecture/implementation-plan.md` — build-first semantic roadmap.
 - `docs/semantic-architecture/build-first-policy.md` — diminishing-returns gate.
+- `docs/semantic-architecture/build-first-handoff.md` — B1–B7 exact-head qualification handoff.
+- `docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md` — B7 design authority and resolver/abort contract.
 - `docs/semantic-architecture/mechanical-semantic-substrate.md` — probes/map/state contracts.
 - `docs/semantic-architecture/skill-contract-manifests-and-domain-packs.md` — manifest/domain conformance.
 - `docs/product-management/capability-migration-matrix.md` — completed PM capability migration/maturity ledger.
