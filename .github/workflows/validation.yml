@@ -147,6 +147,7 @@ jobs:
             tests/test_semantic_reasoning_profile.py \
             tests/test_skill_registry_liveness.py \
             tests/test_semantic_substrate.py \
+            tests/test_semantic_reference_audit.py \
             tests/test_semantic_conformance.py \
             tests/test_semantic_cli.py \
             -q

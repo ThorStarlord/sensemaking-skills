@@ -16,7 +16,13 @@ import click
 from .campaign_semantics import ContractError, canonicalize, target_snapshot_sha256
 from .campaigns import CampaignService, CampaignWorkspaceError
 from .campaigns.bundle import CampaignBundleService
-from .semantic_architecture import SemanticStateEntry, SemanticStateStore
+from .semantic_architecture import (
+    IntegrityEffect,
+    SemanticStateEntry,
+    SemanticStateStore,
+    audit_semantic_references,
+    to_dict as semantic_to_dict,
+)
 
 SEMANTIC_STATE_FILENAME = "semantic-state.jsonl"
 
@@ -67,6 +73,18 @@ def _campaign_target_ref(snapshot: Any) -> str | None:
     if target is None:
         return None
     return f"target-snapshot-sha256:{target_snapshot_sha256(target)}"
+
+
+def _campaign_reference_audit(snapshot: Any, records: list[dict[str, Any]]):
+    active_uncertainty_ids: tuple[str, ...] = ()
+    if snapshot.state.active_uncertainty is not None:
+        active_uncertainty_ids = (snapshot.state.active_uncertainty.id,)
+    return audit_semantic_references(
+        records,
+        campaign_evidence_refs=snapshot.evidence_refs,
+        active_uncertainty_ids=active_uncertainty_ids,
+        campaign_target_ref=_campaign_target_ref(snapshot),
+    )
 
 
 def register_campaign_observability_commands(
@@ -139,6 +157,7 @@ def register_campaign_observability_commands(
                 matches.append({"kind": "semantic_state_entry", "value": entry, "entry_digest": record.get("entry_digest")})
             for field, kind in (
                 ("artifact_ref", "semantic_artifact_ref"),
+                ("target_ref", "semantic_target_ref"),
                 ("semantic_profile_ref", "semantic_profile_ref"),
             ):
                 if entry.get(field) == reference:
@@ -151,11 +170,28 @@ def register_campaign_observability_commands(
                 if reference in entry.get(field, []):
                     matches.append({"kind": kind, "entry_id": entry.get("entry_id")})
 
+        reference_audit_items = []
+        if not semantic_diagnostics:
+            audit = _campaign_reference_audit(snapshot, semantic_records)
+            reference_audit_items = [
+                item for item in audit.items if item.reference == reference
+            ]
+        reference_integrity_ok = (
+            None
+            if not reference_audit_items
+            else not any(
+                item.integrity_effect is IntegrityEffect.FAIL
+                for item in reference_audit_items
+            )
+        )
+
         payload = {
             "ok": bool(matches) and not semantic_diagnostics,
             "code": "CAMPAIGN_REFERENCE_EXPLAINED" if matches else "CAMPAIGN_REFERENCE_NOT_FOUND",
             "reference": reference,
             "matches": matches,
+            "reference_audit": [semantic_to_dict(item) for item in reference_audit_items],
+            "reference_integrity_ok": reference_integrity_ok,
             "semantic_companion_diagnostics": [canonicalize(item) for item in semantic_diagnostics],
             "semantic_recommendation_included": False,
             "semantic_truth_established": False,
@@ -273,14 +309,23 @@ def register_campaign_observability_commands(
     @click.option("--workspace", required=True, type=click.Path(path_type=Path))
     @click.option("--json", "output_json", is_flag=True)
     def campaign_semantic_state(workspace: Path, output_json: bool) -> None:
-        """Show/validate the optional Campaign semantic companion chain."""
-        resume(workspace, output_json)
+        """Show/validate the optional Campaign semantic companion chain and refs."""
+        snapshot = resume(workspace, output_json)
         records, diagnostics = _semantic_store(workspace).load_raw()
+        audit = None if diagnostics else _campaign_reference_audit(snapshot, records)
+        reference_integrity_failed = audit is not None and not audit.integrity_ok
+        if diagnostics:
+            code = "CAMPAIGN_SEMANTIC_STATE_INVALID"
+        elif reference_integrity_failed:
+            code = "CAMPAIGN_SEMANTIC_STATE_REFERENCE_INTEGRITY_FAILED"
+        else:
+            code = "CAMPAIGN_SEMANTIC_STATE_VALID"
         payload = {
-            "ok": not diagnostics,
-            "code": "CAMPAIGN_SEMANTIC_STATE_VALID" if not diagnostics else "CAMPAIGN_SEMANTIC_STATE_INVALID",
+            "ok": not diagnostics and not reference_integrity_failed,
+            "code": code,
             "records": records,
             "diagnostics": [canonicalize(item) for item in diagnostics],
+            "reference_audit": semantic_to_dict(audit) if audit is not None else None,
             "campaign_schema_changed": False,
             "semantic_truth_established": False,
         }
@@ -288,7 +333,7 @@ def register_campaign_observability_commands(
             json_echo(payload)
         else:
             click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
-        if diagnostics:
+        if diagnostics or reference_integrity_failed:
             raise click.exceptions.Exit(3)
 
     @campaign_group.command(name="resume-context")
