@@ -5,6 +5,7 @@
 **Control level:** input to future Level-3 Strategic Repository Evolution or Level-4 Product Thesis reasoning  
 **Authority:** none; candidate ideas do not constitute Strategic Frontier membership, implementation authorization, product-thesis ratification, or release commitment  
 **Current strategy authority:** [`product-strategy.md`](product-strategy.md)  
+**Current product-boundary authority:** [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md)  
 **Current Level-3 state:** [`../STATUS.md`](../STATUS.md)  
 **Control model:** [`strategic-outer-loop.md`](strategic-outer-loop.md)
 
@@ -22,7 +23,7 @@ possible direction
 
 The purpose is memory, not prioritization. A candidate enters current Level-3 state only when concrete pressure, a mechanically explicit need, or explicit owner direction makes it decision-relevant. Thesis-changing candidates require Level-4 review.
 
-This file does not replace `STATUS.md`, `product-strategy.md`, `strategic-outer-loop.md`, ADRs, executable validators/CI, empirical evidence records, or historical root `roadmap.md`.
+This file does not replace `STATUS.md`, `product-strategy.md`, ADR 0029, `strategic-outer-loop.md`, ADRs, executable validators/CI, empirical evidence records, or historical root `roadmap.md`.
 
 ## 2. Candidate lifecycle
 
@@ -49,9 +50,11 @@ Level-3 reassessment
         ↓
 Strategic Frontier
         ↓
+Strategic Decision to Support
+        ↓
 one explicitly warranted responsibility
         ↓
-Campaign / work package
+Campaign / work package when useful
         ↓
 implementation + qualification
         ↓
@@ -60,19 +63,20 @@ STATUS.md reconciliation
 
 ## 3. Reconciliation snapshot
 
-Repository-qualified baselines include:
+Repository-qualified/current baselines include:
 
-- Campaign Preflight, Doctor, observability, replay, provenance, bundles, semantic-reference audit, and completion receipts;
+- Campaign Preflight, Doctor, observability, replay, provenance, bundles, semantic-reference audit, completion receipts, portable rebinding, and explicit multi-repository target/dependency mechanics;
 - Resume Capsule v1/v2, capability context, uncertainty lifecycle/relationships, bundle inspection, inventory, and nondestructive archive markers;
 - read-only Level-3 strategy inspect/diff and explicit strategy handoff;
-- explicit multi-repository target identity, drift verification, refresh, portable rebinding, and caller-authored cross-repository relationships;
 - four static agent-facing Campaign golden paths that describe composition without routing or execution;
 - bounded shared companion IO for recent locator/relation/completion records;
-- Skill Contract Manifests, Domain Packs, semantic conformance, and `semantic catalog`.
+- Skill Contract Manifests, Domain Packs, semantic conformance, and `semantic catalog`;
+- Persona & Adaptive Guidance Model v0 plus shipped-guidance reconciliation;
+- **Product Boundary Reconciliation v1**: ADR 0029 supersedes ADR 0014 for current product-scope decisions while ADR 0014 remains historical evidence;
+- **Strategic Outer Loop Precision v1**: Strategic Decision to Support, qualitative frontier comparison, smallest-warranted-intervention reasoning, concise current Level-3 state, Thesis Tension, dependency-sensitive Level-4 review hold, mandatory post-review reconciliation, and Level-3/Level-4 Semantic Reasoning Model integration;
+- bounded strategic-state mechanics that require/project the Strategic Decision anchor and ADR 0029 pointer without validating strategic quality.
 
-The owner-ratified Persona & Adaptive Guidance Model v0 clarifies the primary design persona and five contextual reasoning factors: user supervision capability, desired delegation, decision complexity, consequentiality, and continuation complexity. Adaptive Guidance Existing Product Reconciliation v0 subsequently aligned the shipped `using-sensemaking` Skill, public onboarding, Campaign product framing, and Golden Path references with that model without changing runtime semantics.
-
-Campaign schema remains v2. None of these baselines establishes native-harness usefulness, empirical portability, comparative superiority, semantic correctness, or automatic planning authority.
+Campaign schema remains v2. None of these baselines establishes native-harness usefulness, empirical portability, comparative superiority, semantic correctness, objective strategic priority, or automatic planning authority.
 
 ## 4. Agent ergonomics candidates
 
@@ -107,48 +111,23 @@ Current mechanical observability includes `inspect`, `explain`, `diff`, semantic
 The Persona & Adaptive Guidance Model v0 supplies the conceptual reason that process ceremony may vary without creating multiple truth systems:
 
 ```text
-user supervision capability
--> scaffolding / explanation
-
-desired delegation
--> agent decision ownership within granted authority
-
-decision complexity + consequentiality
--> process rigor
-
-continuation complexity
--> durability / Campaign value
+user supervision capability -> scaffolding / explanation
+desired delegation -> agent decision ownership within granted authority
+decision complexity + consequentiality -> process rigor
+continuation complexity -> durability / Campaign value
 ```
 
-Adaptive Guidance Existing Product Reconciliation v0 then tested this interpretation against the shipped product. Its audit found **presentation mismatches but no behavior-level mismatch**. The shipped guidance now explicitly supports:
+Adaptive Guidance Existing Product Reconciliation v0 found presentation mismatches but no behavior-level mismatch. The shipped guidance now supports direct bounded work, repository sensemaking when responsibility is uncertain, stronger reconciliation/repair verification when consequential, and Campaign state when continuation complexity warrants it.
+
+This weakens rather than strengthens the case for formal runtime tiers: existing mechanics already allow proportional use.
+
+**Reopen trigger:** repeated normal-use evidence that aligned guidance is insufficient because one-model Campaign semantics themselves impose a mechanically bounded recurring burden.
+
+**Non-goals:** incompatible Campaign models, weaker evidence standards, user-expertise scoring, complexity/consequentiality scoring, automatic Campaign thresholds, or deterministic flow selection.
 
 ```text
-clear/local/one-context work
--> bounded work without Campaign ceremony
-
-uncertain repository responsibility
--> repository sensemaking when useful
-
-consequential claim / repair
--> stronger reconciliation or finding-specific verification when warranted
-
-continuation-heavy work
--> durable Campaign state
-```
-
-This currently weakens rather than strengthens the case for formal runtime tiers: existing mechanics already allow proportional use, and the observed burden was resolved through agent/user guidance rather than alternate Campaign semantics.
-
-Potential `LIGHT` / `STANDARD` / `QUALIFIED` presentation remains illustrative only. The risk is creating multiple truth systems, weakening evidence because of a label, or turning contextual semantic judgment into a routing threshold.
-
-**Reopen trigger:** repeated normal-use evidence that aligned guidance is insufficient because the existing one-model Campaign semantics themselves (a) mechanically impose avoidable ceremony on otherwise appropriate work, or (b) cannot express a recurring mechanically bounded continuation/qualification profile without manual reconstruction.
-
-**Non-goals:** incompatible Campaign models, weaker truth/evidence standards, user-expertise scoring, complexity/consequentiality scoring, automatic Campaign thresholds, or deterministic flow selection.
-
-```text
-adaptive guidance model
-!= formal Campaign tier system
-presentation burden repaired
-!= runtime tier warranted
+adaptive guidance model != formal Campaign tier system
+presentation burden repaired != runtime tier warranted
 ```
 
 ## 5. Campaign portability and lifecycle candidates
@@ -157,16 +136,14 @@ presentation burden repaired
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-Primary and multi-target paths can now be rebound only from caller-supplied locations whose recorded repository identity and exact Git/worktree state match. Primary rebinding preserves canonical Campaign snapshot provenance through a locator companion; multi-target rebinding records an explicit rebind history.
+Primary and multi-target paths can be rebound only from caller-supplied locations whose recorded repository identity and exact Git/worktree state match. Primary rebinding preserves canonical Campaign snapshot provenance through a locator companion; multi-target rebinding records explicit history.
 
 ```text
 rebind valid != repository selected
 rebind != target refresh
 ```
 
-**Remaining candidates:** remote storage/transport, synchronization, or stronger explicit target-rebinding workflows only if separately warranted.
-
-**Non-goal:** repository discovery or silently accepting drift.
+**Remaining candidates:** remote storage/transport, synchronization, or stronger explicit rebinding workflows only if separately warranted.
 
 ### 5.2 Bundle transport extensions
 
@@ -180,7 +157,7 @@ Export/verify/import plus pre-import inspection/resume/graph and target rebindin
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-Terminal Campaigns can produce a recalculable `completion-receipt.json` bound to durable workspace bytes and an optional nondestructive `archive-receipt.json`. Inventory hides valid archived Campaigns by default and can include them explicitly.
+Terminal Campaigns can produce a recalculable completion receipt bound to durable workspace bytes and an optional nondestructive archive receipt. Inventory can include archived Campaigns explicitly.
 
 ```text
 completion receipt != semantic success
@@ -188,9 +165,7 @@ archive != success
 archive != delete/move
 ```
 
-**Possible extensions:** deterministic archival/export indexing or retention metadata only when a concrete consumer needs them.
-
-**Non-goal:** automatic terminal decisions, success inference, or destructive archival.
+**Possible extensions:** deterministic retention/index metadata only when a concrete consumer needs it.
 
 ### 5.4 Replay / richer historical-state reconstruction
 
@@ -223,8 +198,6 @@ relationship recorded != architectural truth
 dependency graph valid != execution plan correct
 ```
 
-**Possible extensions:** additional explicit relation classes or deterministic filters only from a concrete need.
-
 ### 6.2 Cross-repository transaction / activation coordination
 
 **Current reconciliation:** `LONG_HORIZON` + `REQUIRES_EVIDENCE`.
@@ -233,15 +206,11 @@ Multi-Repository Campaigns intentionally do not promise atomic commit/deploy/rol
 
 **Reopen trigger:** explicit owner direction plus a concrete responsibility whose correctness genuinely depends on atomic cross-repository activation.
 
-**Non-goal:** infer deployment topology from repository membership or relation records.
-
 ### 6.3 Automatic repository discovery/scope expansion
 
 **Current reconciliation:** `REJECTED_FOR_NOW`.
 
 Current target/rebind workflows deliberately require caller-selected repositories and aliases.
-
-**Non-goal:** search a machine/organization and silently decide which repositories belong to a Campaign.
 
 ## 7. Domain extensibility candidates
 
@@ -259,8 +228,6 @@ Machine-readable contracts, aggregate conformance, and read-only discovery are r
 
 New Domain Packs beyond Engineering/Product Management should arise from explicit owner direction or a concrete domain with stable responsibilities/artifact contracts.
 
-**Non-goal:** grow Skill/Domain counts for their own sake.
-
 ### 7.3 Product Management migration
 
 **Current reconciliation:** `SUPERSEDED_BY_IMPLEMENTATION`.
@@ -274,8 +241,6 @@ All six planned waves and all 27 capabilities from the pinned source are reposit
 **Current reconciliation:** `DEFERRED_BY_OWNER_DIRECTION`.
 
 Retained research/accounting machinery exists, but ordinary repository construction is not to be silently converted into an experiment program.
-
-The adaptive-guidance reinterpretation makes coordination overhead more interpretable: visible ceremony should not scale merely because the user is less expert, while durable machinery should earn its cost from decision/consequentiality/continuation pressure. That is a product hypothesis, not measured evidence.
 
 **Reopen trigger:** explicit owner direction to resume measurement/research.
 
@@ -301,13 +266,37 @@ Campaign records could support evaluation, but making agent evaluation a first-c
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE`.
 
-Representation inspection/diff and explicit Level-3→Campaign handoff exist without ranking or responsibility selection.
+Representation inspection/diff and explicit Level-3→Campaign handoff exist without ranking or responsibility selection. Strategic Outer Loop Precision v1 additionally projects/transports the already-authored **Strategic Decision to Support** while explicitly reporting that the tool did not select it.
 
 ### 9.2 Level-4 reconciliation automation
 
 **Current reconciliation:** `REJECTED_FOR_NOW` + `REQUIRES_LEVEL_4_REVIEW` for semantic automation.
 
-Automatic strategy revision, thesis adjudication, or owner-ratification substitution remains outside current authority.
+Automatic strategy revision, Thesis Tension scoring/aggregation, escalation adjudication, affected-work dependency inference, reconciliation planning, or owner-ratification substitution remains outside current authority.
+
+The current semantic contracts already support dependency-sensitive review holds and mandatory Level-3 reconciliation without requiring an engine.
+
+### 9.3 Strategic Outer Loop Precision v1
+
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
+
+The milestone established:
+
+- ADR 0029 as current product-boundary authority through an owner-ratified `SUPERSEDE` disposition;
+- first-class Strategic Decision to Support;
+- qualitative frontier-comparison lenses without scoring;
+- smallest-warranted-intervention reasoning;
+- concise current `STATUS.md` projection;
+- Thesis Tension and Level-3↔Level-4 transition semantics;
+- Level-3 and Level-4 instantiations of the Semantic Reasoning Model;
+- bounded mechanical enforcement of only the Strategic Decision heading and ADR 0029 pointer.
+
+**Possible extensions:** none are current work. Reopen only from concrete normal-use/integrity/reconstruction pressure or explicit owner direction.
+
+```text
+reasoning precision != strategic automation
+explicit comparison != priority scoring
+```
 
 ## 10. Integration and implementation-shape candidates
 
@@ -325,15 +314,13 @@ generate provenance != publish provenance
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-Recent target-rebind, multi-target-rebind, target-relation, and completion/archive modules share a bounded `companion_io.py` for canonical JSON hashing, atomic JSON replacement, and fsync'd JSONL append.
-
-The schemas and semantics remain independently owned.
+Recent target-rebind, multi-target-rebind, target-relation, and completion/archive modules share bounded canonical JSON hashing, atomic JSON replacement, and fsync'd JSONL append primitives. Schemas and semantics remain independently owned.
 
 ```text
 shared IO != shared semantic model
 ```
 
-**Possible extensions:** migrate another persistence consumer only when duplication creates a concrete maintenance/integrity problem. Do not bulk-consolidate Semantic Architecture merely for stylistic consistency.
+**Possible extensions:** migrate another consumer only when duplication creates a concrete maintenance/integrity problem.
 
 ### 10.3 Sensemaking as an implementation-independent protocol
 
@@ -352,13 +339,14 @@ These remain non-authorized unless a later Level-3/Level-4 decision explicitly c
 ```text
 StrategicPlanner / OuterLoopEngine
 automatic Strategic Frontier ranking
+automatic Strategic Decision selection/scoring
 automatic responsibility selection
 automatic capability selection
 automatic uncertainty ranking
 automatic workflow routing/execution
 automatic repository discovery/scope expansion
 cross-repository transaction/deployment/rollback coordinator
-Level-4 reconciliation automation
+Level-4 reconciliation automation / Thesis Tension scoring
 universal semantic-reference registry
 universal causal/decision graph
 Sensemaking Protocol product-category pivot
@@ -370,26 +358,30 @@ bulk historical-document deletion
 new empirical experiment without owner direction
 ```
 
-Completed surfaces such as target rebinding, dependency declarations, completion/archive, static golden paths, and adaptive-guidance presentation alignment are no longer listed as missing work.
+Completed surfaces and Strategic Outer Loop Precision v1 are no longer missing work.
 
 ## 12. Candidate review discipline
 
 When reviewing this file:
 
 1. Reconcile each candidate against current `main` before assuming it is missing.
-2. Identify the exact consumer/problem or explicit owner direction.
-3. Separate mechanical implementation warrant from stronger empirical claims.
-4. Prefer the smallest intervention that preserves existing authority boundaries.
-5. Escalate thesis-changing directions to Level 4.
-6. Never promote a candidate merely because it is attractive, old, frequently mentioned, or easy to implement.
-7. After implementation, reconcile this file so completed work is not rediscovered as future work.
+2. State the **Strategic Decision to Support** before promoting a boundary.
+3. Compare credible boundaries qualitatively; do not infer a numeric priority function.
+4. Identify the exact consumer/problem or explicit owner direction.
+5. Separate mechanical implementation warrant from stronger empirical claims.
+6. Prefer the smallest intervention that preserves existing authority boundaries.
+7. Escalate thesis-changing directions to Level 4.
+8. Never promote a candidate merely because it is attractive, old, frequently mentioned, or easy to implement.
+9. After implementation, reconcile this file so completed work is not rediscovered as future work.
 
 Useful promotion test:
 
 ```text
 stable enough semantics
++ consequential Strategic Decision to Support
 + concrete product/integrity need or explicit owner direction
-+ mechanically expressible bounded implementation
++ sufficient current evidence
++ mechanically expressible bounded implementation where mechanics are needed
 + no silent thesis/authority expansion
         -> candidate for Level-3 reassessment
 ```
@@ -398,16 +390,16 @@ stable enough semantics
 
 This document intentionally declares **no current implementation priority**.
 
-`STATUS.md` is authoritative for the current Level-3 frontier and warranted responsibility. The owner-directed Portable Target Rebinding, Cross-Repository Dependency Declarations, Campaign Completion & Archival, Agent Workflow / Golden Path, Surface Simplification & Contract Consolidation, Persona & Adaptive Guidance Model v0, and Adaptive Guidance Existing Product Reconciliation v0 work do not automatically promote another candidate.
+`STATUS.md` is authoritative for the current Level-3 frontier, Strategic Decision to Support, and warranted responsibility. Strategic Outer Loop Precision v1 closes with `NO_FURTHER_REPOSITORY_WORK_WARRANTED`; its completion does not automatically promote another candidate.
 
-The latest reconciliation specifically found no behavior-level defect requiring formal Campaign tiers: the observed proportionality mismatch was in shipped guidance and was repaired there.
+The remaining directions are either extensions without current consumer pressure, owner-deferred empirical questions, long-horizon scope expansions, or ideas whose automation would violate current semantic/authority boundaries.
 
 ```text
 candidate inventory exists
 != repository has pending work
 != candidate ordering is priority
-!= adaptive product model requires adaptive runtime
-!= aligned guidance requires a rigor-mode system
+!= qualitative lenses are a scoring system
+!= future uncertainty is current work
 != absence of current work means product is finished
 ```
 
