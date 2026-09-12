@@ -1,3 +1,16 @@
+<!-- doc-status: historical -->
+
+> **HISTORICAL / SUPERSEDED.** This document records the May 2026 five-skill
+> meta-routing product definition. It is retained as historical design evidence
+> and is **not** the current Version 1.0 product or release authority. Current
+> product-thesis authority is `docs/product-strategy.md`; the current product
+> boundary is `docs/adr/0029-current-product-boundary.md`; current repository
+> development state is `STATUS.md`; operator/release qualification authority is
+> `docs/operations-runbook.md` plus the checked-in CI workflows.
+>
+> Do not derive current V1 scope, readiness, routing authority, or release claims
+> from the historical requirements below.
+
 # PRD: Sensemaking Skills V1 (Refactored Release)
 
 ## Status: Refactored (Five-Skill Pipeline)
