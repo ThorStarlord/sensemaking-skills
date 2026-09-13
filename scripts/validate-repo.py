@@ -12,9 +12,12 @@ def validate_repo():
     core_files = [
         "README.md",
         "CONTEXT.md",
+        "STATUS.md",
         "LICENSE",
         "CONTRIBUTING.md",
-        "docs/PRD-V1-Sensemaking.md",
+        "docs/product-strategy.md",
+        "docs/adr/0029-current-product-boundary.md",
+        "docs/operations-runbook.md",
         "skills/repo-sensemaker/SKILL.md",
         "skills/repo-sensemaker/agents/openai.yaml",
         "skills/repo-sensemaker/references/repo-analysis-template.md",

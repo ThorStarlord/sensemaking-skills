@@ -1,133 +1,109 @@
 # Frequently Asked Questions
 
+**Repository release baseline: `0.3.0` (Beta).**
+
+Current product/release authority lives in `STATUS.md`, `docs/product-strategy.md`,
+`docs/adr/0029-current-product-boundary.md`, and `docs/operations-runbook.md`.
+This FAQ is explanatory only; executable behavior and those authority surfaces
+win if prose drifts.
+
 ## Installation & Setup
 
 ### Q: How do I install sensemaking-skills?
-A: Two options:
-```bash
-# Option 1: From PyPI (recommended)
-pip install sensemaking-skills
+For the current repository version, install from source:
 
-# Option 2: From source
+```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
 cd sensemaking-skills
-pip install -e .
+python -m pip install -e .
 ```
 
-### Q: What are the system requirements?
-A: Python 3.11 or higher. That's it! Only dependency is click (installed automatically).
+A matching packaged release can be installed after an explicitly tagged
+publication exists. Repository qualification alone does not imply publication.
 
-### Q: Does it work on Windows/Mac/Linux?
-A: Yes! It works on all operating systems that support Python 3.11+.
+### Q: What are the system requirements?
+Python 3.11 or higher. Shipped dependencies are declared by `pyproject.toml`.
 
 ## Usage
 
-### Q: How do I diagnose my repository?
-A: Three-step process:
-1. Prepare: `sensemaking-skills analyze --repo /path/to/repo`
-2. Diagnose: Open repo in Claude Code, read skills, ask agent to analyze
-3. Validate: `sensemaking-skills validate --artifact artifacts/brief.md`
+### Q: How do I start?
+Use `GETTING_STARTED.md` for the human first-use sequence. A durable Campaign is
+available when repository-specific decision state must survive fresh contexts,
+agents, machines, or long-running work, but not every Sensemaking task requires
+Campaign state.
 
-### Q: What are the 4 fog types?
-A: Four types of repository confusion:
-- **Product Fog**: Unclear feature boundaries, API design issues
-- **UI Fog**: UI component organization, styling inconsistency
-- **Docs Fog**: Missing documentation, outdated examples
-- **Architecture Fog**: Service coupling, layer violations
+### Q: What is the current product?
+Sensemaking Skills is an agent-native repository decision-support and control
+layer. It combines repository sensemaking, evidence/authority discipline,
+optional durable Campaign state, bounded capability inspection, reconstruction,
+reconciliation, and mechanical qualification while leaving semantic judgment to
+the active coding agent.
 
-### Q: How long does diagnosis take?
-A: Typically < 10 minutes for most repositories. Agent-driven, so it depends on your repository size and complexity.
+### Q: Can I use this with different coding-agent harnesses?
+Yes. Agent-facing Skills can be installed into supported discovery roots for
+generic Agent Skills environments, Claude Code, Codex, and OpenCode. Core
+Sensemaking operation remains local-first.
 
-### Q: Can I use this without Claude Code?
-A: Yes. The CLI utilities (`analyze`, `validate`, `test`) can be used standalone for local validation, testing, and artifact workflows.
+## Campaigns and artifacts
 
-For full agent-guided diagnostics, use the included skill files with an agent-capable environment such as Claude Code.
+### Q: What format is the repository sensemaking brief?
+The canonical `repository_sensemaking_brief` remains a Markdown artifact. Do not
+infer a future-version export commitment from historical roadmap material.
 
-### Q: Does sensemaking-skills require API keys or external services?
-A: No. The sensemaking-skills package itself is local-only. It reads files from your repository, validates artifacts, runs local scripts, and writes Markdown or JSON outputs. It does not make external API calls and does not require credentials.
+### Q: Can Sensemaking work with more than one repository?
+Current Campaign mechanics support explicitly selected multi-repository targets
+and caller-authored relationships. They do not automatically discover
+repositories and do not provide atomic cross-repository commit/deploy/rollback
+coordination.
 
-If you use the skills with an agent harness such as Claude Code, that harness may call an LLM API. Those calls are handled by the harness, not by sensemaking-skills.
-
-### Q: Do I need to share my code?
-A: No! Everything runs locally. Your repository never leaves your machine.
+### Q: Does validation decide whether a claim or strategy is true?
+No. Mechanical validation establishes mechanically decidable representation,
+integrity, provenance, identity, or conformance properties. It does not turn
+those properties into semantic truth, strategic priority, or execution
+authority.
 
 ## Troubleshooting
 
-### Q: "sensemaking-skills command not found"
-A: Try: `python -m sensemaking_skills.cli --version`
-Or reinstall: `pip install --upgrade sensemaking-skills`
+### Q: `sensemaking-skills` command not found
+Install the project/distribution in the active environment, then verify:
 
-### Q: Validate command fails with error
-A: Check the error message for what's missing. Common issues:
-- Brief not in expected location
-- Brief missing required sections
-- Artifact path incorrect
+```bash
+sensemaking-skills --version
+sensemaking-skills campaign --help
+```
 
-Review PHASE-3-TESTING-RESULTS.md for validation details.
+### Q: A Campaign or artifact validation command fails
+Use the reported diagnostic first, then consult `docs/operations-runbook.md` for
+the current operator-facing validation and qualification commands. Older
+milestone runbooks are historical evidence rather than current authority.
 
-### Q: Agent won't read the skills
-A: Make sure:
-- Repository is open in Claude Code
-- Path to skills is correct
-- SKILL.md file exists at that location
+### Q: An agent cannot discover the Skills
+Use `sensemaking-skills setup-skills --help` and select the harness and scope
+explicitly. Project-scoped setup requires an explicit project root.
 
-## Features
-
-### Q: Can I export the brief in JSON?
-A: Currently outputs Markdown. JSON export planned for 0.3.0.
-
-### Q: Can I compare two diagnoses?
-A: Not yet, but tracking feature for 0.3.0.
-
-### Q: Can I run diagnostics on multiple repos at once?
-A: Not yet. Planned for 0.3.0.
-
-## Contributing
-
-### Q: How can I help?
-A: See CONTRIBUTING.md! We welcome:
-- Bug reports
-- Feature requests
-- Documentation improvements
-- Code contributions
-
-### Q: Is there a code of conduct?
-A: Yes! See CODE_OF_CONDUCT.md. Be respectful and inclusive.
-
-### Q: Can I propose a new fog type?
-A: Yes! Open an issue. We're considering custom fog types for 0.3.0.
-
-## Project
+## Project and Version 1.0
 
 ### Q: What's the roadmap?
-A: 
-- 0.2.1: Current release (PyPI available)
-- 0.3.0: User-requested features (JSON export, caching, etc.)
-- 1.0.0: Stable API, comprehensive docs
+Version 1.0 is the current release target, but readiness is determined from the
+current repository contracts and exact-head qualification rather than an old
+feature checklist. The historical `docs/PRD-V1-Sensemaking.md` records a
+superseded May 2026 five-skill product definition and is not current V1
+authority.
 
 ### Q: Is this production-ready?
-A: The current justified readiness level is "externally exercised" (brief
-production validated internally); the current product-validation priority is
-Goal A, whose canonical protocol
-(`docs/research/goal-a-external-product-validation-protocol.md`) targets
-independent-evaluator usefulness of grounded, decision-relevant briefs across
-two structurally different external repositories, with no target mutation and
-no manual artifact repair. Human decision-owner usefulness review is optional /
-deferred and is not required for A1; A1 does not claim actual human
-decision-owner usefulness or human decision impact. The historical D8 readiness
-bar remains inherited evidence guidance, not current binding authority. It is
-not yet general-availability production-ready.
+The current repository baseline is `0.3.0` Beta. Repository qualification can
+establish bounded code, package, persistence, validation, and release-contract
+properties, but stronger empirical or semantic claims retain their existing
+evidence ceilings. A Version 1.0 release candidate must be qualified from its
+own exact candidate head. Tagging/publication remains a separate owner action.
 
 ### Q: How is this licensed?
-A: MIT License. See LICENSE file.
-
-### Q: Who maintains this?
-A: Currently maintained by the repository owner (single-maintainer, experimental
-status). Contributions are welcome via issues/PRs.
+MIT License. See `LICENSE`.
 
 ## Still Have Questions?
 
-- Check the README.md
-- Open a GitHub discussion
-- Report a bug with details
-- Read GETTING_STARTED.md for workflow examples
+- `README.md` — product overview and entry points
+- `GETTING_STARTED.md` — human first-use guidance
+- `STATUS.md` — current Level-3 repository state
+- `docs/product-strategy.md` — current Level-4 product strategy
+- `docs/operations-runbook.md` — current validation/qualification operations
