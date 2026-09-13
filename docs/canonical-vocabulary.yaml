@@ -674,6 +674,88 @@ artifact_ids:
     consumed_by: [architectural-review]
     artifact_type: plan
 
+  # Product-management artifact contracts retained for compatibility. Their
+  # presence in the registry closes the vocabulary contract but does not claim
+  # reduced-scope RC qualification or semantic usefulness evidence.
+  - id: strategy_doc
+    description: "Product strategy document"
+    produced_by: strategy
+    consumed_by: [roadmap, okr]
+    artifact_type: product
+    compatibility_only: true
+  - id: ideal_customer_profile
+    description: "Ideal customer profile"
+    produced_by: ideal-customer-profile
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: prioritized_list
+    description: "Prioritized product list"
+    produced_by: prioritize
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: pricing_model
+    description: "Pricing model"
+    produced_by: pricing
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: experiment_plan
+    description: "Experiment plan"
+    produced_by: experiment-design
+    consumed_by: [ab-test-analysis]
+    artifact_type: product
+    compatibility_only: true
+  - id: pmf_report
+    description: "Product-market-fit report"
+    produced_by: measure-pmf
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: test_results
+    description: "Experiment test results"
+    produced_by: ab-test-analysis
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: risk_analysis
+    description: "Product risk analysis"
+    produced_by: pre-mortem
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: readiness_report
+    description: "Product launch readiness report"
+    produced_by: launch-checklist
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: feature_announcement
+    description: "Feature announcement"
+    produced_by: release-notes
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: gtm_plan
+    description: "Go-to-market plan"
+    produced_by: gtm
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: battlecard
+    description: "Competitive battlecard"
+    produced_by: battlecard
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+  - id: setup_report
+    description: "Setup report"
+    produced_by: setup-sensemaking-skills
+    consumed_by: []
+    artifact_type: product
+    compatibility_only: true
+
 workflow_ids:
   # Diagnostic & Orchestration Workflows
   - id: fast-path-workflow

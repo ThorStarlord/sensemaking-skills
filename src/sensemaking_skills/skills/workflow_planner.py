@@ -4,8 +4,8 @@ Analyzes repository context and recommends appropriate workflow orchestration
 strategy based on repository characteristics and project type.
 """
 
-from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
+
 from .base import BaseSkill
 
 
