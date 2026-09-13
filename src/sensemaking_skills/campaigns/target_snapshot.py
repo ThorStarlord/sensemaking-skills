@@ -25,12 +25,18 @@ from sensemaking_skills.campaign_semantics import (
     target_snapshot_sha256,
 )
 
-from .errors import CampaignIntegrityError, CampaignTransactionError, CampaignWorkspaceError
+from .errors import (
+    CampaignIntegrityError,
+    CampaignTransactionError,
+    CampaignWorkspaceError,
+)
 from .service import (
     CampaignDiagnostic,
-    CampaignService as BaseCampaignService,
     CampaignSnapshot,
     CampaignValidationResult,
+)
+from .service import (
+    CampaignService as BaseCampaignService,
 )
 
 

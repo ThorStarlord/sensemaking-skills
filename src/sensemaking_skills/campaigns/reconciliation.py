@@ -19,7 +19,6 @@ from .admission import ArtifactAdmissionContractError, load_artifact_admission
 from .errors import CampaignIntegrityError
 from .lineage import CampaignLineageService, ConsumptionEdge
 
-
 RECONCILIATION_ARTIFACT_IDS = frozenset(
     {"reconciliation_report", "repair_verification_report"}
 )

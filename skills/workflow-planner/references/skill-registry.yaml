@@ -56,6 +56,10 @@ ecosystems:
         purpose: evaluate skill performance in realistic scenarios
         artifact: usage_research_report
         availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+      - id: setup-sensemaking-skills
+        purpose: install the canonical Skill tree into an explicitly selected harness scope
+        artifact: setup_report
+        availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
 
   drafting:
     name: Implementation Drafting

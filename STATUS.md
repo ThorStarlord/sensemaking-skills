@@ -1,10 +1,13 @@
 # Status
 
-**Version:** 0.3.0  
+**Version:** 1.0.0rc1 (reduced-scope release candidate)
 **Last updated:** 2026-09-11  
 **Current phase:** Strategic Outer Loop Precision v1 is complete through product-boundary reconciliation, Level-3 decision/state refinement, Level-3↔Level-4 transition semantics, Semantic Reasoning Model integration, and bounded mechanical qualification  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, optional durable Campaign state, explicit authority/evidence boundaries, and reconstructible higher-scope strategic decisions  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
+
+**Release status:** RC published from exact-head-qualified commit `70542d47412d98ee6dfae5de6df29bf271304568`; native harness, portability, and semantic usefulness claims remain excluded.
+Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
 

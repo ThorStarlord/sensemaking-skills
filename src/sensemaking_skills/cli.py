@@ -17,6 +17,9 @@ from typing import Any
 import click
 
 from . import __version__
+from .campaign_capability_cli import register_campaign_capability_commands
+from .campaign_decision_cli import register_campaign_decision_commands
+from .campaign_observability_cli import register_campaign_observability_commands
 from .campaign_semantics import CampaignState, ContractError, canonicalize
 from .campaigns import (
     ArtifactAdmissionService,
@@ -31,12 +34,8 @@ from .campaigns import (
     CampaignTransactionError,
     CampaignWorkspaceError,
 )
-from .campaign_capability_cli import register_campaign_capability_commands
-from .campaign_decision_cli import register_campaign_decision_commands
-from .campaign_observability_cli import register_campaign_observability_commands
 from .semantic_cli import register_semantic_commands
 from .setup_skills import setup_skills as run_setup_skills
-
 
 CAMPAIGN_INVALID_EXIT = 3
 CAMPAIGN_WORKSPACE_EXIT = 4
@@ -133,6 +132,7 @@ def _status_payload(snapshot: CampaignSnapshot) -> dict[str, Any]:
         "ok": True,
         "campaign_id": state.campaign_id,
         "mission": state.mission,
+        "schema_version": state.schema_version,
         "status": state.status,
         "current_state": state.current_state,
         "authority": _enum_value(state.authority),

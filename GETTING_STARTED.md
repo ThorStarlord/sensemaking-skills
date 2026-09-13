@@ -294,4 +294,4 @@ Skill installed != Skill observed/invoked by the harness
 external verifier PASS != universal compatibility
 ```
 
-For current release/strategic state, see `STATUS.md`, `docs/operations-runbook.md`, and `docs/productization-v0.3.md`.
+For current release/strategic state, see `STATUS.md`, `docs/operations-runbook.md`, and `docs/release-v1.0-contract.md`.

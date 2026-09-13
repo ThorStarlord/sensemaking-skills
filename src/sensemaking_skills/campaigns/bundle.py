@@ -16,7 +16,6 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-
 BUNDLE_FORMAT = "sensemaking_campaign_bundle"
 BUNDLE_VERSION = 1
 MANIFEST_NAME = "bundle-manifest.json"

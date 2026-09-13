@@ -80,6 +80,11 @@ def check_npm_scripts():
     doc_paths.extend(list(Path(".").glob("AGENTS.md")) if os.path.exists("AGENTS.md") else [])
 
     for doc_path in doc_paths:
+        # Archived reports preserve historical examples, including commands
+        # that were intentionally removed. They are evidence, not current
+        # operator instructions, so do not treat them as live references.
+        if "archive" in doc_path.parts:
+            continue
         content = load_text(str(doc_path))
         # Find `npm run X` patterns
         matches = re.findall(r"`npm run (\S+)`", content)

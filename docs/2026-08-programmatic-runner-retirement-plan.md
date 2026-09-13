@@ -1,7 +1,9 @@
 # Programmatic Runner — Staged Retirement Plan
 
 **Date**: 2026-08-13
-**Status**: Step 3 (deprecate model executors) EXECUTED 2026-08-13; steps 4-8 pending.
+**Status**: CLOSED 2026-08-13. Steps 3–5 were executed; Steps 6–8 were
+superseded by the atomic removal recorded below. The retained deterministic
+runtime is compatibility-only and is not the semantic routing authority.
 **Authority**: ADR 0013 (Accepted 2026-08-13): the primary execution model is
 agent-native — the active coding agent reads and executes Skills directly.
 The programmatic second-model runner (`workflow-runtime.py` /
@@ -82,8 +84,10 @@ its product role was superseded.
    the deterministic/prompt-chain adapter set.
 8. Re-run the layering audit + full suite; verify ADR 0013 alignment.
 
-Each step is an independent, verifiable slice. Nothing is deleted in this
-document; the migration begins only on explicit approval of the sequence.
+Each step was originally defined as an independent, verifiable slice. The
+sequence was subsequently executed through the atomic Step 5 cut below. This
+document is now a historical decision and evidence record; it does not leave
+Steps 6–8 pending.
 
 ## Step 3 evidence (executed 2026-08-13)
 
@@ -139,6 +143,10 @@ Three buckets, classified individually:
 The programmatic-runner retirement project is CLOSED. Return to normal
 agent-native use (ADR 0013 primary). The architecture is coherent, the
 retirement is complete, and the one remaining convention is known and bounded.
+
+The closure statement applies to the executed atomic cut documented in
+“Step 5 evidence” below. It supersedes the earlier staged wording that listed
+Steps 6–8 as pending.
 
 ### cross-run identity: OPEN / DEFERRED (final status)
 

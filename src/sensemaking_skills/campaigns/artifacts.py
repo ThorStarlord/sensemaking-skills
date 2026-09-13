@@ -44,7 +44,6 @@ from .errors import (
 )
 from .store import CampaignStore
 
-
 _SAFE_COMPONENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 _SAFE_SUFFIX = re.compile(r"^\.[A-Za-z0-9]{1,12}$")
 

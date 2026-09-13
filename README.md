@@ -5,8 +5,8 @@
 
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
-**Version:** 0.3.0  
-**Status:** Beta; Outer Loop v0 operational baseline  
+**Version:** 1.0.0rc1 (reduced-scope release candidate)
+**Status:** RC published; native harness, portability, and semantic usefulness claims excluded
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
 
@@ -103,7 +103,7 @@ The Strategic Frontier is decision-relevant possibility state, **not a backlog**
 
 **Outer Loop v0 is now the frozen operational baseline.** Future outer-loop machinery is reopened only by concrete repository/product pressure or explicit owner direction; the existence of conceptual later steps is not a standing implementation roadmap.
 
-## What v0.3 ships
+## What the 1.0 candidate ships
 
 The installed v0.3 package primarily supplies the **Level-2/Level-1 durable and mechanical substrate** used by the active agent. Its central durable Level-2 abstraction is a **Sensemaking Campaign**: a bounded engineering decision process that survives agent/session boundaries when continuation complexity warrants persistent state. Campaign availability does not make Campaign the universal entry point for Sensemaking.
 
@@ -129,6 +129,8 @@ The Level-3/Level-4 Strategic Outer Loop foundation is currently a **repository 
 The shipped wheel deliberately excludes retained research-lab packages (`campaign_validation`, `campaign_accounting`, `exploratory_authorization`, `exploratory_execution`). Those remain source-only repository/lab infrastructure.
 
 ## Product boundary
+
+Release scope and support claims are defined by [`docs/release-v1.0-contract.md`](docs/release-v1.0-contract.md).
 
 The active coding agent owns semantic control:
 

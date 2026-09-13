@@ -36,6 +36,20 @@ from .harness_adapters import (
     resolve_harness_destinations,
 )
 
+__all__ = [
+    "SkillsSetupError",
+    "copy_skill",
+    "find_skills_in_package",
+    "get_agents_skills_dir",
+    "get_claude_code_skills_dir",
+    "get_claude_personal_skills_dir",
+    "get_codex_skills_dir",
+    "get_opencode_skills_dir",
+    "get_package_skills_dir",
+    "setup_skills",
+    "skill_state",
+]
+
 
 class SkillsSetupError(Exception):
     """Raised when skill setup fails."""
@@ -49,7 +63,10 @@ def get_package_skills_dir() -> Path:
         packaged = files("sensemaking_skills") / "skill_trees"
         if packaged.is_dir():
             return Path(str(packaged))
-    except Exception:
+    except (ImportError, ModuleNotFoundError, OSError):
+        # A source checkout may not have importlib resource metadata. Other
+        # failures indicate a broken packaged-resource boundary and must be
+        # visible instead of silently selecting a different source tree.
         pass
 
     package_dir = Path(__file__).parent.parent.parent

@@ -1,0 +1,115 @@
+schema_version: 1
+release:
+  version: 1.0.0rc1
+  status: candidate
+  product_name: Sensemaking Skills
+  scope_classification: reduced
+  scope: local-first Campaign control layer and mechanically qualified engineering Skills
+  release_policy: docs/release-v1.0-contract.md
+
+support:
+  python:
+    - "3.11"
+    - "3.12"
+  operating_systems:
+    - windows
+    - linux
+  harnesses:
+    - generic-agent-skills
+  native_harnesses: []
+  network_required: false
+  database_required: false
+
+public_surface:
+  cli:
+    - campaign
+    - semantic
+    - setup-skills
+    - validate
+    - analyze
+  stable_python_modules:
+    - sensemaking_skills.campaign_semantics
+    - sensemaking_skills.campaigns
+    - sensemaking_skills.semantic_architecture
+    - sensemaking_skills.setup_skills
+  schema_version: "2"
+
+package_boundary:
+  source_only_modules:
+    - sensemaking_skills.campaign_validation
+    - sensemaking_skills.campaign_accounting
+    - sensemaking_skills.exploratory_authorization
+    - sensemaking_skills.exploratory_execution
+  canonical_skill_root: skills
+  packaged_skill_root: sensemaking_skills/skill_trees
+  packaged_validator_root: sensemaking_skills/validator_runtime
+
+skill_inventory:
+  supported:
+    - ab-test-analysis
+    - acceptance-criteria
+    - architectural-review
+    - battlecard
+    - competitive-analysis
+    - customer-journey
+    - discovery
+    - experiment-design
+    - gtm
+    - hypothesis
+    - ideal-customer-profile
+    - interview-synthesis
+    - launch-checklist
+    - lean-canvas
+    - measure-pmf
+    - north-star
+    - okr
+    - opportunity-tree
+    - output-reconciler
+    - persona
+    - pre-mortem
+    - pricing
+    - prioritize
+    - release-notes
+    - repair-verifier
+    - repo-sensemaker
+    - roadmap
+    - stakeholder-update
+    - strategy
+    - to-prd
+    - user-stories
+  internal:
+    - coding-agent-native-campaign
+    - docs-aligner
+    - handoff
+    - problem-framer
+    - sensemaking-docs-reconciler
+    - setup-sensemaking-skills
+    - skill-maintainer
+    - to-issues
+    - unknowns-mapper
+    - usage-researcher
+    - using-sensemaking
+    - workflow-planner
+  experimental: []
+
+claims:
+  - id: campaign-integrity
+    statement: Campaign state, transitions, evidence references, and handoffs are structurally reconstructible.
+    evidence: product-tests-and-installed-wheel
+    status: mechanically-qualified
+    support_required: true
+  - id: native-harness-compatibility
+    statement: Native harness discovery and invocation are explicitly excluded from the 1.0 support promise until real harness evidence exists.
+    evidence: external-golden-path
+    status: deferred
+    support_required: false
+  - id: semantic-usefulness
+    statement: Semantic Architecture measurably improves repeated agent work.
+    evidence: behavioral-evaluation
+    status: deferred
+    support_required: false
+  - id: portability
+    statement: Cross-harness portability is explicitly excluded from the 1.0 support promise until second-harness evidence exists.
+    evidence: second-harness-portability
+    status: deferred
+    support_required: false

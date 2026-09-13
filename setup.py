@@ -29,7 +29,8 @@ class build_py(_build_py):
         skill_dest = Path(self.build_lib) / "sensemaking_skills" / "skill_trees"
         if skill_dest.exists():
             shutil.rmtree(skill_dest)
-        shutil.copytree(skills_src, skill_dest)
+        cache_ignore = shutil.ignore_patterns("__pycache__", "*.py[cod]")
+        shutil.copytree(skills_src, skill_dest, ignore=cache_ignore)
         self.announce(f"packaged canonical skill trees into {skill_dest}", level=2)
 
         scripts_src = repo_root / "scripts"
@@ -47,8 +48,8 @@ class build_py(_build_py):
         runtime_dest = Path(self.build_lib) / "sensemaking_skills" / "validator_runtime"
         if runtime_dest.exists():
             shutil.rmtree(runtime_dest)
-        shutil.copytree(scripts_src, runtime_dest / "scripts")
-        shutil.copytree(skills_src, runtime_dest / "skills")
+        shutil.copytree(scripts_src, runtime_dest / "scripts", ignore=cache_ignore)
+        shutil.copytree(skills_src, runtime_dest / "skills", ignore=cache_ignore)
         (runtime_dest / "docs").mkdir(parents=True, exist_ok=True)
         shutil.copy2(vocabulary_src, runtime_dest / "docs" / vocabulary_src.name)
         self.announce(
