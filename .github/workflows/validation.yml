@@ -59,7 +59,6 @@ jobs:
           src/sensemaking_skills/campaigns
           src/sensemaking_skills/commands
           src/sensemaking_skills/defaults
-          src/sensemaking_skills/reasoning
           src/sensemaking_skills/semantic_architecture
           src/sensemaking_skills/skills
           src/sensemaking_skills/setup_skills.py
@@ -77,10 +76,8 @@ jobs:
             tests/test_product_lab_boundary.py \
             tests/campaign_validation/test_artifact_admission.py \
             tests/campaign_validation/test_campaign_*.py \
-            tests/campaign_validation/test_harness_adapters.py \
             tests/campaign_validation/test_release_candidate_contract.py \
             tests/campaign_validation/test_repo_sensemaker_connector_probe_contract.py \
-            tests/campaign_validation/test_workflow_liveness_contract.py \
             tests/integration/test_external_golden_path_qualification.py \
             -q
 

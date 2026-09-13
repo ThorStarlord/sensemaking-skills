@@ -5,7 +5,7 @@
 
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
-**Version:** 1.0.0-rc
+**Version:** 1.0.0-rc.1 (reduced-scope candidate; not published)
 **Status:** Release candidate; native harness and portability claims excluded
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
@@ -77,7 +77,7 @@ repository changed != repair succeeded
 ## Installation
 
 ```bash
-python -m pip install sensemaking-skills==1.0.0
+python -m pip install sensemaking-skills==1.0.0rc1
 sensemaking-skills --version
 ```
 

@@ -5,16 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - UNRELEASED
+## [1.0.0-rc.1] - UNRELEASED
 
 ### Added
-- Stable Campaign and semantic CLI release candidate with Campaign schema v2,
+- Reduced-scope `1.0.0-rc.1` release candidate with Campaign schema v2,
   deterministic migration, provenance, bundles, and package-boundary checks.
 - Explicit generic Skill-format support with native harness and portability
   claims excluded pending real external evidence.
 
 ### Release status
-- This candidate is not published. External harness qualification, semantic
+- This candidate is not published and is not a final `1.0.0` release. External harness qualification, semantic
   usefulness evaluation, and release-owner authorization remain open gates.
 
 ## [0.3.0] - 2026-09-09

@@ -42,8 +42,8 @@ def validate(repo_root: Path) -> list[str]:
         raise ReleaseContractError("schema_version must be 1")
 
     release = _mapping(data.get("release"), "release")
-    if release.get("version") != "1.0.0":
-        raise ReleaseContractError("release.version must be 1.0.0")
+    if release.get("version") != "1.0.0rc1":
+        raise ReleaseContractError("release.version must be 1.0.0rc1")
     if release.get("scope_classification") not in {"reduced", "full"}:
         raise ReleaseContractError(
             "release.scope_classification must be 'reduced' or 'full'"

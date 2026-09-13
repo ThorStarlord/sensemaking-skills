@@ -1,6 +1,6 @@
 # Status
 
-**Version:** 0.3.0  
+**Version:** 1.0.0-rc.1 (reduced-scope candidate; not published)
 **Last updated:** 2026-09-10  
 **Current phase:** Product Management source-methodology migration complete at repository qualification; Semantic Architecture Phase 10 complete with Outcome A; bounded Phase 15 registry-liveness conformance qualified; post-Phase-10 build-first semantic substrate B1–B6 repository-qualified  
 **Primary program:** Sensemaking Campaign productization with agent-agnostic domain capabilities and evidence-governed repository reasoning  
@@ -352,6 +352,29 @@ The repository now has a broad mechanically bounded build-first substrate. **Do 
 
 Choose the next package only from a concrete missing product/integrity capability. If the next meaningful architecture choice cannot be resolved from existing contracts without answering “would agents actually benefit from/use this?”, treat that as the Construction Diminishing-Returns Gate and switch to empirical validation instead of inventing another abstraction.
 
+## Version 1.0 readiness
+
+The reduced-scope `1.0.0-rc.1` release candidate contract is repository-owned and mechanically checked
+by `release-v1.0.yaml` plus `scripts/validate-release-contract.py`. It
+classifies all canonical Skills, declares the supported CLI/Python/harness
+surface, and records package-boundary and evidence requirements.
+
+This is a release candidate, not a publication claim. Native harness,
+portability, and semantic-usefulness claims are explicitly excluded or
+deferred from the reduced 1.0 scope. The following remain open:
+
+- real supported-harness qualification;
+- Product Management native-harness qualification;
+- second-harness portability qualification;
+- behavioral usefulness evidence for the optional semantic substrate;
+- release-owner publication authorization;
+- clean-install, isolated product-suite, and release-candidate verification on
+  the exact release head.
+
+Run `python scripts/validate-release-contract.py --repo-root .` for the
+repository-facing contract check. See `docs/release-v1.0-contract.md` for the
+claim ceiling and release gates.
+
 ## Canonical sources
 
 - `STATUS.md` — current cross-program state.
@@ -365,6 +388,7 @@ Choose the next package only from a concrete missing product/integrity capabilit
 - `docs/semantic-architecture/common-semantic-contract.md` — optional companion semantic profile contract.
 - `docs/semantic-architecture/phase-10/results.md` — qualified Phase 10 evidence/Outcome A.
 - `docs/semantic-architecture/phase-10-handoff.md` — Phase 10 qualification handoff.
+- `docs/domain-alignment-report-v1.0.md` — latest release-facing documentation alignment report.
 - `docs/semantic-architecture/phase-15/README.md` — bounded registry-liveness pilot.
 - `docs/semantic-architecture/phase-15-handoff.md` — Phase 15 liveness qualification evidence.
 - `docs/semantic-architecture/build-first-handoff.md` — B1–B6 exact-head qualification handoff.

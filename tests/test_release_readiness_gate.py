@@ -4,11 +4,11 @@ from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 
 
-def test_version_1_metadata_is_not_beta() -> None:
+def test_rc_metadata_is_beta_and_not_final() -> None:
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "1.0.0"' in pyproject
-    assert 'Development Status :: 5 - Production/Stable' in pyproject
-    assert 'Development Status :: 4 - Beta' not in pyproject
+    assert 'version = "1.0.0rc1"' in pyproject
+    assert 'Development Status :: 4 - Beta' in pyproject
+    assert 'Development Status :: 5 - Production/Stable' not in pyproject
 
 _SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "validate-release-readiness.py"
 _SPEC = spec_from_file_location("validate_release_readiness", _SCRIPT)

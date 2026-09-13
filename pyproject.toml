@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sensemaking-skills"
-version = "0.3.0"
+version = "1.0.0rc1"
 description = "Agent-native Campaign control layer and repository sensemaking toolkit"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -12,7 +12,7 @@ dependencies = [
     "click>=8.1.0",
     "PyYAML>=6.0,<7.0",
 ]
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Dimmi Andreus", email = "dimmi.andreus1@gmail.com"}
 ]
@@ -22,7 +22,6 @@ classifiers = [
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -42,11 +41,24 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+namespaces = false
+include = [
+    "sensemaking_skills",
+    "sensemaking_skills.campaign_semantics*",
+    "sensemaking_skills.campaigns*",
+    "sensemaking_skills.commands*",
+    "sensemaking_skills.defaults*",
+    "sensemaking_skills.reasoning*",
+    "sensemaking_skills.semantic_architecture*",
+    "sensemaking_skills.skills*",
+]
 exclude = [
     "sensemaking_skills.campaign_accounting*",
     "sensemaking_skills.campaign_validation*",
     "sensemaking_skills.exploratory_authorization*",
     "sensemaking_skills.exploratory_execution*",
+    "sensemaking_skills.defaults.__pycache__",
+    "sensemaking_skills.skills.__pycache__",
 ]
 
 [tool.setuptools.package-data]

@@ -1,4 +1,4 @@
-# Version 1.0 Public Surface
+# Version 1.0 Public Surface (reduced-scope `1.0.0-rc.1` candidate)
 
 This document is the operator-facing interpretation of
 [`release-v1.0.yaml`](../release-v1.0.yaml). The machine-readable release

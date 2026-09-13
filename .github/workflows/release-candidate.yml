@@ -50,7 +50,6 @@ jobs:
           src/sensemaking_skills/campaigns
           src/sensemaking_skills/commands
           src/sensemaking_skills/defaults
-          src/sensemaking_skills/reasoning
           src/sensemaking_skills/semantic_architecture
           src/sensemaking_skills/skills
           src/sensemaking_skills/setup_skills.py
@@ -78,15 +77,15 @@ jobs:
       - name: Check distribution metadata
         run: python -m twine check dist/*
 
-      - name: Assert v1.0.0 artifact identities
+      - name: Assert 1.0.0rc1 artifact identities
         run: |
           python - <<'PY'
           from pathlib import Path
 
           names = {path.name for path in Path("dist").iterdir() if path.is_file()}
           expected = {
-              "sensemaking_skills-1.0.0-py3-none-any.whl",
-              "sensemaking_skills-1.0.0.tar.gz",
+              "sensemaking_skills-1.0.0rc1-py3-none-any.whl",
+              "sensemaking_skills-1.0.0rc1.tar.gz",
           }
           assert names == expected, (names, expected)
           PY
@@ -96,10 +95,10 @@ jobs:
         run: |
           python -m venv "$RUNNER_TEMP/sensemaking-wheel"
           "$RUNNER_TEMP/sensemaking-wheel/bin/python" -m pip install --upgrade pip
-          "$RUNNER_TEMP/sensemaking-wheel/bin/python" -m pip install dist/sensemaking_skills-1.0.0-py3-none-any.whl
+          "$RUNNER_TEMP/sensemaking-wheel/bin/python" -m pip install dist/sensemaking_skills-1.0.0rc1-py3-none-any.whl
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/sensemaking-wheel/bin/sensemaking-skills" --version | tee wheel-version.txt
-          grep -F "1.0.0" wheel-version.txt
+          grep -F "1.0.0rc1" wheel-version.txt
           "$RUNNER_TEMP/sensemaking-wheel/bin/sensemaking-skills" campaign --help >/dev/null
           "$RUNNER_TEMP/sensemaking-wheel/bin/python" - <<'PY'
           from importlib.resources import files
@@ -123,10 +122,10 @@ jobs:
         run: |
           python -m venv "$RUNNER_TEMP/sensemaking-sdist"
           "$RUNNER_TEMP/sensemaking-sdist/bin/python" -m pip install --upgrade pip
-          "$RUNNER_TEMP/sensemaking-sdist/bin/python" -m pip install dist/sensemaking_skills-1.0.0.tar.gz
+          "$RUNNER_TEMP/sensemaking-sdist/bin/python" -m pip install dist/sensemaking_skills-1.0.0rc1.tar.gz
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/sensemaking-sdist/bin/sensemaking-skills" --version | tee sdist-version.txt
-          grep -F "1.0.0" sdist-version.txt
+          grep -F "1.0.0rc1" sdist-version.txt
           "$RUNNER_TEMP/sensemaking-sdist/bin/sensemaking-skills" campaign --help >/dev/null
           "$RUNNER_TEMP/sensemaking-sdist/bin/python" - <<'PY'
           from importlib.resources import files
@@ -140,7 +139,7 @@ jobs:
       - name: Upload candidate distributions
         uses: actions/upload-artifact@v4
         with:
-          name: sensemaking-skills-v1.0.0-candidate-${{ github.event.pull_request.head.sha || github.sha }}
+          name: sensemaking-skills-v1.0.0rc1-candidate-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             dist/*
             release-SHA256SUMS.txt

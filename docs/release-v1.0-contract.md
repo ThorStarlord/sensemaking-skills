@@ -1,4 +1,4 @@
-# Version 1.0 Release Contract
+# Version 1.0 Release Contract (`1.0.0-rc.1` reduced-scope candidate)
 
 This document defines the intended Version 1.0 support surface. The machine-
 readable authority is `release-v1.0.yaml`; `scripts/validate-release-contract.py`
@@ -6,7 +6,7 @@ checks that the declaration remains consistent with the repository.
 
 ## Product identity
 
-Version 1.0 is the stable release of the local-first Sensemaking Campaign
+The `1.0.0-rc.1` candidate targets a reduced-scope release of the local-first Sensemaking Campaign
 control layer and its manifest-backed agent Skills. The active agent owns
 semantic judgment. The product owns durable state, evidence references,
 mechanical validation, provenance, integrity, and explicit authority metadata.
@@ -49,7 +49,7 @@ harness compatibility.
 
 ## Release gates
 
-Before publishing 1.0, CI must pass the following independent lanes:
+Before publishing a final 1.0 release, CI must pass the following independent lanes:
 
 1. Product tests and clean package-boundary checks.
 2. Fresh wheel and sdist installation checks.

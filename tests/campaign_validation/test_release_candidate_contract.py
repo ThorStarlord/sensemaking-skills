@@ -12,7 +12,7 @@ from sensemaking_skills.external_qualification import PROTOCOL_ID
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_VERSION = "1.0.0"
+EXPECTED_VERSION = "1.0.0rc1"
 
 
 def _read(relative: str) -> str:
@@ -38,8 +38,8 @@ def test_v030_release_docs_match_current_architecture() -> None:
     changelog = _read("CHANGELOG.md")
 
     assert "## [0.3.0] - 2026-09-09" in changelog
-    assert "**Version:** 1.0.0-rc" in readme
-    assert "**Version:** 1.0.0-rc" in status
+    assert "**Version:** 1.0.0-rc.1" in readme
+    assert "**Version:** 1.0.0-rc.1" in status
     assert "Campaign schema v2" in status
     assert "product/lab split" in status
     assert "real-harness qualification verifier" in status
@@ -69,8 +69,8 @@ def test_release_candidate_workflow_qualifies_current_boundaries() -> None:
 
     assert "python -m build" in workflow
     assert "python -m twine check dist/*" in workflow
-    assert "sensemaking_skills-1.0.0-py3-none-any.whl" in workflow
-    assert "sensemaking_skills-1.0.0.tar.gz" in workflow
+    assert "sensemaking_skills-1.0.0rc1-py3-none-any.whl" in workflow
+    assert "sensemaking_skills-1.0.0rc1.tar.gz" in workflow
     assert "Fresh wheel install proof" in workflow
     assert "Fresh sdist install proof" in workflow
     assert "test_campaign_schema_evolution.py" in workflow

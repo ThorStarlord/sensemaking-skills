@@ -21,8 +21,8 @@ def readiness_diagnostics(repo_root: Path) -> list[str]:
         return [f"cannot read release contract: {exc}"]
 
     release = contract.get("release", {}) if isinstance(contract, dict) else {}
-    if release.get("version") != "1.0.0":
-        diagnostics.append("release version is not 1.0.0")
+    if release.get("version") != "1.0.0rc1":
+        diagnostics.append("release version is not 1.0.0rc1")
     if release.get("status") != "ready":
         diagnostics.append(f"release status is {release.get('status', 'missing')}")
 
@@ -34,11 +34,11 @@ def readiness_diagnostics(repo_root: Path) -> list[str]:
     else:
         project = pyproject.get("project", {})
         classifiers = project.get("classifiers", [])
-        if release.get("version") == "1.0.0" and (
-            "Development Status :: 4 - Beta" in classifiers
-            or "Development Status :: 5 - Production/Stable" not in classifiers
+        if release.get("version") == "1.0.0rc1" and (
+            "Development Status :: 5 - Production/Stable" in classifiers
+            or "Development Status :: 4 - Beta" not in classifiers
         ):
-            diagnostics.append("project metadata still classifies 1.0.0 as non-stable")
+            diagnostics.append("project metadata does not classify 1.0.0rc1 as a Beta pre-release")
 
     evidence_status = repo_root / "qualification-evidence" / "STATUS.md"
     try:
