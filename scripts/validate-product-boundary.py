@@ -18,14 +18,55 @@ LAB_PACKAGE_GLOBS = {
     "sensemaking_skills.exploratory_execution*",
 }
 LAB_DEPENDENCIES = {"jsonschema", "rfc8785"}
+LAB_MODULE_PREFIXES = (
+    "sensemaking_skills.campaign_accounting",
+    "sensemaking_skills.campaign_validation",
+    "sensemaking_skills.exploratory_authorization",
+    "sensemaking_skills.exploratory_execution",
+)
+PRODUCT_PACKAGE_ROOT = ROOT / "src" / "sensemaking_skills"
 
 
 def _dependency_name(spec: str) -> str:
     return re.split(r"[<>=!~\[; ]", spec, maxsplit=1)[0].strip().lower()
 
 
+def validate_product_imports() -> list[str]:
+    """Reject imports from source-only lab packages into product modules."""
+    errors: list[str] = []
+    for path in PRODUCT_PACKAGE_ROOT.rglob("*.py"):
+        relative = path.relative_to(PRODUCT_PACKAGE_ROOT)
+        if relative.parts and relative.parts[0] in {
+            "campaign_accounting",
+            "campaign_validation",
+            "exploratory_authorization",
+            "exploratory_execution",
+        }:
+            continue
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        except (OSError, SyntaxError) as exc:
+            errors.append(f"cannot inspect product module {path}: {exc}")
+            continue
+        for node in ast.walk(tree):
+            imported: list[str] = []
+            if isinstance(node, ast.Import):
+                imported = [item.name for item in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imported = [node.module]
+            for module in imported:
+                if any(
+                    module == prefix or module.startswith(prefix + ".")
+                    for prefix in LAB_MODULE_PREFIXES
+                ):
+                    errors.append(f"product module {path} imports lab module {module}")
+    return errors
+
+
 def validate() -> list[str]:
     errors: list[str] = []
+
+    errors.extend(validate_product_imports())
 
     with (ROOT / "pyproject.toml").open("rb") as handle:
         pyproject = tomllib.load(handle)

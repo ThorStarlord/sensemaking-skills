@@ -774,3 +774,98 @@ artifacts:
       generic_validator: "python scripts/validate-artifact.py repair_verification_report {artifact_path}"
       required_for_modes:
         - guided_execution
+
+  # Product-management artifacts are intentionally represented here even when
+  # their native-harness execution is not yet qualified. This keeps the
+  # registry and manifest contracts closed without implying semantic validity.
+  - id: strategy_doc
+    path: "artifacts/strategy_doc.md"
+    produced_by: strategy
+    consumed_by: [roadmap, okr]
+    verification:
+      generic_validator: "python scripts/validate-and-report.py strategy_doc {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: ideal_customer_profile
+    path: "artifacts/ideal_customer_profile.md"
+    produced_by: ideal-customer-profile
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py ideal_customer_profile {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: prioritized_list
+    path: "artifacts/prioritized_list.md"
+    produced_by: prioritize
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py prioritized_list {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: pricing_model
+    path: "artifacts/pricing_model.md"
+    produced_by: pricing
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py pricing_model {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: experiment_plan
+    path: "artifacts/experiment_plan.md"
+    produced_by: experiment-design
+    consumed_by: [ab-test-analysis]
+    verification:
+      generic_validator: "python scripts/validate-and-report.py experiment_plan {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: pmf_report
+    path: "artifacts/pmf_report.md"
+    produced_by: measure-pmf
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py pmf_report {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: test_results
+    path: "artifacts/test_results.md"
+    produced_by: ab-test-analysis
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py test_results {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: risk_analysis
+    path: "artifacts/risk_analysis.md"
+    produced_by: pre-mortem
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py risk_analysis {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: readiness_report
+    path: "artifacts/readiness_report.md"
+    produced_by: launch-checklist
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py readiness_report {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: feature_announcement
+    path: "artifacts/feature_announcement.md"
+    produced_by: release-notes
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py feature_announcement {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: gtm_plan
+    path: "artifacts/gtm_plan.md"
+    produced_by: gtm
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py gtm_plan {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: battlecard
+    path: "artifacts/battlecard.md"
+    produced_by: battlecard
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py battlecard {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: setup_report
+    path: "artifacts/setup_report.md"
+    produced_by: setup-sensemaking-skills
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py setup_report {artifact_path}"
+      required_for_modes: [guided_execution]

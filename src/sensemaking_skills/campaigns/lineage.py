@@ -49,7 +49,6 @@ from .errors import (
 from .service import CampaignService
 from .store import CampaignStore
 
-
 _SCHEMA_VERSION = "1"
 _SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")

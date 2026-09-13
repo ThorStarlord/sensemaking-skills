@@ -4,7 +4,11 @@
   "description": "Repository-local command aliases for the Python project; not a package or release authority",
   "scripts": {
     "validate:skills": "python scripts/validate-skill-hygiene.py",
+    "validate:release": "python scripts/validate-release-contract.py --repo-root .",
+    "validate:authority": "python scripts/validate-contract-authority.py --repo-root .",
+    "validate:docs": "python scripts/validate-docs-currentness.py --repo-root .",
     "test": "pytest tests/ -v",
+    "test:release": "python scripts/validate-release-contract.py --repo-root . && python scripts/validate-contract-authority.py --repo-root . && python scripts/validate-docs-currentness.py --repo-root . && pytest tests/test_release_contract.py tests/test_public_surface.py tests/test_contract_authority.py tests/test_current_documentation.py tests/test_test_lane_isolation.py tests/test_version_upgrade.py -q",
     "test:unit": "pytest tests/ -v -k 'not integration'",
     "test:contracts": "pytest tests/test_artifact_contracts_pm_engineering.py tests/test_skill_hygiene_validator.py -v",
     "test:lab": "pytest tests/campaign_accounting tests/campaign_preparation tests/execution_infra_tests tests/test_exploratory_digests.py tests/test_exploratory_lane_derivation.py tests/test_exploratory_capability_lifecycle.py -v"

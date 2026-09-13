@@ -1,4 +1,4 @@
-# Installation & Setup Guide — Sensemaking Skills v0.3.0
+# Installation & Setup Guide — Sensemaking Skills v1.0.0
 
 This guide covers installation of the Campaign-based v0.3 product and explicit setup of its agent-native Skills.
 
@@ -15,11 +15,11 @@ The core installed package is local-first and does not require a server or cloud
 After publication:
 
 ```bash
-python -m pip install sensemaking-skills==0.3.0
+python -m pip install sensemaking-skills==1.0.0
 sensemaking-skills --version
 ```
 
-Expected version: `0.3.0`.
+Expected version: `1.0.0`.
 
 ## Install from source
 
@@ -33,7 +33,7 @@ python -m pip install -e .
 
 ## What the wheel contains
 
-The v0.3 wheel contains the shipped Campaign/runtime surface, build-derived Skill trees, and the build-derived canonical validator runtime used by normal `campaign ingest` operations.
+The 1.0 candidate wheel contains the shipped Campaign/runtime surface, build-derived Skill trees, and the build-derived canonical validator runtime used by normal `campaign ingest` operations.
 
 The wheel intentionally does **not** contain retained research-lab packages:
 
@@ -115,7 +115,10 @@ An invalid explicit override fails closed; it is never silently replaced with an
 
 ## Schema version
 
-v0.3 emits Campaign schema version 2 and can deterministically read/qualify supported v1 representations. See `docs/campaign-schema-evolution.md`.
+Version 1.0 emits Campaign schema version 2 and can deterministically read/qualify supported v1 representations. See `docs/campaign-schema-evolution.md`.
+
+The Version 1.0 candidate support and claim ceiling is documented in
+[`docs/release-v1.0-contract.md`](docs/release-v1.0-contract.md).
 
 ## Development/lab dependencies
 
@@ -128,4 +131,4 @@ The shipped product dependencies are intentionally small. To run retained resear
 - **Project-scoped setup fails:** provide an explicit existing `--project-root`; the tool does not infer it from cwd/editor/git state.
 - **Artifact validation runtime error:** reinstall the package or explicitly select a valid source checkout with `--framework-root`.
 
-For architecture and release state, see `README.md`, `STATUS.md`, and `docs/productization-v0.3.md`.
+For architecture and release state, see `README.md`, `STATUS.md`, and `docs/release-v1.0-contract.md`.

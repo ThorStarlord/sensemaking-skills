@@ -1,4 +1,4 @@
-# Getting Started with Sensemaking Skills v0.3.0
+# Getting Started with Sensemaking Skills v1.0.0
 
 Sensemaking Skills combines agent-native Skills with a local Campaign CLI. The agent supplies semantic judgment; the CLI makes state, evidence, provenance, and explicit decisions durable and mechanically checkable.
 
@@ -11,11 +11,11 @@ Sensemaking Skills combines agent-native Skills with a local Campaign CLI. The a
 ## Install
 
 ```bash
-python -m pip install sensemaking-skills==0.3.0
+python -m pip install sensemaking-skills==1.0.0
 sensemaking-skills --version
 ```
 
-Expected output includes `0.3.0`.
+Expected output includes `1.0.0`.
 
 For source development:
 
@@ -63,7 +63,7 @@ The Skill performs semantic diagnosis. Deterministic scripts/CLI validate and pe
 
 ## Admit validated evidence
 
-Installed v0.3 distributions carry the canonical validator runtime:
+Installed 1.0 distributions carry the canonical validator runtime:
 
 ```bash
 sensemaking-skills campaign ingest \
@@ -115,7 +115,10 @@ The durable handoff allows a fresh context to reconstruct the Campaign without r
 
 Current Campaign artifacts use schema version 2. Historical v1 artifacts can be inspected and deterministically qualified through the schema-evolution surface documented in `docs/campaign-schema-evolution.md`.
 
-## Real-harness qualification
+The Version 1.0 candidate support and claim ceiling is documented in
+[`docs/release-v1.0-contract.md`](docs/release-v1.0-contract.md).
+
+## Real-harness qualification (excluded from the 1.0 support promise)
 
 A real coding-agent harness attempt can be frozen into the evidence package described in `docs/external-golden-path-verifier.md` and verified with the `sensemaking_skills.external_qualification` module.
 
@@ -132,4 +135,4 @@ Skill installed != Skill observed/invoked by the harness
 external verifier PASS != universal compatibility
 ```
 
-For current release state, see `STATUS.md` and `docs/productization-v0.3.md`.
+For current release state, see `STATUS.md` and `docs/release-v1.0-contract.md`.

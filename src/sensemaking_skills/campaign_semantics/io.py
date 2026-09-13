@@ -32,9 +32,21 @@ from typing import Any, Iterable, Mapping, TypeVar
 import yaml
 
 from .models import (
-    Authority, CampaignHandoff, CampaignPolicy, CampaignState, CampaignTrace, Dependency,
-    DependencyType, DeferredResponsibility, ExternalBoundary, Responsibility,
-    TargetSnapshot, TerminalState, TransitionRecord, Uncertainty, to_dict,
+    Authority,
+    CampaignHandoff,
+    CampaignPolicy,
+    CampaignState,
+    CampaignTrace,
+    DeferredResponsibility,
+    Dependency,
+    DependencyType,
+    ExternalBoundary,
+    Responsibility,
+    TargetSnapshot,
+    TerminalState,
+    TransitionRecord,
+    Uncertainty,
+    to_dict,
     validate_campaign_state,
 )
 from .schema import CURRENT_SCHEMA_VERSION, SchemaMigrationError, migrate_payload

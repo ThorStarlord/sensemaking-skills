@@ -236,7 +236,8 @@ _TARGET_OPTIONAL_FIELDS = {
 
 
 def _walk(value: Any) -> Any:
-    if isinstance(value, Enum): return value.value
+    if isinstance(value, Enum):
+        return value.value
     if is_dataclass(value):
         result: dict[str, Any] = {}
         for item in fields(value):
@@ -248,8 +249,10 @@ def _walk(value: Any) -> Any:
                 continue
             result[item.name] = resolved
         return result
-    if isinstance(value, Mapping): return {str(k): _walk(v) for k, v in value.items()}
-    if isinstance(value, (tuple, list)): return [_walk(v) for v in value]
+    if isinstance(value, Mapping):
+        return {str(k): _walk(v) for k, v in value.items()}
+    if isinstance(value, (tuple, list)):
+        return [_walk(v) for v in value]
     return value
 
 

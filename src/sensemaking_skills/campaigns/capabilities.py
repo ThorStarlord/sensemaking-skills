@@ -32,7 +32,6 @@ from sensemaking_skills.setup_skills import (
 from .errors import CampaignTransactionError
 from .service import CampaignService
 
-
 CATALOG_SCHEMA_VERSION = "1"
 _ALLOWED_KINDS = {"skill", "workflow"}
 _ALLOWED_FIELDS = {

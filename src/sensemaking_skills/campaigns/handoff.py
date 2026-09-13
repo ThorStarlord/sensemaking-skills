@@ -42,7 +42,6 @@ from .errors import (
 from .service import CampaignSnapshot
 from .target_snapshot import CampaignService
 
-
 HANDOFF_REF = "campaign-handoff.yaml"
 _BINDING_PROTOCOL = "sensemaking-p7-handoff-v1"
 _BINDING_PREFIX = "# p7_reconstruction_sha256: "

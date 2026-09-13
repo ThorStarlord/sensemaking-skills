@@ -5,12 +5,12 @@
 
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
-**Version:** 0.3.0  
-**Status:** Beta; post-milestone v0.3 baseline  
+**Version:** 1.0.0-rc
+**Status:** Release candidate; native harness and portability claims excluded
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
 
-## What v0.3 ships
+## What the 1.0 candidate ships
 
 The core abstraction is a **Sensemaking Campaign**: a durable engineering decision process that survives agent/session boundaries.
 
@@ -77,7 +77,7 @@ repository changed != repair succeeded
 ## Installation
 
 ```bash
-python -m pip install sensemaking-skills==0.3.0
+python -m pip install sensemaking-skills==1.0.0
 sensemaking-skills --version
 ```
 
@@ -303,13 +303,27 @@ Repository, semantic, PM, and installed-wheel qualification do not substitute fo
 
 ## Release qualification
 
-v0.3 release candidates are qualified on the exact PR head by three complementary authority lanes:
+Release candidates are qualified on the exact PR head by complementary authority lanes:
 
 1. **Product Validation** — Python 3.11/3.12 Campaign product, installed wheel, repository contracts, and filesystem security.
 2. **Lab Validation** — retained source-only research/lab suites, separate from shipped-product authority.
 3. **Release Candidate Distribution** — wheel + sdist build, exact artifact/install assertions, installed validator runtime, and candidate digests.
 
 Tagged publication remains a separate owner action.
+
+## Version 1.0 readiness contract
+
+The planned 1.0 support surface is declared in
+[`release-v1.0.yaml`](release-v1.0.yaml) and explained in
+[`docs/release-v1.0-contract.md`](docs/release-v1.0-contract.md). Validate its
+repository-facing consistency with:
+
+```bash
+python scripts/validate-release-contract.py --repo-root .
+```
+
+The contract records native-harness, portability, and behavioral-usefulness
+claims as unqualified until their required evidence exists.
 
 ## What this is not
 
@@ -360,6 +374,7 @@ experiments/                retained research evidence/lab material
 - `docs/product-management/qualification-levels.md` — PM qualification policy.
 - `docs/product-lab-boundary.md` — shipped product vs retained lab boundary.
 - `docs/external-golden-path-verifier.md` — real-harness evidence verification protocol.
+- `docs/release-v1.0-contract.md` — Version 1.0 support, package, claim, and release gates.
 
 ## Development
 

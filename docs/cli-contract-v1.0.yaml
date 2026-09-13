@@ -1,0 +1,19 @@
+schema_version: 1
+entrypoint: sensemaking-skills
+stable_commands:
+  - campaign
+  - semantic
+  - setup-skills
+  - validate
+  - analyze
+compatibility_commands:
+  - test
+exit_codes:
+  success: 0
+  usage_error: 2
+  campaign_invalid: 3
+  campaign_workspace_error: 4
+  artifact_invalid: 5
+  artifact_validator_error: 6
+  interrupted: 130
+json_contract: "Commands offering --json emit one JSON object on stdout and diagnostics on stderr."

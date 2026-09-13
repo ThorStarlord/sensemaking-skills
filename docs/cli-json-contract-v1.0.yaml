@@ -1,0 +1,46 @@
+schema_version: 1
+commands:
+  campaign-status:
+    success_required:
+      - ok
+      - campaign_id
+      - mission
+      - schema_version
+      - status
+      - current_state
+      - authority
+      - terminal_state
+      - active_responsibility
+      - active_uncertainty
+      - transition_count
+      - evidence_count
+      - evidence_refs
+      - has_policy
+      - has_handoff
+      - code
+    code: CAMPAIGN_STATUS
+  campaign-validate:
+    success_required:
+      - ok
+      - valid
+      - code
+      - diagnostics
+    codes:
+      - CAMPAIGN_VALID
+      - CAMPAIGN_INVALID
+  campaign-history:
+    success_required:
+      - ok
+      - campaign_id
+      - initial_state
+      - current_state
+      - transition_count
+      - transitions
+      - code
+    code: CAMPAIGN_HISTORY
+  errors:
+    required:
+      - ok
+      - code
+      - message
+      - diagnostics

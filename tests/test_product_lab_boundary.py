@@ -22,6 +22,12 @@ def test_product_lab_boundary_contract_is_valid():
     assert validator.validate() == []
 
 
+def test_stable_product_modules_do_not_import_source_only_lab_modules():
+    validator = _validator_module()
+    errors = validator.validate_product_imports()
+    assert errors == []
+
+
 def test_historical_combined_workflow_is_retained_outside_actions_directory():
     archived = ROOT / "docs" / "archive" / "ci" / "validator-ecosystem-pre-core-lab-split.yml"
     assert archived.is_file()

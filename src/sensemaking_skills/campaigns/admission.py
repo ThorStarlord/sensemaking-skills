@@ -16,7 +16,6 @@ from typing import Any, Mapping
 
 import yaml
 
-
 _SCHEMA_VERSION = "1"
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _FIELDS = {
