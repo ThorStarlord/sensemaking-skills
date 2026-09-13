@@ -4,6 +4,7 @@ import hashlib
 import json
 from importlib import import_module
 import inspect
+from enum import Enum
 from pathlib import Path
 
 import yaml
@@ -22,7 +23,9 @@ def _signature_digest(module) -> str:
     signatures = {}
     for name in module.__all__:
         value = getattr(module, name)
-        if callable(value):
+        if isinstance(value, type) and issubclass(value, Enum):
+            signatures[name] = f"<enum:{value.__module__}.{value.__qualname__}>"
+        elif callable(value):
             try:
                 signatures[name] = str(inspect.signature(value))
             except (TypeError, ValueError):

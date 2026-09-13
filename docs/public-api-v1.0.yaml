@@ -3,13 +3,13 @@ policy: "Only names listed by each stable module's __all__ are covered by the 1.
 modules:
   sensemaking_skills.campaign_semantics:
     exports_sha256: "9b6013ff1ad7b4c66bcf4585eb19775c661f5b8257cf7e2ef328555cdfb67226"
-    signatures_sha256: "190da3920a5a095ec744c296a8880bb0595254d127b569873929238851bcb5cf"
+    signatures_sha256: "d8d4c9aa7308009534ffdbcc30985c110fe7a2ec3fdcff073d5cf6905b1083fe"
   sensemaking_skills.campaigns:
     exports_sha256: "f069c96e0a8219c836474d05f7a7f2814111247efe838c6186223e79fe45ce4f"
     signatures_sha256: "c7ca02512db0a8423c9a6554f57221531b11b429068e60955362b353c0bae3f8"
   sensemaking_skills.semantic_architecture:
     exports_sha256: "289f8ebd3daac076881b6eb06c27d5d0235ce8bc87e480f65bd4977367e4f75e"
-    signatures_sha256: "292adacae30d2b2360bdafcc45968b7a74fe427c2ce212415d83266cc8521dc1"
+    signatures_sha256: "70b3548a7c769f074d9bbe5307ff27ac9abda2e86fac0a85ff9f0e0348e20c85"
   sensemaking_skills.setup_skills:
     exports_sha256: "5e08dd6b753adb5c8abd3821de9bcafdbf610eff03b61da4c5149bd0ef747b42"
     signatures_sha256: "7e716674d0a2c82e792043f2625ad0a36657ee1459506d58e29c69ebe8ad34ff"
