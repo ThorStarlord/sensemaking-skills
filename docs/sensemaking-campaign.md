@@ -434,7 +434,7 @@ Use the surrounding documents for different questions:
 | What is the repository's current development frontier? | [`../STATUS.md`](../STATUS.md) |
 | What does the typed campaign contract mean? | [`campaign-semantics.md`](campaign-semantics.md) and `src/sensemaking_skills/campaign_semantics/` |
 | Who owns the top-level semantic control loop? | ADR 0013 |
-| Why is automatic downstream routing deferred? | ADR 0014 |
+| Current product boundary and routing/planning non-goals | [`ADR 0029`](adr/0029-current-product-boundary.md) |
 | Where is the semantic-decision vs deterministic-orchestration boundary? | [`decision-orchestration-boundary.md`](decision-orchestration-boundary.md) |
 | What is the current agent-native operating workflow? | [`agent-native-operating-workflow.md`](agent-native-operating-workflow.md) |
 | Which SkillOpt ideas influenced Sensemaking, and which remain research/deferred? | [`research/skillopt-adaptation.md`](research/skillopt-adaptation.md) |
