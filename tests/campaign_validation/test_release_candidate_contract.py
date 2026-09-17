@@ -38,8 +38,8 @@ def test_v030_release_docs_match_current_architecture() -> None:
     changelog = _read("CHANGELOG.md")
 
     assert "## [0.3.0] - 2026-09-09" in changelog
-    assert "**Version:** 1.0.0-rc.1" in readme
-    assert "**Version:** 1.0.0-rc.1" in status
+    assert "**Version:** 1.0.0rc1" in readme
+    assert "**Version:** 1.0.0rc1" in status
     assert "Campaign schema v2" in status
     assert "product/lab split" in status
     assert "real-harness qualification verifier" in status
