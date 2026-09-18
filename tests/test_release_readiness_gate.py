@@ -61,3 +61,33 @@ def test_development_contract_cannot_be_reported_as_finally_ready(tmp_path: Path
 
     assert any("release status is development" in item for item in diagnostics)
     assert any("release target is" in item for item in diagnostics)
+
+def test_reduced_scope_checklist_does_not_require_excluded_native_harness_claim() -> None:
+    contract = yaml.safe_load(
+        (ROOT / "release-v1.0.yaml").read_text(encoding="utf-8")
+    )
+    checklist = (ROOT / "docs" / "release-v1.0-checklist.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert contract["support"]["native_harnesses"] == []
+    assert (
+        "[x] Engineering native-harness evidence is frozen, or engineering native "
+        "support is excluded from 1.0."
+        in checklist
+    )
+
+
+def test_status_projects_the_active_rc2_freeze_responsibility() -> None:
+    status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
+
+    assert "RC2_FREEZE_PREPARATION_WARRANTED" in status
+    assert "RC2 CANDIDATE FREEZE" in status
+    assert "Complete pre-RC2 freeze reconciliation" in status
+    assert "Issue #384" in status
+    assert "PyPI publication or final `1.0.0`" in status
+    current_responsibility = status.split(
+        "### Current warranted repository-level responsibility", 1
+    )[1].split("### Active execution vehicle", 1)[0]
+    assert "**None.**" not in current_responsibility
+
