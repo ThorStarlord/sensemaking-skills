@@ -5,8 +5,10 @@
 
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
-**Version:** 1.0.0rc1 (reduced-scope release candidate)
-**Status:** RC published; native harness, portability, and semantic usefulness claims excluded
+**Source version:** 1.0.0rc2.dev0
+**Release target:** 1.0.0rc2 (development; not yet a frozen candidate)
+**Historical candidate:** 1.0.0rc1 was qualified at `70542d47412d98ee6dfae5de6df29bf271304568` and is superseded by continued development
+**Status:** post-RC1 development toward RC2; native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
 
@@ -103,9 +105,9 @@ The Strategic Frontier is decision-relevant possibility state, **not a backlog**
 
 **Outer Loop v0 is now the frozen operational baseline.** Future outer-loop machinery is reopened only by concrete repository/product pressure or explicit owner direction; the existence of conceptual later steps is not a standing implementation roadmap.
 
-## What the 1.0 candidate ships
+## What the Version 1.0 target is intended to ship
 
-The installed v0.3 package primarily supplies the **Level-2/Level-1 durable and mechanical substrate** used by the active agent. Its central durable Level-2 abstraction is a **Sensemaking Campaign**: a bounded engineering decision process that survives agent/session boundaries when continuation complexity warrants persistent state. Campaign availability does not make Campaign the universal entry point for Sensemaking.
+The current development package primarily supplies the **Level-2/Level-1 durable and mechanical substrate** used by the active agent. Its central durable Level-2 abstraction is a **Sensemaking Campaign**: a bounded engineering decision process that survives agent/session boundaries when continuation complexity warrants persistent state. Campaign availability does not make Campaign the universal entry point for Sensemaking.
 
 The installed product includes:
 
@@ -187,12 +189,14 @@ Level-3 state != Level-4 strategy authority
 
 ## Installation
 
+Install the latest public PyPI distribution without treating it as the identity of current `main`:
+
 ```bash
-python -m pip install sensemaking-skills==0.3.0
+python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-For source development:
+Current repository development is `1.0.0rc2.dev0` targeting `1.0.0rc2`. For source development:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git

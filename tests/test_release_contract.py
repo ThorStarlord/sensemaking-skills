@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -16,7 +17,11 @@ def test_release_contract_declares_public_surface_and_support_matrix() -> None:
     data = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
 
     assert data["schema_version"] == 1
-    assert data["release"]["version"] == "1.0.0rc1"
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    source_version = pyproject["project"]["version"]
+    target_version = data["release"]["version"]
+    assert data["release"]["status"] == "development"
+    assert source_version == f"{target_version}.dev0"
     assert data["release"]["scope_classification"] == "reduced"
     assert data["public_surface"]["cli"]
     assert data["support"]["python"]

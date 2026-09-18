@@ -1,6 +1,6 @@
-# Installation & Setup Guide — Sensemaking Skills v1.0.0
+# Installation & Setup Guide — Sensemaking Skills
 
-This guide covers installation of the Campaign-based v0.3 product and explicit setup of its agent-native Skills.
+This guide covers installation of the public distribution and the current Version 1.0 development line. Current repository source identity is `1.0.0rc2.dev0`; the next release-candidate target is `1.0.0rc2`.
 
 ## Requirements
 
@@ -12,14 +12,14 @@ The core installed package is local-first and does not require a server or cloud
 
 ## Install from PyPI
 
-After publication:
+The public PyPI distribution may lag the repository development line. Install the latest published distribution without treating it as the identity of current `main`:
 
 ```bash
-python -m pip install sensemaking-skills==1.0.0
+python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-Expected version: `1.0.0`.
+A PyPI version, a repository development version, and a frozen release candidate are distinct provenance claims.
 
 ## Install from source
 
@@ -33,7 +33,7 @@ python -m pip install -e .
 
 ## What the wheel contains
 
-The 1.0 candidate wheel contains the shipped Campaign/runtime surface, build-derived Skill trees, and the build-derived canonical validator runtime used by normal `campaign ingest` operations.
+The Version 1.0 target wheel is intended to contain the shipped Campaign/runtime surface, build-derived Skill trees, and the build-derived canonical validator runtime used by normal `campaign ingest` operations.
 
 The wheel intentionally does **not** contain retained research-lab packages:
 
@@ -117,7 +117,7 @@ An invalid explicit override fails closed; it is never silently replaced with an
 
 Version 1.0 emits Campaign schema version 2 and can deterministically read/qualify supported v1 representations. See `docs/campaign-schema-evolution.md`.
 
-The Version 1.0 candidate support and claim ceiling is documented in
+The Version 1.0 target support and claim ceiling is documented in
 [`docs/release-v1.0-contract.md`](docs/release-v1.0-contract.md).
 
 ## Development/lab dependencies

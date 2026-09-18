@@ -6,23 +6,35 @@ import json
 import tomllib
 from pathlib import Path
 
+import yaml
+
 import sensemaking_skills
 from sensemaking_skills.campaign_semantics import CURRENT_SCHEMA_VERSION
 from sensemaking_skills.external_qualification import PROTOCOL_ID
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_VERSION = "1.0.0rc1"
-
-
 def _read(relative: str) -> str:
     return (REPO_ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_pyproject_is_the_single_release_version_authority() -> None:
+def _release_identity() -> tuple[str, str, str]:
     pyproject = tomllib.loads(_read("pyproject.toml"))
-    assert pyproject["project"]["version"] == EXPECTED_VERSION
-    assert sensemaking_skills.__version__ == EXPECTED_VERSION
+    contract = yaml.safe_load(_read("release-v1.0.yaml"))
+    return (
+        pyproject["project"]["version"],
+        contract["release"]["version"],
+        contract["release"]["status"],
+    )
+
+
+def test_pyproject_is_the_single_source_version_authority() -> None:
+    source_version, target_version, status = _release_identity()
+    assert sensemaking_skills.__version__ == source_version
+    if status == "development":
+        assert source_version == f"{target_version}.dev0"
+    else:
+        assert source_version == target_version
 
     setup_text = _read("setup.py")
     assert "version=" not in setup_text
@@ -31,18 +43,22 @@ def test_pyproject_is_the_single_release_version_authority() -> None:
     assert "version" not in package_json
 
 
-def test_v030_release_docs_match_current_architecture() -> None:
+def test_current_release_docs_match_current_architecture() -> None:
+    source_version, target_version, status = _release_identity()
     readme = _read("README.md")
-    status = _read("STATUS.md")
+    status_doc = _read("STATUS.md")
     plan = _read("docs/productization-v0.3.md")
     changelog = _read("CHANGELOG.md")
 
     assert "## [0.3.0] - 2026-09-09" in changelog
-    assert "**Version:** 1.0.0rc1" in readme
-    assert "**Version:** 1.0.0rc1" in status
-    assert "Campaign schema v2" in status
-    assert "product/lab split" in status
-    assert "real-harness qualification verifier" in status
+    assert source_version in readme
+    assert target_version in readme
+    assert source_version in status_doc
+    assert target_version in status_doc
+    assert status == "development"
+    assert "Campaign schema v2" in status_doc
+    assert "product/lab split" in status_doc
+    assert "real-harness qualification verifier" in status_doc
     assert "P11 — v0.3 release baseline" in plan
 
 
@@ -64,13 +80,15 @@ def test_sdist_manifest_carries_validator_runtime_sources() -> None:
     assert "include docs/canonical-vocabulary.yaml" in manifest
 
 
-def test_release_candidate_workflow_qualifies_current_boundaries() -> None:
+def test_release_distribution_workflow_derives_current_identity() -> None:
     workflow = _read(".github/workflows/release-candidate.yml")
 
     assert "python -m build" in workflow
     assert "python -m twine check dist/*" in workflow
-    assert "sensemaking_skills-1.0.0rc1-py3-none-any.whl" in workflow
-    assert "sensemaking_skills-1.0.0rc1.tar.gz" in workflow
+    assert "source_version=" in workflow
+    assert "target_version=" in workflow
+    assert "release_status=" in workflow
+    assert "sensemaking_skills-1.0.0rc1" not in workflow
     assert "Fresh wheel install proof" in workflow
     assert "Fresh sdist install proof" in workflow
     assert "test_campaign_schema_evolution.py" in workflow

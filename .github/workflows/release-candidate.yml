@@ -7,7 +7,7 @@ on:
 
 jobs:
   distribution:
-    name: v1.0 release-candidate distribution
+    name: v1.0 release distribution
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +30,35 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e . pytest pytest-subtests build twine ruff
+
+      - name: Resolve release identity
+        id: release_identity
+        run: |
+          python - <<'PY'
+          import os
+          import tomllib
+          from pathlib import Path
+          import yaml
+
+          pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+          contract = yaml.safe_load(Path("release-v1.0.yaml").read_text(encoding="utf-8"))
+          source_version = pyproject["project"]["version"]
+          target_version = contract["release"]["version"]
+          release_status = contract["release"]["status"]
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"source_version={source_version}\n")
+              handle.write(f"target_version={target_version}\n")
+              handle.write(f"release_status={release_status}\n")
+          PY
+
+      - name: Release phase
+        run: |
+          echo "Source version: ${{ steps.release_identity.outputs.source_version }}"
+          echo "Release target: ${{ steps.release_identity.outputs.target_version }}"
+          echo "Release status: ${{ steps.release_identity.outputs.release_status }}"
+          if [ "${{ steps.release_identity.outputs.release_status }}" = "development" ]; then
+            echo "Development distribution validation only; this run does not qualify a frozen release candidate."
+          fi
 
       - name: Version 1.0 release contract
         run: python scripts/validate-release-contract.py --repo-root .
@@ -77,28 +106,35 @@ jobs:
       - name: Check distribution metadata
         run: python -m twine check dist/*
 
-      - name: Assert 1.0.0rc1 artifact identities
+      - name: Assert current source artifact identities
+        env:
+          SOURCE_VERSION: ${{ steps.release_identity.outputs.source_version }}
         run: |
           python - <<'PY'
+          import os
           from pathlib import Path
 
+          version = os.environ["SOURCE_VERSION"]
           names = {path.name for path in Path("dist").iterdir() if path.is_file()}
           expected = {
-              "sensemaking_skills-1.0.0rc1-py3-none-any.whl",
-              "sensemaking_skills-1.0.0rc1.tar.gz",
+              f"sensemaking_skills-{version}-py3-none-any.whl",
+              f"sensemaking_skills-{version}.tar.gz",
           }
           assert names == expected, (names, expected)
           PY
           sha256sum dist/* | tee release-SHA256SUMS.txt
 
       - name: Fresh wheel install proof
+        env:
+          SOURCE_VERSION: ${{ steps.release_identity.outputs.source_version }}
         run: |
+          wheel="$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
           python -m venv "$RUNNER_TEMP/sensemaking-wheel"
           "$RUNNER_TEMP/sensemaking-wheel/bin/python" -m pip install --upgrade pip
-          "$RUNNER_TEMP/sensemaking-wheel/bin/python" -m pip install dist/sensemaking_skills-1.0.0rc1-py3-none-any.whl
+          "$RUNNER_TEMP/sensemaking-wheel/bin/python" -m pip install "$wheel"
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/sensemaking-wheel/bin/sensemaking-skills" --version | tee wheel-version.txt
-          grep -F "1.0.0rc1" wheel-version.txt
+          grep -F "$SOURCE_VERSION" wheel-version.txt
           "$RUNNER_TEMP/sensemaking-wheel/bin/sensemaking-skills" campaign --help >/dev/null
           "$RUNNER_TEMP/sensemaking-wheel/bin/python" - <<'PY'
           from importlib.resources import files
@@ -119,13 +155,16 @@ jobs:
           PY
 
       - name: Fresh sdist install proof
+        env:
+          SOURCE_VERSION: ${{ steps.release_identity.outputs.source_version }}
         run: |
+          sdist="$(find dist -maxdepth 1 -name '*.tar.gz' -print -quit)"
           python -m venv "$RUNNER_TEMP/sensemaking-sdist"
           "$RUNNER_TEMP/sensemaking-sdist/bin/python" -m pip install --upgrade pip
-          "$RUNNER_TEMP/sensemaking-sdist/bin/python" -m pip install dist/sensemaking_skills-1.0.0rc1.tar.gz
+          "$RUNNER_TEMP/sensemaking-sdist/bin/python" -m pip install "$sdist"
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/sensemaking-sdist/bin/sensemaking-skills" --version | tee sdist-version.txt
-          grep -F "1.0.0rc1" sdist-version.txt
+          grep -F "$SOURCE_VERSION" sdist-version.txt
           "$RUNNER_TEMP/sensemaking-sdist/bin/sensemaking-skills" campaign --help >/dev/null
           "$RUNNER_TEMP/sensemaking-sdist/bin/python" - <<'PY'
           from importlib.resources import files
@@ -136,10 +175,10 @@ jobs:
           assert package.joinpath("validator_runtime", "scripts", "validate-and-report.py").is_file()
           PY
 
-      - name: Upload candidate distributions
+      - name: Upload validated distributions
         uses: actions/upload-artifact@v4
         with:
-          name: sensemaking-skills-v1.0.0rc1-candidate-${{ github.event.pull_request.head.sha || github.sha }}
+          name: sensemaking-skills-${{ steps.release_identity.outputs.source_version }}-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             dist/*
             release-SHA256SUMS.txt

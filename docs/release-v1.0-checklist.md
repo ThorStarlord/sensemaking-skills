@@ -3,9 +3,11 @@
 Use this checklist with [`release-v1.0-contract.md`](release-v1.0-contract.md).
 It is a gate record, not evidence that the gates have already passed.
 
-The current contract is a reduced-scope release. External harness,
-portability, and semantic-usefulness evidence is intentionally excluded from
-the support promise and remains deferred research evidence.
+The current contract is a reduced-scope Version 1.0 target. Repository source
+is `1.0.0rc2.dev0` in `development` toward `1.0.0rc2`; RC2 is not yet a
+frozen candidate. External harness, portability, and semantic-usefulness
+evidence is intentionally excluded from the support promise and remains
+deferred research evidence.
 
 ## Architecture and contracts
 
@@ -58,6 +60,5 @@ The final publication gate is executable with
 `READY` from a clean exact release head; a `BLOCKED` result is authoritative
 and must not be bypassed by changing documentation alone.
 
-Until every required item is checked, the repository is a release candidate or
-beta, not Version 1.0. Passing mechanical checks does not establish semantic
+Until every required item is checked, the repository remains development/candidate Beta rather than final Version 1.0. Passing mechanical checks does not establish semantic
 truth or user usefulness; semantic truth is never inferred from a validator.

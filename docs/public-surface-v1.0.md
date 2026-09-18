@@ -1,4 +1,4 @@
-# Version 1.0 Public Surface (reduced-scope `1.0.0-rc.1` candidate)
+# Version 1.0 Public Surface (reduced-scope `1.0.0rc2` target; development source `1.0.0rc2.dev0`)
 
 This document is the operator-facing interpretation of
 [`release-v1.0.yaml`](../release-v1.0.yaml). The machine-readable release
@@ -7,7 +7,7 @@ authoritative for exact IDs and claim statuses.
 
 ## Stable product surface
 
-This release contract is classified as **reduced scope**: it promises the
+The active `1.0.0rc2` Version 1.0 target is classified as **reduced scope**. Current source `1.0.0rc2.dev0` is still development, so this document defines the surface intended for the next frozen candidate; it does not claim RC2 is already qualified. The target promises the
 local-first, mechanically qualified product surface below. Native harness
 compatibility, cross-harness portability, and semantic usefulness are not
 Version 1.0 support promises.

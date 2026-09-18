@@ -1,12 +1,14 @@
 # Sensemaking Skills Operations and Qualification Runbook
 
 **Status:** current operator-facing operations/qualification runbook  
-**Updated:** 2026-09-11  
+**Updated:** 2026-09-18  
 **Audience:** maintainers, coding agents, and human qualification/release operators  
 **Executable authority:** checked-in GitHub Actions workflows and current repository code  
 **Strategic authority:** `docs/product-strategy.md` + `STATUS.md`
 
 ## 1. Purpose and authority
+
+Current Version 1.0 release target, support surface, and claim ceiling are defined in [`release-v1.0-contract.md`](release-v1.0-contract.md).
 
 This is the single current operator-facing runbook for repository validation, Campaign operation, qualification, and release-candidate checks.
 
@@ -46,7 +48,7 @@ python -m pip install -e . pytest pytest-subtests
 sensemaking-skills --version
 ```
 
-Current package version: `0.3.0`.
+Current repository source version: `1.0.0rc2.dev0`; active release target: `1.0.0rc2` (`development`, not yet a frozen candidate).
 
 For retained lab compatibility checks only:
 

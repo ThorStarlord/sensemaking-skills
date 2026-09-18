@@ -1,4 +1,4 @@
-# Version 1.0 Release Contract (`1.0.0-rc.1` reduced-scope candidate)
+# Version 1.0 Release Contract (`1.0.0rc2` reduced-scope target)
 
 This document defines the intended Version 1.0 support surface. The machine-
 readable authority is `release-v1.0.yaml`; `scripts/validate-release-contract.py`
@@ -6,10 +6,28 @@ checks that the declaration remains consistent with the repository.
 
 ## Product identity
 
-The `1.0.0-rc.1` candidate targets a reduced-scope release of the local-first Sensemaking Campaign
-control layer and its manifest-backed agent Skills. The active agent owns
-semantic judgment. The product owns durable state, evidence references,
+Current repository source is `1.0.0rc2.dev0` with release status
+`development`. The next frozen release-candidate target is `1.0.0rc2`.
+Historical `1.0.0rc1` remains qualified provenance for exact commit
+`70542d47412d98ee6dfae5de6df29bf271304568`, but continued development
+superseded it as the identity of current `main`.
+
+The `1.0.0rc2` target is a reduced-scope release of the local-first Sensemaking
+Campaign control layer and its manifest-backed agent Skills. The active agent
+owns semantic judgment. The product owns durable state, evidence references,
 mechanical validation, provenance, integrity, and explicit authority metadata.
+
+Release phase semantics are:
+
+```text
+development source
+!= frozen candidate
+!= public distribution
+```
+
+While `release.status` is `development`, the source version is the
+`.dev0` predecessor of the target. A frozen candidate uses the target version
+itself and requires fresh exact-source qualification before any candidate claim.
 
 ## Stable surface
 
@@ -61,6 +79,22 @@ Before publishing a final 1.0 release, CI must pass the following independent la
 
 Capabilities whose evidence is absent must be labelled deferred or excluded
 rather than silently included in the 1.0 promise.
+
+## Candidate identity invariant
+
+A frozen release candidate is an evidence-bound source identity:
+
+```text
+candidate version
++ exact source identity
++ qualification result
++ distribution hashes
+= candidate identity
+```
+
+Continued development may not silently reuse that frozen identity. Qualification
+of one exact source does not transfer to later source bytes merely because the
+version string was left unchanged.
 
 ## Compatibility policy
 
