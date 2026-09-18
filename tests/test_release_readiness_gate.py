@@ -7,13 +7,13 @@ import tomllib
 import yaml
 
 
-def test_development_metadata_is_beta_and_not_final() -> None:
+def test_candidate_metadata_is_beta_and_not_final() -> None:
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     contract = yaml.safe_load((ROOT / "release-v1.0.yaml").read_text(encoding="utf-8"))
     source_version = pyproject["project"]["version"]
     target_version = contract["release"]["version"]
-    assert contract["release"]["status"] == "development"
-    assert source_version == f"{target_version}.dev0"
+    assert contract["release"]["status"] == "candidate"
+    assert source_version == target_version
     assert "Development Status :: 4 - Beta" in pyproject["project"]["classifiers"]
     assert "Development Status :: 5 - Production/Stable" not in pyproject["project"]["classifiers"]
 
@@ -32,7 +32,7 @@ def test_final_release_gate_reports_unresolved_release_and_governance_gates() ->
     diagnostics = readiness_diagnostics(ROOT)
 
     assert any("release target is" in item for item in diagnostics)
-    assert any("release status is development" in item for item in diagnostics)
+    assert any("release status is candidate" in item for item in diagnostics)
     assert any("release-owner authorization" in item for item in diagnostics)
     assert any("exact release head" in item for item in diagnostics)
     assert not any("real external harness evidence" in item for item in diagnostics)
@@ -47,7 +47,7 @@ def test_contract_declares_reduced_scope_when_external_claims_are_excluded() -> 
     assert contract["release"]["scope_classification"] == "reduced"
 
 
-def test_development_contract_cannot_be_reported_as_finally_ready(tmp_path: Path) -> None:
+def test_candidate_contract_cannot_be_reported_as_finally_ready(tmp_path: Path) -> None:
     contract = (ROOT / "release-v1.0.yaml").read_text(encoding="utf-8")
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     (tmp_path / "release-v1.0.yaml").write_text(contract, encoding="utf-8")
@@ -59,7 +59,7 @@ def test_development_contract_cannot_be_reported_as_finally_ready(tmp_path: Path
 
     diagnostics = readiness_diagnostics(tmp_path)
 
-    assert any("release status is development" in item for item in diagnostics)
+    assert any("release status is candidate" in item for item in diagnostics)
     assert any("release target is" in item for item in diagnostics)
 
 def test_reduced_scope_checklist_does_not_require_excluded_native_harness_claim() -> None:
@@ -81,9 +81,9 @@ def test_reduced_scope_checklist_does_not_require_excluded_native_harness_claim(
 def test_status_projects_the_active_rc2_freeze_responsibility() -> None:
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
 
-    assert "RC2_FREEZE_PREPARATION_WARRANTED" in status
+    assert "RC2_CANDIDATE_FREEZE" in status
     assert "RC2 CANDIDATE FREEZE" in status
-    assert "Complete pre-RC2 freeze reconciliation" in status
+    assert "Qualify the frozen `1.0.0rc2` candidate" in status
     assert "Issue #384" in status
     assert "PyPI publication or final `1.0.0`" in status
     current_responsibility = status.split(
