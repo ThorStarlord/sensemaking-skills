@@ -17,16 +17,19 @@ Do not turn this bootstrap into a fixed choreography. Registered workflows and s
 Use this bootstrap to:
 
 1. decide whether repository sensemaking would materially change how you should interpret or execute the request;
-2. identify the nearest unresolved uncertainty that could change the correct next action;
-3. obtain evidence from the right source;
-4. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
-5. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
-6. perform bounded work through the appropriate capability;
-7. distinguish mechanical validation from analytical correctness and closure;
-8. reconcile consequential work claims with durable evidence;
-9. perform finding-specific repair verification when a prior finding was supposedly fixed;
-10. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
-11. decide whether to continue, stop, escalate, or ask the owner.
+2. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
+3. identify the nearest unresolved premise that could change the correct next action;
+4. obtain evidence from the right source;
+5. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
+6. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
+7. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
+8. perform or delegate bounded work through the appropriate capability;
+9. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
+10. distinguish mechanical validation from analytical correctness and closure;
+11. reconcile consequential work claims with durable evidence;
+12. perform finding-specific repair verification when a prior finding was supposedly fixed;
+13. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
+14. decide whether to continue, stop, escalate, or ask the owner.
 
 This Skill does **not** make every task require `repo-sensemaker` or a Campaign, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
 
@@ -48,14 +51,17 @@ A useful compact form is:
 
 ```text
 Orient
--> locate decision-changing uncertainty
+-> name the consequential decision / contemplated warrant target
+-> locate the nearest decision-changing warrant gap
 -> select responsibility
--> perform bounded work
--> ground evidence
+-> perform or delegate bounded work
+-> ground returned evidence
 -> validate mechanics
 -> update warrant
 -> continue / stop / escalate / verify / ask owner
 ```
+
+This is reasoning guidance, not a mandatory runtime phase machine.
 
 New evidence may change the expected solution. That is a feature, not a failure.
 
@@ -179,6 +185,49 @@ Examples:
   Decision-changing uncertainty: **can repository evidence answer the question first?**
 
 Stop investigating once the next warranted action is stable. Do not exhaust every uncertainty in the repository.
+
+### Make warrant explicit when useful
+
+For consequential work, ask:
+
+1. **What exactly am I trying to justify now?**
+2. **What must be true for that target to be warranted?**
+3. **Which unresolved premise could change responsibility, scope, authority, continuation, or closure?**
+4. **Is more reasoning worth more than acting now?**
+
+Useful warrant targets include a claim, inquiry, responsibility, action, continue/stop/escalate decision, closure claim, or protected transition such as merge/publication.
+
+Keep these distinctions explicit:
+
+```text
+warrant != confidence score
+warrant != authorization
+warrant for target A != warrant for target B
+```
+
+Use the lightest amount of explicit structure that preserves the decision boundary.
+
+### Challenge and exploration when commitment risk is material
+
+```text
+high consequence / low reversibility / conflicting evidence /
+novelty / repeated failure / weakly-supported confidence
+-> consider adversarial challenge
+
+narrow or repeatedly failing option set / unstable frame
+-> consider exploration
+
+otherwise
+-> do not add critique ceremony by default
+```
+
+**Challenge** asks why the current frame, claim, forecast, option, or closure decision might be wrong.
+
+**Exploration** asks what plausible frame, option, explanation, or intervention is not yet represented.
+
+Critic or explorer output is evidence for the active agent; it is not automatic veto, approval, or authority.
+
+For challenge/exploration triggers, delegation evidence return, and persistence guidance, read `references/practical-agent-architecture-v0.md` when those decisions are material.
 
 ---
 
@@ -308,6 +357,20 @@ Use this boundary rule:
 > **Skill = one bounded responsibility/artifact, not the whole engineering lifecycle.**
 
 A Skill should not silently expand from diagnosis into repair, from repair into merge, or from recommendation into external publication.
+
+When work is delegated to a Skill, subagent, workflow, or external execution system, preserve the evidence-return boundary:
+
+```text
+delegated result
+-> evidence for the active agent
+-> semantic reassessment
+
+worker recommendation != parent decision
+worker success != global closure
+retry/fallback policy != permission to change responsibility
+```
+
+Delegation does not transfer responsibility-selection, closure, or protected-action authority unless that authority was explicitly delegated.
 
 ---
 
@@ -491,11 +554,12 @@ When continuation is awkward, preserve the actual handoff and candidate evidence
 Read these when the task needs deeper detail:
 
 - `references/adaptive-guidance-v0.md` — contextual scaffolding, rigor, consequentiality, delegation, and Campaign-use examples
+- `references/practical-agent-architecture-v0.md` — warrant targets/dependencies, challenge vs. exploration, resource-aware stopping, delegation evidence return, and persistence guidance
 - `../../CONTEXT.md` — current product/system context and terminology
 - `../../docs/agent-native-operating-workflow.md` — canonical v0 operating map
 - `../../docs/decision-orchestration-boundary.md` — decision vs. execution/orchestration ownership
 - `../../docs/adr/0013-agent-native-orchestration-primary.md` — active-agent control ownership
-- `../../docs/adr/0014-product-boundary.md` — current product boundary and deferred automatic routing
+- `../../docs/adr/0029-current-product-boundary.md` — current product boundary and deferred automatic routing
 - `../workflow-planner/references/artifact-contracts.yaml` — artifact/machine-field contracts
 - `../workflow-planner/references/workflow-registry.yaml` — registered bounded workflows/subgraphs
 - `../repo-sensemaker/references/evidence-rules.md` — evidence discipline
