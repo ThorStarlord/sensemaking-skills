@@ -189,12 +189,14 @@ Level-3 state != Level-4 strategy authority
 
 ## Installation
 
+Install the latest public PyPI distribution without treating it as the identity of current `main`:
+
 ```bash
-python -m pip install sensemaking-skills==0.3.0
+python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-For source development:
+Current repository development is `1.0.0rc2.dev0` targeting `1.0.0rc2`. For source development:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
