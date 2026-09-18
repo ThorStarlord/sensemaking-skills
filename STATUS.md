@@ -1,9 +1,9 @@
 # Status
 
 **Version:** 1.0.0rc1 (reduced-scope release candidate)
-**Last updated:** 2026-09-11  
-**Current phase:** Strategic Outer Loop Precision v1 is complete through product-boundary reconciliation, Level-3 decision/state refinement, Level-3↔Level-4 transition semantics, Semantic Reasoning Model integration, and bounded mechanical qualification  
-**Primary program:** agent-native repository decision support with agent-owned semantic judgment, optional durable Campaign state, explicit authority/evidence boundaries, and reconstructible higher-scope strategic decisions  
+**Last updated:** 2026-09-18  
+**Current phase:** Strategic Outer Loop Precision v1, General Agency Model v0, and Practical Agent Architecture v0 are complete; the repository is now in normal-use validation with no additional architecture construction currently warranted  
+**Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
 **Release status:** RC published from exact-head-qualified commit `70542d47412d98ee6dfae5de6df29bf271304568`; native harness, portability, and semantic usefulness claims remain excluded.
@@ -40,6 +40,9 @@ The repository-qualified baseline includes:
 - Semantic Architecture B1-B7 mechanical substrate, conformance, reference audit, Skill manifests, Domain Packs, and Product Management Waves 1-6;
 - Persona & Adaptive Guidance Model v0 plus shipped-guidance reconciliation;
 - **Campaign schema v2**; newer target/relation/completion records remain additive companions rather than alternate truth systems.
+- **General Agency Model v0** research reference: value → context → strategy → decision frame → epistemic state → sufficiency → inquiry/choice → action → observation/verification → impact/sensemaking → belief update, with lateral challenge/exploration and explicit authority/risk/resource envelopes.
+- **Practical Agent Architecture v0** guidance: semantic agent judgment → target-specific warrant → existing durable decision substrate → deterministic assurance → external execution/orchestration → evidence return and semantic reassessment.
+- Canonical `using-sensemaking` guidance now makes warrant targets/dependencies, challenge versus exploration, resource-aware stopping, and delegated-result evidence return explicit while preserving progressive disclosure.
 
 Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision-v1-handoff.md`.
 
@@ -54,6 +57,8 @@ Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision
 - Multi-repository Campaign mechanics do not provide cross-repository transactional commit/deploy/rollback atomicity or automatic repository discovery.
 - Qualitative frontier lenses do not establish an objective priority function. `qualitative comparison != deterministic ranking`.
 - `Thesis Tension` does not imply Level-4 review, and current mechanics do not automatically infer whether work depends semantically on a challenged thesis.
+- General Agency Model v0 is a bounded research/reference abstraction, not proof of a universal theory of intelligence, comparative superiority, or domain-general product value.
+- Practical Agent Architecture v0 is currently guidance-first. Its reconciliation disposition is `GUIDANCE_ONLY_WARRANTED`; no new runtime, schema, public API, generic state store, or deterministic semantic controller was established as necessary.
 
 ### Strategic Frontier
 
@@ -71,26 +76,29 @@ Current material frontier items are:
 10. **Cross-repository transaction/deployment coordination — DEFERRED / NOT AUTHORIZED.** Current multi-repository scope intentionally stops before transaction orchestration.
 11. **Level-4 reconciliation automation / automatic strategic planning — DEFERRED / NOT AUTHORIZED.** Current semantic authority remains with the agent/owner.
 12. **Sensemaking Protocol / product-category expansion — LONG_HORIZON / REQUIRES_LEVEL_4_REVIEW.** No independent consumer currently warrants a product-category pivot.
+13. **General Agency Model v0 — COMPLETE / RESEARCH_REFERENCE.** The broader value-to-action-to-learning grammar is coherent with current Sensemaking but does not change ADR 0029 or authorize a generic agent product/runtime.
+14. **Practical Agent Architecture v0 — COMPLETE / GUIDANCE_ONLY_WARRANTED / INTEGRATED.** The warrant-centered hybrid design reconciled against current Sensemaking without establishing a state, schema, assurance, runtime, or public-API gap; compact guidance is integrated into `using-sensemaking`.
+15. **Normal-use validation — ACTIVE / NO DEDICATED CONSTRUCTION PACKAGE.** Use the guidance during ordinary consequential repository work and reopen construction only from repeated decision-changing pressure.
 
 ### Current highest-leverage boundary
 
-**None selected.** Strategic Outer Loop Precision v1 resolved the concrete product-boundary, Level-3 reasoning/state, Level-3↔Level-4 transition, semantic-grammar, and mechanically decidable representation gaps that motivated the milestone.
+**None selected.** Strategic Outer Loop Precision v1 resolved the concrete product-boundary and higher-scope control gaps that motivated that milestone. The General Agency Model v0 and Practical Agent Architecture v0 then clarified the broader agency grammar and its practical ownership boundaries without exposing a concrete runtime/state/assurance gap.
 
-The remaining candidate directions either lack concrete current decision value, would improperly mechanize semantic judgment, materially expand external authority/scope, require Level-4 review, or are owner-deferred empirical work.
+The current architecture therefore stops at guidance-first normal use. The remaining candidate directions either lack repeated normal-use evidence, would improperly mechanize semantic judgment, materially expand external authority/scope, require Level-4 review, or are owner-deferred empirical work.
 
 ### Current strategic decision to support
 
-**Decision:** given the completed Strategic Outer Loop Precision v1 changes and current evidence ceilings, is any additional repository-level construction responsibility warranted now?
+**Decision:** does normal use of the warrant-centered Practical Agent Architecture reveal a repeated failure that now warrants a bounded durable-state, deterministic-assurance, or guidance refinement?
 
-**Current judgment:** **NO**.
+**Current judgment:** **NO — NOT YET ESTABLISHED.**
 
-The only concrete post-milestone currentness issue discovered was stale current-authority wording that still treated ADR 0014 as the present product boundary; this closeout reconciles current authority surfaces to ADR 0029 without mass-rewriting historical evidence.
+The completed reconciliation found `GUIDANCE_ONLY_WARRANTED`: current Campaign/state, assurance, orchestration, and authority surfaces already cover the structural requirements identified by Practical Agent Architecture v0. No repeated normal-use failure has yet established a stronger implementation need.
 
 ### Current decision-changing uncertainty
 
 No unresolved uncertainty currently blocks a repository-development decision.
 
-The remaining future-facing question is: **what future normal-use, product, integrity, reconstruction, or explicit owner-directed pressure will reveal a new bounded responsibility worth undertaking?** That question does not need to be answered now and does not itself warrant construction.
+The future-facing question is: **will ordinary consequential repository work repeatedly expose loss of warrant dependencies, reconstruction failure, orchestration responsibility drift, premature convergence, weak challenge, or another concrete control failure that current guidance cannot absorb?** That uncertainty should be resolved through normal use, not a new synthetic construction program.
 
 ### Current warranted repository-level responsibility
 
@@ -102,7 +110,9 @@ No additional package, feature, planner, validator expansion, experiment, or doc
 
 ### Active execution vehicle
 
-No post-closeout Campaign/work package is selected. Strategic Outer Loop Precision v1 is complete; its qualified package ledger and continuation rule are recorded in `docs/strategic-outer-loop-precision-v1-handoff.md`.
+No dedicated post-closeout Campaign/work package is selected. Normal-use validation should occur inside ordinary repository work, using existing Campaign/handoff/state surfaces only when that work independently warrants durability.
+
+The completed General Agency / Practical Agent Architecture package and continuation rule are recorded in `docs/practical-agent-architecture-v0-handoff.md`.
 
 ### Expected evidence and reassessment
 
@@ -110,17 +120,23 @@ Reopen Level 3 when concrete new normal-use/product/integrity/reconstruction pre
 
 Potential invalidation/reopen evidence includes:
 
-- repeated normal-use failure not addressable by current agent judgment/guidance;
-- fresh-context loss of a decision materially required for continuation;
+- repeated failure to reconstruct a live decision or its warrant dependencies across contexts;
+- repeated orchestration/subagent behavior that silently changes responsibility or closure scope;
+- repeated premature convergence where current exploration guidance fails to surface material alternatives;
+- repeated weak-evidence commitment where current challenge guidance is insufficient;
+- repeated over-investigation of cheap reversible work or under-investigation of consequential irreversible work;
 - a new mechanically decidable integrity/currentness failure;
+- inability of current durable surfaces to preserve information materially required for continuation;
 - inability of current product surfaces to express a responsibility required by ADR 0029;
 - a thesis-level contradiction requiring Level-4 review.
 
-Candidate inventory or available implementation capacity alone is not reopen evidence.
+A single awkward case, candidate inventory, or available implementation capacity alone is not reopen evidence.
 
 ### Authority / owner direction
 
 The owner explicitly authorized all Strategic Outer Loop Precision v1 packages, including the Level-4 `SUPERSEDE` disposition that established ADR 0029 and autonomous progression through qualification/merge.
+
+The owner also authorized and completed the General Agency Model v0 and Practical Agent Architecture v0 packages. Those packages preserve ADR 0029 and explicitly stop short of generic runtime, schema, automatic planning, or expanded authority.
 
 This completed milestone does **not** authorize:
 
@@ -148,4 +164,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**STOP repository construction under Strategic Outer Loop Precision v1.** Use the refined model during ordinary repository work. Select a future bounded responsibility only from concrete decision-changing pressure or explicit owner direction; do not treat the candidate reservoir as a standing implementation queue.
+**NORMAL-USE VALIDATION.** Use the General Agency / Practical Agent Architecture guidance during ordinary repository work. Keep trivial reversible work lightweight; make warrant/challenge/exploration/delegation state explicit only when consequential.
+
+Do **not** start Practical Agent Architecture v1, a warrant engine, generic agent state, planner/runtime, new Campaign schema, or new assurance machinery merely because those concepts can be imagined.
+
+Select a future bounded repository responsibility only from repeated concrete decision-changing pressure or explicit owner direction.
