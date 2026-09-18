@@ -856,18 +856,30 @@ PY
 
 Expected: `v0.1 package boundary checks: PASS`.
 
-- [ ] **Step 3: Run repository/Skill validation**
+- [ ] **Step 3: Run the exact local preflight corresponding to repository/document contracts**
 
-Run:
+Install the repository and validation dependencies if the execution environment does not already have them:
+
+```bash
+python -m pip install -e . pytest pytest-subtests
+```
+
+Then run:
 
 ```bash
 python scripts/validate-repo.py
 python scripts/validate-skill-hygiene.py
+python scripts/validate-strategic-state.py --repo-root .
+python scripts/validate-candidate-directions.py --repo-root .
+python scripts/validate-release-contract.py --repo-root .
+python scripts/validate-contract-authority.py --repo-root .
+python scripts/validate-docs-currentness.py --repo-root .
+python scripts/validate-product-boundary.py
 ```
 
-Expected: PASS.
+Expected: every command exits 0.
 
-If the repository's normal test command is available in the execution environment, run it as well; do not claim local full-suite PASS if the environment cannot execute it.
+Do not substitute this local preflight for exact-head GitHub qualification. The full Product Validation and Release Candidate Distribution workflows remain required in Steps 6–7.
 
 - [ ] **Step 4: Fresh review against the approved design**
 
