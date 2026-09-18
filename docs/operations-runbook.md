@@ -8,6 +8,8 @@
 
 ## 1. Purpose and authority
 
+Current Version 1.0 release target, support surface, and claim ceiling are defined in [`release-v1.0-contract.md`](release-v1.0-contract.md).
+
 This is the single current operator-facing runbook for repository validation, Campaign operation, qualification, and release-candidate checks.
 
 ```text
