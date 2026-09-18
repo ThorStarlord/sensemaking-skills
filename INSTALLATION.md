@@ -1,6 +1,6 @@
 # Installation & Setup Guide — Sensemaking Skills
 
-This guide covers installation of the public distribution and the current Version 1.0 release candidate. Current repository source identity and release target are both `1.0.0rc2`; qualification is bound to the exact frozen source tree.
+This guide covers installation of the public distribution and the current Version 1.0 development line. Current repository source identity is `1.0.0rc3.dev0` targeting `1.0.0rc3`; the qualified `1.0.0rc2` candidate remains frozen historical provenance.
 
 ## Requirements
 

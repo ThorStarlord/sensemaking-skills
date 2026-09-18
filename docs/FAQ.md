@@ -1,7 +1,7 @@
 # Frequently Asked Questions
 
-**Current repository source:** `1.0.0rc2.dev0`  
-**Next release-candidate target:** `1.0.0rc2`  
+**Current repository source:** `1.0.0rc3.dev0`  
+**Next release-candidate target:** `1.0.0rc3`  
 **Release phase:** development — RC2 is not yet frozen or published.
 
 Current product/release authority lives in `STATUS.md`,

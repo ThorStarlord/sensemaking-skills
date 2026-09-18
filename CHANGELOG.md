@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0-rc.2] - UNRELEASED
+## [1.0.0-rc.3] - UNRELEASED
+
+### Changed
+- **Post-RC2 development reopened** — current source advances to `1.0.0rc3.dev0` while preserving the exact qualified RC2 source/tree/artifacts as immutable historical provenance.
+- **Next development program** — owner direction authorizes bounded product construction around execution handoff/result evidence, release-authority auditing, external-executor interoperability, provenance publication, and deterministic execution projections without creating a semantic planner or scheduler.
+
+### Release status
+- RC3 is development only; no RC3 candidate has been frozen or qualified.
+
+## [1.0.0-rc.2] - 2026-09-18
 
 ### Changed
 - **Release identity repair** — current repository development moves to `1.0.0rc2.dev0` while the next frozen candidate target is `1.0.0rc2`.

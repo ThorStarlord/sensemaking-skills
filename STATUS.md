@@ -1,13 +1,13 @@
 # Status
 
-**Source version:** 1.0.0rc2
-**Release target:** 1.0.0rc2 (frozen release candidate)
+**Source version:** 1.0.0rc3.dev0
+**Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-18  
-**Current phase:** RC2 candidate freeze and exact-source qualification within Release Authority & Operational Coherence v1; Strategic Outer Loop Precision v1, General Agency Model v0.1, and Practical Agent Architecture v0 remain guidance-complete  
+**Current phase:** Execution Interface & Agent-Factorization v1 — owner-directed post-RC2 construction; Release Authority & Operational Coherence v1 is complete and RC2 remains exact-source qualified  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
-**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568` but was not PyPI-published; continued development superseded it as the identity of `main`. Current source identity is the frozen `1.0.0rc2` candidate. Candidate qualification is established only by exact-source GitHub evidence for this frozen tree; PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
+**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568`. Qualified `1.0.0rc2` is frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`, Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`. Current development has moved to `1.0.0rc3.dev0` targeting `1.0.0rc3`; RC2 qualification does not transfer to these later bytes. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
 Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
@@ -79,43 +79,55 @@ Current material frontier items are:
 12. **Sensemaking Protocol / product-category expansion — LONG_HORIZON / REQUIRES_LEVEL_4_REVIEW.** No independent consumer currently warrants a product-category pivot.
 13. **General Agency Model v0.1 — COMPLETE / RESEARCH_REFERENCE.** The broader value-to-action-to-learning grammar is coherent with current Sensemaking but does not change ADR 0029 or authorize a generic agent product/runtime.
 14. **Practical Agent Architecture v0 — COMPLETE / GUIDANCE_ONLY_WARRANTED / INTEGRATED.** The warrant-centered hybrid design reconciled against current Sensemaking without establishing a state, schema, assurance, runtime, or public-API gap; compact guidance is integrated into `using-sensemaking`.
-15. **Normal-use validation — ACTIVE / NO DEDICATED CONSTRUCTION PACKAGE.** Use the guidance during ordinary consequential repository work and reopen construction only from repeated decision-changing pressure.
+15. **Normal-use validation — ACTIVE / CONTINUES ALONGSIDE CONSTRUCTION.** Preserve qualifying real episodes while owner-directed product construction proceeds; normal-use evidence still governs any additional architecture promotion.
+16. **Execution Interface & Agent-Factorization v1 — ACTIVE / OWNER_DIRECTED.** Build a bounded interface from already-selected responsibility to external execution and returned evidence: release-authority audit, execution handoff, result receipt, high-delegation working projection, generic executor interchange, explicit GitHub provenance publication, and cross-repository execution projection. This does not authorize a planner, scheduler, automatic responsibility selection, or autonomous publication/deployment.
 
 ### Current highest-leverage boundary
 
-**Release Authority & Operational Coherence v1 — ACTIVE / BOUNDED REPAIR.** Normal-use analysis exposed that historical `1.0.0rc1` qualification remained valid provenance for `70542d...`, while later commits continued to reuse the same source/release identity. The selected responsibility is to restore an explicit development identity, make release validation relational rather than RC1-literal, reconcile current release documentation, and freeze `1.0.0rc2` only after candidate-changing work converges.
+**Execution Interface & Agent-Factorization v1 — ACTIVE / OWNER_DIRECTED.** The owner explicitly directed the repository to resume construction after qualified RC2 and to implement the bounded product opportunities identified from current architecture and normal-use evidence.
 
-This repair does **not** reopen the agent architecture. General Agency v0.1 and Practical Agent Architecture remain guidance-first; no new planner, memory runtime, exploration runtime, Campaign schema, or deterministic semantic controller is warranted by this release-identity defect.
+The selected boundary is the interface between an already-warranted responsibility and external execution. Sensemaking should make the delegation contract, authority ceiling, required evidence, worker result, and parent reassessment reconstructible without becoming the coding runtime or silently selecting work.
+
+The program also includes two narrower mechanically grounded improvements: a release-authority auditor derived from Episode 004 and deterministic execution/provenance projections that expose existing explicit state without turning it into a semantic plan.
 
 ### Current strategic decision to support
 
-**Decision:** is the frozen `1.0.0rc2` candidate qualified as one exact integrated source identity?
+**Decision:** what is the smallest coherent product surface that lets Sensemaking hand already-selected work to external executors and safely consume returned evidence?
 
-**Current judgment:** **CANDIDATE FROZEN; QUALIFICATION CLAIM IS EVIDENCE-BOUND.**
+**Current judgment:** **IMPLEMENT A CONTRACT-FIRST INTERFACE, NOT AN EXECUTION ENGINE.**
 
-Candidate-changing repository work has converged and source identity is now `1.0.0rc2`. The remaining hosting-governance gap is tracked separately as Issue #384 because this workspace can read but cannot mutate GitHub branch protection/rulesets; that external admin setting does not change RC2 product bytes or support claims.
-
-This file intentionally does not self-assert a transient CI result. RC2 qualification is established only when the exact freeze head and the exact integrated candidate tree have the required green Product Validation / Release Candidate Distribution evidence and recorded artifact hashes.
+The active agent remains responsible for selecting the responsibility and judging returned evidence. Deterministic machinery may bind exact target identity, responsibility text, authority, success/evidence requirements, result provenance, integrity, and explicit publication payloads. External schedulers/workers remain separate systems.
 
 ### Current decision-changing uncertainty
 
-The remaining bounded uncertainty is **whether this exact frozen candidate and its integrated tree satisfy the applicable qualification gates**.
+The bounded implementation questions are contract-shape questions: which fields are mechanically necessary for safe delegation/result return, which existing Campaign identities can be reused without schema v3, and which projections/adapters can remain additive companions rather than new truth systems.
 
-This does not establish final Version 1.0 readiness or publication authority. PyPI publication and final `1.0.0` still require separate owner-controlled transitions.
+Owner direction resolves whether to build these capabilities; it does not resolve their detailed contract design. Each package must prove the smallest useful mechanical boundary through tests and exact-head qualification.
 
 ### Current warranted repository-level responsibility
 
-**Qualify the frozen `1.0.0rc2` candidate and then stop candidate-changing repository work.**
+**Implement the owner-directed post-RC2 development program in bounded, separately qualified packages.**
 
-Level-3 disposition: `RC2_CANDIDATE_FREEZE`.
+Level-3 disposition: `POST_RC2_DEVELOPMENT_ACTIVE`.
 
-Do not modify candidate bytes merely to record a later CI result. Preserve the qualification receipt in GitHub PR/run/artifact evidence. Do not add unrelated cleanup, new architecture, research machinery, or optional backlog work to the frozen candidate.
+Planned order:
+
+1. reopen development at `1.0.0rc3.dev0`;
+2. add a deterministic release-authority auditor;
+3. add execution handoff + worker result receipt contracts;
+4. add a compact high-delegation working-context projection;
+5. add a generic external-executor interchange and AI Software Factory/GitHub-Issue bridge representation;
+6. add explicit GitHub provenance-publication support with authorization boundaries;
+7. add deterministic cross-repository execution projection;
+8. reconcile/qualify the integrated result and reassess before any further machinery.
+
+Do not introduce automatic responsibility selection, worker scheduling, retries/queues, semantic scoring, automatic repository discovery, autonomous merge/release/deploy, or Campaign schema v3 unless separately warranted.
 
 ### Active execution vehicle
 
-A bounded repository-only release-coherence package is active. No Campaign is required because the responsibility is narrow, reconstructible from Git/PR evidence, and completing inside one repository control context.
+Sequential repository-only PRs against `1.0.0rc3.dev0`, each with focused regression coverage and hosted qualification. The feature contracts should use additive companion artifacts or read-only projections where possible so existing Campaign schema v2 remains authoritative.
 
-The completed General Agency / Practical Agent Architecture package and continuation rule remain recorded in `docs/practical-agent-architecture-v0-handoff.md`.
+A Campaign is not required to coordinate this repository-local implementation because Git/PR/STATUS evidence provides adequate bounded continuity.
 
 ### Expected evidence and reassessment
 
@@ -169,10 +181,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**RC2 CANDIDATE FREEZE.** Qualify this exact `1.0.0rc2` source tree through the required PR-head checks, integrate only if the candidate base/identity is preserved, then require Product Validation and Release Candidate Distribution on the exact integrated `main` commit. Record the integrated commit, Git tree, workflow runs, and artifact SHA-256 digests as the durable RC2 qualification receipt.
+**POST-RC2 DEVELOPMENT.** Merge the `1.0.0rc3.dev0` transition, then implement the Release Authority Auditor as the first bounded product package. Continue autonomously through the owner-directed execution-interface packages while each package remains within ADR 0029 and passes qualification.
 
-If those checks are green, Release Authority & Operational Coherence v1 closes without another candidate-byte mutation and the repository returns to normal-use validation.
+RC2 remains immutable historical provenance. Do not reuse `1.0.0rc2` for later source bytes.
 
-Do **not** publish RC2 to PyPI or advance to final `1.0.0` as part of the freeze. Those remain separate owner-controlled transitions.
-
-Do **not** start Practical Agent Architecture v1, a warrant engine, generic agent state, planner/runtime, new Campaign schema, or new assurance machinery merely because those concepts can be imagined.
+Do **not** interpret this owner-directed program as authorization for a StrategicPlanner, scheduler, automatic responsibility selection, autonomous merge/release/deploy, generic cognition database, or Campaign schema v3.
