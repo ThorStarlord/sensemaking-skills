@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0-rc.1] - UNRELEASED
+## [1.0.0-rc.2] - UNRELEASED
+
+### Changed
+- **Release identity repair** — current repository development moves to `1.0.0rc2.dev0` while the next frozen candidate target is `1.0.0rc2`.
+- **Relational release validation** — validators and distribution CI derive source/target identity from `pyproject.toml` and `release-v1.0.yaml` instead of hardcoding historical RC1.
+- **Candidate immutability rule** — a qualified candidate version applies only to its exact source and artifact evidence; continued development must leave the frozen identity.
+
+### Release status
+- RC2 is not yet frozen or published. The repository is in development toward RC2.
+
+## [1.0.0-rc.1] - 2026-09-13
 
 ### Added
 - Reduced-scope `1.0.0-rc.1` release candidate with Campaign schema v2,
@@ -14,8 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   claims excluded pending real external evidence.
 
 ### Release status
-- This candidate is not published and is not a final `1.0.0` release. External harness qualification, semantic
-  usefulness evaluation, and release-owner authorization remain open gates.
+- Exact source `70542d47412d98ee6dfae5de6df29bf271304568` was mechanically qualified as RC1.
+- RC1 was not published to PyPI and was never final `1.0.0`.
+- Continued development superseded RC1 as the identity of `main`; the historical qualification remains valid provenance for that exact source.
+- Native-harness compatibility, portability, and semantic usefulness remained excluded/deferred under the reduced-scope support promise.
 
 ## [0.3.0] - 2026-09-09
 
