@@ -1,6 +1,6 @@
 # Decision and Orchestration Boundary
 
-**Status:** architecture clarification grounded in ADR 0013, ADR 0014, and
+**Status:** architecture clarification grounded in ADR 0013, ADR 0026, ADR 0029, and
 `docs/agent-native-operating-workflow.md`  
 **Scope:** control ownership in the agent-native operating model  
 **Non-goal:** this document does not introduce a new runtime, registered workflow,
@@ -175,7 +175,7 @@ currently implemented one.
 | Stop / continue / escalate decisions | each stage's "done" is a judgment about sufficiency for the next decision, not a mechanical state | `docs/agent-native-operating-workflow.md` section 2, "STOP CONDITIONS" |
 | Authority decisions, including spawning a next workflow without a separate explicit authority event | `recommendation != selection != execution authorization`; with no authority event the runtime fails closed (it may surface a candidate, it must not spawn it) | ADR 0026 section 2 |
 | Semantic interpretation of findings | anything the probe marks `requires_semantic_review: True` never blocks; the gate blocks on mechanical contradictions and never decides what to fix | `docs/enforcement-contract.md` section 4 |
-| Routing from fog type to an implementation workflow | routing is deferred pending its own external proof; the deterministic fog-type routing table was never accepted | ADR 0014; ADR 0018 (SUPERSEDED, never Accepted) |
+| Routing from fog type to an implementation workflow | automatic routing remains outside current product scope; the deterministic fog-type routing table was never accepted | ADR 0029; ADR 0026 section 2; ADR 0018 (SUPERSEDED, never Accepted) |
 
 ### Evidence from real use (campaign R2-R4, 2026-09-02)
 
