@@ -191,7 +191,7 @@ jobs:
             tests/test_semantic_conformance.py \
             tests/test_semantic_cli.py \
             tests/test_semantic_catalog.py \
-  tests/test_release_authority_audit.py \
+            tests/test_release_authority_audit.py \
             -q
 
       - name: Assert verification did not mutate tracked state
