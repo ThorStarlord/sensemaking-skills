@@ -11,10 +11,29 @@ import click
 from .campaign_semantics import ContractError
 from .campaigns import CampaignWorkspaceError
 from .campaigns.execution import CampaignExecutionService
+from .campaigns.execution_bridge import (
+    build_factory_issue_projection,
+    build_handoff_envelope,
+    build_result_template,
+    import_result_envelope,
+    seal_result_envelope,
+)
 
 
 ErrorEmitter = Callable[..., None]
 JsonEcho = Callable[[dict[str, Any]], None]
+
+
+def _write_json(path: Path | None, payload: dict[str, Any]) -> str | None:
+    if path is None:
+        return None
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(
+        json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    return str(target.resolve())
 
 
 def _inspection_payload(service: CampaignExecutionService) -> dict[str, Any]:
@@ -111,6 +130,194 @@ def register_campaign_execution_commands(
             "selection_performed_by_tool": False,
             "authorization_granted_by_tool": False,
             "global_closure_established": False,
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+    @execution_group.command(name="export")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--handoff-id", required=True)
+    @click.option("--output", type=click.Path(path_type=Path), default=None)
+    @click.option("--json", "output_json", is_flag=True)
+    def execution_export(
+        workspace: Path,
+        handoff_id: str,
+        output: Path | None,
+        output_json: bool,
+    ) -> None:
+        """Export one generic integrity-bound external-executor handoff."""
+        try:
+            envelope = build_handoff_envelope(workspace, handoff_id=handoff_id)
+            written = _write_json(output, envelope)
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        except (OSError, ValueError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = {
+            "ok": True,
+            "code": "CAMPAIGN_EXECUTION_HANDOFF_EXPORTED",
+            "envelope": envelope,
+            "output": written,
+            "execution_performed_by_tool": False,
+            "selection_performed_by_tool": False,
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+    @execution_group.command(name="result-template")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--handoff-id", required=True)
+    @click.option("--result-id", required=True)
+    @click.option("--worker", required=True)
+    @click.option("--output", type=click.Path(path_type=Path), default=None)
+    @click.option("--json", "output_json", is_flag=True)
+    def execution_result_template(
+        workspace: Path,
+        handoff_id: str,
+        result_id: str,
+        worker: str,
+        output: Path | None,
+        output_json: bool,
+    ) -> None:
+        """Create a fillable worker-result envelope bound to a handoff."""
+        try:
+            envelope = build_result_template(
+                workspace,
+                handoff_id=handoff_id,
+                result_id=result_id,
+                worker=worker,
+            )
+            written = _write_json(output, envelope)
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        except (OSError, ValueError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = {
+            "ok": True,
+            "code": "CAMPAIGN_EXECUTION_RESULT_TEMPLATE",
+            "envelope": envelope,
+            "output": written,
+            "template_requires_completion_and_resealing": True,
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+    @execution_group.command(name="result-seal")
+    @click.option(
+        "--file",
+        "result_file",
+        required=True,
+        type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    )
+    @click.option("--output", type=click.Path(path_type=Path), default=None)
+    @click.option("--json", "output_json", is_flag=True)
+    def execution_result_seal(
+        result_file: Path,
+        output: Path | None,
+        output_json: bool,
+    ) -> None:
+        """Validate a completed result envelope and recompute its digest."""
+        try:
+            raw = json.loads(result_file.read_text(encoding="utf-8"))
+            sealed = seal_result_envelope(raw)
+            target = output or result_file
+            written = _write_json(target, sealed)
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = {
+            "ok": True,
+            "code": "CAMPAIGN_EXECUTION_RESULT_SEALED",
+            "envelope": sealed,
+            "output": written,
+            "semantic_truth_established": False,
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+    @execution_group.command(name="result-import")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option(
+        "--file",
+        "result_file",
+        required=True,
+        type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    )
+    @click.option("--json", "output_json", is_flag=True)
+    def execution_result_import(
+        workspace: Path,
+        result_file: Path,
+        output_json: bool,
+    ) -> None:
+        """Validate/import a generic worker-result envelope into the companion."""
+        try:
+            envelope = json.loads(result_file.read_text(encoding="utf-8"))
+            digest = import_result_envelope(workspace, envelope)
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = {
+            "ok": True,
+            "code": "CAMPAIGN_EXECUTION_RESULT_IMPORTED",
+            "record_digest": digest,
+            "campaign_evidence_admitted": False,
+            "worker_completion_establishes_global_closure": False,
+            "parent_reassessment_required": True,
+        }
+        if output_json:
+            json_echo(payload)
+        else:
+            click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+    @execution_group.command(name="factory-issue")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--handoff-id", required=True)
+    @click.option("--repository", required=True, help="Explicit OWNER/REPO target")
+    @click.option(
+        "--workflow",
+        required=True,
+        help="Caller-selected AI Software Factory / Archon workflow",
+    )
+    @click.option("--output", type=click.Path(path_type=Path), default=None)
+    @click.option("--json", "output_json", is_flag=True)
+    def execution_factory_issue(
+        workspace: Path,
+        handoff_id: str,
+        repository: str,
+        workflow: str,
+        output: Path | None,
+        output_json: bool,
+    ) -> None:
+        """Render, but do not publish, an AI Software Factory GitHub issue."""
+        try:
+            projection = build_factory_issue_projection(
+                workspace,
+                handoff_id=handoff_id,
+                repository=repository,
+                workflow=workflow,
+            )
+            written = _write_json(output, projection)
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        except (OSError, ValueError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = {
+            "ok": True,
+            "code": "CAMPAIGN_EXECUTION_FACTORY_ISSUE_PROJECTED",
+            **projection,
+            "output": written,
         }
         if output_json:
             json_echo(payload)
