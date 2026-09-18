@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Candidate immutability rule** — a qualified candidate version applies only to its exact source and artifact evidence; continued development must leave the frozen identity.
 
 ### Release status
-- RC2 is not yet frozen or published. The repository is in development toward RC2.
+- RC2 source identity is frozen as `1.0.0rc2`; qualification is exact-source evidence-bound and publication remains a separate owner-controlled transition.
 
 ## [1.0.0-rc.1] - 2026-09-13
 

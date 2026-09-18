@@ -119,6 +119,18 @@ def validate_docs_currentness(repo_root: Path) -> list[str]:
                 errors.append(
                     f"development source is presented as frozen candidate in {relative}"
                 )
+    else:
+        development_version = f"{target_version}.dev0"
+        for relative, text in texts.items():
+            if development_version in text:
+                errors.append(
+                    f"frozen candidate document still carries development identity "
+                    f"{development_version}: {relative}"
+                )
+            if "not yet a frozen candidate" in text:
+                errors.append(
+                    f"frozen candidate document still claims pre-freeze state: {relative}"
+                )
 
     return errors
 

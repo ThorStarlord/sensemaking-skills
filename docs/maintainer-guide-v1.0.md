@@ -43,8 +43,8 @@ upgrade a semantic or native-harness claim without its required evidence.
 
 ## Release changes
 
-The repository currently carries source version `1.0.0rc2.dev0` and targets
-`1.0.0rc2`. Release status remains `development` until candidate-changing
-work has converged. Only then mint `1.0.0rc2`, qualify one exact source head,
-record distribution digests, and preserve that candidate identity immutably.
-Publication and tagging remain explicit release-owner transitions.
+The repository currently carries frozen candidate source version `1.0.0rc2`
+with release target `1.0.0rc2` and status `candidate`. Qualify one exact
+source tree, record the integrated commit/tree plus distribution digests in
+durable GitHub evidence, and preserve that candidate identity immutably.
+Publication, tagging, and final `1.0.0` remain explicit release-owner transitions.

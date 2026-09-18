@@ -57,7 +57,7 @@ def test_current_release_docs_match_current_architecture() -> None:
     assert target_version in readme
     assert source_version in status_doc
     assert target_version in status_doc
-    assert status == "development"
+    assert status == "candidate"
     assert "Campaign schema v2" in status_doc
     assert "product/lab split" in status_doc
     assert "real-harness qualification verifier" in status_doc
@@ -111,6 +111,8 @@ def test_release_distribution_workflow_derives_current_identity() -> None:
     assert "test_external_golden_path_qualification.py" in workflow
     assert "validate-product-boundary.py" in workflow
     assert 'ref: ${{ github.event.pull_request.head.sha || github.sha }}' in workflow
+    assert "push:" in workflow
+    assert "Frozen candidate distribution qualification" in workflow
 
 
 def test_product_validation_owns_installed_release_portability() -> None:

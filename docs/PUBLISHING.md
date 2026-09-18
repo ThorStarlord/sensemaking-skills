@@ -13,7 +13,7 @@ repository development source
 != publicly published distribution
 ```
 
-The current repository source is `1.0.0rc2.dev0` and the active release target is
+The current repository source and active frozen release target are both
 `1.0.0rc2`. Historical `1.0.0rc1` remains qualified provenance for exact
 commit `70542d47412d98ee6dfae5de6df29bf271304568`; continued development
 superseded it as the identity of `main`.
@@ -25,21 +25,21 @@ superseded it as the identity of `main`.
 
 While `release.status: development`:
 
-- the source version is the development predecessor of the target (currently `1.0.0rc2.dev0`);
+- the source version is the development predecessor of the target (for example, a future `1.0.0rc3` target would use `1.0.0rc3.dev0`);
 - Product Validation and distribution validation may run;
 - passing those checks does **not** qualify a frozen release candidate;
 - current source must not present itself as `1.0.0rc2`.
 
 ## Candidate freeze
 
-Mint `1.0.0rc2` only after candidate-changing work has converged.
+The current source is frozen as `1.0.0rc2` with release status `candidate`.
 
-At freeze:
+Candidate qualification requires:
 
-1. change the source version from `1.0.0rc2.dev0` to `1.0.0rc2`;
-2. set the active release status to `candidate`;
-3. qualify one exact source head with Product Validation and Release Candidate Distribution;
-4. preserve the exact source SHA and distribution SHA-256 digests in durable qualification evidence.
+1. one exact freeze head qualified by Product Validation and Release Candidate Distribution;
+2. integration without changing the candidate Git tree;
+3. Product Validation and Release Candidate Distribution on the exact integrated `main` commit;
+4. durable recording of the integrated commit, Git tree, workflow runs, and distribution SHA-256 digests.
 
 Candidate qualification is an exact-source warrant. It does not automatically
 authorize PyPI publication or final `1.0.0`.
@@ -60,7 +60,7 @@ authorize PyPI publication or final `1.0.0`.
 - verifies CLI version, Campaign surface, schema v2, package boundaries, Skills, and validator runtime;
 - uploads the exact validated distributions as workflow artifacts.
 
-During `development`, this is distribution validation rather than candidate qualification.
+During `development`, this is distribution validation rather than candidate qualification. For a frozen `candidate`, the same workflow is candidate qualification and also runs on `main` pushes so the exact integrated source is qualified.
 
 ## Merge and integration
 

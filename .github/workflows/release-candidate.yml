@@ -1,6 +1,8 @@
 name: Release Candidate Distribution
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -58,6 +60,8 @@ jobs:
           echo "Release status: ${{ steps.release_identity.outputs.release_status }}"
           if [ "${{ steps.release_identity.outputs.release_status }}" = "development" ]; then
             echo "Development distribution validation only; this run does not qualify a frozen release candidate."
+          else
+            echo "Frozen candidate distribution qualification for exact checked-out source."
           fi
 
       - name: Version 1.0 release contract

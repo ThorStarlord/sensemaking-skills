@@ -3,9 +3,10 @@
 Use this checklist with [`release-v1.0-contract.md`](release-v1.0-contract.md).
 It is a gate record, not evidence that the gates have already passed.
 
-The current contract is a reduced-scope Version 1.0 target. Repository source
-is `1.0.0rc2.dev0` in `development` toward `1.0.0rc2`; RC2 is not yet a
-frozen candidate. External harness, portability, and semantic-usefulness
+The current contract is a reduced-scope Version 1.0 frozen candidate. Repository
+source and release target are both `1.0.0rc2` with status `candidate`.
+Candidate qualification is established only by exact-source GitHub checks and
+artifact evidence. External harness, portability, and semantic-usefulness
 evidence is intentionally excluded from the support promise and remains
 deferred research evidence.
 
