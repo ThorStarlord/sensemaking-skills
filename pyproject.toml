@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sensemaking-skills"
-version = "1.0.0rc2"
+version = "1.0.0rc3.dev0"
 description = "Agent-native Campaign control layer and repository sensemaking toolkit"
 readme = "README.md"
 requires-python = ">=3.11"
