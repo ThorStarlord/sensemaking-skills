@@ -43,7 +43,8 @@ upgrade a semantic or native-harness claim without its required evidence.
 
 ## Release changes
 
-The repository currently carries the `1.0.0` candidate version. Keep the
-release status at candidate until the exact-head gates pass. Build the wheel
-and sdist in clean environments, record their digests, and leave publication
-and tagging for the explicit release owner.
+The repository currently carries source version `1.0.0rc2.dev0` and targets
+`1.0.0rc2`. Release status remains `development` until candidate-changing
+work has converged. Only then mint `1.0.0rc2`, qualify one exact source head,
+record distribution digests, and preserve that candidate identity immutably.
+Publication and tagging remain explicit release-owner transitions.
