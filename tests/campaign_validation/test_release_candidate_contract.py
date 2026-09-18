@@ -14,6 +14,8 @@ from sensemaking_skills.external_qualification import PROTOCOL_ID
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
 def _read(relative: str) -> str:
     return (REPO_ROOT / relative).read_text(encoding="utf-8")
 
@@ -71,6 +73,20 @@ def test_schema_and_external_qualification_contracts_are_in_release_baseline() -
     assert "v1 -> v2" in plan
     assert "real-harness PASS evidence is empirical" in plan
     assert "verifier PASS != semantic truth" in readme
+
+
+def test_canonical_campaign_docs_use_schema_v2_and_current_product_authority() -> None:
+    semantics = _read("docs/campaign-semantics.md")
+    campaign = _read("docs/sensemaking-campaign.md")
+
+    assert f'`schema_version` to be `"{CURRENT_SCHEMA_VERSION}"`' in semantics
+    assert '`schema_version` to be `"1"`' not in semantics
+    assert "historical v1" in semantics.lower()
+    assert "unknown future versions fail closed" in semantics
+
+    assert "ADR 0029" in campaign
+    assert "ADR 0026" in campaign
+    assert "Why is automatic downstream routing deferred? | ADR 0014" not in campaign
 
 
 def test_sdist_manifest_carries_validator_runtime_sources() -> None:

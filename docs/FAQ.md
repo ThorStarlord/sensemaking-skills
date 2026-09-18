@@ -1,133 +1,173 @@
 # Frequently Asked Questions
 
+**Current repository source:** `1.0.0rc2.dev0`  
+**Next release-candidate target:** `1.0.0rc2`  
+**Release phase:** development — RC2 is not yet frozen or published.
+
+Current product/release authority lives in `STATUS.md`,
+`docs/product-strategy.md`, `docs/adr/0029-current-product-boundary.md`,
+`release-v1.0.yaml`, and `docs/operations-runbook.md`. This FAQ is
+explanatory only; executable contracts and those authority surfaces win if prose
+drifts.
+
 ## Installation & Setup
 
-### Q: How do I install sensemaking-skills?
-A: Two options:
-```bash
-# Option 1: From PyPI (recommended)
-pip install sensemaking-skills
+### Q: How do I install Sensemaking Skills?
 
-# Option 2: From source
-git clone https://github.com/ThorStarlord/sensemaking-skills.git
-cd sensemaking-skills
-pip install -e .
+For the latest public PyPI distribution:
+
+```bash
+python -m pip install sensemaking-skills
+sensemaking-skills --version
 ```
 
-### Q: What are the system requirements?
-A: Python 3.11 or higher. That's it! Only dependency is click (installed automatically).
+The public package may lag current repository development. To use current
+`main` / source development:
 
-### Q: Does it work on Windows/Mac/Linux?
-A: Yes! It works on all operating systems that support Python 3.11+.
+```bash
+git clone https://github.com/ThorStarlord/sensemaking-skills.git
+cd sensemaking-skills
+python -m venv .venv
+# activate the environment
+python -m pip install -e .
+sensemaking-skills --version
+```
+
+Current source should report `1.0.0rc2.dev0` while the repository is developing
+toward `1.0.0rc2`.
+
+### Q: What are the supported systems?
+
+The current reduced-scope release target supports Python 3.11 and 3.12 on
+Windows and Linux. The shipped Python dependencies are declared in
+`pyproject.toml` and currently include Click and PyYAML.
+
+### Q: Does Sensemaking require external services?
+
+The core product is local-first and has no server, cloud, database, or network
+requirement. A coding-agent harness may use its own model/API service; that is a
+property of the harness, not the Sensemaking package.
 
 ## Usage
 
-### Q: How do I diagnose my repository?
-A: Three-step process:
-1. Prepare: `sensemaking-skills analyze --repo /path/to/repo`
-2. Diagnose: Open repo in Claude Code, read skills, ask agent to analyze
-3. Validate: `sensemaking-skills validate --artifact artifacts/brief.md`
+### Q: Where should a new user start?
 
-### Q: What are the 4 fog types?
-A: Four types of repository confusion:
-- **Product Fog**: Unclear feature boundaries, API design issues
-- **UI Fog**: UI component organization, styling inconsistency
-- **Docs Fog**: Missing documentation, outdated examples
-- **Architecture Fog**: Service coupling, layer violations
+Use `GETTING_STARTED.md`. Coding agents should use
+`skills/using-sensemaking/SKILL.md`. Maintainers and release operators should
+use `docs/operations-runbook.md`.
 
-### Q: How long does diagnosis take?
-A: Typically < 10 minutes for most repositories. Agent-driven, so it depends on your repository size and complexity.
+### Q: What is the current product?
 
-### Q: Can I use this without Claude Code?
-A: Yes. The CLI utilities (`analyze`, `validate`, `test`) can be used standalone for local validation, testing, and artifact workflows.
+Sensemaking Skills is an agent-native repository decision-support and control
+layer. It helps an active coding agent turn uncertainty into grounded evidence,
+explicit decisions, bounded responsibilities, optional durable Campaign state,
+and reconstructible next-action context without replacing the agent's semantic
+judgment.
 
-For full agent-guided diagnostics, use the included skill files with an agent-capable environment such as Claude Code.
+### Q: Do I need a Campaign for every task?
 
-### Q: Does sensemaking-skills require API keys or external services?
-A: No. The sensemaking-skills package itself is local-only. It reads files from your repository, validates artifacts, runs local scripts, and writes Markdown or JSON outputs. It does not make external API calls and does not require credentials.
+No. Use the lightest process that preserves the required engineering
+invariants. Campaign state is useful when repository-specific decision context
+must survive sessions, agents, machines, or long-running responsibilities.
 
-If you use the skills with an agent harness such as Claude Code, that harness may call an LLM API. Those calls are handled by the harness, not by sensemaking-skills.
+### Q: How do I diagnose a repository?
 
-### Q: Do I need to share my code?
-A: No! Everything runs locally. Your repository never leaves your machine.
+Use the Sensemaking control loop and invoke `repo-sensemaker` when
+repository-wide evidence could materially change the next responsibility. The
+canonical output remains a grounded `repository_sensemaking_brief`.
+
+### Q: What are the four primary fog types?
+
+The canonical diagnostic vocabulary contains product, UI, documentation, and
+architecture fog. Fog classification is diagnostic compression, not automatic
+routing authority.
+
+### Q: Can I use different coding-agent harnesses?
+
+The repository can install its generic Agent Skills into explicit discovery
+roots for supported targets such as generic Agent Skills environments, Claude
+Code, Codex, and OpenCode. The release contract does **not** currently claim
+native-harness compatibility or cross-harness portability beyond its declared
+support/evidence ceiling.
+
+## Campaigns and artifacts
+
+### Q: What Campaign schema is current?
+
+Campaign schema **v2** is the durable Version 1.0 representation. Supported
+historical v1 inputs are accepted only through deterministic migration and are
+normalized to v2 without semantic reinterpretation.
+
+### Q: Can Sensemaking work with multiple repositories?
+
+Campaign mechanics support explicitly selected multi-repository targets and
+caller-authored relationships. They do not automatically discover repositories
+and do not provide atomic cross-repository commit, deploy, or rollback
+coordination.
+
+### Q: Does validation decide whether a claim or strategy is true?
+
+No. Mechanical validation establishes mechanically decidable representation,
+integrity, provenance, identity, or conformance properties.
+
+```text
+validator passed != semantic truth
+evidence admitted != responsibility warranted
+capability available != capability selected or authorized
+```
+
+## Releases
+
+### Q: Is `1.0.0rc1` the current release candidate?
+
+No. `1.0.0rc1` remains historical qualified provenance for exact source
+`70542d47412d98ee6dfae5de6df29bf271304568`. Continued development superseded
+it as the identity of current `main`.
+
+The repository is currently `1.0.0rc2.dev0` in development toward
+`1.0.0rc2`. RC2 will be minted only when candidate-changing work has converged
+and one exact source state is ready for fresh qualification.
+
+### Q: Is final Version 1.0 ready?
+
+Not yet. Final publication is a separate release-owner transition governed by
+`docs/release-v1.0-contract.md`, `docs/release-v1.0-checklist.md`, and
+`scripts/validate-release-readiness.py`.
+
+Native-harness compatibility, cross-harness portability, and semantic usefulness
+are currently deferred/excluded from the reduced-scope support promise rather
+than silently treated as proven.
 
 ## Troubleshooting
 
-### Q: "sensemaking-skills command not found"
-A: Try: `python -m sensemaking_skills.cli --version`
-Or reinstall: `pip install --upgrade sensemaking-skills`
+### Q: `sensemaking-skills` is not found after installation.
 
-### Q: Validate command fails with error
-A: Check the error message for what's missing. Common issues:
-- Brief not in expected location
-- Brief missing required sections
-- Artifact path incorrect
+Confirm the environment containing the installation is active, then run:
 
-Review PHASE-3-TESTING-RESULTS.md for validation details.
+```bash
+python -m pip show sensemaking-skills
+python -m sensemaking_skills.cli --version
+```
 
-### Q: Agent won't read the skills
-A: Make sure:
-- Repository is open in Claude Code
-- Path to skills is correct
-- SKILL.md file exists at that location
+### Q: A Skill install differs from the repository version.
 
-## Features
+Use `sensemaking-skills setup-skills ... --dry-run` first. Divergent installed
+Skill trees are preserved unless replacement is explicitly requested with
+`--force`.
 
-### Q: Can I export the brief in JSON?
-A: Currently outputs Markdown. JSON export planned for 0.3.0.
+### Q: Where do I report problems?
 
-### Q: Can I compare two diagnoses?
-A: Not yet, but tracking feature for 0.3.0.
-
-### Q: Can I run diagnostics on multiple repos at once?
-A: Not yet. Planned for 0.3.0.
-
-## Contributing
-
-### Q: How can I help?
-A: See CONTRIBUTING.md! We welcome:
-- Bug reports
-- Feature requests
-- Documentation improvements
-- Code contributions
-
-### Q: Is there a code of conduct?
-A: Yes! See CODE_OF_CONDUCT.md. Be respectful and inclusive.
-
-### Q: Can I propose a new fog type?
-A: Yes! Open an issue. We're considering custom fog types for 0.3.0.
+Use the repository's GitHub issues. For contribution expectations, see
+`CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`.
 
 ## Project
 
-### Q: What's the roadmap?
-A: 
-- 0.2.1: Current release (PyPI available)
-- 0.3.0: User-requested features (JSON export, caching, etc.)
-- 1.0.0: Stable API, comprehensive docs
-
-### Q: Is this production-ready?
-A: The current justified readiness level is "externally exercised" (brief
-production validated internally); the current product-validation priority is
-Goal A, whose canonical protocol
-(`docs/research/goal-a-external-product-validation-protocol.md`) targets
-independent-evaluator usefulness of grounded, decision-relevant briefs across
-two structurally different external repositories, with no target mutation and
-no manual artifact repair. Human decision-owner usefulness review is optional /
-deferred and is not required for A1; A1 does not claim actual human
-decision-owner usefulness or human decision impact. The historical D8 readiness
-bar remains inherited evidence guidance, not current binding authority. It is
-not yet general-availability production-ready.
-
 ### Q: How is this licensed?
-A: MIT License. See LICENSE file.
 
-### Q: Who maintains this?
-A: Currently maintained by the repository owner (single-maintainer, experimental
-status). Contributions are welcome via issues/PRs.
+MIT License. See `LICENSE`.
 
-## Still Have Questions?
+### Q: What is the roadmap?
 
-- Check the README.md
-- Open a GitHub discussion
-- Report a bug with details
-- Read GETTING_STARTED.md for workflow examples
+Current strategic direction is represented by `docs/product-strategy.md` and
+`STATUS.md`. Historical PRDs, phase reports, old roadmap entries, and candidate
+directions are not automatically current commitments.
