@@ -196,7 +196,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-Current repository development is `1.0.0rc2.dev0` targeting `1.0.0rc2`. For source development:
+Current repository source is the frozen `1.0.0rc2` candidate. For source inspection/development:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
