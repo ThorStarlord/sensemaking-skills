@@ -122,6 +122,49 @@ def build_result_template(
     return {**core, "envelope_digest": _envelope_digest(core)}
 
 
+def seal_result_envelope(envelope: Mapping[str, Any]) -> dict[str, Any]:
+    """Validate required return fields and recompute the interchange digest."""
+    if not isinstance(envelope, Mapping):
+        raise ValueError("result envelope must be a JSON object")
+    data = dict(envelope)
+    if data.get("schema_version") != EXECUTION_INTERCHANGE_VERSION:
+        raise ValueError("unsupported result envelope schema_version")
+    if data.get("kind") != RESULT_KIND:
+        raise ValueError(f"result envelope kind must be {RESULT_KIND}")
+    for field in (
+        "campaign_id",
+        "handoff_id",
+        "handoff_record_digest",
+        "result_id",
+        "worker",
+        "source_before",
+        "source_after",
+    ):
+        if not isinstance(data.get(field), str) or not str(data[field]).strip():
+            raise ValueError(f"{field} must be non-empty text")
+    for field in (
+        "changed_paths",
+        "validations",
+        "evidence_refs",
+        "unresolved_uncertainties",
+        "claims_supported",
+        "claims_not_supported",
+    ):
+        _list_of_strings(data.get(field), field)
+    if not isinstance(data.get("authority_exceeded"), bool):
+        raise ValueError("authority_exceeded must be boolean")
+    if data.get("worker_completion_establishes_global_closure") is not False:
+        raise ValueError(
+            "worker_completion_establishes_global_closure must remain false"
+        )
+    if data.get("campaign_evidence_admitted") is not False:
+        raise ValueError("campaign_evidence_admitted must remain false")
+    if data.get("semantic_truth_established") is not False:
+        raise ValueError("semantic_truth_established must remain false")
+    data.pop("envelope_digest", None)
+    return {**data, "envelope_digest": _envelope_digest(data)}
+
+
 def _list_of_strings(value: Any, label: str) -> tuple[str, ...]:
     if not isinstance(value, list):
         raise ValueError(f"{label} must be a list")
