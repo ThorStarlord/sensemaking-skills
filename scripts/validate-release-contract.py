@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +14,9 @@ import yaml
 
 class ReleaseContractError(ValueError):
     pass
+
+
+_RELEASE_TARGET = re.compile(r"^1\\.0\\.0rc[1-9][0-9]*$")
 
 
 def _mapping(value: Any, label: str) -> dict[str, Any]:
@@ -30,6 +35,42 @@ def _strings(value: Any, label: str, *, allow_empty: bool = False) -> list[str]:
     return value
 
 
+def _project_version(repo_root: Path) -> str:
+    try:
+        data = tomllib.loads((repo_root / "pyproject.toml").read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError) as exc:
+        raise ReleaseContractError(f"cannot read pyproject.toml: {exc}") from exc
+    project = _mapping(data.get("project"), "pyproject.project")
+    version = project.get("version")
+    if not isinstance(version, str) or not version:
+        raise ReleaseContractError("pyproject.project.version must be non-empty")
+    return version
+
+
+def _validate_release_identity(release: dict[str, Any], source_version: str) -> None:
+    target = release.get("version")
+    status = release.get("status")
+    if not isinstance(target, str) or not _RELEASE_TARGET.fullmatch(target):
+        raise ReleaseContractError(
+            "release.version must be a Version 1.0 release-candidate target such as 1.0.0rc2"
+        )
+    if status not in {"development", "candidate", "ready"}:
+        raise ReleaseContractError(
+            "release.status must be one of development, candidate, or ready"
+        )
+
+    if status == "development":
+        expected = f"{target}.dev0"
+        if source_version != expected:
+            raise ReleaseContractError(
+                f"development source version must be {expected}, got {source_version}"
+            )
+    elif source_version != target:
+        raise ReleaseContractError(
+            f"{status} source version must equal release target {target}, got {source_version}"
+        )
+
+
 def validate(repo_root: Path) -> list[str]:
     contract_path = repo_root / "release-v1.0.yaml"
     try:
@@ -42,8 +83,8 @@ def validate(repo_root: Path) -> list[str]:
         raise ReleaseContractError("schema_version must be 1")
 
     release = _mapping(data.get("release"), "release")
-    if release.get("version") != "1.0.0rc1":
-        raise ReleaseContractError("release.version must be 1.0.0rc1")
+    source_version = _project_version(repo_root)
+    _validate_release_identity(release, source_version)
     if release.get("scope_classification") not in {"reduced", "full"}:
         raise ReleaseContractError(
             "release.scope_classification must be 'reduced' or 'full'"
@@ -108,7 +149,9 @@ def validate(repo_root: Path) -> list[str]:
         raise ReleaseContractError("claims contain duplicate ids")
 
     return [
-        f"release contract: {release['version']}",
+        f"release target: {release['version']}",
+        f"release status: {release['status']}",
+        f"source version: {source_version}",
         f"canonical Skills classified: {len(canonical)}",
         f"supported Skills with manifests: {len(supported)}",
         f"claims declared: {len(claims)}",
