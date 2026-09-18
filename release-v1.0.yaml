@@ -1,7 +1,7 @@
 schema_version: 1
 release:
   version: 1.0.0rc2
-  status: development
+  status: candidate
   product_name: Sensemaking Skills
   scope_classification: reduced
   scope: local-first Campaign control layer and mechanically qualified engineering Skills
