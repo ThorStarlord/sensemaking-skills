@@ -147,6 +147,8 @@ The model or active agent owns judgments such as:
 
 No deterministic component may silently make these semantic selections.
 
+At the value layer, adversarial reasoning may expose competing stakeholder interests, consequences, assumptions, or rights, but empirical evidence does not automatically settle a genuinely normative conflict. Where legitimacy or governance requires an owner/human decision, the system should surface the contest rather than manufacture a mechanical answer.
+
 ### 5.2 Mechanically decidable facts should be deterministic
 
 Where a fact has a stable mechanical contract, infrastructure should own it.
@@ -218,6 +220,8 @@ It should become explicit only as consequence, uncertainty, continuation complex
 ## 6. Recommended architecture
 
 The architecture has five ownership zones plus a cross-cutting authority envelope.
+
+These zones are **ownership boundaries**, not required processes, deployable services, classes, databases, or runtime engines. A lightweight agent may realize several zones inside one model context; a larger system may distribute them across tools and processes while preserving the same ownership law.
 
 ```text
 ┌──────────────────────────────────────────────────────┐
@@ -376,7 +380,7 @@ W(
 
 This notation is explanatory.
 
-It does not imply a score or deterministic function.
+**Warrant is not a score, ranking, authorization token, or deterministic decision function.** It is an explicit semantic justification relation that may be supported or defeated by evidence, constraints, and authority.
 
 ### 8.2 Warrant target classes
 
