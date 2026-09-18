@@ -13,10 +13,10 @@ repository development source
 != publicly published distribution
 ```
 
-The current repository source and active frozen release target are both
-`1.0.0rc2`. Historical `1.0.0rc1` remains qualified provenance for exact
-commit `70542d47412d98ee6dfae5de6df29bf271304568`; continued development
-superseded it as the identity of `main`.
+The current repository source is `1.0.0rc3.dev0` and the active release target
+is `1.0.0rc3`. Historical `1.0.0rc1` remains qualified provenance for exact
+commit `70542d47412d98ee6dfae5de6df29bf271304568`; qualified `1.0.0rc2`
+remains frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`.
 
 `pyproject.toml` `[project].version` is the literal source/build version.
 `release-v1.0.yaml` declares the release target and phase.
@@ -32,7 +32,8 @@ While `release.status: development`:
 
 ## Candidate freeze
 
-The current source is frozen as `1.0.0rc2` with release status `candidate`.
+A future `1.0.0rc3` candidate may be frozen only after current candidate-changing
+work converges. The current `1.0.0rc3.dev0` source remains `development`.
 
 Candidate qualification requires:
 
