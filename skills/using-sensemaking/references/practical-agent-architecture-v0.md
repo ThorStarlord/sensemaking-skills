@@ -199,6 +199,30 @@ Stop exploring when:
 
 No numeric score is required.
 
+### Iterative-search allocation
+
+When multiple meaningful attempts create a real search history, use that history to decide what kind of next search move is warranted:
+
+- **exploit** — refine the current best;
+- **explore** — try a materially different direction;
+- **challenge** — seek falsification or counter-evidence;
+- **diagnose** — investigate why an attempt failed before discarding its underlying idea;
+- **recombine** — combine useful mechanisms from different attempts;
+- **restart** — leave the current local search region or frame;
+- **verify** — confirm that a promising result is real before spending more effort optimizing it.
+
+These are qualitative search modes, not a required enum, score, planner, or routing table.
+
+For one-shot, local, obvious work, keep search allocation implicit.
+
+```text
+exploration operator
+!= iterative-search allocation policy
+
+search history exists
+!= persistent search-tree required
+```
+
 ## 7. Resource-aware stopping
 
 Reasoning consumes time, attention, compute, tool calls, experiments, and opportunity.
@@ -371,6 +395,30 @@ practical architecture used
 Create durable Campaign state only when continuation complexity warrants it.
 
 Do not persist hidden chain-of-thought. Persist explicit conclusions, evidence, dependencies, rationale, and conditions needed for reconstruction.
+
+### Knowledge externalization / transferability
+
+Durable state and transferable knowledge are related but not identical.
+
+Externalize the selected decision-relevant subset when one or more are material:
+
+- continuation crosses context or actor boundaries;
+- rediscovery would be meaningfully costly;
+- consequential rationale or evidence must remain reconstructible;
+- governance, operations, users, or auditors need the knowledge in an intelligible form;
+- future search quality depends on preserving attempts, outcomes, or failure attribution.
+
+Use existing Sensemaking surfaces first: ADRs, handoffs, Campaign/strategic state, artifacts, reports, Skills/reference docs, and repository history.
+
+```text
+reasoning result
+!= durable artifact required
+
+raw durable state
+!= sufficiently transferable knowledge
+```
+
+Externalize conclusions, rationale, evidence, and material search history when warranted; do not externalize private chain-of-thought merely because it existed.
 
 ## 12. Value and normative conflict
 
