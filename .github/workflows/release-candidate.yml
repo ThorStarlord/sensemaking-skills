@@ -100,6 +100,7 @@ jobs:
             tests/campaign_validation/test_campaign_schema_evolution.py \
             tests/test_version_upgrade.py \
             tests/integration/test_external_golden_path_qualification.py \
+            tests/test_release_authority_audit.py \
             -q
 
       - name: Build wheel and sdist
