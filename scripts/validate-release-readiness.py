@@ -21,10 +21,12 @@ def readiness_diagnostics(repo_root: Path) -> list[str]:
         return [f"cannot read release contract: {exc}"]
 
     release = contract.get("release", {}) if isinstance(contract, dict) else {}
-    if release.get("version") != "1.0.0rc1":
-        diagnostics.append("release version is not 1.0.0rc1")
-    if release.get("status") != "ready":
-        diagnostics.append(f"release status is {release.get('status', 'missing')}")
+    target = release.get("version")
+    status = release.get("status")
+    if target != "1.0.0":
+        diagnostics.append(f"release target is {target or 'missing'}, not final 1.0.0")
+    if status != "ready":
+        diagnostics.append(f"release status is {status or 'missing'}")
 
     pyproject_path = repo_root / "pyproject.toml"
     try:
@@ -33,12 +35,19 @@ def readiness_diagnostics(repo_root: Path) -> list[str]:
         diagnostics.append(f"project metadata is unreadable: {exc}")
     else:
         project = pyproject.get("project", {})
+        source_version = project.get("version")
         classifiers = project.get("classifiers", [])
-        if release.get("version") == "1.0.0rc1" and (
+        if status == "ready" and source_version != target:
+            diagnostics.append(
+                f"ready source version {source_version} does not match release target {target}"
+            )
+        if status != "ready" and (
             "Development Status :: 5 - Production/Stable" in classifiers
             or "Development Status :: 4 - Beta" not in classifiers
         ):
-            diagnostics.append("project metadata does not classify 1.0.0rc1 as a Beta pre-release")
+            diagnostics.append(
+                "project metadata does not classify the pre-release/development source as Beta"
+            )
 
     evidence_status = repo_root / "qualification-evidence" / "STATUS.md"
     try:
