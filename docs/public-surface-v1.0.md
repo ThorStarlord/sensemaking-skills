@@ -16,6 +16,7 @@ The supported command groups are:
 
 ```text
 sensemaking-skills campaign
+sensemaking-skills release
 sensemaking-skills semantic
 sensemaking-skills setup-skills
 sensemaking-skills validate
