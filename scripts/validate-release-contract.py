@@ -16,7 +16,7 @@ class ReleaseContractError(ValueError):
     pass
 
 
-_RELEASE_TARGET = re.compile(r"^1\\.0\\.0rc[1-9][0-9]*$")
+_RELEASE_TARGET = re.compile(r"^1\.0\.0rc[1-9][0-9]*$")
 
 
 def _mapping(value: Any, label: str) -> dict[str, Any]:
