@@ -5,10 +5,10 @@
 
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
-**Source version:** 1.0.0rc2.dev0
-**Release target:** 1.0.0rc2 (development; not yet a frozen candidate)
+**Source version:** 1.0.0rc2
+**Release target:** 1.0.0rc2 (frozen release candidate)
 **Historical candidate:** 1.0.0rc1 was qualified at `70542d47412d98ee6dfae5de6df29bf271304568` and is superseded by continued development
-**Status:** post-RC1 development toward RC2; native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise
+**Status:** RC2 candidate freeze; qualification is exact-source evidence-bound, while PyPI publication and final `1.0.0` remain separate transitions; native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
 
@@ -107,7 +107,7 @@ The Strategic Frontier is decision-relevant possibility state, **not a backlog**
 
 ## What the Version 1.0 target is intended to ship
 
-The current development package primarily supplies the **Level-2/Level-1 durable and mechanical substrate** used by the active agent. Its central durable Level-2 abstraction is a **Sensemaking Campaign**: a bounded engineering decision process that survives agent/session boundaries when continuation complexity warrants persistent state. Campaign availability does not make Campaign the universal entry point for Sensemaking.
+The frozen RC2 candidate package supplies the **Level-2/Level-1 durable and mechanical substrate** used by the active agent. Its central durable Level-2 abstraction is a **Sensemaking Campaign**: a bounded engineering decision process that survives agent/session boundaries when continuation complexity warrants persistent state. Campaign availability does not make Campaign the universal entry point for Sensemaking.
 
 The installed product includes:
 
