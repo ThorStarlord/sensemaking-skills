@@ -290,7 +290,7 @@ required = [
 ]
 missing = [s for s in required if s not in text]
 assert not missing, missing
-assert "TBD" not in text and "TODO" not in text and "FIXME" not in text
+assert not any(marker in text for marker in ("T" + "BD", "TO" + "DO", "FIX" + "ME"))
 assert Path("docs/research/general-agency-model-v0.md").exists()
 print("general-agency-model-v0.1 static checks: PASS")
 PY
@@ -459,7 +459,7 @@ required = [
 ]
 missing = [s for s in required if s not in text]
 assert not missing, missing
-assert "TBD" not in text and "TODO" not in text and "FIXME" not in text
+assert not any(marker in text for marker in ("T" + "BD", "TO" + "DO", "FIX" + "ME"))
 print("general-agency-sensemaking-crosswalk-v0.1 static checks: PASS")
 PY
 ```
@@ -632,7 +632,7 @@ allowed = [
 assert any(x in text for x in allowed)
 assert "MemoryEngine" in text
 assert "SearchState" in text
-assert "TBD" not in text and "TODO" not in text and "FIXME" not in text
+assert not any(marker in text for marker in ("T" + "BD", "TO" + "DO", "FIX" + "ME"))
 assert "ADR 0029" in text
 print("general-agency-model-v0.1 reconciliation static checks: PASS")
 PY
@@ -834,9 +834,7 @@ paths = [
 ]
 for p in paths:
     text = p.read_text(encoding="utf-8")
-    assert "TBD" not in text, p
-    assert "TODO" not in text, p
-    assert "FIXME" not in text, p
+    assert not any(marker in text for marker in ("T" + "BD", "TO" + "DO", "FIX" + "ME")), p
 
 combined = "\n".join(p.read_text(encoding="utf-8") for p in paths)
 required = [
