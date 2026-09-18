@@ -38,7 +38,7 @@ deferred research evidence.
 
 ## Evidence and claims
 
-- [ ] Engineering native-harness evidence is frozen and independently auditable.
+- [x] Engineering native-harness evidence is frozen, or engineering native support is excluded from 1.0. Current reduced-scope contract excludes it.
 - [x] Product Management native-harness evidence is frozen, or PM native support is excluded from 1.0.
 - [x] Second-harness portability evidence is frozen, or portability is excluded from 1.0.
 - [x] Semantic usefulness evaluation protocol is frozen; usefulness remains deferred unless its study passes.
