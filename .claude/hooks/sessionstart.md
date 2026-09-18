@@ -119,7 +119,7 @@ ls -la skills/using-sensemaking/SKILL.md
 
 # Check the file has correct metadata:
 head -10 skills/using-sensemaking/SKILL.md
-# Should show: name: using-sensemaking, description, tags
+# Should show only the Skill frontmatter fields: name and description
 ```
 
 ### Test 3: Skill teaches correct behavior

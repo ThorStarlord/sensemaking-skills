@@ -1,7 +1,6 @@
 ---
 name: using-sensemaking
-description: Use Sensemaking Skills to turn repository uncertainty into evidence-grounded, warranted next action. Teaches when repository sensemaking is warranted, responsibility-before-Skill selection, adaptive scaffolding/rigor/durability, artifact/evidence reading, validation, reconciliation, repair verification, authority boundaries, and stop/escalation decisions.
-tags: [bootstrap, sensemaking, control, evidence, responsibility-selection]
+description: use Sensemaking Skills to turn repository uncertainty or a broad delegated repository mission into evidence-grounded, warranted next action. Use when a coding agent must select responsibility before capability, adapt scaffolding/rigor/durability, preserve authority boundaries, reconcile consequential claims, or continue autonomously toward an authoritative repository outcome without inventing scope.
 ---
 
 # Using Sensemaking Skills: Agent-Native Control Loop
@@ -115,6 +114,23 @@ more scaffolding != more visible machinery
 ```
 
 Do not score these factors, infer a permanent beginner/expert class, create a Campaign merely because a task is large, or translate them into automatic Skill/workflow routing. For examples and anti-patterns, read `references/adaptive-guidance-v0.md` when this decision is material.
+
+### Broad delegated repository missions
+
+A user may delegate an **outcome** rather than a preselected implementation task, for example completing the current authoritative product scope or advancing the repository until no further warranted change remains.
+
+Treat such a prompt as a delegation contract:
+
+```text
+authoritative desired state
++ evidence-driven responsibility selection
++ granted authority
++ explicit terminal conditions
+```
+
+Exercise repository-answerable intermediate judgment, but do not translate broad delegation into unlimited scope, automatic backlog execution, permanent Campaign creation, product-thesis revision, or protected external-action authority.
+
+For concrete terminal-mission patterns and anti-patterns, read `references/delegated-goal-patterns.md` when the mission's scope, authority, or stopping boundary is material.
 
 ---
 
