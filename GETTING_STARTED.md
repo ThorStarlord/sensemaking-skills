@@ -1,4 +1,4 @@
-# Getting Started with Sensemaking Skills v0.3.0
+# Getting Started with Sensemaking Skills
 
 Sensemaking Skills combines agent-native Skills with an optional local Campaign CLI. The active coding agent supplies semantic judgment; deterministic tooling makes state, evidence, provenance, explicit decisions, and repository identity durable and mechanically checkable **when that durability is useful**.
 
@@ -26,14 +26,14 @@ GETTING_STARTED.md = human how-to entry point
 
 ## Install
 
+The public PyPI distribution and the repository development source are separate identities. To install the latest package currently published on PyPI:
+
 ```bash
-python -m pip install sensemaking-skills==0.3.0
+python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-Expected output includes `0.3.0`.
-
-For source development:
+For the current repository development line, the source version is `1.0.0rc2.dev0` and the release target is `1.0.0rc2`. Install from source:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
