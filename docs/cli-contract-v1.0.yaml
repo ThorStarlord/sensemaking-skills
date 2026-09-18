@@ -2,6 +2,7 @@ schema_version: 1
 entrypoint: sensemaking-skills
 stable_commands:
   - campaign
+  - release
   - semantic
   - setup-skills
   - validate

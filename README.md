@@ -159,7 +159,8 @@ Deterministic machinery owns mechanically decidable contracts:
 - manifest/domain cross-reference conformance;
 - Campaign provenance projections and portable-bundle integrity;
 - reference-resolution integrity under existing authoritative namespaces;
-- release/evidence-package verification.
+- release/evidence-package verification;
+- deterministic local release-authority auditing over source/target/Git/current-doc/workflow identity without inferring CI qualification or publication.
 
 The durable invariants include:
 

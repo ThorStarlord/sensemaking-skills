@@ -35,6 +35,7 @@ from .campaigns import (
     CampaignWorkspaceError,
 )
 from .semantic_cli import register_semantic_commands
+from .release_cli import register_release_commands
 from .setup_skills import setup_skills as run_setup_skills
 
 CAMPAIGN_INVALID_EXIT = 3
@@ -650,6 +651,7 @@ register_campaign_observability_commands(
 )
 
 register_semantic_commands(cli)
+register_release_commands(cli)
 
 
 def main():

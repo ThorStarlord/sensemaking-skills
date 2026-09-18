@@ -23,6 +23,7 @@ support:
 public_surface:
   cli:
     - campaign
+    - release
     - semantic
     - setup-skills
     - validate
