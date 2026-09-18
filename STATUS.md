@@ -1,12 +1,13 @@
 # Status
 
-**Version:** 1.0.0rc1 (reduced-scope release candidate)
+**Source version:** 1.0.0rc2.dev0
+**Release target:** 1.0.0rc2 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-18  
-**Current phase:** Strategic Outer Loop Precision v1, General Agency Model v0, and Practical Agent Architecture v0 are complete; the repository is now in normal-use validation with no additional architecture construction currently warranted  
+**Current phase:** Release Authority & Operational Coherence v1 is active as a bounded repair; Strategic Outer Loop Precision v1, General Agency Model v0.1, and Practical Agent Architecture v0 remain guidance-complete  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
-**Release status:** RC published from exact-head-qualified commit `70542d47412d98ee6dfae5de6df29bf271304568`; native harness, portability, and semantic usefulness claims remain excluded.
+**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568` but was not PyPI-published; continued development superseded it as the identity of `main`. Current source is `1.0.0rc2.dev0` targeting a future frozen `1.0.0rc2`. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
 Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
@@ -82,9 +83,9 @@ Current material frontier items are:
 
 ### Current highest-leverage boundary
 
-**None selected.** Strategic Outer Loop Precision v1 resolved the concrete product-boundary and higher-scope control gaps that motivated that milestone. The General Agency Model v0 and Practical Agent Architecture v0 then clarified the broader agency grammar and its practical ownership boundaries without exposing a concrete runtime/state/assurance gap.
+**Release Authority & Operational Coherence v1 — ACTIVE / BOUNDED REPAIR.** Normal-use analysis exposed that historical `1.0.0rc1` qualification remained valid provenance for `70542d...`, while later commits continued to reuse the same source/release identity. The selected responsibility is to restore an explicit development identity, make release validation relational rather than RC1-literal, reconcile current release documentation, and freeze `1.0.0rc2` only after candidate-changing work converges.
 
-The current architecture therefore stops at guidance-first normal use. The remaining candidate directions either lack repeated normal-use evidence, would improperly mechanize semantic judgment, materially expand external authority/scope, require Level-4 review, or are owner-deferred empirical work.
+This repair does **not** reopen the agent architecture. General Agency v0.1 and Practical Agent Architecture remain guidance-first; no new planner, memory runtime, exploration runtime, Campaign schema, or deterministic semantic controller is warranted by this release-identity defect.
 
 ### Current strategic decision to support
 
