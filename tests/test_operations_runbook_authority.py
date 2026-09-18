@@ -1,5 +1,8 @@
 from pathlib import Path
 
+import tomllib
+import yaml
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -47,3 +50,43 @@ def test_outer_loop_v0_is_frozen_as_operational_baseline() -> None:
     assert "**Version:** v0" in control_model
     assert "frozen operational baseline" in control_model
     assert "OUTER_LOOP_V0 = FROZEN_OPERATIONAL_BASELINE" in audit
+
+def test_historical_v1_prd_is_not_current_repository_authority() -> None:
+    prd = _read("docs/PRD-V1-Sensemaking.md")
+    validator = _read("scripts/validate-repo.py")
+
+    assert "<!-- doc-status: historical -->" in prd
+    assert "HISTORICAL / SUPERSEDED" in prd
+    assert "docs/product-strategy.md" in prd
+    assert "docs/adr/0029-current-product-boundary.md" in prd
+
+    assert '"docs/PRD-V1-Sensemaking.md"' not in validator
+    for authority in (
+        "STATUS.md",
+        "docs/product-strategy.md",
+        "docs/adr/0029-current-product-boundary.md",
+        "docs/operations-runbook.md",
+    ):
+        assert f'"{authority}"' in validator
+
+
+def test_live_faq_uses_current_release_authority_without_historical_roadmap_claims() -> None:
+    faq = _read("docs/FAQ.md")
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    contract = yaml.safe_load(_read("release-v1.0.yaml"))
+
+    source_version = pyproject["project"]["version"]
+    target_version = contract["release"]["version"]
+
+    assert source_version in faq
+    assert target_version in faq
+    assert "release phase:** development" in faq.lower()
+    assert "JSON export planned for 0.3.0" not in faq
+    assert "0.2.1: Current release" not in faq
+    assert "0.3.0: User-requested features" not in faq
+    assert "only dependency is click" not in faq.lower()
+    assert "works on all operating systems" not in faq.lower()
+    assert "Campaign schema **v2**" in faq
+    assert "`docs/product-strategy.md`" in faq
+    assert "`docs/operations-runbook.md`" in faq
+
