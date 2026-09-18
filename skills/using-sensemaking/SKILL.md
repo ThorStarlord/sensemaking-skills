@@ -225,6 +225,8 @@ otherwise
 
 **Exploration** asks what plausible frame, option, explanation, or intervention is not yet represented.
 
+When iterative search has multiple meaningful attempts, use the material search history to decide whether the next move should exploit, explore, challenge, diagnose, recombine, restart, or verify. Keep this implicit for one-shot/local work; do not turn the modes into a score or routing table.
+
 Critic or explorer output is evidence for the active agent; it is not automatic veto, approval, or authority.
 
 For challenge/exploration triggers, delegation evidence return, and persistence guidance, read `references/practical-agent-architecture-v0.md` when those decisions are material.
@@ -546,6 +548,8 @@ next agent/run -> depends on what the previous conversation happened to remember
 ```
 
 When continuation is awkward, preserve the actual handoff and candidate evidence first. Do not invent new cross-run machinery until repeated real use demonstrates a stable failure boundary.
+
+Durability and transferability are not identical. Externalize selected rationale, evidence, decisions, or material search history when another actor/context must continue, rediscovery would be costly, or governance/operations/user transfer requires an intelligible artifact. A reasoning result does not automatically require a durable document, and hidden chain-of-thought is never a persistence requirement.
 
 ---
 
