@@ -57,7 +57,7 @@ def test_current_release_docs_match_current_architecture() -> None:
     assert target_version in readme
     assert source_version in status_doc
     assert target_version in status_doc
-    assert status == "candidate"
+    assert status == "development"
     assert "Campaign schema v2" in status_doc
     assert "product/lab split" in status_doc
     assert "real-harness qualification verifier" in status_doc
