@@ -1,13 +1,13 @@
 # Status
 
-**Source version:** 1.0.0rc2.dev0
-**Release target:** 1.0.0rc2 (development; not yet a frozen candidate)
+**Source version:** 1.0.0rc2
+**Release target:** 1.0.0rc2 (frozen release candidate)
 **Last updated:** 2026-09-18  
-**Current phase:** Release Authority & Operational Coherence v1 is active as a bounded repair; Strategic Outer Loop Precision v1, General Agency Model v0.1, and Practical Agent Architecture v0 remain guidance-complete  
+**Current phase:** RC2 candidate freeze and exact-source qualification within Release Authority & Operational Coherence v1; Strategic Outer Loop Precision v1, General Agency Model v0.1, and Practical Agent Architecture v0 remain guidance-complete  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
-**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568` but was not PyPI-published; continued development superseded it as the identity of `main`. Current source is `1.0.0rc2.dev0` targeting a future frozen `1.0.0rc2`. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
+**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568` but was not PyPI-published; continued development superseded it as the identity of `main`. Current source identity is the frozen `1.0.0rc2` candidate. Candidate qualification is established only by exact-source GitHub evidence for this frozen tree; PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
 Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
@@ -89,25 +89,27 @@ This repair does **not** reopen the agent architecture. General Agency v0.1 and 
 
 ### Current strategic decision to support
 
-**Decision:** has candidate-changing repository work converged enough to freeze one exact `1.0.0rc2` source identity?
+**Decision:** is the frozen `1.0.0rc2` candidate qualified as one exact integrated source identity?
 
-**Current judgment:** **YES, SUBJECT TO THIS PRE-FREEZE RECONCILIATION QUALIFYING AND INTEGRATING.**
+**Current judgment:** **CANDIDATE FROZEN; QUALIFICATION CLAIM IS EVIDENCE-BOUND.**
 
-Release-authority repair, current-document reconciliation, stale-PR replacement, normal-use evidence projection repair, and delegated-goal guidance reconciliation have converged. The open-work audit found no remaining implementation PR after those replacements. The remaining hosting-governance gap is tracked separately as Issue #384 because this workspace can read but cannot mutate GitHub branch protection/rulesets; that external admin setting does not require changing RC2 product bytes or support claims.
+Candidate-changing repository work has converged and source identity is now `1.0.0rc2`. The remaining hosting-governance gap is tracked separately as Issue #384 because this workspace can read but cannot mutate GitHub branch protection/rulesets; that external admin setting does not change RC2 product bytes or support claims.
+
+This file intentionally does not self-assert a transient CI result. RC2 qualification is established only when the exact freeze head and the exact integrated candidate tree have the required green Product Validation / Release Candidate Distribution evidence and recorded artifact hashes.
 
 ### Current decision-changing uncertainty
 
-The remaining bounded uncertainty is **whether this pre-freeze reconciliation itself passes the applicable repository qualification and integrates cleanly**. If it does, no known repository-local candidate-changing responsibility remains before RC2 freeze.
+The remaining bounded uncertainty is **whether this exact frozen candidate and its integrated tree satisfy the applicable qualification gates**.
 
-This does not establish final Version 1.0 readiness or publication authority. Final publication still requires its own exact release evidence, artifact digests, and explicit release-owner transition.
+This does not establish final Version 1.0 readiness or publication authority. PyPI publication and final `1.0.0` still require separate owner-controlled transitions.
 
 ### Current warranted repository-level responsibility
 
-**Complete pre-RC2 freeze reconciliation, then freeze `1.0.0rc2` if exact-head and integrated qualification remain green.**
+**Qualify the frozen `1.0.0rc2` candidate and then stop candidate-changing repository work.**
 
-Level-3 disposition: `RC2_FREEZE_PREPARATION_WARRANTED`.
+Level-3 disposition: `RC2_CANDIDATE_FREEZE`.
 
-Do not add unrelated cleanup, new architecture, research machinery, or optional backlog work to the candidate merely because capacity remains.
+Do not modify candidate bytes merely to record a later CI result. Preserve the qualification receipt in GitHub PR/run/artifact evidence. Do not add unrelated cleanup, new architecture, research machinery, or optional backlog work to the frozen candidate.
 
 ### Active execution vehicle
 
@@ -167,7 +169,9 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**RC2 CANDIDATE FREEZE.** After this pre-freeze reconciliation passes applicable exact-head checks and integrates cleanly, change source identity from `1.0.0rc2.dev0` to `1.0.0rc2`, set release status to `candidate`, and run fresh exact-source candidate qualification. Preserve artifact digests and source identity as durable RC2 evidence.
+**RC2 CANDIDATE FREEZE.** Qualify this exact `1.0.0rc2` source tree through the required PR-head checks, integrate only if the candidate base/identity is preserved, then require Product Validation and Release Candidate Distribution on the exact integrated `main` commit. Record the integrated commit, Git tree, workflow runs, and artifact SHA-256 digests as the durable RC2 qualification receipt.
+
+If those checks are green, Release Authority & Operational Coherence v1 closes without another candidate-byte mutation and the repository returns to normal-use validation.
 
 Do **not** publish RC2 to PyPI or advance to final `1.0.0` as part of the freeze. Those remain separate owner-controlled transitions.
 
