@@ -4,7 +4,7 @@
 
 **Goal:** Refine the General Agency research model with explicit memory/provenance substrate, knowledge externalization, conditional exploration policy, and search-state concepts, then reconcile those additions against current Sensemaking without creating unwarranted runtime/product machinery.
 
-**Architecture:** Preserve General Agency Model v0 as the historical baseline and add a successor v0.1 research reference. Reconcile v0.1 against the existing General Agency ↔ Sensemaking crosswalk, Practical Agent Architecture v0, and canonical `using-sensemaking` guidance. Canonical guidance may change only when the reconciliation establishes a bounded `GUIDANCE_GAP`; no runtime, schema, persistence engine, public API, product-boundary, or authority change is permitted by this plan.
+**Architecture:** Add a successor v0.1 research reference while preserving v0 as historical baseline. Reconcile v0.1 against the existing General Agency ↔ Sensemaking crosswalk, Practical Agent Architecture v0, and canonical `using-sensemaking` guidance. Canonical guidance may change only when the reconciliation establishes a bounded `GUIDANCE_GAP`; no runtime, schema, persistence engine, public API, product-boundary, or authority change is permitted by this plan.
 
 **Tech Stack:** Markdown research/reference docs, existing Sensemaking Skills documentation contracts, repository validators, GitHub exact-head CI.
 
