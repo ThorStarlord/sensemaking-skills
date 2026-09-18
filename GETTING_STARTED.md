@@ -33,7 +33,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-For the current repository development line, the source version is `1.0.0rc2.dev0` and the release target is `1.0.0rc2`. Install from source:
+For the current frozen release candidate, the source version and release target are both `1.0.0rc2`. Candidate qualification applies only to the exact source tree that passed the required release gates. Install from source:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
