@@ -48,7 +48,7 @@ python -m pip install -e . pytest pytest-subtests
 sensemaking-skills --version
 ```
 
-Current repository source version: `1.0.0rc2`; active release target: `1.0.0rc2` (`candidate`, frozen identity; qualification remains exact-source evidence-bound).
+Current repository source version: `1.0.0rc3.dev0`; active release target: `1.0.0rc3` (`development`). Qualified `1.0.0rc2` remains frozen at `c9b86138d3919c4fce87040f14161364a0c1c3a0`.
 
 For retained lab compatibility checks only:
 
