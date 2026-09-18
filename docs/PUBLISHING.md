@@ -1,79 +1,114 @@
-# Publishing Sensemaking Skills v0.3.0
+# Publishing Sensemaking Skills Version 1.0
 
-This document defines the publication boundary for the first Campaign-based release.
+This document defines the publication boundary for the current Version 1.0 line.
+The machine-readable support and claim ceiling is [`release-v1.0-contract.md`](release-v1.0-contract.md).
 
-## Release authority
+## Release identity
 
-The sole literal release version is `pyproject.toml` `[project].version`.
+Three identities must not be conflated:
 
-A release candidate must be qualified from one exact commit by:
-
-1. Product Validation;
-2. Lab Validation;
-3. Release Candidate Distribution.
-
-The exact candidate head must be green in all required lanes before merge. Merge qualification does not itself publish to PyPI.
-
-## Candidate distribution gate
-
-`.github/workflows/release-candidate.yml`:
-
-- checks out the exact PR head;
-- validates the product/lab boundary;
-- runs release-contract, Campaign schema-evolution, and external-verifier tests;
-- builds both wheel and sdist;
-- runs `python -m twine check dist/*`;
-- requires exact `0.3.0` artifact identities;
-- records SHA-256 digests;
-- clean-installs both distributions;
-- verifies CLI version/Campaign surface, schema v2, shipped/lab separation, packaged Skills, and packaged validator runtime;
-- uploads the exact candidate distributions as a workflow artifact.
-
-## Merge
-
-Merge only the qualified exact head. If the candidate head moves, the previous qualification does not transfer to the new bytes.
-
-After merge, verify that `main` contains the qualified tree/changes and that the merge ancestry is the intended one.
-
-## Tag
-
-Tagging is an explicit owner release action. The tag should identify the intended merged release commit, for example:
-
-```bash
-git tag v0.3.0 <release-commit>
-git push origin v0.3.0
+```text
+repository development source
+!= frozen release candidate
+!= publicly published distribution
 ```
 
-Do not tag an unqualified or stale candidate.
+The current repository source is `1.0.0rc2.dev0` and the active release target is
+`1.0.0rc2`. Historical `1.0.0rc1` remains qualified provenance for exact
+commit `70542d47412d98ee6dfae5de6df29bf271304568`; continued development
+superseded it as the identity of `main`.
 
-## PyPI publish workflow
+`pyproject.toml` `[project].version` is the literal source/build version.
+`release-v1.0.yaml` declares the release target and phase.
 
-`.github/workflows/publish.yml` triggers on `v*` tags. It:
+## Development phase
 
-1. checks out the tagged commit;
-2. builds distributions;
-3. runs `twine check`;
-4. uploads only after metadata validation succeeds.
+While `release.status: development`:
 
-The workflow requires the configured `PYPI_API_TOKEN` secret.
+- the source version is the development predecessor of the target (currently `1.0.0rc2.dev0`);
+- Product Validation and distribution validation may run;
+- passing those checks does **not** qualify a frozen release candidate;
+- current source must not present itself as `1.0.0rc2`.
 
-## Post-publish verification
+## Candidate freeze
 
-From a clean environment:
+Mint `1.0.0rc2` only after candidate-changing work has converged.
+
+At freeze:
+
+1. change the source version from `1.0.0rc2.dev0` to `1.0.0rc2`;
+2. set the active release status to `candidate`;
+3. qualify one exact source head with Product Validation and Release Candidate Distribution;
+4. preserve the exact source SHA and distribution SHA-256 digests in durable qualification evidence.
+
+Candidate qualification is an exact-source warrant. It does not automatically
+authorize PyPI publication or final `1.0.0`.
+
+## Distribution gate
+
+`.github/workflows/release-candidate.yml` derives distribution identity from
+`pyproject.toml` instead of hardcoding a historical candidate version. It:
+
+- checks out the exact PR/workflow head;
+- validates the release contract and current documentation;
+- validates the product/lab boundary;
+- builds wheel and sdist;
+- runs `python -m twine check dist/*`;
+- verifies artifact names against the current source version;
+- records SHA-256 digests;
+- clean-installs both distributions;
+- verifies CLI version, Campaign surface, schema v2, package boundaries, Skills, and validator runtime;
+- uploads the exact validated distributions as workflow artifacts.
+
+During `development`, this is distribution validation rather than candidate qualification.
+
+## Merge and integration
+
+Merge only a qualified exact PR head. If the PR head moves, rerun qualification.
+
+A qualified PR head does not prove that the eventual integrated candidate is the
+same combined source state if the base advances. Preserve PR head, qualification
+base, actual integration base, integrated commit, and post-integration validation
+when the closure claim depends on the integrated result.
+
+## Tag and PyPI publication
+
+Tagging and PyPI publication are explicit release-owner actions and remain
+separate from candidate qualification. Do not tag or publish an unqualified or stale candidate.
+
+`.github/workflows/publish.yml` triggers on `v*` tags, builds distributions,
+runs `twine check`, and uploads only after metadata validation succeeds.
+
+After public publication, verify from a clean environment:
 
 ```bash
-python -m venv /tmp/sensemaking-v030
+python -m venv /tmp/sensemaking-release-check
 # activate it
 python -m pip install --upgrade pip
-python -m pip install sensemaking-skills==0.3.0
+python -m pip install sensemaking-skills
 sensemaking-skills --version
 sensemaking-skills campaign --help
 ```
 
-Verify the installed product still exposes Campaign schema v2 and does not expose retained source-only lab packages.
+## Post-candidate development
 
-## Real-harness empirical evidence
+Once a candidate is frozen, any material continued development must leave that
+frozen identity before ordinary development proceeds. For example, after a frozen
+`1.0.0rc2`, development toward another candidate should use a new development
+identity such as `1.0.0rc3.dev0`.
 
-The deterministic external qualification verifier ships in v0.3. A frozen real-harness attempt may be verified independently of publication timing.
+```text
+candidate version
++ exact source
++ qualification
++ artifact hashes
+= immutable release-candidate identity
+```
 
-A synthetic verifier fixture is not a real harness run. A real-harness PASS supports only the bounded claim encoded by that exact frozen evidence package; it does not establish universal harness compatibility or semantic truth.
+## Evidence ceiling
+
+The reduced-scope Version 1.0 contract excludes native-harness compatibility,
+cross-harness portability, and semantic usefulness from the required support
+promise unless they are separately promoted with the required evidence.
+
+Validator PASS does not establish semantic truth or release-owner authorization.
