@@ -9,6 +9,7 @@ from typing import Any
 import click
 
 from .campaign_completion_cli import register_campaign_completion_commands
+from .campaign_execution_cli import register_campaign_execution_commands
 from .campaign_handoff_cli import register_campaign_handoff_commands
 from .campaign_lineage_cli import register_campaign_lineage_commands
 from .campaign_multi_target_cli import register_campaign_multi_target_commands
@@ -158,6 +159,7 @@ def register_campaign_capability_commands(
                 click.echo(f"- {candidate['id']} [{candidate['availability']}] -> {candidate['output_artifact']}")
             click.echo(payload["explicit_limit"])
 
+    register_campaign_execution_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_handoff_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_lineage_commands(campaign, emit_error=emit_error, json_echo=json_echo)
     register_campaign_reconciliation_commands(campaign, emit_error=emit_error, json_echo=json_echo)
