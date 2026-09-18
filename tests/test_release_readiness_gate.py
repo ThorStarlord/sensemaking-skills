@@ -59,7 +59,7 @@ def test_development_contract_cannot_be_reported_as_finally_ready(tmp_path: Path
 
     diagnostics = readiness_diagnostics(tmp_path)
 
-    assert any("release status is candidate" in item for item in diagnostics)
+    assert any("release status is development" in item for item in diagnostics)
     assert any("release target is" in item for item in diagnostics)
 
 def test_reduced_scope_checklist_does_not_require_excluded_native_harness_claim() -> None:
