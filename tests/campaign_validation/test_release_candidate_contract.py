@@ -14,6 +14,8 @@ from sensemaking_skills.external_qualification import PROTOCOL_ID
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
 def _read(relative: str) -> str:
     return (REPO_ROOT / relative).read_text(encoding="utf-8")
 
