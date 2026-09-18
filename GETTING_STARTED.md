@@ -98,6 +98,46 @@ desired delegation != granted authority
 
 For the detailed agent-facing interpretation, see `skills/using-sensemaking/references/adaptive-guidance-v0.md`.
 
+## Delegate a complete repository mission
+
+For high-delegation development, you can delegate a **terminal repository
+outcome** instead of manually sequencing every feature, refactor, or repair.
+
+A useful product-completion mission is:
+
+```text
+Goal: Build this repository until every feature and capability explicitly
+required by the current authoritative product scope is implemented and satisfies
+its applicable acceptance and repository-qualification criteria.
+
+Operating policy: Reconstruct current repository reality before assuming work is
+still missing. Resolve decision-changing uncertainty before implementation. Use
+repo-sensemaker when repository-wide evidence could materially change the next
+responsibility. Use durable Campaign state when continuation complexity makes
+transient context unreliable. After each bounded responsibility, reassess what,
+if anything, is warranted next.
+
+Scope discipline: Treat only current authoritative product commitments as
+requirements. Backlog items, candidate directions, stale issues, historical
+plans, and speculative improvements do not become required work unless current
+authority promotes them.
+
+Authority discipline: Desired delegation does not expand granted authority. Do
+not silently revise product-thesis commitments or infer permission to merge,
+release, deploy, publish, mutate external systems, or perform destructive
+actions.
+
+Stop conditions: Stop when authoritative requirements are satisfied or
+legitimately dispositioned and no decision-changing gap blocks the completion
+claim; when no further repository change is warranted; when a reserved owner or
+product-thesis decision is required; or when an external blocker prevents
+further authorized work.
+```
+
+This delegates **intermediate engineering judgment**, not unlimited scope or
+authority. For additional bounded mission patterns and anti-patterns, see
+`skills/using-sensemaking/references/delegated-goal-patterns.md`.
+
 ## Diagnose when repository sensemaking is warranted
 
 Ask the active coding agent to use `using-sensemaking` as its control discipline. When repository-wide evidence could materially change the next responsibility, `repo-sensemaker` can produce a canonical `repository_sensemaking_brief`.
