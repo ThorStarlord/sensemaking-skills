@@ -974,7 +974,7 @@ reasoning result
 
 Knowledge Externalization / Communication is cross-cutting. A domain may implement a dedicated documentation workflow, but the general model does not add a universal vertical `DOCUMENTATION` node.
 
-## 20. Resource-aware metareasoning and stopping
+## 13. Resource-aware metareasoning and stopping
 
 Reasoning itself is an action with opportunity cost.
 
@@ -1069,7 +1069,7 @@ capability available
 != capability warranted
 ```
 
-## 20. Natural entry modes
+## 14. Natural entry modes
 
 There is no universal runtime start node.
 
@@ -1099,7 +1099,7 @@ Surprise is a trigger for reassessment, not proof that the highest-level theory 
 
 An agent may inherit an already-framed decision and begin at the epistemic/sufficiency boundary.
 
-## 20. Nested loops and cadence
+## 15. Nested loops and cadence
 
 The full architecture is better understood as nested loops than as one monolithic pipeline.
 
@@ -1121,7 +1121,7 @@ These loops need not run at the same frequency.
 
 Higher-level commitments normally require stronger evidence and should change less frequently than execution tactics.
 
-## 20. Generality and domain knowledge
+## 16. Generality and domain knowledge
 
 The model distinguishes transferable control relations from domain semantics.
 
@@ -1151,7 +1151,7 @@ The strongest general capability may therefore be not possession of every domain
 
 This remains a hypothesis.
 
-## 20. Relationship to existing Sensemaking models
+## 17. Relationship to existing Sensemaking models
 
 This model is deliberately orthogonal to, not a replacement for, current Sensemaking models.
 
@@ -1174,7 +1174,7 @@ Software-factory runtime
 
 The crosswalk and non-equivalence analysis are recorded separately in `general-agency-sensemaking-crosswalk-v0.md`.
 
-## 20. Strongest permitted claims
+## 18. Strongest permitted claims
 
 This document supports only the following bounded research claims:
 
@@ -1184,7 +1184,7 @@ This document supports only the following bounded research claims:
 4. Prior Sensemaking transfer evidence provides limited support that some control relations can survive beyond software engineering.
 5. The relationship between the General Agency Model and current Sensemaking requires explicit crosswalk and non-equivalence analysis before any product conclusion.
 
-## 20. Explicit non-goals
+## 19. Explicit non-goals
 
 This model does not establish:
 
