@@ -41,7 +41,7 @@ The repository-qualified baseline includes:
 - Semantic Architecture B1-B7 mechanical substrate, conformance, reference audit, Skill manifests, Domain Packs, and Product Management Waves 1-6;
 - Persona & Adaptive Guidance Model v0 plus shipped-guidance reconciliation;
 - **Campaign schema v2**; newer target/relation/completion records remain additive companions rather than alternate truth systems.
-- **General Agency Model v0** research reference: value → context → strategy → decision frame → epistemic state → sufficiency → inquiry/choice → action → observation/verification → impact/sensemaking → belief update, with lateral challenge/exploration and explicit authority/risk/resource envelopes.
+- **General Agency Model v0.1** research reference: value → context → strategy → decision frame → epistemic state → sufficiency → inquiry/choice → action → observation/verification → impact/sensemaking → belief update, with lateral challenge/exploration and explicit authority/risk/resource envelopes.
 - **Practical Agent Architecture v0** guidance: semantic agent judgment → target-specific warrant → existing durable decision substrate → deterministic assurance → external execution/orchestration → evidence return and semantic reassessment.
 - Canonical `using-sensemaking` guidance now makes warrant targets/dependencies, challenge versus exploration, resource-aware stopping, and delegated-result evidence return explicit while preserving progressive disclosure.
 
@@ -52,13 +52,13 @@ Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision
 - Repository qualification does not establish native-harness usefulness, genuine second-harness portability, comparative superiority, product-market value, or general autonomous software-development capability.
 - No new empirical/native-harness experiment was required or performed for Strategic Outer Loop Precision v1; missing empirical proof remains missing.
 - The active agent owns semantic frontier, Strategic Decision, comparison, responsibility, capability, thesis-tension, escalation, reconciliation, and stopping judgments. Deterministic machinery validates only mechanically decidable representation/integrity.
-- The current v0.3 release architecture preserves the **product/lab split**; retained lab evidence does not become shipped-product authority.
+- The current Version 1.0 target architecture preserves the **product/lab split**; retained lab evidence does not become shipped-product authority.
 - The package includes the **real-harness qualification verifier**, but verifier mechanics do not manufacture real-harness evidence or semantic truth.
 - ADR 0029 establishes the current broader product boundary around already integrated decision-support/control surfaces; it does not retroactively broaden historical Goal A evidence or claim ceilings.
 - Multi-repository Campaign mechanics do not provide cross-repository transactional commit/deploy/rollback atomicity or automatic repository discovery.
 - Qualitative frontier lenses do not establish an objective priority function. `qualitative comparison != deterministic ranking`.
 - `Thesis Tension` does not imply Level-4 review, and current mechanics do not automatically infer whether work depends semantically on a challenged thesis.
-- General Agency Model v0 is a bounded research/reference abstraction, not proof of a universal theory of intelligence, comparative superiority, or domain-general product value.
+- General Agency Model v0.1 is a bounded research/reference abstraction, not proof of a universal theory of intelligence, comparative superiority, or domain-general product value.
 - Practical Agent Architecture v0 is currently guidance-first. Its reconciliation disposition is `GUIDANCE_ONLY_WARRANTED`; no new runtime, schema, public API, generic state store, or deterministic semantic controller was established as necessary.
 
 ### Strategic Frontier
@@ -71,13 +71,13 @@ Current material frontier items are:
 4. **Thesis Tension and Level-3/Level-4 Transition Semantics — COMPLETE / INTEGRATED.** Repeated weak thesis signals can be preserved without auto-escalation; active review uses dependency-sensitive hold and mandatory downstream reconciliation.
 5. **Semantic Reasoning Model Integration — COMPLETE / INTEGRATED.** The evidence-to-decision grammar is explicitly instantiated at Levels 3 and 4 without collapsing authority scopes.
 6. **Mechanical Contract Reassessment — COMPLETE / INTEGRATED / REPOSITORY_QUALIFIED.** Only the Strategic Decision heading and ADR 0029 pointer/projection were mechanized; semantic decision quality remains agent-owned.
-7. **Strategic Reassessment & Closeout — COMPLETE / NO_FURTHER_REPOSITORY_WORK_WARRANTED.** The refined Level-3 model finds no additional current construction boundary after the bounded currentness fixes in this closeout.
+7. **Strategic Reassessment & Closeout — COMPLETE / HISTORICAL SCOPE CLOSEOUT.** That architecture milestone found no further architecture construction boundary; the later Release Authority & Operational Coherence repair is a separately evidenced currentness/release responsibility, not a reopening of the architecture program.
 8. **Native-harness / empirical portability qualification — DEFERRED BY OWNER DIRECTION.** Existing protocols remain valid; no new run is a prerequisite for repository construction.
 9. **Progressive Campaign rigor tiers — DEFERRED / REQUIRES EVIDENCE.** Existing proportional mechanics/guidance do not warrant alternate runtime truth systems or thresholds.
 10. **Cross-repository transaction/deployment coordination — DEFERRED / NOT AUTHORIZED.** Current multi-repository scope intentionally stops before transaction orchestration.
 11. **Level-4 reconciliation automation / automatic strategic planning — DEFERRED / NOT AUTHORIZED.** Current semantic authority remains with the agent/owner.
 12. **Sensemaking Protocol / product-category expansion — LONG_HORIZON / REQUIRES_LEVEL_4_REVIEW.** No independent consumer currently warrants a product-category pivot.
-13. **General Agency Model v0 — COMPLETE / RESEARCH_REFERENCE.** The broader value-to-action-to-learning grammar is coherent with current Sensemaking but does not change ADR 0029 or authorize a generic agent product/runtime.
+13. **General Agency Model v0.1 — COMPLETE / RESEARCH_REFERENCE.** The broader value-to-action-to-learning grammar is coherent with current Sensemaking but does not change ADR 0029 or authorize a generic agent product/runtime.
 14. **Practical Agent Architecture v0 — COMPLETE / GUIDANCE_ONLY_WARRANTED / INTEGRATED.** The warrant-centered hybrid design reconciled against current Sensemaking without establishing a state, schema, assurance, runtime, or public-API gap; compact guidance is integrated into `using-sensemaking`.
 15. **Normal-use validation — ACTIVE / NO DEDICATED CONSTRUCTION PACKAGE.** Use the guidance during ordinary consequential repository work and reopen construction only from repeated decision-changing pressure.
 
@@ -89,31 +89,31 @@ This repair does **not** reopen the agent architecture. General Agency v0.1 and 
 
 ### Current strategic decision to support
 
-**Decision:** does normal use of the warrant-centered Practical Agent Architecture reveal a repeated failure that now warrants a bounded durable-state, deterministic-assurance, or guidance refinement?
+**Decision:** has candidate-changing repository work converged enough to freeze one exact `1.0.0rc2` source identity?
 
-**Current judgment:** **NO — NOT YET ESTABLISHED.**
+**Current judgment:** **YES, SUBJECT TO THIS PRE-FREEZE RECONCILIATION QUALIFYING AND INTEGRATING.**
 
-The completed reconciliation found `GUIDANCE_ONLY_WARRANTED`: current Campaign/state, assurance, orchestration, and authority surfaces already cover the structural requirements identified by Practical Agent Architecture v0. No repeated normal-use failure has yet established a stronger implementation need.
+Release-authority repair, current-document reconciliation, stale-PR replacement, normal-use evidence projection repair, and delegated-goal guidance reconciliation have converged. The open-work audit found no remaining implementation PR after those replacements. The remaining hosting-governance gap is tracked separately as Issue #384 because this workspace can read but cannot mutate GitHub branch protection/rulesets; that external admin setting does not require changing RC2 product bytes or support claims.
 
 ### Current decision-changing uncertainty
 
-No unresolved uncertainty currently blocks a repository-development decision.
+The remaining bounded uncertainty is **whether this pre-freeze reconciliation itself passes the applicable repository qualification and integrates cleanly**. If it does, no known repository-local candidate-changing responsibility remains before RC2 freeze.
 
-The future-facing question is: **will ordinary consequential repository work repeatedly expose loss of warrant dependencies, reconstruction failure, orchestration responsibility drift, premature convergence, weak challenge, or another concrete control failure that current guidance cannot absorb?** That uncertainty should be resolved through normal use, not a new synthetic construction program.
+This does not establish final Version 1.0 readiness or publication authority. Final publication still requires its own exact release evidence, artifact digests, and explicit release-owner transition.
 
 ### Current warranted repository-level responsibility
 
-**None.**
+**Complete pre-RC2 freeze reconciliation, then freeze `1.0.0rc2` if exact-head and integrated qualification remain green.**
 
-Level-3 disposition: `NO_FURTHER_REPOSITORY_WORK_WARRANTED`.
+Level-3 disposition: `RC2_FREEZE_PREPARATION_WARRANTED`.
 
-No additional package, feature, planner, validator expansion, experiment, or documentation cleanup is selected merely because this milestone completed.
+Do not add unrelated cleanup, new architecture, research machinery, or optional backlog work to the candidate merely because capacity remains.
 
 ### Active execution vehicle
 
-No dedicated post-closeout Campaign/work package is selected. Normal-use validation should occur inside ordinary repository work, using existing Campaign/handoff/state surfaces only when that work independently warrants durability.
+A bounded repository-only release-coherence package is active. No Campaign is required because the responsibility is narrow, reconstructible from Git/PR evidence, and completing inside one repository control context.
 
-The completed General Agency / Practical Agent Architecture package and continuation rule are recorded in `docs/practical-agent-architecture-v0-handoff.md`.
+The completed General Agency / Practical Agent Architecture package and continuation rule remain recorded in `docs/practical-agent-architecture-v0-handoff.md`.
 
 ### Expected evidence and reassessment
 
@@ -137,7 +137,9 @@ A single awkward case, candidate inventory, or available implementation capacity
 
 The owner explicitly authorized all Strategic Outer Loop Precision v1 packages, including the Level-4 `SUPERSEDE` disposition that established ADR 0029 and autonomous progression through qualification/merge.
 
-The owner also authorized and completed the General Agency Model v0 and Practical Agent Architecture v0 packages. Those packages preserve ADR 0029 and explicitly stop short of generic runtime, schema, automatic planning, or expanded authority.
+The owner also authorized and completed the General Agency Model v0/v0.1 and Practical Agent Architecture v0 packages. Those packages preserve ADR 0029 and explicitly stop short of generic runtime, schema, automatic planning, or expanded authority.
+
+The owner explicitly accepted the revised Release Authority & Operational Coherence plan and authorized implementation through a fresh RC2 candidate qualification. That authorization does **not** imply PyPI publication or final `1.0.0`; those remain separate protected release-owner transitions.
 
 This completed milestone does **not** authorize:
 
@@ -165,8 +167,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NORMAL-USE VALIDATION.** Use the General Agency / Practical Agent Architecture guidance during ordinary repository work. Keep trivial reversible work lightweight; make warrant/challenge/exploration/delegation state explicit only when consequential.
+**RC2 CANDIDATE FREEZE.** After this pre-freeze reconciliation passes applicable exact-head checks and integrates cleanly, change source identity from `1.0.0rc2.dev0` to `1.0.0rc2`, set release status to `candidate`, and run fresh exact-source candidate qualification. Preserve artifact digests and source identity as durable RC2 evidence.
+
+Do **not** publish RC2 to PyPI or advance to final `1.0.0` as part of the freeze. Those remain separate owner-controlled transitions.
 
 Do **not** start Practical Agent Architecture v1, a warrant engine, generic agent state, planner/runtime, new Campaign schema, or new assurance machinery merely because those concepts can be imagined.
-
-Select a future bounded repository responsibility only from repeated concrete decision-changing pressure or explicit owner direction.
