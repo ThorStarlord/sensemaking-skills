@@ -25,7 +25,7 @@ superseded it as the identity of `main`.
 
 While `release.status: development`:
 
-- the source version is the development predecessor of the target (currently `1.0.0rc2.dev0`);
+- the source version is the development predecessor of the target (for example, a future `1.0.0rc3` target would use `1.0.0rc3.dev0`);
 - Product Validation and distribution validation may run;
 - passing those checks does **not** qualify a frozen release candidate;
 - current source must not present itself as `1.0.0rc2`.
