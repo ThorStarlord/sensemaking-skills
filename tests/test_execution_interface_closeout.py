@@ -38,7 +38,8 @@ def test_status_closes_construction_without_freezing_rc3() -> None:
     assert contract["release"]["version"] == "1.0.0rc3"
     assert contract["release"]["status"] == "development"
     assert "Execution Interface & Agent-Factorization v1 — COMPLETE" in status
-    assert "EXECUTION_INTERFACE_V1_CLOSEOUT" in status
+    assert "NORMAL_USE_VALIDATION" in status
+    assert "EXECUTION_INTERFACE_V1_CLOSEOUT" not in status
     assert "No additional construction boundary is currently selected." in status
     assert "POST_RC2_DEVELOPMENT_ACTIVE" not in status
     assert "Do **not** freeze RC3" in status
