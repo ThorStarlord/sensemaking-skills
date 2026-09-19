@@ -15,6 +15,13 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "experiments" / "intelligence-components-v0" / "strategic_planner_v0.py"
 CASES_PATH = ROOT / "experiments" / "intelligence-components-v0" / "cases-v0.yaml"
+SIMULATED_CASES_PATH = (
+    ROOT
+    / "experiments"
+    / "intelligence-components-v0"
+    / "simulated-e2e-v0"
+    / "case-v0.yaml"
+)
 
 SPEC = importlib.util.spec_from_file_location("strategic_planner_v0", MODULE_PATH)
 assert SPEC and SPEC.loader
@@ -36,6 +43,24 @@ def test_frozen_cases_are_explicitly_retrospective_and_loadable() -> None:
         "goal-a-environment-blocker",
         "execution-interface-boundary",
     }
+
+
+def test_constructed_smoke_case_is_supported_without_historical_outcome() -> None:
+    cases = planner.load_cases(SIMULATED_CASES_PATH)
+
+    assert len(cases) == 1
+    assert cases[0]["id"] == "quartz-cli-dry-run-contract"
+    assert "historical_outcome" not in cases[0]
+
+
+def test_constructed_case_must_not_claim_hindsight_contamination(tmp_path: Path) -> None:
+    raw = SIMULATED_CASES_PATH.read_text(encoding="utf-8")
+    bad = raw.replace("hindsight_contaminated: false", "hindsight_contaminated: true")
+    path = tmp_path / "bad-simulated.yaml"
+    path.write_text(bad, encoding="utf-8")
+
+    with pytest.raises(planner.ExperimentContractError):
+        planner.load_cases(path)
 
 
 @pytest.mark.parametrize("arm", ["baseline", "treatment"])
@@ -67,6 +92,7 @@ def test_treatment_generates_candidates_without_claiming_decision_authority() ->
     assert "Do not rank the candidates." in normalized
     assert "Do not choose a winner." in normalized
     assert "Do not execute anything." in normalized
+    assert "Do not split a contingent substep or diagnostic branch" in normalized
     assert "candidate generation != strategic decision" in packet
     assert "planner output != implementation plan" in packet
 

@@ -27,7 +27,11 @@ REQUIRED_CASE_FIELDS = {
     "commitments",
     "known_uncertainties",
     "constraints",
-    "historical_outcome",
+}
+
+CASE_CLASSIFICATIONS = {
+    "retrospective_real_repository_decisions",
+    "simulated_constructed_case",
 }
 
 
@@ -60,8 +64,12 @@ def validate_case(raw: Any) -> dict[str, Any]:
         raise ExperimentContractError(f"case is missing required fields: {missing}")
 
     case = dict(raw)
-    for field in ("id", "title", "goal", "repository_state", "historical_outcome"):
+    for field in ("id", "title", "goal", "repository_state"):
         case[field] = _nonempty_string(case[field], field)
+    if "historical_outcome" in case:
+        case["historical_outcome"] = _nonempty_string(
+            case["historical_outcome"], "historical_outcome"
+        )
     for field in ("commitments", "known_uncertainties", "constraints"):
         case[field] = _string_list(case[field], field)
 
@@ -88,26 +96,47 @@ def load_cases(path: Path) -> list[dict[str, Any]]:
         raise ExperimentContractError(f"cannot read case file: {exc}") from exc
     if not isinstance(data, dict) or data.get("version") != 1:
         raise ExperimentContractError("case file version must be 1")
-    if data.get("classification") != "retrospective_real_repository_decisions":
+    classification = data.get("classification")
+    if classification not in CASE_CLASSIFICATIONS:
         raise ExperimentContractError(
-            "initial v0 case file must use retrospective_real_repository_decisions"
+            f"case classification must be one of {sorted(CASE_CLASSIFICATIONS)}"
         )
     if data.get("independent") is not False:
         raise ExperimentContractError(
-            "initial v0 cases must explicitly declare independent: false"
-        )
-    if data.get("hindsight_contaminated") is not True:
-        raise ExperimentContractError(
-            "initial v0 cases must explicitly declare hindsight_contaminated: true"
+            "v0 case files must explicitly declare independent: false"
         )
     if data.get("comparative_superiority_claim_allowed") is not False:
         raise ExperimentContractError(
-            "initial v0 cases must forbid comparative superiority claims"
+            "v0 case files must forbid comparative superiority claims"
         )
+
+    if classification == "retrospective_real_repository_decisions":
+        if data.get("hindsight_contaminated") is not True:
+            raise ExperimentContractError(
+                "retrospective v0 cases must declare hindsight_contaminated: true"
+            )
+    else:
+        if data.get("hindsight_contaminated") is not False:
+            raise ExperimentContractError(
+                "simulated v0 cases must declare hindsight_contaminated: false"
+            )
     raw_cases = data.get("cases")
     if not isinstance(raw_cases, list) or not raw_cases:
         raise ExperimentContractError("cases must be a non-empty list")
     cases = [validate_case(item) for item in raw_cases]
+    if classification == "retrospective_real_repository_decisions":
+        for case in cases:
+            if "historical_outcome" not in case:
+                raise ExperimentContractError(
+                    "retrospective v0 cases must include historical_outcome"
+                )
+    else:
+        for case in cases:
+            if "historical_outcome" in case:
+                raise ExperimentContractError(
+                    "simulated v0 cases must not include historical_outcome"
+                )
+
     ids = [item["id"] for item in cases]
     if len(ids) != len(set(ids)):
         raise ExperimentContractError("case ids must be unique")
@@ -169,6 +198,10 @@ STRATEGICPLANNER V0 — ADVISORY CANDIDATE GENERATION
 
 Before the active semantic agent selects a responsibility, generate 2–4
 materially distinct candidate repository-level responsibilities.
+
+Do not split a contingent substep or diagnostic branch into a separate candidate
+when it is already subsumed by another candidate. Prefer fewer genuinely distinct
+repository-level responsibilities over a larger but overlapping option set.
 
 For each candidate record:
 

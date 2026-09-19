@@ -1,0 +1,28 @@
+version: 1
+classification: simulated_constructed_case
+independent: false
+hindsight_contaminated: false
+comparative_superiority_claim_allowed: false
+cases:
+  - id: quartz-cli-dry-run-contract
+    title: Dry-run contract ambiguity before release preparation
+    goal: Decide the next repository-level responsibility before release preparation continues.
+    repository_state: >
+      Quartz CLI documents `sync --dry-run` as making no writes. The implementation does not mutate
+      user project files, but on a clean temporary directory it creates `.quartz/cache.json` metadata.
+      Unit tests pass. One integration test named `test_dry_run_no_mutation` fails only on a clean
+      temporary directory because that cache file appears. The failure has not yet been reproduced
+      outside CI. Release preparation is planned next, but no release has been authorized.
+    commitments:
+      - dry-run behavior must have an explicit trustworthy user-facing contract
+      - release preparation must not silently proceed across an unresolved user-visible contract mismatch
+      - prefer the smallest warranted intervention before changing implementation or documentation
+    known_uncertainties:
+      - whether the failing integration test represents current implementation behavior or a CI/environment artifact
+      - whether cache metadata creation is intended to count as a prohibited write under the product contract
+      - whether implementation or documentation is wrong if the behavior is confirmed
+    constraints:
+      - no release or publication authority
+      - do not change implementation and documentation simultaneously before identifying the contract mismatch
+      - an available minor HTTP dependency upgrade has no known causal connection to the failing dry-run test
+      - avoid broad architecture work unless evidence makes it necessary
