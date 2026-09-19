@@ -199,6 +199,10 @@ STRATEGICPLANNER V0 — ADVISORY CANDIDATE GENERATION
 Before the active semantic agent selects a responsibility, generate 2–4
 materially distinct candidate repository-level responsibilities.
 
+Do not split a contingent substep or diagnostic branch into a separate candidate
+when it is already subsumed by another candidate. Prefer fewer genuinely distinct
+repository-level responsibilities over a larger but overlapping option set.
+
 For each candidate record:
 
 - candidate id
