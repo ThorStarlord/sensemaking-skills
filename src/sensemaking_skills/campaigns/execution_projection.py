@@ -223,19 +223,27 @@ def render_execution_projection_mermaid(
     if not value.valid:
         raise ValueError("cannot render invalid execution projection")
     lines = ["flowchart LR"]
+    node_ids = {
+        str(target["alias"]): f"T{index}"
+        for index, target in enumerate(value.targets)
+    }
     for target in value.targets:
         alias = str(target["alias"])
         role = str(target["role"]).replace('"', "'")
-        lines.append(f'    {alias}["{alias}: {role}"]')
+        label = f"{alias}: {role}".replace('"', "'")
+        lines.append(f'    {node_ids[alias]}["{label}"]')
     for edge in value.precedence_edges:
         relation = str(edge["relation_type"])
+        before = node_ids[str(edge["before"])]
+        after = node_ids[str(edge["after"])]
         lines.append(
-            f'    {edge["before"]} -->|"precedes ({relation})"| {edge["after"]}'
+            f'    {before} -->|"precedes ({relation})"| {after}'
         )
     for relation in value.descriptive_relations:
         relation_type = str(relation["relation_type"])
+        source = node_ids[str(relation["source_alias"])]
+        target = node_ids[str(relation["target_alias"])]
         lines.append(
-            f'    {relation["source_alias"]} -. "{relation_type}" .-> '
-            f'{relation["target_alias"]}'
+            f'    {source} -. "{relation_type}" .-> {target}'
         )
     return "\n".join(lines)
