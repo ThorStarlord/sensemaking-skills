@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Post-RC2 development reopened** — current source advances to `1.0.0rc3.dev0` while preserving the exact qualified RC2 source/tree/artifacts as immutable historical provenance.
 - **Next development program** — owner direction authorizes bounded product construction around execution handoff/result evidence, release-authority auditing, external-executor interoperability, provenance publication, and deterministic execution projections without creating a semantic planner or scheduler.
+- **Release Authority Auditor** — adds local source/target/Git/document/workflow reconciliation without manufacturing CI, publication, semantic-truth, or owner-authorization claims.
+- **Execution Interface v1** — adds append-only execution handoff and worker-result companions plus `campaign working-context`; worker return remains evidence for parent reassessment rather than global closure.
+- **External executor interchange** — adds integrity-bound generic handoff/result envelopes and an AI Software Factory GitHub-Issue/command projection with caller-selected workflow.
+- **Explicit GitHub provenance publication** — adds preview-by-default Issue/PR comment publication with explicit `--publish`, environment-token isolation, deterministic markers, and duplicate suppression.
+- **Cross-repository execution projection** — adds read-only prerequisite edges/layers from explicit `depends_on` / `release_after` relations without selecting an execution plan or authorizing parallel work.
+- **Execution Interface & Agent-Factorization v1 closeout** — all planned capability packages integrated and feature-integrated `main` passed Product, Lab, and Release Candidate Distribution validation; the program returns to normal-use validation after closeout qualification.
 
 ### Release status
 - RC3 is development only; no RC3 candidate has been frozen or qualified.
