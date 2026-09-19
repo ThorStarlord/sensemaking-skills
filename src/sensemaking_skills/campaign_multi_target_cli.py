@@ -14,6 +14,11 @@ from .campaigns import CampaignWorkspaceError
 from .campaigns.multi_target import MultiTargetService
 from .campaigns.multi_target_rebind import MultiTargetRebindService
 from .campaigns.multi_target_relations import RELATION_TYPES, MultiTargetRelationService
+from .campaigns.execution_projection import (
+    CrossRepositoryExecutionProjectionService,
+    execution_projection_payload,
+    render_execution_projection_mermaid,
+)
 
 
 ErrorEmitter = Callable[..., None]
@@ -281,6 +286,43 @@ def register_campaign_multi_target_commands(
         else:
             click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
         if not result.valid:
+            raise click.exceptions.Exit(INVALID_EXIT)
+
+    @multi_target_group.command(name="execution-view")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option(
+        "--format",
+        "output_format",
+        type=click.Choice(["json", "mermaid"]),
+        default="json",
+        show_default=True,
+    )
+    def multi_target_execution_view(workspace: Path, output_format: str) -> None:
+        """Project explicit ordering relations into read-only precedence layers."""
+        try:
+            projection = CrossRepositoryExecutionProjectionService(workspace).inspect()
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=(output_format == "json"))
+            return
+        payload = execution_projection_payload(projection)
+        if output_format == "mermaid":
+            try:
+                click.echo(render_execution_projection_mermaid(projection))
+            except ValueError as exc:
+                raise click.ClickException(str(exc)) from exc
+        else:
+            json_echo(
+                {
+                    "ok": projection.valid,
+                    "code": (
+                        "CAMPAIGN_MULTI_TARGET_EXECUTION_VIEW"
+                        if projection.valid
+                        else "CAMPAIGN_MULTI_TARGET_EXECUTION_VIEW_INVALID"
+                    ),
+                    **payload,
+                }
+            )
+        if not projection.valid:
             raise click.exceptions.Exit(INVALID_EXIT)
 
     @multi_target_group.command(name="graph")
