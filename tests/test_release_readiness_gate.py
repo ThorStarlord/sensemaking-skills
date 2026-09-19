@@ -78,16 +78,20 @@ def test_reduced_scope_checklist_does_not_require_excluded_native_harness_claim(
     )
 
 
-def test_status_projects_post_rc2_development_responsibility() -> None:
+def test_status_projects_execution_interface_terminal_closeout() -> None:
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
 
-    assert "POST_RC2_DEVELOPMENT_ACTIVE" in status
-    assert "Execution Interface & Agent-Factorization v1" in status
-    assert "Implement the owner-directed post-RC2 development program" in status
+    assert "NORMAL_USE_VALIDATION" in status
+    assert "Execution Interface & Agent-Factorization v1 — COMPLETE" in status
+    assert "No additional construction boundary is currently selected." in status
+    assert "Issue #393" in status
     assert "Issue #384" in status
-    assert "PyPI publication or final `1.0.0`" in status
+    assert "1.0.0rc3.dev0" in status
+    assert "Do **not** freeze RC3" in status
+    assert "POST_RC2_DEVELOPMENT_ACTIVE" not in status
+    assert "EXECUTION_INTERFACE_V1_CLOSEOUT" not in status
     current_responsibility = status.split(
         "### Current warranted repository-level responsibility", 1
     )[1].split("### Active execution vehicle", 1)[0]
-    assert "**None.**" not in current_responsibility
+    assert "**None. Resume normal-use validation" in current_responsibility
 
