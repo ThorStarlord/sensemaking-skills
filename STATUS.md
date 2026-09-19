@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-18  
-**Current phase:** Execution Interface & Agent-Factorization v1 — owner-directed post-RC2 construction; Release Authority & Operational Coherence v1 is complete and RC2 remains exact-source qualified  
+**Current phase:** Execution Interface & Agent-Factorization v1 implementation is complete; bounded closeout qualification is active before returning to normal-use validation. Release Authority & Operational Coherence v1 remains complete and RC2 remains exact-source qualified  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
@@ -44,6 +44,12 @@ The repository-qualified baseline includes:
 - **General Agency Model v0.1** research reference: value → context → strategy → decision frame → epistemic state → sufficiency → inquiry/choice → action → observation/verification → impact/sensemaking → belief update, with lateral challenge/exploration and explicit authority/risk/resource envelopes.
 - **Practical Agent Architecture v0** guidance: semantic agent judgment → target-specific warrant → existing durable decision substrate → deterministic assurance → external execution/orchestration → evidence return and semantic reassessment.
 - Canonical `using-sensemaking` guidance now makes warrant targets/dependencies, challenge versus exploration, resource-aware stopping, and delegated-result evidence return explicit while preserving progressive disclosure.
+- **Release Authority Auditor**: `release audit` reconciles local release identity/Git/docs/workflow mechanics without asserting CI qualification, publication, semantic truth, or owner authorization.
+- **Execution Interface v1**: additive execution handoff/result companions bind already-selected responsibility, authority, exact targets, evidence requirements, returned worker claims, and append-only integrity without changing Campaign schema v2.
+- **High-delegation working context**: `campaign working-context` projects current responsibility/decision/authority/uncertainty/targets/evidence/stop conditions and latest worker exchange without recommending a next action.
+- **External executor interchange / AI Software Factory bridge**: generic integrity-bound handoff/result envelopes plus a caller-selected factory GitHub-Issue/command projection; no workflow selection, publication, scheduling, worker allocation, merge, or deploy authority.
+- **Explicit GitHub provenance publication**: preview-by-default, explicit-`--publish` Issue/PR comments with deterministic markers and duplicate suppression.
+- **Cross-repository execution projection**: explicit ordering relations become read-only prerequisite edges/layers; the projection is not an execution plan and same-layer membership does not authorize parallel work.
 
 Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision-v1-handoff.md`.
 
@@ -79,55 +85,53 @@ Current material frontier items are:
 12. **Sensemaking Protocol / product-category expansion — LONG_HORIZON / REQUIRES_LEVEL_4_REVIEW.** No independent consumer currently warrants a product-category pivot.
 13. **General Agency Model v0.1 — COMPLETE / RESEARCH_REFERENCE.** The broader value-to-action-to-learning grammar is coherent with current Sensemaking but does not change ADR 0029 or authorize a generic agent product/runtime.
 14. **Practical Agent Architecture v0 — COMPLETE / GUIDANCE_ONLY_WARRANTED / INTEGRATED.** The warrant-centered hybrid design reconciled against current Sensemaking without establishing a state, schema, assurance, runtime, or public-API gap; compact guidance is integrated into `using-sensemaking`.
-15. **Normal-use validation — ACTIVE / CONTINUES ALONGSIDE CONSTRUCTION.** Preserve qualifying real episodes while owner-directed product construction proceeds; normal-use evidence still governs any additional architecture promotion.
-16. **Execution Interface & Agent-Factorization v1 — ACTIVE / OWNER_DIRECTED.** Build a bounded interface from already-selected responsibility to external execution and returned evidence: release-authority audit, execution handoff, result receipt, high-delegation working projection, generic executor interchange, explicit GitHub provenance publication, and cross-repository execution projection. This does not authorize a planner, scheduler, automatic responsibility selection, or autonomous publication/deployment.
+15. **Normal-use validation — ACTIVE / PRIMARY NEXT MODE.** Preserve qualifying real episodes and use the new execution interfaces during ordinary consequential repository work; reopen construction only from recurring decision-changing pressure or explicit owner direction.
+16. **Execution Interface & Agent-Factorization v1 — COMPLETE / INTEGRATED / CLOSEOUT_QUALIFICATION_ACTIVE.** Release-authority audit, execution handoff/result, working-context projection, generic executor interchange, AI Software Factory projection, explicit GitHub provenance publication, and cross-repository execution projection are integrated without adding semantic planning/scheduling authority. Feature-integrated `main@4f89e92030af4dee5c931b59b839869911e6c366` passed Product/Lab/Release Distribution validation; Issue #393 carries the live closeout handoff/result record.
 
 ### Current highest-leverage boundary
 
-**Execution Interface & Agent-Factorization v1 — ACTIVE / OWNER_DIRECTED.** The owner explicitly directed the repository to resume construction after qualified RC2 and to implement the bounded product opportunities identified from current architecture and normal-use evidence.
+**No additional construction boundary is currently selected.** Execution Interface & Agent-Factorization v1 has implemented the complete owner-directed package set. The only active work is bounded closeout qualification/reconciliation of that integrated result.
 
-The selected boundary is the interface between an already-warranted responsibility and external execution. Sensemaking should make the delegation contract, authority ceiling, required evidence, worker result, and parent reassessment reconstructible without becoming the coding runtime or silently selecting work.
+The feature-integrated head `4f89e92030af4dee5c931b59b839869911e6c366` passed Product Validation (run `35408048842`), Lab Validation (run `35408048855`), and Release Candidate Distribution (run `35408048919`).
 
-The program also includes two narrower mechanically grounded improvements: a release-authority auditor derived from Episode 004 and deterministic execution/provenance projections that expose existing explicit state without turning it into a semantic plan.
+After this closeout qualifies and integrates, the repository returns to normal-use validation. Issue #384 remains an external GitHub-admin governance action and is not a candidate-byte or feature-construction responsibility.
 
 ### Current strategic decision to support
 
-**Decision:** what is the smallest coherent product surface that lets Sensemaking hand already-selected work to external executors and safely consume returned evidence?
+**Decision:** did the owner-directed post-RC2 program establish a coherent selected-responsibility → external-execution → returned-evidence boundary without turning Sensemaking into an execution engine?
 
-**Current judgment:** **IMPLEMENT A CONTRACT-FIRST INTERFACE, NOT AN EXECUTION ENGINE.**
+**Current judgment:** **YES — SUBJECT ONLY TO THIS CLOSEOUT PACKAGE QUALIFYING AND INTEGRATING.**
 
-The active agent remains responsible for selecting the responsibility and judging returned evidence. Deterministic machinery may bind exact target identity, responsibility text, authority, success/evidence requirements, result provenance, integrity, and explicit publication payloads. External schedulers/workers remain separate systems.
+The integrated product now preserves delegation/authority/target/evidence-return contracts, exposes a generic executor interchange and bounded AI Software Factory adapter, supports explicit provenance publication, and projects declared cross-repository prerequisites. The active semantic agent still selects responsibility, executor/workflow, evidence acceptance, and closure.
+
+The milestone therefore satisfies the selected boundary while preserving ADR 0029.
 
 ### Current decision-changing uncertainty
 
-The bounded implementation questions are contract-shape questions: which fields are mechanically necessary for safe delegation/result return, which existing Campaign identities can be reused without schema v3, and which projections/adapters can remain additive companions rather than new truth systems.
+The remaining bounded uncertainty is whether this **closeout projection itself** remains mechanically coherent and qualifies on exact head. There is no known missing implementation package inside the owner-directed scope.
 
-Owner direction resolves whether to build these capabilities; it does not resolve their detailed contract design. Each package must prove the smallest useful mechanical boundary through tests and exact-head qualification.
+Further questions—such as whether the interface measurably improves real multi-agent outcomes, whether more executor adapters are useful, or whether live AI Software Factory runs expose missing fields—are normal-use/empirical questions rather than current architecture blockers.
 
 ### Current warranted repository-level responsibility
 
-**Implement the owner-directed post-RC2 development program in bounded, separately qualified packages.**
+**Qualify and integrate the Execution Interface & Agent-Factorization v1 closeout, return exact result evidence to Issue #393, then stop construction.**
 
-Level-3 disposition: `POST_RC2_DEVELOPMENT_ACTIVE`.
+Level-3 disposition: `EXECUTION_INTERFACE_V1_CLOSEOUT`.
 
-Planned order:
+After closeout integration:
 
-1. reopen development at `1.0.0rc3.dev0`;
-2. add a deterministic release-authority auditor;
-3. add execution handoff + worker result receipt contracts;
-4. add a compact high-delegation working-context projection;
-5. add a generic external-executor interchange and AI Software Factory/GitHub-Issue bridge representation;
-6. add explicit GitHub provenance-publication support with authorization boundaries;
-7. add deterministic cross-repository execution projection;
-8. reconcile/qualify the integrated result and reassess before any further machinery.
+```text
+CURRENT CONSTRUCTION RESPONSIBILITY = NONE
+NEXT MODE = NORMAL_USE_VALIDATION
+```
 
-Do not introduce automatic responsibility selection, worker scheduling, retries/queues, semantic scoring, automatic repository discovery, autonomous merge/release/deploy, or Campaign schema v3 unless separately warranted.
+Do not freeze RC3, add another executor adapter, or introduce orchestration machinery merely because the implemented interface makes those extensions imaginable.
 
 ### Active execution vehicle
 
-Sequential repository-only PRs against `1.0.0rc3.dev0`, each with focused regression coverage and hosted qualification. The feature contracts should use additive companion artifacts or read-only projections where possible so existing Campaign schema v2 remains authoritative.
+A single bounded closeout PR plus live dogfood Issue #393. The issue uses the new execution-handoff/result **contract shape** for ordinary repository work: exact responsibility, authority, target, evidence requirements, forbidden actions, returned source/CI evidence, and parent reassessment.
 
-A Campaign is not required to coordinate this repository-local implementation because Git/PR/STATUS evidence provides adequate bounded continuity.
+The closeout does not claim that its own implementation was generated by the new CLI. Feature mechanics are covered by repository tests; live operational semantics are recorded separately in Issue #393.
 
 ### Expected evidence and reassessment
 
@@ -181,8 +185,10 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**POST-RC2 DEVELOPMENT.** Merge the `1.0.0rc3.dev0` transition, then implement the Release Authority Auditor as the first bounded product package. Continue autonomously through the owner-directed execution-interface packages while each package remains within ADR 0029 and passes qualification.
+**CLOSE OUT EXECUTION INTERFACE & AGENT-FACTORIZATION v1.** Qualify and merge this bounded reconciliation package, record exact integrated evidence/result on Issue #393, and return to normal-use validation.
 
-RC2 remains immutable historical provenance. Do not reuse `1.0.0rc2` for later source bytes.
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, or advance to final `1.0.0` as part of this milestone closeout.
 
-Do **not** interpret this owner-directed program as authorization for a StrategicPlanner, scheduler, automatic responsibility selection, autonomous merge/release/deploy, generic cognition database, or Campaign schema v3.
+GitHub branch/ruleset protection remains external Issue #384. Do not claim it is enforced until the hosting setting actually exists.
+
+Do **not** start a scheduler, queue/retry runtime, StrategicPlanner, WarrantEngine, automatic workflow/repository selection, Campaign schema v3, cross-repository transaction coordinator, or additional adapter merely because implementation capacity remains.
