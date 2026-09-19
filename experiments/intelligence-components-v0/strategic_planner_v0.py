@@ -196,8 +196,12 @@ def render_treatment_packet(case: dict[str, Any]) -> str:
 
 STRATEGICPLANNER V0 — ADVISORY CANDIDATE GENERATION
 
-Before the active semantic agent selects a responsibility, generate 2–4
+Before the active semantic agent selects a responsibility, generate up to 4
 materially distinct candidate repository-level responsibilities.
+
+Zero candidates is valid. If the current evidence does not support any credible
+repository-level responsibility, return `NO_CREDIBLE_CANDIDATE_RESPONSIBILITIES`
+and explain why candidate generation should stop.
 
 Do not split a contingent substep or diagnostic branch into a separate candidate
 when it is already subsumed by another candidate. Prefer fewer genuinely distinct
@@ -223,7 +227,8 @@ After generating the candidate set, hand it back to the active semantic agent.
 
 RETURN
 
-- candidate set only
+- candidate set only, which may be empty
+- `NO_CREDIBLE_CANDIDATE_RESPONSIBILITIES` when no credible candidate exists
 - material alternative that would be easiest for baseline reasoning to miss, if any
 - ambiguity or evidence insufficiency that prevents responsible comparison, if any
 
