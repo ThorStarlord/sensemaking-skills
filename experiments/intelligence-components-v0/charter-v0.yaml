@@ -1,0 +1,48 @@
+experiment: experimental-intelligence-components-v0
+component: strategic-planner-v0
+status: exploratory_lab
+issue: 395
+owner_direction_date: 2026-09-19
+objective: Test whether explicit strategic candidate generation materially improves repository-level next-responsibility reasoning over the current Sensemaking baseline.
+hypothesis: An advisory StrategicPlanner may help on ambiguous repository-evolution decisions by surfacing material alternatives, dependencies, and decision-changing uncertainties that baseline reasoning misses.
+baseline: Current Sensemaking Level-3 guidance without the StrategicPlanner treatment packet.
+treatment: Current Sensemaking Level-3 guidance plus StrategicPlanner v0 candidate-generation instructions.
+authority:
+  semantic_decision_owner: active_agent
+  planner_may_select_final_responsibility: false
+  planner_may_execute: false
+  planner_may_expand_repository_scope: false
+  planner_may_change_product_thesis: false
+  planner_may_publish_or_release: false
+boundary:
+  product_surface: false
+  campaign_schema_change: false
+  persistent_database: false
+  automatic_skill_selection: false
+  automatic_repository_discovery: false
+  automatic_campaign_creation: false
+  automatic_workflow_selection: false
+  numeric_priority_score: false
+  core_dependency: false
+initial_cases:
+  source: retrospective_real_repository_decisions
+  count: 4
+  independent: false
+  hindsight_contaminated: true
+  comparative_superiority_claim_allowed: false
+observation_dimensions:
+  - decision_materiality
+  - missing_option_discovery
+  - wrong_work_avoidance
+  - ceremony_overhead
+  - reversal_exposure
+  - human_correction
+  - cost_proportionality
+dispositions:
+  - PROMOTE_CORE
+  - PROMOTE_OPTIONAL
+  - DESCALE
+  - RESEARCH_MORE
+  - REMOVE
+promotion_rule: Successful implementation is insufficient. Promotion requires prospective normal-use evidence across materially different decisions showing decision-changing benefit that outweighs ceremony and new failure modes.
+stop_rule: Stop after the initial StrategicPlanner v0 dogfood and record one disposition. Do not implement the next intelligence component merely because this component exists.

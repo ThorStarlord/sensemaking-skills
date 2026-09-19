@@ -75,6 +75,7 @@ jobs:
             tests/test_exploratory_digests.py \
             tests/test_exploratory_lane_derivation.py \
             tests/test_exploratory_capability_lifecycle.py \
+            tests/test_exploratory_intelligence_components.py \
             tests/campaign_accounting \
             tests/campaign_preparation \
             tests/execution_infra_tests \

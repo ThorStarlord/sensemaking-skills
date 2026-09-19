@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-18  
-**Current phase:** Execution Interface & Agent-Factorization v1 is complete; normal-use validation is the active operating mode. Exact closeout qualification is carried by PR #394 / Issue #393 rather than a follow-up source mutation. Release Authority & Operational Coherence v1 remains complete and RC2 remains exact-source qualified  
+**Current phase:** Experimental Intelligence Components v0 is active as an isolated lab program under Issue #395. StrategicPlanner v0 is the first reversible component; its initial retrospective dogfood disposition is `RESEARCH_MORE`. Normal-use validation remains the source of any future promotion evidence. Execution Interface & Agent-Factorization v1 and Release Authority & Operational Coherence v1 remain complete  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
@@ -87,55 +87,50 @@ Current material frontier items are:
 14. **Practical Agent Architecture v0 — COMPLETE / GUIDANCE_ONLY_WARRANTED / INTEGRATED.** The warrant-centered hybrid design reconciled against current Sensemaking without establishing a state, schema, assurance, runtime, or public-API gap; compact guidance is integrated into `using-sensemaking`.
 15. **Normal-use validation — ACTIVE / PRIMARY NEXT MODE.** Preserve qualifying real episodes and use the new execution interfaces during ordinary consequential repository work; reopen construction only from recurring decision-changing pressure or explicit owner direction.
 16. **Execution Interface & Agent-Factorization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Release-authority audit, execution handoff/result, working-context projection, generic executor interchange, AI Software Factory projection, explicit GitHub provenance publication, and cross-repository execution projection are integrated without adding semantic planning/scheduling authority. Feature-integrated `main@4f89e92030af4dee5c931b59b839869911e6c366` passed Product/Lab/Release Distribution validation; PR #394 / Issue #393 carry the terminal closeout qualification/result receipt.
+17. **Experimental Intelligence Components v0 — ACTIVE / LAB_ONLY / `RESEARCH_MORE`.** Owner direction authorizes cheap, reversible experiments rather than core promotion. StrategicPlanner v0 under Issue #395 compiles baseline/treatment packets and preserves semantic decision authority with the active agent. Initial retrospective dogfood shows a plausible benefit on ambiguous high-leverage decisions and disproportionate ceremony on a tiny bounded repair; this supports prospective testing of an activation boundary, not product promotion or automatic planning.
 
 ### Current highest-leverage boundary
 
-**No additional construction boundary is currently selected.** Execution Interface & Agent-Factorization v1 has implemented the complete owner-directed package set and hands off to normal-use validation.
+**No additional construction boundary is currently selected.** StrategicPlanner v0 is an evidence question, not product construction. The owner explicitly authorized cheap reversible experimentation. The lab component now exists to test whether explicit strategic candidate generation adds decision value beyond current Level-3 reasoning without becoming mandatory ceremony.
 
-The feature-integrated head `4f89e92030af4dee5c931b59b839869911e6c366` passed Product Validation (run `35408048842`), Lab Validation (run `35408048855`), and Release Candidate Distribution (run `35408048919`).
+Initial retrospective dogfood under Issue #395 is mixed: broad release-authority and execution-interface cases show a plausible material benefit from explicit alternative generation, while the bounded stale-reference repair shows clearly disproportionate ceremony. Because the evaluator knows the historical outcomes, the disposition is `RESEARCH_MORE`, not promotion.
 
-This document is the terminal repository projection for the milestone. Exact qualification/integration evidence for this closeout is recorded on PR #394 and live dogfood Issue #393; do not create another source commit merely to copy those transient run IDs back into this file.
-
-Issue #384 remains an external GitHub-admin governance action and is not a candidate-byte or feature-construction responsibility.
+Issue #384 remains an external GitHub-admin governance action and is unrelated to this experiment.
 
 ### Current strategic decision to support
 
-**Decision:** did the owner-directed post-RC2 program establish a coherent selected-responsibility → external-execution → returned-evidence boundary without turning Sensemaking into an execution engine?
+**Decision:** should StrategicPlanner v0 remain experimental, be promoted for optional/core use, be descaled, or be removed?
 
-**Current judgment:** **YES / MILESTONE COMPLETE.**
+**Current judgment:** **RESEARCH_MORE / NO PROMOTION YET.**
 
-The integrated product preserves delegation/authority/target/evidence-return contracts, exposes a generic executor interchange and bounded AI Software Factory adapter, supports explicit provenance publication, and projects declared cross-repository prerequisites. The active semantic agent still selects responsibility, executor/workflow, evidence acceptance, and closure.
-
-Acceptance of this terminal projection is mechanically gated by PR #394 and exact integrated validation; the durable receipt lives on PR #394 / Issue #393 rather than requiring another source mutation.
+The current experiment preserves the active semantic agent as the sole selector of the final repository-level responsibility. StrategicPlanner v0 only generates a bounded candidate set with uncertainties, dependencies, smallest interventions, and reasons for/against.
 
 ### Current decision-changing uncertainty
 
-There is **no currently selected repository-construction uncertainty**.
+**Prospective activation value:** on a naturally occurring ambiguous Level-3 decision, does StrategicPlanner v0 surface a materially decision-changing option, dependency, or uncertainty that the recorded baseline misses, while keeping ceremony proportional?
 
-Remaining questions—whether the interface measurably improves real multi-agent outcomes, which additional executor adapters are useful, whether live AI Software Factory runs expose missing fields, and whether normal-use episodes reveal repeated contract friction—are empirical/normal-use questions.
-
-A future construction package requires recurring decision-changing pressure or new explicit owner direction.
+Retrospective agreement cannot answer that question.
 
 ### Current warranted repository-level responsibility
 
-**None. Resume normal-use validation after this terminal projection integrates.**
+**None. Resume normal-use validation.** Preserve StrategicPlanner v0 only as a lab-only optional treatment inside that mode, and obtain prospective evidence when an appropriate ambiguous repository decision naturally occurs.
 
-Level-3 disposition: `NORMAL_USE_VALIDATION`.
+Level-3 disposition: `EXPERIMENTAL_RESEARCH_MORE`.
 
 ```text
 CURRENT CONSTRUCTION RESPONSIBILITY = NONE
-NEXT MODE = NORMAL_USE_VALIDATION
+PRIMARY OPERATING MODE = NORMAL_USE_VALIDATION
+ACTIVE EXPERIMENT = STRATEGICPLANNER_V0
+NEXT EXPERIMENTAL EVIDENCE = PROSPECTIVE_NORMAL_USE_COMPARISON
 ```
 
-Do not freeze RC3, add another executor adapter, or introduce orchestration machinery merely because the implemented interface makes those extensions imaginable.
+Do not implement WarrantEngine, ExplorationPolicy, PriorityPolicy, SkillRouter, or OuterLoopEngine merely because the experiment scaffold now exists.
 
 ### Active execution vehicle
 
-No construction package is selected after this terminal closeout projection.
+Issue #395 is the experiment authority/evidence tracker. The lab artifacts live under `experiments/intelligence-components-v0/`.
 
-Issue #393 is the live dogfood handoff/result record for the completed milestone and carries the exact closeout integration/CI receipt plus parent reassessment. Normal repository work should use the new surfaces only when warranted.
-
-The closeout does not claim that its own implementation was generated by the new CLI. Feature mechanics are covered by repository tests; live operational semantics are recorded separately in Issue #393.
+For a prospective case, record the baseline decision **before** exposing the StrategicPlanner treatment to the same evidence, then compare using the frozen categorical protocol. Do not manufacture tasks to populate the experiment.
 
 ### Expected evidence and reassessment
 
@@ -163,10 +158,14 @@ The owner also authorized and completed the General Agency Model v0/v0.1 and Pra
 
 The owner explicitly accepted the revised Release Authority & Operational Coherence plan and authorized implementation through a fresh RC2 candidate qualification. That authorization does **not** imply PyPI publication or final `1.0.0`; those remain separate protected release-owner transitions.
 
-This completed milestone does **not** authorize:
+The owner subsequently authorized **Experimental Intelligence Components v0** as cheap, reversible lab experimentation, beginning with StrategicPlanner v0 under Issue #395. That authority covers the isolated experiment scaffold, retrospective sanity check, and later prospective normal-use comparison. It does **not** promote StrategicPlanner into the product or automatically authorize the next experimental component.
+
+Current authority does **not** include:
 
 ```text
-StrategicPlanner / OuterLoopEngine
+StrategicPlanner product/core promotion
+WarrantEngine / OuterLoopEngine
+ExplorationPolicy / PriorityPolicy / SkillRouter implementation
 automatic Strategic Frontier ranking or priority scoring
 automatic responsibility / capability / Skill / workflow / repository selection
 automatic Level-4 escalation or thesis revision
@@ -176,7 +175,7 @@ Campaign schema v3 merely for convenience
 new strategic-state database
 universal decision graph
 cross-repository transaction/deployment coordinator
-new empirical experiment
+unrelated new empirical experiments outside Issue #395
 ```
 
 ### Thesis review state
@@ -189,12 +188,10 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NORMAL-USE VALIDATION.** After this terminal projection integrates under the PR #394 qualification gate, use the new execution-interface surfaces during ordinary consequential repository work and preserve qualifying episodes in Issue #218.
+**PROSPECTIVE STRATEGICPLANNER DOGFOOD WHEN NATURALLY WARRANTED.** The initial StrategicPlanner v0 package stops at `RESEARCH_MORE`. On the next naturally occurring ambiguous Level-3 repository decision, preserve the baseline decision first, then apply the treatment to the same evidence and record whether it changes a material option/uncertainty at proportional cost.
 
-Exact closeout integration and CI evidence belongs on PR #394 / Issue #393. Do not mutate source solely to restate a passing run.
+Do not manufacture a task merely to exercise the planner, and do not implement WarrantEngine or the rest of the speculative component list until this promotion question becomes better evidenced.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, or advance to final `1.0.0` merely because this milestone completed.
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, or advance to final `1.0.0` because an experiment exists.
 
 GitHub branch/ruleset protection remains external Issue #384. Do not claim it is enforced until the hosting setting actually exists.
-
-Do **not** start a scheduler, queue/retry runtime, StrategicPlanner, WarrantEngine, automatic workflow/repository selection, Campaign schema v3, cross-repository transaction coordinator, or additional adapter without new warrant.
