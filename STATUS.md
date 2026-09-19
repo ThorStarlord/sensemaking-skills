@@ -113,7 +113,7 @@ Retrospective agreement cannot answer that question.
 
 ### Current warranted repository-level responsibility
 
-**No further intelligence-component construction is warranted yet.** Preserve StrategicPlanner v0 as a lab-only optional treatment and obtain prospective normal-use evidence when an appropriate ambiguous repository decision naturally occurs.
+**None. Resume normal-use validation.** Preserve StrategicPlanner v0 only as a lab-only optional treatment inside that mode, and obtain prospective evidence when an appropriate ambiguous repository decision naturally occurs.
 
 Level-3 disposition: `EXPERIMENTAL_RESEARCH_MORE`.
 
