@@ -91,7 +91,7 @@ Current material frontier items are:
 
 ### Current highest-leverage boundary
 
-**StrategicPlanner v0 promotion boundary — evidence question, not product construction.** The owner explicitly authorized cheap reversible experimentation. The lab component now exists to test whether explicit strategic candidate generation adds decision value beyond current Level-3 reasoning without becoming mandatory ceremony.
+**No additional construction boundary is currently selected.** StrategicPlanner v0 is an evidence question, not product construction. The owner explicitly authorized cheap reversible experimentation. The lab component now exists to test whether explicit strategic candidate generation adds decision value beyond current Level-3 reasoning without becoming mandatory ceremony.
 
 Initial retrospective dogfood under Issue #395 is mixed: broad release-authority and execution-interface cases show a plausible material benefit from explicit alternative generation, while the bounded stale-reference repair shows clearly disproportionate ceremony. Because the evaluator knows the historical outcomes, the disposition is `RESEARCH_MORE`, not promotion.
 
