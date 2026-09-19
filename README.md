@@ -129,6 +129,7 @@ The installed product includes:
 - a compact `campaign working-context` projection for high-delegation continuation without automatic next-action selection.
 - a generic external-executor interchange plus an AI Software Factory GitHub-Issue projection that transports already-selected work without selecting a workflow or submitting execution.
 - explicit, preview-by-default GitHub provenance publication with deterministic markers and duplicate suppression; publication remains a caller-authorized external mutation.
+- a deterministic cross-repository execution projection that derives prerequisite layers only from explicit `depends_on` / `release_after` relations and never labels the projection an execution plan.
 
 The Level-3/Level-4 Strategic Outer Loop foundation is currently a **repository documentation/authority architecture**, not a shipped autonomous strategic runtime. Installing the package does not create a `StrategicPlanner`, automatically rank the Strategic Frontier, revise product strategy, or generate Campaigns without agent judgment.
 
