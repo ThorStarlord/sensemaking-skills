@@ -1,0 +1,83 @@
+version: 1
+classification: retrospective_real_repository_decisions
+independent: false
+hindsight_contaminated: true
+comparative_superiority_claim_allowed: false
+cases:
+  - id: release-identity-drift
+    title: RC1 documentation drift versus release-identity repair
+    historical_reference: PRs #381 and #386
+    goal: Restore trustworthy Version 1.0 release authority after continued repository development.
+    repository_state: >
+      The repository still identified current source as 1.0.0rc1 even though the exact RC1 qualification
+      applied to an earlier source state and many later changes had landed. Current-facing documentation
+      also contained contradictory version/publication statements.
+    commitments:
+      - preserve historical qualification evidence
+      - do not publish or finalize without explicit owner authority
+      - keep semantic support claims within the reduced-scope release contract
+    known_uncertainties:
+      - whether RC1 was merely under-documented or had been superseded as current source identity
+      - whether current main should become RC2 immediately, final 1.0.0, or development toward RC2
+    constraints:
+      - avoid rewriting historical evidence as false
+      - avoid minting a new frozen candidate before repair convergence
+    historical_outcome: Preserve RC1 as historical provenance, move current source to rc2.dev0, repair relational release invariants, then freeze and qualify RC2 after convergence.
+
+  - id: stale-authority-reference
+    title: One stale current-authority reference
+    historical_reference: PR #378
+    goal: Repair a current Campaign document that points to a superseded ADR.
+    repository_state: >
+      A single current-facing row points to historical ADR 0014 while current authority is represented by
+      later ADRs. The defect is local, evidence is direct, and the intended current authority is known.
+    commitments:
+      - preserve historical ADR evidence
+      - avoid unrelated repository architecture changes
+    known_uncertainties:
+      - whether any other current pointer in the same local surface is also stale
+    constraints:
+      - smallest warranted edit
+      - no Campaign or new architecture solely for this repair
+    historical_outcome: Update the bounded stale reference and validate; do not create new planning/state machinery.
+
+  - id: goal-a-environment-blocker
+    title: Goal A execution substrate falsification
+    historical_reference: Issue #255
+    goal: Determine the next responsibility after three execution substrates fail the external-product-validation contract.
+    repository_state: >
+      Direct sub-agent file write is blocked, framed return is not lossless, and an external process lacks
+      independent authentication. The owner previously established a stop rule after the third substrate
+      failed and prohibited inventing Harness v4.
+    commitments:
+      - preserve independent-producer requirements
+      - obey the owner halt rule
+      - do not manufacture evidence
+    known_uncertainties:
+      - whether a future different host or independent credential can satisfy the substrate
+    constraints:
+      - no Harness v4
+      - no weakening of the independence contract
+      - no fresh Goal A run without separate owner authorization
+    historical_outcome: Stop repository construction for this path and escalate to an external environment/owner decision.
+
+  - id: execution-interface-boundary
+    title: Selected responsibility to external executor boundary
+    historical_reference: PRs #388-#394 / Issue #393
+    goal: Improve handoff from Sensemaking decisions to external coding-agent execution without turning Sensemaking into an execution engine.
+    repository_state: >
+      Sensemaking can select and preserve warranted responsibilities but needs a bounded way to hand already-selected
+      work to external executors and admit returned evidence. Existing architecture reserves semantic responsibility
+      selection and closure to the active agent.
+    commitments:
+      - decision selects work; orchestration coordinates work
+      - worker success does not imply global closure
+      - caller selects executor/workflow
+    known_uncertainties:
+      - which fields are minimally required for lossless responsibility handoff and evidence return
+      - whether specific factory adapters belong in core or as projections
+    constraints:
+      - no scheduler or queue runtime
+      - no automatic workflow selection
+      - no merge/deploy/publication authority
+    historical_outcome: Add generic handoff/result contracts and bounded projections while leaving semantic selection and orchestration authority outside the product.
