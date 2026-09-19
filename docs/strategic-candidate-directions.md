@@ -84,7 +84,7 @@ Campaign schema remains v2. None of these baselines establishes native-harness u
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
 
-`campaign resume-profile --profile minimal|working|audit` provides deterministic progressive disclosure. `campaign workflow list/show` exposes static single-repository, fresh-context, transferred-Campaign, and multi-repository composition paths with explicit decision gates.
+`campaign resume-profile --profile minimal|working|audit` provides deterministic progressive disclosure. `campaign workflow list/show` exposes static single-repository, fresh-context, transferred-Campaign, and multi-repository composition paths with explicit decision gates. `campaign working-context` now projects the active responsibility, decision blocked, authority, uncertainty, targets, evidence, stop conditions, and latest execution handoff/result for high-delegation continuation without selecting a next action.
 
 ```text
 progressive disclosure != semantic summarization
@@ -193,9 +193,13 @@ release_after
 
 Only explicit ordering relations participate in cycle rejection. Sensemaking does not infer relationships or work order.
 
+The read-only `campaign multi-target execution-view` now projects explicit `depends_on` and `release_after` declarations into prerequisite edges and deterministic precedence layers. Descriptive relations remain non-ordering, and same-layer membership does not authorize parallel execution.
+
 ```text
 relationship recorded != architectural truth
 dependency graph valid != execution plan correct
+precedence projection != execution plan
+same layer != parallel execution authorized
 ```
 
 ### 6.2 Cross-repository transaction / activation coordination
@@ -302,12 +306,16 @@ explicit comparison != priority scoring
 
 ### 10.1 GitHub-native Campaign provenance publication
 
-**Current reconciliation:** `PARTIALLY_IMPLEMENTED` + `LONG_HORIZON` for external mutation.
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
 
-Local Markdown/JSON provenance exists. Posting comments, checks, PR-description edits, or merges remains separately authorized GitHub mutation.
+Local Markdown/JSON provenance remains available. `campaign provenance-publish` adds a preview-by-default, explicit-`--publish` GitHub Issue/PR comment path with deterministic Campaign/body markers and duplicate suppression. Repository and issue/PR destination are caller supplied; the token value is never rendered.
+
+This baseline does not generalize into automatic checks, PR-description mutation, merge, release, deployment, or default third-party tracker mutation.
 
 ```text
 generate provenance != publish provenance
+--publish supplied != semantic truth
+publication complete != work authorized
 ```
 
 ### 10.2 Companion persistence consolidation
@@ -331,6 +339,24 @@ Harness independence remains an architectural principle, but implementation inde
 **Reopen trigger:** a concrete independent implementation/consumer need or explicit owner strategy direction.
 
 **Non-goal:** prematurely freeze current Python implementation details into a public standard.
+
+### 10.4 External execution interchange / AI Software Factory bridge
+
+**Current reconciliation:** `IMPLEMENTED_BASELINE` + `CANDIDATE_EXTENSION`.
+
+Execution Interface v1 records append-only execution handoffs and worker-result receipts bound to already-selected Campaign responsibility, authority, exact targets, success conditions, and returned evidence claims. A generic integrity-bound interchange exports/imports that boundary without automatic evidence admission or parent closure.
+
+The AI Software Factory adapter renders a GitHub Issue payload and command template for a **caller-selected** workflow such as `archon-ship` or `archon-lifecycle`. It does not publish the issue, submit the run, select a workflow, allocate workers, schedule, retry, merge, or deploy.
+
+```text
+decision selects work
+orchestration coordinates selected work
+worker result returns evidence
+worker success != global closure
+factory bridge != factory runtime
+```
+
+**Possible extensions:** additional executor adapters only when a concrete external consumer needs the same stable handoff/result contract.
 
 ## 11. Ideas deliberately not promoted
 
