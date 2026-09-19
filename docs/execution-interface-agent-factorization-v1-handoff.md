@@ -1,10 +1,10 @@
 # Execution Interface & Agent-Factorization v1 — Milestone Handoff
 
-**Status:** implementation complete; closeout package under qualification  
+**Status:** milestone complete; terminal closeout qualification receipt is recorded externally on PR #394 / Issue #393  
 **Date:** 2026-09-18  
 **Release line:** `1.0.0rc3.dev0` development toward `1.0.0rc3`  
 **Scope:** release-authority audit, execution delegation/return contracts, high-delegation working context, external-executor interchange, AI Software Factory projection, explicit GitHub provenance publication, and cross-repository execution projection  
-**Next mode after closeout:** normal-use validation / real executor dogfood; no additional construction package selected
+**Next mode:** normal-use validation / real executor dogfood; no additional construction package selected
 
 ## 1. Objective
 
@@ -198,7 +198,7 @@ construction responsibilities.
 
 ## 9. Continuation rule
 
-After the closeout package qualifies and integrates:
+After this terminal closeout projection integrates under the PR #394 gate:
 
 ```text
 NEXT MODE = NORMAL_USE_VALIDATION
