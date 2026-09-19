@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,12 @@ from .campaigns.provenance import (
     render_provenance_markdown,
 )
 from .campaigns.provenance_graph import CampaignProvenanceGraphService
+from .campaigns.github_publication import (
+    GitHubProvenancePublisher,
+    GitHubPublicationError,
+    build_github_provenance_projection,
+    github_provenance_payload,
+)
 from .campaigns.uncertainty_history import ALLOWED_STATUSES, UncertaintyHistoryService
 
 
@@ -270,6 +277,69 @@ def register_campaign_productization_commands(
             json_echo({"ok": True, "code": "CAMPAIGN_PROVENANCE", **payload})
         else:
             click.echo(render_provenance_markdown(value), nl=False)
+
+    @campaign.command(name="provenance-publish")
+    @click.option("--workspace", required=True, type=click.Path(path_type=Path))
+    @click.option("--repository", required=True, help="Explicit OWNER/REPO destination")
+    @click.option("--issue-number", required=True, type=click.IntRange(min=1))
+    @click.option(
+        "--publish",
+        is_flag=True,
+        help="Explicitly authorize the GitHub comment mutation; default is preview only.",
+    )
+    @click.option(
+        "--token-env",
+        default="GITHUB_TOKEN",
+        show_default=True,
+        help="Environment variable containing the GitHub token; its value is never printed.",
+    )
+    @click.option("--json", "output_json", is_flag=True)
+    def campaign_provenance_publish(
+        workspace: Path,
+        repository: str,
+        issue_number: int,
+        publish: bool,
+        token_env: str,
+        output_json: bool,
+    ) -> None:
+        """Preview or explicitly publish deterministic Campaign provenance."""
+        try:
+            projection = build_github_provenance_projection(
+                workspace,
+                repository=repository,
+                issue_number=issue_number,
+            )
+            if publish:
+                token = os.environ.get(token_env)
+                if not token:
+                    raise click.ClickException(
+                        f"--publish requires a non-empty token in environment variable {token_env}"
+                    )
+                payload = GitHubProvenancePublisher().publish(
+                    projection,
+                    token=token,
+                )
+                code = (
+                    "CAMPAIGN_PROVENANCE_ALREADY_PUBLISHED"
+                    if payload["already_present"]
+                    else "CAMPAIGN_PROVENANCE_PUBLISHED"
+                )
+            else:
+                payload = github_provenance_payload(projection)
+                code = "CAMPAIGN_PROVENANCE_PUBLICATION_PREVIEW"
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        except GitHubPublicationError as exc:
+            raise click.ClickException(str(exc)) from exc
+        except ValueError as exc:
+            raise click.ClickException(str(exc)) from exc
+
+        result = {"ok": True, "code": code, **payload}
+        if output_json:
+            json_echo(result)
+        else:
+            click.echo(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
 
     @campaign.command(name="graph-integrity")
     @click.option("--workspace", required=True, type=click.Path(path_type=Path))
