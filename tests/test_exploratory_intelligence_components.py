@@ -22,6 +22,10 @@ planner = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(planner)
 
 
+def _normalized(value: str) -> str:
+    return " ".join(value.split())
+
+
 def test_frozen_cases_are_explicitly_retrospective_and_loadable() -> None:
     cases = planner.load_cases(CASES_PATH)
 
@@ -47,8 +51,9 @@ def test_packet_rendering_is_deterministic(arm: str) -> None:
 def test_baseline_preserves_current_semantic_selection() -> None:
     case = planner.load_cases(CASES_PATH)[0]
     packet = planner.render_baseline_packet(case)
+    normalized = _normalized(packet)
 
-    assert "select one warranted repository-level responsibility" in packet
+    assert "select one warranted repository-level responsibility" in normalized
     assert "STRATEGICPLANNER V0" not in packet
     assert "generate 2–4" not in packet
 
@@ -56,11 +61,12 @@ def test_baseline_preserves_current_semantic_selection() -> None:
 def test_treatment_generates_candidates_without_claiming_decision_authority() -> None:
     case = planner.load_cases(CASES_PATH)[0]
     packet = planner.render_treatment_packet(case)
+    normalized = _normalized(packet)
 
-    assert "generate 2–4" in packet
-    assert "Do not rank the candidates." in packet
-    assert "Do not choose a winner." in packet
-    assert "Do not execute anything." in packet
+    assert "generate 2–4" in normalized
+    assert "Do not rank the candidates." in normalized
+    assert "Do not choose a winner." in normalized
+    assert "Do not execute anything." in normalized
     assert "candidate generation != strategic decision" in packet
     assert "planner output != implementation plan" in packet
 
