@@ -132,13 +132,34 @@ Policy decides what kind of effort should happen next in the broader decision co
 
 It remains qualitative and agent-owned.
 
-### 4.4 Exploration Policy — planned
+### 4.4 Exploration Policy — Package 3 / integrated
 
-Exploration Policy will allocate effort across iterative search modes only when a real
-search history exists. Candidate modes include exploit, explore, challenge, diagnose,
-recombine, restart, and verify.
+Exploration Policy asks:
 
-One-shot reversible work should normally keep this policy implicit.
+> Given meaningful search history, current evidence, uncertainty, resources, and
+> decision context, where should iterative search effort go next?
+
+Canonical qualitative search modes are:
+
+```text
+EXPLOIT
+EXPLORE
+CHALLENGE
+DIAGNOSE
+RECOMBINE
+RESTART
+VERIFY
+EXIT_SEARCH
+```
+
+It becomes explicit only when search is materially iterative. One-shot reversible work
+should normally keep this policy implicit.
+
+Search history is a projection of existing evidence/provenance, not a new persisted
+truth system.
+
+Canonical agent-facing contract:
+`skills/using-sensemaking/references/exploration-policy-v0.md`.
 
 ### 4.5 Warrant / Choice Policy — planned
 
@@ -217,7 +238,7 @@ Policy Hierarchy Completion v0 proceeds as bounded packages:
 
 1. Inquiry Policy v0 — integrated;
 2. Metareasoning Policy v0 — integrated;
-3. Exploration Policy v0;
+3. Exploration Policy v0 — integrated;
 4. Warrant / Choice Policy v0;
 5. Learning / Reconciliation Policy v0;
 6. stable Strategic Alternatives surface;
