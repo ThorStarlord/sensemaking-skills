@@ -7,6 +7,39 @@ description: analyze a repository to produce a repository sensemaking brief. use
 
 Analyzes a repository and produces a **Repository Sensemaking Brief**. This skill is diagnostic, focusing on understanding the user intent, codebase structure, and fragility to find the "weakest boundary."
 
+## Diagnostic boundary vs. strategic repository analysis
+
+This Skill answers primarily:
+
+```text
+What is this repository?
+What is strong / weak / missing / contradictory?
+What is the weakest consequential boundary?
+What evidence supports that diagnosis?
+```
+
+When the user's real question is instead:
+
+```text
+What could this repository become?
+What coherent ways could it be constructed from here?
+How do those repository-evolution paths differ?
+Which strategic direction / inquiry is warranted?
+```
+
+the first-class Level-3 capability is
+`../strategic-repository-analysis/SKILL.md`.
+
+A current Repository Sensemaking Brief can supply diagnostic evidence to that
+analysis, but do not force a new Brief when the strategic analyst can establish
+current repository state directly from the authorized evidence surface.
+
+```text
+diagnosis != strategic evolution synthesis
+candidate next step != construction path
+weakest boundary != automatically selected strategic direction
+```
+
 ## Two responsibilities, one skill
 
 This skill has two responsibilities. They stay conceptually separate (see [docs/candidate/architecture-decision.md](../../docs/candidate/architecture-decision.md), Decision 1) but live in one file, not two, because one of them is structurally incapable of running outside conversation:
