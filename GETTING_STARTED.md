@@ -186,6 +186,28 @@ Skip repository-wide diagnosis when the task is already mechanically narrow and 
 
 The Skill performs semantic diagnosis. Deterministic scripts/CLI validate and persist results; they do not replace the agent's judgment.
 
+
+When strategic work reaches a return or reserved-decision boundary, use the
+smallest companion surface that preserves the decision:
+
+```text
+returned evidence materially changes a prior strategic analysis
+-> strategic-repository-reconciliation
+
+owner preference / policy / reserved authority is the missing premise
+-> owner-decision-capsule
+
+a governing Level-4 commitment is materially challenged
+-> thesis-review-packet
+
+decision-changing evidence comes from outside repository authority
+-> external-evidence-packet
+```
+
+These packets are semantic-agent artifacts. They do not automatically mutate
+strategy, make the owner's choice, ratify a thesis revision, or turn external
+evidence into repository truth.
+
 ## Start a Campaign when durable continuation is warranted
 
 A Campaign is the central durable Level-2 abstraction. Use it when repository-specific decision state needs to survive agent/session boundaries or otherwise become reconstructible. A Campaign is **not** the universal entry point for Sensemaking.
