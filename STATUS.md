@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-20  
-**Current phase:** Issue #416 Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 is owner-authorized and active. Package B — Strategic Reconciliation & Reserved-Decision Surfaces is the current bounded responsibility on the stacked construction branch. Package A remains the prerequisite integration boundary. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #416 Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 is owner-authorized and active. Package C — Multi-Repository Strategic Sensemaking is the current bounded responsibility on the stacked construction branch. Packages A and B remain prerequisite integration boundaries. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -60,7 +60,8 @@ The repository-qualified baseline includes:
 - **Explicit GitHub provenance publication**: preview-by-default, explicit-`--publish` Issue/PR comments with deterministic markers and duplicate suppression.
 - **Cross-repository execution projection**: explicit ordering relations become read-only prerequisite edges/layers; the projection is not an execution plan and same-layer membership does not authorize parallel work.
 - **Strategic Continuity v1 — PACKAGE A PREREQUISITE:** additive strategic-analysis lineage, decision assumptions, reassessment triggers, and deterministic `strategy` projections are implemented on the Package-A line without creating a planner or alternate strategic truth system.
-- **Strategic Reconciliation & Reserved-Decision Surfaces — PACKAGE B IN CONSTRUCTION:** first-class reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts preserve evidence-return and reserved-authority boundaries without automatic state mutation.
+- **Strategic Reconciliation & Reserved-Decision Surfaces — PACKAGE B PREREQUISITE:** first-class reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts preserve evidence-return and reserved-authority boundaries without automatic state mutation.
+- **Multi-Repository Strategic Sensemaking — PACKAGE C IN CONSTRUCTION:** caller-selected repository-set analysis models capability ownership/overlap, boundary tensions, allocation paths, and tradeoffs without automatic repository discovery or transaction orchestration.
 
 Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision-v1-handoff.md`.
 Policy Hierarchy Completion v0 closeout is summarized in `docs/policy-hierarchy-completion-v0-handoff.md`.
@@ -108,88 +109,82 @@ Current material frontier items are:
 
 ### Current highest-leverage boundary
 
-**Strategic Reconciliation & Reserved-Decision Surfaces — Package B of Issue #416.**
+**Multi-Repository Strategic Sensemaking — Package C of Issue #416.**
 
-Package A makes strategic analyses reconstructibly continuous. The next owner-authorized boundary is the return path from consequential evidence and the explicit handoff points where repository reasoning must stop at owner, Level-4, or external-source boundaries.
+Packages A and B make single-repository strategic reasoning continuous and make evidence-return/reserved decisions reconstructible. Package C extends the same Level-3 discipline to a **caller-selected repository set** when capability ownership or repository boundaries are themselves the decision.
 
 ```text
-prior strategic analysis
--> returned evidence
--> explicit reconciliation
--> reaffirm / revise / reopen / owner decision / thesis review
-
-OWNER_DECISION
--> owner decision capsule
-
-THESIS_REVIEW
--> thesis review packet
-
-authorized external evidence
--> external evidence packet
+explicit repository set
+-> current multi-repository system model
+-> capability ownership / overlap
+-> explicit relations + cross-repository evidence
+-> boundary tensions
+-> 0–5 allocation/construction paths
+-> qualitative comparison
+-> strategic disposition
 ```
 
-These are semantic-agent artifacts, not runtime engines or authority tokens.
+The product still refuses automatic repository discovery, automatic target expansion, or transaction/deployment coordination.
 
 ### Current strategic decision to support
 
-**Decision:** how can evidence-return and reserved decisions remain reconstructible across contexts without silently mutating strategy, deciding for the owner, ratifying Level-4 changes, or laundering external evidence into repository truth?
+**Decision:** can Sensemaking analyze how explicitly selected repositories should divide capabilities and interfaces without becoming a repository-discovery engine or cross-repository orchestrator?
 
-**Current judgment:** **BUILD / STRATEGIC_RECONCILIATION_RESERVED_DECISIONS_V1_PACKAGE_B.**
+**Current judgment:** **BUILD / MULTI_REPOSITORY_STRATEGIC_SENSEMAKING_V1_PACKAGE_C.**
 
-The smallest warranted intervention is four bounded artifacts/Skills plus shared mechanical contract validation:
-
-- `strategic_reconciliation`;
-- `owner_decision_capsule`;
-- `thesis_review_packet`;
-- `external_evidence_packet`.
+The bounded surface is `multi-repository-strategic-analysis` producing `multi_repository_strategic_analysis`, with explicit target aliases, source identities, relationship evidence, capability ownership, boundary tensions, coherent allocation paths, qualitative comparison, and one semantic disposition.
 
 ### Current decision-changing uncertainty
 
-The implementation uncertainty is mechanical: whether the four companion surfaces can participate in canonical artifact contracts, Skill manifests, Domain Packs, vocabulary, release inventory, and existing policy guidance without creating a parallel state system or violating conformance/currentness contracts.
+The implementation uncertainty is mechanical: whether explicit repository/relationship/capability/path references remain internally coherent and product-contract conformant while every scope-expansion/authority flag remains false.
 
-No empirical/model-comparison inquiry is required. Exact-head Product Validation and Release Candidate Distribution are the package qualification gates after Package A is integrated.
+No empirical/model-comparison inquiry is required. Product Validation and Release Candidate Distribution remain the qualification gates after Packages A and B integrate.
 
 ### Current warranted repository-level responsibility
 
-**Implement and qualify Package B — Strategic Reconciliation & Reserved-Decision Surfaces.**
+**Implement and qualify Package C — Multi-Repository Strategic Sensemaking.**
 
 Level-3 disposition: `BUILD`.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_RECONCILIATION_RESERVED_DECISIONS_V1
+CURRENT CONSTRUCTION RESPONSIBILITY = MULTI_REPOSITORY_STRATEGIC_SENSEMAKING_V1
 PRIMARY CONSTRUCTION PROGRAM = ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1
-ACTIVE PACKAGE = B_STRATEGIC_RECONCILIATION_RESERVED_DECISIONS
-PACKAGE_A = PREREQUISITE_INTEGRATION_BOUNDARY
+ACTIVE PACKAGE = C_MULTI_REPOSITORY_STRATEGIC_SENSEMAKING
+PACKAGES_A_B = PREREQUISITE_INTEGRATION_BOUNDARIES
+AUTOMATIC_REPOSITORY_DISCOVERY = FORBIDDEN
+CROSS_REPOSITORY_TRANSACTION_COORDINATION = NOT_AUTHORIZED
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE
 SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
 EXPERIMENT PREREQUISITE = NONE
-SYNTHETIC STRATEGICPLANNER TESTING = STOPPED
+SYNTHETIC_STRATEGICPLANNER_TESTING = STOPPED
 ```
 
-Issue #384 remains the separate external GitHub-admin branch/ruleset governance action; Issue #416 does not absorb or fabricate that hosting-layer transition.
+Issue #384 remains the separate external GitHub-admin branch/ruleset governance action.
 
 ### Active execution vehicle
 
-Package B branch:
+Package C branch:
 
 ```text
-work/strategic-reconciliation-v1-package-b
+work/multi-repository-strategic-sensemaking-v1-package-c
 ```
 
-Issue #416 is the owner-authorized umbrella construction record. Package A must integrate before Package B is merged to `main`.
+Issue #416 remains the umbrella authority. Packages A and B must integrate before Package C is merged to `main`.
 
 ### Expected evidence and reassessment
 
-Package B must demonstrate:
+Package C must demonstrate:
 
-- all four artifacts pass generic and specialized mechanical validation;
-- the shared validator cannot mutate strategy, make an owner decision, ratify thesis revision, establish semantic truth, or grant implementation authority;
-- manifests/Domain Pack/vocabulary/registry/release inventory remain mechanically conformant;
-- `using-sensemaking` and Learning / Reconciliation Policy route to the new surfaces only when their decision boundary is material;
-- no BeliefState/generic memory DB, automatic strategy mutation, automatic owner decision, automatic thesis revision, or external retrieval runtime is introduced;
-- exact Package-B head passes Product Validation and Release Candidate Distribution after retargeting onto integrated Package A;
-- the integrated Package-B tree passes the same product/release gates before Package C becomes current.
+- at least two explicit target repositories are required;
+- relation and capability owner aliases can reference only selected targets;
+- existing canonical relation classes are reused rather than replaced;
+- allocation paths are qualitative and all declared paths receive full Level-3 comparison;
+- numeric scoring/ranking fails closed;
+- automatic repository discovery, artifact-driven target expansion, semantic truth, and implementation authority flags must remain false;
+- artifact/Skill/manifest/Domain Pack/vocabulary/release surfaces remain conformant;
+- exact Package-C head passes Product Validation and Release Candidate Distribution after prerequisite integration;
+- the integrated Package-C tree passes the same gates before Package D becomes current.
 
 ### Authority / owner direction
 
@@ -239,10 +234,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**FINISH PACKAGE B, THEN QUALIFY IT ON TOP OF INTEGRATED PACKAGE A.**
+**FINISH PACKAGE C, THEN QUALIFY IT AFTER PACKAGES A AND B INTEGRATE.**
 
-Package B is being built as a stacked branch so owner-authorized construction can continue without an approval pause. Do not merge it before Package A qualifies and integrates.
-
-After Package A integration, retarget Package B to current `main`, resolve any mechanical currentness conflicts, require exact-head Product Validation and Release Candidate Distribution PASS, verify the integrated tree, and then proceed directly to Package C — Multi-Repository Strategic Sensemaking.
+Package C is intentionally stacked so construction continues without an approval pause. Do not merge it ahead of its prerequisite packages. After A/B integration, reconcile the branch to current `main`, require exact-head Product Validation and Release Candidate Distribution PASS, verify the integrated tree, and proceed directly to Package D — Change Impact & Product UX.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of Issue #416.
