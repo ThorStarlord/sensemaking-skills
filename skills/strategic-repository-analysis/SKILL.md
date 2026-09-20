@@ -127,8 +127,35 @@ Do not turn the states into maturity numbers.
 
 ### 5. Form the Strategic Frontier
 
+Before admitting a repository tension into the Strategic Frontier, apply the
+**Strategicity Gate**:
+
+> Would resolving this boundary materially change at least one of the
+> repository/product future capability state, product boundary, major
+> architecture/control boundary, dependency structure, authority/thesis
+> commitment, or the materially different future development that becomes
+> possible?
+
+Only boundaries that pass that semantic test belong on the Strategic Frontier.
+A useful maintenance action, local defect, stale status projection, routine
+dependency update, or already-selected bounded implementation task may still
+warrant lower-level work without becoming a Level-3 construction path.
+
+```text
+repository issue exists != strategic frontier
+useful maintenance exists != construction trajectory
+bounded repair warranted != Level-3 BUILD warranted
+repository-relevant work != strategic repository evolution
+```
+
 Identify the small set of unresolved boundaries that could materially change
 progress toward the governing mission.
+
+For new canonical `schema_version: 2` artifacts, each frontier entry records
+decision-changing evidence references, affected capability identifiers, and a
+short `strategic_consequence` explaining why the boundary is Level-3 material.
+The semantic agent judges that consequence; the validator checks only shape and
+references.
 
 Exclude attractive but non-decision-relevant ideas.
 
@@ -152,6 +179,7 @@ Each path must describe:
 
 - future state;
 - why it is plausible;
+- Strategic Frontier boundary or boundaries it responds to;
 - capabilities it builds on;
 - required capabilities/changes;
 - coarse construction sequence;
@@ -170,6 +198,12 @@ A path transition names a conceptual capability-state transition. It is not a
 task, milestone, schedule entry, status percentage, or automatic next action.
 A path is a coherent future trajectory, not a backlog.
 
+For new canonical `schema_version: 2` artifacts, path grounding is explicit:
+`frontier_refs`, `why_plausible`, `builds_on_capability_ids`, and
+`required_capability_ids` must connect the path to declared frontier and
+capability-map identifiers. Mechanical reference integrity does not establish
+that the path is strategically good.
+
 One path is valid when additional alternatives would be artificial. Zero paths is valid when even one construction path would be artificial or premature.
 
 For path distinctness, capability-state grounding, coarse construction
@@ -183,7 +217,7 @@ later possibilities.
 
 ### 7. Compare paths qualitatively
 
-Use the canonical Level-3 lenses:
+Use the canonical strategic-comparison lenses:
 
 1. mission relevance;
 2. decision value;
@@ -193,8 +227,21 @@ Use the canonical Level-3 lenses:
 6. deferral cost;
 7. reversibility;
 8. authority availability;
-9. dependency;
-10. smallest warranted intervention.
+9. dependency.
+
+For legacy v1 artifacts, the historical tenth
+`smallest_warranted_intervention` comparison lens remains valid for backward
+compatibility. New `schema_version: 2` artifacts derive the smallest warranted
+intervention only **after** the strategic disposition/path judgment.
+
+```text
+strategic warrant
+-> path/disposition selection
+-> smallest warranted intervention
+
+cheap or local intervention
+!= strategically preferable future
+```
 
 Do not assign numeric scores, weighted totals, tiers, or a deterministic winner.
 
@@ -274,6 +321,10 @@ Use:
 
 `references/strategic-repository-analysis-template.md`
 
+New canonical analyses emit `schema_version: 2`. Historical artifacts without a
+`schema_version` remain legacy v1 and must continue to validate without
+mutation.
+
 Then validate:
 
 ```bash
@@ -289,6 +340,8 @@ Preserve these distinctions in the artifact:
 
 ```text
 strategic analysis != implementation authorization
+repository-relevant work != strategic repository evolution
+bounded repair != construction path
 construction path != backlog
 path transition != roadmap item
 path transition != authorized responsibility
@@ -296,6 +349,7 @@ transition established != next transition selected
 path comparison != numeric ranking
 mechanically valid != semantically correct
 candidate responsibility != authorized execution
+strategic warrant precedes intervention minimization
 ```
 
 ## Output behavior

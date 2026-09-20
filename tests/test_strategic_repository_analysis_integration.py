@@ -144,3 +144,37 @@ def test_no_runtime_planner_or_schema_v3_is_added_by_integration() -> None:
     assert "OuterLoopEngine" not in pyproject
     assert "strategic_planner" not in pyproject
     assert 'schema_version: "2"' in release
+
+
+def test_strategicity_gate_separates_level3_from_maintenance() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = PATH_GUIDE.read_text(encoding="utf-8")
+
+    for phrase in (
+        "Strategicity Gate",
+        "repository issue exists != strategic frontier",
+        "bounded repair warranted != Level-3 BUILD warranted",
+        "repository-relevant work != strategic repository evolution",
+        "strategic warrant precedes intervention minimization",
+    ):
+        assert phrase in skill
+
+    assert "Apply the Strategicity Gate before path generation" in guide
+    assert "maintenance repair\n!= construction path" in guide
+    assert "small intervention\n!= strategically preferable path" in guide
+
+
+def test_v2_grounding_is_explicit_without_semantic_validator_authority() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = PATH_GUIDE.read_text(encoding="utf-8")
+
+    for phrase in (
+        "schema_version: 2",
+        "frontier_refs",
+        "why_plausible",
+        "builds_on_capability_ids",
+        "required_capability_ids",
+    ):
+        assert phrase in skill
+
+    assert "Mechanical tools validate only the declared\nrelationships." in guide

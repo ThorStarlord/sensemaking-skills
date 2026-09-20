@@ -140,14 +140,27 @@ coexist without implying a single scalar level.
 The Strategic Frontier is the set of current repository/product boundaries that
 could materially change progress toward the governing mission.
 
-The analysis should include only decision-relevant frontier entries, not every
-possible improvement.
+Before admitting a tension, apply the Strategicity Gate: resolving the boundary
+must be capable of materially changing a future capability state, product
+boundary, major architecture/control boundary, major dependency structure,
+authority/thesis commitment, or materially different future development that
+becomes possible.
+
+A local repair, stale status projection, routine maintenance action, or
+already-selected implementation task may warrant work without becoming Level 3.
 
 ```text
 idea exists != frontier item
+repository issue exists != strategic frontier
+bounded repair != construction path
 frontier item != implementation commitment
 frontier item != priority score
 ```
+
+For new `schema_version: 2` analyses, each frontier entry declares
+`evidence_refs`, `affected_capability_ids`, and `strategic_consequence`.
+The validator checks these declarations mechanically; the active semantic agent
+still decides whether the consequence is genuinely strategic.
 
 ## 7. Candidate construction paths
 
@@ -161,6 +174,7 @@ Each material path should state:
 - stable path identifier and name;
 - future state;
 - why this path is plausible from current evidence;
+- Strategic Frontier entries it responds to;
 - capabilities it builds on;
 - new capabilities or changes it requires;
 - coarse construction sequence;
@@ -193,9 +207,14 @@ BUILD
 
 Do not manufacture alternatives merely to fill a template.
 
+New `schema_version: 2` paths make grounding explicit through
+`frontier_refs`, `why_plausible`, `builds_on_capability_ids`, and
+`required_capability_ids`. Referential integrity is mechanically checkable;
+strategic quality is not.
+
 ## 8. Qualitative comparison
 
-Compare construction paths through existing Level-3 lenses:
+Compare new v2 construction paths through nine strategic lenses:
 
 1. mission relevance;
 2. decision value;
@@ -205,8 +224,20 @@ Compare construction paths through existing Level-3 lenses:
 6. deferral cost;
 7. reversibility;
 8. authority availability;
-9. dependency;
-10. smallest warranted intervention.
+9. dependency.
+
+Historical v1 analyses may retain the legacy tenth comparison lens,
+`smallest_warranted_intervention`. For v2, derive the smallest warranted
+intervention only after the strategic disposition/path judgment.
+
+```text
+strategic warrant
+-> path/disposition selection
+-> smallest warranted intervention
+
+small intervention
+!= strategically preferable future
+```
 
 Comparison values are semantic prose, not numeric scores.
 
@@ -318,6 +349,17 @@ Policy layers do not become runtime services merely because this analysis uses
 them.
 
 ## 14. Artifact
+
+New canonical analyses use:
+
+```yaml
+schema_version: 2
+artifact_id: strategic_repository_analysis
+```
+
+Historical analyses with no `schema_version` are legacy v1. They remain valid
+without mutation so qualified strategic history does not become invalid merely
+because the current authoring contract became more precise.
 
 The durable artifact id is:
 

@@ -287,6 +287,21 @@ one coherent construction trajectory yet. Do not manufacture an alternative mere
 make the analysis look complete. A `BUILD` disposition still requires a selected real
 path.
 
+Before promoting a repository finding into a Strategic Frontier/path, require a
+material future-state consequence. Local maintenance, documentation currentness,
+routine repair, or an already-selected implementation task may warrant bounded
+work without becoming Level-3 strategy.
+
+```text
+repository-relevant work != strategic repository evolution
+bounded repair != construction path
+strategic warrant precedes intervention minimization
+```
+
+New canonical strategic analyses use `schema_version: 2` grounding so frontier
+entries and paths explicitly reference evidence/capability/frontier identifiers.
+Historical versionless analyses remain legacy v1.
+
 ```text
 repo-sensemaker = diagnostic repository understanding
 strategic-repository-analysis = Level-3 repository evolution synthesis

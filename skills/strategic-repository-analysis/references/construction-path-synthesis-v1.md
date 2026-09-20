@@ -12,6 +12,8 @@ evidence to a materially different future capability state.
 ```text
 construction path
 = future state
++ why plausible from current evidence/intent
++ Strategic Frontier grounding
 + capabilities built on
 + required capabilities
 + coarse sequence
@@ -51,6 +53,39 @@ shape.
 path diversity
 != category coverage
 ```
+
+### 2A. Apply the Strategicity Gate before path generation
+
+Do not turn every useful repository action into a Level-3 future.
+
+Before a tension can generate a construction path, ask whether resolving it
+could materially change at least one of:
+
+- repository/product future capability state;
+- product boundary;
+- major architecture/control boundary;
+- major dependency structure;
+- authority or thesis commitment;
+- materially different future development that becomes possible.
+
+If none changes, keep the finding at the appropriate lower control level.
+
+```text
+repository-relevant work
+!= strategic repository evolution
+
+maintenance repair
+!= construction path
+
+bounded work can be warranted
+without Level-3 BUILD
+```
+
+For new `schema_version: 2` analyses, every Strategic Frontier entry records
+evidence references, affected capability identifiers, and a semantic
+`strategic_consequence`; every construction path names its `frontier_refs`
+and capability identifiers. Mechanical tools validate only the declared
+relationships.
 
 ## 3. Minimum path distinctness
 
@@ -165,8 +200,22 @@ Compare every material path through the canonical Level-3 lenses:
 9. dependency;
 10. smallest warranted intervention.
 
+For new `schema_version: 2` artifacts, compare through these nine strategic
+lenses. The legacy v1 tenth lens `smallest_warranted_intervention` remains
+valid only for backward compatibility; v2 derives the smallest warranted
+intervention after strategic disposition/path selection.
+
 For each lens, explain what matters and why. Do not use numbers, stars, weighted
 totals, tiers, or pseudo-quantitative labels as substitutes for reasoning.
+
+```text
+strategic comparison
+-> disposition/path judgment
+-> smallest warranted intervention
+
+small intervention
+!= strategically preferable path
+```
 
 A comparison may reveal:
 
@@ -268,6 +317,7 @@ strategic path selected semantically
 
 Do not:
 
+- convert maintenance, currentness repair, or every useful repository action into a strategic path;
 - convert every gap into a path;
 - make path names disguise one shared implementation sequence;
 - generate a backlog and call it strategy;
