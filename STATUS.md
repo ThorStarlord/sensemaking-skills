@@ -144,7 +144,7 @@ and read-only history/graph projection during ordinary consequential repository
 work. Further construction should reopen only from concrete residual friction or
 separate owner direction.
 
-### Cu### Current decision-changing uncertainty
+### Current decision-changing uncertainty
 
 None currently warrants additional strategic-continuity construction after Issue #430.
 
