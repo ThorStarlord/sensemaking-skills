@@ -164,8 +164,8 @@ sensemaking-skills strategy compare --before /path/to/older.md --after /path/to/
 sensemaking-skills strategy drift --artifact artifacts/strategic_repository_analysis.md --repo /path/to/repo
 ```
 
-`strategy drift` reports mechanically observable source/evidence currentness.
-It does not declare the strategy invalid or require reanalysis by itself.
+`strategy drift` determines whether the prior strategy is invalid.
+When drift is detected, strategic reanalysis is required before further work.
 
 ```text
 repository diagnosis
