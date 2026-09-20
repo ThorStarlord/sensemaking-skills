@@ -150,6 +150,10 @@ capability_states:
     state: ESTABLISHED
     evidence_refs:
       - path/to/file.md:L10-L20
+  - capability_id: needed-capability
+    state: MISSING
+    evidence_refs:
+      - path/to/other-file.md:L30-L40
 strategic_frontier:
   - frontier_id: FRONTIER-1
     statement: "<decision-relevant boundary>"
