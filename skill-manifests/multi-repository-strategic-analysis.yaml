@@ -1,0 +1,26 @@
+schema_version: 1
+skill_id: multi-repository-strategic-analysis
+domain: engineering
+responsibilities:
+  - multi_repository_strategic_analysis
+consumes:
+  - repository_state
+  - owner_intent
+  - prior_evidence
+  - multi_repository_target_set
+  - explicit_repository_relations
+produces:
+  - multi_repository_strategic_analysis
+semantic_concepts:
+  - Intent
+  - TargetSnapshot
+  - Observation
+  - Evidence
+  - Claim
+  - Uncertainty
+  - Responsibility
+  - SoftwareCapability
+  - Decision
+  - Authority
+  - Artifact
+repository_mutation: false
