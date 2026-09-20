@@ -5,6 +5,14 @@
 State owner intent, repository-owned product authority, target repository, exact
 source identity when available, and analysis/implementation authority boundary.
 
+## 1A. Strategic Continuity (when continuing prior analysis)
+
+When a materially relevant prior strategic analysis exists, identify its stable
+reference, declare the continuity disposition (`REAFFIRM | CONTINUE | REVISE |
+SUPERSEDE | CLOSE`), identify the prior selected path when applicable, and state
+why the relationship holds. Use `NEW` when explicitly creating a new analysis
+lineage.
+
 ## 2. Current System Model
 
 Describe the current repository/product as a system: purpose, major capabilities,
@@ -37,6 +45,9 @@ For each path include:
 - **Risks / tradeoffs:**
 - **Reversibility:**
 - **Evidence gaps:**
+- **Assumptions:** decision-relevant premises this path depends on, when useful.
+- **Reassessment triggers:** concrete changes that should cause the path judgment
+  to be reconsidered.
 
 Repeat for each materially distinct path.
 
@@ -68,6 +79,12 @@ State the uncertainty that could materially change the strategic judgment, what
 it could change, whether inquiry is warranted, the smallest sufficient evidence,
 and the correct evidence source.
 
+## 7A. Decision Assumptions and Reassessment Triggers
+
+Record only premises whose failure could materially change the strategic judgment.
+Each assumption should have a stable identifier, evidence references, and one or
+more reassessment triggers. Do not use confidence scores or probability fields.
+
 ## 8. Strategic Synthesis
 
 Explain the semantic judgment across the candidate paths and why the disposition
@@ -98,6 +115,12 @@ line/range or identifier where available.
 
 ```yaml
 artifact_id: strategic_repository_analysis
+analysis_ref: "SRA-<stable-reference>"
+continuity:
+  prior_analysis_ref: null
+  disposition: NEW
+  prior_selected_path_id: null
+  reason: "No prior analysis is being continued."
 target_repository: owner/repository
 target_source_identity: "<commit/tree/ref or documented-unverified>"
 governing_intent: "<owner/repository strategy statement>"
@@ -128,6 +151,10 @@ construction_paths:
     reversibility: "<qualitative explanation>"
     evidence_gaps:
       - "<material assumption/gap>"
+    assumptions:
+      - "<decision-relevant premise>"
+    reassessment_triggers:
+      - "<observable condition that should trigger reconsideration>"
 path_comparison:
   - path_id: PATH-1
     lenses:
@@ -147,6 +174,13 @@ decision_changing_uncertainty:
   inquiry_warranted: false
   evidence_needed: "<smallest sufficient evidence or none>"
   source: repository_evidence
+decision_assumptions:
+  - assumption_id: ASSUMPTION-1
+    statement: "<premise that could change the judgment if false>"
+    evidence_refs:
+      - path/to/file.md:L10-L20
+    reassessment_triggers:
+      - "<condition that should trigger strategic reconsideration>"
 strategic_disposition: BUILD
 selected_path_id: PATH-1
 candidate_repository_responsibility: "<bounded responsibility or null>"
