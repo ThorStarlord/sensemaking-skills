@@ -232,6 +232,34 @@ new SearchState schema.
 Exploration Policy does not rank the Strategic Frontier or select implementation
 authority. The validator does not infer or score search allocation.
 
+### 4.7.4 Warrant / Choice Policy projection
+
+When a strategic boundary, responsibility, continuation, closure, protected transition,
+or strategic direction must be justified explicitly, apply
+[Warrant / Choice Policy v0](../skills/using-sensemaking/references/warrant-choice-policy-v0.md).
+
+```text
+specific target
++ target-specific dependencies
++ current evidence / currentness
++ constraints / consequence / reversibility
++ authority
+-> WARRANTED / NOT_WARRANTED / unresolved disposition
+-> select one target when commitment is required
+   OR NO_SELECTION
+```
+
+Warrant is target-specific and defeasible. A target may be technically warranted while
+protected action authority is still absent.
+
+```text
+warrant != confidence score
+warrant != authorization
+warrant for target A != warrant for target B
+```
+
+The validator does not infer semantic warrant or choose among targets.
+
 ### 4.8 Current warranted repository-level responsibility
 
 Record the semantic responsibility rather than merely an implementation task.
