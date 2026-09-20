@@ -1,0 +1,20 @@
+schema_version: 1
+skill_id: thesis-review-packet
+domain: engineering
+responsibilities:
+  - thesis_review_support
+consumes:
+  - strategic_repository_analysis
+  - strategic_reconciliation
+  - product_strategy
+produces:
+  - thesis_review_packet
+semantic_concepts:
+  - Intent
+  - Evidence
+  - Claim
+  - Uncertainty
+  - Authority
+  - Decision
+  - Artifact
+repository_mutation: false

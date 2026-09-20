@@ -1,0 +1,19 @@
+schema_version: 1
+skill_id: owner-decision-capsule
+domain: engineering
+responsibilities:
+  - owner_decision_support
+consumes:
+  - strategic_repository_analysis
+  - strategic_reconciliation
+  - owner_intent
+produces:
+  - owner_decision_capsule
+semantic_concepts:
+  - Intent
+  - Evidence
+  - Uncertainty
+  - Authority
+  - Decision
+  - Artifact
+repository_mutation: false

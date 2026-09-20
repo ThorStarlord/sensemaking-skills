@@ -245,10 +245,17 @@ For `INVESTIGATE`, nominate the bounded evidence-producing responsibility, not
 a broad research program.
 
 For `OWNER_DECISION`, state the exact owner decision rather than disguising it
-as repository investigation.
+as repository investigation. When a durable owner-facing decision surface is
+useful, produce an `owner_decision_capsule`; the capsule does not select for the
+owner.
 
 For `THESIS_REVIEW`, identify the governing commitment that Level 3 cannot
-silently rewrite.
+silently rewrite. When the review must be carried across contexts, produce a
+`thesis_review_packet`; the packet does not ratify a Level-4 disposition.
+
+When decision-changing evidence comes from outside repository authority and must
+remain reconstructible, use an `external_evidence_packet` to preserve bounded
+source/currentness provenance.
 
 ### 10. Write and validate the artifact
 
@@ -285,6 +292,10 @@ reassessment assumptions should be reconstructible from the artifact itself.
 
 Do not append an implementation plan unless the strategic disposition and
 authority independently warrant one.
+
+When later evidence returns against this analysis, use
+`strategic-repository-reconciliation` if the claim/assumption/path/strategic
+effect itself must become a durable artifact.
 
 Do not automatically create a Campaign, issue, PR, execution handoff, or code
 change from this Skill.

@@ -106,6 +106,7 @@ jobs:
             tests/test_strategic_repository_analysis_integration.py \
             tests/test_strategic_repository_sensemaking_closeout.py \
             tests/test_strategic_continuity_v1.py \
+            tests/test_strategic_companion_artifacts.py \
             -q
 
       - name: Build wheel and sdist

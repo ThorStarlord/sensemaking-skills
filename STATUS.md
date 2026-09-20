@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-20  
-**Current phase:** Issue #416 Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 is owner-authorized and active. Package A — Strategic Continuity & Currentness is the current bounded responsibility. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #416 Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 is owner-authorized and active. Package B — Strategic Reconciliation & Reserved-Decision Surfaces is the current bounded responsibility on the stacked construction branch. Package A remains the prerequisite integration boundary. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -59,7 +59,8 @@ The repository-qualified baseline includes:
 - **External executor interchange / AI Software Factory bridge**: generic integrity-bound handoff/result envelopes plus a caller-selected factory GitHub-Issue/command projection; no workflow selection, publication, scheduling, worker allocation, merge, or deploy authority.
 - **Explicit GitHub provenance publication**: preview-by-default, explicit-`--publish` Issue/PR comments with deterministic markers and duplicate suppression.
 - **Cross-repository execution projection**: explicit ordering relations become read-only prerequisite edges/layers; the projection is not an execution plan and same-layer membership does not authorize parallel work.
-- **Strategic Continuity v1 — PACKAGE A IN CONSTRUCTION:** additive strategic-analysis lineage, decision assumptions, reassessment triggers, and deterministic `strategy` projections are being implemented under Issue #416 without creating a planner or alternate strategic truth system.
+- **Strategic Continuity v1 — PACKAGE A PREREQUISITE:** additive strategic-analysis lineage, decision assumptions, reassessment triggers, and deterministic `strategy` projections are implemented on the Package-A line without creating a planner or alternate strategic truth system.
+- **Strategic Reconciliation & Reserved-Decision Surfaces — PACKAGE B IN CONSTRUCTION:** first-class reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts preserve evidence-return and reserved-authority boundaries without automatic state mutation.
 
 Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision-v1-handoff.md`.
 Policy Hierarchy Completion v0 closeout is summarized in `docs/policy-hierarchy-completion-v0-handoff.md`.
@@ -107,52 +108,58 @@ Current material frontier items are:
 
 ### Current highest-leverage boundary
 
-**Strategic Continuity & Currentness — Package A of Issue #416.**
+**Strategic Reconciliation & Reserved-Decision Surfaces — Package B of Issue #416.**
 
-The first normal-use Strategic Repository Sensemaking episode (#414/#415) exposed a concrete continuity/currentness pressure: the repository's immutable strategic analysis and its current Level-3 projection can diverge after later integration, requiring manual reconstruction.
-
-Owner direction now explicitly promotes that pressure into bounded construction:
+Package A makes strategic analyses reconstructibly continuous. The next owner-authorized boundary is the return path from consequential evidence and the explicit handoff points where repository reasoning must stop at owner, Level-4, or external-source boundaries.
 
 ```text
-immutable strategic analysis
--> explicit lineage / continuation
--> decision assumptions + reassessment triggers
--> deterministic compare/currentness projection
--> semantic reassessment only when the agent judges it warranted
+prior strategic analysis
+-> returned evidence
+-> explicit reconciliation
+-> reaffirm / revise / reopen / owner decision / thesis review
+
+OWNER_DECISION
+-> owner decision capsule
+
+THESIS_REVIEW
+-> thesis review packet
+
+authorized external evidence
+-> external evidence packet
 ```
 
-This package reuses `strategic_repository_analysis`; it does not introduce a second strategic state model.
+These are semantic-agent artifacts, not runtime engines or authority tokens.
 
 ### Current strategic decision to support
 
-**Decision:** how can later repository evolution remain reconstructibly connected to prior strategic analyses without turning currentness detection into automatic strategic planning?
+**Decision:** how can evidence-return and reserved decisions remain reconstructible across contexts without silently mutating strategy, deciding for the owner, ratifying Level-4 changes, or laundering external evidence into repository truth?
 
-**Current judgment:** **BUILD / STRATEGIC_CONTINUITY_V1_PACKAGE_A.**
+**Current judgment:** **BUILD / STRATEGIC_RECONCILIATION_RESERVED_DECISIONS_V1_PACKAGE_B.**
 
-The smallest warranted intervention is additive metadata plus deterministic projections:
+The smallest warranted intervention is four bounded artifacts/Skills plus shared mechanical contract validation:
 
-- optional stable `analysis_ref`;
-- explicit semantic continuity relation to a prior analysis;
-- decision assumptions and reassessment triggers;
-- path-level assumptions/triggers;
-- root `strategy inspect|paths|uncertainty|assumptions|compare|drift` CLI projections.
+- `strategic_reconciliation`;
+- `owner_decision_capsule`;
+- `thesis_review_packet`;
+- `external_evidence_packet`.
 
 ### Current decision-changing uncertainty
 
-The principal implementation uncertainty is mechanical: whether the additive continuity fields and root strategy projections can be integrated while preserving all existing Strategic Repository Sensemaking v1 contracts and release qualification.
+The implementation uncertainty is mechanical: whether the four companion surfaces can participate in canonical artifact contracts, Skill manifests, Domain Packs, vocabulary, release inventory, and existing policy guidance without creating a parallel state system or violating conformance/currentness contracts.
 
-No empirical/model-comparison inquiry is required. Exact-head Product Validation and Release Candidate Distribution are the package qualification gates.
+No empirical/model-comparison inquiry is required. Exact-head Product Validation and Release Candidate Distribution are the package qualification gates after Package A is integrated.
 
 ### Current warranted repository-level responsibility
 
-**Implement and qualify Package A — Strategic Continuity & Currentness.**
+**Implement and qualify Package B — Strategic Reconciliation & Reserved-Decision Surfaces.**
 
 Level-3 disposition: `BUILD`.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_CONTINUITY_CURRENTNESS_V1
+CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_RECONCILIATION_RESERVED_DECISIONS_V1
 PRIMARY CONSTRUCTION PROGRAM = ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1
-ACTIVE PACKAGE = A_STRATEGIC_CONTINUITY_CURRENTNESS
+ACTIVE PACKAGE = B_STRATEGIC_RECONCILIATION_RESERVED_DECISIONS
+PACKAGE_A = PREREQUISITE_INTEGRATION_BOUNDARY
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE
 SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
@@ -164,25 +171,25 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-Package A branch:
+Package B branch:
 
 ```text
-work/strategic-continuity-v1-package-a
+work/strategic-reconciliation-v1-package-b
 ```
 
-Issue #416 is the owner-authorized umbrella construction record.
+Issue #416 is the owner-authorized umbrella construction record. Package A must integrate before Package B is merged to `main`.
 
 ### Expected evidence and reassessment
 
-Package A must demonstrate:
+Package B must demonstrate:
 
-- existing `strategic_repository_analysis` artifacts remain valid;
-- continuity/assumption metadata is mechanically validated when present;
-- `strategy compare` projects declared change without ranking;
-- `strategy drift` reports mechanically observable source/evidence currentness without declaring strategy invalid;
-- no Campaign schema change, planner runtime, automatic reanalysis, or authority expansion occurs;
-- exact Package-A head passes Product Validation and Release Candidate Distribution;
-- the integrated Package-A tree passes the same product/release gates before Package B becomes current.
+- all four artifacts pass generic and specialized mechanical validation;
+- the shared validator cannot mutate strategy, make an owner decision, ratify thesis revision, establish semantic truth, or grant implementation authority;
+- manifests/Domain Pack/vocabulary/registry/release inventory remain mechanically conformant;
+- `using-sensemaking` and Learning / Reconciliation Policy route to the new surfaces only when their decision boundary is material;
+- no BeliefState/generic memory DB, automatic strategy mutation, automatic owner decision, automatic thesis revision, or external retrieval runtime is introduced;
+- exact Package-B head passes Product Validation and Release Candidate Distribution after retargeting onto integrated Package A;
+- the integrated Package-B tree passes the same product/release gates before Package C becomes current.
 
 ### Authority / owner direction
 
@@ -232,10 +239,10 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**QUALIFY AND INTEGRATE ISSUE #416 PACKAGE A — STRATEGIC CONTINUITY & CURRENTNESS.**
+**FINISH PACKAGE B, THEN QUALIFY IT ON TOP OF INTEGRATED PACKAGE A.**
 
-Merge Package A only after its exact head passes Product Validation and Release Candidate Distribution. Verify the integrated tree and record the qualification receipt on Issue #416.
+Package B is being built as a stacked branch so owner-authorized construction can continue without an approval pause. Do not merge it before Package A qualifies and integrates.
 
-After successful integration, proceed directly to Package B — Strategic Reconciliation & Reserved-Decision Surfaces — without reopening an experiment gate or waiting for another approval.
+After Package A integration, retarget Package B to current `main`, resolve any mechanical currentness conflicts, require exact-head Product Validation and Release Candidate Distribution PASS, verify the integrated tree, and then proceed directly to Package C — Multi-Repository Strategic Sensemaking.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of Issue #416.

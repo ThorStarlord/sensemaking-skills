@@ -1,0 +1,18 @@
+schema_version: 1
+skill_id: external-evidence-packet
+domain: engineering
+responsibilities:
+  - external_evidence_packaging
+consumes:
+  - external_source
+  - target_decision
+produces:
+  - external_evidence_packet
+semantic_concepts:
+  - Observation
+  - Evidence
+  - Claim
+  - EpistemicStatus
+  - Uncertainty
+  - Artifact
+repository_mutation: false

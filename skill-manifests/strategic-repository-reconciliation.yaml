@@ -1,0 +1,20 @@
+schema_version: 1
+skill_id: strategic-repository-reconciliation
+domain: engineering
+responsibilities:
+  - strategic_reconciliation
+consumes:
+  - strategic_repository_analysis
+  - prior_evidence
+  - worker_result
+produces:
+  - strategic_reconciliation
+semantic_concepts:
+  - TargetSnapshot
+  - Evidence
+  - Claim
+  - Uncertainty
+  - Responsibility
+  - Decision
+  - Artifact
+repository_mutation: false

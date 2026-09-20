@@ -24,6 +24,26 @@ ecosystems:
         artifact: strategic_repository_analysis
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/strategic-repository-analysis" }
+      - id: strategic-repository-reconciliation
+        purpose: reconcile returned evidence against a prior strategic analysis
+        artifact: strategic_reconciliation
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/strategic-repository-reconciliation" }
+      - id: owner-decision-capsule
+        purpose: package an owner-reserved decision without selecting it
+        artifact: owner_decision_capsule
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/owner-decision-capsule" }
+      - id: thesis-review-packet
+        purpose: prepare a Level-4 thesis review without ratifying it
+        artifact: thesis_review_packet
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/thesis-review-packet" }
+      - id: external-evidence-packet
+        purpose: preserve decision-relevant external evidence provenance and currentness
+        artifact: external_evidence_packet
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/external-evidence-packet" }
       - id: workflow-planner
         purpose: select and configure the recommended workflow for execution
         artifact: workflow_orchestration_plan
