@@ -161,18 +161,42 @@ truth system.
 Canonical agent-facing contract:
 `skills/using-sensemaking/references/exploration-policy-v0.md`.
 
-### 4.5 Warrant / Choice Policy — planned
+### 4.5 Warrant / Choice Policy — Package 4 / integrated
 
-Warrant / Choice Policy will adjudicate whether a contemplated responsibility,
-inquiry, action, continuation, verification, or closure claim is justified now.
+Warrant / Choice Policy asks:
+
+> Given a specific contemplated target, current state, evidence, constraints, and
+> authority, what is justified now—and if several targets are credibly warranted,
+> which one should be selected, if any?
+
+It is target-specific and defeasible.
+
+Documentation-level dispositions include:
+
+```text
+WARRANTED
+NOT_WARRANTED
+MORE_EVIDENCE_REQUIRED
+AUTHORITY_REQUIRED
+OWNER_DECISION_REQUIRED
+CHALLENGE_REQUIRED
+EXPLORATION_REQUIRED
+VERIFICATION_REQUIRED
+SMALLER_INTERVENTION_PREFERRED
+NO_SELECTION
+```
 
 It must preserve:
 
 ```text
 warrant != confidence score
 warrant != authorization
-warrant != majority vote
+warrant for target A != warrant for target B
+candidate set exists != one candidate must be selected
 ```
+
+Canonical agent-facing contract:
+`skills/using-sensemaking/references/warrant-choice-policy-v0.md`.
 
 ### 4.6 Learning / Reconciliation Policy — planned
 
@@ -239,7 +263,7 @@ Policy Hierarchy Completion v0 proceeds as bounded packages:
 1. Inquiry Policy v0 — integrated;
 2. Metareasoning Policy v0 — integrated;
 3. Exploration Policy v0 — integrated;
-4. Warrant / Choice Policy v0;
+4. Warrant / Choice Policy v0 — integrated;
 5. Learning / Reconciliation Policy v0;
 6. stable Strategic Alternatives surface;
 7. Adaptive Policy Coordinator v0.

@@ -116,6 +116,7 @@ task / decision
 -> Metareasoning Policy: act / inquire / challenge / explore / verify / escalate / stop
 -> when search is materially iterative: Exploration Policy
    exploit / explore / challenge / diagnose / recombine / restart / verify / exit-search
+-> Warrant / Choice Policy: adjudicate the specific target or decline selection
 -> bounded evidence when inquiry is warranted
 -> warranted responsibility
 -> authority check
@@ -173,7 +174,10 @@ apply METAREASONING POLICY when control-mode choice is material
 when search is materially iterative,
 apply EXPLORATION POLICY to allocate search effort
       |
+apply WARRANT / CHOICE POLICY to the contemplated target(s)
+      |
 select ONE WARRANTED REPOSITORY-LEVEL RESPONSIBILITY
+or explicitly decline selection
       |
 choose the SMALLEST WARRANTED INTERVENTION
       |

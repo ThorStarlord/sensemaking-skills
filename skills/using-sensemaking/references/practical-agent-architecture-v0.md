@@ -19,6 +19,8 @@ goal + authority + target
 -> resolve the nearest decision-changing warrant gap
 -> apply Inquiry Policy: no inquiry, or smallest sufficient evidence
 -> apply Metareasoning Policy: act / inquire / challenge / explore / verify / escalate / stop
+-> when search is materially iterative, apply Exploration Policy
+-> apply Warrant / Choice Policy to the current target
 -> check authority + mechanical preconditions
 -> orchestrate selected work
 -> treat returned result as evidence
@@ -77,6 +79,29 @@ warrant for target A != warrant for target B
 ```
 
 A test result that warrants a candidate-level claim may not warrant closure. A technically justified repair may not grant merge authority.
+
+### 2.1 Warrant / Choice Policy
+
+Use the canonical `warrant-choice-policy-v0.md` contract when target justification or
+choice is consequential.
+
+```text
+target + dependencies + evidence + constraints + authority
+-> target-specific warrant disposition
+-> select one warranted target if commitment is required
+   OR NO_SELECTION
+```
+
+Warrant is defeasible and current-state relative. Do not convert it into a scalar score,
+permission token, universal lifecycle state, or automatic chooser.
+
+```text
+warrant for target A
+!= warrant for target B
+
+selected
+!= authorized
+```
 
 ## 3. Find the nearest decision-changing warrant gap
 
