@@ -113,6 +113,7 @@ jobs:
             tests/test_policy_hierarchy_interface_clarification_v1.py \
             tests/test_strategic_continuity_refinement_v1.py \
             tests/test_decision_journey_productization_v1.py \
+            tests/test_decision_journey_productization_v1_closeout.py \
             -q
 
       - name: Build wheel and sdist
