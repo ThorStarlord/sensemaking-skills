@@ -416,6 +416,64 @@ artifacts:
         - autonomous_execution
         - yolo_execution
 
+  - id: multi_repository_strategic_analysis
+    path: "artifacts/multi_repository_strategic_analysis.md"
+    produced_by: multi-repository-strategic-analysis
+    consumed_by:
+      - user
+      - workflow-planner
+      - prompt-handoff
+      - strategic-repository-reconciliation
+    description: "Level-3 strategic analysis of an explicitly selected repository set, including capability ownership, boundary tensions, coherent allocation/construction paths, qualitative comparison, and disposition"
+    required_sections:
+      - governing_intent_scope_and_authority
+      - current_multi_repository_system_model
+      - capability_ownership_and_overlap_map
+      - explicit_relationships_and_cross_repository_evidence
+      - boundary_tensions
+      - candidate_boundary_allocation_paths
+      - qualitative_path_comparison
+      - decision_changing_uncertainty
+      - strategic_synthesis_and_warranted_direction
+      - authority_and_claim_boundaries
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - analysis_ref
+      - governing_intent
+      - target_repositories
+      - explicit_relations
+      - capability_ownership
+      - boundary_tensions
+      - construction_paths
+      - path_comparison
+      - decision_changing_uncertainty
+      - strategic_disposition
+      - selected_path_id
+      - candidate_repository_responsibility
+      - affected_target_aliases
+      - automatic_repository_discovery_performed
+      - target_scope_expanded_by_artifact
+      - implementation_authority_established_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    notes:
+      - "Every repository in scope must be explicitly selected and represented in target_repositories."
+      - "Existing Campaign relation classes may be reused as evidence, but this artifact does not mutate multi-target state."
+      - "Capability overlap is not mechanically classified as a defect."
+      - "Construction/allocation paths are qualitative strategic alternatives, not backlogs or transaction plans."
+      - "automatic_repository_discovery_performed, target_scope_expanded_by_artifact, implementation_authority_established_by_artifact, and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py multi_repository_strategic_analysis {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-multi-repository-strategic-analysis.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
   - id: discovery_findings
     path: "artifacts/discovery_findings.md"
     produced_by: discovery
