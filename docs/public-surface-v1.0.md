@@ -120,7 +120,14 @@ The supported Level-3 engineering surface also includes
 It operates only on an explicitly selected repository set and may reuse declared
 multi-target relations as evidence. It does not discover repositories, mutate
 Campaign target sets, rank boundary paths numerically, or coordinate
-cross-repository transactions. It models current capability state,
+cross-repository transactions.
+
+The supported engineering analysis surface also includes
+`change-impact-analysis` -> `change_impact_analysis`. It maps
+decision-relevant affected code/contracts/artifacts/tests/docs/claims/authority/
+release/cross-repository surfaces around a bounded change and records required
+verification/reconciliation or higher-scope review. It does not authorize the
+change, generate an automatic backlog, or expand repository scope. It models current capability state,
 0–5 materially real repository construction paths, qualitative tradeoffs,
 decision-changing uncertainty, and a semantic strategic disposition while
 preserving:
