@@ -259,6 +259,29 @@ If the strategic disposition is `BUILD`, only then nominate the smallest
 bounded repository responsibility and check execution authority independently.
 Do not translate construction paths into an automatic backlog.
 
+When the disposition is reserved or evidence must cross an authority boundary:
+
+```text
+OWNER_DECISION
+-> owner-decision-capsule when a durable owner-facing packet is useful
+
+THESIS_REVIEW
+-> thesis-review-packet when Level-4 review must be reconstructible
+
+external evidence is decision-changing
+-> external-evidence-packet when source/currentness provenance should persist
+```
+
+After consequential Level-3 evidence returns, use
+`strategic-repository-reconciliation` when a fresh context must reconstruct how
+the evidence changed (or did not change) prior claims, assumptions, path
+continuation, or strategic state.
+
+```text
+packet produced != reserved decision made
+reconciliation produced != strategy automatically mutated
+```
+
 Sensemaking is not ceremony. Use the lightest surface that can change the
 decision.
 
@@ -352,7 +375,7 @@ authority need discovered
 != authority granted
 ```
 
-Persist only the explicit decision-relevant update another context must reconstruct, using existing Campaign / STATUS / ADR / handoff / evidence surfaces.
+Persist only the explicit decision-relevant update another context must reconstruct, using existing Campaign / STATUS / ADR / handoff / evidence surfaces. At Level 3, `strategic-repository-reconciliation` provides a first-class artifact when the relationship to a prior `strategic_repository_analysis` itself must be durable.
 
 Read `references/learning-reconciliation-policy-v0.md` when returned evidence can materially change the decision model.
 
@@ -377,7 +400,7 @@ NO_INQUIRY_NEEDED
 
 When inquiry is warranted, identify the smallest sufficient evidence, its source, the bounded evidence-producing responsibility (if one is needed), authority, and a stop condition.
 
-If the missing premise is owner intent, ask the owner rather than searching the repository. If the needed evidence is external and unavailable or unauthorized, record the external dependency rather than fabricating a local substitute.
+If the missing premise is owner intent, ask the owner rather than searching the repository; use an `owner_decision_capsule` when the choice needs a reconstructible options/tradeoff packet. If the needed evidence is external and unavailable or unauthorized, record the external dependency rather than fabricating a local substitute. When authorized external evidence is obtained and its provenance/currentness is decision-relevant, preserve it in an `external_evidence_packet`.
 
 Inquiry selection is not action authorization. Returned evidence comes back to the active semantic controller for adjudication.
 
