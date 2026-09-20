@@ -114,6 +114,8 @@ task / decision
 -> consequential uncertainty
 -> Inquiry Policy: no inquiry or smallest sufficient evidence
 -> Metareasoning Policy: act / inquire / challenge / explore / verify / escalate / stop
+-> when search is materially iterative: Exploration Policy
+   exploit / explore / challenge / diagnose / recombine / restart / verify / exit-search
 -> bounded evidence when inquiry is warranted
 -> warranted responsibility
 -> authority check
@@ -167,6 +169,9 @@ identify DECISION-CHANGING STRATEGIC UNCERTAINTY
 apply INQUIRY POLICY: no inquiry or smallest sufficient evidence
       |
 apply METAREASONING POLICY when control-mode choice is material
+      |
+when search is materially iterative,
+apply EXPLORATION POLICY to allocate search effort
       |
 select ONE WARRANTED REPOSITORY-LEVEL RESPONSIBILITY
       |

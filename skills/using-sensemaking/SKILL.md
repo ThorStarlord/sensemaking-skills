@@ -21,16 +21,17 @@ Use this bootstrap to:
 4. identify the nearest unresolved premise that could change the correct next action;
 5. apply **Inquiry Policy v0** to decide whether more evidence is actually needed and, if so, identify the smallest sufficient evidence and source;
 6. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
-7. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
-8. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
-9. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
-10. perform or delegate bounded work through the appropriate capability;
-11. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
-12. distinguish mechanical validation from analytical correctness and closure;
-13. reconcile consequential work claims with durable evidence;
-14. perform finding-specific repair verification when a prior finding was supposedly fixed;
-15. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
-16. decide whether to continue, stop, escalate, or ask the owner.
+7. when search is materially iterative, apply **Exploration Policy v0** to allocate effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search;
+8. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
+9. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
+10. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
+11. perform or delegate bounded work through the appropriate capability;
+12. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
+13. distinguish mechanical validation from analytical correctness and closure;
+14. reconcile consequential work claims with durable evidence;
+15. perform finding-specific repair verification when a prior finding was supposedly fixed;
+16. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
+17. decide whether to continue, stop, escalate, or ask the owner.
 
 This Skill does **not** make every task require `repo-sensemaker` or a Campaign, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
 
@@ -59,6 +60,7 @@ Orient
 -> locate the nearest decision-changing warrant gap
 -> apply Inquiry Policy: no inquiry, or smallest sufficient evidence
 -> apply Metareasoning Policy when control-mode choice is material
+-> if search is materially iterative, apply Exploration Policy
 -> select responsibility
 -> perform or delegate bounded work
 -> ground returned evidence
@@ -355,11 +357,38 @@ otherwise
 
 **Exploration** asks what plausible frame, option, explanation, or intervention is not yet represented.
 
-When iterative search has multiple meaningful attempts, use the material search history to decide whether the next move should exploit, explore, challenge, diagnose, recombine, restart, or verify. Keep this implicit for one-shot/local work; do not turn the modes into a score or routing table.
+### Exploration Policy v0
+
+When iterative search has multiple meaningful attempts, use the material search history to allocate the next search move:
+
+```text
+EXPLOIT
+EXPLORE
+CHALLENGE
+DIAGNOSE
+RECOMBINE
+RESTART
+VERIFY
+EXIT_SEARCH
+```
+
+`EXIT_SEARCH` is valid when additional search is unlikely to improve the decision enough to justify its cost.
+
+Search history is a decision-relevant projection of existing evidence/provenance. Keep it transient for small work and reuse existing Campaign/handoff/STATUS/repository-history surfaces when continuation makes it durable.
+
+```text
+search history exists
+!= SearchState schema required
+
+Exploration Policy
+!= Strategic Frontier ranking
+```
+
+Keep this implicit for one-shot/local work; do not turn the modes into a score or routing table.
 
 Critic or explorer output is evidence for the active agent; it is not automatic veto, approval, or authority.
 
-For explicit inquiry selection, read `references/inquiry-policy-v0.md`. For challenge/exploration triggers, delegation evidence return, and persistence guidance, read `references/practical-agent-architecture-v0.md` when those decisions are material.
+Read `references/exploration-policy-v0.md` when iterative search allocation is material. For explicit inquiry selection, read `references/inquiry-policy-v0.md`. For challenge/exploration triggers, delegation evidence return, and persistence guidance, read `references/practical-agent-architecture-v0.md`.
 
 ---
 
@@ -690,6 +719,7 @@ Read these when the task needs deeper detail:
 - `references/adaptive-guidance-v0.md` — contextual scaffolding, rigor, consequentiality, delegation, and Campaign-use examples
 - `references/inquiry-policy-v0.md` — decide what to learn next, if anything; smallest sufficient evidence and source boundaries
 - `references/metareasoning-policy-v0.md` — choose the next qualitative control move: act, inquire, challenge, explore, verify, escalate, or stop
+- `references/exploration-policy-v0.md` — allocate iterative search effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search
 - `references/practical-agent-architecture-v0.md` — warrant targets/dependencies, challenge vs. exploration, resource-aware stopping, delegation evidence return, and persistence guidance
 - `../../CONTEXT.md` — current product/system context and terminology
 - `../../docs/agent-native-operating-workflow.md` — canonical v0 operating map
