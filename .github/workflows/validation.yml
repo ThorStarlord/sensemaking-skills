@@ -188,6 +188,7 @@ jobs:
             tests/test_strategic_state_validation.py \
             tests/test_policy_hierarchy_contract.py \
             tests/test_strategic_repository_analysis_contract.py \
+            tests/test_strategic_repository_analysis_integration.py \
             tests/test_semantic_substrate.py \
             tests/test_semantic_reference_audit.py \
             tests/test_semantic_conformance.py \
