@@ -1,6 +1,6 @@
 # Change Impact Analysis
 
-## 1. Change, Scope, and Authority
+## 1. Change Scope and Authority
 
 State the bounded change, its state, target repository/source identity, and
 authority boundary.
