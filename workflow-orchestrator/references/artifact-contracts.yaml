@@ -137,11 +137,14 @@ artifacts:
       - analysis_ref
       - continuity
       - decision_assumptions
+      - governing_authority_refs
+      - candidate_path_transition_ref
     notes:
       - "Strategic analysis is semantic-agent output; the validator does not choose, score, rank, or authorize a path."
-      - "analysis_ref, continuity, and decision_assumptions are additive Strategic Continuity v1 fields; existing qualified analyses remain valid without them."
+      - "analysis_ref, continuity, decision_assumptions, governing_authority_refs, path_transitions, and candidate_path_transition_ref are additive Strategic Continuity fields; existing qualified analyses remain valid without them."
       - "continuity is semantic-agent authored; deterministic commands may project or compare it but may not infer it."
       - "Construction paths are coherent repository-evolution trajectories, not backlogs."
+      - "Optional path_transitions are stable conceptual transition references for reconstruction; they are not roadmap tasks, schedules, progress fields, or automatic next actions."
       - "Numeric path scores/weights/ranking fields are forbidden; comparison is qualitative."
       - "implementation_authority_established_by_artifact and semantic_truth_established must remain false."
     verification:
@@ -191,6 +194,7 @@ artifacts:
       - immutable
     notes:
       - "Returned evidence is semantically interpreted by the active agent; the validator never mutates strategy."
+      - "Optional path_transition_effect may reconcile a declared conceptual transition without turning it into project status."
       - "candidate_next_responsibility does not establish implementation authority."
     verification:
       generic_validator: "python scripts/validate-artifact.py strategic_reconciliation {artifact_path}"

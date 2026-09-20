@@ -183,6 +183,15 @@ def validate(path: Path) -> list[dict[str, str]]:
             )
         )
 
+    governing_authority_refs = data.get("governing_authority_refs")
+    if governing_authority_refs is not None and not _string_list(governing_authority_refs):
+        errors.append(
+            _error(
+                "STRATEGIC_ANALYSIS_GOVERNING_AUTHORITY_REFS_INVALID",
+                "governing_authority_refs must be a list of non-empty strings when present",
+            )
+        )
+
     capabilities = data.get("capability_states")
     if not isinstance(capabilities, list):
         errors.append(
@@ -292,6 +301,7 @@ def validate(path: Path) -> list[dict[str, str]]:
         )
 
     path_ids: set[str] = set()
+    transition_refs: set[str] = set()
     for index, item in enumerate(paths):
         if not isinstance(item, dict):
             errors.append(
@@ -345,6 +355,76 @@ def validate(path: Path) -> list[dict[str, str]]:
                         f"construction_paths[{index}].{field} must be a list of non-empty strings",
                     )
                 )
+
+        path_transitions = item.get("path_transitions")
+        if path_transitions is not None:
+            if not isinstance(path_transitions, list):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_PATH_TRANSITIONS_INVALID",
+                        f"construction_paths[{index}].path_transitions must be a list when present",
+                    )
+                )
+            else:
+                prohibited_transition_fields = {
+                    "priority",
+                    "deadline",
+                    "estimate",
+                    "percent_complete",
+                    "assignee",
+                    "start_date",
+                    "due_date",
+                    "blocked_by",
+                    "next_transition",
+                }
+                for transition_index, transition in enumerate(path_transitions):
+                    if not isinstance(transition, dict):
+                        errors.append(
+                            _error(
+                                "STRATEGIC_ANALYSIS_PATH_TRANSITION_INVALID",
+                                f"construction_paths[{index}].path_transitions[{transition_index}] must be a mapping",
+                            )
+                        )
+                        continue
+                    transition_ref = transition.get("transition_ref")
+                    transition_text = transition.get("transition")
+                    if not _nonempty_string(transition_ref) or not _nonempty_string(
+                        transition_text
+                    ):
+                        errors.append(
+                            _error(
+                                "STRATEGIC_ANALYSIS_PATH_TRANSITION_INVALID",
+                                f"construction_paths[{index}].path_transitions[{transition_index}] requires transition_ref and transition",
+                            )
+                        )
+                        continue
+                    if _nonempty_string(path_id) and not transition_ref.startswith(
+                        f"{path_id}/"
+                    ):
+                        errors.append(
+                            _error(
+                                "STRATEGIC_ANALYSIS_PATH_TRANSITION_PREFIX_INVALID",
+                                f"{transition_ref} must be namespaced under {path_id}/",
+                            )
+                        )
+                    if transition_ref in transition_refs:
+                        errors.append(
+                            _error(
+                                "STRATEGIC_ANALYSIS_PATH_TRANSITION_DUPLICATE",
+                                f"duplicate transition_ref: {transition_ref}",
+                            )
+                        )
+                    else:
+                        transition_refs.add(transition_ref)
+                    prohibited = sorted(prohibited_transition_fields & set(transition))
+                    if prohibited:
+                        errors.append(
+                            _error(
+                                "STRATEGIC_ANALYSIS_PATH_TRANSITION_ROADMAP_FIELD_FORBIDDEN",
+                                "path transition contains roadmap/scheduling fields: "
+                                + ", ".join(prohibited),
+                            )
+                        )
         for field in ("name", "future_state", "reversibility"):
             if field in item and not _nonempty_string(item.get(field)):
                 errors.append(
@@ -353,6 +433,23 @@ def validate(path: Path) -> list[dict[str, str]]:
                         f"construction_paths[{index}].{field} must be non-empty",
                     )
                 )
+
+    candidate_transition_ref = data.get("candidate_path_transition_ref")
+    if candidate_transition_ref is not None:
+        if not _nonempty_string(candidate_transition_ref):
+            errors.append(
+                _error(
+                    "STRATEGIC_ANALYSIS_CANDIDATE_TRANSITION_REF_INVALID",
+                    "candidate_path_transition_ref must be a non-empty string when present",
+                )
+            )
+        elif candidate_transition_ref not in transition_refs:
+            errors.append(
+                _error(
+                    "STRATEGIC_ANALYSIS_CANDIDATE_TRANSITION_UNKNOWN",
+                    "candidate_path_transition_ref must reference a declared path transition",
+                )
+            )
 
     comparisons = data.get("path_comparison")
     if not isinstance(comparisons, list):

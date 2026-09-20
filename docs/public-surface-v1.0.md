@@ -100,10 +100,15 @@ strategy uncertainty
 strategy assumptions
 strategy compare
 strategy drift
+strategy history
+strategy graph
 ```
 
-These commands inspect representation/currentness only. They do not generate,
-rank, select, authorize, or invalidate strategy.
+These commands inspect authored representation/currentness/history only.
+`strategy drift` may emit typed mechanical observations; `strategy history`
+and `strategy graph` preserve caller-supplied order and declared relationships.
+They do not generate, rank, select, authorize, invalidate, semantically
+reinterpret, or automatically reopen strategy.
 
 The supported strategic companion surface also includes:
 
@@ -134,6 +139,9 @@ preserving:
 
 ```text
 strategic analysis != implementation authorization
+currentness observation != semantic consequence
+path transition != roadmap item
+history projection != strategic judgment
 path comparison != numeric ranking
 mechanically valid != semantically correct
 ```

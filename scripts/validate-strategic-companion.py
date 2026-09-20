@@ -54,6 +54,14 @@ THESIS_DISPOSITIONS = {
     "SUPERSEDE",
 }
 
+PATH_TRANSITION_EFFECT_DISPOSITIONS = {
+    "ESTABLISHED",
+    "PARTIAL",
+    "NOT_ESTABLISHED",
+    "SUPERSEDED",
+    "NO_CONCLUSION",
+}
+
 
 def _error(code: str, message: str) -> dict[str, str]:
     return {"error_id": code, "message": message}
@@ -138,6 +146,41 @@ def _validate_reconciliation(data: dict[str, Any], errors: list[dict[str, str]])
         errors.append(_error("STRATEGIC_RECONCILIATION_PATH_DISPOSITION_INVALID", "invalid path_disposition"))
     if data.get("strategic_effect") not in STRATEGIC_EFFECTS:
         errors.append(_error("STRATEGIC_RECONCILIATION_EFFECT_INVALID", "invalid strategic_effect"))
+
+    path_transition_effect = data.get("path_transition_effect")
+    if path_transition_effect is not None:
+        if (
+            not isinstance(path_transition_effect, dict)
+            or not _text(path_transition_effect.get("transition_ref"))
+            or path_transition_effect.get("disposition")
+            not in PATH_TRANSITION_EFFECT_DISPOSITIONS
+        ):
+            errors.append(
+                _error(
+                    "STRATEGIC_RECONCILIATION_PATH_TRANSITION_EFFECT_INVALID",
+                    "path_transition_effect requires transition_ref and a supported disposition",
+                )
+            )
+        else:
+            prohibited = {
+                "priority",
+                "deadline",
+                "estimate",
+                "percent_complete",
+                "assignee",
+                "start_date",
+                "due_date",
+                "blocked_by",
+                "next_transition",
+            } & set(path_transition_effect)
+            if prohibited:
+                errors.append(
+                    _error(
+                        "STRATEGIC_RECONCILIATION_PATH_TRANSITION_ROADMAP_FIELD_FORBIDDEN",
+                        "path_transition_effect contains roadmap/scheduling fields: "
+                        + ", ".join(sorted(prohibited)),
+                    )
+                )
     _require_false(data, "implementation_authority_established_by_artifact", errors)
     _require_false(data, "semantic_truth_established", errors)
 

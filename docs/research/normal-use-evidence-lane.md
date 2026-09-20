@@ -125,6 +125,44 @@ one awkward episode
 != architectural defect established
 ```
 
+### Strategic-continuity refinement friction — Issue #430
+
+When an eligible real episode uses Strategic Continuity v1, preserve any
+naturally occurring friction in three categories:
+
+- **currentness friction** — `DRIFTED` or typed observations still require
+  substantial manual investigation to learn what mechanically changed;
+- **trajectory friction** — it is costly to reconstruct which conceptual
+  transition inside a selected construction path a responsibility/evidence
+  episode was intended to advance;
+- **history-comprehension friction** — a fresh owner/agent must open several
+  artifacts to understand authored analysis -> reconciliation -> later-analysis
+  relationships that the read-only history/graph projection should expose.
+
+When material, record:
+
+```text
+continuity friction category:
+concrete reconstruction burden:
+smallest missing observation/reference/projection:
+did the friction change a decision or only add effort:
+could an existing surface express the answer:
+did typed currentness remain mechanical:
+did path-transition identity remain non-roadmap:
+did history/graph remain projection-only:
+```
+
+Issue #430 implements these bounded refinements under explicit owner direction.
+Normal-use observation remains useful for deciding whether any *further*
+deepening is warranted.
+
+```text
+currentness observation != semantic consequence
+path transition != roadmap item
+history projection != strategic judgment
+normal-use observation != experiment program
+```
+
 ### Path 3 — decision versus orchestration
 
 Watch for repeated cases where:

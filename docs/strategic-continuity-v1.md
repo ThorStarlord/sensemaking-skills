@@ -84,6 +84,37 @@ path closed
 != product thesis retired
 ```
 
+### 4A. Lightweight path-transition identity
+
+When a selected construction path spans several conceptual capability changes,
+the path MAY declare stable transition references:
+
+```yaml
+path_id: PATH-2
+path_transitions:
+  - transition_ref: PATH-2/T1
+    transition: "isolated analyses -> explicit strategic lineage"
+  - transition_ref: PATH-2/T2
+    transition: "lineage -> typed mechanical currentness"
+```
+
+A strategic analysis may optionally identify
+`candidate_path_transition_ref` for the conceptual transition its candidate
+bounded responsibility is intended to advance. Strategic reconciliation may
+later record an authored transition effect:
+
+`ESTABLISHED | PARTIAL | NOT_ESTABLISHED | SUPERSEDED | NO_CONCLUSION`.
+
+```text
+path transition != roadmap item
+path transition != backlog item
+path transition != authorized responsibility
+transition effect != project status
+transition established != next transition selected
+```
+
+Scheduling/project-management fields are intentionally rejected.
+
 ## 5. Decision assumptions
 
 Decision assumptions are the smallest premises worth remembering because their failure could materially change the strategic judgment.
@@ -110,6 +141,8 @@ sensemaking-skills strategy uncertainty
 sensemaking-skills strategy assumptions
 sensemaking-skills strategy compare
 sensemaking-skills strategy drift
+sensemaking-skills strategy history
+sensemaking-skills strategy graph
 ```
 
 These commands operate only on already-authored `strategic_repository_analysis` artifacts.
@@ -132,12 +165,29 @@ It does not decide which analysis is better.
 May mechanically compare:
 
 - the recorded source identity with current Git HEAD when the identity is mechanically comparable;
-- relative repository evidence references with current filesystem existence.
+- relative repository evidence references with their recorded Git version when
+  the source identity is a resolvable commit;
+- explicitly declared `governing_authority_refs` with their recorded Git version;
+- current filesystem presence for addressable local references.
+
+The bounded typed observation vocabulary is:
+
+```text
+SOURCE_IDENTITY_CHANGED
+EVIDENCE_REF_MISSING
+EVIDENCE_REF_CHANGED
+GOVERNING_AUTHORITY_REF_CHANGED
+```
+
+These are observations, not semantic dispositions. In particular, a changed
+governing-authority file does not mechanically establish that the governing
+commitment changed in a decision-relevant way.
 
 It deliberately reports:
 
 ```text
-mechanical_drift_detected
+currentness_observations = [...]
+semantic_consequence_inferred_by_command = false
 strategy_invalidated_by_command = false
 reanalysis_required_by_command = false
 ```
@@ -145,6 +195,9 @@ reanalysis_required_by_command = false
 Because:
 
 ```text
+currentness observation
+!= semantic consequence
+
 repository changed
 != prior strategy wrong
 
@@ -154,6 +207,28 @@ evidence path missing
 drift detected
 != reanalysis automatically warranted
 ```
+
+### `strategy history` and `strategy graph`
+
+These commands accept explicitly supplied strategic-analysis and reconciliation
+artifacts. They preserve caller order and project only authored relationships.
+
+`strategy history` renders a textual sequence of declared analyses,
+continuity, selected paths, assumptions, path transitions, and reconciliation
+effects.
+
+`strategy graph` renders the same declared relationships as Mermaid.
+
+```text
+history order != strategic superiority
+graph edge != causal truth
+graph projection != recommendation
+projection != strategy mutation
+```
+
+The commands do not discover strategic artifacts automatically, infer missing
+chronology, rank strategies, or connect reconciliation to a later analysis
+unless the underlying authored artifacts provide the relationship.
 
 ## 7. Relationship to strategic reconciliation
 
@@ -219,6 +294,8 @@ Strategic Continuity v1 does not add:
 
 - StrategicPlanner or `OuterLoopEngine`;
 - numeric strategy/path/warrant scoring;
+- roadmap/project-management status from path transitions;
+- automatic chronology or causal inference from strategic history;
 - automatic path selection;
 - automatic Campaign creation;
 - automatic repository discovery;

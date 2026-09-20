@@ -23,7 +23,7 @@ Choose the entry point for your role instead of reading every document:
 | A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
 | Understanding how control levels, policy layers, authority, execution, evidence, and strategic continuity compose | [`docs/adaptive-semantic-control-architecture-v0.md`](docs/adaptive-semantic-control-architecture-v0.md) | Descriptive crosswalk; no new control level, runtime, or authority |
 | Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) | Level-3 current-system, capability, construction-path, tradeoff, and strategic-synthesis analysis |
-| Comparing or checking currentness of authored strategic analyses | [`docs/strategic-continuity-v1.md`](docs/strategic-continuity-v1.md) | Deterministic lineage/currentness projections; no strategic selection |
+| Comparing, checking currentness, or reconstructing history of authored strategic analyses | [`docs/strategic-continuity-v1.md`](docs/strategic-continuity-v1.md) | Deterministic typed-currentness/history projections; no strategic selection |
 | Reconciling returned strategic evidence or carrying reserved decisions | [`docs/strategic-reconciliation-and-decision-packets-v1.md`](docs/strategic-reconciliation-and-decision-packets-v1.md) | Strategic reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts |
 | Deciding boundaries/capability ownership across selected repositories | [`skills/multi-repository-strategic-analysis/SKILL.md`](skills/multi-repository-strategic-analysis/SKILL.md) | Level-3 caller-selected repository-set analysis without automatic discovery |
 | Checking consequential affected surfaces around a bounded change | [`skills/change-impact-analysis/SKILL.md`](skills/change-impact-analysis/SKILL.md) | Semantic change-impact, verification, reconciliation, and closure analysis |
@@ -58,6 +58,8 @@ repository/product future itself is open
 a prior strategic analysis exists and the repository has evolved
 -> author a new analysis with explicit continuity when semantically warranted
 -> use `strategy compare` / `strategy drift` for mechanical projection only
+-> use `strategy history` / `strategy graph` when declared lineage is hard to reconstruct
+-> typed currentness observations describe mechanical change, not semantic consequence
 -> if later evidence is decision-changing, apply Learning / Reconciliation
 -> reopen Level 3 only when warranted; drift alone does not require reanalysis
 
@@ -149,7 +151,7 @@ The installed product includes:
 - a generic external-executor interchange plus an AI Software Factory GitHub-Issue projection that transports already-selected work without selecting a workflow or submitting execution.
 - explicit, preview-by-default GitHub provenance publication with deterministic markers and duplicate suppression; publication remains a caller-authorized external mutation.
 - a deterministic cross-repository execution projection that derives prerequisite layers only from explicit `depends_on` / `release_after` relations and never labels the projection an execution plan;
-- Strategic Continuity v1 metadata for explicit analysis lineage, decision assumptions, and reassessment triggers, plus deterministic root `strategy` projections for inspect/paths/uncertainty/assumptions/compare/drift without semantic selection;
+- Strategic Continuity v1 metadata for explicit analysis lineage, decision assumptions, reassessment triggers, optional governing-authority references, and lightweight path-transition identity, plus deterministic root `strategy` projections for inspect/paths/uncertainty/assumptions/compare/drift/history/graph without semantic selection or causal inference;
 - strategic companion Skills/artifacts for evidence-return reconciliation, owner-reserved decisions, Level-4 thesis-review preparation, and external-evidence provenance without automatic state mutation or authority transfer;
 - multi-repository strategic analysis over explicitly selected repositories, including capability ownership/overlap, boundary tensions, coherent allocation paths, and qualitative comparison without repository discovery or transaction orchestration;
 - change-impact analysis over bounded contemplated/completed changes, identifying decision-relevant affected surfaces and verification/reconciliation consequences without automatic backlog generation or change authorization.

@@ -4,6 +4,9 @@
 
 State owner intent, repository-owned product authority, target repository, exact
 source identity when available, and analysis/implementation authority boundary.
+When mechanically addressable governing authority files materially condition the
+analysis, list them explicitly in `governing_authority_refs`. This is provenance
+for currentness inspection, not a semantic claim that file change invalidates strategy.
 
 ## 1A. Strategic Continuity (when continuing prior analysis)
 
@@ -40,6 +43,9 @@ For each path include:
 - **Builds on:**
 - **Requires:**
 - **Construction sequence:**
+- **Path transitions (optional):** stable conceptual transition references such as
+  `PATH-1/T1` when later work would otherwise be difficult to reconstruct. A
+  transition is strategic provenance, not a roadmap task.
 - **Dependencies:**
 - **Unlocks:**
 - **Risks / tradeoffs:**
@@ -124,6 +130,8 @@ continuity:
 target_repository: owner/repository
 target_source_identity: "<commit/tree/ref or documented-unverified>"
 governing_intent: "<owner/repository strategy statement>"
+governing_authority_refs:
+  - docs/product-strategy.md
 capability_states:
   - capability_id: example-capability
     state: ESTABLISHED
@@ -142,6 +150,9 @@ construction_paths:
       - "<needed capability>"
     construction_sequence:
       - "<coarse step>"
+    path_transitions:
+      - transition_ref: PATH-1/T1
+        transition: "<conceptual capability-state transition>"
     dependencies:
       - "<dependency>"
     unlocks:
@@ -184,9 +195,26 @@ decision_assumptions:
 strategic_disposition: BUILD
 selected_path_id: PATH-1
 candidate_repository_responsibility: "<bounded responsibility or null>"
+candidate_path_transition_ref: PATH-1/T1
 smallest_warranted_intervention: "<intervention or null>"
 implementation_authority_established_by_artifact: false
 semantic_truth_established: false
 created_at: "YYYY-MM-DDTHH:MM:SSZ"
 immutable: true
 ```
+
+## Path-transition boundary
+
+Path transition identity is optional and exists only to make a selected strategic
+trajectory reconstructible across later responsibilities and reconciliations.
+
+```text
+path transition != roadmap item
+path transition != backlog item
+path transition != authorized responsibility
+transition established != next transition selected
+```
+
+Do not add scheduling/project-management fields such as priority, deadline, estimate,
+percent complete, assignee, start/due date, blocked-by, or automatic next-transition
+selection.

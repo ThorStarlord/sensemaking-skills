@@ -53,6 +53,7 @@ See:
 - [docs/strategic-outer-loop.md](docs/strategic-outer-loop.md) — canonical four-level control model
 - [docs/policy-hierarchy-v0.md](docs/policy-hierarchy-v0.md) — canonical middle semantic-policy architecture; Inquiry, Metareasoning, Exploration, Warrant / Choice, Learning / Reconciliation, stable Strategic Alternatives, and Adaptive Policy Coordinator v0 are integrated
 - [docs/adaptive-semantic-control-architecture-v0.md](docs/adaptive-semantic-control-architecture-v0.md) — descriptive crosswalk across control levels, semantic policies, authority/execution, evidence return, Strategic Continuity, and reassessment; no new control level/runtime
+- [docs/strategic-continuity-v1.md](docs/strategic-continuity-v1.md) — Level-3 lineage, typed mechanical currentness, optional path-transition identity, and read-only strategic history/graph projection; semantic interpretation remains agent-owned
 - [docs/strategic-state-contract.md](docs/strategic-state-contract.md) — Level-3 durable strategic-state contract
 - [docs/product-thesis-revision.md](docs/product-thesis-revision.md) — Level-4 revision and owner-ratification contract
 - [docs/product-operating-model.md](docs/product-operating-model.md) — value stream, ownership, delegation, and escalation

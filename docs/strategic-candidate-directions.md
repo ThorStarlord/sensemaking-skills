@@ -76,6 +76,7 @@ Repository-qualified/current baselines include:
 - **Strategic Outer Loop Precision v1**: Strategic Decision to Support, qualitative frontier comparison, smallest-warranted-intervention reasoning, concise current Level-3 state, Thesis Tension, dependency-sensitive Level-4 review hold, mandatory post-review reconciliation, and Level-3/Level-4 Semantic Reasoning Model integration;
 - bounded strategic-state mechanics that require/project the Strategic Decision anchor and ADR 0029 pointer without validating strategic quality;
 - **Issue #416 strategic continuity and consequence surfaces**: explicit strategic-analysis lineage, assumptions/reassessment triggers, deterministic strategy inspect/currentness projections, strategic reconciliation, owner/thesis/external-evidence packets, caller-selected multi-repository strategic analysis, and bounded change-impact analysis.
+- **Issue #430 Strategic Continuity Refinement v1**: typed mechanical currentness observations over source/evidence/explicit governing-authority references, deterministic `strategy history` / `strategy graph` projections over explicitly supplied artifacts, and optional lightweight path-transition identity/effects; no roadmap status, causal-history inference, planner runtime, or automatic strategic reopening.
 
 Campaign schema remains v2. None of these baselines establishes native-harness usefulness, empirical portability, comparative superiority, semantic correctness, objective strategic priority, or automatic planning authority.
 

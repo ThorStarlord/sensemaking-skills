@@ -27,6 +27,9 @@ interpretation; it does not mutate the prior analysis.
    `CONFIRM | RESOLVE | REVISE | INVALIDATE | UNCHANGED`.
 5. Reconcile the prior construction path with one:
    `CONTINUE | REVISE | SUPERSEDE | CLOSE | NO_PATH_CHANGE`.
+   When a declared lightweight path transition is materially implicated, optionally
+   record `ESTABLISHED | PARTIAL | NOT_ESTABLISHED | SUPERSEDED | NO_CONCLUSION`
+   for that transition. This is strategic provenance, not roadmap progress.
 6. State one strategic effect:
    `NO_MODEL_CHANGE | REAFFIRM | REVISE_STRATEGY | REOPEN_ANALYSIS |
    OWNER_DECISION | THESIS_REVIEW_REQUIRED`.
@@ -48,5 +51,7 @@ python scripts/validate-strategic-companion.py artifacts/strategic_reconciliatio
 returned evidence != interpreted evidence
 reconciliation != automatic strategy mutation
 candidate next responsibility != execution authorization
+path transition effect != roadmap status
+transition established != next transition selected
 mechanical PASS != semantic truth
 ```
