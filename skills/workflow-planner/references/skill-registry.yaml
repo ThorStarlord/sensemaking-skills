@@ -19,6 +19,11 @@ ecosystems:
         artifact: repository_sensemaking_brief
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/repo-sensemaker" }
+      - id: strategic-repository-analysis
+        purpose: model repository evolution paths and strategic tradeoffs
+        artifact: strategic_repository_analysis
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/strategic-repository-analysis" }
       - id: workflow-planner
         purpose: select and configure the recommended workflow for execution
         artifact: workflow_orchestration_plan

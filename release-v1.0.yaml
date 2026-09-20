@@ -73,6 +73,7 @@ skill_inventory:
     - release-notes
     - repair-verifier
     - repo-sensemaker
+    - strategic-repository-analysis
     - roadmap
     - stakeholder-update
     - strategy

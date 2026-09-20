@@ -1,0 +1,24 @@
+schema_version: 1
+skill_id: strategic-repository-analysis
+domain: engineering
+responsibilities:
+  - strategic_repository_analysis
+consumes:
+  - repository_state
+  - owner_intent
+  - repository_sensemaking_brief
+  - prior_evidence
+produces:
+  - strategic_repository_analysis
+semantic_concepts:
+  - Intent
+  - TargetSnapshot
+  - Observation
+  - Evidence
+  - Claim
+  - EpistemicStatus
+  - Uncertainty
+  - Responsibility
+  - Decision
+  - Artifact
+repository_mutation: false

@@ -90,80 +90,92 @@ Current material frontier items are:
 15. **Normal-use validation — ACTIVE / SUPPORTING EVIDENCE MODE.** Preserve qualifying real episodes and use the execution interfaces during ordinary consequential repository work; it no longer blocks construction explicitly authorized under Issue #399.
 16. **Execution Interface & Agent-Factorization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Release-authority audit, execution handoff/result, working-context projection, generic executor interchange, AI Software Factory projection, explicit GitHub provenance publication, and cross-repository execution projection are integrated without adding semantic planning/scheduling authority. Feature-integrated `main@4f89e92030af4dee5c931b59b839869911e6c366` passed Product/Lab/Release Distribution validation; PR #394 / Issue #393 carry the terminal closeout qualification/result receipt.
 17. **Experimental Intelligence Components v0 — ACTIVE / LAB_ONLY / `RESEARCH_MORE`.** Owner direction authorizes cheap, reversible experiments rather than core promotion. StrategicPlanner v0 under Issue #395 compiles baseline/treatment packets and preserves semantic decision authority with the active agent. Initial retrospective dogfood shows a plausible benefit on ambiguous high-leverage decisions and disproportionate ceremony on a tiny bounded repair; this supports prospective testing of an activation boundary, not product promotion or automatic planning.
-18. **Policy Hierarchy Completion v0 — ACTIVE / OWNER_AUTHORIZED / CONSTRUCTION.** Issue #399 authorizes construction of the missing middle semantic-control layers. Package 1 is Inquiry Policy v0; later packages are Metareasoning, Exploration, Warrant/Choice, Learning/Reconciliation, stable Strategic Alternatives, and an adaptive coordinator. Policy layers must remain agent-owned, zero-work-capable, and non-mandatory.
+18. **Policy Hierarchy Completion v0 — ACTIVE / OWNER_AUTHORIZED / COMPOSABLE.** Issue #399 authorizes the missing middle semantic-control layers. Inquiry Policy v0 is integrated; later Metareasoning, Exploration, Warrant/Choice, Learning/Reconciliation, stable Strategic Alternatives, and adaptive coordination remain authorized follow-ons. Policy layers remain agent-owned, zero-work-capable, and non-mandatory.\n19. **Strategic Repository Sensemaking v1 — ACTIVE / OWNER_AUTHORIZED / CONSTRUCTION.** Issue #401 authorizes a first-class Level-3 analysis surface that turns repository evidence into a current-system model, capability/limitation map, coherent construction paths, qualitative comparison, decision-changing uncertainty, strategic synthesis, and a warranted direction/inquiry/no-change disposition without building a deterministic StrategicPlanner.
 
 ### Current highest-leverage boundary
 
-**Policy Hierarchy Completion v0 — Inquiry Policy v0 integration.**
+**Strategic Repository Sensemaking v1 — first-class repository evolution analysis.**
 
-The owner explicitly ended synthetic StrategicPlanner testing as the active mode and authorized construction of the missing middle control layers. The first bounded boundary is to make inquiry selection explicit without adding a runtime engine, score, schema, or mandatory ceremony.
+The owner explicitly authorized construction under Issue #401 and removed any requirement for another synthetic experiment before building it.
 
-StrategicPlanner v0 remains historical lab evidence at `RESEARCH_MORE`; no additional synthetic test is required by this package.
+The current gap is not that Sensemaking lacks Level-3 concepts. The repository already has repository diagnosis, Strategic Frontier, Strategic Decision to Support, qualitative comparison, decision-changing uncertainty, Inquiry Policy v0, and bounded execution. The missing product layer is a coherent first-class analysis surface that composes those pieces into explicit repository-evolution paths.
+
+Policy Hierarchy Completion v0 remains valid and composable. Inquiry Policy v0 is already integrated and may govern whether a path-distinguishing uncertainty deserves investigation. This milestone does not cancel Issue #399; it applies those semantic-control contracts to a concrete Level-3 product surface.
 
 Issue #384 remains an external GitHub-admin governance action and is unrelated to this construction responsibility.
 
 ### Current strategic decision to support
 
-**Decision:** can Sensemaking make “what should we learn next, if anything?” an explicit, reusable agent-control contract while preserving semantic-agent ownership and the lightest-process rule?
+**Decision:** can Sensemaking turn current repository evidence and governing intent into a reconstructible strategic decision space—current system, capability state, plausible construction paths, qualitative tradeoffs, decision-changing uncertainty, and warranted direction—without becoming a deterministic strategy engine?
 
-**Current judgment:** **YES / INQUIRY POLICY V0 IS THE SMALLEST WARRANTED FIRST PACKAGE.**
+**Current judgment:** **YES / BUILD STRATEGIC REPOSITORY SENSEMAKING V1.**
 
-The policy is implemented as an agent-facing semantic contract integrated into `using-sensemaking`, Practical Agent Architecture guidance, the Four-Level Control Model, and the Level-3 strategic-state lifecycle. It reuses existing evidence, authority, Campaign, and execution surfaces.
+Owner direction resolves whether to build this capability. The smallest warranted product shape is an artifact-first semantic Skill with bounded mechanical validation, not a planner runtime, scoring function, Campaign schema change, or automatic implementation pipeline.
 
 ### Current decision-changing uncertainty
 
-**Integration sufficiency:** does Inquiry Policy v0 remain a compositional semantic layer rather than creating a competing truth system or mandatory investigation phase?
+**Contract sufficiency:** can a stable strategic-analysis artifact represent capability states, construction paths, path comparison, and strategic disposition strongly enough to support fresh-context continuation while keeping semantic quality agent-owned?
 
-Package-1 qualification should establish representation/currentness/integration mechanics only. Semantic usefulness remains bounded by ordinary-use evidence and does not need to be manufactured before repository construction continues.
+This uncertainty is resolved through ordinary implementation/contract qualification, not a synthetic experiment. If the contract requires numeric scoring, automatic ranking, generic AgentState, or a new semantic runtime to function, stop and redesign rather than expanding machinery.
 
 ### Current warranted repository-level responsibility
 
-**Implement and qualify Inquiry Policy v0 as Package 1 of Policy Hierarchy Completion v0.**
+**Implement and qualify Strategic Repository Sensemaking v1 under Issue #401.**
+
+Current bounded package: **Package A — Strategic Analysis Contract**.
 
 Required intervention:
 
-- establish canonical `docs/policy-hierarchy-v0.md`;
-- establish `skills/using-sensemaking/references/inquiry-policy-v0.md`;
-- integrate explicit inquiry selection into the canonical bootstrap and practical-agent reference;
-- connect Inquiry Policy to Level 2/3 control and strategic-state lifecycle;
-- add mechanical regression coverage for the policy contract;
-- preserve existing Campaign schema, runtime, release, and authority boundaries.
+- establish canonical `docs/strategic-repository-sensemaking-v1.md`;
+- add the `strategic-repository-analysis` Skill and artifact template;
+- register `strategic_repository_analysis` in artifact/Skill/domain/release contracts;
+- add a specialized mechanical validator for capability-state vocabulary, construction-path integrity, qualitative comparison, decision-changing uncertainty, disposition/reference integrity, and anti-scoring boundaries;
+- add regression coverage and ordinary product qualification;
+- preserve semantic-agent ownership and external implementation-authority boundaries.
 
-Level-3 disposition: `POLICY_HIERARCHY_CONSTRUCTION_ACTIVE`.
+Level-3 disposition: `STRATEGIC_REPOSITORY_SENSEMAKING_CONSTRUCTION_ACTIVE`.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = INQUIRY_POLICY_V0
-PRIMARY CONSTRUCTION PROGRAM = POLICY_HIERARCHY_COMPLETION_V0
+CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_ANALYSIS_CONTRACT
+PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1
+COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0
+EXPERIMENT PREREQUISITE = NONE
 SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
-SYNTHETIC STRATEGICPLANNER TESTING = STOPPED
 ```
 
 ### Active execution vehicle
 
-Issue #399 is the construction authority tracker.
+Issue #401 is the current milestone authority tracker.
 
-Current bounded package: branch `work/policy-hierarchy-inquiry-v0` and its qualification PR.
+Current branch: `work/strategic-repository-sensemaking-v1-contract`.
 
-Issue #395 remains the historical StrategicPlanner experiment/evidence tracker but is not the active construction vehicle. No new synthetic StrategicPlanner scenario is warranted by this program.
+Package sequence:
+
+1. Strategic Analysis Contract;
+2. Strategic Repository Analysis Skill semantics and path synthesis;
+3. product integration / currentness / closeout.
+
+Issue #399 remains authorized for later policy-layer continuation; no synthetic StrategicPlanner experiment is required by either program.
 
 ### Expected evidence and reassessment
 
-Package 1 should produce:
+Package A should produce:
 
-- canonical Policy Hierarchy and Inquiry Policy contracts;
-- bootstrap/reference/control-model integration;
-- repository tests proving required surfaces and invariants remain present;
-- exact-head Product / Release qualification, plus Lab only if lab paths are touched.
+- canonical strategic-analysis product contract;
+- first-class Skill + template + manifest;
+- artifact/domain/registry/release integration;
+- validator regression coverage;
+- exact-head Product Validation and Release Candidate Distribution qualification.
 
-Reassess after Package 1 integrates:
+After Package A integrates:
 
-- if Inquiry Policy composes cleanly with existing surfaces, proceed to **Metareasoning Policy v0**;
-- if it requires a new generic state store, deterministic semantic judge, or mandatory ceremony to function, stop and redesign rather than expanding machinery;
-- ordinary-use evidence may refine later policy semantics but is not a universal gate on owner-authorized repository-only construction.
+- proceed directly to construction-path synthesis/comparison semantics if the artifact composes without runtime/schema expansion;
+- stop and redesign if the capability only works by introducing deterministic strategy ranking, mandatory numeric scoring, or hidden implementation authority;
+- do not manufacture an empirical study before Package B.
 
 ### Authority / owner direction
 
-The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode.
+The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate.
 
 Current construction authority includes bounded implementation of:
 
@@ -207,12 +219,14 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**IMPLEMENT AND QUALIFY INQUIRY POLICY V0.**
+**IMPLEMENT AND QUALIFY STRATEGIC ANALYSIS CONTRACT — PACKAGE A.**
 
-Complete Package 1 under Issue #399, qualify the exact PR head, and integrate it if the policy remains a guidance/control surface with no new runtime/schema/authority layer.
+Complete the first-class `strategic_repository_analysis` artifact/Skill/validator integration under Issue #401, qualify the exact PR head, and integrate if the surface remains semantic-agent-owned and mechanically bounded.
 
-After Package 1 integrates, the next construction responsibility is **Metareasoning Policy v0**, subject to a fresh bounded package contract rather than another synthetic experiment.
+Then proceed directly to Package B — construction-path synthesis, qualitative comparison, and strategic synthesis semantics — without opening another experiment.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, or advance to final `1.0.0` merely because the policy hierarchy is under construction.
+Policy Hierarchy Completion v0 remains composable follow-on work; Inquiry Policy v0 is already available to Strategic Repository Sensemaking when a path-distinguishing uncertainty warrants evidence.
+
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, or advance to final `1.0.0` merely because this milestone is under construction.
 
 GitHub branch/ruleset protection remains external Issue #384. Do not claim it is enforced until the hosting setting actually exists.
