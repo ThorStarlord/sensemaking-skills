@@ -239,6 +239,20 @@ def test_status_preserves_inquiry_policy_integration_when_later_owner_work_is_se
     assert "Do **not** freeze RC3" in status
 
 
+def test_stable_strategic_alternatives_reuse_existing_level3_surface() -> None:
+    policy = POLICY.read_text(encoding="utf-8")
+    bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
+    status = STATUS.read_text(encoding="utf-8")
+
+    assert "Stable Strategic Alternatives surface — Package 6 / integrated" in policy
+    assert "0–5 materially real construction paths" in policy
+    assert "zero paths" in policy
+    assert "BUILD\n-> at least one real path" in policy
+    assert "0–5 coherent construction paths when materially real" in bootstrap
+    assert "Stable Strategic Alternatives surface" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
+
+
 def test_policy_hierarchy_does_not_create_runtime_or_schema_surface() -> None:
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     release = (ROOT / "release-v1.0.yaml").read_text(encoding="utf-8")
@@ -252,5 +266,7 @@ def test_policy_hierarchy_does_not_create_runtime_or_schema_surface() -> None:
     assert "learning_reconciliation_policy" not in pyproject
     assert "LearningEngine" not in pyproject
     assert "BeliefState" not in pyproject
+    assert "StrategicAlternativesEngine" not in pyproject
+    assert "StrategicPlanner" not in pyproject
     assert "SearchState" not in pyproject
     assert 'schema_version: "2"' in release
