@@ -249,7 +249,7 @@ path.
 
 ```text
 repo-sensemaker = diagnostic repository understanding
-strategic-repository-analysis = Level-3 single-repository evolution synthesis
+strategic-repository-analysis = Level-3 repository evolution synthesis
 multi-repository-strategic-analysis = Level-3 explicit repository-set boundary/allocation synthesis
 
 strategic disposition
