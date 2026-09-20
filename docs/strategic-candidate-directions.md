@@ -74,7 +74,8 @@ Repository-qualified/current baselines include:
 - Persona & Adaptive Guidance Model v0 plus shipped-guidance reconciliation;
 - **Product Boundary Reconciliation v1**: ADR 0029 supersedes ADR 0014 for current product-scope decisions while ADR 0014 remains historical evidence;
 - **Strategic Outer Loop Precision v1**: Strategic Decision to Support, qualitative frontier comparison, smallest-warranted-intervention reasoning, concise current Level-3 state, Thesis Tension, dependency-sensitive Level-4 review hold, mandatory post-review reconciliation, and Level-3/Level-4 Semantic Reasoning Model integration;
-- bounded strategic-state mechanics that require/project the Strategic Decision anchor and ADR 0029 pointer without validating strategic quality.
+- bounded strategic-state mechanics that require/project the Strategic Decision anchor and ADR 0029 pointer without validating strategic quality;
+- **Issue #416 strategic continuity and consequence surfaces**: explicit strategic-analysis lineage, assumptions/reassessment triggers, deterministic strategy inspect/currentness projections, strategic reconciliation, owner/thesis/external-evidence packets, caller-selected multi-repository strategic analysis, and bounded change-impact analysis.
 
 Campaign schema remains v2. None of these baselines establishes native-harness usefulness, empirical portability, comparative superiority, semantic correctness, objective strategic priority, or automatic planning authority.
 
@@ -216,6 +217,35 @@ Multi-Repository Campaigns intentionally do not promise atomic commit/deploy/rol
 
 Current target/rebind workflows deliberately require caller-selected repositories and aliases.
 
+### 6.4 Multi-Repository Strategic Sensemaking v1
+
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
+
+Issue #416 extends Level-3 strategic analysis to an explicitly selected
+repository set through `multi-repository-strategic-analysis`, producing
+`multi_repository_strategic_analysis`.
+
+The artifact can model:
+
+- current multi-repository system state;
+- capability ownership/overlap;
+- explicit cross-repository relationship evidence;
+- decision-relevant boundary tensions;
+- 0–5 coherent allocation/construction paths;
+- qualitative Level-3 comparison;
+- one bounded strategic disposition.
+
+It reuses existing relation classes and caller-selected target identities. It
+does not discover repositories, expand target scope, infer architectural truth,
+or coordinate cross-repository transactions.
+
+```text
+explicit repository set != automatic discovery
+capability overlap != defect automatically
+allocation path != migration authorization
+multi-repository analysis != transaction coordinator
+```
+
 ## 7. Domain extensibility candidates
 
 ### 7.1 Skill Contract Manifests / Domain Packs / catalog
@@ -271,6 +301,21 @@ Campaign records could support evaluation, but making agent evaluation a first-c
 **Current reconciliation:** `IMPLEMENTED_BASELINE`.
 
 Representation inspection/diff and explicit Level-3→Campaign handoff exist without ranking or responsibility selection. Strategic Outer Loop Precision v1 additionally projects/transports the already-authored **Strategic Decision to Support** while explicitly reporting that the tool did not select it.
+
+Strategic Continuity v1 adds root read-only projections for already-authored
+`strategic_repository_analysis` artifacts:
+
+```text
+strategy inspect
+strategy paths
+strategy uncertainty
+strategy assumptions
+strategy compare
+strategy drift
+```
+
+These commands project authored state/currentness only. They do not generate,
+rank, select, authorize, invalidate, or automatically reopen strategy.
 
 ### 9.2 Level-4 reconciliation automation
 
@@ -344,6 +389,40 @@ numeric strategy scoring, automatic Campaign generation, or a semantic runtime.
 separate owner direction. Completion of v1 is not a standing invitation to add
 more strategic machinery.
 
+### 9.5 Strategic Continuity, Reconciliation, and Reserved Decisions v1
+
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
+
+Issue #416 adds a bounded continuation/return-path layer around
+`strategic_repository_analysis` without creating a planner runtime or generic
+belief database.
+
+Implemented surfaces include:
+
+- optional stable strategic `analysis_ref`;
+- explicit `NEW | REAFFIRM | CONTINUE | REVISE | SUPERSEDE | CLOSE`
+  continuity relations;
+- decision/path assumptions and reassessment triggers;
+- deterministic strategy compare/currentness projections;
+- `strategic-repository-reconciliation` / `strategic_reconciliation`;
+- `owner-decision-capsule` / `owner_decision_capsule`;
+- `thesis-review-packet` / `thesis_review_packet`;
+- `external-evidence-packet` / `external_evidence_packet`.
+
+The governing boundaries remain:
+
+```text
+continuity != semantic endorsement
+drift detected != strategy invalid
+returned evidence != strategy automatically changed
+owner packet != owner decision made
+thesis packet != Level-4 ratification
+external evidence != repository truth
+```
+
+**Possible extensions:** none are current work. Reopen only from concrete
+normal-use reconstruction/currentness pressure or explicit owner direction.
+
 ## 10. Integration and implementation-shape candidates
 
 ### 10.1 GitHub-native Campaign provenance publication
@@ -399,6 +478,30 @@ factory bridge != factory runtime
 ```
 
 **Possible extensions:** additional executor adapters only when a concrete external consumer needs the same stable handoff/result contract.
+
+### 10.5 Change-Impact Sensemaking v1
+
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
+
+Issue #416 adds `change-impact-analysis`, producing
+`change_impact_analysis`, for consequential affected-surface reasoning around
+a bounded contemplated/completed change.
+
+The analysis may identify decision-relevant effects on code, contracts,
+artifacts, tests, documentation, claims, decisions, authority, release surfaces,
+external dependencies, and explicitly scoped cross-repository interfaces. It may
+also nominate bounded follow-up responsibilities and one closure effect.
+
+```text
+reference occurrence != material impact
+impact identified != change authorized
+follow-up responsibility != backlog item
+verification requirement != verification result
+cross-repository impact != automatic scope expansion
+```
+
+No numeric severity/risk scoring, causal truth oracle, automatic issue creation,
+or execution authority is introduced.
 
 ## 11. Ideas deliberately not promoted
 
