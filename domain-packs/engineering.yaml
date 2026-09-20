@@ -9,6 +9,7 @@ skill_manifests:
   - skill-manifests/output-reconciler.yaml
 responsibility_vocabulary:
   - repository_sensemaking
+  - strategic_repository_analysis
   - architectural_review
   - repair_verification
   - output_reconciliation
