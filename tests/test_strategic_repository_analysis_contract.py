@@ -395,6 +395,10 @@ def test_v2_rejects_unknown_frontier_and_capability_refs(tmp_path: Path) -> None
 
 def test_v2_rejects_duplicate_grounding_refs(tmp_path: Path) -> None:
     data = _analysis_v2_yaml()
+    data["strategic_frontier"][0]["evidence_refs"] = [
+        "skills/repo-sensemaker/SKILL.md:L1-L20",
+        "skills/repo-sensemaker/SKILL.md:L1-L20",
+    ]
     data["strategic_frontier"][0]["affected_capability_ids"] = [
         "repository-diagnosis",
         "repository-diagnosis",
@@ -406,6 +410,7 @@ def test_v2_rejects_duplicate_grounding_refs(tmp_path: Path) -> None:
     completed, result = _run(path)
     assert completed.returncode == 1
     ids = {item["error_id"] for item in result["errors"]}
+    assert "STRATEGIC_ANALYSIS_FRONTIER_EVIDENCE_DUPLICATE" in ids
     assert "STRATEGIC_ANALYSIS_FRONTIER_CAPABILITY_DUPLICATE" in ids
     assert "STRATEGIC_ANALYSIS_PATH_FRONTIER_DUPLICATE" in ids
 
