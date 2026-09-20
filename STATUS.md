@@ -149,7 +149,7 @@ SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
 
 Issue #401 is the current milestone authority tracker.
 
-Current branch: `work/strategic-repository-sensemaking-v1-contract`.
+Current branch: `work/strategic-repository-sensemaking-v1-synthesis`.
 
 Package sequence:
 
