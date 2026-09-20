@@ -96,7 +96,9 @@ def test_metareasoning_policy_is_integrated_into_agent_and_control_surfaces() ->
 
     assert "Metareasoning Policy v0" in bootstrap
     assert "references/metareasoning-policy-v0.md" in bootstrap
-    assert "ACT / INQUIRE / CHALLENGE / EXPLORE / VERIFY / ESCALATE / STOP" in bootstrap
+    assert "select the smallest useful control move" in bootstrap
+    for move in ("ACT", "INQUIRE", "CHALLENGE", "EXPLORE", "VERIFY", "ESCALATE", "STOP"):
+        assert move in bootstrap
 
     assert "metareasoning-policy-v0.md" in practical
     assert "apply Metareasoning Policy" in practical
