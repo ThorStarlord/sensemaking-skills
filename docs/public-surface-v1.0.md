@@ -86,6 +86,21 @@ an artifact identity, and a resolved Domain Pack or explicit product-domain
 entry. Internal Skills may ship for operator support without being a public
 capability promise.
 
+The supported engineering analysis surface includes
+`strategic-repository-analysis`, which produces the mechanically validated
+`strategic_repository_analysis` artifact. It models current capability state,
+coherent repository construction paths, qualitative tradeoffs, decision-changing
+uncertainty, and a semantic strategic disposition while preserving:
+
+```text
+strategic analysis != implementation authorization
+path comparison != numeric ranking
+mechanically valid != semantically correct
+```
+
+The Skill is a semantic-agent capability, not a CLI planner or automatic
+repository-work selector.
+
 ## Claim ceiling
 
 Mechanical qualification establishes representation and integrity properties.
