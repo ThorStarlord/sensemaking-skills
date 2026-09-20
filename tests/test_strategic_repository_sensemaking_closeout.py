@@ -113,4 +113,5 @@ def test_closeout_does_not_reopen_or_extend_policy_hierarchy() -> None:
     assert "No additional Issue #399 construction package is selected by this closeout." in handoff
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in handoff
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in status
-    assert "this closeout does not reopen or extend it" in status
+    assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
