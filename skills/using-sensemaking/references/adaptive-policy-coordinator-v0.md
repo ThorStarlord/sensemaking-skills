@@ -181,6 +181,37 @@ worker / implementation / validation result
 -> Warrant / Choice reassessment only if needed
 ```
 
+### Pattern G — strategic reassessment
+
+```text
+prior strategic decision / analysis exists
++ new result, observation, trigger, or currentness concern
+-> use mechanical currentness projection only when useful
+-> ask whether the evidence is decision-changing
+-> Learning / Reconciliation when consequential
+-> strategic_reconciliation when cross-context durability is warranted
+-> Warrant / Choice reassessment only if needed
+-> reopen Strategic Repository Sensemaking only when justified
+```
+
+Do not activate the whole hierarchy merely because repository HEAD changed.
+
+```text
+strategy drift = DRIFTED
+!= strategy invalid
+!= semantic reassessment automatically required
+
+reassessment trigger observed
+!= strategy automatically changed
+
+REOPEN_STRATEGY
+!= BUILD
+```
+
+The broader composition crosswalk is
+`docs/adaptive-semantic-control-architecture-v0.md`. It is descriptive guidance, not
+a superior coordinator or new control level.
+
 ## 7. Dependency-aware composition
 
 When several policy questions are active, use dependency order only where it matters:
