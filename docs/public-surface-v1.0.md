@@ -103,7 +103,17 @@ strategy drift
 ```
 
 These commands inspect representation/currentness only. They do not generate,
-rank, select, authorize, or invalidate strategy. It models current capability state,
+rank, select, authorize, or invalidate strategy.
+
+The supported strategic companion surface also includes:
+
+- `strategic-repository-reconciliation` -> `strategic_reconciliation`;
+- `owner-decision-capsule` -> `owner_decision_capsule`;
+- `thesis-review-packet` -> `thesis_review_packet`;
+- `external-evidence-packet` -> `external_evidence_packet`.
+
+These are explicit semantic-agent packets, not runtime engines or authority
+tokens. It models current capability state,
 0–5 materially real repository construction paths, qualitative tradeoffs,
 decision-changing uncertainty, and a semantic strategic disposition while
 preserving:
