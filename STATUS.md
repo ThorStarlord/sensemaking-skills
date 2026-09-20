@@ -2,8 +2,8 @@
 
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
-**Last updated:** 2026-09-19  
-**Current phase:** Strategic Repository Sensemaking v1 is functionally complete and in terminal closeout under Issue #401. Packages A and B are integrated and repository-qualified. Policy Hierarchy Completion v0 is complete/integrated/composable under Issue #399, including Adaptive Policy Coordinator v0. Synthetic StrategicPlanner testing remains stopped as the active mode.  
+**Last updated:** 2026-09-20  
+**Current phase:** Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 are complete/integrated/composable. No repository-local construction program is currently selected; normal-use validation is the operating mode. Synthetic StrategicPlanner testing remains stopped.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
@@ -99,98 +99,93 @@ Current material frontier items are:
 17. **Experimental Intelligence Components v0 — DEFERRED / LAB_ONLY / `RESEARCH_MORE` / SYNTHETIC TESTING STOPPED.** StrategicPlanner v0 under Issue #395 remains historical lab evidence at its original claim ceiling. It is not an active construction or experiment program and is not promoted by Strategic Repository Sensemaking v1.
 18. **Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE.** Issue #399's seven bounded packages are implemented: Inquiry, Metareasoning, Exploration, Warrant / Choice, Learning / Reconciliation, the stable Strategic Alternatives surface, and Adaptive Policy Coordinator v0. Policy layers remain agent-owned, zero-work-capable, non-mandatory, non-routing, and authority-preserving.
 19. **Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #401 established a first-class Level-3 analysis surface that turns repository evidence into a current-system model, capability/limitation map, 0–5 materially real construction paths, qualitative comparison, decision-changing uncertainty, strategic synthesis, and a warranted direction/inquiry/no-change disposition without building a deterministic StrategicPlanner. Package A integrated via PR #403, Package B via PR #404, and PR #409 stabilized the Strategic Alternatives representation without changing the milestone boundary.
+20. **Post-closeout strategic-state reconciliation — COMPLETE / NORMAL_USE_EVIDENCE.** Issue #414 used Strategic Repository Sensemaking v1 in ordinary repository operation, identified only stale post-#401 currentness as repository-local work, and reconciled the stable Level-3 projection without promoting a new product package.
 
 ### Current highest-leverage boundary
 
-**No additional Strategic Repository Sensemaking v1 construction boundary is selected.**
+**No repository-local construction boundary is currently selected.**
 
-The functional capability is integrated through PRs #403 and #404, with #409 stabilizing the Strategic Alternatives surface to allow 0–5 materially real construction paths. Policy Hierarchy Completion v0 is now also complete/integrated/composable through Adaptive Policy Coordinator v0.
+The post-#401 normal-use strategic analysis found one bounded currentness defect: the previous projection still described terminal closeout as pending after Issue #401 had closed and integrated Product/Release qualification had passed. Issue #414 reconciles that stale projection.
 
-This closeout only reconciles current repository claims, records durable qualification/handoff evidence, and stops Issue #401 construction.
+After that repair, the remaining visible frontier is intentionally non-construction:
 
-The completed product boundary is:
+- Issue #384 — external GitHub-admin branch/ruleset governance; not writable from this connected workspace;
+- Issue #255 — external/environment execution-substrate blocker;
+- Issue #218 — supporting normal-use evidence lane;
+- Issue #226 — research track;
+- Issue #395 — deferred historical lab evidence with synthetic testing stopped.
+
+Open issue existence does not create repository work.
 
 ```text
-repo-sensemaker
--> diagnostic repository understanding
+candidate / open issue exists
+!= current repository responsibility
 
-strategic-repository-analysis
--> current-system / capability model
--> 0-5 materially real construction paths
--> qualitative comparison
--> decision-changing uncertainty
--> strategic synthesis
--> semantic disposition
+external blocker
+!= repository code gap
 
-strategic disposition
-!= implementation authorization
+no selected construction
+!= product finished forever
 ```
-
-Issue #384 remains the unrelated external GitHub-admin governance action.
 
 ### Current strategic decision to support
 
-**Decision:** did Strategic Repository Sensemaking v1 establish a coherent first-class way to analyze possible repository construction paths without turning Sensemaking into a deterministic planner?
+**Decision:** after completion of Policy Hierarchy v0 and Strategic Repository Sensemaking v1, does current evidence warrant another repository-local construction program?
 
-**Current judgment:** **YES / MILESTONE FUNCTIONALLY COMPLETE.**
+**Current judgment:** **NO_CHANGE / RETURN TO NORMAL_USE_VALIDATION.**
 
-The product now has a supported `strategic-repository-analysis` Skill and mechanically validated `strategic_repository_analysis` artifact, stable 0–5 Strategic Alternatives, explicit construction-path synthesis, qualitative path comparison, decision-changing uncertainty, complete Policy Hierarchy composition, diagnostic-vs-strategic routing, and canonical human/agent entry points.
+The repository now contains the bounded strategic, policy, Campaign, execution, evidence, authority, and qualification surfaces authorized by the completed milestones. The candidate reservoir explicitly declares no current implementation priority, and remaining directions either lack concrete consumer pressure, are owner-deferred, require Level-4 review, or are external.
 
-No numeric path scoring, deterministic best-path selection, automatic Campaign generation, StrategicPlanner product promotion, or implementation authority was added.
+A future `BUILD` disposition should come from concrete normal-use pressure, a mechanically demonstrated integrity/currentness gap, or explicit owner direction—not from the desire to keep construction active.
 
 ### Current decision-changing uncertainty
 
-There is **no currently selected Issue #401 construction uncertainty**.
+There is **no current repository-local decision-changing construction uncertainty**.
 
-Future questions about strategic-analysis usefulness, richer path semantics, or external consumers are normal product/normal-use questions. They are not prerequisites for closing v1.
+The bounded uncertainty that justified Issue #414—whether #401 had actually integrated and passed post-merge qualification—is resolved by closed Issue #401 plus Product Validation `35484320353` and Release Candidate Distribution `35484320403` on `main@81e01c971b1196d24fa63fd071a4a1eb91e954e6`.
 
-The only remaining Issue #401 question is mechanical: whether this terminal closeout projection passes exact-head and integrated Product Validation / Release Candidate Distribution.
+Future consumer failures, repeated normal-use friction, new owner direction, or a changed external/authority boundary may reopen Level 3. No inquiry is warranted merely to manufacture a next task.
 
 ### Current warranted repository-level responsibility
 
-**None for Strategic Repository Sensemaking v1 after this closeout integrates.**
+**None after Issue #414 integrates.**
 
-Level-3 disposition: `STRATEGIC_REPOSITORY_SENSEMAKING_V1_CLOSEOUT`.
+Level-3 disposition: `NO_CHANGE`.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = NONE_FOR_STRATEGIC_REPOSITORY_SENSEMAKING_V1
-PRIMARY CONSTRUCTION PROGRAM = NONE_SELECTED_BY_ISSUE_401
+CURRENT CONSTRUCTION RESPONSIBILITY = NONE
+PRIMARY CONSTRUCTION PROGRAM = NONE
+OPERATING MODE = NORMAL_USE_VALIDATION
+STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE
 SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
 EXPERIMENT PREREQUISITE = NONE
 SYNTHETIC STRATEGICPLANNER TESTING = STOPPED
 ```
 
-Do not create another Issue #401 package merely to keep the milestone active.
+Do not select work merely because an old issue, candidate direction, or deferred research question exists.
 
 ### Active execution vehicle
 
-The terminal Issue #401 closeout PR is the final repository mutation for this milestone.
+No continuing construction vehicle is selected.
 
-After it integrates:
+Issue #414 is the bounded currentness reconciliation that establishes this stable post-closeout projection. After it integrates and qualifies, close it rather than turning the reconciliation into a new development program.
 
-```text
-STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE
-ISSUE_401_CONSTRUCTION = STOP
-```
-
-The closeout PR and Issue #401 carry the terminal qualification receipt. Do not mutate source afterward merely to copy transient post-merge run IDs into STATUS.
+Ordinary product use may still create bounded responsibilities or Campaigns when a real user/repository decision warrants them.
 
 ### Expected evidence and reassessment
 
-Terminal closeout requires:
+Normal-use validation remains the supporting evidence mode.
 
-- Package A (#403) and Package B (#404) integrated with exact qualified content;
-- #409 Strategic Alternatives stabilization preserved;
-- Policy Hierarchy Completion v0 through Adaptive Policy Coordinator v0 preserved;
-- strategic candidate directions reconciled to `IMPLEMENTED_BASELINE`;
-- RC3 changelog and public surface reconciled;
-- milestone handoff present;
-- closeout regressions passing;
-- exact closeout-head Product Validation and Release Candidate Distribution PASS;
-- post-merge Product Validation and Release Candidate Distribution PASS on the integrated closeout tree.
+Reassess Level 3 only from material new evidence such as:
 
-These gates qualify repository integration/currentness only. They do not establish strategic optimality, comparative superiority, or product-market value.
+- a concrete user/consumer problem the current product cannot handle;
+- repeated normal-use friction that survives existing adaptive guidance/policy composition;
+- a mechanically demonstrable integrity/currentness defect;
+- explicit owner direction selecting a new bounded product responsibility;
+- an external/authority condition changing enough to make previously blocked work actionable.
+
+Do not reopen synthetic experiments, strategic machinery, Campaign schema expansion, or deferred candidates merely to create activity.
 
 ### Authority / owner direction
 
@@ -238,14 +233,12 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**QUALIFY AND INTEGRATE THE TERMINAL STRATEGIC REPOSITORY SENSEMAKING V1 CLOSEOUT.**
+**NORMAL USE / NO CONSTRUCTION PROGRAM SELECTED.**
 
-Merge the closeout only if its exact head passes Product Validation and Release Candidate Distribution, verify the integrated closeout tree, record the qualification receipt on Issue #401, and close that issue.
+Use the completed product surfaces when a real repository decision warrants them. For an open repository-future question, `strategic-repository-analysis` may produce `BUILD`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`, `OWNER_DECISION`, or `THESIS_REVIEW`; do not predetermine that another build package must exist.
 
-After closure, do not open another Strategic Repository Sensemaking package without new concrete pressure or explicit owner direction.
+Preserve normal-use evidence when naturally produced. Do not manufacture experiments.
 
-Policy Hierarchy Completion v0 is complete/integrated/composable; this closeout does not reopen or extend it.
+Issue #384 remains an external GitHub-admin action. Issue #255 remains externally blocked. Research/evidence Issues #218/#226 and historical lab Issue #395 do not become construction automatically.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of this closeout.
-
-GitHub branch/ruleset protection remains external Issue #384.
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` without a separate owner-controlled transition.
