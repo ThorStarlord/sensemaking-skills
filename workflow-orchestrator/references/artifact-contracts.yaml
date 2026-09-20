@@ -153,6 +153,173 @@ artifacts:
         - autonomous_execution
         - yolo_execution
 
+  - id: strategic_reconciliation
+    path: "artifacts/strategic_reconciliation.md"
+    produced_by: strategic-repository-reconciliation
+    consumed_by:
+      - user
+      - strategic-repository-analysis
+      - owner-decision-capsule
+      - thesis-review-packet
+    description: "Semantic reconciliation of returned evidence against a prior strategic repository analysis"
+    required_sections:
+      - prior_decision_and_scope
+      - returned_evidence
+      - claim_updates
+      - assumption_updates
+      - path_continuation
+      - strategic_implication
+      - authority_and_claim_boundaries
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - target_repository
+      - prior_analysis_ref
+      - current_source_identity
+      - returned_evidence
+      - claim_updates
+      - assumption_updates
+      - path_disposition
+      - prior_path_id
+      - current_path_id
+      - strategic_effect
+      - candidate_next_responsibility
+      - implementation_authority_established_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    notes:
+      - "Returned evidence is semantically interpreted by the active agent; the validator never mutates strategy."
+      - "candidate_next_responsibility does not establish implementation authority."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py strategic_reconciliation {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-companion.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: owner_decision_capsule
+    path: "artifacts/owner_decision_capsule.md"
+    produced_by: owner-decision-capsule
+    consumed_by:
+      - user
+      - strategic-repository-analysis
+    description: "Owner-reserved decision packet with credible options, tradeoffs, reversibility, deferral, and authority consequences"
+    required_sections:
+      - decision_needed
+      - why_repository_evidence_cannot_resolve_it
+      - credible_options
+      - tradeoffs_reversibility_and_deferral
+      - authority_effects
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - decision_id
+      - target_repository
+      - decision_statement
+      - repository_can_resolve
+      - options
+      - owner_decision_made_by_artifact
+      - implementation_authority_established_by_artifact
+      - created_at
+      - immutable
+    notes:
+      - "The capsule presents an owner-reserved decision and does not select an option."
+      - "owner_decision_made_by_artifact and implementation_authority_established_by_artifact must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py owner_decision_capsule {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-companion.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: thesis_review_packet
+    path: "artifacts/thesis_review_packet.md"
+    produced_by: thesis-review-packet
+    consumed_by:
+      - user
+      - strategic-repository-analysis
+    description: "Level-4 review packet for a challenged governing product commitment without ratifying the thesis transition"
+    required_sections:
+      - challenged_commitment
+      - thesis_tension
+      - evidence
+      - affected_level3_work
+      - candidate_level4_dispositions
+      - downstream_reconciliation
+      - authority_boundary
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - target_repository
+      - level4_commitment_ref
+      - challenge_statement
+      - evidence_refs
+      - affected_responsibilities
+      - candidate_dispositions
+      - downstream_reconciliation
+      - owner_ratification_required
+      - thesis_revision_ratified_by_artifact
+      - implementation_authority_established_by_artifact
+      - created_at
+      - immutable
+    notes:
+      - "The packet supports Level-4 review; it cannot ratify REAFFIRM/REINTERPRET/REVISE/RETIRE/SUPERSEDE."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py thesis_review_packet {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-companion.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: external_evidence_packet
+    path: "artifacts/external_evidence_packet.md"
+    produced_by: external-evidence-packet
+    consumed_by:
+      - user
+      - repo-sensemaker
+      - strategic-repository-analysis
+      - strategic-repository-reconciliation
+    description: "Bounded provenance and currentness packet for decision-relevant evidence outside repository authority"
+    required_sections:
+      - question_and_scope
+      - sources
+      - claims_supported
+      - currentness_limits
+      - provenance
+      - authority_and_claim_boundaries
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - target_decision_ref
+      - retrieved_at
+      - sources
+      - claims
+      - repository_fact_established_by_artifact
+      - semantic_truth_established
+      - implementation_authority_established_by_artifact
+      - created_at
+      - immutable
+    notes:
+      - "External evidence does not become repository fact or timeless semantic truth."
+      - "The packet does not perform external retrieval itself; the active agent uses authorized source surfaces."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py external_evidence_packet {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-companion.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
   - id: discovery_findings
     produced_by: discovery
     consumed_by:
