@@ -51,7 +51,7 @@ See:
 - [docs/product-strategy.md](docs/product-strategy.md) — Level-4 product thesis and strategic authority
 - [docs/adr/0029-current-product-boundary.md](docs/adr/0029-current-product-boundary.md) — current ratified product-boundary authority
 - [docs/strategic-outer-loop.md](docs/strategic-outer-loop.md) — canonical four-level control model
-- [docs/policy-hierarchy-v0.md](docs/policy-hierarchy-v0.md) — canonical middle semantic-policy architecture; Inquiry, Metareasoning, Exploration, Warrant / Choice, and Learning / Reconciliation Policy v0 are integrated
+- [docs/policy-hierarchy-v0.md](docs/policy-hierarchy-v0.md) — canonical middle semantic-policy architecture; Inquiry, Metareasoning, Exploration, Warrant / Choice, and Learning / Reconciliation Policy v0 are integrated; stable Strategic Alternatives reuse the existing strategic_repository_analysis construction-path surface with 0–5 conditional paths
 - [docs/strategic-state-contract.md](docs/strategic-state-contract.md) — Level-3 durable strategic-state contract
 - [docs/product-thesis-revision.md](docs/product-thesis-revision.md) — Level-4 revision and owner-ratification contract
 - [docs/product-operating-model.md](docs/product-operating-model.md) — value stream, ownership, delegation, and escalation
@@ -149,6 +149,7 @@ Level 4 activates only when evidence makes a product-thesis commitment decision-
 18. **Iterative search is allocated, not exhaustively expanded** — once search is warranted, use material attempt history to choose exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search without creating a search-tree truth system.
 19. **Warrant is target-specific** — evidence sufficient for one claim, responsibility, action, closure, or protected transition does not automatically justify another; `selected != authorized`, and no-selection is valid.
 20. **Returned evidence is interpreted before state changes** — results may confirm/revise claims, resolve/open uncertainty, change responsibility, continue/stop/escalate, or reopen strategy, but no validator/worker result mutates semantic state automatically.
+21. **Strategic alternatives are conditional** — use 0–5 materially real construction paths; zero is valid when no coherent construction trajectory is currently warranted, while `BUILD` still requires a selected real path.
 
 ## Architecture and ownership
 
