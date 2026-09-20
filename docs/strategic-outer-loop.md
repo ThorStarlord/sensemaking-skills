@@ -113,6 +113,7 @@ Canonical shape:
 task / decision
 -> consequential uncertainty
 -> Inquiry Policy: no inquiry or smallest sufficient evidence
+-> Metareasoning Policy: act / inquire / challenge / explore / verify / escalate / stop
 -> bounded evidence when inquiry is warranted
 -> warranted responsibility
 -> authority check
@@ -159,6 +160,8 @@ select ONE boundary — or explicitly decline selection
 identify DECISION-CHANGING STRATEGIC UNCERTAINTY
       |
 apply INQUIRY POLICY: no inquiry or smallest sufficient evidence
+      |
+apply METAREASONING POLICY: select the next control move
       |
 select ONE WARRANTED REPOSITORY-LEVEL RESPONSIBILITY
       |
