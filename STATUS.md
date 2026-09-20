@@ -105,7 +105,7 @@ Current material frontier items are:
 
 **No repository-local construction boundary is currently selected.**
 
-The post-#401 normal-use strategic analysis found one bounded currentness defect: the previous projection still described terminal closeout as pending after Issue #401 had closed and integrated Product/Release qualification had passed. Issue #414 reconciles that stale projection.
+The post-#401 normal-use strategic analysis found one bounded currentness defect: the previous projection still described terminal closeout as pending after Issue #401 had closed and integrated Product/Release qualification had passed. Issue #414 records the reconciliation of that stale projection.
 
 After that repair, the remaining visible frontier is intentionally non-construction:
 
@@ -169,7 +169,7 @@ Do not select work merely because an old issue, candidate direction, or deferred
 
 No continuing construction vehicle is selected.
 
-Issue #414 is the bounded currentness reconciliation that establishes this stable post-closeout projection. After it integrates and qualifies, close it rather than turning the reconciliation into a new development program.
+Issue #414 is the bounded reconciliation record for this stable post-closeout projection; it does not create a continuing construction vehicle.
 
 Ordinary product use may still create bounded responsibilities or Campaigns when a real user/repository decision warrants them.
 
