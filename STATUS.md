@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-20  
-**Current phase:** Issue #432 Decision Journey Productization v1 is complete/integrated and in normal-use handoff; Issues #430, #426, and #416 remain complete/integrated and in normal-use handoff. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #435 Strategic Repository Analysis Semantic Grounding v1 is complete/integrated and in normal-use handoff; Issue #432 Decision Journey Productization v1 is complete/integrated and in normal-use handoff; Issues #430, #426, and #416 remain complete/integrated normal-use baselines. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -65,11 +65,13 @@ The repository-qualified baseline includes:
 - **Multi-Repository Strategic Sensemaking — COMPLETE / INTEGRATED:** caller-selected repository-set analysis models capability ownership/overlap, boundary tensions, allocation paths, and tradeoffs without automatic repository discovery or transaction orchestration.
 - **Change-Impact Sensemaking — COMPLETE / INTEGRATED:** bounded change-impact analysis identifies decision-relevant affected surfaces and verification/reconciliation/closure consequences without turning references into automatic impacts or follow-up into authorized backlog work.
 - **Decision Journey Productization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** read-only journey reconstruction, caller-selected context packs, authored strategic decision deltas, anticipated-vs-observed impact/closure comparison, static guided entry, and canonical playbooks compose existing surfaces without planner/router authority or a new state system.
+- **Strategic Repository Analysis Semantic Grounding v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** an explicit Strategicity Gate separates useful lower-level maintenance from Level-3 repository evolution; new canonical `schema_version: 2` analyses ground frontier/path relationships in evidence and capability identifiers while legacy versionless v1 analyses remain valid.
 
 Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision-v1-handoff.md`.
 Policy Hierarchy Completion v0 closeout is summarized in `docs/policy-hierarchy-completion-v0-handoff.md`.
 Strategic Continuity Refinement v1 closeout is summarized in `docs/strategic-continuity-refinement-v1-handoff.md`.
 Decision Journey Productization v1 closeout is summarized in `docs/decision-journey-productization-v1-handoff.md`.
+Strategic Repository Analysis Semantic Grounding v1 is summarized in `docs/strategic-repository-analysis-semantic-grounding-v1-handoff.md`.
 
 ### Material limitations and evidence ceilings
 
@@ -115,43 +117,48 @@ Current material frontier items are:
 23. **Strategic Continuity Refinement v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #430 deepens the existing continuity surface with typed mechanical currentness observations, explicit governing-authority currentness, deterministic textual/Mermaid strategic-history projections, and optional lightweight path-transition identity/effects. It adds no roadmap/project-management semantics, automatic causal inference, planner runtime, strategic ranking, or automatic reopening.
 
 24. **Decision Journey Productization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #432 composes already-authored strategy, Campaign, execution, returned evidence, reconciliation, change-impact, and reassessment surfaces through read-only `journey` projections, explicit semantic companions, caller-selected context/guidance, and canonical playbooks. It adds no planner, router, schema v3, causal inference, closure inference, or external-action authority.
+25. **Strategic Repository Analysis Semantic Grounding v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #435 adds the Strategicity Gate, backward-compatible strategic artifact v2 grounding, explicit frontier/path reference integrity, and strategy-before-intervention ordering. Historical v1 analyses remain valid; the validator still does not establish semantic truth or strategy correctness.
 
 ### Current highest-leverage boundary
 
-**Decision Journey Productization v1 — terminal normal-use handoff.**
+**Strategic Repository Analysis Semantic Grounding v1 — terminal normal-use handoff.**
 
-Issue #432 closes the owner-authorized product-composition package:
+Issue #435 closes the owner-authorized semantic-grounding refinement:
 
 ```text
-existing strategic / Campaign / execution / reconciliation surfaces
-+ read-only journey reconstruction
-+ caller-selected progressive context
-+ authored decision delta
-+ anticipated-vs-observed impact closure comparison
-+ beginner-first guided entry and playbooks
--> one reconstructible decision journey
+repository evidence
+-> capability map
+-> Strategicity Gate
+-> Strategic Frontier
+-> materially different repository futures
+-> grounded construction paths
+-> strategic comparison
+-> disposition/path judgment
+-> smallest warranted intervention
 -> no new semantic authority
 ```
 
-PR #433 integrated the feature surface at `13b9404cecd406d676e581504b5e66a10b4fd23e`.
-Both exact PR-head qualification and integrated-main Product Validation / Release
-Candidate Distribution passed. The repository now returns to normal-use evidence
-rather than opening another construction package.
+PR #436 integrated the feature surface at `bcb1d6cae1690463b63389d3d546fbb81f0acb27`.
+Exact PR-head Product Validation and Release Candidate Distribution passed on
+`9dde64875ed12afdc1fc16b41e043c86435cce74`; GitHub compare reports zero file
+differences between that qualified head and the merge commit. The repository now
+returns to normal-use evidence rather than opening another construction package.
 
 ### Current strategic decision to support
 
-**Decision:** after integrating Decision Journey Productization v1, is another
-repository-local productization/control package warranted now?
+**Decision:** after integrating Strategic Repository Analysis Semantic Grounding v1,
+is another repository-local strategic-analysis package warranted now?
 
 **Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
 
-Use the journey/context/delta/impact-closure/guided-entry surfaces during ordinary
-consequential repository work. Reopen construction only from recurring concrete
-friction or separate owner direction.
+Use the Strategicity Gate and v2 grounding during ordinary open-future analysis.
+Keep lower-level maintenance below Level 3 unless it materially changes the
+repository future. Reopen construction only from recurring concrete friction or
+separate owner direction.
 
 ### Current decision-changing uncertainty
 
-None currently warrants additional Decision Journey Productization construction after Issue #432.
+None currently warrants additional strategic-analysis construction after Issue #435.
 
 Future normal-use evidence may reveal a bounded deficiency, but:
 
@@ -174,6 +181,7 @@ ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATE
 ISSUE_426_POLICY_HIERARCHY_INTERFACE_CLARIFICATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_430_STRATEGIC_CONTINUITY_REFINEMENT_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_432_DECISION_JOURNEY_PRODUCTIZATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
+ISSUE_435_STRATEGIC_REPOSITORY_ANALYSIS_SEMANTIC_GROUNDING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 STRATEGY_VIEWER_CLI = IMPLEMENTED
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE
@@ -187,10 +195,11 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-None for Issue #432 or the completed Issues #430/#426/#416 programs.
+None for Issue #435 or the completed Issues #432/#430/#426/#416 programs.
 
 The terminal qualification/integration receipts are preserved in
-`docs/decision-journey-productization-v1-handoff.md` and the earlier milestone handoffs.
+`docs/strategic-repository-analysis-semantic-grounding-v1-handoff.md`,
+`docs/decision-journey-productization-v1-handoff.md`, and the earlier milestone handoffs.
 
 ### Expected evidence and reassessment
 
@@ -202,13 +211,15 @@ Reopen repository construction only when ordinary use or explicit owner directio
 - reconciliation packets are insufficient for a concrete returned-evidence episode;
 - an explicitly selected multi-repository decision cannot be represented without violating current boundaries;
 - change-impact analysis fails to preserve a consequential affected-surface/closure decision;
+- ordinary use repeatedly shows lower-level maintenance being promoted into Level-3 construction despite the Strategicity Gate;
+- v2 grounding proves insufficient to reconstruct decision-relevant frontier/path relationships;
 - a protected owner/Level-4/external authority boundary requires a separately authorized product change.
 
 Do not reopen from synthetic planner curiosity alone.
 
 ### Authority / owner direction
 
-The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, later authorized Issue #426 to clarify policy/continuity interfaces, and authorized Issue #430 to implement the strategic-continuity refinement program. The owner then authorized Issue #432 to implement the complete Decision Journey Productization v1 package sequentially without another approval pause.
+The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, later authorized Issue #426 to clarify policy/continuity interfaces, authorized Issue #430 to implement the strategic-continuity refinement program, and authorized Issue #432 to implement Decision Journey Productization v1. The owner then explicitly authorized Issue #435 to implement Strategic Repository Analysis Semantic Grounding v1 without another experiment gate or approval pause.
 
 Policy Hierarchy Completion v0 has integrated the full owner-authorized bounded package set:
 
@@ -254,8 +265,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NORMAL USE / NO ACTIVE ISSUE #432 CONSTRUCTION PACKAGE.**
+**NORMAL USE / NO ACTIVE ISSUE #435 CONSTRUCTION PACKAGE.**
 
-Use the integrated decision-journey, context-pack, strategic-delta, impact-closure, guided-entry, typed-currentness, strategic history/graph, reconciliation, multi-repository, change-impact, and policy-control surfaces during ordinary consequential repository work. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it.
+Use the integrated Strategicity Gate, strategic-analysis v2 grounding, decision-journey, context-pack, typed-currentness, strategic history/graph, reconciliation, multi-repository, change-impact, and policy-control surfaces during ordinary consequential repository work. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of this closeout.
