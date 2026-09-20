@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-19  
-**Current phase:** Strategic Repository Sensemaking v1 is active under Issue #401; Package A is integrated and Package B is constructing first-class repository-evolution path synthesis. Policy Hierarchy Completion v0 remains composable under Issue #399, with Inquiry Policy v0, Metareasoning Policy v0, Exploration Policy v0, Warrant / Choice Policy v0, and Learning / Reconciliation Policy v0 integrated. Synthetic StrategicPlanner testing remains stopped as the active mode.  
+**Current phase:** Strategic Repository Sensemaking v1 is functionally complete and in terminal closeout under Issue #401. Packages A and B are integrated and repository-qualified. Policy Hierarchy Completion v0 remains independently owner-authorized under Issue #399, with Inquiry, Metareasoning, Exploration, Warrant / Choice, Learning / Reconciliation, and the stable Strategic Alternatives surface integrated. Synthetic StrategicPlanner testing remains stopped as the active mode.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
@@ -93,92 +93,102 @@ Current material frontier items are:
 14. **Practical Agent Architecture v0 — COMPLETE / GUIDANCE_ONLY_WARRANTED / INTEGRATED.** The warrant-centered hybrid design reconciled against current Sensemaking without establishing a state, schema, assurance, runtime, or public-API gap; compact guidance is integrated into `using-sensemaking`.
 15. **Normal-use validation — ACTIVE / SUPPORTING EVIDENCE MODE.** Preserve qualifying real episodes and use the execution interfaces during ordinary consequential repository work; it no longer blocks construction explicitly authorized under Issue #399.
 16. **Execution Interface & Agent-Factorization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Release-authority audit, execution handoff/result, working-context projection, generic executor interchange, AI Software Factory projection, explicit GitHub provenance publication, and cross-repository execution projection are integrated without adding semantic planning/scheduling authority. Feature-integrated `main@4f89e92030af4dee5c931b59b839869911e6c366` passed Product/Lab/Release Distribution validation; PR #394 / Issue #393 carry the terminal closeout qualification/result receipt.
-17. **Experimental Intelligence Components v0 — ACTIVE / LAB_ONLY / `RESEARCH_MORE`.** Owner direction authorizes cheap, reversible experiments rather than core promotion. StrategicPlanner v0 under Issue #395 compiles baseline/treatment packets and preserves semantic decision authority with the active agent. Initial retrospective dogfood shows a plausible benefit on ambiguous high-leverage decisions and disproportionate ceremony on a tiny bounded repair; this supports prospective testing of an activation boundary, not product promotion or automatic planning.
+17. **Experimental Intelligence Components v0 — DEFERRED / LAB_ONLY / `RESEARCH_MORE` / SYNTHETIC TESTING STOPPED.** StrategicPlanner v0 under Issue #395 remains historical lab evidence at its original claim ceiling. It is not an active construction or experiment program and is not promoted by Strategic Repository Sensemaking v1.
 18. **Policy Hierarchy Completion v0 — ACTIVE / OWNER_AUTHORIZED / COMPOSABLE.** Issue #399 authorizes the missing middle semantic-control layers. Inquiry, Metareasoning, Exploration, Warrant / Choice, and Learning / Reconciliation Policy v0 are integrated; stable Strategic Alternatives and adaptive coordination remain authorized follow-ons. Policy layers remain agent-owned, zero-work-capable, and non-mandatory.\n19. **Strategic Repository Sensemaking v1 — ACTIVE / OWNER_AUTHORIZED / CONSTRUCTION.** Issue #401 authorizes a first-class Level-3 analysis surface that turns repository evidence into a current-system model, capability/limitation map, coherent construction paths, qualitative comparison, decision-changing uncertainty, strategic synthesis, and a warranted direction/inquiry/no-change disposition without building a deterministic StrategicPlanner.
 
 ### Current highest-leverage boundary
 
-**Strategic Repository Sensemaking v1 — first-class repository evolution analysis.**
+**No additional Strategic Repository Sensemaking v1 construction boundary is selected.**
 
-The owner explicitly authorized construction under Issue #401 and removed any requirement for another synthetic experiment before building it.
+The functional capability is integrated through PRs #403 and #404. This closeout only reconciles current repository claims, records durable qualification/handoff evidence, and stops Issue #401 construction.
 
-The current gap is not that Sensemaking lacks Level-3 concepts. The repository already has repository diagnosis, Strategic Frontier, Strategic Decision to Support, qualitative comparison, decision-changing uncertainty, Inquiry Policy v0, and bounded execution. The missing product layer is a coherent first-class analysis surface that composes those pieces into explicit repository-evolution paths.
+The completed product boundary is:
 
-Policy Hierarchy Completion v0 remains valid and composable. Inquiry, Metareasoning, Exploration, Warrant / Choice, and Learning / Reconciliation Policy v0 are integrated: the first four govern investigation/control/search/target adjudication, while Learning / Reconciliation governs what explicit Level-3 claims, uncertainty, responsibility, or strategic state changes after evidence returns. This milestone does not cancel Issue #399; it applies those semantic-control contracts to a concrete Level-3 product surface.
+```text
+repo-sensemaker
+-> diagnostic repository understanding
 
-Issue #384 remains an external GitHub-admin governance action and is unrelated to this construction responsibility.
+strategic-repository-analysis
+-> current-system / capability model
+-> coherent construction paths
+-> qualitative comparison
+-> decision-changing uncertainty
+-> strategic synthesis
+-> semantic disposition
+
+strategic disposition
+!= implementation authorization
+```
+
+Issue #399 remains a separate owner-authorized policy-hierarchy program. Its Adaptive Policy Coordinator v0 follow-on is **not** automatically selected by this closeout.
+
+Issue #384 remains the unrelated external GitHub-admin governance action.
 
 ### Current strategic decision to support
 
-**Decision:** can Sensemaking turn current repository evidence and governing intent into a reconstructible strategic decision space—current system, capability state, plausible construction paths, qualitative tradeoffs, decision-changing uncertainty, and warranted direction—without becoming a deterministic strategy engine?
+**Decision:** did Strategic Repository Sensemaking v1 establish a coherent first-class way to analyze possible repository construction paths without turning Sensemaking into a deterministic planner?
 
-**Current judgment:** **YES / BUILD STRATEGIC REPOSITORY SENSEMAKING V1.**
+**Current judgment:** **YES / MILESTONE FUNCTIONALLY COMPLETE.**
 
-Owner direction resolves whether to build this capability. The smallest warranted product shape is an artifact-first semantic Skill with bounded mechanical validation, not a planner runtime, scoring function, Campaign schema change, or automatic implementation pipeline.
+The product now has a supported `strategic-repository-analysis` Skill and mechanically validated `strategic_repository_analysis` artifact, explicit construction-path synthesis, qualitative path comparison, decision-changing uncertainty, policy-hierarchy composition, diagnostic-vs-strategic routing, and canonical human/agent entry points.
+
+No numeric path scoring, deterministic best-path selection, automatic Campaign generation, StrategicPlanner product promotion, or implementation authority was added.
 
 ### Current decision-changing uncertainty
 
-**Contract sufficiency:** can a stable strategic-analysis artifact represent capability states, construction paths, path comparison, and strategic disposition strongly enough to support fresh-context continuation while keeping semantic quality agent-owned?
+There is **no currently selected Issue #401 construction uncertainty**.
 
-This uncertainty is resolved through ordinary implementation/contract qualification, not a synthetic experiment. If the contract requires numeric scoring, automatic ranking, generic AgentState, or a new semantic runtime to function, stop and redesign rather than expanding machinery.
+Future questions about strategic-analysis usefulness, richer path semantics, or external consumers are normal product/normal-use questions. They are not prerequisites for closing v1.
+
+The only remaining Issue #401 question is mechanical: whether this terminal closeout projection passes exact-head and integrated Product Validation / Release Candidate Distribution.
 
 ### Current warranted repository-level responsibility
 
-**Implement and qualify Strategic Repository Sensemaking v1 under Issue #401.**
+**None for Strategic Repository Sensemaking v1 after this closeout integrates.**
 
-Current bounded package: **Package B — Construction Path Synthesis & Product Integration**.
-
-Package A is integrated through PR #403 with exact qualified content.
-
-Required intervention:
-
-- strengthen construction-path distinctness, capability grounding, coarse sequencing, and anti-backlog semantics;
-- distinguish diagnostic `repo-sensemaker` from Level-3 `strategic-repository-analysis`;
-- integrate first-class strategic analysis into `using-sensemaking` and the Strategic Outer Loop;
-- expose the high-level repository-evolution entry point in README / Getting Started;
-- add integration regressions proving strategic analysis does not become automatic task selection, numeric ranking, or implementation authority;
-- preserve Inquiry, Metareasoning, Exploration, Warrant / Choice, and Learning / Reconciliation Policy v0 as composable semantic policies for path-distinguishing uncertainty, control-mode selection, iterative search allocation, target-specific adjudication, and evidence-return reconciliation.
-
-Level-3 disposition: `STRATEGIC_REPOSITORY_SENSEMAKING_CONSTRUCTION_ACTIVE`.
+Level-3 disposition: `STRATEGIC_REPOSITORY_SENSEMAKING_V1_CLOSEOUT`.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_PATH_SYNTHESIS_INTEGRATION
-PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1
-COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0
-EXPERIMENT PREREQUISITE = NONE
+CURRENT CONSTRUCTION RESPONSIBILITY = NONE_FOR_STRATEGIC_REPOSITORY_SENSEMAKING_V1
+PRIMARY CONSTRUCTION PROGRAM = NONE_SELECTED_BY_ISSUE_401
+INDEPENDENT AUTHORIZED PROGRAM = POLICY_HIERARCHY_COMPLETION_V0
+ADAPTIVE_POLICY_COORDINATOR_STATUS = AUTHORIZED_NOT_SELECTED_BY_THIS_CLOSEOUT
 SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
+EXPERIMENT PREREQUISITE = NONE
+SYNTHETIC STRATEGICPLANNER TESTING = STOPPED
 ```
+
+Do not create another Issue #401 package merely to keep the milestone active.
 
 ### Active execution vehicle
 
-Issue #401 is the current milestone authority tracker.
+The terminal Issue #401 closeout PR is the final repository mutation for this milestone.
 
-Current branch: `work/strategic-repository-sensemaking-v1-synthesis`.
+After it integrates:
 
-Package sequence:
+```text
+STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE
+ISSUE_401_CONSTRUCTION = STOP
+```
 
-1. Strategic Analysis Contract;
-2. Strategic Repository Analysis Skill semantics and path synthesis;
-3. product integration / currentness / closeout.
+The closeout PR and Issue #401 carry the terminal qualification receipt. Do not mutate source afterward merely to copy transient post-merge run IDs into STATUS.
 
-Issue #399 remains authorized for later policy-layer continuation; no synthetic StrategicPlanner experiment is required by either program.
+Issue #399 remains separate and open.
 
 ### Expected evidence and reassessment
 
-Package B should produce:
+Terminal closeout requires:
 
-- explicit construction-path synthesis semantics grounded in current capabilities and material strategic differences;
-- a clear diagnostic-vs-strategic Skill boundary;
-- Level-3 / using-sensemaking integration;
-- human-facing entry points for repository-evolution analysis;
-- integration regression coverage;
-- exact-head Product Validation and Release Candidate Distribution qualification.
+- Package A (#403) and Package B (#404) integrated with exact qualified content;
+- current Policy Hierarchy work through Learning / Reconciliation preserved;
+- strategic candidate directions reconciled to `IMPLEMENTED_BASELINE`;
+- RC3 changelog and public surface reconciled;
+- milestone handoff present;
+- closeout regressions passing;
+- exact closeout-head Product Validation and Release Candidate Distribution PASS;
+- post-merge Product Validation and Release Candidate Distribution PASS on the integrated closeout tree.
 
-After Package B integrates:
-
-- proceed directly to Package C closeout/currentness reconciliation;
-- stop and redesign if integration requires deterministic path ranking, automatic responsibility selection, Campaign schema expansion, or hidden implementation authority;
-- do not manufacture an empirical study before closeout.
+These gates qualify repository integration/currentness only. They do not establish strategic optimality, comparative superiority, or product-market value.
 
 ### Authority / owner direction
 
@@ -226,14 +236,14 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**IMPLEMENT AND QUALIFY CONSTRUCTION PATH SYNTHESIS & PRODUCT INTEGRATION — PACKAGE B.**
+**QUALIFY AND INTEGRATE THE TERMINAL STRATEGIC REPOSITORY SENSEMAKING V1 CLOSEOUT.**
 
-Integrate strategic repository analysis into the canonical agent/human entry points, preserve `repo-sensemaker` as the diagnostic surface, and make coherent construction-path synthesis a first-class Level-3 capability.
+Merge the closeout only if its exact head passes Product Validation and Release Candidate Distribution, verify the integrated closeout tree, record the qualification receipt on Issue #401, and close that issue.
 
-Then proceed directly to Package C — currentness reconciliation, milestone handoff, and closeout — without opening another experiment.
+After closure, do not open another Strategic Repository Sensemaking package without new concrete pressure or explicit owner direction.
 
-Policy Hierarchy Completion v0 remains composable follow-on work; Inquiry Policy v0 is already available to Strategic Repository Sensemaking when a path-distinguishing uncertainty warrants evidence.
+Policy Hierarchy Completion v0 (Issue #399) remains independently owner-authorized. This closeout does not automatically select Adaptive Policy Coordinator v0 or any other #399 follow-on.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, or advance to final `1.0.0` merely because this milestone is under construction.
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of this closeout.
 
-GitHub branch/ruleset protection remains external Issue #384. Do not claim it is enforced until the hosting setting actually exists.
+GitHub branch/ruleset protection remains external Issue #384.
