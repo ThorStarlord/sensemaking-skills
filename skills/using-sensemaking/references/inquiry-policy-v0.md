@@ -113,7 +113,8 @@ would change the responsibility or frame.
 
 ## 5. Selection rule
 
-Prefer the **smallest sufficient inquiry**.
+Prefer the **smallest sufficient inquiry** and the lowest-cost evidence source
+strong enough for the current decision and claim.
 
 A useful qualitative rule is:
 
@@ -130,17 +131,51 @@ No numeric score is required.
 When several uncertainties exist, prefer the one whose resolution most directly
 discriminates among materially different next responsibilities.
 
+Before escalating from ordinary inquiry into experimentation, apply the
+Experiment Warrant Gate:
+
+```text
+uncertainty exists
+!= experiment required
+
+INVESTIGATE
+!= EXPERIMENT
+
+experiment possible
+!= experiment warranted
+
+better evidence possible
+!= better evidence worth obtaining
+```
+
+Check current evidence, authoritative reading, inspection, verification,
+owner/external sources, a tiny probe, and cheap reversible construction before
+paying for a separate experiment. If plausible experiment outcomes would not
+change what becomes warranted, do not experiment.
+
+When experimentation is materially considered, read
+`experiment-economy-v1.md` for evidence-source economy, total experiment cost,
+Minimum Sufficient Experimental Rigor, Confounder Warrant, and claim-relative
+evidence guidance.
+
 ## 6. Evidence-producing responsibility
 
 Inquiry may be satisfied by:
 
 - reading an authoritative source;
 - inspecting repository state;
+- verifying an existing claim;
 - running a bounded probe/test;
 - asking the owner;
 - checking an external system when authorized;
 - delegating a bounded investigation;
-- performing a cheap reversible information-producing action.
+- performing a cheap reversible information-producing action;
+- implementing a cheap reversible capability whose normal use itself supplies
+  sufficient evidence.
+
+Do not treat a separate experiment as the default evidence-producing
+responsibility. A reversible build may be both the useful product step and the
+cheapest sufficient inquiry.
 
 Do not inflate inquiry into a Campaign or architecture project unless continuation
 complexity independently warrants that machinery.
@@ -154,7 +189,10 @@ Stop inquiry when any of the following becomes true:
 - the needed source is unavailable or outside authority;
 - owner intent is the actual missing premise;
 - expected decision improvement no longer justifies search cost;
-- a cheap reversible action now dominates further analysis;
+- a cheap reversible action or reversible build now dominates further analysis;
+- experiment outcomes would no longer discriminate among materially different actions;
+- added experimental rigor would strengthen a claim the current decision does not need;
+- isolation/control overhead no longer justifies its decision value;
 - evidence invalidates the current decision frame and requires strategic reassessment.
 
 ```text
@@ -234,6 +272,22 @@ What result lets me stop inquiring?
 
 If no unknown passes those tests, return `NO_INQUIRY_NEEDED`.
 
+If experimentation is being considered, additionally ask:
+
+```text
+Would the plausible outcomes change the decision?
+
+Could a cheaper evidence source answer it?
+
+Could cheap reversible construction answer it?
+
+What is the total experiment cost including setup,
+isolation, evaluation, interpretation, documentation,
+delay, and opportunity cost?
+
+What controls are actually required for the claim?
+```
+
 ## 11. Anti-patterns
 
 Avoid:
@@ -243,5 +297,11 @@ Avoid:
 - using repository research to infer owner preference;
 - collecting evidence with no stated decision effect;
 - building tooling before proving the inquiry recurs;
+- treating `INVESTIGATE` as synonymous with experiment;
+- selecting an experiment when reversible construction is cheaper and sufficiently informative;
+- calling an experiment cheap while ignoring isolation/evaluation/documentation overhead;
+- controlling every possible confounder instead of only decision-relevant ones;
+- treating coding-agent participation as contamination when it is part of normal product use;
+- demanding research-grade causal evidence for a cheap reversible product decision;
 - continuing search after the current decision is already sufficiently supported;
 - turning Inquiry Policy outcomes into runtime enums or numeric scores merely for implementation convenience.
