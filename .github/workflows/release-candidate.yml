@@ -109,6 +109,7 @@ jobs:
             tests/test_strategic_companion_artifacts.py \
             tests/test_multi_repository_strategic_analysis.py \
             tests/test_change_impact_analysis.py \
+            tests/test_issue_416_closeout.py \
             -q
 
       - name: Build wheel and sdist

@@ -103,7 +103,7 @@ def test_release_remains_rc3_development_and_no_runtime_planner_is_promoted() ->
     assert "OuterLoopEngine" not in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
 
 
-def test_later_program_does_not_reopen_or_extend_completed_policy_hierarchy() -> None:
+def test_issue_416_closeout_does_not_reopen_completed_policy_hierarchy() -> None:
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
     handoff = (ROOT / "docs" / "strategic-repository-sensemaking-v1-handoff.md").read_text(
         encoding="utf-8"
@@ -113,4 +113,5 @@ def test_later_program_does_not_reopen_or_extend_completed_policy_hierarchy() ->
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in handoff
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in status
     assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
+    assert "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
