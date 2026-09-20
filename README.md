@@ -21,6 +21,7 @@ Choose the entry point for your role instead of reading every document:
 | A human/new user trying to use Sensemaking | [`GETTING_STARTED.md`](GETTING_STARTED.md) | Canonical human how-to and first-use walkthrough |
 | Looking for the canonical Campaign lifecycle/composition | [`docs/agent-workflow-golden-path-v1.md`](docs/agent-workflow-golden-path-v1.md) | Canonical Campaign workflow-composition reference; static guidance, not routing |
 | A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
+| Understanding how control levels, policy layers, authority, execution, evidence, and strategic continuity compose | [`docs/adaptive-semantic-control-architecture-v0.md`](docs/adaptive-semantic-control-architecture-v0.md) | Descriptive crosswalk; no new control level, runtime, or authority |
 | Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) | Level-3 current-system, capability, construction-path, tradeoff, and strategic-synthesis analysis |
 | Comparing or checking currentness of authored strategic analyses | [`docs/strategic-continuity-v1.md`](docs/strategic-continuity-v1.md) | Deterministic lineage/currentness projections; no strategic selection |
 | Reconciling returned strategic evidence or carrying reserved decisions | [`docs/strategic-reconciliation-and-decision-packets-v1.md`](docs/strategic-reconciliation-and-decision-packets-v1.md) | Strategic reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts |
@@ -57,6 +58,8 @@ repository/product future itself is open
 a prior strategic analysis exists and the repository has evolved
 -> author a new analysis with explicit continuity when semantically warranted
 -> use `strategy compare` / `strategy drift` for mechanical projection only
+-> if later evidence is decision-changing, apply Learning / Reconciliation
+-> reopen Level 3 only when warranted; drift alone does not require reanalysis
 
 material completed-work or repair claim
 -> stronger evidence / reconciliation / finding-specific verification when warranted
