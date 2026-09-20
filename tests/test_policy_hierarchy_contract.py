@@ -16,6 +16,9 @@ METAREASONING = ROOT / "skills" / "using-sensemaking" / "references" / "metareas
 EXPLORATION = ROOT / "skills" / "using-sensemaking" / "references" / "exploration-policy-v0.md"
 WARRANT_CHOICE = ROOT / "skills" / "using-sensemaking" / "references" / "warrant-choice-policy-v0.md"
 LEARNING_RECONCILIATION = ROOT / "skills" / "using-sensemaking" / "references" / "learning-reconciliation-policy-v0.md"
+ADAPTIVE_COORDINATOR = ROOT / "skills" / "using-sensemaking" / "references" / "adaptive-policy-coordinator-v0.md"
+ADAPTIVE_GUIDANCE = ROOT / "skills" / "using-sensemaking" / "references" / "adaptive-guidance-v0.md"
+HANDOFF = ROOT / "docs" / "policy-hierarchy-completion-v0-handoff.md"
 BOOTSTRAP = ROOT / "skills" / "using-sensemaking" / "SKILL.md"
 PRACTICAL = ROOT / "skills" / "using-sensemaking" / "references" / "practical-agent-architecture-v0.md"
 OUTER = ROOT / "docs" / "strategic-outer-loop.md"
@@ -253,6 +256,41 @@ def test_stable_strategic_alternatives_reuse_existing_level3_surface() -> None:
     assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
 
 
+def test_adaptive_policy_coordinator_v0_composes_without_routing() -> None:
+    coordinator = ADAPTIVE_COORDINATOR.read_text(encoding="utf-8")
+
+    assert "Which policy questions are decision-relevant now" in coordinator
+    assert "Zero explicitly surfaced policy layers is a valid successful coordination result" in coordinator
+    assert "policy available\n!= policy must activate" in coordinator
+    assert "coordination\n!= routing" in coordinator
+    assert "coordination\n!= authorization" in coordinator
+    assert "not a router, planner, scheduler, workflow selector, score, state machine, or runtime service" in coordinator
+    assert "Adaptive Policy Coordinator\n!= CoordinatorState schema" in coordinator
+    assert "Do not run the full hierarchy by default" not in coordinator
+
+
+def test_adaptive_policy_coordinator_is_integrated_and_policy_hierarchy_closes() -> None:
+    coordinator = ADAPTIVE_COORDINATOR.read_text(encoding="utf-8")
+    adaptive = ADAPTIVE_GUIDANCE.read_text(encoding="utf-8")
+    bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
+    policy = POLICY.read_text(encoding="utf-8")
+    status = STATUS.read_text(encoding="utf-8")
+    handoff = HANDOFF.read_text(encoding="utf-8")
+
+    assert "adaptive-policy-coordinator-v0.md" in adaptive
+    assert "Adaptive Policy Coordinator v0" in bootstrap
+    assert "references/adaptive-policy-coordinator-v0.md" in bootstrap
+    assert "Adaptive Policy Coordinator — Package 7 / integrated" in policy
+    assert "Adaptive Policy Coordinator v0 — integrated" in policy
+    assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
+    assert "No remaining Issue #399 construction package is selected" in status
+    assert "POLICY HIERARCHY COMPLETION V0" in handoff
+    assert "COMPLETE / INTEGRATED / COMPOSABLE" in handoff
+    assert "STRATEGIC REPOSITORY SENSEMAKING V1" in handoff
+    assert "semantic optimality or empirical superiority" in handoff
+    assert "policy available" in coordinator
+
+
 def test_policy_hierarchy_does_not_create_runtime_or_schema_surface() -> None:
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     release = (ROOT / "release-v1.0.yaml").read_text(encoding="utf-8")
@@ -268,5 +306,7 @@ def test_policy_hierarchy_does_not_create_runtime_or_schema_surface() -> None:
     assert "BeliefState" not in pyproject
     assert "StrategicAlternativesEngine" not in pyproject
     assert "StrategicPlanner" not in pyproject
+    assert "PolicyCoordinator" not in pyproject
+    assert "CoordinatorState" not in pyproject
     assert "SearchState" not in pyproject
     assert 'schema_version: "2"' in release
