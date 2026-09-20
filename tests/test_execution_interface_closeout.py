@@ -41,7 +41,7 @@ def test_status_preserves_execution_interface_closeout_without_freezing_rc3() ->
     assert "NORMAL_USE_VALIDATION" in status
     assert "EXECUTION_INTERFACE_V1_CLOSEOUT" not in status
     assert "Policy Hierarchy Completion v0" in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = INQUIRY_POLICY_V0" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
     assert "POST_RC2_DEVELOPMENT_ACTIVE" not in status
     assert "Do **not** freeze RC3" in status
 
