@@ -110,6 +110,7 @@ jobs:
             tests/test_multi_repository_strategic_analysis.py \
             tests/test_change_impact_analysis.py \
             tests/test_issue_416_closeout.py \
+            tests/test_policy_hierarchy_interface_clarification_v1.py \
             -q
 
       - name: Build wheel and sdist
