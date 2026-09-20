@@ -122,16 +122,18 @@ This uncertainty is resolved through ordinary implementation/contract qualificat
 
 **Implement and qualify Strategic Repository Sensemaking v1 under Issue #401.**
 
-Current bounded package: **Package A — Strategic Analysis Contract**.
+Current bounded package: **Package B — Construction Path Synthesis & Product Integration**.
+
+Package A is integrated through PR #403 with exact qualified content.
 
 Required intervention:
 
-- establish canonical `docs/strategic-repository-sensemaking-v1.md`;
-- add the `strategic-repository-analysis` Skill and artifact template;
-- register `strategic_repository_analysis` in artifact/Skill/domain/release contracts;
-- add a specialized mechanical validator for capability-state vocabulary, construction-path integrity, qualitative comparison, decision-changing uncertainty, disposition/reference integrity, and anti-scoring boundaries;
-- add regression coverage and ordinary product qualification;
-- preserve semantic-agent ownership and external implementation-authority boundaries.
+- strengthen construction-path distinctness, capability grounding, coarse sequencing, and anti-backlog semantics;
+- distinguish diagnostic `repo-sensemaker` from Level-3 `strategic-repository-analysis`;
+- integrate first-class strategic analysis into `using-sensemaking` and the Strategic Outer Loop;
+- expose the high-level repository-evolution entry point in README / Getting Started;
+- add integration regressions proving strategic analysis does not become automatic task selection, numeric ranking, or implementation authority;
+- preserve Inquiry Policy v0 as a composable semantic policy for path-distinguishing uncertainty.
 
 Level-3 disposition: `STRATEGIC_REPOSITORY_SENSEMAKING_CONSTRUCTION_ACTIVE`.
 
