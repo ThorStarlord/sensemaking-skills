@@ -161,19 +161,20 @@ Issue #399 remains authorized for later policy-layer continuation; no synthetic 
 
 ### Expected evidence and reassessment
 
-Package A should produce:
+Package B should produce:
 
-- canonical strategic-analysis product contract;
-- first-class Skill + template + manifest;
-- artifact/domain/registry/release integration;
-- validator regression coverage;
+- explicit construction-path synthesis semantics grounded in current capabilities and material strategic differences;
+- a clear diagnostic-vs-strategic Skill boundary;
+- Level-3 / using-sensemaking integration;
+- human-facing entry points for repository-evolution analysis;
+- integration regression coverage;
 - exact-head Product Validation and Release Candidate Distribution qualification.
 
-After Package A integrates:
+After Package B integrates:
 
-- proceed directly to construction-path synthesis/comparison semantics if the artifact composes without runtime/schema expansion;
-- stop and redesign if the capability only works by introducing deterministic strategy ranking, mandatory numeric scoring, or hidden implementation authority;
-- do not manufacture an empirical study before Package B.
+- proceed directly to Package C closeout/currentness reconciliation;
+- stop and redesign if integration requires deterministic path ranking, automatic responsibility selection, Campaign schema expansion, or hidden implementation authority;
+- do not manufacture an empirical study before closeout.
 
 ### Authority / owner direction
 
