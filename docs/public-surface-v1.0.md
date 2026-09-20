@@ -88,7 +88,22 @@ capability promise.
 
 The supported engineering analysis surface includes
 `strategic-repository-analysis`, which produces the mechanically validated
-`strategic_repository_analysis` artifact. It models current capability state,
+`strategic_repository_analysis` artifact.
+
+Strategic Continuity v1 adds a root `strategy` CLI projection surface for
+already-authored strategic analyses:
+
+```text
+strategy inspect
+strategy paths
+strategy uncertainty
+strategy assumptions
+strategy compare
+strategy drift
+```
+
+These commands inspect representation/currentness only. They do not generate,
+rank, select, authorize, or invalidate strategy. It models current capability state,
 0–5 materially real repository construction paths, qualitative tradeoffs,
 decision-changing uncertainty, and a semantic strategic disposition while
 preserving:
