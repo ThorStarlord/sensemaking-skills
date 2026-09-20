@@ -77,14 +77,14 @@ def test_inquiry_policy_is_integrated_into_agent_and_control_surfaces() -> None:
     assert "semantic control contracts" in outer
 
 
-def test_status_selects_inquiry_policy_as_current_construction_responsibility() -> None:
+def test_status_preserves_inquiry_policy_integration_when_later_owner_work_is_selected() -> None:
     status = STATUS.read_text(encoding="utf-8")
 
     assert "Policy Hierarchy Completion v0" in status
     assert "Issue #399" in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = INQUIRY_POLICY_V0" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
-    assert "SYNTHETIC STRATEGICPLANNER TESTING = STOPPED" in status
+    assert "Inquiry Policy v0 is integrated" in status
+    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+    assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "Do **not** freeze RC3" in status
 
 
