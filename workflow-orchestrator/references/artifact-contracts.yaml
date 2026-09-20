@@ -93,6 +93,60 @@ artifacts:
         - autonomous_execution
         - yolo_execution
 
+  - id: strategic_repository_analysis
+    path: "artifacts/strategic_repository_analysis.md"
+    produced_by: strategic-repository-analysis
+    consumed_by:
+      - user
+      - workflow-planner
+      - prompt-handoff
+      - architectural-review
+    description: "Level-3 repository evolution analysis: current system model, capability state, construction paths, qualitative comparison, decision-changing uncertainty, and strategic disposition"
+    required_sections:
+      - governing_intent_and_scope
+      - current_system_model
+      - capability_and_limitation_map
+      - strategic_frontier
+      - candidate_construction_paths
+      - qualitative_path_comparison
+      - decision_changing_uncertainty
+      - strategic_synthesis
+      - warranted_direction
+      - authority_and_claim_boundaries
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - target_repository
+      - target_source_identity
+      - governing_intent
+      - capability_states
+      - strategic_frontier
+      - construction_paths
+      - path_comparison
+      - decision_changing_uncertainty
+      - strategic_disposition
+      - selected_path_id
+      - candidate_repository_responsibility
+      - smallest_warranted_intervention
+      - implementation_authority_established_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    notes:
+      - "Strategic analysis is semantic-agent output; the validator does not choose, score, rank, or authorize a path."
+      - "Construction paths are coherent repository-evolution trajectories, not backlogs."
+      - "Numeric path scores/weights/ranking fields are forbidden; comparison is qualitative."
+      - "implementation_authority_established_by_artifact and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py strategic_repository_analysis {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-repository-analysis.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
   - id: discovery_findings
     produced_by: discovery
     consumed_by:
