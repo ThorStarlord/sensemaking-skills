@@ -15,6 +15,7 @@ responsibility_vocabulary:
   - output_reconciliation
 artifact_contracts:
   - repository_sensemaking_brief
+  - strategic_repository_analysis
   - architectural_review_recommendation
   - repair_verification_report
   - reconciliation_report
