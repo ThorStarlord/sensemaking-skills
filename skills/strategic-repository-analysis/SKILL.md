@@ -133,6 +133,15 @@ A path is a coherent future trajectory, not a backlog.
 
 One path is valid when alternatives would be artificial.
 
+For path distinctness, capability-state grounding, coarse construction
+sequencing, comparison discipline, and anti-backlog rules, read
+`references/construction-path-synthesis-v1.md`.
+
+Do not generate a path merely because a generic category exists. Two paths are
+materially distinct only when they imply a different future capability state,
+dependency structure, authority/thesis requirement, major risk, or set of
+later possibilities.
+
 ### 7. Compare paths qualitatively
 
 Use the canonical Level-3 lenses:
