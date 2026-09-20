@@ -20,6 +20,8 @@ construction path
 + risks / tradeoffs
 + reversibility
 + evidence gaps
++ decision-relevant assumptions when useful
++ reassessment triggers when useful
 ```
 
 A path is not a feature list, issue backlog, roadmap commitment, or numeric
@@ -220,6 +222,26 @@ A good synthesis answers:
 - Which gaps matter enough to change commitment?
 - Why is the selected disposition proportional to current evidence?
 - Why would a more ambitious intervention be premature?
+
+## 9A. Path assumptions and continuation
+
+A path may name the premises it depends on and observable conditions that should
+cause its warrant to be reconsidered.
+
+```text
+assumption
+= premise material to this path judgment
+
+reassessment trigger
+= condition that should cause a fresh semantic review
+
+trigger observed
+!= automatic path reversal
+```
+
+A later strategic analysis may explicitly `REAFFIRM`, `CONTINUE`, `REVISE`,
+`SUPERSEDE`, or `CLOSE` the prior analysis/path relationship. Do not convert
+this into progress percentages or a roadmap state machine.
 
 ## 10. Transition to bounded work
 

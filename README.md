@@ -22,6 +22,7 @@ Choose the entry point for your role instead of reading every document:
 | Looking for the canonical Campaign lifecycle/composition | [`docs/agent-workflow-golden-path-v1.md`](docs/agent-workflow-golden-path-v1.md) | Canonical Campaign workflow-composition reference; static guidance, not routing |
 | A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
 | Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) | Level-3 current-system, capability, construction-path, tradeoff, and strategic-synthesis analysis |
+| Comparing or checking currentness of authored strategic analyses | [`docs/strategic-continuity-v1.md`](docs/strategic-continuity-v1.md) | Deterministic lineage/currentness projections; no strategic selection |
 | Trying to understand the deeper responsibility/authority model | [`docs/agent-native-operating-workflow.md`](docs/agent-native-operating-workflow.md) | Level-2 reasoning, artifact, authority, validation, and stopping model |
 | Maintaining, validating, or qualifying the repository | [`docs/operations-runbook.md`](docs/operations-runbook.md) | Current operator/qualification runbook |
 
@@ -49,6 +50,10 @@ correct repository responsibility is uncertain
 repository/product future itself is open
 -> use strategic-repository-analysis to model coherent construction paths
    before selecting a bounded responsibility
+
+a prior strategic analysis exists and the repository has evolved
+-> author a new analysis with explicit continuity when semantically warranted
+-> use `strategy compare` / `strategy drift` for mechanical projection only
 
 material completed-work or repair claim
 -> stronger evidence / reconciliation / finding-specific verification when warranted
@@ -137,7 +142,8 @@ The installed product includes:
 - a compact `campaign working-context` projection for high-delegation continuation without automatic next-action selection.
 - a generic external-executor interchange plus an AI Software Factory GitHub-Issue projection that transports already-selected work without selecting a workflow or submitting execution.
 - explicit, preview-by-default GitHub provenance publication with deterministic markers and duplicate suppression; publication remains a caller-authorized external mutation.
-- a deterministic cross-repository execution projection that derives prerequisite layers only from explicit `depends_on` / `release_after` relations and never labels the projection an execution plan.
+- a deterministic cross-repository execution projection that derives prerequisite layers only from explicit `depends_on` / `release_after` relations and never labels the projection an execution plan;
+- Strategic Continuity v1 metadata for explicit analysis lineage, decision assumptions, and reassessment triggers, plus deterministic root `strategy` projections for inspect/paths/uncertainty/assumptions/compare/drift without semantic selection.
 
 The Level-3/Level-4 Strategic Outer Loop foundation is currently a **repository documentation/authority architecture**, not a shipped autonomous strategic runtime. Installing the package does not create a `StrategicPlanner`, automatically rank the Strategic Frontier, revise product strategy, or generate Campaigns without agent judgment.
 

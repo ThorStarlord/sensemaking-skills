@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0-rc.3] - UNRELEASED
 
 ### Changed
+- **Strategic Continuity & Currentness v1 (Issue #416 Package A)** — extends `strategic_repository_analysis` with optional explicit analysis lineage, decision assumptions, path assumptions, and reassessment triggers; adds deterministic root `strategy inspect|paths|uncertainty|assumptions|compare|drift` projections that never rank, select, authorize, invalidate, or automatically reopen strategy.
 - **Strategic Repository Sensemaking v1** — adds the supported `strategic-repository-analysis` Skill and `strategic_repository_analysis` artifact for current-system modeling, capability/limitation mapping, 0–5 materially real construction paths, qualitative comparison, decision-changing uncertainty, and strategic synthesis without deterministic path ranking or execution authority.
 - **Repository evolution routing** — keeps `repo-sensemaker` diagnostic while routing high-level “what could this repository become / how could it be constructed?” questions to strategic repository analysis; construction paths are capability-level trajectories rather than backlogs.
 - **Policy Hierarchy Completion v0 begins** — explicit owner direction closes synthetic StrategicPlanner testing as the active mode and starts construction of the missing middle semantic-control layers without adding a generic runtime.

@@ -68,6 +68,7 @@ jobs:
           src/sensemaking_skills/skills
           src/sensemaking_skills/setup_skills.py
           src/sensemaking_skills/cli.py
+          src/sensemaking_skills/strategy_cli.py
           --select E4,E7,E9,F
 
       - name: Error-boundary audit
@@ -190,6 +191,7 @@ jobs:
             tests/test_strategic_repository_analysis_contract.py \
             tests/test_strategic_repository_analysis_integration.py \
             tests/test_strategic_repository_sensemaking_closeout.py \
+            tests/test_strategic_continuity_v1.py \
             tests/test_semantic_substrate.py \
             tests/test_semantic_reference_audit.py \
             tests/test_semantic_conformance.py \

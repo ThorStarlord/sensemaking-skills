@@ -75,6 +75,20 @@ could change the strategic analysis.
 Reuse `repo-sensemaker` evidence when it is current. Run repository diagnosis
 first only when doing so would materially improve the strategic model.
 
+### 2A. Establish strategic continuity when relevant
+
+If a prior `strategic_repository_analysis` materially governs the current
+decision, do not silently overwrite it. Give the new analysis a stable
+`analysis_ref` and declare a continuity relationship:
+
+```text
+NEW | REAFFIRM | CONTINUE | REVISE | SUPERSEDE | CLOSE
+```
+
+Record the prior analysis reference, prior selected path when applicable, and a
+short semantic reason. Continuity is authored judgment; deterministic tools may
+project it but may not infer it.
+
 ### 3. Build the current-system model
 
 Describe the repository as a system/product:
@@ -139,7 +153,9 @@ Each path must describe:
 - what it unlocks;
 - material risks/tradeoffs;
 - reversibility;
-- evidence gaps.
+- evidence gaps;
+- decision-relevant assumptions when useful;
+- reassessment triggers for assumptions whose failure could change the path.
 
 A path is a coherent future trajectory, not a backlog.
 
@@ -193,6 +209,21 @@ source:
 - external_environment
 
 If no inquiry is warranted, say so.
+
+### 8A. Record decision assumptions when they matter
+
+Record only premises whose failure could materially change the strategic
+judgment. Give each a stable identifier, evidence references, and explicit
+reassessment triggers.
+
+```text
+assumption recorded
+!= confidence score
+!= generic belief database
+
+trigger observed
+!= strategy automatically changed
+```
 
 ### 9. Synthesize one strategic disposition
 
@@ -249,7 +280,8 @@ candidate responsibility != authorized execution
 ## Output behavior
 
 The artifact should be useful to a fresh owner or coding agent without hidden
-conversation context.
+conversation context. When it continues a prior analysis, the lineage and
+reassessment assumptions should be reconstructible from the artifact itself.
 
 Do not append an implementation plan unless the strategic disposition and
 authority independently warrant one.

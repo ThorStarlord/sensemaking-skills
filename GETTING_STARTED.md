@@ -149,6 +149,23 @@ When repository-wide evidence could materially change the next bounded responsib
 
 When the question is higher-level—**what could this repository become, what coherent ways could it be constructed from here, and what strategic uncertainty distinguishes those futures?**—use `strategic-repository-analysis`. It produces a `strategic_repository_analysis` containing a current-system model, capability/limitation map, Strategic Frontier, coherent construction paths, qualitative comparison, decision-changing uncertainty, and a semantic strategic disposition.
 
+
+When a later repository state needs to be compared with an earlier strategic
+analysis, author a new analysis with explicit continuity metadata when that
+relationship is decision-relevant. Deterministic projections are then available:
+
+```bash
+sensemaking-skills strategy inspect --artifact artifacts/strategic_repository_analysis.md
+sensemaking-skills strategy paths --artifact artifacts/strategic_repository_analysis.md
+sensemaking-skills strategy uncertainty --artifact artifacts/strategic_repository_analysis.md
+sensemaking-skills strategy assumptions --artifact artifacts/strategic_repository_analysis.md
+sensemaking-skills strategy compare --before /path/to/older.md --after /path/to/newer.md
+sensemaking-skills strategy drift --artifact artifacts/strategic_repository_analysis.md --repo /path/to/repo
+```
+
+`strategy drift` reports mechanically observable source/evidence currentness.
+It does not declare the strategy invalid or require reanalysis by itself.
+
 ```text
 repository diagnosis
 != repository evolution synthesis

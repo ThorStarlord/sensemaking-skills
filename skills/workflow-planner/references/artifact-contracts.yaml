@@ -228,8 +228,14 @@ artifacts:
       - semantic_truth_established
       - created_at
       - immutable
+    recommended_machine_fields:
+      - analysis_ref
+      - continuity
+      - decision_assumptions
     notes:
       - "Strategic analysis is semantic-agent output; the validator does not choose, score, rank, or authorize a path."
+      - "analysis_ref, continuity, and decision_assumptions are additive Strategic Continuity v1 fields; existing qualified analyses remain valid without them."
+      - "continuity is semantic-agent authored; deterministic commands may project or compare it but may not infer it."
       - "Construction paths are coherent repository-evolution trajectories, not backlogs."
       - "construction_paths may contain 0-5 real paths; zero is valid for non-BUILD dispositions when no coherent construction trajectory is currently warranted/representable. BUILD still requires a selected real path."
       - "Numeric path scores/weights/ranking fields are forbidden; comparison is qualitative."

@@ -73,13 +73,10 @@ def test_current_public_surface_and_changelog_record_the_capability() -> None:
     assert "Adaptive Policy Coordinator" in rc3
 
 
-def test_status_is_terminal_for_issue_401_and_preserves_completed_policy_hierarchy() -> None:
+def test_status_keeps_issue_401_terminal_even_when_later_owner_work_is_selected() -> None:
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
 
     assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
-    assert "OPERATING MODE = NORMAL_USE_VALIDATION" in status
     assert "STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
     assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
     assert "SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION" in status
@@ -89,6 +86,8 @@ def test_status_is_terminal_for_issue_401_and_preserves_completed_policy_hierarc
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in status
     assert "CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_PATH_SYNTHESIS_INTEGRATION" not in status
     assert "QUALIFY AND INTEGRATE THE TERMINAL STRATEGIC REPOSITORY SENSEMAKING V1 CLOSEOUT" not in status
+    # A later owner-authorized program may exist without reopening Issue #401.
+    assert "Issue #416" in status
 
 
 def test_release_remains_rc3_development_and_no_runtime_planner_is_promoted() -> None:
@@ -104,7 +103,7 @@ def test_release_remains_rc3_development_and_no_runtime_planner_is_promoted() ->
     assert "OuterLoopEngine" not in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
 
 
-def test_closeout_does_not_reopen_or_extend_policy_hierarchy() -> None:
+def test_later_program_does_not_reopen_or_extend_completed_policy_hierarchy() -> None:
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
     handoff = (ROOT / "docs" / "strategic-repository-sensemaking-v1-handoff.md").read_text(
         encoding="utf-8"
@@ -114,4 +113,4 @@ def test_closeout_does_not_reopen_or_extend_policy_hierarchy() -> None:
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in handoff
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in status
     assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1" in status
