@@ -91,8 +91,8 @@ def test_metareasoning_policy_is_integrated_without_displacing_strategic_analysi
     assert "Metareasoning Policy" in outer
     assert "Metareasoning Policy v0" in status
     assert "Policy Hierarchy Completion v0" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
-    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+    assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
+    assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
 
 
 def test_exploration_policy_v0_exposes_iterative_search_modes() -> None:
@@ -128,8 +128,8 @@ def test_exploration_policy_is_integrated_without_displacing_strategic_analysis(
     assert "exploration-policy-v0.md" in practical
     assert "Exploration Policy" in outer
     assert "Exploration Policy v0" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
-    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+    assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
+    assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
 
 
 def test_warrant_choice_policy_v0_is_target_specific_and_non_authorizing() -> None:
@@ -166,8 +166,8 @@ def test_warrant_choice_policy_is_integrated_without_displacing_strategic_analys
     assert "warrant-choice-policy-v0.md" in practical
     assert "Warrant / Choice Policy" in outer
     assert "Warrant / Choice Policy v0" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
-    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+    assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
+    assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
 
 
 def test_learning_reconciliation_policy_v0_interprets_evidence_before_state_change() -> None:
@@ -206,8 +206,8 @@ def test_learning_reconciliation_is_integrated_without_displacing_strategic_anal
     assert "learning-reconciliation-policy-v0.md" in practical
     assert "Learning / Reconciliation Policy" in outer
     assert "Learning / Reconciliation Policy v0" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
-    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+    assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
+    assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
 
 
 def test_inquiry_policy_is_integrated_into_agent_and_control_surfaces() -> None:
@@ -237,7 +237,7 @@ def test_status_preserves_inquiry_policy_integration_when_later_owner_work_is_se
     assert "Exploration Policy v0" in status
     assert "Warrant / Choice Policy v0" in status
     assert "Learning / Reconciliation Policy v0" in status
-    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+    assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "Do **not** freeze RC3" in status
 
@@ -253,7 +253,7 @@ def test_stable_strategic_alternatives_reuse_existing_level3_surface() -> None:
     assert "BUILD\n-> at least one real path" in policy
     assert "0–5 coherent construction paths when materially real" in bootstrap
     assert "Stable Strategic Alternatives surface" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
+    assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
 
 
 def test_adaptive_policy_coordinator_v0_composes_without_routing() -> None:
