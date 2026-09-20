@@ -20,7 +20,7 @@ Use this bootstrap to:
 3. when several policy questions may be relevant, use **Adaptive Policy Coordinator v0** to expose only the smallest decision-relevant policy composition; keep it implicit for obvious bounded work;
 4. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
 5. identify the nearest unresolved premise that could change the correct next action;
-6. apply **Inquiry Policy v0** only when additional evidence could materially change the decision and is worth obtaining;
+6. apply **Inquiry Policy v0** only when additional evidence could materially change the decision and is worth obtaining; when experimentation is materially considered, apply **Experiment Economy & Proportional Rigor v1** so `INVESTIGATE != EXPERIMENT`, cheap reversible construction can compete as an evidence source, and experimental controls scale to the claim;
 7. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
 8. when search is materially iterative, apply **Exploration Policy v0** to allocate effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search;
 9. apply **Warrant / Choice Policy v0** to the specific contemplated target when target justification/choice is material;
@@ -47,6 +47,8 @@ GOAL / AUTHORIZED SCOPE
   -> What unresolved uncertainty could change the correct next action?
   -> Is inquiry needed, or is current evidence already sufficient?
   -> If inquiry is needed, what is the smallest sufficient evidence and source?
+  -> If an experiment is being considered, is it actually warranted and what is the minimum sufficient rigor?
+  -> Could cheap reversible action/build produce the evidence at lower total cost?
   -> What control move should consume the next unit of effort?
   -> What responsibility is warranted now?
   -> Perform bounded work through a Skill/tool/workflow if useful
@@ -62,6 +64,9 @@ Orient
 -> name the consequential decision / contemplated warrant target
 -> locate the nearest decision-changing warrant gap
 -> apply Inquiry Policy: no inquiry, or smallest sufficient evidence
+-> when experiment is materially considered, apply Experiment Economy:
+   experiment warrant + cheapest sufficient evidence + minimum sufficient rigor
+-> let cheap reversible ACT compete with separate inquiry when it can produce the evidence
 -> apply Metareasoning Policy when control-mode choice is material
 -> if search is materially iterative, apply Exploration Policy
 -> apply Warrant / Choice Policy to the specific target
@@ -354,6 +359,42 @@ reconciliation produced != strategy automatically mutated
 
 Sensemaking is not ceremony. Use the lightest surface that can change the
 decision.
+
+### Experiment economy: do not privilege experimentation
+
+When an `INVESTIGATE` disposition or inquiry could lead to an experiment, do
+not jump from uncertainty to experimental design.
+
+```text
+uncertainty
+!= experiment
+
+INVESTIGATE
+!= EXPERIMENT
+
+experiment possible
+!= experiment warranted
+
+research-grade evidence
+!= default product-development evidence
+```
+
+Prefer the lowest-cost evidence strong enough for the current decision and
+claim. Check existing evidence, reading, inspection, verification,
+owner/external clarification, bounded probes, and cheap reversible construction
+before a separate experiment.
+
+When cheap reversible construction is within authority, sufficiently safe, and
+itself produces the needed evidence, it may dominate a separate experiment.
+
+If experimentation remains materially warranted, control only confounders that
+could invalidate the decision-relevant inference and use the minimum sufficient
+experimental rigor. Normal coding-agent competence/context is not contamination
+by default when the coding agent is part of the intended operating environment.
+
+Read `references/experiment-economy-v1.md` when experimentation, experimental
+isolation, fresh-agent setup, or contamination control is materially under
+consideration.
 
 ---
 

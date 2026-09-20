@@ -266,6 +266,35 @@ source:
 - owner_intent
 - external_environment
 
+`INVESTIGATE` does not imply an experiment. Prefer the lowest-cost evidence
+source strong enough for the strategic decision. Existing evidence, reading,
+inspection, verification, owner/external clarification, a bounded probe, or
+cheap reversible construction may resolve the uncertainty without a separate
+experiment.
+
+When an empirical experiment is materially considered, apply
+`../using-sensemaking/references/experiment-economy-v1.md`:
+
+```text
+uncertainty exists
+!= experiment required
+
+experiment possible
+!= experiment warranted
+
+cheap reversible construction
+may be the cheapest sufficient inquiry
+
+research-grade isolation
+!= default product-development evidence
+```
+
+Require plausible experimental outcomes to change the strategic disposition or
+path judgment. Count total experiment overhead, including isolation,
+evaluation, interpretation, documentation, delay, and opportunity cost. Use
+only the minimum sufficient experimental rigor and control only confounders
+that could invalidate the decision-relevant inference.
+
 If no inquiry is warranted, say so.
 
 ### 8A. Record decision assumptions when they matter
@@ -300,7 +329,9 @@ For `BUILD`, nominate one candidate bounded repository responsibility and the
 smallest warranted intervention.
 
 For `INVESTIGATE`, nominate the bounded evidence-producing responsibility, not
-a broad research program.
+a broad research program. Do not default that responsibility to an experiment;
+state why cheaper evidence sources or reversible construction are insufficient
+before recommending experimental work.
 
 For `OWNER_DECISION`, state the exact owner decision rather than disguising it
 as repository investigation. When a durable owner-facing decision surface is
@@ -350,6 +381,8 @@ path comparison != numeric ranking
 mechanically valid != semantically correct
 candidate responsibility != authorized execution
 strategic warrant precedes intervention minimization
+INVESTIGATE != EXPERIMENT
+cleaner evidence != more valuable evidence
 ```
 
 ## Output behavior

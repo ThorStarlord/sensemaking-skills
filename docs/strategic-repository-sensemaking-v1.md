@@ -265,12 +265,24 @@ A decision-changing uncertainty should record:
   owner intent, or an external environment.
 
 Inquiry Policy v0 governs whether the uncertainty should actually be
-investigated.
+investigated. Experiment Economy & Proportional Rigor v1 governs the narrower
+question of whether experimentation is warranted and how much experimental
+control the current decision/claim requires.
 
 ```text
 uncertainty exists != inquiry required
+INVESTIGATE != EXPERIMENT
+experiment possible != experiment warranted
 strategic uncertainty != implementation blocker by default
+research-grade evidence != default product-development evidence
 ```
+
+Prefer the lowest-cost evidence strong enough for the strategic decision.
+Cheap reversible construction may be the evidence-producing action when it is
+within authority, safe enough, and less costly than a separate experiment.
+When an experiment remains warranted, count total setup/isolation/evaluation
+overhead and control only confounders that could invalidate the
+decision-relevant inference.
 
 ## 10. Strategic disposition
 
@@ -279,7 +291,8 @@ The semantic agent emits one of:
 - `BUILD` — one construction direction is sufficiently warranted to select a
   bounded repository responsibility;
 - `INVESTIGATE` — a specific decision-changing uncertainty should be resolved
-  before selecting/building;
+  before selecting/building; this does not imply an experiment, and the
+  evidence-producing responsibility should use the cheapest sufficient source;
 - `DEFER` — action is plausible but not warranted now;
 - `NO_CHANGE` — current evidence does not warrant repository construction;
 - `OWNER_DECISION` — the material missing premise is owner preference,

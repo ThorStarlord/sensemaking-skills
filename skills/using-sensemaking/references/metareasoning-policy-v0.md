@@ -33,9 +33,11 @@ Metareasoning Policy
 -> what kind of control move should happen next?
 ```
 
-If Inquiry Policy returns `INQUIRY_REQUIRED`, `INQUIRE` is normally the next
-control move unless an authority/external constraint makes `ESCALATE` or `STOP`
-more appropriate.
+If Inquiry Policy returns `INQUIRY_REQUIRED`, `INQUIRE` is a candidate control
+move, not an automatic next move. `ACT` may still dominate when a cheap,
+reversible, authorized, information-producing action can supply the needed
+evidence at lower total cost. Authority/external constraints may instead make
+`ESCALATE` or `STOP` appropriate.
 
 If Inquiry Policy returns `NO_INQUIRY_NEEDED`, do not select `INQUIRE` merely
 because more information could exist.
@@ -79,7 +81,9 @@ Typical conditions:
 - no unresolved premise is likely to redirect the responsibility;
 - authority is available;
 - the action is cheap/reversible/low consequence, or the warrant is otherwise strong;
-- acting itself may return useful evidence.
+- acting itself may return useful evidence;
+- a cheap reversible build can answer the decision-changing uncertainty with
+  less total overhead than a separate investigation or experiment.
 
 ```text
 ACT
@@ -90,6 +94,12 @@ ACT
 ### `INQUIRE`
 
 Obtain the smallest sufficient evidence already identified by Inquiry Policy.
+
+`INQUIRE` does not mean experiment. Reading, inspection, verification, owner or
+external clarification, a bounded probe, and other low-cost evidence sources
+may satisfy the inquiry. When experimentation is materially considered, apply
+the Experiment Warrant and proportional-rigor guidance in
+`experiment-economy-v1.md`.
 
 Use when:
 
@@ -203,10 +213,10 @@ Useful directional rules:
 
 ```text
 cheap + reversible + low consequence + information-producing
--> ACT may dominate more thinking
+-> ACT may dominate more thinking or a separate experiment
 
 decision-changing unknown + worthwhile evidence
--> INQUIRE
+-> INQUIRE only when a separate inquiry beats acting as the evidence source
 
 weakly supported commitment + high consequence / low reversibility
 -> CHALLENGE
@@ -234,10 +244,11 @@ Several moves may be plausible.
 Do not create a score or ranking function. Ask:
 
 1. Which move addresses the nearest decision-changing gap?
-2. Which move has the lowest cost consistent with consequence/reversibility?
-3. Which move preserves optionality?
-4. Which move would most directly change what becomes warranted next?
-5. Is one move merely a substep of another?
+2. Which move has the lowest **total** cost consistent with consequence/reversibility?
+3. Could cheap reversible action produce the needed evidence while also advancing the product?
+4. Which move preserves optionality?
+5. Which move would most directly change what becomes warranted next?
+6. Is one move merely a substep of another?
 
 Record one primary next move when a consequential handoff/reconstruction needs it.
 Otherwise keep the judgment transient.
@@ -325,6 +336,9 @@ Avoid:
 - invoking every control move in sequence;
 - treating the list as a fixed state machine;
 - forcing inquiry after Inquiry Policy returned `NO_INQUIRY_NEEDED`;
+- treating `INQUIRY_REQUIRED` as an automatic command to experiment;
+- selecting a separate inquiry when cheap reversible `ACT` is the cheaper sufficient evidence source;
+- escalating experimental rigor merely because cleaner evidence is possible;
 - challenging or exploring trivial reversible work by default;
 - using metareasoning to select a Skill automatically;
 - treating `ACT` as authority;

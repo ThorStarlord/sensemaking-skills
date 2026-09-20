@@ -122,8 +122,20 @@ evidence is worth its cost.
 
 Zero inquiry is a valid successful outcome.
 
-Canonical agent-facing contract:
-`skills/using-sensemaking/references/inquiry-policy-v0.md`.
+Inquiry does not privilege experimentation. When experimentation is materially
+considered, use Experiment Economy & Proportional Rigor v1 to distinguish
+whether an experiment is warranted from how much experimental control the
+current decision and claim actually require.
+
+```text
+INVESTIGATE != EXPERIMENT
+experiment possible != experiment warranted
+research-grade evidence != default product-development evidence
+```
+
+Canonical agent-facing contracts:
+`skills/using-sensemaking/references/inquiry-policy-v0.md` and
+`skills/using-sensemaking/references/experiment-economy-v1.md`.
 
 ### 4.3 Metareasoning Policy — Package 2 / integrated
 
@@ -152,6 +164,10 @@ Canonical agent-facing contract:
 
 Inquiry Policy decides whether/what information is worth obtaining; Metareasoning
 Policy decides what kind of effort should happen next in the broader decision context.
+
+A decision-changing inquiry can exist while cheap reversible `ACT` still
+dominates a separate inquiry because acting itself can provide sufficient
+evidence at lower total cost.
 
 It remains qualitative and agent-owned.
 
@@ -321,6 +337,10 @@ Metareasoning
 
 A decision-changing question may exist while `ACT`, `ESCALATE`, or `STOP` still
 dominates explicit inquiry.
+
+When `ACT` is cheap, reversible, authorized, and information-producing, compare
+its total cost with the proposed inquiry. Do not choose a separate experiment
+merely because it yields cleaner evidence.
 
 ### Metareasoning `EXPLORE` vs. Exploration Policy
 
