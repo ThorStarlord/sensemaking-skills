@@ -99,6 +99,32 @@ Watch for cases where target-specific warrant:
 - exposes an authority/verification distinction;
 - becomes verbose, circular, ambiguous, or unhelpful.
 
+### Policy-interface friction — Issue #426
+
+When an otherwise eligible normal-use episode naturally exposes policy-composition or
+strategic-reassessment friction, preserve the signal without creating a synthetic
+policy episode.
+
+Useful observations include:
+
+- which policy question became explicit and why;
+- whether a zero-work outcome was valid;
+- whether Inquiry / Metareasoning / Exploration / Warrant ownership was ambiguous;
+- whether currentness evidence was incorrectly treated as semantic invalidation;
+- whether Strategic Continuity -> Learning / Reconciliation -> Level-3 reassessment was reconstructible;
+- whether a policy disposition could be cleanly distinguished from its durable companion artifact;
+- whether warrant/selection remained separate from authority;
+- whether a fresh context could resume from the preserved evidence;
+- the smallest concrete policy-interface deficiency, if any.
+
+```text
+normal-use policy-interface observation
+!= experiment program
+
+one awkward episode
+!= architectural defect established
+```
+
 ### Path 3 — decision versus orchestration
 
 Watch for repeated cases where:
@@ -159,6 +185,16 @@ Also include, when available:
 - whether the episode primarily corroborates, weakens, or remains ambiguous for the current uncertainty-selection interpretation;
 - any secondary Path 2 / Path 3 / Path 4 signal;
 - whether the same failure boundary has appeared before.
+
+When policy-interface friction is material, also include where available:
+
+- which policy question became explicit;
+- whether a valid zero-work outcome existed;
+- what adjacent ownership boundary was difficult to distinguish;
+- whether strategic currentness/reconciliation was reconstructible;
+- whether the observation changed any decision or merely added ceremony.
+
+Do not create a synthetic policy episode merely to populate these fields.
 
 Do not invent unavailable machine-local or executor-local evidence.
 

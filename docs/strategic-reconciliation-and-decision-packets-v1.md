@@ -87,6 +87,35 @@ source retrieved != claim timeless
 packet valid != source true
 ```
 
+## Policy disposition versus durable companion artifact
+
+The Policy Hierarchy owns semantic questions; these artifacts preserve consequential
+results when another actor/context must reconstruct them.
+
+| Semantic disposition / policy | Durable companion when warranted | Boundary |
+| --- | --- | --- |
+| Learning / Reconciliation | `strategic_reconciliation` | reconciliation artifact != automatic state mutation |
+| `OWNER_DECISION_REQUIRED` | `owner_decision_capsule` | packet != owner decision |
+| `THESIS_REVIEW_REQUIRED` | `thesis_review_packet` | packet != Level-4 ratification |
+| `EXTERNAL_EVIDENCE_REQUIRED` | `external_evidence_packet` | packet != timeless truth |
+
+```text
+policy disposition
+!= durable companion artifact
+
+durable companion artifact
+!= authority transfer
+
+REOPEN_STRATEGY
+!= BUILD
+
+THESIS_REVIEW_REQUIRED
+!= thesis ratified
+```
+
+Strategic reassessment composition is described in
+`docs/adaptive-semantic-control-architecture-v0.md`.
+
 ## Non-goals
 
 This package does not create:

@@ -52,6 +52,7 @@ See:
 - [docs/adr/0029-current-product-boundary.md](docs/adr/0029-current-product-boundary.md) — current ratified product-boundary authority
 - [docs/strategic-outer-loop.md](docs/strategic-outer-loop.md) — canonical four-level control model
 - [docs/policy-hierarchy-v0.md](docs/policy-hierarchy-v0.md) — canonical middle semantic-policy architecture; Inquiry, Metareasoning, Exploration, Warrant / Choice, Learning / Reconciliation, stable Strategic Alternatives, and Adaptive Policy Coordinator v0 are integrated
+- [docs/adaptive-semantic-control-architecture-v0.md](docs/adaptive-semantic-control-architecture-v0.md) — descriptive crosswalk across control levels, semantic policies, authority/execution, evidence return, Strategic Continuity, and reassessment; no new control level/runtime
 - [docs/strategic-state-contract.md](docs/strategic-state-contract.md) — Level-3 durable strategic-state contract
 - [docs/product-thesis-revision.md](docs/product-thesis-revision.md) — Level-4 revision and owner-ratification contract
 - [docs/product-operating-model.md](docs/product-operating-model.md) — value stream, ownership, delegation, and escalation
