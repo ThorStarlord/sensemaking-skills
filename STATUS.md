@@ -222,11 +222,11 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**IMPLEMENT AND QUALIFY STRATEGIC ANALYSIS CONTRACT — PACKAGE A.**
+**IMPLEMENT AND QUALIFY CONSTRUCTION PATH SYNTHESIS & PRODUCT INTEGRATION — PACKAGE B.**
 
-Complete the first-class `strategic_repository_analysis` artifact/Skill/validator integration under Issue #401, qualify the exact PR head, and integrate if the surface remains semantic-agent-owned and mechanically bounded.
+Integrate strategic repository analysis into the canonical agent/human entry points, preserve `repo-sensemaker` as the diagnostic surface, and make coherent construction-path synthesis a first-class Level-3 capability.
 
-Then proceed directly to Package B — construction-path synthesis, qualitative comparison, and strategic synthesis semantics — without opening another experiment.
+Then proceed directly to Package C — currentness reconciliation, milestone handoff, and closeout — without opening another experiment.
 
 Policy Hierarchy Completion v0 remains composable follow-on work; Inquiry Policy v0 is already available to Strategic Repository Sensemaking when a path-distinguishing uncertainty warrants evidence.
 
