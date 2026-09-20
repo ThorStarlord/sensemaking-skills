@@ -32,10 +32,10 @@ def test_experiment_economy_defines_warrant_before_rigor() -> None:
         "Minimum Sufficient Experimental Rigor",
         "Confounder Warrant",
         "TOTAL EXPERIMENT COST",
-        "INVESTIGATE\\n!= EXPERIMENT",
-        "possible confounder\\n!= required control",
-        "research-grade evidence\\n!= default product-development evidence",
-        "cheap reversible construction\\ncan be the cheapest sufficient inquiry",
+        "INVESTIGATE\n!= EXPERIMENT",
+        "possible confounder\n!= required control",
+        "research-grade evidence\n!= default product-development evidence",
+        "cheap reversible construction\ncan be the cheapest sufficient inquiry",
     ):
         assert phrase in text
 
@@ -47,8 +47,8 @@ def test_inquiry_policy_does_not_equate_investigation_with_experiment() -> None:
     text = INQUIRY.read_text(encoding="utf-8")
 
     for phrase in (
-        "INVESTIGATE\\n!= EXPERIMENT",
-        "experiment possible\\n!= experiment warranted",
+        "INVESTIGATE\n!= EXPERIMENT",
+        "experiment possible\n!= experiment warranted",
         "experiment-economy-v1.md",
         "cheap reversible construction",
         "total experiment cost",
@@ -72,12 +72,12 @@ def test_using_sensemaking_loads_experiment_economy_only_when_material() -> None
     text = BOOTSTRAP.read_text(encoding="utf-8")
 
     assert "Experiment Economy & Proportional Rigor v1" in text
-    assert "uncertainty\\n!= experiment" in text
-    assert "INVESTIGATE\\n!= EXPERIMENT" in text
+    assert "uncertainty\n!= experiment" in text
+    assert "INVESTIGATE\n!= EXPERIMENT" in text
     assert "experiment-economy-v1.md" in text
     assert (
-        "when experimentation, experimental\\nisolation, fresh-agent setup, or "
-        "contamination control is materially under\\nconsideration"
+        "when experimentation, experimental\nisolation, fresh-agent setup, or "
+        "contamination control is materially under\nconsideration"
     ) in text
 
 
