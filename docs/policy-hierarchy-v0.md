@@ -86,7 +86,7 @@ Level 3 asks what consequential repository-level responsibility is warranted nex
 any. Strategic alternatives may be zero or many. Strategic candidate generation is
 conditional, not mandatory.
 
-### 4.2 Inquiry Policy — Package 1
+### 4.2 Inquiry Policy — Package 1 / integrated
 
 Inquiry Policy asks:
 
@@ -102,13 +102,36 @@ Zero inquiry is a valid successful outcome.
 Canonical agent-facing contract:
 `skills/using-sensemaking/references/inquiry-policy-v0.md`.
 
-### 4.3 Metareasoning Policy — planned
+### 4.3 Metareasoning Policy — Package 2
 
-Metareasoning Policy will decide whether the next useful control move is to act,
-inquire, explore, challenge, verify, escalate, or stop, using consequence,
-reversibility, authority, resource cost, and current evidence.
+Metareasoning Policy asks:
 
-It must remain qualitative and agent-owned.
+> Given the current decision, Inquiry Policy result, evidence, consequence,
+> reversibility, authority, and resource cost, what kind of control move should
+> consume the next unit of effort?
+
+Canonical moves are:
+
+```text
+ACT
+INQUIRE
+CHALLENGE
+EXPLORE
+VERIFY
+ESCALATE
+STOP
+```
+
+These are semantic dispositions, not runtime enums or a required phase sequence.
+
+Canonical agent-facing contract:
+`skills/using-sensemaking/references/metareasoning-policy-v0.md`.
+
+Metareasoning consumes Inquiry Policy output rather than replacing it. Inquiry decides
+whether/what information is worth obtaining; metareasoning decides what kind of effort
+should happen next in the broader decision context.
+
+It remains qualitative and agent-owned.
 
 ### 4.4 Exploration Policy — planned
 
