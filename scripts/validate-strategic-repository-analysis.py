@@ -47,7 +47,9 @@ UNCERTAINTY_SOURCES = {
     "external_environment",
     "none",
 }
-COMPARISON_LENSES = {
+SUPPORTED_SCHEMA_VERSIONS = {1, 2}
+
+COMPARISON_LENSES_BASE = {
     "mission_relevance",
     "decision_value",
     "blocking_power",
@@ -57,8 +59,9 @@ COMPARISON_LENSES = {
     "reversibility",
     "authority_availability",
     "dependency",
-    "smallest_warranted_intervention",
 }
+COMPARISON_LENSES_V1 = COMPARISON_LENSES_BASE | {"smallest_warranted_intervention"}
+COMPARISON_LENSES_V2 = COMPARISON_LENSES_BASE
 
 REQUIRED_TOP_LEVEL = {
     "artifact_id",
@@ -80,12 +83,28 @@ REQUIRED_TOP_LEVEL = {
     "immutable",
 }
 
-PATH_FIELDS = {
+PATH_FIELDS_V1 = {
     "path_id",
     "name",
     "future_state",
     "builds_on",
     "required_capabilities",
+    "construction_sequence",
+    "dependencies",
+    "unlocks",
+    "risks",
+    "reversibility",
+    "evidence_gaps",
+}
+
+PATH_FIELDS_V2 = {
+    "path_id",
+    "name",
+    "future_state",
+    "frontier_refs",
+    "why_plausible",
+    "builds_on_capability_ids",
+    "required_capability_ids",
     "construction_sequence",
     "dependencies",
     "unlocks",
@@ -119,6 +138,22 @@ def _string_list(value: Any) -> bool:
     return isinstance(value, list) and all(_nonempty_string(item) for item in value)
 
 
+def _nonempty_string_list(value: Any) -> bool:
+    return _string_list(value) and bool(value)
+
+
+def _duplicate_strings(value: Any) -> set[str]:
+    if not _string_list(value):
+        return set()
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+    for item in value:
+        if item in seen:
+            duplicates.add(item)
+        seen.add(item)
+    return duplicates
+
+
 def _contains_number(value: Any) -> bool:
     if isinstance(value, bool):
         return False
@@ -146,6 +181,23 @@ def validate(path: Path) -> list[dict[str, str]]:
                 "No strategic_repository_analysis YAML block was found.",
             )
         ]
+
+    raw_schema_version = data.get("schema_version", 1)
+    if (
+        isinstance(raw_schema_version, bool)
+        or not isinstance(raw_schema_version, int)
+        or raw_schema_version not in SUPPORTED_SCHEMA_VERSIONS
+    ):
+        errors.append(
+            _error(
+                "STRATEGIC_ANALYSIS_SCHEMA_VERSION_UNSUPPORTED",
+                f"schema_version must be one of {sorted(SUPPORTED_SCHEMA_VERSIONS)}; "
+                "missing means legacy v1",
+            )
+        )
+        schema_version = 1
+    else:
+        schema_version = raw_schema_version
 
     missing = sorted(REQUIRED_TOP_LEVEL - set(data))
     if missing:
@@ -283,6 +335,51 @@ def validate(path: Path) -> list[dict[str, str]]:
         else:
             frontier_ids.add(fid)
 
+        if schema_version == 2:
+            evidence_refs = item.get("evidence_refs")
+            affected_capability_ids = item.get("affected_capability_ids")
+            strategic_consequence = item.get("strategic_consequence")
+            if not _nonempty_string_list(evidence_refs):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_FRONTIER_EVIDENCE_INVALID",
+                        f"strategic_frontier[{index}].evidence_refs must be a non-empty list of strings",
+                    )
+                )
+            if not _nonempty_string_list(affected_capability_ids):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_FRONTIER_CAPABILITIES_INVALID",
+                        f"strategic_frontier[{index}].affected_capability_ids must be a non-empty list of strings",
+                    )
+                )
+            else:
+                unknown = sorted(set(affected_capability_ids) - seen_capabilities)
+                if unknown:
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_FRONTIER_CAPABILITY_UNKNOWN",
+                            f"strategic_frontier[{index}] references unknown capabilities: "
+                            + ", ".join(unknown),
+                        )
+                    )
+                duplicates = sorted(_duplicate_strings(affected_capability_ids))
+                if duplicates:
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_FRONTIER_CAPABILITY_DUPLICATE",
+                            f"strategic_frontier[{index}] duplicates capability refs: "
+                            + ", ".join(duplicates),
+                        )
+                    )
+            if not _nonempty_string(strategic_consequence):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_FRONTIER_CONSEQUENCE_INVALID",
+                        f"strategic_frontier[{index}].strategic_consequence must be non-empty",
+                    )
+                )
+
     paths = data.get("construction_paths")
     if not isinstance(paths, list):
         errors.append(
@@ -311,7 +408,8 @@ def validate(path: Path) -> list[dict[str, str]]:
                 )
             )
             continue
-        missing_path = sorted(PATH_FIELDS - set(item))
+        path_fields = PATH_FIELDS_V2 if schema_version == 2 else PATH_FIELDS_V1
+        missing_path = sorted(path_fields - set(item))
         if missing_path:
             errors.append(
                 _error(
@@ -337,9 +435,7 @@ def validate(path: Path) -> list[dict[str, str]]:
         else:
             path_ids.add(path_id)
 
-        for field in (
-            "builds_on",
-            "required_capabilities",
+        list_fields = [
             "construction_sequence",
             "dependencies",
             "unlocks",
@@ -347,7 +443,19 @@ def validate(path: Path) -> list[dict[str, str]]:
             "evidence_gaps",
             "assumptions",
             "reassessment_triggers",
-        ):
+        ]
+        if schema_version == 2:
+            list_fields.extend(
+                [
+                    "frontier_refs",
+                    "builds_on_capability_ids",
+                    "required_capability_ids",
+                ]
+            )
+        else:
+            list_fields.extend(["builds_on", "required_capabilities"])
+
+        for field in list_fields:
             if field in item and not _string_list(item.get(field)):
                 errors.append(
                     _error(
@@ -355,6 +463,68 @@ def validate(path: Path) -> list[dict[str, str]]:
                         f"construction_paths[{index}].{field} must be a list of non-empty strings",
                     )
                 )
+
+        if schema_version == 2:
+            if not _nonempty_string(item.get("why_plausible")):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_PATH_PLAUSIBILITY_MISSING",
+                        f"construction_paths[{index}].why_plausible must be non-empty",
+                    )
+                )
+
+            frontier_refs = item.get("frontier_refs")
+            if not _nonempty_string_list(frontier_refs):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_PATH_FRONTIER_REFS_INVALID",
+                        f"construction_paths[{index}].frontier_refs must be a non-empty list of strings",
+                    )
+                )
+            else:
+                unknown_frontiers = sorted(set(frontier_refs) - frontier_ids)
+                if unknown_frontiers:
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_PATH_FRONTIER_UNKNOWN",
+                            f"construction_paths[{index}] references unknown frontiers: "
+                            + ", ".join(unknown_frontiers),
+                        )
+                    )
+                duplicate_frontiers = sorted(_duplicate_strings(frontier_refs))
+                if duplicate_frontiers:
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_PATH_FRONTIER_DUPLICATE",
+                            f"construction_paths[{index}] duplicates frontier refs: "
+                            + ", ".join(duplicate_frontiers),
+                        )
+                    )
+
+            for capability_field, error_id in (
+                ("builds_on_capability_ids", "STRATEGIC_ANALYSIS_PATH_BUILD_CAPABILITY_UNKNOWN"),
+                ("required_capability_ids", "STRATEGIC_ANALYSIS_PATH_REQUIRED_CAPABILITY_UNKNOWN"),
+            ):
+                refs = item.get(capability_field)
+                if _string_list(refs):
+                    unknown_capabilities = sorted(set(refs) - seen_capabilities)
+                    if unknown_capabilities:
+                        errors.append(
+                            _error(
+                                error_id,
+                                f"construction_paths[{index}].{capability_field} references unknown capabilities: "
+                                + ", ".join(unknown_capabilities),
+                            )
+                        )
+                    duplicate_capabilities = sorted(_duplicate_strings(refs))
+                    if duplicate_capabilities:
+                        errors.append(
+                            _error(
+                                "STRATEGIC_ANALYSIS_PATH_CAPABILITY_DUPLICATE",
+                                f"construction_paths[{index}].{capability_field} duplicates capability refs: "
+                                + ", ".join(duplicate_capabilities),
+                            )
+                        )
 
         path_transitions = item.get("path_transitions")
         if path_transitions is not None:
@@ -496,8 +666,11 @@ def validate(path: Path) -> list[dict[str, str]]:
                 )
             )
             continue
-        missing_lenses = sorted(COMPARISON_LENSES - set(lenses))
-        extra_lenses = sorted(set(lenses) - COMPARISON_LENSES)
+        comparison_lenses = (
+            COMPARISON_LENSES_V2 if schema_version == 2 else COMPARISON_LENSES_V1
+        )
+        missing_lenses = sorted(comparison_lenses - set(lenses))
+        extra_lenses = sorted(set(lenses) - comparison_lenses)
         if missing_lenses:
             errors.append(
                 _error(
@@ -520,7 +693,7 @@ def validate(path: Path) -> list[dict[str, str]]:
                 )
             )
         for key, value in lenses.items():
-            if key in COMPARISON_LENSES and not _nonempty_string(value):
+            if key in comparison_lenses and not _nonempty_string(value):
                 errors.append(
                     _error(
                         "STRATEGIC_ANALYSIS_LENS_VALUE_INVALID",
@@ -773,7 +946,9 @@ def main() -> int:
         "errors": errors,
         "checks": [
             "required_machine_shape",
+            "schema_version_compatibility",
             "capability_state_vocabulary",
+            "strategic_frontier_grounding",
             "construction_path_integrity",
             "qualitative_comparison_integrity",
             "decision_changing_uncertainty_shape",
