@@ -86,6 +86,29 @@ Level 3 asks what consequential repository-level responsibility is warranted nex
 any. Strategic alternatives may be zero or many. Strategic candidate generation is
 conditional, not mandatory.
 
+### 4.1.1 Stable Strategic Alternatives surface — Package 6 / integrated
+
+Policy Hierarchy does not create a separate StrategicPlanner or alternatives engine.
+The stable Level-3 alternatives surface is the existing
+`strategic_repository_analysis.construction_paths` representation owned by
+Strategic Repository Sensemaking v1.
+
+Its cardinality is conditional:
+
+```text
+0–5 materially real construction paths
+
+zero paths
+= valid when no coherent construction trajectory is currently warranted/representable
+
+BUILD
+-> at least one real path
+-> selected_path_id references that path
+```
+
+Alternative generation remains semantic-agent work. Mechanical validation checks
+representation integrity only; it does not generate, rank, or select a path.
+
 ### 4.2 Inquiry Policy — Package 1 / integrated
 
 Inquiry Policy asks:
@@ -287,7 +310,7 @@ Policy Hierarchy Completion v0 proceeds as bounded packages:
 3. Exploration Policy v0 — integrated;
 4. Warrant / Choice Policy v0 — integrated;
 5. Learning / Reconciliation Policy v0 — integrated;
-6. stable Strategic Alternatives surface;
+6. stable Strategic Alternatives surface — integrated through Strategic Repository Sensemaking v1;
 7. Adaptive Policy Coordinator v0.
 
 A later package may revise the order only when a concrete dependency warrants it.

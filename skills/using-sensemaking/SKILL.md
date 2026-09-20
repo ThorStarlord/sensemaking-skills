@@ -206,7 +206,7 @@ Its output is a `strategic_repository_analysis`:
 current system model
 -> capability / limitation map
 -> Strategic Frontier
--> coherent construction paths
+-> 0–5 coherent construction paths when materially real
 -> qualitative path comparison
 -> decision-changing uncertainty
 -> strategic synthesis
@@ -216,6 +216,11 @@ current system model
 A current `repository_sensemaking_brief` may be used as evidence, but it is not
 a mandatory prerequisite when the strategic analysis can establish current
 repository state directly.
+
+Zero construction paths is valid when current evidence/authority does not support even
+one coherent construction trajectory yet. Do not manufacture an alternative merely to
+make the analysis look complete. A `BUILD` disposition still requires a selected real
+path.
 
 ```text
 repo-sensemaker = diagnostic repository understanding

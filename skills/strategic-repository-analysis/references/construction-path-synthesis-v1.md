@@ -74,6 +74,30 @@ Use one path when:
 - alternatives differ only in implementation detail;
 - generating more would be performative.
 
+Use zero paths when current evidence/authority does not support even one coherent
+construction trajectory yet, or when the semantic disposition is reached before a
+construction choice is meaningful.
+
+Examples include:
+
+- `NO_CHANGE` with no warranted construction;
+- `OWNER_DECISION` where owner preference defines the future;
+- `THESIS_REVIEW` where Level 4 must resolve the product boundary first;
+- `INVESTIGATE` where a decision-changing premise must be resolved before coherent
+  paths can be formed.
+
+```text
+0–5 construction paths
+= valid strategic-alternative cardinality
+
+BUILD
+-> at least one path
+-> selected real path
+
+zero paths
+!= missing required ceremony
+```
+
 Do not create an artificial “do nothing” path. `NO_CHANGE` and `DEFER` are
 strategic dispositions, not filler alternatives.
 

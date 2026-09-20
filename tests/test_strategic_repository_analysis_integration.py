@@ -57,9 +57,25 @@ def test_construction_path_reference_requires_coherent_distinct_futures() -> Non
     assert "path diversity\n!= category coverage" in guide
     assert "Two paths are materially distinct" in guide
     assert "Do not create an artificial “do nothing” path" in guide
+    assert "0–5 construction paths" in guide
+    assert "zero paths\n!= missing required ceremony" in guide
+    assert "BUILD\n-> at least one path" in guide
     assert "Coarse construction sequence" in guide
     assert "Do not use numbers, stars, weighted" in guide
     assert "path requires capability\n+ path is warranted\n!= capability implementation automatically authorized" in guide
+
+
+def test_strategic_alternatives_are_conditional_and_zero_path_capable() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = PATH_GUIDE.read_text(encoding="utf-8")
+
+    assert "Use zero paths when no construction trajectory is currently warranted/representable" in skill
+    assert "zero real paths\n> manufactured alternative" in skill
+    assert "Use zero paths when current evidence/authority does not support even one coherent" in guide
+    assert "NO_CHANGE" in guide
+    assert "OWNER_DECISION" in guide
+    assert "THESIS_REVIEW" in guide
+    assert "INVESTIGATE" in guide
 
 
 def test_repo_sensemaker_remains_diagnostic_and_points_strategic_requests_upward() -> None:

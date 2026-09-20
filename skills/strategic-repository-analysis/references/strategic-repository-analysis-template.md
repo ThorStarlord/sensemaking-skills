@@ -40,6 +40,11 @@ For each path include:
 
 Repeat for each materially distinct path.
 
+If no coherent construction path is currently warranted/representable, explicitly state
+that and use `construction_paths: []` plus `path_comparison: []` in the machine
+summary. Do not invent a placeholder path. A `BUILD` disposition still requires a
+selected real path.
+
 ## 6. Qualitative Path Comparison
 
 Compare paths using:
