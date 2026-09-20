@@ -25,6 +25,7 @@ Choose the entry point for your role instead of reading every document:
 | Comparing or checking currentness of authored strategic analyses | [`docs/strategic-continuity-v1.md`](docs/strategic-continuity-v1.md) | Deterministic lineage/currentness projections; no strategic selection |
 | Reconciling returned strategic evidence or carrying reserved decisions | [`docs/strategic-reconciliation-and-decision-packets-v1.md`](docs/strategic-reconciliation-and-decision-packets-v1.md) | Strategic reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts |
 | Deciding boundaries/capability ownership across selected repositories | [`skills/multi-repository-strategic-analysis/SKILL.md`](skills/multi-repository-strategic-analysis/SKILL.md) | Level-3 caller-selected repository-set analysis without automatic discovery |
+| Checking consequential affected surfaces around a bounded change | [`skills/change-impact-analysis/SKILL.md`](skills/change-impact-analysis/SKILL.md) | Semantic change-impact, verification, reconciliation, and closure analysis |
 | Trying to understand the deeper responsibility/authority model | [`docs/agent-native-operating-workflow.md`](docs/agent-native-operating-workflow.md) | Level-2 reasoning, artifact, authority, validation, and stopping model |
 | Maintaining, validating, or qualifying the repository | [`docs/operations-runbook.md`](docs/operations-runbook.md) | Current operator/qualification runbook |
 
@@ -147,7 +148,8 @@ The installed product includes:
 - a deterministic cross-repository execution projection that derives prerequisite layers only from explicit `depends_on` / `release_after` relations and never labels the projection an execution plan;
 - Strategic Continuity v1 metadata for explicit analysis lineage, decision assumptions, and reassessment triggers, plus deterministic root `strategy` projections for inspect/paths/uncertainty/assumptions/compare/drift without semantic selection;
 - strategic companion Skills/artifacts for evidence-return reconciliation, owner-reserved decisions, Level-4 thesis-review preparation, and external-evidence provenance without automatic state mutation or authority transfer;
-- multi-repository strategic analysis over explicitly selected repositories, including capability ownership/overlap, boundary tensions, coherent allocation paths, and qualitative comparison without repository discovery or transaction orchestration.
+- multi-repository strategic analysis over explicitly selected repositories, including capability ownership/overlap, boundary tensions, coherent allocation paths, and qualitative comparison without repository discovery or transaction orchestration;
+- change-impact analysis over bounded contemplated/completed changes, identifying decision-relevant affected surfaces and verification/reconciliation consequences without automatic backlog generation or change authorization.
 
 The Level-3/Level-4 Strategic Outer Loop foundation is currently a **repository documentation/authority architecture**, not a shipped autonomous strategic runtime. Installing the package does not create a `StrategicPlanner`, automatically rank the Strategic Frontier, revise product strategy, or generate Campaigns without agent judgment.
 
