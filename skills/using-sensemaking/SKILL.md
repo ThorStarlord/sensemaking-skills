@@ -15,8 +15,9 @@ Do not turn this bootstrap into a fixed choreography. Registered workflows and s
 
 Use this bootstrap to:
 
-1. decide whether repository sensemaking would materially change how you should interpret or execute the request;
-2. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
+1. decide whether repository diagnosis or **Strategic Repository Sensemaking v1** would materially change how you should interpret the request;
+2. when the repository's future direction itself is open, use `strategic-repository-analysis` to model current capability state, coherent construction paths, qualitative tradeoffs, and the decision-changing strategic uncertainty before selecting a bounded responsibility;
+3. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
 3. identify the nearest unresolved premise that could change the correct next action;
 4. apply **Inquiry Policy v0** to decide whether more evidence is actually needed and, if so, identify the smallest sufficient evidence and source;
 5. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
