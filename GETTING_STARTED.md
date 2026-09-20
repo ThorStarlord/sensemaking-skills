@@ -71,6 +71,9 @@ Known narrow change, locally evidenced, one context
 Correct repository responsibility is uncertain
 -> use the Sensemaking control loop; repo-sensemaker may be useful
 
+Repository/product future itself is open and you want plausible construction paths
+-> use strategic-repository-analysis for Level-3 strategic repository analysis
+
 Material completed-work or repair claim
 -> stronger evidence / reconciliation / finding-specific verification when warranted
 
