@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-19  
-**Current phase:** Strategic Repository Sensemaking v1 is active under Issue #401; Package A is integrated and Package B is constructing first-class repository-evolution path synthesis. Policy Hierarchy Completion v0 remains composable under Issue #399, with Inquiry Policy v0 integrated. Synthetic StrategicPlanner testing remains stopped as the active mode.  
+**Current phase:** Strategic Repository Sensemaking v1 is active under Issue #401; Package A is integrated and Package B is constructing first-class repository-evolution path synthesis. Policy Hierarchy Completion v0 remains composable under Issue #399, with Inquiry Policy v0 and Metareasoning Policy v0 integrated. Synthetic StrategicPlanner testing remains stopped as the active mode.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
@@ -45,6 +45,7 @@ The repository-qualified baseline includes:
 - **Practical Agent Architecture v0** guidance: semantic agent judgment → target-specific warrant → existing durable decision substrate → deterministic assurance → external execution/orchestration → evidence return and semantic reassessment.
 - **Policy Hierarchy v0**: canonical middle-control architecture for Strategic → Inquiry → Metareasoning → Exploration → Warrant/Choice → Action/Evidence → Learning/Reconciliation, explicitly defined as semantic policy contracts rather than runtime services.
 - **Inquiry Policy v0**: agent-facing contract for deciding what to learn next, including `NO_INQUIRY_NEEDED`, smallest-sufficient-evidence selection, owner-intent/external-evidence boundaries, and inquiry stop conditions without new schema/state.
+- **Metareasoning Policy v0**: agent-facing qualitative control-move contract for allocating effort among `ACT / INQUIRE / CHALLENGE / EXPLORE / VERIFY / ESCALATE / STOP` without a runtime controller, score, or authority expansion.
 - Canonical `using-sensemaking` guidance now makes warrant targets/dependencies, challenge versus exploration, resource-aware stopping, and delegated-result evidence return explicit while preserving progressive disclosure.
 - **Release Authority Auditor**: `release audit` reconciles local release identity/Git/docs/workflow mechanics without asserting CI qualification, publication, semantic truth, or owner authorization.
 - **Execution Interface v1**: additive execution handoff/result companions bind already-selected responsibility, authority, exact targets, evidence requirements, returned worker claims, and append-only integrity without changing Campaign schema v2.
@@ -90,7 +91,7 @@ Current material frontier items are:
 15. **Normal-use validation — ACTIVE / SUPPORTING EVIDENCE MODE.** Preserve qualifying real episodes and use the execution interfaces during ordinary consequential repository work; it no longer blocks construction explicitly authorized under Issue #399.
 16. **Execution Interface & Agent-Factorization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Release-authority audit, execution handoff/result, working-context projection, generic executor interchange, AI Software Factory projection, explicit GitHub provenance publication, and cross-repository execution projection are integrated without adding semantic planning/scheduling authority. Feature-integrated `main@4f89e92030af4dee5c931b59b839869911e6c366` passed Product/Lab/Release Distribution validation; PR #394 / Issue #393 carry the terminal closeout qualification/result receipt.
 17. **Experimental Intelligence Components v0 — ACTIVE / LAB_ONLY / `RESEARCH_MORE`.** Owner direction authorizes cheap, reversible experiments rather than core promotion. StrategicPlanner v0 under Issue #395 compiles baseline/treatment packets and preserves semantic decision authority with the active agent. Initial retrospective dogfood shows a plausible benefit on ambiguous high-leverage decisions and disproportionate ceremony on a tiny bounded repair; this supports prospective testing of an activation boundary, not product promotion or automatic planning.
-18. **Policy Hierarchy Completion v0 — ACTIVE / OWNER_AUTHORIZED / COMPOSABLE.** Issue #399 authorizes the missing middle semantic-control layers. Inquiry Policy v0 is integrated; later Metareasoning, Exploration, Warrant/Choice, Learning/Reconciliation, stable Strategic Alternatives, and adaptive coordination remain authorized follow-ons. Policy layers remain agent-owned, zero-work-capable, and non-mandatory.\n19. **Strategic Repository Sensemaking v1 — ACTIVE / OWNER_AUTHORIZED / CONSTRUCTION.** Issue #401 authorizes a first-class Level-3 analysis surface that turns repository evidence into a current-system model, capability/limitation map, coherent construction paths, qualitative comparison, decision-changing uncertainty, strategic synthesis, and a warranted direction/inquiry/no-change disposition without building a deterministic StrategicPlanner.
+18. **Policy Hierarchy Completion v0 — ACTIVE / OWNER_AUTHORIZED / COMPOSABLE.** Issue #399 authorizes the missing middle semantic-control layers. Inquiry Policy v0 and Metareasoning Policy v0 are integrated; later Exploration, Warrant/Choice, Learning/Reconciliation, stable Strategic Alternatives, and adaptive coordination remain authorized follow-ons. Policy layers remain agent-owned, zero-work-capable, and non-mandatory.\n19. **Strategic Repository Sensemaking v1 — ACTIVE / OWNER_AUTHORIZED / CONSTRUCTION.** Issue #401 authorizes a first-class Level-3 analysis surface that turns repository evidence into a current-system model, capability/limitation map, coherent construction paths, qualitative comparison, decision-changing uncertainty, strategic synthesis, and a warranted direction/inquiry/no-change disposition without building a deterministic StrategicPlanner.
 
 ### Current highest-leverage boundary
 
@@ -100,7 +101,7 @@ The owner explicitly authorized construction under Issue #401 and removed any re
 
 The current gap is not that Sensemaking lacks Level-3 concepts. The repository already has repository diagnosis, Strategic Frontier, Strategic Decision to Support, qualitative comparison, decision-changing uncertainty, Inquiry Policy v0, and bounded execution. The missing product layer is a coherent first-class analysis surface that composes those pieces into explicit repository-evolution paths.
 
-Policy Hierarchy Completion v0 remains valid and composable. Inquiry Policy v0 is already integrated and may govern whether a path-distinguishing uncertainty deserves investigation. This milestone does not cancel Issue #399; it applies those semantic-control contracts to a concrete Level-3 product surface.
+Policy Hierarchy Completion v0 remains valid and composable. Inquiry Policy v0 and Metareasoning Policy v0 are already integrated: Inquiry governs whether a path-distinguishing uncertainty deserves investigation, while Metareasoning governs whether the next useful control move is to act, inquire, challenge, explore, verify, escalate, or stop. This milestone does not cancel Issue #399; it applies those semantic-control contracts to a concrete Level-3 product surface.
 
 Issue #384 remains an external GitHub-admin governance action and is unrelated to this construction responsibility.
 
@@ -133,7 +134,7 @@ Required intervention:
 - integrate first-class strategic analysis into `using-sensemaking` and the Strategic Outer Loop;
 - expose the high-level repository-evolution entry point in README / Getting Started;
 - add integration regressions proving strategic analysis does not become automatic task selection, numeric ranking, or implementation authority;
-- preserve Inquiry Policy v0 as a composable semantic policy for path-distinguishing uncertainty.
+- preserve Inquiry Policy v0 and Metareasoning Policy v0 as composable semantic policies for path-distinguishing uncertainty and control-mode selection.
 
 Level-3 disposition: `STRATEGIC_REPOSITORY_SENSEMAKING_CONSTRUCTION_ACTIVE`.
 
