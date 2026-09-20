@@ -150,9 +150,14 @@ material observations / gaps / contradictions / opportunities
       |
 CANDIDATE STRATEGIC BOUNDARIES / STRATEGIC FRONTIER
       |
+when the repository future itself is open:
+CURRENT SYSTEM MODEL + CAPABILITY MAP
+      |
+COHERENT CONSTRUCTION PATHS
+      |
 identify the STRATEGIC DECISION TO SUPPORT
       |
-qualitatively compare decision-relevant boundaries
+qualitatively compare decision-relevant boundaries / paths
       |
 select ONE boundary — or explicitly decline selection
       |
