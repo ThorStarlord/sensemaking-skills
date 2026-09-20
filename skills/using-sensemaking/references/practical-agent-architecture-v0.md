@@ -18,7 +18,7 @@ goal + authority + target
 -> identify the few premises that must be true
 -> resolve the nearest decision-changing warrant gap
 -> apply Inquiry Policy: no inquiry, or smallest sufficient evidence
--> choose inquire / act / stop / escalate / verify / close
+-> apply Metareasoning Policy: act / inquire / challenge / explore / verify / escalate / stop
 -> check authority + mechanical preconditions
 -> orchestrate selected work
 -> treat returned result as evidence
@@ -138,7 +138,39 @@ inquiry complete
 -> active semantic reassessment
 ```
 
-## 4. Challenge versus exploration
+## 4. Metareasoning Policy
+
+Metareasoning allocates the next unit of effort after the current decision frame and
+Inquiry Policy result are understood.
+
+Use the canonical contract in
+`metareasoning-policy-v0.md`.
+
+```text
+Inquiry Policy
+-> what information is worth obtaining, if any
+
+Metareasoning Policy
+-> what kind of control move should happen next
+```
+
+Possible semantic moves are `ACT`, `INQUIRE`, `CHALLENGE`, `EXPLORE`,
+`VERIFY`, `ESCALATE`, and `STOP`.
+
+The choice remains qualitative:
+
+```text
+continue reasoning when expected decision improvement
+is worth more than reasoning + information + delay + opportunity cost
+```
+
+A cheap reversible information-producing action can dominate more analysis. A
+consequential irreversible external action can justify stronger inquiry, challenge,
+verification, or escalation.
+
+Metareasoning is not a runtime controller and does not authorize the selected move.
+
+## 5. Challenge versus exploration
 
 These are different semantic operators.
 
@@ -175,7 +207,7 @@ Useful exploration outputs include:
 - cross-domain analogies;
 - low-cost reversible probes.
 
-## 5. When challenge is worth the cost
+## 6. When challenge is worth the cost
 
 Consider adversarial challenge when one or more are materially present:
 
@@ -206,7 +238,7 @@ critic confidence
 
 The active semantic controller adjudicates the challenge under the current authority boundary.
 
-## 6. When exploration is worth the cost
+## 7. When exploration is worth the cost
 
 Explore when:
 
@@ -252,7 +284,7 @@ search history exists
 != persistent search-tree required
 ```
 
-## 7. Resource-aware stopping
+## 8. Resource-aware stopping
 
 Reasoning consumes time, attention, compute, tool calls, experiments, and opportunity.
 
@@ -281,7 +313,7 @@ consequential + irreversible + externally visible
 
 High uncertainty alone does not require more research. Low uncertainty alone does not authorize action.
 
-## 8. Delegation and subagents
+## 9. Delegation and subagents
 
 Delegation should carry a bounded responsibility rather than a vague request to “solve everything.”
 
@@ -319,7 +351,7 @@ worker capability
 != authority expansion
 ```
 
-## 9. Execution and orchestration return evidence upward
+## 10. Execution and orchestration return evidence upward
 
 Use the existing control law:
 
@@ -354,7 +386,7 @@ A retry or fallback policy may coordinate the selected responsibility.
 
 It does not authorize a materially different responsibility.
 
-## 10. Mechanical validation versus semantic judgment
+## 11. Mechanical validation versus semantic judgment
 
 Deterministic machinery may answer questions such as:
 
@@ -386,7 +418,7 @@ authority metadata present
 != authority inferred beyond the declaration
 ```
 
-## 11. Persistence rule
+## 12. Persistence rule
 
 Persist only what a fresh context needs to reconstruct a consequential decision.
 
@@ -449,7 +481,7 @@ raw durable state
 
 Externalize conclusions, rationale, evidence, and material search history when warranted; do not externalize private chain-of-thought merely because it existed.
 
-## 12. Value and normative conflict
+## 13. Value and normative conflict
 
 At the value layer, distinguish empirical disagreement from normative contestation.
 
@@ -474,7 +506,7 @@ surface the conflict
 
 Do not manufacture a deterministic value resolution.
 
-## 13. Progressive disclosure
+## 14. Progressive disclosure
 
 Use the lightest visible structure that preserves the invariants.
 
@@ -497,7 +529,7 @@ cross-context continuation
 
 More architecture does not mean more ceremony for every task.
 
-## 14. Compact decision checklist
+## 15. Compact decision checklist
 
 For consequential work, ask:
 
@@ -524,7 +556,7 @@ What must survive into a fresh context?
 
 Then act, investigate, stop, escalate, verify, or close only as warranted.
 
-## 15. Anti-patterns
+## 16. Anti-patterns
 
 Avoid:
 
@@ -541,7 +573,7 @@ Avoid:
 - treating deterministic validation as semantic closure;
 - creating a generic agent runtime inside Sensemaking because the conceptual model is broad.
 
-## 16. Relationship to current Sensemaking
+## 17. Relationship to current Sensemaking
 
 This reference does not replace:
 
