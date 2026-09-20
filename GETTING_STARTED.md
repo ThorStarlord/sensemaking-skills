@@ -187,6 +187,16 @@ Skip repository-wide diagnosis when the task is already mechanically narrow and 
 The Skill performs semantic diagnosis. Deterministic scripts/CLI validate and persist results; they do not replace the agent's judgment.
 
 
+When the open strategic question spans **multiple repositories whose identities are already explicitly selected**, use `multi-repository-strategic-analysis` to compare capability ownership and boundary/allocation futures. Do not use it to discover repositories automatically or to turn explicit dependencies into an execution schedule.
+
+```text
+explicit repository set + material boundary decision
+-> multi-repository-strategic-analysis
+
+automatic repository discovery
+-> not supported / not authorized
+```
+
 When strategic work reaches a return or reserved-decision boundary, use the
 smallest companion surface that preserves the decision:
 

@@ -503,6 +503,12 @@ artifact_ids:
     artifact_type: plan
 
   # Product Artifacts
+  - id: multi_repository_strategic_analysis
+    description: "Level-3 strategic analysis over an explicitly selected repository set with capability ownership, boundary/allocation paths, qualitative comparison, and no automatic scope expansion"
+    produced_by: multi-repository-strategic-analysis
+    consumed_by: [user, workflow-planner, prompt-handoff, strategic-repository-reconciliation]
+    artifact_type: strategic
+
   - id: discovery_findings
     description: "User research and discovery findings"
     produced_by: discovery
