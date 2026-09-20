@@ -103,6 +103,7 @@ jobs:
             tests/test_release_authority_audit.py \
             tests/test_strategic_repository_analysis_contract.py \
             tests/test_strategic_repository_analysis_integration.py \
+            tests/test_strategic_repository_sensemaking_closeout.py \
             -q
 
       - name: Build wheel and sdist
