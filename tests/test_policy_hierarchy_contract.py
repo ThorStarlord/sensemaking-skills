@@ -84,7 +84,8 @@ def test_metareasoning_policy_is_integrated_without_displacing_strategic_analysi
     assert "references/metareasoning-policy-v0.md" in bootstrap
     assert "metareasoning-policy-v0.md" in practical
     assert "Metareasoning Policy" in outer
-    assert "Metareasoning Policy v0 are integrated" in status
+    assert "Metareasoning Policy v0" in status
+    assert "Policy Hierarchy Completion v0" in status
     assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
     assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
 
