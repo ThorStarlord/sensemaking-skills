@@ -645,6 +645,8 @@ Durability and transferability are not identical. Externalize selected rationale
 Read these when the task needs deeper detail:
 
 - `references/adaptive-guidance-v0.md` — contextual scaffolding, rigor, consequentiality, delegation, and Campaign-use examples
+- `references/inquiry-policy-v0.md` — decide what to learn next, if anything; smallest sufficient evidence and source boundaries
+- `references/metareasoning-policy-v0.md` — choose the next qualitative control move: act, inquire, challenge, explore, verify, escalate, or stop
 - `references/practical-agent-architecture-v0.md` — warrant targets/dependencies, challenge vs. exploration, resource-aware stopping, delegation evidence return, and persistence guidance
 - `../../CONTEXT.md` — current product/system context and terminology
 - `../../docs/agent-native-operating-workflow.md` — canonical v0 operating map
@@ -662,13 +664,14 @@ Read these when the task needs deeper detail:
 1. Establish the goal and authority boundary.
 2. Decide how much scaffolding, investigation rigor, verification, and durable state the situation warrants.
 3. Ask what uncertainty could change the correct next action.
-4. Resolve that uncertainty from the right evidence source.
-5. Select the responsibility before the Skill or solution.
-6. Perform bounded work through the appropriate capability.
-7. Validate mechanics without confusing PASS with truth or closure.
-8. Reconcile consequential work claims.
-9. Repair-verify original findings when relevant.
-10. Update the warrant from new evidence.
-11. Continue, stop, escalate, or ask the owner deliberately.
+4. Apply Inquiry Policy: no inquiry, or the smallest sufficient evidence and source.
+5. Apply Metareasoning Policy when control-mode choice is material.
+6. Select the responsibility before the Skill or solution.
+7. Perform bounded work through the appropriate capability.
+8. Validate mechanics without confusing PASS with truth or closure.
+9. Reconcile consequential work claims.
+10. Repair-verify original findings when relevant.
+11. Update the warrant from new evidence.
+12. Continue, stop, escalate, or ask the owner deliberately.
 
 **Most importantly:** the goal is not to follow a predetermined workflow. The goal is to move from uncertainty to warranted engineering action while keeping evidence, claims, authority, and continuation proportional to the situation.
