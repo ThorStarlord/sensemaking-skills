@@ -92,7 +92,7 @@ What concrete steps correctly perform the bounded work?
 
 These are **reasoning/control scopes, not four runtime engines**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, identity, bounded conformance, and reconstruction.
 
-Within those scopes, Policy Hierarchy v0 makes the middle control questions explicit—what to learn next, how much reasoning to spend, when to broaden search, what is warranted, and what should be reconciled after evidence returns—without requiring separate runtime engines. Inquiry Policy v0 is the first implemented layer and permits `NO_INQUIRY_NEEDED` as a valid result.
+Within those scopes, Policy Hierarchy v0 makes the middle control questions explicit—what to learn next, how much reasoning to spend, when to broaden search, what is warranted, and what should be reconciled after evidence returns—without requiring separate runtime engines. Inquiry Policy v0 permits `NO_INQUIRY_NEEDED` as a valid result; Metareasoning Policy v0 selects the next qualitative control move (`ACT / INQUIRE / CHALLENGE / EXPLORE / VERIFY / ESCALATE / STOP`) when that choice is material.
 
 The governing rule is:
 
