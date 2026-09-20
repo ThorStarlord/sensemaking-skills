@@ -22,17 +22,18 @@ Use this bootstrap to:
 5. apply **Inquiry Policy v0** to decide whether more evidence is actually needed and, if so, identify the smallest sufficient evidence and source;
 6. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
 7. when search is materially iterative, apply **Exploration Policy v0** to allocate effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search;
-8. apply **Warrant / Choice Policy v0** to the specific contemplated claim, responsibility, action, continuation, closure, protected transition, or strategic direction when target justification/choice is material;
+8. apply **Warrant / Choice Policy v0** to the specific contemplated target when target justification/choice is material;
 9. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
 10. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
 11. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
 12. perform or delegate bounded work through the appropriate capability;
 13. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
-14. distinguish mechanical validation from analytical correctness and closure;
-15. reconcile consequential work claims with durable evidence;
-16. perform finding-specific repair verification when a prior finding was supposedly fixed;
-17. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
-18. decide whether to continue, stop, escalate, or ask the owner.
+14. apply **Learning / Reconciliation Policy v0** after consequential evidence returns to update explicit claims, uncertainty, responsibility, continuation, or strategic state when warranted;
+15. distinguish mechanical validation from analytical correctness and closure;
+16. reconcile consequential work claims with durable evidence;
+17. perform finding-specific repair verification when a prior finding was supposedly fixed;
+18. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
+19. decide whether to continue, stop, escalate, or ask the owner.
 
 This Skill does **not** make every task require `repo-sensemaker` or a Campaign, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
 
@@ -66,6 +67,7 @@ Orient
 -> select responsibility
 -> perform or delegate bounded work
 -> ground returned evidence
+-> apply Learning / Reconciliation Policy when the result is consequential
 -> validate mechanics
 -> update warrant
 -> continue / stop / escalate / verify / ask owner
@@ -300,6 +302,29 @@ candidate set exists
 When several materially credible targets exist, compare only what matters to the current decision: target-specific support, nearest warrant gap, smallest sufficient intervention, reversibility, currentness, and authority. Select one when commitment is actually needed; otherwise preserve alternatives or return `NO_SELECTION`.
 
 Read `references/warrant-choice-policy-v0.md` when explicit target adjudication or choice is material.
+
+### Learning / Reconciliation Policy v0
+
+After consequential evidence returns, ask:
+
+> **What explicit claims, uncertainties, responsibility, continuation state, or strategic frame should change—if anything?**
+
+`NO_MODEL_CHANGE` is valid. Other useful dispositions include confirming or revising claims, resolving/opening uncertainty, changing responsibility, continuing, stopping, escalating, reopening strategy, or requiring Level-4 thesis review.
+
+```text
+result returned
+!= state update automatic
+
+learning
+!= model-weight update
+
+authority need discovered
+!= authority granted
+```
+
+Persist only the explicit decision-relevant update another context must reconstruct, using existing Campaign / STATUS / ADR / handoff / evidence surfaces.
+
+Read `references/learning-reconciliation-policy-v0.md` when returned evidence can materially change the decision model.
 
 ### Inquiry Policy v0
 
@@ -748,6 +773,7 @@ Read these when the task needs deeper detail:
 - `references/metareasoning-policy-v0.md` — choose the next qualitative control move: act, inquire, challenge, explore, verify, escalate, or stop
 - `references/exploration-policy-v0.md` — allocate iterative search effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search
 - `references/warrant-choice-policy-v0.md` — adjudicate what a specific target is warranted now and select one warranted target or decline selection
+- `references/learning-reconciliation-policy-v0.md` — reconcile returned evidence into explicit claims, uncertainty, responsibility, continuation, or strategic state
 - `references/practical-agent-architecture-v0.md` — warrant targets/dependencies, challenge vs. exploration, resource-aware stopping, delegation evidence return, and persistence guidance
 - `../../CONTEXT.md` — current product/system context and terminology
 - `../../docs/agent-native-operating-workflow.md` — canonical v0 operating map

@@ -123,7 +123,8 @@ task / decision
 -> capability selection
 -> bounded work
 -> mechanical validation
--> durable result
+-> durable result / evidence
+-> Learning / Reconciliation Policy
 -> advance / defer / owner decision / stop
 ```
 
@@ -186,6 +187,8 @@ create/select bounded Campaign / work package when useful
 LEVEL 2 + LEVEL 1 execution
       |
 qualified result + durable evidence
+      |
+apply LEARNING / RECONCILIATION POLICY
       |
 strategic adjudication + state reconciliation
       |

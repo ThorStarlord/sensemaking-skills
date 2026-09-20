@@ -15,6 +15,7 @@ INQUIRY = ROOT / "skills" / "using-sensemaking" / "references" / "inquiry-policy
 METAREASONING = ROOT / "skills" / "using-sensemaking" / "references" / "metareasoning-policy-v0.md"
 EXPLORATION = ROOT / "skills" / "using-sensemaking" / "references" / "exploration-policy-v0.md"
 WARRANT_CHOICE = ROOT / "skills" / "using-sensemaking" / "references" / "warrant-choice-policy-v0.md"
+LEARNING_RECONCILIATION = ROOT / "skills" / "using-sensemaking" / "references" / "learning-reconciliation-policy-v0.md"
 BOOTSTRAP = ROOT / "skills" / "using-sensemaking" / "SKILL.md"
 PRACTICAL = ROOT / "skills" / "using-sensemaking" / "references" / "practical-agent-architecture-v0.md"
 OUTER = ROOT / "docs" / "strategic-outer-loop.md"
@@ -166,6 +167,46 @@ def test_warrant_choice_policy_is_integrated_without_displacing_strategic_analys
     assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
 
 
+def test_learning_reconciliation_policy_v0_interprets_evidence_before_state_change() -> None:
+    learning = LEARNING_RECONCILIATION.read_text(encoding="utf-8")
+
+    for disposition in (
+        "NO_MODEL_CHANGE",
+        "CONFIRM",
+        "REVISE_CLAIM",
+        "RESOLVE_UNCERTAINTY",
+        "OPEN_NEW_UNCERTAINTY",
+        "CHANGE_RESPONSIBILITY",
+        "CONTINUE",
+        "STOP",
+        "ESCALATE",
+        "REOPEN_STRATEGY",
+        "THESIS_REVIEW_REQUIRED",
+    ):
+        assert f"`{disposition}`" in learning
+
+    assert "result returned\n!= evidence interpreted" in learning
+    assert "validator PASS\n!= semantic update automatic" in learning
+    assert "learning\n!= model-weight update" in learning
+    assert "authority need discovered\n!= authority granted" in learning
+    assert "Learning / Reconciliation Policy\n!= new BeliefState schema" in learning
+
+
+def test_learning_reconciliation_is_integrated_without_displacing_strategic_analysis() -> None:
+    bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
+    practical = PRACTICAL.read_text(encoding="utf-8")
+    outer = OUTER.read_text(encoding="utf-8")
+    status = STATUS.read_text(encoding="utf-8")
+
+    assert "Learning / Reconciliation Policy v0" in bootstrap
+    assert "references/learning-reconciliation-policy-v0.md" in bootstrap
+    assert "learning-reconciliation-policy-v0.md" in practical
+    assert "Learning / Reconciliation Policy" in outer
+    assert "Learning / Reconciliation Policy v0" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
+    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+
+
 def test_inquiry_policy_is_integrated_into_agent_and_control_surfaces() -> None:
     bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
     practical = PRACTICAL.read_text(encoding="utf-8")
@@ -192,6 +233,7 @@ def test_status_preserves_inquiry_policy_integration_when_later_owner_work_is_se
     assert "Metareasoning Policy v0" in status
     assert "Exploration Policy v0" in status
     assert "Warrant / Choice Policy v0" in status
+    assert "Learning / Reconciliation Policy v0" in status
     assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "Do **not** freeze RC3" in status
@@ -207,5 +249,8 @@ def test_policy_hierarchy_does_not_create_runtime_or_schema_surface() -> None:
     assert "exploration_policy" not in pyproject
     assert "warrant_choice_policy" not in pyproject
     assert "WarrantEngine" not in pyproject
+    assert "learning_reconciliation_policy" not in pyproject
+    assert "LearningEngine" not in pyproject
+    assert "BeliefState" not in pyproject
     assert "SearchState" not in pyproject
     assert 'schema_version: "2"' in release
