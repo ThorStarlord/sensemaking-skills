@@ -21,6 +21,7 @@ Choose the entry point for your role instead of reading every document:
 | A human/new user trying to use Sensemaking | [`GETTING_STARTED.md`](GETTING_STARTED.md) | Canonical human how-to and first-use walkthrough |
 | Looking for the canonical Campaign lifecycle/composition | [`docs/agent-workflow-golden-path-v1.md`](docs/agent-workflow-golden-path-v1.md) | Canonical Campaign workflow-composition reference; static guidance, not routing |
 | A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
+| Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) | Level-3 current-system, capability, construction-path, tradeoff, and strategic-synthesis analysis |
 | Trying to understand the deeper responsibility/authority model | [`docs/agent-native-operating-workflow.md`](docs/agent-native-operating-workflow.md) | Level-2 reasoning, artifact, authority, validation, and stopping model |
 | Maintaining, validating, or qualifying the repository | [`docs/operations-runbook.md`](docs/operations-runbook.md) | Current operator/qualification runbook |
 
@@ -44,6 +45,10 @@ clear + locally evidenced + one context
 
 correct repository responsibility is uncertain
 -> apply using-sensemaking; repo-sensemaker may be useful
+
+repository/product future itself is open
+-> use strategic-repository-analysis to model coherent construction paths
+   before selecting a bounded responsibility
 
 material completed-work or repair claim
 -> stronger evidence / reconciliation / finding-specific verification when warranted

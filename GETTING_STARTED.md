@@ -71,6 +71,9 @@ Known narrow change, locally evidenced, one context
 Correct repository responsibility is uncertain
 -> use the Sensemaking control loop; repo-sensemaker may be useful
 
+Repository/product future itself is open and you want plausible construction paths
+-> use strategic-repository-analysis for Level-3 strategic repository analysis
+
 Material completed-work or repair claim
 -> stronger evidence / reconciliation / finding-specific verification when warranted
 
@@ -138,9 +141,21 @@ This delegates **intermediate engineering judgment**, not unlimited scope or
 authority. For additional bounded mission patterns and anti-patterns, see
 `skills/using-sensemaking/references/delegated-goal-patterns.md`.
 
-## Diagnose when repository sensemaking is warranted
+## Diagnose or analyze repository evolution
 
-Ask the active coding agent to use `using-sensemaking` as its control discipline. When repository-wide evidence could materially change the next responsibility, `repo-sensemaker` can produce a canonical `repository_sensemaking_brief`.
+Ask the active coding agent to use `using-sensemaking` as its control discipline.
+
+When repository-wide evidence could materially change the next bounded responsibility, `repo-sensemaker` can produce a diagnostic `repository_sensemaking_brief`.
+
+When the question is higher-level—**what could this repository become, what coherent ways could it be constructed from here, and what strategic uncertainty distinguishes those futures?**—use `strategic-repository-analysis`. It produces a `strategic_repository_analysis` containing a current-system model, capability/limitation map, Strategic Frontier, coherent construction paths, qualitative comparison, decision-changing uncertainty, and a semantic strategic disposition.
+
+```text
+repository diagnosis
+!= repository evolution synthesis
+
+strategic disposition
+!= implementation authorization
+```
 
 Typical reasons include:
 

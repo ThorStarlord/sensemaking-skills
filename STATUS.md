@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-19  
-**Current phase:** Policy Hierarchy Completion v0 is active under Issue #399; Inquiry Policy v0 is the first bounded construction package. Synthetic StrategicPlanner testing is stopped as the active mode. Normal-use validation remains a supporting evidence lane, not a prerequisite for this owner-authorized repository-only construction.  
+**Current phase:** Strategic Repository Sensemaking v1 is active under Issue #401; Package A is integrated and Package B is constructing first-class repository-evolution path synthesis. Policy Hierarchy Completion v0 remains composable under Issue #399, with Inquiry Policy v0 integrated. Synthetic StrategicPlanner testing remains stopped as the active mode.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
@@ -122,21 +122,23 @@ This uncertainty is resolved through ordinary implementation/contract qualificat
 
 **Implement and qualify Strategic Repository Sensemaking v1 under Issue #401.**
 
-Current bounded package: **Package A — Strategic Analysis Contract**.
+Current bounded package: **Package B — Construction Path Synthesis & Product Integration**.
+
+Package A is integrated through PR #403 with exact qualified content.
 
 Required intervention:
 
-- establish canonical `docs/strategic-repository-sensemaking-v1.md`;
-- add the `strategic-repository-analysis` Skill and artifact template;
-- register `strategic_repository_analysis` in artifact/Skill/domain/release contracts;
-- add a specialized mechanical validator for capability-state vocabulary, construction-path integrity, qualitative comparison, decision-changing uncertainty, disposition/reference integrity, and anti-scoring boundaries;
-- add regression coverage and ordinary product qualification;
-- preserve semantic-agent ownership and external implementation-authority boundaries.
+- strengthen construction-path distinctness, capability grounding, coarse sequencing, and anti-backlog semantics;
+- distinguish diagnostic `repo-sensemaker` from Level-3 `strategic-repository-analysis`;
+- integrate first-class strategic analysis into `using-sensemaking` and the Strategic Outer Loop;
+- expose the high-level repository-evolution entry point in README / Getting Started;
+- add integration regressions proving strategic analysis does not become automatic task selection, numeric ranking, or implementation authority;
+- preserve Inquiry Policy v0 as a composable semantic policy for path-distinguishing uncertainty.
 
 Level-3 disposition: `STRATEGIC_REPOSITORY_SENSEMAKING_CONSTRUCTION_ACTIVE`.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_ANALYSIS_CONTRACT
+CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_PATH_SYNTHESIS_INTEGRATION
 PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1
 COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0
 EXPERIMENT PREREQUISITE = NONE
@@ -147,7 +149,7 @@ SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
 
 Issue #401 is the current milestone authority tracker.
 
-Current branch: `work/strategic-repository-sensemaking-v1-contract`.
+Current branch: `work/strategic-repository-sensemaking-v1-synthesis`.
 
 Package sequence:
 
@@ -159,19 +161,20 @@ Issue #399 remains authorized for later policy-layer continuation; no synthetic 
 
 ### Expected evidence and reassessment
 
-Package A should produce:
+Package B should produce:
 
-- canonical strategic-analysis product contract;
-- first-class Skill + template + manifest;
-- artifact/domain/registry/release integration;
-- validator regression coverage;
+- explicit construction-path synthesis semantics grounded in current capabilities and material strategic differences;
+- a clear diagnostic-vs-strategic Skill boundary;
+- Level-3 / using-sensemaking integration;
+- human-facing entry points for repository-evolution analysis;
+- integration regression coverage;
 - exact-head Product Validation and Release Candidate Distribution qualification.
 
-After Package A integrates:
+After Package B integrates:
 
-- proceed directly to construction-path synthesis/comparison semantics if the artifact composes without runtime/schema expansion;
-- stop and redesign if the capability only works by introducing deterministic strategy ranking, mandatory numeric scoring, or hidden implementation authority;
-- do not manufacture an empirical study before Package B.
+- proceed directly to Package C closeout/currentness reconciliation;
+- stop and redesign if integration requires deterministic path ranking, automatic responsibility selection, Campaign schema expansion, or hidden implementation authority;
+- do not manufacture an empirical study before closeout.
 
 ### Authority / owner direction
 
@@ -219,11 +222,11 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**IMPLEMENT AND QUALIFY STRATEGIC ANALYSIS CONTRACT — PACKAGE A.**
+**IMPLEMENT AND QUALIFY CONSTRUCTION PATH SYNTHESIS & PRODUCT INTEGRATION — PACKAGE B.**
 
-Complete the first-class `strategic_repository_analysis` artifact/Skill/validator integration under Issue #401, qualify the exact PR head, and integrate if the surface remains semantic-agent-owned and mechanically bounded.
+Integrate strategic repository analysis into the canonical agent/human entry points, preserve `repo-sensemaker` as the diagnostic surface, and make coherent construction-path synthesis a first-class Level-3 capability.
 
-Then proceed directly to Package B — construction-path synthesis, qualitative comparison, and strategic synthesis semantics — without opening another experiment.
+Then proceed directly to Package C — currentness reconciliation, milestone handoff, and closeout — without opening another experiment.
 
 Policy Hierarchy Completion v0 remains composable follow-on work; Inquiry Policy v0 is already available to Strategic Repository Sensemaking when a path-distinguishing uncertainty warrants evidence.
 

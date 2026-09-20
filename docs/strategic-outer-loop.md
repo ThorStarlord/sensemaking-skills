@@ -150,9 +150,14 @@ material observations / gaps / contradictions / opportunities
       |
 CANDIDATE STRATEGIC BOUNDARIES / STRATEGIC FRONTIER
       |
+when the repository future itself is open:
+CURRENT SYSTEM MODEL + CAPABILITY MAP
+      |
+COHERENT CONSTRUCTION PATHS
+      |
 identify the STRATEGIC DECISION TO SUPPORT
       |
-qualitatively compare decision-relevant boundaries
+qualitatively compare decision-relevant boundaries / paths
       |
 select ONE boundary — or explicitly decline selection
       |
@@ -260,6 +265,68 @@ frontier entry != authorization to implement
 Non-authoritative possibilities belong in
 [`strategic-candidate-directions.md`](strategic-candidate-directions.md) as idea
 memory only.
+
+### 5.3.1 Strategic Repository Sensemaking and construction paths
+
+When the repository's future construction direction is itself the consequential
+decision, Level 3 may use the first-class
+`strategic_repository_analysis` artifact produced by
+`strategic-repository-analysis`.
+
+That analysis makes the decision space explicit:
+
+```text
+CURRENT SYSTEM MODEL
+      |
+CAPABILITY / LIMITATION MAP
+      |
+STRATEGIC FRONTIER
+      |
+2-5 COHERENT CONSTRUCTION PATHS, WHEN MATERIAL
+      |
+QUALITATIVE PATH COMPARISON
+      |
+DECISION-CHANGING UNCERTAINTY
+      |
+STRATEGIC SYNTHESIS
+      |
+BUILD / INVESTIGATE / DEFER / NO_CHANGE /
+OWNER_DECISION / THESIS_REVIEW
+```
+
+A **construction path** is a coherent future capability state plus the major
+capability sequence, dependencies, tradeoffs, reversibility, and evidence gaps
+needed to reach it. It is not a backlog or roadmap commitment.
+
+Use multiple paths only when they represent materially different futures.
+Do not manufacture alternatives when the governing commitment already makes one
+future materially dominant or when differences are merely implementation detail.
+
+The active semantic agent generates and compares paths. Mechanical validation
+may check artifact structure and explicit anti-scoring invariants, but cannot
+choose a path.
+
+```text
+construction path != backlog
+path comparison != numeric ranking
+strategic disposition != implementation authorization
+```
+
+Repository diagnosis and strategic repository analysis remain distinct:
+
+```text
+repo-sensemaker
+-> understand current repository / weakest consequential boundary
+
+strategic-repository-analysis
+-> model coherent repository futures and their decision-relevant differences
+```
+
+A current Repository Sensemaking Brief may be reused as evidence, but it is not a
+mandatory prerequisite for Level-3 strategic analysis.
+
+See `docs/strategic-repository-sensemaking-v1.md` and
+`skills/strategic-repository-analysis/references/construction-path-synthesis-v1.md`.
 
 ### 5.4 Repository-level responsibility classes
 

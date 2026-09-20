@@ -102,6 +102,7 @@ jobs:
             tests/integration/test_external_golden_path_qualification.py \
             tests/test_release_authority_audit.py \
             tests/test_strategic_repository_analysis_contract.py \
+            tests/test_strategic_repository_analysis_integration.py \
             -q
 
       - name: Build wheel and sdist
