@@ -52,6 +52,7 @@ The repository-qualified baseline includes:
 - **Learning / Reconciliation Policy v0**: evidence-return semantic reconciliation across claims, uncertainty, responsibility, continuation/closure, and strategic/thesis state, with valid `NO_MODEL_CHANGE` and no generic belief database or automatic state mutation.
 - **Stable Strategic Alternatives surface**: Strategic Repository Sensemaking v1 now represents 0–5 materially real construction paths; zero paths is valid when no coherent construction trajectory is currently warranted/representable, while `BUILD` still requires a selected real path.
 - **Adaptive Policy Coordinator v0**: progressive semantic policy composition that activates only decision-relevant policy questions, allows zero explicit policy layers for obvious bounded work, and adds no routing/runtime/coordinator-state authority.
+- **Policy Hierarchy Interface Clarification v1 — COMPLETE / INTEGRATED:** adds the non-authoritative Adaptive Semantic Control Architecture crosswalk, canonical policy-responsibility matrix, adjacent ownership boundaries, and Strategic Continuity -> Learning/Reconciliation reassessment bridge without adding a policy layer, runtime, schema, or authority.
 - Canonical `using-sensemaking` guidance now makes warrant targets/dependencies, challenge versus exploration, resource-aware stopping, and delegated-result evidence return explicit while preserving progressive disclosure.
 - **Release Authority Auditor**: `release audit` reconciles local release identity/Git/docs/workflow mechanics without asserting CI qualification, publication, semantic truth, or owner authorization.
 - **Execution Interface v1**: additive execution handoff/result companions bind already-selected responsibility, authority, exact targets, evidence requirements, returned worker claims, and append-only integrity without changing Campaign schema v2.
@@ -107,35 +108,42 @@ Current material frontier items are:
 19. **Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #401 established a first-class Level-3 analysis surface that turns repository evidence into a current-system model, capability/limitation map, 0–5 materially real construction paths, qualitative comparison, decision-changing uncertainty, strategic synthesis, and a warranted direction/inquiry/no-change disposition without building a deterministic StrategicPlanner. Package A integrated via PR #403, Package B via PR #404, and PR #409 stabilized the Strategic Alternatives representation without changing the milestone boundary.
 20. **Post-closeout strategic-state reconciliation — COMPLETE / NORMAL_USE_EVIDENCE.** Issue #414 used Strategic Repository Sensemaking v1 in ordinary repository operation, identified only stale post-#401 currentness as repository-local work, and reconciled the stable Level-3 projection without promoting a new product package.
 21. **Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #416's four bounded packages are repository-qualified and integrated: Strategic Continuity & Currentness; Strategic Reconciliation & Reserved-Decision Surfaces; Multi-Repository Strategic Sensemaking; and Change-Impact Sensemaking/Product UX. No planner runtime, numeric strategy engine, generic belief database, automatic repository discovery, or protected external-action authority was introduced.
+22. **Policy Hierarchy Interface Clarification v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #426 clarifies how the Four-Level Control Model, Policy Hierarchy v0, authority/execution, Strategic Continuity, and Learning/Reconciliation compose; Action / Execution remains a boundary rather than a new policy, and strategic drift/reassessment remains non-automatic.
 
 ### Current highest-leverage boundary
 
-**Issue #416 terminal closeout — stable normal-use handoff.**
+**Policy Hierarchy Interface Clarification v1 — terminal normal-use handoff.**
 
-The owner-authorized four-package construction program is complete. The repository now has bounded surfaces for:
+Issue #426 closes the bounded clarification pressure identified after #416:
 
 ```text
-strategic continuity / lineage / currentness
-+ evidence-return reconciliation
-+ owner / thesis / external-evidence decision packets
-+ caller-selected multi-repository strategic analysis
-+ change-impact sensemaking
-+ read-only strategic inspection/currentness UX
+Four-Level Control Model
++ Policy Hierarchy v0
++ authority / execution
++ Strategic Continuity
++ Learning / Reconciliation
+-> one explicit descriptive composition model
+-> no new control authority
 ```
 
-No further repository-local change is warranted merely because additional strategic machinery can be imagined.
+The repository now makes policy ownership and strategic reassessment reconstructible
+without promoting another semantic layer. No further repository-local change is
+warranted merely because additional control abstractions can be imagined.
 
 ### Current strategic decision to support
 
-**Decision:** is another repository-local construction package warranted immediately after Issue #416?
+**Decision:** after clarifying the interfaces among the completed policy/strategic
+surfaces, is another repository-local control-architecture package warranted now?
 
 **Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
 
-The new surfaces should now be exercised during ordinary repository work. Future construction should reopen only from concrete normal-use reconstruction/currentness/decision pressure or separate owner direction.
+Use the integrated crosswalk and reassessment bridge during ordinary consequential
+repository work. Reopen construction only from concrete recurring policy-interface,
+reconstruction, currentness, or authority-boundary pressure—or explicit owner direction.
 
 ### Current decision-changing uncertainty
 
-None currently warrants additional Issue #416 construction.
+None currently warrants additional policy-hierarchy / strategic-control construction after Issue #426.
 
 Future normal-use evidence may reveal a bounded deficiency, but:
 
@@ -155,6 +163,7 @@ CURRENT CONSTRUCTION RESPONSIBILITY = NONE
 PRIMARY CONSTRUCTION PROGRAM = NONE
 OPERATING MODE = NORMAL_USE_VALIDATION
 ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
+ISSUE_426_POLICY_HIERARCHY_INTERFACE_CLARIFICATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 STRATEGY_VIEWER_CLI = IMPLEMENTED
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE
@@ -168,7 +177,7 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-None for Issue #416.
+None for Issue #426 or the completed Issue #416 program.
 
 The terminal qualification/integration receipts are preserved in
 `docs/strategic-continuity-reconciliation-multi-repository-v1-handoff.md`.
@@ -233,7 +242,7 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NORMAL USE / NO ACTIVE ISSUE #416 CONSTRUCTION PACKAGE.**
+**NORMAL USE / NO ACTIVE ISSUE #426 CONSTRUCTION PACKAGE.**
 
 Use the integrated strategic continuity, reconciliation, multi-repository, change-impact, and strategy-inspection surfaces during ordinary consequential repository work. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it.
 
