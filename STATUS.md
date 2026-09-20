@@ -67,6 +67,7 @@ The repository-qualified baseline includes:
 
 Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision-v1-handoff.md`.
 Policy Hierarchy Completion v0 closeout is summarized in `docs/policy-hierarchy-completion-v0-handoff.md`.
+Strategic Continuity Refinement v1 closeout is summarized in `docs/strategic-continuity-refinement-v1-handoff.md`.
 
 ### Material limitations and evidence ceilings
 
