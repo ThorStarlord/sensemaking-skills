@@ -79,6 +79,7 @@ Repository-qualified/current baselines include:
 - **Issue #430 Strategic Continuity Refinement v1**: typed mechanical currentness observations over source/evidence/explicit governing-authority references, deterministic `strategy history` / `strategy graph` projections over explicitly supplied artifacts, and optional lightweight path-transition identity/effects; no roadmap status, causal-history inference, planner runtime, or automatic strategic reopening.
 - **Issue #432 Decision Journey Productization v1**: read-only journey reconstruction, caller-selected context packs, authored strategic deltas, impact/closure comparison, guided entry, and playbooks without planner/router authority.
 - **Issue #435 Strategic Repository Analysis Semantic Grounding v1**: explicit Strategicity Gate, backward-compatible strategic artifact v2 grounding, frontier/path reference integrity, and strategy-before-intervention ordering while preserving historical v1 analyses and semantic-agent ownership.
+- **Issue #438 Experiment Economy & Proportional Rigor v1**: Experiment Warrant, evidence-source economy, reversible-build-as-evidence, total experiment-cost reasoning, Minimum Sufficient Experimental Rigor, Confounder Warrant, and normal-use/causal evidence distinction; no experiment engine, scorer, mandatory isolation, or experiment program.
 
 Campaign schema remains v2. None of these baselines establishes native-harness usefulness, empirical portability, comparative superiority, semantic correctness, objective strategic priority, or automatic planning authority.
 
