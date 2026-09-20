@@ -255,17 +255,19 @@ Stop exploring when:
 
 No numeric score is required.
 
-### Iterative-search allocation
+### Exploration Policy v0 — iterative-search allocation
 
-When multiple meaningful attempts create a real search history, use that history to decide what kind of next search move is warranted:
+When multiple meaningful attempts create a real search history, use the canonical
+`exploration-policy-v0.md` contract to decide where search effort goes next:
 
-- **exploit** — refine the current best;
-- **explore** — try a materially different direction;
-- **challenge** — seek falsification or counter-evidence;
-- **diagnose** — investigate why an attempt failed before discarding its underlying idea;
-- **recombine** — combine useful mechanisms from different attempts;
-- **restart** — leave the current local search region or frame;
-- **verify** — confirm that a promising result is real before spending more effort optimizing it.
+- **EXPLOIT** — refine the current best;
+- **EXPLORE** — try a materially different direction;
+- **CHALLENGE** — seek falsification or counter-evidence;
+- **DIAGNOSE** — investigate why an attempt failed before discarding its underlying idea;
+- **RECOMBINE** — combine useful mechanisms from different attempts;
+- **RESTART** — leave the current local search region or frame;
+- **VERIFY** — confirm that a promising result is real before further optimization;
+- **EXIT_SEARCH** — return control when more search is not worth its cost.
 
 These are qualitative search modes, not a required enum, score, planner, or routing table.
 
@@ -273,11 +275,18 @@ For one-shot, local, obvious work, keep search allocation implicit.
 
 ```text
 exploration operator
-!= iterative-search allocation policy
+!= Exploration Policy
 
 search history exists
 != persistent search-tree required
+
+Exploration Policy
+!= Strategic Frontier ranking
 ```
+
+Search history is an on-demand projection of existing evidence/provenance. Reuse
+Campaign, handoff, STATUS, strategic alternatives, repository history, and explicit
+evidence before considering any new durable state.
 
 ## 8. Resource-aware stopping
 
