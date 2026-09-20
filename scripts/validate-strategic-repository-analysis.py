@@ -267,11 +267,11 @@ def validate(path: Path) -> list[dict[str, str]]:
             frontier_ids.add(fid)
 
     paths = data.get("construction_paths")
-    if not isinstance(paths, list) or not paths:
+    if not isinstance(paths, list):
         errors.append(
             _error(
                 "STRATEGIC_ANALYSIS_PATHS_INVALID",
-                "construction_paths must be a non-empty list",
+                "construction_paths must be a list",
             )
         )
         paths = []
