@@ -49,6 +49,11 @@ ecosystems:
         artifact: multi_repository_strategic_analysis
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/multi-repository-strategic-analysis" }
+      - id: change-impact-analysis
+        purpose: analyze decision-relevant affected surfaces around a bounded change
+        artifact: change_impact_analysis
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/change-impact-analysis" }
       - id: workflow-planner
         purpose: select and configure the recommended workflow for execution
         artifact: workflow_orchestration_plan

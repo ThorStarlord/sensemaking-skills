@@ -9,6 +9,7 @@ skill_manifests:
   - skill-manifests/thesis-review-packet.yaml
   - skill-manifests/external-evidence-packet.yaml
   - skill-manifests/multi-repository-strategic-analysis.yaml
+  - skill-manifests/change-impact-analysis.yaml
   - skill-manifests/architectural-review.yaml
   - skill-manifests/repair-verifier.yaml
   - skill-manifests/output-reconciler.yaml
@@ -20,6 +21,7 @@ responsibility_vocabulary:
   - thesis_review_support
   - external_evidence_packaging
   - multi_repository_strategic_analysis
+  - change_impact_analysis
   - architectural_review
   - repair_verification
   - output_reconciliation
@@ -31,6 +33,7 @@ artifact_contracts:
   - thesis_review_packet
   - external_evidence_packet
   - multi_repository_strategic_analysis
+  - change_impact_analysis
   - architectural_review_recommendation
   - repair_verification_report
   - reconciliation_report

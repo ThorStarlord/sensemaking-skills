@@ -474,6 +474,58 @@ artifacts:
         - autonomous_execution
         - yolo_execution
 
+  - id: change_impact_analysis
+    path: "artifacts/change_impact_analysis.md"
+    produced_by: change-impact-analysis
+    consumed_by:
+      - user
+      - workflow-planner
+      - prompt-handoff
+      - output-reconciler
+      - repair-verifier
+      - strategic-repository-reconciliation
+    description: "Evidence-grounded affected-surface analysis around a bounded contemplated or completed change, including verification/reconciliation/authority consequences and bounded follow-up responsibilities"
+    required_sections:
+      - change_scope_and_authority
+      - impact_evidence
+      - affected_surfaces
+      - cross_repository_impact
+      - claim_and_verification_consequences
+      - bounded_follow_up_responsibilities
+      - closure_effect
+      - authority_and_claim_boundaries
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - analysis_ref
+      - target_repository
+      - target_source_identity
+      - change
+      - impact_items
+      - cross_repository_impacts
+      - claim_consequences
+      - followup_responsibilities
+      - closure_effect
+      - automatic_repository_discovery_performed
+      - change_authorized_by_artifact
+      - followup_execution_authorized_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    notes:
+      - "Impact materiality is semantic-agent judgment; reference occurrence does not establish material impact."
+      - "The artifact may nominate bounded follow-up responsibilities but does not create a backlog or grant execution authority."
+      - "Cross-repository impacts may cover only explicitly selected/authorized scope; automatic_repository_discovery_performed must remain false."
+      - "change_authorized_by_artifact, followup_execution_authorized_by_artifact, and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py change_impact_analysis {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-change-impact-analysis.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
   - id: discovery_findings
     path: "artifacts/discovery_findings.md"
     produced_by: discovery

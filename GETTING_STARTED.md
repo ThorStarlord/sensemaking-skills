@@ -218,6 +218,29 @@ These packets are semantic-agent artifacts. They do not automatically mutate
 strategy, make the owner's choice, ratify a thesis revision, or turn external
 evidence into repository truth.
 
+## Analyze consequential change impact
+
+Use `change-impact-analysis` when the implementation target is known but a safe
+completion claim depends on understanding what else the change materially affects.
+
+Typical examples:
+
+- a shared contract/API change;
+- an ADR/authority boundary change;
+- a release identity or qualification change;
+- a change that can stale documentation/claims;
+- an explicitly scoped cross-repository interface change.
+
+```text
+reference occurrence != material impact
+impact identified != change authorized
+follow-up responsibility != backlog item
+```
+
+The output is `change_impact_analysis`. It records affected surfaces,
+verification/reconciliation needs, bounded follow-up responsibilities, and one
+closure effect; it does not execute or authorize the follow-up.
+
 ## Start a Campaign when durable continuation is warranted
 
 A Campaign is the central durable Level-2 abstraction. Use it when repository-specific decision state needs to survive agent/session boundaries or otherwise become reconstructible. A Campaign is **not** the universal entry point for Sensemaking.
