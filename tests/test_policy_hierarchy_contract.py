@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 POLICY = ROOT / "docs" / "policy-hierarchy-v0.md"
 INQUIRY = ROOT / "skills" / "using-sensemaking" / "references" / "inquiry-policy-v0.md"
 METAREASONING = ROOT / "skills" / "using-sensemaking" / "references" / "metareasoning-policy-v0.md"
+EXPLORATION = ROOT / "skills" / "using-sensemaking" / "references" / "exploration-policy-v0.md"
 BOOTSTRAP = ROOT / "skills" / "using-sensemaking" / "SKILL.md"
 PRACTICAL = ROOT / "skills" / "using-sensemaking" / "references" / "practical-agent-architecture-v0.md"
 OUTER = ROOT / "docs" / "strategic-outer-loop.md"
@@ -88,6 +89,43 @@ def test_metareasoning_policy_is_integrated_without_displacing_strategic_analysi
     assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
 
 
+def test_exploration_policy_v0_exposes_iterative_search_modes() -> None:
+    exploration = EXPLORATION.read_text(encoding="utf-8")
+
+    for mode in (
+        "EXPLOIT",
+        "EXPLORE",
+        "CHALLENGE",
+        "DIAGNOSE",
+        "RECOMBINE",
+        "RESTART",
+        "VERIFY",
+        "EXIT_SEARCH",
+    ):
+        assert f"`{mode}`" in exploration
+
+    assert "search history exists\n!= persistent SearchState required" in exploration
+    assert "Exploration Policy\n!= Strategic Frontier ranking" in exploration
+    assert "not a search engine, planner, score, enum contract, persistent search tree, or automatic router" in exploration
+    assert "SearchState.json" in exploration
+    assert "EXIT_SEARCH" in exploration
+
+
+def test_exploration_policy_is_integrated_without_displacing_strategic_analysis() -> None:
+    bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
+    practical = PRACTICAL.read_text(encoding="utf-8")
+    outer = OUTER.read_text(encoding="utf-8")
+    status = STATUS.read_text(encoding="utf-8")
+
+    assert "Exploration Policy v0" in bootstrap
+    assert "references/exploration-policy-v0.md" in bootstrap
+    assert "exploration-policy-v0.md" in practical
+    assert "Exploration Policy" in outer
+    assert "Exploration Policy v0" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
+    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+
+
 def test_inquiry_policy_is_integrated_into_agent_and_control_surfaces() -> None:
     bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
     practical = PRACTICAL.read_text(encoding="utf-8")
@@ -112,6 +150,7 @@ def test_status_preserves_inquiry_policy_integration_when_later_owner_work_is_se
     assert "Issue #399" in status
     assert "Inquiry Policy v0" in status
     assert "Metareasoning Policy v0" in status
+    assert "Exploration Policy v0" in status
     assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "Do **not** freeze RC3" in status
@@ -124,4 +163,6 @@ def test_policy_hierarchy_does_not_create_runtime_or_schema_surface() -> None:
     assert "policy_hierarchy" not in pyproject
     assert "inquiry_policy" not in pyproject
     assert "metareasoning_policy" not in pyproject
+    assert "exploration_policy" not in pyproject
+    assert "SearchState" not in pyproject
     assert 'schema_version: "2"' in release
