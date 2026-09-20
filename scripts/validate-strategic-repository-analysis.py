@@ -32,6 +32,14 @@ DISPOSITIONS = {
     "OWNER_DECISION",
     "THESIS_REVIEW",
 }
+CONTINUITY_DISPOSITIONS = {
+    "NEW",
+    "REAFFIRM",
+    "CONTINUE",
+    "REVISE",
+    "SUPERSEDE",
+    "CLOSE",
+}
 UNCERTAINTY_SOURCES = {
     "repository_evidence",
     "empirical",
@@ -327,6 +335,8 @@ def validate(path: Path) -> list[dict[str, str]]:
             "unlocks",
             "risks",
             "evidence_gaps",
+            "assumptions",
+            "reassessment_triggers",
         ):
             if field in item and not _string_list(item.get(field)):
                 errors.append(
@@ -463,6 +473,116 @@ def validate(path: Path) -> list[dict[str, str]]:
                 )
             )
 
+    analysis_ref = data.get("analysis_ref")
+    if analysis_ref is not None and not _nonempty_string(analysis_ref):
+        errors.append(
+            _error(
+                "STRATEGIC_ANALYSIS_REF_INVALID",
+                "analysis_ref must be a non-empty string when present",
+            )
+        )
+
+    continuity = data.get("continuity")
+    if continuity is not None:
+        if not isinstance(continuity, dict):
+            errors.append(
+                _error(
+                    "STRATEGIC_ANALYSIS_CONTINUITY_INVALID",
+                    "continuity must be a mapping when present",
+                )
+            )
+        else:
+            prior_ref = continuity.get("prior_analysis_ref")
+            if prior_ref is not None and not _nonempty_string(prior_ref):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_PRIOR_REF_INVALID",
+                        "continuity.prior_analysis_ref must be null or a non-empty string",
+                    )
+                )
+            if continuity.get("disposition") not in CONTINUITY_DISPOSITIONS:
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_CONTINUITY_DISPOSITION_INVALID",
+                        "continuity.disposition must be one of "
+                        + ", ".join(sorted(CONTINUITY_DISPOSITIONS)),
+                    )
+                )
+            if not _nonempty_string(continuity.get("reason")):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_CONTINUITY_REASON_INVALID",
+                        "continuity.reason must be non-empty",
+                    )
+                )
+            prior_path = continuity.get("prior_selected_path_id")
+            if prior_path is not None and not _nonempty_string(prior_path):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_PRIOR_PATH_INVALID",
+                        "continuity.prior_selected_path_id must be null or a non-empty string",
+                    )
+                )
+
+    assumptions = data.get("decision_assumptions")
+    if assumptions is not None:
+        if not isinstance(assumptions, list):
+            errors.append(
+                _error(
+                    "STRATEGIC_ANALYSIS_ASSUMPTIONS_INVALID",
+                    "decision_assumptions must be a list when present",
+                )
+            )
+        else:
+            seen_assumptions: set[str] = set()
+            for index, item in enumerate(assumptions):
+                if not isinstance(item, dict):
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_ASSUMPTION_ENTRY_INVALID",
+                            f"decision_assumptions[{index}] must be a mapping",
+                        )
+                    )
+                    continue
+                assumption_id = item.get("assumption_id")
+                if not _nonempty_string(assumption_id):
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_ASSUMPTION_ID_INVALID",
+                            f"decision_assumptions[{index}].assumption_id must be non-empty",
+                        )
+                    )
+                elif assumption_id in seen_assumptions:
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_ASSUMPTION_ID_DUPLICATE",
+                            f"duplicate assumption_id: {assumption_id}",
+                        )
+                    )
+                else:
+                    seen_assumptions.add(assumption_id)
+                if not _nonempty_string(item.get("statement")):
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_ASSUMPTION_STATEMENT_INVALID",
+                            f"decision_assumptions[{index}].statement must be non-empty",
+                        )
+                    )
+                if not _string_list(item.get("evidence_refs")):
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_ASSUMPTION_EVIDENCE_INVALID",
+                            f"decision_assumptions[{index}].evidence_refs must be a list of non-empty strings",
+                        )
+                    )
+                if not _string_list(item.get("reassessment_triggers")):
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_REASSESSMENT_TRIGGERS_INVALID",
+                            f"decision_assumptions[{index}].reassessment_triggers must be a list of non-empty strings",
+                        )
+                    )
+
     disposition = data.get("strategic_disposition")
     if disposition not in DISPOSITIONS:
         errors.append(
@@ -560,6 +680,7 @@ def main() -> int:
             "construction_path_integrity",
             "qualitative_comparison_integrity",
             "decision_changing_uncertainty_shape",
+            "optional_continuity_and_assumption_integrity",
             "strategic_disposition_reference_integrity",
             "authority_and_semantic_claim_boundaries",
             "anti_numeric_scoring",
