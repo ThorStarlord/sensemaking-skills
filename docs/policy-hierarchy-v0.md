@@ -277,7 +277,125 @@ router, planner, scheduler, state machine, score, or runtime service.
 Canonical agent-facing contract:
 `skills/using-sensemaking/references/adaptive-policy-coordinator-v0.md`.
 
-## 5. Activation principle
+## 5. Policy responsibility matrix
+
+This matrix is the canonical compact ownership map for the semantic-control layers.
+It clarifies interfaces without turning the hierarchy into a phase machine.
+
+| Layer / boundary | Question owned | Explicit activation | Valid zero-work / implicit result | Produces | Does **not** own | Typical consumer | Durable surface |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Strategic Policy / Strategic Repository Sensemaking | What repository-level decision matters now? | Repository/product future is materially open or strategic state must be reconstructed | `NO_CHANGE` / no strategic construction | strategic decision, alternatives, disposition, candidate responsibility | Level-4 thesis authority; implementation authorization | Inquiry / Warrant / Level 2 | `strategic_repository_analysis`, `STATUS.md` when warranted |
+| Inquiry Policy | What evidence would materially change the decision, if anything? | Decision-changing uncertainty with worthwhile evidence source | `NO_INQUIRY_NEEDED` | smallest sufficient inquiry / evidence need | final responsibility selection; authority | Metareasoning / Warrant | existing evidence/analysis surfaces only when continuation requires it |
+| Metareasoning Policy | What kind of effort deserves the next unit of resources? | Control move among act/inquire/challenge/explore/verify/escalate/stop is materially ambiguous | implicit obvious move or `STOP` | qualitative control move | detailed allocation inside iterative search; authorization | dependent policy or bounded action | normally transient |
+| Exploration Policy | Where should already-warranted iterative search go next? | Material attempt/search history changes allocation | `EXIT_SEARCH` or remain implicit | exploit/explore/challenge/diagnose/recombine/restart/verify allocation | whether search should exist at all; Strategic Frontier ranking | Warrant / Inquiry / active agent | existing provenance/history when continuation requires it |
+| Warrant / Choice Policy | What specific target is sufficiently justified now, and should one be selected? | Consequential target justification or material choice | `NO_SELECTION` / `NOT_WARRANTED` | target-specific warrant / choice | permission or protected authority | Authority / responsibility / execution | existing decision surfaces |
+| Action / Execution boundary | How is already-selected, authorized bounded work performed correctly? | Responsibility selected and required authority available | no action when not authorized | result / evidence | semantic target selection; warrant; authority grant | Learning / Reconciliation | execution handoff/result, repository history, evidence |
+| Learning / Reconciliation Policy | What explicit decision state changes after returned evidence? | Evidence can change claims, uncertainty, responsibility, continuation/closure, strategy, or thesis-review state | `NO_MODEL_CHANGE` | reconciled explicit state / escalation / reopening disposition | automatic state mutation; model-weight learning | Warrant / Strategy / owner/higher scope | Campaign/STATUS/ADR/reconciliation/strategic surfaces when warranted |
+| Adaptive Policy Coordinator | Which policy questions must be explicit now? | Several semantic questions could plausibly change the current decision | zero explicitly surfaced policies | smallest sufficient policy composition | routing, planning, authorization, superior semantic authority | active semantic agent | normally transient |
+
+Two consequences are intentional:
+
+```text
+Action / Execution != Action Policy v0
+
+Adaptive Policy Coordinator != superior policy authority
+```
+
+Responsibility, warrant, authority, capability/tool selection, and execution already
+have distinct owners. Do not add a new Action Policy merely to mirror the diagram.
+
+## 6. Adjacent ownership boundaries
+
+The hierarchy contains neighboring questions that may use overlapping evidence. Keep
+their ownership distinct.
+
+### Inquiry vs. Metareasoning
+
+```text
+Inquiry
+-> what evidence would change the decision?
+
+Metareasoning
+-> is obtaining that evidence the best use of the next unit of effort?
+```
+
+A decision-changing question may exist while `ACT`, `ESCALATE`, or `STOP` still
+dominates explicit inquiry.
+
+### Metareasoning `EXPLORE` vs. Exploration Policy
+
+```text
+Metareasoning EXPLORE
+-> broadening/search effort is warranted
+
+Exploration Policy
+-> given meaningful search history, where should iterative search go now?
+```
+
+An exploration operator does not require a persistent Exploration Policy surface.
+
+### Warrant / Choice vs. authority
+
+```text
+WARRANTED
+!= AUTHORIZED
+
+NO_SELECTION
+= no contemplated target is selected
+```
+
+Authority remains a separate protected boundary.
+
+### Metareasoning `STOP` vs. Warrant `NO_SELECTION`
+
+```text
+Metareasoning STOP
+= further effort on the current line is not worth its cost / is blocked / should defer
+
+Warrant NO_SELECTION
+= the current candidate set does not justify selecting one target
+```
+
+One may lead to the other, but they are not aliases.
+
+### Verification vs. Learning / Reconciliation
+
+```text
+Verification
+-> did the relevant result satisfy its contract?
+
+Learning / Reconciliation
+-> what does that verified, failed, or ambiguous result change?
+```
+
+A verified result may still produce `NO_MODEL_CHANGE`; a failed result may require
+only local repair rather than strategic reopening.
+
+### Policy disposition vs. durable companion artifact
+
+Semantic outcomes and durable packets solve different problems:
+
+```text
+Learning / Reconciliation Policy
+!= strategic_reconciliation artifact
+
+OWNER_DECISION_REQUIRED
+!= owner_decision_capsule
+
+THESIS_REVIEW_REQUIRED
+!= thesis_review_packet
+
+EXTERNAL_EVIDENCE_REQUIRED
+!= external_evidence_packet
+
+policy disposition
+!= durable companion artifact
+```
+
+Use a companion artifact only when another actor/context must reconstruct the
+consequential result. Artifact creation never transfers authority.
+
+## 7. Activation principle
 
 Visible policy structure should scale with decision pressure.
 
@@ -295,7 +413,7 @@ Useful triggers include:
 
 For an obvious local reversible task, most policy reasoning may remain implicit.
 
-## 6. Durability
+## 8. Durability
 
 Persist policy results only when a fresh context or another actor needs them to
 reconstruct a consequential decision.
@@ -311,7 +429,7 @@ Use existing surfaces first:
 
 Do not persist hidden chain-of-thought.
 
-## 7. Construction sequence
+## 9. Construction sequence
 
 Policy Hierarchy Completion v0 proceeds as bounded packages:
 
@@ -325,7 +443,7 @@ Policy Hierarchy Completion v0 proceeds as bounded packages:
 
 A later package may revise the order only when a concrete dependency warrants it.
 
-## 8. Explicit non-goals
+## 10. Explicit non-goals
 
 This architecture does not authorize:
 
@@ -337,9 +455,11 @@ This architecture does not authorize:
 - automatic Skill/workflow/Campaign selection;
 - an `OuterLoopEngine` finite-state controller;
 - automatic product-thesis revision;
-- autonomous merge, release, deployment, or publication authority.
+- autonomous merge, release, deployment, or publication authority;
+- `Action Policy v0` as a redundant semantic layer;
+- treating Adaptive Semantic Control Architecture v0 as a new control level or runtime.
 
-## 9. Completion criterion
+## 11. Completion criterion
 
 Policy Hierarchy Completion v0 is complete when the missing middle policies have
 explicit agent-facing contracts, compose coherently with existing strategy/execution
