@@ -119,6 +119,9 @@ def test_artifact_contract_is_declared() -> None:
     assert contract["produced_by"] == "strategic-repository-analysis"
     assert "construction_paths" in contract["required_machine_fields"]
     assert "strategic_disposition" in contract["required_machine_fields"]
+    assert {"analysis_ref", "continuity", "decision_assumptions"} <= set(
+        contract["recommended_machine_fields"]
+    )
     assert any("0-5 real paths" in note for note in contract["notes"])
     assert any(
         "validate-strategic-repository-analysis.py" in command
@@ -257,3 +260,53 @@ def test_artifact_cannot_self_grant_authority_or_truth(tmp_path: Path) -> None:
     ids = {item["error_id"] for item in result["errors"]}
     assert "STRATEGIC_ANALYSIS_AUTHORITY_BOUNDARY_INVALID" in ids
     assert "STRATEGIC_ANALYSIS_SEMANTIC_AUTHORITY_INVALID" in ids
+
+
+def test_optional_continuity_and_assumption_metadata_is_mechanically_checked(tmp_path: Path) -> None:
+    data = _analysis_yaml()
+    data["analysis_ref"] = "SRA-2"
+    data["continuity"] = {
+        "prior_analysis_ref": "SRA-1",
+        "disposition": "CONTINUE",
+        "prior_selected_path_id": "PATH-1",
+        "reason": "The same path remains material.",
+    }
+    data["decision_assumptions"] = [
+        {
+            "assumption_id": "ASSUMPTION-1",
+            "statement": "The repository boundary remains stable.",
+            "evidence_refs": ["docs/product-strategy.md"],
+            "reassessment_triggers": ["The product boundary changes."],
+        }
+    ]
+    data["construction_paths"][0]["assumptions"] = [
+        "The repository boundary remains stable."
+    ]
+    data["construction_paths"][0]["reassessment_triggers"] = [
+        "The product boundary changes."
+    ]
+    path = tmp_path / "analysis.md"
+    path.write_text(_artifact(data), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert result["valid"] is True
+    assert "optional_continuity_and_assumption_integrity" in result["checks"]
+
+
+def test_invalid_continuity_metadata_fails_closed(tmp_path: Path) -> None:
+    data = _analysis_yaml()
+    data["continuity"] = {
+        "prior_analysis_ref": "SRA-1",
+        "disposition": "AUTO_BEST",
+        "prior_selected_path_id": None,
+        "reason": "",
+    }
+    path = tmp_path / "analysis.md"
+    path.write_text(_artifact(data), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 1
+    ids = {item["error_id"] for item in result["errors"]}
+    assert "STRATEGIC_ANALYSIS_CONTINUITY_DISPOSITION_INVALID" in ids
+    assert "STRATEGIC_ANALYSIS_CONTINUITY_REASON_INVALID" in ids
