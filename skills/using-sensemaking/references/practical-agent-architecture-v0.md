@@ -24,6 +24,7 @@ goal + authority + target
 -> check authority + mechanical preconditions
 -> orchestrate selected work
 -> treat returned result as evidence
+-> apply Learning / Reconciliation Policy when the evidence is consequential
 -> update warrant
 -> repeat only as warranted
 ```
@@ -401,14 +402,27 @@ selected responsibility
 
 Execution failure is also evidence.
 
+Use the canonical `learning-reconciliation-policy-v0.md` contract when returned
+evidence could materially change an explicit claim, uncertainty, responsibility,
+continuation/closure state, or strategic frame.
+
 ```text
 execution failure
 -> evidence
+-> Learning / Reconciliation
 -> semantic reassessment
 -> retry same responsibility
    OR revise responsibility
    OR stop
    OR escalate
+```
+
+```text
+result returned
+!= state update automatic
+
+learning
+!= model-weight update
 ```
 
 A retry or fallback policy may coordinate the selected responsibility.
