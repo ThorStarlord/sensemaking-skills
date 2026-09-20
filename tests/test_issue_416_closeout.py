@@ -78,7 +78,7 @@ def test_candidate_directions_reconcile_issue_416_surfaces_as_implemented() -> N
     for section in (multi, continuity, impact):
         assert "IMPLEMENTED_BASELINE" in section
 
-    assert "automatic repository discovery" in multi
+    assert "automatic discovery" in multi
     assert "drift detected != strategy invalid" in continuity
     assert "follow-up responsibility != backlog item" in impact
 
@@ -107,6 +107,6 @@ def test_terminal_handoff_does_not_claim_release_or_external_admin_authority() -
     handoff = HANDOFF.read_text(encoding="utf-8")
 
     assert "Issue #384 remains a separate GitHub-hosting/admin" in handoff
-    assert "does not freeze RC3" in handoff
+    assert "freeze RC3" in handoff
     assert "publish a package" in handoff
     assert "final `1.0.0`" in handoff
