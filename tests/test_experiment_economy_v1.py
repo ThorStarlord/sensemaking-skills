@@ -39,7 +39,7 @@ def test_experiment_economy_defines_warrant_before_rigor() -> None:
     ):
         assert phrase in text
 
-    assert "No numeric" in text
+    assert "do not create a numeric expected-value score" in text
     assert "not an engine, scorer, router, or experiment framework" in text
 
 
@@ -61,7 +61,7 @@ def test_inquiry_policy_does_not_equate_investigation_with_experiment() -> None:
 def test_metareasoning_allows_reversible_act_to_dominate_separate_inquiry() -> None:
     text = METAREASONING.read_text(encoding="utf-8")
 
-    assert "ACT may still dominate" in text
+    assert "`ACT` may still dominate" in text
     assert "cheap reversible build" in text
     assert "INQUIRE` does not mean experiment" in text
     assert "experiment-economy-v1.md" in text
