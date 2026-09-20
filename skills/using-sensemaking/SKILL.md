@@ -179,7 +179,49 @@ Use `repo-sensemaker` when, for example:
 
 Skip it when the task is already locally evidenced and mechanically narrow, such as a known schema rename with known affected tests and no material ownership uncertainty.
 
-Sensemaking is not ceremony. Use it where it can change the decision.
+### When the repository's future is the problem
+
+Use `strategic-repository-analysis` when the user is not primarily asking for a
+diagnosis or a preselected task, but for a high-level repository evolution
+decision such as:
+
+- what could this repository become from here?
+- what are the coherent ways to construct/develop it?
+- which major capability directions are plausible?
+- what do those paths build on, require, unlock, or risk?
+- what strategic uncertainty would change the choice?
+
+Its output is a `strategic_repository_analysis`:
+
+```text
+current system model
+-> capability / limitation map
+-> Strategic Frontier
+-> coherent construction paths
+-> qualitative path comparison
+-> decision-changing uncertainty
+-> strategic synthesis
+-> BUILD / INVESTIGATE / DEFER / NO_CHANGE / OWNER_DECISION / THESIS_REVIEW
+```
+
+A current `repository_sensemaking_brief` may be used as evidence, but it is not
+a mandatory prerequisite when the strategic analysis can establish current
+repository state directly.
+
+```text
+repo-sensemaker = diagnostic repository understanding
+strategic-repository-analysis = Level-3 repository evolution synthesis
+
+strategic disposition
+!= implementation authorization
+```
+
+If the strategic disposition is `BUILD`, only then nominate the smallest
+bounded repository responsibility and check execution authority independently.
+Do not translate construction paths into an automatic backlog.
+
+Sensemaking is not ceremony. Use the lightest surface that can change the
+decision.
 
 ---
 
