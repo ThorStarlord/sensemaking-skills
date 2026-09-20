@@ -18,18 +18,18 @@ Use this bootstrap to:
 1. decide whether repository diagnosis or **Strategic Repository Sensemaking v1** would materially change how you should interpret the request;
 2. when the repository's future direction itself is open, use `strategic-repository-analysis` to model current capability state, coherent construction paths, qualitative tradeoffs, and the decision-changing strategic uncertainty before selecting a bounded responsibility;
 3. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
-3. identify the nearest unresolved premise that could change the correct next action;
-4. apply **Inquiry Policy v0** to decide whether more evidence is actually needed and, if so, identify the smallest sufficient evidence and source;
-5. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
-6. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
-7. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
-8. perform or delegate bounded work through the appropriate capability;
-9. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
-10. distinguish mechanical validation from analytical correctness and closure;
-11. reconcile consequential work claims with durable evidence;
-12. perform finding-specific repair verification when a prior finding was supposedly fixed;
-13. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
-14. decide whether to continue, stop, escalate, or ask the owner.
+4. identify the nearest unresolved premise that could change the correct next action;
+5. apply **Inquiry Policy v0** to decide whether more evidence is actually needed and, if so, identify the smallest sufficient evidence and source;
+6. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
+7. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
+8. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
+9. perform or delegate bounded work through the appropriate capability;
+10. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
+11. distinguish mechanical validation from analytical correctness and closure;
+12. reconcile consequential work claims with durable evidence;
+13. perform finding-specific repair verification when a prior finding was supposedly fixed;
+14. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
+15. decide whether to continue, stop, escalate, or ask the owner.
 
 This Skill does **not** make every task require `repo-sensemaker` or a Campaign, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
 
