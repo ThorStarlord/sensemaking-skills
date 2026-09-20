@@ -3,7 +3,8 @@
 **Status:** agent-facing guidance for using Sensemaking; not a runtime specification  
 **Authority:** interpretive guidance under the current product boundary; ADR 0029 and canonical authority contracts remain controlling  
 **Parent design:** `../../../docs/superpowers/specs/2026-09-17-practical-agent-architecture-v0-design.md`  
-**Reconciliation:** `../../../docs/research/practical-agent-architecture-reconciliation-v0.md`
+**Reconciliation:** `../../../docs/research/practical-agent-architecture-reconciliation-v0.md`  
+**Policy hierarchy:** `../../../docs/policy-hierarchy-v0.md`
 
 Use this reference when a consequential decision benefits from making warrant, challenge/exploration, delegated work, or stopping logic explicit.
 
@@ -16,6 +17,7 @@ goal + authority + target
 -> name contemplated warrant target
 -> identify the few premises that must be true
 -> resolve the nearest decision-changing warrant gap
+-> apply Inquiry Policy: no inquiry, or smallest sufficient evidence
 -> choose inquire / act / stop / escalate / verify / close
 -> check authority + mechanical preconditions
 -> orchestrate selected work
@@ -108,6 +110,33 @@ warrant dependencies:
 ```
 
 If dependency 1 is unresolved, do not spend effort optimizing dependency 5 first.
+
+### 3.1 Inquiry Policy
+
+Finding a warrant gap does not automatically justify investigation.
+
+Use the dedicated Inquiry Policy v0 contract in
+`inquiry-policy-v0.md` to decide whether additional evidence is worth obtaining.
+
+```text
+decision-changing uncertainty identified
+-> ask whether evidence could materially change the decision
+-> ask whether the evidence is obtainable within authority
+-> ask whether expected decision improvement justifies cost/delay
+-> NO_INQUIRY_NEEDED
+   OR smallest sufficient inquiry
+```
+
+Do not use repository research to answer owner intent, and do not use local inference to fabricate external evidence.
+
+```text
+inquiry result
+!= action authorization
+
+inquiry complete
+-> evidence
+-> active semantic reassessment
+```
 
 ## 4. Challenge versus exploration
 

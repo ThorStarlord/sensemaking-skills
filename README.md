@@ -87,6 +87,8 @@ What concrete steps correctly perform the bounded work?
 
 These are **reasoning/control scopes, not four runtime engines**. The active coding agent owns semantic judgment. Deterministic machinery owns only mechanically decidable representation, validation, provenance, persistence, integrity, identity, bounded conformance, and reconstruction.
 
+Within those scopes, Policy Hierarchy v0 makes the middle control questions explicit—what to learn next, how much reasoning to spend, when to broaden search, what is warranted, and what should be reconciled after evidence returns—without requiring separate runtime engines. Inquiry Policy v0 is the first implemented layer and permits `NO_INQUIRY_NEEDED` as a valid result.
+
 The governing rule is:
 
 > **Lower levels may execute decisions delegated from higher levels, but they may not silently redefine commitments owned by the higher level.**
@@ -96,6 +98,7 @@ The current authority surfaces are:
 - `docs/product-strategy.md` — Level-4 product thesis and strategic authority;
 - `STATUS.md` — Level-3 Strategic Repository Evolution state;
 - `docs/strategic-outer-loop.md` — canonical four-level control model;
+- `docs/policy-hierarchy-v0.md` — canonical middle semantic-policy architecture between strategy and execution;
 - `docs/strategic-state-contract.md` — Level-3 durable strategic-state contract;
 - `docs/product-thesis-revision.md` — Level-4 revision and owner-ratification contract;
 - `docs/sensemaking-campaign.md` — canonical Level-2 durable Campaign model;

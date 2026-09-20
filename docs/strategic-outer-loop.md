@@ -5,7 +5,8 @@
 **Reasoning precision:** Strategic Outer Loop Precision v1 clarification over the frozen v0 control architecture  
 **Construction state:** frozen operational baseline; reasoning semantics may be clarified from concrete pressure or explicit owner direction  
 **Authority:** product strategy + ADRs 0013/0029; does not override executable contracts  
-**Scope:** how Sensemaking separates product-thesis, repository-evolution, bounded responsibility, and execution reasoning
+**Scope:** how Sensemaking separates product-thesis, repository-evolution, bounded responsibility, and execution reasoning  
+**Middle policy architecture:** `policy-hierarchy-v0.md`
 
 ## 1. Purpose
 
@@ -42,6 +43,23 @@ What concrete steps correctly perform the bounded work?
 
 These levels describe **scope of reasoning and durable state**, not four
 runtime engines. The active coding agent remains the semantic controller.
+
+The cross-cutting middle reasoning between strategic scope and execution is made
+explicit by [Policy Hierarchy v0](policy-hierarchy-v0.md):
+
+```text
+Strategic Policy
+-> Inquiry Policy
+-> Metareasoning Policy
+-> Exploration Policy
+-> Warrant / Choice Policy
+-> Action / Execution
+-> Evidence
+-> Learning / Reconciliation
+```
+
+Policy layers are semantic control contracts. They may remain implicit on trivial
+work and do not imply separate services, databases, or mandatory phases.
 
 Outer Loop v0 remains the frozen control-architecture baseline. Strategic Outer
 Loop Precision v1 clarifies reasoning and transition semantics inside that
@@ -94,7 +112,8 @@ Canonical shape:
 ```text
 task / decision
 -> consequential uncertainty
--> bounded evidence
+-> Inquiry Policy: no inquiry or smallest sufficient evidence
+-> bounded evidence when inquiry is warranted
 -> warranted responsibility
 -> authority check
 -> capability selection
@@ -139,7 +158,7 @@ select ONE boundary — or explicitly decline selection
       |
 identify DECISION-CHANGING STRATEGIC UNCERTAINTY
       |
-identify cheapest sufficient evidence when needed
+apply INQUIRY POLICY: no inquiry or smallest sufficient evidence
       |
 select ONE WARRANTED REPOSITORY-LEVEL RESPONSIBILITY
       |

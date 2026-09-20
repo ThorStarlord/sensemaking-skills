@@ -29,7 +29,7 @@ def test_execution_interface_v1_handoff_covers_all_owner_directed_packages() -> 
     assert "Issue #384" in handoff
 
 
-def test_status_closes_construction_without_freezing_rc3() -> None:
+def test_status_preserves_execution_interface_closeout_without_freezing_rc3() -> None:
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     contract = yaml.safe_load((ROOT / "release-v1.0.yaml").read_text(encoding="utf-8"))
@@ -40,7 +40,8 @@ def test_status_closes_construction_without_freezing_rc3() -> None:
     assert "Execution Interface & Agent-Factorization v1 — COMPLETE" in status
     assert "NORMAL_USE_VALIDATION" in status
     assert "EXECUTION_INTERFACE_V1_CLOSEOUT" not in status
-    assert "No additional construction boundary is currently selected." in status
+    assert "Policy Hierarchy Completion v0" in status
+    assert "CURRENT CONSTRUCTION RESPONSIBILITY = INQUIRY_POLICY_V0" in status
     assert "POST_RC2_DEVELOPMENT_ACTIVE" not in status
     assert "Do **not** freeze RC3" in status
 

@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0-rc.3] - UNRELEASED
 
 ### Changed
+- **Policy Hierarchy Completion v0 begins** — explicit owner direction closes synthetic StrategicPlanner testing as the active mode and starts construction of the missing middle semantic-control layers without adding a generic runtime.
+- **Inquiry Policy v0** — adds a canonical agent-facing contract for deciding what to learn next, including `NO_INQUIRY_NEEDED`, smallest-sufficient-evidence selection, owner-intent/external-evidence boundaries, and explicit inquiry stopping rules.
 - **Post-RC2 development reopened** — current source advances to `1.0.0rc3.dev0` while preserving the exact qualified RC2 source/tree/artifacts as immutable historical provenance.
 - **Next development program** — owner direction authorizes bounded product construction around execution handoff/result evidence, release-authority auditing, external-executor interoperability, provenance publication, and deterministic execution projections without creating a semantic planner or scheduler.
 - **Release Authority Auditor** — adds local source/target/Git/document/workflow reconciliation without manufacturing CI, publication, semantic-truth, or owner-authorization claims.

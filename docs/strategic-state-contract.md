@@ -173,6 +173,27 @@ CHEAPEST SUFFICIENT EVIDENCE, IF KNOWN
 WHAT WOULD CHANGE THE CURRENT DECISION / RESPONSIBILITY
 ```
 
+### 4.7.1 Inquiry Policy projection
+
+When the selected strategic uncertainty requires additional information, apply
+[Inquiry Policy v0](../skills/using-sensemaking/references/inquiry-policy-v0.md)
+before converting uncertainty into investigation.
+
+```text
+decision-changing uncertainty
+-> NO_INQUIRY_NEEDED
+   OR smallest sufficient evidence + source + stop condition
+-> responsibility selection
+```
+
+Zero inquiry is valid when current evidence is already sufficient or remaining
+uncertainty cannot materially change the decision. Owner-intent and external
+evidence gaps must retain their source boundary rather than becoming repository
+research by default.
+
+Inquiry Policy is semantic agent judgment; the strategic-state validator does
+not score or select inquiries.
+
 ### 4.8 Current warranted repository-level responsibility
 
 Record the semantic responsibility rather than merely an implementation task.
@@ -284,7 +305,8 @@ reconstruct strategy + repository state
 -> state strategic decision to support
 -> compare credible boundaries qualitatively
 -> select or decline a boundary
--> identify decision-changing uncertainty / sufficient evidence
+-> identify decision-changing uncertainty
+-> apply Inquiry Policy: no inquiry or smallest sufficient evidence
 -> select one repository-level responsibility
 -> choose smallest warranted intervention
 -> delegate bounded execution
