@@ -171,8 +171,27 @@ Each material path should state:
 - evidence gaps / assumptions that matter.
 
 Prefer **2–5 paths** when multiple futures are genuinely plausible. A single path
-is valid when alternatives are immaterial, incoherent, or outside scope. Do not
-manufacture alternatives merely to fill a template.
+is valid when only one coherent construction trajectory is materially represented.
+
+**Zero paths is also valid** when current evidence/authority does not support a
+meaningful construction trajectory yet, or when the strategic disposition is reached
+without selecting a construction direction (for example `NO_CHANGE`,
+`OWNER_DECISION`, `THESIS_REVIEW`, or an investigation that must precede path
+formation).
+
+```text
+construction_paths: []
+!= analysis failure
+
+zero real paths
+> one manufactured path
+
+BUILD
+-> at least one real path
+-> selected_path_id references that path
+```
+
+Do not manufacture alternatives merely to fill a template.
 
 ## 8. Qualitative comparison
 
