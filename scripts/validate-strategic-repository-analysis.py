@@ -346,6 +346,16 @@ def validate(path: Path) -> list[dict[str, str]]:
                         f"strategic_frontier[{index}].evidence_refs must be a non-empty list of strings",
                     )
                 )
+            else:
+                duplicate_evidence = sorted(_duplicate_strings(evidence_refs))
+                if duplicate_evidence:
+                    errors.append(
+                        _error(
+                            "STRATEGIC_ANALYSIS_FRONTIER_EVIDENCE_DUPLICATE",
+                            f"strategic_frontier[{index}] duplicates evidence refs: "
+                            + ", ".join(duplicate_evidence),
+                        )
+                    )
             if not _nonempty_string_list(affected_capability_ids):
                 errors.append(
                     _error(
