@@ -466,6 +466,12 @@ artifact_ids:
     artifact_type: diagnostic
     routing_critical: true
 
+  - id: strategic_repository_analysis
+    description: "Level-3 repository evolution analysis with capability state, construction paths, qualitative comparison, and strategic disposition"
+    produced_by: strategic-repository-analysis
+    consumed_by: [user, workflow-planner, prompt-handoff, architectural-review]
+    artifact_type: strategic
+
   - id: workflow_orchestration_plan
     description: "Step-by-step execution plan with decision points"
     produced_by: workflow-planner
