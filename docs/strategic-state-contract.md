@@ -194,6 +194,24 @@ research by default.
 Inquiry Policy is semantic agent judgment; the strategic-state validator does
 not score or select inquiries.
 
+### 4.7.2 Metareasoning Policy projection
+
+When the next useful control move is not obvious, apply
+[Metareasoning Policy v0](../skills/using-sensemaking/references/metareasoning-policy-v0.md)
+after the current Inquiry Policy result is understood.
+
+```text
+decision + inquiry result + consequence + reversibility + authority + cost
+-> ACT / INQUIRE / CHALLENGE / EXPLORE / VERIFY / ESCALATE / STOP
+-> smallest warranted next control move
+```
+
+Metareasoning allocates effort. It does not authorize a responsibility, protected
+mutation, merge, publication, or release. The selected move may remain transient unless
+fresh-context reconstruction needs it.
+
+The strategic-state validator does not infer or score the correct control move.
+
 ### 4.8 Current warranted repository-level responsibility
 
 Record the semantic responsibility rather than merely an implementation task.
@@ -307,6 +325,7 @@ reconstruct strategy + repository state
 -> select or decline a boundary
 -> identify decision-changing uncertainty
 -> apply Inquiry Policy: no inquiry or smallest sufficient evidence
+-> apply Metareasoning Policy when control-mode choice is material
 -> select one repository-level responsibility
 -> choose smallest warranted intervention
 -> delegate bounded execution
