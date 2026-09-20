@@ -211,6 +211,27 @@ mutation, merge, publication, or release.
 
 The strategic-state validator does not infer or score the correct control move.
 
+### 4.7.3 Exploration Policy projection
+
+When search is materially iterative, apply
+[Exploration Policy v0](../skills/using-sensemaking/references/exploration-policy-v0.md)
+to the smallest decision-relevant projection of prior attempts and outcomes.
+
+```text
+material search history
+-> EXPLOIT / EXPLORE / CHALLENGE / DIAGNOSE /
+   RECOMBINE / RESTART / VERIFY / EXIT_SEARCH
+-> evidence / option-set change
+-> semantic reassessment
+```
+
+Search history may remain transient. If continuation requires durability, reuse existing
+Campaign/handoff/STATUS/strategic-alternative/provenance surfaces rather than creating a
+new SearchState schema.
+
+Exploration Policy does not rank the Strategic Frontier or select implementation
+authority. The validator does not infer or score search allocation.
+
 ### 4.8 Current warranted repository-level responsibility
 
 Record the semantic responsibility rather than merely an implementation task.
