@@ -3,6 +3,7 @@ domain_id: engineering
 capability_ledger: src/sensemaking_skills/campaigns/capabilities.py
 skill_manifests:
   - skill-manifests/repo-sensemaker.yaml
+  - skill-manifests/strategic-repository-analysis.yaml
   - skill-manifests/architectural-review.yaml
   - skill-manifests/repair-verifier.yaml
   - skill-manifests/output-reconciler.yaml
