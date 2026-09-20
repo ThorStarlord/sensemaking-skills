@@ -25,14 +25,17 @@ Do not require explicit enumeration of multiple candidate responsibilities unles
 
 Use the same case evidence plus StrategicPlanner v0. The planner must:
 
-1. generate 2–4 materially distinct candidate repository-level responsibilities;
-2. state the strategic decision each candidate would support;
-3. identify the decision-changing uncertainty for each candidate;
-4. expose material dependencies;
-5. state the smallest plausible intervention;
-6. record reasons for and against each candidate;
-7. identify invalidation/stop evidence;
-8. return the candidate set to the active semantic agent.
+1. generate 0–4 materially distinct candidate repository-level responsibilities;
+2. return `NO_CREDIBLE_CANDIDATE_RESPONSIBILITIES` when none are credibly warranted by the available evidence;
+3. state the strategic decision each candidate would support;
+4. identify the decision-changing uncertainty for each candidate;
+5. expose material dependencies;
+6. state the smallest plausible intervention;
+7. record reasons for and against each candidate;
+8. identify invalidation/stop evidence;
+9. return the candidate set to the active semantic agent.
+
+Zero candidates is a valid treatment result, not a planner failure.
 
 The planner must not choose a final winner, execute work, expand authority, infer new repository scope, or assign numeric priority scores.
 

@@ -1,0 +1,34 @@
+version: 1
+classification: simulated_constructed_case
+independent: false
+hindsight_contaminated: false
+comparative_superiority_claim_allowed: false
+cases:
+  - id: sensemaking-skills-next-responsibility-stress
+    title: One cheap next package under a no-construction current state
+    goal: Decide what repository-level responsibility, if any, should be pursued next when the owner is willing to fund one small high-upside package.
+    repository_state: >
+      Target is ThorStarlord/sensemaking-skills at exact snapshot 853334caa8b76d3170bbf0b744ac9d795537a1e8.
+      STATUS declares no current construction responsibility and normal-use validation as the primary mode.
+      StrategicPlanner v0 is lab-only RESEARCH_MORE. Execution Interface and release-authority milestones are complete.
+      Open issues include an external GitHub-admin governance action (#384), an owner/environment stop-boundary Goal A issue (#255),
+      a synthetic research study (#226), the normal-use evidence lane (#218), and the StrategicPlanner evidence tracker (#395).
+      Source is 1.0.0rc3.dev0 targeting 1.0.0rc3 in development. No release transition is authorized.
+      The simulated owner says implementation is cheap and one small high-upside package may be funded if genuinely warranted.
+    commitments:
+      - do not manufacture repository work merely because implementation is cheap
+      - preserve normal-use validation as the default when no construction responsibility is warranted
+      - respect existing external-action and owner/environment stop boundaries
+      - keep StrategicPlanner experimental unless evidence supports promotion
+      - preserve release and product-thesis authority boundaries
+    known_uncertainties:
+      - whether any current repository pressure warrants construction rather than continued observation
+      - whether another cheap intelligence-component experiment would answer a decision-changing question
+      - whether any open issue represents actionable repository work rather than external, blocked, synthetic, or observational state
+    constraints:
+      - no RC3 freeze, publication, or final 1.0 transition
+      - do not treat open issue status as evidence that implementation is warranted
+      - do not reinterpret #384 as repository code work
+      - do not bypass the #255 stop boundary or invent another harness
+      - do not count #226 as prospective normal-use evidence
+      - do not build WarrantEngine, OuterLoopEngine, PriorityPolicy, ExplorationPolicy, or SkillRouter solely because they are cheap or conceptually attractive

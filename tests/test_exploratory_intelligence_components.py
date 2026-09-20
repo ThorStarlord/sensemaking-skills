@@ -80,7 +80,7 @@ def test_baseline_preserves_current_semantic_selection() -> None:
 
     assert "select one warranted repository-level responsibility" in normalized
     assert "STRATEGICPLANNER V0" not in packet
-    assert "generate 2–4" not in packet
+    assert "generate up to 4" not in packet
 
 
 def test_treatment_generates_candidates_without_claiming_decision_authority() -> None:
@@ -88,7 +88,9 @@ def test_treatment_generates_candidates_without_claiming_decision_authority() ->
     packet = planner.render_treatment_packet(case)
     normalized = _normalized(packet)
 
-    assert "generate 2–4" in normalized
+    assert "generate up to 4" in normalized
+    assert "Zero candidates is valid." in normalized
+    assert "NO_CREDIBLE_CANDIDATE_RESPONSIBILITIES" in packet
     assert "Do not rank the candidates." in normalized
     assert "Do not choose a winner." in normalized
     assert "Do not execute anything." in normalized
