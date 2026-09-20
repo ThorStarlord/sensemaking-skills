@@ -60,6 +60,7 @@ The repository-qualified baseline includes:
 - **Cross-repository execution projection**: explicit ordering relations become read-only prerequisite edges/layers; the projection is not an execution plan and same-layer membership does not authorize parallel work.
 
 Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision-v1-handoff.md`.
+Policy Hierarchy Completion v0 closeout is summarized in `docs/policy-hierarchy-completion-v0-handoff.md`.
 
 ### Material limitations and evidence ceilings
 
