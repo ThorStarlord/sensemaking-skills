@@ -216,8 +216,8 @@ Do not persist hidden chain-of-thought.
 
 Policy Hierarchy Completion v0 proceeds as bounded packages:
 
-1. Inquiry Policy v0;
-2. Metareasoning Policy v0;
+1. Inquiry Policy v0 — integrated;
+2. Metareasoning Policy v0 — active Package 2;
 3. Exploration Policy v0;
 4. Warrant / Choice Policy v0;
 5. Learning / Reconciliation Policy v0;
