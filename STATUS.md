@@ -160,6 +160,8 @@ EXPERIMENT PREREQUISITE = NONE
 SYNTHETIC STRATEGICPLANNER TESTING = STOPPED
 ```
 
+Issue #384 remains the separate external GitHub-admin branch/ruleset governance action; Issue #416 does not absorb or fabricate that hosting-layer transition.
+
 ### Active execution vehicle
 
 Package A branch:
