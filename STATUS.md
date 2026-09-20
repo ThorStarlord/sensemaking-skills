@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-19  
-**Current phase:** Policy Hierarchy Completion v0 is active under Issue #399; Inquiry Policy v0 is the first bounded construction package. Synthetic StrategicPlanner testing is stopped as the active mode. Normal-use validation remains a supporting evidence lane, not a prerequisite for this owner-authorized repository-only construction.  
+**Current phase:** Strategic Repository Sensemaking v1 is active under Issue #401; Package A is integrated and Package B is constructing first-class repository-evolution path synthesis. Policy Hierarchy Completion v0 remains composable under Issue #399, with Inquiry Policy v0 integrated. Synthetic StrategicPlanner testing remains stopped as the active mode.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
