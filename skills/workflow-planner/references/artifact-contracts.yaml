@@ -229,6 +229,7 @@ artifacts:
       - created_at
       - immutable
     recommended_machine_fields:
+      - schema_version
       - analysis_ref
       - continuity
       - decision_assumptions
@@ -236,6 +237,9 @@ artifacts:
       - candidate_path_transition_ref
     notes:
       - "Strategic analysis is semantic-agent output; the validator does not choose, score, rank, or authorize a path."
+      - "New canonical strategic_repository_analysis artifacts use schema_version: 2; missing schema_version means legacy v1 and remains valid without mutation."
+      - "v2 Strategic Frontier entries declare evidence_refs, affected_capability_ids, and strategic_consequence; v2 paths declare frontier_refs, why_plausible, builds_on_capability_ids, and required_capability_ids."
+      - "v2 comparison uses nine strategic lenses; smallest_warranted_intervention is derived after strategic disposition/path selection rather than used as a path-selection lens."
       - "analysis_ref, continuity, decision_assumptions, governing_authority_refs, path_transitions, and candidate_path_transition_ref are additive Strategic Continuity fields; existing qualified analyses remain valid without them."
       - "continuity is semantic-agent authored; deterministic commands may project or compare it but may not infer it."
       - "Construction paths are coherent repository-evolution trajectories, not backlogs."
