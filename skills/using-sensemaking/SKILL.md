@@ -18,7 +18,7 @@ Use this bootstrap to:
 1. decide whether repository sensemaking would materially change how you should interpret or execute the request;
 2. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
 3. identify the nearest unresolved premise that could change the correct next action;
-4. obtain evidence from the right source;
+4. apply **Inquiry Policy v0** to decide whether more evidence is actually needed and, if so, identify the smallest sufficient evidence and source;
 5. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
 6. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
 7. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
@@ -39,7 +39,9 @@ For consequential work, reason in this order:
 ```text
 GOAL / AUTHORIZED SCOPE
   -> What unresolved uncertainty could change the correct next action?
-  -> What responsibility is warranted now to resolve it?
+  -> Is inquiry needed, or is current evidence already sufficient?
+  -> If inquiry is needed, what is the smallest sufficient evidence and source?
+  -> What responsibility is warranted now?
   -> Perform bounded work through a Skill/tool/workflow if useful
   -> What evidence do we now have?
   -> What does that evidence warrant next?
@@ -52,6 +54,7 @@ A useful compact form is:
 Orient
 -> name the consequential decision / contemplated warrant target
 -> locate the nearest decision-changing warrant gap
+-> apply Inquiry Policy: no inquiry, or smallest sufficient evidence
 -> select responsibility
 -> perform or delegate bounded work
 -> ground returned evidence
@@ -223,6 +226,33 @@ warrant for target A != warrant for target B
 
 Use the lightest amount of explicit structure that preserves the decision boundary.
 
+### Inquiry Policy v0
+
+Before turning an unresolved uncertainty into investigation, ask:
+
+> **Given the current decision and epistemic state, what should I learn next, if anything?**
+
+Inquiry is warranted only when additional evidence could materially change responsibility, scope, authority path, continuation, verification, or closure **and** obtaining that evidence is worth its cost.
+
+```text
+uncertainty exists
+!= inquiry required
+
+more evidence possible
+!= more evidence worth obtaining
+
+NO_INQUIRY_NEEDED
+= valid successful policy result
+```
+
+When inquiry is warranted, identify the smallest sufficient evidence, its source, the bounded evidence-producing responsibility (if one is needed), authority, and a stop condition.
+
+If the missing premise is owner intent, ask the owner rather than searching the repository. If the needed evidence is external and unavailable or unauthorized, record the external dependency rather than fabricating a local substitute.
+
+Inquiry selection is not action authorization. Returned evidence comes back to the active semantic controller for adjudication.
+
+Read `references/inquiry-policy-v0.md` when explicit inquiry selection is material. Policy Hierarchy v0 is defined in `../../docs/policy-hierarchy-v0.md`.
+
 ### Challenge and exploration when commitment risk is material
 
 ```text
@@ -245,7 +275,7 @@ When iterative search has multiple meaningful attempts, use the material search 
 
 Critic or explorer output is evidence for the active agent; it is not automatic veto, approval, or authority.
 
-For challenge/exploration triggers, delegation evidence return, and persistence guidance, read `references/practical-agent-architecture-v0.md` when those decisions are material.
+For explicit inquiry selection, read `references/inquiry-policy-v0.md`. For challenge/exploration triggers, delegation evidence return, and persistence guidance, read `references/practical-agent-architecture-v0.md` when those decisions are material.
 
 ---
 
