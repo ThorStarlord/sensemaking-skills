@@ -472,6 +472,30 @@ artifact_ids:
     consumed_by: [user, workflow-planner, prompt-handoff, architectural-review]
     artifact_type: strategic
 
+  - id: strategic_reconciliation
+    description: "Evidence-return reconciliation against a prior strategic repository analysis"
+    produced_by: strategic-repository-reconciliation
+    consumed_by: [user, strategic-repository-analysis, owner-decision-capsule, thesis-review-packet]
+    artifact_type: strategic
+
+  - id: owner_decision_capsule
+    description: "Owner-reserved decision packet with options, tradeoffs, reversibility, deferral, and authority effects"
+    produced_by: owner-decision-capsule
+    consumed_by: [user, strategic-repository-analysis]
+    artifact_type: decision_support
+
+  - id: thesis_review_packet
+    description: "Level-4 thesis review packet that preserves owner ratification authority"
+    produced_by: thesis-review-packet
+    consumed_by: [user, strategic-repository-analysis]
+    artifact_type: strategic
+
+  - id: external_evidence_packet
+    description: "Provenance and currentness packet for decision-relevant evidence outside repository authority"
+    produced_by: external-evidence-packet
+    consumed_by: [user, repo-sensemaker, strategic-repository-analysis, strategic-repository-reconciliation]
+    artifact_type: evidence
+
   - id: workflow_orchestration_plan
     description: "Step-by-step execution plan with decision points"
     produced_by: workflow-planner
