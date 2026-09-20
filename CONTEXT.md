@@ -51,6 +51,7 @@ See:
 - [docs/product-strategy.md](docs/product-strategy.md) — Level-4 product thesis and strategic authority
 - [docs/adr/0029-current-product-boundary.md](docs/adr/0029-current-product-boundary.md) — current ratified product-boundary authority
 - [docs/strategic-outer-loop.md](docs/strategic-outer-loop.md) — canonical four-level control model
+- [docs/policy-hierarchy-v0.md](docs/policy-hierarchy-v0.md) — canonical middle semantic-policy architecture; Inquiry Policy v0 is the first explicit layer
 - [docs/strategic-state-contract.md](docs/strategic-state-contract.md) — Level-3 durable strategic-state contract
 - [docs/product-thesis-revision.md](docs/product-thesis-revision.md) — Level-4 revision and owner-ratification contract
 - [docs/product-operating-model.md](docs/product-operating-model.md) — value stream, ownership, delegation, and escalation
@@ -91,7 +92,8 @@ The practical Level-2 loop is:
 ```text
 GOAL / AUTHORIZED SCOPE
   -> identify nearest decision-changing uncertainty
-  -> select the responsibility most likely to resolve it
+  -> apply Inquiry Policy: no inquiry or smallest sufficient evidence
+  -> select the responsibility most likely to resolve the decision
   -> perform bounded work
   -> produce durable evidence/artifact
   -> validate mechanics
@@ -138,6 +140,7 @@ Level 4 activates only when evidence makes a product-thesis commitment decision-
 13. **Reference resolution is not semantic warrant** — B7 may establish addressability/integrity under existing authorities; it does not establish currentness, relevance, support, or truth.
 14. **Strategic decision before strategic responsibility** — a Level-3 boundary should connect to a consequential Strategic Decision to Support before it becomes current work.
 15. **Qualitative comparison is not scoring** — make frontier judgment reconstructible without converting semantic priority into a deterministic formula.
+16. **Inquiry is conditional** — unresolved uncertainty does not automatically justify investigation; zero inquiry is valid when current evidence is already sufficient or further evidence would not change the decision.
 
 ## Architecture and ownership
 
