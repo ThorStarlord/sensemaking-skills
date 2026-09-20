@@ -107,5 +107,5 @@ def test_closeout_does_not_auto_select_policy_hierarchy_follow_on() -> None:
     )
 
     assert "Adaptive Policy Coordinator v0 remains an authorized follow-on" in handoff
-    assert "is not selected by this closeout" in handoff
+    assert "not selected by this closeout" in handoff
     assert "does not automatically select Adaptive Policy Coordinator v0" in status
