@@ -231,6 +231,7 @@ artifacts:
     notes:
       - "Strategic analysis is semantic-agent output; the validator does not choose, score, rank, or authorize a path."
       - "Construction paths are coherent repository-evolution trajectories, not backlogs."
+      - "construction_paths may contain 0-5 real paths; zero is valid for non-BUILD dispositions when no coherent construction trajectory is currently warranted/representable. BUILD still requires a selected real path."
       - "Numeric path scores/weights/ranking fields are forbidden; comparison is qualitative."
       - "implementation_authority_established_by_artifact and semantic_truth_established must remain false."
     verification:
