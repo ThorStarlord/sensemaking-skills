@@ -116,6 +116,18 @@ Exclude attractive but non-decision-relevant ideas.
 
 Generate 2–5 paths when multiple futures are materially plausible.
 
+Use one path when only one coherent construction trajectory is materially represented.
+Use zero paths when no construction trajectory is currently warranted/representable and
+the strategic conclusion is reached before construction selection.
+
+```text
+zero real paths
+> manufactured alternative
+
+BUILD
+-> requires a selected real path
+```
+
 Each path must describe:
 
 - future state;
@@ -131,7 +143,7 @@ Each path must describe:
 
 A path is a coherent future trajectory, not a backlog.
 
-One path is valid when alternatives would be artificial.
+One path is valid when additional alternatives would be artificial. Zero paths is valid when even one construction path would be artificial or premature.
 
 For path distinctness, capability-state grounding, coarse construction
 sequencing, comparison discipline, and anti-backlog rules, read
