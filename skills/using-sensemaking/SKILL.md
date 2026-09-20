@@ -21,16 +21,16 @@ Use this bootstrap to:
 4. identify the nearest unresolved premise that could change the correct next action;
 5. apply **Inquiry Policy v0** to decide whether more evidence is actually needed and, if so, identify the smallest sufficient evidence and source;
 6. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
-16. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
-7. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
-8. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
-9. perform or delegate bounded work through the appropriate capability;
-10. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
-11. distinguish mechanical validation from analytical correctness and closure;
-12. reconcile consequential work claims with durable evidence;
-13. perform finding-specific repair verification when a prior finding was supposedly fixed;
-14. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
-15. decide whether to continue, stop, escalate, or ask the owner.
+7. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
+8. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
+9. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
+10. perform or delegate bounded work through the appropriate capability;
+11. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
+12. distinguish mechanical validation from analytical correctness and closure;
+13. reconcile consequential work claims with durable evidence;
+14. perform finding-specific repair verification when a prior finding was supposedly fixed;
+15. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
+16. decide whether to continue, stop, escalate, or ask the owner.
 
 This Skill does **not** make every task require `repo-sensemaker` or a Campaign, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
 
