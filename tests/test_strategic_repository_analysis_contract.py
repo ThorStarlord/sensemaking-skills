@@ -79,6 +79,46 @@ def _analysis_yaml() -> dict:
     }
 
 
+
+def _analysis_v2_yaml() -> dict:
+    data = _analysis_yaml()
+    data["schema_version"] = 2
+    data["capability_states"].append(
+        {
+            "capability_id": "strategic-analysis-artifact",
+            "state": "MISSING",
+            "evidence_refs": ["docs/strategic-repository-sensemaking-v1.md"],
+        }
+    )
+    data["strategic_frontier"][0].update(
+        {
+            "evidence_refs": ["skills/repo-sensemaker/SKILL.md:L1-L20"],
+            "affected_capability_ids": ["repository-diagnosis"],
+            "strategic_consequence": (
+                "A first-class strategic-analysis capability changes how open "
+                "repository futures can be represented and selected."
+            ),
+        }
+    )
+    path = data["construction_paths"][0]
+    path.pop("builds_on")
+    path.pop("required_capabilities")
+    path.update(
+        {
+            "frontier_refs": ["FRONTIER-1"],
+            "why_plausible": (
+                "Repository diagnosis and Level-3 strategy already exist, so an "
+                "explicit strategic-analysis surface is a coherent extension."
+            ),
+            "builds_on_capability_ids": ["repository-diagnosis"],
+            "required_capability_ids": ["strategic-analysis-artifact"],
+        }
+    )
+    data["path_comparison"][0]["lenses"].pop("smallest_warranted_intervention")
+    return data
+
+
+
 def _artifact(data: dict) -> str:
     return (
         "# Strategic Repository Analysis\n\n"
@@ -310,3 +350,86 @@ def test_invalid_continuity_metadata_fails_closed(tmp_path: Path) -> None:
     ids = {item["error_id"] for item in result["errors"]}
     assert "STRATEGIC_ANALYSIS_CONTINUITY_DISPOSITION_INVALID" in ids
     assert "STRATEGIC_ANALYSIS_CONTINUITY_REASON_INVALID" in ids
+
+
+def test_valid_v2_strategic_analysis_passes_grounding_validation(tmp_path: Path) -> None:
+    path = tmp_path / "analysis-v2.md"
+    path.write_text(_artifact(_analysis_v2_yaml()), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert result["valid"] is True
+    assert "schema_version_compatibility" in result["checks"]
+    assert "strategic_frontier_grounding" in result["checks"]
+
+
+def test_v2_requires_path_plausibility(tmp_path: Path) -> None:
+    data = _analysis_v2_yaml()
+    del data["construction_paths"][0]["why_plausible"]
+    path = tmp_path / "missing-plausibility.md"
+    path.write_text(_artifact(data), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 1
+    ids = {item["error_id"] for item in result["errors"]}
+    assert "STRATEGIC_ANALYSIS_PATH_FIELDS_MISSING" in ids
+    assert "STRATEGIC_ANALYSIS_PATH_PLAUSIBILITY_MISSING" in ids
+
+
+def test_v2_rejects_unknown_frontier_and_capability_refs(tmp_path: Path) -> None:
+    data = _analysis_v2_yaml()
+    data["strategic_frontier"][0]["affected_capability_ids"] = ["CAPABILITY-404"]
+    data["construction_paths"][0]["frontier_refs"] = ["FRONTIER-404"]
+    data["construction_paths"][0]["required_capability_ids"] = ["CAPABILITY-404"]
+    path = tmp_path / "unknown-grounding.md"
+    path.write_text(_artifact(data), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 1
+    ids = {item["error_id"] for item in result["errors"]}
+    assert "STRATEGIC_ANALYSIS_FRONTIER_CAPABILITY_UNKNOWN" in ids
+    assert "STRATEGIC_ANALYSIS_PATH_FRONTIER_UNKNOWN" in ids
+    assert "STRATEGIC_ANALYSIS_PATH_REQUIRED_CAPABILITY_UNKNOWN" in ids
+
+
+def test_v2_rejects_duplicate_grounding_refs(tmp_path: Path) -> None:
+    data = _analysis_v2_yaml()
+    data["strategic_frontier"][0]["affected_capability_ids"] = [
+        "repository-diagnosis",
+        "repository-diagnosis",
+    ]
+    data["construction_paths"][0]["frontier_refs"] = ["FRONTIER-1", "FRONTIER-1"]
+    path = tmp_path / "duplicate-grounding.md"
+    path.write_text(_artifact(data), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 1
+    ids = {item["error_id"] for item in result["errors"]}
+    assert "STRATEGIC_ANALYSIS_FRONTIER_CAPABILITY_DUPLICATE" in ids
+    assert "STRATEGIC_ANALYSIS_PATH_FRONTIER_DUPLICATE" in ids
+
+
+def test_v2_comparison_derives_intervention_after_strategy(tmp_path: Path) -> None:
+    data = _analysis_v2_yaml()
+    data["path_comparison"][0]["lenses"]["smallest_warranted_intervention"] = (
+        "This legacy comparison lens must not select a v2 strategy."
+    )
+    path = tmp_path / "legacy-v2-lens.md"
+    path.write_text(_artifact(data), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 1
+    ids = {item["error_id"] for item in result["errors"]}
+    assert "STRATEGIC_ANALYSIS_LENSES_UNKNOWN" in ids
+
+
+def test_unsupported_schema_version_fails_closed(tmp_path: Path) -> None:
+    data = _analysis_v2_yaml()
+    data["schema_version"] = 3
+    path = tmp_path / "unsupported-schema.md"
+    path.write_text(_artifact(data), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 1
+    ids = {item["error_id"] for item in result["errors"]}
+    assert "STRATEGIC_ANALYSIS_SCHEMA_VERSION_UNSUPPORTED" in ids
