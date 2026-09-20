@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-20  
-**Current phase:** Issue #432 Decision Journey Productization v1 is the active bounded construction program; Issue #430 and prior strategic/control milestones remain complete/integrated baselines. The implementation candidate composes existing surfaces without a planner, router, new control level, or alternate state system.  
+**Current phase:** Issue #430 Strategic Continuity Refinement v1 is complete/integrated and in normal-use handoff; Issues #426 and #416 remain complete/integrated baselines. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -64,7 +64,6 @@ The repository-qualified baseline includes:
 - **Strategic Reconciliation & Reserved-Decision Surfaces — COMPLETE / INTEGRATED:** first-class reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts preserve evidence-return and reserved-authority boundaries without automatic state mutation.
 - **Multi-Repository Strategic Sensemaking — COMPLETE / INTEGRATED:** caller-selected repository-set analysis models capability ownership/overlap, boundary tensions, allocation paths, and tradeoffs without automatic repository discovery or transaction orchestration.
 - **Change-Impact Sensemaking — COMPLETE / INTEGRATED:** bounded change-impact analysis identifies decision-relevant affected surfaces and verification/reconciliation/closure consequences without turning references into automatic impacts or follow-up into authorized backlog work.
-- **Decision Journey Productization v1 — IMPLEMENTATION CANDIDATE:** read-only journey reconstruction, caller-selected context packs, authored decision delta, anticipated-vs-observed impact/closure comparison, beginner-first static guidance, and canonical playbooks are implemented on Issue #432's candidate branch; qualification/integration remains pending.
 
 Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision-v1-handoff.md`.
 Policy Hierarchy Completion v0 closeout is summarized in `docs/policy-hierarchy-completion-v0-handoff.md`.
@@ -158,14 +157,14 @@ possible future deficiency
 
 ### Current warranted repository-level responsibility
 
-**Qualify and integrate Decision Journey Productization v1 without expanding semantic authority.**
+**No active repository-local construction responsibility.**
 
-Level-3 disposition: `BUILD`.
+Level-3 disposition: `NO_CHANGE`.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = QUALIFY_DECISION_JOURNEY_PRODUCTIZATION_V1
-PRIMARY CONSTRUCTION PROGRAM = ISSUE_432
-OPERATING MODE = BOUNDED_PRODUCT_CONSTRUCTION
+CURRENT CONSTRUCTION RESPONSIBILITY = NONE
+PRIMARY CONSTRUCTION PROGRAM = NONE
+OPERATING MODE = NORMAL_USE_VALIDATION
 ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_426_POLICY_HIERARCHY_INTERFACE_CLARIFICATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_430_STRATEGIC_CONTINUITY_REFINEMENT_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
