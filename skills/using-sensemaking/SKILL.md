@@ -249,7 +249,8 @@ path.
 
 ```text
 repo-sensemaker = diagnostic repository understanding
-strategic-repository-analysis = Level-3 repository evolution synthesis
+strategic-repository-analysis = Level-3 single-repository evolution synthesis
+multi-repository-strategic-analysis = Level-3 explicit repository-set boundary/allocation synthesis
 
 strategic disposition
 != implementation authorization
@@ -258,6 +259,20 @@ strategic disposition
 If the strategic disposition is `BUILD`, only then nominate the smallest
 bounded repository responsibility and check execution authority independently.
 Do not translate construction paths into an automatic backlog.
+
+When the consequential question is **which explicitly selected repository should own a capability or how those repositories should relate**, use `multi-repository-strategic-analysis` rather than forcing the question into one repository. The target set must be supplied explicitly; the Skill may not discover or silently add repositories.
+
+```text
+repository set explicitly selected
++ boundary / ownership decision material
+-> multi-repository-strategic-analysis
+
+related repository merely exists
+!= multi-repository analysis automatically required
+
+repository observed during analysis
+!= target scope expanded
+```
 
 When the disposition is reserved or evidence must cross an authority boundary:
 
