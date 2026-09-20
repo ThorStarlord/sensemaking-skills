@@ -198,14 +198,36 @@ candidate set exists != one candidate must be selected
 Canonical agent-facing contract:
 `skills/using-sensemaking/references/warrant-choice-policy-v0.md`.
 
-### 4.6 Learning / Reconciliation Policy — planned
+### 4.6 Learning / Reconciliation Policy — Package 5 / integrated
 
-Learning / Reconciliation Policy will state what explicit repository-domain model
-changes after evidence returns: claim revision, uncertainty resolution, responsibility
-change, continuation, stop, escalation, or strategic reopening.
+Learning / Reconciliation Policy asks:
 
-It will write through existing durable surfaces rather than creating a generic belief
-database.
+> Given returned evidence and the current explicit decision model, what should change
+> in claims, uncertainties, responsibility, continuation state, or strategic frame—if
+> anything?
+
+Canonical documentation-level dispositions include:
+
+```text
+NO_MODEL_CHANGE
+CONFIRM
+REVISE_CLAIM
+RESOLVE_UNCERTAINTY
+OPEN_NEW_UNCERTAINTY
+CHANGE_RESPONSIBILITY
+CONTINUE
+STOP
+ESCALATE
+REOPEN_STRATEGY
+THESIS_REVIEW_REQUIRED
+```
+
+Returned evidence does not mutate semantic state automatically. Reconciliation writes
+through existing Campaign/STATUS/ADR/handoff/evidence/strategic surfaces rather than
+creating a generic belief database.
+
+Canonical agent-facing contract:
+`skills/using-sensemaking/references/learning-reconciliation-policy-v0.md`.
 
 ### 4.7 Adaptive Policy Coordinator — later composition
 
@@ -264,7 +286,7 @@ Policy Hierarchy Completion v0 proceeds as bounded packages:
 2. Metareasoning Policy v0 — integrated;
 3. Exploration Policy v0 — integrated;
 4. Warrant / Choice Policy v0 — integrated;
-5. Learning / Reconciliation Policy v0;
+5. Learning / Reconciliation Policy v0 — integrated;
 6. stable Strategic Alternatives surface;
 7. Adaptive Policy Coordinator v0.
 
