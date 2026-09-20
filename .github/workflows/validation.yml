@@ -200,6 +200,7 @@ jobs:
             tests/test_strategic_continuity_refinement_v1.py \
             tests/test_decision_journey_productization_v1.py \
             tests/test_decision_journey_productization_v1_closeout.py \
+            tests/test_strategic_repository_analysis_semantic_grounding_v1_closeout.py \
             tests/test_semantic_substrate.py \
             tests/test_semantic_reference_audit.py \
             tests/test_semantic_conformance.py \
