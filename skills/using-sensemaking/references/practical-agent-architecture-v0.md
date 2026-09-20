@@ -10,6 +10,22 @@ Use this reference when a consequential decision benefits from making warrant, c
 
 The architecture is a **reasoning and ownership guide**, not a mandatory workflow. For trivial local reversible work, keep most of it implicit.
 
+## 0. Adaptive policy composition
+
+Use `adaptive-policy-coordinator-v0.md` only when several semantic policy questions
+could plausibly govern the next decision. The coordinator is progressive-disclosure
+guidance, not a runtime controller.
+
+```text
+obvious bounded work
+-> keep policy composition implicit
+
+ambiguous / consequential / iterative / authority-sensitive
+-> expose only policy questions that can change the decision
+```
+
+Do not run the full hierarchy by default.
+
 ## 1. Compact practical loop
 
 ```text
