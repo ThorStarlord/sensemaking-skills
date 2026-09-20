@@ -51,7 +51,7 @@ See:
 - [docs/product-strategy.md](docs/product-strategy.md) — Level-4 product thesis and strategic authority
 - [docs/adr/0029-current-product-boundary.md](docs/adr/0029-current-product-boundary.md) — current ratified product-boundary authority
 - [docs/strategic-outer-loop.md](docs/strategic-outer-loop.md) — canonical four-level control model
-- [docs/policy-hierarchy-v0.md](docs/policy-hierarchy-v0.md) — canonical middle semantic-policy architecture; Inquiry and Metareasoning Policy v0 are integrated
+- [docs/policy-hierarchy-v0.md](docs/policy-hierarchy-v0.md) — canonical middle semantic-policy architecture; Inquiry, Metareasoning, and Exploration Policy v0 are integrated
 - [docs/strategic-state-contract.md](docs/strategic-state-contract.md) — Level-3 durable strategic-state contract
 - [docs/product-thesis-revision.md](docs/product-thesis-revision.md) — Level-4 revision and owner-ratification contract
 - [docs/product-operating-model.md](docs/product-operating-model.md) — value stream, ownership, delegation, and escalation
@@ -94,6 +94,7 @@ GOAL / AUTHORIZED SCOPE
   -> identify nearest decision-changing uncertainty
   -> apply Inquiry Policy: no inquiry or smallest sufficient evidence
   -> apply Metareasoning Policy when the next control move is ambiguous
+  -> when search is materially iterative, apply Exploration Policy
   -> select the responsibility most likely to resolve the decision
   -> perform bounded work
   -> produce durable evidence/artifact
@@ -143,6 +144,7 @@ Level 4 activates only when evidence makes a product-thesis commitment decision-
 15. **Qualitative comparison is not scoring** — make frontier judgment reconstructible without converting semantic priority into a deterministic formula.
 16. **Inquiry is conditional** — unresolved uncertainty does not automatically justify investigation; zero inquiry is valid when current evidence is already sufficient or further evidence would not change the decision.
 17. **Reasoning effort is allocated, not maximized** — when control-mode choice is material, select the smallest useful move among act, inquire, challenge, explore, verify, escalate, or stop; do not run all modes by default.
+18. **Iterative search is allocated, not exhaustively expanded** — once search is warranted, use material attempt history to choose exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search without creating a search-tree truth system.
 
 ## Architecture and ownership
 
