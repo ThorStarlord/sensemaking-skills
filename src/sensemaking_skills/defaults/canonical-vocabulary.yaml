@@ -509,6 +509,12 @@ artifact_ids:
     consumed_by: [user, workflow-planner, prompt-handoff, strategic-repository-reconciliation]
     artifact_type: strategic
 
+  - id: change_impact_analysis
+    description: "Evidence-grounded affected-surface analysis around a bounded change, including semantic review, verification/reconciliation, authority consequences, and bounded follow-up responsibilities"
+    produced_by: change-impact-analysis
+    consumed_by: [user, workflow-planner, prompt-handoff, output-reconciler, repair-verifier, strategic-repository-reconciliation]
+    artifact_type: diagnostic
+
   - id: discovery_findings
     description: "User research and discovery findings"
     produced_by: discovery
