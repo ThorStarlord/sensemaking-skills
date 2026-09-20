@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-19  
-**Current phase:** Strategic Repository Sensemaking v1 is in terminal closeout under Issue #401; Packages A and B are integrated and the first-class repository-evolution analysis surface is functionally complete. Package C reconciles currentness and qualification evidence only. Policy Hierarchy Completion v0 remains independently owner-authorized under Issue #399; synthetic StrategicPlanner testing remains stopped as the active mode.  
+**Current phase:** Strategic Repository Sensemaking v1 is functionally complete and integrated; this terminal projection is accepted only through the Package C exact-head/integrated closeout gate recorded on Issue #401 and its closeout PR. Policy Hierarchy Completion v0 remains independently owner-authorized under Issue #399; synthetic StrategicPlanner testing remains stopped as the active mode.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
