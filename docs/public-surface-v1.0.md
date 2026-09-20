@@ -113,7 +113,14 @@ The supported strategic companion surface also includes:
 - `external-evidence-packet` -> `external_evidence_packet`.
 
 These are explicit semantic-agent packets, not runtime engines or authority
-tokens. It models current capability state,
+tokens.
+
+The supported Level-3 engineering surface also includes
+`multi-repository-strategic-analysis` -> `multi_repository_strategic_analysis`.
+It operates only on an explicitly selected repository set and may reuse declared
+multi-target relations as evidence. It does not discover repositories, mutate
+Campaign target sets, rank boundary paths numerically, or coordinate
+cross-repository transactions. It models current capability state,
 0–5 materially real repository construction paths, qualitative tradeoffs,
 decision-changing uncertainty, and a semantic strategic disposition while
 preserving:
