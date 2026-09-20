@@ -102,6 +102,46 @@ The coordinator does not select a Skill/workflow/Campaign automatically and does
 grant authority. Read `references/adaptive-policy-coordinator-v0.md` when policy
 composition itself is material.
 
+### Strategic reassessment: currentness is evidence, not a planner trigger
+
+When a prior strategic analysis exists and later repository/evidence state may matter,
+use Strategic Continuity and Learning / Reconciliation as a bounded return path:
+
+```text
+prior strategic analysis
++ later result / observation / reassessment trigger
+-> use strategy compare/drift only for mechanical projection when useful
+-> ask whether the new evidence is decision-changing
+-> apply Learning / Reconciliation when consequential
+-> persist strategic_reconciliation only when another context/actor needs it
+-> reopen Strategic Repository Sensemaking only when warranted
+```
+
+Preserve these boundaries:
+
+```text
+currentness inspection
+!= semantic reassessment
+
+drift detected
+!= strategy invalid
+
+reassessment trigger observed
+!= strategy automatically changed
+
+semantic reassessment
+!= strategic reopening
+
+REOPEN_STRATEGY
+!= BUILD
+
+THESIS_REVIEW_REQUIRED
+!= thesis ratified
+```
+
+See `../../docs/adaptive-semantic-control-architecture-v0.md` for the broader
+crosswalk. It does not add a control level, runtime, policy router, or authority.
+
 ## Adaptive guidance: use the lightest process that preserves the invariants
 
 Before deciding how much Sensemaking structure to use, make a qualitative judgment about five contextual factors:
