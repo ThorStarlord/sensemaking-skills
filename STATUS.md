@@ -4,6 +4,7 @@
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-20  
 **Current phase:** Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 are complete/integrated/composable. No repository-local construction program is currently selected; normal-use validation is the operating mode. Synthetic StrategicPlanner testing remains stopped.  
+**Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
