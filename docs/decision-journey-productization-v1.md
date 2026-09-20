@@ -1,6 +1,6 @@
 # Decision Journey Productization v1
 
-**Status:** Issue #432 implementation candidate  
+**Status:** COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF (Issue #432)  
 **Scope:** product composition over existing Level-3/Level-2/Level-1 surfaces  
 **Authority:** read-only mechanical reconstruction plus explicitly authored semantic companions  
 **Non-goal:** no planner, router, new control level, or alternate state authority
