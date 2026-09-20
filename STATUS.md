@@ -102,17 +102,23 @@ The current gap is not that Sensemaking lacks Level-3 concepts. The repository a
 
 Policy Hierarchy Completion v0 remains valid and composable. Inquiry Policy v0 is already integrated and may govern whether a path-distinguishing uncertainty deserves investigation. This milestone does not cancel Issue #399; it applies those semantic-control contracts to a concrete Level-3 product surface.
 
-Issue #384 remains an external GitHub-admin governance action and is unrelated to this construction responsibility.\n\n### Current strategic decision to support
+Issue #384 remains an external GitHub-admin governance action and is unrelated to this construction responsibility.
+
+### Current strategic decision to support
 
 **Decision:** can Sensemaking turn current repository evidence and governing intent into a reconstructible strategic decision space—current system, capability state, plausible construction paths, qualitative tradeoffs, decision-changing uncertainty, and warranted direction—without becoming a deterministic strategy engine?
 
 **Current judgment:** **YES / BUILD STRATEGIC REPOSITORY SENSEMAKING V1.**
 
-Owner direction resolves whether to build this capability. The smallest warranted product shape is an artifact-first semantic Skill with bounded mechanical validation, not a planner runtime, scoring function, Campaign schema change, or automatic implementation pipeline.\n\n### Current decision-changing uncertainty
+Owner direction resolves whether to build this capability. The smallest warranted product shape is an artifact-first semantic Skill with bounded mechanical validation, not a planner runtime, scoring function, Campaign schema change, or automatic implementation pipeline.
+
+### Current decision-changing uncertainty
 
 **Contract sufficiency:** can a stable strategic-analysis artifact represent capability states, construction paths, path comparison, and strategic disposition strongly enough to support fresh-context continuation while keeping semantic quality agent-owned?
 
-This uncertainty is resolved through ordinary implementation/contract qualification, not a synthetic experiment. If the contract requires numeric scoring, automatic ranking, generic AgentState, or a new semantic runtime to function, stop and redesign rather than expanding machinery.\n\n### Current warranted repository-level responsibility
+This uncertainty is resolved through ordinary implementation/contract qualification, not a synthetic experiment. If the contract requires numeric scoring, automatic ranking, generic AgentState, or a new semantic runtime to function, stop and redesign rather than expanding machinery.
+
+### Current warranted repository-level responsibility
 
 **Implement and qualify Strategic Repository Sensemaking v1 under Issue #401.**
 
@@ -134,7 +140,9 @@ CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_ANALYSIS_CONTRACT
 PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1
 COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0
 EXPERIMENT PREREQUISITE = NONE
-```\n\n### Active execution vehicle
+```
+
+### Active execution vehicle
 
 Issue #401 is the current milestone authority tracker.
 
@@ -146,7 +154,9 @@ Package sequence:
 2. Strategic Repository Analysis Skill semantics and path synthesis;
 3. product integration / currentness / closeout.
 
-Issue #399 remains authorized for later policy-layer continuation; no synthetic StrategicPlanner experiment is required by either program.\n\n### Expected evidence and reassessment
+Issue #399 remains authorized for later policy-layer continuation; no synthetic StrategicPlanner experiment is required by either program.
+
+### Expected evidence and reassessment
 
 Package A should produce:
 
@@ -160,7 +170,9 @@ After Package A integrates:
 
 - proceed directly to construction-path synthesis/comparison semantics if the artifact composes without runtime/schema expansion;
 - stop and redesign if the capability only works by introducing deterministic strategy ranking, mandatory numeric scoring, or hidden implementation authority;
-- do not manufacture an empirical study before Package B.\n\n### Authority / owner direction
+- do not manufacture an empirical study before Package B.
+
+### Authority / owner direction
 
 The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate.
 
