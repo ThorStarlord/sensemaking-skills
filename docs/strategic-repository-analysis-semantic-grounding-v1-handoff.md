@@ -143,8 +143,8 @@ No package introduced:
 
 Repository qualification establishes contract, implementation, reference, and
 compatibility coherence for the exact qualified bytes. It does not establish
-that generated strategies are optimal, comparatively superior, empirically more
-useful, or semantically correct.
+semantic correctness, strategic optimality, comparative superiority, empirical
+usefulness, or product-market value.
 
 ## Terminal operating state
 
