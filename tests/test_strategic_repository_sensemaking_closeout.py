@@ -77,15 +77,18 @@ def test_status_is_terminal_for_issue_401_and_preserves_completed_policy_hierarc
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
 
     assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE_FOR_STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = NONE_SELECTED_BY_ISSUE_401" in status
+    assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
+    assert "OPERATING MODE = NORMAL_USE_VALIDATION" in status
+    assert "STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
     assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
     assert "SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "SYNTHETIC STRATEGICPLANNER TESTING = STOPPED" in status
     assert "Adaptive Policy Coordinator v0" in status
-    assert "No remaining Issue #399 construction package is selected" in status
+    assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in status
     assert "CURRENT CONSTRUCTION RESPONSIBILITY = STRATEGIC_PATH_SYNTHESIS_INTEGRATION" not in status
+    assert "QUALIFY AND INTEGRATE THE TERMINAL STRATEGIC REPOSITORY SENSEMAKING V1 CLOSEOUT" not in status
 
 
 def test_release_remains_rc3_development_and_no_runtime_planner_is_promoted() -> None:
@@ -110,4 +113,5 @@ def test_closeout_does_not_reopen_or_extend_policy_hierarchy() -> None:
     assert "No additional Issue #399 construction package is selected by this closeout." in handoff
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in handoff
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in status
-    assert "this closeout does not reopen or extend it" in status
+    assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
