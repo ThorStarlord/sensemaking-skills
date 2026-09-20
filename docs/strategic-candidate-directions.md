@@ -1,7 +1,7 @@
 # Strategic Candidate Directions
 
 **Status:** exploratory / non-authoritative idea reservoir  
-**Updated:** 2026-09-11  
+**Updated:** 2026-09-20  
 **Control level:** input to future Level-3 Strategic Repository Evolution or Level-4 Product Thesis reasoning  
 **Authority:** none; candidate ideas do not constitute Strategic Frontier membership, implementation authorization, product-thesis ratification, or release commitment  
 **Current strategy authority:** [`product-strategy.md`](product-strategy.md)  
@@ -77,6 +77,8 @@ Repository-qualified/current baselines include:
 - bounded strategic-state mechanics that require/project the Strategic Decision anchor and ADR 0029 pointer without validating strategic quality;
 - **Issue #416 strategic continuity and consequence surfaces**: explicit strategic-analysis lineage, assumptions/reassessment triggers, deterministic strategy inspect/currentness projections, strategic reconciliation, owner/thesis/external-evidence packets, caller-selected multi-repository strategic analysis, and bounded change-impact analysis.
 - **Issue #430 Strategic Continuity Refinement v1**: typed mechanical currentness observations over source/evidence/explicit governing-authority references, deterministic `strategy history` / `strategy graph` projections over explicitly supplied artifacts, and optional lightweight path-transition identity/effects; no roadmap status, causal-history inference, planner runtime, or automatic strategic reopening.
+- **Issue #432 Decision Journey Productization v1**: read-only journey reconstruction, caller-selected context packs, authored strategic deltas, impact/closure comparison, guided entry, and playbooks without planner/router authority.
+- **Issue #435 Strategic Repository Analysis Semantic Grounding v1**: explicit Strategicity Gate, backward-compatible strategic artifact v2 grounding, frontier/path reference integrity, and strategy-before-intervention ordering while preserving historical v1 analyses and semantic-agent ownership.
 
 Campaign schema remains v2. None of these baselines establishes native-harness usefulness, empirical portability, comparative superiority, semantic correctness, objective strategic priority, or automatic planning authority.
 
