@@ -162,10 +162,19 @@ sensemaking-skills strategy uncertainty --artifact artifacts/strategic_repositor
 sensemaking-skills strategy assumptions --artifact artifacts/strategic_repository_analysis.md
 sensemaking-skills strategy compare --before /path/to/older.md --after /path/to/newer.md
 sensemaking-skills strategy drift --artifact artifacts/strategic_repository_analysis.md --repo /path/to/repo
+sensemaking-skills strategy history --artifact /path/to/sra-1.md --artifact /path/to/reconciliation.md --artifact /path/to/sra-2.md
+sensemaking-skills strategy graph --artifact /path/to/sra-1.md --artifact /path/to/reconciliation.md --artifact /path/to/sra-2.md
 ```
 
-`strategy drift` reports mechanically observable source/evidence currentness.
-It does not declare the strategy invalid or require reanalysis by itself.
+`strategy drift` reports typed mechanically observable source/evidence/declared
+governing-authority currentness. `strategy history` and `strategy graph`
+project only relationships declared in explicitly supplied analysis/reconciliation
+artifacts. They do not declare strategy invalid, infer causal history, select a
+path, or require reanalysis by themselves.
+
+Optional path-transition references such as `PATH-2/T1` help locate bounded
+work inside a longer strategic trajectory when that reconstruction would
+otherwise be difficult. They are not roadmap tasks or automatic next actions.
 
 ```text
 repository diagnosis
