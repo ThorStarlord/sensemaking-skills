@@ -19,7 +19,8 @@ Use this bootstrap to:
 2. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
 3. identify the nearest unresolved premise that could change the correct next action;
 4. apply **Inquiry Policy v0** to decide whether more evidence is actually needed and, if so, identify the smallest sufficient evidence and source;
-5. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
+5. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
+6. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
 6. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
 7. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
 8. perform or delegate bounded work through the appropriate capability;
@@ -41,6 +42,7 @@ GOAL / AUTHORIZED SCOPE
   -> What unresolved uncertainty could change the correct next action?
   -> Is inquiry needed, or is current evidence already sufficient?
   -> If inquiry is needed, what is the smallest sufficient evidence and source?
+  -> What control move should consume the next unit of effort?
   -> What responsibility is warranted now?
   -> Perform bounded work through a Skill/tool/workflow if useful
   -> What evidence do we now have?
@@ -55,6 +57,7 @@ Orient
 -> name the consequential decision / contemplated warrant target
 -> locate the nearest decision-changing warrant gap
 -> apply Inquiry Policy: no inquiry, or smallest sufficient evidence
+-> apply Metareasoning Policy when control-mode choice is material
 -> select responsibility
 -> perform or delegate bounded work
 -> ground returned evidence
@@ -252,6 +255,44 @@ If the missing premise is owner intent, ask the owner rather than searching the 
 Inquiry selection is not action authorization. Returned evidence comes back to the active semantic controller for adjudication.
 
 Read `references/inquiry-policy-v0.md` when explicit inquiry selection is material. Policy Hierarchy v0 is defined in `../../docs/policy-hierarchy-v0.md`.
+
+### Metareasoning Policy v0
+
+When the real question is **how to spend the next unit of reasoning/action effort**, select the smallest useful control move:
+
+```text
+ACT
+INQUIRE
+CHALLENGE
+EXPLORE
+VERIFY
+ESCALATE
+STOP
+```
+
+Use `ACT` when an already-selected authorized bounded responsibility is sufficiently warranted and more thinking is not worth its cost.
+
+Use `INQUIRE` when Inquiry Policy has identified decision-changing evidence worth obtaining.
+
+Use `CHALLENGE` for consequential, low-reversibility, conflicting, or weakly supported commitments.
+
+Use `EXPLORE` when the frame or option set may be too narrow.
+
+Use `VERIFY` when a consequential result/repair/closure claim still needs direct confirmation.
+
+Use `ESCALATE` when the real gap is owner intent, higher-scope commitment, protected authority, or external control.
+
+Use `STOP` when no additional effort is warranted.
+
+```text
+control move selected
+!= responsibility authorized
+
+cheap + reversible + low consequence + information-producing
+-> acting can dominate thinking longer
+```
+
+Keep this implicit for obvious local work. Read `references/metareasoning-policy-v0.md` when control-mode selection is consequential or ambiguous.
 
 ### Challenge and exploration when commitment risk is material
 
