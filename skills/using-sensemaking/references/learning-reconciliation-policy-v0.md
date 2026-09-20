@@ -193,6 +193,8 @@ The policies may interleave. Neither is a deterministic rule engine.
 
 Reuse existing repository-domain surfaces:
 
+- `strategic_reconciliation` when returned Level-3 evidence must be durably
+  related to a prior `strategic_repository_analysis`;
 - Campaign evidence / transitions;
 - current Responsibility / Uncertainty / Authority projection;
 - handoff / resume context;
@@ -216,6 +218,8 @@ Persist only what another context/actor needs to reconstruct a consequential dec
 Strategic Repository Sensemaking constructs a Level-3 model of current system, capabilities, limitations, coherent construction paths, tradeoffs, and decision-changing uncertainty.
 
 Learning / Reconciliation updates that model only when returned evidence is strategically material.
+When that update itself must survive contexts, the canonical first-class
+artifact is produced by `strategic-repository-reconciliation`.
 
 ```text
 bounded implementation confirms expected mechanics
@@ -232,6 +236,22 @@ evidence shows path choice depends on owner product preference
 ```
 
 It must not automatically regenerate or rerank paths after every implementation result.
+
+Reserved outcomes may use bounded companion packets:
+
+```text
+owner preference / reserved authority decides the issue
+-> owner_decision_capsule
+
+Level-4 commitment must be reviewed
+-> thesis_review_packet
+
+external evidence is decision-changing and provenance/currentness must persist
+-> external_evidence_packet
+```
+
+Producing one of these artifacts does not make the reserved decision, ratify the
+thesis transition, or transform external evidence into repository truth.
 
 ## 11. Closure discipline
 
