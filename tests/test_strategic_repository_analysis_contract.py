@@ -119,6 +119,7 @@ def test_artifact_contract_is_declared() -> None:
     assert contract["produced_by"] == "strategic-repository-analysis"
     assert "construction_paths" in contract["required_machine_fields"]
     assert "strategic_disposition" in contract["required_machine_fields"]
+    assert any("0-5 real paths" in note for note in contract["notes"])
     assert any(
         "validate-strategic-repository-analysis.py" in command
         for command in contract["verification"]["specialized_validators"]
@@ -151,6 +152,45 @@ def test_valid_strategic_analysis_passes_specialized_and_generic_validation(tmp_
         check=False,
     )
     assert generic.returncode == 0, generic.stdout + generic.stderr
+
+
+def test_non_build_disposition_allows_zero_real_paths(tmp_path: Path) -> None:
+    data = _analysis_yaml()
+    data["construction_paths"] = []
+    data["path_comparison"] = []
+    data["strategic_disposition"] = "NO_CHANGE"
+    data["selected_path_id"] = None
+    data["candidate_repository_responsibility"] = None
+    data["smallest_warranted_intervention"] = None
+    data["decision_changing_uncertainty"] = {
+        "statement": "none",
+        "could_change": "none",
+        "inquiry_warranted": False,
+        "evidence_needed": "none",
+        "source": "none",
+    }
+    path = tmp_path / "analysis.md"
+    path.write_text(_artifact(data), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert result["valid"] is True
+    assert result["strategy_selected_by_validator"] is False
+    assert result["implementation_authorized_by_validator"] is False
+
+
+def test_build_with_zero_paths_fails_closed(tmp_path: Path) -> None:
+    data = _analysis_yaml()
+    data["construction_paths"] = []
+    data["path_comparison"] = []
+    data["selected_path_id"] = None
+    path = tmp_path / "analysis.md"
+    path.write_text(_artifact(data), encoding="utf-8")
+
+    completed, result = _run(path)
+    assert completed.returncode == 1
+    ids = {item["error_id"] for item in result["errors"]}
+    assert "STRATEGIC_ANALYSIS_BUILD_PATH_REQUIRED" in ids
 
 
 def test_numeric_path_scoring_fails_closed(tmp_path: Path) -> None:
