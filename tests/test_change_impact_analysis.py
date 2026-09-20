@@ -83,7 +83,7 @@ def _data() -> dict:
 
 def _artifact(data: dict) -> str:
     sections = [
-        "Change, Scope, and Authority",
+        "Change Scope and Authority",
         "Impact Evidence",
         "Affected Surfaces",
         "Cross-Repository Impact",
