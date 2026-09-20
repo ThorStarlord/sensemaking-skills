@@ -126,12 +126,12 @@ def test_human_entry_points_distinguish_diagnosis_from_strategic_evolution() -> 
     assert "repository diagnosis\n!= repository evolution synthesis" in getting
 
 
-def test_current_status_selects_path_synthesis_without_reopening_experiments() -> None:
+def test_current_status_closes_path_synthesis_without_reopening_experiments() -> None:
     status = STATUS.read_text(encoding="utf-8")
 
     assert "Strategic Repository Sensemaking v1" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
-    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+    assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
+    assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION" in status
 
