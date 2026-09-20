@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-20  
-**Current phase:** Issue #426 Policy Hierarchy Interface Clarification v1 is complete/integrated and in normal-use handoff; Issue #416 remains complete/integrated. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #430 Strategic Continuity Refinement v1 is complete/integrated and in normal-use handoff; Issues #426 and #416 remain complete/integrated baselines. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -60,7 +60,7 @@ The repository-qualified baseline includes:
 - **External executor interchange / AI Software Factory bridge**: generic integrity-bound handoff/result envelopes plus a caller-selected factory GitHub-Issue/command projection; no workflow selection, publication, scheduling, worker allocation, merge, or deploy authority.
 - **Explicit GitHub provenance publication**: preview-by-default, explicit-`--publish` Issue/PR comments with deterministic markers and duplicate suppression.
 - **Cross-repository execution projection**: explicit ordering relations become read-only prerequisite edges/layers; the projection is not an execution plan and same-layer membership does not authorize parallel work.
-- **Strategic Continuity v1 — COMPLETE / INTEGRATED:** additive strategic-analysis lineage, decision assumptions, reassessment triggers, and deterministic `strategy` projections are repository-qualified without creating a planner or alternate strategic truth system.
+- **Strategic Continuity v1 — COMPLETE / INTEGRATED:** additive strategic-analysis lineage, decision assumptions, reassessment triggers, typed mechanical currentness observations, explicit governing-authority references, lightweight path-transition identity, and deterministic `strategy inspect|paths|uncertainty|assumptions|compare|drift|history|graph` projections are repository-qualified without creating a planner, roadmap engine, causal-history inference, or alternate strategic truth system.
 - **Strategic Reconciliation & Reserved-Decision Surfaces — COMPLETE / INTEGRATED:** first-class reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts preserve evidence-return and reserved-authority boundaries without automatic state mutation.
 - **Multi-Repository Strategic Sensemaking — COMPLETE / INTEGRATED:** caller-selected repository-set analysis models capability ownership/overlap, boundary tensions, allocation paths, and tradeoffs without automatic repository discovery or transaction orchestration.
 - **Change-Impact Sensemaking — COMPLETE / INTEGRATED:** bounded change-impact analysis identifies decision-relevant affected surfaces and verification/reconciliation/closure consequences without turning references into automatic impacts or follow-up into authorized backlog work.
@@ -81,7 +81,7 @@ Policy Hierarchy Completion v0 closeout is summarized in `docs/policy-hierarchy-
 - `Thesis Tension` does not imply Level-4 review, and current mechanics do not automatically infer whether work depends semantically on a challenged thesis.
 - General Agency Model v0.1 is a bounded research/reference abstraction, not proof of a universal theory of intelligence, comparative superiority, or domain-general product value.
 - Practical Agent Architecture v0 is currently guidance-first. Its reconciliation disposition is `GUIDANCE_ONLY_WARRANTED`; no new runtime, schema, public API, generic state store, or deterministic semantic controller was established as necessary.
-- Strategic Continuity currentness checks may establish source/evidence drift only; `drift detected != strategy invalid != reanalysis automatically required`.
+- Strategic Continuity currentness checks may establish typed source/evidence/governing-authority observations only; `currentness observation != semantic consequence`, `drift detected != strategy invalid != reanalysis automatically required`, and `graph edge != causal truth`.
 
 ### Strategic Frontier
 
@@ -109,41 +109,43 @@ Current material frontier items are:
 20. **Post-closeout strategic-state reconciliation — COMPLETE / NORMAL_USE_EVIDENCE.** Issue #414 used Strategic Repository Sensemaking v1 in ordinary repository operation, identified only stale post-#401 currentness as repository-local work, and reconciled the stable Level-3 projection without promoting a new product package.
 21. **Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #416's four bounded packages are repository-qualified and integrated: Strategic Continuity & Currentness; Strategic Reconciliation & Reserved-Decision Surfaces; Multi-Repository Strategic Sensemaking; and Change-Impact Sensemaking/Product UX. No planner runtime, numeric strategy engine, generic belief database, automatic repository discovery, or protected external-action authority was introduced.
 22. **Policy Hierarchy Interface Clarification v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #426 clarifies how the Four-Level Control Model, Policy Hierarchy v0, authority/execution, Strategic Continuity, and Learning/Reconciliation compose; Action / Execution remains a boundary rather than a new policy, and strategic drift/reassessment remains non-automatic.
+23. **Strategic Continuity Refinement v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #430 deepens the existing continuity surface with typed mechanical currentness observations, explicit governing-authority currentness, deterministic textual/Mermaid strategic-history projections, and optional lightweight path-transition identity/effects. It adds no roadmap/project-management semantics, automatic causal inference, planner runtime, strategic ranking, or automatic reopening.
 
 ### Current highest-leverage boundary
 
-**Policy Hierarchy Interface Clarification v1 — terminal normal-use handoff.**
+**Strategic Continuity Refinement v1 — terminal normal-use handoff.**
 
-Issue #426 closes the bounded clarification pressure identified after #416:
+Issue #430 closes the owner-authorized continuity-depth package:
 
 ```text
-Four-Level Control Model
-+ Policy Hierarchy v0
-+ authority / execution
-+ Strategic Continuity
-+ Learning / Reconciliation
--> one explicit descriptive composition model
--> no new control authority
+typed mechanical currentness
++ explicit governing-authority observation
++ lightweight path-transition identity
++ deterministic textual / Mermaid strategic history
+-> cheaper reconstruction of existing strategic reasoning
+-> no new semantic authority
 ```
 
-The repository now makes policy ownership and strategic reassessment reconstructible
-without promoting another semantic layer. No further repository-local change is
-warranted merely because additional control abstractions can be imagined.
+The repository can now distinguish several mechanically observable kinds of drift,
+place bounded work inside an authored strategic trajectory when explicitly useful,
+and project declared analysis/reconciliation history without inferring strategic
+quality, causal truth, project status, or next action.
 
 ### Current strategic decision to support
 
-**Decision:** after clarifying the interfaces among the completed policy/strategic
-surfaces, is another repository-local control-architecture package warranted now?
+**Decision:** after the owner-authorized Issue #430 depth/UX refinement, is another
+repository-local strategic-continuity package warranted now?
 
 **Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
 
-Use the integrated crosswalk and reassessment bridge during ordinary consequential
-repository work. Reopen construction only from concrete recurring policy-interface,
-reconstruction, currentness, or authority-boundary pressure—or explicit owner direction.
+Use typed currentness, path-transition identity only when reconstruction benefits,
+and read-only history/graph projection during ordinary consequential repository
+work. Further construction should reopen only from concrete residual friction or
+separate owner direction.
 
-### Current decision-changing uncertainty
+### Cu### Current decision-changing uncertainty
 
-None currently warrants additional policy-hierarchy / strategic-control construction after Issue #426.
+None currently warrants additional strategic-continuity construction after Issue #430.
 
 Future normal-use evidence may reveal a bounded deficiency, but:
 
@@ -164,6 +166,7 @@ PRIMARY CONSTRUCTION PROGRAM = NONE
 OPERATING MODE = NORMAL_USE_VALIDATION
 ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_426_POLICY_HIERARCHY_INTERFACE_CLARIFICATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
+ISSUE_430_STRATEGIC_CONTINUITY_REFINEMENT_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 STRATEGY_VIEWER_CLI = IMPLEMENTED
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE
@@ -177,7 +180,7 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-None for Issue #426 or the completed Issue #416 program.
+None for Issue #430 or the completed Issues #426/#416 programs.
 
 The terminal qualification/integration receipts are preserved in
 `docs/strategic-continuity-reconciliation-multi-repository-v1-handoff.md`.
@@ -186,7 +189,9 @@ The terminal qualification/integration receipts are preserved in
 
 Reopen repository construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
 
-- strategic continuity/currentness cannot be reconstructed from the integrated surfaces;
+- typed strategic currentness still cannot expose a mechanically decidable change needed for a real reassessment;
+- path-transition identity proves insufficient to reconstruct trajectory position without introducing roadmap semantics;
+- strategic history/graph projection cannot reconstruct declared relationships needed by a fresh owner/agent;
 - reconciliation packets are insufficient for a concrete returned-evidence episode;
 - an explicitly selected multi-repository decision cannot be represented without violating current boundaries;
 - change-impact analysis fails to preserve a consequential affected-surface/closure decision;
@@ -196,7 +201,7 @@ Do not reopen from synthetic planner curiosity alone.
 
 ### Authority / owner direction
 
-The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner now explicitly authorizes Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause.
+The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, and later authorized Issue #426 to clarify policy/continuity interfaces. The owner now explicitly authorizes Issue #430 to implement the full strategic-continuity refinement program—typed currentness, strategic history/graph projection, and lightweight path-transition identity—without another approval pause.
 
 Policy Hierarchy Completion v0 has integrated the full owner-authorized bounded package set:
 
@@ -242,8 +247,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NORMAL USE / NO ACTIVE ISSUE #426 CONSTRUCTION PACKAGE.**
+**NORMAL USE / NO ACTIVE ISSUE #430 CONSTRUCTION PACKAGE.**
 
-Use the integrated strategic continuity, reconciliation, multi-repository, change-impact, and strategy-inspection surfaces during ordinary consequential repository work. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it.
+Use the integrated typed-currentness, strategic history/graph, path-transition, reconciliation, multi-repository, change-impact, and policy-control surfaces during ordinary consequential repository work. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of this closeout.
