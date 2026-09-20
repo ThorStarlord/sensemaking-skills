@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-20  
-**Current phase:** Issue #416 Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 is owner-authorized and active. Package D — Change Impact & Product UX is the current bounded responsibility on the stacked construction branch. Packages A–C remain prerequisite integration boundaries. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #416 Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 is complete/integrated and in normal-use handoff. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -59,10 +59,10 @@ The repository-qualified baseline includes:
 - **External executor interchange / AI Software Factory bridge**: generic integrity-bound handoff/result envelopes plus a caller-selected factory GitHub-Issue/command projection; no workflow selection, publication, scheduling, worker allocation, merge, or deploy authority.
 - **Explicit GitHub provenance publication**: preview-by-default, explicit-`--publish` Issue/PR comments with deterministic markers and duplicate suppression.
 - **Cross-repository execution projection**: explicit ordering relations become read-only prerequisite edges/layers; the projection is not an execution plan and same-layer membership does not authorize parallel work.
-- **Strategic Continuity v1 — PACKAGE A PREREQUISITE:** additive strategic-analysis lineage, decision assumptions, reassessment triggers, and deterministic `strategy` projections are implemented on the Package-A line without creating a planner or alternate strategic truth system.
-- **Strategic Reconciliation & Reserved-Decision Surfaces — PACKAGE B PREREQUISITE:** first-class reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts preserve evidence-return and reserved-authority boundaries without automatic state mutation.
-- **Multi-Repository Strategic Sensemaking — PACKAGE C PREREQUISITE:** caller-selected repository-set analysis models capability ownership/overlap, boundary tensions, allocation paths, and tradeoffs without automatic repository discovery or transaction orchestration.
-- **Change-Impact Sensemaking — PACKAGE D IN CONSTRUCTION:** bounded change-impact analysis identifies decision-relevant affected surfaces and verification/reconciliation/closure consequences without turning references into automatic impacts or follow-up into authorized backlog work.
+- **Strategic Continuity v1 — COMPLETE / INTEGRATED:** additive strategic-analysis lineage, decision assumptions, reassessment triggers, and deterministic `strategy` projections are repository-qualified without creating a planner or alternate strategic truth system.
+- **Strategic Reconciliation & Reserved-Decision Surfaces — COMPLETE / INTEGRATED:** first-class reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts preserve evidence-return and reserved-authority boundaries without automatic state mutation.
+- **Multi-Repository Strategic Sensemaking — COMPLETE / INTEGRATED:** caller-selected repository-set analysis models capability ownership/overlap, boundary tensions, allocation paths, and tradeoffs without automatic repository discovery or transaction orchestration.
+- **Change-Impact Sensemaking — COMPLETE / INTEGRATED:** bounded change-impact analysis identifies decision-relevant affected surfaces and verification/reconciliation/closure consequences without turning references into automatic impacts or follow-up into authorized backlog work.
 
 Detailed milestone evidence is preserved in `docs/strategic-outer-loop-precision-v1-handoff.md`.
 Policy Hierarchy Completion v0 closeout is summarized in `docs/policy-hierarchy-completion-v0-handoff.md`.
@@ -106,55 +106,56 @@ Current material frontier items are:
 18. **Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE.** Issue #399's seven bounded packages are implemented: Inquiry, Metareasoning, Exploration, Warrant / Choice, Learning / Reconciliation, the stable Strategic Alternatives surface, and Adaptive Policy Coordinator v0. Policy layers remain agent-owned, zero-work-capable, non-mandatory, non-routing, and authority-preserving.
 19. **Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #401 established a first-class Level-3 analysis surface that turns repository evidence into a current-system model, capability/limitation map, 0–5 materially real construction paths, qualitative comparison, decision-changing uncertainty, strategic synthesis, and a warranted direction/inquiry/no-change disposition without building a deterministic StrategicPlanner. Package A integrated via PR #403, Package B via PR #404, and PR #409 stabilized the Strategic Alternatives representation without changing the milestone boundary.
 20. **Post-closeout strategic-state reconciliation — COMPLETE / NORMAL_USE_EVIDENCE.** Issue #414 used Strategic Repository Sensemaking v1 in ordinary repository operation, identified only stale post-#401 currentness as repository-local work, and reconciled the stable Level-3 projection without promoting a new product package.
-21. **Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 — ACTIVE / OWNER_AUTHORIZED.** Issue #416 explicitly authorizes four bounded construction packages. Package A adds strategic-analysis continuity metadata and deterministic currentness/projection surfaces; later packages add reconciliation/reserved-decision artifacts, caller-selected multi-repository strategic sensemaking, and change-impact/product UX. No experiment prerequisite applies.
+21. **Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #416's four bounded packages are repository-qualified and integrated: Strategic Continuity & Currentness; Strategic Reconciliation & Reserved-Decision Surfaces; Multi-Repository Strategic Sensemaking; and Change-Impact Sensemaking/Product UX. No planner runtime, numeric strategy engine, generic belief database, automatic repository discovery, or protected external-action authority was introduced.
 
 ### Current highest-leverage boundary
 
-**Change Impact & Product UX — Package D of Issue #416.**
+**Issue #416 terminal closeout — stable normal-use handoff.**
 
-Packages A–C now cover strategic continuity/currentness, evidence-return/reserved decisions, and explicit multi-repository boundary analysis on the stacked construction line. The final bounded product gap is consequential **change impact**: a locally correct change can leave contracts, artifacts, tests, documentation, claims, authority, release surfaces, or explicit cross-repository interfaces stale.
+The owner-authorized four-package construction program is complete. The repository now has bounded surfaces for:
 
 ```text
-bounded contemplated/completed change
--> smallest sufficient impact evidence
--> decision-relevant affected surfaces
--> verification / reconciliation / authority consequences
--> bounded follow-up responsibilities
--> closure effect
+strategic continuity / lineage / currentness
++ evidence-return reconciliation
++ owner / thesis / external-evidence decision packets
++ caller-selected multi-repository strategic analysis
++ change-impact sensemaking
++ read-only strategic inspection/currentness UX
 ```
 
-Package A already supplies the requested strategic viewer/CLI projections:
-`strategy inspect|paths|uncertainty|assumptions|compare|drift`.
+No further repository-local change is warranted merely because additional strategic machinery can be imagined.
 
 ### Current strategic decision to support
 
-**Decision:** can Sensemaking make consequential change impact reconstructible without becoming a causal truth oracle, automatic backlog generator, repository-discovery engine, or authorization system?
+**Decision:** is another repository-local construction package warranted immediately after Issue #416?
 
-**Current judgment:** **BUILD / CHANGE_IMPACT_SENSEMAKING_V1_PACKAGE_D.**
+**Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
 
-The bounded surface is `change-impact-analysis` producing `change_impact_analysis`, integrated with existing evidence, Semantic Architecture, reconciliation, and closure boundaries.
+The new surfaces should now be exercised during ordinary repository work. Future construction should reopen only from concrete normal-use reconstruction/currentness/decision pressure or separate owner direction.
 
 ### Current decision-changing uncertainty
 
-The implementation uncertainty is mechanical: whether impact items, follow-up references, closure effects, cross-repository scope, and protected false authority/discovery flags remain contract-valid across the existing product/release surfaces.
+None currently warrants additional Issue #416 construction.
 
-No empirical/model-comparison inquiry is required. Product Validation and Release Candidate Distribution remain the qualification gates after prerequisite packages integrate.
+Future normal-use evidence may reveal a bounded deficiency, but:
+
+```text
+possible future deficiency
+!= current construction responsibility
+```
 
 ### Current warranted repository-level responsibility
 
-**Implement and qualify Package D — Change Impact & Product UX, then perform terminal Issue #416 closeout.**
+**No active repository-local construction responsibility.**
 
-Level-3 disposition: `BUILD`.
+Level-3 disposition: `NO_CHANGE`.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = CHANGE_IMPACT_SENSEMAKING_V1
-PRIMARY CONSTRUCTION PROGRAM = ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1
-ACTIVE PACKAGE = D_CHANGE_IMPACT_PRODUCT_UX
-PACKAGES_A_C = PREREQUISITE_INTEGRATION_BOUNDARIES
-STRATEGY_VIEWER_CLI = IMPLEMENTED_ON_PACKAGE_A_LINE
-AUTOMATIC_REPOSITORY_DISCOVERY = FORBIDDEN
-AUTOMATIC_IMPACT_TRUTH = FORBIDDEN
-FOLLOWUP_EXECUTION_AUTHORITY = NOT_ESTABLISHED_BY_ARTIFACT
+CURRENT CONSTRUCTION RESPONSIBILITY = NONE
+PRIMARY CONSTRUCTION PROGRAM = NONE
+OPERATING MODE = NORMAL_USE_VALIDATION
+ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
+STRATEGY_VIEWER_CLI = IMPLEMENTED
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE
 SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
@@ -163,30 +164,26 @@ SYNTHETIC_STRATEGICPLANNER_TESTING = STOPPED
 SYNTHETIC STRATEGICPLANNER TESTING = STOPPED
 ```
 
-Issue #384 remains the separate external GitHub-admin branch/ruleset governance action.
+Issue #384 remains the separate external GitHub-admin branch/ruleset governance action; Issue #416 does not absorb or fabricate that hosting-layer transition.
 
 ### Active execution vehicle
 
-Package D branch:
+None for Issue #416.
 
-```text
-work/change-impact-sensemaking-v1-package-d
-```
-
-Issue #416 remains umbrella authority. Packages A–C must integrate before Package D is merged to `main`.
+The terminal qualification/integration receipts are preserved in
+`docs/strategic-continuity-reconciliation-multi-repository-v1-handoff.md`.
 
 ### Expected evidence and reassessment
 
-Package D must demonstrate:
+Reopen repository construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
 
-- impact categories are bounded representation, not severity/priority scores;
-- follow-up responsibilities reference known affected surfaces;
-- change authorization, follow-up execution authority, automatic repository discovery, and semantic truth flags remain false;
-- cross-repository impacts remain explicitly scoped;
-- artifact/Skill/manifest/Domain Pack/vocabulary/release surfaces remain conformant;
-- the strategic viewer/CLI from Package A remains intact;
-- exact Package-D head passes Product Validation and Release Candidate Distribution after prerequisite integration;
-- the integrated Package-D tree preserves all four packages before Issue #416 terminal closeout.
+- strategic continuity/currentness cannot be reconstructed from the integrated surfaces;
+- reconciliation packets are insufficient for a concrete returned-evidence episode;
+- an explicitly selected multi-repository decision cannot be represented without violating current boundaries;
+- change-impact analysis fails to preserve a consequential affected-surface/closure decision;
+- a protected owner/Level-4/external authority boundary requires a separately authorized product change.
+
+Do not reopen from synthetic planner curiosity alone.
 
 ### Authority / owner direction
 
@@ -236,8 +233,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**FINISH PACKAGE D, THEN RECONCILE AND QUALIFY THE FULL ISSUE #416 PROGRAM SEQUENTIALLY.**
+**NORMAL USE / NO ACTIVE ISSUE #416 CONSTRUCTION PACKAGE.**
 
-Package D is the final owner-authorized construction package. Do not merge it ahead of A–C. After prerequisite integration, rebuild/reconcile the final package on current `main`, require exact-head Product Validation and Release Candidate Distribution PASS, verify the integrated bytes, then add the terminal milestone handoff, reconcile candidate directions/current STATUS, and close Issue #416.
+Use the integrated strategic continuity, reconciliation, multi-repository, change-impact, and strategy-inspection surfaces during ordinary consequential repository work. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of Issue #416.
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of this closeout.
