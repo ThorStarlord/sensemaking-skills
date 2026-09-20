@@ -293,6 +293,30 @@ REASSESSMENT CONDITION
 
 This prevents continuation merely because implementation can continue.
 
+### 4.10.1 Learning / Reconciliation Policy projection
+
+After a qualified or otherwise consequential result returns, apply
+[Learning / Reconciliation Policy v0](../skills/using-sensemaking/references/learning-reconciliation-policy-v0.md)
+when the evidence can change explicit Level-3 state.
+
+```text
+returned evidence
+-> interpret target-specific support / contradiction
+-> NO_MODEL_CHANGE / CONFIRM / REVISE_CLAIM /
+   RESOLVE_UNCERTAINTY / OPEN_NEW_UNCERTAINTY /
+   CHANGE_RESPONSIBILITY / CONTINUE / STOP / ESCALATE /
+   REOPEN_STRATEGY / THESIS_REVIEW_REQUIRED
+-> update only decision-relevant explicit state
+```
+
+Reconciliation may update capability claims, limitations, Strategic Decision,
+construction-path assumptions, uncertainty, responsibility, continuation, or thesis
+review state. It must not infer authority changes or rewrite Level-4 commitments
+silently.
+
+Reuse existing `STATUS.md`, Strategic Repository Analysis, Campaign, handoff, ADR,
+evidence, and repository-history surfaces. No generic BeliefState schema is implied.
+
 ### 4.11 Authority and owner decisions
 
 Record both available and reserved authority:
@@ -377,6 +401,7 @@ reconstruct strategy + repository state
 -> choose smallest warranted intervention
 -> delegate bounded execution
 -> receive qualified result/evidence
+-> apply Learning / Reconciliation Policy when decision-relevant
 -> reconcile capability state + strategic decision
 -> preserve material thesis tension or escalate when needed
 -> update frontier
