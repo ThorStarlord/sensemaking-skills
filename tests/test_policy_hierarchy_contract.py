@@ -14,6 +14,7 @@ POLICY = ROOT / "docs" / "policy-hierarchy-v0.md"
 INQUIRY = ROOT / "skills" / "using-sensemaking" / "references" / "inquiry-policy-v0.md"
 METAREASONING = ROOT / "skills" / "using-sensemaking" / "references" / "metareasoning-policy-v0.md"
 EXPLORATION = ROOT / "skills" / "using-sensemaking" / "references" / "exploration-policy-v0.md"
+WARRANT_CHOICE = ROOT / "skills" / "using-sensemaking" / "references" / "warrant-choice-policy-v0.md"
 BOOTSTRAP = ROOT / "skills" / "using-sensemaking" / "SKILL.md"
 PRACTICAL = ROOT / "skills" / "using-sensemaking" / "references" / "practical-agent-architecture-v0.md"
 OUTER = ROOT / "docs" / "strategic-outer-loop.md"
@@ -127,6 +128,44 @@ def test_exploration_policy_is_integrated_without_displacing_strategic_analysis(
     assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
 
 
+def test_warrant_choice_policy_v0_is_target_specific_and_non_authorizing() -> None:
+    warrant = WARRANT_CHOICE.read_text(encoding="utf-8")
+
+    for disposition in (
+        "WARRANTED",
+        "NOT_WARRANTED",
+        "MORE_EVIDENCE_REQUIRED",
+        "AUTHORITY_REQUIRED",
+        "OWNER_DECISION_REQUIRED",
+        "CHALLENGE_REQUIRED",
+        "EXPLORATION_REQUIRED",
+        "VERIFICATION_REQUIRED",
+        "SMALLER_INTERVENTION_PREFERRED",
+        "NO_SELECTION",
+    ):
+        assert f"`{disposition}`" in warrant
+
+    assert "warrant for target A\n!= warrant for target B" in warrant
+    assert "WARRANTED\n!= authorized" in warrant
+    assert "candidate set exists\n!= one candidate must be selected" in warrant
+    assert "not a permission token, score, rule engine, ranking service, or automatic chooser" in warrant
+
+
+def test_warrant_choice_policy_is_integrated_without_displacing_strategic_analysis() -> None:
+    bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
+    practical = PRACTICAL.read_text(encoding="utf-8")
+    outer = OUTER.read_text(encoding="utf-8")
+    status = STATUS.read_text(encoding="utf-8")
+
+    assert "Warrant / Choice Policy v0" in bootstrap
+    assert "references/warrant-choice-policy-v0.md" in bootstrap
+    assert "warrant-choice-policy-v0.md" in practical
+    assert "Warrant / Choice Policy" in outer
+    assert "Warrant / Choice Policy v0" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
+    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+
+
 def test_inquiry_policy_is_integrated_into_agent_and_control_surfaces() -> None:
     bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
     practical = PRACTICAL.read_text(encoding="utf-8")
@@ -152,6 +191,7 @@ def test_status_preserves_inquiry_policy_integration_when_later_owner_work_is_se
     assert "Inquiry Policy v0" in status
     assert "Metareasoning Policy v0" in status
     assert "Exploration Policy v0" in status
+    assert "Warrant / Choice Policy v0" in status
     assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "Do **not** freeze RC3" in status
@@ -165,5 +205,7 @@ def test_policy_hierarchy_does_not_create_runtime_or_schema_surface() -> None:
     assert "inquiry_policy" not in pyproject
     assert "metareasoning_policy" not in pyproject
     assert "exploration_policy" not in pyproject
+    assert "warrant_choice_policy" not in pyproject
+    assert "WarrantEngine" not in pyproject
     assert "SearchState" not in pyproject
     assert 'schema_version: "2"' in release
