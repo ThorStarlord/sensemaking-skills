@@ -171,7 +171,49 @@ reconciliation
 
 Neither replaces the other.
 
-## 8. Boundaries
+## 8. Strategic reassessment bridge
+
+Strategic Continuity provides reconstructible lineage, assumptions, triggers, compare,
+and drift/currentness facts. Learning / Reconciliation owns the semantic interpretation
+of consequential returned evidence.
+
+```text
+assumption / reassessment trigger
+-> observation, result, or currentness evidence
+-> is it decision-changing?
+   -> no: NO_MODEL_CHANGE / continue
+   -> yes: Learning / Reconciliation
+            -> confirm / revise / open uncertainty / change responsibility
+            -> REOPEN_STRATEGY only when Level-3 state is materially changed
+```
+
+When durability is warranted, `strategic_reconciliation` records the interpretation;
+it does not mutate the earlier strategic analysis.
+
+```text
+drift detected
+!= strategy invalid
+
+drift detected
+!= semantic reassessment automatically required
+
+reassessment trigger observed
+!= strategic assumption falsified
+
+reassessment trigger observed
+!= strategy automatically changed
+
+REOPEN_STRATEGY
+!= BUILD
+
+THESIS_REVIEW_REQUIRED
+!= thesis ratified
+```
+
+The broader ownership crosswalk is
+`docs/adaptive-semantic-control-architecture-v0.md`.
+
+## 9. Boundaries
 
 Strategic Continuity v1 does not add:
 
