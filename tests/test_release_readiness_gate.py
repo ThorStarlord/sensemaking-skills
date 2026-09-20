@@ -84,7 +84,7 @@ def test_status_preserves_execution_interface_closeout_during_new_construction()
     assert "NORMAL_USE_VALIDATION" in status
     assert "Execution Interface & Agent-Factorization v1 — COMPLETE" in status
     assert "Policy Hierarchy Completion v0" in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = INQUIRY_POLICY_V0" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
     assert "Issue #393" in status
     assert "Issue #384" in status
     assert "1.0.0rc3.dev0" in status
@@ -94,6 +94,6 @@ def test_status_preserves_execution_interface_closeout_during_new_construction()
     current_responsibility = status.split(
         "### Current warranted repository-level responsibility", 1
     )[1].split("### Active execution vehicle", 1)[0]
-    assert "Inquiry Policy v0" in current_responsibility
+    assert "Metareasoning Policy v0" in current_responsibility
     assert "POLICY_HIERARCHY_CONSTRUCTION_ACTIVE" in current_responsibility
 
