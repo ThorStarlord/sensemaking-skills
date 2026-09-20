@@ -302,6 +302,29 @@ decision.
 
 ---
 
+## 2A. Use change-impact analysis when the bounded change is not the whole claim
+
+Use `change-impact-analysis` when a contemplated or completed change can be locally
+implemented yet still leaves consequential uncertainty about adjacent contracts,
+artifacts, tests, documentation, claims, authority, release surfaces, or explicitly
+selected cross-repository interfaces.
+
+```text
+change locally clear
++ affected-surface/closure consequences uncertain
+-> change-impact-analysis
+
+reference exists
+!= material impact
+
+impact identified
+!= follow-up authorized
+```
+
+This is not a reason to run impact analysis for every edit. Activate it only when
+the affected-surface decision can change implementation, verification,
+reconciliation, closure, authority, or higher-scope state.
+
 ## 3. Identify the nearest decision-changing uncertainty
 
 Do not ask "what is the final solution?" first.
