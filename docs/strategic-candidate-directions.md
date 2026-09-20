@@ -302,6 +302,44 @@ reasoning precision != strategic automation
 explicit comparison != priority scoring
 ```
 
+### 9.4 Strategic Repository Sensemaking v1
+
+**Current reconciliation:** `IMPLEMENTED_BASELINE`.
+
+Issue #401 established a first-class Level-3 repository-evolution analysis surface:
+
+- current-system model;
+- capability / limitation map;
+- Strategic Frontier;
+- 0–5 materially real construction paths;
+- qualitative path comparison;
+- decision-changing uncertainty;
+- strategic synthesis;
+- semantic `BUILD | INVESTIGATE | DEFER | NO_CHANGE | OWNER_DECISION | THESIS_REVIEW` disposition.
+
+The canonical Skill is `strategic-repository-analysis`, producing
+`strategic_repository_analysis`. `repo-sensemaker` remains diagnostic
+repository understanding; a current diagnostic brief may be reused as evidence
+but is not a mandatory prerequisite.
+
+```text
+construction path != backlog
+path comparison != numeric ranking
+strategic disposition != implementation authorization
+mechanically valid strategic analysis != strategically correct
+```
+
+PR #409 stabilized the Strategic Alternatives surface without promoting a
+planner: zero paths is valid for non-`BUILD` dispositions and `BUILD` still
+requires a selected real path.
+
+This baseline does not promote StrategicPlanner v0, automatic path selection,
+numeric strategy scoring, automatic Campaign generation, or a semantic runtime.
+
+**Possible extensions:** reopen only from concrete future consumer pressure or
+separate owner direction. Completion of v1 is not a standing invitation to add
+more strategic machinery.
+
 ## 10. Integration and implementation-shape candidates
 
 ### 10.1 GitHub-native Campaign provenance publication
