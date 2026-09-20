@@ -46,6 +46,10 @@ clear + locally evidenced + one context
 correct repository responsibility is uncertain
 -> apply using-sensemaking; repo-sensemaker may be useful
 
+repository/product future itself is open
+-> use strategic-repository-analysis to model coherent construction paths
+   before selecting a bounded responsibility
+
 material completed-work or repair claim
 -> stronger evidence / reconciliation / finding-specific verification when warranted
 
