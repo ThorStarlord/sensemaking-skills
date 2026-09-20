@@ -89,6 +89,7 @@ Experiment Economy & Proportional Rigor v1 is summarized in `docs/experiment-eco
 - General Agency Model v0.1 is a bounded research/reference abstraction, not proof of a universal theory of intelligence, comparative superiority, or domain-general product value.
 - Practical Agent Architecture v0 is currently guidance-first. Its reconciliation disposition is `GUIDANCE_ONLY_WARRANTED`; no new runtime, schema, public API, generic state store, or deterministic semantic controller was established as necessary.
 - Strategic Continuity currentness checks may establish typed source/evidence/governing-authority observations only; `currentness observation != semantic consequence`, `drift detected != strategy invalid != reanalysis automatically required`, and `graph edge != causal truth`.
+- Experiment Economy & Proportional Rigor v1 is a guidance refinement motivated by preliminary normal-use friction. Repository qualification establishes contract/integration coherence, not scientific proof of a systematic experiment bias, empirical superiority of the refinement, or optimal evidence/rigor selection.
 
 ### Strategic Frontier
 
