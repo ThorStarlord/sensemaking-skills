@@ -75,6 +75,10 @@ skill_inventory:
     - repair-verifier
     - repo-sensemaker
     - strategic-repository-analysis
+    - strategic-repository-reconciliation
+    - owner-decision-capsule
+    - thesis-review-packet
+    - external-evidence-packet
     - roadmap
     - stakeholder-update
     - strategy
