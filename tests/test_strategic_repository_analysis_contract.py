@@ -159,9 +159,10 @@ def test_artifact_contract_is_declared() -> None:
     assert contract["produced_by"] == "strategic-repository-analysis"
     assert "construction_paths" in contract["required_machine_fields"]
     assert "strategic_disposition" in contract["required_machine_fields"]
-    assert {"analysis_ref", "continuity", "decision_assumptions"} <= set(
+    assert {"schema_version", "analysis_ref", "continuity", "decision_assumptions"} <= set(
         contract["recommended_machine_fields"]
     )
+    assert any("schema_version: 2" in note for note in contract["notes"])
     assert any("0-5 real paths" in note for note in contract["notes"])
     assert any(
         "validate-strategic-repository-analysis.py" in command
