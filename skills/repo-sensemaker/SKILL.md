@@ -1,6 +1,6 @@
 ---
 name: repo-sensemaker
-description: analyze a repository to produce a repository sensemaking brief. use when the user asks what a repo is for, what is missing, what can be improved, what the weakest boundary is, or what the next steps should be. When invoked conversationally (not via automated workflow execution), also applies an investigate-first interaction procedure to decide whether one neutral clarifying question is needed before recommending.
+description: analyze a repository diagnostically to produce a repository sensemaking brief. use when the user asks what a repo is for, what is missing or contradictory, what the weakest consequential boundary is, or what evidence should shape a bounded next step. for high-level questions about multiple coherent repository evolution or construction paths, use strategic-repository-analysis instead.
 ---
 
 # repo-sensemaker
