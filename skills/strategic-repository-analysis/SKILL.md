@@ -89,6 +89,12 @@ Record the prior analysis reference, prior selected path when applicable, and a
 short semantic reason. Continuity is authored judgment; deterministic tools may
 project it but may not infer it.
 
+When mechanically addressable repository authority files materially condition
+the analysis, declare them in `governing_authority_refs`. This lets later
+currentness inspection identify that an authority reference changed; the
+mechanical observation does not decide that the governing commitment changed
+semantically or that strategy must reopen.
+
 ### 3. Build the current-system model
 
 Describe the repository as a system/product:
@@ -155,8 +161,13 @@ Each path must describe:
 - reversibility;
 - evidence gaps;
 - decision-relevant assumptions when useful;
-- reassessment triggers for assumptions whose failure could change the path.
+- reassessment triggers for assumptions whose failure could change the path;
+- optional lightweight `path_transitions` with stable references such as
+  `PATH-2/T1` when later work would otherwise be difficult to place inside the
+  trajectory.
 
+A path transition names a conceptual capability-state transition. It is not a
+task, milestone, schedule entry, status percentage, or automatic next action.
 A path is a coherent future trajectory, not a backlog.
 
 One path is valid when additional alternatives would be artificial. Zero paths is valid when even one construction path would be artificial or premature.
@@ -279,6 +290,9 @@ Preserve these distinctions in the artifact:
 ```text
 strategic analysis != implementation authorization
 construction path != backlog
+path transition != roadmap item
+path transition != authorized responsibility
+transition established != next transition selected
 path comparison != numeric ranking
 mechanically valid != semantically correct
 candidate responsibility != authorized execution
