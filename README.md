@@ -24,6 +24,7 @@ Choose the entry point for your role instead of reading every document:
 | Understanding how control levels, policy layers, authority, execution, evidence, and strategic continuity compose | [`docs/adaptive-semantic-control-architecture-v0.md`](docs/adaptive-semantic-control-architecture-v0.md) | Descriptive crosswalk; no new control level, runtime, or authority |
 | Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) | Level-3 current-system, capability, construction-path, tradeoff, and strategic-synthesis analysis |
 | Comparing, checking currentness, or reconstructing history of authored strategic analyses | [`docs/strategic-continuity-v1.md`](docs/strategic-continuity-v1.md) | Deterministic typed-currentness/history projections; no strategic selection |
+| Reconstructing a decision from strategy through execution, evidence return, and reassessment | [`docs/decision-journey-productization-v1.md`](docs/decision-journey-productization-v1.md) | Read-only journey/context/delta/impact-closure projections plus caller-selected guidance |
 | Reconciling returned strategic evidence or carrying reserved decisions | [`docs/strategic-reconciliation-and-decision-packets-v1.md`](docs/strategic-reconciliation-and-decision-packets-v1.md) | Strategic reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts |
 | Deciding boundaries/capability ownership across selected repositories | [`skills/multi-repository-strategic-analysis/SKILL.md`](skills/multi-repository-strategic-analysis/SKILL.md) | Level-3 caller-selected repository-set analysis without automatic discovery |
 | Checking consequential affected surfaces around a bounded change | [`skills/change-impact-analysis/SKILL.md`](skills/change-impact-analysis/SKILL.md) | Semantic change-impact, verification, reconciliation, and closure analysis |
@@ -155,6 +156,7 @@ The installed product includes:
 - strategic companion Skills/artifacts for evidence-return reconciliation, owner-reserved decisions, Level-4 thesis-review preparation, and external-evidence provenance without automatic state mutation or authority transfer;
 - multi-repository strategic analysis over explicitly selected repositories, including capability ownership/overlap, boundary tensions, coherent allocation paths, and qualitative comparison without repository discovery or transaction orchestration;
 - change-impact analysis over bounded contemplated/completed changes, identifying decision-relevant affected surfaces and verification/reconciliation consequences without automatic backlog generation or change authorization.
+- Decision Journey Productization v1 read-only composition: `journey inspect`, caller-selected context packs, authored strategic decision deltas, anticipated-vs-observed impact/closure comparison, static beginner guidance, and canonical end-to-end playbooks; no router, planner, causal inference, or closure inference.
 
 The Level-3/Level-4 Strategic Outer Loop foundation is currently a **repository documentation/authority architecture**, not a shipped autonomous strategic runtime. Installing the package does not create a `StrategicPlanner`, automatically rank the Strategic Frontier, revise product strategy, or generate Campaigns without agent judgment.
 
@@ -217,6 +219,21 @@ Strategic Frontier != backlog
 strategic boundary selected != implementation authorized
 Level-3 state != Level-4 strategy authority
 ```
+
+
+### Decision journey quick start
+
+Use the ```journey``` family when the problem is no longer one missing layer but reconstructing how already-authored decisions compose:
+
+```text
+sensemaking-skills journey guide --intent repository-future
+sensemaking-skills journey context --profile strategic --strategy-artifact artifacts/strategic_repository_analysis.md
+sensemaking-skills journey inspect --manifest artifacts/decision_journey.md --strategy-artifact artifacts/strategic_repository_analysis.md --workspace /path/to/CMP-1
+sensemaking-skills journey delta --artifact artifacts/strategic_decision_delta.md --before /path/to/sra-1.md --after /path/to/sra-2.md
+sensemaking-skills journey impact-closure --impact-artifact artifacts/change_impact_analysis.md --closure-artifact artifacts/change_evidence_closure.md
+```
+
+The caller explicitly selects the intent/profile and supplies the sources. The commands do not discover repositories, choose a capability, infer a next action, decide closure, or establish causal truth.
 
 ## Installation
 

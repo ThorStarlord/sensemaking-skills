@@ -432,3 +432,40 @@ external verifier PASS != universal compatibility
 ```
 
 For current release/strategic state, see `STATUS.md`, `docs/operations-runbook.md`, and `docs/release-v1.0-contract.md`.
+
+## Reconstruct a full decision journey
+
+When strategy, responsibility, execution, evidence return, and reassessment already exist but are spread across different surfaces, use Decision Journey Productization v1.
+
+Start with caller-selected guidance:
+
+`bash
+sensemaking-skills journey guide --intent repository-future
+`
+
+Available intents are deliberately small and static:
+
+- `repository-future`;
+- `responsibility-unclear`;
+- `selected-work`;
+- `returned-work`;
+- `repository-changed`;
+- `change-consequences`;
+- `multi-repo-boundary`.
+
+This is guidance, not automatic routing. The command does not invoke the suggested capability.
+
+For fresh-agent context, explicitly choose a profile:
+
+`bash
+sensemaking-skills journey context --profile strategic --strategy-artifact artifacts/strategic_repository_analysis.md
+sensemaking-skills journey context --profile responsibility --workspace /path/to/CMP-1
+sensemaking-skills journey context --profile execution --workspace /path/to/CMP-1
+sensemaking-skills journey context --profile reassessment --workspace /path/to/CMP-1 --change-impact-artifact artifacts/change_impact_analysis.md
+`
+
+For the complete contract, companion templates, and playbooks, see:
+
+- `docs/decision-journey-productization-v1.md`
+- `docs/decision-journey-playbooks.md`
+
