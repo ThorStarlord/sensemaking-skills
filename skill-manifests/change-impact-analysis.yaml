@@ -1,0 +1,24 @@
+schema_version: 1
+skill_id: change-impact-analysis
+domain: engineering
+responsibilities:
+  - change_impact_analysis
+consumes:
+  - repository_state
+  - prior_evidence
+  - change
+produces:
+  - change_impact_analysis
+semantic_concepts:
+  - TargetSnapshot
+  - Observation
+  - Evidence
+  - Claim
+  - Uncertainty
+  - Responsibility
+  - Change
+  - Validation
+  - Decision
+  - Authority
+  - Artifact
+repository_mutation: false
