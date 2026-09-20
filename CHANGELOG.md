@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0-rc.3] - UNRELEASED
 
 ### Changed
+- **Strategic Repository Sensemaking v1** — adds a first-class Level-3 `strategic-repository-analysis` Skill and `strategic_repository_analysis` artifact for current-system modeling, capability/limitation mapping, coherent construction paths, qualitative comparison, decision-changing uncertainty, and strategic synthesis without deterministic path ranking or execution authority.
+- **Repository evolution routing** — keeps `repo-sensemaker` diagnostic while routing high-level “what could this repository become / how could it be constructed?” questions to strategic repository analysis; construction paths are capability-level trajectories rather than backlogs.
 - **Policy Hierarchy Completion v0 begins** — explicit owner direction closes synthetic StrategicPlanner testing as the active mode and starts construction of the missing middle semantic-control layers without adding a generic runtime.
 - **Inquiry Policy v0** — adds a canonical agent-facing contract for deciding what to learn next, including `NO_INQUIRY_NEEDED`, smallest-sufficient-evidence selection, owner-intent/external-evidence boundaries, and explicit inquiry stopping rules.
 - **Post-RC2 development reopened** — current source advances to `1.0.0rc3.dev0` while preserving the exact qualified RC2 source/tree/artifacts as immutable historical provenance.
