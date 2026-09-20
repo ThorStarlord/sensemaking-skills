@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 POLICY = ROOT / "docs" / "policy-hierarchy-v0.md"
 INQUIRY = ROOT / "skills" / "using-sensemaking" / "references" / "inquiry-policy-v0.md"
+METAREASONING = ROOT / "skills" / "using-sensemaking" / "references" / "metareasoning-policy-v0.md"
 BOOTSTRAP = ROOT / "skills" / "using-sensemaking" / "SKILL.md"
 PRACTICAL = ROOT / "skills" / "using-sensemaking" / "references" / "practical-agent-architecture-v0.md"
 OUTER = ROOT / "docs" / "strategic-outer-loop.md"
@@ -60,6 +61,33 @@ def test_inquiry_policy_v0_supports_zero_inquiry_and_source_boundaries() -> None
     assert "No numeric score is required." in inquiry
 
 
+def test_metareasoning_policy_v0_exposes_qualitative_control_moves() -> None:
+    metareasoning = METAREASONING.read_text(encoding="utf-8")
+
+    for move in ("ACT", "INQUIRE", "CHALLENGE", "EXPLORE", "VERIFY", "ESCALATE", "STOP"):
+        assert f"`{move}`" in metareasoning
+
+    assert "continue reasoning when expected decision improvement" in metareasoning
+    assert "No numeric calculation is required." in metareasoning
+    assert "control move selected\n!= responsibility authorized" in metareasoning
+    assert "not a service, scheduler, score, state machine, or automatic router" in metareasoning
+
+
+def test_metareasoning_policy_is_integrated_without_displacing_strategic_analysis() -> None:
+    bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
+    practical = PRACTICAL.read_text(encoding="utf-8")
+    outer = OUTER.read_text(encoding="utf-8")
+    status = STATUS.read_text(encoding="utf-8")
+
+    assert "Metareasoning Policy v0" in bootstrap
+    assert "references/metareasoning-policy-v0.md" in bootstrap
+    assert "metareasoning-policy-v0.md" in practical
+    assert "Metareasoning Policy" in outer
+    assert "Metareasoning Policy v0 are integrated" in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = STRATEGIC_REPOSITORY_SENSEMAKING_V1" in status
+    assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
+
+
 def test_inquiry_policy_is_integrated_into_agent_and_control_surfaces() -> None:
     bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
     practical = PRACTICAL.read_text(encoding="utf-8")
@@ -82,7 +110,8 @@ def test_status_preserves_inquiry_policy_integration_when_later_owner_work_is_se
 
     assert "Policy Hierarchy Completion v0" in status
     assert "Issue #399" in status
-    assert "Inquiry Policy v0 is integrated" in status
+    assert "Inquiry Policy v0" in status
+    assert "Metareasoning Policy v0" in status
     assert "COMPOSABLE POLICY PROGRAM = POLICY_HIERARCHY_COMPLETION_V0" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "Do **not** freeze RC3" in status
@@ -94,4 +123,5 @@ def test_policy_hierarchy_does_not_create_runtime_or_schema_surface() -> None:
 
     assert "policy_hierarchy" not in pyproject
     assert "inquiry_policy" not in pyproject
+    assert "metareasoning_policy" not in pyproject
     assert 'schema_version: "2"' in release
