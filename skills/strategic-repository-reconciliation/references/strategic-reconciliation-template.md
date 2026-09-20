@@ -22,6 +22,11 @@ UNCHANGED`.
 
 Declare `CONTINUE | REVISE | SUPERSEDE | CLOSE | NO_PATH_CHANGE` and explain.
 
+When the prior analysis declared a lightweight path transition and returned evidence
+materially bears on it, optionally record one path-transition effect:
+`ESTABLISHED | PARTIAL | NOT_ESTABLISHED | SUPERSEDED | NO_CONCLUSION`.
+This is semantic reconciliation of a conceptual transition, not project status.
+
 ## 6. Strategic Implication
 
 Declare exactly one:
@@ -57,10 +62,19 @@ assumption_updates:
 path_disposition: CONTINUE
 prior_path_id: PATH-1
 current_path_id: PATH-1
+path_transition_effect:
+  transition_ref: PATH-1/T1
+  disposition: ESTABLISHED
 strategic_effect: REAFFIRM
 candidate_next_responsibility: null
 implementation_authority_established_by_artifact: false
 semantic_truth_established: false
 created_at: "YYYY-MM-DDTHH:MM:SSZ"
 immutable: true
+```
+
+```text
+path transition effect != roadmap status
+transition established != next transition selected
+transition effect != implementation authorization
 ```
