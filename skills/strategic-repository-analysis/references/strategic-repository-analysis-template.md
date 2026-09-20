@@ -30,7 +30,15 @@ material, constraints, and claim ceilings.
 
 ## 4. Strategic Frontier
 
-List only current decision-relevant repository/product boundaries.
+List only current decision-relevant repository/product boundaries that pass the
+Strategicity Gate. For new `schema_version: 2` artifacts, each frontier entry
+must identify its evidence references, affected capability identifiers, and a
+short semantic explanation of the strategic consequence.
+
+```text
+repository-relevant finding != strategic frontier
+bounded repair != construction path
+```
 
 ## 5. Candidate Construction Paths
 
@@ -40,8 +48,9 @@ For each path include:
 
 - **Future state:**
 - **Why plausible:**
-- **Builds on:**
-- **Requires:**
+- **Frontier grounding:** which Strategic Frontier entries this path responds to.
+- **Builds on:** capability-map identifiers plus concise explanation where useful.
+- **Requires:** capability-map identifiers plus concise explanation where useful.
 - **Construction sequence:**
 - **Path transitions (optional):** stable conceptual transition references such as
   `PATH-1/T1` when later work would otherwise be difficult to reconstruct. A
@@ -74,8 +83,11 @@ Compare paths using:
 - deferral cost;
 - reversibility;
 - authority availability;
-- dependency;
-- smallest warranted intervention.
+- dependency.
+
+For new v2 artifacts, derive the smallest warranted intervention only after the
+strategic disposition/path judgment. Historical v1 artifacts may retain the
+legacy tenth comparison lens.
 
 Do not use numeric scores or weighted ranking.
 
@@ -120,6 +132,7 @@ line/range or identifier where available.
 ## 12. Machine-Readable Summary
 
 ```yaml
+schema_version: 2
 artifact_id: strategic_repository_analysis
 analysis_ref: "SRA-<stable-reference>"
 continuity:
@@ -140,14 +153,22 @@ capability_states:
 strategic_frontier:
   - frontier_id: FRONTIER-1
     statement: "<decision-relevant boundary>"
+    evidence_refs:
+      - path/to/file.md:L10-L20
+    affected_capability_ids:
+      - example-capability
+    strategic_consequence: "<how resolving this could materially change the repository future>"
 construction_paths:
   - path_id: PATH-1
     name: "<path name>"
     future_state: "<coherent future state>"
-    builds_on:
-      - "<existing capability>"
-    required_capabilities:
-      - "<needed capability>"
+    frontier_refs:
+      - FRONTIER-1
+    why_plausible: "<why current evidence and governing intent support this trajectory>"
+    builds_on_capability_ids:
+      - example-capability
+    required_capability_ids:
+      - needed-capability
     construction_sequence:
       - "<coarse step>"
     path_transitions:
@@ -178,7 +199,6 @@ path_comparison:
       reversibility: "<qualitative judgment>"
       authority_availability: "<qualitative judgment>"
       dependency: "<qualitative judgment>"
-      smallest_warranted_intervention: "<qualitative judgment>"
 decision_changing_uncertainty:
   statement: "<uncertainty or none>"
   could_change: "<which strategic judgment>"
@@ -202,6 +222,13 @@ semantic_truth_established: false
 created_at: "YYYY-MM-DDTHH:MM:SSZ"
 immutable: true
 ```
+
+## Schema compatibility
+
+New canonical analyses use `schema_version: 2`. Historical strategic analyses
+without `schema_version` are legacy v1 and remain valid without mutation. The
+v2 grounding fields strengthen reconstructibility; they do not authorize a
+deterministic judgment about whether a frontier/path is strategically correct.
 
 ## Path-transition boundary
 
