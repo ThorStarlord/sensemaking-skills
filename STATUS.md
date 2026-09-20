@@ -2,8 +2,8 @@
 
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
-**Last updated:** 2026-09-18  
-**Current phase:** Experimental Intelligence Components v0 is active as an isolated lab program under Issue #395. StrategicPlanner v0 is the first reversible component; its initial retrospective dogfood disposition is `RESEARCH_MORE`. Normal-use validation remains the source of any future promotion evidence. Execution Interface & Agent-Factorization v1 and Release Authority & Operational Coherence v1 remain complete  
+**Last updated:** 2026-09-19  
+**Current phase:** Policy Hierarchy Completion v0 is active under Issue #399; Inquiry Policy v0 is the first bounded construction package. Synthetic StrategicPlanner testing is stopped as the active mode. Normal-use validation remains a supporting evidence lane, not a prerequisite for this owner-authorized repository-only construction.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
@@ -43,6 +43,8 @@ The repository-qualified baseline includes:
 - **Campaign schema v2**; newer target/relation/completion records remain additive companions rather than alternate truth systems.
 - **General Agency Model v0.1** research reference: value → context → strategy → decision frame → epistemic state → sufficiency → inquiry/choice → action → observation/verification → impact/sensemaking → belief update, with lateral challenge/exploration and explicit authority/risk/resource envelopes.
 - **Practical Agent Architecture v0** guidance: semantic agent judgment → target-specific warrant → existing durable decision substrate → deterministic assurance → external execution/orchestration → evidence return and semantic reassessment.
+- **Policy Hierarchy v0**: canonical middle-control architecture for Strategic → Inquiry → Metareasoning → Exploration → Warrant/Choice → Action/Evidence → Learning/Reconciliation, explicitly defined as semantic policy contracts rather than runtime services.
+- **Inquiry Policy v0**: agent-facing contract for deciding what to learn next, including `NO_INQUIRY_NEEDED`, smallest-sufficient-evidence selection, owner-intent/external-evidence boundaries, and inquiry stop conditions without new schema/state.
 - Canonical `using-sensemaking` guidance now makes warrant targets/dependencies, challenge versus exploration, resource-aware stopping, and delegated-result evidence return explicit while preserving progressive disclosure.
 - **Release Authority Auditor**: `release audit` reconciles local release identity/Git/docs/workflow mechanics without asserting CI qualification, publication, semantic truth, or owner authorization.
 - **Execution Interface v1**: additive execution handoff/result companions bind already-selected responsibility, authority, exact targets, evidence requirements, returned worker claims, and append-only integrity without changing Campaign schema v2.
@@ -85,98 +87,115 @@ Current material frontier items are:
 12. **Sensemaking Protocol / product-category expansion — LONG_HORIZON / REQUIRES_LEVEL_4_REVIEW.** No independent consumer currently warrants a product-category pivot.
 13. **General Agency Model v0.1 — COMPLETE / RESEARCH_REFERENCE.** The broader value-to-action-to-learning grammar is coherent with current Sensemaking but does not change ADR 0029 or authorize a generic agent product/runtime.
 14. **Practical Agent Architecture v0 — COMPLETE / GUIDANCE_ONLY_WARRANTED / INTEGRATED.** The warrant-centered hybrid design reconciled against current Sensemaking without establishing a state, schema, assurance, runtime, or public-API gap; compact guidance is integrated into `using-sensemaking`.
-15. **Normal-use validation — ACTIVE / PRIMARY NEXT MODE.** Preserve qualifying real episodes and use the new execution interfaces during ordinary consequential repository work; reopen construction only from recurring decision-changing pressure or explicit owner direction.
+15. **Normal-use validation — ACTIVE / SUPPORTING EVIDENCE MODE.** Preserve qualifying real episodes and use the execution interfaces during ordinary consequential repository work; it no longer blocks construction explicitly authorized under Issue #399.
 16. **Execution Interface & Agent-Factorization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Release-authority audit, execution handoff/result, working-context projection, generic executor interchange, AI Software Factory projection, explicit GitHub provenance publication, and cross-repository execution projection are integrated without adding semantic planning/scheduling authority. Feature-integrated `main@4f89e92030af4dee5c931b59b839869911e6c366` passed Product/Lab/Release Distribution validation; PR #394 / Issue #393 carry the terminal closeout qualification/result receipt.
 17. **Experimental Intelligence Components v0 — ACTIVE / LAB_ONLY / `RESEARCH_MORE`.** Owner direction authorizes cheap, reversible experiments rather than core promotion. StrategicPlanner v0 under Issue #395 compiles baseline/treatment packets and preserves semantic decision authority with the active agent. Initial retrospective dogfood shows a plausible benefit on ambiguous high-leverage decisions and disproportionate ceremony on a tiny bounded repair; this supports prospective testing of an activation boundary, not product promotion or automatic planning.
+18. **Policy Hierarchy Completion v0 — ACTIVE / OWNER_AUTHORIZED / CONSTRUCTION.** Issue #399 authorizes construction of the missing middle semantic-control layers. Package 1 is Inquiry Policy v0; later packages are Metareasoning, Exploration, Warrant/Choice, Learning/Reconciliation, stable Strategic Alternatives, and an adaptive coordinator. Policy layers must remain agent-owned, zero-work-capable, and non-mandatory.
 
 ### Current highest-leverage boundary
 
-**No additional construction boundary is currently selected.** StrategicPlanner v0 is an evidence question, not product construction. The owner explicitly authorized cheap reversible experimentation. The lab component now exists to test whether explicit strategic candidate generation adds decision value beyond current Level-3 reasoning without becoming mandatory ceremony.
+**Policy Hierarchy Completion v0 — Inquiry Policy v0 integration.**
 
-Initial retrospective dogfood under Issue #395 is mixed: broad release-authority and execution-interface cases show a plausible material benefit from explicit alternative generation, while the bounded stale-reference repair shows clearly disproportionate ceremony. Because the evaluator knows the historical outcomes, the disposition is `RESEARCH_MORE`, not promotion.
+The owner explicitly ended synthetic StrategicPlanner testing as the active mode and authorized construction of the missing middle control layers. The first bounded boundary is to make inquiry selection explicit without adding a runtime engine, score, schema, or mandatory ceremony.
 
-Issue #384 remains an external GitHub-admin governance action and is unrelated to this experiment.
+StrategicPlanner v0 remains historical lab evidence at `RESEARCH_MORE`; no additional synthetic test is required by this package.
+
+Issue #384 remains an external GitHub-admin governance action and is unrelated to this construction responsibility.
 
 ### Current strategic decision to support
 
-**Decision:** should StrategicPlanner v0 remain experimental, be promoted for optional/core use, be descaled, or be removed?
+**Decision:** can Sensemaking make “what should we learn next, if anything?” an explicit, reusable agent-control contract while preserving semantic-agent ownership and the lightest-process rule?
 
-**Current judgment:** **RESEARCH_MORE / NO PROMOTION YET.**
+**Current judgment:** **YES / INQUIRY POLICY V0 IS THE SMALLEST WARRANTED FIRST PACKAGE.**
 
-The current experiment preserves the active semantic agent as the sole selector of the final repository-level responsibility. StrategicPlanner v0 only generates a bounded candidate set with uncertainties, dependencies, smallest interventions, and reasons for/against.
+The policy is implemented as an agent-facing semantic contract integrated into `using-sensemaking`, Practical Agent Architecture guidance, the Four-Level Control Model, and the Level-3 strategic-state lifecycle. It reuses existing evidence, authority, Campaign, and execution surfaces.
 
 ### Current decision-changing uncertainty
 
-**Prospective activation value:** on a naturally occurring ambiguous Level-3 decision, does StrategicPlanner v0 surface a materially decision-changing option, dependency, or uncertainty that the recorded baseline misses, while keeping ceremony proportional?
+**Integration sufficiency:** does Inquiry Policy v0 remain a compositional semantic layer rather than creating a competing truth system or mandatory investigation phase?
 
-Retrospective agreement cannot answer that question.
+Package-1 qualification should establish representation/currentness/integration mechanics only. Semantic usefulness remains bounded by ordinary-use evidence and does not need to be manufactured before repository construction continues.
 
 ### Current warranted repository-level responsibility
 
-**None. Resume normal-use validation.** Preserve StrategicPlanner v0 only as a lab-only optional treatment inside that mode, and obtain prospective evidence when an appropriate ambiguous repository decision naturally occurs.
+**Implement and qualify Inquiry Policy v0 as Package 1 of Policy Hierarchy Completion v0.**
 
-Level-3 disposition: `EXPERIMENTAL_RESEARCH_MORE`.
+Required intervention:
+
+- establish canonical `docs/policy-hierarchy-v0.md`;
+- establish `skills/using-sensemaking/references/inquiry-policy-v0.md`;
+- integrate explicit inquiry selection into the canonical bootstrap and practical-agent reference;
+- connect Inquiry Policy to Level 2/3 control and strategic-state lifecycle;
+- add mechanical regression coverage for the policy contract;
+- preserve existing Campaign schema, runtime, release, and authority boundaries.
+
+Level-3 disposition: `POLICY_HIERARCHY_CONSTRUCTION_ACTIVE`.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = NONE
-PRIMARY OPERATING MODE = NORMAL_USE_VALIDATION
-ACTIVE EXPERIMENT = STRATEGICPLANNER_V0
-NEXT EXPERIMENTAL EVIDENCE = PROSPECTIVE_NORMAL_USE_COMPARISON
+CURRENT CONSTRUCTION RESPONSIBILITY = INQUIRY_POLICY_V0
+PRIMARY CONSTRUCTION PROGRAM = POLICY_HIERARCHY_COMPLETION_V0
+SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
+SYNTHETIC STRATEGICPLANNER TESTING = STOPPED
 ```
-
-Do not implement WarrantEngine, ExplorationPolicy, PriorityPolicy, SkillRouter, or OuterLoopEngine merely because the experiment scaffold now exists.
 
 ### Active execution vehicle
 
-Issue #395 is the experiment authority/evidence tracker. The lab artifacts live under `experiments/intelligence-components-v0/`.
+Issue #399 is the construction authority tracker.
 
-For a prospective case, record the baseline decision **before** exposing the StrategicPlanner treatment to the same evidence, then compare using the frozen categorical protocol. Do not manufacture tasks to populate the experiment.
+Current bounded package: branch `work/policy-hierarchy-inquiry-v0` and its qualification PR.
+
+Issue #395 remains the historical StrategicPlanner experiment/evidence tracker but is not the active construction vehicle. No new synthetic StrategicPlanner scenario is warranted by this program.
 
 ### Expected evidence and reassessment
 
-Reopen Level 3 when concrete new normal-use/product/integrity/reconstruction pressure or explicit owner direction changes a meaningful repository decision.
+Package 1 should produce:
 
-Potential invalidation/reopen evidence includes:
+- canonical Policy Hierarchy and Inquiry Policy contracts;
+- bootstrap/reference/control-model integration;
+- repository tests proving required surfaces and invariants remain present;
+- exact-head Product / Release qualification, plus Lab only if lab paths are touched.
 
-- repeated failure to reconstruct a live decision or its warrant dependencies across contexts;
-- repeated orchestration/subagent behavior that silently changes responsibility or closure scope;
-- repeated premature convergence where current exploration guidance fails to surface material alternatives;
-- repeated weak-evidence commitment where current challenge guidance is insufficient;
-- repeated over-investigation of cheap reversible work or under-investigation of consequential irreversible work;
-- a new mechanically decidable integrity/currentness failure;
-- inability of current durable surfaces to preserve information materially required for continuation;
-- inability of current product surfaces to express a responsibility required by ADR 0029;
-- a thesis-level contradiction requiring Level-4 review.
+Reassess after Package 1 integrates:
 
-A single awkward case, candidate inventory, or available implementation capacity alone is not reopen evidence.
+- if Inquiry Policy composes cleanly with existing surfaces, proceed to **Metareasoning Policy v0**;
+- if it requires a new generic state store, deterministic semantic judge, or mandatory ceremony to function, stop and redesign rather than expanding machinery;
+- ordinary-use evidence may refine later policy semantics but is not a universal gate on owner-authorized repository-only construction.
 
 ### Authority / owner direction
 
-The owner explicitly authorized all Strategic Outer Loop Precision v1 packages, including the Level-4 `SUPERSEDE` disposition that established ADR 0029 and autonomous progression through qualification/merge.
+The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode.
 
-The owner also authorized and completed the General Agency Model v0/v0.1 and Practical Agent Architecture v0 packages. Those packages preserve ADR 0029 and explicitly stop short of generic runtime, schema, automatic planning, or expanded authority.
+Current construction authority includes bounded implementation of:
 
-The owner explicitly accepted the revised Release Authority & Operational Coherence plan and authorized implementation through a fresh RC2 candidate qualification. That authorization does **not** imply PyPI publication or final `1.0.0`; those remain separate protected release-owner transitions.
+```text
+Inquiry Policy v0
+Metareasoning Policy v0
+Exploration Policy v0
+Warrant / Choice Policy v0
+Learning / Reconciliation Policy v0
+stable Strategic Alternatives surface
+Adaptive Policy Coordinator v0
+```
 
-The owner subsequently authorized **Experimental Intelligence Components v0** as cheap, reversible lab experimentation, beginning with StrategicPlanner v0 under Issue #395. That authority covers the isolated experiment scaffold, retrospective sanity check, and later prospective normal-use comparison. It does **not** promote StrategicPlanner into the product or automatically authorize the next experimental component.
+Each follow-on package remains bounded by the existing product strategy, ADR 0029, semantic-agent ownership, and protected external-action boundaries.
 
 Current authority does **not** include:
 
 ```text
-StrategicPlanner product/core promotion
-WarrantEngine / OuterLoopEngine
-ExplorationPolicy / PriorityPolicy / SkillRouter implementation
-automatic Strategic Frontier ranking or priority scoring
-automatic responsibility / capability / Skill / workflow / repository selection
-automatic Level-4 escalation or thesis revision
-automatic Campaign generation
-expertise / complexity / consequentiality scoring
-Campaign schema v3 merely for convenience
-new strategic-state database
-universal decision graph
+generic AgentState
+generic memory/search database
+Campaign schema v3 merely to mirror policies
+numeric inquiry/warrant/priority/intelligence scores
+deterministic semantic routing
+automatic Skill/workflow/Campaign selection
+OuterLoopEngine finite-state runtime
+automatic Level-4 thesis revision
 cross-repository transaction/deployment coordinator
-unrelated new empirical experiments outside Issue #395
+autonomous merge/release/deployment/publication authority
+PyPI publication or final 1.0
 ```
+
+The earlier StrategicPlanner lab evidence remains valid at its stated ceiling. Additional synthetic StrategicPlanner testing is stopped unless separately re-authorized for a new decision-changing reason.
 
 ### Thesis review state
 
@@ -188,10 +207,12 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**PROSPECTIVE STRATEGICPLANNER DOGFOOD WHEN NATURALLY WARRANTED.** The initial StrategicPlanner v0 package stops at `RESEARCH_MORE`. On the next naturally occurring ambiguous Level-3 repository decision, preserve the baseline decision first, then apply the treatment to the same evidence and record whether it changes a material option/uncertainty at proportional cost.
+**IMPLEMENT AND QUALIFY INQUIRY POLICY V0.**
 
-Do not manufacture a task merely to exercise the planner, and do not implement WarrantEngine or the rest of the speculative component list until this promotion question becomes better evidenced.
+Complete Package 1 under Issue #399, qualify the exact PR head, and integrate it if the policy remains a guidance/control surface with no new runtime/schema/authority layer.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, or advance to final `1.0.0` because an experiment exists.
+After Package 1 integrates, the next construction responsibility is **Metareasoning Policy v0**, subject to a fresh bounded package contract rather than another synthetic experiment.
+
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, or advance to final `1.0.0` merely because the policy hierarchy is under construction.
 
 GitHub branch/ruleset protection remains external Issue #384. Do not claim it is enforced until the hosting setting actually exists.
