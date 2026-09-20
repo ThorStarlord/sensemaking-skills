@@ -29,6 +29,26 @@ continuation complexity != task size
 more scaffolding != more visible machinery
 ```
 
+## 1.1 Relationship to Adaptive Policy Coordinator v0
+
+Adaptive Guidance adjusts **scaffolding, rigor, verification, and durability**.
+Adaptive Policy Coordinator v0 adjusts **which semantic policy questions are worth
+making explicit**.
+
+```text
+Adaptive Guidance
+!= policy routing
+
+Adaptive Policy Coordinator
+!= rigor mode
+
+both remain qualitative agent judgment
+```
+
+When several policy layers seem plausible, use
+`adaptive-policy-coordinator-v0.md` to expose only the smallest composition that can
+change the decision. For clear bounded work, zero explicit policy layers is valid.
+
 ## 2. Use the lightest process that preserves the invariants
 
 The doctrine does not change with task size. The ceremony can.

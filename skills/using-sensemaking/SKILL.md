@@ -17,23 +17,24 @@ Use this bootstrap to:
 
 1. decide whether repository diagnosis or **Strategic Repository Sensemaking v1** would materially change how you should interpret the request;
 2. when the repository's future direction itself is open, use `strategic-repository-analysis` to model current capability state, coherent construction paths, qualitative tradeoffs, and the decision-changing strategic uncertainty before selecting a bounded responsibility;
-3. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
-4. identify the nearest unresolved premise that could change the correct next action;
-5. apply **Inquiry Policy v0** to decide whether more evidence is actually needed and, if so, identify the smallest sufficient evidence and source;
-6. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
-7. when search is materially iterative, apply **Exploration Policy v0** to allocate effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search;
-8. apply **Warrant / Choice Policy v0** to the specific contemplated target when target justification/choice is material;
-9. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
-10. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
-11. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
-12. perform or delegate bounded work through the appropriate capability;
-13. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
-14. apply **Learning / Reconciliation Policy v0** after consequential evidence returns to update explicit claims, uncertainty, responsibility, continuation, or strategic state when warranted;
-15. distinguish mechanical validation from analytical correctness and closure;
-16. reconcile consequential work claims with durable evidence;
-17. perform finding-specific repair verification when a prior finding was supposedly fixed;
-18. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
-19. decide whether to continue, stop, escalate, or ask the owner.
+3. when several policy questions may be relevant, use **Adaptive Policy Coordinator v0** to expose only the smallest decision-relevant policy composition; keep it implicit for obvious bounded work;
+4. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
+5. identify the nearest unresolved premise that could change the correct next action;
+6. apply **Inquiry Policy v0** only when additional evidence could materially change the decision and is worth obtaining;
+7. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
+8. when search is materially iterative, apply **Exploration Policy v0** to allocate effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search;
+9. apply **Warrant / Choice Policy v0** to the specific contemplated target when target justification/choice is material;
+10. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
+11. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
+12. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
+13. perform or delegate bounded work through the appropriate capability;
+14. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
+15. apply **Learning / Reconciliation Policy v0** after consequential evidence returns to update explicit claims, uncertainty, responsibility, continuation, or strategic state when warranted;
+16. distinguish mechanical validation from analytical correctness and closure;
+17. reconcile consequential work claims with durable evidence;
+18. perform finding-specific repair verification when a prior finding was supposedly fixed;
+19. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
+20. decide whether to continue, stop, escalate, or ask the owner.
 
 This Skill does **not** make every task require `repo-sensemaker` or a Campaign, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
 
@@ -76,6 +77,30 @@ Orient
 This is reasoning guidance, not a mandatory runtime phase machine.
 
 New evidence may change the expected solution. That is a feature, not a failure.
+
+## Adaptive Policy Coordinator: activate only decision-relevant policy questions
+
+When multiple policy layers seem potentially relevant, ask which ones can actually
+change the current decision. Use the smallest sufficient composition and collapse back
+to direct work as soon as the decision stabilizes.
+
+```text
+policy available
+!= policy must activate
+
+clear + local + reversible + sufficiently evidenced
+-> direct bounded work + relevant verification
+
+iterative search only
+-> Exploration Policy may become explicit
+
+consequential returned evidence only
+-> Learning / Reconciliation may become explicit
+```
+
+The coordinator does not select a Skill/workflow/Campaign automatically and does not
+grant authority. Read `references/adaptive-policy-coordinator-v0.md` when policy
+composition itself is material.
 
 ## Adaptive guidance: use the lightest process that preserves the invariants
 
@@ -774,6 +799,7 @@ Durability and transferability are not identical. Externalize selected rationale
 Read these when the task needs deeper detail:
 
 - `references/adaptive-guidance-v0.md` — contextual scaffolding, rigor, consequentiality, delegation, and Campaign-use examples
+- `references/adaptive-policy-coordinator-v0.md` — compose only decision-relevant semantic policy questions and collapse unnecessary ceremony
 - `references/inquiry-policy-v0.md` — decide what to learn next, if anything; smallest sufficient evidence and source boundaries
 - `references/metareasoning-policy-v0.md` — choose the next qualitative control move: act, inquire, challenge, explore, verify, escalate, or stop
 - `references/exploration-policy-v0.md` — allocate iterative search effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search

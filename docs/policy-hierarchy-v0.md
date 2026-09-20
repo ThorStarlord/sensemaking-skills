@@ -252,20 +252,30 @@ creating a generic belief database.
 Canonical agent-facing contract:
 `skills/using-sensemaking/references/learning-reconciliation-policy-v0.md`.
 
-### 4.7 Adaptive Policy Coordinator — later composition
+### 4.7 Adaptive Policy Coordinator — Package 7 / integrated
 
-A later coordinator may compose the individual policy contracts after they exist. It
-must permit compression:
+Adaptive Policy Coordinator v0 asks:
+
+> Which policy questions are decision-relevant now, and what is the smallest
+> sufficient composition that preserves evidence, authority, and stopping
+> boundaries?
+
+Its governing rule is:
 
 ```text
-clear + local + reversible
--> direct bounded work + verification
+clear + local + reversible + sufficiently evidenced
+-> direct bounded work + relevant verification
 
-ambiguous / consequential
--> expose only the policy layers needed for the decision
+ambiguous / consequential / iterative / authority-sensitive
+-> expose only the policy questions that can materially change the decision
 ```
 
-The coordinator must not require all layers on every task.
+Zero explicitly surfaced policy layers is valid for obvious bounded work. The
+coordinator is semantic composition guidance owned by the active agent; it is not a
+router, planner, scheduler, state machine, score, or runtime service.
+
+Canonical agent-facing contract:
+`skills/using-sensemaking/references/adaptive-policy-coordinator-v0.md`.
 
 ## 5. Activation principle
 
@@ -311,7 +321,7 @@ Policy Hierarchy Completion v0 proceeds as bounded packages:
 4. Warrant / Choice Policy v0 — integrated;
 5. Learning / Reconciliation Policy v0 — integrated;
 6. stable Strategic Alternatives surface — integrated through Strategic Repository Sensemaking v1;
-7. Adaptive Policy Coordinator v0.
+7. Adaptive Policy Coordinator v0 — integrated.
 
 A later package may revise the order only when a concrete dependency warrants it.
 
