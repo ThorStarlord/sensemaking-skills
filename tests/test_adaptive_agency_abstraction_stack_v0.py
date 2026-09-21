@@ -76,5 +76,5 @@ def test_closeout_returns_to_normal_use_without_product_expansion() -> None:
 
     assert "Adaptive Agency Abstraction Stack v0" in status
     assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
-    assert "Level-3 disposition: NO_CHANGE" in status
+    assert "Level-3 disposition: `NO_CHANGE`" in status
     assert "NORMAL_USE_VALIDATION" in status
