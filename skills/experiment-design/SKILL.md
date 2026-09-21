@@ -43,6 +43,18 @@ material.
 
 External experiment execution remains separately authorized.
 
+## Efficiency objective
+
+Optimize **decision-relevant information per total experiment cost**, subject to
+sufficient evidentiary rigor. Require **decision discrimination**: material result
+classes should lead to meaningfully different decision effects, or the warrant should
+be returned for reassessment.
+
+```text
+experimental quality
+!= experimental efficiency
+```
+
 ## Procedure
 
 1. Read [references/contract.md](references/contract.md).
