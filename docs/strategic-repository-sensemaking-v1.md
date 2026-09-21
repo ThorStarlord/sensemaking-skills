@@ -3,20 +3,21 @@
 **Status:** canonical product contract  
 **Control level:** Level 3 — Strategic Repository Evolution  
 **Authority:** subordinate to `docs/product-strategy.md`, ADR 0029, and the Four-Level Control Model  
-**Owner direction:** Issue #401  
+**Owner direction:** Issue #401, refined by Issue #446  
 **Runtime posture:** semantic-agent reasoning + mechanically validated artifact; no strategic planner runtime
 
 ## 1. Purpose
 
-Strategic Repository Sensemaking v1 turns repository evidence into an explicit,
-reconstructible strategic decision space.
+Strategic Repository Sensemaking v1 turns repository evidence, governing intent,
+and strategically relevant opportunity into an explicit, reconstructible
+strategic decision space.
 
 It answers:
 
 > Given this repository, its governing intent, current capabilities, evidence
-> ceilings, and material constraints, what coherent ways could the repository
-> evolve from here, what distinguishes those paths, and what direction or
-> inquiry is warranted now?
+> ceilings, material constraints, and credible opportunities, what coherent ways
+> could the repository evolve from here, what distinguishes those paths, and
+> what direction or inquiry is warranted now?
 
 This surface sits between repository diagnosis and bounded implementation:
 
@@ -28,6 +29,8 @@ current system model
 capability / limitation map
         |
 strategic frontier
+        |
+generative strategic-hypothesis pass
         |
 candidate construction paths
         |
@@ -44,6 +47,21 @@ candidate repository responsibility
 existing Level-2 / execution surfaces when separately authorized
 ```
 
+The generative pass does not replace evidence discipline. It separates the
+evidentiary burden of describing the present from the strategic burden of
+representing a plausible future:
+
+```text
+present-state claim
+-> evidence or explicit owner-intent source
+
+future-state possibility
+-> strategic grounding + explicit assumptions
+
+future success claim
+-> returned evidence after action
+```
+
 ## 2. Core boundary
 
 Strategic Repository Sensemaking is **not** a deterministic planner.
@@ -55,12 +73,15 @@ path comparison != numeric ranking
 semantic recommendation != deterministic planner output
 mechanically valid artifact != strategy correct
 repository evidence != owner intent
+strategic grounding != prior validation
+speculative path != manufactured path
 ```
 
 The active semantic agent owns:
 
 - interpretation of repository evidence;
 - generation of plausible construction paths;
+- admission of strategically grounded hypotheses about unbuilt futures;
 - qualitative comparison;
 - identification of decision-changing uncertainty;
 - strategic synthesis;
@@ -85,6 +106,8 @@ It asks primarily:
 `strategic-repository-analysis` asks a different Level-3 question:
 
 - what coherent futures are now plausible?
+- which futures respond to current tensions?
+- which futures exploit current capability, architectural leverage, or adjacent opportunity?
 - how would each future be constructed?
 - what does each path build on and require?
 - what does each path unlock?
@@ -135,19 +158,46 @@ Capabilities use the following bounded semantic states:
 The map is not a maturity score. Multiple capabilities with different states may
 coexist without implying a single scalar level.
 
+Current-state entries require evidence or an explicit owner-intent source.
+Future paths may require capabilities currently marked `MISSING`; the fact that
+a future capability is absent is normal construction, not a reason to suppress
+a strategically grounded path.
+
+```text
+missing capability
+!= strategic priority
+
+missing capability
+!= inadmissible strategic hypothesis
+```
+
 ## 6. Strategic frontier
 
-The Strategic Frontier is the set of current repository/product boundaries that
-could materially change progress toward the governing mission.
+The Strategic Frontier is the set of current repository/product boundaries **and
+unexploited opportunities** that could materially change progress toward the
+governing mission.
 
-Before admitting a tension, apply the Strategicity Gate: resolving the boundary
-must be capable of materially changing a future capability state, product
-boundary, major architecture/control boundary, major dependency structure,
-authority/thesis commitment, or materially different future development that
-becomes possible.
+Before admitting a tension or opportunity, apply the Strategicity Gate:
+resolving or pursuing it must be capable of materially changing a future
+capability state, product boundary, major architecture/control boundary, major
+dependency structure, authority/thesis commitment, or materially different
+future development that becomes possible.
 
 A local repair, stale status projection, routine maintenance action, or
 already-selected implementation task may warrant work without becoming Level 3.
+
+An opportunity may be Level-3 material even when its future capability does not
+exist yet. It must be grounded in a present strategic basis such as:
+
+- current repository capability or architectural leverage;
+- governing owner/product intent;
+- a represented adjacent user/problem;
+- an existing contract that makes the extension mechanistically plausible;
+- another explicit source that explains why this future belongs in the current
+  decision space.
+
+The source grounds the **present basis** of the opportunity. It does not need to
+prove the future outcome.
 
 ```text
 idea exists != frontier item
@@ -155,6 +205,7 @@ repository issue exists != strategic frontier
 bounded repair != construction path
 frontier item != implementation commitment
 frontier item != priority score
+opportunity not yet built != opportunity not strategically representable
 ```
 
 For new `schema_version: 2` analyses, each frontier entry declares
@@ -169,11 +220,46 @@ state plus the major capability sequence and dependencies needed to reach it.
 
 A path is not a feature list or roadmap.
 
+### Strategic Hypothesis Admission
+
+Before converging on evidence sufficiency, perform a generative pass. Strategy
+may represent disciplined hypotheses about futures that do not yet exist.
+
+A **real strategic path** is:
+
+```text
+coherent with governing intent
++ compatible with known repository reality
++ materially distinct future capability state
++ plausible mechanism from present capability/opportunity to that future
++ explicit decision-relevant assumptions
++ no known material contradiction
+```
+
+A path is **manufactured** when it exists mainly to fill path-count symmetry, is
+materially indistinguishable from another path, contradicts governing
+intent/current repository reality, solves no strategically represented
+problem/opportunity, or relies on hidden/invented premises.
+
+```text
+real strategic path
+!= empirically validated future
+
+speculative path
+!= manufactured path
+
+ambitious
+!= ungrounded
+
+absence of evidence for future success
+!= evidence that the future is strategically unwarranted
+```
+
 Each material path should state:
 
 - stable path identifier and name;
 - future state;
-- why this path is plausible from current evidence;
+- why this path is plausible from current evidence, intent, leverage, or opportunity;
 - Strategic Frontier entries it responds to;
 - capabilities it builds on;
 - new capabilities or changes it requires;
@@ -182,15 +268,17 @@ Each material path should state:
 - what the path unlocks;
 - material risks or tradeoffs;
 - reversibility characteristics;
-- evidence gaps / assumptions that matter.
+- evidence gaps / assumptions that matter;
+- reassessment triggers when assumption failure could change the path.
 
 Prefer **2–5 paths** when multiple futures are genuinely plausible. A single path
 is valid when only one coherent construction trajectory is materially represented.
 
-**Zero paths is also valid** when current evidence/authority does not support a
-meaningful construction trajectory yet, or when the strategic disposition is reached
-without selecting a construction direction (for example `NO_CHANGE`,
-`OWNER_DECISION`, `THESIS_REVIEW`, or an investigation that must precede path
+**Zero paths is also valid** when, after Strategic Hypothesis Admission,
+current evidence/intent/authority does not support a meaningful real strategic
+trajectory, or when the strategic disposition is reached without selecting a
+construction direction (for example `NO_CHANGE`, `OWNER_DECISION`,
+`THESIS_REVIEW`, or a genuinely gating investigation that must precede path
 formation).
 
 ```text
@@ -200,17 +288,24 @@ construction_paths: []
 zero real paths
 > one manufactured path
 
+zero paths
+!= default response to unvalidated futures
+
 BUILD
 -> at least one real path
 -> selected_path_id references that path
 ```
 
-Do not manufacture alternatives merely to fill a template.
+Do not manufacture alternatives merely to fill a template. Do not use the
+zero-path option merely because a coherent path is unvalidated; first ask
+whether it is a strategically grounded hypothesis under the rules above.
 
 New `schema_version: 2` paths make grounding explicit through
 `frontier_refs`, `why_plausible`, `builds_on_capability_ids`, and
-`required_capability_ids`. Referential integrity is mechanically checkable;
-strategic quality is not.
+`required_capability_ids`. The core strategic hypothesis/mechanism belongs in
+`why_plausible`; material premises belong in assumptions/reassessment
+triggers. Referential integrity is mechanically checkable; strategic quality is
+not.
 
 ## 8. Qualitative comparison
 
@@ -246,7 +341,30 @@ qualitative comparison != deterministic ranking
 agent judgment != unexplained intuition
 ```
 
-A comparison may conclude that no path is sufficiently warranted.
+### Commission / omission symmetry
+
+Comparison must consider both forms of strategic exposure:
+
+- **commission risk** — the downside of pursuing a path whose assumptions turn
+  out to be wrong;
+- **omission risk** — mission progress, leverage, learning rate, strategic
+  optionality, or adjacent opportunity lost by preserving the current state or
+  delaying unnecessarily.
+
+Use the existing lenses, especially consequence of error, deferral cost,
+decision value, and reversibility. Do not add numeric expected-value scoring or
+a new required schema field.
+
+```text
+risk of building wrong
+!= only strategic risk
+
+risk of not building
+= strategically relevant when omission changes mission progress or optionality
+```
+
+A comparison may conclude that no path is sufficiently warranted, but that
+conclusion should follow the generative/admission pass rather than replace it.
 
 ## 9. Decision-changing uncertainty
 
@@ -275,6 +393,7 @@ INVESTIGATE != EXPERIMENT
 experiment possible != experiment warranted
 strategic uncertainty != implementation blocker by default
 research-grade evidence != default product-development evidence
+residual uncertainty != BUILD prohibited
 ```
 
 Prefer the lowest-cost evidence strong enough for the strategic decision.
@@ -284,17 +403,25 @@ When an experiment remains warranted, count total setup/isolation/evaluation
 overhead and control only confounders that could invalidate the
 decision-relevant inference.
 
+Residual uncertainty about whether a strategically grounded future will
+succeed does not by itself require `INVESTIGATE`. A bounded, reversible,
+authorized, sufficiently safe, information-producing build may be the cheapest
+way to resolve that uncertainty while creating product value.
+
 ## 10. Strategic disposition
 
 The semantic agent emits one of:
 
 - `BUILD` — one construction direction is sufficiently warranted to select a
-  bounded repository responsibility;
+  bounded repository responsibility; prior empirical proof of future success is
+  not required when the strategic hypothesis is coherently grounded and the
+  bounded next responsibility has acceptable downside/reversibility;
 - `INVESTIGATE` — a specific decision-changing uncertainty should be resolved
   before selecting/building; this does not imply an experiment, and the
   evidence-producing responsibility should use the cheapest sufficient source;
 - `DEFER` — action is plausible but not warranted now;
-- `NO_CHANGE` — current evidence does not warrant repository construction;
+- `NO_CHANGE` — current evidence and strategically grounded opportunity do not
+  warrant repository construction;
 - `OWNER_DECISION` — the material missing premise is owner preference,
   authority, or policy;
 - `THESIS_REVIEW` — the decision cannot be resolved inside Level 3 because a
@@ -308,6 +435,12 @@ consistently.
 
 When disposition is `BUILD`, the analysis may nominate one candidate
 repository-level responsibility and the smallest warranted intervention.
+
+`BUILD` requires sufficient strategic warrant for the bounded next
+responsibility: coherent grounding, acceptable downside, appropriate
+reversibility, explicit material assumptions, and independent implementation
+authority. It does not require prior proof that the whole future path will
+succeed.
 
 That nomination is **not** implementation authority.
 
@@ -323,7 +456,7 @@ authority surface.
 
 ## 12. Evidence discipline
 
-Decision-changing claims must be grounded in durable evidence.
+Decision-changing **present-state claims** must be grounded in durable evidence.
 
 Evidence entries should identify:
 
@@ -334,6 +467,23 @@ Evidence entries should identify:
 
 Owner intent should be identified as owner-supplied context rather than
 fabricated repository evidence.
+
+Future-state strategic hypotheses must not masquerade as established evidence.
+They should declare:
+
+- the present evidence/intent/leverage that makes the future plausible;
+- the mechanism connecting the present to the proposed future;
+- material assumptions;
+- evidence gaps;
+- reassessment triggers.
+
+```text
+hypothesis explicitly grounded
+!= future outcome claimed true
+
+future not yet evidenced
+!= future excluded from strategy
+```
 
 ## 13. Policy Hierarchy composition
 
