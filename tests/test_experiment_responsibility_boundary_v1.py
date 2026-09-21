@@ -17,6 +17,9 @@ ECONOMY = (
     ROOT / "skills" / "using-sensemaking" / "references" / "experiment-economy-v1.md"
 )
 REPO_SENSEMAKER = ROOT / "skills" / "repo-sensemaker" / "SKILL.md"
+REPO_TEMPLATE = (
+    ROOT / "skills" / "repo-sensemaker" / "references" / "repo-analysis-template.md"
+)
 DISCOVERY = ROOT / "skills" / "discovery" / "SKILL.md"
 HYPOTHESIS = ROOT / "skills" / "hypothesis" / "SKILL.md"
 LEAN_CANVAS = ROOT / "skills" / "lean-canvas" / "SKILL.md"
@@ -55,6 +58,7 @@ def test_boundary_separates_diagnostic_inquiry_and_experiment_design_roles() -> 
 
 def test_diagnostic_skills_do_not_promote_missing_evidence_directly_to_experiment() -> None:
     repo = REPO_SENSEMAKER.read_text(encoding="utf-8")
+    template = REPO_TEMPLATE.read_text(encoding="utf-8")
     discovery = DISCOVERY.read_text(encoding="utf-8")
     hypothesis = HYPOTHESIS.read_text(encoding="utf-8")
     lean = LEAN_CANVAS.read_text(encoding="utf-8")
@@ -63,6 +67,8 @@ def test_diagnostic_skills_do_not_promote_missing_evidence_directly_to_experimen
     assert "diagnostic recommendation != experimentation responsibility" in repo
     assert "apply Experiment Economy before" in repo
     assert "formulate a bounded probe and recommend" not in repo
+    assert "formulate/recommend the probe instead" not in template
+    assert "apply Experiment Economy before" in template
 
     assert "uncertainty != experiment" in discovery
     assert "experiment-economy-v1.md" in discovery
@@ -83,7 +89,7 @@ def test_experiment_design_consumes_warrant_instead_of_manufacturing_it() -> Non
 
     for phrase in (
         "experiment-design\n!= experiment-warrant selector",
-        "do **not** manufacture the warrant",
+        "**not** manufacture the warrant",
         "cheaper evidence sources considered",
         "decision discrimination",
         "total experiment cost",
