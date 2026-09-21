@@ -19,9 +19,20 @@ Require product, target segment, delivered value hypothesis, stage, and current 
 4. Use competitor pricing only from dated source evidence.
 5. Use willingness-to-pay methods only when actual interview/survey/transaction evidence exists; otherwise mark WTP unknown.
 6. Propose packaging/tiers and economics assumptions with explicit evidence status.
-7. Define experiments to reduce the highest-risk pricing assumptions before external rollout.
-8. Return `pricing_model` and control. Any actual pricing/publishing change requires separate authority.
+7. Identify the decision-changing evidence needs behind the highest-risk pricing assumptions and compare candidate evidence sources by total cost. Populate experiment proposals only when Experiment Economy establishes that experimentation is the lowest-cost sufficient source.
+8. Otherwise keep the experiment proposal surface empty and record the unresolved evidence need / cheaper source instead of manufacturing an experiment.
+9. Return `pricing_model` and control. Any actual pricing/publishing change requires separate authority.
 
 ## Boundary
 
-`pricing recommendation != price-change authority`, `competitor benchmark != WTP evidence`, `value hypothesis != ROI observation`, and `unit-economics target != actual economics`.
+```text
+pricing uncertainty != experiment
+high-risk assumption != experiment requirement
+pricing recommendation != experimentation responsibility
+pricing recommendation != price-change authority
+competitor benchmark != WTP evidence
+value hypothesis != ROI observation
+unit-economics target != actual economics
+```
+
+Apply `../using-sensemaking/references/experiment-economy-v1.md` before proposing pricing experiments.
