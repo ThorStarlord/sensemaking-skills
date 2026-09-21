@@ -31,7 +31,7 @@ def test_handoff_records_exact_feature_qualification_and_merge() -> None:
 
     assert "zero file differences" in text
     assert "COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in text
-    assert "does not establish" in text
+    assert "does **not** establish" in text
     assert "not a validation experiment" in text
 
 
