@@ -21,6 +21,42 @@ def payload(aid):
  if aid=="pmf_report": return {"artifact_id":aid,"schema_version":"1","status":"partial","segment":"teams","evidence_window":"2026-Q3","survey":{"response_count":10,"very_disappointed_count":4,"very_disappointed_share":0.4,"evidence_refs":["survey-1"]},"retention_signals":[],"organic_signals":[],"qualitative_signals":[],"economics_signals":[],"assessment":"insufficient_evidence","assessment_basis":["small survey"],"limitations":["limited sample"],"next_evidence":["collect more responses"]}
  return {"artifact_id":aid,"schema_version":"1","status":"proposed","segment":"teams","value_metric":{"name":"seat","evidence_status":"hypothesis","evidence_refs":[]},"model_options":["per-seat","tiered"],"recommended_model":"tiered per-seat","competitor_claims":[],"wtp_evidence":[],"tiers":[{"id":"TIER-1","name":"Pro","price":None,"price_status":"unknown","evidence_refs":[]}],"economics":{"evidence_status":"unknown","evidence_refs":[],"values":{}},"experiments":[],"external_change_authority_ref":None,"unresolved_questions":[]}
 
+def v2_plan():
+ d=payload("experiment_plan")
+ d.update({
+  "schema_version":"2",
+  "decision_to_support":"choose whether to ship the candidate flow",
+  "decision_changing_uncertainty":"whether the candidate improves completion without guardrail harm",
+  "experiment_warrant":{
+   "status":"warranted",
+   "rationale":"existing evidence cannot discriminate the candidate from the current flow",
+   "cheaper_evidence_sources_considered":[
+    {"source":"existing_evidence","disposition":"insufficient","rationale":"no comparable observations exist"},
+    {"source":"reversible_build","disposition":"insufficient","rationale":"normal use cannot separate the candidate effect from traffic mix"},
+   ],
+  },
+  "decision_branches":[
+   {"result_class":"benefit without guardrail harm","decision_effect":"ship remains warranted"},
+   {"result_class":"no benefit or guardrail harm","decision_effect":"do not ship and revisit the hypothesis"},
+  ],
+  "total_experiment_cost":{
+   "design":"bounded plan design",
+   "setup":"existing experiment platform configuration",
+   "implementation":"candidate flow already implemented",
+   "isolation":"standard randomized allocation only",
+   "execution":"eligible production exposure",
+   "evaluation":"primary metric and guardrail analysis",
+   "interpretation":"one decision review",
+   "documentation":"experiment result artifact",
+   "delay":"one planned observation window",
+   "opportunity_cost":"candidate traffic is temporarily split",
+  },
+  "minimum_required_controls":["randomized allocation"],
+  "controls_rejected_as_unnecessary":["fresh-agent isolation is unrelated to this product experiment"],
+  "claim_ceiling":"supports only the declared population, intervention, metrics, and observation window",
+ })
+ return d
+
 def write(tmp_path,aid,data=None):
  parts=[f"# {aid}",""]
  for s in SECTIONS[aid]: parts += [f"## {s}","Fixture.",""]
@@ -40,6 +76,36 @@ def test_router_maps_all_measurement_artifacts():
 @pytest.mark.parametrize("aid",IDS)
 def test_valid_measurement_artifacts_pass(tmp_path,aid):
  code,out=route(write(tmp_path,aid)); assert code==0,out; assert out["validator"]=="validate-pm-measurement.py"
+
+def test_v2_experiment_plan_with_warrant_and_efficiency_context_passes(tmp_path):
+ code,out=route(write(tmp_path,"experiment_plan",v2_plan()))
+ assert code==0,out
+
+
+def test_v2_experiment_plan_requires_warrant_context(tmp_path):
+ d=v2_plan(); d.pop("experiment_warrant")
+ code,out=route(write(tmp_path,"experiment_plan",d))
+ assert code==1
+ assert any(e["error_id"]=="PM_MISSING_FIELD" and e["field"]=="experiment_warrant" for e in out["errors"])
+
+
+def test_v2_experiment_plan_requires_decision_discrimination(tmp_path):
+ d=v2_plan()
+ d["decision_branches"]=[
+  {"result_class":"positive","decision_effect":"ship"},
+  {"result_class":"negative","decision_effect":"ship"},
+ ]
+ code,out=route(write(tmp_path,"experiment_plan",d))
+ assert code==1
+ assert any(e["error_id"]=="PM_NO_DECISION_DISCRIMINATION" for e in out["errors"])
+
+
+def test_v2_experiment_plan_requires_total_cost_components(tmp_path):
+ d=v2_plan(); d["total_experiment_cost"].pop("opportunity_cost")
+ code,out=route(write(tmp_path,"experiment_plan",d))
+ assert code==1
+ assert any(e["error_id"]=="PM_EXPERIMENT_COST_COMPONENT_REQUIRED" for e in out["errors"])
+
 
 def test_experiment_plan_cannot_encode_result(tmp_path):
  d=payload("experiment_plan"); d["winner"]="treatment"; code,out=route(write(tmp_path,"experiment_plan",d)); assert code==1; assert any(e["error_id"]=="PM_PLAN_CANNOT_CONTAIN_RESULT" for e in out["errors"])
