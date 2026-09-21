@@ -48,6 +48,8 @@ Created:
 - docs/research/adaptive-agency-abstraction-stack-v0.md
 - docs/research/adaptive-agency-abstraction-stack-v0-reconciliation.md
 - tests/test_adaptive_agency_abstraction_stack_v0.py
+- .github/workflows/validation.yml
+- .github/workflows/release-candidate.yml
 - this handoff
 
 Updated:
@@ -130,26 +132,18 @@ A future organizational-pattern package requires repeated normal-use pressure or
 
 ## 7. Validation evidence and ceiling
 
-### Hosted PR validation
+The focused boundary test is wired into both existing hosted qualification lanes:
 
-The RED-stage head containing the new documentation contract test but not the model/reconciliation/handoff was submitted through PR #445.
+- Product Validation — Stable repository assertion suite;
+- Release Candidate Distribution — Release baseline contracts.
 
-Product Validation and Release Candidate Distribution both returned PASS on that head.
+An earlier RED-stage PR head passed both hosted lanes before this wiring existed. That result is retained only as evidence that the new test had not yet been collected; it is **not** claimed as RED proof.
 
-That result **does not constitute RED proof for the new focused test**, because the current hosted PR suites did not exercise the newly added test file: the test would have raised missing-file errors had it been collected.
+A local clone/test attempt was unavailable in this tool environment because outbound GitHub DNS/network access is blocked. The checked-in test was syntax-compiled independently, and every asserted boundary phrase was verified against the exact branch files through the GitHub connector.
 
-### Local focused pytest
+Final qualification must therefore come from the hosted Product Validation and Release Candidate Distribution runs on the exact final PR head, where the focused test is now explicitly collected.
 
-A local exact-branch clone/test run could not be executed in the current tool environment because the container has no outbound DNS/network access to GitHub.
-
-Therefore this handoff does **not** claim that tests/test_adaptive_agency_abstraction_stack_v0.py has been executed in this session.
-
-### What can still be established
-
-- GitHub records the exact branch changes and PR head.
-- Existing hosted Product Validation / Release Candidate Distribution can provide broader repository integration evidence for each pushed PR head.
-- The focused contract test is checked in for future full-suite/local execution.
-- Repository qualification, even when green, establishes representation/integration coherence only; it does not establish empirical usefulness of emergent organization.
+Even a green final qualification establishes representation/integration coherence only. It does not establish empirical usefulness, emergent-organization superiority, or a need for a Sensemaking organization runtime.
 
 ## 8. Reopen conditions
 
