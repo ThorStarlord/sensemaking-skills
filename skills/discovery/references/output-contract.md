@@ -19,3 +19,6 @@ unresolved_questions: []
 ```
 
 Hypothesis IDs are unique. `status` is `untested`, `evidence_backed`, or `contradicted`; `evidence_backed` requires evidence. Never encode `validated` merely because a test was designed. Decision criteria must be observable or explicitly owner-judgment based.
+
+
+`learning_method` is evidence-source-neutral. It may name reading, inspection, verification, owner/external evidence, a bounded probe, reversible normal-use construction, or an experiment only when experimentation has separately passed Experiment Economy. Do not encode an experiment merely because a hypothesis is untested.
