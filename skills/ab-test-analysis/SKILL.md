@@ -20,8 +20,17 @@ Require an experiment definition/hypothesis plus actual control/treatment observ
 5. Separate statistical uncertainty from practical/product significance.
 6. Evaluate guardrails and important segment heterogeneity without fishing for an unplanned winner.
 7. Return `ship`, `investigate`, `extend`, `stop`, `do_not_ship`, or `insufficient_evidence` as an analysis recommendation only.
-8. Return control; no rollout/external action is authorized.
+8. If the recommendation is `investigate` or `extend`, name the unresolved evidence need. Do not treat that recommendation as automatic warrant for another experiment; a continuation experiment must pass Experiment Economy again.
+9. Return control; no rollout/external action is authorized.
 
 ## Boundary
 
-`statistical significance != product value`, `recommendation != rollout authority`, and `experiment plan != observed result`.
+```text
+statistical significance != product value
+recommendation != rollout authority
+extend recommendation != experiment warrant
+investigate recommendation != experiment warrant
+experiment plan != observed result
+```
+
+Returned evidence may justify reassessment; it does not self-authorize experiment continuation.
