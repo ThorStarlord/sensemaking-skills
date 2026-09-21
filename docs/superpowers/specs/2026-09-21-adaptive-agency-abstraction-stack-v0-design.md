@@ -443,6 +443,10 @@ Modify only where required for bounded integration:
 - `docs/research/general-agency-model-v0.1.md`
 - `skills/using-sensemaking/references/practical-agent-architecture-v0.md`
 - `STATUS.md`
+- `.github/workflows/validation.yml` — include the focused boundary test in Product Validation
+- `.github/workflows/release-candidate.yml` — include the focused boundary test in release-baseline qualification
+
+The workflow edits only make the new documentation contract executable in existing qualification lanes; they add no product/runtime authority.
 
 The new test is representation/boundary assurance only. It must not claim semantic correctness or empirical usefulness.
 
@@ -455,7 +459,8 @@ Repository-local verification should establish:
 - capability/authority separation is explicit;
 - General Agency and Practical Agent Architecture point to the new model without promoting it into runtime authority;
 - STATUS records the package as research/reference and returns to `NO_CHANGE / NORMAL_USE`;
-- existing policy/control contract tests remain green.
+- existing policy/control contract tests remain green;
+- the focused abstraction-boundary test is exercised by both Product Validation and Release Candidate Distribution.
 
 No synthetic multi-agent experiment is required.
 
