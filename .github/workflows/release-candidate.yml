@@ -99,6 +99,7 @@ jobs:
           python -m pytest \
             tests/campaign_validation/test_release_candidate_contract.py \
             tests/campaign_validation/test_campaign_schema_evolution.py \
+            tests/campaign_validation/test_pm_measurement.py \
             tests/test_version_upgrade.py \
             tests/integration/test_external_golden_path_qualification.py \
             tests/test_release_authority_audit.py \
