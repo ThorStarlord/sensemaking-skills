@@ -82,6 +82,7 @@ jobs:
             tests/test_product_lab_boundary.py \
             tests/campaign_validation/test_artifact_admission.py \
             tests/campaign_validation/test_campaign_*.py \
+            tests/campaign_validation/test_pm_measurement.py \
             tests/campaign_validation/test_release_candidate_contract.py \
             tests/campaign_validation/test_repo_sensemaker_connector_probe_contract.py \
             tests/integration/test_external_golden_path_qualification.py \
