@@ -289,6 +289,8 @@ git commit -m "docs: integrate capability organization institution guidance"
 **Files:**
 - Create: docs/adaptive-agency-abstraction-stack-v0-handoff.md
 - Modify: STATUS.md
+- Modify: .github/workflows/validation.yml
+- Modify: .github/workflows/release-candidate.yml
 
 **Interfaces:**
 - Consumes: completed research model, reconciliation, and integrated guidance.
@@ -328,7 +330,11 @@ NEXT MODE = NORMAL_USE_VALIDATION
 
 Do not reopen a runtime program.
 
-- [ ] **Step 3: Run the focused test and verify GREEN**
+- [ ] **Step 3: Wire the focused boundary test into hosted qualification**
+
+Add `tests/test_adaptive_agency_abstraction_stack_v0.py` to the existing Stable repository assertion suite in Product Validation and the Release baseline contracts list in Release Candidate Distribution. Do not create a new workflow or runtime gate.
+
+- [ ] **Step 4: Run the focused test and verify GREEN**
 
 Run:
 
@@ -338,7 +344,7 @@ python -m pytest tests/test_adaptive_agency_abstraction_stack_v0.py -q
 
 Expected: PASS.
 
-- [ ] **Step 4: Run adjacent and repository-level validation**
+- [ ] **Step 5: Run adjacent and repository-level validation**
 
 Run:
 
@@ -349,7 +355,7 @@ python scripts/validate-repo.py
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit closeout**
+- [ ] **Step 6: Commit closeout**
 
 ~~~bash
 git add STATUS.md docs/adaptive-agency-abstraction-stack-v0-handoff.md
