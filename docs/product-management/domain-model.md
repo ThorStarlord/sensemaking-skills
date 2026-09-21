@@ -22,7 +22,7 @@ The smallest current vocabulary that covers the 27-source migration candidates w
 | `delivery_specification` | Decompose product intent into user-centered slices and verifiable done states. | user-stories, acceptance-criteria |
 | `prioritization` | Compare candidate work using declared evidence, trade-offs, and chosen framework. | prioritize |
 | `product_strategy` | Define strategic choices, goals, metrics, sequencing, and business assumptions. | strategy, north-star, okr, roadmap, lean-canvas |
-| `experimentation` | Design or analyze tests of product hypotheses using actual supplied observations where required. | experiment-design, ab-test-analysis |
+| `experimentation` | Design or analyze already-warranted tests of product hypotheses; experiment-design consumes experiment warrant, while result analysis never self-authorizes continuation. | experiment-design, ab-test-analysis |
 | `product_measurement` | Assess product signals such as PMF using supplied empirical evidence. | measure-pmf |
 | `commercial_strategy` | Reason about monetization, positioning, sales enablement, and GTM. | pricing, gtm, battlecard |
 | `risk_and_readiness` | Surface failure modes and readiness evidence before consequential release/launch decisions. | pre-mortem, launch-checklist |
@@ -43,6 +43,22 @@ agent identifies warranted responsibility
 ```
 
 Catalog membership must never be interpreted as recommendation, ranking, or authorization.
+
+Experimentation has an additional responsibility boundary:
+
+```text
+diagnostic uncertainty
+!= experimentation responsibility
+
+experiment-design capability exists
+!= experiment should be run
+
+experiment-analysis continuation recommendation
+!= fresh experiment warrant
+```
+
+Inquiry Policy / Experiment Economy decides whether experimentation is the lowest-cost
+sufficient evidence source before the `experimentation` responsibility is selected.
 
 ## First workflow envelope
 

@@ -20,7 +20,7 @@ Use this bootstrap to:
 3. when several policy questions may be relevant, use **Adaptive Policy Coordinator v0** to expose only the smallest decision-relevant policy composition; keep it implicit for obvious bounded work;
 4. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
 5. identify the nearest unresolved premise that could change the correct next action;
-6. apply **Inquiry Policy v0** only when additional evidence could materially change the decision and is worth obtaining; when experimentation is materially considered, apply **Experiment Economy & Proportional Rigor v1** so `INVESTIGATE != EXPERIMENT`, cheap reversible construction can compete as an evidence source, and experimental controls scale to the claim;
+6. apply **Inquiry Policy v0** only when additional evidence could materially change the decision and is worth obtaining; when experimentation is materially considered, apply **Experiment Economy & Proportional Rigor v1** so `INVESTIGATE != EXPERIMENT`, diagnostic Skills do not manufacture experimentation responsibility, cheap reversible construction can compete as an evidence source, and experimental controls scale to the claim;
 7. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
 8. when search is materially iterative, apply **Exploration Policy v0** to allocate effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search;
 9. apply **Warrant / Choice Policy v0** to the specific contemplated target when target justification/choice is material;
@@ -395,6 +395,20 @@ by default when the coding agent is part of the intended operating environment.
 Read `references/experiment-economy-v1.md` when experimentation, experimental
 isolation, fresh-agent setup, or contamination control is materially under
 consideration.
+
+A domain/diagnostic Skill may surface the uncertainty and evidence need, but the active
+control loop retains experiment warrant:
+
+```text
+diagnostic recommendation
+!= experimentation responsibility
+
+experiment warrant
+-> then experiment-design
+```
+
+Do not select `experiment-design` merely because a Skill emitted an empirical
+uncertainty or a validation idea.
 
 ---
 

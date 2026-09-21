@@ -22,3 +22,6 @@ status: proposed
 ```
 
 `hypothesis_id`, success criterion, and kill criterion are non-empty. `status` is always `proposed` here; experiment outcomes belong to empirical evidence or later artifacts. Evidence refs support context but never turn a proposed hypothesis into a validated result.
+
+
+`validation_method` is a candidate evidence source, not an experiment command. Prefer existing evidence, inspection, verification, owner/external evidence, a bounded probe, or reversible normal use when sufficient. Name an experiment only when experiment warrant has been established outside this Skill.

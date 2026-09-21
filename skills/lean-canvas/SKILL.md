@@ -18,9 +18,18 @@ Require a product idea/direction, target audience, and problem. Prefer discovery
 3. Preserve existing alternatives and early-adopter assumptions explicitly.
 4. Treat UVP, unfair advantage, channels, revenue, costs, TAM/SAM/SOM, and unit economics according to their actual evidence strength.
 5. Identify the smallest set of critical assumptions whose failure would invalidate the model.
-6. Propose validation approaches without claiming they have run.
+6. Propose the lowest-cost sufficient evidence source for each critical assumption. When empirical work is material, apply `../using-sensemaking/references/experiment-economy-v1.md` before recommending an experiment.
 7. Return `business_canvas` and control.
 
 ## Boundary
 
-`canvas block != validated fact`, `unfair advantage hypothesis != moat`, `pricing hypothesis != willingness-to-pay evidence`, and `TAM estimate != observed market capture`.
+```text
+critical assumption != experiment requirement
+validation method != experiment warrant
+canvas block != validated fact
+unfair advantage hypothesis != moat
+pricing hypothesis != willingness-to-pay evidence
+TAM estimate != observed market capture
+```
+
+Lean Canvas owns assumption mapping, not experimentation responsibility.

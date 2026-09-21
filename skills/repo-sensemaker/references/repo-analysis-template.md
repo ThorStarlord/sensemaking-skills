@@ -309,8 +309,11 @@ extended_analysis:
     # failed in production" is repository_evidence if run logs already
     # exist to search; it's empirical if nothing has ever been run and
     # the only way to find out is to run it. Either way: empirical
-    # uncertainty is never resolved by asking the owner to guess --
-    # formulate/recommend the probe instead (see Boundary Rule 3).
+    # uncertainty is never resolved by asking the owner to guess.
+    # Identify the evidence need and apply Experiment Economy before
+    # recommending an evidence-producing action. A probe is a candidate,
+    # not an automatic consequence of empirical uncertainty; an experiment
+    # requires experiment warrant (see Boundary Rule 2).
     question: >
       The specific unresolved question, independent of source -- every
       source can have one, not only owner_intent.

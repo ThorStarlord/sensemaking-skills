@@ -48,6 +48,28 @@ research-grade evidence
 
 Do not optimize evidence purity independently of decision value.
 
+## Responsibility boundary
+
+Experiment Economy owns the decision **whether experimentation is warranted**. Domain
+and diagnostic Skills may surface an empirical uncertainty, missing evidence, and
+candidate evidence source, but they must not manufacture an experimentation
+responsibility merely because they know how to test something.
+
+```text
+diagnostic uncertainty
+!= experiment warrant
+
+missing evidence
+!= experimentation responsibility
+
+experiment-design
+= downstream of experiment warrant
+```
+
+Once experiment warrant exists, `experiment-design` owns efficient experiment design:
+decision discrimination, total cost, minimum sufficient rigor, necessary controls, stop
+conditions, and claim ceiling. It does not re-decide its own activation.
+
 ## 2. Experiment Warrant Gate
 
 Before selecting an experiment, answer:

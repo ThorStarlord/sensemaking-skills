@@ -30,3 +30,5 @@ unresolved_questions: []
 ```
 
 Allowed evidence states are `observed`, `inferred`, `hypothesis`, and `unknown`. Any block marked `observed` requires evidence refs. `status` is always `hypothesis` here; later empirical evidence may update Campaign knowledge without retroactively changing the meaning of this generated canvas.
+
+For `critical_hypotheses[].validation_method`, record the lowest-cost plausible evidence source. An experiment is allowed only when Experiment Economy has established experiment warrant; an untested or high-risk hypothesis does not itself justify experimentation.

@@ -39,9 +39,27 @@ It enforces source-backed observed market claims, proposed strategy/metric/OKR/r
 
 ### `experiment_plan`
 
-The artifact is always `status: designed`, references a hypothesis, identifies experiment type/population/intervention, defines primary metric, guardrails, sample/duration plan, preregistered decision and kill criteria, analysis method, and any external execution authority reference.
+The artifact is always `status: designed` and cannot encode winner/result/effect/p-value fields. An observed baseline requires evidence. External execution authority remains separate.
 
-A plan cannot encode winner/result/effect/p-value fields. An observed baseline requires evidence. The validator establishes planning representation, not experiment execution.
+Historical `schema_version: "1"` plans remain valid with the original hypothesis/method/metric/sample/duration/decision/kill/analysis representation.
+
+Canonical new `schema_version: "2"` plans additionally require:
+
+- the decision to support and decision-changing uncertainty;
+- an explicit experiment warrant with cheaper evidence sources considered and why they were insufficient;
+- at least two material result classes with decision effects;
+- qualitative total experiment cost across design, setup, implementation, isolation, execution, evaluation, interpretation, documentation, delay, and opportunity cost;
+- minimum required controls and optionally controls rejected as unnecessary;
+- a claim ceiling.
+
+The validator can check representation, explicit warrant presence, cost-component coverage, and direct duplicate decision effects. It does **not** establish that experimentation was actually the cheapest sufficient evidence source, that the selected controls are semantically sufficient, or that the experiment is optimal.
+
+```text
+valid experiment_plan
+!= experiment warrant semantically proven
+!= experiment executed
+!= experiment result
+```
 
 ### `test_results`
 

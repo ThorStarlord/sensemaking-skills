@@ -41,6 +41,50 @@ def validate_plan(d,errors):
  if any(k in d for k in ("result","winner","effect_estimate","p_value")): errors.append(err("PM_PLAN_CANNOT_CONTAIN_RESULT","artifact","experiment_plan cannot encode observed result/winner fields"))
  if not text(d.get("analysis_method")): errors.append(err("PM_ANALYSIS_METHOD_REQUIRED","analysis_method","analysis method required"))
 
+ if str(d.get("schema_version"))=="2":
+  require(d,("decision_to_support","decision_changing_uncertainty","experiment_warrant","decision_branches","total_experiment_cost","minimum_required_controls","controls_rejected_as_unnecessary","claim_ceiling"),errors)
+  if not text(d.get("decision_to_support")): errors.append(err("PM_DECISION_REQUIRED","decision_to_support","v2 experiment plan requires the decision it can change",d.get("decision_to_support")))
+  if not text(d.get("decision_changing_uncertainty")): errors.append(err("PM_UNCERTAINTY_REQUIRED","decision_changing_uncertainty","v2 experiment plan requires a decision-changing uncertainty",d.get("decision_changing_uncertainty")))
+
+  warrant=d.get("experiment_warrant")
+  if not isinstance(warrant,dict):
+   errors.append(err("PM_EXPERIMENT_WARRANT_REQUIRED","experiment_warrant","v2 experiment plan requires experiment warrant context",warrant))
+  else:
+   if warrant.get("status")!="warranted": errors.append(err("PM_EXPERIMENT_WARRANT_REQUIRED","experiment_warrant.status","experiment warrant status must be warranted",warrant.get("status")))
+   if not text(warrant.get("rationale")): errors.append(err("PM_EXPERIMENT_WARRANT_RATIONALE_REQUIRED","experiment_warrant.rationale","experiment warrant rationale required",warrant.get("rationale")))
+   alternatives=warrant.get("cheaper_evidence_sources_considered")
+   if not isinstance(alternatives,list) or not alternatives:
+    errors.append(err("PM_CHEAPER_EVIDENCE_REVIEW_REQUIRED","experiment_warrant.cheaper_evidence_sources_considered","v2 experiment plan must record at least one cheaper evidence source considered",alternatives))
+   else:
+    for i,item in enumerate(alternatives):
+     if not isinstance(item,dict) or not text(item.get("source")) or not text(item.get("disposition")) or not text(item.get("rationale")):
+      errors.append(err("PM_INVALID_EVIDENCE_ALTERNATIVE",f"experiment_warrant.cheaper_evidence_sources_considered[{i}]","each cheaper evidence source requires source, disposition, and rationale",item))
+
+  branches=d.get("decision_branches")
+  if not isinstance(branches,list) or len(branches)<2:
+   errors.append(err("PM_DECISION_DISCRIMINATION_REQUIRED","decision_branches","v2 experiment plan requires at least two material result classes",branches))
+  else:
+   effects=[]
+   for i,item in enumerate(branches):
+    if not isinstance(item,dict) or not text(item.get("result_class")) or not text(item.get("decision_effect")):
+     errors.append(err("PM_INVALID_DECISION_BRANCH",f"decision_branches[{i}]","each decision branch requires result_class and decision_effect",item))
+    else: effects.append(item["decision_effect"].strip().casefold())
+   if len(effects)>=2 and len(set(effects))==1:
+    errors.append(err("PM_NO_DECISION_DISCRIMINATION","decision_branches","all declared result classes lead to the same decision effect",effects))
+
+  cost=d.get("total_experiment_cost")
+  cost_fields=("design","setup","implementation","isolation","execution","evaluation","interpretation","documentation","delay","opportunity_cost")
+  if not isinstance(cost,dict):
+   errors.append(err("PM_TOTAL_EXPERIMENT_COST_REQUIRED","total_experiment_cost","v2 experiment plan requires qualitative total experiment cost",cost))
+  else:
+   for field in cost_fields:
+    if not text(cost.get(field)): errors.append(err("PM_EXPERIMENT_COST_COMPONENT_REQUIRED",f"total_experiment_cost.{field}",f"experiment cost component {field!r} must be described",cost.get(field)))
+
+  for field in ("minimum_required_controls","controls_rejected_as_unnecessary"):
+   if not isinstance(d.get(field),list) or not all(text(x) for x in d.get(field,[])):
+    errors.append(err("PM_INVALID_CONTROL_LIST",field,f"{field} must be a list of strings",d.get(field)))
+  if not text(d.get("claim_ceiling")): errors.append(err("PM_CLAIM_CEILING_REQUIRED","claim_ceiling","v2 experiment plan requires a claim ceiling",d.get("claim_ceiling")))
+
 def validate_results(d,errors):
  require(d,("schema_version","status","experiment_ref","observation_refs","primary_metric","control","treatment","method","effect_estimate","uncertainty","setup_integrity","guardrails","recommendation","limitations"),errors)
  status=d.get("status"); rec=d.get("recommendation")
@@ -111,7 +155,9 @@ def validate(path:Path):
  errors=[]
  for section in SECTIONS[aid]:
   if not re.search(rf"^##\s+(?:\d+\.\s*)?{re.escape(section)}\s*$",content,re.MULTILINE|re.IGNORECASE): errors.append(err("PM_MISSING_SECTION","sections",f"required section {section!r} is missing"))
- if data.get("schema_version") not in {"1",1}: errors.append(err("PM_INVALID_SCHEMA_VERSION","schema_version","schema_version must be 1",data.get("schema_version")))
+ version=str(data.get("schema_version"))
+ allowed={"1","2"} if aid=="experiment_plan" else {"1"}
+ if version not in allowed: errors.append(err("PM_INVALID_SCHEMA_VERSION","schema_version",f"schema_version must be one of {sorted(allowed)}",data.get("schema_version")))
  VALIDATORS[aid](data,errors); return aid,errors
 
 def main(argv=None):

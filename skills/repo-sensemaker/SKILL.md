@@ -221,8 +221,17 @@ Every response must follow the [Repository Sensemaking Brief](references/repo-an
 
 ## Boundary Rules
 1. **No Implementation**: Do not execute workflows or implement changes. The output of this skill is a diagnostic artifact.
-2. **Registry grounding AND target availability**: A non-null `recommended_workflow_id` MUST satisfy *both* checks. (a) **Exists in the toolchain**: it is a live id in `skills/workflow-planner/references/workflow-registry.yaml` — do not invent or "hallucinate" workflow IDs from semantic context. (b) **Available from the analysed target**: the recommended workflow is actually an execution vehicle reachable from the target's context — i.e. the target repository is Sensemaking-configured and vendors `workflow-planner` plus the workflow's constituent skills (check for `skills/workflow-planner/`, a `skills/VENDORED.yaml`, `sensemaking-config.yaml`, or an equivalent marker), or the workflow is being run within the Sensemaking toolchain itself against the target. A workflow that exists in the registry but is **not** available from the target is a **no-match**, not a recommendation: do not silently collapse "exists in the Sensemaking toolchain" into "available in the target repository". In the no-match case (whether because nothing matches semantically, or because the match is not available from the target), set `escalation_recommended: true` and emit `recommended_workflow_id: null` (valid no-match state per ADR 0014); if the toolchain workflow is still a useful conceptual pointer, name it in the Section 11/12 prose and state plainly that it is a Sensemaking-toolchain workflow **not vendored/available in the analysed target repository**. Do not fabricate a closest structural match, and never imply target-local availability you have not verified.
-3. **Clarification policy**: Ask no questions when repository evidence is sufficient. When unresolved owner intent would materially change the recommendation, ask a neutral, high-information clarification that gathers intent rather than advocating one option. Resolve empirical uncertainty through probes rather than asking the owner to guess. This policy applies regardless of execution mode, but *how* it's carried out differs: in conversational invocation, apply it directly — see "Interact" below, which is this policy's full worked-out procedure (uncertainty classification, the neutral-clarification discipline, the one-question default). In automated runtime execution there is no owner to ask (see Execution Protocol step 8) — the equivalent signal is `escalation_recommended: true`, optionally sharpened by Section 15's `uncertainty`/`owner_intent_state` fields, which is what a later conversational consumer (a human, or this skill re-invoked conversationally) uses to actually ask.
+2. **Experiment responsibility boundary**: This diagnostic Skill may identify empirical uncertainty and missing evidence, but it does not manufacture an experimentation responsibility. Apply `../using-sensemaking/references/experiment-economy-v1.md` before recommending a probe/experiment when empirical evidence is material.
+
+   ```text
+   uncertainty != experiment
+   missing evidence != experiment required
+   diagnostic recommendation != experimentation responsibility
+   ```
+
+   Prefer an evidence need or candidate evidence source until experiment warrant exists.
+3. **Registry grounding AND target availability**: A non-null `recommended_workflow_id` MUST satisfy *both* checks. (a) **Exists in the toolchain**: it is a live id in `skills/workflow-planner/references/workflow-registry.yaml` — do not invent or "hallucinate" workflow IDs from semantic context. (b) **Available from the analysed target**: the recommended workflow is actually an execution vehicle reachable from the target's context — i.e. the target repository is Sensemaking-configured and vendors `workflow-planner` plus the workflow's constituent skills (check for `skills/workflow-planner/`, a `skills/VENDORED.yaml`, `sensemaking-config.yaml`, or an equivalent marker), or the workflow is being run within the Sensemaking toolchain itself against the target. A workflow that exists in the registry but is **not** available from the target is a **no-match**, not a recommendation: do not silently collapse "exists in the Sensemaking toolchain" into "available in the target repository". In the no-match case (whether because nothing matches semantically, or because the match is not available from the target), set `escalation_recommended: true` and emit `recommended_workflow_id: null` (valid no-match state per ADR 0014); if the toolchain workflow is still a useful conceptual pointer, name it in the Section 11/12 prose and state plainly that it is a Sensemaking-toolchain workflow **not vendored/available in the analysed target repository**. Do not fabricate a closest structural match, and never imply target-local availability you have not verified.
+4. **Clarification policy**: Ask no questions when repository evidence is sufficient. When unresolved owner intent would materially change the recommendation, ask a neutral, high-information clarification that gathers intent rather than advocating one option. Resolve empirical uncertainty through probes rather than asking the owner to guess. This policy applies regardless of execution mode, but *how* it's carried out differs: in conversational invocation, apply it directly — see "Interact" below, which is this policy's full worked-out procedure (uncertainty classification, the neutral-clarification discipline, the one-question default). In automated runtime execution there is no owner to ask (see Execution Protocol step 8) — the equivalent signal is `escalation_recommended: true`, optionally sharpened by Section 15's `uncertainty`/`owner_intent_state` fields, which is what a later conversational consumer (a human, or this skill re-invoked conversationally) uses to actually ask.
 
 ## References
 - [Canonical Vocabulary Registry](../../docs/canonical-vocabulary.yaml) — Authoritative fog type definitions and routing field enums
@@ -316,9 +325,9 @@ produce yourself.
 
 **Applies only when you are talking directly with a user (or another agent) in conversation, not when invoked as an automated workflow step (see "Execution Protocol" above, step 8).** If you're not sure which mode you're in: if you were given a `run_id`/`step_id`/`expected_output_path`, you're in the automated path — stop after producing the artifact. Otherwise, continue below.
 
-This section is the conversational-mode procedure for **Boundary Rule 3's clarification policy** — the policy itself is stated once, above, and applies in both execution modes; what follows is how to actually carry it out when a chat channel exists. Don't let this section's wording drift from Boundary Rule 3's — if you're revising one, revise both.
+This section is the conversational-mode procedure for **Boundary Rule 4's clarification policy** — the policy itself is stated once, above, and applies in both execution modes; what follows is how to actually carry it out when a chat channel exists. Don't let this section's wording drift from Boundary Rule 3's — if you're revising one, revise both.
 
-This skill's job, in this mode: given real (or agent-selected) owner uncertainty, produce a useful recommendation with the least owner burden possible, while never inventing an owner preference it doesn't have. This procedure is evidenced by a real-use validation experiment (see `docs/prototypes/real-use-experiment-2026-08-09/` on `prototype/repo-sensemaker-vnext`, PR #164) that ran it twice under genuine context isolation and found it independently avoided a real design failure mode (bundling an evidence-resolved fact with an evidence-supported-but-unauthorized recommendation) both times — see [docs/candidate/architecture-decision.md](../../docs/candidate/architecture-decision.md) for why the underlying *behavior* is treated as evidenced even though the packaging it originally shipped in (a separate Skill) was not. Independently, canonical `main`'s Boundary Rule 3 (PR #165, merged without knowledge of this branch) codifies the same "ask only if evidence-insufficient and decision-changing, resolve empirical uncertainty via probes" policy at the Diagnose level — real, if indirect, corroboration that this behavior is worth having, from a source that never saw #164's evidence.
+This skill's job, in this mode: given real (or agent-selected) owner uncertainty, produce a useful recommendation with the least owner burden possible, while never inventing an owner preference it doesn't have. This procedure is evidenced by a real-use validation experiment (see `docs/prototypes/real-use-experiment-2026-08-09/` on `prototype/repo-sensemaker-vnext`, PR #164) that ran it twice under genuine context isolation and found it independently avoided a real design failure mode (bundling an evidence-resolved fact with an evidence-supported-but-unauthorized recommendation) both times — see [docs/candidate/architecture-decision.md](../../docs/candidate/architecture-decision.md) for why the underlying *behavior* is treated as evidenced even though the packaging it originally shipped in (a separate Skill) was not. Independently, canonical `main`'s Boundary Rule 4 (PR #165, merged without knowledge of this branch) codifies the same "ask only if evidence-insufficient and decision-changing, resolve empirical uncertainty via probes" policy at the Diagnose level — real, if indirect, corroboration that this behavior is worth having, from a source that never saw #164's evidence.
 
 ### Interaction workflow
 
@@ -356,14 +365,20 @@ owner_intent_state?
    |   repository_evidence -> re-run Diagnose with a narrower
    |                          investigation focus (not a new
    |                          owner question)
-   |   empirical            -> formulate a bounded probe and recommend
-   |                          it. Do not run it here -- Boundary Rule
-   |                          #1 (No implementation) still applies in
-   |                          this mode. If the probe would itself need
-   |                          separate authorization (e.g. it's
-   |                          ADR-0017/0021-gated, not ordinary
-   |                          read-only investigation), say so; do not
-   |                          assume "bounded" means "pre-authorized."
+   |   empirical            -> identify the decision-changing evidence
+   |                          need and apply Experiment Economy before
+   |                          recommending any evidence-producing action.
+   |                          Prefer existing evidence, inspection,
+   |                          verification, owner/external clarification,
+   |                          a tiny probe, or cheap reversible construction
+   |                          when sufficient. A bounded probe is only a
+   |                          candidate after that comparison; an experiment
+   |                          requires separate experiment warrant. Do not
+   |                          run it here -- Boundary Rule #1 (No
+   |                          implementation) still applies. If the selected
+   |                          evidence-producing action would itself need
+   |                          separate authorization, say so; do not assume
+   |                          "bounded" means "pre-authorized."
    |   owner_intent         -> would a different answer materially
    |                          change the recommendation?
    |                             no  -> proceed, note the residual
