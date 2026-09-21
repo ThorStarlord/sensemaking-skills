@@ -12,6 +12,13 @@ warranted and how much rigor is sufficient. Individual Skills can still bypass t
 control layer if they translate an empirical uncertainty directly into an experiment
 or if `experiment-design` silently manufactures the warrant it consumes.
 
+Canonical non-identity:
+
+```text
+diagnostic uncertainty
+!= experimentation responsibility
+```
+
 The responsibility boundary is:
 
 ```text
