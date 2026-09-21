@@ -397,6 +397,35 @@ worker capability
 != authority expansion
 ```
 
+
+### 9.1 Organization boundary
+
+Adaptive Agency Abstraction Stack v0 provides the supporting research vocabulary for distinguishing bounded delegation from materially multi-actor organization. See ../../../docs/research/adaptive-agency-abstraction-stack-v0.md and ../../../docs/research/adaptive-agency-abstraction-stack-v0-reconciliation.md.
+
+~~~text
+delegation
+!= Organization automatically
+
+Campaign != Organization
+
+organization pattern != execution authority
+~~~
+
+Campaign preserves the live decision/responsibility/evidence/authority state. Organization describes how multiple actors are arranged through roles, specialization, communication, or coordination topology. A Campaign may be executed by one agent; an external multi-agent organization may execute work inside a Campaign without moving organizational topology into Campaign state.
+
+Under the current ADR 0029 boundary, adaptive worker allocation, scheduling, peer communication topology, and team lifecycle belong primarily to the external harness / software-factory / orchestration environment. Sensemaking should preserve the warranted responsibility, authority envelope, evidence requirements, and semantic reassessment boundary rather than become an organization runtime.
+
+~~~text
+organizational capability
+!= Sensemaking runtime responsibility
+
+organizational pattern discovered
+!= organizational pattern authorized
+
+capability growth
+!= authority growth
+~~~
+
 ## 10. Execution and orchestration return evidence upward
 
 Use the existing control law:
