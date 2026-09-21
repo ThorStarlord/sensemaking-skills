@@ -34,6 +34,7 @@ def test_strategic_skill_owns_repository_evolution_not_task_execution() -> None:
         "capability / limitation map",
         "Strategic Frontier",
         "Generate coherent construction paths",
+        "Strategic Hypothesis Admission",
         "Compare paths qualitatively",
         "decision-changing uncertainty",
         "BUILD",
@@ -71,11 +72,68 @@ def test_strategic_alternatives_are_conditional_and_zero_path_capable() -> None:
 
     assert "Use zero paths when no construction trajectory is currently warranted/representable" in skill
     assert "zero real paths\n> manufactured alternative" in skill
-    assert "Use zero paths when current evidence/authority does not support even one coherent" in guide
+    assert "Use zero paths when, **after Strategic Hypothesis Admission**, current" in guide
     assert "NO_CHANGE" in guide
     assert "OWNER_DECISION" in guide
     assert "THESIS_REVIEW" in guide
     assert "INVESTIGATE" in guide
+    assert "zero paths\n!= default response to unvalidated futures" in guide
+
+
+def test_strategic_hypothesis_admission_separates_present_evidence_from_future_grounding() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = PATH_GUIDE.read_text(encoding="utf-8")
+
+    for phrase in (
+        "present-state claim\n-> evidence or explicit owner-intent source",
+        "future-state possibility\n-> strategic grounding + explicit assumptions",
+        "real strategic path\n!= empirically validated future",
+        "speculative path\n!= manufactured path",
+        "strategic grounding\n!= prior validation",
+        "absence of evidence for future success\n!= evidence that the future is strategically unwarranted",
+    ):
+        assert phrase in skill
+
+    for phrase in (
+        "Strategic Hypothesis Admission",
+        "present-state claim\n-> current evidence or explicit owner-intent source",
+        "future-state possibility\n-> strategic grounding + explicit assumptions",
+        "real strategic path\n!= empirically validated future",
+        "speculative path\n!= manufactured path",
+        "zero paths\n!= default response to unvalidated futures",
+    ):
+        assert phrase in guide
+
+
+def test_opportunity_driven_frontier_and_commission_omission_symmetry_are_explicit() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = PATH_GUIDE.read_text(encoding="utf-8")
+
+    assert "repository tension **or opportunity**" in skill
+    assert "unresolved boundaries **and unexploited opportunities**" in skill
+    assert "opportunity not yet built != opportunity not strategically representable" in skill
+    assert "commission/omission symmetry check" in skill
+    assert "**risk of commission:**" in skill
+    assert "**risk of omission:**" in skill
+
+    assert "repository tensions and opportunities" in guide
+    assert "deficiency-driven future\n!= only admissible future" in guide
+    assert "Commission / omission symmetry" in guide
+    assert "**commission risk**" in guide
+    assert "**omission risk**" in guide
+
+
+def test_build_can_be_information_producing_without_prior_success_proof() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = PATH_GUIDE.read_text(encoding="utf-8")
+
+    assert "residual uncertainty\n!= BUILD prohibited" in skill
+    assert "may warrant BUILD before future success is demonstrated" in skill
+    assert "`BUILD` does not require prior empirical\nproof that the selected future will succeed" in skill
+
+    assert "residual uncertainty\n!= BUILD prohibited" in guide
+    assert "may warrant BUILD before future success is demonstrated" in guide
+    assert "`BUILD` does not require proof of future success" in guide
 
 
 def test_repo_sensemaker_remains_diagnostic_and_points_strategic_requests_upward() -> None:
@@ -177,4 +235,4 @@ def test_v2_grounding_is_explicit_without_semantic_validator_authority() -> None
     ):
         assert phrase in skill
 
-    assert "Mechanical tools validate only the declared\nrelationships." in guide
+    assert "Mechanical tools validate only the declared relationships." in guide
