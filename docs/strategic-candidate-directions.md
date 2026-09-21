@@ -80,6 +80,7 @@ Repository-qualified/current baselines include:
 - **Issue #432 Decision Journey Productization v1**: read-only journey reconstruction, caller-selected context packs, authored strategic deltas, impact/closure comparison, guided entry, and playbooks without planner/router authority.
 - **Issue #435 Strategic Repository Analysis Semantic Grounding v1**: explicit Strategicity Gate, backward-compatible strategic artifact v2 grounding, frontier/path reference integrity, and strategy-before-intervention ordering while preserving historical v1 analyses and semantic-agent ownership.
 - **Issue #438 Experiment Economy & Proportional Rigor v1**: Experiment Warrant, evidence-source economy, reversible-build-as-evidence, total experiment-cost reasoning, Minimum Sufficient Experimental Rigor, Confounder Warrant, and normal-use/causal evidence distinction; no experiment engine, scorer, mandatory isolation, or experiment program.
+- **Issue #441 Experiment Responsibility Boundary v1**: propagates experiment-warrant ownership through repo-sensemaker and product diagnostic Skills; experiment-design consumes rather than creates warrant; canonical experiment plans use backward-compatible v2 decision-discrimination/total-cost/control context; no experiment router or automatic responsibility selection.
 
 Campaign schema remains v2. None of these baselines establishes native-harness usefulness, empirical portability, comparative superiority, semantic correctness, objective strategic priority, or automatic planning authority.
 
