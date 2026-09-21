@@ -18,9 +18,10 @@ Require a target user/segment, an opportunity/problem, and a proposed interventi
 3. Separate user behavior from internal business metric where possible.
 4. Define a primary measure plus secondary or guardrail measures only when useful and observable.
 5. Identify consequential assumptions across value, usability, viability, and feasibility.
-6. Define a bounded validation approach and explicit success, pivot, and kill criteria before results exist.
-7. Cite supporting evidence and label unsupported premises as assumptions.
-8. Render [references/output-contract.md](references/output-contract.md) and return control.
+6. Define the evidence need and a bounded validation approach, preferring the lowest-cost sufficient evidence source. If empirical work is material, apply `../using-sensemaking/references/experiment-economy-v1.md` before recommending an experiment.
+7. Preserve explicit success, pivot, and kill criteria before results exist.
+8. Cite supporting evidence and label unsupported premises as assumptions.
+9. Render [references/output-contract.md](references/output-contract.md) and return control.
 
 ## Stop or downgrade
 
@@ -31,4 +32,11 @@ Require a target user/segment, an opportunity/problem, and a proposed interventi
 
 ## Boundary
 
-`hypothesis card != experiment result`, and `validation approach != validation evidence`.
+```text
+hypothesis != experiment warrant
+validation approach != experiment requirement
+validation approach != validation evidence
+hypothesis card != experiment result
+```
+
+This Skill may describe what evidence would discriminate the hypothesis, but Experiment Economy owns whether an experiment is warranted.
