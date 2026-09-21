@@ -700,6 +700,36 @@ Simulation estimates possible future states under candidate interventions.
 
 Simulation output remains evidence for judgment, not automatic authority.
 
+
+### 8.8 Adaptive Agency Abstraction Stack v0
+
+Adaptive Agency Abstraction Stack v0 is a supporting research model for three distinct but interacting concerns:
+
+~~~text
+Capability Plane
+-> Root Primitive / Cognitive Operator / Capability / Skill
+
+Coordination Plane
+-> delegation / role allocation / Organization
+
+Governance / Persistence Plane
+-> policy / authority / provenance / continuity / Institution
+~~~
+
+See adaptive-agency-abstraction-stack-v0.md and its Sensemaking reconciliation.
+
+The model clarifies an allocation consequence already implicit in metareasoning and decomposition: when multiple actors are available, decomposition may produce role specialization, peer coordination, or a temporary organizational arrangement.
+
+**Organization is not a mandatory lifecycle stage.** A single agent, a tool-using agent, a parent with one delegated worker, and a multi-agent organization can all instantiate the same General Agency lifecycle.
+
+Institution is also not a larger agent or a final cognitive stage. It belongs primarily in the governance/persistence envelope: durable rules, authority, precedent, memory/provenance, and continuity can constrain or outlive particular actors.
+
+~~~text
+organization modeled != organization runtime warranted
+institution != autonomous agent collective
+capability growth != authority growth
+~~~
+
 ## 9. Adversarial review and value contestation
 
 Adversarial reasoning can operate on values as well as factual beliefs, but two cases must be distinguished.

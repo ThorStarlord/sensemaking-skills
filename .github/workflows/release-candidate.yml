@@ -120,6 +120,7 @@ jobs:
             tests/test_experiment_economy_v1_closeout.py \
             tests/test_experiment_responsibility_boundary_v1.py \
             tests/test_experiment_responsibility_boundary_v1_closeout.py \
+            tests/test_adaptive_agency_abstraction_stack_v0.py \
             -q
 
       - name: Build wheel and sdist
