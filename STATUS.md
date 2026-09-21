@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-21  
-**Current phase:** Issue #444 Adaptive Agency Abstraction Stack v0 is complete as a bounded research/reference integration with no runtime/product-boundary expansion; Issue #441 Experiment Responsibility Boundary v1 is complete/integrated and in normal-use handoff; Issue #438 Experiment Economy & Proportional Rigor v1 is complete/integrated and in normal-use handoff; Issue #435 Strategic Repository Analysis Semantic Grounding v1 is complete/integrated and in normal-use handoff; Issue #432 Decision Journey Productization v1 is complete/integrated and in normal-use handoff; Issues #430, #426, and #416 remain complete/integrated normal-use baselines. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #446 Strategic Hypothesis Admission v1 is complete/integrated and in normal-use handoff; Issue #444 Adaptive Agency Abstraction Stack v0 is complete as a bounded research/reference integration with no runtime/product-boundary expansion; Issue #441 Experiment Responsibility Boundary v1 is complete/integrated and in normal-use handoff; Issue #438 Experiment Economy & Proportional Rigor v1 is complete/integrated and in normal-use handoff; Issue #435 Strategic Repository Analysis Semantic Grounding v1 is complete/integrated and in normal-use handoff; Issue #432 Decision Journey Productization v1 is complete/integrated and in normal-use handoff; Issues #430, #426, and #416 remain complete/integrated normal-use baselines. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -51,7 +51,7 @@ The repository-qualified baseline includes:
 - **Exploration Policy v0**: agent-facing iterative-search allocation over `EXPLOIT / EXPLORE / CHALLENGE / DIAGNOSE / RECOMBINE / RESTART / VERIFY / EXIT_SEARCH`, with search history treated as an existing-evidence projection rather than a SearchState schema.
 - **Warrant / Choice Policy v0**: target-specific, defeasible adjudication for claims/responsibilities/actions/continuation/closure/protected transitions/strategic directions, preserving `warrant != authority`, target-specific evidence, and valid `NO_SELECTION` without a WarrantEngine.
 - **Learning / Reconciliation Policy v0**: evidence-return semantic reconciliation across claims, uncertainty, responsibility, continuation/closure, and strategic/thesis state, with valid `NO_MODEL_CHANGE` and no generic belief database or automatic state mutation.
-- **Stable Strategic Alternatives surface**: Strategic Repository Sensemaking v1 now represents 0–5 materially real construction paths; zero paths is valid when no coherent construction trajectory is currently warranted/representable, while `BUILD` still requires a selected real path.
+- **Stable Strategic Alternatives surface**: Strategic Repository Sensemaking v1 represents 0–5 materially real construction paths and now performs Strategic Hypothesis Admission before converging on zero paths; a real path may be a grounded unbuilt future rather than an empirically validated one, while `BUILD` still requires a selected real path.
 - **Adaptive Policy Coordinator v0**: progressive semantic policy composition that activates only decision-relevant policy questions, allows zero explicit policy layers for obvious bounded work, and adds no routing/runtime/coordinator-state authority.
 - **Policy Hierarchy Interface Clarification v1 — COMPLETE / INTEGRATED:** adds the non-authoritative Adaptive Semantic Control Architecture crosswalk, canonical policy-responsibility matrix, adjacent ownership boundaries, and Strategic Continuity -> Learning/Reconciliation reassessment bridge without adding a policy layer, runtime, schema, or authority.
 - Canonical `using-sensemaking` guidance now makes warrant targets/dependencies, challenge versus exploration, resource-aware stopping, and delegated-result evidence return explicit while preserving progressive disclosure.
@@ -67,6 +67,7 @@ The repository-qualified baseline includes:
 - **Change-Impact Sensemaking — COMPLETE / INTEGRATED:** bounded change-impact analysis identifies decision-relevant affected surfaces and verification/reconciliation/closure consequences without turning references into automatic impacts or follow-up into authorized backlog work.
 - **Decision Journey Productization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** read-only journey reconstruction, caller-selected context packs, authored strategic decision deltas, anticipated-vs-observed impact/closure comparison, static guided entry, and canonical playbooks compose existing surfaces without planner/router authority or a new state system.
 - **Strategic Repository Analysis Semantic Grounding v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** an explicit Strategicity Gate separates useful lower-level maintenance from Level-3 repository evolution; new canonical `schema_version: 2` analyses ground frontier/path relationships in evidence and capability identifiers while legacy versionless v1 analyses remain valid.
+- **Strategic Hypothesis Admission v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** present-state claims retain evidence requirements while future-state construction paths may be grounded strategic hypotheses; the Strategic Frontier admits materially grounded opportunities, path comparison considers commission and omission risk, and bounded reversible information-producing construction may warrant `BUILD` despite residual success uncertainty. Schema v2, semantic-agent ownership, and independent execution authority remain unchanged.
 - **Experiment Economy & Proportional Rigor v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** inquiry/strategic guidance now requires experiment warrant before experimental work, recognizes cheap reversible construction as a possible evidence source, counts total experiment overhead, applies minimum sufficient rigor, and requires decision-relevant warrant before paying confounder-control cost; no experiment runtime, scorer, or new schema was introduced.
 - **Experiment Responsibility Boundary v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** diagnostic/domain Skills surface uncertainty and evidence need without manufacturing experimentation responsibility; Experiment Economy retains experiment warrant; experiment-design consumes warrant and emits canonical backward-compatible `experiment_plan` v2 with decision discrimination, total-cost, proportional-control, and claim-ceiling context; result analysis does not self-authorize experiment continuation.
 
@@ -75,6 +76,7 @@ Policy Hierarchy Completion v0 closeout is summarized in `docs/policy-hierarchy-
 Strategic Continuity Refinement v1 closeout is summarized in `docs/strategic-continuity-refinement-v1-handoff.md`.
 Decision Journey Productization v1 closeout is summarized in `docs/decision-journey-productization-v1-handoff.md`.
 Strategic Repository Analysis Semantic Grounding v1 is summarized in `docs/strategic-repository-analysis-semantic-grounding-v1-handoff.md`.
+Strategic Hypothesis Admission v1 is summarized in `docs/strategic-hypothesis-admission-v1-handoff.md`.
 Experiment Economy & Proportional Rigor v1 is summarized in `docs/experiment-economy-proportional-rigor-v1-handoff.md`.
 Experiment Responsibility Boundary v1 is summarized in `docs/experiment-responsibility-boundary-v1-handoff.md`.
 
@@ -94,6 +96,7 @@ Experiment Responsibility Boundary v1 is summarized in `docs/experiment-responsi
 - Strategic Continuity currentness checks may establish typed source/evidence/governing-authority observations only; `currentness observation != semantic consequence`, `drift detected != strategy invalid != reanalysis automatically required`, and `graph edge != causal truth`.
 - Experiment Economy & Proportional Rigor v1 is a guidance refinement motivated by preliminary normal-use friction. Repository qualification establishes contract/integration coherence, not scientific proof of a systematic experiment bias, empirical superiority of the refinement, or optimal evidence/rigor selection.
 - Experiment Responsibility Boundary v1 establishes Skill responsibility and experiment-plan representation boundaries. Qualification does not prove that future agents always select the cheapest evidence source, that v2 mechanically proves semantic experiment warrant, or that every designed experiment is optimal.
+- Strategic Hypothesis Admission v1 establishes semantic admission/comparison guidance, not proof that any generated future will succeed, that every plausible opportunity will be surfaced, or that semantic path selection is objectively optimal. `strategic grounding != prior validation` and `hypothesis admitted != implementation authorized`.
 
 ### Strategic Frontier
 
@@ -129,58 +132,53 @@ Current material frontier items are:
 27. **Experiment Responsibility Boundary v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #441 reconciles direct empirical-promotion surfaces across repo-sensemaker, discovery, hypothesis, lean-canvas, pricing, experiment-design, ab-test-analysis, and usage-researcher; canonical experiment plans move to backward-compatible v2 warrant/efficiency representation while historical v1 plans remain valid.
 
 28. **Adaptive Agency Abstraction Stack v0 — COMPLETE / RESEARCH_REFERENCE / NORMAL_USE_HANDOFF.** Issue #444 formalizes the three-plane capability/coordination/governance model and separate promotion/evolution ladder, reconciles Organization/Institution against Campaign, Skills, Practical Agent Architecture, Execution Interface, and ADR 0029, and establishes `NO_RUNTIME_GAP_ESTABLISHED` / no product-boundary change. No organization runtime, team registry, scheduler, worker allocator, or new schema is warranted.
+29. **Strategic Hypothesis Admission v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #446 corrects future-state evidence asymmetry in `strategic-repository-analysis`: present-state facts still require evidence, but coherent unbuilt futures may enter the decision space as explicitly grounded strategic hypotheses. Opportunity-driven frontier entries, commission/omission symmetry, and reversible build-as-learning are explicit without schema v3, a new disposition, automatic path selection, or weakened authority boundaries.
 
 ### Current highest-leverage boundary
 
-**Adaptive Agency Abstraction Stack v0 — terminal research/reference handoff.**
+**Strategic Hypothesis Admission v1 — terminal normal-use handoff.**
 
-Issue #444 closes the owner-directed conceptual reconciliation:
-
-~~~text
-Root Primitive / Cognitive Operator / Capability-Skill
--> Capability Plane
-
-delegation / roles / topology
--> Coordination Plane / Organization
-
-policy / authority / provenance / continuity
--> Governance-Persistence Plane / Institution
-
-separate promotion ladder
--> ephemeral composition
--> reusable operator
--> packaged capability
--> repeatable coordination pattern
--> institutionalized practice
-~~~
-
-The reconciliation preserves:
+Issue #446 closes the owner-directed correction to the Level-3 generative/convergent balance:
 
 ~~~text
-Campaign != Organization
-capability growth != authority growth
-organization modeled != organization runtime warranted
+present-state claim
+-> evidence or explicit owner-intent source
+
+future-state possibility
+-> strategic grounding + explicit assumptions
+
+future success claim
+-> returned evidence after construction/use
 ~~~
 
-No runtime, schema, product-boundary, worker-allocation, scheduling, or authority expansion follows. The repository returns to normal-use observation.
+The integrated guidance now preserves:
+
+~~~text
+strategic grounding != prior validation
+speculative path != manufactured path
+risk of building wrong != only strategic risk
+residual uncertainty != BUILD prohibited
+~~~
+
+No schema v3, strategic planner/runtime, numeric ranking, new disposition, automatic path selection, or implementation-authority expansion follows. The repository returns to normal-use observation.
 
 ### Current strategic decision to support
 
-**Decision:** after integrating Adaptive Agency Abstraction Stack v0, does current evidence warrant a Sensemaking-owned Organization runtime, team/role registry, organization compiler, or organizational-pattern-learning construction package?
+**Decision:** after integrating Strategic Hypothesis Admission v1, does current evidence warrant another strategic-analysis schema/runtime layer, new disposition, deterministic path selector, or further construction package?
 
 **Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
 
-The conceptual gap is now represented without a runtime gap. Dynamic worker allocation, scheduling, communication topology, and team lifecycle remain primarily external orchestration responsibilities under ADR 0029. Preserve real normal-use evidence if those boundaries later prove insufficient.
+The observed normal-use problem was representational/semantic: future paths faced a stronger implicit burden of proof than current-state preservation. Issue #446 corrects that guidance using existing schema-v2 fields and existing authority semantics. Further machinery is not warranted merely because future strategic quality remains semantic.
 
 ### Current decision-changing uncertainty
 
-None currently warrants additional organization/runtime construction after Issue #444.
+None currently warrants another construction package after Issue #446.
 
-Future normal-use evidence may reveal that decision-relevant organizational state cannot be preserved through current execution/handoff boundaries, but:
+Normal use should reveal whether the revised skill still collapses grounded opportunities into zero-path / defer outcomes, or whether it overcorrects by admitting ungrounded speculation. Those are future evidence signals, not current blockers.
 
 ~~~text
-possible future organization capability
-!= current construction responsibility
+future strategic quality remains uncertain
+!= another schema/runtime package warranted now
 ~~~
 
 ### Current warranted repository-level responsibility
@@ -203,6 +201,8 @@ ISSUE_438_TERMINAL = NO ACTIVE ISSUE #438 CONSTRUCTION PACKAGE
 ISSUE_441_EXPERIMENT_RESPONSIBILITY_BOUNDARY_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_441_TERMINAL = NO ACTIVE ISSUE #441 CONSTRUCTION PACKAGE
 ISSUE_444_ADAPTIVE_AGENCY_ABSTRACTION_STACK_V0 = COMPLETE_RESEARCH_REFERENCE_NORMAL_USE_HANDOFF
+ISSUE_446_STRATEGIC_HYPOTHESIS_ADMISSION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
+ISSUE_446_TERMINAL = NO ACTIVE ISSUE #446 CONSTRUCTION PACKAGE
 ADAPTIVE_AGENCY_ABSTRACTION_RUNTIME_GAP = NO_RUNTIME_GAP_ESTABLISHED
 STRATEGY_VIEWER_CLI = IMPLEMENTED
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
@@ -217,9 +217,10 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-None for Issue #441 or the completed Issues #438/#435/#432/#430/#426/#416 programs.
+None for Issue #446 or the completed Issues #444/#441/#438/#435/#432/#430/#426/#416 programs.
 
 The terminal qualification/integration receipts are preserved in
+`docs/strategic-hypothesis-admission-v1-handoff.md`,
 `docs/experiment-responsibility-boundary-v1-handoff.md`,
 `docs/experiment-economy-proportional-rigor-v1-handoff.md`,
 `docs/strategic-repository-analysis-semantic-grounding-v1-handoff.md`,
@@ -238,6 +239,8 @@ Reopen repository construction only when ordinary use or explicit owner directio
 - ordinary use repeatedly shows lower-level maintenance being promoted into Level-3 construction despite the Strategicity Gate;
 - v2 grounding proves insufficient to reconstruct decision-relevant frontier/path relationships;
 - ordinary use repeatedly selects experiments where cheaper sufficient evidence or reversible construction would have resolved the decision;
+- ordinary use still collapses strategically grounded but unbuilt opportunities into zero-path, `DEFER`, or passive-observation outcomes solely because future success lacks prior evidence;
+- ordinary use admits speculative paths without a present strategic basis, explicit material assumptions, or a plausible mechanism, indicating overcorrection from epistemic conservatism;
 - ordinary use repeatedly spends isolation/confounder-control effort beyond the claim and decision consequence;
 - a diagnostic/domain Skill still promotes empirical uncertainty directly into experimentation without Experiment Economy;
 - experiment-design is invoked without reconstructible warrant or v2 decision-discrimination/total-cost context;
@@ -248,7 +251,7 @@ Do not reopen from synthetic planner curiosity alone.
 
 ### Authority / owner direction
 
-The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, later authorized Issue #426 to clarify policy/continuity interfaces, authorized Issue #430 to implement the strategic-continuity refinement program, authorized Issue #432 to implement Decision Journey Productization v1, and explicitly authorized Issue #435 to implement Strategic Repository Analysis Semantic Grounding v1. The owner then authorized Issue #438 to implement Experiment Economy & Proportional Rigor v1 from observed normal-use friction and Issue #441 to propagate the resulting responsibility boundary through diagnostic/product Skills and experiment-design without another experiment gate or approval pause. The owner subsequently authorized Issue #444 to implement the bounded Adaptive Agency Abstraction Stack v0 research/reconciliation package without another approval pause; that direction does not itself expand ADR 0029 or grant organization-runtime authority.
+The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, later authorized Issue #426 to clarify policy/continuity interfaces, authorized Issue #430 to implement the strategic-continuity refinement program, authorized Issue #432 to implement Decision Journey Productization v1, and explicitly authorized Issue #435 to implement Strategic Repository Analysis Semantic Grounding v1. The owner then authorized Issue #438 to implement Experiment Economy & Proportional Rigor v1 from observed normal-use friction and Issue #441 to propagate the resulting responsibility boundary through diagnostic/product Skills and experiment-design without another experiment gate or approval pause. The owner subsequently authorized Issue #444 to implement the bounded Adaptive Agency Abstraction Stack v0 research/reconciliation package without another approval pause; that direction does not itself expand ADR 0029 or grant organization-runtime authority. The owner then explicitly authorized Issue #446 Strategic Hypothesis Admission v1 to correct the conservative path-admission behavior, proceed without approval pauses, and preserve existing evidence/authority ceilings.
 
 Policy Hierarchy Completion v0 has integrated the full owner-authorized bounded package set:
 
@@ -294,8 +297,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NORMAL USE / NO ACTIVE ISSUE #444 CONSTRUCTION PACKAGE.**
+**NORMAL USE / NO ACTIVE ISSUE #446 CONSTRUCTION PACKAGE.**
 
-Use the integrated Experiment Responsibility Boundary, Experiment Warrant, proportional-rigor, Strategicity Gate, strategic-analysis v2 grounding, decision-journey, typed-currentness, reconciliation, multi-repository, change-impact, and policy-control surfaces during ordinary consequential repository work. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it. Do not create a validation experiment merely to demonstrate this responsibility refinement.
+Use the integrated Strategic Hypothesis Admission, Experiment Responsibility Boundary, Experiment Warrant, proportional-rigor, Strategicity Gate, strategic-analysis v2 grounding, decision-journey, typed-currentness, reconciliation, multi-repository, change-impact, and policy-control surfaces during ordinary consequential repository work. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it. Do not create a validation experiment merely to demonstrate this responsibility refinement.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of this closeout.
