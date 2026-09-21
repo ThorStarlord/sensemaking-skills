@@ -1,6 +1,6 @@
 ---
 name: strategic-repository-analysis
-description: analyze a repository at level 3 to model its current capability state, generate coherent construction paths, compare them qualitatively, identify decision-changing uncertainty, and produce a strategic repository analysis without selecting work mechanically.
+description: analyze a repository at level 3 to model its current capability state, generate coherent evidence-grounded or hypothesis-grounded construction paths, compare them qualitatively, identify decision-changing uncertainty, and produce a strategic repository analysis without selecting work mechanically.
 ---
 
 # strategic-repository-analysis
@@ -121,41 +121,65 @@ CLAIMED_UNVERIFIED
 OUT_OF_SCOPE
 ```
 
-Each entry needs evidence or an explicit owner-intent source.
+Each current-state entry needs evidence or an explicit owner-intent source.
+The capability map describes what is currently established, partial, missing,
+deferred, blocked, claimed, or out of scope; it is not a requirement that a
+future capability already have empirical proof before it may appear inside a
+strategic hypothesis.
+
+```text
+present-state claim
+-> evidence or explicit owner-intent source
+
+future-state possibility
+-> strategic grounding + explicit assumptions
+
+future success claim
+-> returned evidence after action
+```
 
 Do not turn the states into maturity numbers.
 
 ### 5. Form the Strategic Frontier
 
-Before admitting a repository tension into the Strategic Frontier, apply the
-**Strategicity Gate**:
+Before admitting a repository tension **or opportunity** into the Strategic
+Frontier, apply the **Strategicity Gate**:
 
-> Would resolving this boundary materially change at least one of the
-> repository/product future capability state, product boundary, major
+> Would resolving or pursuing this boundary materially change at least one of
+> the repository/product future capability state, product boundary, major
 > architecture/control boundary, dependency structure, authority/thesis
 > commitment, or the materially different future development that becomes
 > possible?
 
-Only boundaries that pass that semantic test belong on the Strategic Frontier.
-A useful maintenance action, local defect, stale status projection, routine
-dependency update, or already-selected bounded implementation task may still
-warrant lower-level work without becoming a Level-3 construction path.
+Only boundaries or opportunities that pass that semantic test belong on the
+Strategic Frontier. A useful maintenance action, local defect, stale status
+projection, routine dependency update, or already-selected bounded
+implementation task may still warrant lower-level work without becoming a
+Level-3 construction path.
+
+An opportunity may be admitted even when the future capability does not yet
+exist. Ground it in current repository capability/leverage, governing intent,
+an adjacent user/problem, or another explicit strategic basis. Do not require
+evidence that the proposed future has already succeeded.
 
 ```text
 repository issue exists != strategic frontier
 useful maintenance exists != construction trajectory
 bounded repair warranted != Level-3 BUILD warranted
 repository-relevant work != strategic repository evolution
+opportunity not yet built != opportunity not strategically representable
 ```
 
-Identify the small set of unresolved boundaries that could materially change
-progress toward the governing mission.
+Identify the small set of unresolved boundaries **and unexploited opportunities**
+that could materially change progress toward the governing mission.
 
 For new canonical `schema_version: 2` artifacts, each frontier entry records
 decision-changing evidence references, affected capability identifiers, and a
 short `strategic_consequence` explaining why the boundary is Level-3 material.
-The semantic agent judges that consequence; the validator checks only shape and
-references.
+For opportunity-driven entries, evidence references should ground the present
+capability, leverage, problem, or intent; they do not need to prove the future
+outcome. The semantic agent judges that consequence; the validator checks only
+shape and references.
 
 Exclude attractive but non-decision-relevant ideas.
 
@@ -174,6 +198,49 @@ zero real paths
 BUILD
 -> requires a selected real path
 ```
+
+#### Strategic Hypothesis Admission
+
+Do a generative pass before converging on evidence sufficiency. A path may be a
+strategic hypothesis rather than an already-demonstrated future.
+
+A **real strategic path** is:
+
+```text
+coherent with governing intent
++ compatible with known repository reality
++ materially distinct future capability state
++ plausible mechanism from present capabilities/opportunities to that future
++ explicit decision-relevant assumptions
++ no known material contradiction
+```
+
+A path is **manufactured** when it exists mainly to satisfy path-count symmetry,
+is materially indistinguishable from another path, contradicts governing
+intent/current repository reality, or depends on hidden/invented premises.
+
+```text
+real strategic path
+!= empirically validated future
+
+speculative path
+!= manufactured path
+
+ambitious
+!= ungrounded
+
+strategic grounding
+!= prior validation
+
+absence of evidence for future success
+!= evidence that the future is strategically unwarranted
+```
+
+For a hypothesis-driven path, use existing v2 fields rather than creating a new
+schema: state the core hypothesis and causal/mechanistic story in
+`why_plausible`; declare material premises in decision-relevant assumptions;
+and use reassessment triggers to state observations that would materially
+strengthen or weaken the path.
 
 Each path must describe:
 
@@ -204,7 +271,11 @@ For new canonical `schema_version: 2` artifacts, path grounding is explicit:
 capability-map identifiers. Mechanical reference integrity does not establish
 that the path is strategically good.
 
-One path is valid when additional alternatives would be artificial. Zero paths is valid when even one construction path would be artificial or premature.
+One path is valid when additional alternatives would be artificial. Zero paths
+is valid when even one construction path would be artificial or premature.
+Do not use zero paths merely because a coherent future is unvalidated; first
+test whether it qualifies as a strategically grounded hypothesis under the
+admission rules above.
 
 For path distinctness, capability-state grounding, coarse construction
 sequencing, comparison discipline, and anti-backlog rules, read
@@ -241,6 +312,24 @@ strategic warrant
 
 cheap or local intervention
 != strategically preferable future
+```
+
+Apply a commission/omission symmetry check while interpreting the lenses:
+
+- **risk of commission:** what becomes costly, constraining, or misleading if
+  this path is pursued and its assumptions are wrong?
+- **risk of omission:** what opportunity, leverage, learning rate, strategic
+  optionality, or mission progress is lost if the path is not pursued?
+
+Use `deferral cost`, `decision value`, and `reversibility` to express this
+without adding another schema field or numeric score.
+
+```text
+risk of building wrong
+!= only strategic risk
+
+risk of not building
+= strategically relevant when omission changes mission progress or optionality
 ```
 
 Do not assign numeric scores, weighted totals, tiers, or a deterministic winner.
@@ -295,6 +384,22 @@ evaluation, interpretation, documentation, delay, and opportunity cost. Use
 only the minimum sufficient experimental rigor and control only confounders
 that could invalidate the decision-relevant inference.
 
+Residual uncertainty about whether a strategically grounded future will
+succeed does not by itself prohibit `BUILD`. If the contemplated construction
+is bounded, reversible, authorized, sufficiently safe, and information-producing,
+compare build-now learning against inquiry delay rather than demanding prior
+proof of success.
+
+```text
+residual uncertainty
+!= BUILD prohibited
+
+bounded reversible construction
++ coherent strategic hypothesis
++ acceptable downside
+may warrant BUILD before future success is demonstrated
+```
+
 If no inquiry is warranted, say so.
 
 ### 8A. Record decision assumptions when they matter
@@ -326,7 +431,11 @@ THESIS_REVIEW
 ```
 
 For `BUILD`, nominate one candidate bounded repository responsibility and the
-smallest warranted intervention.
+smallest warranted intervention. `BUILD` does not require prior empirical
+proof that the selected future will succeed. It requires sufficient strategic
+warrant for the bounded next responsibility: coherent grounding, acceptable
+downside, appropriate reversibility, explicit material assumptions, and
+independent implementation authority.
 
 For `INVESTIGATE`, nominate the bounded evidence-producing responsibility, not
 a broad research program. Do not default that responsibility to an experiment;
@@ -383,6 +492,9 @@ candidate responsibility != authorized execution
 strategic warrant precedes intervention minimization
 INVESTIGATE != EXPERIMENT
 cleaner evidence != more valuable evidence
+strategic grounding != prior validation
+speculative path != manufactured path
+absence of evidence for future success != evidence that the future is strategically unwarranted
 ```
 
 ## Output behavior
