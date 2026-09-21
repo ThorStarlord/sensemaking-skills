@@ -335,11 +335,11 @@ capabilities:
     accepted_responsibility_types: [experimentation]
     input_artifact: hypothesis_statement
     output_artifact: experiment_plan
-    completion_conditions: [a preregistered experiment_plan is returned without claiming execution or results]
+    completion_conditions: [a warranted canonical experiment_plan is returned with decision discrimination, proportional rigor, and no claim of execution or results]
     mutates_repository: false
     authority: authorized_autonomously
     availability: external
-    availability_reason: canonical PM analysis Skill; external experiment execution remains separately authorized
+    availability_reason: canonical PM analysis Skill; experiment warrant must already exist and external experiment execution remains separately authorized
     returns_control: true
 
   - id: ab-test-analysis
