@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-21  
-**Current phase:** Issue #449 Goal Fitness & Frontier Integrity v1 is complete/integrated and in normal-use handoff; Issue #446 Strategic Hypothesis Admission v1 remains complete/integrated and in normal-use handoff; Issue #444 Adaptive Agency Abstraction Stack v0 is complete as a bounded research/reference integration with no runtime/product-boundary expansion; Issue #441 Experiment Responsibility Boundary v1 is complete/integrated and in normal-use handoff; Issue #438 Experiment Economy & Proportional Rigor v1 is complete/integrated and in normal-use handoff; Issue #435 Strategic Repository Analysis Semantic Grounding v1 is complete/integrated and in normal-use handoff; Issue #432 Decision Journey Productization v1 is complete/integrated and in normal-use handoff; Issues #430, #426, and #416 remain complete/integrated normal-use baselines. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #452 Strategic Sensemaking Loop v1 is complete/integrated and in normal-use handoff; Issue #449 Goal Fitness & Frontier Integrity v1 remains complete/integrated and in normal-use handoff; Issue #446 Strategic Hypothesis Admission v1 remains complete/integrated and in normal-use handoff; Issue #444 Adaptive Agency Abstraction Stack v0 is complete as a bounded research/reference integration with no runtime/product-boundary expansion; Issue #441 Experiment Responsibility Boundary v1 is complete/integrated and in normal-use handoff; Issue #438 Experiment Economy & Proportional Rigor v1 is complete/integrated and in normal-use handoff; Issue #435 Strategic Repository Analysis Semantic Grounding v1 is complete/integrated and in normal-use handoff; Issue #432 Decision Journey Productization v1 is complete/integrated and in normal-use handoff; Issues #430, #426, and #416 remain complete/integrated normal-use baselines. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -69,6 +69,7 @@ The repository-qualified baseline includes:
 - **Strategic Repository Analysis Semantic Grounding v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** an explicit Strategicity Gate separates useful lower-level maintenance from Level-3 repository evolution; new canonical `schema_version: 2` analyses ground frontier/path relationships in evidence and capability identifiers while legacy versionless v1 analyses remain valid.
 - **Strategic Hypothesis Admission v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** present-state claims retain evidence requirements while future-state construction paths may be grounded strategic hypotheses; the Strategic Frontier admits materially grounded opportunities, path comparison considers commission and omission risk, and bounded reversible information-producing construction may warrant `BUILD` despite residual success uncertainty. Schema v2, semantic-agent ownership, and independent execution authority remain unchanged.
 - **Goal Fitness & Frontier Integrity v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** `strategic-repository-analysis` now distinguishes terminal outcomes from milestones/proxies/evidence states, checks decision-relevant product-completion layers before promoting downstream qualification work, runs an orthogonality challenge before path-set convergence, and preserves explicit goal-fit warnings without overriding owner intent; `using-sensemaking` adds a narrow inherited-responsibility prerequisite backstop, while `owner-decision-capsule` fails closed on materially incomplete option sets.
+- **Strategic Sensemaking Loop v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** internal `strategic-sensemaking-loop` provides a one-prompt artifact-aware start/resume surface over the existing strategic analysis, responsibility, execution, reconciliation, and reserved-decision Skills; it skips semantically completed stages, allows direct execution through real non-Skill surfaces, stops at owner/Level-4/external boundaries, and adds no master artifact, planner/runtime, Campaign schema, or authority expansion.
 - **Experiment Economy & Proportional Rigor v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** inquiry/strategic guidance now requires experiment warrant before experimental work, recognizes cheap reversible construction as a possible evidence source, counts total experiment overhead, applies minimum sufficient rigor, and requires decision-relevant warrant before paying confounder-control cost; no experiment runtime, scorer, or new schema was introduced.
 - **Experiment Responsibility Boundary v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** diagnostic/domain Skills surface uncertainty and evidence need without manufacturing experimentation responsibility; Experiment Economy retains experiment warrant; experiment-design consumes warrant and emits canonical backward-compatible `experiment_plan` v2 with decision discrimination, total-cost, proportional-control, and claim-ceiling context; result analysis does not self-authorize experiment continuation.
 
@@ -136,55 +137,54 @@ Current material frontier items are:
 28. **Adaptive Agency Abstraction Stack v0 — COMPLETE / RESEARCH_REFERENCE / NORMAL_USE_HANDOFF.** Issue #444 formalizes the three-plane capability/coordination/governance model and separate promotion/evolution ladder, reconciles Organization/Institution against Campaign, Skills, Practical Agent Architecture, Execution Interface, and ADR 0029, and establishes `NO_RUNTIME_GAP_ESTABLISHED` / no product-boundary change. No organization runtime, team registry, scheduler, worker allocator, or new schema is warranted.
 29. **Strategic Hypothesis Admission v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #446 corrects future-state evidence asymmetry in `strategic-repository-analysis`: present-state facts still require evidence, but coherent unbuilt futures may enter the decision space as explicitly grounded strategic hypotheses. Opportunity-driven frontier entries, commission/omission symmetry, and reversible build-as-learning are explicit without schema v3, a new disposition, automatic path selection, or weakened authority boundaries.
 30. **Goal Fitness & Frontier Integrity v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #449 corrects milestone/proxy capture discovered through normal use: Level-3 analysis now tests whether a stated objective is terminal or instrumental, checks prerequisite completion layers, guards against verification legibility crowding out product-completion gaps, challenges shared downstream path framing, and fails closed rather than forcing owner choice inside an incomplete option set. No schema v3, numeric goal-fit score, new planner/runtime, mandatory third path, or product-completion database was added.
+31. **Strategic Sensemaking Loop v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #452 adds an internal one-prompt orchestration front door that reconstructs the latest semantically valid boundary, conditionally composes existing specialized Skills, executes already-selected work through real execution surfaces, and returns consequential evidence upward without collapsing semantic responsibilities or creating a deterministic router/runtime.
 
 ### Current highest-leverage boundary
 
-**Goal Fitness & Frontier Integrity v1 — terminal normal-use handoff.**
+**Strategic Sensemaking Loop v1 — terminal normal-use handoff.**
 
-Issue #449 closes a normal-use failure in which an instrumental
-release/qualification milestone could become the strategic frontier even while a
-material prerequisite product-completion state remained unresolved.
+Issue #452 closes an operator-UX/composition gap discovered through normal use:
+the existing strategic Skills were semantically well separated, but the user had
+to manually prompt the same episode through analysis, responsibility, handoff,
+execution, reconciliation, and reserved-decision transitions.
 
-The integrated guidance now preserves:
+The integrated front door now preserves:
 
 ~~~text
-goal obedience != goal diagnosis
-stated milestone != terminal product intent automatically
-milestone completion != prerequisite product completion
-verification legibility != strategic importance
-two credible paths != option set necessarily complete
-upstream selected responsibility != dependency-free responsibility
+one front door != one semantic responsibility
+stage completed != stage must rerun
+handoff useful != handoff mandatory
+workflow/tool/executor != Skill identity automatically
+returned evidence != strategy automatically changed
+owner decision packet != owner decision made
+loop summary != master artifact
 ~~~
-
-The correction stays inside existing semantic-agent judgment, artifact schema v2,
-Policy Hierarchy, and owner-authority boundaries.
 
 ### Current strategic decision to support
 
-**Decision:** after integrating Goal Fitness & Frontier Integrity v1, does current
-evidence warrant a separate product-completion primitive, schema extension,
-numeric goal-fit mechanism, deterministic option-set checker, or new planner/runtime?
+**Decision:** after integrating Strategic Sensemaking Loop v1, does current
+evidence warrant a deterministic strategic router/runtime, a new master
+orchestration artifact, a new Campaign schema, or merging the component Skills
+into one monolith?
 
 **Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
 
-The observed failure is representational/semantic and is addressed by bounded
-guidance in the existing Level-3 analysis, Warrant/Choice backstop, and
-owner-decision packet boundary. A new product-completion state system is not
-established as necessary.
+The observed problem was prompt/composition friction, not missing semantic state
+or runtime authority. A thin Skill-level front door is sufficient at the current
+evidence ceiling.
 
 ### Current decision-changing uncertainty
 
-None currently warrants another construction package after Issue #449.
+None currently warrants another construction package after Issue #452.
 
-Normal use should reveal whether agents now surface real milestone/proxy
-inversions without overreaching into hidden-goal inference, whether the
-orthogonality challenge finds grounded omitted trajectories without
-manufacturing third options, and whether the inherited-responsibility backstop
-returns upstream only when a truly decision-critical prerequisite is missing.
+Normal use should reveal whether the loop can reliably resume in the middle,
+skip already-completed stages, preserve owner/authority boundaries, and avoid
+fabricating Skill identities for non-Skill execution surfaces without becoming a
+mandatory choreography.
 
 ~~~text
-future semantic quality remains uncertain
-!= another schema/runtime package warranted now
+one-prompt convenience
+!= deterministic orchestration warranted
 ~~~
 
 ### Current warranted repository-level responsibility
@@ -211,6 +211,8 @@ ISSUE_446_STRATEGIC_HYPOTHESIS_ADMISSION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HAN
 ISSUE_446_TERMINAL = NO ACTIVE ISSUE #446 CONSTRUCTION PACKAGE
 ISSUE_449_GOAL_FITNESS_FRONTIER_INTEGRITY_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_449_TERMINAL = NO ACTIVE ISSUE #449 CONSTRUCTION PACKAGE
+ISSUE_452_STRATEGIC_SENSEMAKING_LOOP_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
+ISSUE_452_TERMINAL = NO ACTIVE ISSUE #452 CONSTRUCTION PACKAGE
 ADAPTIVE_AGENCY_ABSTRACTION_RUNTIME_GAP = NO_RUNTIME_GAP_ESTABLISHED
 STRATEGY_VIEWER_CLI = IMPLEMENTED
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
@@ -225,7 +227,7 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-None for Issue #449 or the completed Issues #446/#444/#441/#438/#435/#432/#430/#426/#416 programs.
+None for Issue #452 or the completed Issues #449/#446/#444/#441/#438/#435/#432/#430/#426/#416 programs.
 
 The terminal qualification/integration receipts are preserved in
 `docs/goal-fitness-frontier-integrity-v1-handoff.md`,
@@ -251,6 +253,10 @@ Reopen repository construction only when ordinary use or explicit owner directio
 - ordinary use compares only downstream paths despite a grounded upstream frontier, or manufactures orthogonal paths merely for option diversity;
 - inherited responsibilities repeatedly execute despite a decision-critical prerequisite being materially unestablished, or return upstream on trivial/non-decision-critical prerequisites;
 - owner-decision capsules repeatedly force binary choice despite a materially incomplete option set;
+- strategic loop normal use repeatedly reruns completed stages instead of resuming from the latest semantically valid boundary;
+- the strategic loop fabricates Skill identities for workflows/tools/executors or requires `handoff` between every stage;
+- a fresh context cannot reconstruct the intended strategic resume point from durable artifacts without conversation memory;
+- the loop fails to stop at a genuine owner/Level-4/external authority boundary or becomes mandatory ceremony for simple work;
 - ordinary use repeatedly selects experiments where cheaper sufficient evidence or reversible construction would have resolved the decision;
 - ordinary use still collapses strategically grounded but unbuilt opportunities into zero-path, `DEFER`, or passive-observation outcomes solely because future success lacks prior evidence;
 - ordinary use admits speculative paths without a present strategic basis, explicit material assumptions, or a plausible mechanism, indicating overcorrection from epistemic conservatism;
@@ -264,7 +270,7 @@ Do not reopen from synthetic planner curiosity alone.
 
 ### Authority / owner direction
 
-The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, later authorized Issue #426 to clarify policy/continuity interfaces, authorized Issue #430 to implement the strategic-continuity refinement program, authorized Issue #432 to implement Decision Journey Productization v1, and explicitly authorized Issue #435 to implement Strategic Repository Analysis Semantic Grounding v1. The owner then authorized Issue #438 to implement Experiment Economy & Proportional Rigor v1 from observed normal-use friction and Issue #441 to propagate the resulting responsibility boundary through diagnostic/product Skills and experiment-design without another experiment gate or approval pause. The owner subsequently authorized Issue #444 to implement the bounded Adaptive Agency Abstraction Stack v0 research/reconciliation package without another approval pause; that direction does not itself expand ADR 0029 or grant organization-runtime authority. The owner then explicitly authorized Issue #446 Strategic Hypothesis Admission v1 to correct the conservative path-admission behavior, proceed without approval pauses, and preserve existing evidence/authority ceilings. The owner subsequently authorized Issue #449 Goal Fitness & Frontier Integrity v1 to implement the normal-use milestone-inversion corrections end-to-end without approval pauses while preserving owner authority and avoiding new runtime/schema machinery.
+The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, later authorized Issue #426 to clarify policy/continuity interfaces, authorized Issue #430 to implement the strategic-continuity refinement program, authorized Issue #432 to implement Decision Journey Productization v1, and explicitly authorized Issue #435 to implement Strategic Repository Analysis Semantic Grounding v1. The owner then authorized Issue #438 to implement Experiment Economy & Proportional Rigor v1 from observed normal-use friction and Issue #441 to propagate the resulting responsibility boundary through diagnostic/product Skills and experiment-design without another experiment gate or approval pause. The owner subsequently authorized Issue #444 to implement the bounded Adaptive Agency Abstraction Stack v0 research/reconciliation package without another approval pause; that direction does not itself expand ADR 0029 or grant organization-runtime authority. The owner then explicitly authorized Issue #446 Strategic Hypothesis Admission v1 to correct the conservative path-admission behavior, proceed without approval pauses, and preserve existing evidence/authority ceilings. The owner subsequently authorized Issue #449 Goal Fitness & Frontier Integrity v1 to implement the normal-use milestone-inversion corrections end-to-end without approval pauses while preserving owner authority and avoiding new runtime/schema machinery. The owner then authorized Issue #452 Strategic Sensemaking Loop v1 to compress the repetitive multi-prompt strategic episode into one front-door Skill, proceed without approval pauses, and preserve the existing modular semantic/authority boundaries.
 
 Policy Hierarchy Completion v0 has integrated the full owner-authorized bounded package set:
 
@@ -310,8 +316,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NORMAL USE / NO ACTIVE ISSUE #449 CONSTRUCTION PACKAGE.**
+**NORMAL USE / NO ACTIVE ISSUE #452 CONSTRUCTION PACKAGE.**
 
-Use the integrated Goal Fitness & Frontier Integrity, Strategic Hypothesis Admission, Experiment Responsibility Boundary, Experiment Warrant, proportional-rigor, Strategicity Gate, strategic-analysis v2 grounding, decision-journey, typed-currentness, reconciliation, multi-repository, change-impact, and policy-control surfaces during ordinary consequential repository work. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it. Do not create a validation experiment merely to demonstrate this responsibility refinement.
+Use `strategic-sensemaking-loop` as the normal one-prompt front door when a strategic repository episode should start or resume end-to-end; continue using the specialized Skills directly when a narrower surface is the real task. Preserve real normal-use evidence of resume/routing friction and reopen construction only when that evidence or explicit owner direction warrants it. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it. Do not create a validation experiment merely to demonstrate this responsibility refinement.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of this closeout.
