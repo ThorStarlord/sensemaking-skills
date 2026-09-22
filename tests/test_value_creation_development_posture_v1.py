@@ -13,8 +13,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 STRATEGY = ROOT / "docs" / "product-strategy.md"
 OPERATING = ROOT / "docs" / "product-operating-model.md"
+LEVEL2_WORKFLOW = ROOT / "docs" / "agent-native-operating-workflow.md"
+CONTEXT = ROOT / "CONTEXT.md"
 POLICY = ROOT / "docs" / "policy-hierarchy-v0.md"
 USING = ROOT / "skills" / "using-sensemaking" / "SKILL.md"
+ADAPTIVE_GUIDANCE = (
+    ROOT / "skills" / "using-sensemaking" / "references" / "adaptive-guidance-v0.md"
+)
 INQUIRY = ROOT / "skills" / "using-sensemaking" / "references" / "inquiry-policy-v0.md"
 METAREASONING = (
     ROOT / "skills" / "using-sensemaking" / "references" / "metareasoning-policy-v0.md"
@@ -67,6 +72,25 @@ def test_using_sensemaking_advances_outcome_before_uncertainty_elimination() -> 
     assert "subjective engineering judgment\n!= owner-reserved intent" in text
     assert "human evidence could improve confidence\n!= human evidence required" in text
     assert "strict and fail-closed" in text
+
+
+
+def test_current_context_and_adaptive_guidance_use_six_factor_outcome_first_model() -> None:
+    context = CONTEXT.read_text(encoding="utf-8")
+    guidance = ADAPTIVE_GUIDANCE.read_text(encoding="utf-8")
+    workflow = LEVEL2_WORKFLOW.read_text(encoding="utf-8")
+
+    assert "Advance the governing outcome with the smallest sufficiently warranted move" in context
+    assert "Value creation is risk-adjusted, not liability-minimized" in context
+    assert "Lifecycle posture changes the default bias, not local truth" in context
+
+    assert "## 1. Six contextual factors" in guidance
+    assert "Development / lifecycle posture" in guidance
+    assert "value-creation bias\n!= reckless action" in guidance
+
+    assert "six contextual factors from the current adaptive guidance model" in workflow
+    assert "development / lifecycle posture" in workflow
+    assert "active development + cheap reversible authorized work" in workflow
 
 
 def test_inquiry_and_metareasoning_include_omission_and_delay_cost() -> None:
