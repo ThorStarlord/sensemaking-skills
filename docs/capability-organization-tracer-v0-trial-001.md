@@ -1,10 +1,11 @@
 # Capability & Organization Tracer v0 — Trial 001
 
-**Status:** completed real-repository tracer episode  
+**Status:** completed / integrated / reconciled real-repository tracer episode  
 **Date:** 2026-09-22  
-**Tracker:** Issue #459  
-**Integration vehicle:** PR #461  
-**Qualified feature head:** `44d1b7732c5bf018c294164a613422f02b244306`  
+**Tracker:** Issue #459 — completed  
+**Integration vehicle:** PR #461 — merged  
+**Integrated main:** `49fb3f24ec5f02192b515cf7acbe2d2a65c89c25`  
+**Qualified feature head:** `bf364d996cf5cb24040c8711482ac0b501639c93`  
 **Base:** `main@a3d83c14de033734d33296ff3f45ebc5f4d8d911`
 
 ## 1. Question
@@ -287,9 +288,10 @@ factor.
 
 ~~~text
 CAPABILITY_ORGANIZATION_TRACER_V0:
+  INTEGRATED
   FEATURE_QUALIFIED
   TRIAL_001_RECONCILED
-  INTEGRATION_PENDING
+  NORMAL_USE_HANDOFF
 
 organization_pattern_representation:
   SUPPORTED
@@ -316,7 +318,7 @@ independent_multi_agent_benefit:
 ## 7. Next evidence boundary
 
 After integration, use the Organization surface selectively during real
-high-delegation repository work.
+high-delegation repository work. PR #461 is now merged; this condition is active.
 
 The highest-value next evidence would be a naturally occurring episode with a
 genuinely independent external Builder or Verifier context.
