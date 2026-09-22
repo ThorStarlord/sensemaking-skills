@@ -50,6 +50,7 @@ The specialized Skills keep their existing responsibilities:
 | `using-sensemaking` | select/adjudicate the bounded responsibility and control move |
 | `handoff` | preserve context across a real Skill transition |
 | active agent / Campaign execution interface | perform already-selected work |
+| `organization inspect|role|skill-profile` | optionally expose role/capability/evidence topology when that topology is decision-relevant; never select actors/Skills or grant authority |
 | `strategic-repository-reconciliation` | interpret consequential returned evidence against prior Level 3 |
 | `owner-decision-capsule` | package a genuinely owner-reserved decision without selecting it |
 | `thesis-review-packet` | carry a Level-4 review boundary when warranted |
@@ -110,6 +111,7 @@ RESPONSIBILITY
 
 EXECUTE
 -> responsibility + prerequisites + authority established
+-> optionally inspect Organization topology when it materially improves delegation / verification / evidence-flow / authority legibility
 
 RECONCILE
 -> consequential evidence returned
@@ -179,6 +181,20 @@ active coding agent
 ```
 
 When the active agent can execute directly, execute directly.
+
+When explicit role/capability topology is decision-relevant, the loop may inspect
+the shipped Organization surface before or during execution-boundary choice:
+
+```text
+organization inspect / organization role / organization skill-profile
+-> read-only topology evidence
+-> not a new loop state
+-> not Skill selection
+-> not actor allocation
+-> not execution authority
+```
+
+Do not make Organization inspection mandatory for obvious bounded work.
 
 When durable cross-context delegation is useful, use the Campaign Execution
 Interface:
@@ -257,6 +273,8 @@ Strategic Sensemaking Loop v1 does not add:
 - a new Campaign schema;
 - automatic Skill selection from scores;
 - automatic Campaign creation;
+- a mandatory Organization stage;
+- automatic role allocation, dynamic Organization generation, or Skill routing;
 - automatic owner decisions;
 - automatic Level-4 thesis revision;
 - automatic merge/release/publication authority;
