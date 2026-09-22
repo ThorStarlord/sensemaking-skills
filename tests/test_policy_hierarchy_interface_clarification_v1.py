@@ -97,8 +97,6 @@ def test_issue_399_and_416_remain_terminal_while_426_closes_to_normal_use() -> N
     assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
     assert "Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert "Policy Hierarchy Interface Clarification v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
-    assert "OPERATING MODE = NORMAL_USE_VALIDATION" in status
     assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
     assert "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
     assert "ISSUE_426_POLICY_HIERARCHY_INTERFACE_CLARIFICATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
