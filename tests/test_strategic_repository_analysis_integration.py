@@ -18,6 +18,13 @@ PATH_GUIDE = (
     / "references"
     / "construction-path-synthesis-v1.md"
 )
+GOAL_FIT_GUIDE = (
+    ROOT
+    / "skills"
+    / "strategic-repository-analysis"
+    / "references"
+    / "goal-fitness-and-completion-v1.md"
+)
 REPO_SENSEMAKER = ROOT / "skills" / "repo-sensemaker" / "SKILL.md"
 USING = ROOT / "skills" / "using-sensemaking" / "SKILL.md"
 OUTER = ROOT / "docs" / "strategic-outer-loop.md"
@@ -236,3 +243,65 @@ def test_v2_grounding_is_explicit_without_semantic_validator_authority() -> None
         assert phrase in skill
 
     assert "Mechanical tools validate only the declared relationships." in guide
+
+
+def test_goal_fitness_detects_milestone_proxy_inversion_without_overriding_owner() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = GOAL_FIT_GUIDE.read_text(encoding="utf-8")
+
+    for phrase in (
+        "Test goal fitness before treating the stated objective as the frontier",
+        "OBJECTIVE_ROLE",
+        "GOAL_FIT",
+        "goal obedience\n!= goal diagnosis",
+        "stated milestone authoritative\n!= milestone sufficient proxy for governing intent",
+        "milestone completion != prerequisite product completion",
+        "verification legibility != strategic importance",
+    ):
+        assert phrase in skill
+
+    for phrase in (
+        "milestone inversion",
+        "terminal | milestone | proxy | constraint | evidence_state | unclear",
+        "What is the highest-value remaining material difference",
+        "easy to verify\n!= strategically important",
+        "GOAL_FIT_WARNING",
+        "owner statement\n!= permission to invent hidden intent",
+    ):
+        assert phrase in guide
+
+
+def test_completion_layer_sanity_check_separates_product_from_qualification() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = GOAL_FIT_GUIDE.read_text(encoding="utf-8")
+
+    chain = (
+        "implementation exists\n"
+        "!= integration/reachability complete\n"
+        "!= content/behavior complete\n"
+        "!= intended user/product experience complete\n"
+        "!= release/qualification complete"
+    )
+    assert chain in skill
+    assert chain in guide
+    assert "downstream milestone to become the whole\nstrategic problem" in skill
+
+
+def test_path_synthesis_challenges_shared_downstream_frame_without_forcing_third_path() -> None:
+    guide = PATH_GUIDE.read_text(encoding="utf-8")
+
+    assert "Orthogonality challenge before path-set convergence" in guide
+    assert "two credible paths\n!= option set necessarily complete" in guide
+    assert "orthogonality challenge\n!= mandatory third option" in guide
+    assert "shared downstream frame\n+ unresolved upstream frontier" in guide
+    assert "force a third path when no grounded orthogonal trajectory exists" in guide
+
+
+def test_using_sensemaking_backstops_inherited_responsibility_preconditions() -> None:
+    text = USING.read_text(encoding="utf-8")
+
+    assert "Inherited-responsibility prerequisite backstop" in text
+    assert "defeasible conclusion" in text
+    assert "RESPONSIBILITY_PRECONDITION_NOT_ESTABLISHED" in text
+    assert "upstream recommendation\n!= unquestionable premise" in text
+    assert "return upstream through Learning / Reconciliation" in text
