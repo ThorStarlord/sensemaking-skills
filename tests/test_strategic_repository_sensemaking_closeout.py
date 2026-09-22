@@ -113,5 +113,4 @@ def test_issue_416_closeout_does_not_reopen_completed_policy_hierarchy() -> None
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in handoff
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in status
     assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
     assert "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status

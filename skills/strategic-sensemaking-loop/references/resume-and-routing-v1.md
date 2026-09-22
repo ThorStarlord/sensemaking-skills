@@ -47,6 +47,7 @@ Common sources include:
 
 ```text
 current user intent / authority
+current development / lifecycle posture when decision-relevant
 current repository source identity
 STATUS.md / governing strategy / ADRs
 
@@ -110,6 +111,7 @@ Use explicit references, source identity, currentness, and semantic relationship
 | --- | --- | --- |
 | No current Level-3 analysis; repository future materially open | `ANALYZE` | `strategic-repository-analysis` |
 | Prior analysis exists but is explicitly reopened / invalidated | `ANALYZE` | `strategic-repository-analysis` |
+| Prior `NO_CHANGE`/terminal frame exists but explicit owner direction materially reopens product evolution or changes development posture | `ANALYZE` | `strategic-repository-analysis` |
 | Current strategic direction exists; bounded responsibility unresolved | `RESPONSIBILITY` | `using-sensemaking` |
 | Owner has explicitly resolved a prior owner capsule | `RESPONSIBILITY` | `using-sensemaking` |
 | Bounded responsibility selected, prerequisites + authority established | `EXECUTE` | active agent / existing execution surface |
@@ -123,6 +125,25 @@ Use explicit references, source identity, currentness, and semantic relationship
 The active agent owns this semantic judgment. The table is not executable
 routing metadata.
 
+### Development posture precedence
+
+An earlier terminal or `NO_CHANGE` conclusion remains provenance, but it does not
+override later explicit owner direction that materially changes the governing
+development posture.
+
+```text
+prior NO_CHANGE / terminal frame
++ explicit owner direction reopening active product evolution
+-> ANALYZE from the new governing posture
+
+RC/version target present
+!= terminalization automatically current
+```
+
+Do not infer this transition from ordinary drift or from a merely imaginable
+improvement. It requires explicit owner/repository authority or other
+decision-changing governing evidence.
+
 ## 5. Stage-skip rules
 
 Do not rerun a Skill merely because it appears earlier in the conceptual loop.
@@ -132,7 +153,8 @@ Do not rerun a Skill merely because it appears earlier in the conceptual loop.
 - a current analysis remains materially valid;
 - a reconciliation has not reopened strategy;
 - the current question is an already-selected Level-2 responsibility;
-- ordinary repository drift does not change the strategic model.
+- ordinary repository drift does not change the strategic model;
+- no explicit owner/repository authority has materially changed the governing development posture.
 
 ### Skip using-sensemaking as a fresh selection pass when
 

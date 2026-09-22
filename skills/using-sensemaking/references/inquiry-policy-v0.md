@@ -42,6 +42,11 @@ more evidence possible
 
 For obvious, local, reversible work with sufficient evidence, keep the policy implicit.
 
+During active exploration/development, do not convert residual uncertainty into
+an inquiry obligation when a bounded authorized action can both advance the
+product and generate sufficient evidence at lower total cost. Include omission
+risk and delay cost when judging whether inquiry is worth paying for.
+
 ## 3. Inputs
 
 Reason from the smallest current decision context needed to answer:
@@ -55,6 +60,8 @@ AUTHORITY / EXTERNAL CONSTRAINTS
 CONSEQUENCE + REVERSIBILITY
 KNOWN EVIDENCE SOURCES
 COST / DELAY OF FURTHER INQUIRY
+COST OF DELAY / OMISSION IF WE DO NOT ACT
+DEVELOPMENT / LIFECYCLE POSTURE, WHEN MATERIAL
 ```
 
 Do not require a new durable object when these facts are already reconstructible from
@@ -94,7 +101,9 @@ WHAT EACH MATERIAL ANSWER WOULD CHANGE
 The missing premise is an owner preference, product commitment, or reserved decision
 that repository investigation cannot establish.
 
-Do not disguise missing owner intent as technical research.
+Do not disguise missing owner intent as technical research. Likewise, do not
+reclassify ordinary delegated engineering judgment as owner intent merely
+because a human preference or playtest could increase confidence.
 
 ### `EXTERNAL_EVIDENCE_REQUIRED`
 
@@ -131,8 +140,18 @@ No numeric score is required.
 When several uncertainties exist, prefer the one whose resolution most directly
 discriminates among materially different next responsibilities.
 
-Before escalating from ordinary inquiry into experimentation, apply the
-Experiment Warrant Gate:
+Before escalating from ordinary inquiry into experimentation, compare the
+proposed inquiry against bounded action using commission/omission symmetry:
+
+```text
+risk of commission
+-> downside if acting now is wrong
+
+risk of omission
+-> value / learning / optionality lost by waiting
+```
+
+Then apply the Experiment Warrant Gate:
 
 ```text
 uncertainty exists
@@ -214,6 +233,9 @@ evidence obtained
 
 owner-intent gap
 != repository evidence gap
+
+engineering judgment under delegated authority
+!= owner-intent gap
 
 external blocker
 != permission to fabricate local evidence

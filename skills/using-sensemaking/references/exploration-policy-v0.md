@@ -74,6 +74,8 @@ FRAME / OPTION-SET STABILITY
 UNVERIFIED PROMISING RESULTS
 REMAINING SEARCH UNCERTAINTY
 CONSEQUENCE + REVERSIBILITY
+RISK OF OMISSION / COST OF DELAY
+DEVELOPMENT / LIFECYCLE POSTURE, WHEN MATERIAL
 AUTHORITY / EXTERNAL CONSTRAINTS
 REMAINING TIME / COMPUTE / TOOL / EXPERIMENT BUDGET
 PROVENANCE / CURRENTNESS WHEN MATERIAL
@@ -203,6 +205,49 @@ Prefer when:
 
 Verification remains bounded to the claim needed for the decision.
 
+## 4A. Product-evolution search lenses
+
+When the governing question is genuinely **open product evolution** rather than
+a bounded implementation, terminalized release scope, or production incident,
+deliberately consider several kinds of search before converging:
+
+```text
+IDENTITY
+Could this capability be framed materially better or differently?
+-> usually EXPLORE / RESTART
+
+DEPTH
+If the current identity is right, what important value remains latent inside it?
+-> usually EXPLOIT
+
+ADJACENCY
+What nearby capability becomes possible because this capability exists?
+-> usually EXPLORE
+
+COMPOSITION
+What new value emerges by combining existing capabilities?
+-> usually RECOMBINE
+
+PRUNING
+What machinery / responsibility no longer earns its complexity?
+-> usually CHALLENGE / EXIT_SEARCH
+
+HARDENING
+What valuable existing behavior is unreliable enough that making it reliable
+would materially improve the product?
+-> usually VERIFY / EXPLOIT
+```
+
+These are **lenses over existing search modes**, not new modes, schema fields,
+or a mandatory checklist. Do not force broad product exploration onto a known
+bug fix, already-selected responsibility, frozen-version terminalization,
+release-hardening task, or urgent production recovery.
+
+During active development, use these lenses to avoid a search process that
+optimizes only for the easiest mechanically legible gap. Include omission risk,
+learning value, and cost of delay when deciding whether to exploit, broaden,
+recombine, or stop.
+
 ## 5. Exit disposition
 
 ### `EXIT_SEARCH`
@@ -245,7 +290,8 @@ Ask:
 6. Do separate attempts contain complementary validated mechanisms?
 7. Are repeated failures evidence that the frame/search region is wrong?
 8. Is a promising result verified strongly enough to optimize further?
-9. Would another search move improve the decision enough to justify its cost?
+9. What value, learning, or optionality is lost if the search delays bounded action?
+10. Would another search move improve the decision enough to justify its total cost?
 
 Use the smallest search move that is likely to produce decision-relevant information or
 materially improve the option set.

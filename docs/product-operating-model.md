@@ -88,7 +88,7 @@ repository owner**, beginner-first and expert-capable. The same person may have
 different effective expertise in different decisions, and an expert may still
 choose high delegation because they want leverage rather than instruction.
 
-Five situational factors clarify the adaptation:
+Six situational factors clarify the adaptation:
 
 | Factor | Meaning | Primarily influences |
 | --- | --- | --- |
@@ -97,6 +97,7 @@ Five situational factors clarify the adaptation:
 | **Decision complexity** | How difficult it is to determine the warranted repository responsibility | Sensemaking and investigation rigor |
 | **Consequentiality** | Cost, irreversibility, authority sensitivity, or damage potential of a wrong responsibility/action | Caution, evidence, validation, reconciliation |
 | **Continuation complexity** | How much repository-specific decision state must survive time, sessions, agents, machines, or handoffs | Campaign durability, provenance, handoff, resume |
+| **Development / lifecycle posture** | Whether the product is exploring, actively constructing, converging, terminalizing, hardening for release, or operating under real-user reliability pressure | Relative bias toward generative value creation versus assurance, rollback, and blast-radius control |
 
 Conceptually:
 
@@ -112,12 +113,73 @@ decision complexity + consequentiality
 
 continuation complexity
         -> durability / Campaign value
+
+development / lifecycle posture
+        -> default value-creation versus assurance posture
 ```
 
 These factors are independent enough that one must not stand in for another.
 For example, a technically difficult implementation may have low decision
 complexity, a one-line change may be highly consequential, and a beginner-facing
 task may need more guidance without needing Campaign state.
+
+### Value creation and lifecycle posture
+
+Lifecycle posture changes the **default optimization bias**, not the authority
+model and not the truth of mechanical validators. During active product
+exploration/development, the dominant risk may be under-building, delayed
+learning, or local optimization around process. As consequence, irreversibility,
+blast radius, and live-user dependence increase, the dominant risk shifts toward
+operational harm and stronger assurance.
+
+A useful qualitative gradient is:
+
+| Posture | Dominant failure to avoid | Default bias |
+| --- | --- | --- |
+| Exploration | premature convergence / option poverty | broaden possibilities and learn cheaply |
+| Active development | under-building / delay / process displacement | create user value and decision-changing learning |
+| Convergence | endless expansion / incomplete integration | deepen, integrate, complete, prune |
+| Version terminalization | scope reopening from merely desirable improvements | compare only against frozen obligations |
+| Release hardening | unsupported release claims / invalid package identity | qualify exact promised bytes and claims |
+| Production | user harm / instability / regressions | risk-adjusted iteration with rollback and observability |
+| High assurance | irreversible or catastrophic failure | strong evidence, verification, and protected authority |
+
+These labels are descriptive guidance only. Do not persist a lifecycle state,
+create a stage router, or infer that every action in development is low-risk or
+every production change requires maximum ceremony. Local consequence still
+governs the specific action.
+
+Reason qualitatively about both sides of the decision:
+
+```text
+risk of commission
+-> what happens if we act and are wrong?
+
+risk of omission
+-> what value, learning, optionality, or mission progress is lost if we do not act?
+
+cost of delay
+-> what does waiting itself cost?
+
+reversibility + blast radius
+-> how expensive is being wrong and how safely can we recover?
+```
+
+During active development, a cheap, reversible, authorized action that advances
+the product and returns useful evidence should normally compete strongly against
+more analysis. During production or other high-consequence contexts, increase
+verification, rollback planning, observability, and escalation proportionally.
+
+```text
+value-creation bias
+!= reckless action
+
+production conservatism
+!= zero-change objective
+
+strict validator selected
+-> validator remains strict
+```
 
 ### Opinionated principles, adaptive ceremony
 

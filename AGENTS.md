@@ -22,6 +22,15 @@
 6. **Flag material uncertainty explicitly.** State uncertainty that could
    change the next responsibility, claim, or authority decision. Do not turn
    unresolved hypotheses into confident claims.
+7. **Prefer warranted value creation over liability minimization.** During active
+   product development, treat delay and omission as real costs. When a bounded
+   move is authorized, reversible, plausibly valuable, and information-producing,
+   prefer acting/building over extra analysis whose result is unlikely to change
+   the decision. Increase rigor with consequence, irreversibility, blast radius,
+   weak rollback, or protected commitment. Do not reclassify ordinary delegated
+   engineering judgment as owner intent merely because a human could provide more
+   confidence. Strict validators and authority boundaries remain strict once
+   legitimately selected.
 
 ## Evaluation & benchmark work
 

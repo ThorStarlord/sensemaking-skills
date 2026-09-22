@@ -1,7 +1,7 @@
 # Sensemaking Skills Product Strategy
 
 **Status:** current product hypothesis and strategic authority  
-**Updated:** 2026-09-11  
+**Updated:** 2026-09-22  
 **Control level:** Level 4 — Product Thesis / Strategy Revision  
 **Scope:** public repository strategy; empirical claims retain the ceilings of their source evidence
 
@@ -22,6 +22,13 @@ preflight is [`persona-adaptive-guidance-design-preflight.md`](persona-adaptive-
 The 2026-09-11 Product Boundary Reconciliation v1 is an owner-ratified Level-4
 `SUPERSEDE`: ADR 0029 is now the current product-boundary authority, while ADR
 0014 remains historical evidence for the narrower July 2026 boundary.
+
+The 2026-09-22 Value-Creation & Development Posture clarification is an
+owner-ratified Level-4 `REINTERPRET`, not a product-category pivot. It makes
+explicit that active product development should optimize for valuable,
+warranted progress under uncertainty rather than for uncertainty elimination,
+while consequence, irreversibility, blast radius, and protected commitments
+raise evidence and verification requirements proportionally.
 
 ## 1. Product purpose
 
@@ -237,6 +244,43 @@ turn every available product surface into mandatory ceremony.
     requiring the user to understand Sensemaking's internal machinery. Experts
     should be able to consume concise evidence/control surfaces without losing
     the same invariants.
+18. **Optimize for valuable, warranted progress under uncertainty.** During
+    active exploration and development, prefer sufficiently warranted,
+    reversible actions that create user value or decision-changing learning over
+    additional analysis, governance, experimentation, or verification whose
+    result is unlikely to change the decision.
+19. **Treat commission and omission risks symmetrically.** The cost of a wrong
+    action matters, but so do the cost of delay, foregone learning, lost
+    optionality, and missed product value from not acting.
+20. **Scale rigor to consequence, not to uncertainty alone.** Increase evidence,
+    challenge, verification, rollback discipline, and escalation as
+    consequentiality, irreversibility, blast radius, or protected commitment
+    increases. Residual uncertainty by itself is not a reason to block bounded,
+    authorized, reversible construction.
+
+Useful non-identities:
+
+```text
+uncertainty exists
+!= action prohibited
+
+more evidence possible
+!= more evidence required
+
+verification available
+!= verification decision-changing
+
+human judgment could help
+!= owner decision required
+
+risk of commission
+!= only strategic risk
+```
+
+This posture is qualitative agent guidance, not a lifecycle enum, risk score,
+automatic stage classifier, or permission to weaken validators or protected
+authority boundaries. Once a strict validator, security boundary, or release
+gate is legitimately selected, it remains strict.
 
 ## 8. Strategic non-goals
 

@@ -106,6 +106,45 @@ Read `references/goal-fitness-and-completion-v1.md` when the objective may be a
 milestone, proxy, qualification state, or other downstream representation of
 product completion.
 
+### 1B. Establish development / lifecycle posture when it can change the search
+
+Do not assume that a release target, candidate label, or mature repository means
+product evolution is closed. Establish the governing posture from explicit
+owner intent and current authoritative repository state when it materially
+changes what kinds of opportunities may enter the Strategic Frontier.
+
+Useful qualitative postures include:
+
+```text
+EXPLORATION / ACTIVE DEVELOPMENT
+-> broad product evolution remains open; value creation and learning matter
+
+CONVERGENCE
+-> deepen, integrate, complete, and prune before expanding casually
+
+VERSION TERMINALIZATION
+-> only after a version scope is intentionally frozen; compare against frozen obligations
+
+RELEASE HARDENING
+-> qualification/package/release evidence is the active downstream objective
+
+PRODUCTION / HIGH ASSURANCE
+-> risk-adjusted iteration with stronger blast-radius and rollback discipline
+```
+
+These are reasoning descriptions, not schema values or a stage machine.
+
+```text
+release target exists
+!= product evolution closed
+
+release candidate contemplated
+!= terminalization automatically governing
+
+terminalization
+-> requires an intentionally frozen scope / obligation set
+```
+
 ### 2. Verify current repository state
 
 Use the authorized repository-access surface.
@@ -207,6 +246,52 @@ future success claim
 ```
 
 Do not turn the states into maturity numbers.
+
+### 4A. Search capability identity, depth, adjacency, composition, pruning, and hardening when product evolution is open
+
+When the governing posture is open exploration / active product development and
+the repository future is materially open, perform a bounded generative pass over
+the important existing capabilities before converging on the Strategic Frontier.
+
+For each decision-relevant capability, ask only the lenses that could materially
+change the product future:
+
+```text
+IDENTITY
+Is the capability framed correctly, or would a materially different identity
+serve the mission better?
+
+DEPTH
+If the current identity is correct, what important user/product value remains
+latent inside it?
+
+ADJACENCY
+What nearby capability becomes possible because this capability already exists?
+
+COMPOSITION
+What new value emerges by combining this capability with other established capabilities?
+
+PRUNING
+What machinery, distinction, or responsibility no longer earns its complexity?
+
+HARDENING
+What valuable existing behavior is unreliable enough that making it reliable
+would materially improve the product?
+```
+
+Use existing Exploration Policy modes rather than inventing new semantic
+categories: identity/adjacency usually map to `EXPLORE` or `RESTART`, depth to
+`EXPLOIT`, composition to `RECOMBINE`, pruning to `CHALLENGE`/`EXIT_SEARCH`,
+and hardening to `VERIFY`/`EXPLOIT`.
+
+This pass is **conditional**. Do not apply it to an already-localized task, a
+genuinely frozen version-terminalization comparison, release-hardening work, or
+urgent production recovery merely because broad search is possible.
+
+Prefer product-value and learning significance over mechanical legibility. A
+taxonomy, metadata, validator, or documentation refinement should not crowd out
+a materially larger user-facing capability opportunity merely because the
+former is easier to prove.
 
 ### 5. Form the Strategic Frontier
 
@@ -394,12 +479,15 @@ cheap or local intervention
 != strategically preferable future
 ```
 
-Apply a commission/omission symmetry check while interpreting the lenses:
+Apply a commission/omission symmetry check while interpreting the lenses. During active development, include the cost of delay explicitly rather than treating inaction as risk-free:
 
 - **risk of commission:** what becomes costly, constraining, or misleading if
   this path is pursued and its assumptions are wrong?
 - **risk of omission:** what opportunity, leverage, learning rate, strategic
   optionality, or mission progress is lost if the path is not pursued?
+- **cost of delay:** what user value or decision-changing learning is lost by
+  waiting for stronger evidence or cleaner governance before taking a bounded,
+  reversible step?
 
 Use `deferral cost`, `decision value`, and `reversibility` to express this
 without adding another schema field or numeric score.
@@ -589,6 +677,12 @@ reassessment assumptions should be reconstructible from the artifact itself.
 
 Do not append an implementation plan unless the strategic disposition and
 authority independently warrant one.
+
+Do not promote terminalization merely because release machinery exists or the
+repository is mature. If owner intent still keeps product evolution open, a
+valuable grounded capability opportunity may remain eligible for Level-3
+consideration; release hardening stays downstream until the product/version
+scope is intentionally frozen.
 
 When later evidence returns against this analysis, use
 `strategic-repository-reconciliation` if the claim/assumption/path/strategic

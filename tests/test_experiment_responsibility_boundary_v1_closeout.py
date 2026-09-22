@@ -38,14 +38,8 @@ def test_handoff_records_exact_feature_qualification_and_merge() -> None:
 def test_status_returns_to_normal_use_after_issue_441() -> None:
     status = STATUS.read_text(encoding="utf-8")
 
-    assert (
-        "Issue #441 Experiment Responsibility Boundary v1 "
-        "is complete/integrated and in normal-use handoff"
-    ) in status
-    assert (
-        "Issue #438 Experiment Economy & Proportional Rigor v1 "
-        "is complete/integrated and in normal-use handoff"
-    ) in status
+    assert "Experiment Responsibility Boundary v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
+    assert "Experiment Economy & Proportional Rigor v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert (
         "ISSUE_441_EXPERIMENT_RESPONSIBILITY_BOUNDARY_V1 "
         "= COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
@@ -54,9 +48,6 @@ def test_status_returns_to_normal_use_after_issue_441() -> None:
         "ISSUE_438_EXPERIMENT_ECONOMY_PROPORTIONAL_RIGOR_V1 "
         "= COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
     ) in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
-    assert "OPERATING MODE = NORMAL_USE_VALIDATION" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "SYNTHETIC_STRATEGICPLANNER_TESTING = STOPPED" in status
     assert "NO ACTIVE ISSUE #441 CONSTRUCTION PACKAGE" in status

@@ -124,6 +124,45 @@ close one warranted difference
 This is not “keep improving forever.” The target state, evidence ceilings,
 authority, and stop conditions remain bounded by governing intent.
 
+## 5A. Open product evolution versus closed-world terminalization
+
+Do not use a closed-world completion comparison until the relevant version or
+product scope has been **intentionally frozen** by governing owner/repository
+authority.
+
+```text
+release target exists
+!= frozen product scope
+
+release candidate discussed
+!= product evolution closed
+
+mature repository
+!= terminalization automatically governing
+```
+
+When product evolution remains open, a difference-closing question should be
+paired with bounded generative search for materially better capability identity,
+depth, adjacency, composition, pruning, or hardening opportunities. During this
+posture, the cost of omission and delay is part of the strategic comparison.
+
+When version terminalization is explicitly entered, switch to a closed-world
+comparison:
+
+```text
+possible improvement
+!= current-version blocker
+
+frozen obligation violated
+-> eligible current-version work
+
+desirable improvement without frozen-obligation violation
+-> later-version / post-terminalization opportunity
+```
+
+This is a semantic posture distinction, not a new lifecycle schema or automatic
+stage transition.
+
 ## 6. Legibility bias
 
 Mechanically legible work can dominate agent attention even when it is not the
@@ -208,6 +247,7 @@ Do not:
 - infer a hidden owner goal without evidence;
 - equate route/build/package/test completion with product completion;
 - prefer qualification merely because its evidence is more legible;
+- declare product evolution closed merely because release machinery or an RC target exists;
 - reopen a settled terminal objective merely because a proxy is imperfect;
 - manufacture an orthogonal path solely to create option diversity;
 - create a new completion schema when the existing capability/frontier model is sufficient.

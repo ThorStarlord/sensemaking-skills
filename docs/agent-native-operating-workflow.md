@@ -147,7 +147,7 @@ policy) and its "Interact" section.
 #### Adaptive ceremony and scaffolding
 
 The entry decision is not only about task size. The active agent should reason
-about five contextual factors from the Persona & Adaptive Guidance Model v0:
+about six contextual factors from the current adaptive guidance model:
 
 - **user supervision capability** — how much explanation/scaffolding is useful
   for this decision;
@@ -158,7 +158,12 @@ about five contextual factors from the Persona & Adaptive Guidance Model v0:
 - **consequentiality** — how costly, irreversible, or authority-sensitive a
   wrong responsibility/action would be;
 - **continuation complexity** — how much repository-specific decision state must
-  survive time, sessions, agents, machines, or handoffs.
+  survive time, sessions, agents, machines, or handoffs;
+- **development / lifecycle posture** — whether the current context is open
+  exploration/active development, convergence, intentionally frozen version
+  terminalization, release hardening, production, or high assurance; this
+  changes the default value-creation versus assurance bias without overriding
+  local consequence.
 
 These factors influence presentation and rigor, not deterministic routing.
 Examples of proportional use:
@@ -178,6 +183,14 @@ high continuation complexity
 -> durable Campaign state / provenance / resume support when transient
    context would otherwise be unreliable
 
+active development + cheap reversible authorized work
+-> prefer value-producing / information-producing action over extra analysis
+   when more evidence is unlikely to change the decision
+
+production / high assurance + high consequence / low reversibility
+-> strengthen verification, rollback, observability, challenge, and escalation
+   proportionally
+
 lower user supervision capability
 -> proactively surface missing considerations in clearer language
    without exposing unnecessary internal machinery
@@ -185,8 +198,14 @@ lower user supervision capability
 
 Do **not** infer `Campaign required`, `Skill X required`, or `owner approval
 required` from a score or persona label. No user-expertise score, complexity
-score, consequentiality score, beginner/expert mode, or automatic Campaign
-threshold exists.
+score, consequentiality score, lifecycle score, beginner/expert mode,
+automatic Campaign threshold, or development-stage router exists.
+
+During active product development, treat omission risk and cost of delay as real
+engineering costs. High delegation means the agent should exercise ordinary
+repository-answerable judgment rather than escalate merely because a human
+could increase confidence. Strict validators and protected authority boundaries
+remain strict once legitimately selected.
 
 Most importantly:
 

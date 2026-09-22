@@ -6,6 +6,16 @@
 **Integrated baseline:** `main` after PR #360  
 **Scope:** current agent-facing and user-facing Sensemaking surfaces; no runtime scoring, routing, schema migration, or empirical claim expansion
 
+> **Currentness note (2026-09-22):** this document is historical closeout
+> provenance for the 2026-09-11 five-factor Persona & Adaptive Guidance v0
+> package. The owner-ratified Value-Creation & Development Posture
+> `REINTERPRET` extends the **current** adaptive model with a sixth qualitative
+> factor, development/lifecycle posture, and makes commission risk, omission
+> risk, and cost of delay explicit. The five-factor wording below remains an
+> accurate record of this earlier milestone; current operating guidance is
+> `docs/product-operating-model.md` plus
+> `skills/using-sensemaking/references/adaptive-guidance-v0.md`.
+
 ## 1. Purpose
 
 This reconciliation asked whether the existing shipped Sensemaking product correctly serves the clarified **high-delegation agent-assisted builder / repository owner**, beginner-first and expert-capable, without imposing unnecessary ceremony.
