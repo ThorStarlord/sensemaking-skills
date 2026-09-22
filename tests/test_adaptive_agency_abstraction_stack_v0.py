@@ -75,6 +75,5 @@ def test_closeout_returns_to_normal_use_without_product_expansion() -> None:
     assert "NORMAL_USE_VALIDATION" in handoff
 
     assert "Adaptive Agency Abstraction Stack v0" in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
-    assert "Level-3 disposition: `NO_CHANGE`" in status
-    assert "NORMAL_USE_VALIDATION" in status
+    assert "ADAPTIVE_AGENCY_ABSTRACTION_RUNTIME_GAP = NO_RUNTIME_GAP_ESTABLISHED" in status
+    assert "ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = FEATURE_QUALIFIED_TRIAL_RECONCILED_INTEGRATION_PENDING" in status

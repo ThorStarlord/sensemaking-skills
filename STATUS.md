@@ -2,8 +2,8 @@
 
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
-**Last updated:** 2026-09-21  
-**Current phase:** Issue #452 Strategic Sensemaking Loop v1 is complete/integrated and in normal-use handoff; Issue #449 Goal Fitness & Frontier Integrity v1 remains complete/integrated and in normal-use handoff; Issue #446 Strategic Hypothesis Admission v1 remains complete/integrated and in normal-use handoff; Issue #444 Adaptive Agency Abstraction Stack v0 is complete as a bounded research/reference integration with no runtime/product-boundary expansion; Issue #441 Experiment Responsibility Boundary v1 is complete/integrated and in normal-use handoff; Issue #438 Experiment Economy & Proportional Rigor v1 is complete/integrated and in normal-use handoff; Issue #435 Strategic Repository Analysis Semantic Grounding v1 is complete/integrated and in normal-use handoff; Issue #432 Decision Journey Productization v1 is complete/integrated and in normal-use handoff; Issues #430, #426, and #416 remain complete/integrated normal-use baselines. No repository-local construction package is currently selected. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Last updated:** 2026-09-22  
+**Current phase:** Issue #459 Capability & Organization Tracer v0 is feature-qualified and Trial 001 is reconciled on PR #461, with integration still pending; no further repository-local Organization construction package is selected. Issue #452 Strategic Sensemaking Loop v1 remains complete/integrated and in normal-use handoff; Issues #449, #446, #441, #438, #435, #432, #430, #426, and #416 remain complete/integrated normal-use baselines; Issue #444 Adaptive Agency Abstraction Stack v0 remains the non-authoritative research model. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -45,6 +45,7 @@ The repository-qualified baseline includes:
 - **General Agency Model v0.1** research reference: value → context → strategy → decision frame → epistemic state → sufficiency → inquiry/choice → action → observation/verification → impact/sensemaking → belief update, with lateral challenge/exploration and explicit authority/risk/resource envelopes.
 - **Practical Agent Architecture v0** guidance: semantic agent judgment → target-specific warrant → existing durable decision substrate → deterministic assurance → external execution/orchestration → evidence return and semantic reassessment.
 - **Adaptive Agency Abstraction Stack v0** research reference: separates the Capability Plane (Root Primitive → Cognitive Operator → Capability/Skill), Coordination Plane (delegation → Organization), and Governance/Persistence Plane (policy/authority/provenance/continuity → Institution), plus a distinct promotion/evolution ladder; preserves `Campaign != Organization`, `capability growth != authority growth`, and the current external-orchestration boundary without adding runtime/schema authority.
+- **Capability & Organization Tracer v0 — FEATURE_QUALIFIED / TRIAL_RECONCILED / INTEGRATION_PENDING:** shipped read-only `organization` inspection exposes a small non-authoritative Skill-capability facet overlay and one explicit Repository Change Cell topology (Controller / optional Analyst / Builder / Verifier / Reconciler); exact-head Product Validation #1198 and Release Candidate Distribution #330 passed at `44d1b7732c5bf018c294164a613422f02b244306`. Trial 001 established mechanical coherence and useful responsibility-boundary attribution, but did not establish independent multi-agent superiority or warrant scheduler/runtime expansion.
 - **Policy Hierarchy v0**: canonical middle-control architecture for Strategic → Inquiry → Metareasoning → Exploration → Warrant/Choice → Action/Evidence → Learning/Reconciliation, explicitly defined as semantic policy contracts rather than runtime services.
 - **Inquiry Policy v0**: agent-facing contract for deciding what to learn next, including `NO_INQUIRY_NEEDED`, smallest-sufficient-evidence selection, owner-intent/external-evidence boundaries, and inquiry stop conditions without new schema/state.
 - **Metareasoning Policy v0**: agent-facing qualitative control-move contract for allocating effort among `ACT / INQUIRE / CHALLENGE / EXPLORE / VERIFY / ESCALATE / STOP` without a runtime controller, score, or authority expansion.
@@ -122,6 +123,7 @@ Current material frontier items are:
 14. **Practical Agent Architecture v0 — COMPLETE / GUIDANCE_ONLY_WARRANTED / INTEGRATED.** The warrant-centered hybrid design reconciled against current Sensemaking without establishing a state, schema, assurance, runtime, or public-API gap; compact guidance is integrated into `using-sensemaking`.
 15. **Normal-use validation — ACTIVE / SUPPORTING EVIDENCE MODE.** Preserve qualifying real episodes and use the execution interfaces during ordinary consequential repository work; it no longer blocks construction explicitly authorized under Issue #399.
 16. **Execution Interface & Agent-Factorization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Release-authority audit, execution handoff/result, working-context projection, generic executor interchange, AI Software Factory projection, explicit GitHub provenance publication, and cross-repository execution projection are integrated without adding semantic planning/scheduling authority. Feature-integrated `main@4f89e92030af4dee5c931b59b839869911e6c366` passed Product/Lab/Release Distribution validation; PR #394 / Issue #393 carry the terminal closeout qualification/result receipt.
+   - Historical closeout mode: `NORMAL_USE_VALIDATION`; historical receipt token: `SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION`. These describe the completed Execution Interface milestone and do not override the separately owner-authorized Issue #459 build.
 17. **Experimental Intelligence Components v0 — DEFERRED / LAB_ONLY / `RESEARCH_MORE` / SYNTHETIC TESTING STOPPED.** StrategicPlanner v0 under Issue #395 remains historical lab evidence at its original claim ceiling. It is not an active construction or experiment program and is not promoted by Strategic Repository Sensemaking v1.
 18. **Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE.** Issue #399's seven bounded packages are implemented: Inquiry, Metareasoning, Exploration, Warrant / Choice, Learning / Reconciliation, the stable Strategic Alternatives surface, and Adaptive Policy Coordinator v0. Policy layers remain agent-owned, zero-work-capable, non-mandatory, non-routing, and authority-preserving.
 19. **Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #401 established a first-class Level-3 analysis surface that turns repository evidence into a current-system model, capability/limitation map, 0–5 materially real construction paths, qualitative comparison, decision-changing uncertainty, strategic synthesis, and a warranted direction/inquiry/no-change disposition without building a deterministic StrategicPlanner. Package A integrated via PR #403, Package B via PR #404, and PR #409 stabilized the Strategic Alternatives representation without changing the milestone boundary.
@@ -139,60 +141,48 @@ Current material frontier items are:
 29. **Strategic Hypothesis Admission v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #446 corrects future-state evidence asymmetry in `strategic-repository-analysis`: present-state facts still require evidence, but coherent unbuilt futures may enter the decision space as explicitly grounded strategic hypotheses. Opportunity-driven frontier entries, commission/omission symmetry, and reversible build-as-learning are explicit without schema v3, a new disposition, automatic path selection, or weakened authority boundaries.
 30. **Goal Fitness & Frontier Integrity v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #449 corrects milestone/proxy capture discovered through normal use: Level-3 analysis now tests whether a stated objective is terminal or instrumental, checks prerequisite completion layers, guards against verification legibility crowding out product-completion gaps, challenges shared downstream path framing, and fails closed rather than forcing owner choice inside an incomplete option set. No schema v3, numeric goal-fit score, new planner/runtime, mandatory third path, or product-completion database was added.
 31. **Strategic Sensemaking Loop v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #452 adds an internal one-prompt orchestration front door that reconstructs the latest semantically valid boundary, conditionally composes existing specialized Skills, executes already-selected work through real execution surfaces, and returns consequential evidence upward without collapsing semantic responsibilities or creating a deterministic router/runtime.
+32. **Capability & Organization Tracer v0 — FEATURE_QUALIFIED / TRIAL_RECONCILED / INTEGRATION_PENDING.** Issue #459 implements a read-only faceted Skill/capability overlay plus one explicit Repository Change Cell Organization Pattern, reusing existing Campaign execution boundaries rather than adding a worker runtime. Trial 001 is recorded in `docs/capability-organization-tracer-v0-trial-001.md`; no broader Organization runtime, automatic role allocation, or Skill routing is warranted by current evidence.
 
 ### Current highest-leverage boundary
 
-**Strategic Sensemaking Loop v1 — terminal normal-use handoff.**
+**Capability & Organization Tracer v0 — feature-qualified tracer at integration boundary.**
 
-Issue #452 closes an operator-UX/composition gap discovered through normal use:
-the existing strategic Skills were semantically well separated, but the user had
-to manually prompt the same episode through analysis, responsibility, handoff,
-execution, reconciliation, and reserved-decision transitions.
+Issue #459 has completed its bounded executable topology test. The existing Skill/capability substrate was sufficient for one explicit Repository Change Cell, and the episode exposed useful control-boundary defects without requiring a new worker runtime. Integration of PR #461 remains a protected repository transition.
 
-The integrated front door now preserves:
+The tracer preserves:
 
 ~~~text
-one front door != one semantic responsibility
-stage completed != stage must rerun
-handoff useful != handoff mandatory
-workflow/tool/executor != Skill identity automatically
-returned evidence != strategy automatically changed
-owner decision packet != owner decision made
-loop summary != master artifact
+role != Skill
+Skill != actor
+capability facet != routing authority
+organization valid != organization warranted
+role binding != actor assignment
+external execution != Organization runtime
+worker success != parent closure
 ~~~
 
 ### Current strategic decision to support
 
-**Decision:** after integrating Strategic Sensemaking Loop v1, does current
-evidence warrant a deterministic strategic router/runtime, a new master
-orchestration artifact, a new Campaign schema, or merging the component Skills
-into one monolith?
+**Decision:** after the executable tracer and Trial 001, does current evidence warrant industrializing Organization into worker allocation, scheduling, dynamic topology, persistent teams, or automatic Skill routing?
 
-**Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
+**Current judgment:** **NO_RUNTIME_EXPANSION / NORMAL_USE_HANDOFF / INTEGRATION_PENDING.**
 
-The observed problem was prompt/composition friction, not missing semantic state
-or runtime authority. A thin Skill-level front door is sufficient at the current
-evidence ceiling.
+The tracer earned a first-class read-only Organization inspection surface, not an organizational runtime. Independent multi-agent benefit remains unestablished, so broader machinery should wait for naturally arising normal-use pressure.
 
 ### Current decision-changing uncertainty
 
-None currently warrants another construction package after Issue #452.
-
-Normal use should reveal whether the loop can reliably resume in the middle,
-skip already-completed stages, preserve owner/authority boundaries, and avoid
-fabricating Skill identities for non-Skill execution surfaces without becoming a
-mandatory choreography.
+The remaining uncertainty is whether genuinely independent actors obtain enough additional value from explicit organizational topology to justify stronger product representation. Trial 001 used one active agent across Controller/Builder/Reconciler with CI as the independent mechanical verifier, so comparative multi-agent benefit remains deliberately unresolved.
 
 ~~~text
-one-prompt convenience
-!= deterministic orchestration warranted
+organization representation useful
+!= organization runtime warranted
 ~~~
 
 ### Current warranted repository-level responsibility
 
-**No active repository-local construction responsibility.**
+**No active repository-local construction responsibility for Issue #459.** The tracer is feature-qualified and Trial 001 is reconciled; PR #461 is the remaining integration vehicle.
 
-Level-3 disposition: `NO_CHANGE`.
+Level-3 disposition: `NO_CHANGE / NORMAL_USE_HANDOFF` beyond integration.
 
 ```text
 CURRENT CONSTRUCTION RESPONSIBILITY = NONE
@@ -218,6 +208,7 @@ ADAPTIVE_AGENCY_ABSTRACTION_RUNTIME_GAP = NO_RUNTIME_GAP_ESTABLISHED
 STRATEGY_VIEWER_CLI = IMPLEMENTED
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE
+ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = FEATURE_QUALIFIED_TRIAL_RECONCILED_INTEGRATION_PENDING
 SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
 EXPERIMENT PREREQUISITE = NONE
 SYNTHETIC_STRATEGICPLANNER_TESTING = STOPPED
@@ -228,9 +219,9 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-None for Issue #452 or the completed Issues #449/#446/#444/#441/#438/#435/#432/#430/#426/#416 programs.
+PR #461 is the integration vehicle for the feature-qualified Issue #459 tracer. No further feature construction is selected on the branch. Trial 001 records that Builder work used the active agent while exact-head GitHub Actions supplied independent mechanical verification; existing Campaign execution handoff/result remains the durable external-worker interface when a genuinely separate coding-agent/factory is available.
 
-The terminal qualification/integration receipts are preserved in
+The terminal qualification/integration receipts for earlier programs are preserved in
 `docs/strategic-sensemaking-loop-v1-handoff.md`,
 `docs/goal-fitness-frontier-integrity-v1-handoff.md`,
 `docs/strategic-hypothesis-admission-v1-handoff.md`,
@@ -241,7 +232,7 @@ The terminal qualification/integration receipts are preserved in
 
 ### Expected evidence and reassessment
 
-Reopen repository construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
+Trial 001 now provides direct tracer evidence about role clarity, capability coverage, evidence flow, authority boundaries, and organization ceremony. It does not establish the value of independent semantic actors. After integration, reopen broader Organization construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
 
 - typed strategic currentness still cannot expose a mechanically decidable change needed for a real reassessment;
 - path-transition identity proves insufficient to reconstruct trajectory position without introducing roadmap semantics;
@@ -272,7 +263,7 @@ Do not reopen from synthetic planner curiosity alone.
 
 ### Authority / owner direction
 
-The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, later authorized Issue #426 to clarify policy/continuity interfaces, authorized Issue #430 to implement the strategic-continuity refinement program, authorized Issue #432 to implement Decision Journey Productization v1, and explicitly authorized Issue #435 to implement Strategic Repository Analysis Semantic Grounding v1. The owner then authorized Issue #438 to implement Experiment Economy & Proportional Rigor v1 from observed normal-use friction and Issue #441 to propagate the resulting responsibility boundary through diagnostic/product Skills and experiment-design without another experiment gate or approval pause. The owner subsequently authorized Issue #444 to implement the bounded Adaptive Agency Abstraction Stack v0 research/reconciliation package without another approval pause; that direction does not itself expand ADR 0029 or grant organization-runtime authority. The owner then explicitly authorized Issue #446 Strategic Hypothesis Admission v1 to correct the conservative path-admission behavior, proceed without approval pauses, and preserve existing evidence/authority ceilings. The owner subsequently authorized Issue #449 Goal Fitness & Frontier Integrity v1 to implement the normal-use milestone-inversion corrections end-to-end without approval pauses while preserving owner authority and avoiding new runtime/schema machinery. The owner then authorized Issue #452 Strategic Sensemaking Loop v1 to compress the repetitive multi-prompt strategic episode into one front-door Skill, proceed without approval pauses, and preserve the existing modular semantic/authority boundaries.
+The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, later authorized Issue #426 to clarify policy/continuity interfaces, authorized Issue #430 to implement the strategic-continuity refinement program, authorized Issue #432 to implement Decision Journey Productization v1, and explicitly authorized Issue #435 to implement Strategic Repository Analysis Semantic Grounding v1. The owner then authorized Issue #438 to implement Experiment Economy & Proportional Rigor v1 from observed normal-use friction and Issue #441 to propagate the resulting responsibility boundary through diagnostic/product Skills and experiment-design without another experiment gate or approval pause. The owner subsequently authorized Issue #444 to implement the bounded Adaptive Agency Abstraction Stack v0 research/reconciliation package without another approval pause; that direction does not itself expand ADR 0029 or grant organization-runtime authority. The owner then explicitly authorized Issue #446 Strategic Hypothesis Admission v1 to correct the conservative path-admission behavior, proceed without approval pauses, and preserve existing evidence/authority ceilings. The owner subsequently authorized Issue #449 Goal Fitness & Frontier Integrity v1 to implement the normal-use milestone-inversion corrections end-to-end without approval pauses while preserving owner authority and avoiding new runtime/schema machinery. The owner then authorized Issue #452 Strategic Sensemaking Loop v1 to compress the repetitive multi-prompt strategic episode into one front-door Skill, proceed without approval pauses, and preserve the existing modular semantic/authority boundaries. The owner subsequently authorized Issue #459 Capability & Organization Tracer v0 to build the executable thin slice directly, proceed without approval pauses, and use real repository work to test the Skill-substrate / organizational-topology hypothesis while explicitly avoiding premature industrialization.
 
 Policy Hierarchy Completion v0 has integrated the full owner-authorized bounded package set:
 
@@ -318,8 +309,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NORMAL USE / NO ACTIVE ISSUE #452 CONSTRUCTION PACKAGE.**
+**ISSUE #459 — FEATURE-QUALIFIED / TRIAL-RECONCILED / INTEGRATION PENDING.**
 
-Use `strategic-sensemaking-loop` as the normal one-prompt front door when a strategic repository episode should start or resume end-to-end; continue using the specialized Skills directly when a narrower surface is the real task. Preserve real normal-use evidence of resume/routing friction and reopen construction only when that evidence or explicit owner direction warrants it. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it. Do not create a validation experiment merely to demonstrate this responsibility refinement.
+Integrate PR #461 when authorized. After integration, use `organization inspect|role|skill-profile` selectively during real high-delegation work and preserve naturally arising evidence, especially episodes with independent external Builder/Verifier contexts. Do not open a scheduler, worker-allocation, automatic-routing, persistent-team, or dynamic-Organization program unless normal use exposes one of those as the actual limiting factor.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of this closeout.
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Issue #459 does not itself authorize freezing RC3, PyPI publication, release tagging, or final `1.0.0`. Do **not** freeze RC3 as part of Issue #459.
