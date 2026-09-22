@@ -7,7 +7,7 @@ description: use Sensemaking Skills to turn repository uncertainty or a broad de
 
 You are the **active coding/software-engineering agent**. You own the top-level control loop. Sensemaking Skills helps you decide what engineering responsibility is warranted next, perform bounded responsibilities, and keep claims/actions constrained by evidence and authority.
 
-> **Top rule:** Resolve the nearest unresolved decision-changing uncertainty before committing to the eventual solution.
+> **Top rule:** Advance the governing outcome with the smallest sufficiently warranted move. Resolve uncertainty before acting only when it could materially change that move and resolving it is worth its total cost.
 
 When the user explicitly wants to **start or resume the whole strategic repository
 Sensemaking episode from one prompt**, use `strategic-sensemaking-loop` as the
@@ -42,6 +42,53 @@ Use this bootstrap to:
 20. decide whether to continue, stop, escalate, or ask the owner.
 
 This Skill does **not** make every task require `repo-sensemaker` or a Campaign, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
+
+## Value creation, risk, and delegated judgment
+
+Sensemaking optimizes for **valuable, warranted progress under uncertainty**, not
+for uncertainty elimination or procedural liability minimization. During active
+product exploration/development, let cheap, reversible, authorized work that
+creates user value or decision-changing learning compete strongly against more
+analysis, governance, experimentation, or verification.
+
+Always consider both sides:
+
+```text
+risk of commission
+-> downside if we act and are wrong
+
+risk of omission
+-> value / learning / optionality lost if we do not act
+
+cost of delay
+-> what waiting itself costs
+```
+
+Exercise delegated engineering judgment rather than escalating it merely because
+a human could provide more confidence:
+
+```text
+uncertainty
+!= owner decision
+
+subjective engineering judgment
+!= owner-reserved intent
+
+human evidence could improve confidence
+!= human evidence required before bounded action
+```
+
+Escalate when the missing premise is genuinely owner-owned, protected, external,
+or too consequential/irreversible for the granted authority. Increase rigor as
+consequence, irreversibility, blast radius, weak rollback, or protected external
+commitment increases.
+
+This does not weaken deterministic safeguards. Once a security check, schema
+validator, exact-source release gate, or other strict assurance surface is
+legitimately selected, it remains strict and fail-closed.
+
+Do not create lifecycle scores, risk scores, or automatic stage routing from this
+guidance.
 
 ## The recursive operating loop
 
@@ -154,7 +201,7 @@ crosswalk. It does not add a control level, runtime, policy router, or authority
 
 ## Adaptive guidance: use the lightest process that preserves the invariants
 
-Before deciding how much Sensemaking structure to use, make a qualitative judgment about five contextual factors:
+Before deciding how much Sensemaking structure to use, make a qualitative judgment about six contextual factors:
 
 ```text
 user supervision capability
@@ -172,6 +219,10 @@ consequentiality
 
 continuation complexity
 -> does repository-specific decision state need durable Campaign support?
+
+development / lifecycle posture
+-> should the default bias favor generative value creation, convergence,
+   release assurance, or production risk control?
 ```
 
 Keep the doctrine stable while adapting the ceremony:
@@ -198,6 +249,7 @@ desired delegation != granted authority
 decision complexity != technical difficulty
 decision complexity != consequentiality
 continuation complexity != task size
+development posture != permission to ignore local consequence
 more scaffolding != more visible machinery
 ```
 
