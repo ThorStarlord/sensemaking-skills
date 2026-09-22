@@ -4,6 +4,20 @@
 **Scope:** artifact-aware resume and conditional composition  
 **Authority:** guidance only; no deterministic routing or semantic state mutation
 
+## Contents
+
+1. Purpose
+2. Durable sources to inspect
+3. Semantic precedence, not timestamp precedence
+4. Resume table
+5. Stage-skip rules
+6. Execution target typing
+7. Owner-decision resume
+8. Returned-evidence resume
+9. Fresh-start examples
+10. Mid-episode examples
+11. Final summary is not a source of truth
+
 ## 1. Purpose
 
 This reference lets the front-door Skill resume a strategic Sensemaking episode
