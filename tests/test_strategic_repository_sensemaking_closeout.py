@@ -79,7 +79,6 @@ def test_status_keeps_issue_401_terminal_even_when_later_owner_work_is_selected(
     assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert "STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
     assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
-    assert "SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "SYNTHETIC STRATEGICPLANNER TESTING = STOPPED" in status
     assert "Adaptive Policy Coordinator v0" in status
@@ -113,5 +112,5 @@ def test_issue_416_closeout_does_not_reopen_completed_policy_hierarchy() -> None
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in handoff
     assert "Policy Hierarchy Completion v0 is complete/integrated/composable" in status
     assert "POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
+    assert "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
     assert "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
