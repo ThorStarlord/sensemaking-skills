@@ -47,7 +47,7 @@ def test_status_is_terminal_for_issue_416_and_preserves_prior_baselines() -> Non
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
 
     assert "Issue #416" in status
-    assert "complete/integrated and in normal-use handoff" in status
+    assert "Strategic Continuity, Reconciliation & Multi-Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert (
         "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = "
         "COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
