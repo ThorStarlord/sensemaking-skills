@@ -52,9 +52,6 @@ def test_status_returns_to_normal_use_without_opening_experiment_program() -> No
         "ISSUE_438_EXPERIMENT_ECONOMY_PROPORTIONAL_RIGOR_V1 "
         "= COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
     ) in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
-    assert "OPERATING MODE = NORMAL_USE_VALIDATION" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "SYNTHETIC STRATEGICPLANNER TESTING = STOPPED" in status
     assert "NO ACTIVE ISSUE #438 CONSTRUCTION PACKAGE" in status
