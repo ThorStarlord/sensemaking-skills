@@ -61,6 +61,11 @@ The active coding agent owns the top-level control loop (ADR 0013). Use
 - **Finding is not authorization.** Diagnosis, recommendation, implementation,
   validation, owner decision, publication, and canonical closure are distinct
   lifecycle states.
+- **Terminalization changes work admission.** When `STATUS.md` declares a
+  frozen/terminalizing version or `NO_CHANGE` with no active construction
+  responsibility, use the closed-world completion rules in `CONTEXT.md` and
+  `docs/release-v1.0-contract.md`. Do not reopen Level 3 merely because another
+  desirable improvement can be imagined.
 - **Research hypotheses are not architecture.** Domain-general Sensemaking,
   domain-specific packs, and formalized decision-theory machinery remain
   research questions unless separately ratified.
