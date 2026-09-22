@@ -80,6 +80,7 @@ Decision Journey Productization v1 closeout is summarized in `docs/decision-jour
 Strategic Repository Analysis Semantic Grounding v1 is summarized in `docs/strategic-repository-analysis-semantic-grounding-v1-handoff.md`.
 Strategic Hypothesis Admission v1 is summarized in `docs/strategic-hypothesis-admission-v1-handoff.md`.
 Goal Fitness & Frontier Integrity v1 is summarized in `docs/goal-fitness-frontier-integrity-v1-handoff.md`.
+Strategic Sensemaking Loop v1 is summarized in `docs/strategic-sensemaking-loop-v1-handoff.md`.
 Experiment Economy & Proportional Rigor v1 is summarized in `docs/experiment-economy-proportional-rigor-v1-handoff.md`.
 Experiment Responsibility Boundary v1 is summarized in `docs/experiment-responsibility-boundary-v1-handoff.md`.
 
@@ -230,6 +231,7 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 None for Issue #452 or the completed Issues #449/#446/#444/#441/#438/#435/#432/#430/#426/#416 programs.
 
 The terminal qualification/integration receipts are preserved in
+`docs/strategic-sensemaking-loop-v1-handoff.md`,
 `docs/goal-fitness-frontier-integrity-v1-handoff.md`,
 `docs/strategic-hypothesis-admission-v1-handoff.md`,
 `docs/experiment-responsibility-boundary-v1-handoff.md`,
