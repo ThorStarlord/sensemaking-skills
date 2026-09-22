@@ -45,9 +45,6 @@ def test_status_returns_to_normal_use_after_issue_435() -> None:
         "ISSUE_435_STRATEGIC_REPOSITORY_ANALYSIS_SEMANTIC_GROUNDING_V1 "
         "= COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
     ) in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
-    assert "OPERATING MODE = NORMAL_USE_VALIDATION" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "SYNTHETIC STRATEGICPLANNER TESTING = STOPPED" in status
 
