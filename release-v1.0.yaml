@@ -92,6 +92,7 @@ skill_inventory:
     - handoff
     - problem-framer
     - sensemaking-docs-reconciler
+    - strategic-sensemaking-loop
     - setup-sensemaking-skills
     - skill-maintainer
     - to-issues

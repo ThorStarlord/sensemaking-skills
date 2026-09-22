@@ -24,6 +24,11 @@ ecosystems:
         artifact: strategic_repository_analysis
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/strategic-repository-analysis" }
+      - id: strategic-sensemaking-loop
+        purpose: start or resume end-to-end strategic repository Sensemaking from one prompt
+        artifact: session_summary
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/strategic-sensemaking-loop" }
       - id: strategic-repository-reconciliation
         purpose: reconcile returned evidence against a prior strategic analysis
         artifact: strategic_reconciliation

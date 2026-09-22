@@ -8,6 +8,7 @@ Use the adjacent references by audience:
 
 - **Workflow composition / canonical Campaign golden paths:** `docs/agent-workflow-golden-path-v1.md`.
 - **Coding agent instructions:** `skills/using-sensemaking/SKILL.md`.
+- **One-prompt strategic start/resume:** `skills/strategic-sensemaking-loop/SKILL.md` — front door that reconstructs the current strategic episode and invokes only the warranted stages.
 - **Control architecture crosswalk:** `docs/adaptive-semantic-control-architecture-v0.md` — how existing control scopes, policy layers, authority, execution/evidence, and strategic reassessment compose; optional reference, not a required workflow.
 - **Deeper Level-2 responsibility/authority model:** `docs/agent-native-operating-workflow.md`.
 - **Maintainer/operator validation and qualification:** `docs/operations-runbook.md`.
@@ -74,6 +75,10 @@ Correct repository responsibility is uncertain
 
 Repository/product future itself is open and you want plausible construction paths
 -> use strategic-repository-analysis for Level-3 strategic repository analysis
+
+You want the whole strategic episode to start or resume from one prompt
+-> use strategic-sensemaking-loop
+-> it reuses current artifacts and skips stages that are already complete
 
 Material completed-work or repair claim
 -> stronger evidence / reconciliation / finding-specific verification when warranted
@@ -150,6 +155,7 @@ When repository-wide evidence could materially change the next bounded responsib
 
 When the question is higher-level—**what could this repository become, what coherent ways could it be constructed from here, and what strategic uncertainty distinguishes those futures?**—use `strategic-repository-analysis`. It produces a `strategic_repository_analysis` containing a current-system model, capability/limitation map, Strategic Frontier, coherent construction paths, qualitative comparison, decision-changing uncertainty, and a semantic strategic disposition.
 
+When you want the agent to **start or resume the entire strategic episode without manually prompting every transition**, use `strategic-sensemaking-loop`. It composes the existing strategic analysis, responsibility, execution, evidence-return, reconciliation, and reserved-decision surfaces. It does not create a master artifact or force all stages to run.
 
 When a later repository state needs to be compared with an earlier strategic
 analysis, author a new analysis with explicit continuity metadata when that
