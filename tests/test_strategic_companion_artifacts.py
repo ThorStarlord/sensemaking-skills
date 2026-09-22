@@ -16,6 +16,7 @@ SPECIAL = ROOT / "scripts" / "validate-strategic-companion.py"
 CONTRACTS = ROOT / "skills" / "workflow-planner" / "references" / "artifact-contracts.yaml"
 OWNER_DECISION_SKILL = ROOT / "skills" / "owner-decision-capsule" / "SKILL.md"
 OWNER_DECISION_SKILL = ROOT / "skills" / "owner-decision-capsule" / "SKILL.md"
+OWNER_DECISION_SKILL = ROOT / "skills" / "owner-decision-capsule" / "SKILL.md"
 
 
 def _artifact(title: str, sections: list[str], data: dict) -> str:
@@ -249,6 +250,17 @@ def test_strategic_companion_skills_are_registered_in_product_surfaces() -> None
 
     release = yaml.safe_load((ROOT / "release-v1.0.yaml").read_text(encoding="utf-8"))
     assert expected_skills <= set(release["skill_inventory"]["supported"])
+
+
+def test_owner_decision_capsule_fails_closed_when_option_set_is_materially_incomplete() -> None:
+    skill = OWNER_DECISION_SKILL.read_text(encoding="utf-8")
+
+    assert "option-set adequacy" in skill
+    assert "OPTION_SET_INCOMPLETE" in skill
+    assert "do not emit a misleading binary capsule" in skill
+    assert "construction-path/frontier synthesis must be reopened" in skill
+    assert "two represented options != option set necessarily complete" in skill
+    assert "OPTION_SET_INCOMPLETE != owner decision" in skill
 
 
 def test_owner_decision_capsule_fails_closed_when_option_set_is_materially_incomplete() -> None:
