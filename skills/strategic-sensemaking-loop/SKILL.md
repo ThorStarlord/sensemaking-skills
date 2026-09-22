@@ -104,6 +104,34 @@ Use `strategic-repository-analysis` when:
 Do not reopen strategy for ordinary drift, currentness noise, or because another
 idea is imaginable.
 
+#### Terminalization reopening guard
+
+When authoritative repository state declares the current version scope frozen
+or terminalizing and Level 3 is `NO_CHANGE` with no active construction
+responsibility, switch from open-world opportunity discovery to closed-world
+work admission. Do **not** reopen `ANALYZE` from an unconstrained
+"what remains until finished?" comparison or because a desirable improvement,
+taxonomy inconsistency, documentation refinement, architecture cleanup, or new
+strategic hypothesis can be found.
+
+Reopen current-version construction only when positive evidence establishes one
+of:
+
+- an unsatisfied frozen requirement/obligation;
+- a reproducible defect violating the frozen contract;
+- incomplete required integration/reachability;
+- a mandatory release-gate failure;
+- explicit owner scope change; or
+- repository reality that materially contradicts the terminal state.
+
+```text
+terminal NO_CHANGE + closed scope
+!= invitation to rediscover work
+
+possible improvement
+!= current-version blocker
+```
+
 ### RESPONSIBILITY
 
 Use `using-sensemaking` when:
@@ -161,7 +189,9 @@ Follow the resulting strategic effect:
 
 ```text
 NO_MODEL_CHANGE / REAFFIRM
--> continue or stop according to responsibility state
+-> if the selected responsibility is complete and no next responsibility is
+   independently established, STOP; otherwise continue according to the
+   established responsibility state
 
 REVISE_STRATEGY
 -> use the reconciled state as current Level-3 input
