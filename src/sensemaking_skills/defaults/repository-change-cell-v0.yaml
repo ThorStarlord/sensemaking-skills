@@ -1,0 +1,145 @@
+# Repository Change Cell v0.
+#
+# This is a descriptive/executable tracer pattern, not a worker scheduler.
+# Bindings expose declared Skills/executors; they do not instantiate actors.
+schema_version: 0
+organization_id: repository-change-cell-v0
+objective_class: bounded_repository_change
+
+roles:
+  - id: controller
+    responsibility: Preserve the owner objective, select the warranted bounded responsibility, and decide continue/stop/escalate from returned evidence.
+    capability_requirements:
+      - responsibility_control
+      - episode_coordination
+    authority: inherited_owner_scope
+    receives:
+      - owner_intent
+      - returned_evidence
+    returns:
+      - bounded_responsibility
+      - authority_boundary
+      - continuation_disposition
+    bindings:
+      - kind: skill
+        id: using-sensemaking
+
+  - id: analyst
+    optional: true
+    responsibility: Diagnose repository state only when decision-changing uncertainty warrants repository analysis.
+    capability_requirements:
+      - repository_diagnosis
+    authority: advise_only
+    receives:
+      - objective
+      - repository_state
+    returns:
+      - diagnosis
+      - decision_relevant_uncertainty
+    bindings:
+      - kind: skill
+        id: repo-sensemaker
+
+  - id: builder
+    responsibility: Implement only the already-selected bounded repository responsibility within delegated authority.
+    capability_requirements:
+      - repository_implementation
+    authority: execute_within_delegation
+    receives:
+      - bounded_responsibility
+      - success_conditions
+      - authority_boundary
+    returns:
+      - candidate_change
+      - validation_evidence
+      - unresolved_uncertainty
+    bindings:
+      - kind: executor
+        id: external_coding_agent
+        provides:
+          - repository_implementation
+
+  - id: verifier
+    responsibility: Independently test the bounded completion claim and identify unsupported claims or residual failure.
+    capability_requirements:
+      - bounded_verification
+    authority: advise_only
+    receives:
+      - candidate_change
+      - success_conditions
+      - validation_evidence
+    returns:
+      - verification_result
+      - residual_uncertainty
+    bindings:
+      - kind: skill
+        id: repair-verifier
+
+  - id: reconciler
+    responsibility: Reconcile returned implementation and verification evidence with the prior responsibility and claims.
+    capability_requirements:
+      - evidence_reconciliation
+    authority: advise_only
+    receives:
+      - bounded_responsibility
+      - candidate_change
+      - verification_result
+    returns:
+      - reconciliation_result
+      - continuation_evidence
+    bindings:
+      - kind: skill
+        id: output-reconciler
+
+relationships:
+  - from: controller
+    to: analyst
+    kind: delegates_to
+    carries:
+      - objective
+      - repository_state
+
+  - from: analyst
+    to: controller
+    kind: returns_evidence_to
+    carries:
+      - diagnosis
+      - decision_relevant_uncertainty
+
+  - from: controller
+    to: builder
+    kind: delegates_to
+    carries:
+      - bounded_responsibility
+      - success_conditions
+      - authority_boundary
+
+  - from: builder
+    to: verifier
+    kind: returns_evidence_to
+    carries:
+      - candidate_change
+      - validation_evidence
+      - unresolved_uncertainty
+
+  - from: verifier
+    to: reconciler
+    kind: returns_evidence_to
+    carries:
+      - verification_result
+      - residual_uncertainty
+
+  - from: reconciler
+    to: controller
+    kind: returns_evidence_to
+    carries:
+      - reconciliation_result
+      - continuation_evidence
+
+limits:
+  - pattern validity does not select this organization for a task
+  - a role binding does not assign or instantiate an actor
+  - a Skill profile does not extend Skill Contract Manifest authority
+  - builder execution remains external to Organization Pattern v0
+  - no scheduler queue retry loop worker pool or dynamic role allocation is provided
+  - verifier success does not establish parent objective closure
