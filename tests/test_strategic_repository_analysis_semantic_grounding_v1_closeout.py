@@ -37,10 +37,7 @@ def test_handoff_records_exact_feature_qualification_and_merge() -> None:
 
 def test_status_returns_to_normal_use_after_issue_435() -> None:
     status = STATUS.read_text(encoding="utf-8")
-    assert (
-        "Issue #435 Strategic Repository Analysis Semantic Grounding v1 "
-        "is complete/integrated and in normal-use handoff"
-    ) in status
+    assert "Strategic Repository Analysis Semantic Grounding v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert (
         "ISSUE_435_STRATEGIC_REPOSITORY_ANALYSIS_SEMANTIC_GROUNDING_V1 "
         "= COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
