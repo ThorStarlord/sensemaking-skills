@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+import subprocess
+import sys
 
 import yaml
 
@@ -16,6 +18,7 @@ RELEASE = ROOT / "release-v1.0.yaml"
 CONTRACTS = ROOT / "skills" / "workflow-planner" / "references" / "artifact-contracts.yaml"
 OUTER = ROOT / "docs" / "strategic-outer-loop.md"
 GETTING_STARTED = ROOT / "GETTING_STARTED.md"
+RECONCILIATION = ROOT / "artifacts" / "strategic_reconciliation.md"
 
 
 def test_loop_skill_exists_as_thin_front_door_over_specialized_skills() -> None:
@@ -76,6 +79,40 @@ def test_loop_allows_direct_execution_without_fabricating_skill_identity() -> No
     assert "not a Skill identity" in resume
 
 
+
+
+def test_post_tracer_strategic_reconciliation_validates_and_reaffirms() -> None:
+    commands = (
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "validate-artifact.py"),
+            "strategic_reconciliation",
+            str(RECONCILIATION),
+            "--repo-root",
+            str(ROOT),
+        ],
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "validate-strategic-companion.py"),
+            str(RECONCILIATION),
+        ],
+    )
+    for command in commands:
+        result = subprocess.run(
+            command,
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    text = RECONCILIATION.read_text(encoding="utf-8")
+    assert "Strategic effect: REAFFIRM." in text
+    assert "strategic_effect: REAFFIRM" in text
+    assert "Organization representation established" in text
+    assert "!= Organization runtime warranted" in text
+    assert "independent semantic multi-agent benefit remains unestablished" in text
 
 def test_loop_treats_organization_as_optional_read_only_execution_evidence() -> None:
     text = SKILL.read_text(encoding="utf-8")
