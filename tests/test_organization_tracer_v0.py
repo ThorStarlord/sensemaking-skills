@@ -145,3 +145,25 @@ limits: []
         for item in payload["diagnostics"]
     )
     assert payload["selection_performed"] is False
+
+
+def test_status_selects_tracer_without_reopening_completed_milestones():
+    status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
+    assert (
+        "ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = "
+        "ACTIVE_OWNER_DIRECTED_EXECUTABLE_TRACER"
+    ) in status
+    assert (
+        "CURRENT CONSTRUCTION RESPONSIBILITY = "
+        "CAPABILITY_ORGANIZATION_TRACER_V0"
+    ) in status
+    assert "PRIMARY CONSTRUCTION PROGRAM = ISSUE_459_EXECUTABLE_TRACER" in status
+    assert (
+        "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = "
+        "COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
+    ) in status
+    assert (
+        "POLICY_HIERARCHY_COMPLETION_V0 = "
+        "COMPLETE_INTEGRATED_COMPOSABLE"
+    ) in status
+    assert "SYNTHETIC STRATEGICPLANNER TESTING = STOPPED" in status
