@@ -64,6 +64,48 @@ Distinguish:
 A strategic request grants authority to analyze. It does not automatically
 grant authority to implement the resulting direction.
 
+### 1A. Test goal fitness before treating the stated objective as the frontier
+
+A stated objective remains authoritative owner input, but it may be a terminal
+outcome, an instrumental milestone/proxy, a constraint, an evidence/qualification
+state, or unclear. Do not silently reinterpret the owner's goal; test whether
+optimizing the stated objective would also satisfy the governing product intent.
+
+Use current repository and owner evidence to distinguish:
+
+```text
+STATED_OBJECTIVE
+-> what the owner explicitly asked for
+
+OBJECTIVE_ROLE
+-> terminal | milestone | proxy | constraint | evidence_state | unclear
+
+GOVERNING_INTENT
+-> explicit product/owner intent supported by current evidence
+
+GOAL_FIT
+-> aligned | partial | conflicting | unresolved
+```
+
+Look for a concrete counterexample: could the stated objective be satisfied while
+a material governing objective remains unsatisfied? If yes, emit a goal-fit
+warning and keep both facts visible rather than replacing the owner's objective.
+
+```text
+goal obedience
+!= goal diagnosis
+
+stated milestone authoritative
+!= milestone sufficient proxy for governing intent
+
+milestone satisfied
+!= product objective satisfied
+```
+
+Read `references/goal-fitness-and-completion-v1.md` when the objective may be a
+milestone, proxy, qualification state, or other downstream representation of
+product completion.
+
 ### 2. Verify current repository state
 
 Use the authorized repository-access surface.
@@ -106,6 +148,32 @@ Describe the repository as a system/product:
 - major constraints and claim ceilings.
 
 Do not reduce the repository to a file inventory.
+
+### 3A. Check product/completion layers when downstream milestones are in play
+
+When the stated objective involves release, qualification, packaging, validation,
+route completion, integration, or another milestone that could be downstream of
+actual product completion, establish the relevant completion layers before
+forming the Strategic Frontier.
+
+Use domain-appropriate layers; do not force software/game wording onto every
+repository. A useful generic distinction is:
+
+```text
+implementation exists
+!= integration/reachability complete
+!= content/behavior complete
+!= intended user/product experience complete
+!= release/qualification complete
+```
+
+The analysis need not prove subjective perfection. It must establish whether a
+material prerequisite completion state is evidenced, contradicted, or unresolved
+when that state could make the apparent frontier premature.
+
+A highly legible verification surface must not crowd out a less mechanically
+legible but more consequential product-completion gap merely because CI, SHAs,
+validators, or packaging are easier to inspect.
 
 ### 4. Build the capability / limitation map
 
@@ -172,6 +240,12 @@ opportunity not yet built != opportunity not strategically representable
 
 Identify the small set of unresolved boundaries **and unexploited opportunities**
 that could materially change progress toward the governing mission.
+
+Before treating an instrumental milestone as the active frontier, reconcile it
+against the goal-fitness and completion-layer checks above. If a prerequisite
+product state is materially incomplete or unresolved, represent that fact in the
+frontier instead of allowing the downstream milestone to become the whole
+strategic problem.
 
 For new canonical `schema_version: 2` artifacts, each frontier entry records
 decision-changing evidence references, affected capability identifiers, and a
@@ -278,8 +352,14 @@ test whether it qualifies as a strategically grounded hypothesis under the
 admission rules above.
 
 For path distinctness, capability-state grounding, coarse construction
-sequencing, comparison discipline, and anti-backlog rules, read
+sequencing, comparison discipline, the **orthogonality challenge**, and
+anti-backlog rules, read
 `references/construction-path-synthesis-v1.md`.
+
+Before converging on the path set, challenge whether all candidate paths are
+solving the same framed downstream problem. If so, ask whether that frame is
+itself premature or subordinate to another grounded Strategic Frontier. Do not
+force a third path; admit an orthogonal path only when it is strategically real.
 
 Do not generate a path merely because a generic category exists. Two paths are
 materially distinct only when they imply a different future capability state,
@@ -495,6 +575,10 @@ cleaner evidence != more valuable evidence
 strategic grounding != prior validation
 speculative path != manufactured path
 absence of evidence for future success != evidence that the future is strategically unwarranted
+stated milestone != terminal product intent automatically
+milestone completion != prerequisite product completion
+verification legibility != strategic importance
+path-set comparison != proof that the option set is complete
 ```
 
 ## Output behavior
