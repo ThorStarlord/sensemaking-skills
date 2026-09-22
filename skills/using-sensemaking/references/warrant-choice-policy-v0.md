@@ -122,6 +122,20 @@ dependency 1 unresolved
 A dependency may be factual, semantic, contractual, authority-related, owner-reserved,
 or external.
 
+When the target/responsibility was selected upstream, do not exempt it from this
+dependency check. Treat upstream selection as defeasible evidence of prior
+warrant. If a current decision-critical prerequisite is not established, return
+to reconciliation/upstream adjudication rather than forcing execution.
+
+```text
+upstream selected target
+!= dependency-free target
+
+inherited responsibility
++ prerequisite materially unresolved
+-> target warrant must be reassessed
+```
+
 ## 5. Warrant dispositions
 
 These are documentation-level semantic dispositions, not runtime enums.

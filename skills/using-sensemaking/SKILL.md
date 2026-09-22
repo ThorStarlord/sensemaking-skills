@@ -24,7 +24,7 @@ Use this bootstrap to:
 7. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
 8. when search is materially iterative, apply **Exploration Policy v0** to allocate effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search;
 9. apply **Warrant / Choice Policy v0** to the specific contemplated target when target justification/choice is material;
-10. select a **responsibility before choosing a Skill, workflow, tool, or patch**;
+10. select a **responsibility before choosing a Skill, workflow, tool, or patch**; when the responsibility is inherited from upstream, verify any decision-critical prerequisite that could make it premature before operationalizing it;
 11. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
 12. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
 13. perform or delegate bounded work through the appropriate capability;
@@ -478,6 +478,48 @@ warrant for target A != warrant for target B
 ```
 
 Use the lightest amount of explicit structure that preserves the decision boundary.
+
+### Inherited-responsibility prerequisite backstop
+
+Treat an upstream selected responsibility as a **defeasible conclusion**, not as
+a premise that must be operationalized unchanged.
+
+Before acting on a consequential inherited responsibility, check only the
+decision-critical prerequisites that could make the responsibility premature or
+misframed. Do not redo Level-3 strategy merely because another path is imaginable.
+
+Example:
+
+```text
+inherited responsibility:
+qualify / release / verify the candidate
+
+decision-critical prerequisite:
+the candidate represents the intended sufficiently complete product state
+
+repository evidence:
+buildable/reachable = established
+product/content completion = materially unresolved
+
+result:
+RESPONSIBILITY_PRECONDITION_NOT_ESTABLISHED
+-> return upstream through Learning / Reconciliation
+-> do not optimize the downstream qualification responsibility yet
+```
+
+Use this backstop when new/current evidence contradicts or fails to establish a
+premise the inherited responsibility materially depends on.
+
+```text
+upstream recommendation
+!= unquestionable premise
+
+precondition unresolved
+!= automatic strategic reopening
+
+precondition materially defeats responsibility
+-> reconcile / return upstream before execution
+```
 
 ### Warrant / Choice Policy v0
 

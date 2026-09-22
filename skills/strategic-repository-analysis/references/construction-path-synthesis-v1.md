@@ -157,6 +157,54 @@ and capability identifiers. For opportunity-driven frontiers, evidence grounds
 the current basis of the opportunity, not proof of the future outcome.
 Mechanical tools validate only the declared relationships.
 
+### 2C. Orthogonality challenge before path-set convergence
+
+A path set can be internally reasonable and still be strategically incomplete
+because every path accepts the same downstream framing.
+
+Before convergence, ask:
+
+> Are all candidate paths solving the same framed problem? If so, is that frame
+> itself premature, proxy-driven, or downstream of another grounded Strategic
+> Frontier?
+
+Examples:
+
+```text
+qualify current candidate
+vs
+collect more evidence about current candidate
+```
+
+may omit:
+
+```text
+finish a materially incomplete product surface first
+```
+
+Likewise, two architecture options may both assume a product boundary that has
+not actually been established.
+
+Do not require a third path. Generate an orthogonal path only when governing
+intent + current repository reality + a plausible mechanism make it a real
+strategic trajectory.
+
+```text
+two credible paths
+!= option set necessarily complete
+
+orthogonality challenge
+!= mandatory third option
+
+shared downstream frame
++ unresolved upstream frontier
+-> reopen path generation before comparison
+```
+
+If the challenge exposes an upstream product-completion or goal-fit problem,
+return to the Strategic Frontier rather than ranking the downstream paths more
+carefully.
+
 ## 3. Minimum path distinctness
 
 Two paths are materially distinct when choosing one would change at least one of:
@@ -460,5 +508,7 @@ Do not:
 - rank paths numerically;
 - treat repository facts as owner preferences;
 - assume a path recommendation authorizes implementation;
+- compare only paths that inherit the same downstream/proxy framing without an orthogonality challenge;
+- force a third path when no grounded orthogonal trajectory exists;
 - continue decomposing after `OWNER_DECISION` or `THESIS_REVIEW` merely to
   maintain momentum.

@@ -3,7 +3,7 @@
 **Status:** canonical product contract  
 **Control level:** Level 3 — Strategic Repository Evolution  
 **Authority:** subordinate to `docs/product-strategy.md`, ADR 0029, and the Four-Level Control Model  
-**Owner direction:** Issue #401, refined by Issue #446  
+**Owner direction:** Issue #401, refined by Issues #446 and #449  
 **Runtime posture:** semantic-agent reasoning + mechanically validated artifact; no strategic planner runtime
 
 ## 1. Purpose
@@ -24,7 +24,9 @@ This surface sits between repository diagnosis and bounded implementation:
 ```text
 repository + owner intent
         |
-current system model
+goal fitness / objective-role check
+        |
+current system + completion-layer model
         |
 capability / limitation map
         |
@@ -73,6 +75,10 @@ path comparison != numeric ranking
 semantic recommendation != deterministic planner output
 mechanically valid artifact != strategy correct
 repository evidence != owner intent
+goal obedience != goal diagnosis
+stated milestone != terminal product intent automatically
+milestone completion != prerequisite product completion
+verification legibility != strategic importance
 strategic grounding != prior validation
 speculative path != manufactured path
 ```
@@ -140,6 +146,40 @@ The model should distinguish:
 
 The current-system model is descriptive evidence synthesis. It must distinguish
 verified repository state from owner-supplied intent and inference.
+
+### 4A. Goal fitness and completion-layer integrity
+
+Before treating the stated objective as the Strategic Frontier, classify its
+role when that distinction could change the decision:
+
+```text
+terminal | milestone | proxy | constraint | evidence_state | unclear
+```
+
+The stated objective remains authoritative owner input. The analysis does not
+invent a hidden “real goal.” It compares the stated objective against explicitly
+grounded governing intent and asks whether satisfying the objective could still
+leave a material governing outcome unsatisfied.
+
+When the objective is release-, qualification-, package-, integration-, or
+verification-oriented, establish any decision-relevant prerequisite completion
+layers first:
+
+```text
+implementation exists
+!= integration/reachability complete
+!= content/behavior complete
+!= intended user/product experience complete
+!= release/qualification complete
+```
+
+If a concrete counterexample shows that the milestone can be completed while the
+governing product objective remains materially incomplete, record a goal-fit
+warning and represent the upstream completion gap in the Strategic Frontier.
+
+Use
+`skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md`
+for the detailed contract.
 
 ## 5. Capability / limitation map
 
@@ -299,6 +339,11 @@ BUILD
 Do not manufacture alternatives merely to fill a template. Do not use the
 zero-path option merely because a coherent path is unvalidated; first ask
 whether it is a strategically grounded hypothesis under the rules above.
+
+Before comparison, run an **orthogonality challenge**: if all represented paths
+solve the same downstream/proxy-framed problem, ask whether another grounded
+Strategic Frontier precedes that frame. This is a search challenge, not a
+requirement to manufacture a third option.
 
 New `schema_version: 2` paths make grounding explicit through
 `frontier_refs`, `why_plausible`, `builds_on_capability_ids`, and
@@ -554,4 +599,6 @@ It does not establish:
 - comparative superiority over unaided reasoning;
 - product-market value;
 - that a selected path will succeed;
+- that the stated milestone is a sufficient proxy for governing product intent;
+- that a compared option set is strategically complete merely because its members are credible;
 - that mechanical validation establishes semantic truth.
