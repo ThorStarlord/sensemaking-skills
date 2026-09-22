@@ -43,6 +43,15 @@ Sensemaking is **cross-cutting, not an SDLC stage**. Software-engineering work c
 
 New evidence may warrant a responsibility conventionally considered earlier, later, or sideways in a lifecycle. These are evidence-grounded responsibility transitions, not backward/forward commands. Local mechanical iteration stays inside the selected responsibility until evidence puts that responsibility itself in question.
 
+The current development posture is also decision-relevant context. During active
+product development, Sensemaking should optimize for valuable, warranted
+progress under uncertainty: commission risk, omission risk, cost of delay,
+reversibility, learning value, and blast radius all matter. Version
+terminalization becomes governing only after an intentional scope freeze;
+release/RC machinery alone does not close product evolution. Production and
+high-assurance contexts increase rollback, observability, verification, and
+protected-authority pressure without making zero change the objective.
+
 The Strategic Repository Evolution loop operates above bounded Campaign work. It evaluates product/repository capability state against current strategy, maintains the Strategic Frontier, states the **Strategic Decision to Support**, qualitatively compares credible boundaries, selects or declines one boundary/responsibility, delegates bounded work downward, and reassesses after qualified results. It is not a roadmap processor and does not automatically rank work.
 
 The current ratified product boundary is ADR 0029: Sensemaking is an agent-native repository decision-support and control layer with optional durable Campaign and continuation/reconstruction surfaces while semantic selection remains agent-owned. ADR 0014 is preserved as historical evidence for the narrower July 2026 boundary around the validated, human-reviewed `repository_sensemaking_brief`; historical Goal A evidence remains bounded to the scope under which it was produced.
@@ -87,14 +96,16 @@ The owner-directed build-first rule does not delete empirical questions. It says
 
 ## Top operating rule — Level 2
 
-> **Resolve the nearest unresolved decision-changing uncertainty before committing to the eventual solution.**
+> **Advance the governing outcome with the smallest sufficiently warranted move. Resolve uncertainty before acting only when it could materially change that move and resolving it is worth its total cost.**
 
 The practical Level-2 loop is:
 
 ```text
 GOAL / AUTHORIZED SCOPE
-  -> identify nearest decision-changing uncertainty
-  -> apply Inquiry Policy: no inquiry or smallest sufficient evidence
+  -> identify the governing outcome and contemplated next move
+  -> identify uncertainty only where it could materially redirect that move
+  -> apply Inquiry Policy: no inquiry or smallest sufficient evidence when worth its total cost
+  -> let cheap reversible authorized action compete with separate inquiry
   -> apply Metareasoning Policy when the next control move is ambiguous
   -> when search is materially iterative, apply Exploration Policy
   -> apply Warrant / Choice Policy to the specific target when material
@@ -132,7 +143,7 @@ Level 4 activates only when evidence makes a product-thesis commitment decision-
 ## Core principles
 
 1. **Responsibility before Skill** — decide what class of engineering work is warranted before choosing a Skill, tool, workflow, or patch.
-2. **Evidence before commitment** — resolve the closest uncertainty that could change the next action instead of jumping to the desired final implementation.
+2. **Evidence before unsupported commitment** — obtain evidence when it can materially change the warranted move or support a consequential claim; do not maximize evidence merely because residual uncertainty exists.
 3. **Artifacts are the API** — consequential information crosses responsibility boundaries through durable artifacts and declared inputs, not conversation memory.
 4. **Finding is not authorization** — diagnosis, recommendation, implementation, validation, owner decision, publication, and closure are distinct lifecycle states.
 5. **Validation is not closure** — deterministic PASS proves contract/mechanical properties, not analytical correctness, goal satisfaction, or repair of the original finding.
@@ -153,6 +164,8 @@ Level 4 activates only when evidence makes a product-thesis commitment decision-
 20. **Returned evidence is interpreted before state changes** — results may confirm/revise claims, resolve/open uncertainty, change responsibility, continue/stop/escalate, or reopen strategy, but no validator/worker result mutates semantic state automatically.
 21. **Strategic alternatives are conditional** — use 0–5 materially real construction paths; zero is valid when no coherent construction trajectory is currently warranted, while `BUILD` still requires a selected real path.
 22. **Policy composition is adaptive** — expose only policy questions that can materially change the current decision; zero explicit layers is valid for clear bounded work, and policy activation never grants authority or performs routing.
+23. **Value creation is risk-adjusted, not liability-minimized** — during active development, compare commission risk with omission risk and cost of delay; cheap reversible authorized construction may be the best evidence-producing move.
+24. **Lifecycle posture changes the default bias, not local truth** — active development favors generative progress, intentionally frozen terminalization favors closed-world obligation checking, and production/high-assurance contexts favor stronger rollback and verification. No lifecycle stage weakens strict validators or grants authority.
 
 ## Architecture and ownership
 
