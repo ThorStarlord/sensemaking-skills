@@ -84,6 +84,13 @@ Before publishing a final 1.0 release, CI must pass the following independent la
 Capabilities whose evidence is absent must be labelled deferred or excluded
 rather than silently included in the 1.0 promise.
 
+Final CI results, artifact SHA-256 records, and release-owner authorization are
+post-qualification evidence and must not change the exact source identity they
+attest. The final readiness gate therefore consumes provenance-bound ignored or
+out-of-tree sidecars as defined in `docs/final-release-evidence-v1.md`. Mechanical
+validation of those records does not independently query GitHub, make the owner
+decision, or establish semantic usefulness.
+
 ## Candidate identity invariant
 
 A frozen release candidate is an evidence-bound source identity:
