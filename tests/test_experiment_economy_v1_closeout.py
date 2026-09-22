@@ -54,7 +54,7 @@ def test_status_returns_to_normal_use_without_opening_experiment_program() -> No
     ) in status
     assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
     assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
-    assert "OPERATING MODE = NORMAL_USE_VALIDATION" in status
+    assert "OPERATING MODE = VERSION_1_TERMINALIZATION" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
     assert "SYNTHETIC STRATEGICPLANNER TESTING = STOPPED" in status
     assert "NO ACTIVE ISSUE #438 CONSTRUCTION PACKAGE" in status
