@@ -334,4 +334,4 @@ No current Thesis Tension is promoted into active review.
 
 Qualify the shipped organization inspection surface, run the Repository Change Cell against a real bounded repository change, preserve what the role/capability/evidence topology actually contributed, and stop at the evidence boundary. Do not expand into scheduling, worker allocation, automatic routing, persistent teams, or dynamic Organization generation unless the tracer exposes those as the actual limiting factor.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Issue #459 does not itself authorize freezing RC3, PyPI publication, release tagging, or final `1.0.0`. **Do not freeze RC3 as part of Issue #459.**
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Issue #459 does not itself authorize freezing RC3, PyPI publication, release tagging, or final `1.0.0`. Do **not** freeze RC3 as part of Issue #459.
