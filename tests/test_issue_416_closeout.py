@@ -50,7 +50,7 @@ def test_status_is_terminal_for_issue_416_and_preserves_prior_baselines() -> Non
     assert "complete/integrated and in normal-use handoff" in status
     assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
     assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
-    assert "OPERATING MODE = NORMAL_USE_VALIDATION" in status
+    assert "OPERATING MODE = VERSION_1_TERMINALIZATION" in status
     assert (
         "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = "
         "COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
