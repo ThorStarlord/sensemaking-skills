@@ -14,7 +14,7 @@ Historical `1.0.0rc1` remains qualified provenance for exact commit
 `70542d47412d98ee6dfae5de6df29bf271304568`, but continued development
 superseded it as the identity of current `main`.
 
-The `1.0.0rc2` target is a reduced-scope release of the local-first Sensemaking
+The `1.0.0rc3` target is a reduced-scope release of the local-first Sensemaking
 Campaign control layer and its manifest-backed agent Skills. The active agent
 owns semantic judgment. The product owns durable state, evidence references,
 mechanical validation, provenance, integrity, and explicit authority metadata.
@@ -68,6 +68,44 @@ The release distinguishes four claim states:
 
 Passing a validator does not establish semantic truth, usefulness, or native
 harness compatibility.
+
+## Scope freeze and work admission
+
+Version 1.0 terminalization uses a **closed-world completion rule**. The support
+surface declared by this contract and `release-v1.0.yaml` is the current frozen
+product scope even while the source remains the `.dev0` predecessor of the
+candidate. Product-scope freeze is distinct from freezing an exact candidate
+source identity.
+
+New current-Version-1.0 work may be admitted only when positive evidence shows
+at least one of:
+
+- an unsatisfied obligation already present in the frozen Version 1.0 contract;
+- a reproducible defect that violates that contract;
+- incomplete required integration or reachability;
+- failure of a mandatory release gate; or
+- an explicit owner change to the frozen scope.
+
+The following do **not** become Version 1.0 blockers merely because they are
+desirable or discoverable:
+
+- taxonomy or naming refinement;
+- documentation elegance or non-blocking consistency cleanup;
+- speculative architecture improvements;
+- new strategic opportunities or hypotheses;
+- additional experiments not required by the frozen support claim;
+- theoretical UX/product improvements outside an existing frozen obligation.
+
+Record or defer worthwhile post-Version-1.0 opportunities rather than promoting
+them into the current blocker set.
+
+```text
+finished Version 1.0
+= frozen obligations satisfied
+
+finished Version 1.0
+!= absence of imaginable improvements
+```
 
 ## Release gates
 
