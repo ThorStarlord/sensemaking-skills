@@ -135,3 +135,6 @@ Thumbs.db
 
 # Agent-local linked worktrees
 .claude/worktrees/
+
+# Ephemeral final-release evidence sidecars
+.release-evidence/

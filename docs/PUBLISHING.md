@@ -72,6 +72,43 @@ same combined source state if the base advances. Preserve PR head, qualification
 base, actual integration base, integrated commit, and post-integration validation
 when the closure claim depends on the integrated result.
 
+## Final Version 1.0 readiness evidence
+
+The final readiness gate must be satisfiable without changing the source bytes
+whose qualification it evaluates. Final CI results, artifact digests, and
+release-owner authorization therefore enter through provenance-bound sidecars,
+not through a source commit made after qualification.
+
+Default inputs are:
+
+```text
+.release-evidence/ci.yaml
+.release-evidence/owner-authorization.yaml
+dist/SHA256SUMS
+```
+
+The `.release-evidence/` directory is gitignored. Operators may pass explicit
+out-of-tree paths with `--ci-evidence`, `--owner-authorization`, and
+`--artifact-digests`.
+
+The CI sidecar must bind successful **Product Validation** and **Release
+Candidate Distribution** run IDs to the exact current Git HEAD. The owner
+sidecar must bind `AUTHORIZE_FINAL_1_0_PUBLICATION` to the same exact head.
+The digest record must cover the final wheel and sdist.
+
+See [Final Version 1.0 Release Evidence Boundary](final-release-evidence-v1.md).
+
+```text
+recorded sidecar evidence
+!= independent live GitHub verification
+
+release readiness READY
+!= publication already performed
+
+owner authorization sidecar
+!= owner decision made by tooling
+```
+
 ## Tag and PyPI publication
 
 Tagging and PyPI publication are explicit release-owner actions and remain
