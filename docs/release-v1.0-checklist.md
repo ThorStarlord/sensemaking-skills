@@ -22,6 +22,7 @@ evidence.
 - [x] `validate-contract-authority.py` passes.
 - [x] Source-only lab modules are absent from the wheel.
 - [x] Stable Python exports are explicit and hash-pinned in `docs/public-api-v1.0.yaml`.
+- [x] Final readiness evidence can be supplied without mutating exact source identity; the sidecar contract is documented in `final-release-evidence-v1.md`.
 
 ## Tests and packaging
 
@@ -57,9 +58,15 @@ evidence.
 - [ ] The release owner explicitly authorizes publication.
 
 The final publication gate is executable with
-`python scripts/validate-release-readiness.py --repo-root .`. It must return
-`READY` from a clean exact release head; a `BLOCKED` result is authoritative
-and must not be bypassed by changing documentation alone.
+`python scripts/validate-release-readiness.py --repo-root .`. By default it
+consumes ignored `.release-evidence/ci.yaml`,
+`.release-evidence/owner-authorization.yaml`, and `dist/SHA256SUMS`; explicit
+out-of-tree paths are also supported. See `final-release-evidence-v1.md`.
+
+The gate must return `READY` from a clean exact release head; a `BLOCKED` result
+is authoritative and must not be bypassed by changing documentation alone.
+Mechanical validation of recorded CI/owner evidence does not independently query
+GitHub or synthesize release-owner authorization.
 
 Until every required item is checked, the repository remains development/candidate Beta rather than final Version 1.0. Passing mechanical checks does not establish semantic
 truth or user usefulness; semantic truth is never inferred from a validator.
