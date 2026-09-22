@@ -61,6 +61,8 @@ AUTHORITY / EXTERNAL CONSTRAINTS
 SEARCH / ATTEMPT HISTORY, IF MATERIAL
 VERIFICATION / CLOSURE STATE
 REASONING + INFORMATION + DELAY + OPPORTUNITY COST
+RISK OF COMMISSION + RISK OF OMISSION
+DEVELOPMENT / LIFECYCLE POSTURE, WHEN MATERIAL
 ```
 
 Do not create a new persistent object when these inputs already exist in Campaign,
@@ -237,6 +239,23 @@ no move expected to improve the decision enough to justify cost
 Select the **smallest control move** likely to improve the decision or safely advance
 the already-selected responsibility.
 
+During active exploration/development, apply a generative default when the local
+action permits it:
+
+```text
+cheap + reversible + authorized + plausibly valuable + information-producing
+-> ACT should compete strongly with more analysis
+
+residual uncertainty alone
+!= reason to prefer INQUIRE / VERIFY / ESCALATE
+
+high consequence + low reversibility + large blast radius / weak rollback
+-> strengthen CHALLENGE / INQUIRE / VERIFY / ESCALATE as appropriate
+```
+
+This is risk-adjusted value creation, not an instruction to bypass required
+validators or protected authority.
+
 ## 6. Tie handling
 
 Several moves may be plausible.
@@ -248,7 +267,8 @@ Do not create a score or ranking function. Ask:
 3. Could cheap reversible action produce the needed evidence while also advancing the product?
 4. Which move preserves optionality?
 5. Which move would most directly change what becomes warranted next?
-6. Is one move merely a substep of another?
+6. What product value, learning, or optionality is lost by delaying action?
+7. Is one move merely a substep of another?
 
 Record one primary next move when a consequential handoff/reconstruction needs it.
 Otherwise keep the judgment transient.
@@ -342,5 +362,7 @@ Avoid:
 - challenging or exploring trivial reversible work by default;
 - using metareasoning to select a Skill automatically;
 - treating `ACT` as authority;
+- escalating ordinary delegated engineering judgment merely because a human could provide more confidence;
+- choosing the lowest-liability procedural move when a reversible value-producing action has the better total decision cost;
 - persisting every metareasoning judgment;
 - building an `OuterLoopEngine`, scheduler, or controller service merely to host these labels.
