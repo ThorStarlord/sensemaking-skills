@@ -33,6 +33,11 @@ interpretation; it does not mutate the prior analysis.
 6. State one strategic effect:
    `NO_MODEL_CHANGE | REAFFIRM | REVISE_STRATEGY | REOPEN_ANALYSIS |
    OWNER_DECISION | THESIS_REVIEW_REQUIRED`.
+6A. When the effect is `NO_MODEL_CHANGE` or `REAFFIRM`, the selected
+   responsibility is complete, and no next responsibility is independently
+   established, terminate the episode. Do not manufacture a follow-up Level-3
+   reassessment solely because the repository changed through the completed
+   work.
 7. Nominate a candidate next responsibility only when the strategic effect and
    existing authority warrant one.
 8. Preserve the boundary that reconciliation does not grant implementation
@@ -54,4 +59,6 @@ candidate next responsibility != execution authorization
 path transition effect != roadmap status
 transition established != next transition selected
 mechanical PASS != semantic truth
+REAFFIRM + responsibility complete + no established next responsibility -> STOP
+completed change != automatic Level-3 reassessment
 ```
