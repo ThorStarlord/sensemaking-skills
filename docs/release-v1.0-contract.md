@@ -14,7 +14,7 @@ Historical `1.0.0rc1` remains qualified provenance for exact commit
 `70542d47412d98ee6dfae5de6df29bf271304568`, but continued development
 superseded it as the identity of current `main`.
 
-The `1.0.0rc2` target is a reduced-scope release of the local-first Sensemaking
+The `1.0.0rc3` target is a reduced-scope release of the local-first Sensemaking
 Campaign control layer and its manifest-backed agent Skills. The active agent
 owns semantic judgment. The product owns durable state, evidence references,
 mechanical validation, provenance, integrity, and explicit authority metadata.
@@ -36,12 +36,39 @@ candidate qualification claim.
 ## Stable surface
 
 The stable surface is the Campaign and semantic CLI, generic Skill-format
-distribution, Campaign schema v2, and the manifest-backed Skills in the
-release contract. Native support for specific external harnesses is excluded
-until real harness evidence exists.
+distribution, Campaign schema v2, the manifest-backed semantic Skills, and the
+public agent entrypoints declared in the release contract. Native support for
+specific external harnesses is excluded until real harness evidence exists.
 
 Legacy workflow execution remains compatibility machinery until removed or
 separately promoted. It must not silently become semantic routing authority.
+
+## Public agent entrypoints
+
+`release-v1.0.yaml.public_surface.agent_entrypoints` names compositional Skills
+that are part of the Version 1.0 operator-facing contract even when they do not
+own an independent semantic responsibility.
+
+For the current target, `strategic-sensemaking-loop` is the public one-prompt
+strategic start/resume entrypoint. It remains `internal` in
+`skill_inventory` because its component Skills retain semantic responsibility
+and artifact ownership.
+
+The validator requires every public agent entrypoint to name a canonical,
+non-experimental Skill. This contract establishes shipped/discoverable product
+surface only; it does not establish native-harness invocation, portability,
+semantic usefulness, or new semantic authority.
+
+```text
+public agent entrypoint
+!= supported semantic Skill automatically
+
+entrypoint mechanically present
+!= native harness observed/invoked
+
+composition
+!= new semantic controller
+```
 
 ## Package boundary
 
@@ -77,7 +104,7 @@ Before publishing a final 1.0 release, CI must pass the following independent la
 2. Fresh wheel and sdist installation checks.
 3. Campaign lifecycle end-to-end checks.
 4. Filesystem and path-containment security checks on supported systems.
-5. Skill inventory, manifest, Domain Pack, and contract-authority checks.
+5. Skill inventory, public agent-entrypoint, manifest, Domain Pack, and contract-authority checks.
 6. Required real-harness evidence for every capability advertised as native.
 7. Documentation/status reconciliation and a clean working tree.
 
