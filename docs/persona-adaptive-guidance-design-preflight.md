@@ -7,6 +7,15 @@
 **Schema impact:** none  
 **Empirical claim impact:** none
 
+> **Currentness note (2026-09-22):** this preflight remains the owner-ratified
+> provenance for Persona & Adaptive Guidance Model v0. The later
+> Value-Creation & Development Posture `REINTERPRET` extends current adaptive
+> guidance with a sixth qualitative development/lifecycle-posture factor and
+> explicit commission/omission/delay reasoning. It does not invalidate the
+> persona, delegation, authority, complexity, consequentiality, or continuation
+> distinctions ratified here. See `docs/product-operating-model.md` for the
+> current integrated model.
+
 ## 1. Decision
 
 Clarify the existing Sensemaking Skills product thesis around the user who most benefits from delegated repository judgment and around the factors that should influence how much guidance, rigor, and durability the active coding agent uses.
