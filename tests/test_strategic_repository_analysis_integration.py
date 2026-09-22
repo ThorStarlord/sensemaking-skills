@@ -198,7 +198,7 @@ def test_current_status_closes_path_synthesis_without_reopening_experiments() ->
     assert "Strategic Repository Sensemaking v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
-    assert "SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION" in status
+    assert "SYNTHETIC STRATEGICPLANNER TESTING = STOPPED" in status
 
 
 def test_no_runtime_planner_or_schema_v3_is_added_by_integration() -> None:
