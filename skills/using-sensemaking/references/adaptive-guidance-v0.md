@@ -8,7 +8,7 @@ The governing principle is:
 
 This reference does not define scores, thresholds, modes, or automatic routing. The active coding agent owns the judgment.
 
-## 1. Five contextual factors
+## 1. Six contextual factors
 
 | Factor | Ask | Primarily affects |
 | --- | --- | --- |
@@ -17,6 +17,7 @@ This reference does not define scores, thresholds, modes, or automatic routing. 
 | **Decision complexity** | How difficult is it to determine the warranted repository responsibility? | Sensemaking / investigation rigor |
 | **Consequentiality** | How costly, irreversible, authority-sensitive, or damaging could a wrong action be? | Caution / evidence / validation / reconciliation |
 | **Continuation complexity** | How much decision state must survive time, sessions, agents, machines, or handoffs? | Campaign durability / provenance / resume |
+| **Development / lifecycle posture** | Is this open exploration/active development, convergence, intentionally frozen version terminalization, release hardening, production, or high assurance? | Default value-creation versus assurance posture |
 
 Keep these non-identities explicit:
 
@@ -26,6 +27,8 @@ desired delegation != granted authority
 decision complexity != technical difficulty
 decision complexity != consequentiality
 continuation complexity != task size
+development posture != permission to ignore local consequence
+release target != product evolution closed
 more scaffolding != more visible machinery
 ```
 
@@ -198,6 +201,63 @@ multi-session repository evolution + evidence + authority + handoffs
 
 A Campaign is the central **durable** Level-2 abstraction, not the universal entry point for Sensemaking.
 
+## 8. Development / lifecycle posture -> default optimization bias
+
+Lifecycle posture changes what kind of mistake deserves the strongest default
+attention. It does not create a stage machine and does not override local
+consequence, authority, or strict mechanical validators.
+
+```text
+exploration / active development
+-> bias toward valuable, warranted, reversible progress and learning
+
+convergence
+-> deepen, integrate, complete, simplify, and prune before expanding casually
+
+intentionally frozen version terminalization
+-> compare against frozen obligations; desirable improvement alone does not reopen the version
+
+release hardening
+-> exact-source packaging / qualification / claim integrity
+
+production
+-> risk-adjusted iteration with rollback and observability
+
+high assurance
+-> stronger evidence, verification, and protected authority
+```
+
+During active development, explicitly consider:
+
+```text
+risk of commission
++ risk of omission
++ cost of delay
++ reversibility
++ blast radius
+```
+
+A cheap, reversible, authorized action that creates user value and useful
+evidence should normally compete strongly with another round of analysis. As
+consequence, irreversibility, blast radius, weak rollback, or protected
+commitment rises, strengthen inquiry, challenge, verification, and escalation
+proportionally.
+
+```text
+value-creation bias
+!= reckless action
+
+production conservatism
+!= zero-change objective
+
+strict validator selected
+-> validator remains strict
+```
+
+Do not infer owner intent merely because human feedback could improve confidence.
+Ordinary delegated engineering judgment remains agent-owned within granted
+authority.
+
 ## 8. Combined examples
 
 ### Beginner + simple task
@@ -231,7 +291,11 @@ Avoid:
 - treating high delegation as permission to cross authority boundaries;
 - exposing internal state merely because more scaffolding is helpful;
 - weakening engineering invariants for expert users;
-- adding formal `LIGHT / STANDARD / HEAVY` rigor modes without separate evidence and authority.
+- adding formal `LIGHT / STANDARD / HEAVY` rigor modes without separate evidence and authority;
+- turning lifecycle posture into a persisted runtime mode, stage classifier, or router;
+- treating production conservatism as a zero-change objective;
+- treating active development as permission to ignore high-consequence local risks;
+- escalating ordinary delegated engineering judgment solely because human feedback could increase confidence.
 
 ## 10. Decision shorthand
 
@@ -243,6 +307,7 @@ What judgment have they delegated to me?
 How uncertain is the correct repository responsibility?
 How consequential would a wrong move be?
 Will the decision context need to survive this context?
+What development/lifecycle posture governs, and what do omission or delay cost?
 ```
 
 Then use the lightest Sensemaking process that preserves the required evidence, authority, validation, and continuation invariants.
