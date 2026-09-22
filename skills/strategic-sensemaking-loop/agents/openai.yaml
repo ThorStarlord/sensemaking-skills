@@ -1,0 +1,18 @@
+interface:
+  display_name: Strategic Sensemaking Loop
+  short_description: Run or resume strategic repository Sensemaking from one prompt.
+  icon: 🔁
+  color: purple
+
+instructions: >
+  Use SKILL.md as a thin orchestration front door over the existing strategic
+  Sensemaking Skills. Reconstruct the current durable boundary, invoke only
+  warranted specialized stages, continue through authorized repository-answerable
+  work, reconcile consequential returned evidence, and stop at genuine owner,
+  Level-4, external, or no-further-work boundaries. Never create a master state
+  artifact, deterministic planner, or automatic authority expansion.
+
+tools:
+  - web_search
+  - read_local_files
+  - search_local_files
