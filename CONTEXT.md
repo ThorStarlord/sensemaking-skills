@@ -129,6 +129,69 @@ CURRENT PRODUCT STRATEGY
 
 Level 4 activates only when evidence makes a product-thesis commitment decision-changing or the owner changes strategic intent. Material recurring weak signals may be preserved as **Thesis Tension** without automatically triggering Level-4 review.
 
+## Product evolution vs Version 1.0 terminalization
+
+Sensemaking distinguishes **open-world product evolution** from
+**closed-world version terminalization**.
+
+```text
+PRODUCT EVOLUTION
+Open-world discovery of warranted product work is allowed.
+
+        -> explicit scope freeze / terminalization
+
+VERSION TERMINALIZATION
+The current-version obligation set is closed.
+Desirable improvements do not become current-version work merely because they exist.
+
+        -> frozen obligations satisfied
+
+RELEASE HARDENING
+Only demonstrated release blockers, required integration repairs, and mandatory
+gate failures may reopen current-version work.
+
+        -> gates pass and release authority is granted
+
+RELEASE EXECUTION
+Candidate identity, package, tag, publication, and final-release transitions
+occur under their separate authority rules.
+```
+
+These phases ask different questions:
+
+```text
+product evolution:
+"What should improve next?"
+
+version terminalization:
+"What authoritative frozen obligation is still unsatisfied?"
+
+release hardening:
+"What demonstrably blocks this frozen scope from becoming a releasable candidate?"
+```
+
+During terminalization, completion is **closed-world**. A newly discovered idea,
+taxonomy inconsistency, documentation improvement, architectural refinement,
+possible experiment, or speculative UX improvement is not a Version 1.0 blocker
+by default. Admit new current-version construction only when positive evidence
+maps the work to at least one of:
+
+- an unsatisfied requirement in the frozen Version 1.0 scope;
+- a reproducible defect that violates that frozen requirement or support contract;
+- incomplete required integration/reachability;
+- a mandatory release-gate failure; or
+- an explicit owner change to the frozen scope.
+
+```text
+possible improvement != current-version obligation
+new strategic hypothesis != reopened construction
+NO_CHANGE + frozen scope != invitation to search for another blocker
+```
+
+`STATUS.md` projects the current operating phase. The release contract defines
+the Version 1.0 work-admission boundary. Terminalization does not itself grant
+merge, tag, publication, deployment, or final-release authority.
+
 ## Core principles
 
 1. **Responsibility before Skill** — decide what class of engineering work is warranted before choosing a Skill, tool, workflow, or patch.
