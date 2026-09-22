@@ -94,7 +94,8 @@ The current product model separates several reasons for stronger support:
 - **desired delegation** affects how much repository-answerable judgment the agent should exercise within granted authority;
 - **decision complexity** affects investigation/sensemaking rigor;
 - **consequentiality** affects caution, evidence, validation, and reconciliation;
-- **continuation complexity** affects whether durable Campaign state is worth its cost.
+- **continuation complexity** affects whether durable Campaign state is worth its cost;
+- **development / lifecycle posture** affects whether the default bias should favor generative value creation, convergence, release assurance, or production risk control.
 
 These are qualitative agent judgments, not scores, modes, or routing rules.
 
@@ -103,6 +104,8 @@ more guidance != more visible machinery
 large task != Campaign required
 high consequentiality != Campaign required
 desired delegation != granted authority
+release target != product evolution closed
+uncertainty exists != action prohibited
 ```
 
 For the detailed agent-facing interpretation, see `skills/using-sensemaking/references/adaptive-guidance-v0.md`.
@@ -120,10 +123,14 @@ required by the current authoritative product scope is implemented and satisfies
 its applicable acceptance and repository-qualification criteria.
 
 Operating policy: Reconstruct current repository reality before assuming work is
-still missing. Resolve decision-changing uncertainty before implementation. Use
-repo-sensemaker when repository-wide evidence could materially change the next
-responsibility. Use durable Campaign state when continuation complexity makes
-transient context unreliable. After each bounded responsibility, reassess what,
+still missing. Advance the governing outcome with the smallest sufficiently
+warranted move; resolve uncertainty before acting only when it could materially
+change that move and resolving it is worth its total cost. Let cheap reversible
+authorized construction compete with separate inquiry when it creates value and
+useful evidence. Use repo-sensemaker when repository-wide evidence could
+materially change the next responsibility. Use durable Campaign state when
+continuation complexity makes transient context unreliable. After each bounded
+responsibility, reassess what,
 if anything, is warranted next.
 
 Scope discipline: Treat only current authoritative product commitments as
