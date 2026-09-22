@@ -60,6 +60,18 @@ selection
 
 mechanical validation
 != semantic correctness
+
+uncertainty exists
+!= action prohibited
+
+more evidence possible
+!= more evidence required
+
+verification available
+!= verification warranted
+
+human judgment could help
+!= owner decision required
 ```
 
 The active semantic agent owns policy application unless authority is explicitly
@@ -414,6 +426,48 @@ policy disposition
 
 Use a companion artifact only when another actor/context must reconstruct the
 consequential result. Artifact creation never transfers authority.
+
+## 6A. Value-creation posture
+
+The policy hierarchy serves the governing product outcome; it is not an
+independent objective. During active product exploration and development, the
+default semantic posture is to seek valuable, warranted progress under
+uncertainty rather than to minimize decision liability.
+
+Use commission/omission symmetry:
+
+```text
+risk of commission
+-> downside if the contemplated move is wrong
+
+risk of omission
+-> value, learning, optionality, or mission progress lost by not moving
+
+cost of delay
+-> what waiting itself costs
+```
+
+When action is cheap, reversible, authorized, plausibly valuable, and
+information-producing, `ACT` or bounded construction should compete strongly
+with additional inquiry or verification. When consequence, irreversibility,
+blast radius, protected external commitment, or weak rollback increases, raise
+the level of inquiry, challenge, verification, and escalation proportionally.
+
+This doctrine changes policy **selection**, not validator semantics:
+
+```text
+semantic controller decides whether more rigor is decision-relevant
+
+strict validator selected
+-> strict validator remains fail-closed
+
+value-creation bias
+!= weakened evidence standard
+!= expanded authority
+```
+
+Do not create a `LifecycleState`, `ValueCreationScore`, automatic stage
+classifier, or another policy layer merely to encode this posture.
 
 ## 7. Activation principle
 
