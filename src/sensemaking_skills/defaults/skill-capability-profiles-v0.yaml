@@ -1,0 +1,53 @@
+# Capability & Organization Tracer v0 overlay.
+#
+# This file is intentionally non-authoritative. It adds explanatory facets for
+# a small tracer set of Skills without extending Skill Contract Manifest v1,
+# selecting a Skill, or granting execution authority.
+schema_version: 0
+
+profiles:
+  - skill_id: using-sensemaking
+    package_role: governance
+    capability_families:
+      - responsibility_control
+      - episode_coordination
+    typical_roles:
+      - controller
+    authority_posture: select_within_delegation
+    effect_boundary: read_only
+    notes:
+      - selects warranted responsibility semantically but does not grant execution authority
+
+  - skill_id: repo-sensemaker
+    package_role: situated_skill
+    capability_families:
+      - repository_diagnosis
+    typical_roles:
+      - analyst
+    authority_posture: advise
+    effect_boundary: read_only
+    notes:
+      - diagnosis does not become implementation authority
+
+  - skill_id: repair-verifier
+    package_role: situated_skill
+    capability_families:
+      - bounded_verification
+      - evidence_reconciliation
+    typical_roles:
+      - verifier
+    authority_posture: advise
+    effect_boundary: read_only
+    notes:
+      - verifies bounded closure against evidence without deciding parent continuation
+
+  - skill_id: output-reconciler
+    package_role: capability
+    capability_families:
+      - evidence_reconciliation
+    typical_roles:
+      - reconciler
+    authority_posture: advise
+    effect_boundary: read_only
+    notes:
+      - reconciles returned work claims with evidence without selecting unrelated work
