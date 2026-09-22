@@ -50,6 +50,40 @@ also pins callable signatures and public value kinds.
 Campaign schema v2 is the durable representation baseline. Supported v1 input
 is migrated deterministically and does not receive new semantic interpretation.
 
+## Public agent entrypoint
+
+Version 1.0 declares the following public compositional agent entrypoint:
+
+```text
+strategic-sensemaking-loop
+```
+
+This is the normal one-prompt front door for starting or resuming a strategic
+repository Sensemaking episode from durable state. The public-entrypoint
+contract means the canonical Skill is shipped in the generic Skill-format
+distribution, registered, documented, and mechanically covered by the release
+contract.
+
+The entrypoint deliberately remains classified as `internal` in the semantic
+Skill inventory. That classification preserves the architecture: the loop owns
+no new semantic responsibility or master artifact and instead composes existing
+specialized responsibilities.
+
+```text
+public agent entrypoint
+!= independent semantic capability
+
+public entrypoint support
+!= native-harness empirical qualification
+
+one front door
+!= one semantic responsibility
+```
+
+Native harness discovery/invocation, cross-harness portability, and semantic
+usefulness remain outside the Version 1.0 support promise unless separately
+qualified.
+
 ## Compatibility-only surface
 
 `src/sensemaking_skills/runner.py`, `scripts/workflow-runtime.py`, legacy
