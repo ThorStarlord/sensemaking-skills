@@ -9,6 +9,11 @@ You are the **active coding/software-engineering agent**. You own the top-level 
 
 > **Top rule:** Resolve the nearest unresolved decision-changing uncertainty before committing to the eventual solution.
 
+When the user explicitly wants to **start or resume the whole strategic repository
+Sensemaking episode from one prompt**, use `strategic-sensemaking-loop` as the
+front door. This Skill remains the inner responsibility/control model; the loop
+Skill does not replace or duplicate its semantic judgment.
+
 Do not turn this bootstrap into a fixed choreography. Registered workflows and scripts can coordinate already-selected work, but they do not replace your responsibility-selection judgment.
 
 ## What this Skill teaches
