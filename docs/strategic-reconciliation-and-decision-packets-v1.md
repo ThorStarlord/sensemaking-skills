@@ -56,9 +56,26 @@ or reserved authority.
 It must expose credible options, tradeoffs, reversibility/deferral effects, and
 the authority consequence of each option.
 
+Before packaging, it must also check whether the represented option set is
+materially adequate. If all options inherit one downstream/proxy framing while
+current strategic evidence grounds a materially distinct omitted trajectory, the
+Skill must fail closed:
+
+```text
+OPTION_SET_INCOMPLETE
+-> do not emit a misleading binary capsule
+-> return upstream to Strategic Frontier / construction-path synthesis
+```
+
+This escape hatch does not authorize the packet Skill to invent strategy. It
+only prevents a reserved decision packet from forcing owner choice inside an
+option set already shown to be incomplete.
+
 ```text
 owner decision packet != owner decision made
 option described != option selected
+two credible options != option set necessarily complete
+OPTION_SET_INCOMPLETE != third option invented
 ```
 
 ## Thesis Review Packet
