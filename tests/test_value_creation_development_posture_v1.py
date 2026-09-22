@@ -15,6 +15,8 @@ STRATEGY = ROOT / "docs" / "product-strategy.md"
 OPERATING = ROOT / "docs" / "product-operating-model.md"
 LEVEL2_WORKFLOW = ROOT / "docs" / "agent-native-operating-workflow.md"
 CONTEXT = ROOT / "CONTEXT.md"
+README = ROOT / "README.md"
+GETTING_STARTED = ROOT / "GETTING_STARTED.md"
 POLICY = ROOT / "docs" / "policy-hierarchy-v0.md"
 USING = ROOT / "skills" / "using-sensemaking" / "SKILL.md"
 ADAPTIVE_GUIDANCE = (
@@ -91,6 +93,21 @@ def test_current_context_and_adaptive_guidance_use_six_factor_outcome_first_mode
     assert "six contextual factors from the current adaptive guidance model" in workflow
     assert "development / lifecycle posture" in workflow
     assert "active development + cheap reversible authorized work" in workflow
+
+
+
+def test_human_entry_points_expose_lifecycle_posture_without_stage_routing() -> None:
+    readme = README.read_text(encoding="utf-8")
+    getting = GETTING_STARTED.read_text(encoding="utf-8")
+
+    assert "development/lifecycle posture" in readme
+    assert "release target != product evolution closed" in readme
+    assert "uncertainty exists != action prohibited" in readme
+
+    assert "**development / lifecycle posture**" in getting
+    assert "Advance the governing outcome with the smallest sufficiently" in getting
+    assert "cheap reversible\nauthorized construction" in getting
+    assert "release target != product evolution closed" in getting
 
 
 def test_inquiry_and_metareasoning_include_omission_and_delay_cost() -> None:
