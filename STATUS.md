@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-22  
-**Current phase:** Issue #459 Capability & Organization Tracer v0 is an owner-directed executable thin-slice construction program testing a read-only Skill-capability projection and explicit Organization Pattern without adding a scheduler/runtime; Issue #452 Strategic Sensemaking Loop v1 remains complete/integrated and in normal-use handoff; Issues #449, #446, #441, #438, #435, #432, #430, #426, and #416 remain complete/integrated normal-use baselines; Issue #444 Adaptive Agency Abstraction Stack v0 remains the non-authoritative research model. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #459 Capability & Organization Tracer v0 is feature-qualified and Trial 001 is reconciled on PR #461, with integration still pending; no further repository-local Organization construction package is selected. Issue #452 Strategic Sensemaking Loop v1 remains complete/integrated and in normal-use handoff; Issues #449, #446, #441, #438, #435, #432, #430, #426, and #416 remain complete/integrated normal-use baselines; Issue #444 Adaptive Agency Abstraction Stack v0 remains the non-authoritative research model. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -45,7 +45,7 @@ The repository-qualified baseline includes:
 - **General Agency Model v0.1** research reference: value → context → strategy → decision frame → epistemic state → sufficiency → inquiry/choice → action → observation/verification → impact/sensemaking → belief update, with lateral challenge/exploration and explicit authority/risk/resource envelopes.
 - **Practical Agent Architecture v0** guidance: semantic agent judgment → target-specific warrant → existing durable decision substrate → deterministic assurance → external execution/orchestration → evidence return and semantic reassessment.
 - **Adaptive Agency Abstraction Stack v0** research reference: separates the Capability Plane (Root Primitive → Cognitive Operator → Capability/Skill), Coordination Plane (delegation → Organization), and Governance/Persistence Plane (policy/authority/provenance/continuity → Institution), plus a distinct promotion/evolution ladder; preserves `Campaign != Organization`, `capability growth != authority growth`, and the current external-orchestration boundary without adding runtime/schema authority.
-- **Capability & Organization Tracer v0 — ACTIVE / OWNER-DIRECTED THIN SLICE:** shipped read-only `organization` inspection exposes a small non-authoritative Skill-capability facet overlay and one explicit Repository Change Cell topology (Controller / optional Analyst / Builder / Verifier / Reconciler); capability coverage and evidence-flow references are mechanically inspectable, while actor allocation, Skill selection, execution, scheduling, and authority remain external/agent-owned.
+- **Capability & Organization Tracer v0 — FEATURE_QUALIFIED / TRIAL_RECONCILED / INTEGRATION_PENDING:** shipped read-only `organization` inspection exposes a small non-authoritative Skill-capability facet overlay and one explicit Repository Change Cell topology (Controller / optional Analyst / Builder / Verifier / Reconciler); exact-head Product Validation #1198 and Release Candidate Distribution #330 passed at `44d1b7732c5bf018c294164a613422f02b244306`. Trial 001 established mechanical coherence and useful responsibility-boundary attribution, but did not establish independent multi-agent superiority or warrant scheduler/runtime expansion.
 - **Policy Hierarchy v0**: canonical middle-control architecture for Strategic → Inquiry → Metareasoning → Exploration → Warrant/Choice → Action/Evidence → Learning/Reconciliation, explicitly defined as semantic policy contracts rather than runtime services.
 - **Inquiry Policy v0**: agent-facing contract for deciding what to learn next, including `NO_INQUIRY_NEEDED`, smallest-sufficient-evidence selection, owner-intent/external-evidence boundaries, and inquiry stop conditions without new schema/state.
 - **Metareasoning Policy v0**: agent-facing qualitative control-move contract for allocating effort among `ACT / INQUIRE / CHALLENGE / EXPLORE / VERIFY / ESCALATE / STOP` without a runtime controller, score, or authority expansion.
@@ -141,16 +141,13 @@ Current material frontier items are:
 29. **Strategic Hypothesis Admission v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #446 corrects future-state evidence asymmetry in `strategic-repository-analysis`: present-state facts still require evidence, but coherent unbuilt futures may enter the decision space as explicitly grounded strategic hypotheses. Opportunity-driven frontier entries, commission/omission symmetry, and reversible build-as-learning are explicit without schema v3, a new disposition, automatic path selection, or weakened authority boundaries.
 30. **Goal Fitness & Frontier Integrity v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #449 corrects milestone/proxy capture discovered through normal use: Level-3 analysis now tests whether a stated objective is terminal or instrumental, checks prerequisite completion layers, guards against verification legibility crowding out product-completion gaps, challenges shared downstream path framing, and fails closed rather than forcing owner choice inside an incomplete option set. No schema v3, numeric goal-fit score, new planner/runtime, mandatory third path, or product-completion database was added.
 31. **Strategic Sensemaking Loop v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #452 adds an internal one-prompt orchestration front door that reconstructs the latest semantically valid boundary, conditionally composes existing specialized Skills, executes already-selected work through real execution surfaces, and returns consequential evidence upward without collapsing semantic responsibilities or creating a deterministic router/runtime.
-32. **Capability & Organization Tracer v0 — ACTIVE / OWNER-DIRECTED EXECUTABLE TRACER.** Issue #459 implements a read-only faceted Skill/capability overlay plus one explicit Repository Change Cell Organization Pattern, reusing existing Campaign execution boundaries rather than adding a worker runtime. The active question is whether explicit role/capability/authority/evidence topology improves real high-delegation repository work enough to warrant broader product representation.
+32. **Capability & Organization Tracer v0 — FEATURE_QUALIFIED / TRIAL_RECONCILED / INTEGRATION_PENDING.** Issue #459 implements a read-only faceted Skill/capability overlay plus one explicit Repository Change Cell Organization Pattern, reusing existing Campaign execution boundaries rather than adding a worker runtime. Trial 001 is recorded in `docs/capability-organization-tracer-v0-trial-001.md`; no broader Organization runtime, automatic role allocation, or Skill routing is warranted by current evidence.
 
 ### Current highest-leverage boundary
 
-**Capability & Organization Tracer v0 — executable topology test.**
+**Capability & Organization Tracer v0 — feature-qualified tracer at integration boundary.**
 
-Issue #459 is deliberately neither another ontology-only package nor a general
-multi-agent runtime. It tests whether the existing Skill/capability substrate is
-stable enough to support one real, explicit organizational topology and whether
-that topology exposes decision-changing coordination failures in practice.
+Issue #459 has completed its bounded executable topology test. The existing Skill/capability substrate was sufficient for one explicit Repository Change Cell, and the episode exposed useful control-boundary defects without requiring a new worker runtime. Integration of PR #461 remains a protected repository transition.
 
 The tracer preserves:
 
@@ -166,26 +163,15 @@ worker success != parent closure
 
 ### Current strategic decision to support
 
-**Decision:** can a small explicit role/capability/evidence topology add useful
-coordination to real repository work while reusing current Skill and execution
-surfaces, or does it add ceremony without enough value to warrant Organization
-as a stronger product concept?
+**Decision:** after the executable tracer and Trial 001, does current evidence warrant industrializing Organization into worker allocation, scheduling, dynamic topology, persistent teams, or automatic Skill routing?
 
-**Current judgment:** **BUILD / EXECUTABLE_TRACER_ONLY.**
+**Current judgment:** **NO_RUNTIME_EXPANSION / NORMAL_USE_HANDOFF / INTEGRATION_PENDING.**
 
-Owner direction explicitly warrants the smallest real construction that can
-produce this evidence. It does not authorize a scheduler, worker pool, automatic
-role allocation, automatic Skill routing, persistent workforce state, or a
-Campaign schema change.
+The tracer earned a first-class read-only Organization inspection surface, not an organizational runtime. Independent multi-agent benefit remains unestablished, so broader machinery should wait for naturally arising normal-use pressure.
 
 ### Current decision-changing uncertainty
 
-The live uncertainty is whether explicit organizational topology contributes
-decision-relevant value beyond existing single-agent composition.
-
-The tracer should expose whether failures arise from Skill/capability ambiguity,
-role-boundary ambiguity, handoff/evidence loss, authority leakage, or unnecessary
-organizational ceremony.
+The remaining uncertainty is whether genuinely independent actors obtain enough additional value from explicit organizational topology to justify stronger product representation. Trial 001 used one active agent across Controller/Builder/Reconciler with CI as the independent mechanical verifier, so comparative multi-agent benefit remains deliberately unresolved.
 
 ~~~text
 organization representation useful
@@ -194,14 +180,14 @@ organization representation useful
 
 ### Current warranted repository-level responsibility
 
-**Active bounded responsibility:** implement and qualify Capability & Organization Tracer v0 under Issue #459, then reconcile the first real repository trial.
+**No active repository-local construction responsibility for Issue #459.** The tracer is feature-qualified and Trial 001 is reconciled; PR #461 is the remaining integration vehicle.
 
-Level-3 disposition: `BUILD` for the executable tracer only.
+Level-3 disposition: `NO_CHANGE / NORMAL_USE_HANDOFF` beyond integration.
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = CAPABILITY_ORGANIZATION_TRACER_V0
-PRIMARY CONSTRUCTION PROGRAM = ISSUE_459_EXECUTABLE_TRACER
-OPERATING MODE = OWNER_DIRECTED_BOUNDED_BUILD
+CURRENT CONSTRUCTION RESPONSIBILITY = NONE
+PRIMARY CONSTRUCTION PROGRAM = NONE
+OPERATING MODE = NORMAL_USE_VALIDATION
 ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_426_POLICY_HIERARCHY_INTERFACE_CLARIFICATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_430_STRATEGIC_CONTINUITY_REFINEMENT_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
@@ -222,8 +208,8 @@ ADAPTIVE_AGENCY_ABSTRACTION_RUNTIME_GAP = NO_RUNTIME_GAP_ESTABLISHED
 STRATEGY_VIEWER_CLI = IMPLEMENTED
 STRATEGIC_REPOSITORY_SENSEMAKING_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 POLICY_HIERARCHY_COMPLETION_V0 = COMPLETE_INTEGRATED_COMPOSABLE
-ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = ACTIVE_OWNER_DIRECTED_EXECUTABLE_TRACER
-SUPPORTING EVIDENCE MODE = REAL_REPOSITORY_TRIAL
+ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = FEATURE_QUALIFIED_TRIAL_RECONCILED_INTEGRATION_PENDING
+SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
 EXPERIMENT PREREQUISITE = NONE
 SYNTHETIC_STRATEGICPLANNER_TESTING = STOPPED
 SYNTHETIC STRATEGICPLANNER TESTING = STOPPED
@@ -233,12 +219,7 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-Issue #459 is implemented on a bounded feature branch/PR. Builder work uses the
-active agent and repository write surface in this workspace; the product pattern
-continues to model the Builder as an external executor so that the tracer does
-not silently collapse executor identity into Skill identity. Existing Campaign
-execution handoff/result remains the durable external-worker interface when a
-separate coding-agent/factory is available.
+PR #461 is the integration vehicle for the feature-qualified Issue #459 tracer. No further feature construction is selected on the branch. Trial 001 records that Builder work used the active agent while exact-head GitHub Actions supplied independent mechanical verification; existing Campaign execution handoff/result remains the durable external-worker interface when a genuinely separate coding-agent/factory is available.
 
 The terminal qualification/integration receipts for earlier programs are preserved in
 `docs/strategic-sensemaking-loop-v1-handoff.md`,
@@ -251,9 +232,7 @@ The terminal qualification/integration receipts for earlier programs are preserv
 
 ### Expected evidence and reassessment
 
-Issue #459 should first produce direct tracer evidence about role clarity, capability coverage, evidence flow, authority boundaries, organization ceremony, and whether actor independence materially changes verification value.
-
-After the tracer closes, reopen broader Organization construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
+Trial 001 now provides direct tracer evidence about role clarity, capability coverage, evidence flow, authority boundaries, and organization ceremony. It does not establish the value of independent semantic actors. After integration, reopen broader Organization construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
 
 - typed strategic currentness still cannot expose a mechanically decidable change needed for a real reassessment;
 - path-transition identity proves insufficient to reconstruct trajectory position without introducing roadmap semantics;
@@ -330,8 +309,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**ISSUE #459 — COMPLETE THE EXECUTABLE TRACER AND RECONCILE ITS FIRST REAL REPOSITORY EPISODE.**
+**ISSUE #459 — FEATURE-QUALIFIED / TRIAL-RECONCILED / INTEGRATION PENDING.**
 
-Qualify the shipped organization inspection surface, run the Repository Change Cell against a real bounded repository change, preserve what the role/capability/evidence topology actually contributed, and stop at the evidence boundary. Do not expand into scheduling, worker allocation, automatic routing, persistent teams, or dynamic Organization generation unless the tracer exposes those as the actual limiting factor.
+Integrate PR #461 when authorized. After integration, use `organization inspect|role|skill-profile` selectively during real high-delegation work and preserve naturally arising evidence, especially episodes with independent external Builder/Verifier contexts. Do not open a scheduler, worker-allocation, automatic-routing, persistent-team, or dynamic-Organization program unless normal use exposes one of those as the actual limiting factor.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Issue #459 does not itself authorize freezing RC3, PyPI publication, release tagging, or final `1.0.0`. Do **not** freeze RC3 as part of Issue #459.
