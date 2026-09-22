@@ -77,13 +77,15 @@ agents, machines, or a long-running responsibility
 -> Campaign durability is likely useful
 ```
 
-The active agent qualitatively considers user supervision capability, desired delegation, decision complexity, consequentiality, and continuation complexity. These affect scaffolding, investigation rigor, verification, and durability; they are **not** scores, modes, or automatic routing inputs.
+The active agent qualitatively considers user supervision capability, desired delegation, decision complexity, consequentiality, continuation complexity, and development/lifecycle posture. These affect scaffolding, investigation rigor, verification, durability, and the default value-creation-versus-assurance bias; they are **not** scores, modes, or automatic routing inputs.
 
 ```text
 more scaffolding != more visible machinery
 desired delegation != granted authority
 large task != Campaign required
 high consequentiality != Campaign required
+release target != product evolution closed
+uncertainty exists != action prohibited
 ```
 
 See `GETTING_STARTED.md` for the human first-use sequence and `skills/using-sensemaking/references/adaptive-guidance-v0.md` for the detailed agent-facing lens.
