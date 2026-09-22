@@ -49,8 +49,16 @@ Single-context repo — `CONTEXT.md` at root, ADRs in `docs/adr/`. See `docs/age
 The active coding agent owns the top-level control loop (ADR 0013). Use
 `docs/agent-native-operating-workflow.md` as the current operating map.
 
-- **Choose responsibility before Skill.** Resolve the nearest unresolved
-  decision-changing uncertainty before committing to an eventual solution.
+- **Choose responsibility before Skill.** Advance the governing outcome with the
+  smallest sufficiently warranted move. Resolve an uncertainty before acting only
+  when it could materially change that move and resolving it is worth its total
+  cost.
+- **Bias active development toward value creation.** Treat commission risk,
+  omission risk, and cost of delay together. Cheap, reversible, authorized,
+  information-producing construction should compete strongly with more analysis;
+  raise rigor as consequence, irreversibility, blast radius, weak rollback, or
+  protected commitments increase. Do not offload ordinary delegated engineering
+  judgment to the owner merely to obtain more confidence.
 - **Decision is not orchestration.** Sensemaking selects the responsibility
   warranted by current evidence. Execution/orchestration coordinates how the
   selected responsibility is performed. Do not restore automatic downstream
