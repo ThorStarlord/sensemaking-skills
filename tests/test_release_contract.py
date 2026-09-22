@@ -24,6 +24,9 @@ def test_release_contract_declares_public_surface_and_support_matrix() -> None:
     assert source_version == f"{target_version}.dev0"
     assert data["release"]["scope_classification"] == "reduced"
     assert data["public_surface"]["cli"]
+    assert data["public_surface"]["agent_entrypoints"] == [
+        "strategic-sensemaking-loop"
+    ]
     assert data["support"]["python"]
     assert data["support"]["harnesses"]
     assert data["support"]["native_harnesses"] == []
@@ -52,3 +55,16 @@ def test_release_contract_validator_accepts_repository() -> None:
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "PASS" in result.stdout
+
+
+def test_public_agent_entrypoints_are_canonical_and_non_experimental() -> None:
+    data = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
+    canonical = {
+        path.parent.name
+        for path in (ROOT / "skills").glob("*/SKILL.md")
+    }
+    entrypoints = set(data["public_surface"]["agent_entrypoints"])
+    experimental = set(data["skill_inventory"]["experimental"])
+
+    assert entrypoints <= canonical
+    assert entrypoints.isdisjoint(experimental)

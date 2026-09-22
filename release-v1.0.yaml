@@ -35,6 +35,8 @@ public_surface:
     - sensemaking_skills.semantic_architecture
     - sensemaking_skills.setup_skills
   schema_version: "2"
+  agent_entrypoints:
+    - strategic-sensemaking-loop
 
 package_boundary:
   source_only_modules:

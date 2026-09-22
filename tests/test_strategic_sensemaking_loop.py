@@ -113,6 +113,7 @@ def test_loop_is_registered_internal_and_has_agent_metadata() -> None:
     release = yaml.safe_load(RELEASE.read_text(encoding="utf-8"))
     assert "strategic-sensemaking-loop" in release["skill_inventory"]["internal"]
     assert "strategic-sensemaking-loop" not in release["skill_inventory"]["supported"]
+    assert "strategic-sensemaking-loop" in release["public_surface"]["agent_entrypoints"]
 
     agent = yaml.safe_load(AGENT.read_text(encoding="utf-8"))
     assert agent["interface"]["display_name"] == "Strategic Sensemaking Loop"

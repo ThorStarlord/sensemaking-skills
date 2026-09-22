@@ -108,6 +108,9 @@ def validate(repo_root: Path) -> list[str]:
     _strings(public.get("stable_python_modules"), "public_surface.stable_python_modules")
     if public.get("schema_version") != "2":
         raise ReleaseContractError("public_surface.schema_version must be 2")
+    agent_entrypoints = _strings(
+        public.get("agent_entrypoints"), "public_surface.agent_entrypoints"
+    )
 
     boundary = _mapping(data.get("package_boundary"), "package_boundary")
     source_only = _strings(boundary.get("source_only_modules"), "package_boundary.source_only_modules")
@@ -125,6 +128,18 @@ def validate(repo_root: Path) -> list[str]:
     if len(declared) != len(set(declared)):
         raise ReleaseContractError("skill inventory categories overlap")
     canonical = {path.parent.name for path in (repo_root / "skills").glob("*/SKILL.md")}
+    if not set(agent_entrypoints) <= canonical:
+        unknown_entrypoints = sorted(set(agent_entrypoints) - canonical)
+        raise ReleaseContractError(
+            "public agent entrypoints must name canonical Skills; "
+            f"unknown={unknown_entrypoints}"
+        )
+    if set(agent_entrypoints) & set(experimental):
+        experimental_entrypoints = sorted(set(agent_entrypoints) & set(experimental))
+        raise ReleaseContractError(
+            "public agent entrypoints cannot be experimental; "
+            f"experimental={experimental_entrypoints}"
+        )
     if set(declared) != canonical:
         missing = sorted(canonical - set(declared))
         extra = sorted(set(declared) - canonical)
@@ -154,6 +169,7 @@ def validate(repo_root: Path) -> list[str]:
         f"source version: {source_version}",
         f"canonical Skills classified: {len(canonical)}",
         f"supported Skills with manifests: {len(supported)}",
+        f"public agent entrypoints: {len(agent_entrypoints)}",
         f"claims declared: {len(claims)}",
     ]
 

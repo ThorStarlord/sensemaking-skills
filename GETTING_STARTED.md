@@ -8,7 +8,7 @@ Use the adjacent references by audience:
 
 - **Workflow composition / canonical Campaign golden paths:** `docs/agent-workflow-golden-path-v1.md`.
 - **Coding agent instructions:** `skills/using-sensemaking/SKILL.md`.
-- **One-prompt strategic start/resume:** `skills/strategic-sensemaking-loop/SKILL.md` — front door that reconstructs the current strategic episode and invokes only the warranted stages.
+- **One-prompt strategic start/resume:** `skills/strategic-sensemaking-loop/SKILL.md` — Version 1.0 public agent entrypoint that reconstructs the current strategic episode and invokes only the warranted stages; its component semantic responsibilities remain owned by the specialized Skills.
 - **Control architecture crosswalk:** `docs/adaptive-semantic-control-architecture-v0.md` — how existing control scopes, policy layers, authority, execution/evidence, and strategic reassessment compose; optional reference, not a required workflow.
 - **Deeper Level-2 responsibility/authority model:** `docs/agent-native-operating-workflow.md`.
 - **Maintainer/operator validation and qualification:** `docs/operations-runbook.md`.
