@@ -35,6 +35,7 @@ from .campaigns import (
     CampaignWorkspaceError,
 )
 from .semantic_cli import register_semantic_commands
+from .organization_cli import register_organization_commands
 from .release_cli import register_release_commands
 from .strategy_cli import register_strategy_commands
 from .decision_journey_cli import register_decision_journey_commands
@@ -653,6 +654,7 @@ register_campaign_observability_commands(
 )
 
 register_semantic_commands(cli)
+register_organization_commands(cli)
 register_release_commands(cli)
 register_strategy_commands(cli)
 register_decision_journey_commands(cli)
