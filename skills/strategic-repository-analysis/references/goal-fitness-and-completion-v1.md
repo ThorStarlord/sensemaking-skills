@@ -124,6 +124,46 @@ close one warranted difference
 This is not “keep improving forever.” The target state, evidence ceilings,
 authority, and stop conditions remain bounded by governing intent.
 
+## 5A. Closed-world completion during terminalization
+
+The difference-closing frontier above applies while the product/repository
+future is materially open. When authoritative repository state declares a
+version scope frozen/terminalizing and Level 3 is `NO_CHANGE` with no active
+construction responsibility, change the burden of proof.
+
+Do not compare the current product against an unconstrained ideal product or
+interpret "finished" as "no further improvement can be imagined." Compare only
+against the authoritative frozen target.
+
+Admit new current-version work only when positive evidence maps it to:
+
+- an unsatisfied frozen requirement or support obligation;
+- a reproducible defect violating that obligation;
+- incomplete required integration/reachability;
+- a mandatory release-gate failure; or
+- explicit owner scope expansion.
+
+```text
+desirable improvement != release blocker
+architectural refinement != incomplete product
+taxonomy inconsistency != construction gap by default
+new strategic hypothesis != reopened frozen scope
+```
+
+A terminal `NO_CHANGE` state therefore changes work admission:
+
+```text
+open product evolution
+-> plausible material opportunity may enter the frontier
+
+closed version terminalization
+-> positive blocker evidence is required to reopen current-version construction
+```
+
+Do not add a new completion schema merely to represent this distinction; use
+the existing governing intent, status, capability, frontier, and release
+surfaces.
+
 ## 6. Legibility bias
 
 Mechanically legible work can dominate agent attention even when it is not the
