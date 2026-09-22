@@ -343,6 +343,7 @@ established next responsibility should stop rather than automatically recurse
 into another Level-3 analysis.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in
-`development`. Product scope freeze is distinct from candidate-source freeze:
-candidate identity, merge, tagging, publication, and advancement to final
-`1.0.0` remain separate authority-controlled transitions.
+`development`. Product scope freeze is distinct from candidate-source freeze.
+Do **not** freeze RC3 merely because terminalization is declared; candidate
+identity, merge, tagging, publication, and advancement to final `1.0.0` remain
+separate authority-controlled transitions.
