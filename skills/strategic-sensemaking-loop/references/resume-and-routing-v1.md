@@ -110,6 +110,8 @@ Use explicit references, source identity, currentness, and semantic relationship
 | --- | --- | --- |
 | No current Level-3 analysis; repository future materially open | `ANALYZE` | `strategic-repository-analysis` |
 | Prior analysis exists but is explicitly reopened / invalidated | `ANALYZE` | `strategic-repository-analysis` |
+| Version scope is frozen/terminalizing, Level 3 is `NO_CHANGE`, no active construction exists, and no positive blocker evidence is present | `STOP` | none |
+| Frozen/terminalizing scope has positive evidence of an unsatisfied frozen obligation, contract-violating defect, required integration failure, mandatory gate failure, or explicit owner scope change | establish the narrow implicated boundary first | only the smallest warranted capability |
 | Current strategic direction exists; bounded responsibility unresolved | `RESPONSIBILITY` | `using-sensemaking` |
 | Owner has explicitly resolved a prior owner capsule | `RESPONSIBILITY` | `using-sensemaking` |
 | Bounded responsibility selected, prerequisites + authority established | `EXECUTE` | active agent / existing execution surface |
@@ -129,6 +131,9 @@ Do not rerun a Skill merely because it appears earlier in the conceptual loop.
 
 ### Skip strategic-repository-analysis when
 
+- authoritative repository state declares a frozen/terminalizing version with
+  Level-3 `NO_CHANGE`, no active construction responsibility, and no positive
+  evidence that a frozen obligation is unsatisfied;
 - a current analysis remains materially valid;
 - a reconciliation has not reopened strategy;
 - the current question is an already-selected Level-2 responsibility;
@@ -242,6 +247,8 @@ Typical outcomes:
 ```text
 executed bounded responsibility + pass
 -> responsibility closure / next responsibility may be decidable
+-> if reconciliation is REAFFIRM/NO_MODEL_CHANGE and no next responsibility is
+   independently established, STOP rather than automatically reassessing Level 3
 
 executed gate failure
 -> bounded repair may become eligible
