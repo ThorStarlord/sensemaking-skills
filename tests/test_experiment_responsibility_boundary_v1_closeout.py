@@ -38,10 +38,7 @@ def test_handoff_records_exact_feature_qualification_and_merge() -> None:
 def test_status_returns_to_normal_use_after_issue_441() -> None:
     status = STATUS.read_text(encoding="utf-8")
 
-    assert (
-        "Issue #441 Experiment Responsibility Boundary v1 "
-        "is complete/integrated and in normal-use handoff"
-    ) in status
+    assert "Experiment Responsibility Boundary v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert (
         "Issue #438 Experiment Economy & Proportional Rigor v1 "
         "is complete/integrated and in normal-use handoff"
