@@ -49,6 +49,8 @@ owner decision packet != owner decision made
 responsibility selected != implementation authorized
 handoff useful != handoff mandatory
 Campaign available != Campaign required
+release target exists != product evolution closed
+residual uncertainty != automatic inquiry
 ```
 
 Do **not** create a new master strategic artifact or orchestration state file.
@@ -58,6 +60,31 @@ reconciliation, owner-decision, Campaign, and repository artifacts.
 Read `references/resume-and-routing-v1.md` whenever existing artifacts mean the
 episode may need to resume in the middle rather than start from strategic
 analysis.
+
+## Development posture before routing
+
+Reconstruct not only the latest strategic artifact but also the **current
+development posture** when owner/repository authority makes it decision-relevant.
+
+```text
+open product evolution
+-> materially grounded identity / depth / adjacency / composition / pruning / hardening opportunities may still enter Level 3
+
+version terminalization
+-> only after scope is intentionally frozen; desirable improvements do not reopen the current version without frozen-obligation evidence
+
+release hardening
+-> qualification and exact-source evidence are downstream work
+
+production / high assurance
+-> stronger rollback, verification, and blast-radius discipline
+```
+
+Do not infer terminalization merely from an RC/version target or repository
+maturity. Explicit current owner direction that keeps product evolution open is
+decision-relevant governing intent.
+
+This is semantic context, not a new persisted state machine.
 
 ## 1. Reconstruct the current episode before invoking another Skill
 
@@ -99,10 +126,12 @@ Use `strategic-repository-analysis` when:
 
 - no current Level-3 strategic analysis exists and repository future is materially open;
 - an existing reconciliation explicitly warrants `REOPEN_ANALYSIS`;
-- current governing intent/source reality materially invalidates the prior analysis.
+- current governing intent/source reality materially invalidates the prior analysis;
+- explicit owner direction materially changes the development posture or reopens product evolution relative to the prior analysis.
 
 Do not reopen strategy for ordinary drift, currentness noise, or because another
-idea is imaginable.
+idea is imaginable. But do not preserve a stale `NO_CHANGE`/terminalization frame
+when explicit owner direction has changed the governing development posture.
 
 ### RESPONSIBILITY
 
