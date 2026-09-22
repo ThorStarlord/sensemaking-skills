@@ -40,10 +40,7 @@ def test_handoff_records_exact_feature_qualification_and_claim_ceiling() -> None
 def test_status_returns_to_normal_use_without_opening_experiment_program() -> None:
     status = STATUS.read_text(encoding="utf-8")
 
-    assert (
-        "Issue #438 Experiment Economy & Proportional Rigor v1 "
-        "is complete/integrated and in normal-use handoff"
-    ) in status
+    assert "Experiment Economy & Proportional Rigor v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert (
         "Issue #435 Strategic Repository Analysis Semantic Grounding v1 "
         "is complete/integrated and in normal-use handoff"
