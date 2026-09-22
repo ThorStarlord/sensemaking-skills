@@ -350,6 +350,6 @@ do not add a schema, score, experiment, or runtime merely to represent the
 problem.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in
-`development`. Release qualification remains available downstream. **Do not** freeze RC3,
+`development`. Release qualification remains available downstream. Do **not** freeze RC3,
 advance to final `1.0.0`, tag, publish to PyPI, or cross other protected release
 transitions from this development-posture reinterpretation.
