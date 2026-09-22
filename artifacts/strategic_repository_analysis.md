@@ -2,258 +2,350 @@
 
 ## 1. Governing Intent and Scope
 
-Owner direction is to continue repository work without reopening synthetic experiments or inventing machinery. The current repository authority is the existing product strategy, ADR 0029, the completed Policy Hierarchy v0 baseline, and the completed Strategic Repository Sensemaking v1 baseline.
+The governing owner objective for this episode is to identify and close the highest-value remaining material difference between the current Sensemaking Skills product and a finished Version 1.0 product. Release-candidate identity, qualification, packaging, and validation are downstream milestones unless repository evidence establishes that product construction itself is complete.
 
-Target repository: `ThorStarlord/sensemaking-skills`.
+Repository-owned Level-4 authority is `docs/product-strategy.md` plus ADR 0029. They define Sensemaking Skills as an agent-native repository decision-support and control layer for software-engineering agents, optimized for a high-delegation owner who should not need to manually route internal Sensemaking mechanisms.
 
-Target source identity: `main@81e01c971b1196d24fa63fd071a4a1eb91e954e6`.
+Target repository: `ThorStarlord/sensemaking-skills` at `main@a3d83c14de033734d33296ff3f45ebc5f4d8d911`.
 
-This analysis may identify a warranted repository-local responsibility. It does not establish implementation, merge, release, publication, deployment, or GitHub-admin authority by itself.
+This analysis may select a repository-local construction responsibility. It does not authorize protected merge, release, publication, deployment, GitHub-admin configuration, or Level-4 thesis revision.
+
+### Goal-fitness diagnosis
+
+The stated objective is **terminal product intent**, while RC3 freeze/qualification/publication are downstream milestone/evidence states.
+
+A concrete counterexample exists: the reduced-scope release contract can mechanically qualify while the repository's normal one-prompt strategic entrypoint remains outside the Version 1.0 public capability promise. Therefore RC/qualification completion alone does not establish the governing product outcome.
+
+## 1A. Strategic Continuity
+
+This analysis **SUPERSEDES** the prior strategic analysis persisted at `artifacts/strategic_repository_analysis.md` under `main@81e01c971b1196d24fa63fd071a4a1eb91e954e6`.
+
+The prior analysis correctly resolved a then-current post-closeout documentation inconsistency, but it predates Goal Fitness & Frontier Integrity v1 and Strategic Sensemaking Loop v1. Its conclusion that no construction program remained is not authoritative for the newly explicit Version 1.0 completion question.
 
 ## 2. Current System Model
 
-Sensemaking Skills is an agent-native repository decision-support/control layer for high-delegation software-engineering work.
+Sensemaking Skills already has the substantive reasoning/control architecture required for high-delegation repository work:
 
-The current product baseline includes:
+- repository diagnosis and evidence-grounded responsibility selection;
+- Level-3 strategic repository analysis and reconciliation;
+- owner/Level-4/external boundary packets;
+- optional durable Campaign state;
+- one-prompt `strategic-sensemaking-loop` orchestration that reconstructs state, skips completed stages, executes bounded work through real surfaces, reconciles returned evidence, and stops at genuine authority boundaries.
 
-- durable Level-2 Campaign semantics and terminal states;
-- Level-3 Strategic Repository Sensemaking;
-- Inquiry, Metareasoning, Exploration, Warrant / Choice, and Learning / Reconciliation policies;
-- Adaptive Policy Coordinator guidance;
-- bounded execution handoff/result evidence;
-- release-authority auditing and exact-source qualification;
-- explicit authority, evidence, provenance, verification, and stopping boundaries.
+The one-prompt loop is registered, shipped in the canonical Skill tree, documented in README/GETTING_STARTED, and named by current `STATUS.md` as the normal strategic front door.
 
-Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 are integrated. The current release line remains `1.0.0rc3.dev0`; RC3 freeze/publication remains owner-controlled and is not implied by this analysis.
+However, the Version 1.0 release inventory classifies the loop as `internal`, and `docs/public-surface-v1.0.md` says internal Skills may ship for operator support without being a public capability promise. The release contract has no separate concept for a **public compositional agent entrypoint**. Reclassifying the loop as a supported semantic Skill would be misleading because supported Skills are manifest-backed independent semantic capabilities, while the loop intentionally adds no new semantic responsibility or master artifact.
+
+Native-harness usefulness, cross-harness portability, and comparative semantic usefulness remain deferred claim areas and are not prerequisites for this repository-local productization responsibility.
 
 ## 3. Capability and Limitation Map
 
 | Capability | State | Evidence | Strategic relevance |
 | --- | --- | --- | --- |
-| Policy Hierarchy semantic control | ESTABLISHED | `STATUS.md`, `docs/policy-hierarchy-completion-v0-handoff.md` | Middle control layers are complete; no missing policy package remains. |
-| Strategic Repository Sensemaking v1 | ESTABLISHED | `docs/strategic-repository-sensemaking-v1-handoff.md`, Issue #401 | Repository-evolution analysis is a first-class supported surface. |
-| Durable Campaign continuation | ESTABLISHED | `docs/sensemaking-campaign.md`, `docs/campaign-semantics.md` | Broad delegated goals already have durable mission/terminal-state support when warranted. |
-| External executor interchange | ESTABLISHED | `STATUS.md` | Selected work can cross an executor boundary and return evidence without transferring strategy authority. |
-| GitHub main-branch protection | BLOCKED | Issue #384 | Hosting-layer governance remains external; this workspace exposes read but not ruleset/protection mutation. |
-| Native-harness / comparative product-value evidence | DEFERRED | `docs/product-strategy.md`, `STATUS.md` | Owner direction does not make empirical work a current construction prerequisite. |
-| Cross-repository transaction/deployment coordination | DEFERRED | `docs/product-strategy.md`, `docs/strategic-candidate-directions.md` | Explicitly outside current warranted scope absent concrete pressure/owner direction. |
-| Current Level-3 projection after #401 closeout | PARTIAL | `STATUS.md` vs. closed Issue #401 and integrated CI | The product is complete, but the current projection still describes terminal closeout as pending. |
+| High-delegation product mission and progressive-disclosure doctrine | ESTABLISHED | `docs/product-strategy.md`, `docs/product-operating-model.md` | Governing product outcome |
+| One-prompt strategic start/resume behavior | ESTABLISHED | `skills/strategic-sensemaking-loop/SKILL.md`, `docs/strategic-sensemaking-loop-v1-handoff.md` | Implements the desired operator journey |
+| Normal-front-door discoverability/documentation | ESTABLISHED | `README.md`, `GETTING_STARTED.md`, `STATUS.md` | Users are already directed to the loop |
+| Public Version 1.0 contract for the compositional front door | MISSING | `release-v1.0.yaml`, `docs/public-surface-v1.0.md` | The core operator journey is not a public support promise |
+| Independent semantic contracts for component responsibilities | ESTABLISHED | supported strategic Skills in `release-v1.0.yaml`, engineering Domain Pack/manifests | Lets the front door remain composition rather than new authority |
+| Native-harness usefulness / portability | DEFERRED | `release-v1.0.yaml`, `docs/release-v1.0-contract.md` | Explicitly outside reduced-scope v1 support claims |
+| RC3 freeze/publication | DEFERRED | `STATUS.md`, release docs | Downstream release-owner transition, not governing construction frontier |
 
 ## 4. Strategic Frontier
 
-### FRONTIER-1 — Post-closeout Level-3 currentness
+### FRONTIER-1 — Public contract for the normal high-delegation entrypoint
 
-`STATUS.md` is defined as the current Level-3 projection, but it still says Strategic Repository Sensemaking v1 is in terminal closeout and instructs the repository to qualify/merge that closeout. Issue #401 is already closed and integrated `main@81e01c971b1196d24fa63fd071a4a1eb91e954e6` passed Product Validation and Release Candidate Distribution.
+The product already implements and documents a one-prompt strategic front door, but Version 1.0 cannot currently promise that entrypoint without either leaving it merely internal or falsely treating orchestration as an independent semantic Skill.
 
-This is a bounded documentation/currentness inconsistency.
+Evidence:
+- `docs/product-strategy.md`
+- `docs/adr/0029-current-product-boundary.md`
+- `STATUS.md`
+- `docs/strategic-sensemaking-loop-v1-handoff.md`
+- `release-v1.0.yaml`
+- `docs/public-surface-v1.0.md`
 
-### FRONTIER-2 — GitHub hosting governance
-
-Issue #384 remains a valid external governance gap. The connected GitHub workspace exposes no branch-protection/ruleset mutation action, so repository code cannot legitimately close it.
-
-### FRONTIER-3 — Future product extensions / empirical questions
-
-The candidate reservoir contains extensions, research questions, and long-horizon ideas, but the current product strategy and candidate review explicitly provide no current implementation priority. No concrete consumer pressure or new owner direction promotes one into present construction.
+Strategic consequence: closing this boundary converts an already-built operator journey into an explicit Version 1.0 product surface while preserving the semantic architecture. Leaving it open permits a mechanically complete v1 release whose public promise still omits the normal one-prompt control experience.
 
 ## 5. Candidate Construction Paths
 
-### PATH-1 — Reconcile post-closeout strategic state
+### PATH-1 — Public compositional agent-entrypoint contract
 
-- **Future state:** `STATUS.md` truthfully projects #399/#401 as complete, no repository-local construction program selected, and normal-use validation as the operating mode.
-- **Why plausible:** the inconsistency is directly observable and mechanically bounded; correcting it requires no new product concept.
-- **Builds on:** completed #399/#401 milestones, current strategic-state contract, existing qualification workflows.
-- **Requires:** documentation/currentness reconciliation only.
-- **Construction sequence:** update stable current-state claims → preserve completion/authority markers → qualify exact head → integrate → record receipt.
-- **Dependencies:** integrated #401 closeout and current CI evidence.
-- **Unlocks:** a truthful no-construction Level-3 state from which future work can be selected only from concrete pressure.
-- **Risks / tradeoffs:** avoid self-referential churn by not copying transient post-merge run IDs into `STATUS.md`.
-- **Reversibility:** documentation-only and easily reversible.
-- **Evidence gaps:** none that materially change whether this currentness repair is warranted.
+- **Future state:** Version 1.0 explicitly declares `strategic-sensemaking-loop` as a public agent entrypoint while retaining its `internal` semantic Skill classification.
+- **Why plausible:** the loop is already implemented, shipped, registered, documented, and inside the ratified product boundary; the missing distinction is release-contract representation, not a new runtime or reasoning engine.
+- **Frontier grounding:** FRONTIER-1.
+- **Builds on:** the existing loop, canonical Skill packaging, release contract, supported component Skills, and generic Agent Skills distribution.
+- **Requires:** a mechanically validated `public_surface.agent_entrypoints` contract plus docs/tests that preserve the distinction between entrypoint support and independent semantic authority.
+- **Construction sequence:**
+  - add the public agent-entrypoint declaration to the release contract;
+  - validate that declared entrypoints name canonical non-experimental Skills;
+  - document the claim ceiling and composition semantics;
+  - add regression tests proving the loop stays internal semantically while public as an entrypoint;
+  - qualify the branch through existing Product Validation and Release Candidate Distribution;
+  - leave merge/freeze/publication as separate protected transitions.
+- **Path transition:** `PATH-1/T1` — public contract closes around the already-built strategic front door without creating a new semantic responsibility.
+- **Dependencies:** current canonical Skill tree and release-contract validation machinery.
+- **Unlocks:** a coherent Version 1.0 support promise for the primary high-delegation strategic journey.
+- **Risks / tradeoffs:** documentation could accidentally imply native-harness invocation or semantic usefulness; tests/docs must preserve those claim ceilings.
+- **Reversibility:** high; this is a bounded release-contract/docs/test extension over an existing shipped Skill.
+- **Evidence gaps:** none that would change whether this bounded repository-local productization is warranted.
+- **Assumptions:** public entrypoint support can mean mechanically shipped/documented/composable without claiming native-harness empirical qualification.
+- **Reassessment triggers:** evidence that the release contract already encodes an equivalent public entrypoint promise, or that ADR 0029/product strategy is superseded.
+
+### Orthogonality challenge
+
+Two superficially available alternatives were considered but are not coherent competing construction paths:
+
+- directly move `strategic-sensemaking-loop` into `skill_inventory.supported`: rejected because that inventory means manifest-backed independent semantic capability and would blur the loop's explicit composition-only boundary;
+- build a deterministic CLI planner/router: rejected by ADR 0029 and the loop's own non-goals.
+
+No artificial second construction path is added solely for option diversity.
 
 ## 6. Qualitative Path Comparison
 
-Only one materially real repository-local construction path exists. Other visible frontier items are external, deferred, or non-promoted and therefore are not manufactured as competing construction paths.
+### PATH-1
 
-PATH-1:
-
-- **Mission relevance:** preserves the repository's central promise of reconstructible current decision state.
-- **Decision value:** converts a stale pending-closeout projection into a stable post-closeout state.
-- **Blocking power:** prevents later agents from treating already-complete #401 work as current.
-- **Evidence sufficiency / resolvability:** current GitHub issue/CI state and repository closeout records are sufficient.
-- **Consequence of error:** low and reversible; the main risk is unnecessary currentness churn.
-- **Deferral cost:** continued stale Level-3 guidance may cause repeated or contradictory work.
-- **Reversibility:** high; documentation-only.
-- **Authority availability:** repository-local documentation work is within the user's current delegation; protected release/admin actions remain excluded.
-- **Dependency:** depends only on already-integrated #401 completion evidence.
-- **Smallest warranted intervention:** reconcile `STATUS.md` and persist this analysis; do not build a new subsystem.
+- **Mission relevance:** directly closes the gap between high-delegation product intent and the Version 1.0 public surface.
+- **Decision value:** converts an already-built normal entrypoint into an explicit product promise without expanding semantic authority.
+- **Blocking power:** removes the main remaining mismatch that allows release mechanics to be complete while the core operator journey remains merely internal.
+- **Evidence sufficiency / resolvability:** repository evidence is sufficient; no experiment or owner-preference question is needed.
+- **Consequence of error:** bounded; the primary risk is claim overreach, controllable through explicit claim ceilings and tests.
+- **Deferral cost:** deferral preserves milestone inversion risk by letting RC/qualification become the practical definition of v1 completion.
+- **Reversibility:** high; contract/docs/tests can be reverted without data migration or runtime state change.
+- **Authority availability:** repository-local implementation is within the delegated scope; merge/release remain reserved.
+- **Dependency:** depends only on already-integrated loop/package/release-contract surfaces.
 
 ## 7. Decision-Changing Uncertainty
 
-The relevant uncertainty was whether Strategic Repository Sensemaking v1 had actually completed and qualified after integration.
+No unresolved repository-answerable uncertainty would change the next responsibility.
 
-It is resolved by closed Issue #401 plus integrated Product Validation `35484320353` and Release Candidate Distribution `35484320403` on `main@81e01c971b1196d24fa63fd071a4a1eb91e954e6`.
+The remaining empirical questions—native-harness invocation, cross-harness portability, and semantic usefulness—could change future support claims but are explicitly deferred from reduced-scope Version 1.0 and are not prerequisites for representing the public compositional entrypoint.
 
-No further inquiry is warranted for this bounded repair.
+Inquiry is therefore not warranted before reversible construction.
+
+## 7A. Decision Assumptions and Reassessment Triggers
+
+### ASSUMPTION-1 — Public entrypoint support is narrower than empirical native-harness support
+
+Evidence:
+- `release-v1.0.yaml`
+- `docs/release-v1.0-contract.md`
+- `docs/public-surface-v1.0.md`
+
+Reassess if the release contract changes to require native invocation evidence for every generic Agent Skills entrypoint.
+
+### ASSUMPTION-2 — Strategic Sensemaking Loop remains composition, not independent semantic authority
+
+Evidence:
+- `skills/strategic-sensemaking-loop/SKILL.md`
+- `docs/strategic-sensemaking-loop-v1-handoff.md`
+- `tests/test_strategic_sensemaking_loop.py`
+
+Reassess if a future owner-ratified design gives the loop its own canonical semantic responsibility/artifact.
 
 ## 8. Strategic Synthesis
 
-The repository does not currently show a warranted missing product layer. Policy Hierarchy and Strategic Repository Sensemaking are complete; Campaign/mission continuation already exists; the remaining substantive candidates are deferred, external, owner-reserved, or lack concrete consumer pressure.
+The repository does not presently need another reasoning layer, planner, experiment, Campaign schema, or release-validation subsystem. The highest-value remaining construction difference is that the product's **normal one-prompt strategic journey is implemented but not represented as a Version 1.0 public entrypoint**.
 
-However, the current Level-3 projection is stale after #401 closeout. Because `STATUS.md` is explicitly the current operational projection, this inconsistency is decision-relevant enough to justify one small reconciliation.
+This is upstream of RC3 freeze/qualification because those milestones can pass while the mismatch remains.
 
-After that reconciliation integrates, the correct Level-3 result is no selected repository-local construction program and a return to normal-use validation.
+The smallest coherent fix is to extend the release public-surface contract with an agent-entrypoint category, declare the existing loop there, validate the declaration, and document the claim ceiling. This preserves the existing internal semantic classification and avoids inventing a new master artifact or semantic responsibility.
 
 ## 9. Warranted Direction
 
 **Disposition: BUILD**
 
-Selected path: `PATH-1`.
+**Selected path:** PATH-1 — Public compositional agent-entrypoint contract.
 
-Candidate bounded repository responsibility:
+**Candidate bounded repository responsibility:**
 
-> Reconcile `STATUS.md` from the pre-merge #401 closeout projection to the stable post-closeout state, preserve all evidence/authority ceilings, and return the repository to no selected construction program.
+> Add a mechanically validated Version 1.0 public agent-entrypoint contract for `strategic-sensemaking-loop`, while keeping the loop semantically `internal` and preserving all existing no-planner/no-master-artifact/native-harness claim ceilings.
 
-Smallest warranted intervention:
-
-> Update `STATUS.md` and persist this Strategic Repository Analysis; qualify and integrate the docs-only/currentness change without creating another product package.
+**Smallest warranted intervention:** update `release-v1.0.yaml`, its validator/tests, and the public/release documentation; do not add a runtime, schema v3, new semantic artifact, new semantic responsibility, or experiment.
 
 ## 10. Authority and Claim Boundaries
 
+The user's current delegation authorizes repository-answerable analysis and reversible repository construction for the selected responsibility.
+
 This analysis does **not** authorize:
 
-- RC3 freeze, tag, or PyPI publication;
-- release or deployment;
+- merging the implementation PR;
+- RC3 freeze/tag/publication;
+- PyPI publication;
 - branch-protection/ruleset mutation;
-- reopening synthetic StrategicPlanner tests;
-- automatic selection of a future product extension;
+- native-harness or semantic-usefulness claim expansion;
+- automatic planner/router/runtime construction;
 - Level-4 product-thesis revision.
 
 ```text
-strategic analysis != implementation authorization
-construction path != backlog
-path comparison != numeric ranking
-mechanically valid != semantically correct
-candidate responsibility != authorized execution
-```
+public entrypoint
+!= independent semantic capability
 
-The user's current instruction authorizes this bounded repository-local reconciliation; protected/external transitions remain separate.
+entrypoint shipped/documented
+!= native harness empirically qualified
+
+mechanical PASS
+!= semantic usefulness
+
+BUILD selected
+!= protected merge/release authorized
+```
 
 ## 11. Evidence
 
-- `STATUS.md` — still projects #401 terminal closeout as pending and names closeout integration as the current next step.
-- `docs/strategic-repository-sensemaking-v1-handoff.md` — defines the terminal rule: after integrated Product/Release qualification, v1 is complete and #401 construction stops.
-- GitHub Issue #401 — closed as completed.
-- `main@81e01c971b1196d24fa63fd071a4a1eb91e954e6` — integrated closeout commit.
-- Product Validation run `35484320353` — PASS on the integrated closeout.
-- Release Candidate Distribution run `35484320403` — PASS on the integrated closeout.
-- `docs/strategic-candidate-directions.md` — explicitly declares no current implementation priority and requires concrete pressure/owner direction before promotion.
-- Issue #384 — external GitHub-admin governance action; repository code cannot fabricate enforcement.
+- `docs/product-strategy.md` — high-delegation primary user, desired delegated outcome, progressive-disclosure principle.
+- `docs/adr/0029-current-product-boundary.md` — ratifies agent-native repository decision-support/control as the current product boundary and keeps automatic semantic planning/routing out of scope.
+- `docs/product-operating-model.md` — repository-answerable judgment should be exercised by the active agent within authority; visible machinery should remain proportional.
+- `docs/goal-fitness-frontier-integrity-v1-handoff.md` and its canonical reference — release/qualification milestone inversion must not displace an upstream product-completion frontier.
+- `skills/strategic-sensemaking-loop/SKILL.md` — one-prompt front door over specialized responsibilities; no master artifact or deterministic planner/router.
+- `docs/strategic-sensemaking-loop-v1-handoff.md` — loop is implemented, registered, documented, but deliberately remains internal to the current reduced-scope public Skill promise.
+- `STATUS.md` — directs normal strategic use through the one-prompt front door.
+- `release-v1.0.yaml` and `docs/public-surface-v1.0.md` — internal Skills are not public capability promises and no public compositional-entrypoint category exists.
+- `scripts/validate-release-contract.py` — supported semantic Skills require manifests; public-surface validation currently has no agent-entrypoint field.
 
 ## 12. Machine-Readable Summary
 
 ```yaml
+schema_version: 2
 artifact_id: strategic_repository_analysis
+analysis_ref: "SRA-2026-09-22-v1-strategic-front-door"
+continuity:
+  prior_analysis_ref: "artifacts/strategic_repository_analysis.md@main-81e01c971b1196d24fa63fd071a4a1eb91e954e6"
+  disposition: SUPERSEDE
+  prior_selected_path_id: PATH-1
+  reason: "The prior analysis resolved post-closeout currentness but predates Goal Fitness & Frontier Integrity v1 and the implemented one-prompt strategic front door; the current Version 1.0 completion objective reopens Level 3."
 target_repository: ThorStarlord/sensemaking-skills
-target_source_identity: "main@81e01c971b1196d24fa63fd071a4a1eb91e954e6"
-governing_intent: "Continue repository development only where current evidence and authority warrant a real repository-level responsibility; do not manufacture work or reopen synthetic experiments."
+target_source_identity: "main@a3d83c14de033734d33296ff3f45ebc5f4d8d911"
+governing_intent: "Close the highest-value remaining material difference between the current product and a finished Version 1.0 product; treat RC/qualification/packaging/validation as downstream unless product construction is already complete."
+governing_authority_refs:
+  - docs/product-strategy.md
+  - docs/adr/0029-current-product-boundary.md
+  - docs/product-operating-model.md
 capability_states:
-  - capability_id: policy-hierarchy-semantic-control
+  - capability_id: high-delegation-product-mission
     state: ESTABLISHED
-    evidence_refs:
-      - STATUS.md
-      - docs/policy-hierarchy-completion-v0-handoff.md
-  - capability_id: strategic-repository-sensemaking-v1
-    state: ESTABLISHED
-    evidence_refs:
-      - docs/strategic-repository-sensemaking-v1-handoff.md
-      - https://github.com/ThorStarlord/sensemaking-skills/issues/401
-  - capability_id: durable-campaign-continuation
-    state: ESTABLISHED
-    evidence_refs:
-      - docs/sensemaking-campaign.md
-      - docs/campaign-semantics.md
-  - capability_id: external-executor-interchange
-    state: ESTABLISHED
-    evidence_refs:
-      - STATUS.md
-  - capability_id: github-main-protection
-    state: BLOCKED
-    evidence_refs:
-      - https://github.com/ThorStarlord/sensemaking-skills/issues/384
-  - capability_id: empirical-product-value-qualification
-    state: DEFERRED
     evidence_refs:
       - docs/product-strategy.md
+      - docs/product-operating-model.md
+  - capability_id: strategic-one-prompt-front-door
+    state: ESTABLISHED
+    evidence_refs:
+      - skills/strategic-sensemaking-loop/SKILL.md
+      - docs/strategic-sensemaking-loop-v1-handoff.md
       - STATUS.md
-  - capability_id: cross-repository-transaction-coordination
+  - capability_id: public-v1-strategic-entrypoint-contract
+    state: MISSING
+    evidence_refs:
+      - release-v1.0.yaml
+      - docs/public-surface-v1.0.md
+  - capability_id: component-semantic-contracts
+    state: ESTABLISHED
+    evidence_refs:
+      - release-v1.0.yaml
+      - domain-packs/engineering.yaml
+  - capability_id: native-harness-usefulness
     state: DEFERRED
     evidence_refs:
-      - docs/product-strategy.md
-      - docs/strategic-candidate-directions.md
-  - capability_id: post-closeout-level3-currentness
-    state: PARTIAL
+      - release-v1.0.yaml
+      - docs/release-v1.0-contract.md
+  - capability_id: rc3-freeze-publication
+    state: DEFERRED
     evidence_refs:
       - STATUS.md
-      - docs/strategic-repository-sensemaking-v1-handoff.md
+      - docs/release-v1.0-contract.md
 strategic_frontier:
   - frontier_id: FRONTIER-1
-    statement: "STATUS.md still projects the already-completed Issue #401 terminal closeout as pending."
-  - frontier_id: FRONTIER-2
-    statement: "GitHub main-branch governance remains an external admin boundary tracked by Issue #384."
-  - frontier_id: FRONTIER-3
-    statement: "Future product extensions and empirical questions lack current concrete consumer pressure or fresh owner promotion."
+    statement: "The normal one-prompt strategic front door is implemented and documented but Version 1.0 has no public compositional-entrypoint contract for it."
+    evidence_refs:
+      - docs/product-strategy.md
+      - STATUS.md
+      - docs/strategic-sensemaking-loop-v1-handoff.md
+      - release-v1.0.yaml
+      - docs/public-surface-v1.0.md
+    affected_capability_ids:
+      - high-delegation-product-mission
+      - strategic-one-prompt-front-door
+      - public-v1-strategic-entrypoint-contract
+      - component-semantic-contracts
+    strategic_consequence: "A mechanically qualified Version 1.0 can otherwise omit the product's normal high-delegation strategic entrypoint from its public promise."
 construction_paths:
   - path_id: PATH-1
-    name: "Post-closeout strategic-state reconciliation"
-    future_state: "Current Level-3 state truthfully reports #399/#401 complete, no repository-local construction program selected, and normal-use validation active."
-    builds_on:
-      - "Strategic Repository Sensemaking v1 closeout"
-      - "Policy Hierarchy Completion v0"
-      - "Strategic-state currentness contract"
-    required_capabilities:
-      - "documentation/currentness reconciliation"
+    name: "Public compositional agent-entrypoint contract"
+    future_state: "Version 1.0 explicitly supports strategic-sensemaking-loop as a public agent entrypoint while retaining its internal semantic Skill classification and component authority boundaries."
+    frontier_refs:
+      - FRONTIER-1
+    why_plausible: "The entrypoint already exists, ships, is registered and documented, and sits inside ADR 0029; only the release public-surface representation is missing."
+    builds_on_capability_ids:
+      - high-delegation-product-mission
+      - strategic-one-prompt-front-door
+      - component-semantic-contracts
+    required_capability_ids:
+      - public-v1-strategic-entrypoint-contract
     construction_sequence:
-      - "reconcile stable STATUS.md claims"
-      - "preserve authority and release boundaries"
-      - "qualify exact head"
-      - "integrate and record evidence"
+      - "Declare public_surface.agent_entrypoints in release-v1.0.yaml."
+      - "Validate canonical non-experimental entrypoint identity in validate-release-contract.py."
+      - "Document public-entrypoint semantics and claim ceilings."
+      - "Add regression tests preserving internal semantic classification."
+      - "Run existing Product Validation and Release Candidate Distribution."
+    path_transitions:
+      - transition_ref: PATH-1/T1
+        transition: "The already-built one-prompt strategic front door becomes an explicit Version 1.0 public entrypoint without becoming a new semantic responsibility."
     dependencies:
-      - "Issue #401 closed"
-      - "integrated Product Validation PASS"
-      - "integrated Release Candidate Distribution PASS"
+      - "Canonical strategic-sensemaking-loop Skill already exists and is shipped."
+      - "Release-contract validator and tests already exist."
     unlocks:
-      - "truthful no-construction Level-3 state"
-      - "future responsibility selection from concrete pressure only"
+      - "Version 1.0 public support surface matches the normal high-delegation strategic journey."
+      - "RC3 qualification can remain downstream rather than substituting for product-surface completion."
     risks:
-      - "self-referential currentness churn if transient run IDs are copied into STATUS.md"
-    reversibility: "Documentation-only and easily reversible."
-    evidence_gaps:
-      - "No material evidence gap changes whether the currentness repair is warranted."
+      - "Public entrypoint wording could overclaim native-harness invocation or semantic usefulness if claim ceilings are not explicit."
+    reversibility: "High; bounded release-contract/docs/test changes over an existing Skill, with no persistent-data or runtime migration."
+    evidence_gaps: []
+    assumptions:
+      - "Public entrypoint support can remain narrower than native-harness empirical qualification."
+      - "The loop remains composition rather than independent semantic authority."
+    reassessment_triggers:
+      - "Release authority supersedes the reduced-scope public surface."
+      - "ADR 0029 or product strategy changes the governing high-delegation outcome."
 path_comparison:
   - path_id: PATH-1
     lenses:
-      mission_relevance: "Preserves reconstructible current strategic state, a core product invariant."
-      decision_value: "Removes a stale pending-closeout instruction that could misdirect future agents."
-      blocking_power: "Prevents repeated or contradictory #401 closeout work."
-      evidence_sufficiency: "Closed Issue #401 and integrated Product/Release PASS provide sufficient current evidence."
-      consequence_of_error: "Low and reversible; only documentation/currentness is changed."
-      deferral_cost: "Leaving the stale projection increases rediscovery and wrong-work risk."
-      reversibility: "High; the intervention is documentation-only."
-      authority_availability: "Repository-local reconciliation is within current delegation; protected external actions remain excluded."
-      dependency: "Depends only on already-qualified #401 completion evidence."
-      smallest_warranted_intervention: "Update STATUS.md and persist this analysis; do not add a product/runtime package."
+      mission_relevance: "Directly aligns the Version 1.0 promise with the high-delegation product mission."
+      decision_value: "Closes an explicit public-surface omission using an already-built capability."
+      blocking_power: "Prevents release mechanics from becoming a false substitute for operator-journey completion."
+      evidence_sufficiency: "Repository authority and current implementation are sufficient; no new empirical evidence is needed for the bounded contract change."
+      consequence_of_error: "Bounded claim-overreach risk, mitigated by explicit exclusions and regression tests."
+      deferral_cost: "Deferral leaves the normal front door outside the v1 public promise and preserves milestone-inversion risk."
+      reversibility: "High; no runtime or persistent schema change."
+      authority_availability: "Repository-local construction is delegated; merge/release remain protected."
+      dependency: "Depends only on already-integrated product and release-contract machinery."
 decision_changing_uncertainty:
-  statement: "Whether Strategic Repository Sensemaking v1 actually completed and qualified after integration."
-  could_change: "If closeout were incomplete or failed integrated qualification, Issue #401 work would remain current instead of a docs-only reconciliation."
+  statement: "Whether any repository evidence requires a different construction responsibility before public-entrypoint productization."
+  could_change: "A contrary product-boundary or release-contract authority could make the proposed public entrypoint out of scope."
   inquiry_warranted: false
-  evidence_needed: "None; Issue #401 is closed and integrated Product Validation / Release Candidate Distribution are PASS."
-  source: external_environment
+  evidence_needed: "None; current ADR 0029, product strategy, release contract, loop handoff, and STATUS establish the boundary."
+  source: repository_evidence
+decision_assumptions:
+  - assumption_id: ASSUMPTION-1
+    statement: "A public compositional entrypoint can be mechanically supported without claiming native-harness empirical qualification."
+    evidence_refs:
+      - release-v1.0.yaml
+      - docs/release-v1.0-contract.md
+    reassessment_triggers:
+      - "The release contract requires native empirical evidence for generic Agent Skills entrypoints."
+  - assumption_id: ASSUMPTION-2
+    statement: "strategic-sensemaking-loop remains composition rather than independent semantic authority."
+    evidence_refs:
+      - skills/strategic-sensemaking-loop/SKILL.md
+      - docs/strategic-sensemaking-loop-v1-handoff.md
+      - tests/test_strategic_sensemaking_loop.py
+    reassessment_triggers:
+      - "An owner-ratified design assigns the loop a new canonical semantic responsibility or master artifact."
 strategic_disposition: BUILD
 selected_path_id: PATH-1
-candidate_repository_responsibility: "Reconcile STATUS.md to the stable post-#401-closeout no-construction state and persist this normal-use strategic analysis."
-smallest_warranted_intervention: "STATUS.md currentness reconciliation plus this strategic_repository_analysis artifact; no new product feature/runtime/schema."
+candidate_repository_responsibility: "Add a mechanically validated Version 1.0 public agent-entrypoint contract for strategic-sensemaking-loop while preserving its internal semantic classification and existing claim ceilings."
+candidate_path_transition_ref: PATH-1/T1
+smallest_warranted_intervention: "Update release-v1.0.yaml, release-contract validation/tests, and public/release documentation; add no runtime, semantic artifact, responsibility, or experiment."
 implementation_authority_established_by_artifact: false
 semantic_truth_established: false
-created_at: "2026-09-20T04:20:37Z"
+created_at: "2026-09-22T05:39:00Z"
 immutable: true
 ```
