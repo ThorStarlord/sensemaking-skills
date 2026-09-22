@@ -22,6 +22,14 @@
 6. **Flag material uncertainty explicitly.** State uncertainty that could
    change the next responsibility, claim, or authority decision. Do not turn
    unresolved hypotheses into confident claims.
+7. **Respect terminalization.** When authoritative repository state declares a
+   version scope frozen/terminalizing or Level 3 is `NO_CHANGE` with no active
+   construction responsibility, do not admit new current-version work merely
+   from desirable improvements, taxonomy inconsistencies, architectural
+   refinement, documentation polish, or speculative opportunities. Reopen
+   current-version construction only from positive evidence of an unsatisfied
+   frozen obligation, a reproducible defect or mandatory gate failure, or an
+   explicit owner scope change.
 
 ## Evaluation & benchmark work
 
