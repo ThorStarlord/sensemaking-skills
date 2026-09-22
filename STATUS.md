@@ -194,10 +194,19 @@ one-prompt convenience
 
 Level-3 disposition: `NO_CHANGE`.
 
+The reduced-scope Version 1.0 product is now in **VERSION_1_TERMINALIZATION**.
+The current-version construction set is closed: a newly imaginable improvement
+does not become Version 1.0 work. Reopen construction only when positive evidence
+shows an unsatisfied frozen Version 1.0 obligation, a reproducible defect or
+required integration failure, a mandatory release-gate failure, or an explicit
+owner scope change.
+
 ```text
 CURRENT CONSTRUCTION RESPONSIBILITY = NONE
 PRIMARY CONSTRUCTION PROGRAM = NONE
-OPERATING MODE = NORMAL_USE_VALIDATION
+OPERATING MODE = VERSION_1_TERMINALIZATION
+VERSION_1_SCOPE = FROZEN
+NEW_PRODUCT_CONSTRUCTION = CLOSED
 ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_426_POLICY_HIERARCHY_INTERFACE_CLARIFICATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_430_STRATEGIC_CONTINUITY_REFINEMENT_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
@@ -318,8 +327,22 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NORMAL USE / NO ACTIVE ISSUE #452 CONSTRUCTION PACKAGE.**
+**VERSION 1 TERMINALIZATION / RELEASE HARDENING.**
 
-Use `strategic-sensemaking-loop` as the normal one-prompt front door when a strategic repository episode should start or resume end-to-end; continue using the specialized Skills directly when a narrower surface is the real task. Preserve real normal-use evidence of resume/routing friction and reopen construction only when that evidence or explicit owner direction warrants it. Preserve real evidence of any recurring deficiency and reopen construction only when that evidence or explicit owner direction warrants it. Do not create a validation experiment merely to demonstrate this responsibility refinement.
+Do not run another broad Level-3 reassessment merely because a completed change
+has been integrated or because another improvement can be imagined. The
+current Version 1.0 scope is closed. Admit new Version 1.0 construction only
+when concrete evidence maps the work to a frozen requirement, a reproducible
+release-blocking defect, a required integration failure, a mandatory release
+gate, or an explicit owner scope change. Other worthwhile ideas belong to
+post-Version-1.0 opportunity memory rather than the current blocker set.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Do **not** freeze RC3, publish to PyPI, tag a release, or advance to final `1.0.0` as part of this closeout.
+Use `strategic-sensemaking-loop` when a genuinely new strategic episode is
+warranted; a successful terminalization repair followed by `REAFFIRM` and no
+established next responsibility should stop rather than automatically recurse
+into another Level-3 analysis.
+
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in
+`development`. Product scope freeze is distinct from candidate-source freeze:
+candidate identity, merge, tagging, publication, and advancement to final
+`1.0.0` remain separate authority-controlled transitions.
