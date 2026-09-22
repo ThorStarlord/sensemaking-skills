@@ -31,7 +31,7 @@ def test_handoff_records_feature_and_integrated_qualification() -> None:
 
 def test_status_returns_to_normal_use_without_reopening_prior_milestones() -> None:
     status = STATUS.read_text(encoding="utf-8")
-    assert "Issue #432 Decision Journey Productization v1 is complete/integrated and in normal-use handoff" in status
+    assert "Decision Journey Productization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert "Decision Journey Productization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert "ISSUE_432_DECISION_JOURNEY_PRODUCTIZATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
     assert "ISSUE_430_STRATEGIC_CONTINUITY_REFINEMENT_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF" in status
