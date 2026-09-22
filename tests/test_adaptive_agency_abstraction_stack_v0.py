@@ -76,4 +76,4 @@ def test_closeout_returns_to_normal_use_without_product_expansion() -> None:
 
     assert "Adaptive Agency Abstraction Stack v0" in status
     assert "ADAPTIVE_AGENCY_ABSTRACTION_RUNTIME_GAP = NO_RUNTIME_GAP_ESTABLISHED" in status
-    assert "ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = FEATURE_QUALIFIED_TRIAL_RECONCILED_INTEGRATION_PENDING" in status
+    assert "ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = COMPLETE_INTEGRATED_TRIAL_RECONCILED_NORMAL_USE_HANDOFF" in status

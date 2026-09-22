@@ -49,6 +49,9 @@ owner decision packet != owner decision made
 responsibility selected != implementation authorized
 handoff useful != handoff mandatory
 Campaign available != Campaign required
+Organization visible != Organization warranted
+role binding != actor allocation
+Organization Pattern != execution authority
 ```
 
 Do **not** create a new master strategic artifact or orchestration state file.
@@ -70,6 +73,7 @@ Inspect the smallest sufficient set of current sources:
 - current responsibility/decision artifacts such as
   `artifacts/sensemaking_decision.md` when present;
 - handoff / execution evidence or Campaign execution receipts when present;
+- Organization Pattern / `organization inspect|role|skill-profile` output when explicit role/capability topology is decision-relevant;
 - `artifacts/owner_decision_capsule.md` when present;
 - explicit owner choice supplied after a decision capsule.
 
@@ -138,6 +142,24 @@ durable multi-context delegation useful
 protected / owner-reserved action
 -> stop or escalate
 ```
+
+When explicit role/capability topology would materially improve delegation,
+verification, evidence-flow, or authority legibility, the agent may inspect the
+existing Organization surface before choosing or continuing the execution
+boundary:
+
+```text
+organization inspect / organization role / organization skill-profile
+-> read-only coordination evidence
+-> not a new resume state
+-> not Skill selection
+-> not actor allocation
+-> not execution authorization
+```
+
+Do not insert Organization inspection as mandatory ceremony for a clear bounded
+action. A valid Organization Pattern does not establish that the pattern is
+warranted for the current objective.
 
 Use `handoff` only when a prompt handoff to a **registered Skill** is actually
 the correct next boundary. Do not invent a Skill identity for a workflow,
@@ -328,6 +350,8 @@ Do not introduce:
 - a new Campaign schema;
 - a new strategic/master artifact;
 - automatic repository discovery or scope expansion;
+- a mandatory Organization stage or Organization Pattern for every execution;
+- automatic role allocation, dynamic Organization generation, or Skill routing;
 - automatic owner decisions;
 - automatic Level-4 thesis revision;
 - automatic merge/release/publication authority;

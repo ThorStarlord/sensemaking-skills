@@ -147,15 +147,12 @@ limits: []
     assert payload["selection_performed"] is False
 
 
-def test_status_closes_tracer_without_reopening_completed_milestones():
+def test_status_keeps_tracer_terminal_without_freezing_future_owner_work():
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
     assert (
         "ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = "
-        "FEATURE_QUALIFIED_TRIAL_RECONCILED_INTEGRATION_PENDING"
+        "COMPLETE_INTEGRATED_TRIAL_RECONCILED_NORMAL_USE_HANDOFF"
     ) in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = NONE" in status
-    assert "PRIMARY CONSTRUCTION PROGRAM = NONE" in status
-    assert "OPERATING MODE = NORMAL_USE_VALIDATION" in status
     assert (
         "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = "
         "COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
