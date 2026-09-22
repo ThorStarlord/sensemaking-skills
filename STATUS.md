@@ -240,7 +240,7 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-None for Issue #452 or the completed Issues #449/#446/#444/#441/#438/#435/#432/#430/#426/#416 programs.
+No dedicated runtime or Campaign vehicle is required for the current posture. Product evolution proceeds through ordinary repository work and bounded Skill changes; the completed Issue #452/#449/#446/#444/#441/#438/#435/#432/#430/#426/#416 programs remain historical integrated baselines rather than active execution programs.
 
 The terminal qualification/integration receipts are preserved in
 `docs/strategic-sensemaking-loop-v1-handoff.md`,
@@ -253,7 +253,7 @@ The terminal qualification/integration receipts are preserved in
 
 ### Expected evidence and reassessment
 
-Reopen repository construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
+Add or deepen dedicated Sensemaking control machinery only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
 
 - typed strategic currentness still cannot expose a mechanically decidable change needed for a real reassessment;
 - path-transition identity proves insufficient to reconstruct trajectory position without introducing roadmap semantics;
