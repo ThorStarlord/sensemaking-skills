@@ -29,6 +29,10 @@ The Skill may surface mismatch. It may not silently replace the owner's goal.
 When the distinction can change the Strategic Frontier, classify the stated
 objective qualitatively as one of:
 
+```text
+terminal | milestone | proxy | constraint | evidence_state | unclear
+```
+
 - `terminal` — satisfying it directly realizes the governing outcome;
 - `milestone` — a bounded intermediate state on the way to the governing outcome;
 - `proxy` — an observable representation used to stand in for less directly
