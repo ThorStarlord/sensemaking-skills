@@ -76,6 +76,30 @@ def test_loop_allows_direct_execution_without_fabricating_skill_identity() -> No
     assert "not a Skill identity" in resume
 
 
+
+def test_loop_treats_organization_as_optional_read_only_execution_evidence() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+    resume = RESUME.read_text(encoding="utf-8")
+
+    for phrase in (
+        "Organization visible != Organization warranted",
+        "role binding != actor allocation",
+        "Organization Pattern != execution authority",
+        "organization inspect / organization role / organization skill-profile",
+        "not a new resume state",
+        "not Skill selection",
+        "not actor allocation",
+        "not execution authorization",
+    ):
+        assert phrase in text
+
+    assert "Skip Organization inspection when" in resume
+    assert "Organization inspection is not a loop stage" in resume
+    assert "organization valid" in resume
+    assert "!= organization warranted" in resume
+    assert "role binding" in resume
+    assert "!= actor allocation" in resume
+
 def test_loop_stops_at_owner_boundary_and_resumes_from_explicit_owner_choice() -> None:
     text = SKILL.read_text(encoding="utf-8")
     resume = RESUME.read_text(encoding="utf-8")
