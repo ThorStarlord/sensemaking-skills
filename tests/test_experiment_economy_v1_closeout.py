@@ -41,10 +41,7 @@ def test_status_returns_to_normal_use_without_opening_experiment_program() -> No
     status = STATUS.read_text(encoding="utf-8")
 
     assert "Experiment Economy & Proportional Rigor v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
-    assert (
-        "Issue #435 Strategic Repository Analysis Semantic Grounding v1 "
-        "is complete/integrated and in normal-use handoff"
-    ) in status
+    assert "Strategic Repository Analysis Semantic Grounding v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert (
         "ISSUE_438_EXPERIMENT_ECONOMY_PROPORTIONAL_RIGOR_V1 "
         "= COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
