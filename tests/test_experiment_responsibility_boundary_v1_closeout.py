@@ -39,10 +39,7 @@ def test_status_returns_to_normal_use_after_issue_441() -> None:
     status = STATUS.read_text(encoding="utf-8")
 
     assert "Experiment Responsibility Boundary v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
-    assert (
-        "Issue #438 Experiment Economy & Proportional Rigor v1 "
-        "is complete/integrated and in normal-use handoff"
-    ) in status
+    assert "Experiment Economy & Proportional Rigor v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF" in status
     assert (
         "ISSUE_441_EXPERIMENT_RESPONSIBILITY_BOUNDARY_V1 "
         "= COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
