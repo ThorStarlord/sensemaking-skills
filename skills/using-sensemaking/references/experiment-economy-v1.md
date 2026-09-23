@@ -145,6 +145,36 @@ build-as-inquiry
 Compare the full cost of "experiment then maybe build" with "build minimally, use,
 observe, retain/revise/remove."
 
+### Reversible-build dominance
+
+Prefer a reversible build over a separate experiment followed by later duplicate
+implementation when all are true:
+
+- the capability/action is already sufficiently warranted;
+- retaining it would create useful product/capability value if it works;
+- it is cheap enough to revise, simplify, or remove;
+- ordinary use or normal verification can produce evidence sufficient for the
+  current decision;
+- total build/use/revise cost is no greater than experiment overhead plus later
+  implementation;
+- downside and maintenance burden are acceptable;
+- the intended claim does not require stronger causal/comparative isolation.
+
+```text
+retained useful value
++ sufficient normal-use evidence
++ acceptable downside
++ no greater total cost
+-> REVERSIBLE BUILD normally dominates separate experiment + duplicate build
+
+reversible build available
+!= reversible build automatically warranted
+```
+
+Prefer READ/INSPECT/VERIFY when they answer the question materially cheaper.
+Prefer an experiment when the decision genuinely requires evidence the build
+cannot provide without compromising the inference.
+
 ## 5. Total experiment cost
 
 Do not call an experiment cheap merely because the experimental code is small.
@@ -320,7 +350,8 @@ Avoid:
 - treating coding-agent participation as contamination when it is part of normal use;
 - demanding causal evidence for a cheap reversible product decision;
 - building an evaluation framework before showing that experiment outcomes change the decision;
-- experimenting about whether to build something when building it reversibly is cheaper and sufficiently informative;
+- experimenting about whether to build something when building it reversibly is cheaper, creates retained useful value, and is sufficiently informative;
+- treating reversible build as a universal default even when READ/VERIFY is cheaper or a causal claim requires isolation;
 - continuing to purify an experiment after the current decision is already supported.
 
 ## 13. Boundaries
