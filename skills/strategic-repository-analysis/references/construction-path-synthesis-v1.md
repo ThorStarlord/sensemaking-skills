@@ -369,6 +369,27 @@ risk of not building
 = strategically relevant when omission changes mission progress or optionality
 ```
 
+### Value creation visibility
+
+For every material path, make the **value created if successful** explicit enough
+for a fresh owner/agent to audit the selection. This may include new user/product
+capability, reduced friction, leverage unlocked, optionality created, learning
+rate improved through normal use, or important constraint/risk removed.
+
+Do not add a numeric value score or required schema field. The goal is to prevent
+highly legible safety/qualification work from winning merely because the upside
+of construction remained implicit.
+
+```text
+path comparison
+must expose upside
+not only downside
+
+safe-enough path A
+vs safe-enough higher-value path B
+-> lower risk alone does not select A
+```
+
 A comparison may reveal:
 
 - one path is sufficiently warranted;
@@ -433,6 +454,7 @@ disposition, not merely repeat path descriptions.
 
 A good synthesis answers:
 
+- What useful product/capability value would each material path create if successful?
 - Which differences between paths are decision-relevant?
 - Which present-state claims are well grounded?
 - Which future-state assumptions remain hypotheses?
@@ -442,6 +464,12 @@ A good synthesis answers:
   opportunity, reversibility, and authority?
 - Why would a materially more aggressive **or more conservative** disposition
   be less warranted?
+
+When the analysis is consumed by an owner-facing orchestration surface, preserve
+these conclusions as a compact Decision Trace rather than hiding the alternative
+set. The trace should expose material alternatives, their value, and the
+selection rationale without manufacturing filler paths or disclosing private
+scratch reasoning.
 
 ## 9A. Path assumptions and continuation
 
