@@ -57,13 +57,22 @@ The specialized Skills keep their existing responsibilities:
 
 The loop Skill owns only composition and resume.
 
+It also applies the cross-cutting **Value-Producing Action Preference** and
+delegation envelope when those affect how far the episode should continue.
+
 ```text
 one front door
 != one giant Skill
 
 composition
 != responsibility collapse
+
+highest-value warranted action
+!= lowest-risk action automatically
 ```
+
+See
+`skills/strategic-sensemaking-loop/references/value-action-and-delegation-v1.md`.
 
 ## Artifact-aware resume
 
@@ -127,6 +136,23 @@ STOP
 ```
 
 These labels are not persisted state and are not deterministic routing enums.
+
+When action-mode choice is material, compare descriptive shapes such as:
+
+```text
+BUILD
+REVERSIBLE BUILD
+VERIFY / QUALIFY
+PROBE / INQUIRE
+SPIKE / PROTOTYPE
+EXPERIMENT
+STOP / ESCALATE
+```
+
+A reversible build is especially attractive when it creates useful retained
+product value and normal use provides evidence strong enough for the current
+decision at no greater total cost/downside than a separate experiment followed
+by duplicate implementation.
 
 ## No mandatory choreography
 
@@ -226,6 +252,28 @@ owner capsule exists
 
 The option statement itself is not automatically a Level-2 work package.
 
+## High-delegation repository envelope
+
+When the owner explicitly delegates continued repository work without approval
+pauses, the loop may proceed through ordinary repository-answerable analysis,
+construction, reversible builds, repair/refactor/docs, existing qualification,
+warranted probes/experiments, branch/commit/draft-PR work, evidence
+reconciliation, and the next independently warranted responsibility.
+
+This broad delegation does not silently authorize protected merge, release,
+production deployment, credentials/billing, Level-4 thesis choice,
+preference-sensitive owner decision, or unrelated external mutation.
+
+```text
+high delegation
+!= unlimited authority
+```
+
+A blocked verification/qualification gate blocks the responsibility that depends
+on it. It does not automatically prove that no other independently warranted
+repository work exists; such work may continue only when it does not bypass,
+depend on, or weaken the blocked gate.
+
 ## Evidence return
 
 Returned execution evidence first answers:
@@ -256,6 +304,14 @@ The front door may emit a concise run summary containing:
 - current strategic and responsibility state;
 - stop reason.
 
+For consequential Level-3 selections, it should also expose a compact **Decision
+Trace** with the material alternatives actually considered, the product/capability
+value each would create, the selected action shape, and brief reasons a materially
+more conservative or aggressive move was less warranted.
+
+This is owner-visible decision observability, not private scratch reasoning and
+not a new artifact.
+
 This summary is convenience output only.
 
 ```text
@@ -278,6 +334,8 @@ Strategic Sensemaking Loop v1 does not add:
 - automatic owner decisions;
 - automatic Level-4 thesis revision;
 - automatic merge/release/publication authority;
+- numeric expected-value/action scoring or automatic action routing;
+- mandatory reversible builds, prototypes, qualification, or experiments;
 - mandatory execution through `handoff`;
 - mandatory five-Skill choreography.
 
