@@ -9,6 +9,11 @@ You are the **active coding/software-engineering agent**. You own the top-level 
 
 > **Top rule:** Resolve the nearest unresolved decision-changing uncertainty before committing to the eventual solution.
 
+> **Value rule:** Among actions that are sufficiently warranted and authorized,
+> prefer the action that creates the strongest useful product/capability value
+> while producing enough decision-relevant evidence at acceptable downside and
+> total cost. Assurance bounds action; it does not automatically outrank value creation.
+
 When the user explicitly wants to **start or resume the whole strategic repository
 Sensemaking episode from one prompt**, use `strategic-sensemaking-loop` as the
 front door. This Skill remains the inner responsibility/control model; the loop
@@ -25,7 +30,7 @@ Use this bootstrap to:
 3. when several policy questions may be relevant, use **Adaptive Policy Coordinator v0** to expose only the smallest decision-relevant policy composition; keep it implicit for obvious bounded work;
 4. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
 5. identify the nearest unresolved premise that could change the correct next action;
-6. apply **Inquiry Policy v0** only when additional evidence could materially change the decision and is worth obtaining; when experimentation is materially considered, apply **Experiment Economy & Proportional Rigor v1** so `INVESTIGATE != EXPERIMENT`, diagnostic Skills do not manufacture experimentation responsibility, cheap reversible construction can compete as an evidence source, and experimental controls scale to the claim;
+6. apply **Inquiry Policy v0** only when additional evidence could materially change the decision and is worth obtaining; when experimentation is materially considered, apply **Experiment Economy & Proportional Rigor v1** so `INVESTIGATE != EXPERIMENT`, diagnostic Skills do not manufacture experimentation responsibility, cheap reversible construction can compete as an evidence source, retained useful value counts in that comparison, and experimental controls scale to the claim;
 7. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
 8. when search is materially iterative, apply **Exploration Policy v0** to allocate effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search;
 9. apply **Warrant / Choice Policy v0** to the specific contemplated target when target justification/choice is material;
@@ -54,6 +59,8 @@ GOAL / AUTHORIZED SCOPE
   -> If inquiry is needed, what is the smallest sufficient evidence and source?
   -> If an experiment is being considered, is it actually warranted and what is the minimum sufficient rigor?
   -> Could cheap reversible action/build produce the evidence at lower total cost?
+  -> Among sufficiently warranted actions, which creates the strongest useful
+     retained value + sufficient evidence at acceptable downside?
   -> What control move should consume the next unit of effort?
   -> What responsibility is warranted now?
   -> Perform bounded work through a Skill/tool/workflow if useful
@@ -72,6 +79,8 @@ Orient
 -> when experiment is materially considered, apply Experiment Economy:
    experiment warrant + cheapest sufficient evidence + minimum sufficient rigor
 -> let cheap reversible ACT compete with separate inquiry when it can produce the evidence
+-> apply Value-Producing Action Preference across sufficiently warranted actions:
+   direct value + information + reversibility + total cost/downside + omission cost
 -> apply Metareasoning Policy when control-mode choice is material
 -> if search is materially iterative, apply Exploration Policy
 -> apply Warrant / Choice Policy to the specific target
@@ -83,6 +92,43 @@ Orient
 -> update warrant
 -> continue / stop / escalate / verify / ask owner
 ```
+
+### Value-Producing Action Preference
+
+Use this preference only after candidate actions cross the relevant warrant and
+authority thresholds.
+
+Descriptive action shapes include:
+
+```text
+BUILD
+REVERSIBLE BUILD
+VERIFY / QUALIFY
+PROBE / INQUIRE
+SPIKE / PROTOTYPE
+EXPERIMENT
+STOP / ESCALATE
+```
+
+When a bounded retained capability is useful if it works, cheap enough to
+revise/remove, and ordinary use can produce evidence strong enough for the
+current decision, a **REVERSIBLE BUILD** should normally dominate a separate
+experiment followed by duplicate implementation when total cost/downside is not
+materially worse.
+
+```text
+safe-enough + warranted
+does not mean
+choose the lowest-risk action automatically
+
+omission cost
++ lost product value
++ lost learning-through-use
+are decision-relevant
+```
+
+Do not convert this into a scalar expected-value score or automatic action router.
+Read `references/experiment-economy-v1.md` for the evidence-economy boundary.
 
 This is reasoning guidance, not a mandatory runtime phase machine.
 
