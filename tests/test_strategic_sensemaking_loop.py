@@ -12,6 +12,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills" / "strategic-sensemaking-loop" / "SKILL.md"
 RESUME = ROOT / "skills" / "strategic-sensemaking-loop" / "references" / "resume-and-routing-v1.md"
+VALUE_ACTION = ROOT / "skills" / "strategic-sensemaking-loop" / "references" / "value-action-and-delegation-v1.md"
 AGENT = ROOT / "skills" / "strategic-sensemaking-loop" / "agents" / "openai.yaml"
 REGISTRY = ROOT / "skills" / "workflow-planner" / "references" / "skill-registry.yaml"
 RELEASE = ROOT / "release-v1.0.yaml"
@@ -188,3 +189,68 @@ def test_loop_is_documented_as_orchestration_not_new_control_level() -> None:
     assert "does not add a fifth control level" in outer
     assert "strategic-sensemaking-loop" in getting_started
     assert "skips stages that are already complete" in getting_started
+
+
+def test_loop_prefers_value_producing_warranted_action_without_scoring() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+    ref = VALUE_ACTION.read_text(encoding="utf-8")
+
+    assert "Value-Producing Action Preference" in text
+    assert "value-producing warranted action != lowest-risk action automatically" in text
+    assert "Prefer the highest-value **warranted and authorized** action" in ref
+    assert "safe-enough high-value action" in ref
+    assert "omission cost" in ref
+    assert "numeric expected-value scoring" in ref
+
+
+def test_reversible_build_has_conditional_dominance_not_universal_bias() -> None:
+    ref = VALUE_ACTION.read_text(encoding="utf-8")
+
+    assert "Reversible-build dominance test" in ref
+    assert "REVERSIBLE BUILD normally dominates separate experiment + duplicate build" in ref
+    assert "reversible build available" in ref
+    assert "!= reversible build automatically warranted" in ref
+    assert "Prefer READ/INSPECT/VERIFY" in ref
+    assert "Prefer an experiment when the decision genuinely requires evidence" in ref
+
+
+def test_high_delegation_envelope_allows_repository_work_but_preserves_protected_transitions() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+    ref = VALUE_ACTION.read_text(encoding="utf-8")
+
+    assert "high-delegation repository envelope" in text
+    assert "bounded construction, reversible builds" in text
+    assert "repository qualification" in text
+    assert "warranted probes/experiments" in text
+    assert "high delegation\n!= unlimited authority" in ref
+    assert "Level-4 product-thesis choices" in ref
+    assert "production release/deployment" in ref
+    assert "credentials, secrets, billing" in ref
+
+
+def test_blocked_gate_does_not_force_repository_wide_freeze_or_allow_bypass() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+    ref = VALUE_ACTION.read_text(encoding="utf-8")
+
+    assert "blocked responsibility != repository-wide freeze automatically" in text
+    assert "no independently warranted repository responsibility can proceed" in text
+    assert "do not evade the gate" in ref
+    assert "another **independently warranted** value-creating responsibility" in ref
+    assert "independent work exists" in ref
+    assert "!= permission to bypass blocked verification" in ref
+
+
+def test_consequential_final_report_exposes_compact_decision_trace() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+    ref = VALUE_ACTION.read_text(encoding="utf-8")
+
+    assert "Decision Trace" in text
+    assert "material alternatives actually considered" in text
+    assert "value each would create if successful" in text
+    assert "materially more conservative move" in text
+    assert "materially more aggressive move" in text
+
+    assert "MATERIAL ALTERNATIVES CONSIDERED" in ref
+    assert "VALUE CREATED IF SUCCESSFUL" in ref
+    assert "user-facing observability" in ref
+    assert "not private scratch reasoning" in ref
