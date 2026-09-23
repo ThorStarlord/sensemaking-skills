@@ -49,6 +49,9 @@ owner decision packet != owner decision made
 responsibility selected != implementation authorized
 handoff useful != handoff mandatory
 Campaign available != Campaign required
+value-producing warranted action != lowest-risk action automatically
+blocked responsibility != repository-wide freeze automatically
+high delegation != protected-transition authority
 Organization visible != Organization warranted
 role binding != actor allocation
 Organization Pattern != execution authority
@@ -61,6 +64,10 @@ reconciliation, owner-decision, Campaign, and repository artifacts.
 Read `references/resume-and-routing-v1.md` whenever existing artifacts mean the
 episode may need to resume in the middle rather than start from strategic
 analysis.
+
+Read `references/value-action-and-delegation-v1.md` when the action mode,
+delegation envelope, blocked-gate continuation, or owner-visible decision trace
+is material.
 
 ## 1. Reconstruct the current episode before invoking another Skill
 
@@ -121,13 +128,35 @@ Use `using-sensemaking` when:
 Treat upstream recommendations as defeasible. Preserve the
 inherited-responsibility prerequisite backstop in `using-sensemaking`.
 
+When several responses are sufficiently warranted and authorized, apply the
+**Value-Producing Action Preference**: prefer useful retained product/capability
+value plus sufficient evidence over a lower-value evidence-only move when total
+cost/downside is not materially worse. Do not turn this into numeric scoring.
+
 ### EXECUTE
 
 When a bounded responsibility is selected:
 
 1. verify decision-critical prerequisites;
 2. verify exact authority for the contemplated action;
-3. choose the lightest execution boundary.
+3. choose the warranted action shape and lightest execution boundary.
+
+Descriptive action shapes include:
+
+```text
+BUILD
+REVERSIBLE BUILD
+VERIFY / QUALIFY
+PROBE / INQUIRE
+SPIKE / PROTOTYPE
+EXPERIMENT
+STOP / ESCALATE
+```
+
+These labels describe the current move; they are not a new runtime enum or
+artifact schema. A strategically selected `BUILD` may be executed as a
+reversible build when the bounded implementation is useful if retained and
+normal use produces sufficient evidence.
 
 ```text
 same active agent + clear bounded action
@@ -229,7 +258,9 @@ Stop when any of these is true:
 - no repository/product change is warranted;
 - a genuine owner-reserved decision is waiting;
 - a Level-4 thesis decision is waiting;
-- an external/infrastructure blocker cannot be resolved within current authority;
+- an external/infrastructure blocker cannot be resolved within current authority
+  **and no independently warranted repository responsibility can proceed without
+  bypassing or depending on the blocked gate**;
 - the next action requires authority not granted by the current user/repository;
 - no further decision-changing evidence or action is warranted.
 
@@ -315,9 +346,21 @@ PUBLISH / MERGE / RELEASE
 as separable authority surfaces.
 
 A user's instruction to proceed autonomously authorizes repository-answerable
-steps only to the extent of the user's actual scope and repository policy. It
-does not silently grant protected publication, merge, deployment, release,
-credential, billing, or unrelated external mutation authority.
+steps only to the extent of the user's actual scope and repository policy.
+
+When the owner explicitly says to proceed without further input, continue
+autonomously through ordinary repository-answerable work under the
+**high-delegation repository envelope** in
+`references/value-action-and-delegation-v1.md`. This may include bounded
+construction, reversible builds, repair/refactor/docs, repository qualification,
+warranted probes/experiments, issue/branch/commit/draft-PR work, evidence
+reconciliation, and continuation to the next independently warranted repository
+responsibility.
+
+It does not silently grant protected publication, merge, deployment, release,
+credential, billing, Level-4 thesis choice, preference-sensitive owner decision,
+or unrelated external mutation authority. Repository policy and explicit owner
+constraints remain controlling.
 
 No component artifact grants authority merely by existing.
 
@@ -338,6 +381,20 @@ At the end of the run, report:
 9. authority boundary reached;
 10. exact stop reason and next owner input only when one is genuinely required.
 
+For consequential Level-3 selections or materially contested control moves, also
+surface a compact **Decision Trace**:
+
+- material alternatives actually considered;
+- value each would create if successful;
+- selected control/action shape;
+- why the selected move is warranted now;
+- why a materially more conservative move was less warranted;
+- why a materially more aggressive move was less warranted.
+
+Do not expose private scratch reasoning or manufacture alternatives merely to fill
+the display. This trace is user-facing observability, not a new canonical
+artifact.
+
 A concise session summary may be emitted for the user, but it is not a new source
 of truth and must not compete with the underlying artifacts.
 
@@ -355,5 +412,7 @@ Do not introduce:
 - automatic owner decisions;
 - automatic Level-4 thesis revision;
 - automatic merge/release/publication authority;
-- numeric path/resume/priority scoring;
+- numeric path/resume/priority/expected-value scoring;
+- mandatory reversible builds, prototypes, experiments, or qualification;
+- a permission engine derived from delegation labels;
 - repeated analysis merely for ceremony.
