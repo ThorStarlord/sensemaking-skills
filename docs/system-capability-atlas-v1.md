@@ -193,7 +193,76 @@ organization visible != organization runtime warranted
 front-door orchestration != monolithic planner
 ```
 
-## 7. Maintenance rule
+## 7. Visibility and promotion rule
+
+The repository now has enough conceptual machinery that **surface visibility is
+itself a product-design decision**.
+
+Use this progression:
+
+```text
+default
+-> keep deeper machinery implicit
+
+bounded specialized responsibility becomes the task
+-> expose the specialized Skill
+
+continuation / provenance / authority complexity becomes decision-relevant
+-> expose Campaign / continuity / journey / organization / validation support
+
+recurring normal-use friction shows the abstraction itself is needed by users
+-> consider promoting visibility
+
+mere existence / elegance / inspectability
+-> do not promote
+```
+
+A subsystem should become more visible only when seeing or controlling it can
+materially improve the user's decision, delegation, reconstruction, or
+authority understanding.
+
+This yields four useful tests:
+
+1. **Decision test** — can exposing the surface change a warranted decision?
+2. **Action test** — can the user do something legitimate with the surface?
+3. **Reconstruction test** — is the surface needed to understand durable state?
+4. **Authority test** — does hiding the surface risk obscuring a real authority
+   boundary?
+
+If all four are negative, keep the mechanism internal by default.
+
+```text
+architectural importance
+!= user-facing importance
+
+internal complexity may grow modestly
+only while visible complexity remains bounded
+
+progressive disclosure
+= expose complexity when it becomes decision-relevant
+```
+
+## 8. Lessons from the current architecture
+
+The current repository suggests several broader product lessons:
+
+- **Release support and product visibility are orthogonal.** A Skill can be
+  supported but specialized; an internal surface can still be the preferred
+  front door for composition.
+- **Front doors should compress choreography, not semantics.**
+  `strategic-sensemaking-loop` may hide sequencing while the underlying
+  responsibilities remain distinct.
+- **Every reasoning safeguard needs an anti-ceremony counterpart.** Preventing
+  premature convergence without preventing exhaustive-search ceremony merely
+  moves the failure to the opposite extreme.
+- **Current projections must outrank historical residue.** Compatibility and
+  retained history are valuable only when they cannot masquerade as current
+  product direction.
+- **Normal use is now part of architecture governance.** New machinery should be
+  reopened from recurring material pressure, not from the mere availability of
+  another conceptual abstraction.
+
+## 9. Maintenance rule
 
 Update this atlas only when a **material system boundary or product-facing role**
 changes. Do not turn it into a complete file inventory, duplicate the Skill
