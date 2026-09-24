@@ -202,6 +202,14 @@ The remaining questions are normal-use questions:
 No synthetic search benchmark, frontier scorer, or deterministic search runtime
 is warranted now.
 
+For ordinary-use observations, use
+[`docs/strategic-normal-use-failure-taxonomy-v1.md`](docs/strategic-normal-use-failure-taxonomy-v1.md)
+as descriptive vocabulary for recurring material failure families such as
+premature convergence, proxy capture, experiment reflex, resume regression, and
+front-door leakage. The taxonomy is not telemetry, a score, an automatic defect
+detector, or a standing construction queue.
+
+
 ~~~text
 funnel integrated
 != strategic completeness proved
