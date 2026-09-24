@@ -202,6 +202,9 @@ Reject candidates that are merely:
 Preserve this distinction:
 
 ```text
+frontier candidate
+!= construction path
+
 FRONTIER CANDIDATE
 = where strategic value/tension may be concentrated
 
