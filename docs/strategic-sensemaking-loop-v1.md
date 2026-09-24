@@ -114,6 +114,8 @@ Use the following as semantic guidance only:
 ```text
 ANALYZE
 -> strategy absent or explicitly reopened
+-> run Strategic Exploration Funnel:
+   system map → breadth exploration → frontier candidates → depth drill → paths
 
 RESPONSIBILITY
 -> strategy current, bounded responsibility unresolved
@@ -186,6 +188,12 @@ existing owner capsule
 
 The loop must not rerun completed stages merely to reproduce a canonical
 sequence.
+
+In particular, the repository-wide Strategic Exploration Funnel belongs only to
+a genuine `ANALYZE / REOPEN_ANALYSIS` boundary. A resumed
+`RESPONSIBILITY / EXECUTE / VERIFY / RECONCILE` episode must not remap every
+system or repeat breadth exploration unless returned evidence actually reopens
+Level 3.
 
 ## Handoff boundary
 
@@ -309,6 +317,13 @@ Trace** with the material alternatives actually considered, the product/capabili
 value each would create, the selected action shape, and brief reasons a materially
 more conservative or aggressive move was less warranted.
 
+When `ANALYZE / REOPEN_ANALYSIS` actually ran, precede that Decision Trace with
+a compact **Strategic Exploration Summary** showing the major systems examined,
+breadth opportunity themes, synthesized frontier candidates, candidates advanced
+to depth, selected Strategic Frontier, and selected construction path (if any).
+This is owner-visible proof of coverage-before-convergence, not an exhaustive
+idea dump or private chain-of-thought.
+
 This is owner-visible decision observability, not private scratch reasoning and
 not a new artifact.
 
@@ -337,6 +352,8 @@ Strategic Sensemaking Loop v1 does not add:
 - numeric expected-value/action scoring or automatic action routing;
 - mandatory reversible builds, prototypes, qualification, or experiments;
 - mandatory execution through `handoff`;
-- mandatory five-Skill choreography.
+- mandatory five-Skill choreography;
+- mandatory breadth/depth reanalysis during settled execution or verification;
+- a persisted search tree, frontier score, or deterministic exploration router.
 
 The active semantic agent remains the controller.

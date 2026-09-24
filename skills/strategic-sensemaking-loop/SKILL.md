@@ -112,8 +112,22 @@ Use `strategic-repository-analysis` when:
 - an existing reconciliation explicitly warrants `REOPEN_ANALYSIS`;
 - current governing intent/source reality materially invalidates the prior analysis.
 
+When this boundary is genuinely active, allow `strategic-repository-analysis`
+to run its **Strategic Exploration Funnel**:
+
+```text
+system map
+-> breadth exploration
+-> frontier candidates
+-> depth drill
+-> construction paths
+-> selection
+```
+
 Do not reopen strategy for ordinary drift, currentness noise, or because another
-idea is imaginable.
+idea is imaginable. Do not run the breadth/depth funnel during
+`RESPONSIBILITY / EXECUTE / VERIFY / RECONCILE` merely because the loop
+continued.
 
 ### RESPONSIBILITY
 
@@ -391,6 +405,20 @@ surface a compact **Decision Trace**:
 - why a materially more conservative move was less warranted;
 - why a materially more aggressive move was less warranted.
 
+When the current run actually invoked `strategic-repository-analysis` at
+`ANALYZE / REOPEN_ANALYSIS`, precede the Decision Trace with a compact
+**Strategic Exploration Summary** showing:
+
+- major systems examined;
+- breadth opportunity themes/observations;
+- frontier candidates synthesized;
+- which candidates advanced to depth and why;
+- selected Strategic Frontier;
+- selected construction path, if one exists.
+
+Do not dump every idea or expose private scratch reasoning. This summary exists
+to make repository-wide breadth -> depth -> selection visible to the owner.
+
 Do not expose private scratch reasoning or manufacture alternatives merely to fill
 the display. This trace is user-facing observability, not a new canonical
 artifact.
@@ -415,4 +443,6 @@ Do not introduce:
 - numeric path/resume/priority/expected-value scoring;
 - mandatory reversible builds, prototypes, experiments, or qualification;
 - a permission engine derived from delegation labels;
-- repeated analysis merely for ceremony.
+- repeated analysis merely for ceremony;
+- mandatory repository-wide breadth exploration during settled execution or verification;
+- a persisted search tree, frontier score, or deterministic breadth/depth router.

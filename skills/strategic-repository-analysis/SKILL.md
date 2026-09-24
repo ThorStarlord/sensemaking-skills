@@ -149,6 +149,58 @@ Describe the repository as a system/product:
 
 Do not reduce the repository to a file inventory.
 
+### 3B. Run the Strategic Exploration Funnel before frontier convergence
+
+At a genuine Level-3 `ANALYZE` or `REOPEN_ANALYSIS` boundary, do not converge
+on the first visible defect, next issue, or most mechanically legible surface.
+
+Run the **Strategic Exploration Funnel**:
+
+```text
+SYSTEM MAP
+-> BREADTH EXPLORATION
+-> FRONTIER CANDIDATE SYNTHESIS
+-> DEPTH DRILL
+-> CONSTRUCTION PATH SYNTHESIS
+-> COMPARATIVE SELECTION
+```
+
+Map major product/control systems and their important relationships, then scan
+both **within systems** and **across systems** for material deficiencies,
+unrealized leverage, compositional gaps, autonomy opportunities, simplification,
+and new product value.
+
+Breadth exploration is divergent. Do not select the Strategic Frontier until
+the breadth landscape is sufficient to make omission of a more important
+repository-wide opportunity unlikely merely because another problem was easier
+to see.
+
+Then compress material observations into grounded **frontier candidates**.
+Advance only the strongest/material candidates to a proportional depth drill.
+Only after that depth drill should construction paths be synthesized.
+
+Preserve:
+
+```text
+frontier candidate
+!= construction path
+
+breadth observation
+!= Level-3 frontier automatically
+
+repository-wide
+!= inspect every file
+
+coverage before convergence
+!= exhaustive inventory
+```
+
+Read `references/strategic-exploration-funnel-v1.md` whenever this funnel runs.
+
+Do **not** repeat the funnel during an already-settled
+`RESPONSIBILITY / EXECUTE / VERIFY / RECONCILE` continuation unless returned
+evidence genuinely reopens Level 3.
+
 ### 3A. Check product/completion layers when downstream milestones are in play
 
 When the stated objective involves release, qualification, packaging, validation,
@@ -210,6 +262,12 @@ Do not turn the states into maturity numbers.
 
 ### 5. Form the Strategic Frontier
 
+When the Strategic Exploration Funnel ran, form the Strategic Frontier from the
+depth-qualified frontier candidates rather than directly from the first
+repository tension observed. The breadth landscape may contain many useful
+observations; only the small set that passes the Strategicity Gate and depth
+comparison belongs at Level 3.
+
 Before admitting a repository tension **or opportunity** into the Strategic
 Frontier, apply the **Strategicity Gate**:
 
@@ -258,6 +316,10 @@ shape and references.
 Exclude attractive but non-decision-relevant ideas.
 
 ### 6. Generate coherent construction paths
+
+When the Strategic Exploration Funnel ran, synthesize construction paths **after**
+frontier-candidate depth analysis. Do not create detailed construction paths for
+every breadth observation merely because it was surfaced.
 
 Generate 2–5 paths when multiple futures are materially plausible.
 
@@ -367,6 +429,11 @@ dependency structure, authority/thesis requirement, major risk, or set of
 later possibilities.
 
 ### 7. Compare paths qualitatively
+
+When multiple frontier candidates advanced to depth, compare the strategic value
+of the candidate frontiers as well as the construction paths within the selected
+frontier. Preserve enough rationale for an owner-visible Strategic Exploration
+Summary without exposing private scratch reasoning.
 
 Use the canonical strategic-comparison lenses:
 
@@ -567,6 +634,10 @@ path transition != roadmap item
 path transition != authorized responsibility
 transition established != next transition selected
 path comparison != numeric ranking
+frontier candidate != construction path
+breadth exploration != exhaustive repository inventory
+depth drill != deep analysis of every observation
+resume existing strategy != rerun breadth exploration
 mechanically valid != semantically correct
 candidate responsibility != authorized execution
 strategic warrant precedes intervention minimization
