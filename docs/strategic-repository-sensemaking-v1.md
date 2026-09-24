@@ -3,7 +3,7 @@
 **Status:** canonical product contract  
 **Control level:** Level 3 — Strategic Repository Evolution  
 **Authority:** subordinate to `docs/product-strategy.md`, ADR 0029, and the Four-Level Control Model  
-**Owner direction:** Issue #401, refined by Issues #446 and #449  
+**Owner direction:** Issue #401, refined by Issues #446, #449, and #468  
 **Runtime posture:** semantic-agent reasoning + mechanically validated artifact; no strategic planner runtime
 
 ## 1. Purpose
