@@ -23,6 +23,7 @@ Choose the entry point for your role instead of reading every document:
 | A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
 | A human/agent wanting one-prompt strategic start/resume | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) | Artifact-aware strategic orchestration across analysis, responsibility, execution, evidence return, reconciliation, and reserved-decision boundaries |
 | Understanding how control levels, policy layers, authority, execution, evidence, and strategic continuity compose | [`docs/adaptive-semantic-control-architecture-v0.md`](docs/adaptive-semantic-control-architecture-v0.md) | Descriptive crosswalk; no new control level, runtime, or authority |
+| Orienting across the major systems and deciding which surfaces should normally be visible | [`docs/system-capability-atlas-v1.md`](docs/system-capability-atlas-v1.md) | Descriptive system/capability atlas and product-role classification; no new authority |
 | Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) | Level-3 current-system, capability, construction-path, tradeoff, and strategic-synthesis analysis |
 | Comparing, checking currentness, or reconstructing history of authored strategic analyses | [`docs/strategic-continuity-v1.md`](docs/strategic-continuity-v1.md) | Deterministic typed-currentness/history projections; no strategic selection |
 | Reconstructing a decision from strategy through execution, evidence return, and reassessment | [`docs/decision-journey-productization-v1.md`](docs/decision-journey-productization-v1.md) | Read-only journey/context/delta/impact-closure projections plus caller-selected guidance |
@@ -41,6 +42,8 @@ operations-runbook.md = how maintainers operate and qualify it
 ```
 
 Do not create a parallel `HOW_TO_USE.md` or generic `workflow.md` for the same material. The goal is one clear entry point per audience rather than duplicated instruction surfaces.
+
+The product-facing default is intentionally compressed: humans start with `GETTING_STARTED.md`, coding agents use `using-sensemaking`, and a complete strategic episode can start/resume through `strategic-sensemaking-loop`. Specialized Skills remain directly invokable when their bounded responsibility is explicitly the task. See the [System Capability Atlas v1](docs/system-capability-atlas-v1.md) for the front-door / specialized / substrate / compatibility distinction.
 
 ### Choose the lightest useful process
 

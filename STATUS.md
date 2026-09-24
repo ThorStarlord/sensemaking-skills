@@ -2,7 +2,7 @@
 
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
-**Last updated:** 2026-09-23  
+**Last updated:** 2026-09-24  
 **Current phase:** Issue #468 Strategic Exploration Funnel v1 is complete/integrated and in normal-use handoff; Issue #465 Value-Producing Action & High-Delegation v1 remains complete/integrated and in normal-use handoff; Issue #462 Strategic Sensemaking Loop Organization reconciliation is complete/integrated on PR #463 and remains a no-runtime-expansion normal-use handoff. Issue #459 Capability & Organization Tracer v0 is complete/integrated with Trial 001 reconciled; Issue #452 Strategic Sensemaking Loop v1 remains complete/integrated and in normal-use handoff; Issues #449, #446, #441, #438, #435, #432, #430, #426, and #416 remain complete/integrated normal-use baselines; Issue #444 Adaptive Agency Abstraction Stack v0 remains the non-authoritative research model. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
@@ -202,6 +202,14 @@ The remaining questions are normal-use questions:
 No synthetic search benchmark, frontier scorer, or deterministic search runtime
 is warranted now.
 
+For ordinary-use observations, use
+[`docs/strategic-normal-use-failure-taxonomy-v1.md`](docs/strategic-normal-use-failure-taxonomy-v1.md)
+as descriptive vocabulary for recurring material failure families such as
+premature convergence, proxy capture, experiment reflex, resume regression, and
+front-door leakage. The taxonomy is not telemetry, a score, an automatic defect
+detector, or a standing construction queue.
+
+
 ~~~text
 funnel integrated
 != strategic completeness proved
@@ -350,8 +358,26 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**ISSUE #462 — FEATURE-QUALIFIED / INTEGRATION PENDING.**
+**NO ACTIVE LEVEL-3 CONSTRUCTION PROGRAM — NORMAL-USE VALIDATION.**
 
-Integrate PR #463 when authorized. After integration, update the installed ChatGPT Skill from the validated `skill.zip`, then use `organization inspect|role|skill-profile` selectively during real high-delegation work and preserve naturally arising evidence, especially episodes with independent external Builder/Verifier contexts. Do not open a scheduler, worker-allocation, automatic-routing, persistent-team, or dynamic-Organization program unless normal use exposes one of those as the actual limiting factor.
+PR #463 is already integrated. Continue ordinary use of
+`strategic-sensemaking-loop`, Strategic Repository Sensemaking, and the
+optional Organization inspection surface. Preserve naturally arising evidence
+when it reveals recurring material failure, using
+[`docs/strategic-normal-use-failure-taxonomy-v1.md`](docs/strategic-normal-use-failure-taxonomy-v1.md)
+as descriptive vocabulary rather than an issue generator.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in `development`. Issue #459 does not itself authorize freezing RC3, PyPI publication, release tagging, or final `1.0.0`. Do **not** freeze RC3 as part of Issue #459.
+PR #471 is a bounded documentation/observability reconciliation produced under
+that normal-use boundary. It adds the System Capability Atlas, product-role
+classification, and normal-use failure taxonomy without opening a new Level-3
+construction program. Integration of that PR remains a separately protected
+merge transition.
+
+Do not open a scheduler, worker-allocation, automatic-routing, persistent-team,
+dynamic-Organization, new policy layer, search runtime, or additional strategic
+machinery unless recurring normal use exposes one of those as the actual
+limiting factor.
+
+Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in
+`development`. Normal-use documentation reconciliation does not authorize
+freezing RC3, PyPI publication, release tagging, or final `1.0.0`.

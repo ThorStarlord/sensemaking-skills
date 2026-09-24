@@ -66,6 +66,30 @@ Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless
 
 You do not need to create a Campaign for every task. The coding agent should use the lightest process that preserves the required engineering invariants.
 
+### Default product-facing path
+
+You normally need only three entry surfaces:
+
+```text
+human first use
+-> GETTING_STARTED.md
+
+coding agent deciding warranted repository work
+-> using-sensemaking
+
+whole strategic episode from one prompt
+-> strategic-sensemaking-loop
+```
+
+Use a specialized Skill directly when its bounded responsibility is explicitly
+what you need. Deeper policy, continuity, Campaign, journey, organization,
+semantic-architecture, and validator surfaces should appear only when they
+materially help the current work.
+
+For the full map, see
+[`docs/system-capability-atlas-v1.md`](docs/system-capability-atlas-v1.md).
+
+
 ```text
 Known narrow change, locally evidenced, one context
 -> direct bounded work + relevant tests
