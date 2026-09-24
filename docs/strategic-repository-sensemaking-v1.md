@@ -28,7 +28,13 @@ goal fitness / objective-role check
         |
 current system + completion-layer model
         |
-capability / limitation map
+major-system map
+        |
+breadth opportunity exploration
+        |
+frontier candidate synthesis
+        |
+depth drill on material candidates
         |
 strategic frontier
         |
@@ -181,6 +187,59 @@ Use
 `skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md`
 for the detailed contract.
 
+### 4B. Strategic Exploration Funnel
+
+At a genuine Level-3 `ANALYZE` or `REOPEN_ANALYSIS` boundary, run a
+repository-wide Strategic Exploration Funnel before converging on the Strategic
+Frontier:
+
+```text
+SYSTEM MAP
+-> BREADTH EXPLORATION
+-> FRONTIER CANDIDATE SYNTHESIS
+-> DEPTH DRILL
+-> CONSTRUCTION PATH SYNTHESIS
+-> COMPARATIVE SELECTION
+```
+
+The system map identifies major product/control systems and their important
+relationships. The breadth pass searches both **within** those systems and
+**across** their boundaries for deficiencies, unrealized leverage, semantic or
+authority loss, compositional gaps, simplification, autonomy opportunities, and
+adjacent product value.
+
+The breadth pass produces an opportunity landscape, not a backlog. The agent then
+compresses material observations into grounded **frontier candidates** and
+advances only the strongest/material candidates to deeper analysis.
+
+Preserve:
+
+```text
+frontier candidate
+!= construction path
+
+system map
+!= file inventory
+
+breadth exploration
+!= exhaustive repository enumeration
+
+coverage before convergence
+!= analysis ceremony
+```
+
+A frontier candidate names **where** strategic value/tension may be concentrated.
+Construction paths describe **how** the repository could evolve after a candidate
+survives enough depth analysis.
+
+The funnel runs only when Level 3 is actually open/reopened. Mid-episode
+`RESPONSIBILITY / EXECUTE / VERIFY / RECONCILE` continuation reuses the current
+strategic model unless returned evidence genuinely reopens it.
+
+Use
+`skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md`
+for the detailed contract.
+
 ## 5. Capability / limitation map
 
 Capabilities use the following bounded semantic states:
@@ -212,6 +271,10 @@ missing capability
 ```
 
 ## 6. Strategic frontier
+
+When the Strategic Exploration Funnel ran, the Strategic Frontier is formed from
+the depth-qualified frontier candidates rather than directly from the first
+visible repository problem.
 
 The Strategic Frontier is the set of current repository/product boundaries **and
 unexploited opportunities** that could materially change progress toward the
@@ -254,6 +317,10 @@ The validator checks these declarations mechanically; the active semantic agent
 still decides whether the consequence is genuinely strategic.
 
 ## 7. Candidate construction paths
+
+When breadth/depth exploration ran, synthesize construction paths only after the
+relevant frontier candidate has survived proportional depth analysis. Do not
+generate detailed paths for every breadth observation.
 
 A **construction path** is a coherent repository-evolution trajectory: a future
 state plus the major capability sequence and dependencies needed to reach it.
