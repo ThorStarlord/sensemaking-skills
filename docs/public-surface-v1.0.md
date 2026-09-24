@@ -86,6 +86,55 @@ an artifact identity, and a resolved Domain Pack or explicit product-domain
 entry. Internal Skills may ship for operator support without being a public
 capability promise.
 
+### Product-role classification (orthogonal to release classification)
+
+Release classification answers **what compatibility/support promise applies**.
+Product-role classification answers **how a human or active agent should normally
+encounter the surface**. These must not be collapsed.
+
+```text
+FRONT DOOR
+- GETTING_STARTED.md
+- using-sensemaking
+- strategic-sensemaking-loop
+
+SPECIALIZED DIRECT CAPABILITY
+- repo-sensemaker
+- strategic-repository-analysis
+- strategic-repository-reconciliation
+- owner-decision-capsule
+- thesis-review-packet
+- external-evidence-packet
+- multi-repository-strategic-analysis
+- change-impact-analysis
+- architectural-review
+- output-reconciler
+- repair-verifier
+
+INTERNAL SUBSTRATE / COMPOSITION
+- Policy Hierarchy contracts
+- Strategic Exploration Funnel internals
+- Strategic Continuity projections
+- Campaign provenance / identity / reference machinery
+- execution handoff/result interchange
+- Decision Journey projections
+- Capability & Organization Tracer
+- semantic architecture and validator substrate
+
+COMPATIBILITY / HISTORICAL
+- compatibility workflow runtime and legacy registries
+- deprecated invocation metadata
+- retained research/experiment machinery
+- superseded authority retained only as provenance
+```
+
+A specialized capability does not become less first-class merely because a
+front door often reaches it. Conversely, an internal substrate should not become
+a required user step merely because it is architecturally important.
+
+The descriptive system map is
+[`system-capability-atlas-v1.md`](system-capability-atlas-v1.md).
+
 The supported engineering analysis surface includes
 `strategic-repository-analysis`, which produces the mechanically validated
 `strategic_repository_analysis` artifact.
