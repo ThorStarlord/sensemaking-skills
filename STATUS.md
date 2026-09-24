@@ -367,11 +367,12 @@ when it reveals recurring material failure, using
 [`docs/strategic-normal-use-failure-taxonomy-v1.md`](docs/strategic-normal-use-failure-taxonomy-v1.md)
 as descriptive vocabulary rather than an issue generator.
 
-PR #471 is a bounded documentation/observability reconciliation produced under
-that normal-use boundary. It adds the System Capability Atlas, product-role
-classification, and normal-use failure taxonomy without opening a new Level-3
-construction program. Integration of that PR remains a separately protected
-merge transition.
+PR #471 is integrated on `main` as merge commit
+`80e7e999c31e2234a71885d218530cce2d796dd6`. It added the System Capability
+Atlas, product-role classification, and normal-use failure taxonomy as a bounded
+documentation/observability reconciliation without opening a new Level-3
+construction program. No follow-on construction responsibility is implied by
+that integration.
 
 Do not open a scheduler, worker-allocation, automatic-routing, persistent-team,
 dynamic-Organization, new policy layer, search runtime, or additional strategic
