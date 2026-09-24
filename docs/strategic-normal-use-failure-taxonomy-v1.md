@@ -240,7 +240,42 @@ Examples:
 - deprecated registry entries are treated as supported product direction;
 - retained research machinery becomes shipped-product authority.
 
-## 3. Evidence record for a material occurrence
+## 3. Symmetric failure pairs
+
+Several of the most important categories are deliberately paired. The goal is
+not to maximize Sensemaking activity; it is to stay inside a useful control
+band.
+
+| Too little control | Too much control / ceremony |
+| --- | --- |
+| F1 Premature convergence | F2 Exhaustive-search ceremony |
+| F13 Reconciliation omission | F14 Over-reconciliation ceremony |
+| F6 Construction starvation | Unbounded build/prototype accumulation |
+| F16 Global freeze from a local blocker | Bypassing a blocker with dependent work |
+| F17 Front-door leakage through manual choreography | Hiding a genuine owner/authority boundary behind over-compression |
+
+Other categories protect a boundary rather than a volume of reasoning:
+
+- F10 protects responsibility from capability availability;
+- F11 protects warrant from authority;
+- F12 protects semantic conclusions from mechanical validation;
+- F15 protects owner/Level-4 decisions from repository inference;
+- F18 protects current authority from compatibility residue.
+
+The operating principle is:
+
+```text
+more Sensemaking
+!= better Sensemaking
+
+less visible machinery
+!= less rigor
+
+the right amount
+= the smallest control surface that can still change or protect the decision
+```
+
+## 4. Evidence record for a material occurrence
 
 No new artifact is required. When a failure materially changes repository
 strategy or responsibility, preserve only the evidence needed by the existing
@@ -262,7 +297,7 @@ Does this warrant repository change now? yes / no / uncertain
 
 Do not assign numeric severity or confidence merely because a category exists.
 
-## 4. Reopen rule
+## 5. Reopen rule
 
 A new construction package is more strongly warranted when ordinary use shows a
 **recurring material failure** whose correction is mechanically/documentarily
@@ -284,7 +319,7 @@ Examples of stronger reopen evidence:
 - experiment reflex persists despite the current Experiment Economy guidance;
 - Goal Fitness repeatedly allows proxy capture.
 
-## 5. Relationship to the current normal-use handoff
+## 6. Relationship to the current normal-use handoff
 
 This taxonomy operationalizes the existing `STATUS.md` reassessment questions.
 It does not supersede them.
