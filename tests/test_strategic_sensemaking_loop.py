@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills" / "strategic-sensemaking-loop" / "SKILL.md"
 RESUME = ROOT / "skills" / "strategic-sensemaking-loop" / "references" / "resume-and-routing-v1.md"
 VALUE_ACTION = ROOT / "skills" / "strategic-sensemaking-loop" / "references" / "value-action-and-delegation-v1.md"
+EXPLORATION = ROOT / "skills" / "strategic-repository-analysis" / "references" / "strategic-exploration-funnel-v1.md"
 AGENT = ROOT / "skills" / "strategic-sensemaking-loop" / "agents" / "openai.yaml"
 REGISTRY = ROOT / "skills" / "workflow-planner" / "references" / "skill-registry.yaml"
 RELEASE = ROOT / "release-v1.0.yaml"
@@ -254,3 +255,42 @@ def test_consequential_final_report_exposes_compact_decision_trace() -> None:
     assert "VALUE CREATED IF SUCCESSFUL" in ref
     assert "user-facing observability" in ref
     assert "not private scratch reasoning" in ref
+
+
+def test_loop_runs_exploration_funnel_only_at_analyze_boundaries() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+    guide = EXPLORATION.read_text(encoding="utf-8")
+
+    assert "When this boundary is genuinely active" in text
+    assert "Strategic Exploration Funnel" in text
+    assert "system map" in text
+    assert "breadth exploration" in text
+    assert "frontier candidates" in text
+    assert "depth drill" in text
+
+    assert "ANALYZE / REOPEN_ANALYSIS" in guide
+    assert "RESPONSIBILITY / EXECUTE / VERIFY / RECONCILE" in guide
+    assert "preserve current Level 3 unless evidence genuinely reopens it" in guide
+
+
+def test_loop_does_not_repeat_breadth_analysis_during_mid_episode_resume() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+    resume = RESUME.read_text(encoding="utf-8")
+
+    assert "Do not run the breadth/depth funnel during" in text
+    assert "RESPONSIBILITY / EXECUTE / VERIFY / RECONCILE" in text
+    assert "Do not rerun a Skill merely because it appears earlier in the conceptual loop." in resume
+    assert "mandatory repository-wide breadth exploration during settled execution or verification" in text
+
+
+def test_analyze_final_report_exposes_strategic_exploration_summary() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+
+    assert "Strategic Exploration Summary" in text
+    assert "major systems examined" in text
+    assert "breadth opportunity themes/observations" in text
+    assert "frontier candidates synthesized" in text
+    assert "which candidates advanced to depth and why" in text
+    assert "selected Strategic Frontier" in text
+    assert "selected construction path" in text
+    assert "breadth -> depth -> selection visible to the owner" in text
