@@ -25,6 +25,13 @@ GOAL_FIT_GUIDE = (
     / "references"
     / "goal-fitness-and-completion-v1.md"
 )
+EXPLORATION_GUIDE = (
+    ROOT
+    / "skills"
+    / "strategic-repository-analysis"
+    / "references"
+    / "strategic-exploration-funnel-v1.md"
+)
 REPO_SENSEMAKER = ROOT / "skills" / "repo-sensemaker" / "SKILL.md"
 USING = ROOT / "skills" / "using-sensemaking" / "SKILL.md"
 OUTER = ROOT / "docs" / "strategic-outer-loop.md"
@@ -305,3 +312,51 @@ def test_using_sensemaking_backstops_inherited_responsibility_preconditions() ->
     assert "RESPONSIBILITY_PRECONDITION_NOT_ESTABLISHED" in text
     assert "upstream recommendation\n!= unquestionable premise" in text
     assert "return upstream through Learning / Reconciliation" in text
+
+
+def test_strategic_exploration_funnel_requires_coverage_before_convergence() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = EXPLORATION_GUIDE.read_text(encoding="utf-8")
+
+    for phrase in (
+        "Strategic Exploration Funnel",
+        "SYSTEM MAP",
+        "BREADTH EXPLORATION",
+        "FRONTIER CANDIDATE SYNTHESIS",
+        "DEPTH DRILL",
+        "CONSTRUCTION PATH SYNTHESIS",
+        "coverage before convergence",
+        "frontier candidate\n!= construction path",
+    ):
+        assert phrase in skill
+        assert phrase in guide
+
+    assert "Map major product/control systems" in skill
+    assert "within systems" in skill
+    assert "across systems" in skill
+    assert "opportunity landscape" in guide
+    assert "deficiency discovery" in guide
+    assert "opportunity discovery" in guide
+
+
+def test_exploration_funnel_separates_frontier_candidates_from_construction_paths() -> None:
+    guide = EXPLORATION_GUIDE.read_text(encoding="utf-8")
+
+    assert "FRONTIER CANDIDATE" in guide
+    assert "= where strategic value/tension may be concentrated" in guide
+    assert "CONSTRUCTION PATH" in guide
+    assert "= coherent future trajectory for changing that frontier" in guide
+    assert "Advance only the strongest/material frontier candidates" in guide
+    assert "Breadth does not require generating construction paths for every candidate." in guide
+
+
+def test_exploration_funnel_is_not_exhaustive_or_numeric_search() -> None:
+    skill = STRATEGIC_SKILL.read_text(encoding="utf-8")
+    guide = EXPLORATION_GUIDE.read_text(encoding="utf-8")
+
+    assert "repository-wide\n!= inspect every file" in guide
+    assert "breadth exploration\n!= manufacture an opportunity for every system" in guide
+    assert "depth drill\n!= deeply analyze every candidate" in guide
+    assert "Do not assign numeric opportunity scores." in guide
+    assert "no search engine, score, planner, or new artifact schema" in guide
+    assert "breadth exploration != exhaustive repository inventory" in skill
