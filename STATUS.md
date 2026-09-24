@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-23  
-**Current phase:** Issue #465 Value-Producing Action & High-Delegation v1 is complete/integrated and in normal-use handoff; Issue #462 Strategic Sensemaking Loop Organization reconciliation is complete/integrated on PR #463 and remains a no-runtime-expansion normal-use handoff. Issue #459 Capability & Organization Tracer v0 is complete/integrated with Trial 001 reconciled; Issue #452 Strategic Sensemaking Loop v1 remains complete/integrated and in normal-use handoff; Issues #449, #446, #441, #438, #435, #432, #430, #426, and #416 remain complete/integrated normal-use baselines; Issue #444 Adaptive Agency Abstraction Stack v0 remains the non-authoritative research model. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #468 Strategic Exploration Funnel v1 is the active bounded Level-3 refinement; Issue #465 Value-Producing Action & High-Delegation v1 remains complete/integrated and in normal-use handoff; Issue #462 Strategic Sensemaking Loop Organization reconciliation is complete/integrated on PR #463 and remains a no-runtime-expansion normal-use handoff. Issue #459 Capability & Organization Tracer v0 is complete/integrated with Trial 001 reconciled; Issue #452 Strategic Sensemaking Loop v1 remains complete/integrated and in normal-use handoff; Issues #449, #446, #441, #438, #435, #432, #430, #426, and #416 remain complete/integrated normal-use baselines; Issue #444 Adaptive Agency Abstraction Stack v0 remains the non-authoritative research model. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -72,6 +72,7 @@ The repository-qualified baseline includes:
 - **Goal Fitness & Frontier Integrity v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** `strategic-repository-analysis` now distinguishes terminal outcomes from milestones/proxies/evidence states, checks decision-relevant product-completion layers before promoting downstream qualification work, runs an orthogonality challenge before path-set convergence, and preserves explicit goal-fit warnings without overriding owner intent; `using-sensemaking` adds a narrow inherited-responsibility prerequisite backstop, while `owner-decision-capsule` fails closed on materially incomplete option sets.
 - **Strategic Sensemaking Loop v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** internal `strategic-sensemaking-loop` provides a one-prompt artifact-aware start/resume surface over the existing strategic analysis, responsibility, execution, reconciliation, and reserved-decision Skills; it skips semantically completed stages, allows direct execution through real non-Skill surfaces, stops at owner/Level-4/external boundaries, and adds no master artifact, planner/runtime, Campaign schema, or authority expansion.
 - **Value-Producing Action & High-Delegation v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** Issue #465 strengthens the existing reversible-build/commission-omission guidance into a qualitative preference for the highest-value warranted and authorized action, adds a repository-scoped high-delegation envelope with protected-transition boundaries, prevents one blocked verification gate from automatically freezing unrelated independently warranted work, and requires owner-visible Decision Trace output for consequential Level-3 selections. Exact feature head `8412a8b832dfc477c9e85b131011c77161931f06` passed Product Validation #1210 and Release Candidate Distribution #342 before PR #466 merged as `47c1d7cacc3c3f253a6ab17dac145fff457a14d3`. No numeric expected-value score, automatic router, mandatory reversible build/experiment, permission engine, or merge/release authority is added.
+- **Strategic Exploration Funnel v1 — FEATURE CANDIDATE / QUALIFICATION PENDING:** Issue #468 makes genuine Level-3 analysis explicitly breadth→depth: major-system map, within/across-system opportunity exploration, grounded frontier-candidate synthesis, proportional depth on material finalists, then construction-path synthesis and comparative selection. The one-prompt loop exposes a compact Strategic Exploration Summary only when `ANALYZE/REOPEN_ANALYSIS` actually runs and explicitly skips repository-wide breadth reanalysis during settled responsibility/execution/verification/reconciliation. No new schema, score, search tree/router, exhaustive file inventory, or mandatory opportunity-per-system behavior is added.
 - **Experiment Economy & Proportional Rigor v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** inquiry/strategic guidance now requires experiment warrant before experimental work, recognizes cheap reversible construction as a possible evidence source, counts total experiment overhead, applies minimum sufficient rigor, and requires decision-relevant warrant before paying confounder-control cost; no experiment runtime, scorer, or new schema was introduced.
 - **Experiment Responsibility Boundary v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** diagnostic/domain Skills surface uncertainty and evidence need without manufacturing experimentation responsibility; Experiment Economy retains experiment warrant; experiment-design consumes warrant and emits canonical backward-compatible `experiment_plan` v2 with decision discrimination, total-cost, proportional-control, and claim-ceiling context; result analysis does not self-authorize experiment continuation.
 
@@ -146,68 +147,68 @@ Current material frontier items are:
 32. **Capability & Organization Tracer v0 — COMPLETE / INTEGRATED / TRIAL_RECONCILED / NORMAL_USE_HANDOFF.** Issue #459 implements a read-only faceted Skill/capability overlay plus one explicit Repository Change Cell Organization Pattern, reusing existing Campaign execution boundaries rather than adding a worker runtime. Trial 001 is recorded in `docs/capability-organization-tracer-v0-trial-001.md`; no broader Organization runtime, automatic role allocation, or Skill routing is warranted by current evidence.
 33. **Strategic Sensemaking Loop Organization Reconciliation — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #462 reconciles the integrated tracer outcome as `REAFFIRM`, teaches the loop that Organization inspection is optional read-only coordination evidence inside `EXECUTE`, validates the durable reconciliation, and preserves no new resume state, no mandatory Organization stage, no actor allocation, no Skill routing, and no runtime expansion. PR #463 is integrated on `main`.
 34. **Value-Producing Action & High-Delegation v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #465 operationalizes retained product value alongside evidence quality, adds a bounded high-delegation repository envelope, blocked-gate continuation discipline, and compact Decision Trace observability without adding an action engine or permission runtime.
+35. **Strategic Exploration Funnel v1 — FEATURE CANDIDATE / QUALIFICATION PENDING.** Issue #468 makes coverage-before-convergence explicit at genuine Level-3 analysis boundaries: system mapping and breadth opportunity exploration precede frontier-candidate synthesis; only material finalists receive depth analysis and construction-path synthesis; resumed execution/verification does not repeat the funnel.
 
 ### Current highest-leverage boundary
 
-**Value-Producing Action & High-Delegation v1 — terminal normal-use handoff.**
+**Strategic Exploration Funnel v1 — feature qualification.**
 
-Issue #465 is integrated. The current strategic question is no longer whether to
-build more control machinery, but whether ordinary repository use now shows the
-desired balance between value creation, evidence discipline, and protected
-authority.
+Issue #468 addresses a normal-use observability/search gap: Strategic Repository
+Analysis already modeled systems, hypotheses, paths, and comparisons, but it did
+not require an explicit enough breadth→depth funnel before frontier convergence,
+nor expose that funnel clearly to the owner.
 
-The integrated guidance preserves:
+The feature candidate now preserves:
 
 ~~~text
-highest-value warranted action
-!= lowest-risk action automatically
+SYSTEM MAP
+-> BREADTH EXPLORATION
+-> FRONTIER CANDIDATES
+-> DEPTH DRILL
+-> CONSTRUCTION PATHS
+-> COMPARATIVE SELECTION
 
-REVERSIBLE BUILD
-!= universal default
+frontier candidate
+!= construction path
 
-high delegation
-!= unlimited authority
+coverage before convergence
+!= exhaustive inventory
 
-blocked responsibility
-!= repository-wide freeze automatically
-
-Decision Trace
-!= private chain-of-thought
+resume existing Level 3
+!= rerun breadth exploration
 ~~~
 
 ### Current strategic decision to support
 
-**Decision:** does normal use reveal a repeated material failure in value/action
-selection, delegation interpretation, blocked-gate continuation, or Decision
-Trace observability that warrants another product refinement?
+**Decision:** can repository-wide breadth→depth exploration become explicit and
+owner-visible at genuine Level-3 analysis boundaries without reintroducing
+analysis ceremony during mid-episode continuation or creating a search
+runtime/schema?
 
-**Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
+**Current judgment:** **BUILD / FEATURE_QUALIFICATION_PENDING.**
 
 ### Current decision-changing uncertainty
 
-The remaining questions are empirical/normal-use:
+Repository qualification must establish that the new funnel guidance and
+regression contracts integrate coherently with the existing strategic analysis,
+one-prompt orchestration, and installed Skill distribution.
 
-- whether REVERSIBLE BUILD is selected when it genuinely dominates separate inquiry;
-- whether high delegation removes unnecessary approval pauses without authority overreach;
-- whether Decision Trace improves auditability without ceremony/filler alternatives;
-- whether blocked-gate continuation distinguishes independent work from gate avoidance;
-- whether the front door still composes/skips specialized Skills correctly.
-
-No synthetic expected-value scorer/router experiment is warranted now.
+Normal use should later determine whether the breadth pass is wide enough to
+avoid first-visible-problem capture without becoming verbose or exhaustive.
 
 ~~~text
-guidance integrated
-!= optimal action selection proved
+breadth exploration explicit
+!= strategic completeness proved
 
-normal-use evidence
--> next refinement only if recurring material pressure appears
+Strategic Exploration Summary
+!= private chain-of-thought
 ~~~
 
 ### Current warranted repository-level responsibility
 
-**No active repository-local construction responsibility for Issue #465.** The feature is exact-head-qualified and integrated; normal-use evidence is the next warranted source.
+**Active bounded responsibility: qualify Issue #468 Strategic Exploration Funnel v1.** The semantic/documentation changes and regression contracts are source-implemented; exact-head repository qualification is the remaining feature gate before integration.
 
-Level-3 disposition: `NO_CHANGE / NORMAL_USE_HANDOFF`.
+Level-3 disposition: `BUILD / FEATURE_QUALIFICATION_PENDING`.
 
 ```text
 CURRENT CONSTRUCTION RESPONSIBILITY = NONE
@@ -237,6 +238,7 @@ ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = COMPLETE_INTEGRATED_TRIAL_RECONCIL
 ISSUE_462_STRATEGIC_LOOP_ORGANIZATION_RECONCILIATION = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_465_VALUE_PRODUCING_ACTION_HIGH_DELEGATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_465_TERMINAL = NO ACTIVE ISSUE #465 CONSTRUCTION PACKAGE
+ISSUE_468_STRATEGIC_EXPLORATION_FUNNEL_V1 = FEATURE_CANDIDATE_QUALIFICATION_PENDING
 SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
 EXPERIMENT PREREQUISITE = NONE
 SYNTHETIC_STRATEGICPLANNER_TESTING = STOPPED
