@@ -249,6 +249,8 @@ For each recorded episode:
 - separate technical evidence from action/merge/publication authority;
 - distinguish candidate validity, canonical-state validity, and finding-specific closure when they differ;
 - prefer exact durable repository references over prose recollection.
+- when an episode is intended to evaluate a newly integrated Skill revision, record the actual harness-loaded Skill identity when inspectable; repository-source currentness does not prove installed-copy currentness;
+- if the loaded Skill identity is stale or unknown, preserve the episode but lower causal attribution to the current Skill revision rather than discarding otherwise useful behavioral evidence.
 
 Historical artifacts may preserve useful evidence without remaining the correct current implementation vehicle.
 
