@@ -3,7 +3,7 @@
 **Source version:** 1.0.0rc3.dev0
 **Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
 **Last updated:** 2026-09-25  
-**Current phase:** Issue #473 Autonomous Terminal Mission Continuation v1 is complete/integrated on `main` (exact feature head `2ec13d99cd62a3785c0be1036d7bed3b6efa2ca5` passed Product Validation run 36106321929 and Release Candidate Distribution run 36106321954 before PR #474 merged as `3fc1bcf1efd8565513592ddc57870476575eacb7`); it extends the existing Strategic Sensemaking Loop/high-delegation envelope with repeated responsibility continuation toward a terminal goal without a new Skill/runtime/authority model, and normal-use behavioral evidence is not yet established. Strategic Sensemaking normal-use observation guidance is implemented on PR #472 and awaiting exact-head qualification/integration. Issue #468 Strategic Exploration Funnel v1 is complete/integrated and in normal-use handoff; Issue #465 Value-Producing Action & High-Delegation v1 remains complete/integrated and in normal-use handoff; Issue #462 Strategic Sensemaking Loop Organization reconciliation is complete/integrated on PR #463 and remains a no-runtime-expansion normal-use handoff. Issue #459 Capability & Organization Tracer v0 is complete/integrated with Trial 001 reconciled; Issue #452 Strategic Sensemaking Loop v1 remains complete/integrated and in normal-use handoff; Issues #449, #446, #441, #438, #435, #432, #430, #426, and #416 remain complete/integrated normal-use baselines; Issue #444 Adaptive Agency Abstraction Stack v0 remains the non-authoritative research model. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
+**Current phase:** Issue #473 Autonomous Terminal Mission Continuation v1 is complete/integrated on `main` (exact feature head `2ec13d99cd62a3785c0be1036d7bed3b6efa2ca5` passed Product Validation run 36106321929 and Release Candidate Distribution run 36106321954 before PR #474 merged as `3fc1bcf1efd8565513592ddc57870476575eacb7`). Normal-use Trial 001 on `ThorStarlord/React_incremental_game_prototype` now provides one bounded explicit-target support episode: target PR #154 head `70c24d5a11c4238c60e1fdee9f83eb9164dd35f0` passed Build Validation run 36120244452 and stopped at the intentionally withheld merge-authority boundary; attribution to the current #474 Skill revision remains limited because the harness-loaded Skill was reported stale. Strategic Sensemaking normal-use observation guidance is integrated on `main` via PR #472 / `cbd3a3b153cd5ee8367925828fa0ba629896cb62`. Issue #468 Strategic Exploration Funnel v1 is complete/integrated and in normal-use handoff; Issue #465 Value-Producing Action & High-Delegation v1 remains complete/integrated and in normal-use handoff; Issue #462 Strategic Sensemaking Loop Organization reconciliation is complete/integrated on PR #463 and remains a no-runtime-expansion normal-use handoff. Issue #459 Capability & Organization Tracer v0 is complete/integrated with Trial 001 reconciled; Issue #452 Strategic Sensemaking Loop v1 remains complete/integrated and in normal-use handoff; Issues #449, #446, #441, #438, #435, #432, #430, #426, and #416 remain complete/integrated normal-use baselines; Issue #444 Adaptive Agency Abstraction Stack v0 remains the non-authoritative research model. Strategic Repository Sensemaking v1 and Policy Hierarchy Completion v0 remain complete/integrated/composable; synthetic StrategicPlanner testing remains stopped.  
 **Policy Hierarchy state:** Policy Hierarchy Completion v0 is complete/integrated/composable.  
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
@@ -67,8 +67,8 @@ The repository-qualified baseline includes:
 - **Multi-Repository Strategic Sensemaking — COMPLETE / INTEGRATED:** caller-selected repository-set analysis models capability ownership/overlap, boundary tensions, allocation paths, and tradeoffs without automatic repository discovery or transaction orchestration.
 - **Change-Impact Sensemaking — COMPLETE / INTEGRATED:** bounded change-impact analysis identifies decision-relevant affected surfaces and verification/reconciliation/closure consequences without turning references into automatic impacts or follow-up into authorized backlog work.
 - **Decision Journey Productization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** read-only journey reconstruction, caller-selected context packs, authored strategic decision deltas, anticipated-vs-observed impact/closure comparison, static guided entry, and canonical playbooks compose existing surfaces without planner/router authority or a new state system.
-- **Autonomous Terminal Mission Continuation v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** Issue #473 adds a FULL AUTONOMY / FULL DELEGATION mission profile to `strategic-sensemaking-loop`: conditional Level-3 breadth, repeated responsibility -> execute -> verify -> reconcile -> remaining-difference continuation, decision-relevant vertical completion, mission-scoped construction-before-field-validation, synthetic-persona claim discipline, evidence-gated canonical promotion, and separately governed protected transitions; no new Skill, planner, permission engine, numeric optimizer, backlog executor, Campaign schema, or automatic merge/release authority. Mechanical/contract qualification is established; normal-use behavioral evidence is not. Exact feature head `2ec13d99cd62a3785c0be1036d7bed3b6efa2ca5` passed Product Validation run 36106321929 and Release Candidate Distribution run 36106321954 before PR #474 merged as `3fc1bcf1efd8565513592ddc57870476575eacb7`.
-- **Strategic Sensemaking Normal-Use Observation Guide — CANDIDATE / QUALIFICATION_PENDING:** adds a descriptive observation discipline for breadth before convergence, frontier-candidate compression, proportional depth, semantic resume, BUILD-versus-unnecessary-inquiry, and Goal Fitness / qualification-frontier integrity; it extends the standing `docs/research/normal-use-evidence-lane.md` and adds no score, benchmark, tracker, runtime, new policy layer, or automatic strategy reopening.
+- **Autonomous Terminal Mission Continuation v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF / TRIAL_001_SUPPORTED_WITH_ATTRIBUTION_LIMIT:** Issue #473 adds a FULL AUTONOMY / FULL DELEGATION mission profile to `strategic-sensemaking-loop`: conditional Level-3 breadth, repeated responsibility -> execute -> verify -> reconcile -> remaining-difference continuation, decision-relevant vertical completion, mission-scoped construction-before-field-validation, synthetic-persona claim discipline, evidence-gated canonical promotion, and separately governed protected transitions; no new Skill, planner, permission engine, numeric optimizer, backlog executor, Campaign schema, or automatic merge/release authority. Mechanical/contract qualification is established. Normal-use Trial 001 provides one explicit bounded-target support episode with exact-head Build Validation success and correct stop at withheld merge authority, but cross-repository corroboration, fresh-context resume, highest-leverage autonomous selection, merge-authorized continuation, and a general full-autonomy claim remain unestablished. The episode also has a loaded-Skill attribution limitation.
+- **Strategic Sensemaking Normal-Use Observation Guide — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** PR #472 merged as `cbd3a3b153cd5ee8367925828fa0ba629896cb62`; the guide covers breadth before convergence, frontier-candidate compression, proportional depth, semantic resume, BUILD-versus-unnecessary-inquiry, Goal Fitness / qualification-frontier integrity, and autonomous terminal-mission observation without adding a score, benchmark, tracker, runtime, new policy layer, or automatic strategy reopening.
 - **Strategic Repository Analysis Semantic Grounding v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** an explicit Strategicity Gate separates useful lower-level maintenance from Level-3 repository evolution; new canonical `schema_version: 2` analyses ground frontier/path relationships in evidence and capability identifiers while legacy versionless v1 analyses remain valid.
 - **Strategic Hypothesis Admission v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** present-state claims retain evidence requirements while future-state construction paths may be grounded strategic hypotheses; the Strategic Frontier admits materially grounded opportunities, path comparison considers commission and omission risk, and bounded reversible information-producing construction may warrant `BUILD` despite residual success uncertainty. Schema v2, semantic-agent ownership, and independent execution authority remain unchanged.
 - **Goal Fitness & Frontier Integrity v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF:** `strategic-repository-analysis` now distinguishes terminal outcomes from milestones/proxies/evidence states, checks decision-relevant product-completion layers before promoting downstream qualification work, runs an orthogonality challenge before path-set convergence, and preserves explicit goal-fit warnings without overriding owner intent; `using-sensemaking` adds a narrow inherited-responsibility prerequisite backstop, while `owner-decision-capsule` fails closed on materially incomplete option sets.
@@ -202,6 +202,11 @@ The remaining questions are normal-use questions:
 - whether the Strategic Exploration Summary proves enough search coverage without
   becoming an idea dump;
 - whether mid-episode resume continues to skip the funnel correctly.
+- whether explicit-target autonomous missions continue correctly across independent repository shapes;
+- whether fresh-context resume preserves terminal-mission responsibility without rediscovery;
+- whether `AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK` selects a grounded remaining difference rather than a ticket/severity proxy;
+- whether explicit merge authority, when separately granted, is exercised only after qualification/policy gates;
+- whether actual harness-loaded Skill identity is current enough for attribution-sensitive normal-use claims.
 
 No synthetic search benchmark, frontier scorer, or deterministic search runtime
 is warranted now.
@@ -258,6 +263,9 @@ ISSUE_465_VALUE_PRODUCING_ACTION_HIGH_DELEGATION_V1 = COMPLETE_INTEGRATED_NORMAL
 ISSUE_465_TERMINAL = NO ACTIVE ISSUE #465 CONSTRUCTION PACKAGE
 ISSUE_468_STRATEGIC_EXPLORATION_FUNNEL_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_468_TERMINAL = NO ACTIVE ISSUE #468 CONSTRUCTION PACKAGE
+ISSUE_473_AUTONOMOUS_TERMINAL_MISSION_CONTINUATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
+TRIAL_1_EXPLICIT_BOUNDED_TARGET = SUPPORTED_WITH_ATTRIBUTION_LIMIT
+STRATEGIC_SENSEMAKING_NORMAL_USE_OBSERVATION_GUIDE = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION
 EXPERIMENT PREREQUISITE = NONE
 SYNTHETIC_STRATEGICPLANNER_TESTING = STOPPED
@@ -364,19 +372,29 @@ No current Thesis Tension is promoted into active review.
 
 **NO ACTIVE LEVEL-3 CONSTRUCTION PROGRAM — NORMAL-USE VALIDATION.**
 
-PR #463 is already integrated. Continue ordinary use of
-`strategic-sensemaking-loop`, Strategic Repository Sensemaking, and the
-optional Organization inspection surface. Preserve naturally arising evidence
-when it reveals recurring material failure, using
+Trial 001 is preserved in
+`docs/normal-use/autonomous-terminal-mission-trial-001.md`. Its exact target
+head passed Build Validation, and the episode supports the bounded explicit-
+target behavior while preserving a loaded-Skill attribution limitation.
+
+Before the next attribution-sensitive autonomous mission, verify/synchronize
+the **actual harness-loaded** `strategic-sensemaking-loop` Skill when feasible.
+For file-based harnesses use `scripts/probe_skill_distribution.py`; hosted
+Skill surfaces require their own installation/update mechanism. Unknown or stale
+loaded identity lowers the attribution claim but does not invalidate ordinary
+behavioral evidence.
+
+The next useful evidence is **Trial 2 on a meaningfully different repository
+shape with an explicit bounded terminal target**, preferably in a fresh context.
+After that, test fresh-context continuation, then
+`AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK`, and only later test separately
+granted merge authority. Cross-episode reconciliation should precede any broader
+full-autonomy claim or Sensemaking construction reopening.
+
+Continue ordinary use of Strategic Sensemaking and preserve naturally arising
+evidence. Use
 [`docs/strategic-normal-use-failure-taxonomy-v1.md`](docs/strategic-normal-use-failure-taxonomy-v1.md)
 as descriptive vocabulary rather than an issue generator.
-
-PR #471 is integrated on `main` as merge commit
-`80e7e999c31e2234a71885d218530cce2d796dd6`. It added the System Capability
-Atlas, product-role classification, and normal-use failure taxonomy as a bounded
-documentation/observability reconciliation without opening a new Level-3
-construction program. No follow-on construction responsibility is implied by
-that integration.
 
 Do not open a scheduler, worker-allocation, automatic-routing, persistent-team,
 dynamic-Organization, new policy layer, search runtime, or additional strategic
@@ -384,6 +402,5 @@ machinery unless recurring normal use exposes one of those as the actual
 limiting factor.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in
-`development`. Do **not** freeze RC3. Normal-use documentation reconciliation
-does not authorize freezing RC3, PyPI publication, release tagging, or final
-`1.0.0`.
+`development`. Do **not** freeze RC3. This normal-use reconciliation does not
+authorize freezing RC3, PyPI publication, release tagging, or final `1.0.0`.
