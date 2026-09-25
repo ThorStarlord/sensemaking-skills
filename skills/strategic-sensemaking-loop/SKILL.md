@@ -460,6 +460,21 @@ artifact.
 A concise session summary may be emitted for the user, but it is not a new source
 of truth and must not compete with the underlying artifacts.
 
+When an ordinary-use episode exposes consequential evidence about breadth,
+frontier-candidate compression, proportional depth, semantic resume, action-mode
+selection, or Goal Fitness, preserve that evidence using
+`docs/normal-use/strategic-sensemaking-observation-guide.md` **only when the
+episode already qualifies for normal-use capture**. Do not delay work, create a
+synthetic episode, or make observation capture a mandatory loop stage.
+
+```text
+normal-use observation
+!= loop stage
+
+one awkward episode
+!= strategy must reopen
+```
+
 ## Non-goals
 
 Do not introduce:

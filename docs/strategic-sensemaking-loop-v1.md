@@ -404,6 +404,38 @@ loop summary
 != master artifact
 ```
 
+## Normal-use product observation
+
+The loop's owner-visible Strategic Exploration Summary, Decision Trace, durable
+artifacts, execution evidence, and reconciliation outputs are also the preferred
+inputs for lightweight normal-use product observation when a consequential
+episode naturally qualifies.
+
+Use `docs/normal-use/strategic-sensemaking-observation-guide.md` to watch six
+behavioral questions:
+
+1. breadth before convergence;
+2. frontier-candidate compression;
+3. proportional depth;
+4. semantic resume;
+5. BUILD / REVERSIBLE BUILD versus unnecessary inquiry;
+6. Goal Fitness and qualification-frontier integrity.
+
+This is an extension of the standing
+`docs/research/normal-use-evidence-lane.md`, not a parallel tracker or a
+mandatory final-report section.
+
+```text
+observability
+!= benchmark
+
+normal-use evidence
+!= synthetic validation program
+
+recurring material friction
+-> possible strategic reopening
+```
+
 ## Non-goals
 
 Strategic Sensemaking Loop v1 does not add:

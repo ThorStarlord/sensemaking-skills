@@ -1,8 +1,10 @@
 # Autonomous Terminal Mission Continuation v1 — Handoff
 
-**Status:** IMPLEMENTED / PR OPEN / QUALIFICATION PENDING  
+**Status:** COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF  
 **Issue:** #473 — Autonomous Terminal Mission Continuation v1  
 **Feature PR:** #474 — feat: add Autonomous Terminal Mission Continuation v1  
+**Qualified head:** `2ec13d99cd62a3785c0be1036d7bed3b6efa2ca5` — Product Validation run 36106321929, Release Candidate Distribution run 36106321954  
+**Integrated:** `3fc1bcf1efd8565513592ddc57870476575eacb7` (2026-09-25)  
 **Date:** 2026-09-24
 
 ## 1. Why this package exists
@@ -207,7 +209,18 @@ establish mechanically that:
 - human entry points expose the canonical terminal-mission prompt;
 - no new planner/runtime/permission/priority/Campaign machinery appears.
 
-Final exact-head qualification is pending GitHub Actions for PR #474.
+Exact-head qualification passed: Product Validation run 36106321929 and
+Release Candidate Distribution run 36106321954 on
+`2ec13d99cd62a3785c0be1036d7bed3b6efa2ca5`; PR #474 merged as
+`3fc1bcf1efd8565513592ddc57870476575eacb7`.
+
+While reconstructing the package on current `main`, pre-existing main
+qualification gaps were also repaired: the loop/autonomy contract tests were
+unwired and drifting (prose assertions were line-wrap sensitive) and
+`artifacts/strategic_reconciliation.md` used a tilde YAML fence the validator
+cannot read. The contract tests are now wired into the ordinary repository
+assertion suite. This keeps the mechanical claim ceiling intact; it does not
+establish normal-use behavioral evidence.
 
 ## 5. Claim ceiling
 
@@ -235,7 +248,9 @@ It does **not** establish:
 
 ```text
 ISSUE_473_AUTONOMOUS_TERMINAL_MISSION_CONTINUATION_V1
-= IMPLEMENTED_PR_OPEN_QUALIFICATION_PENDING
+= COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
+
+NORMAL_USE_BEHAVIORAL_EVIDENCE = NOT_YET_ESTABLISHED
 
 NEW_TOP_LEVEL_SKILL = NO
 NEW_RUNTIME = NO
