@@ -381,5 +381,6 @@ machinery unless recurring normal use exposes one of those as the actual
 limiting factor.
 
 Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in
-`development`. Normal-use documentation reconciliation does not authorize
-freezing RC3, PyPI publication, release tagging, or final `1.0.0`.
+`development`. Do **not** freeze RC3. Normal-use documentation reconciliation
+does not authorize freezing RC3, PyPI publication, release tagging, or final
+`1.0.0`.
