@@ -305,6 +305,14 @@ This lane does not authorize:
 
 This lane complements rather than replaces existing repository evidence practices.
 
+For Strategic Sensemaking Loop episodes, the specialized observation guide at
+`docs/normal-use/strategic-sensemaking-observation-guide.md` extends this lane
+with six product-behavior questions: breadth before convergence,
+frontier-candidate compression, proportional depth, semantic resume,
+BUILD-versus-unnecessary-inquiry, and Goal Fitness / qualification-frontier
+integrity. Use the same qualifying episode and human-readable evidence record;
+do not create a parallel tracker merely because the strategic fields are useful.
+
 Relevant precedents include:
 
 - `artifacts/dogfood-evidence-index.md`, which preserves provenance and separates historical from current-state dogfood evidence;
