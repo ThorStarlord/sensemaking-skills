@@ -258,7 +258,116 @@ The existing regression case
 `docs/normal-use/milestone-inversion-frontier-integrity-regression.md`
 is a precedent, not a universal rule against release-oriented work.
 
-## 10. Compact per-episode template
+## 10. Autonomous terminal-mission observation
+
+When a real episode uses FULL AUTONOMY / FULL DELEGATION toward a terminal
+repository outcome, observe mission-scale behavior separately from the six
+strategic questions above.
+
+The primary question is:
+
+> Does the agent retain responsibility for the terminal mission across bounded
+> responsibilities, while preserving scope, evidence, and authority boundaries?
+
+Use a qualitative matrix when material:
+
+| Property | What to observe |
+| --- | --- |
+| Resume | correct semantic starting boundary; stale projections do not force blind trust or needless re-analysis |
+| Breadth discipline | Level 3 reopens only when genuinely open/reopened |
+| Responsibility | selected work is bounded and materially related to the terminal goal |
+| Action | BUILD / REVERSIBLE BUILD wins when sufficiently warranted; inquiry is not manufactured |
+| Continuation | responsibility completion does not cause an unnecessary owner prompt while the mission remains open |
+| Scope | autonomy does not become backlog execution or unrelated cleanup |
+| Verticality | every materially required layer is completed without maximum-architecture ceremony |
+| Evidence | claims wait for applicable local/hosted verification |
+| Field validation | deferred external evidence remains honestly deferred |
+| Promotion | implementation/qualification does not silently become canonical integration |
+| Authority | merge/release/deploy/owner boundaries remain separate |
+| Stop | stop is mission-scale: terminal outcome, no further warrant, owner/Level-4, unavoidable external blocker, or authority boundary |
+
+Use dispositions such as:
+
+```text
+SUPPORTED
+FRICTION
+MATERIAL FAILURE
+AMBIGUOUS
+```
+
+Do not turn the matrix into a score.
+
+### Mission boundary versus validation-program boundary
+
+Keep these distinct:
+
+```text
+same terminal mission incomplete
+-> continue autonomously
+
+terminal mission reaches genuine authority/external boundary
+-> successful mission stop
+
+separate normal-use trial / different repository episode
+-> may begin in a fresh context
+```
+
+Starting Trial 2 in another session is not a continuation failure when Trial 1
+already reached its legitimate terminal/authority boundary.
+
+### Loaded-Skill identity and attribution
+
+When the purpose of an episode is to evaluate behavior added by a newly
+integrated Skill revision, record the **actual harness-loaded Skill identity**
+when it is inspectable.
+
+For file-based installations:
+
+```bash
+python scripts/probe_skill_distribution.py --no-write
+```
+
+Use explicit synchronization only when intended:
+
+```bash
+python scripts/probe_skill_distribution.py --sync --no-write
+# or:
+sensemaking-skills setup-skills --target <target> --scope <scope> ... --force
+```
+
+For hosted/non-filesystem Skill surfaces, use the platform's actual
+installation/update mechanism.
+
+If the loaded Skill is stale or exact identity cannot be established:
+
+```text
+behavioral observation may remain useful
+but
+causal attribution to current Skill guidance is weakened
+```
+
+Do not discard a real episode merely because attribution is imperfect. Lower the
+claim ceiling and preserve the mismatch.
+
+### Evidence versus promotion
+
+Separate these claims:
+
+```text
+evidence discipline supported
+!= every hosted check already complete
+
+promotion discipline supported
+!= canonical integration performed
+
+candidate validated
+!= merge authorized
+```
+
+A mission may correctly demonstrate promotion discipline by **not** integrating
+when merge authority is withheld.
+
+## 11. Compact per-episode template
 
 Use only the fields that are material. This is intentionally not a
 machine-validated schema.
@@ -270,6 +379,9 @@ Owner objective:
 Starting durable state:
 Expected resume boundary:
 Actual resume boundary:
+Loaded Skill identity / parity, when attribution-sensitive:
+Terminal mission, if any:
+Protected transitions granted / withheld:
 
 BREADTH
 - major systems examined:
@@ -304,6 +416,17 @@ LATER / RETURNED EVIDENCE
 - did inquiry materially change the decision:
 - did resume preserve settled work:
 
+AUTONOMOUS TERMINAL MISSION, when applicable
+- responsibility completion -> mission continuation:
+- scope expansion / backlog execution:
+- decision-relevant verticality:
+- evidence state:
+- field-validation claim boundary:
+- promotion state:
+- authority boundary:
+- stop reason:
+- attribution limitation:
+
 Disposition:
 - supports current behavior
 - isolated friction
@@ -313,7 +436,7 @@ Disposition:
 Durable references:
 ```
 
-## 11. Cross-episode review
+## 12. Cross-episode review
 
 Do not treat a large dataset as the goal.
 
@@ -336,7 +459,7 @@ Useful cross-episode questions include:
 Preserve counterexamples and ambiguous cases. Do not rewrite earlier episodes as
 inevitable after later evidence arrives.
 
-## 12. Escalation rule
+## 13. Escalation rule
 
 Use this progression:
 
@@ -360,7 +483,7 @@ repeated useful responsibility
 A single failure does not warrant another Skill, schema, policy, scorer, or
 runtime.
 
-## 13. Non-goals
+## 14. Non-goals
 
 This guide does not introduce:
 
@@ -380,7 +503,7 @@ This guide does not introduce:
 - a deterministic breadth/depth evaluator;
 - automatic strategy reopening.
 
-## 14. Current operating posture
+## 15. Current operating posture
 
 The intended loop is:
 
