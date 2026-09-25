@@ -156,38 +156,51 @@ Current material frontier items are:
 
 ### Current highest-leverage boundary
 
-**Strategic Exploration Funnel v1 — terminal normal-use handoff.**
+**Strategic Sensemaking normal-use validation — autonomous terminal-mission
+corroboration after Trial 001.**
 
-Issue #468 is integrated. The current question is no longer whether to add more
-search/control machinery, but whether ordinary Level-3 analyses now demonstrate
-useful coverage-before-convergence without becoming exhaustive or ceremonial.
+Issues #468 and #473 are integrated. The current question is no longer whether
+to add more search/control/autonomy machinery, but whether heterogeneous real
+repository episodes corroborate the existing behavior without exposing a stable
+decision-relevant failure boundary.
+
+Trial 001 supports one explicit bounded-target mission while preserving a loaded-
+Skill attribution limitation. The next useful evidence should vary repository
+shape and, later, context/target-selection/merge-authority conditions rather
+than deepen the same episode synthetically.
 
 The integrated guidance preserves:
 
 ~~~text
-SYSTEM MAP
+LEVEL 3 genuinely open
+-> SYSTEM MAP
 -> BREADTH EXPLORATION
 -> FRONTIER CANDIDATES
--> DEPTH DRILL
+-> PROPORTIONAL DEPTH
 -> CONSTRUCTION PATHS
 -> SELECTION
 
-frontier candidate
-!= construction path
+strategy already settled
+-> RESPONSIBILITY / EXECUTE / RECONCILE
+-> no repository-wide restart
 
-coverage before convergence
-!= exhaustive inventory
+responsibility completed
+!= terminal mission completed
 
-resume current Level 3
-!= repeat repository-wide breadth analysis
+full autonomy
+!= backlog execution
+
+full delegation
+!= protected-transition authority
 ~~~
 
 ### Current strategic decision to support
 
-**Decision:** does normal use reveal a repeated material failure in breadth
-coverage, frontier-candidate synthesis, proportional depth allocation, or
-owner-visible Strategic Exploration Summary quality that warrants another
-refinement?
+**Decision:** does normal use across heterogeneous repositories support the
+current Strategic Sensemaking + autonomous terminal-mission behavior, or reveal
+a recurring material failure in semantic resume, breadth/depth allocation,
+responsibility continuation, construction bias, scope/verticality, evidence
+promotion, or authority-aware stopping that warrants another refinement?
 
 **Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
 
@@ -229,7 +242,10 @@ normal-use evidence
 
 ### Current warranted repository-level responsibility
 
-**No active repository-local construction responsibility for Issue #468.** The feature is exact-head-qualified and integrated; normal-use evidence is the next warranted source.
+**No active repository-local construction responsibility.** The current
+strategic/control capabilities are integrated; the next warranted source is
+heterogeneous normal-use evidence, not another Sensemaking construction
+package.
 
 Level-3 disposition: `NO_CHANGE / NORMAL_USE_HANDOFF`.
 
@@ -276,11 +292,17 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-PR #466 is merged as `47c1d7cacc3c3f253a6ab17dac145fff457a14d3`.
-Exact feature head `8412a8b832dfc477c9e85b131011c77161931f06`
-passed Product Validation #1210 and Release Candidate Distribution #342. No
-Issue #465 construction vehicle remains active; the package is in normal-use
-handoff.
+There is **no active `sensemaking-skills` construction vehicle**.
+
+The current external normal-use evidence vehicle is
+`ThorStarlord/React_incremental_game_prototype#154` at
+`70c24d5a11c4238c60e1fdee9f83eb9164dd35f0`. Build Validation run
+`36120244452` completed successfully. The PR remains draft/open and unmerged
+because merge authority was intentionally withheld for Trial 001.
+
+That target PR is evidence for the normal-use program, not a
+`sensemaking-skills` implementation dependency or cross-repository execution
+authority.
 
 The terminal qualification/integration receipts for earlier programs are preserved in
 `docs/strategic-sensemaking-loop-v1-handoff.md`,
