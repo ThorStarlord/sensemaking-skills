@@ -266,6 +266,13 @@ Exercise repository-answerable intermediate judgment, but do not translate broad
 
 For concrete terminal-mission patterns and anti-patterns, read `references/delegated-goal-patterns.md` when the mission's scope, authority, or stopping boundary is material.
 
+When the owner explicitly wants FULL AUTONOMY / FULL DELEGATION across repeated
+responsibilities until a terminal repository outcome is satisfied, use
+`strategic-sensemaking-loop` as the front door. Its
+`skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md` profile owns continuation across
+responsibilities; this inner Skill continues to own warrant, inquiry, and
+responsibility selection.
+
 ---
 
 ## 1. Establish goal and authority

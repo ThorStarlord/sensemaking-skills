@@ -1,6 +1,6 @@
 ---
 name: strategic-sensemaking-loop
-description: orchestrate and resume an end-to-end strategic repository Sensemaking episode from one prompt. Use when a user wants to start, continue, or resume strategic repository work without manually prompting strategic-repository-analysis, using-sensemaking, handoff, strategic-repository-reconciliation, and owner-decision-capsule in sequence. Reconstruct current durable state, invoke only the specialized stages that are warranted, execute already-selected work within authority, reconcile returned evidence, and stop at genuine owner, Level-4, external, or no-further-work boundaries.
+description: orchestrate and resume end-to-end strategic repository Sensemaking from one prompt, including FULL AUTONOMY / FULL DELEGATION terminal missions and AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK requests. Use when a user wants to start, continue, or resume strategic repository work without manually sequencing component Skills. Reconstruct durable state, invoke only warranted stages, execute and continue across bounded responsibilities within authority, reconcile returned evidence, and stop only at genuine terminal, owner, Level-4, external, or authority boundaries.
 ---
 
 # Strategic Sensemaking Loop
@@ -55,6 +55,11 @@ high delegation != protected-transition authority
 Organization visible != Organization warranted
 role binding != actor allocation
 Organization Pattern != execution authority
+responsibility completed != mission completed
+mission incomplete != execute backlog blindly
+full repository delegation != protected-transition authority
+synthetic persona != empirical user evidence
+implementation exists != canonical promotion warranted
 ```
 
 Do **not** create a new master strategic artifact or orchestration state file.
@@ -68,6 +73,12 @@ analysis.
 Read `references/value-action-and-delegation-v1.md` when the action mode,
 delegation envelope, blocked-gate continuation, or owner-visible decision trace
 is material.
+
+Read `references/autonomous-terminal-mission-v1.md` when the user grants FULL
+AUTONOMY / FULL DELEGATION for a terminal repository outcome, uses
+`AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK`, or otherwise expects the loop to
+continue across multiple bounded responsibilities until the mission is complete
+or a genuine stop boundary is reached.
 
 ## 1. Reconstruct the current episode before invoking another Skill
 
@@ -321,6 +332,23 @@ owner explicitly selects prior capsule option
 The correct sequence is whatever the current evidence/authority warrants, not a
 mandatory five-stage pipeline.
 
+### Full-autonomy terminal missions
+
+When the owner delegates a terminal mission under FULL AUTONOMY / FULL
+DELEGATION, read `references/autonomous-terminal-mission-v1.md`. Continue
+across bounded responsibilities until the terminal goal is satisfied or a
+genuine stop boundary is reached:
+
+```text
+responsibility -> execute -> verify -> reconcile
+-> remaining difference -> next warranted responsibility -> continue
+```
+
+Do not stop merely because one responsibility completed. Do not force exactly
+three strategic alternatives or rerun breadth after every responsibility. When
+Level 3 is settled, do not execute backlog items blindly, manufacture irrelevant
+vertical layers, or treat synthetic personas as empirical evidence.
+
 ## 4. Artifact-aware resume rules
 
 Preserve provenance across stages.
@@ -373,8 +401,12 @@ responsibility.
 
 It does not silently grant protected publication, merge, deployment, release,
 credential, billing, Level-4 thesis choice, preference-sensitive owner decision,
-or unrelated external mutation authority. Repository policy and explicit owner
-constraints remain controlling.
+cross-repository expansion, or unrelated external mutation authority. Repository
+policy and explicit owner constraints remain controlling.
+
+A terminal mission may separately grant a protected transition such as merge
+authority when the owner says so explicitly and repository policy permits it.
+Do not infer that grant from the words "full autonomy" or "full delegation".
 
 No component artifact grants authority merely by existing.
 
@@ -393,7 +425,9 @@ At the end of the run, report:
 7. final strategic state/disposition;
 8. final bounded responsibility state;
 9. authority boundary reached;
-10. exact stop reason and next owner input only when one is genuinely required.
+10. exact stop reason and next owner input only when one is genuinely required;
+11. when a terminal mission is active, whether the terminal outcome is satisfied
+    and the highest-value remaining difference, if any.
 
 For consequential Level-3 selections or materially contested control moves, also
 surface a compact **Decision Trace**:
@@ -445,4 +479,10 @@ Do not introduce:
 - a permission engine derived from delegation labels;
 - repeated analysis merely for ceremony;
 - mandatory repository-wide breadth exploration during settled execution or verification;
+- forced exactly-three-path strategic search;
+- automatic backlog execution under a terminal mission;
+- mandatory API/service/event/persistence/operator layers when the capability does not need them;
+- synthetic-persona evidence represented as empirical user validation;
+- automatic canonical/status promotion before applicable verification and reconciliation;
+- automatic protected merge/release/deploy authority from autonomy wording;
 - a persisted search tree, frontier score, or deterministic breadth/depth router.

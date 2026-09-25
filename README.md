@@ -21,7 +21,7 @@ Choose the entry point for your role instead of reading every document:
 | A human/new user trying to use Sensemaking | [`GETTING_STARTED.md`](GETTING_STARTED.md) | Canonical human how-to and first-use walkthrough |
 | Looking for the canonical Campaign lifecycle/composition | [`docs/agent-workflow-golden-path-v1.md`](docs/agent-workflow-golden-path-v1.md) | Canonical Campaign workflow-composition reference; static guidance, not routing |
 | A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
-| A human/agent wanting one-prompt strategic start/resume | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) | Artifact-aware strategic orchestration across analysis, responsibility, execution, evidence return, reconciliation, and reserved-decision boundaries |
+| A human/agent wanting one-prompt strategic start/resume or a full-autonomy terminal mission | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) | Artifact-aware strategic orchestration across analysis, responsibility, repeated autonomous execution, evidence return, reconciliation, terminal-goal continuation, and reserved-decision boundaries |
 | Understanding how control levels, policy layers, authority, execution, evidence, and strategic continuity compose | [`docs/adaptive-semantic-control-architecture-v0.md`](docs/adaptive-semantic-control-architecture-v0.md) | Descriptive crosswalk; no new control level, runtime, or authority |
 | Orienting across the major systems and deciding which surfaces should normally be visible | [`docs/system-capability-atlas-v1.md`](docs/system-capability-atlas-v1.md) | Descriptive system/capability atlas and product-role classification; no new authority |
 | Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) | Level-3 current-system, capability, construction-path, tradeoff, and strategic-synthesis analysis |
@@ -63,6 +63,10 @@ repository/product future itself is open
 user wants the whole strategic episode to start/resume from one prompt
 -> use strategic-sensemaking-loop
 -> it reconstructs the current durable boundary and invokes only the warranted stages
+
+user delegates FULL AUTONOMY / FULL DELEGATION toward a terminal repository outcome
+-> use strategic-sensemaking-loop with the autonomous terminal-mission profile
+-> after each responsibility: verify/reconcile -> identify remaining difference -> continue when warranted
 
 a prior strategic analysis exists and the repository has evolved
 -> author a new analysis with explicit continuity when semantically warranted

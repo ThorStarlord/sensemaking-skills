@@ -104,6 +104,10 @@ You want the whole strategic episode to start or resume from one prompt
 -> use strategic-sensemaking-loop
 -> it reuses current artifacts and skips stages that are already complete
 
+You want FULL AUTONOMY / FULL DELEGATION toward a terminal repository outcome
+-> use strategic-sensemaking-loop with an autonomous terminal mission
+-> it continues across bounded responsibilities until the terminal goal or a genuine stop boundary
+
 Material completed-work or repair claim
 -> stronger evidence / reconciliation / finding-specific verification when warranted
 
@@ -170,6 +174,115 @@ further authorized work.
 This delegates **intermediate engineering judgment**, not unlimited scope or
 authority. For additional bounded mission patterns and anti-patterns, see
 `skills/using-sensemaking/references/delegated-goal-patterns.md`.
+
+### Run a full-autonomy terminal mission
+
+When you want Sensemaking to keep selecting and completing warranted
+responsibilities until a terminal outcome is reached, use
+`strategic-sensemaking-loop` with the autonomous terminal-mission profile.
+
+A canonical prompt is:
+
+```text
+Run this repository mission with FULL AUTONOMY and FULL REPOSITORY DELEGATION.
+
+TARGET:
+[TARGET_SYSTEM_OR_FEATURE]
+or AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK
+
+TERMINAL GOAL:
+Advance the authoritative product scope until the target capability/system is
+construction-complete and satisfies all repository-answerable acceptance and
+qualification criteria.
+
+AUTONOMY:
+Proceed through repository-answerable decisions and implementation
+responsibilities without waiting for further approval. After each consequential
+responsibility, reconcile current reality, identify the highest-value remaining
+difference to the terminal goal, establish the next warranted responsibility,
+and continue automatically.
+
+STRATEGIC SEARCH:
+Run repository-wide breadth -> frontier candidates -> proportional depth ->
+construction paths only when Level 3 is genuinely open or reopened. Generate
+only materially real alternatives; do not force an arbitrary count. When
+strategy is already settled, resume at the current responsibility/execution/
+reconciliation boundary.
+
+CONSTRUCTION:
+Prefer BUILD / REVERSIBLE BUILD when retained construction is warranted and more
+useful than separate evidence-only work. Complete every decision-relevant
+vertical layer required by the capability without manufacturing irrelevant
+architecture.
+
+FIELD VALIDATION:
+External trials, panels, professional asset production, and live telemetry are
+deferred until construction completeness unless current authoritative
+requirements make them genuine prerequisites. Synthetic personas and
+first-principles reasoning may guide construction decisions but are not empirical
+evidence.
+
+EVIDENCE:
+Implement -> verify -> reconcile -> promote repository status only when the
+evidence supports the claim. Do not leave TODOs, placeholders, empty stubs, or
+deliberately incomplete happy-path-only behavior where the target requires the
+omitted behavior.
+
+AUTHORITY:
+Full repository delegation covers ordinary repository-local construction,
+repair, refactor, deletion, documentation, tests, qualification, status updates,
+issues, branches, commits, and pull requests. Merge, release/deployment,
+credentials/billing, Level-4 thesis choices, genuine owner-preference decisions,
+destructive external mutation, and cross-repository scope expansion remain
+separately governed unless explicitly granted.
+
+STOP ONLY WHEN:
+- the terminal repository outcome is satisfied and supported by applicable
+  repository-answerable evidence;
+- no further repository change is warranted;
+- a genuine owner/Level-4 decision is required;
+- an unavoidable external blocker prevents all remaining warranted work; or
+- the next required action exceeds granted authority.
+```
+
+The target token `AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK` means: select the
+highest-value remaining difference between current repository reality and the
+authoritative terminal outcome, using qualitative Sensemaking judgment rather
+than a numeric priority score.
+
+Full autonomy does **not** force breadth search after every responsibility and
+does not imply automatic backlog execution. A responsibility can complete while
+the terminal mission remains open; after reconciliation, the loop should select
+the next warranted responsibility and continue.
+
+Construction-before-field-validation is a mission policy, not a universal
+Sensemaking law. When external evidence is an authoritative prerequisite for a
+specific safety, legal, regulatory, or product claim, the agent must preserve
+that prerequisite or narrow the claim rather than bypass it.
+
+Synthetic personas are design-reasoning aids, not observed users:
+
+```text
+synthetic persona
+!= empirical user evidence
+
+repository qualified
+!= externally validated
+!= production deployed
+```
+
+Protected-transition authority may be granted separately, for example:
+
+```text
+MERGE_AUTHORITY = YES
+RELEASE_AUTHORITY = NO
+DEPLOY_AUTHORITY = NO
+```
+
+Repository policy still controls whether the transition is actually available.
+
+Canonical details:
+`skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`.
 
 ## Diagnose or analyze repository evolution
 

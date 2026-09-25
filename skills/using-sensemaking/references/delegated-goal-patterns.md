@@ -44,6 +44,12 @@ green validator != semantic closure
 Use when the owner wants the agent to keep selecting and completing warranted
 repository responsibilities until the current product commitments are realized.
 
+When the owner explicitly grants FULL AUTONOMY / FULL DELEGATION across repeated
+responsibilities, use `strategic-sensemaking-loop` as the front door and read
+`skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`.
+That profile adds continuation across bounded responsibilities; it does not create
+a second goal model or expand protected-transition authority.
+
 ```text
 Goal: Build this repository until every feature and capability explicitly
 required by the current authoritative product scope is implemented and satisfies
@@ -128,7 +134,12 @@ Avoid prompts or interpretations such as:
 - "Use a Campaign because this is large." — durability depends on continuation
   complexity, not size alone.
 - "You are autonomous, so merge/release when done." — delegation does not imply
-  protected-transition authority.
+  protected-transition authority unless that transition is separately and explicitly granted.
+- "Generate exactly three architectures before every responsibility." — strategic
+  breadth is conditional on an open/reopened Level-3 decision and should use only
+  materially real alternatives.
+- "Synthetic personas validated the UX." — synthetic personas can support
+  construction reasoning but are not empirical user evidence.
 - "Keep improving after requirements are satisfied." — manufactures work instead
   of honoring a legitimate terminal condition.
 
