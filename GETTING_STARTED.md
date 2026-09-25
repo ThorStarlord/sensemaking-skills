@@ -281,6 +281,41 @@ DEPLOY_AUTHORITY = NO
 
 Repository policy still controls whether the transition is actually available.
 
+### Verify the loaded Skill before attribution-sensitive trials
+
+If you are testing behavior added by a newly integrated Skill revision, verify
+the **actual harness-loaded Skill**, not only the repository source.
+
+For file-based harness installations:
+
+```bash
+python scripts/probe_skill_distribution.py --no-write
+```
+
+When explicit replacement is intended:
+
+```bash
+python scripts/probe_skill_distribution.py --sync --no-write
+# or use setup-skills with the correct target/scope and --force
+```
+
+Hosted/non-filesystem Skill surfaces may have a separate installation/update
+mechanism. Use the platform's actual loaded Skill identity when available.
+
+```text
+repository Skill current
+!= harness-loaded Skill current automatically
+
+behavior observed under stale/unknown Skill identity
+-> useful normal-use evidence may remain
+-> causal attribution to the current Skill revision is weaker
+```
+
+Do not throw away the episode. Record the mismatch and narrow the claim.
+
+The first bounded normal-use episode is preserved in
+`docs/normal-use/autonomous-terminal-mission-trial-001.md`.
+
 Canonical details:
 `skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`.
 
