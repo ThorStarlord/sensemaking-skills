@@ -408,6 +408,8 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 | `docs/semantic-architecture/reasoning-model.md` | shared evidence-to-decision reasoning grammar and its Level-3/Level-4 instantiations |
 | `docs/system-capability-atlas-v1.md` | descriptive map of major systems, owned questions, and front-door/specialized/substrate/compatibility product roles |
 | `docs/strategic-normal-use-failure-taxonomy-v1.md` | descriptive vocabulary for recurring material normal-use failures; no detector, score, or issue-generation authority |
+| `docs/normal-use/strategic-sensemaking-observation-guide.md` | standing qualitative normal-use observation guidance for strategic and autonomous terminal-mission behavior; no score/benchmark/runtime |
+| `docs/normal-use/autonomous-terminal-mission-trial-001.md` | first explicit-target autonomous terminal-mission normal-use episode; bounded behavioral support with loaded-Skill attribution limitation |
 | `docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md` | B7 reference-resolution scope, authoritative resolver matrix, negative cases, and abort boundary |
 | `docs/semantic-architecture/build-first-handoff.md` | B1–B7 repository qualification and continuation handoff |
 | `docs/campaign-observability-and-portability.md` | Campaign observability, semantic companion, B7 reference audit rendering, Resume Capsule, replay/graph, and bundles |
