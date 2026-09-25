@@ -156,6 +156,76 @@ product value and normal use provides evidence strong enough for the current
 decision at no greater total cost/downside than a separate experiment followed
 by duplicate implementation.
 
+## Autonomous terminal missions
+
+When the owner explicitly delegates a terminal repository outcome with FULL
+AUTONOMY / FULL DELEGATION, the loop may continue across multiple bounded
+responsibilities without returning control merely because one responsibility
+finished.
+
+This is a continuation profile over the existing control model:
+
+```text
+terminal mission
+-> current semantic boundary
+-> bounded responsibility
+-> execute
+-> verify
+-> reconcile
+-> terminal-gap check
+-> next warranted responsibility when needed
+-> continue
+```
+
+The mission profile is defined in
+`skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`.
+
+Its defining laws are:
+
+```text
+responsibility completed
+!= mission completed
+
+mission incomplete
+!= execute backlog blindly
+
+full repository delegation
+!= protected-transition authority
+```
+
+If Level 3 is genuinely open/reopened, the existing Strategic Exploration Funnel
+still owns breadth -> frontier candidates -> proportional depth -> construction
+paths -> selection. Full autonomy does not force exactly three approaches and
+does not rerun strategic breadth during settled responsibility/execution/
+reconciliation.
+
+For implementation, "complete the vertical stack" means every
+**decision-relevant** layer required by the selected capability, not maximal
+architecture. Domain, integration, persistence, user/operator, observability,
+content/progression, compatibility, documentation, and qualification surfaces
+are included only when they materially belong to the target.
+
+A mission may explicitly defer field validation until construction completeness.
+That allows first-principles heuristics and synthetic personas to guide
+construction-stage decisions, while preserving:
+
+```text
+synthetic persona
+!= empirical user evidence
+
+construction complete
+!= externally validated
+```
+
+Status/capability authority may be updated after applicable verification and
+reconciliation supports promotion. Implementation alone does not make
+provisional/draft state canonical.
+
+Merge, release/deploy, external publication, credentials/billing, destructive
+external mutation, cross-repository expansion, Level-4 thesis revision, and
+genuine owner-preference decisions remain separately governed unless explicitly
+granted and permitted by repository policy.
+
 ## No mandatory choreography
 
 A fresh episode may traverse several surfaces:

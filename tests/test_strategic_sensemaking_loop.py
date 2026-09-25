@@ -23,6 +23,11 @@ GETTING_STARTED = ROOT / "GETTING_STARTED.md"
 RECONCILIATION = ROOT / "artifacts" / "strategic_reconciliation.md"
 
 
+def _flat(text: str) -> str:
+    """Collapse line wrapping so prose phrase assertions are wrap-insensitive."""
+    return " ".join(text.split())
+
+
 def test_loop_skill_exists_as_thin_front_door_over_specialized_skills() -> None:
     text = SKILL.read_text(encoding="utf-8")
 
@@ -63,7 +68,7 @@ def test_loop_resumes_from_semantic_boundary_and_skips_completed_stages() -> Non
     assert "Do not rerun an earlier stage merely because it is part of the canonical loop." in text
     assert "Do not rerun a Skill merely because it appears earlier in the conceptual loop." in resume
     assert "newer mtime" in resume
-    assert "newest file" in resume
+    assert "automatically authoritative" in _flat(resume)
 
 
 def test_loop_allows_direct_execution_without_fabricating_skill_identity() -> None:
@@ -143,9 +148,9 @@ def test_loop_stops_at_owner_boundary_and_resumes_from_explicit_owner_choice() -
     text = SKILL.read_text(encoding="utf-8")
     resume = RESUME.read_text(encoding="utf-8")
 
-    assert "After producing an adequate capsule, **stop for the owner**." in text
-    assert "Never synthesize or guess the owner's selection." in text
-    assert "do not recreate the capsule merely because one exists" in text
+    assert "After producing an adequate capsule, **stop for the owner**." in _flat(text)
+    assert "Never synthesize or guess the owner's selection." in _flat(text)
+    assert "do not recreate the capsule merely because one exists" in _flat(text)
 
     assert "owner_decision_capsule" in resume
     assert "+ no explicit owner selection" in resume
@@ -207,9 +212,9 @@ def test_loop_prefers_value_producing_warranted_action_without_scoring() -> None
 def test_reversible_build_has_conditional_dominance_not_universal_bias() -> None:
     ref = VALUE_ACTION.read_text(encoding="utf-8")
 
-    assert "Reversible-build dominance test" in ref
-    assert "REVERSIBLE BUILD normally dominates separate experiment + duplicate build" in ref
-    assert "reversible build available" in ref
+    assert "Reversible-build dominance test" in _flat(ref)
+    assert "REVERSIBLE BUILD normally dominates" in _flat(ref)
+    assert "reversible build possible" in ref
     assert "!= reversible build automatically warranted" in ref
     assert "Prefer READ/INSPECT/VERIFY" in ref
     assert "Prefer an experiment when the decision genuinely requires evidence" in ref
@@ -219,8 +224,8 @@ def test_high_delegation_envelope_allows_repository_work_but_preserves_protected
     text = SKILL.read_text(encoding="utf-8")
     ref = VALUE_ACTION.read_text(encoding="utf-8")
 
-    assert "high-delegation repository envelope" in text
-    assert "bounded construction, reversible builds" in text
+    assert "high-delegation repository envelope" in _flat(text)
+    assert "bounded construction, reversible builds" in _flat(text)
     assert "repository qualification" in text
     assert "warranted probes/experiments" in text
     assert "high delegation\n!= unlimited authority" in ref

@@ -185,7 +185,7 @@ repository-local Skill consistency update and packaging work.
 
 ## 9. Machine-Readable Summary
 
-~~~yaml
+```yaml
 artifact_id: strategic_reconciliation
 target_repository: ThorStarlord/sensemaking-skills
 prior_analysis_ref: artifacts/strategic_repository_analysis.md
@@ -234,4 +234,4 @@ implementation_authority_established_by_artifact: false
 semantic_truth_established: false
 created_at: "2026-09-22T18:55:00Z"
 immutable: true
-~~~
+```
