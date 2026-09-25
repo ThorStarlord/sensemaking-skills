@@ -244,13 +244,76 @@ It does **not** establish:
 - that a new planner, scheduler, permission engine, or autonomous runtime is
   warranted.
 
-## 6. Current posture
+## 6. Normal-use Trial 001
+
+The first real-repository terminal-mission episode is recorded in
+`docs/normal-use/autonomous-terminal-mission-trial-001.md`.
+
+Target evidence:
+
+```text
+repository
+= ThorStarlord/React_incremental_game_prototype
+
+target PR
+= #154
+
+candidate head
+= 70c24d5a11c4238c60e1fdee9f83eb9164dd35f0
+
+Build Validation
+= run 36120244452
+= completed / success
+
+merge
+= not performed
+= authority intentionally withheld
+```
+
+The episode supports, for one explicit bounded target, semantic resume,
+BUILD-oriented construction, continued repository-answerable work, scope and
+verticality discipline, verification before claim promotion, honest field-
+validation deferral, and stopping at the merge-authority boundary.
+
+The episode also preserved an attribution limitation: the harness-loaded global
+`strategic-sensemaking-loop` Skill was reported as pre-#474. The exact
+installed bytes/hash were not captured. Therefore:
+
+```text
+desired autonomous behavior observed
+!= integrated #474 Skill causally isolated
+```
+
+That mismatch should be removed or explicitly recorded before the next
+attribution-sensitive episode. It does not invalidate the observed behavior.
+
+One episode does not establish cross-repository generalization, fresh-context
+resume, `AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK` selection quality, or
+merge-authorized continuation.
+
+## 7. Current posture
 
 ```text
 ISSUE_473_AUTONOMOUS_TERMINAL_MISSION_CONTINUATION_V1
 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 
-NORMAL_USE_BEHAVIORAL_EVIDENCE = NOT_YET_ESTABLISHED
+TRIAL_1_EXPLICIT_BOUNDED_TARGET
+= SUPPORTED_WITH_ATTRIBUTION_LIMIT
+
+CROSS_REPOSITORY_CORROBORATION
+= NOT_ESTABLISHED
+
+FRESH_CONTEXT_AUTONOMOUS_RESUME
+= NOT_ESTABLISHED
+
+AUTONOMOUS_HIGHEST_LEVERAGE_SELECTION
+= NOT_ESTABLISHED
+
+MERGE_AUTHORIZED_CONTINUATION
+= NOT_ESTABLISHED
+
+GENERAL_FULL_AUTONOMY_CLAIM
+= NOT_ESTABLISHED
 
 NEW_TOP_LEVEL_SKILL = NO
 NEW_RUNTIME = NO
@@ -258,6 +321,6 @@ NEW_AUTHORITY_MODEL = NO
 MERGE_AUTHORITY_EXPANSION = NO
 ```
 
-After qualification, normal use should observe whether terminal missions
-actually reduce unnecessary approval stops while preserving goal, authority,
-evidence, and stopping discipline.
+Continue normal-use observation. Do not reopen construction from Trial 001 alone.
+The next useful evidence is a heterogeneous explicit-target episode with the
+actual harness-loaded Skill identity verified when feasible.
