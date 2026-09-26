@@ -82,6 +82,42 @@ sensemaking-skills setup-skills --target opencode --scope project --project-root
 
 Use `--dry-run` to preview and `--force` only when you explicitly intend to replace a divergent installed Skill tree.
 
+### Verify installed Skill parity
+
+Repository source and the Skill bytes actually loaded by a harness can drift.
+When behavior attribution depends on a newly integrated Skill revision, inspect
+that boundary explicitly.
+
+For file-based installed Skill roots:
+
+```bash
+python scripts/probe_skill_distribution.py --no-write
+```
+
+The probe reports synchronized, line-ending-only, content-drift, and missing
+Skill copies. To intentionally synchronize missing/content-drifted copies from
+the repository source:
+
+```bash
+python scripts/probe_skill_distribution.py --sync --no-write
+```
+
+You may instead use the applicable `setup-skills` target/scope with `--force`
+when replacement is intentional.
+
+For hosted/non-filesystem Skill surfaces, use that platform's installation or
+update mechanism; this repository probe cannot establish the identity of bytes
+loaded by a remote service.
+
+```text
+installed-copy drift
+!= Skill behavior defect automatically
+
+unknown loaded identity
+!= permission to claim current-revision causality
+```
+
+
 ## Verify the Campaign CLI
 
 ```bash
