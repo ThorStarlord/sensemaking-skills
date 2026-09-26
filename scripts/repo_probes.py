@@ -17,7 +17,7 @@ import subprocess
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence
 
 try:
     from probe_relationships import relationships  # scripts/ on sys.path (CLI)
@@ -511,13 +511,18 @@ def vendored_skill_drift(
 
 
 def probe_skill_distribution(
-    repo_root: Path, installed_skills_root: Path | None = None
+    repo_root: Path,
+    installed_skills_root: Path | None = None,
+    skill_names: Sequence[str] | None = None,
 ) -> Dict[str, object]:
     """Compare canonical skills/*/SKILL.md against installed copies.
 
     Installed copies default to ~/.agents/skills; Path.home() resolves both
     Windows (C:\\Users\\<user>\\.agents\\skills) and Unix (/home/<user>/.agents/skills)
     home locations. Pure filesystem + hashlib reads, no writes, no subprocess.
+
+    skill_names optionally scopes the comparison to an explicit set of repo
+    skill directory names. None (default) inspects every canonical skill.
 
     Each skill is categorized by a drift_type:
       - "none": raw bytes identical; counted in synchronized_count, NOT listed
@@ -538,9 +543,13 @@ def probe_skill_distribution(
     missing_installed_count = 0
     total_skills_checked = 0
 
+    selected_skills = set(skill_names) if skill_names is not None else None
+
     repo_skills_dir = repo_root / "skills"
     for skill_md in sorted(repo_skills_dir.glob("*/SKILL.md")):
         skill_name = skill_md.parent.name
+        if selected_skills is not None and skill_name not in selected_skills:
+            continue
         total_skills_checked += 1
 
         repo_data = _read_bytes(skill_md)
@@ -612,6 +621,7 @@ def sync_skills(
     repo_root: Path,
     installed_skills_root: Path | None = None,
     overwrite_content_drift: bool = True,
+    skill_names: Sequence[str] | None = None,
 ) -> Dict[str, object]:
     """Synchronize repo skills into the installed skills root (explicit write path).
 
@@ -620,11 +630,18 @@ def sync_skills(
     overwritten when overwrite_content_drift is True (default). Skills that
     differ only by line endings are left untouched -- their installed copy is
     treated as equivalent. Returns a summary dict listing the synced skills.
+
+    skill_names optionally limits the write path to an explicit set of repo
+    skill directory names, so a shared installed root can be partially
+    reconciled without touching unrelated skills. None (default) syncs every
+    drifted skill.
     """
     if installed_skills_root is None:
         installed_skills_root = Path.home() / ".agents" / "skills"
 
-    payload = probe_skill_distribution(repo_root, installed_skills_root)
+    payload = probe_skill_distribution(
+        repo_root, installed_skills_root, skill_names=skill_names
+    )
     synced_skills: List[str] = []
     for entry in payload["drifted_skills"]:
         skill_name = entry["skill_name"]

@@ -107,8 +107,15 @@ File-installed harnesses:
 ```bash
 # pick the root the harness actually loads
 python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills --no-write
-python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills --sync --no-write
-python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills --no-write   # re-probe: expect no drift
+
+# Scope the write path to the trial Skill(s). A bare `--sync` reconciles EVERY
+# missing/content-drifted Skill in the root; never run blanket `--sync` against
+# a shared user Skill root (~/.agents/skills, ~/.claude/skills) merely to prepare
+# a trial -- it would rewrite unrelated installed Skills.
+python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills \
+    --skill strategic-sensemaking-loop --skill using-sensemaking --sync --no-write
+python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills \
+    --skill strategic-sensemaking-loop --skill using-sensemaking --no-write   # re-probe: expect no drift
 
 sha256sum skills/strategic-sensemaking-loop/SKILL.md \
           skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md \
