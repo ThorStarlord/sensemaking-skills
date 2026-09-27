@@ -116,6 +116,19 @@ evidence admitted != responsibility warranted
 capability available != capability selected or authorized
 ```
 
+### Q: What is the difference between a test, validation stage, control level, and qualification state?
+
+They answer different questions:
+
+- a **test class** says what kind of behavior/evidence is being checked;
+- a **validation stage** (V0-V5) says which mechanically decidable property is being established;
+- a **control level** (Level 1-4) says the scope of the decision the agent is reasoning about;
+- a **qualification state** says where the capability has actually been proven.
+
+They are deliberately not one ladder. A Level-3 strategic artifact can pass V0-V5 mechanical validation without making its strategy semantically correct, and repository qualification does not imply native-harness qualification.
+
+See `docs/verification-and-qualification-model.md` for the canonical terminology and claim-ceiling matrix.
+
 ## Releases
 
 ### Q: Is `1.0.0rc1` the current release candidate?
