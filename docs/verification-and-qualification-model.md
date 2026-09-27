@@ -242,7 +242,34 @@ When adding a new check, document or infer four independent answers:
 
 A check that cannot answer these independently is likely mixing implementation assurance, semantic judgment, and product claims.
 
-## 9. Design invariants
+## 9. Lessons from repository evolution
+
+The repository's history shows several recurring failure modes that this model is intended to prevent:
+
+1. **Vocabulary reuse can create false authority.** The historical phrase `Level-3 validators` later collided with the current Level-3 repository-strategy meaning. Stable names should preserve one semantic role across current documentation.
+2. **Green checks can silently inflate claims.** Unit, integration, acceptance, and validator results each support different bounded claims; none automatically upgrades empirical qualification.
+3. **Evidence transport and evidence meaning are different responsibilities.** Provenance, identity, reference resolution, and admission can be deterministic while support, usefulness, and warrant remain semantic.
+4. **Qualification is environment-bound.** Repository qualification is not a simulation of native-harness qualification; the environment named by the claim must appear in the evidence.
+5. **Assurance needs a source-of-truth surface.** Scattered correct statements are insufficient when a fresh agent can reconstruct an obsolete model from historical material.
+
+### Reporting rule
+
+Consequential validation/qualification reports should state, when material:
+
+```text
+test class:
+validation stage:
+semantic status:
+qualification effect:
+evidence identity:
+claim ceiling:
+```
+
+Fields may be omitted when genuinely irrelevant, but a PASS should never be reported without enough context to identify what passed and what claim that result supports.
+
+This is a reporting discipline, not a new artifact schema or mandatory runtime record.
+
+## 10. Design invariants
 
 ```text
 test class != control level
