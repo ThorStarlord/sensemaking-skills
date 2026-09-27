@@ -5,6 +5,9 @@ ROOT = Path(__file__).resolve().parents[1]
 MODEL = ROOT / "docs" / "verification-and-qualification-model.md"
 MAINTAINER = ROOT / "docs" / "maintainer-guide-v1.0.md"
 QUALIFICATION = ROOT / "docs" / "product-management" / "qualification-levels.md"
+OPERATIONS = ROOT / "docs" / "operations-runbook.md"
+FAQ = ROOT / "docs" / "FAQ.md"
+CONTEXT = ROOT / "CONTEXT.md"
 
 
 def test_verification_and_qualification_model_declares_orthogonal_axes():
@@ -75,3 +78,37 @@ def test_qualification_doc_links_back_to_cross_axis_model():
     assert "../verification-and-qualification-model.md" in text
     assert "not a synonym for test result, validation depth, or Four-Level Control scope" in text
     assert "does not by itself advance empirical maturity" in text
+
+def test_model_is_discoverable_from_current_operator_and_context_surfaces():
+    operations = OPERATIONS.read_text(encoding="utf-8")
+    context = CONTEXT.read_text(encoding="utf-8")
+
+    assert "verification-and-qualification-model.md" in operations
+    assert "verification-and-qualification-model.md" in context
+
+
+def test_consequential_results_have_a_reporting_discipline():
+    model = MODEL.read_text(encoding="utf-8")
+    operations = OPERATIONS.read_text(encoding="utf-8")
+
+    for field in (
+        "test class:",
+        "validation stage:",
+        "semantic status:",
+        "qualification effect:",
+        "evidence identity:",
+        "claim ceiling:",
+    ):
+        assert field in model
+        assert field in operations
+
+
+def test_faq_explains_the_four_assurance_axes():
+    text = FAQ.read_text(encoding="utf-8")
+
+    assert "test class" in text
+    assert "validation stage" in text
+    assert "control level" in text
+    assert "qualification state" in text
+    assert "They are deliberately not one ladder." in text
+
