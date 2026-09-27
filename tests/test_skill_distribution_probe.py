@@ -240,6 +240,65 @@ def test_sync_defaults_to_home_agents_skills(tmp_path: Path, monkeypatch) -> Non
     assert (home / ".agents" / "skills" / "demo" / "SKILL.md").is_file()
 
 
+def test_probe_scopes_to_named_skills(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    for name, content in (("alpha", "a\n"), ("beta", "b\n")):
+        (repo / "skills" / name).mkdir(parents=True)
+        (repo / "skills" / name / "SKILL.md").write_text(content, encoding="utf-8")
+    payload = probe_skill_distribution(repo, _installed_with_skill(tmp_path, "alpha", "a\n"), skill_names=["alpha"])
+    assert payload["total_skills_checked"] == 1
+    assert payload["synchronized_count"] == 1
+    assert payload["drifted_skills"] == []
+
+
+def test_sync_scopes_to_named_skills(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    for name, content in (("alpha", "a\n"), ("beta", "b\n")):
+        (repo / "skills" / name).mkdir(parents=True)
+        (repo / "skills" / name / "SKILL.md").write_text(content, encoding="utf-8")
+    installed = _installed_with_skill(tmp_path, "alpha", "A changed\n")
+    (installed / "beta").mkdir()
+    (installed / "beta" / "SKILL.md").write_text("B changed\n", encoding="utf-8")
+    summary = sync_skills(repo, installed, skill_names=["alpha"])
+    assert summary["synced_skills"] == ["alpha"]
+    assert (installed / "alpha" / "SKILL.md").read_text(encoding="utf-8") == "a\n"
+    assert (installed / "beta" / "SKILL.md").read_text(encoding="utf-8") == "B changed\n"
+
+
+def test_cli_skill_flag_scopes_sync(tmp_path: Path, capsys) -> None:
+    repo = tmp_path / "repo"
+    for name, content in (("alpha", "a\nrepo\n"), ("beta", "b\nrepo\n")):
+        (repo / "skills" / name).mkdir(parents=True)
+        (repo / "skills" / name / "SKILL.md").write_text(content, encoding="utf-8")
+    installed = tmp_path / "installed"
+    for name in ("alpha", "beta"):
+        (installed / name).mkdir(parents=True)
+        (installed / name / "SKILL.md").write_text(f"{name[0]}\ninstalled\n", encoding="utf-8")
+    code = cli_main(
+        [
+            "--repo-root",
+            str(repo),
+            "--installed-dir",
+            str(installed),
+            "--skill",
+            "alpha",
+            "--sync",
+            "--no-write",
+        ]
+    )
+    assert code == 0
+    assert (installed / "alpha" / "SKILL.md").read_text(encoding="utf-8") == "a\nrepo\n"
+    assert (installed / "beta" / "SKILL.md").read_text(encoding="utf-8") == "b\ninstalled\n"
+
+
+def test_cli_unknown_skill_flag_fails(tmp_path: Path) -> None:
+    repo = _repo_with_skill(tmp_path, "demo", "# demo\n")
+    code = cli_main(
+        ["--repo-root", str(repo), "--installed-dir", str(tmp_path / "installed"), "--skill", "nope", "--no-write"]
+    )
+    assert code == 2
+
+
 def test_cli_sync_flag_syncs_and_reports(tmp_path: Path, capsys) -> None:
     repo = _repo_with_skill(tmp_path, "demo", "# demo\nrepo version\n")
     installed = tmp_path / "installed"

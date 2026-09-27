@@ -39,6 +39,7 @@ evidence.
 | R11 | Evidence = "the agent reports it passed" | **Provenance rule:** only externally produced evidence (hosted CI fetched by the evaluator, platform merge state) counts as verification; agent-authored STATUS/PR text is a claim (section 8.3) | Prevents the self-referential echo chamber where the agent reads its own `PASS` as repository confirmation -- in any repository, isolated or not. |
 | R12 | Qualification on the PR head | **Base-drift check** before any completion claim: fetch `origin/<default>`, check mergeability, re-qualify if the base moved in touched files | `qualified on head X != qualified on current main + X`; long multi-session missions and Trial 004 are most exposed. |
 | R13 | Workspace unspecified | **Clean-room baseline** per trial and per resume: fresh clone, empty `git status --porcelain`, recorded base SHA | Leftover files contaminate self-review, and a reused workspace in 002R would mean resume was not from durable state. |
+| R14 | Harness/session assumed fixed; prompt used surface-specific mention syntax | **Prompt is harness- and session-portable** (any tool-capable coding agent, generic skill invocation); execution surface and model are recorded, never assumed. **Inline (same-session) mode is allowed only as a lower-evidence episode** (section 4.5) | The Skill is portable, but a session that already read the plan/seal cannot exercise the blind break or the fresh-context resume rung. Recording the surface is what makes a portability claim attributable. |
 
 ## 2. Evidence ladder
 
@@ -107,8 +108,15 @@ File-installed harnesses:
 ```bash
 # pick the root the harness actually loads
 python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills --no-write
-python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills --sync --no-write
-python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills --no-write   # re-probe: expect no drift
+
+# Scope the write path to the trial Skill(s). A bare `--sync` reconciles EVERY
+# missing/content-drifted Skill in the root; never run blanket `--sync` against
+# a shared user Skill root (~/.agents/skills, ~/.claude/skills) merely to prepare
+# a trial -- it would rewrite unrelated installed Skills.
+python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills \
+    --skill strategic-sensemaking-loop --skill using-sensemaking --sync --no-write
+python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills \
+    --skill strategic-sensemaking-loop --skill using-sensemaking --no-write   # re-probe: expect no drift
 
 sha256sum skills/strategic-sensemaking-loop/SKILL.md \
           skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md \
@@ -170,7 +178,7 @@ Changes versus the original draft: target pinned (R1); Skill check demoted to
 secondary evidence (R2); everything else preserved.
 
 ```text
-@Strategic Sensemaking Loop @GitHub
+Use the strategic-sensemaking-loop skill.
 
 Run this repository mission with FULL AUTONOMY and FULL REPOSITORY DELEGATION.
 
@@ -278,6 +286,41 @@ The prompt deliberately says nothing about a later context break (R4).
 Exit: segment ends at the planned break (or at a terminal/authority stop);
 evidence captured per section 7.
 
+### 4.5 Execution surface, portability, and session modes
+
+The mission prompt is **harness- and session-portable**. It assumes only a
+tool-capable coding agent that can load the skill, reconstruct repository state,
+edit code, run tests, and create commits/branches/PRs. The first line names the
+skill generically (`Use the strategic-sensemaking-loop skill.`) and must not use
+surface-specific mention syntax such as `@Skill`. GitHub access may be through
+`gh`, an MCP server, or an equivalent integration; if none can open PRs, that is
+an external blocker, not a behavior failure.
+
+Portability is a property of the prompt, not of the measurement. Whatever the
+surface, the identity receipt (4.1) must record the agent, its **model**, and the
+loaded Skill copy, or the episode is `UNVERIFIED`.
+
+Two session modes:
+
+- **Fresh-session (default).** Required for Trial 002 and 002R as planned. The
+  mission runs in a session that has not read this plan, the sealed
+  decomposition, or the observation matrix. Only this mode can exercise the
+  blind break (4.4), the fresh-context autonomous resume rung (Step 3), and the
+  sealed-decomposition scope check.
+
+- **Inline (same-session).** The mission runs in a session that has already seen
+  the plan and/or the seal. Permitted only as a behavioral episode with a lowered
+  claim ceiling. It **cannot** establish:
+  - `FRESH_CONTEXT_AUTONOMOUS_RESUME` (no context boundary exists);
+  - the blind-break Continuation observation (the runner knows the break is
+    coming);
+  - the sealed-decomposition scope check (the runner has seen the seal).
+
+  Record an inline run as
+  `docs/normal-use/autonomous-terminal-mission-inline-00N.md`; it is not a ladder
+  rung and cannot contribute to `NORMAL_USE_CORROBORATED`. Discard the seal for
+  that run -- it is not independent evidence.
+
 ## 5. Step 3 -- Trial 002R: fresh-context resume
 
 Question: can the mission continue from durable repository state alone?
@@ -291,7 +334,7 @@ Record the clean-room fields from 4.1 again.
 Resume prompt (restates authority, R5; does *not* restate target or progress):
 
 ```text
-@Strategic Sensemaking Loop @GitHub
+Use the strategic-sensemaking-loop skill.
 
 Continue the current FULL AUTONOMY terminal mission in ThorStarlord/auteur
 from durable repository state.

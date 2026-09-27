@@ -33,6 +33,14 @@ def main(argv: list[str]) -> int:
         action="store_true",
         help="Copy missing/content-drifted skills from skills/<skill>/ into the installed root",
     )
+    parser.add_argument(
+        "--skill",
+        action="append",
+        default=None,
+        metavar="NAME",
+        help="Limit probe/sync to these repo skill names (repeatable). "
+        "Use against a shared installed root to avoid rewriting unrelated skills.",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -46,12 +54,24 @@ def main(argv: list[str]) -> int:
 
     installed_root = Path(args.installed_dir).resolve() if args.installed_dir else Path.home() / ".agents" / "skills"
 
+    for name in args.skill or []:
+        if not (repo_root / "skills" / name / "SKILL.md").is_file():
+            print(
+                f"[probe-skill-distribution] ERROR: --skill {name} is not a repo skill under {repo_root / 'skills'}",
+                file=sys.stderr,
+            )
+            return 2
+
     start = time.perf_counter()
-    payload = probe_skill_distribution(repo_root, installed_skills_root=installed_root)
+    payload = probe_skill_distribution(
+        repo_root, installed_skills_root=installed_root, skill_names=args.skill
+    )
 
     if args.sync:
         try:
-            sync_summary = sync_skills(repo_root, installed_skills_root=installed_root)
+            sync_summary = sync_skills(
+                repo_root, installed_skills_root=installed_root, skill_names=args.skill
+            )
         except OSError as exc:
             print(
                 f"[probe-skill-distribution] ERROR: sync failed: {exc}",
@@ -66,7 +86,9 @@ def main(argv: list[str]) -> int:
             )
         else:
             print("  nothing to sync")
-        payload = probe_skill_distribution(repo_root, installed_skills_root=installed_root)
+        payload = probe_skill_distribution(
+            repo_root, installed_skills_root=installed_root, skill_names=args.skill
+        )
 
     elapsed_ms = round((time.perf_counter() - start) * 1000, 2)
 
