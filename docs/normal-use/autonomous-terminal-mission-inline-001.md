@@ -111,3 +111,65 @@ validation.
 No Sensemaking Skill change is warranted by this episode: no `MATERIAL
 FAILURE` occurred, and the blockers encountered were operator/setup (seals,
 harness, proxy), not Skill-attributable. The freeze holds.
+
+## Addendum 2026-09-28 — independent review (§8.3) + dispositions + merges
+
+Independent read-only review of `489abad...4763b24` returned **No-go**;
+verified here as correct. Confirmed: 10 files +1411/−0; no-change decided
+by content (`vertical_slice_service.py:359`); inspection silently dropped
+unresolvable IDs (`episode_one_direction.py:164–177`); CLI test docstring
+claimed invariant 13 without a test; each PR showed only `L1 focused
+validation`. Sharper cause (from `validation.yml`): focused CI runs only
+changed test files, so the ~17 existing `test_series_*` files never ran
+against the shared `store/service/cli/formatters` changes; agent-run
+"100-test subset" is not CI.
+
+Dispositions (owner decisions executed):
+
+1. **Idempotency: content identity governs.** A different proposal ID with
+   byte-identical direction content yields `changed=False`, no new
+   revision. Documented in `EpisodeDirectionAcceptance` docstring; tested
+   by `test_different_proposal_identical_content_is_no_change`.
+2. **Requalification scope: L2 before merge, full stack before closing
+   #218.** Existing Series suite (`tests/test_series_*.py`, 314 tests)
+   was the merge gate — **AGENT-RUN, not CI**: 72 + 132 + 109 + 1 passed
+   on fix head `ec972f5`, re-run 72 + 132 + 110 passed on merged `main @
+   a9cdd62`. #218's Linux + Windows + verification + wheel requirement
+   applies before closing #218 (still OPEN), not per PR. Stabilization
+   run `36370311870` on `a9cdd62` is **FAILED** on pre-existing
+   `narrative_realization/test_layer3_integration.py` knowledge-gap
+   failures, proven identical on pre-stack base `489abad` (zero file
+   overlap with the Episode stack); fixing that subsystem is a separate
+   responsibility, and #218 closure waits on a green full requal.
+3. **Silent drop → must-fix, done.** `EpisodeOneDirectionInspection`
+   gains `stale_commitment_ids`; `describe_…` populates it;
+   `format_episode_one_direction_inspection` renders
+   `(stale: not in current accepted Series Direction)`; tested by
+   `test_inspection_reports_stale_commitments`.
+4. **Missing tests, done on #293 head (`ec972f5`):** entry-form atomicity,
+   acceptance-time unknown-ref rejection, byte-stability of a
+   Book-oriented project (invariant 13), stale inspection. CLI docstring
+   narrowed to invariant 12; invariant 13 covered in service tests.
+   Ruff clean; #293 L1 `pass` on `ec972f5`
+   (run `36369165159/job/108761586025`).
+
+Merges in order, `--merge`, each retargeted to `main` as the previous
+landed: #291 MERGED `e8a4025` (2026-09-28T02:22:16Z); #292 MERGED
+`58abca4` (02:23:14Z); #293 MERGED `a9cdd62` (02:23:57Z, includes fix
+`ec972f5`). These merges were **delegated by the owner**: the owner
+directed "implement all of these tasks … merge #291 → #292 → #293 in
+order" and the agent executed that delegation; the agent did not exercise
+independent merge authority. Follow-up 1 in §Open follow-ups is done;
+#218 closure still requires the full cross-platform + wheel
+qualification.
+
+§8.3 comparison: self-review efficacy **MATERIAL FAILURE (narrow)** —
+tests explicitly claimed invariant-13 coverage that did not exist;
+evidence discipline **FRICTION** — focused L1 presented as external
+verification while existing tests never ran; vertical completeness
+**SUPPORTED** — all six layers present. This addendum supersedes the
+episode record's "no `MATERIAL FAILURE` occurred" sentence above: a
+narrow MATERIAL FAILURE did occur. The freeze still holds, but now
+because attribution is weak per §9 (opencode + deepseek-v4.1-flash, not
+trial setup), not because nothing failed. Recorded as first real
+self-review data point for the predicted failure mode.
