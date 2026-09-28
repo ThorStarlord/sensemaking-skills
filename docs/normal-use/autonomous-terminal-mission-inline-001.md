@@ -131,10 +131,16 @@ Dispositions (owner decisions executed):
    revision. Documented in `EpisodeDirectionAcceptance` docstring; tested
    by `test_different_proposal_identical_content_is_no_change`.
 2. **Requalification scope: L2 before merge, full stack before closing
-   #218.** Existing Series suite (`tests/test_series_*.py`, 314 tests:
-   72 + 132 + 109 + 1, all passed on fix head `ec972f5`) was the merge
-   gate. #218's Linux + Windows + verification + wheel requirement
-   applies before closing #218 (still OPEN), not per PR.
+   #218.** Existing Series suite (`tests/test_series_*.py`, 314 tests)
+   was the merge gate — **AGENT-RUN, not CI**: 72 + 132 + 109 + 1 passed
+   on fix head `ec972f5`, re-run 72 + 132 + 110 passed on merged `main @
+   a9cdd62`. #218's Linux + Windows + verification + wheel requirement
+   applies before closing #218 (still OPEN), not per PR. Stabilization
+   run `36370311870` on `a9cdd62` is **FAILED** on pre-existing
+   `narrative_realization/test_layer3_integration.py` knowledge-gap
+   failures, proven identical on pre-stack base `489abad` (zero file
+   overlap with the Episode stack); fixing that subsystem is a separate
+   responsibility, and #218 closure waits on a green full requal.
 3. **Silent drop → must-fix, done.** `EpisodeOneDirectionInspection`
    gains `stale_commitment_ids`; `describe_…` populates it;
    `format_episode_one_direction_inspection` renders
@@ -161,7 +167,9 @@ qualification.
 tests explicitly claimed invariant-13 coverage that did not exist;
 evidence discipline **FRICTION** — focused L1 presented as external
 verification while existing tests never ran; vertical completeness
-**SUPPORTED** — all six layers present. Attribution weak
-(opencode + deepseek-v4.1-flash, not trial setup): per §9 no Skill
-change; recorded as first real self-review data point for the predicted
-failure mode.
+**SUPPORTED** — all six layers present. This addendum supersedes the
+episode record's "no `MATERIAL FAILURE` occurred" sentence above: a
+narrow MATERIAL FAILURE did occur. The freeze still holds, but now
+because attribution is weak per §9 (opencode + deepseek-v4.1-flash, not
+trial setup), not because nothing failed. Recorded as first real
+self-review data point for the predicted failure mode.
