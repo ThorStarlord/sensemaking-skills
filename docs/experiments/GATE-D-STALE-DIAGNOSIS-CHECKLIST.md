@@ -42,12 +42,13 @@ the repository owner in the distinct owner-approval artifact. Both comparisons
 belong to the **Gate A authorization consumer contract**, and must occur
 before any model invocation.
 
-**The Gate A consumer verifies this checklist's digest.** That consumer is
-implemented at `scripts/gate_a_authorization.py` (see section 1a of the
-preparation package): it recomputes this digest and compares it against
-`gate_d_checklist_sha256` before any invocation. **Gate D must not begin unless
-the Gate A consumer has passed.** While no owner approval exists, this
-checklist governs no live run at all.
+**No Gate A consumer runs to verify this checklist's digest.** The
+authorization module remains at `scripts/gate_a_authorization.py` (see section
+1a of the preparation package): under the specified protocol it recomputed
+this digest and compared it against `gate_d_checklist_sha256` before any
+invocation. That invocation path was retired with the programmatic runner
+(ADR 0013). **Gate D must not begin** — and while no owner approval exists,
+this checklist governs no live run at all.
 
 If either comparison fails — checklist
 digest mismatch, authorization-record digest mismatch, missing record, or

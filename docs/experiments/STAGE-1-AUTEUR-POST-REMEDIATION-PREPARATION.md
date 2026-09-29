@@ -5,26 +5,26 @@ PREPARED_NOT_RUN
 ```
 
 > **READ THIS FIRST — the authorization contract in this document is SPECIFIED
-> and is enforced by the merged Gate A consumer, but no Stage 1 run is
-> authorized.**
+> but no Stage 1 run is authorized. The Gate A consumer was retired with the
+> programmatic runner (ADR 0013), so no runtime enforcement executes.**
 >
 > ```text
 > Authorization contract:     specified
-> Authorization consumer:     implemented
-> Runtime enforcement:        active at provider boundaries
+> Authorization consumer:     retired with the programmatic runner (ADR 0013)
+> Runtime enforcement:        none — no model-invocation boundary remains
 > Owner approval:             not yet meaningful
 > Package runnable:           false
 > Evidence 0016 execution:    prohibited
 > ```
 >
-> A Gate A authorization consumer now exists at
-> `scripts/gate_a_authorization.py` and is wired into the real invocation path:
-> it loads the authorization record, validates the owner approval, recomputes
-> the digests, and blocks a model invocation on authorization state. That the
-> mechanism exists authorizes nothing. This package remains non-runnable
+> A Gate A authorization module remains at
+> `scripts/gate_a_authorization.py`, and `scripts/skill_executor.py` retains
+> its Gate A imports, but no Stage 1 invocation path remains: the programmatic
+> runner — including every model-call boundary the consumer gated — was
+> retired (ADR 0013), so no capability is minted or consumed at runtime. That
+> no mechanism runs authorizes nothing. This package remains non-runnable
 > while the pending sentinels stand, and authorization cannot succeed without
-> an owner approval binding the exact current record digest; the consumer
-> therefore denies every request. See section 1a.
+> an owner approval binding the exact current record digest. See section 1a.
 
 **Nature of this document**: preparation and governance only. It resolves and
 records the exact configuration that exactly one future, separately
@@ -80,18 +80,22 @@ execution_authorization_status: NOT_AUTHORIZED
 package_runnable: false
 
 # --- Gate A runtime consumer status (see section 2i) ---
-# THE DECISIVE FIELDS. As of the Gate A consumer PR, the authorization contract
-# below is SPECIFIED and ENFORCED: `scripts/gate_a_authorization.py` reads it,
-# and `scripts/skill_executor.py` requires the typed capability it mints before
-# any provider SDK call. Implementing the consumer does NOT authorize a run --
-# see `execution_authorization_status` and `package_runnable`, both unchanged.
-gate_a_authorization_consumer_status: IMPLEMENTED
+# THE DECISIVE FIELDS. The Gate A consumer was implemented by the Gate A
+# consumer PR and RETIRED with the programmatic runner (2026-08
+# programmatic-runner-retirement plan; ADR 0013): no provider SDK call path
+# remains, so no runtime enforcement executes. `scripts/gate_a_authorization.py`
+# is retained as the authorization-contract reader used by validators and
+# construction-time checks; `scripts/skill_executor.py` retains the Gate A
+# imports and refusal paths but no model-invocation boundary. A future
+# rewiring does NOT authorize a run -- see `execution_authorization_status`
+# and `package_runnable`, both unchanged.
+gate_a_authorization_consumer_status: NOT_IMPLEMENTED
 gate_a_authorization_consumer_required: true
 gate_a_authorization_consumer_path: scripts/gate_a_authorization.py
-gate_a_authorization_consumer_wired_to_stage1: true
-gate_a_authorization_consumer_tests_status: IMPLEMENTED
-gate_a_consumer_integration_point: scripts/skill_executor.py::ClaudeAgentSdkSkillExecutor
-gate_a_runtime_enforcement_exists: true
+gate_a_authorization_consumer_wired_to_stage1: false
+gate_a_authorization_consumer_tests_status: NOT_IMPLEMENTED
+gate_a_consumer_integration_point: scripts/skill_executor.py::SkillExecutor
+gate_a_runtime_enforcement_exists: false
 contract_tests_are_runtime_enforcement_tests: false
 authorization_without_consumer_is_valid: false
 owner_approval_without_consumer_is_valid: false
@@ -115,8 +119,10 @@ consumer_implementation_precedes_authorization_record_creation: true
 consumer_merge_precedes_owner_approval: true
 execution_framework_sha_selected_after_consumer_merge: true
 # "this pr" means the PR that most recently updated this document. PR #107
-# added no consumer; the Gate A consumer PR did.
-consumer_implementation_file_added_by_this_pr: true
+# added no consumer; the Gate A consumer PR did; the programmatic-runner
+# retirement removed the enforcing boundary again, and this PR adds no
+# consumer file.
+consumer_implementation_file_added_by_this_pr: false
 
 # --- Authorization-record integrity (single mandatory mechanism; sections 2b-2h) ---
 # Exactly one mechanism is permitted. There is no fork, no alternative, and no
@@ -271,13 +277,14 @@ authorization_hard_stop_conditions:
   - mutable or floating path used as authority
   - GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED
 authorization_hard_stop_count: 24
-# Hard stop 24 is RETIRED: the consumer exists, is wired ahead of the first
-# model call, and is proven at the invocation boundary. Conditions 1-23 are now
-# reachable and evaluated. The first hard stop that still fires is the pending
-# execution pin -- and the missing record and approval fire immediately after.
-# No hard stop was removed; one stopped firing because its condition was fixed.
-first_evaluated_hard_stop: GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING
-gate_a_authorization_consumer_not_implemented_is_active: false
+# Hard stop 24 is ACTIVE again: the consumer was implemented, wired ahead of
+# the first model call, and proven at the invocation boundary — and then the
+# programmatic runner (with every model-call boundary) was retired (ADR 0013),
+# so the NOT_IMPLEMENTED condition holds once more. Conditions 1-23 stand as
+# specified. The first hard stop that fires is the consumer-absence stop again;
+# the pending execution pin fires immediately after it.
+first_evaluated_hard_stop: GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED
+gate_a_authorization_consumer_not_implemented_is_active: true
 gate_a_authorization_consumer_hard_stop_waivable: false
 authorization_failure_is_gate_a_failure: true
 authorization_failure_permits_retry: false
@@ -345,7 +352,7 @@ gate_a_consumer_required_test_categories:
   - consumer absent blocks execution
   - consumer not wired into invocation path blocks execution
   - positive proof that the model invocation cannot occur before preflight success
-gate_a_consumer_required_test_categories_implemented_in_this_pr: true
+gate_a_consumer_required_test_categories_implemented_in_this_pr: false
 # Proof a LATER independent review must demonstrate before authorization (section 2k).
 proof_required_before_authorization:
   - real consumer source code exists
@@ -488,38 +495,43 @@ contradiction_search_paths:
 ## 1a. Gate A runtime consumer status
 
 ```text
-gate_a_authorization_consumer_status: IMPLEMENTED
+gate_a_authorization_consumer_status: NOT_IMPLEMENTED
 ```
 
-The Gate A authorization consumer now exists as runtime source at
-`scripts/gate_a_authorization.py`, and it is wired into the real Stage 1
-invocation path in `scripts/skill_executor.py` ahead of the first model call.
+The Gate A authorization module remains in the tree at
+`scripts/gate_a_authorization.py`, and `scripts/skill_executor.py` retains
+its Gate A imports — but no Stage 1 invocation path remains. The Gate A
+consumer was implemented, wired ahead of the first model call, and proven at
+the invocation boundary; the programmatic runner (with every model-call
+boundary the consumer gated) was then retired (ADR 0013). No capability is
+minted or consumed at runtime now.
 
 Stated plainly, and without hedging:
 
 ```text
-A Gate A authorization consumer exists in this repository.
-The runtime loads the authorization record.
-The runtime loads and validates the owner-approval artifact.
-The runtime recomputes the authorization-record SHA-256 over exact bytes.
-The runtime verifies owner identity.
-The runtime verifies the preparation-package digest.
-The runtime verifies the Gate D checklist digest.
-The runtime binds a validated authorization result to the Stage 1 model
-  invocation, as a typed single-use capability object.
-The 15-step sequence in section 5 is current runtime behavior. It executes.
+No Gate A authorization consumer runs in this repository.
+The specified protocol loaded the authorization record.
+The specified protocol validated the owner-approval artifact.
+The specified protocol recomputed the authorization-record SHA-256 over exact bytes.
+The specified protocol verified owner identity.
+The specified protocol verified the preparation-package digest.
+The specified protocol verified the Gate D checklist digest.
+The specified protocol bound a validated authorization result to the Stage 1
+  model invocation, as a typed single-use capability object.
+The 15-step sequence in section 5 is the specified protocol. It does not execute.
 The tests in PR #107 validate CONTRACT CONSISTENCY ONLY.
 The tests in PR #107 do NOT prove runtime enforcement, and must never be
   cited as evidence of it.
-The invocation-boundary proofs live in
-  tests/test_gate_a_invocation_boundary.py, which exercises the real
-  executors with a spy provider.
+The invocation-boundary proof suite
+  (tests/test_gate_a_invocation_boundary.py) was retired with the
+  programmatic runner. The retained authorization-module suite is
+  tests/test_gate_a_authorization_consumer.py.
 ```
 
 ### What implementing the consumer did NOT do
 
-The mechanism now exists. Nothing is authorized by it. Every one of these
-remains true and blocking:
+The mechanism was implemented and then retired with the programmatic runner.
+Nothing is authorized by it. Every one of these remains true and blocking:
 
 ```text
 A DRAFT authorization record exists, and it is NOT operative.
@@ -539,13 +551,12 @@ only that the authorization *proposal* has stable, hashable bytes that an owner
 could later approve. Authority arrives solely with an owner-approval artifact,
 which does not exist.
 
-An enforcement mechanism with nothing operative to enforce denies every
-request. That is the intended state: the consumer returns
-`GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING` while the sentinel stands, and with
-the record and digest present but no owner approval on disk it denies with
-`GATE_A_OWNER_APPROVAL_MISSING`, and mints no capability. Merging the consumer
-therefore moves the package *closer* to being auditable, and not one step
-closer to being authorized.
+No enforcement mechanism runs anymore: the programmatic runner was retired, so
+no request can reach a model-invocation boundary at all. That is the intended
+state: with the record and digest present but no owner approval on disk, no
+capability can be minted and no invocation can occur. The retired consumer
+therefore leaves the package auditable, and not one step closer to being
+authorized.
 
 ### Scope of the prose-honesty guard
 
@@ -553,9 +564,9 @@ The package tests include a deterministic prose guard that scans this document,
 the Gate D checklist, and the execution package for sentences asserting that
 authorization enforcement happens *now*. It exists because the authorization
 contract below was specified while no runtime consumer existed, so any
-present-tense enforcement sentence in these files would have been false; now
-that the consumer is merged and wired, the status-aware guard in
-`tests/support/state_honesty_guard.py` governs instead.
+present-tense enforcement sentence in these files would have been false; with
+the enforcing consumer retired, the status-aware guard in
+`tests/support/state_honesty_guard.py` governs the retired truth instead.
 
 **Declared scope.** This deterministic guard covers the enumerated
 active-simple-present, emphatic-do, present-progressive, and affirmative-passive
@@ -785,33 +796,38 @@ state are each explicitly insufficient:
 | Obtain a genuine repository-owner approval of the exact digest | **Still not runnable** until the execution pin is also finalized. |
 
 Existence is not authority. Drafting a record and hashing it produces stable
-bytes an owner *could* approve; it produces no approval. An approval is a
-decision *about* an enforcement mechanism, and the mechanism now exists and
-evaluates it — but no approval has been given.
+bytes an owner *could* approve; it produces no approval. An approval would be
+a decision *about* an enforcement mechanism, and no such mechanism runs — but
+no approval has been given either.
 
-The consumer requirement has been satisfied. The consumer was:
+The consumer requirement is not satisfied anymore. The consumer was:
 
 1. **implemented** as real source code;
 2. **tested**, with the positive and negative categories of section 2j;
 3. **reviewed** independently;
 4. **merged**;
 5. **wired into the real Stage 1 invocation path**, ahead of the first model
-   call, and proven so by integration test.
+   call, and proven so by integration test —
+6. **and then retired with the programmatic runner** (ADR 0013), which removed
+   every model-call boundary it gated.
 
-All five are true, so `GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED`
-(hard stop 24, section 2h) is retired and no longer fires. Authorization state
-is therefore effective — and it currently evaluates to DENY.
+Steps 1-5 are true history; step 6 is the current truth. So
+`GATE_A_AUTHORIZATION_CONSUMER_NOT_IMPLEMENTED` (hard stop 24, section 2h) is
+active again and fires first. Authorization state is therefore ineffective —
+and it evaluates to DENY regardless.
 
 ### Where the consumer lives
 
 ```yaml
 gate_a_authorization_consumer_path: scripts/gate_a_authorization.py
-gate_a_consumer_integration_point: scripts/skill_executor.py::ClaudeAgentSdkSkillExecutor
+gate_a_consumer_integration_point: scripts/skill_executor.py::SkillExecutor
 ```
 
-The contract requires that the consumer gate the real Stage 1 execution
-path — which enters through `scripts/workflow-runtime.py` — before the
-first model call. It does **not** claim that `scripts/workflow-runtime.py`
+The retained authorization module is `scripts/gate_a_authorization.py`; the
+designated integration seam remains the `SkillExecutor` interface in
+`scripts/skill_executor.py`, where a future consumer would gate the Stage 1
+execution path — which enters through `scripts/workflow-runtime.py` — before
+the first model call. It does **not** claim that `scripts/workflow-runtime.py`
 performs, or has ever performed, any authorization preflight. It does not; the
 preflight happens at the executor integration point named above.
 `scripts/workflow-runtime.py` is named in this package solely as
@@ -1204,8 +1220,9 @@ No circular self-reference is created, because the two commits are distinct:
 - the authorization record pins an EARLIER framework execution SHA;
 - the LATER run-control commit contains the authorization and approval
   artifacts;
-- the consumer verifies BOTH the framework SHA and the
-  authorization digest;
+- under the specified protocol, the consumer verified BOTH the framework SHA
+  and the authorization digest (retired with the programmatic runner; no
+  verification runs now);
 - the run-control commit does NOT need to equal the framework execution SHA,
   and must not be assumed to.
 ```
@@ -1270,8 +1287,9 @@ artifact.
 
 ### Package and checklist provenance
 
-The record carries SHA-256 digests for the two governing documents, and the
-Gate A consumer verifies them before any model invocation:
+The record carries SHA-256 digests for the two governing documents; under the
+specified protocol the Gate A consumer verified them before any model
+invocation (retired; no verification runs now):
 
 ```text
 SHA-256(preparation package bytes) == authorization record preparation_package_sha256
@@ -1809,7 +1827,7 @@ facts rather than inside a prose-guard exemption region:
 PR #107 is a **preparation-contract PR**. It implements no security
 enforcement. Its tests are contract-consistency tests
 (`pr_107_tests_are_contract_consistency_tests: true`) and must never be cited
-as evidence that runtime enforcement exists
+as evidence of runtime enforcement
 (`pr_107_implements_runtime_enforcement: false`).
 
 ### Owner authorization (blank — no approval pre-filled, and not yet meaningful)
