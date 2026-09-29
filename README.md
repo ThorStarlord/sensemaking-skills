@@ -19,6 +19,9 @@ Choose the entry point for your role instead of reading every document:
 | If you are... | Start here | What it owns |
 | --- | --- | --- |
 | A human/new user trying to use Sensemaking | [`GETTING_STARTED.md`](GETTING_STARTED.md) | Canonical human how-to and first-use walkthrough |
+| Browsing all documentation, current vs historical | [`docs/README.md`](docs/README.md) | Documentation index; navigation only |
+| Looking up what a Skill does | [`docs/skill-catalogue.md`](docs/skill-catalogue.md) | Skill catalogue grouped by responsibility; no routing |
+| Looking up CLI commands | [`docs/cli-reference.md`](docs/cli-reference.md) | Human-readable CLI overview; machine contracts remain authoritative |
 | Looking for the canonical Campaign lifecycle/composition | [`docs/agent-workflow-golden-path-v1.md`](docs/agent-workflow-golden-path-v1.md) | Canonical Campaign workflow-composition reference; static guidance, not routing |
 | A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
 | A human/agent wanting one-prompt strategic start/resume or a full-autonomy terminal mission | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) | Artifact-aware strategic orchestration across analysis, responsibility, repeated autonomous execution, evidence return, reconciliation, terminal-goal continuation, and reserved-decision boundaries |
