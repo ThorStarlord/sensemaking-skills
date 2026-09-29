@@ -346,7 +346,7 @@ class SkillsOrchestrator:
                 dest = current_session / artifact_file.name
                 if not dest.exists():
                     shutil.copy2(artifact_file, dest)
-                    print(f"  ✓ Copied {artifact_file.name}")
+                    print(f"  [ok] Copied {artifact_file.name}")
 
             # Run workflow with parent session artifacts available. This call is
             # intentionally explicit so it does not rely on the deprecated

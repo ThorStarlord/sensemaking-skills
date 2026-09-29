@@ -286,7 +286,7 @@ def main(argv: list[str] | None = None) -> int:
     # Exit with repeatable-boundary status
     if ledger["repeatable_failures"]:
         print(
-            f"\n⚠️  {len(ledger['repeatable_failures'])} repeatable failure "
+            f"\n[!]  {len(ledger['repeatable_failures'])} repeatable failure "
             "boundary(ies) detected. Systemic hardening warranted.",
             file=sys.stderr,
         )

@@ -537,7 +537,7 @@ class OrchestrationRunner:
                 f.write("---\n")
                 f.write(f"\n## Clarification\n\n{clarification}\n")
 
-            print(f"✓ Created intent amendment: {os.path.relpath(amendment_path, self.repo_root)}")
+            print(f"[ok] Created intent amendment: {os.path.relpath(amendment_path, self.repo_root)}")
             return amendment_path
         except Exception as e:
             self.errors.append(format_error("FILE_WRITE_FAILED", f"Failed to write intent amendment: {e}"))
@@ -554,7 +554,7 @@ class OrchestrationRunner:
 
         # 1. Git state (skip in chained/auto-invoked workflows)
         if self.chained:
-            print(f"  ~ GIT: chained workflow — skipping git clean check")
+            print(f"  ~ GIT: chained workflow -- skipping git clean check")
         else:
             clean, details = _check_clean_git(self.repo_root)
             if not clean:
@@ -605,11 +605,11 @@ class OrchestrationRunner:
             elif self.chained:
                 # Chained child: the parent workflow owns the context bundle. Warn but
                 # don't fail, since session/dir handling is the parent's responsibility.
-                print(f"  ~ CONTEXT: no context artifacts detected, but workflow is chained — "
+                print(f"  ~ CONTEXT: no context artifacts detected, but workflow is chained -- "
                       f"deferring to parent workflow's context bundle")
             elif not is_execution_mode:
                 # Planning mode: lenient — artifacts may not exist yet.
-                print(f"  ~ CONTEXT: no context artifacts found (planning mode — continuing). "
+                print(f"  ~ CONTEXT: no context artifacts found (planning mode -- continuing). "
                       f"An execution-mode run would require a prior sensemaking run.")
             else:
                 msg = (
