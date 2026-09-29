@@ -464,7 +464,7 @@ def main(argv: list[str] | None = None) -> int:
     if warnings:
         for warning in warnings:
             print(f"[WARN] {warning}")
-        print(f"\n  • {len(warnings)} warning(s)")
+        print(f"\n  - {len(warnings)} warning(s)")
         return 0
 
     print("[OK] All fields (required + recommended) present")

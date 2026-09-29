@@ -207,7 +207,7 @@ def main():
         print(f"VALIDATION FAILED: {len(all_errors)} error(s) found:")
         print()
         for error in all_errors:
-            print(f"  • {error}")
+            print(f"  - {error}")
         print()
         return 1
     else:

@@ -158,21 +158,21 @@ class PortfolioOrchestrator:
         print("  [1/2] Routing...")
         result = self.route_project(project_file)
         if result.status == "failed":
-            print(f"  ✗ Routing failed: {result.error_message}")
+            print(f"  [x] Routing failed: {result.error_message}")
             with self.lock:
                 self.results.append(result)
             return result
 
-        print(f"  ✓ Type: {result.classification_type} ({result.confidence}%)")
-        print(f"  ✓ Workflow: {result.workflow} ({result.mode})")
+        print(f"  [ok] Type: {result.classification_type} ({result.confidence}%)")
+        print(f"  [ok] Workflow: {result.workflow} ({result.mode})")
 
         # Execute the workflow
         print("  [2/2] Executing workflow...")
         result = self.execute_workflow(result)
         if result.status == "completed":
-            print(f"  ✓ Completed in {result.execution_time:.1f}s")
+            print(f"  [ok] Completed in {result.execution_time:.1f}s")
         else:
-            print(f"  ✗ Failed: {result.error_message}")
+            print(f"  [x] Failed: {result.error_message}")
 
         with self.lock:
             self.results.append(result)
