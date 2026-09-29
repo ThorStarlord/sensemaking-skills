@@ -86,13 +86,20 @@ class TestAutoInvokeAuthorityGating(unittest.TestCase):
                               "workflow_orchestration_plan.selected_workflow")
 
     def test_explicit_next_id_ui_diagnostic_fails_closed(self):
-        """The ui-diagnostic explicit next-id path must fail closed (ADR 0026).
+        """The retired ui-diagnostic explicit next-id path must fail closed.
 
-        ui-diagnostic-workflow declares auto_invoke_next_workflow_id:
-        ui-implementation-workflow. An explicit target is still NOT authority.
+        ui-diagnostic-workflow is compatibility_only under workflow-liveness.yaml
+        (ADR 0027), so the operational registry no longer loads it. A retired
+        explicit target is still NOT authority: loading fails closed with
+        WORKFLOW_NOT_FOUND and no runner (hence no spawn path) exists.
         """
-        self._assert_no_spawn(self._runner("ui-diagnostic-workflow", "guided_execution"),
-                              "ui-implementation-workflow", "ui_specification")
+        runner = OrchestrationRunner(
+            workflow_id="ui-diagnostic-workflow", mode="guided_execution",
+            repo_root=REPO_ROOT, executor="dry-run")
+        self.assertFalse(runner.workflow)
+        self.assertTrue(
+            any("WORKFLOW_NOT_FOUND" in e for e in runner.errors),
+            f"retired workflow must fail closed at load: {runner.errors}")
 
     def test_candidate_surfaced_with_reason_and_not_authorized_recorded(self):
         """Surfacing records candidate, source, reason, and 'execution not authorized'."""
