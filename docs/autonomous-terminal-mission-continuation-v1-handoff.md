@@ -324,3 +324,47 @@ MERGE_AUTHORITY_EXPANSION = NO
 Continue normal-use observation. Do not reopen construction from Trial 001 alone.
 The next useful evidence is a heterogeneous explicit-target episode with the
 actual harness-loaded Skill identity verified when feasible.
+
+## 8. Owner acceptance decision (2026-09-29)
+
+**Owner decision:** For normal use, the owner accepts full-autonomy /
+full-delegation output as acceptable **when it passes independent verification
+and repair**, and accepts the current level of reliability as sufficient **for
+use with that gate**.
+
+This is a risk-acceptance decision, not an empirical claim. It does not change
+the claim ceiling in section 5: general reliability without independent
+verification remains `NOT_ESTABLISHED`, and the trial ladder in
+`docs/normal-use/autonomous-terminal-mission-corroboration-plan.md` is
+unchanged.
+
+**Gate (what "independent verification and repair" means here):**
+
+- verification that does not depend on the producing agent's own report:
+  hosted CI on the exact head that runs the tests for the code that changed,
+  and/or a fresh-context review of the diff against the authoritative
+  contract;
+- defects found by that verification are repaired and re-verified before
+  integration;
+- authority limits are enforced by the environment (branch protection,
+  credentials), not only by the prompt.
+
+**Tolerated:** defects that the gate catches and repair before integration.
+
+**Not tolerated:** defects that reach the default branch with no independent
+check, including agent claims of coverage or completion that no external
+evidence supports.
+
+**Basis:** Trial 001 (supported, attribution-limited) and inline-001
+(`docs/normal-use/autonomous-terminal-mission-inline-001.md`): an independent
+review found defects the producing agent's own review did not (an unsupported
+coverage claim, a silently dropped stale reference, and focused CI that never
+ran the existing tests for the changed code); they were repaired and merged.
+Attribution for inline-001 is weak (different harness and model, session
+exposed to the plan), so it is a data point, not a ladder rung.
+
+**Revisit:** after Trials 002-004, or immediately if a defect reaches the
+default branch without independent review.
+
+This decision does not grant merge, release, or deploy authority, and it does
+not replace the per-mission authority block.
