@@ -233,6 +233,41 @@ jobs:
             exit 1
           }
 
+  full-suite:
+    name: Full test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install product, lab, and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest pytest-subtests pytest-xdist ruff
+          # Lab deps the full suite exercises. They are declared in
+          # requirements-lab.txt; installed here explicitly so the full-suite
+          # gate does not silently skip tests that import them (the previous
+          # blind spot: the curated product subset never ran them, so CI stayed
+          # green while the full suite failed).
+          python -m pip install "rfc8785>=0.1.4,<0.2" "jsonschema>=4.18,<5.0"
+
+      - name: Full suite (same command as local)
+        run: python -m pytest -q -n auto
+
+      - name: Assert the full suite did not mutate tracked state
+        shell: bash
+        run: |
+          git status --porcelain
+          test -z "$(git status --porcelain)" || {
+            echo "::error::full suite dirtied the working tree"
+            exit 1
+          }
+
   filesystem-security-linux:
     name: Filesystem security (Linux)
     runs-on: ubuntu-latest
