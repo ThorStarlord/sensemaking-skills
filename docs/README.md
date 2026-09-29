@@ -70,6 +70,27 @@ ADR says so - see `research/control-model-research-agenda.md`).
 These are not moved into `archive/` here because tests and cross-references
 depend on their current paths.
 
+## Root-level historical records
+
+The repository root carries a few non-documentation records. Treat them as
+historical evidence, not current guidance:
+
+| Root path | What it is | Status |
+| --- | --- | --- |
+| `release-v1.0.yaml` | The machine-readable 1.0 release/support contract. | **Current, load-bearing.** Read by validators, CI, `MANIFEST.in`, and the release tests. |
+| `adoption-finalization.md` | Probe Engine relationship-integration adoption record (2026-08-12). | Historical record. |
+| `integration-design.md`, `integration-report.md` | Cross-artifact relationship-probe design and experiment report. | Historical records. |
+| `integration-run-auteur.yaml`, `integration-run-sensemaking-skills.yaml` | Raw probe-run outputs from that experiment. | Immutable evidence. |
+
+**Decision (2026-09-29, delegated by the owner):** leave the historical
+records in place rather than move them. They are cited by immutable probe
+reports and campaign records (`artifacts/*.yaml`,
+`experiments/evidence/**`, `docs/campaigns/**`), so relocating them would
+invalidate evidence citations for no benefit. `release-v1.0.yaml` stays at the
+root because it is a load-bearing machine contract. The same reasoning applies
+to the `PHASE-*` / `STAGE-*` / `IMPLEMENTATION-*` files above: they stay in
+place, marked historical here.
+
 ## Adding a document
 
 Put it in the group above that fits, give it a status line, and add it here if
