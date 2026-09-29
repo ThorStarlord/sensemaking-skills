@@ -61,7 +61,7 @@ schema_version: 1
 primary_fog_type: architecture_fog
 evidence:
   - "scripts/validate-brief.py:1: exists"
-recommended_workflow_id: architecture-implementation-workflow
+recommended_workflow_id: architectural-review-planning-workflow
 weakness_type: Zero Validation
 created_at: "2026-08-09T00:00:00Z"
 immutable: true

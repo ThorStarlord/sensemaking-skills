@@ -238,7 +238,7 @@ escalation_recommended: false
 evidence:
   - "README.md (lines 5-12): feature requirements are vague, no user context"
   - "docs/ARCHITECTURE.md: does not exist"
-recommended_workflow_id: product-implementation-workflow  # must be a top-level id from workflow-registry.yaml
+recommended_workflow_id: product-discovery-sprint  # must be a liveness-active top-level id from workflow-registry.yaml
 recommended_execution_mode: guided_execution
 weakest_boundary: Zero Validation
 weakness_type: Zero Validation  # must be one of the 7 weakness types (weakness-types.md) or "Other", NOT a fog-type value

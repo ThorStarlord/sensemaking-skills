@@ -2,17 +2,20 @@
 
 ## Evidence
 
-- README.md (lines 5-12): Feature requirements are vague, no user context
+- README.md (lines 6-8): Feature requirements are vague, no user context
 - docs/ARCHITECTURE.md: Does not exist
 - Issues: 30+ marked 'needs-clarification', no acceptance criteria
+
+## 6. Weakest boundary
+**Weakness type:** Contract Mismatch
 
 ## Evidence excerpts
 
 ```yaml
 evidence_excerpts:
   - file: "README.md"
-    lines: "5-12"
-    quote: "An agent-native framework for repository diagnosis and workflow orchestration."
+    lines: "L6-L8"
+    quote: "An agent-native engineering sensemaking and control layer for software-engineering agents."
     supports_claim: "product_fog: feature scope is undefined"
 ```
 
@@ -25,20 +28,21 @@ rather than UI, docs, or architecture concerns; this points to product_fog.
 Based on the evidence, the primary fog type is **product_fog**. The system lacks clear user needs and feature scope definition.
 
 The recommended workflow for Phase 2 implementation will be:
-- product-implementation-workflow
+- product-discovery-sprint
 
 ---
 
-## Machine-readable Handoff
+## 13. Machine-readable handoff
 
 ```yaml
 artifact_id: repository_sensemaking_brief
 primary_fog_type: product_fog
 evidence:
-  - "README.md (lines 5-12): Feature requirements are vague"
+  - "README.md (lines 6-8): Feature requirements are vague"
   - "ARCHITECTURE.md missing: no design documentation"
   - "30+ issues lack acceptance criteria"
-recommended_workflow_id: product-implementation-workflow
+recommended_workflow_id: product-discovery-sprint
+weakness_type: Contract Mismatch
 created_at: "2026-05-24T15:30:00Z"
 immutable: true
 ```

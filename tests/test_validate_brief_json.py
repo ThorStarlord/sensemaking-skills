@@ -72,15 +72,16 @@ class TestValidateBriefJSON(unittest.TestCase):
         # Should have errors for missing fields
         self.assertGreater(len(errors), 0, "Invalid brief should have errors")
 
-        # Check error types are correct
+        # The three missing required fields must each be reported as
+        # missing_field (the validator additionally reports logic gaps for
+        # the sparse fixture; those are covered by their own tests).
         error_types = [e.get("error_type") for e in errors]
-        self.assertTrue(all(et == "missing_field" for et in error_types))
-
-        # Check fields mentioned
         error_fields = [e.get("field") for e in errors]
-        self.assertIn("primary_fog_type", error_fields)
-        self.assertIn("evidence", error_fields)
-        self.assertIn("recommended_workflow_id", error_fields)
+        for field in ("primary_fog_type", "evidence", "recommended_workflow_id"):
+            self.assertIn(field, error_fields)
+            self.assertIn("missing_field", [
+                e.get("error_type") for e in errors if e.get("field") == field
+            ])
 
     def test_missing_fields_json_has_suggested_fixes(self):
         """Each error should have suggested_fixes array."""
@@ -94,7 +95,15 @@ class TestValidateBriefJSON(unittest.TestCase):
         for error in result["errors"]:
             self.assertIn("suggested_fixes", error)
             self.assertIsInstance(error["suggested_fixes"], list)
-            self.assertGreater(len(error["suggested_fixes"]), 0)
+        # Missing-field errors must be actionable (non-empty fixes); structural
+        # logic gaps and non-blocking weakness_type warnings describe brief-level
+        # absence and carry references instead of fixes.
+        for error in result["errors"]:
+            if error.get("error_type") == "missing_field":
+                self.assertGreater(
+                    len(error["suggested_fixes"]), 0,
+                    f"missing-field error for {error.get('field')} should suggest a fix",
+                )
 
     def test_wrong_value_types(self):
         """Brief with wrong data types should produce type_error."""
@@ -190,7 +199,10 @@ class TestValidateBriefJSON(unittest.TestCase):
         for error in errors:
             message = error.get("message", "")
             self.assertGreater(len(message), 10, "Message should be descriptive")
-            self.assertIn(error.get("field"), message, "Message should mention the field")
+            # Field-level messages must name their field; brief-level
+            # structural errors (field None) cannot.
+            if error.get("field") is not None:
+                self.assertIn(error.get("field"), message, "Message should mention the field")
 
     def test_references_point_to_real_docs(self):
         """Each error should reference documentation."""

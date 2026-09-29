@@ -71,7 +71,7 @@ evidence_excerpts:
 
 ```yaml
 primary_fog_type: architecture_fog
-recommended_workflow_id: architecture-implementation-workflow
+recommended_workflow_id: architectural-review-planning-workflow
 escalation_recommended: false
 weakness_type: Zero Validation
 evidence:
@@ -107,7 +107,7 @@ class TestSemanticMerge(unittest.TestCase):
         out = bs.reconcile(VALID_MODEL_OUTPUT)
         self.assertIn("This repo builds sensemaking skills", out)
         self.assertIn("primary_fog_type: architecture_fog", out)
-        self.assertIn("recommended_workflow_id: architecture-implementation-workflow", out)
+        self.assertIn("recommended_workflow_id: architectural-review-planning-workflow", out)
 
     def test_valid_output_passes_validator(self):
         out = bs.reconcile(VALID_MODEL_OUTPUT)
