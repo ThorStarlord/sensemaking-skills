@@ -2694,23 +2694,27 @@ class GateAConsumerStatusFields(unittest.TestCase):
         self.contract, self.text = _load_contract()
 
     # 51
-    def test_consumer_status_is_implemented_and_enforcing(self):
-        """The consumer landed. The claim is checked against real files.
+    def test_consumer_status_is_retired_and_unenforcing(self):
+        """The enforcing consumer was retired with the programmatic runner.
 
-        Flipping this status to IMPLEMENTED is only truthful if the consumer
-        source AND the invocation-boundary test suite actually exist, so this
-        asserts both rather than trusting the YAML.
+        The Gate A module (scripts/gate_a_authorization.py) is retained and
+        still tested, but no model-invocation boundary remains, so the honest
+        contract status is NOT_IMPLEMENTED with no runtime enforcement. The
+        retired invocation-boundary suite must stay absent: restoring
+        enforcement claims without restoring their boundary proof is the
+        defect this test exists to catch.
         """
         self.assertEqual(
-            self.contract["gate_a_authorization_consumer_status"], "IMPLEMENTED"
+            self.contract["gate_a_authorization_consumer_status"], "NOT_IMPLEMENTED"
         )
-        self.assertTrue(self.contract["gate_a_runtime_enforcement_exists"])
+        self.assertFalse(self.contract["gate_a_runtime_enforcement_exists"])
         self.assertTrue(
             (REPO_ROOT / "scripts" / "gate_a_authorization.py").is_file()
         )
-        self.assertTrue(
-            (REPO_ROOT / "tests" / "test_gate_a_invocation_boundary.py").is_file(),
-            "IMPLEMENTED is only honest if the invocation boundary is tested",
+        self.assertFalse(
+            (REPO_ROOT / "tests" / "test_gate_a_invocation_boundary.py").exists(),
+            "the retired invocation-boundary suite must stay absent while "
+            "no enforcing consumer exists",
         )
 
     # 52
@@ -2739,8 +2743,15 @@ class GateAConsumerStatusFields(unittest.TestCase):
 
     # 54
     def test_consumer_is_wired_to_stage1(self):
-        """Wired means the invocation path imports AND consumes the capability."""
-        self.assertTrue(
+        """Wired means the invocation path imports AND consumes the capability.
+
+        The programmatic runner was retired (ADR 0013): the Gate A imports
+        are retained in scripts/skill_executor.py but no provider boundary
+        remains to consume a capability at, so the honest contract value is
+        unwired. Rewiring (a `.consume(` call at a live boundary) must be a
+        deliberate change that flips this test back.
+        """
+        self.assertFalse(
             self.contract["gate_a_authorization_consumer_wired_to_stage1"]
         )
         executor = (REPO_ROOT / "scripts" / "skill_executor.py").read_text(
@@ -2748,29 +2759,33 @@ class GateAConsumerStatusFields(unittest.TestCase):
         )
         self.assertIn("from gate_a_authorization import", executor)
         self.assertIn("require_authorization_capability", executor)
-        self.assertIn(
+        self.assertNotIn(
             ".consume(",
             executor,
-            "the capability must be consumed at the provider boundary, not "
-            "merely validated somewhere earlier",
+            "no capability consumption may exist without a live provider "
+            "boundary: the retired consumer must stay retired",
         )
 
     # 55
     def test_consumer_tests_are_implemented(self):
+        """The retained module suite exists; the retired boundary suite stays gone."""
         self.assertEqual(
             self.contract["gate_a_authorization_consumer_tests_status"],
-            "IMPLEMENTED",
+            "NOT_IMPLEMENTED",
         )
-        self.assertTrue(
+        self.assertFalse(
             self.contract[
                 "gate_a_consumer_required_test_categories_implemented_in_this_pr"
             ]
         )
-        for suite in (
-            "tests/test_gate_a_authorization_consumer.py",
-            "tests/test_gate_a_invocation_boundary.py",
-        ):
-            self.assertTrue((REPO_ROOT / suite).is_file(), suite)
+        self.assertTrue(
+            (REPO_ROOT / "tests" / "test_gate_a_authorization_consumer.py").is_file(),
+            "the retained authorization-module suite must keep existing",
+        )
+        self.assertFalse(
+            (REPO_ROOT / "tests" / "test_gate_a_invocation_boundary.py").exists(),
+            "the retired invocation-boundary suite must stay absent",
+        )
 
     # 56
     def test_document_tests_are_not_runtime_enforcement_tests(self):
@@ -2832,22 +2847,26 @@ class AuthorizationCannotOutrunTheConsumer(unittest.TestCase):
         )
 
     # 61
-    def test_consumer_hard_stop_is_retired_but_still_unwaivable(self):
-        """The hard stop stopped firing because its condition was FIXED.
+    def test_consumer_hard_stop_is_active_again_after_runner_retirement(self):
+        """The hard stop fired, was fixed, and fires again after retirement.
 
-        It was not waived and not deleted: it remains among the 24 and remains
-        non-waivable, so deleting the consumer would make it fire again.
+        The consumer PR satisfied the condition, retiring the stop. The
+        programmatic-runner retirement (ADR 0013) then removed every
+        model-call boundary the consumer gated, so the NOT_IMPLEMENTED
+        condition holds once more. The stop was not waived and not deleted:
+        it remains among the 24 and remains non-waivable, so rewiring a live
+        enforcing consumer would retire it again.
         """
         self.assertFalse(
             self.contract["gate_a_authorization_consumer_hard_stop_waivable"]
         )
-        self.assertFalse(
+        self.assertTrue(
             self.contract["gate_a_authorization_consumer_not_implemented_is_active"]
         )
         self.assertIn(
             CONSUMER_HARD_STOP,
             self.contract["authorization_hard_stop_conditions"],
-            "the hard stop must be retired by satisfaction, never removed",
+            "the hard stop must be reactivated by retirement, never removed",
         )
         # Retiring one hard stop must not make the package runnable.
         self.assertFalse(self.contract["package_runnable"])
@@ -2864,16 +2883,13 @@ class ConsumerHardStop(unittest.TestCase):
         self.stops = self.contract["authorization_hard_stop_conditions"]
 
     # 62
-    def test_consumer_hard_stop_still_listed_but_no_longer_first(self):
+    def test_consumer_hard_stop_listed_and_first_again(self):
         self.assertIn(CONSUMER_HARD_STOP, self.stops)
-        # The consumer now exists, so the first STILL-FIRING hard stop is the
-        # pending execution pin.
+        # The enforcing consumer was retired, so the first firing hard stop is
+        # the consumer-absence stop again — not the pending execution pin.
         self.assertEqual(
             self.contract["first_evaluated_hard_stop"],
-            "GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING",
-        )
-        self.assertNotEqual(
-            self.contract["first_evaluated_hard_stop"], CONSUMER_HARD_STOP
+            CONSUMER_HARD_STOP,
         )
         # It is documented in the hard-stop table too, not only in YAML.
         self.assertIn(CONSUMER_HARD_STOP, self.text)
@@ -3185,10 +3201,10 @@ class Pr107ClaimsAreBounded(unittest.TestCase):
         checklist = CHECKLIST_PATH.read_text(encoding="utf-8")
         collapsed = " ".join(checklist.split())
         self.assertIn(
-            "The Gate A consumer verifies this checklist's digest.", collapsed
+            "No Gate A consumer runs to verify this checklist's digest.", collapsed
         )
         self.assertIn(
-            "Gate D must not begin unless the Gate A consumer has passed.",
+            "Gate D must not begin",
             collapsed,
         )
         self.assertIn("this checklist governs no live run", collapsed)
@@ -3197,13 +3213,15 @@ class Pr107ClaimsAreBounded(unittest.TestCase):
 
 
 class ConsumerImplementedWithoutAuthorizingAnything(unittest.TestCase):
-    """80: the consumer now exists in runtime sources -- and authorizes nothing.
+    """80: the consumer module remains in runtime sources -- and authorizes nothing.
 
     This test was originally the guard proving PR #107 added no consumer. The
-    consumer PR flips its direction: the authorization *mechanism* must now be
+    consumer PR flipped its direction: the authorization *mechanism* must now be
     present in runtime sources, while every authorization *artifact* must still
-    be absent. Those are independent facts, and conflating them is exactly the
-    failure mode the preparation package exists to prevent.
+    be absent. The programmatic-runner retirement flips the "added by this PR"
+    bit back: the module is retained (markers still present) but this PR adds
+    no consumer file. Those are independent facts, and conflating them is
+    exactly the failure mode the preparation package exists to prevent.
     """
 
     def setUp(self):
@@ -3211,7 +3229,7 @@ class ConsumerImplementedWithoutAuthorizingAnything(unittest.TestCase):
 
     # 80
     def test_consumer_exists_in_runtime_sources(self):
-        self.assertTrue(
+        self.assertFalse(
             self.contract["consumer_implementation_file_added_by_this_pr"]
         )
         implementers = []
@@ -4214,14 +4232,16 @@ class ConsumerHardStopUnchangedByRound6(unittest.TestCase):
 
     # 141
     def test_consumer_hard_stop_semantics_unchanged(self):
-        """Round 6 changed no safety semantics, and neither did the consumer PR.
+        """The round-6 prose work changed no safety semantics; the runner
+        retirement legitimately changed the consumer status it pins here.
 
-        The consumer *status* legitimately changed; every safety value asserted
-        below did not.
+        The consumer *status* legitimately changed (IMPLEMENTED at the
+        consumer PR, NOT_IMPLEMENTED again after the programmatic-runner
+        retirement); every safety value asserted below did not.
         """
         self.assertIn(CONSUMER_HARD_STOP, self.text)
         self.assertEqual(
-            self.contract["gate_a_authorization_consumer_status"], "IMPLEMENTED"
+            self.contract["gate_a_authorization_consumer_status"], "NOT_IMPLEMENTED"
         )
         self.assertTrue(self.contract["consumer_absence_blocks_preflight"])
         self.assertFalse(self.contract["package_runnable"])
@@ -4640,10 +4660,10 @@ class Round7ChangedNoSafetySemantics(unittest.TestCase):
         self.assertIn(CONSUMER_HARD_STOP, self.text)
         self.assertEqual(
             self.contract["first_evaluated_hard_stop"],
-            "GATE_A_EXECUTION_FRAMEWORK_SHA_PENDING",
+            CONSUMER_HARD_STOP,
         )
         self.assertEqual(
-            self.contract["gate_a_authorization_consumer_status"], "IMPLEMENTED"
+            self.contract["gate_a_authorization_consumer_status"], "NOT_IMPLEMENTED"
         )
         self.assertTrue(self.contract["consumer_absence_blocks_preflight"])
         self.assertFalse(self.contract["package_runnable"])

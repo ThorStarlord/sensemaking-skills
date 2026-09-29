@@ -29,21 +29,22 @@
 > but they are non-operative drafts. The **owner-approved digest is a distinct
 > artifact** from the authorization record itself (`owner-approval.md`): a
 > record may not approve itself, and any digest carried inside the record is
-> informational only. The Gate A consumer recomputes the record's digest and
-> compares it to the owner-approved value before any model invocation; a
-> mismatch, a missing record, or a missing owner approval is a hard stop.
-> Authorization cannot succeed without an owner approval binding the exact
-> current record digest; none binds it at this state.
+> informational only. Under the specified protocol, the Gate A consumer
+> recomputed the record's digest and compared it to the owner-approved value
+> before any model invocation; a mismatch, a missing record, or a missing
+> owner approval was a hard stop. That invocation path was retired with the
+> programmatic runner (ADR 0013). Authorization cannot succeed without an
+> owner approval binding the exact current record digest; none binds it at
+> this state.
 >
-> **Runtime enforcement of that contract exists.** The Gate A authorization
-> consumer is implemented, tested, reviewed, merged, and wired into the real
-> Stage 1 invocation path (`scripts/gate_a_authorization.py`): it loads the
-> authorization record, validates the owner approval, recomputes the digests,
-> and blocks a model invocation on authorization state. The Evidence 0016
-> preparation contract is therefore **not executable** while Stage 1 is not
-> authorized: the pending sentinels and the absent owner approval keep every
-> invocation denied. The historical Evidence 0013-0015 narrative below is
-> untouched by all of this.
+> **No runtime enforcement of that contract runs.** The Gate A authorization
+> consumer was implemented, tested, reviewed, and merged
+> (`scripts/gate_a_authorization.py`), then retired with the programmatic
+> runner: no Stage 1 invocation path remains for it to gate. The Evidence
+> 0016 preparation contract is therefore **not executable**: the pending
+> sentinels and the absent owner approval keep it unauthorized, and the
+> retirement keeps it uninvokable. The historical Evidence 0013-0015
+> narrative below is untouched by all of this.
 
 **Date**: 2026-07-27 (revised: this revision is a documentation-only refresh
 that proposes a **new** framework execution pin for a possible future

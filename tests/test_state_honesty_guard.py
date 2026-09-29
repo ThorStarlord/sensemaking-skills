@@ -66,10 +66,18 @@ POST_GATE_A_STATE = {
     "real_model_invoked": False,
 }
 
-# The actual current derived state of the real repository. Equal to
-# POST_GATE_A_STATE: the PR #113 approval was invalidated by the record
-# regeneration (see note above) and no fresh approval has been granted.
-REAL_REPO_STATE = dict(POST_GATE_A_STATE)
+# The actual current derived state of the real repository. SPLIT from
+# POST_GATE_A_STATE by the programmatic-runner retirement (ADR 0013): the
+# authorization module and its imports are retained (consumer_exists and the
+# synthetic battery keep the implemented world), but no model-invocation
+# boundary remains, so nothing is wired to Stage 1 and no runtime enforcement
+# executes. test_derived_state_matches_the_current_repository names its own
+# comparison target explicitly for exactly this reason.
+REAL_REPO_STATE = {
+    **POST_GATE_A_STATE,
+    "gate_a_consumer_wired": False,
+    "runtime_enforcement_exists": False,
+}
 
 
 class GuardBase(unittest.TestCase):
@@ -97,7 +105,11 @@ class StateFactsAreDerivedNotDeclared(GuardBase):
 
     def test_consumer_facts_trace_to_real_files(self):
         self.assertTrue(guard.CONSUMER_PATH.is_file())
-        self.assertTrue(guard.BOUNDARY_PROOF_PATH.is_file())
+        # The invocation-boundary proof suite was retired with the
+        # programmatic runner (ADR 0013): its absence is the honest
+        # retired state, and runtime_enforcement_exists derives False
+        # from it.
+        self.assertFalse(guard.BOUNDARY_PROOF_PATH.exists())
         body = guard.PROVIDER_BOUNDARY_PATH.read_text(encoding="utf-8")
         self.assertIn("gate_a_authorization", body)
 
