@@ -139,6 +139,10 @@ class TestRuntimeExecutorHandoff(unittest.TestCase):
         self.runner.use_fixtures = False
         self.runner.mode = "guided_execution"
         self.runner.errors = []
+        # Instance attributes set by __init__ are not on the class, so the
+        # spec'd mock lacks them: warrant_enabled gates the opt-in
+        # MODEL_WARRANT seam in execute_step and must be set explicitly.
+        self.runner.warrant_enabled = False
         self.runner.contracts = {
             "artifacts": [
                 {"id": "problem_frame", "path": "artifacts/problem_frame.md"}

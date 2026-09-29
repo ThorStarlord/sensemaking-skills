@@ -27,4 +27,6 @@ def test_maintainer_guide_and_checklist_define_release_authority() -> None:
     for text in (guide, checklist):
         assert "release-v1.0-contract.md" in text
         assert "semantic truth" in text
-        assert "publication" in text
+        # Topic coverage, not typography: "Publication" at a sentence start
+        # is the same topic as "publication".
+        assert "publication" in text.lower()

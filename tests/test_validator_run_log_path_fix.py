@@ -46,6 +46,10 @@ def test_run_validate_and_report_uses_log_dir():
         runner.repo_root = tmpdir
         runner.log_dir = tmpdir
         runner.workflow_id = "test"
+        # Attributes the method reads that __init__ normally sets (the test
+        # bypasses __init__ via __new__): target_repo gates the
+        # --target-repo flag for external-repository runs.
+        runner.target_repo = None
 
         # Create a dummy artifact to validate
         artifact_path = os.path.join(tmpdir, "test_artifact.md")

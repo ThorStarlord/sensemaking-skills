@@ -66,7 +66,9 @@ def test_load_workflow_registry_loads_yaml(tmp_path: Path):
     ref_dir.mkdir(parents=True)
     (ref_dir / "workflow-registry.yaml").write_text("workflows:\n  - id: test\n")
     result = load_workflow_registry(str(tmp_path))
-    assert result == {"workflows": [{"id": "test"}]}
+    # Operational view (ADR 0027): entries are annotated with effective
+    # liveness; unlisted workflows default to active.
+    assert result == {"workflows": [{"id": "test", "liveness": "active"}]}
 
 
 def test_load_workflow_registry_returns_none_for_missing(tmp_path: Path):

@@ -2,9 +2,18 @@
 
 Tests that both paths can execute end-to-end:
 1. Manual path: diagnostic workflow → manual implementation workflow with --from-session
-2. Automation path: diagnostic workflow auto-chains to implementation workflow
+2. Automation path: diagnostic workflow surfaces (never spawns) the next-workflow
+   candidate under ADR 0026 fail-closed authority gating
 3. Recursion guard: prevents self-routing
-4. Session passing: child workflow receives parent artifacts via --from-session
+4. Session passing: --from-session flag and session-reuse plumbing exist
+
+NOTE (retirement): test_auto_invocation_passes_from_session was rewritten as
+test_auto_invocation_is_fail_closed_not_spawn. It pinned the pre-ADR-0026
+spawning behavior (_invoke_next_workflow passing --from-session to a child
+process). The runtime is now fail-closed by design: candidates are surfaced,
+never spawned, and the retired spawning path must stay absent. The no-spawn
+contract itself is pinned thoroughly by
+tests/test_auto_invoke_authority_gating.py.
 """
 
 import os
@@ -74,21 +83,24 @@ def test_recursion_guard_implemented():
     assert 'if next_workflow_id == self.workflow_id:' in runtime_code, "Self-routing check not found"
     print("  ✓ Self-routing check implemented")
 
-    assert 'recursion_error' in runtime_code, "Recursion error status not handled"
-    print("  ✓ Recursion error status handling implemented")
+    assert 'routing configuration error' in runtime_code, "Self-routing error reporting not found"
+    print("  ✓ Self-routing reported as a routing configuration error")
 
     print("  [OK] TEST PASSED")
 
 
-def test_auto_invocation_passes_from_session():
-    """Test that auto-invocation passes --from-session to child workflow.
+def test_auto_invocation_is_fail_closed_not_spawn():
+    """Test that auto-invocation surfaces (never spawns) the next candidate.
 
-    Verifies:
-    1. _invoke_next_workflow method includes --from-session in command
-    2. Parent session directory is passed to child workflow
+    ADR 0026 retired child-process spawning: the runtime surfaces the
+    candidate via _surface_candidate_next_workflow and completes without a
+    child workflow. The no-spawn contract itself is pinned by
+    tests/test_auto_invoke_authority_gating.py; here we pin the surviving
+    session plumbing (--from-session flag, from_session state, session
+    reuse) that the manual path still uses.
     """
     print("\n" + "="*60)
-    print("TEST 3: Auto-Invocation Passes Parent Session")
+    print("TEST 3: Auto-Invocation Fail-Closed, Session Plumbing Retained")
     print("="*60)
 
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -97,31 +109,37 @@ def test_auto_invocation_passes_from_session():
     with open(runtime_path, "r", encoding="utf-8") as f:
         runtime_code = f.read()
 
-    # Check that _invoke_next_workflow includes --from-session
-    assert '_invoke_next_workflow' in runtime_code, "_invoke_next_workflow method not found"
-    print("  ✓ _invoke_next_workflow method exists")
+    # The fail-closed surfacing entry point replaced _invoke_next_workflow.
+    assert '_surface_candidate_next_workflow' in runtime_code, "fail-closed surfacing entry point not found"
+    print("  ✓ _surface_candidate_next_workflow entry point exists")
 
-    # Find the _invoke_next_workflow method
-    start_idx = runtime_code.find('def _invoke_next_workflow')
-    end_idx = runtime_code.find('\n    def ', start_idx + 1)
-    method_code = runtime_code[start_idx:end_idx]
+    assert 'def _invoke_next_workflow' not in runtime_code, "retired spawning method must stay retired"
+    print("  ✓ retired _invoke_next_workflow spawning method absent")
 
-    assert '--from-session' in method_code, "--from-session not passed in auto-invocation"
-    print("  ✓ --from-session passed to child workflow")
+    assert '--from-session' in runtime_code, "--from-session flag missing"
+    print("  ✓ --from-session flag retained for the manual path")
 
-    assert 'self.artifact_session_dir' in method_code, "Parent session directory not referenced"
-    print("  ✓ Parent artifact_session_dir passed to child")
+    assert 'self.artifact_session_dir' in runtime_code, "Parent session directory not referenced"
+    print("  ✓ Parent artifact_session_dir referenced")
 
     print("  [OK] TEST PASSED")
 
 
 def test_cli_syntax_examples():
-    """Test that CLI examples in documentation use correct syntax.
+    """Test that documented CLI syntax matches the implementation.
+
+    The documented surface is the `sensemaking-skills <command>` families
+    (docs/cli-reference.md, subordinate to docs/cli-contract-v1.0.yaml);
+    scripts/workflow-runtime.py retains --workflow for direct invocation.
+    GETTING_STARTED.md intentionally points at references instead of
+    duplicating CLI contracts, so flag counts are pinned at the reference
+    and contract, not the entry guide.
 
     Verifies:
-    1. GETTING_STARTED.md uses --workflow flag
-    2. README.md uses --workflow flag
-    3. ADR 0012 uses --workflow flag
+    1. docs/cli-reference.md documents the sensemaking-skills command families
+    2. docs/cli-contract-v1.0.yaml is the machine authority for the CLI
+    3. workflow-runtime.py implements the --workflow flag
+    4. ADR 0012 historical --workflow examples remain intact
     """
     print("\n" + "="*60)
     print("TEST 4: CLI Syntax in Documentation")
@@ -129,23 +147,26 @@ def test_cli_syntax_examples():
 
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    # Check GETTING_STARTED.md
-    gs_path = os.path.join(repo_root, "GETTING_STARTED.md")
-    with open(gs_path, "r", encoding="utf-8") as f:
-        gs_content = f.read()
+    # CLI reference documents the command families.
+    ref_path = os.path.join(repo_root, "docs", "cli-reference.md")
+    with open(ref_path, "r", encoding="utf-8") as f:
+        ref_content = f.read()
 
-    workflow_flag_count = gs_content.count("--workflow")
-    assert workflow_flag_count > 10, f"Expected many --workflow flags in GETTING_STARTED.md, found {workflow_flag_count}"
-    print(f"  ✓ GETTING_STARTED.md: {workflow_flag_count} --workflow examples")
+    assert "sensemaking-skills" in ref_content, "cli-reference.md doesn't document the sensemaking-skills command"
+    print("  ✓ docs/cli-reference.md documents the sensemaking-skills command")
 
-    # Check README.md
-    readme_path = os.path.join(repo_root, "README.md")
-    with open(readme_path, "r", encoding="utf-8") as f:
-        readme_content = f.read()
+    # Machine contract is the CLI authority.
+    contract_path = os.path.join(repo_root, "docs", "cli-contract-v1.0.yaml")
+    assert os.path.exists(contract_path), "docs/cli-contract-v1.0.yaml (CLI machine authority) missing"
+    print("  ✓ docs/cli-contract-v1.0.yaml CLI authority present")
 
-    workflow_flag_count = readme_content.count("--workflow")
-    assert workflow_flag_count > 5, f"Expected multiple --workflow flags in README.md, found {workflow_flag_count}"
-    print(f"  ✓ README.md: {workflow_flag_count} --workflow examples")
+    # The runtime implements --workflow for direct invocation.
+    runtime_path = os.path.join(repo_root, "scripts", "workflow-runtime.py")
+    with open(runtime_path, "r", encoding="utf-8") as f:
+        runtime_code = f.read()
+
+    assert '"--workflow"' in runtime_code or "'--workflow'" in runtime_code, "--workflow flag not implemented in runtime"
+    print("  ✓ workflow-runtime.py implements the --workflow flag")
 
     # Check ADR 0012
     adr_path = os.path.join(repo_root, "docs", "adr", "0012-invocation-paths.md")
@@ -205,10 +226,15 @@ def test_registry_mode_consistency():
 def test_execution_modes_documented():
     """Test that all five execution modes are documented.
 
+    The enumeration lives in ADR 0012 (ratification) and
+    skills/workflow-planner/references/execution-modes.md (runtime reference).
+    GETTING_STARTED.md intentionally points at references instead of
+    duplicating enumerations, so modes are pinned at the ADR and the
+    reference, not the entry guide.
+
     Verifies:
     1. ADR 0012 lists five execution modes
-    2. GETTING_STARTED.md documents all five modes
-    3. README.md documents all five modes
+    2. execution-modes.md reference covers all five modes
     """
     print("\n" + "="*60)
     print("TEST 6: Five Execution Modes Documented")
@@ -230,23 +256,14 @@ def test_execution_modes_documented():
         assert mode in adr_content, f"ADR 0012 doesn't document {mode}"
     print(f"  ✓ ADR 0012: All five modes documented")
 
-    # Check GETTING_STARTED.md
-    gs_path = os.path.join(repo_root, "GETTING_STARTED.md")
-    with open(gs_path, "r", encoding="utf-8") as f:
-        gs_content = f.read()
+    # Check the execution-modes reference
+    ref_path = os.path.join(repo_root, "skills", "workflow-planner", "references", "execution-modes.md")
+    with open(ref_path, "r", encoding="utf-8") as f:
+        ref_content = f.read()
 
     for mode in expected_modes:
-        assert mode in gs_content, f"GETTING_STARTED.md doesn't document {mode}"
-    print(f"  ✓ GETTING_STARTED.md: All five modes mentioned")
-
-    # Check README.md
-    readme_path = os.path.join(repo_root, "README.md")
-    with open(readme_path, "r", encoding="utf-8") as f:
-        readme_content = f.read()
-
-    mode_count = sum(1 for mode in expected_modes if mode in readme_content)
-    assert mode_count >= 3, f"README.md only mentions {mode_count} modes"
-    print(f"  ✓ README.md: {mode_count} modes documented")
+        assert mode in ref_content, f"execution-modes.md doesn't document {mode}"
+    print(f"  ✓ execution-modes.md: All five modes documented")
 
     print("  [OK] TEST PASSED")
 
@@ -259,7 +276,7 @@ if __name__ == "__main__":
     tests = [
         ("from_session_flag_exists", test_from_session_flag_exists),
         ("recursion_guard_implemented", test_recursion_guard_implemented),
-        ("auto_invocation_passes_from_session", test_auto_invocation_passes_from_session),
+        ("auto_invocation_is_fail_closed_not_spawn", test_auto_invocation_is_fail_closed_not_spawn),
         ("cli_syntax_examples", test_cli_syntax_examples),
         ("registry_mode_consistency", test_registry_mode_consistency),
         ("execution_modes_documented", test_execution_modes_documented),
@@ -289,10 +306,10 @@ if __name__ == "__main__":
         print("\nSummary:")
         print("  ✓ --from-session flag implemented in runtime")
         print("  ✓ Recursion guard prevents self-routing")
-        print("  ✓ Auto-invocation passes parent session to child")
-        print("  ✓ CLI syntax uses --workflow flag correctly")
+        print("  ✓ Auto-invocation fail-closed, session plumbing retained")
+        print("  ✓ CLI syntax matches the implementation")
         print("  ✓ Registry modes consistent with documentation")
-        print("  ✓ Five execution modes documented everywhere")
+        print("  ✓ Five execution modes documented at ADR + reference")
         sys.exit(0)
     else:
         sys.exit(1)
