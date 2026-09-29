@@ -871,11 +871,15 @@ class OrchestrationRunner:
     # the brief carries no valid recommended_workflow_id. It is deliberately NOT
     # treated as the final selection: the brief's recommendation is preferred, and
     # selection (chosen_workflow_id / selected_workflow) is a distinct authority.
+    # Every fallback MUST be liveness-active (ADR 0027): a compatibility-only
+    # fallback would produce a plan that validate-plan.py rejects. No active
+    # ui-family workflow exists, so ui_fog falls back to the comprehensive
+    # full-fog-workflow (a generic diagnostic route, not a UI-specific claim).
     _FOG_TO_WORKFLOW = {
-        "product_fog": "product-implementation-workflow",
-        "ui_fog": "ui-implementation-workflow",
+        "product_fog": "product-discovery-sprint",
+        "ui_fog": "full-fog-workflow",
         "docs_fog": "docs-implementation-workflow",
-        "architecture_fog": "architecture-implementation-workflow",
+        "architecture_fog": "architectural-review-planning-workflow",
     }
 
     def _read_brief_machine_data(self, brief_path: str) -> dict:

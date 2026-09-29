@@ -51,8 +51,8 @@ class TestWorkflowPlannerSkillFogContract(unittest.TestCase):
             "The four-fog list in SKILL.md must match the ratified canonical set",
         )
         # The fog->workflow mapping must not teach integration_fog as a routable
-        # fog type (it must not appear in the selection-mapping lines).
-        mapping_section = self.content.split("Workflow selection mapping", 1)[1]
+        # fog type (it must not appear in the selection-guidance lines).
+        mapping_section = self.content.split("Workflow selection guidance", 1)[1]
         mapping_head = mapping_section.split("\n\n", 1)[0]
         self.assertNotIn(
             "integration_fog",
@@ -70,7 +70,7 @@ class TestWorkflowPlannerSkillFogContract(unittest.TestCase):
         )
         m = re.search(
             r"Section 11: Machine-readable plan\*+ YAML block containing "
-            r"`?([a-z_]+)`?",
+            r"[a-z ]*`([a-z_]+)`",
             self.content,
         )
         self.assertIsNotNone(
@@ -87,9 +87,14 @@ class TestWorkflowPlannerSkillFogContract(unittest.TestCase):
         # The mapping must be framed as a planning recommendation / selection
         # aid, not automatic execution authority.
         self.assertIn(
-            "planning recommendation / selection aid",
+            "planning recommendation",
             self.content,
             "fog->workflow mapping must be framed as a recommendation",
+        )
+        self.assertIn(
+            "not automatic routing",
+            self.content,
+            "fog->workflow mapping must deny automatic routing",
         )
         self.assertIn(
             "A recommendation is not execution authorization",

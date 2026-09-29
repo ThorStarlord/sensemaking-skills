@@ -36,16 +36,22 @@ _TARGET = re.compile(r"target repositor|analy[sz]ed (?:target|repositor)|in the 
 
 
 def _boundary_rule_2() -> str:
-    """The text of Boundary Rule 2 (the recommended_workflow_id grounding rule)
-    in repo-sensemaker/SKILL.md -- located within the '## Boundary Rules'
-    section, robust to the rule's bold-header wording."""
+    """The text of the recommended_workflow_id grounding rule in
+    repo-sensemaker/SKILL.md -- located within the '## Boundary Rules'
+    section by content (it grounds recommended_workflow_id on the toolchain
+    registry), robust to rule renumbering."""
     text = SKILL_MD.read_text(encoding="utf-8")
     section = re.search(r"^##\s+Boundary Rules\s*$(.*?)(?=^##\s)", text, re.S | re.M)
     assert section, "'## Boundary Rules' section not found in repo-sensemaker/SKILL.md"
     body = section.group(1)
-    m = re.search(r"^\s*2\.\s+.*?(?=^\s*3\.\s+)", body, re.S | re.M)
-    assert m, "Boundary Rule 2 not found in the '## Boundary Rules' section"
-    return m.group(0)
+    rules = re.split(r"(?=^\s*\d+\.\s+)", body, flags=re.M)
+    for rule in rules:
+        if "recommended_workflow_id" in rule and "workflow-registry.yaml" in rule:
+            return rule
+    raise AssertionError(
+        "recommended_workflow_id grounding rule not found in the "
+        "'## Boundary Rules' section"
+    )
 
 
 def _template_section_12() -> str:

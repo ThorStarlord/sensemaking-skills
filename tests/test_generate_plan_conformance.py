@@ -58,20 +58,23 @@ VALID_ESCALATED_BRIEF_FIXTURE = os.path.join(
 
 # A real, distinct, non-fog-default registry workflow with a contract-valid plan. It
 # must differ from every fog-aligned default so the test proves a brief recommendation
-# that is NOT merely reconstructed from a fog map is honored. product-discovery-sprint
-# is a product-family workflow that differs from product-implementation-workflow.
-DISTINCT_RECOMMENDED_WORKFLOW = "product-discovery-sprint"
+# that is NOT merely reconstructed from a fog map is honored. product-strategy-sprint
+# is an active product-family workflow that differs from the product_fog default
+# (product-discovery-sprint).
+DISTINCT_RECOMMENDED_WORKFLOW = "product-strategy-sprint"
 
 # The fog -> default implementation workflow mapping, taken from validate-plan.py's OWN
 # fog_to_workflow (the consumer/routing authority), NOT from the runtime's private
 # _FOG_TO_WORKFLOW. The test uses it only to construct realistic valid briefs whose
 # recommendation the producer must honor; it never asserts the producer "should" have
-# produced a value from the runtime's private map.
+# produced a value from the runtime's private map. Every default is liveness-active
+# (ADR 0027); no active ui-family workflow exists, so ui_fog maps to the comprehensive
+# full-fog-workflow fallback, mirroring the validator.
 VALIDATOR_FOG_TO_DEFAULT_WORKFLOW = {
-    "product_fog": "product-implementation-workflow",
-    "ui_fog": "ui-implementation-workflow",
+    "product_fog": "product-discovery-sprint",
+    "ui_fog": "full-fog-workflow",
     "docs_fog": "docs-implementation-workflow",
-    "architecture_fog": "architecture-implementation-workflow",
+    "architecture_fog": "architectural-review-planning-workflow",
 }
 
 if "workflow_runtime" in sys.modules:
@@ -312,7 +315,7 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
         """
         tmp = tempfile.mkdtemp()
         try:
-            brief = _write_valid_brief("product_fog", "product-implementation-workflow")
+            brief = _write_valid_brief("product_fog", "product-discovery-sprint")
             _assert_valid_brief(self, brief)
 
             runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
@@ -326,7 +329,7 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             self.assertEqual(machine.get("selected_workflow"), DISTINCT_RECOMMENDED_WORKFLOW)
             # The brief's recommendation is the system recommendation.
             self.assertEqual(machine.get("system_recommended_workflow"),
-                             "product-implementation-workflow")
+                             "product-discovery-sprint")
             # Selection differs from recommendation -> truthful divergence.
             self.assertIs(machine.get("routing_divergence"), True)
             self.assertEqual(machine.get("routing_decision_method"), "user_explicit_override")
@@ -354,7 +357,7 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
         tmp = tempfile.mkdtemp()
         try:
             # Brief recommends the fog-default; a finalized (non-override) plan selects it.
-            brief = _write_valid_brief("product_fog", "product-implementation-workflow")
+            brief = _write_valid_brief("product_fog", "product-discovery-sprint")
             _assert_valid_brief(self, brief)
             runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
             runner.generate_plan()
@@ -364,10 +367,10 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             with open(runner.plan_out, encoding="utf-8") as f:
                 content = f.read()
             content = content.replace(
-                "selected_workflow: product-implementation-workflow",
+                "selected_workflow: product-discovery-sprint",
                 f"selected_workflow: {DISTINCT_RECOMMENDED_WORKFLOW}")
             content = content.replace(
-                "chosen_workflow_id: product-implementation-workflow",
+                "chosen_workflow_id: product-discovery-sprint",
                 f"chosen_workflow_id: {DISTINCT_RECOMMENDED_WORKFLOW}")
             with open(runner.plan_out, "w", encoding="utf-8") as f:
                 f.write(content)
