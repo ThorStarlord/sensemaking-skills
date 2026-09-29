@@ -12,6 +12,7 @@ It is NOT registered in the production CLI or executor factory.
 """
 
 import os
+import subprocess
 import sys
 from pathlib import Path
 from datetime import datetime
@@ -106,7 +107,7 @@ class DeterministicFixtureSkillExecutor(SkillExecutor):
         # Route to skill-specific fixture generator
         if skill_id == "repo-sensemaker":
             return self._invoke_repo_sensemaker(
-                output_path, expected_output_artifact, input_artifacts
+                output_path, expected_output_artifact, input_artifacts, context
             )
         elif skill_id == "architectural-review":
             return self._invoke_architectural_review(
@@ -125,56 +126,74 @@ class DeterministicFixtureSkillExecutor(SkillExecutor):
         output_path: str,
         expected_artifact: str,
         input_artifacts: list[str],
+        context: dict,
     ) -> SkillExecutionResult:
-        """Step 1: Produce a valid repository_sensemaking_brief fixture."""
+        """Step 1: Produce a valid repository_sensemaking_brief fixture.
+
+        The output must satisfy the current validate-brief.py contract: a
+        ## 13. Machine-readable handoff block, a liveness-active
+        recommended_workflow_id, a Section 6 / Section 13 weakness_type pair,
+        and a verbatim-grounded evidence excerpt.
+
+        Like the real producer, this fixture also runs probe-repo.py into the
+        runtime-owned expected_probe_report_path when the runtime allocates
+        one (directive #23): without that report the validator fails closed
+        with PROBE_REPORT_NOT_FOUND, which is the product behaving correctly.
+        """
+        probe_path = (context or {}).get("expected_probe_report_path")
+        if probe_path:
+            target = (context or {}).get("target_repo") or self.repo_root
+            os.makedirs(os.path.dirname(probe_path), exist_ok=True)
+            subprocess.run(
+                [sys.executable, str(SCRIPTS_DIR / "probe-repo.py"),
+                 "--repo-root", str(target), "--output", str(probe_path)],
+                capture_output=True, text=True, check=True,
+            )
 
         brief_content = """# Repository Sensemaking Brief
 
-## Summary
+## 1. Repository goal
 This repository implements an agent-native framework for repository diagnosis
 and workflow orchestration. It turns repository uncertainty into clear problem
 frames, research paths, and actionable next-step prompts.
 
-## Weakest Boundary
+## 6. Weakest boundary
+**Weakness type:** Implicit Dependencies
+
 The current weakest boundary is in workflow routing: the gap between initial
 problem-domain identification and domain-specific implementation workflows.
 
-## Evidence
-- File: CONTEXT.md (missing — recommend creating)
-- File: skills/workflow-planner/references/workflow-registry.yaml (complete)
-- File: scripts/validate-plan.py (alignment enforcement works)
+## 7. Evidence
+- skills/workflow-planner/references/workflow-registry.yaml (lines L8): workflow catalog root
+- scripts/validate-plan.py: alignment enforcement works
 
-## Evidence excerpts
+## 8. Evidence excerpts
 
 ```yaml
 evidence_excerpts:
   - file: "skills/workflow-planner/references/workflow-registry.yaml"
-    lines: "1-10"
-    quote: "workflows: [...]"
-    supports_claim: "Workflow registry defined with 30+ workflows"
+    lines: "L8"
+    quote: "workflows:"
+    supports_claim: "Workflow registry defines the workflow catalog"
 ```
 
-## Recommended Next Step
+## 12. Recommended workflow
 Logic trace: the workflow registry and validation framework are in place but
 no skill exists to validate architectural decisions against them, so the
 weakest boundary is the missing architectural-review routing step; this
-points to architecture_fog. Implement the architectural-review skill to
-handle routing decisions when proposed architectural changes need validation
-against principal-engineer judgment.
+points to architecture_fog and the architectural-review-planning-workflow.
 
-## Machine-readable metadata
+## 13. Machine-readable handoff
 
 ```yaml
 artifact_id: repository_sensemaking_brief
 primary_fog_type: architecture_fog
 evidence:
-  - "Workflow registry defined with 30+ workflows"
-  - "Validation framework in place"
-  - "routing decision fields present in artifact-contracts.yaml"
-  - "Gap: architectural-review skill not yet implemented"
+  - "skills/workflow-planner/references/workflow-registry.yaml (lines L8): workflow catalog root"
+  - "scripts/validate-plan.py: alignment enforcement works"
 recommended_workflow_id: architectural-review-planning-workflow
+weakness_type: Implicit Dependencies
 created_at: "2026-07-19T12:00:00Z"
-created_by: "deterministic-test-executor"
 immutable: false
 ```
 """
@@ -274,7 +293,7 @@ judgment (capability abstraction, bottleneck detection, architectural risk mappi
 Implement the architectural-review skill following the workflow-planner handoff
 contract. Deploy to production with appropriate validation gates.
 
-## Machine-readable recommendation
+## Machine-readable Decision
 
 ```yaml
 artifact_id: architectural_review_recommendation

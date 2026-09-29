@@ -165,7 +165,10 @@ def _run_validator(script: Path, artifact: Path) -> tuple[int, dict]:
 
 def _git(repo: Path, *args: str) -> str:
     completed = subprocess.run(
-        ["git", *args],
+        # -c core.autocrlf=false: the test relies on byte-stable blob hashes,
+        # and Windows Git system defaults enable autocrlf (LF->CRLF on
+        # commit), which would otherwise corrupt the comparison.
+        ["git", "-c", "core.autocrlf=false", *args],
         cwd=repo,
         check=True,
         capture_output=True,
