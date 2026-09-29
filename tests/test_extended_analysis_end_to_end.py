@@ -84,20 +84,18 @@ extended_analysis:
 
 ```yaml
 primary_fog_type: product_fog
-recommended_workflow_id: product-implementation-workflow
+recommended_workflow_id: product-discovery-sprint
 escalation_recommended: false
 weakness_type: Zero Validation
 evidence:
   - "scripts/brief_skeleton.py (lines L52): artifact_id constant"
 ```
 """
-# recommended_workflow_id deliberately uses product-implementation-workflow,
-# not architecture-implementation-workflow: the latter is valid per
-# workflow-registry.yaml (what validate-brief.py checks) but is missing from
-# docs/canonical-vocabulary.yaml's workflow_ids list (what validate-artifact.py
-# checks) -- a real, pre-existing drift between the two registries, unrelated
-# to Section 15/extended_analysis. Using a workflow id present in both keeps
-# this test isolated to what it's actually verifying.
+# recommended_workflow_id deliberately uses product-discovery-sprint: it is
+# liveness-active (what validate-brief.py checks) AND present in
+# docs/canonical-vocabulary.yaml's workflow_ids list (what
+# validate-artifact.py checks). A retired id would fail the former; an id
+# missing from the vocabulary would fail the latter.
 
 
 class TestExtendedAnalysisEndToEnd(unittest.TestCase):

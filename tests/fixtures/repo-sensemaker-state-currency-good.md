@@ -26,7 +26,7 @@ Example repository goal text.
 **Weakness type:** Contract Mismatch
 
 ## 7. Evidence
-- README.md (lines 5-12): feature requirements are vague, no user context
+- README.md (lines 6-8): feature requirements are vague, no user context
 - docs/ARCHITECTURE.md: does not exist
 
 State-currency note: the roadmap document claims the proposal-apply CLI is
@@ -46,8 +46,8 @@ context (the Stage 1 intent) distinguishable.
 ```yaml
 evidence_excerpts:
   - file: README.md
-    lines: L5-L12
-    quote: "An agent-native framework for repository diagnosis and workflow orchestration."
+    lines: L6-L8
+    quote: "An agent-native engineering sensemaking and control layer for software-engineering agents."
     supports_claim: "Feature requirements are vague"
 ```
 
@@ -62,7 +62,7 @@ verified and is not sequenced on.
 Logic trace: the evidence shows feature requirements are vague and no
 architecture documentation exists, so the fog is centered on undefined
 product scope rather than UI, docs, or architecture concerns; this points
-to product_fog and the product-implementation-workflow.
+to product_fog and the product-discovery-sprint.
 
 ## 13. Machine-readable handoff
 
@@ -75,9 +75,9 @@ primary_fog_type: product_fog
 diagnosis_conflict: false
 escalation_recommended: false
 evidence:
-  - "README.md (lines 5-12): feature requirements are vague, no user context"
+  - "README.md (lines 6-8): feature requirements are vague, no user context"
   - "docs/ARCHITECTURE.md: does not exist"
-recommended_workflow_id: product-implementation-workflow
+recommended_workflow_id: product-discovery-sprint
 recommended_execution_mode: guided_execution
 weakest_boundary: analytics_feedback_gap
 weakness_type: Contract Mismatch
