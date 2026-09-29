@@ -449,10 +449,10 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
             "current_value": None,
             "message": "WORKFLOW_NOT_FOUND: Required field 'chosen_workflow_id' is missing.",
             "suggested_fixes": [
-                "Add chosen_workflow_id: product-implementation-workflow",
-                "Add chosen_workflow_id: ui-implementation-workflow",
+                "Add chosen_workflow_id: product-discovery-sprint",
+                "Add chosen_workflow_id: full-fog-workflow",
                 "Add chosen_workflow_id: docs-implementation-workflow",
-                "Add chosen_workflow_id: architecture-implementation-workflow"
+                "Add chosen_workflow_id: architectural-review-planning-workflow"
             ],
             "reference": "skills/workflow-planner/references/artifact-contracts.yaml"
         })
@@ -550,11 +550,15 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
     # when the plan carries no explicit `system_recommended_workflow`. Following #232,
     # the fog map is a fallback recommendation, not an unquestionable routing authority:
     # the audit compares the recorded system recommendation against the selection.
+    # Every fallback MUST be liveness-active (ADR 0027); the pre-liveness
+    # *-implementation-workflow defaults are compatibility_only and must never be
+    # recommended. No active ui-family workflow exists, so ui_fog falls back to
+    # the comprehensive full-fog-workflow (generic diagnostic route).
     fog_to_workflow = {
-        "product_fog": "product-implementation-workflow",
-        "ui_fog": "ui-implementation-workflow",
+        "product_fog": "product-discovery-sprint",
+        "ui_fog": "full-fog-workflow",
         "docs_fog": "docs-implementation-workflow",
-        "architecture_fog": "architecture-implementation-workflow",
+        "architecture_fog": "architectural-review-planning-workflow",
     }
 
     fog_type = plan_data.get("primary_fog_type")
