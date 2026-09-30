@@ -52,3 +52,12 @@ citations (probe reports, campaign records) for no benefit.
   parallel-load wall-clock artifacts on this machine, not regressions, and
   none were in the baseline failure list.
 - Baseline failure count resolved: 74 / 74.
+- The four local load-sensitive failures above were subsequently made robust on
+  slow runners in PR #496: the perf subprocess timeout 10->120 and bound 5s->30s;
+  the arch-review `--from-session` timeouts 30->120; and the runtime's Level-1
+  preflight (`_run_level1_validator`) given an explicit 300s bound.
+- An untracked `tests/test_reference_audit.py` (never committed; imported a
+  nonexistent `audit_entry` and broke whole-suite collection) was deleted from
+  the H: working checkout and **not restored**; the quarantined copy under
+  `%TEMP%` was discarded after this record. There was nothing to relocate into
+  the repository.
