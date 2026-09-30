@@ -82,6 +82,10 @@ discipline in 002 (the control, not the skill, breached read-only).
 
 ## Verdict (recommendation to the owner) — revised after the control arm
 
+**Owner decision packet: `artifacts/owner_decision_capsule.md`
+(`OWNER-DECISION-SIMPLIFY-001`). Ratification pending — this file stays a
+recommendation until the owner ratifies.**
+
 Apply the pre-registered rule: **the control arm did not confirm the skill's
 advantage at the ≥2/3 bar**, so the honest verdict is **simplify hard**, not
 "keep investing but simplify."

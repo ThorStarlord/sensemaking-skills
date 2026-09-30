@@ -12,7 +12,7 @@ Separate facts from preference/policy/authority.
 
 Describe only materially real options.
 
-## 4. Tradeoffs, Reversibility, and Deferral
+## 4. Tradeoffs Reversibility and Deferral
 
 Explain what differs and what waiting changes.
 
