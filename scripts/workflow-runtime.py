@@ -128,7 +128,14 @@ def _run_level1_validator(repo_root: str) -> tuple[bool, str]:
     if not os.path.exists(validator):
         return False, "validate-repo.py not found"
     cmd = [sys.executable, validator, "--repo-root", repo_root]
-    code, output, _elapsed = run_subprocess(cmd, repo_root, inject_repo_root=False)
+    # Level-1 validation walks the whole repository, so on a loaded or slow
+    # machine it can exceed the shared run_subprocess default (120s). The
+    # timeout is a liveness guard, not a correctness bound: give this
+    # whole-repo pass explicit headroom so a slow-but-correct preflight does
+    # not fail closed.
+    code, output, _elapsed = run_subprocess(
+        cmd, repo_root, inject_repo_root=False, timeout=300
+    )
     return code == 0, output
 
 

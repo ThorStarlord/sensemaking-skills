@@ -349,7 +349,7 @@ created_by: "test-runner"
             capture_output=True,
             text=True,
             cwd=repo_root,
-            timeout=30
+            timeout=120
         )
 
         # Verify workflow loading succeeded (not execution failure)
@@ -428,7 +428,7 @@ immutable: false
             capture_output=True,
             text=True,
             cwd=repo_root,
-            timeout=30
+            timeout=120
         )
 
         # Workflow should fail (Step 2 should fail on missing input)
