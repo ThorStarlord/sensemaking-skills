@@ -111,6 +111,12 @@ Negative evidence includes first-visible-problem capture, mechanically legible
 work crowding out product work, or manufactured alternatives with no different
 strategic effect.
 
+Breadth serves the decision, not a template. Examine the systems and candidate
+themes the decision actually needs, and stop once the frame is stable; continued
+enumeration of opportunity themes is ceremony, not evidence. This is an
+observation discipline, not a theme-count target: there is no minimum number of
+alternatives to surface, and a larger list is not better.
+
 ## 5. Observation 2 — frontier-candidate compression
 
 Breadth observations should not map one-to-one into Strategic Frontier
