@@ -53,37 +53,73 @@ score, benchmark, or control/treatment study.
   was enumerating several opportunity themes when one was decision-changing —
   worst at the smallest repo.
 
-## Verdict (recommendation to the owner)
+## Control arm (added 2026-09-29 — the decisive comparison)
 
-The evidence supports **keep investing, but simplify** rather than "simplify
-only" or "stop":
+Each skill episode's counterfactual was a self-report ("without the skill I would
+have captured the first visible problem"). To test that, the same three tasks
+were run in **clean, fresh contexts that never loaded the skill** (the prompt
+explicitly excluded any skill/SKILL.md/sensemaking material). Records:
+`strategic-sensemaking-control-002/003/004.md`. Judged on artifacts
+(responsibility chosen, scope avoided), not self-reports.
 
-- **Keep investing.** In 3/3 read-only episodes the control layer changed the
-  selected responsibility away from scope-inventing implementation and toward the
-  correct blocking question (owner/authority, external boundary, or a
-  presupposed capability). That is the specific failure the skill exists to
-  prevent, and it recurred across three very different repositories.
-- **Simplify (do not add).** The one recurring cost is disproportionate breadth
-  enumeration. The warranted change is emphasis, not machinery: scale
-  breadth/depth to repository size and stop enumerating opportunity themes once
-  the frame is stable. Consistent with the guide's own "lightest surface that can
-  change the decision."
-- **Do not stop, and do not formalize.** There is no stable, mechanically
-  expressible failure boundary yet, and no repeated manual burden that a new
-  artifact or policy layer would remove. Adding one now would violate the guide's
-  escalation rule (section 13) and its non-goals (section 14).
+Pre-registered bar (owner): ratify "keep investing but simplify" only if the
+control arm shows the skill changed the outcome in the skill's favor on **at
+least two of three**; otherwise the honest verdict is **"simplify hard."**
+
+| Task | Skill arm chose | Control arm chose | Direction |
+| --- | --- | --- | --- |
+| 002 Pydantic | ESCALATE on ownership/authority; no mutation | Restore verifiability (env mismatch) + request the work queue; incidental `.venv` slip, self-corrected | **Mixed / near-tie** |
+| 003 Jellyfin | ESCALATE on the external-maintainer boundary | Bounded, evidence-grounded verification of the hottest recent refactor, with a proposed regression test | **Control-favorable** |
+| 004 AION | CHALLENGE the visible milestone; surface the unwired-validation gap | Implement the visible documented milestone (v0.2 schema validation) | **Skill-favorable** |
+
+Read honestly: the skill won the milestone-challenge case (004) and did not
+invent scope anywhere; but the control **also avoided scope invention in all
+three**, produced a *better* responsibility in 003 (the skill over-escalated
+there), and matched the skill in 002. The skill's central claimed benefit —
+preventing first-visible-problem capture — materialized in **one of three**,
+not the two the bar required. The only other skill-favorable signal is authority
+discipline in 002 (the control, not the skill, breached read-only).
+
+## Verdict (recommendation to the owner) — revised after the control arm
+
+Apply the pre-registered rule: **the control arm did not confirm the skill's
+advantage at the ≥2/3 bar**, so the honest verdict is **simplify hard**, not
+"keep investing but simplify."
+
+- **Simplify hard.** The doctrine's core ceremony cost (breadth/depth over-
+  processing) is real and recurring, while its headline benefit (preventing
+  scope-inventing first-visible-problem capture) was demonstrated on 1/3 tasks
+  against a control that avoided that failure on its own. Reduce the ceremony
+  substantially. The single clearer skill-favorable signal is a secondary one —
+  authority-boundary discipline (the control alone mutated) — not the headline
+  claim.
+- **Do not stop.** There is one genuine skill win (004, milestone inversion) and
+  a real authority-discipline signal; and the skill never made an outcome worse
+  than the control in the sense of inventing scope.
+- **Do not formalize.** Still no stable, mechanically expressible failure
+  boundary, and no repeated manual burden a new artifact or policy layer would
+  remove (guide sections 13-14).
+
+This revision changes the earlier agent-authored recommendation. The investment
+decision remains the owner's (issue #497); the evidence now points at "simplify
+hard."
 
 ## What would change this verdict
 
-- A control arm showing agents reach the same responsibility without the skill
-  would weaken the "keep investing" half.
-- Write-authority episodes showing the skill either under-builds (excess inquiry
+- Write-authority episodes showing whether the skill under-builds (excess inquiry
   where a cheap reversible build was warranted) or over-builds would test the
   unmeasured half of the doctrine.
 - More episodes on genuinely construction-eligible tasks, not read-only ones.
+- A second control arm on a set where the control is likelier to over-act (e.g.
+  tasks that look like obvious local fixes), to test whether the skill's
+  milestone-capture prevention generalizes beyond AION.
 
 ## Program limits recorded
 
-- Read-only only; counterfactuals self-reported; n=3; reviewer not independent
-  of the skill's design. These bound the verdict to "recommendation," which is
-  why the investment decision remains owner-reserved in issue #497.
+- Read-only only; counterfactuals self-reported; n=3; the treatment and control
+  arms were run by the same reviewer's subagents (not an independent lab). These
+  bound the verdict to "recommendation," which is why the investment decision
+  remains owner-reserved in issue #497.
+- The control arm 002 agent incidentally created a `.venv` (then removed it) — a
+  read-only slip, recorded, and a point in the skill's favor on authority
+  discipline rather than against it.
