@@ -249,6 +249,8 @@ more scaffolding != more visible machinery
 
 Do not score these factors, infer a permanent beginner/expert class, create a Campaign merely because a task is large, or translate them into automatic Skill/workflow routing. For examples and anti-patterns, read `references/adaptive-guidance-v0.md` when this decision is material.
 
+Scale breadth and depth to the repository and the decision, not to a template. Explore the systems and candidate themes the decision actually needs, then stop: once the frame is stable, continued enumeration of opportunity themes is ceremony, not evidence. A candidate count is not a goal, and there is no target number of alternatives to surface. This is reasoning guidance, not a rule, score, or quota.
+
 ### Broad delegated repository missions
 
 A user may delegate an **outcome** rather than a preselected implementation task, for example completing the current authoritative product scope or advancing the repository until no further warranted change remains.
