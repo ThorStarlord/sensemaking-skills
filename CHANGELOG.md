@@ -47,6 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Cross-repository execution projection** — adds read-only prerequisite edges/layers from explicit `depends_on` / `release_after` relations without selecting an execution plan or authorizing parallel work.
 - **Execution Interface & Agent-Factorization v1 closeout** — all planned capability packages integrated and feature-integrated `main` passed Product, Lab, and Release Candidate Distribution validation; the program returns to normal-use validation after closeout qualification.
 
+### Fixed
+- **Level-1 preflight timeout bound** — the runtime's Level-1 structural preflight (`validate-repo.py` over the whole repository) now allows up to 300 seconds instead of the shared 120-second subprocess default, so a slow-but-correct preflight on a loaded or slow machine does not fail closed. This is a liveness guard, not a correctness bound; the value is a fixed constant (no environment override). No control boundary, contract, or authority changes.
+
 ### Release status
 - RC3 is development only; no RC3 candidate has been frozen or qualified.
 
