@@ -34,6 +34,28 @@ Per `strategic-sensemaking-observation-guide.md` (section 11 template, section
   (`--sync` or `setup-skills --force`). Lower the claim ceiling and preserve
   the mismatch per the guide.
 
+## Decision on the stale Skills (delegated, 2026-09-29)
+
+**Do not synchronize the global harness for the trials. Record the caveat per
+episode instead.**
+
+Rationale:
+
+- The two Skills that gate the control-layer question — `using-sensemaking` and
+  `strategic-sensemaking-loop` — are already current, so the primary attribution
+  the trials need is sound.
+- The stale set is 15 drifted + 4 missing downstream Skills. Synchronizing
+  mutates the machine-global `~/.agents/skills` (and, if distributed, the other
+  agents' folders), affecting work outside this repository for a secondary
+  attribution gain.
+- The guide explicitly permits a real episode with imperfect attribution:
+  "Lower the claim ceiling and preserve the mismatch" (section 10).
+
+If full downstream attribution is later required, the contained action is a
+single sync of the drifted + missing Skills, on this machine's `.agents` only,
+followed by re-running `probe_skill_distribution.py --no-write` — not a blanket
+sync of all 51.
+
 ## Boundary (why this is not executed here)
 
 Selecting the 2-3 real bounded tasks and running the episodes is a strategic,
