@@ -115,6 +115,11 @@ This revision changes the earlier agent-authored draft verdict. The owner has
 since **ratified "simplify hard"** and chosen Option B, Stage 1 only
 (`artifacts/owner_decision_capsule.md`).
 
+**Re-measure (3 episodes per arm per task):**
+`strategic-sensemaking-remeasure-2026-09-30.md` — reinforces "simplify hard"
+(0 clear skill-favorable tasks; below the ≥2/3 bar). The pre-ratification verdict
+stands and is not reopened by the added episodes.
+
 ## What would change this verdict
 
 - Write-authority episodes showing whether the skill under-builds (excess inquiry
