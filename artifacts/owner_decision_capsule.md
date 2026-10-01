@@ -11,8 +11,9 @@ bar of 2 of 3. Applying that rule, the honest verdict is **simplify hard**, not
 "keep investing but simplify" (`docs/normal-use/strategic-sensemaking-trial-program-review.md`).
 
 Interpreting the evidence honestly: **"1 of 3 means no demonstrated benefit yet,
-not proven no benefit."** The skill did not make outcomes worse, the control also
-avoided scope invention, and the one clear skill win was catching milestone
+not proven no benefit."** The skill did not demonstrably improve outcomes, and on
+one task (Jellyfin) the control did better; the control also avoided
+scope-invention on its own. The one clear skill win was catching milestone
 inversion (AION). So this capsule packages a *simplification* decision, not a
 retirement-or-stop decision.
 

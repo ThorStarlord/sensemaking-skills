@@ -80,11 +80,13 @@ preventing first-visible-problem capture — materialized in **one of three**,
 not the two the bar required. The only other skill-favorable signal is authority
 discipline in 002 (the control, not the skill, breached read-only).
 
-## Verdict (recommendation to the owner) — revised after the control arm
+## Verdict (ratified by the owner, 2026-09-30)
 
-**Owner decision packet: `artifacts/owner_decision_capsule.md`
-(`OWNER-DECISION-SIMPLIFY-001`). Ratification pending — this file stays a
-recommendation until the owner ratifies.**
+**Ratified.** Owner decision packet: `artifacts/owner_decision_capsule.md`
+(`OWNER-DECISION-SIMPLIFY-001`). The owner selected **Option B (staged program),
+authorized for Stage 1 only** (documentation-volume reduction); Stage 2 and
+Stage 3 are withheld until Stage 1 passes its suite-green check. RC3 / PyPI /
+1.0.0 remain held until the simplification decision completes.
 
 Apply the pre-registered rule: **the control arm did not confirm the skill's
 advantage at the ≥2/3 bar**, so the honest verdict is **simplify hard**, not
@@ -104,9 +106,9 @@ advantage at the ≥2/3 bar**, so the honest verdict is **simplify hard**, not
   boundary, and no repeated manual burden a new artifact or policy layer would
   remove (guide sections 13-14).
 
-This revision changes the earlier agent-authored recommendation. The investment
-decision remains the owner's (issue #497); the evidence now points at "simplify
-hard."
+This revision changes the earlier agent-authored recommendation. The owner has
+since **ratified "simplify hard"** and chosen Option B, Stage 1 only
+(`artifacts/owner_decision_capsule.md`).
 
 ## What would change this verdict
 
