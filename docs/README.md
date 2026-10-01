@@ -61,6 +61,7 @@ ADR says so - see `research/control-model-research-agenda.md`).
 | Location | What it is |
 | --- | --- |
 | `archive/` | Phase reports, deployment checklists, and CI snapshots. Fully historical. |
+| `archive/orphaned-2026-09-30/` | Unreferenced docs archived by the owner-ratified Stage 1 simplification (zero inbound references; archived, not deleted; one-command restore). See its README. |
 | `PHASE-*.md`, `PHASE2_SUMMARY.md`, `PHASE3_SUMMARY.md`, `PHASE5_*`, `STAGE-*.md`, `WEEK1-*`, `IMPLEMENTATION-*.md`, `VERDICT-SUMMARY.md`, `phase-1-*.md`, `task-*.md` | Phase-era plans/reports from the runner-led product. |
 | `ISSUES-V1.md`, `CUSTOMER_ONBOARDING.md`, `DEPLOYMENT_GUIDE.md`, `PORTFOLIO_OPERATIONS.md`, `UI-ROUTING-*.md`, `ROUTING_GUIDE.md` | Runner/routing-era operating guides; check each file's banner before relying on it. |
 | `superpowers/` | Dated implementation plans and specs. |
