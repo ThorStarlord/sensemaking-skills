@@ -1,17 +1,22 @@
 # Strategic Sensemaking trial program — cross-episode review and verdict
 
 Section 12 review over `strategic-sensemaking-trial-002/003/004.md` (read-only
-episodes on Pydantic, Jellyfin, and AION Workflow Core), 2026-09-29.
+episodes on Pydantic, Jellyfin, and AION Workflow Core), 2026-09-29
+(ratified 2026-09-30).
 
-**This is an agent recommendation, not a ratified decision.** The investment
-verdict is owner-reserved (issue #497). Per the guide section 14, this is not a
-score, benchmark, or control/treatment study.
+**Ratified by the owner on 2026-09-30.** Source:
+`artifacts/owner_decision_capsule.md` (`OWNER-DECISION-SIMPLIFY-001`); decision:
+Option B (staged program), Stage 1 only, verdict "simplify hard" (originally
+tracked in #497, closed; remaining decisions in #506). This is not a score,
+benchmark, or control/treatment study (guide section 14).
 
 ## Claim ceiling (read this before the verdict)
 
-- **Single arm.** No episode ran a without-skill control. The "what would you
-  have done without the skill" field is each subagent's own low-confidence
-  guess, not measured counterfactual behavior.
+- **Two arms (skill vs clean no-skill control), but n=3, read-only, same
+  reviewer.** The first pass had no control; the control arm was added afterward
+  (see "Control arm (added 2026-09-29)" below). The "what would you have done
+  without the skill" field is each subagent's own low-confidence guess, not
+  measured counterfactual behavior.
 - **Executor.** Each episode was run by an independent read-only subagent (not
   the guide's author), but the reviewer writing this verdict is not fully
   independent of the skill's design.
@@ -39,7 +44,7 @@ score, benchmark, or control/treatment study.
 - **The dominant baseline failure mode the skill prevented was the same in all
   three episodes:** first-visible-problem capture — treating a vague "advance"
   objective as a license to start implementing the first plausible item
-  (a TODO, a coverage bump, the README roadmap milestone). All three
+  (a TODO, a coverage bump, the README roadmap milestone). All three (skill arm)
   self-reported counterfactuals describe that behavior; all three instead
   surfaced the correct blocking question.
 - **Two of three correctly refused to invent scope** and escalated on an
@@ -106,7 +111,7 @@ advantage at the ≥2/3 bar**, so the honest verdict is **simplify hard**, not
   boundary, and no repeated manual burden a new artifact or policy layer would
   remove (guide sections 13-14).
 
-This revision changes the earlier agent-authored recommendation. The owner has
+This revision changes the earlier agent-authored draft verdict. The owner has
 since **ratified "simplify hard"** and chosen Option B, Stage 1 only
 (`artifacts/owner_decision_capsule.md`).
 
@@ -124,8 +129,8 @@ since **ratified "simplify hard"** and chosen Option B, Stage 1 only
 
 - Read-only only; counterfactuals self-reported; n=3; the treatment and control
   arms were run by the same reviewer's subagents (not an independent lab). These
-  bound the verdict to "recommendation," which is why the investment decision
-  remains owner-reserved in issue #497.
+  limits still apply; the verdict is ratified (2026-09-30) and the remaining
+  decisions are tracked in issue #506.
 - The control arm 002 agent incidentally created a `.venv` (then removed it) — a
   read-only slip, recorded, and a point in the skill's favor on authority
   discipline rather than against it.
