@@ -11,6 +11,12 @@
 # `-text` disables that conversion, so these files are checked out byte-for-byte
 # as committed. Any document referenced by a `*_sha256` field in an
 # authorization record MUST be listed here.
+#
+# `-text` (not `eol=lf`) is deliberate: `-text` means "never convert", which
+# preserves EXACT committed bytes on every platform. `eol=lf` would instead
+# re-normalize the stored blob on checkout and can override a `-text` line that
+# appears earlier in this file (last matching pattern wins), silently changing
+# the bytes a digest depends on.
 docs/experiments/STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md -text
 docs/experiments/GATE-D-STALE-DIAGNOSIS-CHECKLIST.md -text
 
@@ -21,3 +27,24 @@ experiments/run-control/** -text
 # Campaign packages are digest-bound (policy_digest / configuration_id and
 # the *_sha256 sidecar); their bytes must be identical on every platform.
 experiments/campaigns/EXP-0002-stage1-auteur-coding-agent-pilot/** -text
+
+# LF byte-stability for the current documentation surface.
+#
+# The rc3 freeze (#509) was committed from a Windows checkout with
+# core.autocrlf enabled and rewrote these files LF -> CRLF, burying a 46-line
+# content change under ~1,300-line diffs. A frozen candidate's bytes are the
+# candidate, so these files must not depend on the checkout platform.
+#
+# Listed individually (no glob) so the rule cannot accidentally override the
+# `-text` byte-pinned files above, and so it cannot re-normalize unrelated
+# tracked files (experiment fixtures, candidate records) on checkout.
+README.md -text
+STATUS.md -text
+GETTING_STARTED.md -text
+INSTALLATION.md -text
+docs/PUBLISHING.md -text
+docs/maintainer-guide-v1.0.md -text
+docs/operations-runbook.md -text
+docs/public-surface-v1.0.md -text
+docs/release-v1.0-checklist.md -text
+docs/release-v1.0-contract.md -text

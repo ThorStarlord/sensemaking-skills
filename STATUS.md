@@ -2,7 +2,7 @@
 
 **Source version:** 1.0.0rc3
 **Release target:** 1.0.0rc3 (frozen reduced-scope release candidate)
-**Last updated:** 2026-09-25  
+**Last updated:** 2026-10-02  
 **Current phase:** post-RC2 development (see the itemized state below; each bullet is one integrated or in-handoff issue/observation).
 
 - Issue #473 Autonomous Terminal Mission Continuation v1 is complete/integrated on `main` (exact feature head `2ec13d99cd62a3785c0be1036d7bed3b6efa2ca5` passed Product Validation run 36106321929 and Release Candidate Distribution run 36106321954 before PR #474 merged as `3fc1bcf1efd8565513592ddc57870476575eacb7`).
