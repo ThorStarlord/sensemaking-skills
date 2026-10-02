@@ -407,6 +407,7 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 | `docs/semantic-architecture/README.md` | semantic-model/reasoning/capability/substrate architecture; orthogonal to the four control scopes |
 | `docs/semantic-architecture/reasoning-model.md` | shared evidence-to-decision reasoning grammar and its Level-3/Level-4 instantiations |
 | `docs/system-capability-atlas-v1.md` | descriptive map of major systems, owned questions, and front-door/specialized/substrate/compatibility product roles |
+| `docs/dark-factory-autonomy-boundary.md` | current ownership boundary: Sensemaking semantic R&D/reusable Skills vs Dark Factory canonical durable autonomy runtime; generic full-autonomy Skill rejected, operator front door candidate-only |
 | `docs/strategic-normal-use-failure-taxonomy-v1.md` | descriptive vocabulary for recurring material normal-use failures; no detector, score, or issue-generation authority |
 | `docs/normal-use/strategic-sensemaking-observation-guide.md` | standing qualitative normal-use observation guidance for strategic and autonomous terminal-mission behavior; no score/benchmark/runtime |
 | `docs/normal-use/autonomous-terminal-mission-trial-001.md` | first explicit-target autonomous terminal-mission normal-use episode; bounded behavioral support with loaded-Skill attribution limitation |
