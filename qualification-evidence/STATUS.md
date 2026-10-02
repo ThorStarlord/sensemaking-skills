@@ -2,7 +2,7 @@
 
 **Repository-owned evidence contract:** IMPLEMENTED IN THIS PACKAGE  
 **Checked-in real-harness attempts:** 0  
-**Current empirical PASS:** NONE  
+**Current empirical PASS:** NONE (no real external-harness attempt; see below)  
 **Human/external action required for empirical PASS:** YES
 
 Version 1.0 packet templates now define separate engineering,

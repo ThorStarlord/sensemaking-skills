@@ -89,14 +89,14 @@ def test_status_keeps_issue_401_terminal_even_when_later_owner_work_is_selected(
     assert "Issue #416" in status
 
 
-def test_release_remains_rc3_development_and_no_runtime_planner_is_promoted() -> None:
+def test_release_is_rc3_candidate_and_no_runtime_planner_is_promoted() -> None:
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     release_text = (ROOT / "release-v1.0.yaml").read_text(encoding="utf-8")
     release = yaml.safe_load(release_text)
 
-    assert pyproject["project"]["version"] == "1.0.0rc3.dev0"
+    assert pyproject["project"]["version"] == "1.0.0rc3"
     assert release["release"]["version"] == "1.0.0rc3"
-    assert release["release"]["status"] == "development"
+    assert release["release"]["status"] == "candidate"
     assert 'schema_version: "2"' in release_text
     assert "StrategicPlanner" not in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert "OuterLoopEngine" not in (ROOT / "pyproject.toml").read_text(encoding="utf-8")

@@ -13,7 +13,7 @@ repository development source
 != publicly published distribution
 ```
 
-The current repository source is `1.0.0rc3.dev0` and the active release target
+The current repository source is the frozen candidate `1.0.0rc3` and the active release target
 is `1.0.0rc3`. Historical `1.0.0rc1` remains qualified provenance for exact
 commit `70542d47412d98ee6dfae5de6df29bf271304568`; qualified `1.0.0rc2`
 remains frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`.
@@ -25,7 +25,7 @@ remains frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`.
 
 While `release.status: development`:
 
-- the source version is the development predecessor of the target (for example, a future `1.0.0rc3` target would use `1.0.0rc3.dev0`);
+- the source version is the development predecessor of the target (for example, a future target would use a `.dev0` predecessor);
 - Product Validation and distribution validation may run;
 - passing those checks does **not** qualify a frozen release candidate;
 - current source must not present itself as `1.0.0rc2`.
@@ -33,7 +33,7 @@ While `release.status: development`:
 ## Candidate freeze
 
 A future `1.0.0rc3` candidate may be frozen only after current candidate-changing
-work converges. The current `1.0.0rc3.dev0` source remains `development`.
+work converges. The current `1.0.0rc3` source is a frozen candidate (`candidate`).
 
 Candidate qualification requires:
 
@@ -96,7 +96,7 @@ sensemaking-skills campaign --help
 Once a candidate is frozen, any material continued development must leave that
 frozen identity before ordinary development proceeds. For example, after a frozen
 `1.0.0rc2`, development toward another candidate should use a new development
-identity such as `1.0.0rc3.dev0`.
+identity such as a `.dev0` predecessor of its target.
 
 ```text
 candidate version

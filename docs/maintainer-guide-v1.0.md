@@ -43,7 +43,7 @@ upgrade a semantic or native-harness claim without its required evidence.
 
 ## Release changes
 
-The repository currently carries development source version `1.0.0rc3.dev0`
+The repository currently carries frozen candidate source version `1.0.0rc3`
 targeting `1.0.0rc3` with release status `development`. The previously
 qualified `1.0.0rc2` candidate remains immutable at integrated commit
 `c9b86138d3919c4fce87040f14161364a0c1c3a0`. Future RC3 qualification must

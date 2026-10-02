@@ -1,7 +1,7 @@
 # Status
 
-**Source version:** 1.0.0rc3.dev0
-**Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
+**Source version:** 1.0.0rc3
+**Release target:** 1.0.0rc3 (frozen reduced-scope release candidate)
 **Last updated:** 2026-09-25  
 **Current phase:** post-RC2 development (see the itemized state below; each bullet is one integrated or in-handoff issue/observation).
 
@@ -16,7 +16,7 @@
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
-**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568`. Qualified `1.0.0rc2` is frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`, Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`. Current development has moved to `1.0.0rc3.dev0` targeting `1.0.0rc3`; RC2 qualification does not transfer to these later bytes. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
+**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568`. Qualified `1.0.0rc2` is frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`, Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`. The source is now the frozen candidate `1.0.0rc3`; RC2 qualification does not transfer to these later bytes. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
 Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
@@ -431,6 +431,7 @@ dynamic-Organization, new policy layer, search runtime, or additional strategic
 machinery unless recurring normal use exposes one of those as the actual
 limiting factor.
 
-Current release source remains `1.0.0rc3.dev0` targeting `1.0.0rc3` in
-`development`. Do **not** freeze RC3. This normal-use reconciliation does not
-authorize freezing RC3, PyPI publication, release tagging, or final `1.0.0`.
+Current release source is the frozen candidate `1.0.0rc3`.
+This normal-use reconciliation did not by itself authorize freezing RC3.
+Owner authorization for the RC3 freeze is now recorded separately on issue #506.
+PyPI publication, release tagging, and final `1.0.0` remain owner-controlled.

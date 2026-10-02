@@ -35,7 +35,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-For current repository development, the source version is `1.0.0rc3.dev0` targeting `1.0.0rc3`. The previously qualified `1.0.0rc2` candidate remains immutable historical provenance. Install from source:
+The repository source is the frozen candidate `1.0.0rc3`. The previously qualified `1.0.0rc2` candidate remains immutable historical provenance. Install from source:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
