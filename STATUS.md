@@ -34,6 +34,7 @@ Release scope and support claims: `docs/release-v1.0-contract.md`.
 - **Primary persona:** high-delegation agent-assisted builder / repository owner; beginner-first, expert-capable.
 - **Strategic design principle:** opinionated about engineering invariants, adaptive about process, progressive in disclosure.
 - **Control law:** lower levels may execute higher-level commitments but may not silently redefine them.
+- **Downstream runtime boundary:** `ThorStarlord/dark-factory` is the canonical durable software-factory runtime for mature full-autonomy/full-delegation continuation; this repository remains the semantic R&D/reusable decision-support source and must not create a competing factory controller. See `docs/dark-factory-autonomy-boundary.md`.
 - The four-level architecture remains **Version v0** and a **frozen operational baseline**; Strategic Outer Loop Precision v1 clarifies its reasoning and transition semantics without creating a new planner/runtime.
 
 ### Current capability state
