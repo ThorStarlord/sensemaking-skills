@@ -239,7 +239,9 @@ def test_status_preserves_inquiry_policy_integration_when_later_owner_work_is_se
     assert "Learning / Reconciliation Policy v0" in status
     assert "Policy Hierarchy Completion v0 — COMPLETE / INTEGRATED / COMPOSABLE" in status
     assert "EXPERIMENT PREREQUISITE = NONE" in status
-    assert "Do **not** freeze RC3" in status
+    # After the owner-authorized RC3 freeze, the freeze is recorded (issue #506);
+    # the pre-freeze "Do not freeze RC3" instruction no longer applies.
+    assert "issue #506" in status
 
 
 def test_stable_strategic_alternatives_reuse_existing_level3_surface() -> None:
