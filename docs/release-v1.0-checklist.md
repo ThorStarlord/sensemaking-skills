@@ -4,7 +4,7 @@ Use this checklist with [`release-v1.0-contract.md`](release-v1.0-contract.md).
 It is a gate record, not evidence that the gates have already passed.
 
 The current contract is a reduced-scope Version 1.0 development target.
-Repository source is `1.0.0rc3.dev0` with status `development` toward
+Repository source is the frozen candidate `1.0.0rc3` with status `candidate` toward
 `1.0.0rc3`. The qualified `1.0.0rc2` candidate remains immutable historical
 provenance. External harness, portability, and semantic-usefulness evidence is
 intentionally excluded from the support promise and remains deferred research

@@ -6,8 +6,8 @@ checks that the declaration remains consistent with the repository.
 
 ## Product identity
 
-Current repository source is `1.0.0rc3.dev0` with release status
-`development`, targeting a future frozen `1.0.0rc3`. The qualified
+Current repository source is the frozen candidate `1.0.0rc3` with release status
+`candidate`. The qualified
 `1.0.0rc2` candidate remains immutable historical provenance at integrated
 commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`.
 Historical `1.0.0rc1` remains qualified provenance for exact commit
@@ -29,8 +29,8 @@ development source
 
 While `release.status` is `development`, the source version is the
 `.dev0` predecessor of the target. A frozen candidate uses the target version
-itself. The current `1.0.0rc3.dev0` source is not a frozen candidate. A future
-`1.0.0rc3` freeze requires fresh exact-source qualification before any
+itself. The current `1.0.0rc3` source is a frozen candidate, but that freeze is not itself a
+candidate qualification; fresh exact-source qualification is required before any
 candidate qualification claim.
 
 ## Stable surface

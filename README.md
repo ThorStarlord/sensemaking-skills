@@ -5,8 +5,8 @@
 
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
-**Source version:** 1.0.0rc3.dev0
-**Release target:** 1.0.0rc3 (development; not yet a frozen candidate)
+**Source version:** 1.0.0rc3
+**Release target:** 1.0.0rc3 (frozen reduced-scope release candidate)
 **Historical candidates:** RC1 was qualified at `70542d47412d98ee6dfae5de6df29bf271304568`; RC2 was qualified at `c9b86138d3919c4fce87040f14161364a0c1c3a0` with Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`
 **Status:** post-RC2 development toward RC3; RC2 remains immutable historical provenance; native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise
 **Python:** 3.11+  
@@ -259,7 +259,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-Current repository development source is `1.0.0rc3.dev0` targeting `1.0.0rc3`. For source development:
+Current repository source is the frozen candidate `1.0.0rc3`. For source development:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
