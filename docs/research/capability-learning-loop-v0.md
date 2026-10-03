@@ -224,6 +224,161 @@ REVISIT / RETIRE TRIGGER
 
 This is a reasoning checklist, not a mandatory persisted object.
 
+## 6A. Artifact production and ownership
+
+Capability learning does not require every Skill to emit a second, generic
+"learning artifact." Existing Skills and execution surfaces already produce the
+episode evidence from which learning can be reconstructed.
+
+| Responsibility | Existing producer/surface | Durable result when warranted |
+| --- | --- | --- |
+| repository diagnosis | `repo-sensemaker` | repository sensemaking brief |
+| Level-3 strategic model | `strategic-repository-analysis` | `strategic_repository_analysis` |
+| bounded execution | Campaign / executor / repository work | evidence, transitions, receipts, code/tests/PR history |
+| current decision-model learning | Learning / Reconciliation in `using-sensemaking` | revised explicit claim/uncertainty/responsibility in the appropriate existing durable surface |
+| Level-3 evidence return | `strategic-repository-reconciliation` | `strategic_reconciliation` |
+| cross-context continuation | Campaign / handoff / resume surfaces | reconstruction context and provenance |
+| promoted institutional doctrine | ordinary repository development | Skill/reference/ADR/runbook/validator change |
+
+The active semantic controller decides whether a consequential lesson needs to
+survive another context and places it in the narrowest existing durable surface
+that owns that information.
+
+```text
+learning occurred
+!= create a learning artifact automatically
+
+episode result is trivial / locally reconstructible
+-> no additional durable learning record
+
+forgetting the lesson would cause rediscovery, contradiction, unsafe
+continuation, repeated failed search, or lost rationale
+-> preserve the lesson in the appropriate existing artifact
+```
+
+Do not add a universal `artifacts/capability_learning.md`,
+`LEARNINGS.md`, or equivalent append-only knowledge dump.
+
+## 6B. Artifact lifecycle
+
+The learning architecture distinguishes three representations:
+
+```text
+EPISODE ARTIFACT
+= what happened and what the current decision model learned
+
+CAPABILITY-LEARNING CANDIDATE
+= what several comparable episodes may jointly teach
+
+PROMOTED DOCTRINE
+= what future agents should actually use
+```
+
+The normal lifecycle is:
+
+```text
+episode evidence / Campaign / reconciliation / PR / qualification
+        |
+        | several episodes become materially comparable
+        v
+cross-episode synthesis
+        |
+        v
+capability-learning candidate
+        |
+        v
+generalization warranted?
+     /        \
+   no          yes
+   |            |
+   v            v
+retain local/   identify smallest reusable target
+historical      |
+knowledge       v
+            Skill / reference / runbook / validator change
+                 |
+                 v
+            exact-candidate qualification
+                 |
+                 v
+             later normal use
+                 |
+                 v
+           retain / revise / retire
+```
+
+A candidate may be represented initially as a bounded research/normal-use
+document, issue, PR rationale, or reconciliation note. No canonical candidate
+artifact schema is required until repeated use demonstrates that a stable
+machine-checked representation would create value.
+
+```text
+what happened
+!= what several episodes jointly imply
+
+cross-episode synthesis
+!= doctrine
+
+doctrine candidate
+!= integrated capability
+
+integrated capability
+!= permanently correct
+```
+
+## 6C. Skill boundary
+
+No new capability-learning Skill is warranted by this clarification alone.
+
+Current ownership is:
+
+```text
+existing Skills / execution surfaces
+-> produce episode evidence
+
+Learning / Reconciliation
+-> decide what consequential episode learning becomes durable
+
+active semantic agent
+-> perform cross-episode synthesis when explicitly warranted
+
+future specialized Skill
+-> candidate only
+```
+
+A future Skill, tentatively describable as
+`capability-learning-analysis`, would own only this bounded responsibility:
+
+> Given an explicitly selected set of normal-use/reconciliation artifacts,
+> determine whether they support a reusable capability lesson and produce a
+> bounded lesson candidate with context limits, counterevidence, claim ceiling,
+> proposed reusable target, and qualification requirements.
+
+It would not discover all repositories automatically, rewrite existing Skills,
+promote doctrine, merge changes, or create protected authority.
+
+Consider creating that Skill only when normal use shows all of the following:
+
+1. cross-episode synthesis is repeatedly needed;
+2. agents repeatedly perform substantially the same comparison structure;
+3. omission of explicit guidance causes material generalization errors, missed
+   counterevidence, or inflated claim ceilings;
+4. the input/output responsibility is stable enough to describe independently
+   of one repository;
+5. a dedicated Skill would reduce repeated work without creating a second
+   learning state system.
+
+Until those conditions are established, cross-episode synthesis remains an
+agent-owned reasoning responsibility using existing artifacts.
+
+```text
+possible reusable responsibility
+!= Skill warranted now
+
+repeated stable responsibility + demonstrated guidance value
+-> reconsider dedicated Skill
+```
+
 ## 7. Allowed reusable targets
 
 A warranted generalized lesson may nominate changes to existing surfaces such as:
