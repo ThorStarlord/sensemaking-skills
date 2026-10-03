@@ -295,6 +295,46 @@ Preserve explicit lessons such as attempt/result, falsified assumption, revised 
 
 Do not persist private chain-of-thought.
 
+## 13A. Cross-episode capability learning
+
+Cross-context learning preserves what another context needs to continue one
+consequential line of work. A different question appears when several normal-use
+episodes expose a materially similar reusable lesson.
+
+Use `docs/research/capability-learning-loop-v0.md` as the evidence-gated
+explanatory model for that higher-order case.
+
+```text
+episode learning
+-> update the current explicit decision/repository model
+
+cross-episode capability learning
+-> ask whether several explicit lessons warrant a reusable doctrine candidate
+```
+
+Do not generalize one surprising result into a Skill/policy rule automatically.
+Prefer heterogeneous corroboration when the intended doctrine is meant to apply
+across repository types, record counterevidence/context limits, and use the
+smallest reusable guidance change that addresses the demonstrated pattern.
+
+```text
+one episode
+!= reusable doctrine
+
+recurring pattern
+!= common cause proven
+
+lesson candidate
+!= Skill change authorized
+
+qualified reusable change
+!= universal semantic truth
+```
+
+Capability learning reuses existing evidence, normal-use records, repository
+history, reviews, and qualification surfaces. It introduces no `LearningEngine`,
+self-modification loop, generic memory schema, or automatic policy mutation.
+
 ## 14. Compact use
 
 After a consequential result, ask:
