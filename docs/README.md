@@ -18,6 +18,7 @@ evidence, not current guidance. Where two documents disagree, ADR 0029, ADR
 | Which Skill does what | [`skill-catalogue.md`](skill-catalogue.md) |
 | Which system owns which question | [`system-capability-atlas-v1.md`](system-capability-atlas-v1.md) |
 | Sensemaking vs Dark Factory full-autonomy ownership | [`dark-factory-autonomy-boundary.md`](dark-factory-autonomy-boundary.md) |
+| How repository learning accumulates across contexts/episodes | [`research/capability-learning-loop-v0.md`](research/capability-learning-loop-v0.md) |
 | Agent operating map | [`agent-native-operating-workflow.md`](agent-native-operating-workflow.md), [`decision-orchestration-boundary.md`](decision-orchestration-boundary.md) |
 | Commands | [`cli-reference.md`](cli-reference.md), [`campaign-cli.md`](campaign-cli.md) |
 | Product thesis and boundary | [`product-strategy.md`](product-strategy.md), [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md) |
