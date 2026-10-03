@@ -6,6 +6,8 @@ Product Management capability implementation may continue before native-harness 
 
 This document separates **implementation maturity** from **empirical promotion**. It does not weaken artifact validation, Campaign integrity, repository CI, authority boundaries, or evidence-shape contracts.
 
+Qualification state is one assurance axis, not a synonym for test result, validation depth, or Four-Level Control scope. The canonical cross-axis terminology is defined in [`../verification-and-qualification-model.md`](../verification-and-qualification-model.md).
+
 ## Maturity states
 
 ### CANDIDATE
@@ -68,6 +70,8 @@ dogfood before promotion
 !=
 dogfood before expansion
 ```
+
+A passing unit, contract, integration, acceptance, or qualification-verifier test does not by itself advance empirical maturity. Qualification advances only when the evidence required by the target state exists and is bound to the exact candidate/environment it claims.
 
 New PM capabilities may move from `DEFER` to implementation when they are separately authorized and repository architecture can support them without speculative infrastructure expansion. They must remain clearly marked as unpromoted until the relevant empirical gates are completed.
 

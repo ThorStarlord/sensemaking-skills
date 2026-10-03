@@ -4,6 +4,11 @@ This guide is the short operational entry point for maintainers. The exact
 support and claim ceiling is defined in [`release-v1.0-contract.md`](release-v1.0-contract.md)
 and validated by `scripts/validate-release-contract.py`.
 
+The canonical assurance vocabulary is defined in
+[`verification-and-qualification-model.md`](verification-and-qualification-model.md).
+Use that model to distinguish test class, mechanical validation stage,
+Four-Level Control scope, and qualification state.
+
 ## Authority order
 
 1. Accepted ADRs and executable contracts define current behavior.
@@ -23,7 +28,12 @@ public surface.
 - Add a failing test before changing production behavior.
 - Preserve exact artifact and target-repository provenance.
 - Use the product/lab boundary to decide which validation lane owns a test.
+- Classify new assurance checks independently by test class, validation stage,
+  control level, and qualification effect.
+- Reserve `Level 1`-`Level 4` for the current Four-Level Control Model; do not
+  introduce new `Level-N validator` terminology.
 - Treat `validator passed != semantic truth` as a release invariant.
+- Treat `test passed != qualification` as a release invariant.
 
 ## Verification lanes
 
@@ -40,6 +50,32 @@ python -m twine check dist/*
 Product tests own shipped behavior. Lab tests own retained research machinery.
 External qualification tests own frozen real-harness evidence. No lane may
 upgrade a semantic or native-harness claim without its required evidence.
+
+The lane and the test class are different axes. For example, an external
+qualification lane may contain a qualification verifier plus preserved external
+evidence; an integration test remains an integration test whether it exercises
+product or retained lab machinery.
+
+## Claim discipline
+
+Use the smallest claim supported by the evidence:
+
+```text
+unit/contract/integration/acceptance result
+!= qualification state
+
+mechanical validation V0-V5
+!= semantic judgment
+
+repository qualified
+!= native-harness qualified
+!= portability qualified
+!= promoted
+```
+
+Historical documents may retain older phrases such as `Level-3 validators` for
+provenance. Treat those uses as legacy execution-validation terminology, not as
+references to the current Level-3 repository-strategy control scope.
 
 ## Release changes
 

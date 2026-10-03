@@ -59,6 +59,7 @@ See:
 - [docs/product-operating-model.md](docs/product-operating-model.md) — value stream, ownership, delegation, and escalation
 - [docs/agent-native-operating-workflow.md](docs/agent-native-operating-workflow.md) — Level-2 agent-native responsibility/Campaign operating map
 - [docs/operations-runbook.md](docs/operations-runbook.md) — current operator-facing validation, qualification, Campaign, and release runbook; checked-in workflows remain executable authority
+- [docs/verification-and-qualification-model.md](docs/verification-and-qualification-model.md) — canonical assurance vocabulary: test classes, V0-V5 mechanical validation stages, Four-Level Control disambiguation, qualification states, and claim ceilings
 - [docs/decision-orchestration-boundary.md](docs/decision-orchestration-boundary.md) — decision vs. orchestration ownership
 - [docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md](docs/semantic-architecture/b7-semantic-reference-audit-design-preflight.md) — B7 reference-resolution boundaries and construction authority
 - [docs/research/control-model-research-agenda.md](docs/research/control-model-research-agenda.md) — explicitly non-ratified research directions

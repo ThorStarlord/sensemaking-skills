@@ -8,7 +8,7 @@
 
 ## 1. Purpose and authority
 
-Current Version 1.0 release target, support surface, and claim ceiling are defined in [`release-v1.0-contract.md`](release-v1.0-contract.md).
+Current Version 1.0 release target, support surface, and claim ceiling are defined in [`release-v1.0-contract.md`](release-v1.0-contract.md). The canonical assurance terminology and claim-discipline model is [`verification-and-qualification-model.md`](verification-and-qualification-model.md).
 
 This is the single current operator-facing runbook for repository validation, Campaign operation, qualification, and release-candidate checks.
 
@@ -564,7 +564,22 @@ repository qualified
 
 Real-harness PASS claims still require their canonical external-attempt evidence. Current owner direction defers such experiments; repository/hermetic development may continue without pretending those claims are proven.
 
-## 10. Historical milestone runbooks
+## 10. Assurance-result reporting
+
+When a validation or qualification result is consequential to continuation, handoff, release, or a support claim, report the smallest sufficient assurance context:
+
+```text
+test class: <UNIT|CONTRACT|INTEGRATION|ACCEPTANCE|ROBUSTNESS|PERFORMANCE|RELEASE_INTEGRITY|QUALIFICATION_VERIFIER|EXTERNAL_EVIDENCE>
+validation stage: <V0-V5 or not-applicable>
+semantic status: <not-assessed|agent-reviewed|owner-reviewed|other explicit status>
+qualification effect: <none|candidate|repository|native-harness|portability|promotion>
+evidence identity: <exact head/artifact/run/environment as applicable>
+claim ceiling: <bounded claim justified by this evidence>
+```
+
+This prevents a generic `PASS` from being mistaken for a stronger claim. Do not manufacture fields that are irrelevant to the check, and do not translate semantic judgment into a validation-stage PASS.
+
+## 11. Historical milestone runbooks
 
 These are retained as historical evidence, **not current operational authority**:
 
@@ -575,7 +590,7 @@ docs/post-milestone-handoff-runbook.md
 
 Current operators start with `docs/operations-runbook.md`.
 
-## 11. Normal repository-development entry sequence
+## 12. Normal repository-development entry sequence
 
 ```text
 1. docs/product-strategy.md          — Level 4: what/why
