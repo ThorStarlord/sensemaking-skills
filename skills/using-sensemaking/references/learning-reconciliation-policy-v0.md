@@ -335,6 +335,28 @@ Capability learning reuses existing evidence, normal-use records, repository
 history, reviews, and qualification surfaces. It introduces no `LearningEngine`,
 self-modification loop, generic memory schema, or automatic policy mutation.
 
+Do not manufacture a second generic learning artifact merely because a lesson
+was found. Preserve the lesson in the narrowest existing durable surface that
+owns the consequential state: Campaign evidence/transition, handoff/resume,
+strategic reconciliation, STATUS/ADR, qualification record, issue/PR history,
+or another repository-owned artifact.
+
+```text
+lesson worth remembering
+-> use appropriate existing durable surface
+
+lesson observed
+!= append to universal LEARNINGS.md
+
+several explicit lessons become materially comparable
+-> cross-episode synthesis may be warranted
+```
+
+Cross-episode synthesis is currently agent-owned reasoning. A dedicated
+`capability-learning-analysis` Skill remains a candidate only if repeated
+normal use establishes a stable reusable responsibility; its existence is not
+implied by this policy.
+
 ## 14. Compact use
 
 After a consequential result, ask:
