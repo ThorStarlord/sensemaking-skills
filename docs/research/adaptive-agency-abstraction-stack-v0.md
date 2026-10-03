@@ -159,6 +159,17 @@ repo-sensemaker
 
 Use the qualified phrase Cognitive Operator rather than naked Operator because the repository also uses operator terminology for human/operational concerns.
 
+A bounded descendant research projection now tests whether the current canonical Skill set can be explained with a smaller shared operator vocabulary without turning those operators into routing metadata or runtime authority. See [Core Operator Vocabulary v0](core-operator-vocabulary-v0.md) and its [51-Skill Crosswalk](core-operator-vocabulary-v0-skill-crosswalk.md).
+
+That projection is intentionally subordinate to this abstraction stack:
+
+~~~text
+operator vocabulary
+!= Skill Contract Manifest extension
+!= automatic Skill selection
+!= replacement for General Agency / Policy Hierarchy vocabulary
+~~~
+
 ## 6. Capability and Skill
 
 A **Capability** is an available bounded means of performing some responsibility.
