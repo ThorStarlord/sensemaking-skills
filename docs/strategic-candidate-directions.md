@@ -542,6 +542,45 @@ cross-repository impact != automatic scope expansion
 No numeric severity/risk scoring, causal truth oracle, automatic issue creation,
 or execution authority is introduced.
 
+### 10.6 Capability Learning Loop v0
+
+**Current reconciliation:** `CONCEPTUALLY_SUPPORTED` + `CANDIDATE_EXTENSION` +
+`EVIDENCE_GATED`.
+
+Current Sensemaking already supports:
+
+- cross-context durable learning through evidence, Campaign/handoff/resume,
+  reconciliation, provenance, ADR, STATUS, and repository history;
+- repository-strategic learning through Strategic Repository Analysis,
+  Strategic Reconciliation, and Strategic Continuity;
+- Knowledge Externalization / Communication as a cross-cutting guidance concern.
+
+The remaining higher-order question is whether repeated **normal-use episodes**
+should ever be generalized into a bounded reusable Skill/policy/reference lesson.
+
+The explanatory model is
+`docs/research/capability-learning-loop-v0.md`.
+
+```text
+episode evidence
+!= generalized lesson
+
+recurring pattern
+!= doctrine automatically
+
+lesson candidate
+!= reusable guidance change authorized
+
+reusable guidance change
+-> ordinary review + exact-head qualification
+-> later normal-use reconciliation
+```
+
+**Current implementation disposition:** no new Skill, schema, runtime, learning
+engine, generic memory store, or automatic self-modification. Reopen only when a
+concrete recurring cross-episode deficiency is supported by normal-use evidence
+and cannot be absorbed by local reconciliation.
+
 ## 11. Ideas deliberately not promoted
 
 These remain non-authorized unless a later Level-3/Level-4 decision explicitly changes their disposition:
