@@ -484,6 +484,40 @@ factory bridge != factory runtime
 
 **Possible extensions:** additional executor adapters only when a concrete external consumer needs the same stable handoff/result contract.
 
+### 10.4.1 Dark Factory runtime ownership / operator front door
+
+**Current reconciliation:** `EXTERNAL_CANONICAL_RUNTIME` + `CANDIDATE_EXTENSION`.
+
+Owner clarification on 2026-10-02 establishes
+`ThorStarlord/dark-factory` as the canonical durable software-factory runtime
+for mature full-autonomy / full-delegation continuation. Sensemaking remains the
+semantic R&D and reusable repository decision-support source.
+
+Do **not** create another generic Full Autonomy / Full Delegation Skill. The
+existing `strategic-sensemaking-loop` already owns reusable terminal-mission
+orchestration, while Dark Factory owns durable Goal / Frontier / Delegation /
+Campaign continuation.
+
+A future `dark-factory-mission` Skill is a candidate only as an operator/front
+door to the Dark Factory runtime. It may initialize/resume/inspect/operate
+Dark Factory through stable exposed interfaces, but it must not create parallel
+strategic state or bypass Dark Factory to execute the delegated implementation
+itself.
+
+See `dark-factory-autonomy-boundary.md` for the full ownership and reopen
+contract.
+
+```text
+generic full-autonomy Skill
+= REJECTED AS DUPLICATE
+
+Dark Factory operator Skill
+= CANDIDATE_EXTENSION
+
+operator interface
+!= second autonomy runtime
+```
+
 ### 10.5 Change-Impact Sensemaking v1
 
 **Current reconciliation:** `IMPLEMENTED_BASELINE`.

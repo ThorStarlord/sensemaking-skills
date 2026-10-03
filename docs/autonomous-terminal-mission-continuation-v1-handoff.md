@@ -368,3 +368,41 @@ default branch without independent review.
 
 This decision does not grant merge, release, or deploy authority, and it does
 not replace the per-mission authority block.
+
+## 9. Downstream Dark Factory boundary (owner clarification, 2026-10-02)
+
+The reusable terminal-mission profile in this repository is **not** the runtime
+controller for Dark Factory.
+
+Owner direction now makes the intended composition explicit:
+
+```text
+sensemaking-skills
+= semantic R&D + reusable agent-facing decision support
+
+strategic-sensemaking-loop
+= interactive reusable terminal-mission front door
+
+ThorStarlord/dark-factory
+= canonical durable software-factory autonomy runtime
+```
+
+Dark Factory has independently reconciled mature Sensemaking semantics into its
+own Goal / Frontier / Delegation / Campaign / evidence / transition model. Its
+E2E-6 qualification is downstream evidence for bounded serial delegated
+continuation; it does not raise this Skill's general behavioral claim ceiling.
+
+Accordingly:
+
+```text
+NEW_GENERIC_FULL_AUTONOMY_SKILL = NO
+DARK_FACTORY_OPERATOR_FRONT_DOOR = CANDIDATE_ONLY
+SECOND_FACTORY_CONTROL_LOOP = NO
+```
+
+A future `dark-factory-mission` Skill may be warranted as an operator adapter
+when a stable Dark Factory interface is available and repeated use demonstrates
+the need. It must operate the existing runtime rather than reproduce the
+semantic-control or durable-state machinery.
+
+See `docs/dark-factory-autonomy-boundary.md`.
