@@ -23,6 +23,7 @@ evidence, not current guidance. Where two documents disagree, ADR 0029, ADR
 | Product thesis and boundary | [`product-strategy.md`](product-strategy.md), [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md) |
 | Decisions | [`adr/README.md`](adr/README.md) (index with statuses) |
 | Maintaining and qualifying | [`operations-runbook.md`](operations-runbook.md), [`maintainer-guide-v1.0.md`](maintainer-guide-v1.0.md) |
+| Capability scale / what to stress next | [`research/capability-scale-frontier-v0.md`](research/capability-scale-frontier-v0.md) |
 
 ## Current
 
