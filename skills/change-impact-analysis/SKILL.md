@@ -51,6 +51,26 @@ authority | repository_boundary | release | external_dependency`.
 For each item record evidence, material impact, semantic-review need,
 verification/reconciliation need, and authority boundary.
 
+### 3A. Follow consequence depth when the impact can propagate
+
+When an affected surface can change another consumer's interpretation or later
+workflow behavior, follow the consequence chain only while the next layer can
+change implementation, verification, reconciliation, closure, ownership, or
+strategy.
+
+Ask, as needed:
+
+- what consumes or depends on the changed state/concept?
+- what later behavior follows from those consumers?
+- can the effect compound across stages/time?
+- do several impacts point to one shared invariant or missing abstraction?
+- does the current architecture materially obstruct that invariant?
+- is any resulting Level-3/Level-4 consequence actually decision-changing?
+
+Do not manufacture architectural work merely because a consequence can be
+imagined. See
+`../../docs/research/consequence-depth-and-systems-reasoning-v0.md`.
+
 ### 4. Identify explicit cross-repository impact
 
 Only for caller-selected/authorized repository scope. Never discover/add targets
@@ -97,4 +117,7 @@ verification requirement != verification result
 follow-up candidate != backlog item
 cross-repo impact != automatic scope expansion
 mechanical PASS != semantic truth
+local mechanical success != systemic correctness
+affected surface != downstream consequence automatically
+repeated local patches != missing abstraction proven
 ```
