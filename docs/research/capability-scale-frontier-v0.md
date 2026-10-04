@@ -132,8 +132,8 @@ next consequence layer cannot change the decision
 -> stop
 ~~~
 
-See `consequence-depth-and-systems-reasoning-v0.md` when that document is
-integrated.
+See `consequence-depth-and-systems-reasoning-v0.md` for the integrated
+bounded consequence-depth doctrine.
 
 ## 5. Axis C — Epistemic Messiness
 
@@ -287,7 +287,8 @@ H6
 = repository-governed reusable doctrine changed
 ~~~
 
-See the Capability Learning Loop documentation when integrated.
+See `capability-learning-loop-v0.md` for the integrated evidence-gated
+Capability Learning model.
 
 ## 11. A capability episode as a coordinate
 
