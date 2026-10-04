@@ -94,11 +94,44 @@ vertical phases:
 - Strategic Continuity v1 — preserves authored strategic lineage, assumptions, and reassessment triggers;
 - durability / continuation complexity — determines whether state must survive contexts;
 - Knowledge Externalization / Communication — persists useful decision-relevant knowledge when warranted.
+- Capability Learning Loop v0 — evidence-gated cross-episode generalization may nominate reusable guidance changes only after recurring normal-use evidence; it is a candidate learning relation, not a runtime or policy layer.
 
 ```text
 cross-cutting concern
 != mandatory workflow phase
 ```
+
+## 3A. Documentation, knowledge externalization, and capability learning
+
+Documentation is not a mandatory terminal phase in this architecture.
+
+```text
+Memory / Provenance
+= persistent substrate
+
+Knowledge Externalization / Communication
+= cross-cutting transferability concern
+
+Capability Learning Loop v0
+= evidence-gated relationship across multiple explicit normal-use lessons
+```
+
+The existing control loop already supports responsibility learning and
+repository-strategic learning through evidence return and reconciliation.
+`docs/research/capability-learning-loop-v0.md` names a possible higher-order
+loop:
+
+```text
+multiple episodes
+-> recurring material lesson
+-> cross-episode generalization
+-> bounded reusable guidance candidate
+-> independent qualification
+-> later normal-use reconciliation
+```
+
+This does not authorize automatic Skill editing, policy mutation, model training,
+or a generic continual-learning runtime.
 
 ## 4. Policy responsibility summary
 

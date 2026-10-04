@@ -472,7 +472,47 @@ uncertainty or a validation idea.
 
 ---
 
-## 2A. Use change-impact analysis when the bounded change is not the whole claim
+## 2A. Increase reasoning scope when local completion may hide a systems problem
+
+A locally obvious patch can be mechanically correct while still being the wrong
+responsibility when the changed concept has consequential downstream consumers,
+delayed effects, or repeated neighboring workarounds.
+
+Use bounded **consequence-depth reasoning** before committing to the local fix
+when that possibility can materially change the decision:
+
+~~~text
+first order  -> what does the change directly fix?
+second order -> what consumes/depends on the changed thing?
+third order  -> what later behavior follows from those consumers?
+fourth order -> do repeated effects reveal a missing invariant/abstraction?
+fifth order  -> does architecture materially obstruct that invariant?
+sixth order  -> does this actually change Level 3 / Level 4?
+~~~
+
+At every step ask whether going one level deeper could change the problem
+interpretation, responsibility, implementation, verification, ownership, or
+strategic decision. Stop when it cannot.
+
+~~~text
+local mechanical success
+!= systemic correctness
+
+more reasoning depth
+!= better automatically
+
+additional zoom cannot change the decision
+-> stop and execute bounded work
+~~~
+
+Repeated flags, exceptions, or local patches around the same concept are a
+signal to ask whether one missing distinction/invariant explains the family;
+they are not proof that a new abstraction is warranted.
+
+Read `../../docs/research/consequence-depth-and-systems-reasoning-v0.md` when
+this zoom-out decision is material.
+
+## 2B. Use change-impact analysis when the bounded change is not the whole claim
 
 Use `change-impact-analysis` when a contemplated or completed change can be locally
 implemented yet still leaves consequential uncertainty about adjacent contracts,
