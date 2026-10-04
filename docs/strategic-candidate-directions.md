@@ -542,6 +542,71 @@ cross-repository impact != automatic scope expansion
 No numeric severity/risk scoring, causal truth oracle, automatic issue creation,
 or execution authority is introduced.
 
+### 10.6 Capability Learning Loop v0
+
+**Current reconciliation:** `CONCEPTUALLY_SUPPORTED` + `CANDIDATE_EXTENSION` +
+`EVIDENCE_GATED`.
+
+Current Sensemaking already supports:
+
+- cross-context durable learning through evidence, Campaign/handoff/resume,
+  reconciliation, provenance, ADR, STATUS, and repository history;
+- repository-strategic learning through Strategic Repository Analysis,
+  Strategic Reconciliation, and Strategic Continuity;
+- Knowledge Externalization / Communication as a cross-cutting guidance concern.
+
+The remaining higher-order question is whether repeated **normal-use episodes**
+should ever be generalized into a bounded reusable Skill/policy/reference lesson.
+
+The explanatory model is
+`docs/research/capability-learning-loop-v0.md`.
+
+```text
+episode evidence
+!= generalized lesson
+
+recurring pattern
+!= doctrine automatically
+
+lesson candidate
+!= reusable guidance change authorized
+
+reusable guidance change
+-> ordinary review + exact-head qualification
+-> later normal-use reconciliation
+```
+
+**Current implementation disposition:** no new Skill, schema, runtime, learning
+engine, generic memory store, or automatic self-modification. Reopen only when a
+concrete recurring cross-episode deficiency is supported by normal-use evidence
+and cannot be absorbed by local reconciliation.
+
+**Future specialized Skill boundary: `capability-learning-analysis` —
+`CANDIDATE_ONLY`.** Existing Skills and reconciliation surfaces should continue
+to produce episode evidence and durable local learning. A separate Skill becomes
+warranted only if repeated normal use establishes a stable cross-episode
+synthesis responsibility with recurring comparison structure and material
+failure modes that explicit reusable guidance would prevent.
+
+If later warranted, that Skill may consume an explicitly selected set of
+normal-use/reconciliation artifacts and produce a bounded lesson candidate. It
+must not automatically discover repositories, rewrite Skills, promote doctrine,
+or grant merge/release authority.
+
+```text
+existing Skills
+-> episode evidence
+
+Learning / Reconciliation
+-> durable episode learning
+
+cross-episode synthesis
+-> agent-owned today
+
+capability-learning-analysis Skill
+-> candidate only after repeated stable need
+```
+
 ## 11. Ideas deliberately not promoted
 
 These remain non-authorized unless a later Level-3/Level-4 decision explicitly changes their disposition:
