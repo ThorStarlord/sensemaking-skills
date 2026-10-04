@@ -1,8 +1,10 @@
 # Autonomous Terminal Mission — Normal-Use Corroboration Plan
 
-**Status:** plan / not yet executed  
-**Date:** 2026-09-25  
-**Depends on:** PR #476 (Trial 001 reconciliation) integrating first  
+**Status:** active evidence plan / Trial 001 complete / Trial 002+002R prepared  
+**Original date:** 2026-09-25  
+**Current reconciliation:** 2026-10-04  
+**Historical dependency:** PR #476 integrated Trial 001 reconciliation  
+**Current baseline prerequisite:** integrate PRs #512, #513, and #514, then pin the resulting `main` SHA before Trial 002 launch  
 **Governing references:**
 
 - `skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`
@@ -15,6 +17,86 @@ Mission Continuation v1. It adds no Skill, policy, runtime, schema, score, or
 benchmark. Each trial removes **one** remaining uncertainty; nothing here
 authorizes changing Sensemaking itself unless a trial produces a
 `MATERIAL FAILURE` (section 9).
+
+## 0. 2026-10-04 baseline reset and Capability Scale Frontier mapping
+
+The original plan froze the evaluated Skill paths after PR #476. Before Trial
+002 launched, later owner-authorized doctrine work changed the evaluated
+Sensemaking guidance:
+
+- PR #512 — Capability Learning Loop v0;
+- PR #513 — bounded Consequence-Depth / Local Completion Bias guidance;
+- PR #514 — Capability Scale Frontier v0 (documentation model).
+
+No Trial 002/002R evidence was collected under the older freeze after those
+changes, so there is no mixed-attribution episode to preserve. Establish one new
+baseline **after #514 integrates**, record its exact `main` SHA in issue #515,
+and freeze the evaluated Skill paths from that point through Trial 002/002R
+unless the failure branch explicitly reopens Sensemaking construction.
+
+~~~text
+old post-#476 freeze
+-> superseded before Trial 002 launch
+
+post-#514 exact main SHA
+-> new Trial 002/002R Sensemaking baseline
+~~~
+
+### Pinned Trial 002 target
+
+The delegated owner selection for Trial 002 is:
+
+> **ThorStarlord/auteur issue #306 — Add Beginner Reconcile New Elements
+> workflow for creative divergence**
+
+The execution tracker is Sensemaking issue #515.
+
+Selection rationale:
+
+1. current open product-ergonomics responsibility;
+2. materially multi-responsibility (candidate freshness/content binding,
+   divergence projection/classification, author-facing action routing,
+   authority-preserving reconciliation, browser/focused qualification);
+3. materially different repository/product shape from Trial 001;
+4. thesis-stable and explicitly preserves Auteur's authority architecture;
+5. mechanically qualifiable through existing focused/server/browser evidence;
+6. no open PR was implementing #306 at selection time.
+
+Recheck criterion 6 immediately before launch. If another actor starts #306
+first, do not contaminate the trial by joining an already-in-flight
+implementation; re-run target admission.
+
+### Scale-frontier interpretation
+
+Trial 002 primarily increases:
+
+- **G — Repository / Environment Heterogeneity** (different product/repository
+  shape);
+- **E — Responsibility Breadth** (several distinct responsibility boundaries
+  inside one pinned terminal outcome);
+- bounded **B — Consequence Depth** where candidate freshness, authority,
+  reconciliation, and UI behavior interact.
+
+Trial 002R then isolates:
+
+- **D3 -> D4 — Temporal / Continuation Horizon**, using a genuinely fresh
+  context and fresh workspace.
+
+This mapping is descriptive only.
+
+~~~text
+scale coordinate
+!= score
+
+Trial 002 PASS
+!= Trial 003 automatically launched
+
+Trial 002 MATERIAL FAILURE
+-> pause later rungs
+-> reconcile the smallest failure-specific responsibility
+~~~
+
+The existing one-variable-per-rung discipline remains controlling.
 
 ## 1. What changed from the original sequence
 
