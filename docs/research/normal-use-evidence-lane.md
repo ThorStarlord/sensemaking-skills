@@ -315,6 +315,34 @@ BUILD-versus-unnecessary-inquiry, and Goal Fitness / qualification-frontier
 integrity. Use the same qualifying episode and human-readable evidence record;
 do not create a parallel tracker merely because the strategic fields are useful.
 
+### Capability Scale Frontier
+
+The descriptive
+[`Capability Scale Frontier v0`](capability-scale-frontier-v0.md) may be used
+to name the capability pressure exercised by an eligible episode and to identify
+a materially adjacent unsupported scale.
+
+It does not change this lane's evidence discipline:
+
+~~~text
+real normal-use episode already available
+-> prefer normal-use evidence
+
+cheap bounded synthetic stress
+can answer one concrete decision now
+-> synthetic stress may be warranted
+
+scale frontier exists
+!= synthetic fixture required
+
+episode coordinate
+!= benchmark score
+~~~
+
+Do not require scale coordinates in Issue #218 comments. Record them only when
+they materially improve interpretation of the episode or comparison across a
+small frozen episode set.
+
 Relevant precedents include:
 
 - `artifacts/dogfood-evidence-index.md`, which preserves provenance and separates historical from current-state dogfood evidence;
