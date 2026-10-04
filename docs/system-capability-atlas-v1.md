@@ -177,6 +177,36 @@ STRATEGIC-SENSEMAKING-LOOP
 != new source of truth
 ```
 
+## 5A. Capability Scale Frontier relationship
+
+The System Capability Atlas and Capability Scale Frontier answer different
+questions:
+
+~~~text
+System Capability Atlas
+= what major systems exist and what question each owns
+
+Capability Scale Frontier
+= how far the composed capability has been demonstrated
+  and which adjacent scale is worth evidence next
+~~~
+
+Use
+[`research/capability-scale-frontier-v0.md`](research/capability-scale-frontier-v0.md)
+as a descriptive roadmap-selection lens when the question is not "what system
+exists?" but "what complexity boundary should we stress before building more?"
+
+The scale model does not change system ownership, support status, strategic
+priority, or implementation authority.
+
+~~~text
+system exists
+!= scale demonstrated
+
+adjacent scale unqualified
+!= system extension warranted
+~~~
+
 ## 6. Common non-equivalences
 
 ```text

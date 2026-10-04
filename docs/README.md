@@ -20,6 +20,7 @@ evidence, not current guidance. Where two documents disagree, ADR 0029, ADR
 | Sensemaking vs Dark Factory full-autonomy ownership | [`dark-factory-autonomy-boundary.md`](dark-factory-autonomy-boundary.md) |
 | How repository learning accumulates across contexts/episodes | [`research/capability-learning-loop-v0.md`](research/capability-learning-loop-v0.md) |
 | When a local fix should zoom out into systems reasoning | [`research/consequence-depth-and-systems-reasoning-v0.md`](research/consequence-depth-and-systems-reasoning-v0.md) |
+| Capability scale / what to stress next | [`research/capability-scale-frontier-v0.md`](research/capability-scale-frontier-v0.md) |
 | Agent operating map | [`agent-native-operating-workflow.md`](agent-native-operating-workflow.md), [`decision-orchestration-boundary.md`](decision-orchestration-boundary.md) |
 | Commands | [`cli-reference.md`](cli-reference.md), [`campaign-cli.md`](campaign-cli.md) |
 | Product thesis and boundary | [`product-strategy.md`](product-strategy.md), [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md) |

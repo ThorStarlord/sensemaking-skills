@@ -607,6 +607,62 @@ capability-learning-analysis Skill
 -> candidate only after repeated stable need
 ```
 
+### 10.7 Capability Scale Frontier v0
+
+**Current reconciliation:** `DOCUMENTATION_MODEL` + `NO_NEW_RUNTIME`.
+
+The
+[`Capability Scale Frontier v0`](research/capability-scale-frontier-v0.md)
+provides a qualitative map of demonstrated capability boundaries across eight
+independent axes:
+
+- Decision Scope;
+- Consequence Depth;
+- Epistemic Messiness;
+- Temporal / Continuation Horizon;
+- Responsibility Breadth;
+- Authority Complexity;
+- Repository / Environment Heterogeneity;
+- Learning Depth.
+
+Its purpose is roadmap selection, not scoring:
+
+~~~text
+current qualified envelope
++ product-relevant adjacent frontier
++ decision-changing evidence
+-> next bounded stress / normal-use target
+~~~
+
+A PASS may expand a bounded support claim without creating construction. A FAIL
+should identify the smallest missing capability before any build is selected.
+
+The model explicitly rejects:
+
+- maturity or weighted scale scores;
+- exhaustive stress matrices;
+- mandatory scale annotation on ordinary work;
+- a new Skill, runtime, schema, router, or planner;
+- automatic Strategic Frontier reopening;
+- recreating Dark Factory runtime ownership inside Sensemaking.
+
+The current rough adjacent frontiers remain evidence questions such as
+fresh-context resume, autonomous highest-leverage responsibility selection,
+merge-authorized continuation, heterogeneous repository corroboration, and
+cross-episode capability learning. Their presence here does not select them as
+current work; `STATUS.md` remains authoritative.
+
+~~~text
+unsupported scale
+!= roadmap item automatically
+
+adjacent frontier
+!= construction path
+
+scale evidence
+!= implementation authorization
+~~~
+
 ## 11. Ideas deliberately not promoted
 
 These remain non-authorized unless a later Level-3/Level-4 decision explicitly changes their disposition:
