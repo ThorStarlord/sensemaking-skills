@@ -2,8 +2,13 @@
 
 **Source version:** 1.0.0rc3
 **Release target:** 1.0.0rc3 (frozen reduced-scope release candidate)
-**Last updated:** 2026-10-02  
+**Last updated:** 2026-10-04  
 **Current phase:** post-RC2 development (see the itemized state below; each bullet is one integrated or in-handoff issue/observation).
+
+- **Capability Learning Loop v0 — INTEGRATED / EVIDENCE-GATED:** PR #512 merged as `3f6e5e9f4b4a811fcb19724adb18db911e997dd6`; cross-episode reusable doctrine remains evidence-gated, with no self-modifying runtime or automatic Skill promotion.
+- **Consequence-Depth / Local Completion Bias guidance — INTEGRATED / NORMAL-USE OBSERVATION:** PR #513 merged as `bb90f700138749272111b9683ec8671c5593ccce`; `using-sensemaking` and `change-impact-analysis` now zoom outward only while downstream consequences can change the decision, responsibility, verification, invariant, or strategy.
+- **Capability Scale Frontier v0 — INTEGRATED / ROADMAP-SELECTION MODEL:** PR #514 merged as `9931b3438e0dc1a315fc69fb3df85e8bd4a5c407`; the eight-axis qualified-envelope / adjacent-frontier model is descriptive only and adds no score, benchmark runtime, Skill, schema, or automatic frontier selection.
+- **Next normal-use evidence frontier — TRIAL 002/002R PREPARED:** Sensemaking issue #515 pins `ThorStarlord/auteur#306` as the explicit different-repository-shape target, with `main@9931b3438e0dc1a315fc69fb3df85e8bd4a5c407` as the evaluated Sensemaking baseline. Trial 002 tests heterogeneous multi-responsibility continuation; Trial 002R tests D4 fresh-context resume. A valid D4 result requires genuinely separate coding-agent contexts and a fresh workspace; same-session rehearsal cannot establish that claim.
 
 - Issue #473 Autonomous Terminal Mission Continuation v1 is complete/integrated on `main` (exact feature head `2ec13d99cd62a3785c0be1036d7bed3b6efa2ca5` passed Product Validation run 36106321929 and Release Candidate Distribution run 36106321954 before PR #474 merged as `3fc1bcf1efd8565513592ddc57870476575eacb7`).
 - Normal-use Trial 001 on `ThorStarlord/React_incremental_game_prototype` now provides one bounded explicit-target support episode: target PR #154 head `70c24d5a11c4238c60e1fdee9f83eb9164dd35f0` passed Build Validation run 36120244452 and stopped at the intentionally withheld merge-authority boundary; attribution to the current #474 Skill revision remains limited because the harness-loaded Skill was reported stale.
