@@ -56,7 +56,7 @@ strategy inspect
 ## Fresh-context continuation
 
 ```text
-resume-profile --profile working
+resume-profile --profile minimal
 -> preflight
 -> doctor when a mechanical check fails
 -> AGENT: decide whether the current responsibility remains warranted
