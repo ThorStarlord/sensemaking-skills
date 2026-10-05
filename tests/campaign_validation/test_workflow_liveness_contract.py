@@ -16,14 +16,28 @@ from sensemaking_skills.registry import WorkflowRegistry  # noqa: E402
 
 
 COMPATIBILITY_ONLY = {
+    "fast-path-workflow",
+    "full-fog-workflow",
+    "setup-sensemaking-repo",
+    "artifact-reconciliation",
+    "autonomous-sprint-preflight",
+    "docs-architecture",
     "product-to-issues",
+    "product-discovery-sprint",
+    "product-strategy-sprint",
     "product-autonomous-sprint",
+    "full-local-sensemaking",
+    "fast-local-diagnostic",
     "experimental-autonomous-sprint",
+    "skill-maintenance-loop",
     "implementation-workflow",
     "product-implementation-workflow",
     "ui-diagnostic-workflow",
     "ui-implementation-workflow",
+    "docs-implementation-workflow",
     "architecture-implementation-workflow",
+    "skill-evaluation-workflow",
+    "architectural-review-planning-workflow",
 }
 
 
@@ -149,7 +163,7 @@ def test_deterministic_planner_refuses_inactive_former_default_without_substitut
     assert "No replacement route is ratified" in result
 
 
-def test_deterministic_planner_still_plans_active_default(tmp_path: Path) -> None:
+def test_deterministic_planner_still_plans_the_one_active_bounded_subgraph(tmp_path: Path) -> None:
     planner = _load_script_planner()
     brief = tmp_path / "brief.md"
     brief.write_text(
@@ -157,7 +171,7 @@ def test_deterministic_planner_still_plans_active_default(tmp_path: Path) -> Non
         "## 13. Machine-readable handoff\n"
         "```yaml\n"
         "primary_fog_type: docs_fog\n"
-        "recommended_workflow_id: docs-implementation-workflow\n"
+        "recommended_workflow_id: docs-contract-reconciliation\n"
         "escalation_recommended: false\n"
         "```\n",
         encoding="utf-8",
@@ -165,10 +179,10 @@ def test_deterministic_planner_still_plans_active_default(tmp_path: Path) -> Non
 
     result = planner.plan_workflow(str(brief), str(ROOT))
     assert not result.startswith("ERROR:")
-    assert "chosen_workflow_id: docs-implementation-workflow" in result
+    assert "chosen_workflow_id: docs-contract-reconciliation" in result
 
 
-def test_routing_divergence_tracks_recommendation_selection_mismatch(tmp_path: Path) -> None:
+def test_planner_does_not_substitute_an_inactive_default_for_inactive_recommendation(tmp_path: Path) -> None:
     planner = _load_script_planner()
     brief = tmp_path / "brief.md"
     brief.write_text(
@@ -183,7 +197,6 @@ def test_routing_divergence_tracks_recommendation_selection_mismatch(tmp_path: P
     )
 
     result = planner.plan_workflow(str(brief), str(ROOT))
-    assert not result.startswith("ERROR:")
-    assert "chosen_workflow_id: docs-implementation-workflow" in result
-    assert "routing_decision_method: manual_override" in result
-    assert "routing_divergence: true" in result
+    assert result.startswith("ERROR:")
+    assert "not currently active under ADR 0027" in result
+    assert "No replacement route is ratified" in result
