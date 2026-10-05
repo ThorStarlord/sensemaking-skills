@@ -509,6 +509,11 @@ sensemaking-skills campaign handoff --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign resume --workspace /path/to/campaigns/CMP-0001
 ```
 
+Decision commands generate routine transition/state identifiers when omitted;
+operators should author only identifiers that are externally meaningful. The
+semantic fields remain explicit, and authority is still a recorded
+classification rather than a grant.
+
 Actual GitHub publication/mutation remains separately authorized.
 
 ```text
