@@ -518,6 +518,20 @@ sensemaking-skills campaign defer --help
 sensemaking-skills campaign close --help
 ```
 
+The decision surface now treats bookkeeping as machinery: `--transition-id`,
+`--to-state`, and (for advance) `--responsibility-id` are optional and are
+generated deterministically when omitted. The agent still supplies the semantic
+content: decision, responsibility statement, blocked decision, scope, authority
+classification, evidence, and success conditions.
+
+```text
+agent supplies semantics
+machine supplies bookkeeping
+
+authority classification recorded
+!= authority granted or enforced
+```
+
 ## Complete and optionally archive a terminal Campaign
 
 `campaign close` remains the semantic terminal decision. Only afterward can a deterministic completion receipt be created:
