@@ -36,7 +36,7 @@ WORKFLOWS: dict[str, dict[str, Any]] = {
     "fresh-context": {
         "purpose": "Reconstruct an existing Campaign in a fresh agent/context without relying on chat memory.",
         "steps": [
-            {"id": "resume", "surface": "campaign resume-profile --profile working", "decision_gate": False},
+            {"id": "resume", "surface": "campaign resume-profile --profile minimal", "decision_gate": False},
             {"id": "preflight", "surface": "campaign preflight", "decision_gate": False},
             {"id": "diagnose_if_needed", "surface": "campaign doctor", "decision_gate": False},
             {"id": "interpret", "surface": "agent decides whether current responsibility remains warranted", "decision_gate": True},
