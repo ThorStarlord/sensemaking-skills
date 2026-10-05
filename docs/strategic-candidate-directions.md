@@ -1,7 +1,7 @@
 # Strategic Candidate Directions
 
 **Status:** exploratory / non-authoritative idea reservoir  
-**Updated:** 2026-09-20  
+**Updated:** 2026-10-05  
 **Control level:** input to future Level-3 Strategic Repository Evolution or Level-4 Product Thesis reasoning  
 **Authority:** none; candidate ideas do not constitute Strategic Frontier membership, implementation authorization, product-thesis ratification, or release commitment  
 **Current strategy authority:** [`product-strategy.md`](product-strategy.md)  
@@ -735,3 +735,71 @@ candidate inventory exists
 ```
 
 Use this reservoir to remember possibilities. Use Level 3 to decide whether any possibility has become consequential enough to act on.
+
+## 14. Architecture-pruning candidates from adversarial review
+
+**Current reconciliation:** `REQUIRES_EVIDENCE` + `OWNER_DIRECTION_TO_SIMPLIFY`.
+
+The 2026-10-05 adversarial claims-vs-runtime review interprets the existing
+normal-use evidence as a pruning signal, not as a mandate to manufacture another
+control subsystem. The ratified `simplify hard` verdict and subsequent
+re-measure already establish the strategic bias: machinery whose incremental
+decision value is not demonstrated should face a higher retention bar than
+simple agent-owned judgment.
+
+These are candidate simplifications, **not an authorized deletion backlog**:
+
+1. **Fast-path auto-orchestration reconciliation.** Reconcile active workflow
+   language/modes that advertise automatic downstream invocation with runtime
+   behavior that deliberately surfaces a candidate and does not spawn a child
+   workflow without a separate authority event. Candidate outcomes include
+   demoting the surface to compatibility-only or rewriting the live contract so
+   capability claims match behavior.
+2. **Organization Tracer default-surface reduction.** Reassess whether the
+   read-only Organization Pattern/tracer belongs in the default operational
+   product surface before independent multi-role outcome advantage is
+   demonstrated. Preserve research evidence if the default surface is reduced.
+3. **Policy-name consolidation.** Preserve useful inquiry, challenge,
+   exploration, warrant, and reconciliation rules while testing whether several
+   separately named policy layers create more cognitive/maintenance cost than
+   decision value. Prefer one compact operating doctrine when distinctions do
+   not change action.
+4. **Skill-surface reduction / optional packs.** Reassess whether all canonical
+   Skills need equal default visibility. Prefer a smaller core decision-support
+   surface with optional specialized packs if normal use shows discovery and
+   maintenance cost without commensurate value.
+5. **Historical/compatibility isolation.** Keep provenance where useful, but
+   prevent superseded workflow/control models from competing with current
+   operational truth in normal navigation and capability discovery.
+6. **Continuation compression.** Prefer the smallest durable continuation
+   capsule that lets a fresh agent reconstruct goal, current responsibility,
+   remaining difference, authority, required verification, blockers, stop
+   condition, and evidence pointers. Additional persistence machinery must be
+   justified by an observed reconstruction failure.
+7. **Campaign exceptional-by-default.** Continue treating Campaign as warranted
+   by continuation complexity rather than task importance or size; direct
+   bounded work remains the default when one context can safely finish the
+   responsibility.
+8. **Validator retention by external value, not self-consumption.** A validator
+   should not be retained merely because repository tests or another internal
+   abstraction consume it. Retention should trace to user-facing correctness,
+   safety, provenance, release integrity, or a demonstrated recurring failure.
+
+The governing admission/retention test is:
+
+```text
+competent control agent without abstraction
+-> materially recurring failure
+
+proposed abstraction
+-> changes that outcome
+-> at acceptable maintenance + cognitive cost
+
+otherwise
+-> simplify / demote / archive rather than expand
+```
+
+This section does not add a Complexity Tax score, Architecture Pruning Skill,
+new validator, new schema, new workflow, automatic retirement policy, or
+permission to delete a shipped surface.
+
