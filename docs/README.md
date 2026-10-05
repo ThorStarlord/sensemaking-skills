@@ -10,24 +10,25 @@ and the sections marked **Current** below. A document that opens with a
 evidence, not current guidance. Where two documents disagree, ADR 0029, ADR
 0013, and the canonical contracts win.
 
-## Start here
+## Start here — default spine
+
+A fresh maintainer or agent should normally need only this spine:
 
 | Need | Read |
 | --- | --- |
-| First use as a human | `../GETTING_STARTED.md`, `../INSTALLATION.md`, `FAQ.md`, `TROUBLESHOOTING.md` |
-| Which Skill does what | [`skill-catalogue.md`](skill-catalogue.md) |
-| Which system owns which question | [`system-capability-atlas-v1.md`](system-capability-atlas-v1.md) |
-| Sensemaking vs Dark Factory full-autonomy ownership | [`dark-factory-autonomy-boundary.md`](dark-factory-autonomy-boundary.md) |
-| How repository learning accumulates across contexts/episodes | [`research/capability-learning-loop-v0.md`](research/capability-learning-loop-v0.md) |
-| When a local fix should zoom out into systems reasoning | [`research/consequence-depth-and-systems-reasoning-v0.md`](research/consequence-depth-and-systems-reasoning-v0.md) |
-| Capability scale / what to stress next | [`research/capability-scale-frontier-v0.md`](research/capability-scale-frontier-v0.md) |
-| Agent operating map | [`agent-native-operating-workflow.md`](agent-native-operating-workflow.md), [`decision-orchestration-boundary.md`](decision-orchestration-boundary.md) |
-| Commands | [`cli-reference.md`](cli-reference.md), [`campaign-cli.md`](campaign-cli.md) |
-| Product thesis and boundary | [`product-strategy.md`](product-strategy.md), [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md) |
-| Decisions | [`adr/README.md`](adr/README.md) (index with statuses) |
-| Maintaining and qualifying | [`operations-runbook.md`](operations-runbook.md), [`maintainer-guide-v1.0.md`](maintainer-guide-v1.0.md) |
+| Human use | `../GETTING_STARTED.md` |
+| Agent operating doctrine | `../skills/using-sensemaking/SKILL.md` |
+| Strategic one-prompt continuation | `../skills/strategic-sensemaking-loop/SKILL.md` |
+| Current repository state | `../STATUS.md` |
+| Product/authority model | [`product-operating-model.md`](product-operating-model.md), [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md) |
+| Operations / qualification | [`operations-runbook.md`](operations-runbook.md) |
+| Commands | [`cli-reference.md`](cli-reference.md) |
 
-## Current
+Everything else below is a **current or historical reference**, not part of the
+default reading path. Open it only when the current decision needs that detail.
+
+## Advanced current references
+## Advanced current references
 
 ### Control model and strategy
 `strategic-outer-loop.md`, `policy-hierarchy-v0.md`, `strategic-state-contract.md`,
