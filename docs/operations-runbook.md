@@ -321,10 +321,12 @@ sensemaking-skills campaign explain --workspace /path/to/campaigns/CMP-0001 --re
 sensemaking-skills campaign graph --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign graph-integrity --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign doctor --workspace /path/to/campaigns/CMP-0001 --json
-sensemaking-skills campaign resume-profile --workspace /path/to/campaigns/CMP-0001 --profile working --json
+sensemaking-skills campaign resume-profile --workspace /path/to/campaigns/CMP-0001 --profile minimal --json
 ```
 
 Backward-compatible `campaign resume-context` remains available. `resume-profile` supports `minimal|working|audit`, deterministic tail-preserving `--max-items`, and optional preflight inclusion.
+
+`minimal` is the default because fresh-context orientation should start from the smallest durable projection; request `working` or `audit` only when the additional state is decision-relevant.
 
 When responsibility type is already explicitly selected:
 
