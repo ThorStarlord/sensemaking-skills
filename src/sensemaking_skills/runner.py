@@ -1,14 +1,15 @@
-"""Workflow orchestration runner for Sensemaking Skills.
+"""Legacy workflow-compatibility wrapper for Sensemaking Skills.
 
-Delegates to the legacy workflow-runtime.py for orchestration execution
-while providing a modern, configurable interface. Also manages skill execution.
+The active coding agent is the product\'s semantic controller. This module keeps
+an explicit compatibility bridge to scripts/workflow-runtime.py for callers
+that still need a registered legacy workflow; it is not the default control
+surface and it never selects an execution mode implicitly.
 """
 
 import os
 import sys
 import subprocess
 import shutil
-import warnings
 import yaml
 from typing import Optional, List, Dict, Any
 from pathlib import Path
@@ -17,14 +18,12 @@ from .paths import PathResolver
 from .skills import BaseSkill, RepoSensemakerSkill, WorkflowPlannerSkill
 
 
-_EXECUTION_MODE_UNSET = object()
-
-
 class SkillsOrchestrator:
-    """Main orchestration engine for running skill workflows.
+    """Legacy compatibility bridge for explicit registered-workflow execution.
 
-    Accepts configuration and delegates workflow execution to the
-    production-grade orchestration runner (scripts/workflow-runtime.py).
+    New agent-native integrations should invoke Skills directly or use the
+    Campaign surfaces. This wrapper delegates only when a caller explicitly
+    chooses both the workflow and its execution mode.
     """
 
     def __init__(self, config: Optional[SkillsConfig] = None, config_path: Optional[str] = None):
@@ -73,7 +72,7 @@ class SkillsOrchestrator:
     def run_workflow(
         self,
         workflow_id: str,
-        execution_mode: Any = _EXECUTION_MODE_UNSET,
+        execution_mode: Optional[str] = None,
         from_session: Optional[str] = None,
         **kwargs
     ) -> int:
@@ -81,25 +80,22 @@ class SkillsOrchestrator:
 
         Args:
             workflow_id: ID of the workflow to execute
-            execution_mode: Explicit execution mode (plan_only, guided_execution,
-                autonomous_execution, yolo_execution). Omitting this argument is
-                deprecated; for compatibility, omission currently behaves as
-                ``yolo_execution`` and emits a FutureWarning.
+            execution_mode: Required explicit execution mode (plan_only,
+                guided_execution, autonomous_execution, or the legacy explicit
+                yolo_execution compatibility mode). No implicit execution mode
+                is selected.
             from_session: Path to artifact session directory from a prior workflow run
             **kwargs: Additional arguments to pass to the runner (plan_out, log_dir, etc.)
 
         Returns:
             Exit code (0 for success, non-zero for failure)
         """
-        if execution_mode is _EXECUTION_MODE_UNSET:
-            warnings.warn(
-                "Omitting execution_mode is deprecated; pass an explicit execution mode. "
-                "For compatibility this call currently behaves as "
-                "execution_mode='yolo_execution'.",
-                FutureWarning,
-                stacklevel=2,
+        if execution_mode is None:
+            raise ValueError(
+                "execution_mode is required; implicit workflow execution defaults "
+                "were retired. Pass plan_only, guided_execution, "
+                "autonomous_execution, or explicit legacy yolo_execution."
             )
-            execution_mode = "yolo_execution"
 
         project_root = str(self.config.project_root)
         cmd = [
@@ -348,12 +344,11 @@ class SkillsOrchestrator:
                     shutil.copy2(artifact_file, dest)
                     print(f"  [ok] Copied {artifact_file.name}")
 
-            # Run workflow with parent session artifacts available. This call is
-            # intentionally explicit so it does not rely on the deprecated
-            # omitted-mode compatibility behavior.
+            # The manual parent-session path is compatibility plumbing, not a
+            # request for maximum autonomy. Use guided execution explicitly.
             return self.run_workflow(
                 workflow_id,
-                execution_mode="yolo_execution",
+                execution_mode="guided_execution",
                 from_session=str(current_session)
             )
 
