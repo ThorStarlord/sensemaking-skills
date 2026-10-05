@@ -2,8 +2,10 @@
 
 **Source version:** 1.0.0rc3
 **Release target:** 1.0.0rc3 (frozen reduced-scope release candidate)
-**Last updated:** 2026-10-04  
+**Last updated:** 2026-10-05  
 **Current phase:** post-RC2 development (see the itemized state below; each bullet is one integrated or in-handoff issue/observation).
+
+- **Adversarial architecture review — PRUNING / EVIDENCE-BEFORE-EXPANSION POSTURE:** the 2026-10-05 claims-vs-runtime audit strengthens the already-ratified `simplify hard` direction. The repository should prune or demote ceremony before adding another policy layer, Skill, orchestration abstraction, Organization surface, authority subsystem, or autonomy subsystem. New abstractions require a concrete recurring failure that a competent control agent without the abstraction materially mishandles, plus evidence that the proposed machinery changes the outcome enough to justify its maintenance and cognitive cost. This posture does not itself authorize deleting shipped surfaces; candidate removals remain subject to their normal authority/reconciliation boundaries.
 
 - **Capability Learning Loop v0 — INTEGRATED / EVIDENCE-GATED:** PR #512 merged as `3f6e5e9f4b4a811fcb19724adb18db911e997dd6`; cross-episode reusable doctrine remains evidence-gated, with no self-modifying runtime or automatic Skill promotion.
 - **Consequence-Depth / Local Completion Bias guidance — INTEGRATED / NORMAL-USE OBSERVATION:** PR #513 merged as `bb90f700138749272111b9683ec8671c5593ccce`; `using-sensemaking` and `change-impact-analysis` now zoom outward only while downstream consequences can change the decision, responsibility, verification, invariant, or strategy.
@@ -38,6 +40,8 @@ Release scope and support claims: `docs/release-v1.0-contract.md`.
 - **Product purpose:** improve repository-level decisions when a capable coding agent cannot safely determine the correct next engineering responsibility from the user request alone.
 - **Primary persona:** high-delegation agent-assisted builder / repository owner; beginner-first, expert-capable.
 - **Strategic design principle:** opinionated about engineering invariants, adaptive about process, progressive in disclosure.
+- **Complexity posture:** mechanical maturity has outpaced demonstrated incremental value across the broader control surface. The normal-use re-measure recorded 0 clear skill-favorable tasks and reinforced the owner-ratified `simplify hard` verdict; therefore the default strategic bias is prune/simplify before expand, while preserving the few invariants with demonstrated decision, authority, provenance, or verification value.
+- **Abstraction admission rule:** coherence, schema validity, internal consumption, or test coverage are insufficient reasons to retain or add an abstraction. A new abstraction must identify a concrete consumer/failure and demonstrate incremental value over a competent control agent without it.
 - **Control law:** lower levels may execute higher-level commitments but may not silently redefine them.
 - **Downstream runtime boundary:** `ThorStarlord/dark-factory` is the canonical durable software-factory runtime for mature full-autonomy/full-delegation continuation; this repository remains the semantic R&D/reusable decision-support source and must not create a competing factory controller. See `docs/dark-factory-autonomy-boundary.md`.
 - The four-level architecture remains **Version v0** and a **frozen operational baseline**; Strategic Outer Loop Precision v1 clarifies its reasoning and transition semantics without creating a new planner/runtime.
