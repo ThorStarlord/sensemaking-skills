@@ -144,6 +144,11 @@ def test_copy_with_sibling_resolves_liveness_from_sibling_file(tmp_path):
     # operational view contains exactly the active workflows of the catalog.
     registry_ids = sorted(w["id"] for w in _load_yaml(REGISTRY_PATH)["workflows"])
     assert out["catalog_ids"] == registry_ids
-    compat_only = {wid for wid, v in overlay["overrides"].items() if v == "compatibility_only"}
-    assert compat_only, "overlay fixture must declare at least one compatibility_only workflow"
-    assert out["operational_ids"] == [wid for wid in registry_ids if wid not in compat_only]
+    default_liveness = overlay["default_liveness"]
+    overrides = overlay["overrides"]
+    expected_active = sorted(
+        wid for wid in registry_ids
+        if overrides.get(wid, default_liveness) == "active"
+    )
+    assert expected_active == ["docs-contract-reconciliation"]
+    assert out["operational_ids"] == expected_active
