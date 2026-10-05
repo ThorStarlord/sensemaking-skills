@@ -14,39 +14,34 @@ An agent-native engineering decision-support, durability, and sensemaking layer 
 
 ## How to use Sensemaking
 
-Choose the entry point for your role instead of reading every document:
+Start from the smallest surface that can answer the current question. Most users
+and agents should not traverse the repository's full documentation or capability
+catalog.
 
-| If you are... | Start here | What it owns |
-| --- | --- | --- |
-| A human/new user trying to use Sensemaking | [`GETTING_STARTED.md`](GETTING_STARTED.md) | Canonical human how-to and first-use walkthrough |
-| Browsing all documentation, current vs historical | [`docs/README.md`](docs/README.md) | Documentation index; navigation only |
-| Looking up what a Skill does | [`docs/skill-catalogue.md`](docs/skill-catalogue.md) | Skill catalogue grouped by responsibility; no routing |
-| Looking up CLI commands | [`docs/cli-reference.md`](docs/cli-reference.md) | Human-readable CLI overview; machine contracts remain authoritative |
-| Looking for the canonical Campaign lifecycle/composition | [`docs/agent-workflow-golden-path-v1.md`](docs/agent-workflow-golden-path-v1.md) | Canonical Campaign workflow-composition reference; static guidance, not routing |
-| A coding agent using Sensemaking | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) | Agent-facing operating instructions |
-| A human/agent wanting one-prompt strategic start/resume or a full-autonomy terminal mission | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) | Artifact-aware strategic orchestration across analysis, responsibility, repeated autonomous execution, evidence return, reconciliation, terminal-goal continuation, and reserved-decision boundaries |
-| Understanding how control levels, policy layers, authority, execution, evidence, and strategic continuity compose | [`docs/adaptive-semantic-control-architecture-v0.md`](docs/adaptive-semantic-control-architecture-v0.md) | Descriptive crosswalk; no new control level, runtime, or authority |
-| Orienting across the major systems and deciding which surfaces should normally be visible | [`docs/system-capability-atlas-v1.md`](docs/system-capability-atlas-v1.md) | Descriptive system/capability atlas and product-role classification; no new authority |
-| Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) | Level-3 current-system, capability, construction-path, tradeoff, and strategic-synthesis analysis |
-| Comparing, checking currentness, or reconstructing history of authored strategic analyses | [`docs/strategic-continuity-v1.md`](docs/strategic-continuity-v1.md) | Deterministic typed-currentness/history projections; no strategic selection |
-| Reconstructing a decision from strategy through execution, evidence return, and reassessment | [`docs/decision-journey-productization-v1.md`](docs/decision-journey-productization-v1.md) | Read-only journey/context/delta/impact-closure projections plus caller-selected guidance |
-| Reconciling returned strategic evidence or carrying reserved decisions | [`docs/strategic-reconciliation-and-decision-packets-v1.md`](docs/strategic-reconciliation-and-decision-packets-v1.md) | Strategic reconciliation, owner-decision, thesis-review, and external-evidence companion artifacts |
-| Deciding boundaries/capability ownership across selected repositories | [`skills/multi-repository-strategic-analysis/SKILL.md`](skills/multi-repository-strategic-analysis/SKILL.md) | Level-3 caller-selected repository-set analysis without automatic discovery |
-| Checking consequential affected surfaces around a bounded change | [`skills/change-impact-analysis/SKILL.md`](skills/change-impact-analysis/SKILL.md) | Semantic change-impact, verification, reconciliation, and closure analysis |
-| Trying to understand the deeper responsibility/authority model | [`docs/agent-native-operating-workflow.md`](docs/agent-native-operating-workflow.md) | Level-2 reasoning, artifact, authority, validation, and stopping model |
-| Maintaining, validating, or qualifying the repository | [`docs/operations-runbook.md`](docs/operations-runbook.md) | Current operator/qualification runbook |
+| Need | Start here |
+| --- | --- |
+| Human installation / first use | [`GETTING_STARTED.md`](GETTING_STARTED.md) |
+| Coding-agent repository work | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) |
+| One-prompt strategic start/resume or delegated terminal mission | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) |
+| Repository future / construction-path analysis | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) |
+| CLI lookup | [`docs/cli-reference.md`](docs/cli-reference.md) |
+| Maintenance / qualification | [`docs/operations-runbook.md`](docs/operations-runbook.md) |
+| Advanced/current/historical references | [`docs/README.md`](docs/README.md) |
 
 ```text
-GETTING_STARTED.md = how to use
-agent-workflow-golden-path-v1.md = how Campaign surfaces compose
-using-sensemaking/SKILL.md = how the coding agent operates
-agent-native-operating-workflow.md = why the Level-2 loop works this way
-operations-runbook.md = how maintainers operate and qualify it
+normal path
+= one front door
++ direct bounded work
++ only the extra surface the decision actually needs
+
+capability exists
+!= capability belongs in the default cognitive path
 ```
 
-Do not create a parallel `HOW_TO_USE.md` or generic `workflow.md` for the same material. The goal is one clear entry point per audience rather than duplicated instruction surfaces.
-
-The product-facing default is intentionally compressed: humans start with `GETTING_STARTED.md`, coding agents use `using-sensemaking`, and a complete strategic episode can start/resume through `strategic-sensemaking-loop`. Specialized Skills remain directly invokable when their bounded responsibility is explicitly the task. See the [System Capability Atlas v1](docs/system-capability-atlas-v1.md) for the front-door / specialized / substrate / compatibility distinction.
+Specialized Skills remain directly invokable when their bounded responsibility
+is explicitly the task. The full Skill catalogue, system atlas, policy
+references, journey, Organization, semantic-architecture, and historical
+surfaces are **advanced/reference material**, not prerequisites for normal use.
 
 ### Choose the lightest useful process
 
