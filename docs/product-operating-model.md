@@ -171,6 +171,46 @@ The active agent should resolve repository-answerable questions itself when
 that judgment is delegated, while still escalating owner intent and reserved
 actions at the appropriate boundary.
 
+### Autonomy and enforcement claim ceiling
+
+Autonomy governs how long the active agent may continue exercising delegated
+judgment without returning to the owner. It does not enlarge scope or authority.
+
+```text
+autonomy = continuation discretion within granted authority
+autonomy != authority expansion
+full delegation != protected-transition authority
+```
+
+Keep three authority/compliance concepts separate:
+
+```text
+DECLARED AUTHORITY
+what the delegation contract says an actor may do
+
+ENFORCED AUTHORITY
+what the executor/runtime/environment makes impossible to violate
+
+REPORTED COMPLIANCE
+what the actor says it actually did
+```
+
+Sensemaking may represent declared authority and preserve worker-reported
+compliance without itself being the enforcement mechanism. Do not describe a
+recorded boundary as mechanically enforced unless the relevant runtime or
+environment deterministically prevents or detects the violation.
+
+```text
+integrity-bound claim != verified claim
+reported compliance != enforced compliance
+recorded forbidden action != mechanically prevented action
+```
+
+The deterministic substrate should enforce only mechanically knowable
+invariants. Semantic judgment remains agent-owned, and protected operational
+authority belongs to the executor/runtime/environment that can actually enforce
+it.
+
 ## Strategic Repository Evolution — Level 3
 
 Level 3 operates above a bounded Campaign. It asks what repository-level change
