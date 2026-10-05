@@ -1,7 +1,7 @@
 # Sensemaking Skills Operations and Qualification Runbook
 
 **Status:** current operator-facing operations/qualification runbook  
-**Updated:** 2026-09-18  
+**Updated:** 2026-10-05  
 **Audience:** maintainers, coding agents, and human qualification/release operators  
 **Executable authority:** checked-in GitHub Actions workflows and current repository code  
 **Strategic authority:** `docs/product-strategy.md` + `STATUS.md`
@@ -94,7 +94,7 @@ python -m pip install -e . pytest pytest-subtests
 sensemaking-skills --version
 ```
 
-Current repository source version: `1.0.0rc3`; active release target: frozen candidate `1.0.0rc3` (`candidate`). Qualified `1.0.0rc2` remains frozen at `c9b86138d3919c4fce87040f14161364a0c1c3a0`.
+Current repository source version: `1.0.0rc4.dev0`; active release target: `1.0.0rc4` (`development`). Qualified `1.0.0rc2` remains frozen at `c9b86138d3919c4fce87040f14161364a0c1c3a0`; no earlier qualification transfers to current development bytes.
 
 For retained lab compatibility checks only:
 
@@ -568,7 +568,7 @@ Running retained compatibility tests does not create a new operative experiment;
 
 ## 7. Release Candidate Distribution
 
-`.github/workflows/release-candidate.yml` is exact-head distribution authority for v0.3.0.
+`.github/workflows/release-candidate.yml` is the exact-head distribution-validation authority for the current Version 1.0 development target; while status is `development`, a passing run is not candidate qualification.
 
 ```bash
 python scripts/validate-product-boundary.py
