@@ -29,14 +29,14 @@ def test_execution_interface_v1_handoff_covers_all_owner_directed_packages() -> 
     assert "Issue #384" in handoff
 
 
-def test_status_preserves_execution_interface_closeout_after_rc3_freeze() -> None:
+def test_status_preserves_execution_interface_closeout_during_rc4_development() -> None:
     status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     contract = yaml.safe_load((ROOT / "release-v1.0.yaml").read_text(encoding="utf-8"))
 
-    assert pyproject["project"]["version"] == "1.0.0rc3"
-    assert contract["release"]["version"] == "1.0.0rc3"
-    assert contract["release"]["status"] == "candidate"
+    assert pyproject["project"]["version"] == "1.0.0rc4.dev0"
+    assert contract["release"]["version"] == "1.0.0rc4"
+    assert contract["release"]["status"] == "development"
     assert "Execution Interface & Agent-Factorization v1 — COMPLETE" in status
     assert "NORMAL_USE_VALIDATION" in status
     assert "EXECUTION_INTERFACE_V1_CLOSEOUT" not in status
