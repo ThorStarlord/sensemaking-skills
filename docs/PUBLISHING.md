@@ -45,6 +45,35 @@ Candidate qualification requires:
 Candidate qualification is an exact-source warrant. It does not automatically
 authorize PyPI publication or final `1.0.0`.
 
+### Hosted-CI availability boundary
+
+Ordinary development does not stop merely because GitHub-hosted qualification is
+temporarily unavailable. Continue with applicable local tests, validators, builds,
+and repository work, and record the hosted check as pending/unavailable.
+
+However, the current candidate/release contract deliberately requires hosted
+exact-source qualification for the stronger candidate, merge, and publication
+claims described below. Local reproduction may support development confidence but
+does not substitute for that evidence.
+
+```text
+hosted Actions unavailable
+-> continue ordinary development locally
+-> preserve hosted qualification as pending
+
+local PASS
+!= exact-head hosted qualification
+
+qualification unavailable
+!= qualification failed
+!= permission to weaken the gate
+```
+
+If the external blocker is quota/billing, do not spend money, change billing, or
+bypass repository policy without explicit owner authority. Once hosted
+qualification is available and materially needed, run only the required
+qualification rather than rerunning it as routine ceremony.
+
 ## Distribution gate
 
 `.github/workflows/release-candidate.yml` derives distribution identity from
