@@ -52,6 +52,21 @@ def _workspace(tmp_path: Path, name: str = "campaign", *, responsibility: bool =
     return workspace
 
 
+def test_resume_profile_defaults_to_minimal_projection(tmp_path: Path) -> None:
+    workspace = _workspace(tmp_path)
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli,
+        ["campaign", "resume-profile", "--workspace", str(workspace), "--json"],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["projection"] == "minimal"
+    assert "established_facts" not in payload
+
+
 def test_resume_profile_v2_progressive_disclosure_and_bounding(tmp_path: Path) -> None:
     workspace = _workspace(tmp_path)
     runner = CliRunner()
