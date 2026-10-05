@@ -1,9 +1,9 @@
 # Status
 
-**Source version:** 1.0.0rc3
-**Release target:** 1.0.0rc3 (frozen reduced-scope release candidate)
+**Source version:** 1.0.0rc4.dev0
+**Release target:** 1.0.0rc4 (development; reduced-scope candidate target)
 **Last updated:** 2026-10-05  
-**Current phase:** post-RC2 development (see the itemized state below; each bullet is one integrated or in-handoff issue/observation).
+**Current phase:** post-RC3 simplification development (see the itemized state below; each bullet is one integrated or in-handoff issue/observation).
 
 - **Adversarial architecture review — PRUNING / EVIDENCE-BEFORE-EXPANSION POSTURE:** the 2026-10-05 claims-vs-runtime audit strengthens the already-ratified `simplify hard` direction. The repository should prune or demote ceremony before adding another policy layer, Skill, orchestration abstraction, Organization surface, authority subsystem, or autonomy subsystem. New abstractions require a concrete recurring failure that a competent control agent without the abstraction materially mishandles, plus evidence that the proposed machinery changes the outcome enough to justify its maintenance and cognitive cost. This posture does not itself authorize deleting shipped surfaces; candidate removals remain subject to their normal authority/reconciliation boundaries.
 
@@ -23,7 +23,7 @@
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
-**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568`. Qualified `1.0.0rc2` is frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`, Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`. The source is now the frozen candidate `1.0.0rc3`; RC2 qualification does not transfer to these later bytes. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
+**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568`. Qualified `1.0.0rc2` remains frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`, Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`. The preceding RC3 candidate line has been reopened as `1.0.0rc4.dev0` because this simplification changes source behavior; no RC2/RC3 qualification transfers to these bytes. A future `1.0.0rc4` freeze requires fresh exact-source qualification. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
 Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
