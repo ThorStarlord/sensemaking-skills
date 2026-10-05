@@ -126,6 +126,12 @@ def test_resume_and_validate_fail_closed_on_unrecorded_target_drift(tmp_path: Pa
     assert validation.valid is False
     assert "TARGET_SNAPSHOT_DRIFT" in validation.diagnostic_codes
 
+    inspection, observed = CampaignService(workspace).inspect()
+    assert inspection.valid is False
+    assert "TARGET_SNAPSHOT_DRIFT" in inspection.diagnostic_codes
+    assert observed.state.target_snapshot is not None
+    assert observed.state.target_snapshot != capture_target_snapshot(repo)
+
 
 def test_lifecycle_transition_binds_source_and_post_work_target_snapshots(tmp_path: Path) -> None:
     repo = _repo(tmp_path)
