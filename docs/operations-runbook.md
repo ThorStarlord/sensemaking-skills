@@ -38,6 +38,52 @@ scripts/validate-candidate-directions.py
 
 Neither strategic validator decides strategy quality or priority.
 
+### 1.1 Hosted CI availability and budget policy
+
+The repository is currently public and the checked-in qualification workflows use
+standard GitHub-hosted runner labels. Under GitHub's current billing model, standard
+hosted Actions for public repositories are not billed against private-repository
+included minutes. Re-check that assumption if repository visibility, runner class,
+or GitHub billing policy changes.
+
+Hosted CI remains valuable because it provides exact-head, clean-environment, and
+cross-platform evidence that a single local environment cannot reproduce exactly.
+It is **not** a prerequisite for continuing ordinary repository development.
+
+If hosted Actions become unavailable because of quota/billing limits, platform
+outage, or another external constraint:
+
+1. continue warranted implementation, documentation, refactoring, and investigation;
+2. run the closest applicable local test/validator/build reproduction and record
+   the exact commands/results;
+3. mark hosted CI as unavailable/pending rather than failed or passed;
+4. do not claim hosted cross-platform, exact-head Actions, or release-candidate
+   qualification evidence that was not obtained;
+5. do not repeatedly rerun a workflow whose blocker is known to be quota/billing;
+6. resume the hosted qualification step only when it is materially required and
+   the external constraint is cleared.
+
+```text
+hosted CI unavailable
+!= repository development blocked
+
+local validation PASS
+!= hosted cross-platform CI PASS
+!= release-candidate qualification
+
+external billing/quota blocker
+!= technical failure
+```
+
+Do not purchase additional Actions capacity, change billing, move to larger paid
+runners, or alter repository protection merely to clear a qualification gate
+without explicit owner authority.
+
+For normal development, prefer the cheapest sufficient evidence. For a protected
+merge/release/candidate claim whose current contract explicitly requires hosted
+exact-head evidence, preserve that claim as pending until the required evidence
+exists rather than weakening the contract silently.
+
 ## 2. Development setup
 
 ```bash
