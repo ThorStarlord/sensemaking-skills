@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-rc.4] - UNRELEASED
+
+### Changed
+- **Subtractive architecture pass** — reopens Version 1.0 development after the RC3 line so compatibility sediment can be removed without mutating a frozen candidate identity. Legacy workflow execution is explicit-only, workflow selection defaults to compatibility-only except the evidenced `docs-contract-reconciliation` subgraph, Campaign inspection remains available when strict recovery/target checks block continuation, and routine Campaign decision identifiers can be derived mechanically.
+
 ## [1.0.0-rc.3] - UNRELEASED
 
 ### Changed
