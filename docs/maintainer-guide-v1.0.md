@@ -4,6 +4,9 @@ This guide is the short operational entry point for maintainers. The exact
 support and claim ceiling is defined in [`release-v1.0-contract.md`](release-v1.0-contract.md)
 and validated by `scripts/validate-release-contract.py`.
 
+**Current source:** `1.0.0rc4.dev0`  
+**Current target:** `1.0.0rc4` (`development`; not yet a frozen candidate)
+
 ## Authority order
 
 1. Accepted ADRs and executable contracts define current behavior.
