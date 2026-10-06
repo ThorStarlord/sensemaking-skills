@@ -101,7 +101,7 @@ def test_package_registry_separates_catalog_from_selectable_workflows(tmp_path: 
     assert registry.get_selectable_workflow("docs-contract-reconciliation") is not None
 
 
-def test_external_custom_workflow_defaults_active_without_liveness_migration(tmp_path: Path) -> None:
+def test_external_custom_workflow_requires_explicit_activation(tmp_path: Path) -> None:
     registry = WorkflowRegistry(
         tmp_path,
         user_registry={
@@ -115,8 +115,8 @@ def test_external_custom_workflow_defaults_active_without_liveness_migration(tmp
         },
     )
 
-    assert registry.get_workflow_liveness("custom-current-workflow") == "active"
-    assert "custom-current-workflow" in registry.list_selectable_workflows()
+    assert registry.get_workflow_liveness("custom-current-workflow") == "compatibility_only"
+    assert "custom-current-workflow" not in registry.list_selectable_workflows()
 
 
 def test_user_can_explicitly_reactivate_an_overridden_compatibility_id(tmp_path: Path) -> None:
