@@ -17,27 +17,14 @@ from sensemaking_skills.registry import WorkflowRegistry  # noqa: E402
 
 COMPATIBILITY_ONLY = {
     "fast-path-workflow",
-    "full-fog-workflow",
-    "setup-sensemaking-repo",
-    "artifact-reconciliation",
-    "autonomous-sprint-preflight",
-    "docs-architecture",
     "product-to-issues",
-    "product-discovery-sprint",
-    "product-strategy-sprint",
     "product-autonomous-sprint",
-    "full-local-sensemaking",
-    "fast-local-diagnostic",
     "experimental-autonomous-sprint",
-    "skill-maintenance-loop",
     "implementation-workflow",
     "product-implementation-workflow",
     "ui-diagnostic-workflow",
     "ui-implementation-workflow",
-    "docs-implementation-workflow",
     "architecture-implementation-workflow",
-    "skill-evaluation-workflow",
-    "architectural-review-planning-workflow",
 }
 
 
@@ -101,7 +88,7 @@ def test_package_registry_separates_catalog_from_selectable_workflows(tmp_path: 
     assert registry.get_selectable_workflow("docs-contract-reconciliation") is not None
 
 
-def test_external_custom_workflow_requires_explicit_activation(tmp_path: Path) -> None:
+def test_external_custom_workflow_defaults_active_without_liveness_migration(tmp_path: Path) -> None:
     registry = WorkflowRegistry(
         tmp_path,
         user_registry={
@@ -115,8 +102,8 @@ def test_external_custom_workflow_requires_explicit_activation(tmp_path: Path) -
         },
     )
 
-    assert registry.get_workflow_liveness("custom-current-workflow") == "compatibility_only"
-    assert "custom-current-workflow" not in registry.list_selectable_workflows()
+    assert registry.get_workflow_liveness("custom-current-workflow") == "active"
+    assert "custom-current-workflow" in registry.list_selectable_workflows()
 
 
 def test_user_can_explicitly_reactivate_an_overridden_compatibility_id(tmp_path: Path) -> None:
@@ -163,7 +150,7 @@ def test_deterministic_planner_refuses_inactive_former_default_without_substitut
     assert "No replacement route is ratified" in result
 
 
-def test_deterministic_planner_still_plans_the_one_active_bounded_subgraph(tmp_path: Path) -> None:
+def test_deterministic_planner_still_plans_active_default(tmp_path: Path) -> None:
     planner = _load_script_planner()
     brief = tmp_path / "brief.md"
     brief.write_text(
@@ -171,7 +158,7 @@ def test_deterministic_planner_still_plans_the_one_active_bounded_subgraph(tmp_p
         "## 13. Machine-readable handoff\n"
         "```yaml\n"
         "primary_fog_type: docs_fog\n"
-        "recommended_workflow_id: docs-contract-reconciliation\n"
+        "recommended_workflow_id: docs-implementation-workflow\n"
         "escalation_recommended: false\n"
         "```\n",
         encoding="utf-8",
@@ -179,7 +166,7 @@ def test_deterministic_planner_still_plans_the_one_active_bounded_subgraph(tmp_p
 
     result = planner.plan_workflow(str(brief), str(ROOT))
     assert not result.startswith("ERROR:")
-    assert "chosen_workflow_id: docs-contract-reconciliation" in result
+    assert "chosen_workflow_id: docs-implementation-workflow" in result
 
 
 def test_planner_does_not_substitute_an_inactive_default_for_inactive_recommendation(tmp_path: Path) -> None:
