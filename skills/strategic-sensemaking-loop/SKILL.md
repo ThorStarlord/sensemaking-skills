@@ -52,9 +52,6 @@ Campaign available != Campaign required
 value-producing warranted action != lowest-risk action automatically
 blocked responsibility != repository-wide freeze automatically
 high delegation != protected-transition authority
-Organization visible != Organization warranted
-role binding != actor allocation
-Organization Pattern != execution authority
 responsibility completed != mission completed
 mission incomplete != execute backlog blindly
 full repository delegation != protected-transition authority
@@ -91,7 +88,6 @@ Inspect the smallest sufficient set of current sources:
 - current responsibility/decision artifacts such as
   `artifacts/sensemaking_decision.md` when present;
 - handoff / execution evidence or Campaign execution receipts when present;
-- Organization Pattern / `organization inspect|role|skill-profile` output when explicit role/capability topology is decision-relevant;
 - `artifacts/owner_decision_capsule.md` when present;
 - explicit owner choice supplied after a decision capsule.
 
@@ -197,23 +193,11 @@ protected / owner-reserved action
 -> stop or escalate
 ```
 
-When explicit role/capability topology would materially improve delegation,
-verification, evidence-flow, or authority legibility, the agent may inspect the
-existing Organization surface before choosing or continuing the execution
-boundary:
-
-```text
-organization inspect / organization role / organization skill-profile
--> read-only coordination evidence
--> not a new resume state
--> not Skill selection
--> not actor allocation
--> not execution authorization
-```
-
-Do not insert Organization inspection as mandatory ceremony for a clear bounded
-action. A valid Organization Pattern does not establish that the pattern is
-warranted for the current objective.
+The legacy Organization tracer is not part of the normal strategic loop or
+default execution surface. Treat it as an advanced/research inspection aid only
+when a user explicitly asks to study role/capability topology or when maintaining
+that compatibility surface. Do not introduce it merely to structure ordinary
+delegation.
 
 Use `handoff` only when a prompt handoff to a **registered Skill** is actually
 the correct next boundary. Do not invent a Skill identity for a workflow,
