@@ -134,8 +134,8 @@ def _registry_path(repo_root: str, filename: str) -> str:
 def load_workflow_liveness(repo_root: str) -> dict:
     """Load the ADR-0027 workflow-liveness overlay.
 
-    Missing overlays default to ``active`` for backward compatibility with
-    external/custom registries that predate the liveness contract.
+    Missing overlays default to ``compatibility_only``. Registration preserves
+    identity; current selection requires an explicit active declaration.
     """
     return _workflow_liveness().load_liveness_file(
         _registry_path(repo_root, "workflow-liveness.yaml")
