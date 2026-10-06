@@ -73,6 +73,14 @@ mechanism independently verifies them. In particular, `source_before`,
 The companion validates their structure, handoff association, and record/envelope
 integrity; it does not by itself establish that those assertions are true.
 
+For a result tied to exactly one handoff target, the durable result also records
+whether the reported `source_before` equals that target's bound `head_sha`.
+This is a cheap mechanical comparison, not a complete source-state verification:
+dirty worktree identity, `source_after`, changed paths, validations, claims, and
+authority compliance remain independently unverified. Multi-target v1 results
+remain worker-reported because the return schema does not identify which target
+the single `source_before` field refers to.
+
 The current interface also does not act as a sandbox or security reference
 monitor. It records target identity, scope/authority context, evidence
 requirements, and forbidden actions, but it does not mechanically prevent a
