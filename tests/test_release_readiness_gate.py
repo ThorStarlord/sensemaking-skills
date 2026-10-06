@@ -7,13 +7,13 @@ import tomllib
 import yaml
 
 
-def test_frozen_candidate_metadata_is_beta_and_not_final() -> None:
+def test_current_development_metadata_is_beta_and_not_final() -> None:
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     contract = yaml.safe_load((ROOT / "release-v1.0.yaml").read_text(encoding="utf-8"))
     source_version = pyproject["project"]["version"]
     target_version = contract["release"]["version"]
-    assert contract["release"]["status"] == "candidate"
-    assert source_version == target_version
+    assert contract["release"]["status"] == "development"
+    assert source_version == f"{target_version}.dev0"
     assert "Development Status :: 4 - Beta" in pyproject["project"]["classifiers"]
     assert "Development Status :: 5 - Production/Stable" not in pyproject["project"]["classifiers"]
 
@@ -46,7 +46,7 @@ def test_contract_declares_reduced_scope_when_external_claims_are_excluded() -> 
     assert contract["release"]["scope_classification"] == "reduced"
 
 
-def test_frozen_candidate_contract_cannot_be_reported_as_finally_ready(tmp_path: Path) -> None:
+def test_development_contract_cannot_be_reported_as_finally_ready(tmp_path: Path) -> None:
     contract = (ROOT / "release-v1.0.yaml").read_text(encoding="utf-8")
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     (tmp_path / "release-v1.0.yaml").write_text(contract, encoding="utf-8")
@@ -58,7 +58,7 @@ def test_frozen_candidate_contract_cannot_be_reported_as_finally_ready(tmp_path:
 
     diagnostics = readiness_diagnostics(tmp_path)
 
-    assert any("release status is candidate" in item for item in diagnostics)
+    assert any("release status is development" in item for item in diagnostics)
     assert any("release target is" in item for item in diagnostics)
 
 def test_reduced_scope_checklist_does_not_require_excluded_native_harness_claim() -> None:
@@ -87,7 +87,7 @@ def test_status_preserves_execution_interface_closeout_during_new_construction()
     assert "SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION" in status
     assert "Issue #393" in status
     assert "Issue #384" in status
-    assert "1.0.0rc3" in status
+    assert "1.0.0rc4" in status
     assert "POST_RC2_DEVELOPMENT_ACTIVE" not in status
     assert "EXECUTION_INTERFACE_V1_CLOSEOUT" not in status
     assert "CURRENT CONSTRUCTION RESPONSIBILITY = EXECUTION_INTERFACE_V1_CLOSEOUT" not in status
