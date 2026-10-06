@@ -1,13 +1,16 @@
 # Capability & Organization Tracer v0
 
-**Status:** owner-directed executable tracer; first-class product inspection surface, not an organizational runtime  
+**Status:** advanced compatibility/research tracer; not part of the default operating surface or organizational runtime  
 **Date:** 2026-09-22  
 **Tracker:** Issue #459  
 **Product boundary:** ADR 0029 remains authoritative
 
 ## 1. Objective
 
-Capability & Organization Tracer v0 tests one concrete product hypothesis:
+Capability & Organization Tracer v0 preserves a historical product hypothesis
+and a read-only compatibility surface. It is retained for explicit topology
+inspection and research, not as a normal execution step:
+
 
 > Existing Skills can serve as a legible capability substrate for an explicit
 > multi-role organization without turning Sensemaking into a scheduler,
