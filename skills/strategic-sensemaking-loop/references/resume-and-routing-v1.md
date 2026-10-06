@@ -58,9 +58,6 @@ artifacts/owner_decision_capsule.md
 
 Campaign state / execution handoff / worker result
 when durable continuation was actually used
-
-Organization Pattern / organization inspection output
-when role/capability topology is decision-relevant
 ```
 
 Not every repository uses every filename. Follow artifact identity and
@@ -116,7 +113,6 @@ Use explicit references, source identity, currentness, and semantic relationship
 | Current strategic direction exists; bounded responsibility unresolved | `RESPONSIBILITY` | `using-sensemaking` |
 | Owner has explicitly resolved a prior owner capsule | `RESPONSIBILITY` | `using-sensemaking` |
 | Bounded responsibility selected, prerequisites + authority established | `EXECUTE` | active agent / existing execution surface |
-| Bounded responsibility selected and explicit role/capability topology is decision-relevant | `EXECUTE` | optional `organization inspect|role|skill-profile`, then existing execution surface |
 | Bounded responsibility selected but delegation to another registered Skill is useful | `EXECUTE` | `handoff` then target Skill |
 | Consequential returned evidence exists and can affect Level 3 | `RECONCILE` | `strategic-repository-reconciliation` |
 | Returned evidence affects only bounded continuation/responsibility | `RESPONSIBILITY` | `using-sensemaking` Learning/Reconciliation path |
@@ -155,13 +151,12 @@ authority even when a new standalone decision artifact is unnecessary.
   surface;
 - the proposed target is a workflow/tool/action rather than a registered Skill.
 
-### Skip Organization inspection when
+### Organization compatibility surface
 
-- one actor can execute a clear bounded responsibility without topology ambiguity;
-- role/capability structure would add no decision-relevant delegation, verification, evidence-flow, or authority information;
-- the only reason to inspect is that Organization support exists.
-
-Organization inspection is not a loop stage. Skipping it requires no special disposition.
+Organization inspection is not a loop stage and is not part of normal resume
+routing. Use it only for explicit topology research/maintenance; ordinary
+execution should stay with the active agent, handoff, or Campaign execution
+surface as warranted.
 
 ### Skip strategic-repository-reconciliation when
 
