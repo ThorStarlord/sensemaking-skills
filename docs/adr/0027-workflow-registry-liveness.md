@@ -47,9 +47,14 @@ The liveness vocabulary is intentionally narrow:
 - `active` — eligible for current recommendation, selection, planning, and execution, subject to the normal authority model;
 - `compatibility_only` — retained for identity/provenance/compatibility but ineligible for current recommendation, selection, planning, or execution.
 
-The default is `active`. This preserves compatibility for external/custom workflow registries that predate ADR 0027: a new workflow without an explicit override remains current unless its owner says otherwise.
+**RC4 simplification amendment (2026-10-06):** the default is now `compatibility_only`. Registry membership preserves identity, but current recommendation/planning/execution requires an explicit `active` declaration. This applies to repository-owned and external/custom workflows alike; adding a definition does not silently create a live capability.
 
 ### Initial compatibility-only set
+
+The list below records the **2026-09-01 initial set** that motivated ADR 0027.
+The RC4 simplification amendment later changed the default itself to
+`compatibility_only`, so the current effective compatibility set is broader
+than this historical list. The liveness overlay is the current authority.
 
 The evidence-qualified initial set is:
 
@@ -92,7 +97,7 @@ A compatibility-only workflow may pass catalog validity while correctly failing 
 - Historical workflow IDs and provenance remain durable.
 - Current planning no longer implies that proposed/deprecated missing Skills are live capabilities.
 - Runtime and validation can fail closed without reviving `tdd`, implementing `triage`, or deleting historical workflows.
-- External/custom workflows remain active by default, avoiding an unnecessary migration burden.
+- External/custom workflows remain representable without becoming active implicitly; explicit activation makes current capability intentional and auditable.
 
 ### Costs
 
@@ -118,7 +123,7 @@ The implementation of this ADR must prove at minimum that:
 
 1. all eight evidence-qualified workflows remain present in the catalog;
 2. all eight resolve to `compatibility_only`;
-3. unlisted workflows resolve to `active` by default;
-4. current planning/runtime selection cannot execute a compatibility-only workflow;
+3. unlisted workflows resolve to `compatibility_only` by default;
+4. explicit `active` promotion makes a workflow selectable while current planning/runtime selection refuses compatibility-only workflows;
 5. catalog validation continues to inspect compatibility definitions rather than deleting or ignoring them;
 6. the packaged defaults expose the same liveness semantics for shared workflow IDs.
