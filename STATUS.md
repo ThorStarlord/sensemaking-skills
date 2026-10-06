@@ -443,6 +443,6 @@ dynamic-Organization, new policy layer, search runtime, or additional strategic
 machinery unless recurring normal use exposes one of those as the actual
 limiting factor.
 
-Current release source is `1.0.0rc4.dev0` targeting `1.0.0rc4` in development.
-The preceding RC3 line remains historical provenance; current simplification bytes require a new freeze and exact-source qualification before any RC4 candidate claim.
-PyPI publication, release tagging, and final `1.0.0` remain owner-controlled.
+Current freeze-proposal source is `1.0.0rc4` with release status `candidate`.
+The preceding RC3 line remains historical provenance; this exact RC4 source still requires fresh hosted qualification before any candidate qualification claim.
+Candidate qualification does not authorize integration, PyPI publication, release tagging, or final `1.0.0`; those remain separately owner-controlled.
