@@ -3,17 +3,17 @@
 Use this checklist with [`release-v1.0-contract.md`](release-v1.0-contract.md).
 It is a gate record, not evidence that the gates have already passed.
 
-The current contract is a reduced-scope Version 1.0 development target.
-Repository source is `1.0.0rc4.dev0` with status `development` toward
-`1.0.0rc4`. The qualified `1.0.0rc2` candidate remains immutable historical
-provenance; current development must be frozen and freshly qualified before a
-new candidate claim. External harness, portability, and semantic-usefulness evidence is
+The current contract is a reduced-scope Version 1.0 candidate proposal.
+Repository source is `1.0.0rc4` with status `candidate`. The qualified
+`1.0.0rc2` candidate remains immutable historical provenance; this RC4 source
+must earn fresh exact-head qualification before any candidate qualification
+claim. External harness, portability, and semantic-usefulness evidence is
 intentionally excluded from the support promise and remains deferred research
 evidence.
 
-### Current RC4 development integration evidence
+### Pre-freeze RC4 development integration evidence
 
-This is **development readiness evidence, not candidate freeze/qualification**:
+This is **pre-freeze development evidence, not RC4 candidate qualification**:
 
 - integrated `main`: `95323faa8a26d06145bc260153048dcc8fb2af23`;
 - integrated Git tree: `d0bf7bf1920a402fdbf9e9240fcba8ca0986d17b`;
