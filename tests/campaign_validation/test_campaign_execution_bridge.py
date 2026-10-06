@@ -17,7 +17,7 @@ from sensemaking_skills.campaigns.execution_bridge import (
 from sensemaking_skills.cli import cli
 
 
-def _setup(tmp_path: Path) -> tuple[Path, CliRunner]:
+def _setup(tmp_path: Path) -> tuple[Path, Path, CliRunner]:
     target = tmp_path / "target"
     target.mkdir()
     subprocess.run(["git", "init", str(target)], check=True, capture_output=True)
@@ -88,7 +88,7 @@ def test_generic_handoff_export_is_integrity_bound_and_nonexecuting(tmp_path: Pa
 
 
 def test_result_envelope_seal_and_import_preserve_parent_boundary(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     envelope = build_result_template(
         workspace,
         handoff_id="H-BRIDGE",
