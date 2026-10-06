@@ -165,7 +165,7 @@ def test_tampered_result_envelope_is_rejected(tmp_path: Path) -> None:
 
 
 def test_factory_issue_projection_requires_caller_selected_workflow(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     result = runner.invoke(
         cli,
         [
