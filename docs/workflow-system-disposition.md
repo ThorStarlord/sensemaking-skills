@@ -239,40 +239,34 @@ is entered inside the agent-owned loop, are:
   production (map section 2 "VALIDATION"). No new investment (schema,
   automation, hook) is claimed: the measurable-benefit part of the
   investment rule is only partially met (section 3 rationale).
-- **DEMOTE -- `artifact-reconciliation`.** Its evidenced core (work claim or
-  brief -> `output-reconciler` -> `reconciliation_report`) remains the
-  operational form of the loop's OUTPUT RECONCILIATION stage (map
-  lines 221-232) and is entered whenever a material work claim or handoff
-  is made. Steps 3-4 remain registered but unevidenced; whether to narrow
-  the registered definition is an owner decision (section 6, item 7).
+- **HISTORICAL -- `artifact-reconciliation`.** The evidenced direct core
+  (work claim / brief -> `output-reconciler` -> `reconciliation_report`)
+  remains available without the registered four-step chain. RC4 retains the
+  workflow definition only for identity/provenance.
 - **DEMOTE -- `architectural-review-planning-workflow`.** The responsibility
-  it wraps (architecture uncertainty -> `architectural-review`) is entered
-  as a Skill via agent selection (map line 177). The workflow definition is
-  retained as the internal golden-path proof vehicle (ADR 0014 lines 57-66)
-  and as the target of the runtime's resume/gate/precondition evidence
-  (EV:0008). Whether the registry description should say so is an owner
-  decision (section 6, item 8).
-- **RETIRE_CANDIDATE -- the two external-routing sprints.** No retained role
-  is evidenced; both remain `active` by overlay default until the owner
-  decides (section 6, item 1). Nothing on the product surface enters them.
-- **HISTORICAL -- the nine compatibility-only workflows.** Retained for
+  it wraps (architecture uncertainty -> `architectural-review`) is still
+  consumed by current architecture-fog recommendation contracts, so RC4 does
+  not apply its demotion yet. Migrate that recommendation contract before
+  changing liveness.
+- **RETIRE_CANDIDATE -- `product-discovery-sprint` only.** Its evidence still
+  supports retirement, but it remains the current product-fog default. A
+  future cut must migrate producers/consumers to the already-supported
+  truthful no-match state instead of silently choosing a substitute.
+- **HISTORICAL -- the twelve compatibility-only workflows.** Retained for
   identity and provenance only (ADR 0027 "Catalog identity"); consumers fail
   closed on them; not entered.
-- **INSUFFICIENT_EVIDENCE -- the ten remaining active workflows.** They stay
+- **INSUFFICIENT_EVIDENCE -- the eight remaining active workflows.** They stay
   `active` under ADR 0027's default and remain selectable subject to the
-  authority model; this document neither promotes nor demotes them. The path
-  from INSUFFICIENT_EVIDENCE to KEEP is the charter's: recover the workflow
-  from repeated successful real traces (agent-native artifacts or evidence
-  records that name the workflow and show its sequence), not from a
-  prospective catalog. The path to REPAIR or DEMOTE is a pinned defect or a
-  pinned narrower role on a real trace.
+  authority model. Lack of evidence alone does not authorize demotion; the
+  path to KEEP/REPAIR/DEMOTE remains repeated real traces or a pinned defect.
 
 ---
 
 ## 6. Remaining and resolved owner decisions
 
-None of the following is performed here; each is a registry, overlay,
-contract, or documentation change outside R6's authority.
+The original R6 audit did not apply these decisions. RC4 has now applied the
+items explicitly marked RESOLVED below; the remaining items stay evidence- or
+migration-gated.
 
 1. **External-routing sprints — PARTIALLY RESOLVED.** `product-strategy-sprint`
    is now `compatibility_only`. `product-discovery-sprint` remains active
@@ -313,8 +307,11 @@ contract, or documentation change outside R6's authority.
    ADR 0014's deferral of step 2 should be revisited -- which ADR 0014
    lines 78-87 say requires external proof.
 9. **Packaged catalog and overlay divergence.** The packaged catalog carries
-   20 of the 23 ids and 7 of the 8 overrides (section 8). Whether this is
-   intended is a packaging decision.
+   20 of the 23 ids. After RC4 selective contraction the packaged overlay
+   carries 10 of the repository overlay's 12 explicit overrides; the missing
+   entries correspond to workflow IDs not shipped in the packaged catalog.
+   Preserve this as an intentional package-boundary difference unless a real
+   consumer demonstrates otherwise.
 
 ---
 
@@ -327,11 +324,12 @@ architecture fog; authorise automatic routing; create a general-purpose
 lifecycle framework for Skills, artifacts, or arbitrary entities; or make
 `active` equivalent to execution authorisation.
 
-In addition, this document does not: change any liveness value; delete,
-revive, or edit any workflow or Skill; re-decide the eight compatibility-only
-workflows; ratify a workflow as the product spine (ADR 0014 governs); promote
-any convention to machinery (operating map section 7 rule); or treat a
-disposition as authorisation to act on it.
+RC4 selectively applies liveness changes for
+`artifact-reconciliation`, `autonomous-sprint-preflight`, and
+`product-strategy-sprint`. It still does not delete, revive, or rewrite their
+workflow definitions or any Skill; ratify a workflow as the product spine;
+promote a convention to machinery; or treat any remaining disposition as
+automatic authorisation to act on it.
 
 ---
 
