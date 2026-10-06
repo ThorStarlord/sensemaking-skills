@@ -91,8 +91,7 @@ GOAL / AUTHORIZED SCOPE
 -> continue / stop / escalate
 ```
 
-If experimentation is materially considered, apply Experiment Economy &
-Proportional Rigor v1 so `INVESTIGATE != EXPERIMENT`, retained useful value
+If experimentation is materially considered, apply **Experiment Economy & Proportional Rigor v1** so `INVESTIGATE != EXPERIMENT`, retained useful value
 counts, and controls scale to the claim. If search or control-mode selection is
 genuinely difficult, the advanced policy references above can refine the compact
 loop without turning it into a phase machine.
