@@ -35,12 +35,11 @@ class WorkflowRegistry:
         """
         self.target_repo = Path(target_repo)
         self._workflows: Dict[str, Any] = {}
-        self._default_liveness: str = ACTIVE
+        self._default_liveness: str = COMPATIBILITY_ONLY
         self._liveness_overrides: Dict[str, str] = {}
 
-        # Package liveness is loaded before definitions so an external override
-        # of a compatibility ID remains compatibility-only unless the target
-        # explicitly reclassifies it.
+        # Package liveness is loaded before definitions. Compatibility is the
+        # fail-closed default; any current workflow must be promoted explicitly.
         self._load_package_liveness()
         self._load_package_defaults()
 
