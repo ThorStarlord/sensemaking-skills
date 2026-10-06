@@ -138,7 +138,7 @@ def test_result_envelope_seal_and_import_preserve_parent_boundary(tmp_path: Path
 
 
 def test_tampered_result_envelope_is_rejected(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     envelope = build_result_template(
         workspace,
         handoff_id="H-BRIDGE",
