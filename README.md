@@ -5,10 +5,10 @@
 
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
-**Source version:** 1.0.0rc4.dev0
-**Release target:** 1.0.0rc4 (development; reduced-scope candidate target)
+**Source version:** 1.0.0rc4
+**Release target:** 1.0.0rc4 (frozen reduced-scope release candidate proposal)
 **Historical candidates:** RC1 was qualified at `70542d47412d98ee6dfae5de6df29bf271304568`; RC2 was qualified at `c9b86138d3919c4fce87040f14161364a0c1c3a0` with Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`; RC3 was the preceding candidate line and supplies no qualification to current bytes
-**Status:** RC4 simplification development; RC2 remains immutable qualified provenance; current RC4 development requires fresh qualification before any candidate claim; native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise
+**Status:** RC4 freeze proposal; this exact branch must earn fresh candidate qualification, and qualification does not authorize merge/publication; native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
 
@@ -256,7 +256,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-Current repository source is `1.0.0rc4.dev0`, developing toward `1.0.0rc4`. For source development:
+Current repository source on this freeze branch is `1.0.0rc4`, the reduced-scope RC4 candidate identity. For source/candidate inspection:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
