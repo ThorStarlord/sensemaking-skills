@@ -29,9 +29,10 @@ ALLOWED_LIVENESS = {ACTIVE, COMPATIBILITY_ONLY}
 
 
 def load_liveness_file(path: str | Path) -> dict[str, Any]:
-    """Load a liveness overlay, defaulting compatibly when absent.
+    """Load a liveness overlay, failing closed when absent.
 
-    External/custom registries that predate ADR 0027 remain active by default.
+    Missing overlays default to compatibility-only. External/custom workflows
+    require an explicit active declaration before entering current selection.
     Invalid values are preserved rather than silently normalized; repository
     validation is responsible for reporting malformed canonical overlays and
     operational consumers fail closed because only ``active`` is selectable.
@@ -40,7 +41,7 @@ def load_liveness_file(path: str | Path) -> dict[str, Any]:
     if not path.exists():
         return {
             "schema_version": 1,
-            "default_liveness": ACTIVE,
+            "default_liveness": COMPATIBILITY_ONLY,
             "allowed_liveness": sorted(ALLOWED_LIVENESS),
             "overrides": {},
         }
@@ -59,7 +60,7 @@ def load_liveness_file(path: str | Path) -> dict[str, Any]:
 def effective_liveness(workflow_id: str, overlay: dict[str, Any] | None) -> str:
     """Return the declared effective liveness for one workflow ID."""
     overlay = overlay or {}
-    default = overlay.get("default_liveness", ACTIVE)
+    default = overlay.get("default_liveness", COMPATIBILITY_ONLY)
     overrides = overlay.get("overrides", {})
     if not isinstance(overrides, dict):
         return "invalid"
