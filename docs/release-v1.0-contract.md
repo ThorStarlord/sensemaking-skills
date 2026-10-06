@@ -1,4 +1,4 @@
-# Version 1.0 Release Contract (`1.0.0rc4` reduced-scope development target)
+# Version 1.0 Release Contract (`1.0.0rc4` reduced-scope candidate proposal)
 
 This document defines the intended Version 1.0 support surface. The machine-
 readable authority is `release-v1.0.yaml`; `scripts/validate-release-contract.py`
@@ -6,7 +6,7 @@ checks that the declaration remains consistent with the repository.
 
 ## Product identity
 
-Current repository source is `1.0.0rc4.dev0` with release status `development`,
+Current freeze-proposal source is `1.0.0rc4` with release status `candidate`,
 targeting `1.0.0rc4`. The qualified `1.0.0rc2` candidate remains immutable
 historical provenance at integrated commit
 `c9b86138d3919c4fce87040f14161364a0c1c3a0`. The preceding RC3 candidate line
@@ -28,11 +28,10 @@ development source
 != public distribution
 ```
 
-While `release.status` is `development`, the source version is the
-`.dev0` predecessor of the target. A frozen candidate uses the target version
-itself. The current `1.0.0rc4.dev0` source is development state; fresh exact-source
-qualification is required after an explicit freeze before any `1.0.0rc4` candidate
-qualification claim.
+For this freeze proposal, `release.status` is `candidate` and the source
+version equals the target version exactly. Fresh exact-source qualification is
+required before any `1.0.0rc4` candidate qualification claim. Candidate status
+does not itself establish qualification, publication, or owner authorization.
 
 ## Stable surface
 
