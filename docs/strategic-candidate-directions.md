@@ -736,56 +736,59 @@ candidate inventory exists
 
 Use this reservoir to remember possibilities. Use Level 3 to decide whether any possibility has become consequential enough to act on.
 
-## 14. Architecture-pruning candidates from adversarial review
+## 14. Architecture simplification disposition from adversarial review
 
-**Current reconciliation:** `REQUIRES_EVIDENCE` + `OWNER_DIRECTION_TO_SIMPLIFY`.
+**Current reconciliation:** `IMPLEMENTED_DEFAULT_SURFACE_REDUCTION` + `FURTHER_DELETION_EVIDENCE_GATED`.
 
-The 2026-10-05 adversarial claims-vs-runtime review interprets the existing
-normal-use evidence as a pruning signal, not as a mandate to manufacture another
-control subsystem. The ratified `simplify hard` verdict and subsequent
-re-measure already establish the strategic bias: machinery whose incremental
-decision value is not demonstrated should face a higher retention bar than
-simple agent-owned judgment.
+The 2026-10-05 adversarial claims-vs-runtime review, the owner-ratified
+`simplify hard` verdict, and the subsequent re-measure now produce an explicit
+subtractive disposition rather than another control subsystem.
 
-These are candidate simplifications, **not an authorized deletion backlog**:
+Implemented in the RC4 development line:
 
-1. **Fast-path auto-orchestration reconciliation.** Reconcile active workflow
-   language/modes that advertise automatic downstream invocation with runtime
-   behavior that deliberately surfaces a candidate and does not spawn a child
-   workflow without a separate authority event. Candidate outcomes include
-   demoting the surface to compatibility-only or rewriting the live contract so
-   capability claims match behavior.
-2. **Organization Tracer default-surface reduction.** Reassess whether the
-   read-only Organization Pattern/tracer belongs in the default operational
-   product surface before independent multi-role outcome advantage is
-   demonstrated. Preserve research evidence if the default surface is reduced.
-3. **Policy-name consolidation.** Preserve useful inquiry, challenge,
-   exploration, warrant, and reconciliation rules while testing whether several
-   separately named policy layers create more cognitive/maintenance cost than
-   decision value. Prefer one compact operating doctrine when distinctions do
-   not change action.
-4. **Skill-surface reduction / optional packs.** Reassess whether all canonical
-   Skills need equal default visibility. Prefer a smaller core decision-support
-   surface with optional specialized packs if normal use shows discovery and
-   maintenance cost without commensurate value.
-5. **Historical/compatibility isolation.** Keep provenance where useful, but
-   prevent superseded workflow/control models from competing with current
-   operational truth in normal navigation and capability discovery.
-6. **Continuation compression.** Prefer the smallest durable continuation
-   capsule that lets a fresh agent reconstruct goal, current responsibility,
-   remaining difference, authority, required verification, blockers, stop
-   condition, and evidence pointers. Additional persistence machinery must be
-   justified by an observed reconstruction failure.
-7. **Campaign exceptional-by-default.** Continue treating Campaign as warranted
-   by continuation complexity rather than task importance or size; direct
-   bounded work remains the default when one context can safely finish the
-   responsibility.
-8. **Validator retention by external value, not self-consumption.** A validator
-   should not be retained merely because repository tests or another internal
-   abstraction consume it. Retention should trace to user-facing correctness,
-   safety, provenance, release integrity, or a demonstrated recurring failure.
+1. **Legacy orchestration is compatibility-first.** Registered workflows default
+   to `compatibility_only`; only the repeatedly evidenced
+   `docs-contract-reconciliation` bounded subgraph is active by default.
+   `SkillsOrchestrator.run_workflow` requires an explicit execution mode and no
+   longer turns omission into `yolo_execution`.
+2. **Organization is out of the normal loop.** The read-only tracer remains
+   callable for explicit topology research/compatibility, but it is removed from
+   normal strategic resume/execution guidance and default navigation.
+3. **Policy names are no longer the default mental model.** `using-sensemaking`
+   leads with one compact evidence/warrant/authority/action/verification loop.
+   The named Inquiry / Metareasoning / Exploration / Warrant / Learning layers
+   remain advanced reference vocabulary.
+4. **Skill visibility is reduced without deleting compatibility.** The shipped
+   inventory remains available, but documentation defines a small default core;
+   PM/commercial and other specialized Skills are opt-in surfaces.
+5. **Current navigation is a spine, not a catalogue.** Root and docs navigation
+   lead through a small current authority path; historical and advanced
+   machinery is explicitly secondary.
+6. **Continuation starts minimal.** `campaign resume-profile` defaults to the
+   `minimal` projection. Read-only `campaign inspect` remains available for
+   orientation when strict recovery or target-currentness checks block
+   continuation.
+7. **Campaign remains exceptional-by-default.** Direct bounded work is the
+   default when one context can safely complete the responsibility; Campaign is
+   justified by continuation complexity, not importance or task size.
+8. **Retention/admission is outcome-based.** "Has tests", "has a consumer", and
+   "schema validates" are insufficient retention reasons. A validator or
+   abstraction must protect user-facing correctness, safety, provenance,
+   release integrity, or a demonstrated recurring failure.
+9. **Execution assertions expose their claim ceiling.** Result records distinguish
+   mechanically compared source-before identity from worker-reported,
+   unverified source-after/changed-path/validation/claim/authority assertions.
 
-The governing admission/retention test is:
+Still evidence-gated rather than performed destructively:
+
+- physically deleting compatibility workflow definitions;
+- physically removing the Organization CLI implementation;
+- splitting all 51 Skills into separately installed packages;
+- deleting individual validators without consumer/failure tracing;
+- replacing Campaign schema/history with a new continuation schema.
+
+Those larger migrations would create their own maintenance program and therefore
+must cross the same admission test they are intended to enforce.
 
 ```text
 competent control agent without abstraction
@@ -799,7 +802,8 @@ otherwise
 -> simplify / demote / archive rather than expand
 ```
 
-This section does not add a Complexity Tax score, Architecture Pruning Skill,
-new validator, new schema, new workflow, automatic retirement policy, or
-permission to delete a shipped surface.
+No Complexity Tax score, pruning runtime, retirement workflow, permission
+engine, or new control layer is introduced.
+
+
 
