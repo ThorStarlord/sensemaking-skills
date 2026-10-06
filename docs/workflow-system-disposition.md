@@ -44,11 +44,12 @@ Campaign").
   see section 8). Registration preserves identity and provenance only
   (ADR 0027 "Catalog identity").
 - **liveness** (`active` | `compatibility_only`): declared in
-  `workflow-liveness.yaml`; current RC4 default `compatibility_only`; `active`
-  requires explicit promotion for current recommendation, selection, planning,
-  or execution. The original eight-item override set is historical; the current
-  overlay keeps only `docs-contract-reconciliation` active by default. Liveness
-  is not execution authority
+  `workflow-liveness.yaml`; default `active`; `compatibility_only` = retained
+  for identity/provenance, ineligible for current recommendation, selection,
+  planning, or execution. The original ADR-0027 set remains compatibility-only,
+  and RC4 additionally demotes `fast-path-workflow` because its historical
+  auto-chaining claim contradicts current runtime behavior. Liveness is not
+  execution authority
   (ADR 0027; ADR 0026 as summarised at `workflow-registry.yaml:1-7`).
 - **step_type**: `local_execution` = the step names a Skill the active agent
   is expected to have installed locally; `external_routing` = the step
