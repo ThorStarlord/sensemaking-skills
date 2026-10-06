@@ -190,7 +190,7 @@ def test_factory_issue_projection_requires_caller_selected_workflow(tmp_path: Pa
 
 
 def test_factory_issue_projection_does_not_default_a_workflow(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     result = runner.invoke(
         cli,
         [
