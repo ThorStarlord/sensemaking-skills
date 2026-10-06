@@ -169,7 +169,7 @@ def test_deterministic_planner_still_plans_active_default(tmp_path: Path) -> Non
     assert "chosen_workflow_id: docs-implementation-workflow" in result
 
 
-def test_planner_does_not_substitute_an_inactive_default_for_inactive_recommendation(tmp_path: Path) -> None:
+def test_routing_divergence_tracks_recommendation_selection_mismatch(tmp_path: Path) -> None:
     planner = _load_script_planner()
     brief = tmp_path / "brief.md"
     brief.write_text(
@@ -184,6 +184,6 @@ def test_planner_does_not_substitute_an_inactive_default_for_inactive_recommenda
     )
 
     result = planner.plan_workflow(str(brief), str(ROOT))
-    assert result.startswith("ERROR:")
-    assert "not currently active under ADR 0027" in result
-    assert "No replacement route is ratified" in result
+    assert not result.startswith("ERROR:")
+    assert "chosen_workflow_id: docs-implementation-workflow" in result
+    assert "routing_divergence: true" in result
