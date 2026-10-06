@@ -300,7 +300,7 @@ B7 reference audit is one bounded instance of mechanical validation: it can esta
 
 ### Reconciliation
 
-Reconciliation compares material work claims with durable repository evidence. The `artifact-reconciliation` registered workflow and `output-reconciler` Skill operationalize this responsibility.
+Reconciliation compares material work claims with durable repository evidence. The current operational responsibility is the direct `output-reconciler` Skill path. The historical `artifact-reconciliation` registered workflow is retained as `compatibility_only` catalog/provenance identity and is not a current execution route.
 
 Representative claim states include `verified`, `disputed`, and `omitted`.
 
