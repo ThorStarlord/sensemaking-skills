@@ -1,9 +1,9 @@
 # Status
 
-**Source version:** 1.0.0rc4.dev0
-**Release target:** 1.0.0rc4 (development; reduced-scope candidate target)
+**Source version:** 1.0.0rc4
+**Release target:** 1.0.0rc4 (frozen reduced-scope release candidate proposal)
 **Last updated:** 2026-10-06  
-**Current phase:** RC4 stabilization and evidence handoff (see the itemized state below; each bullet is one integrated or intentionally deferred issue/observation).
+**Current phase:** RC4 exact-head candidate qualification proposal (see the itemized state below; each bullet is one integrated, qualified-on-branch, or intentionally deferred issue/observation).
 
 - **Adversarial architecture simplification — IMPLEMENTED DEFAULT-SURFACE REDUCTION / FURTHER DELETION EVIDENCE-GATED:** the 2026-10-05 claims-vs-runtime audit now has concrete RC4 development changes: `fast-path-workflow` is compatibility-only because its historical auto-chaining claim contradicts current runtime behavior; other workflow liveness remains governed by ADR 0027; implicit yolo execution is removed; Campaign resume defaults to minimal projection while read-only inspect remains available under blocked continuation; Organization and detailed policy hierarchy are advanced/reference rather than normal-loop surfaces; the default Skill/documentation spine is smaller; execution-result assertion provenance is explicit; and new abstractions/validators face an outcome-based admission test. Physical deletion/package migrations remain evidence-gated because creating a migration program would itself incur the complexity tax being removed.
 
@@ -24,7 +24,7 @@
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
-**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568`. Qualified `1.0.0rc2` remains frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`, Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`. The preceding RC3 candidate line has been reopened as `1.0.0rc4.dev0` because this simplification changes source behavior; no RC2/RC3 qualification transfers to these bytes. RC3 freeze authorization was separately recorded on issue #506; that historical authorization does not authorize the RC4 freeze. A future `1.0.0rc4` freeze requires fresh exact-source qualification. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
+**Release status:** this branch proposes frozen candidate `1.0.0rc4` after the RC4 simplification/contraction work converged. Historical `1.0.0rc1` and qualified `1.0.0rc2` remain immutable provenance; RC2 is frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`, Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`. No RC2/RC3 qualification transfers to RC4. This freeze proposal must earn fresh exact-head Product Validation, Lab Validation where applicable, and Release Candidate Distribution before any RC4 candidate qualification claim. Branch qualification does not authorize merge, PyPI publication, or final `1.0.0`. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
 Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
