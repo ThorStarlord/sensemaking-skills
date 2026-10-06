@@ -80,7 +80,7 @@ def test_live_faq_uses_current_release_authority_without_historical_roadmap_clai
 
     assert source_version in faq
     assert target_version in faq
-    assert "release phase:** development" in faq.lower()
+    assert f"release phase:** {contract['release']['status']}" in faq.lower()
     assert "JSON export planned for 0.3.0" not in faq
     assert "0.2.1: Current release" not in faq
     assert "0.3.0: User-requested features" not in faq
