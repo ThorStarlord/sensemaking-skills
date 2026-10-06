@@ -60,6 +60,30 @@ sensemaking-skills campaign history --workspace /path/to/campaign
 
 History order is not inferred from transition filenames. Target-bound transition records carry source/destination target snapshot SHA-256 values as mechanical provenance; those fields do not classify the repository change as correct or successful.
 
+### Read-only orientation under drift or recovery failure
+
+`campaign inspect` reads the last materialized Campaign snapshot without
+running lifecycle recovery. It surfaces reconstruction/target diagnostics and
+pending/invalid transaction-journal observations even when strict
+`resume`/`validate` cannot continue.
+
+```text
+cannot safely continue
+!= cannot safely inspect
+
+inspect available
+!= continuation authorized
+```
+
+### Explicit decisions with derived bookkeeping
+
+`campaign advance|defer|close` keep semantic judgment agent-authored while
+deriving routine bookkeeping when the caller does not care about those labels.
+Transition IDs and target-state labels are optional; `advance` also generates a
+responsibility ID when omitted. Explicit values remain supported for stable
+external references.
+
+
 ## JSON output
 
 All four P3 commands accept `--json`.

@@ -246,6 +246,40 @@ def test_cli_advance_json_exposes_exact_authored_decision_without_recommendation
     assert "recommended capability" not in encoded
 
 
+def test_cli_advance_derives_bookkeeping_ids_and_state_when_omitted(runner, tmp_path):
+    workspace = tmp_path / "campaign"
+    _initialize(workspace)
+
+    result = runner.invoke(
+        cli,
+        [
+            "campaign",
+            "advance",
+            "--workspace",
+            str(workspace),
+            "--decision",
+            "the bounded responsibility is warranted",
+            "--responsibility-statement",
+            "perform the selected bounded responsibility",
+            "--decision-blocked",
+            "whether the responsibility is complete",
+            "--scope",
+            "bounded repository work",
+            "--authority",
+            Authority.AUTHORIZED_AUTONOMOUSLY.value,
+            "--success-condition",
+            "the bounded result is durably verified",
+            "--json",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["transition"]["id"] == "TR-AUTO-0001"
+    assert payload["active_responsibility"]["id"] == "R-AUTO-0001"
+    assert payload["current_state"] == "responsibility_active_R-AUTO-0001"
+
+
 def test_cli_advance_rejects_orphan_artifact_that_is_not_admitted_evidence(
     runner, tmp_path
 ):

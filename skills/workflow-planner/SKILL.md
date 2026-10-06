@@ -9,7 +9,7 @@ This skill produces a **workflow orchestration plan** artifact. It does **not** 
 
 If the active agent selects a registered workflow for execution, `workflow-runtime.py` (the Python execution engine) is bounded orchestration/compatibility machinery: it reads the plan's `chosen_workflow_id` to sequence the selected workflow's steps. Workflow selection remains the agent's (or user's) decision; a plan recommendation never by itself authorizes execution.
 
-ADR 0027 adds a second necessary distinction: **registered is not the same as currently selectable**. `workflow-registry.yaml` is the durable catalog; `references/workflow-liveness.yaml` declares which catalog entries are `active` versus `compatibility_only`. Compatibility-only IDs may be discussed as history/provenance but MUST NOT be recommended, selected, planned, or executed as current capabilities.
+ADR 0027 adds a second necessary distinction: **registered is not the same as currently selectable**. `workflow-registry.yaml` is the durable catalog; `references/workflow-liveness.yaml` declares which catalog entries are `active` versus `compatibility_only`. Compatibility-only IDs may be discussed as history/provenance but MUST NOT be recommended, selected, planned, or executed as current capabilities. In the RC4 simplification line, `fast-path-workflow` is compatibility-only because its historical auto-chaining claim does not match current runtime behavior.
 
 ## Workflow
 

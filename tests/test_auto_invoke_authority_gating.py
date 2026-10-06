@@ -39,7 +39,7 @@ OrchestrationRunner = workflow_runtime.OrchestrationRunner
 class TestAutoInvokeAuthorityGating(unittest.TestCase):
     """Script-runtime fail-closed auto-invocation behavior (ADR 0026)."""
 
-    def _runner(self, workflow_id="fast-path-workflow", mode="autonomous_execution"):
+    def _runner(self, workflow_id="full-local-sensemaking", mode="autonomous_execution"):
         runner = OrchestrationRunner(
             workflow_id=workflow_id, mode=mode, repo_root=REPO_ROOT, executor="dry-run"
         )
@@ -63,8 +63,9 @@ class TestAutoInvokeAuthorityGating(unittest.TestCase):
     def test_flag_alone_does_not_spawn(self):
         """auto_invoke_next_workflow: true alone must NOT cause a spawn (ADR 0026)."""
         # The runner loaded a workflow whose registry entry has
-        # auto_invoke_next_workflow: true (fast-path-workflow). Surfacing a
-        # candidate must never spawn, regardless of the flag.
+        # auto_invoke_next_workflow: true (full-local-sensemaking). The legacy
+        # fast-path-workflow is compatibility-only in RC4; use this still-active
+        # metadata carrier to preserve the authority-gating contract.
         self._runner()
         # Even with the flag set, surfacing a candidate never spawns:
         self._assert_no_spawn(self._runner(), "product-implementation-workflow",

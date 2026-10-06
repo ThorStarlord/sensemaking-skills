@@ -1,8 +1,8 @@
 # Frequently Asked Questions
 
-**Current repository source:** `1.0.0rc3.dev0`  
-**Next release-candidate target:** `1.0.0rc3`  
-**Release phase:** development — RC2 is not yet frozen or published.
+**Current repository source:** `1.0.0rc4.dev0`  
+**Next release-candidate target:** `1.0.0rc4`  
+**Release phase:** development — current bytes are not yet a frozen candidate; RC2 remains the qualified historical candidate.
 
 Current product/release authority lives in `STATUS.md`,
 `docs/product-strategy.md`, `docs/adr/0029-current-product-boundary.md`,

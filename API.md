@@ -1,6 +1,12 @@
 # API Reference
 
-Use sensemaking-skills programmatically in Python to integrate artifact generation and analysis into your applications.
+Use sensemaking-skills programmatically in Python to integrate durable Campaign,
+semantic, setup, and Skill capabilities into applications.
+
+> **Legacy workflow compatibility:** `sensemaking_skills.runner.SkillsOrchestrator`
+> remains importable for explicit compatibility use, but it is not a Version 1.0
+> stable Python module and is not the agent-native control surface. It never
+> chooses an execution mode implicitly.
 
 ---
 
@@ -60,14 +66,14 @@ result = orchestrator.run_workflow(
     problem_statement="Our codebase has unclear architecture",
 )
 
-# Result contains:
-# - result.success: bool - whether workflow succeeded
-# - result.artifacts: dict - all generated artifacts
-# - result.logs: list - execution logs
-# - result.fog_type: str - detected fog type (product_fog, ui_fog, etc.)
+# The compatibility wrapper returns the subprocess exit code.
+# 0 means the legacy runtime process completed successfully.
 ```
 
-Pass `execution_mode` explicitly when calling `SkillsOrchestrator.run_workflow`. Omitting it is deprecated. During the compatibility window, an omitted mode still behaves as `yolo_execution` and emits a `FutureWarning`; that fallback is not a stable product default and may be removed or changed only through a later versioned release decision.
+Pass `execution_mode` explicitly when calling `SkillsOrchestrator.run_workflow`.
+Omitting it raises `ValueError`; there is no implicit `yolo_execution` (or
+other) default. Explicit `yolo_execution` remains compatibility-only and is not
+ratified product behavior.
 
 ---
 
@@ -171,7 +177,7 @@ from sensemaking_skills.config import SkillsConfig
 from typing import Dict, Any
 
 class SkillsOrchestrator:
-    """Orchestrates skill execution and workflow chaining."""
+    """Legacy compatibility bridge for explicit workflow execution."""
     
     def __init__(self, config: SkillsConfig):
         """
@@ -185,7 +191,7 @@ class SkillsOrchestrator:
     def run_workflow(
         self,
         workflow_id: str,
-        execution_mode: str = ...,  # omission is accepted temporarily but deprecated
+        execution_mode: str,  # required; no implicit mode
         problem_statement: str = "",
         context_artifacts: Dict[str, str] = None,
     ) -> Dict[str, Any]:
@@ -196,18 +202,13 @@ class SkillsOrchestrator:
             workflow_id: ID of workflow to run (e.g., "fast-path-workflow")
             execution_mode: Explicit execution mode. Callers should pass one of
                 plan_only, guided_execution, autonomous_execution, or yolo_execution.
-                Omitting this argument is deprecated; the current compatibility
-                fallback is yolo_execution and emits FutureWarning.
+                The argument is required. yolo_execution is accepted only when
+                selected explicitly for compatibility.
             problem_statement: User's problem description (optional)
             context_artifacts: Prior artifacts for chained workflows (optional)
         
         Returns:
-            Dict with keys:
-              - success: bool
-              - artifacts: dict of generated artifacts
-              - logs: list of execution logs
-              - fog_type: detected problem type
-              - recommendations: suggested next steps
+            Integer subprocess exit code (0 for success, non-zero for failure).
         """
         pass
     
@@ -249,9 +250,7 @@ result = orchestrator.run_workflow(
     problem_statement="Need to refactor data layer",
 )
 
-print(f"Success: {result['success']}")
-print(f"Fog type: {result['fog_type']}")
-print(f"Artifacts: {list(result['artifacts'].keys())}")
+print(f"Legacy workflow exit code: {result}")
 ```
 
 ### BaseSkill

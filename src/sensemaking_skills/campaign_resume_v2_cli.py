@@ -41,7 +41,7 @@ def register_campaign_resume_v2_commands(
 ) -> None:
     @campaign.command(name="resume-profile")
     @click.option("--workspace", required=True, type=click.Path(path_type=Path))
-    @click.option("--profile", type=click.Choice(list(RESUME_PROFILES)), default="working", show_default=True)
+    @click.option("--profile", type=click.Choice(list(RESUME_PROFILES)), default="minimal", show_default=True)
     @click.option("--recent-transitions", type=click.IntRange(0, 50), default=5, show_default=True)
     @click.option("--max-items", type=click.IntRange(1, 1000), default=None)
     @click.option("--include-preflight", is_flag=True, help="Include mechanical preflight in working profile; audit always includes it")

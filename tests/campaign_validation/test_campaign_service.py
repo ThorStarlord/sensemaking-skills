@@ -231,6 +231,32 @@ def test_crash_after_commit_intent_recovers_exact_transition(tmp_path, monkeypat
     assert not journal.exists()
 
 
+
+def test_malformed_transaction_blocks_resume_but_not_read_only_inspection(tmp_path):
+    workspace = tmp_path / "CMP-P2"
+    service = CampaignService(workspace)
+    created = service.initialize(_state())
+
+    malformed = service.store.workspace.transactions_dir / "not-a-directory"
+    malformed.write_text("corrupt journal entry", encoding="utf-8")
+
+    with pytest.raises(CampaignTransactionError, match="invalid transaction journal entry"):
+        CampaignService(workspace).resume()
+
+    result, observed = CampaignService(workspace).inspect()
+    transactions = CampaignService(workspace).store.inspect_lifecycle_transactions()
+
+    assert result.valid is True
+    assert observed.state == created.state
+    assert transactions == (
+        {
+            "name": "not-a-directory",
+            "status": "invalid",
+            "diagnostics": ("INVALID_TRANSACTION_JOURNAL_ENTRY",),
+        },
+    )
+
+
 def test_transition_digest_detects_decision_record_drift(tmp_path):
     service = CampaignService(tmp_path / "CMP-P2")
     service.initialize(_state())

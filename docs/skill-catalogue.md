@@ -17,6 +17,32 @@ Visibility classes (from the System Capability Atlas):
 - **Conditional/internal** - used at a specific boundary of another flow.
 - **Maintenance** - for maintaining the Skills themselves.
 
+
+## Default cognitive surface
+
+The package still ships the full Skill inventory for compatibility and explicit
+specialized use. Normal repository work should begin from a much smaller core:
+
+| Skill | Default role |
+| --- | --- |
+| `using-sensemaking` | ordinary repository decision/support doctrine |
+| `strategic-sensemaking-loop` | one-prompt strategic or delegated terminal mission |
+| `repo-sensemaker` | repository-wide diagnosis when current reality is unclear |
+| `strategic-repository-analysis` | repository evolution when the future itself is open |
+| `output-reconciler` | consequential completed-work claim reconciliation |
+| `repair-verifier` | verify a claimed repair against the original finding |
+| `handoff` | explicit cross-Skill/context transfer only when needed |
+
+All other Skills are specialized, conditional, maintenance, or domain-pack
+capabilities. Their presence in the distribution does not make them part of the
+default reasoning path.
+
+```text
+shipped
+!= default-visible
+!= automatically warranted
+```
+
 ## 1. Front door and setup
 
 | Skill | Purpose | Visibility |
@@ -32,7 +58,7 @@ Visibility classes (from the System Capability Atlas):
 | `problem-framer` | Turn a vague idea or repository fog into a structured problem frame. |
 | `unknowns-mapper` | Separate knowns, unknowns, assumptions, and risks. |
 | `repo-sensemaker` | Diagnose a repository into a Repository Sensemaking Brief (purpose, contradictions, weakest consequential boundary). |
-| `workflow-planner` | Read a brief and emit a machine-readable workflow plan. A recommendation, not execution authority (ADR 0025/0026). |
+| `workflow-planner` | Compatibility/reference planner for registered workflow definitions. Current selection is compatibility-only by default except explicitly promoted bounded subgraphs. |
 | `handoff` | Convert an artifact into a ready-to-copy prompt for the next Skill. Conditional/internal. |
 | `architectural-review` | Evaluate a proposed architectural response against principal-engineer judgment. |
 | `change-impact-analysis` | Identify what a contemplated or completed change affects and what verification it needs. |
@@ -58,9 +84,9 @@ Visibility classes (from the System Capability Atlas):
 | --- | --- |
 | `coding-agent-native-campaign` | Run an approved `coding_agent_native` campaign under the one-word `approve` contract. See [coding-agent-native-campaign.md](coding-agent-native-campaign.md). |
 
-## 5. Product management domain (ADR 0028)
+## 5. Optional Product Management domain pack (ADR 0028)
 
-Agent-agnostic Campaign domain; contracts in
+This domain is shipped for explicit product-management work but is not part of the default repository-engineering cognitive surface. Contracts in
 `docs/product-management/`, manifests in `skill-manifests/pm/`.
 
 | Group | Skills |

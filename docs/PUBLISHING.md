@@ -13,10 +13,12 @@ repository development source
 != publicly published distribution
 ```
 
-The current repository source is the frozen candidate `1.0.0rc3` and the active release target
-is `1.0.0rc3`. Historical `1.0.0rc1` remains qualified provenance for exact
-commit `70542d47412d98ee6dfae5de6df29bf271304568`; qualified `1.0.0rc2`
-remains frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`.
+The current repository source is `1.0.0rc4.dev0` and the active release target
+is `1.0.0rc4` with status `development`. Historical `1.0.0rc1` remains qualified
+provenance for exact commit `70542d47412d98ee6dfae5de6df29bf271304568`;
+qualified `1.0.0rc2` remains frozen at integrated commit
+`c9b86138d3919c4fce87040f14161364a0c1c3a0`. The preceding RC3 candidate
+line does not qualify the current RC4 development bytes.
 
 `pyproject.toml` `[project].version` is the literal source/build version.
 `release-v1.0.yaml` declares the release target and phase.
@@ -28,12 +30,12 @@ While `release.status: development`:
 - the source version is the development predecessor of the target (for example, a future target would use a `.dev0` predecessor);
 - Product Validation and distribution validation may run;
 - passing those checks does **not** qualify a frozen release candidate;
-- current source must not present itself as `1.0.0rc2`.
+- current source must not present itself as the frozen `1.0.0rc4` candidate.
 
 ## Candidate freeze
 
-A future `1.0.0rc3` candidate may be frozen only after current candidate-changing
-work converges. The current `1.0.0rc3` source is a frozen candidate (`candidate`).
+A future `1.0.0rc4` candidate may be frozen only after current candidate-changing
+work converges. The current `1.0.0rc4.dev0` source is development state, not a frozen candidate.
 
 Candidate qualification requires:
 
@@ -44,6 +46,35 @@ Candidate qualification requires:
 
 Candidate qualification is an exact-source warrant. It does not automatically
 authorize PyPI publication or final `1.0.0`.
+
+### Hosted-CI availability boundary
+
+Ordinary development does not stop merely because GitHub-hosted qualification is
+temporarily unavailable. Continue with applicable local tests, validators, builds,
+and repository work, and record the hosted check as pending/unavailable.
+
+However, the current candidate/release contract deliberately requires hosted
+exact-source qualification for the stronger candidate, merge, and publication
+claims described below. Local reproduction may support development confidence but
+does not substitute for that evidence.
+
+```text
+hosted Actions unavailable
+-> continue ordinary development locally
+-> preserve hosted qualification as pending
+
+local PASS
+!= exact-head hosted qualification
+
+qualification unavailable
+!= qualification failed
+!= permission to weaken the gate
+```
+
+If the external blocker is quota/billing, do not spend money, change billing, or
+bypass repository policy without explicit owner authority. Once hosted
+qualification is available and materially needed, run only the required
+qualification rather than rerunning it as routine ceremony.
 
 ## Distribution gate
 

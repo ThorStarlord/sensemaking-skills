@@ -49,6 +49,14 @@ The liveness vocabulary is intentionally narrow:
 
 The default is `active`. This preserves compatibility for external/custom workflow registries that predate ADR 0027: a new workflow without an explicit override remains current unless its owner says otherwise.
 
+**RC4 simplification amendment (2026-10-06):** `fast-path-workflow` is
+explicitly `compatibility_only`. Its registry language historically implied
+automatic downstream invocation, while the current runtime deliberately surfaces
+a candidate and refuses to spawn a child workflow without a separate authority
+event. Demoting that one contradictory surface preserves catalog identity
+without pretending it is a current autonomous execution path.
+
+
 ### Initial compatibility-only set
 
 The evidence-qualified initial set is:

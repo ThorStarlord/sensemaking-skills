@@ -1,7 +1,7 @@
 # Strategic Candidate Directions
 
 **Status:** exploratory / non-authoritative idea reservoir  
-**Updated:** 2026-09-20  
+**Updated:** 2026-10-05  
 **Control level:** input to future Level-3 Strategic Repository Evolution or Level-4 Product Thesis reasoning  
 **Authority:** none; candidate ideas do not constitute Strategic Frontier membership, implementation authorization, product-thesis ratification, or release commitment  
 **Current strategy authority:** [`product-strategy.md`](product-strategy.md)  
@@ -735,3 +735,75 @@ candidate inventory exists
 ```
 
 Use this reservoir to remember possibilities. Use Level 3 to decide whether any possibility has become consequential enough to act on.
+
+## 14. Architecture simplification disposition from adversarial review
+
+**Current reconciliation:** `IMPLEMENTED_DEFAULT_SURFACE_REDUCTION` + `FURTHER_DELETION_EVIDENCE_GATED`.
+
+The 2026-10-05 adversarial claims-vs-runtime review, the owner-ratified
+`simplify hard` verdict, and the subsequent re-measure now produce an explicit
+subtractive disposition rather than another control subsystem.
+
+Implemented in the RC4 development line:
+
+1. **Contradictory auto-orchestration is demoted.** `fast-path-workflow` is
+   `compatibility_only` because its historical auto-chaining claim does not
+   match current runtime behavior. Other workflow liveness remains governed by
+   ADR 0027. `SkillsOrchestrator.run_workflow` requires an explicit execution
+   mode and no longer turns omission into `yolo_execution`.
+2. **Organization is out of the normal loop.** The read-only tracer remains
+   callable for explicit topology research/compatibility, but it is removed from
+   normal strategic resume/execution guidance and default navigation.
+3. **Policy names are no longer the default mental model.** `using-sensemaking`
+   leads with one compact evidence/warrant/authority/action/verification loop.
+   The named Inquiry / Metareasoning / Exploration / Warrant / Learning layers
+   remain advanced reference vocabulary.
+4. **Skill visibility is reduced without deleting compatibility.** The shipped
+   inventory remains available, but documentation defines a small default core;
+   PM/commercial and other specialized Skills are opt-in surfaces.
+5. **Current navigation is a spine, not a catalogue.** Root and docs navigation
+   lead through a small current authority path; historical and advanced
+   machinery is explicitly secondary.
+6. **Continuation starts minimal.** `campaign resume-profile` defaults to the
+   `minimal` projection. Read-only `campaign inspect` remains available for
+   orientation when strict recovery or target-currentness checks block
+   continuation.
+7. **Campaign remains exceptional-by-default.** Direct bounded work is the
+   default when one context can safely complete the responsibility; Campaign is
+   justified by continuation complexity, not importance or task size.
+8. **Retention/admission is outcome-based.** "Has tests", "has a consumer", and
+   "schema validates" are insufficient retention reasons. A validator or
+   abstraction must protect user-facing correctness, safety, provenance,
+   release integrity, or a demonstrated recurring failure.
+9. **Execution assertions expose their claim ceiling.** Result records distinguish
+   mechanically compared source-before identity from worker-reported,
+   unverified source-after/changed-path/validation/claim/authority assertions.
+
+Still evidence-gated rather than performed destructively:
+
+- physically deleting compatibility workflow definitions;
+- physically removing the Organization CLI implementation;
+- splitting all 51 Skills into separately installed packages;
+- deleting individual validators without consumer/failure tracing;
+- replacing Campaign schema/history with a new continuation schema.
+
+Those larger migrations would create their own maintenance program and therefore
+must cross the same admission test they are intended to enforce.
+
+```text
+competent control agent without abstraction
+-> materially recurring failure
+
+proposed abstraction
+-> changes that outcome
+-> at acceptable maintenance + cognitive cost
+
+otherwise
+-> simplify / demote / archive rather than expand
+```
+
+No Complexity Tax score, pruning runtime, retirement workflow, permission
+engine, or new control layer is introduced.
+
+
+

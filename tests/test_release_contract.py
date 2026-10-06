@@ -20,8 +20,8 @@ def test_release_contract_declares_public_surface_and_support_matrix() -> None:
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     source_version = pyproject["project"]["version"]
     target_version = data["release"]["version"]
-    assert data["release"]["status"] == "candidate"
-    assert source_version == target_version
+    assert data["release"]["status"] == "development"
+    assert source_version == f"{target_version}.dev0"
     assert data["release"]["scope_classification"] == "reduced"
     assert data["public_surface"]["cli"]
     assert data["support"]["python"]

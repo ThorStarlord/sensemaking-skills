@@ -106,19 +106,42 @@ def register_campaign_observability_commands(
     @click.option("--workspace", required=True, type=click.Path(path_type=Path))
     @click.option("--json", "output_json", is_flag=True)
     def campaign_inspect(workspace: Path, output_json: bool) -> None:
-        """Project the full mechanically reconstructible Campaign snapshot."""
-        snapshot = resume(workspace, output_json)
+        """Orient from materialized Campaign state without mutating recovery."""
+        try:
+            service = CampaignService(workspace)
+            result, snapshot = service.inspect()
+            transactions = service.store.inspect_lifecycle_transactions()
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+
+        blocking_transactions = [
+            item for item in transactions if item["status"] in {"pending", "invalid"}
+        ]
+        continuation_safe = result.valid and not blocking_transactions
         payload = {
-            "ok": True,
-            "code": "CAMPAIGN_INSPECT",
+            "ok": continuation_safe,
+            "code": (
+                "CAMPAIGN_INSPECT"
+                if continuation_safe
+                else "CAMPAIGN_INSPECT_WITH_DIAGNOSTICS"
+            ),
             "state": canonicalize(snapshot.state),
             "transitions": [canonicalize(item) for item in snapshot.transitions],
             "evidence_refs": list(snapshot.evidence_refs),
             "policy": canonicalize(snapshot.policy) if snapshot.policy is not None else None,
             "handoff": canonicalize(snapshot.handoff) if snapshot.handoff is not None else None,
+            "diagnostics": [canonicalize(item) for item in result.diagnostics],
+            "lifecycle_transactions": list(transactions),
+            "continuation_safe": continuation_safe,
             "semantic_companion": _semantic_summary(workspace),
             "semantic_recommendation_included": False,
             "semantic_truth_established": False,
+            "explicit_limit": (
+                "Read-only inspection may orient from the last materialized state "
+                "when strict resume is blocked; it does not recover transactions "
+                "or authorize continuation."
+            ),
         }
         if output_json:
             json_echo(payload)

@@ -1,4 +1,4 @@
-# Version 1.0 Release Contract (`1.0.0rc3` reduced-scope target)
+# Version 1.0 Release Contract (`1.0.0rc4` reduced-scope development target)
 
 This document defines the intended Version 1.0 support surface. The machine-
 readable authority is `release-v1.0.yaml`; `scripts/validate-release-contract.py`
@@ -6,16 +6,17 @@ checks that the declaration remains consistent with the repository.
 
 ## Product identity
 
-Current repository source is the frozen candidate `1.0.0rc3` with release status
-`candidate`. The qualified
-`1.0.0rc2` candidate remains immutable historical provenance at integrated
-commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`.
+Current repository source is `1.0.0rc4.dev0` with release status `development`,
+targeting `1.0.0rc4`. The qualified `1.0.0rc2` candidate remains immutable
+historical provenance at integrated commit
+`c9b86138d3919c4fce87040f14161364a0c1c3a0`. The preceding RC3 candidate line
+supplies no qualification to current development bytes.
 Historical `1.0.0rc1` remains qualified provenance for exact commit
 `70542d47412d98ee6dfae5de6df29bf271304568`, but continued development
 superseded it as the identity of current `main`.
 
-The `1.0.0rc2` target is a reduced-scope release of the local-first Sensemaking
-Campaign control layer and its manifest-backed agent Skills. The active agent
+The `1.0.0rc4` target is a reduced-scope release of the local-first Sensemaking
+repository decision-support and durability layer and its manifest-backed agent Skills. The active agent
 owns semantic judgment. The product owns durable state, evidence references,
 mechanical validation, provenance, integrity, and explicit authority metadata.
 
@@ -29,9 +30,9 @@ development source
 
 While `release.status` is `development`, the source version is the
 `.dev0` predecessor of the target. A frozen candidate uses the target version
-itself. The current `1.0.0rc3` source is a frozen candidate, but that freeze is not itself a
-candidate qualification; fresh exact-source qualification is required before any
-candidate qualification claim.
+itself. The current `1.0.0rc4.dev0` source is development state; fresh exact-source
+qualification is required after an explicit freeze before any `1.0.0rc4` candidate
+qualification claim.
 
 ## Stable surface
 

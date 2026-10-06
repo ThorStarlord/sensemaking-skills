@@ -35,7 +35,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-The repository source is the frozen candidate `1.0.0rc3`. The previously qualified `1.0.0rc2` candidate remains immutable historical provenance. Install from source:
+The repository source is `1.0.0rc4.dev0`, developing toward the reduced-scope `1.0.0rc4` candidate target. The previously qualified `1.0.0rc2` candidate remains immutable historical provenance; no earlier qualification transfers to current development bytes. Install from source:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
@@ -516,6 +516,20 @@ Use the explicit decision commands after the active agent has made the semantic 
 sensemaking-skills campaign advance --help
 sensemaking-skills campaign defer --help
 sensemaking-skills campaign close --help
+```
+
+The decision surface now treats bookkeeping as machinery: `--transition-id`,
+`--to-state`, and (for advance) `--responsibility-id` are optional and are
+generated deterministically when omitted. The agent still supplies the semantic
+content: decision, responsibility statement, blocked decision, scope, authority
+classification, evidence, and success conditions.
+
+```text
+agent supplies semantics
+machine supplies bookkeeping
+
+authority classification recorded
+!= authority granted or enforced
 ```
 
 ## Complete and optionally archive a terminal Campaign

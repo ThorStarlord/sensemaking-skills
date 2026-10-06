@@ -121,28 +121,15 @@ def test_post_tracer_strategic_reconciliation_validates_and_reaffirms() -> None:
     assert "!= Organization runtime warranted" in text
     assert "independent semantic multi-agent benefit remains unestablished" in text
 
-def test_loop_treats_organization_as_optional_read_only_execution_evidence() -> None:
+def test_loop_demotes_organization_from_normal_execution_surface() -> None:
     text = SKILL.read_text(encoding="utf-8")
     resume = RESUME.read_text(encoding="utf-8")
 
-    for phrase in (
-        "Organization visible != Organization warranted",
-        "role binding != actor allocation",
-        "Organization Pattern != execution authority",
-        "organization inspect / organization role / organization skill-profile",
-        "not a new resume state",
-        "not Skill selection",
-        "not actor allocation",
-        "not execution authorization",
-    ):
-        assert phrase in text
-
-    assert "Skip Organization inspection when" in resume
+    assert "legacy Organization tracer is not part of the normal strategic loop" in text
+    assert "advanced/research inspection aid" in text
     assert "Organization inspection is not a loop stage" in resume
-    assert "organization valid" in resume
-    assert "!= organization warranted" in resume
-    assert "role binding" in resume
-    assert "!= actor allocation" in resume
+    assert "explicit topology research/maintenance" in resume
+    assert "optional `organization inspect|role|skill-profile`" not in resume
 
 def test_loop_stops_at_owner_boundary_and_resumes_from_explicit_owner_choice() -> None:
     text = SKILL.read_text(encoding="utf-8")

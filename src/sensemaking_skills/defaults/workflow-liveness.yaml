@@ -13,3 +13,4 @@ overrides:
   product-implementation-workflow: compatibility_only
   ui-diagnostic-workflow: compatibility_only
   ui-implementation-workflow: compatibility_only
+  fast-path-workflow: compatibility_only

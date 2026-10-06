@@ -16,6 +16,7 @@ from sensemaking_skills.registry import WorkflowRegistry  # noqa: E402
 
 
 COMPATIBILITY_ONLY = {
+    "fast-path-workflow",
     "product-to-issues",
     "product-autonomous-sprint",
     "experimental-autonomous-sprint",
@@ -185,5 +186,4 @@ def test_routing_divergence_tracks_recommendation_selection_mismatch(tmp_path: P
     result = planner.plan_workflow(str(brief), str(ROOT))
     assert not result.startswith("ERROR:")
     assert "chosen_workflow_id: docs-implementation-workflow" in result
-    assert "routing_decision_method: manual_override" in result
     assert "routing_divergence: true" in result

@@ -479,6 +479,79 @@ class CampaignStore:
             ) from exc
         return final_transition
 
+    def inspect_lifecycle_transactions(self) -> tuple[dict[str, Any], ...]:
+        """Inspect transaction-journal entries without recovering or mutating them.
+
+        This surface exists for orientation when recovery itself is blocked.
+        A valid/pending observation does not authorize continuation; it only
+        reports what durable commit-intent material is present.
+        """
+        self._require_initialized()
+        transactions_dir = self.workspace.transactions_dir
+        if not transactions_dir.exists():
+            return (
+                {
+                    "name": ".transactions",
+                    "status": "invalid",
+                    "diagnostics": ("TRANSACTIONS_DIRECTORY_MISSING",),
+                },
+            )
+
+        _assert_physically_contained(transactions_dir, self.root)
+        observations: list[dict[str, Any]] = []
+        for entry in sorted(transactions_dir.iterdir(), key=lambda item: item.name):
+            diagnostics: list[str] = []
+            if entry.name.startswith(".") and ".staging-" in entry.name:
+                observations.append(
+                    {
+                        "name": entry.name,
+                        "status": "unpublished_staging",
+                        "diagnostics": (),
+                    }
+                )
+                continue
+
+            if entry.is_symlink() or not entry.is_dir() or not _SAFE_ID.fullmatch(entry.name):
+                observations.append(
+                    {
+                        "name": entry.name,
+                        "status": "invalid",
+                        "diagnostics": ("INVALID_TRANSACTION_JOURNAL_ENTRY",),
+                    }
+                )
+                continue
+
+            try:
+                _assert_physically_contained(entry, transactions_dir)
+                prepared = (
+                    ("campaign-state.yaml", load_campaign_state),
+                    ("transition.yaml", load_transition_record),
+                    ("trace.yaml", load_campaign_trace),
+                )
+                for filename, loader in prepared:
+                    path = entry / filename
+                    _assert_physically_contained(path, entry)
+                    if not path.is_file():
+                        diagnostics.append(f"MISSING_{filename.upper().replace('-', '_').replace('.', '_')}")
+                        continue
+                    try:
+                        loader(path)
+                    except Exception as exc:  # read-only diagnostic boundary
+                        diagnostics.append(
+                            f"INVALID_{filename.upper().replace('-', '_').replace('.', '_')}: {exc}"
+                        )
+            except Exception as exc:  # containment/read failures remain observable
+                diagnostics.append(f"TRANSACTION_INSPECTION_ERROR: {exc}")
+
+            observations.append(
+                {
+                    "name": entry.name,
+                    "status": "invalid" if diagnostics else "pending",
+                    "diagnostics": tuple(diagnostics),
+                }
+            )
+        return tuple(observations)
+
     def recover_lifecycle_transactions(self) -> tuple[str, ...]:
         """Complete every published P2 transaction idempotently."""
         self._require_initialized()

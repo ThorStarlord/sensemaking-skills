@@ -85,7 +85,8 @@ def test_default_catalog_loads_real_skill_and_workflow_identities() -> None:
     active_workflow = registry.get("fast-path-workflow")
     assert active_workflow is not None
     assert active_workflow.kind == "workflow"
-    assert active_workflow.availability is AvailabilityStatus.EXTERNAL
+    assert active_workflow.availability is AvailabilityStatus.UNAVAILABLE
+    assert "compatibility_only" in active_workflow.availability_reason
 
     compatibility = registry.get("implementation-workflow")
     assert compatibility is not None

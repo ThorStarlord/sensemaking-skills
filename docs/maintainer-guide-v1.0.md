@@ -4,6 +4,9 @@ This guide is the short operational entry point for maintainers. The exact
 support and claim ceiling is defined in [`release-v1.0-contract.md`](release-v1.0-contract.md)
 and validated by `scripts/validate-release-contract.py`.
 
+**Current source:** `1.0.0rc4.dev0`  
+**Current target:** `1.0.0rc4` (`development`; not yet a frozen candidate)
+
 ## Authority order
 
 1. Accepted ADRs and executable contracts define current behavior.
@@ -17,6 +20,25 @@ disagreement, and reconcile the current document. Do not silently expand the
 public surface.
 
 ## Change discipline
+
+Before adding or retaining a nontrivial abstraction, validator, workflow, policy
+layer, or coordination surface, apply this admission test:
+
+```text
+competent control agent without the abstraction
+-> materially fails a real task
+
+abstraction present
+-> materially improves the outcome
+
+benefit
+> cognitive + maintenance + continuation cost
+```
+
+"Has a consumer", "has tests", "schema validates", or "documentation is coherent"
+are not sufficient retention criteria by themselves. Validators that mainly
+protect machinery whose only purpose is protecting that same machinery are
+pruning candidates.
 
 - Choose responsibility before Skill or workflow.
 - Keep semantic judgment with the active coding agent.
@@ -43,9 +65,9 @@ upgrade a semantic or native-harness claim without its required evidence.
 
 ## Release changes
 
-The repository currently carries frozen candidate source version `1.0.0rc3`
-targeting `1.0.0rc3` with release status `development`. The previously
-qualified `1.0.0rc2` candidate remains immutable at integrated commit
-`c9b86138d3919c4fce87040f14161364a0c1c3a0`. Future RC3 qualification must
+The repository currently carries source version `1.0.0rc4.dev0` targeting
+`1.0.0rc4` with release status `development`. The previously qualified
+`1.0.0rc2` candidate remains immutable at integrated commit
+`c9b86138d3919c4fce87040f14161364a0c1c3a0`. Future RC4 qualification must
 bind a new exact source/tree and artifact evidence. Publication, tagging, and
 final `1.0.0` remain explicit release-owner transitions.

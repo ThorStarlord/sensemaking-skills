@@ -64,6 +64,41 @@ returned evidence != admitted evidence
 result recorded != result accepted
 ```
 
+### Result claim ceiling
+
+The result companion preserves **worker-reported assertions** unless another
+mechanism independently verifies them. In particular, `source_before`,
+`source_after`, `changed_paths`, validation statements, returned claims, and
+`authority_exceeded` are declarations made by the caller/worker at import time.
+The companion validates their structure, handoff association, and record/envelope
+integrity; it does not by itself establish that those assertions are true.
+
+For a result tied to exactly one handoff target, the durable result also records
+whether the reported `source_before` equals that target's bound `head_sha`.
+This is a cheap mechanical comparison, not a complete source-state verification:
+dirty worktree identity, `source_after`, changed paths, validations, claims, and
+authority compliance remain independently unverified. Multi-target v1 results
+remain worker-reported because the return schema does not identify which target
+the single `source_before` field refers to.
+
+The current interface also does not act as a sandbox or security reference
+monitor. It records target identity, scope/authority context, evidence
+requirements, and forbidden actions, but it does not mechanically prevent a
+worker from exceeding them or compare a complete worker action log against those
+constraints.
+
+```text
+integrity-bound report != verified report
+worker-reported source identity != independently observed source identity
+worker-reported authority compliance != enforced authority compliance
+forbidden action recorded != forbidden action mechanically prevented
+```
+
+When exact source identity, changed-path confinement, or authority compliance is
+decision-critical, the parent or downstream execution runtime must verify the
+relevant fact from an authoritative source before admission, closure, merge,
+release, or another protected transition.
+
 ## High-delegation working context
 
 `campaign working-context` projects:
@@ -122,5 +157,6 @@ The active agent/owner still decides:
 - whether evidence should be admitted;
 - whether to continue, repair, verify, escalate, defer, or close.
 
-The deterministic interface only preserves the exact delegation and return
-boundary.
+The deterministic interface preserves the exact declared delegation and return
+boundary. It is a semantic/durable authority-control protocol, not a security
+reference monitor.

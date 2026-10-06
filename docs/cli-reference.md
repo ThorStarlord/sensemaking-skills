@@ -26,7 +26,7 @@ sensemaking-skills [--version] <command> ...
 | `campaign` | Durable Campaign state, handoff/resume, execution companions, lineage, bundles, multi-target, provenance. | `docs/campaign-cli.md` |
 | `strategy` | Inspect authored Level-3 strategic analyses. | `docs/strategic-continuity-v1.md` |
 | `journey` | Read-only decision-journey projections. | `docs/decision-journey-productization-v1.md` |
-| `organization` | Read-only role/capability topology. | `docs/capability-organization-tracer-v0.md` |
+| `organization` | **Advanced/optional** read-only role/capability topology; not part of the default control loop. | `docs/capability-organization-tracer-v0.md` |
 | `semantic` | Mechanical semantic substrate (catalog, conformance, probes, map build, companion state). | `docs/semantic-architecture/README.md` |
 | `release` | Local release-authority audit. | `docs/release-authority-audit.md` |
 
@@ -69,10 +69,11 @@ decision):
 `inspect`, `context`, `delta`, `impact-closure`, `guide`. `guide` shows static
 guidance for one caller-selected intent and never routes.
 
-## `organization`
+## Advanced/optional: `organization`
 
 `inspect`, `role`, `skill-profile`. Explicit topology only; no worker
-allocation.
+allocation, Skill selection, execution authority, or default-loop role. Use only
+when topology itself is decision-relevant.
 
 ## `semantic`
 

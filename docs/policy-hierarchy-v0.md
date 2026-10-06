@@ -1,6 +1,6 @@
 # Policy Hierarchy v0
 
-**Status:** canonical agent-control architecture under Policy Hierarchy Completion v0  
+**Status:** advanced reference architecture retained for compatibility/research; not the default operating surface  
 **Authority:** subordinate to `docs/product-strategy.md`, ADR 0029, the Four-Level Control Model, and existing authority contracts  
 **Construction authority:** Issue #399  
 **Runtime status:** semantic policy contracts; not separate runtime services or deterministic semantic oracles
@@ -8,10 +8,7 @@
 ## 1. Purpose
 
 Sensemaking already has strong strategy, durable decision state, authority, execution,
-provenance, and assurance surfaces. Policy Hierarchy v0 makes the currently implicit
-middle reasoning policies explicit so a capable coding agent can decide **what to learn,
-how much reasoning to spend, when to broaden search, what is warranted, and what to
-update after evidence returns** without turning those judgments into mandatory engines.
+provenance, and assurance surfaces. Policy Hierarchy v0 preserves a detailed decomposition of reasoning questions for advanced inspection, compatibility, and research. Normal operation should use the compact doctrine in `skills/using-sensemaking/SKILL.md` and consult these named layers only when the distinction changes a real decision. The hierarchy does not turn those judgments into mandatory engines.
 
 Canonical shape:
 

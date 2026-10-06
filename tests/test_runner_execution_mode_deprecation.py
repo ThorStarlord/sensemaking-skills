@@ -1,8 +1,10 @@
-"""Regression contract for issue #264 implicit execution-mode deprecation."""
+"""Regression contract for the explicit-only legacy workflow wrapper."""
 
 from __future__ import annotations
 
 import warnings
+
+import pytest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
@@ -26,22 +28,14 @@ def _mode_from_subprocess_call(mock_run: Mock) -> str:
     return cmd[cmd.index("--mode") + 1]
 
 
-def test_omitted_execution_mode_warns_once_and_preserves_yolo_behavior(tmp_path: Path) -> None:
+def test_omitted_execution_mode_is_rejected_without_spawning(tmp_path: Path) -> None:
     orchestrator = _orchestrator(tmp_path)
 
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        with patch(
-            "sensemaking_skills.runner.subprocess.run",
-            return_value=SimpleNamespace(returncode=0),
-        ) as mock_run:
-            assert orchestrator.run_workflow("fast-path-workflow") == 0
+    with patch("sensemaking_skills.runner.subprocess.run") as mock_run:
+        with pytest.raises(ValueError, match="execution_mode is required"):
+            orchestrator.run_workflow("fast-path-workflow")
 
-    future = _future_warnings(caught)
-    assert len(future) == 1
-    assert "Omitting execution_mode is deprecated" in str(future[0].message)
-    assert "pass an explicit execution mode" in str(future[0].message)
-    assert _mode_from_subprocess_call(mock_run) == "yolo_execution"
+    mock_run.assert_not_called()
 
 
 def test_explicit_yolo_execution_preserves_behavior_without_deprecation_warning(
@@ -82,7 +76,7 @@ def test_explicit_guided_execution_has_no_deprecation_warning(tmp_path: Path) ->
     assert _mode_from_subprocess_call(mock_run) == "guided_execution"
 
 
-def test_parent_session_path_requests_yolo_explicitly(tmp_path: Path) -> None:
+def test_parent_session_path_requests_guided_execution_explicitly(tmp_path: Path) -> None:
     orchestrator = _orchestrator(tmp_path)
     parent_session = tmp_path / "artifacts" / "parent-session"
     parent_session.mkdir(parents=True)
@@ -102,6 +96,6 @@ def test_parent_session_path_requests_yolo_explicitly(tmp_path: Path) -> None:
 
     orchestrator.run_workflow.assert_called_once_with(
         "implementation-workflow",
-        execution_mode="yolo_execution",
+        execution_mode="guided_execution",
         from_session=str(parent_session.resolve()),
     )

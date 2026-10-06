@@ -1,7 +1,7 @@
 # Sensemaking Skills Operations and Qualification Runbook
 
 **Status:** current operator-facing operations/qualification runbook  
-**Updated:** 2026-09-18  
+**Updated:** 2026-10-05  
 **Audience:** maintainers, coding agents, and human qualification/release operators  
 **Executable authority:** checked-in GitHub Actions workflows and current repository code  
 **Strategic authority:** `docs/product-strategy.md` + `STATUS.md`
@@ -38,6 +38,52 @@ scripts/validate-candidate-directions.py
 
 Neither strategic validator decides strategy quality or priority.
 
+### 1.1 Hosted CI availability and budget policy
+
+The repository is currently public and the checked-in qualification workflows use
+standard GitHub-hosted runner labels. Under GitHub's current billing model, standard
+hosted Actions for public repositories are not billed against private-repository
+included minutes. Re-check that assumption if repository visibility, runner class,
+or GitHub billing policy changes.
+
+Hosted CI remains valuable because it provides exact-head, clean-environment, and
+cross-platform evidence that a single local environment cannot reproduce exactly.
+It is **not** a prerequisite for continuing ordinary repository development.
+
+If hosted Actions become unavailable because of quota/billing limits, platform
+outage, or another external constraint:
+
+1. continue warranted implementation, documentation, refactoring, and investigation;
+2. run the closest applicable local test/validator/build reproduction and record
+   the exact commands/results;
+3. mark hosted CI as unavailable/pending rather than failed or passed;
+4. do not claim hosted cross-platform, exact-head Actions, or release-candidate
+   qualification evidence that was not obtained;
+5. do not repeatedly rerun a workflow whose blocker is known to be quota/billing;
+6. resume the hosted qualification step only when it is materially required and
+   the external constraint is cleared.
+
+```text
+hosted CI unavailable
+!= repository development blocked
+
+local validation PASS
+!= hosted cross-platform CI PASS
+!= release-candidate qualification
+
+external billing/quota blocker
+!= technical failure
+```
+
+Do not purchase additional Actions capacity, change billing, move to larger paid
+runners, or alter repository protection merely to clear a qualification gate
+without explicit owner authority.
+
+For normal development, prefer the cheapest sufficient evidence. For a protected
+merge/release/candidate claim whose current contract explicitly requires hosted
+exact-head evidence, preserve that claim as pending until the required evidence
+exists rather than weakening the contract silently.
+
 ## 2. Development setup
 
 ```bash
@@ -48,7 +94,7 @@ python -m pip install -e . pytest pytest-subtests
 sensemaking-skills --version
 ```
 
-Current repository source version: `1.0.0rc3`; active release target: frozen candidate `1.0.0rc3` (`candidate`). Qualified `1.0.0rc2` remains frozen at `c9b86138d3919c4fce87040f14161364a0c1c3a0`.
+Current repository source version: `1.0.0rc4.dev0`; active release target: `1.0.0rc4` (`development`). Qualified `1.0.0rc2` remains frozen at `c9b86138d3919c4fce87040f14161364a0c1c3a0`; no earlier qualification transfers to current development bytes.
 
 For retained lab compatibility checks only:
 
@@ -275,10 +321,12 @@ sensemaking-skills campaign explain --workspace /path/to/campaigns/CMP-0001 --re
 sensemaking-skills campaign graph --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign graph-integrity --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign doctor --workspace /path/to/campaigns/CMP-0001 --json
-sensemaking-skills campaign resume-profile --workspace /path/to/campaigns/CMP-0001 --profile working --json
+sensemaking-skills campaign resume-profile --workspace /path/to/campaigns/CMP-0001 --profile minimal --json
 ```
 
 Backward-compatible `campaign resume-context` remains available. `resume-profile` supports `minimal|working|audit`, deterministic tail-preserving `--max-items`, and optional preflight inclusion.
+
+`minimal` is the default because fresh-context orientation should start from the smallest durable projection; request `working` or `audit` only when the additional state is decision-relevant.
 
 When responsibility type is already explicitly selected:
 
@@ -463,6 +511,11 @@ sensemaking-skills campaign handoff --workspace /path/to/campaigns/CMP-0001
 sensemaking-skills campaign resume --workspace /path/to/campaigns/CMP-0001
 ```
 
+Decision commands generate routine transition/state identifiers when omitted;
+operators should author only identifiers that are externally meaningful. The
+semantic fields remain explicit, and authority is still a recorded
+classification rather than a grant.
+
 Actual GitHub publication/mutation remains separately authorized.
 
 ```text
@@ -517,7 +570,7 @@ Running retained compatibility tests does not create a new operative experiment;
 
 ## 7. Release Candidate Distribution
 
-`.github/workflows/release-candidate.yml` is exact-head distribution authority for v0.3.0.
+`.github/workflows/release-candidate.yml` is the exact-head distribution-validation authority for the current Version 1.0 development target; while status is `development`, a passing run is not candidate qualification.
 
 ```bash
 python scripts/validate-product-boundary.py

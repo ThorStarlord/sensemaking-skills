@@ -1,9 +1,11 @@
 # Status
 
-**Source version:** 1.0.0rc3
-**Release target:** 1.0.0rc3 (frozen reduced-scope release candidate)
-**Last updated:** 2026-10-04  
-**Current phase:** post-RC2 development (see the itemized state below; each bullet is one integrated or in-handoff issue/observation).
+**Source version:** 1.0.0rc4.dev0
+**Release target:** 1.0.0rc4 (development; reduced-scope candidate target)
+**Last updated:** 2026-10-05  
+**Current phase:** post-RC3 simplification development (see the itemized state below; each bullet is one integrated or in-handoff issue/observation).
+
+- **Adversarial architecture simplification — IMPLEMENTED DEFAULT-SURFACE REDUCTION / FURTHER DELETION EVIDENCE-GATED:** the 2026-10-05 claims-vs-runtime audit now has concrete RC4 development changes: `fast-path-workflow` is compatibility-only because its historical auto-chaining claim contradicts current runtime behavior; other workflow liveness remains governed by ADR 0027; implicit yolo execution is removed; Campaign resume defaults to minimal projection while read-only inspect remains available under blocked continuation; Organization and detailed policy hierarchy are advanced/reference rather than normal-loop surfaces; the default Skill/documentation spine is smaller; execution-result assertion provenance is explicit; and new abstractions/validators face an outcome-based admission test. Physical deletion/package migrations remain evidence-gated because creating a migration program would itself incur the complexity tax being removed.
 
 - **Capability Learning Loop v0 — INTEGRATED / EVIDENCE-GATED:** PR #512 merged as `3f6e5e9f4b4a811fcb19724adb18db911e997dd6`; cross-episode reusable doctrine remains evidence-gated, with no self-modifying runtime or automatic Skill promotion.
 - **Consequence-Depth / Local Completion Bias guidance — INTEGRATED / NORMAL-USE OBSERVATION:** PR #513 merged as `bb90f700138749272111b9683ec8671c5593ccce`; `using-sensemaking` and `change-impact-analysis` now zoom outward only while downstream consequences can change the decision, responsibility, verification, invariant, or strategy.
@@ -21,7 +23,7 @@
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
-**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568`. Qualified `1.0.0rc2` is frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`, Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`. The source is now the frozen candidate `1.0.0rc3`; RC2 qualification does not transfer to these later bytes. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
+**Release status:** historical `1.0.0rc1` was exact-head-qualified at `70542d47412d98ee6dfae5de6df29bf271304568`. Qualified `1.0.0rc2` remains frozen at integrated commit `c9b86138d3919c4fce87040f14161364a0c1c3a0`, Git tree `2da97295576b2dc68b3fa3eaed626a70343dd387`. The preceding RC3 candidate line has been reopened as `1.0.0rc4.dev0` because this simplification changes source behavior; no RC2/RC3 qualification transfers to these bytes. RC3 freeze authorization was separately recorded on issue #506; that historical authorization does not authorize the RC4 freeze. A future `1.0.0rc4` freeze requires fresh exact-source qualification. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
 Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
@@ -38,6 +40,9 @@ Release scope and support claims: `docs/release-v1.0-contract.md`.
 - **Product purpose:** improve repository-level decisions when a capable coding agent cannot safely determine the correct next engineering responsibility from the user request alone.
 - **Primary persona:** high-delegation agent-assisted builder / repository owner; beginner-first, expert-capable.
 - **Strategic design principle:** opinionated about engineering invariants, adaptive about process, progressive in disclosure.
+- **Complexity posture:** mechanical maturity has outpaced demonstrated incremental value across the broader control surface. The normal-use re-measure recorded 0 clear skill-favorable tasks and reinforced the owner-ratified `simplify hard` verdict; therefore the default strategic bias is prune/simplify before expand, while preserving the few invariants with demonstrated decision, authority, provenance, or verification value.
+- **Abstraction admission rule:** coherence, schema validity, internal consumption, or test coverage are insufficient reasons to retain or add an abstraction. A new abstraction must identify a concrete consumer/failure and demonstrate incremental value over a competent control agent without it.
+- **Validation availability policy:** ordinary development continues through local tests/validators when hosted CI is unavailable; unavailable hosted Actions are an external evidence blocker, not a repository-wide freeze. Local PASS must not be promoted into hosted cross-platform or exact-head qualification claims. The current public repository uses standard hosted runners, so hosted Actions remain useful for the stronger qualification evidence while that service is available.
 - **Control law:** lower levels may execute higher-level commitments but may not silently redefine them.
 - **Downstream runtime boundary:** `ThorStarlord/dark-factory` is the canonical durable software-factory runtime for mature full-autonomy/full-delegation continuation; this repository remains the semantic R&D/reusable decision-support source and must not create a competing factory controller. See `docs/dark-factory-autonomy-boundary.md`.
 - The four-level architecture remains **Version v0** and a **frozen operational baseline**; Strategic Outer Loop Precision v1 clarifies its reasoning and transition semantics without creating a new planner/runtime.
@@ -59,8 +64,8 @@ The repository-qualified baseline includes:
 - **General Agency Model v0.1** research reference: value → context → strategy → decision frame → epistemic state → sufficiency → inquiry/choice → action → observation/verification → impact/sensemaking → belief update, with lateral challenge/exploration and explicit authority/risk/resource envelopes.
 - **Practical Agent Architecture v0** guidance: semantic agent judgment → target-specific warrant → existing durable decision substrate → deterministic assurance → external execution/orchestration → evidence return and semantic reassessment.
 - **Adaptive Agency Abstraction Stack v0** research reference: separates the Capability Plane (Root Primitive → Cognitive Operator → Capability/Skill), Coordination Plane (delegation → Organization), and Governance/Persistence Plane (policy/authority/provenance/continuity → Institution), plus a distinct promotion/evolution ladder; preserves `Campaign != Organization`, `capability growth != authority growth`, and the current external-orchestration boundary without adding runtime/schema authority.
-- **Capability & Organization Tracer v0 — COMPLETE / INTEGRATED / TRIAL_RECONCILED / NORMAL_USE_HANDOFF:** shipped read-only `organization` inspection exposes a small non-authoritative Skill-capability facet overlay and one explicit Repository Change Cell topology (Controller / optional Analyst / Builder / Verifier / Reconciler); exact-head Product Validation #1198 and Release Candidate Distribution #330 passed at `44d1b7732c5bf018c294164a613422f02b244306`. Trial 001 established mechanical coherence and useful responsibility-boundary attribution, but did not establish independent multi-agent superiority or warrant scheduler/runtime expansion.
-- **Policy Hierarchy v0**: canonical middle-control architecture for Strategic → Inquiry → Metareasoning → Exploration → Warrant/Choice → Action/Evidence → Learning/Reconciliation, explicitly defined as semantic policy contracts rather than runtime services.
+- **Capability & Organization Tracer v0 — COMPLETE / INTEGRATED / TRIAL_RECONCILED / CURRENTLY ADVANCED_COMPATIBILITY:** the read-only `organization` CLI remains available for explicit topology research/compatibility, but the simplification pass removes it from the normal strategic/execution path. Trial 001 established mechanical coherence but not independent multi-agent superiority; no scheduler/runtime expansion is warranted.
+- **Policy Hierarchy v0 — ADVANCED REFERENCE:** the detailed Strategic → Inquiry → Metareasoning → Exploration → Warrant/Choice → Action/Evidence → Learning/Reconciliation decomposition remains preserved for compatibility/research, but normal operation uses the compact doctrine in `using-sensemaking`; named layers are not a default phase model.
 - **Inquiry Policy v0**: agent-facing contract for deciding what to learn next, including `NO_INQUIRY_NEEDED`, smallest-sufficient-evidence selection, owner-intent/external-evidence boundaries, and inquiry stop conditions without new schema/state.
 - **Metareasoning Policy v0**: agent-facing qualitative control-move contract for allocating effort among `ACT / INQUIRE / CHALLENGE / EXPLORE / VERIFY / ESCALATE / STOP` without a runtime controller, score, or authority expansion.
 - **Exploration Policy v0**: agent-facing iterative-search allocation over `EXPLOIT / EXPLORE / CHALLENGE / DIAGNOSE / RECOMBINE / RESTART / VERIFY / EXIT_SEARCH`, with search history treated as an existing-evidence projection rather than a SearchState schema.
@@ -437,7 +442,6 @@ dynamic-Organization, new policy layer, search runtime, or additional strategic
 machinery unless recurring normal use exposes one of those as the actual
 limiting factor.
 
-Current release source is the frozen candidate `1.0.0rc3`.
-This normal-use reconciliation did not by itself authorize freezing RC3.
-Owner authorization for the RC3 freeze is now recorded separately on issue #506.
+Current release source is `1.0.0rc4.dev0` targeting `1.0.0rc4` in development.
+The preceding RC3 line remains historical provenance; current simplification bytes require a new freeze and exact-source qualification before any RC4 candidate claim.
 PyPI publication, release tagging, and final `1.0.0` remain owner-controlled.

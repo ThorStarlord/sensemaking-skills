@@ -128,6 +128,9 @@ def test_worker_result_returns_evidence_without_global_closure(tmp_path: Path) -
     assert payload["campaign_evidence_admitted"] is False
     assert payload["parent_reassessment_required"] is True
     assert payload["result"]["authority_exceeded"] is False
+    assert payload["result"]["source_before_matches_bound_target_head"] is True
+    assert payload["result"]["assertion_provenance"]["authority_exceeded"] == "worker_reported_unverified"
+    assert payload["result"]["assertion_provenance"]["forbidden_actions_enforced_by_interface"] is False
 
     snapshot = CampaignService(workspace).resume()
     assert snapshot.state.active_responsibility is not None

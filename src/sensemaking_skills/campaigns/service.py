@@ -94,6 +94,16 @@ class CampaignService:
         self.store.initialize(state, policy=policy)
         return self.resume()
 
+    def inspect(self) -> tuple[CampaignValidationResult, CampaignSnapshot]:
+        """Inspect materialized durable state without recovery or mutation.
+
+        This is an orientation surface, not a continuation gate. It deliberately
+        does not run lifecycle recovery, so callers can inspect the last
+        materialized state even when a malformed/pending transaction blocks
+        strict resume.
+        """
+        return self._inspect()
+
     def validate(self) -> CampaignValidationResult:
         """Recover committed intent, then validate durable reconstruction."""
         self.store.recover_lifecycle_transactions()

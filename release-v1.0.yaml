@@ -1,10 +1,10 @@
 schema_version: 1
 release:
-  version: 1.0.0rc3
-  status: candidate
+  version: 1.0.0rc4
+  status: development
   product_name: Sensemaking Skills
   scope_classification: reduced
-  scope: local-first Campaign control layer and mechanically qualified engineering Skills
+  scope: local-first repository decision-support and durability layer plus mechanically qualified engineering Skills
   release_policy: docs/release-v1.0-contract.md
 
 support:

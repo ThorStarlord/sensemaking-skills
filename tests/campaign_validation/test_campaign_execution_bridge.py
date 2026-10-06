@@ -17,7 +17,7 @@ from sensemaking_skills.campaigns.execution_bridge import (
 from sensemaking_skills.cli import cli
 
 
-def _setup(tmp_path: Path) -> tuple[Path, CliRunner]:
+def _setup(tmp_path: Path) -> tuple[Path, Path, CliRunner]:
     target = tmp_path / "target"
     target.mkdir()
     subprocess.run(["git", "init", str(target)], check=True, capture_output=True)
@@ -62,11 +62,11 @@ def _setup(tmp_path: Path) -> tuple[Path, CliRunner]:
         ],
     )
     assert created.exit_code == 0, created.output
-    return workspace, runner
+    return workspace, target, runner
 
 
 def test_generic_handoff_export_is_integrity_bound_and_nonexecuting(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     result = runner.invoke(
         cli,
         [
@@ -88,16 +88,22 @@ def test_generic_handoff_export_is_integrity_bound_and_nonexecuting(tmp_path: Pa
 
 
 def test_result_envelope_seal_and_import_preserve_parent_boundary(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     envelope = build_result_template(
         workspace,
         handoff_id="H-BRIDGE",
         result_id="RES-BRIDGE",
         worker="factory-worker",
     )
+    before = subprocess.run(
+        ["git", "-C", str(target), "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
     envelope.update(
         {
-            "source_before": "abc123",
+            "source_before": before,
             "source_after": "def456",
             "changed_paths": ["src/example.py"],
             "validations": ["pytest focused: PASS"],
@@ -124,6 +130,7 @@ def test_result_envelope_seal_and_import_preserve_parent_boundary(tmp_path: Path
     assert payload["campaign_evidence_admitted"] is False
     assert payload["worker_completion_establishes_global_closure"] is False
     assert payload["parent_reassessment_required"] is True
+    assert payload["result"]["source_before_matches_bound_target_head"] is True
 
     snapshot = CampaignService(workspace).resume()
     assert snapshot.state.active_responsibility is not None
@@ -131,7 +138,7 @@ def test_result_envelope_seal_and_import_preserve_parent_boundary(tmp_path: Path
 
 
 def test_tampered_result_envelope_is_rejected(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     envelope = build_result_template(
         workspace,
         handoff_id="H-BRIDGE",
@@ -158,7 +165,7 @@ def test_tampered_result_envelope_is_rejected(tmp_path: Path) -> None:
 
 
 def test_factory_issue_projection_requires_caller_selected_workflow(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     result = runner.invoke(
         cli,
         [
@@ -183,7 +190,7 @@ def test_factory_issue_projection_requires_caller_selected_workflow(tmp_path: Pa
 
 
 def test_factory_issue_projection_does_not_default_a_workflow(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     result = runner.invoke(
         cli,
         [

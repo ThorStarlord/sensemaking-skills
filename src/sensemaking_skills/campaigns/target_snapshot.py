@@ -307,6 +307,16 @@ class CampaignService(BaseCampaignService):
                 diagnostic_codes=tuple(item.code for item in diagnostics),
             )
 
+    def inspect(self) -> tuple[CampaignValidationResult, CampaignSnapshot]:
+        """Read target-aware state and diagnostics without blocking orientation."""
+        base, snapshot = super().inspect()
+        diagnostics = [
+            *base.diagnostics,
+            *self._history_diagnostics(snapshot),
+            *self._live_diagnostics(snapshot),
+        ]
+        return CampaignValidationResult(not diagnostics, tuple(diagnostics)), snapshot
+
     def resume_for_transition(self) -> CampaignSnapshot:
         """Reconstruct durable history while permitting a new live post-work snapshot."""
         snapshot = super().resume()
