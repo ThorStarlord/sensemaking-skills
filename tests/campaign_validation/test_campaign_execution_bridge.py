@@ -62,11 +62,11 @@ def _setup(tmp_path: Path) -> tuple[Path, CliRunner]:
         ],
     )
     assert created.exit_code == 0, created.output
-    return workspace, runner
+    return workspace, target, runner
 
 
 def test_generic_handoff_export_is_integrity_bound_and_nonexecuting(tmp_path: Path) -> None:
-    workspace, runner = _setup(tmp_path)
+    workspace, target, runner = _setup(tmp_path)
     result = runner.invoke(
         cli,
         [
@@ -95,9 +95,15 @@ def test_result_envelope_seal_and_import_preserve_parent_boundary(tmp_path: Path
         result_id="RES-BRIDGE",
         worker="factory-worker",
     )
+    before = subprocess.run(
+        ["git", "-C", str(target), "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
     envelope.update(
         {
-            "source_before": "abc123",
+            "source_before": before,
             "source_after": "def456",
             "changed_paths": ["src/example.py"],
             "validations": ["pytest focused: PASS"],
@@ -124,6 +130,7 @@ def test_result_envelope_seal_and_import_preserve_parent_boundary(tmp_path: Path
     assert payload["campaign_evidence_admitted"] is False
     assert payload["worker_completion_establishes_global_closure"] is False
     assert payload["parent_reassessment_required"] is True
+    assert payload["result"]["source_before_matches_bound_target_head"] is True
 
     snapshot = CampaignService(workspace).resume()
     assert snapshot.state.active_responsibility is not None
