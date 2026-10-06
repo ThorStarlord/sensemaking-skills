@@ -28,7 +28,6 @@ Everything else below is a **current or historical reference**, not part of the
 default reading path. Open it only when the current decision needs that detail.
 
 ## Advanced current references
-## Advanced current references
 
 ### Control model and strategy
 `strategic-outer-loop.md`, `policy-hierarchy-v0.md`, `strategic-state-contract.md`,
