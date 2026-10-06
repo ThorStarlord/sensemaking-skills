@@ -738,6 +738,32 @@ Use this reservoir to remember possibilities. Use Level 3 to decide whether any 
 
 ## 14. Architecture simplification disposition from adversarial review
 
+### RC4 selective contraction decision
+
+Follow-up consumer tracing narrows the next cuts:
+
+- `product-strategy-sprint` -> `compatibility_only`;
+- `artifact-reconciliation` -> `compatibility_only`, preserving direct
+  reconciliation Skills rather than productizing its unevidenced tail;
+- `autonomous-sprint-preflight` -> `compatibility_only`;
+- `product-discovery-sprint` -> **retain active for now** because current
+  product-fog recommendation contracts still consume it;
+- `architectural-review-planning-workflow` -> **retain active for now**
+  because current architecture-fog recommendation contracts still consume it.
+
+The repository already supports a truthful no-match brief
+(`recommended_workflow_id: null` + `escalation_recommended: true`). Future
+demotion of a live default must migrate its producer/consumer contract to that
+state explicitly; do not invent a replacement workflow.
+
+Stage-2 validator tracing also finds no present consolidation warrant:
+error-boundary safety, final release readiness, semantic-reasoning profiles,
+change-impact analysis, multi-repository analysis, and the PM artifact-family
+validators protect distinct invariants/representations. Shared parsing
+boilerplate alone does not justify a new validator framework or a broader
+failure domain.
+
+
 **Current reconciliation:** `IMPLEMENTED_DEFAULT_SURFACE_REDUCTION` + `FURTHER_DELETION_EVIDENCE_GATED`.
 
 The 2026-10-05 adversarial claims-vs-runtime review, the owner-ratified

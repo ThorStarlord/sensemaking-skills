@@ -56,12 +56,11 @@ VALID_ESCALATED_BRIEF_FIXTURE = os.path.join(
     REPO_ROOT, "tests", "fixtures", "validate-brief", "valid", "no-match-with-escalation.md"
 )
 
-# A real, distinct, non-fog-default registry workflow with a contract-valid plan. It
-# must differ from every fog-aligned default so the test proves a brief recommendation
-# that is NOT merely reconstructed from a fog map is honored. product-strategy-sprint
-# is an active product-family workflow that differs from the product_fog default
-# (product-discovery-sprint).
-DISTINCT_RECOMMENDED_WORKFLOW = "product-strategy-sprint"
+# A real, distinct, non-fog-default registry workflow with a contract-valid plan.
+# It must differ from every fog-aligned default so the test proves a brief
+# recommendation that is NOT merely reconstructed from a fog map is honored.
+# full-local-sensemaking remains active and is distinct from all four defaults.
+DISTINCT_RECOMMENDED_WORKFLOW = "full-local-sensemaking"
 
 # The fog -> default implementation workflow mapping, taken from validate-plan.py's OWN
 # fog_to_workflow (the consumer/routing authority), NOT from the runtime's private

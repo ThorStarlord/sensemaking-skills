@@ -84,7 +84,8 @@ After running a workflow, logs are available in:
 #### View Full Documentation
 
 - Architecture: `docs/validator-ecosystem/ARCHITECTURE.md`
-- Workflows: `docs/ROUTING_GUIDE.md`
+- Current agent operating doctrine: `skills/using-sensemaking/SKILL.md`
+- Historical runner-era workflow guide: `docs/ROUTING_GUIDE.md`
 - Troubleshooting: `docs/TROUBLESHOOTING.md`
 
 #### Report Issues

@@ -3381,7 +3381,7 @@ class StaleAuthorizationPathIsGone(unittest.TestCase):
     """80-83: exactly one canonical planned run-control location."""
 
     def _repo_text_files(self):
-        skip = {".git", "node_modules", "__pycache__", ".pytest_cache", ".venv"}
+        skip = {".git", "node_modules", "__pycache__", ".pytest_cache", ".venv", "build", "dist"}
         for path in REPO_ROOT.rglob("*"):
             if not path.is_file():
                 continue

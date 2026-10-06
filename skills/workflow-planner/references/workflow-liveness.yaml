@@ -21,3 +21,9 @@ overrides:
   # RC4 simplification: historical auto-chaining claims do not match the
   # current runtime, which deliberately requires a separate authority event.
   fast-path-workflow: compatibility_only
+
+  # RC4 selective contraction: preserve catalog identity, remove unsupported
+  # workflows from the current selectable surface.
+  artifact-reconciliation: compatibility_only
+  autonomous-sprint-preflight: compatibility_only
+  product-strategy-sprint: compatibility_only

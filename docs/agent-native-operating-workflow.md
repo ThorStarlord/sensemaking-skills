@@ -58,11 +58,7 @@ It models three synchronized views, because modeling only one hides the architec
 ## 1. The operating flow
 
 The Level-2 semantic control loop belongs to the **active coding agent** (ADR 0013).
-The runtime/scripts are deterministic support machinery. Registered workflows
-(`fast-path-workflow`, `artifact-reconciliation`,
-`docs-contract-reconciliation`, ...) are potentially **subgraphs inside this
-loop**, not the whole loop and not the Level-3 Strategic Repository Evolution
-loop. The per-workflow disposition of all 23 registered workflows in campaign
+The runtime/scripts are deterministic support machinery. Only **liveness-active** registered workflows may be current subgraphs inside this loop; compatibility-only entries (including `fast-path-workflow` and `artifact-reconciliation`) are catalog/provenance identities, not current execution paths. `docs-contract-reconciliation` remains one evidenced bounded subgraph. The workflow catalog is not the whole loop and not the Level-3 Strategic Repository Evolution loop. The per-workflow disposition of all 23 registered workflows in campaign
 vocabulary, with the execution evidence behind each call, is recorded in
 [`workflow-system-disposition.md`](workflow-system-disposition.md)
 (non-authoritative; ADR 0027 and the liveness overlay remain the liveness
@@ -306,9 +302,11 @@ Mechanics (REAL, dogfooded): `output-reconciler` reads the `work_claim` +
 `repository_sensemaking_brief` (+ optional `prior_evidence`), re-derives each
 claim from durable artifacts, classifies each `verified | disputed | omitted`,
 disposes each disputed/omitted claim `fix | defer (with reason) | file`, and
-emits `reconciliation_report`. Registered subgraph:
-`artifact-reconciliation` workflow (`workflow-registry.yaml`). This is the
-operational form of "read the artifact, not the prose" (evidence 0020).
+emits `reconciliation_report`. This direct Skill responsibility is the current
+operational form of "read the artifact, not the prose" (evidence 0020). The
+historical `artifact-reconciliation` four-step workflow is retained in the
+catalog as `compatibility_only`; its unevidenced issue/handoff tail is not a
+current execution path.
 
 ### REPAIR VERIFICATION
 
@@ -554,7 +552,7 @@ Level-3 result != authorization to rewrite Level-4 product thesis
 | Next responsibility selection | agent judgment + skill catalog | CONVENTION / unratified automation (ADR 0018 SUPERSEDED); exercised by a fresh context in campaign R1 (report Q3 alternatives table, Q5) | do not restore automatic routing by accident |
 | Specialized analysis | individual Skills | REAL per Skill | Skill existence != product need |
 | Artifact validation | validators + `artifact-contracts.yaml` | REAL | schema != truth |
-| Output reconciliation | `output-reconciler` + `artifact-reconciliation` workflow | REAL + dogfooded (evidence 0018, 0020) | not needed after every trivial action |
+| Output reconciliation | direct `output-reconciler` responsibility; historical `artifact-reconciliation` catalog entry is compatibility-only | REAL + dogfooded (evidence 0018, 0020) | not needed after every trivial action |
 | Repair verification | `repair-verifier` + `docs-contract-reconciliation` step 3 | REAL + dogfooded (evidence 0019); `unevaluable` category UNRATIFIED | generic green != closure |
 | Promotion / durability | `promotion-criteria.md` + evidence 0019 doctrine | CONVENTION / partially formalized | promotion != canonicalization |
 | Authority handling | Skill rules + ADRs (0016 accepted; 0019/0022 PROPOSED; 0023 accepted) + agent discipline | DISTRIBUTED | findings do not grant mutation authority |
@@ -583,8 +581,7 @@ architecture, not a new autonomous runtime capability.
   teaches the entry pattern; this document describes, it does not execute.
 - **No new ADR** -- ADR 0013 and ADR 0014 already ratify the architecture
   and product boundary; this document consolidates, it does not decide.
-- **Registered workflows stay subgraphs** (`artifact-reconciliation`,
-  `docs-contract-reconciliation`) -- the loop is not one giant choreography.
+- **Only live registered workflows may be subgraphs** -- `docs-contract-reconciliation` remains an evidenced bounded subgraph; `artifact-reconciliation` is compatibility-only historical identity. The loop is not one giant choreography.
 - **No continuation schema, validator, or hook** -- three record-mediated
   handoffs (campaign R0 -> R1, R1 -> R2, R2 -> close-out audit; two of them
   into fresh contexts) produced zero shape errors and one fact error, which

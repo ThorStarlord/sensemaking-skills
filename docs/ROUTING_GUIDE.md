@@ -1,5 +1,18 @@
 # Workflow Routing Guide
 
+> **HISTORICAL RUNNER/ROUTING GUIDE — NOT CURRENT OPERATING AUTHORITY**
+>
+> This document describes the retired classifier/automatic-routing era. Current
+> Sensemaking uses agent-owned responsibility selection; workflow registry
+> liveness determines whether a catalog ID is selectable, and no guide text
+> grants execution authority. Start from `README.md`,
+> `skills/using-sensemaking/SKILL.md`, and
+> `skills/strategic-sensemaking-loop/SKILL.md` for current behavior.
+>
+> Examples below are preserved as historical provenance and may name
+> `compatibility_only` workflows or retired execution modes.
+
+
 ## Automatic Project Classification & Workflow Selection
 
 The router eliminates the need to manually select workflows. It automatically classifies your project type and recommends the optimal workflow. The canonical implementation lives at `skills/project-classifier/router.py`.

@@ -14,3 +14,5 @@ overrides:
   ui-diagnostic-workflow: compatibility_only
   ui-implementation-workflow: compatibility_only
   fast-path-workflow: compatibility_only
+  autonomous-sprint-preflight: compatibility_only
+  product-strategy-sprint: compatibility_only
