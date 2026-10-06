@@ -12,6 +12,7 @@ from _validator_utils import (
     format_error,
     extract_sections,
     load_weakness_types,
+    load_workflow_catalog,
     load_workflow_registry,
     load_canonical_vocabulary,
 )
@@ -723,7 +724,11 @@ def validate_brief(
                     "escalation_recommended: true (truthful no-match "
                     "requires escalation, ADR 0014).",
                 ))
-            registry = load_workflow_registry(repo_root)
+            # Identity validation must use the complete catalog. A
+            # compatibility-only workflow is a known historical identifier,
+            # not a hallucination; current planning/execution performs the
+            # separate liveness check.
+            registry = load_workflow_catalog(repo_root)
             if registry is not None:
                 valid_ids = {w["id"] for w in registry.get("workflows", [])}
                 if workflow_id is not None and workflow_id not in valid_ids:
