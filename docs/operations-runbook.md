@@ -94,14 +94,13 @@ python -m pip install -e . pytest pytest-subtests
 sensemaking-skills --version
 ```
 
-Current repository source version: `1.0.0rc4.dev0`; active release target: `1.0.0rc4` (`development`). Qualified `1.0.0rc2` remains frozen at `c9b86138d3919c4fce87040f14161364a0c1c3a0`; no earlier qualification transfers to current development bytes.
+Current freeze-proposal source version: `1.0.0rc4`; active release target: `1.0.0rc4` (`candidate`). Qualified `1.0.0rc2` remains frozen at `c9b86138d3919c4fce87040f14161364a0c1c3a0`; no earlier qualification transfers to current development bytes.
 
 Current integrated RC4-development source is `main@95323faa8a26d06145bc260153048dcc8fb2af23`,
 tree `d0bf7bf1920a402fdbf9e9240fcba8ca0986d17b`. PR #518 head
 `1660d9b7a992d176194909b0e795bf33654bb428` has the same tree and passed all
 three hosted qualification lanes. Treat that as source-byte qualification
-evidence only; no hosted run is currently attached to the merge commit, and RC4
-candidate freeze remains a separate protected transition.
+evidence only; no hosted run is currently attached to the merge commit, and the RC4 freeze proposal remains separately governed. Exact-head qualification of this branch does not authorize integration or publication.
 
 
 For retained lab compatibility checks only:
