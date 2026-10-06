@@ -9,12 +9,12 @@ This skill produces a **workflow orchestration plan** artifact. It does **not** 
 
 If the active agent selects a registered workflow for execution, `workflow-runtime.py` (the Python execution engine) is bounded orchestration/compatibility machinery: it reads the plan's `chosen_workflow_id` to sequence the selected workflow's steps. Workflow selection remains the agent's (or user's) decision; a plan recommendation never by itself authorizes execution.
 
-ADR 0027 adds a second necessary distinction: **registered is not the same as currently selectable**. `workflow-registry.yaml` is the durable catalog; `references/workflow-liveness.yaml` declares which catalog entries are `active` versus `compatibility_only`. Compatibility-only IDs may be discussed as history/provenance but MUST NOT be recommended, selected, planned, or executed as current capabilities.
+ADR 0027 adds a second necessary distinction: **registered is not the same as currently selectable**. `workflow-registry.yaml` is the durable catalog; `references/workflow-liveness.yaml` declares which catalog entries are `active` versus `compatibility_only`. Compatibility-only IDs may be discussed as history/provenance but MUST NOT be recommended, selected, planned, or executed as current capabilities. In the RC4 simplification line, `fast-path-workflow` is compatibility-only because its historical auto-chaining claim does not match current runtime behavior.
 
 ## Workflow
 
 1. **Consume Brief**: Review the diagnostic brief from `repo-sensemaker`.
-2. **Read Current Liveness**: Read `references/workflow-liveness.yaml` and resolve the effective liveness of any candidate workflow. Unlisted workflows default to `compatibility_only`; current planning requires an explicit `active` declaration.
+2. **Read Current Liveness**: Read `references/workflow-liveness.yaml` and resolve the effective liveness of any candidate workflow. Unlisted workflows default to `active`; `compatibility_only` is never eligible for a current plan.
 3. **Recommend Workflow**: Map the warranted path to an **active** workflow in `workflow-registry.yaml`, as a recommendation. Catalog membership alone is insufficient.
 4. **Plan**: Produce a Workflow Orchestration Plan with the chosen active workflow, ordered steps, and approval gates.
 5. **Mode Selection**: Determine the execution mode (default: `plan_only`).
@@ -97,7 +97,7 @@ The plan must include a `chosen_workflow_id` field in its machine-readable secti
 Workflow selection guidance (planning aid only; not automatic routing):
 - Read `primary_fog_type` from the repository sensemaking brief (always canonical form per canonical-vocabulary.yaml).
 - Read `workflow-registry.yaml` for catalog identity and `workflow-liveness.yaml` for current eligibility.
-- `docs-contract-reconciliation` is currently the only repository-default active bounded workflow. Other catalog workflows require explicit activation before current selection.
+- `docs-implementation-workflow` is currently active and may be considered for `docs_fog` when its responsibility actually fits.
 - Historical mappings to `product-implementation-workflow`, `ui-implementation-workflow`, `implementation-workflow`, and `architecture-implementation-workflow` are **not current defaults** while those workflows are `compatibility_only`.
 - Do not silently invent replacement product/UI/architecture routes. Select another active workflow only when current evidence and authority independently warrant it.
 - An explicit `recommended_workflow_id` from the brief may be considered only if it is currently active.
