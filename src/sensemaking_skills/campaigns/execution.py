@@ -446,6 +446,19 @@ class CampaignExecutionService:
         if not isinstance(source_after, str) or not source_after.strip():
             raise ValueError("source_after must be non-empty text")
 
+        handoff = next(
+            item for item in current.handoffs
+            if str(item["handoff_id"]) == handoff_id
+        )
+        targets = list(handoff.get("targets") or [])
+        if len(targets) == 1:
+            expected_head = str(targets[0].get("head_sha") or "").strip()
+            source_before_matches_bound_target_head: bool | None = (
+                bool(expected_head) and source_before.strip() == expected_head
+            )
+        else:
+            source_before_matches_bound_target_head = None
+
         previous = (
             str(current.results[-1]["record_digest"]) if current.results else None
         )
@@ -473,6 +486,21 @@ class CampaignExecutionService:
                 "claims_not_supported",
             ),
             "authority_exceeded": authority_exceeded,
+            "source_before_matches_bound_target_head": source_before_matches_bound_target_head,
+            "assertion_provenance": {
+                "source_before": (
+                    "mechanically_compared_to_single_handoff_target_head"
+                    if source_before_matches_bound_target_head is not None
+                    else "worker_reported_unverified_multi_target"
+                ),
+                "source_after": "worker_reported_unverified",
+                "changed_paths": "worker_reported_unverified",
+                "validations": "worker_reported_unverified",
+                "claims": "worker_reported_unverified",
+                "authority_exceeded": "worker_reported_unverified",
+                "scope_enforced_by_interface": False,
+                "forbidden_actions_enforced_by_interface": False,
+            },
             "previous_digest": previous,
             "worker_completion_establishes_global_closure": False,
             "campaign_evidence_admitted": False,
