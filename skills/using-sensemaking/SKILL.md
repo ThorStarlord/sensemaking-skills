@@ -49,6 +49,12 @@ Keep these invariants:
 8. desired delegation does not expand authority;
 9. durable Campaign state is optional and justified by continuation complexity.
 
+Default to **no Campaign** when one context can safely finish the bounded
+responsibility. Escalate to Campaign durability only when state must reliably
+survive contexts, actors, machines, long-running execution, or a comparable
+continuation boundary.
+
+
 The detailed named policies remain **advanced reference vocabulary**, not a
 mandatory default mental model. When a decision actually needs finer-grained
 reasoning, the existing references remain available: **Inquiry Policy v0**,
