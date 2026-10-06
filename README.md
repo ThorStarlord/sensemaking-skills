@@ -22,7 +22,7 @@ catalog.
 | --- | --- |
 | Human installation / first use | [`GETTING_STARTED.md`](GETTING_STARTED.md) |
 | Coding-agent repository work | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) |
-| One-prompt strategic start/resume or delegated terminal mission | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) |
+| One-prompt strategic start/resume or full-autonomy terminal mission | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) |
 | Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) |
 | CLI lookup | [`docs/cli-reference.md`](docs/cli-reference.md) |
 | Maintenance / qualification | [`docs/operations-runbook.md`](docs/operations-runbook.md) |
