@@ -746,11 +746,11 @@ subtractive disposition rather than another control subsystem.
 
 Implemented in the RC4 development line:
 
-1. **Legacy orchestration is compatibility-first.** Registered workflows default
-   to `compatibility_only`; only the repeatedly evidenced
-   `docs-contract-reconciliation` bounded subgraph is active by default.
-   `SkillsOrchestrator.run_workflow` requires an explicit execution mode and no
-   longer turns omission into `yolo_execution`.
+1. **Contradictory auto-orchestration is demoted.** `fast-path-workflow` is
+   `compatibility_only` because its historical auto-chaining claim does not
+   match current runtime behavior. Other workflow liveness remains governed by
+   ADR 0027. `SkillsOrchestrator.run_workflow` requires an explicit execution
+   mode and no longer turns omission into `yolo_execution`.
 2. **Organization is out of the normal loop.** The read-only tracer remains
    callable for explicit topology research/compatibility, but it is removed from
    normal strategic resume/execution guidance and default navigation.
