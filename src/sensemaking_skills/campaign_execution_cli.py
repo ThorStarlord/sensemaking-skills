@@ -262,6 +262,12 @@ def register_campaign_execution_commands(
         try:
             envelope = json.loads(result_file.read_text(encoding="utf-8"))
             digest = import_result_envelope(workspace, envelope)
+            inspected = CampaignExecutionService(workspace).inspect()
+            record = next(
+                item
+                for item in inspected.results
+                if item["result_id"] == envelope["result_id"]
+            )
         except (CampaignWorkspaceError, ContractError) as exc:
             emit_error(exc, output_json=output_json)
             return
@@ -271,6 +277,7 @@ def register_campaign_execution_commands(
             "ok": True,
             "code": "CAMPAIGN_EXECUTION_RESULT_IMPORTED",
             "record_digest": digest,
+            "result": record,
             "campaign_evidence_admitted": False,
             "worker_completion_establishes_global_closure": False,
             "parent_reassessment_required": True,
