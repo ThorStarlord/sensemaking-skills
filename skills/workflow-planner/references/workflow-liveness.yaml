@@ -3,15 +3,21 @@
 # Registry membership preserves stable IDs and historical/compatibility provenance.
 # Liveness controls whether a workflow is eligible for CURRENT recommendation,
 # selection, planning, or execution. See ADR 0027 and the disposition audit.
-#
-# Simplification posture (2026-10-05): compatibility is the default. A workflow
-# becomes active only through explicit evidence-backed promotion.
 schema_version: 1
-default_liveness: compatibility_only
+default_liveness: active
 allowed_liveness: [active, compatibility_only]
 
 overrides:
-  # The disposition audit found recurring successful evidence for this bounded
-  # sequence. All other registered workflows remain addressable historical /
-  # compatibility definitions but are excluded from current selection.
-  docs-contract-reconciliation: active
+  # Original ADR-0027 compatibility set.
+  product-to-issues: compatibility_only
+  product-autonomous-sprint: compatibility_only
+  experimental-autonomous-sprint: compatibility_only
+  implementation-workflow: compatibility_only
+  product-implementation-workflow: compatibility_only
+  ui-diagnostic-workflow: compatibility_only
+  ui-implementation-workflow: compatibility_only
+  architecture-implementation-workflow: compatibility_only
+
+  # RC4 simplification: historical auto-chaining claims do not match the
+  # current runtime, which deliberately requires a separate authority event.
+  fast-path-workflow: compatibility_only
