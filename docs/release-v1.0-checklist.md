@@ -11,6 +11,20 @@ new candidate claim. External harness, portability, and semantic-usefulness evid
 intentionally excluded from the support promise and remains deferred research
 evidence.
 
+### Current RC4 development integration evidence
+
+This is **development readiness evidence, not candidate freeze/qualification**:
+
+- integrated `main`: `95323faa8a26d06145bc260153048dcc8fb2af23`;
+- integrated Git tree: `d0bf7bf1920a402fdbf9e9240fcba8ca0986d17b`;
+- qualified PR #518 head: `1660d9b7a992d176194909b0e795bf33654bb428`;
+- qualified PR #518 tree: `d0bf7bf1920a402fdbf9e9240fcba8ca0986d17b`;
+- Product Validation #1380, Lab Validation #164, and Release Candidate Distribution #509 passed on that PR head.
+
+The identical tree establishes byte equivalence between the qualified PR source
+and current merged source. It does **not** mean a hosted run executed on the
+merge commit, and it does not freeze or qualify `1.0.0rc4` as a candidate.
+
 ## Architecture and contracts
 
 - [x] Stable public CLI and Python modules are documented.
