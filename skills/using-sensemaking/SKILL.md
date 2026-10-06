@@ -21,77 +21,75 @@ Skill does not replace or duplicate its semantic judgment.
 
 Do not turn this bootstrap into a fixed choreography. Registered workflows and scripts can coordinate already-selected work, but they do not replace your responsibility-selection judgment.
 
-## What this Skill teaches
+## Default doctrine
 
-Use this bootstrap to:
+Normal use should fit in one compact loop:
 
-1. decide whether repository diagnosis or **Strategic Repository Sensemaking v1** would materially change how you should interpret the request;
-2. when the repository's future direction itself is open, use `strategic-repository-analysis` to model current capability state, coherent construction paths, qualitative tradeoffs, and the decision-changing strategic uncertainty before selecting a bounded responsibility;
-3. when several policy questions may be relevant, use **Adaptive Policy Coordinator v0** to expose only the smallest decision-relevant policy composition; keep it implicit for obvious bounded work;
-4. identify the consequential decision and, when useful, name the **warrant target** currently being justified;
-5. identify the nearest unresolved premise that could change the correct next action;
-6. apply **Inquiry Policy v0** only when additional evidence could materially change the decision and is worth obtaining; when experimentation is materially considered, apply **Experiment Economy & Proportional Rigor v1** so `INVESTIGATE != EXPERIMENT`, diagnostic Skills do not manufacture experimentation responsibility, cheap reversible construction can compete as an evidence source, retained useful value counts in that comparison, and experimental controls scale to the claim;
-7. apply **Metareasoning Policy v0** when control-mode selection is material: act, inquire, challenge, explore, verify, escalate, or stop;
-8. when search is materially iterative, apply **Exploration Policy v0** to allocate effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search;
-9. apply **Warrant / Choice Policy v0** to the specific contemplated target when target justification/choice is material;
-10. select a **responsibility before choosing a Skill, workflow, tool, or patch**; when the responsibility is inherited from upstream, verify any decision-critical prerequisite that could make it premature before operationalizing it;
-11. adapt visible scaffolding, investigation rigor, verification, and durable Campaign use to the situation without creating scores or routing rules;
-12. use adversarial challenge or exploration when consequence, irreversibility, conflict, novelty, repeated failure, or option poverty makes premature commitment risky;
-13. perform or delegate bounded work through the appropriate capability;
-14. treat delegated/orchestrated results as evidence that returns to the active semantic controller;
-15. apply **Learning / Reconciliation Policy v0** after consequential evidence returns to update explicit claims, uncertainty, responsibility, continuation, or strategic state when warranted;
-16. distinguish mechanical validation from analytical correctness and closure;
-17. reconcile consequential work claims with durable evidence;
-18. perform finding-specific repair verification when a prior finding was supposedly fixed;
-19. respect authority boundaries between knowing, deciding, acting, publishing, and merging;
-20. decide whether to continue, stop, escalate, or ask the owner.
+```text
+What decision matters?
+-> What evidence could change it?
+-> Is more evidence worth its cost?
+-> What bounded responsibility is warranted?
+-> Am I authorized?
+-> Act through the lightest useful capability.
+-> Verify the mechanically decidable facts.
+-> Reassess the claim/responsibility from returned evidence.
+-> Stop or continue.
+```
 
-This Skill does **not** make every task require `repo-sensemaker` or a Campaign, does not authorize automatic downstream routing, and does not grant mutation/publication authority merely because a finding or recommendation exists.
+Keep these invariants:
+
+1. select responsibility before Skill, workflow, tool, or patch;
+2. use repository-wide diagnosis only when local evidence is insufficient;
+3. use strategic analysis only when the repository's future is materially open;
+4. inquiry is optional: obtain only decision-changing evidence worth its cost;
+5. cheap reversible construction may be a better evidence source than a separate experiment;
+6. validation proves only what it mechanically checks;
+7. delegated/orchestrated results return as evidence, not automatic truth or closure;
+8. desired delegation does not expand authority;
+9. durable Campaign state is optional and justified by continuation complexity.
+
+The detailed named policies remain **advanced reference vocabulary**, not a
+mandatory default mental model. When a decision actually needs finer-grained
+reasoning, the existing references remain available: **Inquiry Policy v0**,
+**Metareasoning Policy v0**, **Exploration Policy v0**, **Warrant / Choice
+Policy v0**, **Learning / Reconciliation Policy v0**, and **Adaptive Policy
+Coordinator v0**. Do not enumerate or activate them merely because they exist.
+See `references/inquiry-policy-v0.md`,
+`references/metareasoning-policy-v0.md`,
+`references/exploration-policy-v0.md`,
+`references/warrant-choice-policy-v0.md`,
+`references/learning-reconciliation-policy-v0.md`, and
+`references/adaptive-policy-coordinator-v0.md` only when the current decision
+benefits from that extra distinction.
+
+This Skill does **not** make every task require `repo-sensemaker`, a Campaign,
+or an explicit policy decomposition. It does not authorize automatic downstream
+routing and does not grant mutation/publication authority merely because a
+finding or recommendation exists.
 
 ## The recursive operating loop
 
-For consequential work, reason in this order:
+For consequential work, use the compact doctrine first:
 
 ```text
 GOAL / AUTHORIZED SCOPE
-  -> What unresolved uncertainty could change the correct next action?
-  -> Is inquiry needed, or is current evidence already sufficient?
-  -> If inquiry is needed, what is the smallest sufficient evidence and source?
-  -> If an experiment is being considered, is it actually warranted and what is the minimum sufficient rigor?
-  -> Could cheap reversible action/build produce the evidence at lower total cost?
-  -> Among sufficiently warranted actions, which creates the strongest useful
-     retained value + sufficient evidence at acceptable downside?
-  -> What control move should consume the next unit of effort?
-  -> What responsibility is warranted now?
-  -> Perform bounded work through a Skill/tool/workflow if useful
-  -> What evidence do we now have?
-  -> What does that evidence warrant next?
-  -> Are we authorized to continue, act, publish, merge, or should we stop?
+-> consequential decision
+-> decision-changing evidence gap, if any
+-> smallest sufficient inquiry or reversible action
+-> warranted bounded responsibility
+-> authority check
+-> execute
+-> verify
+-> reconcile returned evidence
+-> continue / stop / escalate
 ```
 
-A useful compact form is:
-
-```text
-Orient
--> name the consequential decision / contemplated warrant target
--> locate the nearest decision-changing warrant gap
--> apply Inquiry Policy: no inquiry, or smallest sufficient evidence
--> when experiment is materially considered, apply Experiment Economy:
-   experiment warrant + cheapest sufficient evidence + minimum sufficient rigor
--> let cheap reversible ACT compete with separate inquiry when it can produce the evidence
--> apply Value-Producing Action Preference across sufficiently warranted actions:
-   direct value + information + reversibility + total cost/downside + omission cost
--> apply Metareasoning Policy when control-mode choice is material
--> if search is materially iterative, apply Exploration Policy
--> apply Warrant / Choice Policy to the specific target
--> select responsibility
--> perform or delegate bounded work
--> ground returned evidence
--> apply Learning / Reconciliation Policy when the result is consequential
--> validate mechanics
--> update warrant
--> continue / stop / escalate / verify / ask owner
-```
+If experimentation is materially considered, apply Experiment Economy &
+Proportional Rigor v1 so `INVESTIGATE != EXPERIMENT`, retained useful value
+counts, and controls scale to the claim. If search or control-mode selection is
+genuinely difficult, the advanced policy references above can refine the compact
+loop without turning it into a phase machine.
 
 ### Value-Producing Action Preference
 
@@ -134,11 +132,13 @@ This is reasoning guidance, not a mandatory runtime phase machine.
 
 New evidence may change the expected solution. That is a feature, not a failure.
 
-## Adaptive Policy Coordinator: activate only decision-relevant policy questions
+## Advanced reference: policy decomposition
 
-When multiple policy layers seem potentially relevant, ask which ones can actually
-change the current decision. Use the smallest sufficient composition and collapse back
-to direct work as soon as the decision stabilizes.
+**Adaptive Policy Coordinator v0** is retained as an advanced reference for the
+rare case where several policy questions are simultaneously decision-relevant.
+It is not a normal-use stage. Ask which distinctions can actually change the
+current decision, use the smallest sufficient composition, and collapse back to
+direct work as soon as the decision stabilizes.
 
 ```text
 policy available
