@@ -23,7 +23,7 @@ catalog.
 | Human installation / first use | [`GETTING_STARTED.md`](GETTING_STARTED.md) |
 | Coding-agent repository work | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) |
 | One-prompt strategic start/resume or delegated terminal mission | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) |
-| Repository future / construction-path analysis | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) |
+| Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) |
 | CLI lookup | [`docs/cli-reference.md`](docs/cli-reference.md) |
 | Maintenance / qualification | [`docs/operations-runbook.md`](docs/operations-runbook.md) |
 | Advanced/current/historical references | [`docs/README.md`](docs/README.md) |
@@ -42,6 +42,8 @@ Specialized Skills remain directly invokable when their bounded responsibility
 is explicitly the task. The full Skill catalogue, system atlas, policy
 references, journey, Organization, semantic-architecture, and historical
 surfaces are **advanced/reference material**, not prerequisites for normal use.
+
+For the retained detailed control-architecture crosswalk, see `docs/adaptive-semantic-control-architecture-v0.md`; it is an advanced reference, not a required navigation step.
 
 ### Choose the lightest useful process
 
