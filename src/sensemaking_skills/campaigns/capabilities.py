@@ -140,7 +140,7 @@ def _workflow_facts(
 
     liveness_data = _load_yaml_mapping(liveness_path, label="workflow liveness")
     default_liveness = _nonempty_text(
-        liveness_data.get("default_liveness", "active"),
+        liveness_data.get("default_liveness", "compatibility_only"),
         field="workflow_liveness.default_liveness",
     )
     if default_liveness not in _ALLOWED_WORKFLOW_LIVENESS:
