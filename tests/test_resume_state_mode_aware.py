@@ -295,8 +295,7 @@ def test_step_loop_actually_selects_step_2_after_resume(wfrt, tmp_log_dir):
          patch.object(wfrt.OrchestrationRunner, "generate_implementation_report"), \
          patch.object(wfrt.OrchestrationRunner, "generate_workflow_summary_json", return_value=""), \
          patch.object(wfrt.OrchestrationRunner, "invoke_presentation_skill"), \
-         patch.object(wfrt.OrchestrationRunner, "update_mode_coverage"), \
-         patch.object(wfrt.OrchestrationRunner, "_should_auto_invoke_next", return_value=(False, None)):
+         patch.object(wfrt.OrchestrationRunner, "update_mode_coverage"):
 
         runner = wfrt.OrchestrationRunner(
             workflow_id=workflow_id,
@@ -355,8 +354,7 @@ def test_no_resume_flag_no_steps_skipped(wfrt, tmp_log_dir):
          patch.object(wfrt.OrchestrationRunner, "generate_implementation_report"), \
          patch.object(wfrt.OrchestrationRunner, "generate_workflow_summary_json", return_value=""), \
          patch.object(wfrt.OrchestrationRunner, "invoke_presentation_skill"), \
-         patch.object(wfrt.OrchestrationRunner, "update_mode_coverage"), \
-         patch.object(wfrt.OrchestrationRunner, "_should_auto_invoke_next", return_value=(False, None)):
+         patch.object(wfrt.OrchestrationRunner, "update_mode_coverage"):
 
         runner = wfrt.OrchestrationRunner(
             workflow_id=workflow_id,

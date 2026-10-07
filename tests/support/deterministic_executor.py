@@ -181,7 +181,7 @@ evidence_excerpts:
 Logic trace: the workflow registry and validation framework are in place but
 no skill exists to validate architectural decisions against them, so the
 weakest boundary is the missing architectural-review routing step; this
-points to architecture_fog and the architectural-review-planning-workflow.
+points to architecture_fog and the direct architectural-review responsibility.
 
 ## 13. Machine-readable handoff
 
@@ -191,7 +191,7 @@ primary_fog_type: architecture_fog
 evidence:
   - "skills/workflow-planner/references/workflow-registry.yaml (lines L8): workflow catalog root"
   - "scripts/validate-plan.py: alignment enforcement works"
-recommended_workflow_id: architectural-review-planning-workflow
+recommended_workflow_id: full-local-sensemaking
 weakness_type: Implicit Dependencies
 created_at: "2026-07-19T12:00:00Z"
 immutable: false

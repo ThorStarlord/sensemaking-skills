@@ -173,7 +173,7 @@ Registry line ranges refer to `skills/workflow-planner/references/workflow-regis
 | `autonomous-sprint-preflight` (WR:238-264) | compatibility_only (RC4 selective contraction) | 1 repo-sensemaker (SR:17); 2 handoff (SR:47); implemented, local_execution | plan_only only: MC:83, MC:152, MC:175. No ledger, evidence record, or artifact. Its purpose (WR:240-241) is to gate "Autonomous Sprint", whose two registered forms are `compatibility_only` (ADR 0027 lines 55-57) | HISTORICAL | No real execution record or current code consumer was found, and its purpose gates Autonomous Sprint workflows already retained only for compatibility. Catalog identity is preserved; current preflight remains agent-owned. |
 | `docs-architecture` (WR:265-290) | active | 1 docs-aligner (SR:63); 2 handoff (SR:47); implemented, local_execution | Claims: MC:84 (plan_only), MC:88 (guided_execution), MC:153, MC:176 -- no pointer. Step-1 Skill outputs exist agent-natively but outside this workflow: `artifacts/domain_alignment_report.md` (docs-aligner autonomous run 2026-09-01, `gate: none`, per `artifacts/work_claim.md:4-5`; file first added be8c407 2026-05-16), `artifacts/domain_alignment_report_run2.md`, `artifacts/docs_aligner_dogfood_evaluation.md` -- produced in the reconciliation lane, no `session_summary`. `EV:0013-.../repository_sensemaking_brief.md` recommends it (mention) | INSUFFICIENT_EVIDENCE | active, implemented, no record of the registered two-step sequence; docs-aligner is evidenced as a Skill (rule 5) |
 | `product-to-issues` (WR:291-324) | compatibility_only (overlay :14; ADR 0027 line 55) | 1 to-prd (SR:69); 2 to-issues (SR:74); 3 triage (**proposed**, SR:79-85, no implementation) | Claim: MC:89 (plan_only). No ledger or record | HISTORICAL | per ADR 0027; not re-decided |
-| `product-discovery-sprint` (WR:325-367) | active (no override) | 1 persona (SR:118-124); 2 discovery (SR:125-131); 3 interview-synthesis (SR:132-138); 4 opportunity-tree (SR:146-152); 5 hypothesis (SR:153-159); **all `deprecated`, none under `skills/`; all `external_routing`** | Claims only: MC:149, MC:164 (guided_execution), MC:186-188, MC:211 (all five steps validated via dispatcher) -- 2026-05-era, no run record in the repository. `workflow_executability_consumer_analysis.md:67` scopes the two external-routing sprints out of ADR 0027's set as "separate compatibility/product questions" | RETIRE_CANDIDATE | active but every step routes to a deprecated, unimplemented Skill (record G11 / U9). Implied owner decision: section 6, item 1 |
+| `product-discovery-sprint` (WR:325-367) | compatibility_only (post-RC4 direct-responsibility migration) | 1 persona (SR:118-124); 2 discovery (SR:125-131); 3 interview-synthesis (SR:132-138); 4 opportunity-tree (SR:146-152); 5 hypothesis (SR:153-159); **all `deprecated`, none under `skills/`; all `external_routing`** | Claims only: MC:149, MC:164 (guided_execution), MC:186-188, MC:211 (all five steps validated via dispatcher) -- 2026-05-era, no run record in the repository. `workflow_executability_consumer_analysis.md:67` scopes the two external-routing sprints out of ADR 0027's set as "separate compatibility/product questions" | HISTORICAL | Current producer/consumer contracts no longer use this workflow as the product-fog default. Product fog may use truthful no-match and the active agent selects the warranted responsibility directly; catalog identity remains for provenance. |
 | `product-strategy-sprint` (WR:368-410) | compatibility_only (RC4 selective contraction) | 1 lean-canvas (SR:208-214); 2 north-star (SR:222-228); 3 okr (SR:201-207); 4 roadmap (SR:194-200); 5 stakeholder-update (SR:271-277); **all `deprecated`, none under `skills/`; all `external_routing`** | Claims only: MC:85, MC:154 (plan_only). No run record | HISTORICAL | RC4 applies the retirement candidate as a liveness demotion: every step routes externally to deprecated, unimplemented Skills and no real workflow execution record exists. Identity remains for provenance. |
 | `product-autonomous-sprint` (WR:411-476) | compatibility_only (overlay :15) | 1-7 persona, discovery, opportunity-tree, hypothesis, prd (SR:167-173), user-stories (SR:174-180), acceptance-criteria (SR:181-187) -- all deprecated; 8 handoff (SR:47) | Claims: MC:86, MC:155, MC:177 (plan_only) | HISTORICAL | per ADR 0027 |
 | `full-local-sensemaking` (WR:477-554) | active | 1 problem-framer; 2 unknowns-mapper; `3-conditional` -> `if_true` = discovery (**deprecated**, SR:125-131) as `external_routing` (WR:519-534); 4 repo-sensemaker; 5 workflow-planner; 6 handoff; the five named local Skills implemented; auto-invoke WR:502-505 compatibility metadata | plan_only ledgers: `artifacts/02-orchestration-run/run-ledger.jsonl:1`, `03-.../run-ledger.jsonl:1`, `04-.../run-ledger.jsonl:1` (single `run_started` line each, 2026-05-23/25) with `plan_full-local-sensemaking.md` plans. Claims: MC:90, MC:94 (workflow-runtime plan_only, yolo), MC:128-131 (orchestration-runner yolo, guided, autonomous), MC:148, 163, 185, 201, 210, 217, 222, 241 (validator coverage "steps 1-4") -- no run record. EV:0021 EVIDENCE.md:206 (CONTEXT.md keeps a legacy CLI-path caveat on its DEFAULT entry); retirement plan lines 106-119 (default mode now plan_only) | INSUFFICIENT_EVIDENCE | active, named local Skills implemented, no real execution record (plan_only only). Defect observed, not a REPAIR because unevidenced: the conditional branch targets a deprecated Skill (section 6, item 3) |
@@ -187,7 +187,7 @@ Registry line ranges refer to `skills/workflow-planner/references/workflow-regis
 | `docs-implementation-workflow` (WR:894-929) | active | 1 docs-aligner (SR:63); 2 to-prd (SR:69); 3 handoff (SR:47); all implemented, local_execution | None: no ledger, no mode-coverage entry, no evidence record, no `prd` artifact under `artifacts/`. All `workflow_id` hits are recommendation mentions (`artifacts/workflow_orchestration_plan_scenario4.md` -- test scenario; post-hardening packets; one e3 candidate). EV:0021 EVIDENCE.md:173-175 (presence check). `workflow_executability_consumer_analysis.md:116` records that `workflow-planner` SKILL.md offers it for docs fog | INSUFFICIENT_EVIDENCE | active, implemented, no real execution record; it is the only implementation-workflow left `active` after ADR 0027 |
 | `architecture-implementation-workflow` (WR:930-986) | compatibility_only (overlay :21) | 1 docs-aligner; 2 to-prd; 3 to-issues; 4 triage (proposed); 5 tdd (deprecated); 6 handoff | 38 `workflow_id` hits, all recommendation mentions (`artifacts/repository_sensemaking_brief_phase4_1*.md`, `artifacts/scenario5_*`, `artifacts/test_brief_failure_attempt_*`, `artifacts/workflow_orchestration_plan_phase4_1*.md`, post-hardening packets, e3 candidates, product-interaction investigations). Absent from the packaged catalog and packaged overlay (section 8) | HISTORICAL | per ADR 0027 |
 | `skill-evaluation-workflow` (WR:987-1023) | active | 1 usage-researcher (SR:55); 2 skill-maintainer (SR:51); 3 handoff (SR:47); implemented, local_execution | None: no ledger, no mode-coverage workflow entry (MC:254-263 is validator coverage of `usage_research_report` on standalone scenarios), no evidence record, no tracked artifact. One `workflow_id` hit in `experiments/evaluation-design-e3-autonomous-task-v2/construction/tranche1/candidates/T1H-K9W.md` (construction candidate) | INSUFFICIENT_EVIDENCE | active, implemented, no real execution record |
-| `architectural-review-planning-workflow` (WR:1024-1061) | active | 1 repo-sensemaker (SR:17); 2 architectural-review (SR:27); implemented, local_execution; `auto_invoke_next_workflow: false` | All records are runner-era (`--executor claude-code`, removed 2026-08-13; rule 6): EV:0005 `run-ledger.jsonl:1-6`, `run_log.md:8, 21, 40`, `README.md:46-55, 105` (guided, 2026-07-25; step 1 failed validation; 0/2); EV:0006 `RESULT.md:3-9` (LIVE STEP 1 PROVEN: brief validated), `:22-24, 48-55` (step 2 auto-cascaded and failed on missing `proposed_direction`; `final-run-e787fc41/workflow_summary.json` status failed); EV:0008 `EVIDENCE.md:84-86, 114` (positive run resumed from 0006's step 1; step 2 completed and validated; ledger `status: completed`, exit 0; `positive/workflow_summary.json` "2/2 steps completed"), `:137-139, 162` (negative run fails closed as designed), `:164-173` (golden path justified for this workflow only); EV:0013 `EVIDENCE.md:3, 32, 69`, EV:0014 `EVIDENCE.md:5-13`, EV:0015 `raw/workflow_summary.json` (three controlled Stage-1 runs on auteur, step 1 only, all STAGE 1 FAIL on structural validation). MC:15-26 (`steps_completed: 1` at MC:19 vs 0/2 in the cited run log), MC:134, MC:268-270. ADR 0014 lines 57-66 (golden path proven internally for exactly this workflow), 78-87 (step 2 deferred, not ratified). No agent-native run is recorded; OM:175-181 maps architecture uncertainty to the `architectural-review` Skill | DEMOTE | KEEP's four literal conditions hold (active; both Skills implemented; real ledgers; recurred across 7 runs), but the investment rule fails: 1 of 7 runs completed both steps (and only by resuming a prior step-1 success), 5 halted at step-1 validation, every run was an internal harness or controlled-experiment proof through an executor since removed, and ADR 0014 keeps step 2 outside the ratified boundary. Evidenced role: the internal golden-path proof vehicle; current entry to the responsibility is the Skill via agent selection. Mode-coverage overstatement: section 6, item 6 |
+| `architectural-review-planning-workflow` (WR:1024-1061) | compatibility_only (post-RC4 direct-responsibility migration) | 1 repo-sensemaker (SR:17); 2 architectural-review (SR:27); implemented, local_execution; `auto_invoke_next_workflow: false` | All records are runner-era (`--executor claude-code`, removed 2026-08-13; rule 6): EV:0005 `run-ledger.jsonl:1-6`, `run_log.md:8, 21, 40`, `README.md:46-55, 105` (guided, 2026-07-25; step 1 failed validation; 0/2); EV:0006 `RESULT.md:3-9` (LIVE STEP 1 PROVEN: brief validated), `:22-24, 48-55` (step 2 auto-cascaded and failed on missing `proposed_direction`; `final-run-e787fc41/workflow_summary.json` status failed); EV:0008 `EVIDENCE.md:84-86, 114` (positive run resumed from 0006's step 1; step 2 completed and validated; ledger `status: completed`, exit 0; `positive/workflow_summary.json` "2/2 steps completed"), `:137-139, 162` (negative run fails closed as designed), `:164-173` (golden path justified for this workflow only); EV:0013 `EVIDENCE.md:3, 32, 69`, EV:0014 `EVIDENCE.md:5-13`, EV:0015 `raw/workflow_summary.json` (three controlled Stage-1 runs on auteur, step 1 only, all STAGE 1 FAIL on structural validation). MC:15-26 (`steps_completed: 1` at MC:19 vs 0/2 in the cited run log), MC:134, MC:268-270. ADR 0014 lines 57-66 (golden path proven internally for exactly this workflow), 78-87 (step 2 deferred, not ratified). No agent-native run is recorded; OM:175-181 maps architecture uncertainty to the `architectural-review` Skill | HISTORICAL | The wrapper is no longer a current selectable route. The `architectural-review` Skill is invoked directly when the active agent selects that responsibility. Historical runner-era evidence still shows why the wrapper once existed, but the investment rule failed: 1 of 7 runs completed both steps (and only by resuming a prior step-1 success), 5 halted at step-1 validation, every run was an internal harness or controlled-experiment proof through an executor since removed, and ADR 0014 keeps step 2 outside the ratified boundary. Evidenced role: the internal golden-path proof vehicle; current entry to the responsibility is the Skill via agent selection. Mode-coverage overstatement: section 6, item 6 |
 
 ---
 
@@ -197,9 +197,9 @@ Registry line ranges refer to `skills/workflow-planner/references/workflow-regis
 |---|---|---|
 | KEEP_AS_BOUNDED_SUBGRAPH | 1 | docs-contract-reconciliation |
 | REPAIR | 0 | -- |
-| DEMOTE | 1 | architectural-review-planning-workflow |
-| RETIRE_CANDIDATE | 1 | product-discovery-sprint |
-| HISTORICAL | 12 | fast-path-workflow; artifact-reconciliation; autonomous-sprint-preflight; product-to-issues; product-strategy-sprint; product-autonomous-sprint; experimental-autonomous-sprint; implementation-workflow; product-implementation-workflow; ui-diagnostic-workflow; ui-implementation-workflow; architecture-implementation-workflow |
+| DEMOTE | 0 | -- |
+| RETIRE_CANDIDATE | 0 | -- |
+| HISTORICAL | 14 | fast-path-workflow; artifact-reconciliation; autonomous-sprint-preflight; product-to-issues; product-discovery-sprint; product-strategy-sprint; product-autonomous-sprint; experimental-autonomous-sprint; implementation-workflow; product-implementation-workflow; ui-diagnostic-workflow; ui-implementation-workflow; architecture-implementation-workflow; architectural-review-planning-workflow |
 | INSUFFICIENT_EVIDENCE | 8 | full-fog-workflow; setup-sensemaking-repo; docs-architecture; full-local-sensemaking; fast-local-diagnostic; skill-maintenance-loop; docs-implementation-workflow; skill-evaluation-workflow |
 | total | 23 | |
 
@@ -243,16 +243,9 @@ is entered inside the agent-owned loop, are:
   (work claim / brief -> `output-reconciler` -> `reconciliation_report`)
   remains available without the registered four-step chain. RC4 retains the
   workflow definition only for identity/provenance.
-- **DEMOTE -- `architectural-review-planning-workflow`.** The responsibility
-  it wraps (architecture uncertainty -> `architectural-review`) is still
-  consumed by current architecture-fog recommendation contracts, so RC4 does
-  not apply its demotion yet. Migrate that recommendation contract before
-  changing liveness.
-- **RETIRE_CANDIDATE -- `product-discovery-sprint` only.** Its evidence still
-  supports retirement, but it remains the current product-fog default. A
-  future cut must migrate producers/consumers to the already-supported
-  truthful no-match state instead of silently choosing a substitute.
-- **HISTORICAL -- the twelve compatibility-only workflows.** Retained for
+- **HISTORICAL -- `architectural-review-planning-workflow`.** Its current consumer was migrated to direct `architectural-review` Skill responsibility selection. The wrapper remains catalog provenance only.
+- **HISTORICAL -- `product-discovery-sprint`.** Product fog no longer implies a default workflow. The brief contract can represent truthful no-match and the active agent selects the bounded responsibility directly.
+- **HISTORICAL -- the fourteen compatibility-only workflows.** Retained for
   identity and provenance only (ADR 0027 "Catalog identity"); consumers fail
   closed on them; not entered.
 - **INSUFFICIENT_EVIDENCE -- the eight remaining active workflows.** They stay
@@ -268,13 +261,8 @@ The original R6 audit did not apply these decisions. RC4 has now applied the
 items explicitly marked RESOLVED below; the remaining items stay evidence- or
 migration-gated.
 
-1. **External-routing sprints — PARTIALLY RESOLVED.** `product-strategy-sprint`
-   is now `compatibility_only`. `product-discovery-sprint` remains active
-   because current product-fog brief/planner contracts still name it as the
-   default. Demote it only together with a deliberate migration to the already
-   supported truthful no-match representation (`recommended_workflow_id: null`
-   + `escalation_recommended: true`), not by silently substituting another
-   workflow.
+1. **External-routing sprints — RESOLVED FOR CURRENT LIVENESS.** `product-strategy-sprint` and `product-discovery-sprint` are `compatibility_only`. The product-fog default was removed instead of silently substituting a replacement workflow. Truthful no-match plus direct active-agent responsibility selection is the current boundary.
+
 2. **The product-management ecosystem.** 28 `deprecated` entries under
    `skill-registry.yaml:115-291` (plus `tdd` and three UI Skills under
    `:86-113`) are retained so historical workflow references reconcile. The
@@ -301,11 +289,8 @@ migration-gated.
 7. **`artifact-reconciliation` — RESOLVED.** RC4 demotes the oversized registered workflow to `compatibility_only` while retaining the evidenced direct reconciliation core. Historical option was: narrow the registered sequence
    to its evidenced core, or keep steps 3-4 pending a trace that records
    them.
-8. **`architectural-review-planning-workflow` description.** Whether the
-   registry description should identify it as the internal golden-path
-   proof (ADR 0014) rather than a general selectable workflow, and whether
-   ADR 0014's deferral of step 2 should be revisited -- which ADR 0014
-   lines 78-87 say requires external proof.
+8. **`architectural-review-planning-workflow` — RESOLVED.** The workflow is compatibility-only and no longer the architecture-fog default. Current architectural review enters directly through the `architectural-review` Skill; the old wrapper remains historical proof/provenance rather than a current product route.
+
 9. **Packaged catalog and overlay divergence.** The packaged catalog carries
    20 of the 23 ids. After RC4 selective contraction the packaged overlay
    carries 10 of the repository overlay's 12 explicit overrides; the missing
@@ -324,12 +309,7 @@ architecture fog; authorise automatic routing; create a general-purpose
 lifecycle framework for Skills, artifacts, or arbitrary entities; or make
 `active` equivalent to execution authorisation.
 
-RC4 selectively applies liveness changes for
-`artifact-reconciliation`, `autonomous-sprint-preflight`, and
-`product-strategy-sprint`. It still does not delete, revive, or rewrite their
-workflow definitions or any Skill; ratify a workflow as the product spine;
-promote a convention to machinery; or treat any remaining disposition as
-automatic authorisation to act on it.
+The current contraction line applies liveness changes without deleting catalog identity for `artifact-reconciliation`, `autonomous-sprint-preflight`, `product-strategy-sprint`, `product-discovery-sprint`, and `architectural-review-planning-workflow`. It also removes executable auto-invocation consumers now that all remaining metadata carriers are compatibility-only. It still does not revive deprecated Skills, invent replacement workflows, promote a convention to machinery, or treat any catalog disposition as execution authority.
 
 ---
 

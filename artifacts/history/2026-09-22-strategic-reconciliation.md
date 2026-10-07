@@ -4,7 +4,7 @@
 
 Target repository: `ThorStarlord/sensemaking-skills`.
 
-Prior strategic analysis: `artifacts/strategic_repository_analysis.md`.
+Prior strategic analysis: `artifacts/history/2026-09-20-strategic-repository-analysis.md`.
 
 Prior analysis source identity: `main@81e01c971b1196d24fa63fd071a4a1eb91e954e6`.
 
@@ -171,7 +171,7 @@ repository-local Skill consistency update and packaging work.
 
 ## 8. Evidence
 
-- `artifacts/strategic_repository_analysis.md`
+- `artifacts/history/2026-09-20-strategic-repository-analysis.md`
 - `docs/adr/0029-current-product-boundary.md`
 - `docs/capability-organization-tracer-v0.md`
 - `docs/capability-organization-tracer-v0-trial-001.md`
@@ -188,7 +188,7 @@ repository-local Skill consistency update and packaging work.
 ```yaml
 artifact_id: strategic_reconciliation
 target_repository: ThorStarlord/sensemaking-skills
-prior_analysis_ref: artifacts/strategic_repository_analysis.md
+prior_analysis_ref: artifacts/history/2026-09-20-strategic-repository-analysis.md
 current_source_identity: "main@49fb3f24ec5f02192b515cf7acbe2d2a65c89c25"
 returned_evidence:
   - evidence_ref: "PR#461"

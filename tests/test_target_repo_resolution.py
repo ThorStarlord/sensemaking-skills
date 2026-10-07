@@ -277,7 +277,7 @@ class TestTargetImmutability:
 
         # Create runner and resolve inputs
         runner = workflow_runtime.OrchestrationRunner(
-            workflow_id="architectural-review-planning-workflow",
+            workflow_id="fast-local-diagnostic",
             mode="plan_only",
             repo_root=framework_root,
             target_repo=target_root,

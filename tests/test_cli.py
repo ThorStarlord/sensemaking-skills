@@ -50,12 +50,28 @@ class TestCLIBasic:
         assert result.exit_code == 0
         assert "--repos" in result.output
 
-    def test_campaign_help_exposes_p3_commands(self, runner):
+    def test_campaign_help_exposes_small_durable_kernel(self, runner):
         result = runner.invoke(cli, ["campaign", "--help"])
         assert result.exit_code == 0
-        assert "init" in result.output
-        assert "status" in result.output
-        assert "validate" in result.output
+        for command in (
+            "init",
+            "ingest",
+            "status",
+            "validate",
+            "advance",
+            "defer",
+            "close",
+            "inspect",
+            "resume-profile",
+            "working-context",
+            "advanced",
+        ):
+            assert command in result.output
+        assert "history" not in result.output
+
+    def test_campaign_advanced_help_exposes_secondary_commands(self, runner):
+        result = runner.invoke(cli, ["campaign", "advanced", "--help"])
+        assert result.exit_code == 0
         assert "history" in result.output
 
     def test_analyze_without_repo(self, runner):
@@ -88,6 +104,6 @@ def test_runner_implicit_execution_mode_deprecation_contract(tmp_path):
     spec.loader.exec_module(module)
 
     module.test_omitted_execution_mode_is_rejected_without_spawning(tmp_path)
-    module.test_explicit_yolo_execution_preserves_behavior_without_deprecation_warning(tmp_path)
+    module.test_explicit_yolo_execution_is_rejected_without_spawning(tmp_path)
     module.test_explicit_guided_execution_has_no_deprecation_warning(tmp_path)
     module.test_parent_session_path_requests_guided_execution_explicitly(tmp_path)

@@ -1,11 +1,9 @@
-"""Registry-copy agreement test for auto_invoke_next_workflow semantics (ADR 0026).
+"""Current/compatibility workflow auto-invocation boundary.
 
-Both the runtime-loaded registry
-(skills/workflow-planner/references/workflow-registry.yaml) and the packaged
-defaults copy (src/sensemaking_skills/defaults/workflow-registry.yaml) must
-encode auto_invoke_next_workflow as COMPATIBILITY / HISTORICAL TRANSITION
-METADATA, NOT execution authority, and both must agree on the set of workflows
-that declare it.
+Active workflows must not advertise automatic downstream execution. Historical
+compatibility workflows may retain auto-invocation metadata solely so old
+records remain reconstructible; liveness keeps those entries out of current
+selection/execution surfaces.
 """
 
 import os
@@ -14,49 +12,85 @@ import unittest
 import yaml
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-COPIES = [
-    "skills/workflow-planner/references/workflow-registry.yaml",
-    "src/sensemaking_skills/defaults/workflow-registry.yaml",
+REGISTRY_COPIES = [
+    (
+        "skills/workflow-planner/references/workflow-registry.yaml",
+        "skills/workflow-planner/references/workflow-liveness.yaml",
+    ),
+    (
+        "src/sensemaking_skills/defaults/workflow-registry.yaml",
+        "src/sensemaking_skills/defaults/workflow-liveness.yaml",
+    ),
 ]
 
 
 class TestAutoInvokeRegistryAgreement(unittest.TestCase):
-    """Prove both registry copies agree on compatibility-only auto_invoke semantics."""
-
     def _load(self, rel):
         with open(os.path.join(REPO_ROOT, rel), encoding="utf-8") as f:
             return yaml.safe_load(f)
 
-    def test_both_copies_declare_auto_invoke_compatibility_metadata(self):
-        """Both copies carry an explicit ADR 0026 compatibility-only declaration."""
-        for rel in COPIES:
-            with open(os.path.join(REPO_ROOT, rel), encoding="utf-8") as f:
-                text = f.read()
-            self.assertIn("COMPATIBILITY / HISTORICAL TRANSITION METADATA", text,
-                          f"{rel} must mark auto_invoke_next_workflow as compatibility metadata")
-            self.assertIn("NOT grant execution authority", text,
-                          f"{rel} must state auto_invoke_next_workflow is NOT execution authority")
+    def _effective_liveness(self, workflow_id, overlay):
+        return overlay.get("overrides", {}).get(
+            workflow_id, overlay.get("default_liveness", "active")
+        )
 
-    def test_both_copies_agree_on_auto_invoke_workflow_set(self):
-        """Both copies list the same workflows with auto_invoke_next_workflow: true."""
+    def test_active_workflows_have_no_auto_execution_metadata(self):
+        for registry_rel, liveness_rel in REGISTRY_COPIES:
+            registry = self._load(registry_rel)
+            overlay = self._load(liveness_rel)
+            offenders = []
+            for workflow in registry.get("workflows", []):
+                if self._effective_liveness(workflow["id"], overlay) != "active":
+                    continue
+                if any(
+                    key in workflow
+                    for key in (
+                        "auto_invoke_next_workflow",
+                        "auto_invoke_source",
+                        "auto_invoke_next_workflow_id",
+                    )
+                ):
+                    offenders.append(workflow["id"])
+            self.assertEqual(
+                offenders,
+                [],
+                f"{registry_rel} active workflows must return recommendations to the active agent",
+            )
+
+    def test_retained_auto_invoke_metadata_is_compatibility_only(self):
         sets = []
-        for rel in COPIES:
-            reg = self._load(rel)
-            w = {wf["id"] for wf in reg.get("workflows", [])
-                 if wf.get("auto_invoke_next_workflow") is True}
-            sets.append(w)
-        self.assertEqual(sets[0], sets[1],
-                         "registry copies must agree on which workflows declare auto-invoke")
+        for registry_rel, liveness_rel in REGISTRY_COPIES:
+            registry = self._load(registry_rel)
+            overlay = self._load(liveness_rel)
+            retained = {
+                workflow["id"]
+                for workflow in registry.get("workflows", [])
+                if workflow.get("auto_invoke_next_workflow") is True
+            }
+            for workflow_id in retained:
+                self.assertEqual(
+                    self._effective_liveness(workflow_id, overlay),
+                    "compatibility_only",
+                    f"{workflow_id} may retain auto-invoke metadata only as compatibility history",
+                )
+            sets.append(retained)
+        self.assertEqual(
+            sets[0],
+            sets[1],
+            "registry copies must agree on retained compatibility auto-invoke identities",
+        )
 
-    def test_both_copies_agree_on_ui_diagnostic_explicit_next(self):
-        """ui-diagnostic-workflow declares the same auto_invoke_next_workflow_id in both."""
+    def test_ui_diagnostic_historical_explicit_next_agrees(self):
         next_ids = []
-        for rel in COPIES:
-            reg = self._load(rel)
-            wf = next(w for w in reg.get("workflows", [])
-                      if w.get("id") == "ui-diagnostic-workflow")
-            next_ids.append(wf.get("auto_invoke_next_workflow_id"))
-        self.assertEqual(next_ids[0], next_ids[1], "ui-diagnostic explicit next id must agree")
+        for registry_rel, _ in REGISTRY_COPIES:
+            registry = self._load(registry_rel)
+            workflow = next(
+                workflow
+                for workflow in registry.get("workflows", [])
+                if workflow.get("id") == "ui-diagnostic-workflow"
+            )
+            next_ids.append(workflow.get("auto_invoke_next_workflow_id"))
+        self.assertEqual(next_ids[0], next_ids[1])
         self.assertEqual(next_ids[0], "ui-implementation-workflow")
 
 

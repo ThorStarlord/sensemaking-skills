@@ -217,7 +217,7 @@ Release Candidate Distribution run 36106321954 on
 While reconstructing the package on current `main`, pre-existing main
 qualification gaps were also repaired: the loop/autonomy contract tests were
 unwired and drifting (prose assertions were line-wrap sensitive) and
-`artifacts/strategic_reconciliation.md` used a tilde YAML fence the validator
+`artifacts/history/2026-09-22-strategic-reconciliation.md` used a tilde YAML fence the validator
 cannot read. The contract tests are now wired into the ordinary repository
 assertion suite. This keeps the mechanical claim ceiling intact; it does not
 establish normal-use behavioral evidence.

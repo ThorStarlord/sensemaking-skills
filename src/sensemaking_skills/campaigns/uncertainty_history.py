@@ -193,8 +193,14 @@ class UncertaintyHistoryService:
         self.lifecycle = CampaignService(workspace)
         self.path = self.lifecycle.store.root / UNCERTAINTY_HISTORY_FILENAME
 
-    def load(self) -> UncertaintyHistoryResult:
-        snapshot = self.lifecycle.resume()
+    def load(self, *, snapshot=None) -> UncertaintyHistoryResult:
+        """Read against an already reconstructed snapshot when supplied.
+
+        Read-only orientation can therefore reuse materialized state without
+        re-entering strict Campaign resume/recovery.
+        """
+        if snapshot is None:
+            snapshot = self.lifecycle.resume()
         if not self.path.exists():
             return UncertaintyHistoryResult(
                 campaign_id=snapshot.state.campaign_id,
@@ -401,8 +407,8 @@ class UncertaintyHistoryService:
             os.fsync(handle.fileno())
         return record["event_digest"]
 
-    def summary(self) -> dict[str, Any]:
-        result = self.load()
+    def summary(self, *, snapshot=None) -> dict[str, Any]:
+        result = self.load(snapshot=snapshot)
         return {
             "present": self.path.exists(),
             "valid": result.valid,

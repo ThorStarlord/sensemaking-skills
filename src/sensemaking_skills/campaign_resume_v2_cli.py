@@ -10,7 +10,12 @@ from typing import Any
 import click
 
 from .campaign_semantics import ContractError, canonicalize
-from .campaigns import CampaignService, CampaignWorkspaceError
+from .campaigns import (
+    CampaignIntegrityError,
+    CampaignService,
+    CampaignTransactionError,
+    CampaignWorkspaceError,
+)
 from .campaigns.resume_capsule import RESUME_PROFILES, build_resume_capsule
 from .semantic_architecture import SemanticStateStore
 
@@ -55,8 +60,27 @@ def register_campaign_resume_v2_commands(
         output_json: bool,
     ) -> None:
         """Emit Resume Capsule v2 using deterministic progressive disclosure."""
+        service = CampaignService(workspace)
+        strict_resume_error = None
+        diagnostics: list[dict[str, Any]] = []
+        transactions: tuple[dict[str, Any], ...] | list[dict[str, Any]] = ()
         try:
-            snapshot = CampaignService(workspace).resume()
+            snapshot = service.resume()
+            continuation_safe = True
+        except (CampaignIntegrityError, CampaignTransactionError) as exc:
+            strict_resume_error = str(exc)
+            try:
+                inspection, snapshot = service.inspect()
+                transactions = service.store.inspect_lifecycle_transactions()
+            except (CampaignWorkspaceError, ContractError) as inspect_exc:
+                emit_error(inspect_exc, output_json=output_json)
+                return
+            diagnostics = [canonicalize(item) for item in inspection.diagnostics]
+            blocking = [
+                item for item in transactions
+                if item.get("status") in {"pending", "invalid"}
+            ]
+            continuation_safe = inspection.valid and not blocking
         except (CampaignWorkspaceError, ContractError) as exc:
             emit_error(exc, output_json=output_json)
             return
@@ -69,6 +93,20 @@ def register_campaign_resume_v2_commands(
             include_preflight=include_preflight,
             profile=profile,
             max_items=max_items,
+        )
+        payload.update(
+            {
+                "continuation_safe": continuation_safe,
+                "orientation_only": not continuation_safe,
+                "diagnostics": diagnostics,
+                "lifecycle_transactions": list(transactions),
+                "strict_resume_error": strict_resume_error,
+                "explicit_continuation_limit": (
+                    "A resume capsule may orient from last materialized state "
+                    "when strict resume is blocked; it never authorizes mutation "
+                    "while continuation_safe is false."
+                ),
+            }
         )
         if output_json:
             json_echo(payload)

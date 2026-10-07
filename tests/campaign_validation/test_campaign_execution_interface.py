@@ -131,6 +131,10 @@ def test_worker_result_returns_evidence_without_global_closure(tmp_path: Path) -
     assert payload["result"]["source_before_matches_bound_target_head"] is True
     assert payload["result"]["assertion_provenance"]["authority_exceeded"] == "worker_reported_unverified"
     assert payload["result"]["assertion_provenance"]["forbidden_actions_enforced_by_interface"] is False
+    assert payload["result"]["independent_verification_established"] is False
+    assert payload["result"]["protected_transition_eligible"] is False
+    assert payload["result"]["closure_eligible"] is False
+    assert payload["result"]["worker_completion_establishes_global_closure"] is False
 
     snapshot = CampaignService(workspace).resume()
     assert snapshot.state.active_responsibility is not None

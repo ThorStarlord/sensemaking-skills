@@ -42,9 +42,9 @@ def _data() -> dict:
             {
                 "surface_id": "IMPACT-2",
                 "category": "test",
-                "target_ref": "tests/test_execution_interface_closeout.py",
+                "target_ref": "tests/campaign_validation/test_campaign_execution_interface.py",
                 "impact_statement": "Closure regression must still describe the new contract.",
-                "evidence_refs": ["tests/test_execution_interface_closeout.py"],
+                "evidence_refs": ["tests/campaign_validation/test_campaign_execution_interface.py"],
                 "semantic_review_required": False,
                 "required_actions": ["Run the closure regression."],
                 "authority_boundary": "repository-only",

@@ -33,3 +33,34 @@ contribute 5 FAILED + 15 SUBFAIL = 20 of the failures. After this change those 2
 If the retired workflows are ever restored to the registry as `active`, move
 the corresponding file(s) back to `tests/integration/` and remove this
 directory's `norecursedirs` entry when empty.
+
+
+## Post-RC4 additions (2026-10-07)
+
+- `test_architectural_review_recommendation_runtime.py`
+- `test_architectural_review_acceptance.py`
+
+These prove the historical `architectural-review-planning-workflow` wrapper and
+`--from-session` execution route. The current path invokes the
+`architectural-review` Skill directly, so keeping these tests in the live suite
+would require preserving a workflow runtime solely to satisfy its own tests.
+
+
+## Auto-invocation consumer removal (2026-10-07)
+
+The following tests were moved here when executable auto-invocation consumers
+were removed after all remaining metadata carriers became `compatibility_only`:
+
+- `test_auto_invoke_authority_gating.py`
+- `test_auto_invocation_target_repo.py`
+- `test_invocation_paths.py`
+
+The historical metadata remains in catalog records for provenance. Current
+execution no longer parses it, surfaces hypothetical child workflows, or keeps a
+no-op router alive merely to prove that it will not route.
+
+
+- `test_field_contract_agreement.py` was also retired with the executable
+  auto-routing consumer. Its sole contract was that the removed runtime routing
+  alias lists matched artifact schemas; with those readers gone, preserving the
+  alias lists only to satisfy this test would recreate dead product machinery.

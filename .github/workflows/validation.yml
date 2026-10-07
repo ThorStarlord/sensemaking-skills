@@ -191,7 +191,6 @@ jobs:
             tests/test_semantic_reasoning_profile.py \
             tests/test_skill_registry_liveness.py \
             tests/test_strategic_state_validation.py \
-            tests/test_policy_hierarchy_contract.py \
             tests/test_strategic_repository_analysis_contract.py \
             tests/test_strategic_repository_analysis_integration.py \
             tests/test_strategic_repository_sensemaking_closeout.py \
@@ -199,12 +198,10 @@ jobs:
             tests/test_strategic_companion_artifacts.py \
             tests/test_multi_repository_strategic_analysis.py \
             tests/test_change_impact_analysis.py \
-            tests/test_issue_416_closeout.py \
             tests/test_policy_hierarchy_interface_clarification_v1.py \
             tests/test_strategic_continuity_refinement_v1.py \
             tests/test_decision_journey_productization_v1.py \
             tests/test_decision_journey_productization_v1_closeout.py \
-            tests/test_strategic_repository_analysis_semantic_grounding_v1_closeout.py \
             tests/test_experiment_economy_v1.py \
             tests/test_experiment_economy_v1_closeout.py \
             tests/test_experiment_responsibility_boundary_v1.py \
@@ -221,7 +218,6 @@ jobs:
             tests/test_semantic_catalog.py \
             tests/test_release_authority_audit.py \
             tests/test_release_readiness_gate.py \
-            tests/test_execution_interface_closeout.py \
             -q
 
       - name: Assert verification did not mutate tracked state

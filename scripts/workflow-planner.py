@@ -195,7 +195,7 @@ The selected workflow includes the following steps:
 ## 6. Execution Mode
 
 **Recommended Mode**: `plan_only`
-**Auto-Invocation**: Enabled (workflow runtime will read `recommended_workflow_id` and invoke next workflow)
+**Downstream execution**: Active-agent decision; this plan may recommend but never invokes a child workflow
 
 ---
 
@@ -218,7 +218,7 @@ After this plan is approved and executed:
 
 If the selected workflow encounters issues:
 - Attempted fixes will be recorded in validation logs
-- Escalation will occur after 3 failed attempts
+- Repeated failure returns evidence to the active agent; no automatic responsibility escalation is implied
 - Escalation messages will include detailed error context and suggested next steps
 
 ---

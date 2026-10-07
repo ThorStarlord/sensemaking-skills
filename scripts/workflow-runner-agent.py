@@ -42,7 +42,7 @@ def main(argv: list[str] | None = None) -> int:
                         help="User problem statement or goal (will prompt if not provided)")
     parser.add_argument("--workflow", default=None,
                         help="Explicit workflow ID (default: full-local-sensemaking)")
-    parser.add_argument("--mode", default="guided_execution", choices=list(KNOWN_MODES.keys()),
+    parser.add_argument("--mode", default="guided_execution", choices=[mode for mode in KNOWN_MODES.keys() if mode != "yolo_execution"],
                         help="Execution mode (default: guided_execution)")
     parser.add_argument("--scope", default="soft", choices=["soft", "hard", "advisory"],
                         help="How strictly the problem constrains analysis (default: soft)")

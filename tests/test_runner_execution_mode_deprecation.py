@@ -38,24 +38,19 @@ def test_omitted_execution_mode_is_rejected_without_spawning(tmp_path: Path) -> 
     mock_run.assert_not_called()
 
 
-def test_explicit_yolo_execution_preserves_behavior_without_deprecation_warning(
+def test_explicit_yolo_execution_is_rejected_without_spawning(
     tmp_path: Path,
 ) -> None:
     orchestrator = _orchestrator(tmp_path)
 
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        with patch(
-            "sensemaking_skills.runner.subprocess.run",
-            return_value=SimpleNamespace(returncode=0),
-        ) as mock_run:
-            assert orchestrator.run_workflow(
+    with patch("sensemaking_skills.runner.subprocess.run") as mock_run:
+        with pytest.raises(ValueError, match="yolo_execution is retired"):
+            orchestrator.run_workflow(
                 "fast-path-workflow",
                 execution_mode="yolo_execution",
-            ) == 0
+            )
 
-    assert _future_warnings(caught) == []
-    assert _mode_from_subprocess_call(mock_run) == "yolo_execution"
+    mock_run.assert_not_called()
 
 
 def test_explicit_guided_execution_has_no_deprecation_warning(tmp_path: Path) -> None:

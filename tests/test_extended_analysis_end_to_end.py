@@ -84,14 +84,14 @@ extended_analysis:
 
 ```yaml
 primary_fog_type: product_fog
-recommended_workflow_id: product-discovery-sprint
+recommended_workflow_id: full-local-sensemaking
 escalation_recommended: false
 weakness_type: Zero Validation
 evidence:
   - "scripts/brief_skeleton.py (lines L52): artifact_id constant"
 ```
 """
-# recommended_workflow_id deliberately uses product-discovery-sprint: it is
+# recommended_workflow_id deliberately uses full-local-sensemaking: it is
 # liveness-active (what validate-brief.py checks) AND present in
 # docs/canonical-vocabulary.yaml's workflow_ids list (what
 # validate-artifact.py checks). A retired id would fail the former; an id

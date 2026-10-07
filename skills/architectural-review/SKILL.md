@@ -13,7 +13,7 @@ Evaluates proposed architectural responses against principal-engineer judgment: 
 **Output**:
 - Artifact: `architectural_review_recommendation` (decision + risk analysis)
 
-**Invocation**: Only via `--from-session` with pre-written `proposed_direction.md` in session directory.
+**Invocation**: Invoke this Skill directly when the active agent has selected the architectural-review responsibility. Supply the current `repository_sensemaking_brief` and a concrete `proposed_direction` as the two bounded inputs.
 
 ---
 
@@ -25,7 +25,7 @@ Evaluates proposed architectural responses against principal-engineer judgment: 
 
 3. **Proposed response evaluation**: Evaluate whether the *proposed* response architecturally addresses the identified fog, not whether the fog classification is correct. Leave fog validation to repo-sensemaker. An observed dependency or file relation is not by itself an architectural violation: establish the relevant boundary/contract/intent before making that inference.
 
-4. **Insufficient brief handling**: If the brief is incomplete or insufficient, return `investigate_first` and recommend running a more comprehensive fog workflow. Do not supplement the brief independently or infer missing architecture intent from directory shape alone.
+4. **Insufficient brief handling**: If the brief is incomplete or insufficient, return `investigate_first` and identify the bounded evidence that is missing. Do not manufacture a workflow route, supplement the brief independently, or infer missing architecture intent from directory shape alone.
 
 5. **Output decision outcomes**: Every recommendation must result in one of: `pursue`, `pursue_narrowed`, `investigate_first`, `defer`, or `reject`. Decisions must be actionable and justified with specific risks, constraints, conditions, and the evidence that could change the verdict when material.
 
@@ -101,7 +101,7 @@ Use epistemic labels only where they clarify material reasoning; do not turn the
 ## References
 
 - [Artifact Contract](../../workflow-planner/references/artifact-contracts.yaml): `architectural_review_recommendation`
-- [Workflow Registry](../../workflow-planner/references/workflow-registry.yaml): `architectural-review-planning-workflow`
+- Historical workflow registry identity: `architectural-review-planning-workflow` is compatibility-only provenance, not the current invocation path.
 - [Skill Registry](../../workflow-planner/references/skill-registry.yaml): `architectural-review`
 - [Design Document](../../docs/skill-design-architectural-review.md): Full specification
 - [Template](./references/architectural-review-template.md): Artifact template
@@ -111,31 +111,20 @@ Use epistemic labels only where they clarify material reasoning; do not turn the
 
 ---
 
-## Invocation Prerequisite (v1)
+## Invocation Prerequisite
 
-This skill requires a pre-written `proposed_direction.md` artifact supplied by the caller in a session directory. The runtime uses `--from-session <path>` to locate this pre-written artifact before invoking the skill.
+This Skill requires two explicit inputs:
 
-**In v1, fresh invocations cannot supply `proposed_direction` directly** because the session directory is not knowable until `workflow-runtime.py` starts. The workflow therefore supports only existing-session invocation (Possibility A):
+1. a current `repository_sensemaking_brief`;
+2. a concrete `proposed_direction`.
 
-1. Caller creates a session directory with a unique ID
-2. Caller writes `00-user-intent.md` (required by all workflows)
-3. Caller writes `proposed_direction.md` with the proposal
-4. Caller invokes: `python workflow-runtime.py --workflow architectural-review-planning-workflow --from-session <path>`
+The active agent may supply those inputs from current repository context or durable artifacts. The Skill does **not** require `workflow-runtime.py`, a session directory, `--from-session`, or the historical `architectural-review-planning-workflow` wrapper.
 
-See `INVOCATION-GUIDE.md` for step-by-step procedures.
-
----
+The wrapper remains compatibility-only historical identity for reconstructing earlier experiments. It does not grant current execution authority or define the current product path.
 
 ## Regression Testing
 
-Baseline test: `tests/integration/test_end_to_end_workflows.py` (existing workflows, structural only)
-
-New E2E test: `tests/test_architectural_review_recommendation_runtime.py`
-- Covers validator dispatch, input resolution, control flow
-- Exercises artifact path scoping and session-directory handling
-- Verifies missing-input hard-fail before skill invocation
-
-No changes required to existing workflows. This skill is optional; existing workflows remain unchanged.
+Current live tests are artifact/validator and Skill-contract tests, especially `tests/test_architectural_review_recommendation_validator.py` and the architectural-review artifact fixtures. Historical runner-wrapper acceptance/runtime tests are quarantined under `tests/quarantine-retired-runner/` because the wrapper is no longer a current execution route.
 
 ---
 
