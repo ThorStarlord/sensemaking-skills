@@ -117,7 +117,7 @@ def test_installed_wheel_supports_p9_reconciliation_disposition_without_source_c
     workspace = work_dir / "CMP-P9-WHEEL"
 
     campaign_help = subprocess.run(
-        [cli_path, "campaign", "--help"],
+        [cli_path, "campaign", "advanced", "--help"],
         capture_output=True,
         text=True,
         timeout=60,
@@ -152,6 +152,7 @@ def test_installed_wheel_supports_p9_reconciliation_disposition_without_source_c
         [
             cli_path,
             "campaign",
+            "advanced",
             "reconciliation",
             "--workspace",
             str(workspace),
@@ -210,6 +211,7 @@ def test_installed_wheel_supports_p9_reconciliation_disposition_without_source_c
         [
             cli_path,
             "campaign",
+            "advanced",
             "reconciliation",
             "--workspace",
             str(workspace),
