@@ -1,6 +1,6 @@
 # Installation & Setup Guide — Sensemaking Skills
 
-This guide covers installation of the public distribution and the current Version 1.0 development line. Current shadow source identity is `1.0.0rc5.dev0` targeting `1.0.0rc5`; the exact RC4 candidate remains immutable predecessor provenance and no RC4 qualification transfers to these bytes.
+This guide covers installation of the public distribution and the current Version 1.0 development line. Current source identity is `1.0.0rc5.dev0` targeting `1.0.0rc5` on integrated RC4 `main`; RC4 remains immutable predecessor provenance and no RC4 qualification transfers to these changed bytes.
 
 ## Requirements
 

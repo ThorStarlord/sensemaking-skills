@@ -35,7 +35,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-The repository source on this post-RC4 shadow is `1.0.0rc5.dev0`, developing toward the reduced-scope `1.0.0rc5` candidate target. The exact RC4 candidate at `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance; no RC4 qualification transfers to these development bytes. Install from source:
+The repository source is `1.0.0rc5.dev0`, developing toward the reduced-scope `1.0.0rc5` candidate target on integrated RC4 `main`. RC4 integrated as `9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` with the exact frozen candidate tree; no RC4 qualification transfers to these changed development bytes. Install from source:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git

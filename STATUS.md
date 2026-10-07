@@ -3,9 +3,9 @@
 **Source version:** 1.0.0rc5.dev0
 **Release target:** 1.0.0rc5 (development; post-RC4 reduced-scope candidate target)
 **Last updated:** 2026-10-07  
-**Current phase:** post-RC4 pragmatic-kernel contraction shadow development, constructed on the exact RC4 candidate source without modifying PR #520. This shadow is not canonical until RC4 integrates and the resulting source is requalified.
+**Current phase:** RC5 post-RC4 pragmatic-kernel contraction development on canonical integrated RC4 `main`; PR #531 is the current integration candidate.
 
-- **Post-RC4 pragmatic-kernel contraction — IMPLEMENTED IN STACKED DEVELOPMENT / NOT YET INTEGRATED:** Issue #521 now has a dependency-ordered branch/PR series that removes the parallel workflow-routing architecture while preserving historical identity. Active workflows no longer advertise auto-execution; `yolo_execution` is retired as executable behavior; product and architecture fog no longer hard-code workflow defaults; `product-discovery-sprint` and `architectural-review-planning-workflow` are compatibility-only; executable auto-invocation consumers are removed; the normal Campaign root is progressively disclosed around a small durable kernel; read-only status/resume orientation survives drift or blocked transaction recovery while mutation remains fail-closed; worker-result records are mechanically ineligible for protected transitions/closure; prose-only closeout tests are removed; and stale September strategic instances are archived under dated paths. The stack begins at PR #522 and remains subject to independent qualification and protected merge authority.
+- **Post-RC4 pragmatic-kernel contraction — IMPLEMENTED / CANONICAL-BASE QUALIFICATION:** Issue #521 is consolidated into PR #531 on integrated RC4 `main`. Active workflow auto-routing is removed, `yolo_execution` is retired, current product/architecture responsibility selection is direct, Campaign root discovery is contracted around the durable kernel, read-only orientation remains available under drift/recovery blockage while mutation stays fail-closed, worker-reported evidence cannot satisfy protected transition/closure claims, prose-only closeout tests are removed, and stale strategic instances are archived. Superseded slice PRs remain closed provenance.
 
 - **Further deletion remains evidence-gated:** compatibility workflow definitions, the Organization implementation, specialized validators, and shipped Skill identities are not physically deleted merely because they are secondary. The contraction rule is outcome-based: retain machinery when it protects demonstrated correctness, integrity, provenance, recovery, or a recurring failure; otherwise prefer direct agent judgment and smaller surfaces.
 
@@ -25,7 +25,7 @@
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
-**Release status:** exact RC4 candidate `d26521005f7ab6696e050844510ff0e3298f002b` (tree `8121f53cf08420131ba34c32e57882b71e9c0bff`) remains immutable predecessor provenance. This shadow reopens source development as `1.0.0rc5.dev0` targeting `1.0.0rc5`; no RC4 qualification transfers to these bytes. PR #520 remains the separately protected RC4 integration candidate. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
+**Release status:** RC4 integrated as `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` with tree `8121f53cf08420131ba34c32e57882b71e9c0bff`, byte-identical to the frozen RC4 candidate and fully green on integrated-main Product/Lab/Release push qualification. Current development is `1.0.0rc5.dev0` targeting `1.0.0rc5`; no RC4 qualification transfers to these changed bytes. PyPI publication and final `1.0.0` remain separate owner-controlled transitions. Native harness, portability, and semantic usefulness claims remain excluded from the reduced-scope support promise.
 Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
@@ -444,6 +444,6 @@ dynamic-Organization, new policy layer, search runtime, or additional strategic
 machinery unless recurring normal use exposes one of those as the actual
 limiting factor.
 
-Current shadow source is `1.0.0rc5.dev0` targeting `1.0.0rc5` in development.
-The exact RC4 candidate remains historical predecessor provenance; post-RC4 source changes require a fresh future freeze and exact-source qualification before any RC5 candidate claim.
+Current source is `1.0.0rc5.dev0` targeting `1.0.0rc5` in development.
+Integrated RC4 remains immutable predecessor provenance; post-RC4 source changes require a fresh future freeze and exact-source qualification before any RC5 candidate claim.
 PyPI publication, release tagging, and final `1.0.0` remain owner-controlled.

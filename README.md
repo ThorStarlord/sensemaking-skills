@@ -8,7 +8,7 @@ An agent-native engineering sensemaking and control layer for software-engineeri
 **Source version:** 1.0.0rc5.dev0
 **Release target:** 1.0.0rc5 (post-RC4 development target)
 **Historical candidates:** RC1 was qualified at `70542d47412d98ee6dfae5de6df29bf271304568`; RC2 was qualified at `c9b86138d3919c4fce87040f14161364a0c1c3a0`; RC4 is the exact qualified predecessor candidate at `d26521005f7ab6696e050844510ff0e3298f002b` and supplies no qualification to post-RC4 development bytes.
-**Status:** post-RC4 shadow development; RC5 identity is development-only and requires a future fresh freeze/qualification before any RC5 candidate claim. RC4 merge/publication remains separately protected.
+**Status:** post-RC4 RC5 development on integrated RC4 `main`; RC5 identity is development-only and requires a future fresh freeze/qualification before any RC5 candidate claim. RC4 is integrated; publication remains separately protected.
 **Python:** 3.11+  
 **Core runtime:** local-first; no server or cloud dependency
 
@@ -256,7 +256,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-Current shadow source is `1.0.0rc5.dev0`, targeting the reduced-scope `1.0.0rc5` development line. For source/candidate inspection:
+Current source is `1.0.0rc5.dev0`, targeting the reduced-scope `1.0.0rc5` development line. For source/candidate inspection:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
