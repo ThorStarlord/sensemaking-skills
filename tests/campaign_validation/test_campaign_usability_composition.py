@@ -196,3 +196,29 @@ def test_resume_profile_orients_when_transaction_recovery_is_blocked(tmp_path: P
         item["status"] == "invalid"
         for item in payload["lifecycle_transactions"]
     )
+
+
+
+def test_resume_profile_working_projection_orients_when_recovery_is_blocked(tmp_path: Path) -> None:
+    workspace = _workspace(tmp_path)
+    invalid_entry = workspace / ".transactions" / "invalid-entry!"
+    invalid_entry.write_text("invalid\n", encoding="utf-8")
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "campaign",
+            "resume-profile",
+            "--workspace",
+            str(workspace),
+            "--profile",
+            "working",
+            "--json",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["orientation_only"] is True
+    assert payload["continuation_safe"] is False
+    assert "uncertainty_history" in payload
