@@ -117,8 +117,7 @@ inventing an unavailable receipt.
 
 ## Compatibility
 
-Historical `artifacts/strategic_repository_analysis.md` remains unchanged and
-valid as legacy v1 evidence.
+Historical `artifacts/history/2026-09-20-strategic-repository-analysis.md` preserves the prior instance as legacy v1 evidence. The canonical `artifacts/strategic_repository_analysis.md` path remains reserved for a future current analysis.
 
 Existing Strategic Continuity, reconciliation, decision-journey,
 multi-repository analysis, Campaign schema v2, and authority boundaries remain
