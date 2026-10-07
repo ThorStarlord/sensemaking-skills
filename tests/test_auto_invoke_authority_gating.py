@@ -60,16 +60,16 @@ class TestAutoInvokeAuthorityGating(unittest.TestCase):
             workflow_runtime.run_subprocess = original_run_subprocess
         self.assertEqual(code, 0, "fail-closed surfacing must return clean completion 0")
 
-    def test_flag_alone_does_not_spawn(self):
-        """auto_invoke_next_workflow: true alone must NOT cause a spawn (ADR 0026)."""
-        # The runner loaded a workflow whose registry entry has
-        # auto_invoke_next_workflow: true (full-local-sensemaking). The legacy
-        # fast-path-workflow is compatibility-only in RC4; use this still-active
-        # metadata carrier to preserve the authority-gating contract.
-        self._runner()
-        # Even with the flag set, surfacing a candidate never spawns:
-        self._assert_no_spawn(self._runner(), "product-implementation-workflow",
-                              "workflow_orchestration_plan.recommended_workflow_id")
+    def test_active_workflow_has_no_auto_invoke_and_surface_helper_does_not_spawn(self):
+        """Current active workflows do not carry auto-execution metadata."""
+        runner = self._runner()
+        self.assertNotIn("auto_invoke_next_workflow", runner.workflow)
+        self.assertNotIn("auto_invoke_source", runner.workflow)
+        self._assert_no_spawn(
+            runner,
+            "product-implementation-workflow",
+            "workflow_orchestration_plan.recommended_workflow_id",
+        )
 
     def test_recommended_workflow_id_does_not_spawn(self):
         """A discoverable recommended_workflow_id must NOT cause a spawn."""

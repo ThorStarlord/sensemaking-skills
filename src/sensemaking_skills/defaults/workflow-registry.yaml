@@ -47,11 +47,10 @@ workflows:
 - id: full-fog-workflow
   display_name: Full Fog Path - Comprehensive Sensemaking & Orchestration
   purpose: Comprehensively analyze ambiguous projects from raw fog through diagnosis
-    to automatic implementation workflow invocation.
-  description: "Use this when the problem is vague or highly uncertain. Chains problem-framer\
-    \ \xE2\u2020\u2019 unknowns-mapper \xE2\u2020\u2019 repo-sensemaker \xE2\u2020\
-    \u2019 workflow-planner with approval gates between steps. The orchestrator automatically\
-    \ invokes the recommended implementation workflow without user intervention."
+    and produce a bounded downstream recommendation for active-agent review.
+  description: Use when the problem is vague or highly uncertain. Chains problem framing,
+    unknown mapping, repository diagnosis, and workflow planning, then returns the
+    recommendation to the active agent. It does not automatically execute a downstream workflow.
   initial_inputs:
   - id: user_intent
     type: artifact
@@ -97,8 +96,6 @@ workflows:
     gate: review_orchestration_plan
     input_artifact: repository_sensemaking_brief
     output_artifact: workflow_orchestration_plan
-  auto_invoke_next_workflow: true
-  auto_invoke_source: workflow_orchestration_plan.recommended_workflow_id
 - id: setup-sensemaking-repo
   display_name: Setup Sensemaking Repo
   purpose: Configure repository agent docs, artifact contracts, execution mode defaults,
@@ -428,10 +425,6 @@ workflows:
   branch_policy:
     required: true
     pattern: yolo/{workflow_id}/{timestamp}
-  auto_invoke_next_workflow: true
-  auto_invoke_source: workflow_orchestration_plan
-  # NOTE: auto_invoke_next_workflow_id is read from workflow_orchestration_plan.recommended_workflow_id
-  # The workflow-planner skill determines which implementation workflow to invoke based on fog_type
   steps:
   - id: 1
     skill: problem-framer
@@ -474,7 +467,7 @@ workflows:
     gate: none
     input_artifact: repository_sensemaking_brief
     output_artifact: workflow_orchestration_plan
-    description: Orchestration planning - select implementation workflow based on fog type
+    description: Planning - recommend a bounded downstream workflow when one is useful; execution remains an active-agent decision
   - id: 6
     skill: handoff
     step_type: local_execution
