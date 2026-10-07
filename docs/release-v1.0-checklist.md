@@ -4,8 +4,8 @@ Use this checklist with [`release-v1.0-contract.md`](release-v1.0-contract.md).
 It is a gate record, not evidence that the gates have already passed.
 
 The current contract is a reduced-scope Version 1.0 development target.
-Repository shadow source is `1.0.0rc5.dev0` with status `development`, targeting
-`1.0.0rc5`. Exact RC4 candidate `d26521005f7ab6696e050844510ff0e3298f002b`
+Repository source is `1.0.0rc5.dev0` with status `development`, targeting
+`1.0.0rc5` on integrated RC4 `main`. Integrated RC4 `9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776`
 remains immutable predecessor provenance; no RC4 qualification transfers to RC5
 development bytes. A future RC5 freeze must earn fresh exact-head qualification before any candidate qualification
 claim. External harness, portability, and semantic-usefulness evidence is

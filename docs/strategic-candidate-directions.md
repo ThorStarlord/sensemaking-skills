@@ -758,15 +758,15 @@ validators protect distinct invariants/representations. Shared parsing
 boilerplate alone does not justify a new validator framework or a broader
 failure domain.
 
-PR #518 integrated the selective RC4 contraction on `main@95323faa8a26d06145bc260153048dcc8fb2af23`. The qualified RC4 candidate PR #520 preserves that baseline; this shadow layers the post-RC4 pragmatic-kernel contraction on top of its exact candidate source without changing #520 itself.
+PR #518 integrated the selective RC4 contraction on `main@95323faa8a26d06145bc260153048dcc8fb2af23`. RC4 then integrated through PR #520 as `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` with the exact qualified candidate tree. PR #531 layers the post-RC4 pragmatic-kernel contraction on that canonical integrated source.
 
-**Current reconciliation:** `POST_RC4_PRAGMATIC_KERNEL_CONTRACTION_SHADOW` + `FURTHER_DELETION_EVIDENCE_GATED`.
+**Current reconciliation:** `POST_RC4_PRAGMATIC_KERNEL_CONTRACTION_CANONICAL_BASE` + `FURTHER_DELETION_EVIDENCE_GATED`.
 
 The 2026-10-05 adversarial claims-vs-runtime review, the owner-ratified
 `simplify hard` verdict, and the subsequent re-measure now produce an explicit
 subtractive disposition rather than another control subsystem.
 
-Implemented in the post-RC4 shadow development line:
+Implemented in the post-RC4 development line:
 
 1. **Parallel workflow routing is removed from current execution.** Active workflows carry no auto-execution metadata; `product-discovery-sprint` and `architectural-review-planning-workflow` are compatibility-only; runtime/package auto-invocation consumers are removed; and no replacement workflow router is introduced. Historical catalog metadata remains provenance only.
 2. **Organization is out of the normal loop.** The read-only tracer remains

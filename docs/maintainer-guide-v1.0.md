@@ -5,7 +5,7 @@ support and claim ceiling is defined in [`release-v1.0-contract.md`](release-v1.
 and validated by `scripts/validate-release-contract.py`.
 
 **Current source:** `1.0.0rc5.dev0`  
-**Current target:** `1.0.0rc5` (`development`; post-RC4 shadow line)
+**Current target:** `1.0.0rc5` (`development`; post-RC4 line on integrated RC4 main)
 
 ## Authority order
 
@@ -65,8 +65,8 @@ upgrade a semantic or native-harness claim without its required evidence.
 
 ## Release changes
 
-The post-RC4 shadow carries source version `1.0.0rc5.dev0` targeting
-`1.0.0rc5` with release status `development`. Exact RC4 candidate
+The post-RC4 development line carries source version `1.0.0rc5.dev0` targeting
+`1.0.0rc5` with release status `development`. Integrated RC4
 `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance; the previously qualified
 `1.0.0rc2` candidate also remains immutable at integrated commit
 `c9b86138d3919c4fce87040f14161364a0c1c3a0`. Future RC4 qualification must

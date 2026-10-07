@@ -13,8 +13,8 @@ repository development source
 != publicly published distribution
 ```
 
-The current post-RC4 shadow source is `1.0.0rc5.dev0` and the active release
-target is `1.0.0rc5` with status `development`. Exact RC4 candidate
+The current post-RC4 source is `1.0.0rc5.dev0` and the active release
+target is `1.0.0rc5` with status `development` on integrated RC4 `main`. Integrated RC4
 `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor
 provenance and its qualification does not transfer to these development bytes.
 Historical `1.0.0rc1` and qualified `1.0.0rc2` also remain immutable provenance.
@@ -33,7 +33,7 @@ While `release.status: candidate`:
 
 ## Candidate freeze
 
-The exact `1.0.0rc4` freeze proposal is preserved on PR #520. This RC5 development shadow is not a freeze proposal; a future RC5 candidate would require a new exact-source freeze and qualification after development converges.
+RC4 was integrated through PR #520 as `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` with the exact frozen candidate tree. Current RC5 development is not a freeze proposal; a future RC5 candidate requires a new exact-source freeze and qualification after development converges.
 
 Candidate qualification requires:
 

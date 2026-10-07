@@ -7,7 +7,7 @@ authoritative for exact IDs and claim statuses.
 
 ## Stable product surface
 
-The active `1.0.0rc5` Version 1.0 target is classified as **reduced scope**. Current shadow source is `1.0.0rc5.dev0`; exact RC4 candidate `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance. This document defines the post-RC4 development surface; a future RC5 candidate would require fresh exact-head qualification. The target promises the
+The active `1.0.0rc5` Version 1.0 target is classified as **reduced scope**. Current source is `1.0.0rc5.dev0` on integrated RC4 `main`; integrated RC4 `9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` remains immutable predecessor provenance. This document defines the post-RC4 development surface; a future RC5 candidate would require fresh exact-head qualification. The target promises the
 local-first, mechanically qualified product surface below. Native harness
 compatibility, cross-harness portability, and semantic usefulness are not
 Version 1.0 support promises.

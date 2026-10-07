@@ -6,8 +6,8 @@ checks that the declaration remains consistent with the repository.
 
 ## Product identity
 
-Current post-RC4 shadow source is `1.0.0rc5.dev0` with release status `development`,
-targeting `1.0.0rc5`. Exact RC4 candidate `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance. The qualified `1.0.0rc2` candidate also remains immutable
+Current post-RC4 source is `1.0.0rc5.dev0` with release status `development`,
+targeting `1.0.0rc5` on integrated RC4 `main`. Integrated RC4 `9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` remains immutable predecessor provenance. The qualified `1.0.0rc2` candidate also remains immutable
 historical provenance at integrated commit
 `c9b86138d3919c4fce87040f14161364a0c1c3a0`. The preceding RC3 candidate line
 supplies no qualification to current development bytes.
@@ -28,7 +28,7 @@ development source
 != public distribution
 ```
 
-For this shadow development line, `release.status` is `development` and the
+For this development line, `release.status` is `development` and the
 source version is `1.0.0rc5.dev0` while the target is `1.0.0rc5`. A future RC5
 freeze must change status to `candidate`, mint exact candidate identity, and earn
 fresh exact-source qualification before any RC5 candidate claim. Development status

@@ -94,13 +94,13 @@ python -m pip install -e . pytest pytest-subtests
 sensemaking-skills --version
 ```
 
-Current shadow source version: `1.0.0rc5.dev0`; active release target: `1.0.0rc5` (`development`). Exact RC4 candidate `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance; no RC4 qualification transfers to these development bytes.
+Current source version: `1.0.0rc5.dev0`; active release target: `1.0.0rc5` (`development`) on integrated RC4 `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776`. Integrated RC4 tree `8121f53cf08420131ba34c32e57882b71e9c0bff` remains immutable predecessor provenance; no RC4 qualification transfers to these changed development bytes.
 
 Current integrated RC4-development source is `main@95323faa8a26d06145bc260153048dcc8fb2af23`,
 tree `d0bf7bf1920a402fdbf9e9240fcba8ca0986d17b`. PR #518 head
 `1660d9b7a992d176194909b0e795bf33654bb428` has the same tree and passed all
 three hosted qualification lanes. Treat that as source-byte qualification
-evidence only; no hosted run is currently attached to the merge commit, and the RC4 freeze proposal remains separately governed. Exact-head qualification of this branch does not authorize integration or publication.
+evidence only. RC4 integrated as `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` with the exact frozen candidate tree, and Product/Lab/Release push qualification passed on that integrated commit. Exact-head qualification of the current RC5 development branch does not authorize merge or publication.
 
 
 For retained lab compatibility checks only:
