@@ -391,9 +391,45 @@ def setup_skills(
         sys.exit(1)
 
 
-@cli.group()
+_CAMPAIGN_VISIBLE_COMMANDS = frozenset({
+    "init",
+    "ingest",
+    "status",
+    "validate",
+    "advance",
+    "defer",
+    "close",
+    "inspect",
+    "resume-profile",
+    "working-context",
+    "advanced",
+})
+
+
+class _CampaignRootGroup(click.Group):
+    """Progressively disclose the durable Campaign kernel.
+
+    Secondary commands remain addressable at their historical root paths for
+    compatibility, but root help/completion presents only the normal kernel.
+    """
+
+    def list_commands(self, ctx):
+        return [
+            name
+            for name in super().list_commands(ctx)
+            if name in _CAMPAIGN_VISIBLE_COMMANDS
+        ]
+
+
+@cli.group(cls=_CampaignRootGroup)
 def campaign():
-    """Operate durable campaigns without making semantic decisions."""
+    """Operate the small durable Campaign kernel without semantic routing."""
+    pass
+
+
+@campaign.group(name="advanced")
+def campaign_advanced():
+    """Secondary inspection, lineage, portability, strategy, and compatibility surfaces."""
     pass
 
 
@@ -652,6 +688,13 @@ register_campaign_observability_commands(
     emit_error=_emit_campaign_error,
     json_echo=_json_echo,
 )
+
+# Progressive disclosure only: keep historical root command paths callable for
+# compatibility while making `campaign advanced` the discoverable home for
+# every non-kernel Campaign surface. No command semantics or authority change.
+for _campaign_name, _campaign_command in list(campaign.commands.items()):
+    if _campaign_name not in _CAMPAIGN_VISIBLE_COMMANDS:
+        campaign_advanced.add_command(_campaign_command, name=_campaign_name)
 
 register_semantic_commands(cli)
 register_organization_commands(cli)
