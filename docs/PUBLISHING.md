@@ -34,7 +34,7 @@ While `release.status: candidate`:
 
 ## Candidate freeze
 
-This branch is the `1.0.0rc4` freeze proposal after candidate-changing work converged. It becomes a qualified RC4 candidate only if the exact freeze head satisfies the required qualification gates; integration remains separately authorized.
+The exact `1.0.0rc4` freeze proposal is preserved on PR #520. This RC5 development shadow is not a freeze proposal; a future RC5 candidate would require a new exact-source freeze and qualification after development converges.
 
 Candidate qualification requires:
 
