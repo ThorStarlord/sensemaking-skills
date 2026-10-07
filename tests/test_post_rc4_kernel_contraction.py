@@ -6,6 +6,7 @@ These checks pin executable/product-surface facts rather than historical prose.
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 
 import yaml
@@ -80,6 +81,7 @@ def test_yolo_is_historical_not_current_execution_mode() -> None:
     spec = importlib.util.spec_from_file_location("workflow_runtime_kernel_regression", runtime_path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     assert "yolo_execution" in module.RETIRED_EXECUTION_MODES
     assert "yolo_execution" not in module.CURRENT_EXECUTION_MODES
