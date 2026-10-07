@@ -56,7 +56,7 @@ Logic trace: connects evidence to conclusion.
 
 ```yaml
 primary_fog_type: architecture_fog
-recommended_workflow_id: architectural-review-planning-workflow
+recommended_workflow_id: full-local-sensemaking
 escalation_recommended: false
 weakness_type: Zero Validation
 evidence:

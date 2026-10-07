@@ -33,3 +33,14 @@ contribute 5 FAILED + 15 SUBFAIL = 20 of the failures. After this change those 2
 If the retired workflows are ever restored to the registry as `active`, move
 the corresponding file(s) back to `tests/integration/` and remove this
 directory's `norecursedirs` entry when empty.
+
+
+## Post-RC4 additions (2026-10-07)
+
+- `test_architectural_review_recommendation_runtime.py`
+- `test_architectural_review_acceptance.py`
+
+These prove the historical `architectural-review-planning-workflow` wrapper and
+`--from-session` execution route. The current path invokes the
+`architectural-review` Skill directly, so keeping these tests in the live suite
+would require preserving a workflow runtime solely to satisfy its own tests.
