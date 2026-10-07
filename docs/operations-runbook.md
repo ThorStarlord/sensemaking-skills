@@ -94,7 +94,7 @@ python -m pip install -e . pytest pytest-subtests
 sensemaking-skills --version
 ```
 
-Current freeze-proposal source version: `1.0.0rc4`; active release target: `1.0.0rc4` (`candidate`). Qualified `1.0.0rc2` remains frozen at `c9b86138d3919c4fce87040f14161364a0c1c3a0`; no earlier qualification transfers to current development bytes.
+Current shadow source version: `1.0.0rc5.dev0`; active release target: `1.0.0rc5` (`development`). Exact RC4 candidate `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance; no RC4 qualification transfers to these development bytes.
 
 Current integrated RC4-development source is `main@95323faa8a26d06145bc260153048dcc8fb2af23`,
 tree `d0bf7bf1920a402fdbf9e9240fcba8ca0986d17b`. PR #518 head
