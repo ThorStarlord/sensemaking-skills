@@ -1,4 +1,4 @@
-# Version 1.0 Public Surface (reduced-scope `1.0.0rc4` release-candidate proposal)
+# Version 1.0 Public Surface (reduced-scope `1.0.0rc5` development target)
 
 This document is the operator-facing interpretation of
 [`release-v1.0.yaml`](../release-v1.0.yaml). The machine-readable release
@@ -7,7 +7,7 @@ authoritative for exact IDs and claim statuses.
 
 ## Stable product surface
 
-The active `1.0.0rc4` Version 1.0 target is classified as **reduced scope**. Current freeze-proposal source is `1.0.0rc4`; the previously qualified `1.0.0rc2` candidate remains immutable historical provenance. This document defines the RC4 candidate surface, subject to fresh exact-head qualification. The target promises the
+The active `1.0.0rc5` Version 1.0 target is classified as **reduced scope**. Current shadow source is `1.0.0rc5.dev0`; exact RC4 candidate `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance. This document defines the post-RC4 development surface; a future RC5 candidate would require fresh exact-head qualification. The target promises the
 local-first, mechanically qualified product surface below. Native harness
 compatibility, cross-harness portability, and semantic usefulness are not
 Version 1.0 support promises.
