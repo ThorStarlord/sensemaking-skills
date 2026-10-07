@@ -132,6 +132,33 @@ def test_resume_and_validate_fail_closed_on_unrecorded_target_drift(tmp_path: Pa
     assert observed.state.target_snapshot is not None
     assert observed.state.target_snapshot != capture_target_snapshot(repo)
 
+    runner = CliRunner()
+    status = runner.invoke(
+        cli,
+        ["campaign", "status", "--workspace", str(workspace), "--json"],
+    )
+    assert status.exit_code == 0, status.output
+    status_payload = json.loads(status.output)
+    assert status_payload["continuation_safe"] is False
+    assert any(
+        item["code"] == "TARGET_SNAPSHOT_DRIFT"
+        for item in status_payload["diagnostics"]
+    )
+
+    resume = runner.invoke(
+        cli,
+        ["campaign", "resume-profile", "--workspace", str(workspace), "--json"],
+    )
+    assert resume.exit_code == 0, resume.output
+    resume_payload = json.loads(resume.output)
+    assert resume_payload["projection"] == "minimal"
+    assert resume_payload["orientation_only"] is True
+    assert resume_payload["continuation_safe"] is False
+    assert any(
+        item["code"] == "TARGET_SNAPSHOT_DRIFT"
+        for item in resume_payload["diagnostics"]
+    )
+
 
 def test_lifecycle_transition_binds_source_and_post_work_target_snapshots(tmp_path: Path) -> None:
     repo = _repo(tmp_path)

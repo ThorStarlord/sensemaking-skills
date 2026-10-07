@@ -174,3 +174,25 @@ def test_campaign_inventory_is_sorted_and_does_not_prioritize(tmp_path: Path) ->
     assert [Path(item["workspace"]).name for item in payload["entries"]] == ["a", "b"]
     assert payload["prioritization_performed"] is False
     assert payload["semantic_recommendation_included"] is False
+
+
+
+def test_resume_profile_orients_when_transaction_recovery_is_blocked(tmp_path: Path) -> None:
+    workspace = _workspace(tmp_path)
+    invalid_entry = workspace / ".transactions" / "not-a-valid-transaction!"
+    invalid_entry.write_text("invalid\n", encoding="utf-8")
+
+    result = CliRunner().invoke(
+        cli,
+        ["campaign", "resume-profile", "--workspace", str(workspace), "--json"],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["orientation_only"] is True
+    assert payload["continuation_safe"] is False
+    assert payload["strict_resume_error"]
+    assert any(
+        item["status"] == "invalid"
+        for item in payload["lifecycle_transactions"]
+    )

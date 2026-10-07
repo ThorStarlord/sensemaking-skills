@@ -571,18 +571,61 @@ def campaign_ingest(
 )
 @click.option("--json", "output_json", is_flag=True, help="Emit JSON")
 def campaign_status(workspace: Path, output_json: bool):
-    """Show what durable campaign state currently says."""
+    """Orient from durable state without treating read access as continuation authority."""
     try:
-        snapshot = CampaignService(workspace).resume()
+        service = CampaignService(workspace)
+        result, snapshot = service.inspect()
+        transactions = service.store.inspect_lifecycle_transactions()
     except (CampaignWorkspaceError, ContractError) as exc:
         _emit_campaign_error(exc, output_json=output_json)
 
+    blocking_transactions = [
+        item for item in transactions if item["status"] in {"pending", "invalid"}
+    ]
+    continuation_safe = result.valid and not blocking_transactions
+    diagnostics = [
+        {"code": diagnostic.code, "detail": diagnostic.detail}
+        for diagnostic in result.diagnostics
+    ]
     if output_json:
         payload = _status_payload(snapshot)
-        payload["code"] = "CAMPAIGN_STATUS"
+        payload.update(
+            {
+                "ok": True,
+                "code": (
+                    "CAMPAIGN_STATUS"
+                    if continuation_safe
+                    else "CAMPAIGN_STATUS_WITH_DIAGNOSTICS"
+                ),
+                "continuation_safe": continuation_safe,
+                "diagnostics": diagnostics,
+                "blocking_lifecycle_transactions": blocking_transactions,
+                "explicit_limit": (
+                    "Status is read-only orientation. continuation_safe=false "
+                    "means strict resume/mutation still requires resolving the "
+                    "reported integrity or transaction condition."
+                ),
+            }
+        )
         _json_echo(payload)
     else:
-        _echo_campaign_status(snapshot, heading="CAMPAIGN_STATUS")
+        _echo_campaign_status(
+            snapshot,
+            heading=(
+                "CAMPAIGN_STATUS"
+                if continuation_safe
+                else "CAMPAIGN_STATUS_WITH_DIAGNOSTICS"
+            ),
+        )
+        if not continuation_safe:
+            click.echo("Continuation safe: false")
+            for diagnostic in result.diagnostics:
+                click.echo(f"  {diagnostic.code}: {diagnostic.detail}")
+            for item in blocking_transactions:
+                click.echo(
+                    f"  transaction {item.get('name')}: {item.get('status')} "
+                    f"{', '.join(item.get('diagnostics', ())) }"
+                )
 
 
 @campaign.command(name="validate")
