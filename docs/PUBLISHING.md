@@ -13,12 +13,11 @@ repository development source
 != publicly published distribution
 ```
 
-The current freeze-proposal source is `1.0.0rc4` and the active release target
-is `1.0.0rc4` with status `candidate`. Historical `1.0.0rc1` remains qualified
-provenance for exact commit `70542d47412d98ee6dfae5de6df29bf271304568`;
-qualified `1.0.0rc2` remains frozen at integrated commit
-`c9b86138d3919c4fce87040f14161364a0c1c3a0`. The preceding RC3 candidate
-line does not qualify the current RC4 development bytes.
+The current post-RC4 shadow source is `1.0.0rc5.dev0` and the active release
+target is `1.0.0rc5` with status `development`. Exact RC4 candidate
+`d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor
+provenance and its qualification does not transfer to these development bytes.
+Historical `1.0.0rc1` and qualified `1.0.0rc2` also remain immutable provenance.
 
 `pyproject.toml` `[project].version` is the literal source/build version.
 `release-v1.0.yaml` declares the release target and phase.
