@@ -243,7 +243,7 @@ def test_installed_wheel_supports_p7_handoff_and_fresh_resume_without_source_che
     workspace = work_dir / "CMP-P7-WHEEL"
 
     campaign_help = subprocess.run(
-        [cli_path, "campaign", "--help"],
+        [cli_path, "campaign", "advanced", "--help"],
         capture_output=True, text=True, timeout=60, cwd=str(work_dir),
     )
     assert campaign_help.returncode == 0, campaign_help.stdout + campaign_help.stderr
@@ -319,7 +319,7 @@ def test_installed_wheel_supports_p8_lineage_without_source_checkout(tmp_path):
     workspace = work_dir / "CMP-P8-WHEEL"
 
     campaign_help = subprocess.run(
-        [cli_path, "campaign", "--help"],
+        [cli_path, "campaign", "advanced", "--help"],
         capture_output=True, text=True, timeout=60, cwd=str(work_dir),
     )
     assert campaign_help.returncode == 0, campaign_help.stdout + campaign_help.stderr
