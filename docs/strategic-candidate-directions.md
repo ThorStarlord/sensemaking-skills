@@ -738,7 +738,7 @@ Use this reservoir to remember possibilities. Use Level 3 to decide whether any 
 
 ## 14. Architecture simplification disposition from adversarial review
 
-### RC4 selective contraction decision
+### RC4 selective contraction decision — integrated
 
 Follow-up consumer tracing narrows the next cuts:
 
@@ -762,6 +762,11 @@ change-impact analysis, multi-repository analysis, and the PM artifact-family
 validators protect distinct invariants/representations. Shared parsing
 boilerplate alone does not justify a new validator framework or a broader
 failure domain.
+
+PR #518 integrated this selective contraction on `main@95323faa8a26d06145bc260153048dcc8fb2af23`.
+No further workflow/Skill pruning is selected before normal-use/control evidence
+shows a concrete recurring failure or maintenance burden. The next strategic
+question is evidence, not another simplification package.
 
 
 **Current reconciliation:** `IMPLEMENTED_DEFAULT_SURFACE_REDUCTION` + `FURTHER_DELETION_EVIDENCE_GATED`.

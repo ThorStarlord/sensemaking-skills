@@ -159,7 +159,7 @@ Dark Factory operator Skill
 
 ## 5. Current implementation disposition
 
-The operator Skill remains **candidate-only / not shipped by default** during the `1.0.0rc4.dev0` simplification line.
+The operator Skill remains **candidate-only / not shipped by default** during the `1.0.0rc4` simplification line.
 
 Do not add it to the current shipped Skill catalogue merely from architectural
 attractiveness. A new shipped Skill is warranted when a concrete Dark Factory

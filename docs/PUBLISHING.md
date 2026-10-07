@@ -13,8 +13,8 @@ repository development source
 != publicly published distribution
 ```
 
-The current repository source is `1.0.0rc4.dev0` and the active release target
-is `1.0.0rc4` with status `development`. Historical `1.0.0rc1` remains qualified
+The current freeze-proposal source is `1.0.0rc4` and the active release target
+is `1.0.0rc4` with status `candidate`. Historical `1.0.0rc1` remains qualified
 provenance for exact commit `70542d47412d98ee6dfae5de6df29bf271304568`;
 qualified `1.0.0rc2` remains frozen at integrated commit
 `c9b86138d3919c4fce87040f14161364a0c1c3a0`. The preceding RC3 candidate
@@ -23,19 +23,18 @@ line does not qualify the current RC4 development bytes.
 `pyproject.toml` `[project].version` is the literal source/build version.
 `release-v1.0.yaml` declares the release target and phase.
 
-## Development phase
+## Candidate phase
 
-While `release.status: development`:
+While `release.status: candidate`:
 
-- the source version is the development predecessor of the target (for example, a future target would use a `.dev0` predecessor);
-- Product Validation and distribution validation may run;
-- passing those checks does **not** qualify a frozen release candidate;
-- current source must not present itself as the frozen `1.0.0rc4` candidate.
+- the source version equals the release target exactly;
+- Product Validation, Lab Validation where applicable, and Release Candidate Distribution may qualify the exact branch head;
+- passing checks qualifies only that exact source/tree for the claims those checks establish;
+- candidate qualification does **not** authorize merge, PyPI publication, tagging, or final `1.0.0`.
 
 ## Candidate freeze
 
-A future `1.0.0rc4` candidate may be frozen only after current candidate-changing
-work converges. The current `1.0.0rc4.dev0` source is development state, not a frozen candidate.
+This branch is the `1.0.0rc4` freeze proposal after candidate-changing work converged. It becomes a qualified RC4 candidate only if the exact freeze head satisfies the required qualification gates; integration remains separately authorized.
 
 Candidate qualification requires:
 

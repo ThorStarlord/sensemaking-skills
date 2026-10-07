@@ -3,13 +3,27 @@
 Use this checklist with [`release-v1.0-contract.md`](release-v1.0-contract.md).
 It is a gate record, not evidence that the gates have already passed.
 
-The current contract is a reduced-scope Version 1.0 development target.
-Repository source is `1.0.0rc4.dev0` with status `development` toward
-`1.0.0rc4`. The qualified `1.0.0rc2` candidate remains immutable historical
-provenance; current development must be frozen and freshly qualified before a
-new candidate claim. External harness, portability, and semantic-usefulness evidence is
+The current contract is a reduced-scope Version 1.0 candidate proposal.
+Repository source is `1.0.0rc4` with status `candidate`. The qualified
+`1.0.0rc2` candidate remains immutable historical provenance; this RC4 source
+must earn fresh exact-head qualification before any candidate qualification
+claim. External harness, portability, and semantic-usefulness evidence is
 intentionally excluded from the support promise and remains deferred research
 evidence.
+
+### Pre-freeze RC4 development integration evidence
+
+This is **pre-freeze development evidence, not RC4 candidate qualification**:
+
+- integrated `main`: `95323faa8a26d06145bc260153048dcc8fb2af23`;
+- integrated Git tree: `d0bf7bf1920a402fdbf9e9240fcba8ca0986d17b`;
+- qualified PR #518 head: `1660d9b7a992d176194909b0e795bf33654bb428`;
+- qualified PR #518 tree: `d0bf7bf1920a402fdbf9e9240fcba8ca0986d17b`;
+- Product Validation #1380, Lab Validation #164, and Release Candidate Distribution #509 passed on that PR head.
+
+The identical tree establishes byte equivalence between the qualified PR source
+and current merged source. It does **not** mean a hosted run executed on the
+merge commit, and it does not freeze or qualify `1.0.0rc4` as a candidate.
 
 ## Architecture and contracts
 
