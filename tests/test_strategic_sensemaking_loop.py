@@ -20,7 +20,7 @@ RELEASE = ROOT / "release-v1.0.yaml"
 CONTRACTS = ROOT / "skills" / "workflow-planner" / "references" / "artifact-contracts.yaml"
 OUTER = ROOT / "docs" / "strategic-outer-loop.md"
 GETTING_STARTED = ROOT / "GETTING_STARTED.md"
-RECONCILIATION = ROOT / "artifacts" / "strategic_reconciliation.md"
+RECONCILIATION = ROOT / "artifacts" / "history" / "2026-09-22-strategic-reconciliation.md"
 
 
 def _flat(text: str) -> str:

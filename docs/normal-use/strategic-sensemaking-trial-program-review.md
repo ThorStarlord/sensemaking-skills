@@ -5,7 +5,7 @@ episodes on Pydantic, Jellyfin, and AION Workflow Core), 2026-09-29
 (ratified 2026-09-30).
 
 **Ratified by the owner on 2026-09-30.** Source:
-`artifacts/owner_decision_capsule.md` (`OWNER-DECISION-SIMPLIFY-001`); decision:
+`artifacts/history/2026-09-30-owner-decision-simplify-hard.md` (`OWNER-DECISION-SIMPLIFY-001`); decision:
 Option B (staged program), Stage 1 only, verdict "simplify hard" (originally
 tracked in #497, closed; remaining decisions in #506). This is not a score,
 benchmark, or control/treatment study (guide section 14).
@@ -87,7 +87,7 @@ discipline in 002 (the control, not the skill, breached read-only).
 
 ## Verdict (ratified by the owner, 2026-09-30)
 
-**Ratified.** Owner decision packet: `artifacts/owner_decision_capsule.md`
+**Ratified.** Owner decision packet: `artifacts/history/2026-09-30-owner-decision-simplify-hard.md`
 (`OWNER-DECISION-SIMPLIFY-001`). The owner selected **Option B (staged program),
 authorized for Stage 1 only** (documentation-volume reduction); Stage 2 and
 Stage 3 are withheld until Stage 1 passes its suite-green check. RC3 / PyPI /
@@ -113,7 +113,7 @@ advantage at the ≥2/3 bar**, so the honest verdict is **simplify hard**, not
 
 This revision changes the earlier agent-authored draft verdict. The owner has
 since **ratified "simplify hard"** and chosen Option B, Stage 1 only
-(`artifacts/owner_decision_capsule.md`).
+(`artifacts/history/2026-09-30-owner-decision-simplify-hard.md`).
 
 **Re-measure (3 episodes per arm per task):**
 `strategic-sensemaking-remeasure-2026-09-30.md` — reinforces "simplify hard"
