@@ -1,4 +1,4 @@
-# Version 1.0 Release Contract (`1.0.0rc4` reduced-scope candidate proposal)
+# Version 1.0 Release Contract (`1.0.0rc5` reduced-scope development target)
 
 This document defines the intended Version 1.0 support surface. The machine-
 readable authority is `release-v1.0.yaml`; `scripts/validate-release-contract.py`
@@ -6,8 +6,8 @@ checks that the declaration remains consistent with the repository.
 
 ## Product identity
 
-Current freeze-proposal source is `1.0.0rc4` with release status `candidate`,
-targeting `1.0.0rc4`. The qualified `1.0.0rc2` candidate remains immutable
+Current post-RC4 shadow source is `1.0.0rc5.dev0` with release status `development`,
+targeting `1.0.0rc5`. Exact RC4 candidate `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance. The qualified `1.0.0rc2` candidate also remains immutable
 historical provenance at integrated commit
 `c9b86138d3919c4fce87040f14161364a0c1c3a0`. The preceding RC3 candidate line
 supplies no qualification to current development bytes.
@@ -15,7 +15,7 @@ Historical `1.0.0rc1` remains qualified provenance for exact commit
 `70542d47412d98ee6dfae5de6df29bf271304568`, but continued development
 superseded it as the identity of current `main`.
 
-The `1.0.0rc4` target is a reduced-scope release of the local-first Sensemaking
+The `1.0.0rc5` target is a reduced-scope release of the local-first Sensemaking
 repository decision-support and durability layer and its manifest-backed agent Skills. The active agent
 owns semantic judgment. The product owns durable state, evidence references,
 mechanical validation, provenance, integrity, and explicit authority metadata.
@@ -28,9 +28,10 @@ development source
 != public distribution
 ```
 
-For this freeze proposal, `release.status` is `candidate` and the source
-version equals the target version exactly. Fresh exact-source qualification is
-required before any `1.0.0rc4` candidate qualification claim. Candidate status
+For this shadow development line, `release.status` is `development` and the
+source version is `1.0.0rc5.dev0` while the target is `1.0.0rc5`. A future RC5
+freeze must change status to `candidate`, mint exact candidate identity, and earn
+fresh exact-source qualification before any RC5 candidate claim. Development status
 does not itself establish qualification, publication, or owner authorization.
 
 ## Stable surface
