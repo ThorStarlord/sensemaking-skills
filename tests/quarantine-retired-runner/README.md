@@ -58,3 +58,9 @@ were removed after all remaining metadata carriers became `compatibility_only`:
 The historical metadata remains in catalog records for provenance. Current
 execution no longer parses it, surfaces hypothetical child workflows, or keeps a
 no-op router alive merely to prove that it will not route.
+
+
+- `test_field_contract_agreement.py` was also retired with the executable
+  auto-routing consumer. Its sole contract was that the removed runtime routing
+  alias lists matched artifact schemas; with those readers gone, preserving the
+  alias lists only to satisfy this test would recreate dead product machinery.
