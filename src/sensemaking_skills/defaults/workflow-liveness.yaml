@@ -16,3 +16,7 @@ overrides:
   fast-path-workflow: compatibility_only
   autonomous-sprint-preflight: compatibility_only
   product-strategy-sprint: compatibility_only
+
+  # Post-RC4 direct-responsibility migration. The architectural-review
+  # wrapper is not shipped in the packaged registry; product discovery is.
+  product-discovery-sprint: compatibility_only

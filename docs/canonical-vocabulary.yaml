@@ -705,8 +705,8 @@ artifact_ids:
     artifact_type: handoff
 
   - id: architectural_review_recommendation
-    description: "Recommended architectural response with decision fields, produced by the architectural-review-planning workflow"
-    produced_by: architectural-review-planning-workflow
+    description: "Recommended architectural response with decision fields, produced directly by the architectural-review Skill"
+    produced_by: architectural-review
     consumed_by: [workflow-planner]
     artifact_type: plan
 
