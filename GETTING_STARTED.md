@@ -35,7 +35,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-The repository source on the RC4 freeze proposal is `1.0.0rc4`. The previously qualified `1.0.0rc2` candidate remains immutable historical provenance; no earlier qualification transfers to RC4. Candidate qualification applies only to the exact qualified RC4 source and does not authorize publication. Install from source:
+The repository source on this post-RC4 shadow is `1.0.0rc5.dev0`, developing toward the reduced-scope `1.0.0rc5` candidate target. The exact RC4 candidate at `d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance; no RC4 qualification transfers to these development bytes. Install from source:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git
@@ -449,16 +449,23 @@ Initialization records repository identity/state and creates durable structure. 
 
 For repository-level strategic work, inspect Level-3 state first and use `campaign strategy handoff` only after the active agent has explicitly selected a current frontier item and responsibility.
 
+## Use the small Campaign root first
+
+`campaign --help` shows the durable kernel only. Secondary composition,
+history, portability, graph, strategy, and compatibility tools are under
+`campaign advanced`. Historical direct command paths remain callable during
+the compatibility window, but new guidance should use the advanced namespace.
+
 ## See the current Campaign golden paths
 
 When Campaign durability is warranted, the CLI exposes static navigation for composing existing Campaign surfaces. It does not choose a flow or execute its steps. The canonical workflow-composition reference is `docs/agent-workflow-golden-path-v1.md`.
 
 ```bash
-sensemaking-skills campaign workflow list
-sensemaking-skills campaign workflow show single-repository
-sensemaking-skills campaign workflow show fresh-context
-sensemaking-skills campaign workflow show transferred-campaign
-sensemaking-skills campaign workflow show multi-repository
+sensemaking-skills campaign advanced workflow list
+sensemaking-skills campaign advanced workflow show single-repository
+sensemaking-skills campaign advanced workflow show fresh-context
+sensemaking-skills campaign advanced workflow show transferred-campaign
+sensemaking-skills campaign advanced workflow show multi-repository
 ```
 
 The same agent-facing reference ships at `skills/using-sensemaking/references/golden-paths-v1.md`.
@@ -490,7 +497,7 @@ sensemaking-skills campaign resume-profile \
   --profile working \
   --json
 
-sensemaking-skills campaign preflight \
+sensemaking-skills campaign advanced preflight \
   --workspace /tmp/CMP-0001 \
   --json
 ```
@@ -500,7 +507,7 @@ Use `campaign doctor` when a mechanical preflight failure needs a bounded diagno
 ## Inspect capabilities after responsibility selection
 
 ```bash
-sensemaking-skills campaign capability-context \
+sensemaking-skills campaign advanced capability-context \
   --workspace /tmp/CMP-0001 \
   --responsibility-type architectural_review \
   --json
@@ -537,9 +544,9 @@ authority classification recorded
 `campaign close` remains the semantic terminal decision. Only afterward can a deterministic completion receipt be created:
 
 ```bash
-sensemaking-skills campaign closeout --workspace /tmp/CMP-0001 --json
-sensemaking-skills campaign completion-receipt --workspace /tmp/CMP-0001 --json
-sensemaking-skills campaign archive --workspace /tmp/CMP-0001 --json
+sensemaking-skills campaign advanced closeout --workspace /tmp/CMP-0001 --json
+sensemaking-skills campaign advanced completion-receipt --workspace /tmp/CMP-0001 --json
+sensemaking-skills campaign advanced archive --workspace /tmp/CMP-0001 --json
 ```
 
 Archive is a nondestructive marker, not a success judgment.
@@ -549,14 +556,14 @@ Archive is a nondestructive marker, not a success judgment.
 Inspect bundle bytes before durable import:
 
 ```bash
-sensemaking-skills campaign bundle-inspect --bundle /path/to/CMP-0001.bundle --json
-sensemaking-skills campaign bundle-resume-context --bundle /path/to/CMP-0001.bundle --json
+sensemaking-skills campaign advanced bundle-inspect --bundle /path/to/CMP-0001.bundle --json
+sensemaking-skills campaign advanced bundle-resume-context --bundle /path/to/CMP-0001.bundle --json
 ```
 
 After explicit import, provide the local target path rather than asking Sensemaking to discover it:
 
 ```bash
-sensemaking-skills campaign target rebind \
+sensemaking-skills campaign advanced target rebind \
   --workspace /path/to/imported/CMP-0001 \
   --target-repo /new/path/to/repository \
   --json
@@ -569,11 +576,11 @@ Rebinding accepts only the same recorded repository identity and exact recorded 
 Additional repositories are explicitly added by alias. Relationships are explicitly authored, then mechanically checked:
 
 ```bash
-sensemaking-skills campaign multi-target add --help
-sensemaking-skills campaign multi-target relate --help
-sensemaking-skills campaign multi-target verify --help
-sensemaking-skills campaign multi-target dependency-check --help
-sensemaking-skills campaign multi-target graph --help
+sensemaking-skills campaign advanced multi-target add --help
+sensemaking-skills campaign advanced multi-target relate --help
+sensemaking-skills campaign advanced multi-target verify --help
+sensemaking-skills campaign advanced multi-target dependency-check --help
+sensemaking-skills campaign advanced multi-target graph --help
 ```
 
 Multi-target membership or dependency validity is not proof that the architecture or execution order is correct.
@@ -581,8 +588,8 @@ Multi-target membership or dependency validity is not proof that the architectur
 ## Inspect evidence lineage and reconciliation
 
 ```bash
-sensemaking-skills campaign lineage --workspace /tmp/CMP-0001
-sensemaking-skills campaign reconciliation --workspace /tmp/CMP-0001
+sensemaking-skills campaign advanced lineage --workspace /tmp/CMP-0001
+sensemaking-skills campaign advanced reconciliation --workspace /tmp/CMP-0001
 ```
 
 These commands reconstruct mechanical provenance/disposition state; they do not decide what the evidence means.
@@ -590,8 +597,8 @@ These commands reconstruct mechanical provenance/disposition state; they do not 
 ## Handoff and resume
 
 ```bash
-sensemaking-skills campaign handoff --workspace /tmp/CMP-0001
-sensemaking-skills campaign resume --workspace /tmp/CMP-0001
+sensemaking-skills campaign advanced handoff --workspace /tmp/CMP-0001
+sensemaking-skills campaign advanced resume --workspace /tmp/CMP-0001
 ```
 
 The durable handoff allows a fresh context to reconstruct the Campaign without relying on the previous chat transcript.

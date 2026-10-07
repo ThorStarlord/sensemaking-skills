@@ -738,7 +738,7 @@ Use this reservoir to remember possibilities. Use Level 3 to decide whether any 
 
 ## 14. Architecture simplification disposition from adversarial review
 
-### RC4 selective contraction decision — integrated
+### RC4 selective contraction decision — integrated baseline
 
 Follow-up consumer tracing narrows the next cuts:
 
@@ -746,15 +746,10 @@ Follow-up consumer tracing narrows the next cuts:
 - `artifact-reconciliation` -> `compatibility_only`, preserving direct
   reconciliation Skills rather than productizing its unevidenced tail;
 - `autonomous-sprint-preflight` -> `compatibility_only`;
-- `product-discovery-sprint` -> **retain active for now** because current
-  product-fog recommendation contracts still consume it;
-- `architectural-review-planning-workflow` -> **retain active for now**
-  because current architecture-fog recommendation contracts still consume it.
+- `product-discovery-sprint` -> `compatibility_only` after migrating product-fog producers/consumers to the already-supported truthful no-match representation;
+- `architectural-review-planning-workflow` -> `compatibility_only` after moving the current architecture responsibility directly to the `architectural-review` Skill.
 
-The repository already supports a truthful no-match brief
-(`recommended_workflow_id: null` + `escalation_recommended: true`). Future
-demotion of a live default must migrate its producer/consumer contract to that
-state explicitly; do not invent a replacement workflow.
+No replacement workflow is introduced. Product/architecture fog remains diagnostic context, not routing authority.
 
 Stage-2 validator tracing also finds no present consolidation warrant:
 error-boundary safety, final release readiness, semantic-reasoning profiles,
@@ -763,25 +758,17 @@ validators protect distinct invariants/representations. Shared parsing
 boilerplate alone does not justify a new validator framework or a broader
 failure domain.
 
-PR #518 integrated this selective contraction on `main@95323faa8a26d06145bc260153048dcc8fb2af23`.
-No further workflow/Skill pruning is selected before normal-use/control evidence
-shows a concrete recurring failure or maintenance burden. The next strategic
-question is evidence, not another simplification package.
+PR #518 integrated the selective RC4 contraction on `main@95323faa8a26d06145bc260153048dcc8fb2af23`. The qualified RC4 candidate PR #520 preserves that baseline; this shadow layers the post-RC4 pragmatic-kernel contraction on top of its exact candidate source without changing #520 itself.
 
-
-**Current reconciliation:** `IMPLEMENTED_DEFAULT_SURFACE_REDUCTION` + `FURTHER_DELETION_EVIDENCE_GATED`.
+**Current reconciliation:** `POST_RC4_PRAGMATIC_KERNEL_CONTRACTION_SHADOW` + `FURTHER_DELETION_EVIDENCE_GATED`.
 
 The 2026-10-05 adversarial claims-vs-runtime review, the owner-ratified
 `simplify hard` verdict, and the subsequent re-measure now produce an explicit
 subtractive disposition rather than another control subsystem.
 
-Implemented in the RC4 development line:
+Implemented in the post-RC4 shadow development line:
 
-1. **Contradictory auto-orchestration is demoted.** `fast-path-workflow` is
-   `compatibility_only` because its historical auto-chaining claim does not
-   match current runtime behavior. Other workflow liveness remains governed by
-   ADR 0027. `SkillsOrchestrator.run_workflow` requires an explicit execution
-   mode and no longer turns omission into `yolo_execution`.
+1. **Parallel workflow routing is removed from current execution.** Active workflows carry no auto-execution metadata; `product-discovery-sprint` and `architectural-review-planning-workflow` are compatibility-only; runtime/package auto-invocation consumers are removed; and no replacement workflow router is introduced. Historical catalog metadata remains provenance only.
 2. **Organization is out of the normal loop.** The read-only tracer remains
    callable for explicit topology research/compatibility, but it is removed from
    normal strategic resume/execution guidance and default navigation.
@@ -795,10 +782,7 @@ Implemented in the RC4 development line:
 5. **Current navigation is a spine, not a catalogue.** Root and docs navigation
    lead through a small current authority path; historical and advanced
    machinery is explicitly secondary.
-6. **Continuation starts minimal.** `campaign resume-profile` defaults to the
-   `minimal` projection. Read-only `campaign inspect` remains available for
-   orientation when strict recovery or target-currentness checks block
-   continuation.
+6. **Continuation starts minimal and remains orientable under drift.** `campaign resume-profile` defaults to `minimal`; `campaign status` and `resume-profile` can project last materialized state plus diagnostics when strict continuation is blocked; mutation/validation remains fail-closed.
 7. **Campaign remains exceptional-by-default.** Direct bounded work is the
    default when one context can safely complete the responsibility; Campaign is
    justified by continuation complexity, not importance or task size.
@@ -806,9 +790,9 @@ Implemented in the RC4 development line:
    "schema validates" are insufficient retention reasons. A validator or
    abstraction must protect user-facing correctness, safety, provenance,
    release integrity, or a demonstrated recurring failure.
-9. **Execution assertions expose their claim ceiling.** Result records distinguish
-   mechanically compared source-before identity from worker-reported,
-   unverified source-after/changed-path/validation/claim/authority assertions.
+9. **Execution assertions expose their claim ceiling.** Result records distinguish mechanically compared source-before identity from worker-reported, unverified source-after/changed-path/validation/claim/authority assertions and explicitly set protected-transition / closure eligibility to false without independent verification.
+10. **Normal Campaign discoverability is contracted.** Root help/completion exposes the durable kernel; secondary history, graph, portability, strategy, and compatibility surfaces live under `campaign advanced`, while historical direct aliases remain callable during the compatibility window.
+11. **Tests and artifacts stop acting like product state.** Prose-only closeout tests are removed; dated September strategic instances move under `artifacts/history/` while canonical future artifact contracts remain unchanged.
 
 Still evidence-gated rather than performed destructively:
 
