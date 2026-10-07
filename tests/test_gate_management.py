@@ -1,4 +1,4 @@
-"""Tests for workflow-runtime.py _manage_gate() across all 5 execution modes."""
+"""Tests for workflow-runtime.py gate semantics across current modes plus retired YOLO."""
 
 import os
 import sys
@@ -48,11 +48,12 @@ def test_prompt_chain_gate_not_applicable():
     assert runner.gate_decisions[-1]["result"] == "not_applicable"
 
 
-def test_yolo_gate_bypassed():
+def test_yolo_gate_bypass_is_retired():
     runner = _make_runner("yolo_execution")
     result = runner._manage_gate("review", 3, "test-skill")
-    assert result == "bypassed"
-    assert runner.gate_decisions[-1]["result"] == "bypassed"
+    assert result == "timed_out"
+    assert runner.gate_decisions == []
+    assert any("EXECUTION_MODE_RETIRED" in error for error in runner.errors)
 
 
 def test_autonomous_gate_automated_approval():
@@ -62,11 +63,12 @@ def test_autonomous_gate_automated_approval():
     assert runner.gate_decisions[-1]["approved_by"] == "automated_gate"
 
 
-def test_guided_gate_auto_approve():
+def test_guided_gate_test_auto_approve_is_not_user_approval():
     runner = _make_runner("guided_execution", "auto-approve")
     result = runner._manage_gate("review", 5, "test-skill")
-    assert result == "approved_by_user"
-    assert runner.gate_decisions[-1]["approved_by"] == "auto_gate"
+    assert result == "automated_approval"
+    assert runner.gate_decisions[-1]["result"] == "automated_approval"
+    assert runner.gate_decisions[-1]["approved_by"] == "test_auto_gate"
 
 
 def test_guided_gate_auto_deny():
@@ -95,17 +97,17 @@ def test_unknown_mode_defaults_to_not_applicable():
 
 
 def test_gate_decision_records_step_and_gate_name():
-    runner = _make_runner("yolo_execution")
+    runner = _make_runner("autonomous_execution")
     runner._manage_gate("my_gate", 99, "some-skill")
     entry = runner.gate_decisions[-1]
     assert entry["step"] == 99
     assert entry["gate"] == "my_gate"
-    assert entry["mode"] == "yolo_execution"
+    assert entry["mode"] == "autonomous_execution"
 
 
 def test_timestamp_is_iso_format():
     import re
-    runner = _make_runner("yolo_execution")
+    runner = _make_runner("autonomous_execution")
     runner._manage_gate("review", 1, "test-skill")
     ts = runner.gate_decisions[-1]["timestamp"]
     assert re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", ts)

@@ -84,8 +84,13 @@ KNOWN_MODES = OrderedDict([
     ("prompt_chain", {"gates": "none", "mutation": False, "risk": "none"}),
     ("guided_execution", {"gates": "mandatory", "mutation": True, "risk": "low"}),
     ("autonomous_execution", {"gates": "automated", "mutation": True, "risk": "medium"}),
-    ("yolo_execution", {"gates": "bypassed", "mutation": True, "risk": "high"}),
+    # Historical record vocabulary only. Current execution rejects this mode.
+    ("yolo_execution", {"gates": "bypassed", "mutation": True, "risk": "retired"}),
 ])
+CURRENT_EXECUTION_MODES = tuple(
+    mode for mode in KNOWN_MODES if mode != "yolo_execution"
+)
+RETIRED_EXECUTION_MODES = {"yolo_execution"}
 
 GATE_RESULTS = ["approved_by_user", "denied_by_user", "automated_approval", "bypassed", "not_applicable"]
 
@@ -253,6 +258,13 @@ class OrchestrationRunner:
         # GATE_A_INVOCATION_IDENTITY_MISMATCH.
         self.invocation_identity = invocation_identity
         self.errors: list[str] = []
+        if self.mode in RETIRED_EXECUTION_MODES:
+            self.errors.append(format_error(
+                "EXECUTION_MODE_RETIRED",
+                "yolo_execution is historical record vocabulary and is no longer "
+                "an executable mode. Use an explicit current mode and preserve "
+                "authority as responsibility metadata instead of bypassing gates.",
+            ))
 
         # Bounded explicit-model enforcement (issue #86): a controlled
         # experiment with no explicit model must fail before any
@@ -2453,16 +2465,13 @@ class OrchestrationRunner:
             return "not_applicable"
 
         if behavior == "bypassed":
-            # yolo: gates are bypassed
-            self.gate_decisions.append({
-                "step": step_num,
-                "gate": gate_name,
-                "result": "bypassed",
-                "timestamp": timestamp,
-                "mode": self.mode,
-            })
-            print(f"  ~ Gate '{gate_name}' BYPASSED (yolo mode)")
-            return "bypassed"
+            self.errors.append(format_error(
+                "EXECUTION_MODE_RETIRED",
+                "gate bypass behavior belonged to retired yolo_execution and "
+                "cannot authorize current execution",
+            ))
+            print(f"  [FAIL] Gate '{gate_name}' cannot be bypassed: yolo_execution is retired")
+            return "timed_out"
 
         if behavior == "automated":
             # autonomous: automated approval
@@ -2483,14 +2492,14 @@ class OrchestrationRunner:
                 self.gate_decisions.append({
                     "step": step_num,
                     "gate": gate_name,
-                    "result": "approved_by_user",
+                    "result": "automated_approval",
                     "timestamp": timestamp,
                     "approved_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "approved_by": "auto_gate",
+                    "approved_by": "test_auto_gate",
                     "mode": self.mode,
                 })
-                print(f"  ~ Gate '{gate_name}' AUTO_APPROVED (--gate-decision={self.gate_decision})")
-                return "approved_by_user"
+                print(f"  ~ Gate '{gate_name}' TEST-AUTOMATED (--gate-decision={self.gate_decision})")
+                return "automated_approval"
 
             elif self.gate_decision == "auto-deny":
                 self.gate_decisions.append({
@@ -2525,14 +2534,14 @@ class OrchestrationRunner:
                     self.gate_decisions.append({
                         "step": step_num,
                         "gate": gate_name,
-                        "result": "approved_by_user",
+                        "result": "automated_approval",
                         "timestamp": timestamp,
                         "approved_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        "approved_by": "auto_gate (mandatory mode)",
+                        "approved_by": "test_auto_gate",
                         "mode": self.mode,
                     })
-                    print(f"  ~ Gate '{gate_name}' AUTO_APPROVED (--gate-decision={self.gate_decision})")
-                    return "approved_by_user"
+                    print(f"  ~ Gate '{gate_name}' TEST-AUTOMATED (--gate-decision={self.gate_decision})")
+                    return "automated_approval"
                 elif self.gate_decision == "auto-deny":
                     self.gate_decisions.append({
                         "step": step_num,
@@ -2895,14 +2904,16 @@ class OrchestrationRunner:
             gates_note = "not_applicable_plan_only"
         elif self.mode == "prompt_chain":
             gates_note = "not_applicable_prompt_chain"
-        elif self.mode == "yolo_execution":
-            gates_note = "bypassed_by_yolo"
         elif self.mode == "autonomous_execution":
             gates_note = "automated_approval_all_gates"
         elif self.mode == "guided_execution":
             approved = [gd for gd in self.gate_decisions if gd["result"] == "approved_by_user"]
+            automated = [gd for gd in self.gate_decisions if gd["result"] == "automated_approval"]
             denied = [gd for gd in self.gate_decisions if gd["result"] == "denied_by_user"]
-            gates_note = f"{len(approved)} approved, {len(denied)} denied"
+            gates_note = (
+                f"{len(approved)} user-approved, {len(automated)} automated, "
+                f"{len(denied)} denied"
+            )
 
         entry_data = {
             "mode": self.mode,
@@ -3238,6 +3249,9 @@ class OrchestrationRunner:
 
     def run(self) -> int:
         """Execute the full orchestration lifecycle. Returns exit code."""
+        if self.mode in RETIRED_EXECUTION_MODES:
+            print("ERROR: yolo_execution is retired and cannot execute.")
+            return 1
         # Phase 1: Pre-flight (skip for plan_only mode)
         if self.mode != "plan_only":
             if not self.preflight_check():
@@ -3404,7 +3418,7 @@ class OrchestrationRunner:
         else:
             # Phase 7: Check for auto-invocation of next workflow (only in execution modes)
             should_invoke, source_artifact = self._should_auto_invoke_next()
-            if should_invoke and self.mode in ("guided_execution", "autonomous_execution", "yolo_execution"):
+            if should_invoke and self.mode in ("guided_execution", "autonomous_execution"):
                 print(f"\n{'='*60}")
                 print(f"PHASE 7: AUTO-INVOCATION CHECK (authority-gated, ADR 0026)")
                 print(f"{'='*60}")
@@ -3722,8 +3736,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("problem", nargs="?", default=None, help="User problem statement or goal (will prompt if not provided for full-local-sensemaking)")
     parser.add_argument("--workflow", default=None, help="Explicit workflow ID (overrides default)")
-    parser.add_argument("--mode", default="plan_only", choices=list(KNOWN_MODES.keys()),
-                        help="Execution mode (default: plan_only - the coherent default post-retirement: requires no model executor, and is the only mode every retained workflow allows). The mutating execution modes (guided/autonomous/yolo) have no real executor since the programmatic second-model runner was retired (ADR 0013).")
+    parser.add_argument("--mode", default="plan_only", choices=list(CURRENT_EXECUTION_MODES),
+                        help="Current execution mode. yolo_execution is retired historical vocabulary and cannot be selected.")
     parser.add_argument("--scope", default="soft", choices=["soft", "hard", "advisory"],
                         help="How strictly the problem statement constrains analysis (default: soft)")
     parser.add_argument("--repo-root", default=".", help="Framework root directory (where skills/registries live)")

@@ -80,10 +80,9 @@ class SkillsOrchestrator:
 
         Args:
             workflow_id: ID of the workflow to execute
-            execution_mode: Required explicit execution mode (plan_only,
-                guided_execution, autonomous_execution, or the legacy explicit
-                yolo_execution compatibility mode). No implicit execution mode
-                is selected.
+            execution_mode: Required explicit current execution mode. Historical
+                yolo_execution records remain readable but the mode is no longer
+                executable. No implicit execution mode is selected.
             from_session: Path to artifact session directory from a prior workflow run
             **kwargs: Additional arguments to pass to the runner (plan_out, log_dir, etc.)
 
@@ -93,8 +92,12 @@ class SkillsOrchestrator:
         if execution_mode is None:
             raise ValueError(
                 "execution_mode is required; implicit workflow execution defaults "
-                "were retired. Pass plan_only, guided_execution, "
-                "autonomous_execution, or explicit legacy yolo_execution."
+                "were retired. Pass plan_only, prompt_chain, guided_execution, "
+                "or autonomous_execution."
+            )
+        if execution_mode == "yolo_execution":
+            raise ValueError(
+                "yolo_execution is retired historical vocabulary and is no longer executable"
             )
 
         project_root = str(self.config.project_root)

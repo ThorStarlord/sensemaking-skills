@@ -210,61 +210,32 @@ def test_registry_mode_consistency():
     # Check for allowed modes
     if fp_section:
         modes_present = []
-        for mode in ["plan_only", "prompt_chain", "guided_execution", "autonomous_execution", "yolo_execution"]:
+        for mode in ["plan_only", "prompt_chain", "guided_execution", "autonomous_execution"]:
             if mode in fp_section:
                 modes_present.append(mode)
 
         assert len(modes_present) > 0, f"fast-path-workflow has no allowed modes in registry"
         print(f"  ✓ fast-path-workflow allowed modes: {', '.join(modes_present)}")
 
-    # Note: yolo_execution may or may not be allowed depending on registry
-    # Just verify the registry is consistent
+    # Current execution deliberately excludes retired yolo_execution.
 
     print("  [OK] TEST PASSED")
 
 
 def test_execution_modes_documented():
-    """Test that all five execution modes are documented.
-
-    The enumeration lives in ADR 0012 (ratification) and
-    skills/workflow-planner/references/execution-modes.md (runtime reference).
-    GETTING_STARTED.md intentionally points at references instead of
-    duplicating enumerations, so modes are pinned at the ADR and the
-    reference, not the entry guide.
-
-    Verifies:
-    1. ADR 0012 lists five execution modes
-    2. execution-modes.md reference covers all five modes
-    """
+    """Pin the current runtime-mode boundary without treating historical ADR prose as runtime authority."""
     print("\n" + "="*60)
-    print("TEST 6: Five Execution Modes Documented")
+    print("TEST 6: Current Execution Mode Boundary")
     print("="*60)
 
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    runtime_path = os.path.join(repo_root, "scripts", "workflow-runtime.py")
+    with open(runtime_path, "r", encoding="utf-8") as f:
+        runtime_code = f.read()
 
-    expected_modes = ["guided_execution", "autonomous_execution", "prompt_chain", "plan_only", "yolo_execution"]
-
-    # Check ADR 0012
-    adr_path = os.path.join(repo_root, "docs", "adr", "0012-invocation-paths.md")
-    with open(adr_path, "r", encoding="utf-8") as f:
-        adr_content = f.read()
-
-    assert "Five Execution Modes" in adr_content, "ADR 0012 doesn't mention five modes"
-    print("  ✓ ADR 0012: Mentions five execution modes")
-
-    for mode in expected_modes:
-        assert mode in adr_content, f"ADR 0012 doesn't document {mode}"
-    print(f"  ✓ ADR 0012: All five modes documented")
-
-    # Check the execution-modes reference
-    ref_path = os.path.join(repo_root, "skills", "workflow-planner", "references", "execution-modes.md")
-    with open(ref_path, "r", encoding="utf-8") as f:
-        ref_content = f.read()
-
-    for mode in expected_modes:
-        assert mode in ref_content, f"execution-modes.md doesn't document {mode}"
-    print(f"  ✓ execution-modes.md: All five modes documented")
-
+    assert 'RETIRED_EXECUTION_MODES = {"yolo_execution"}' in runtime_code
+    assert "choices=list(CURRENT_EXECUTION_MODES)" in runtime_code
+    print("  ✓ current CLI excludes retired yolo_execution")
     print("  [OK] TEST PASSED")
 
 
@@ -309,7 +280,7 @@ if __name__ == "__main__":
         print("  ✓ Auto-invocation fail-closed, session plumbing retained")
         print("  ✓ CLI syntax matches the implementation")
         print("  ✓ Registry modes consistent with documentation")
-        print("  ✓ Five execution modes documented at ADR + reference")
+        print("  ✓ Current execution-mode boundary excludes retired YOLO")
         sys.exit(0)
     else:
         sys.exit(1)
