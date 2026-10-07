@@ -200,40 +200,6 @@ class WorkflowRegistry:
             if item.get("liveness") == ACTIVE
         ]
 
-    def has_auto_invocation(self, workflow_id: str) -> bool:
-        """Check current auto-invocation metadata for an active workflow.
-
-        Compatibility-only workflows never participate in current chaining.
-        """
-        workflow = self.get_selectable_workflow(workflow_id)
-        if not workflow:
-            return False
-        return workflow.get("auto_invoke_next_workflow", False)
-
-    def get_recommended_next_workflow(self, workflow_id: str) -> Optional[str]:
-        """Get a current selectable next-workflow candidate.
-
-        ADR 0026 still governs execution authority. ADR 0027 additionally
-        prevents compatibility-only source or target workflows from appearing
-        as current chaining candidates.
-        """
-        workflow = self.get_selectable_workflow(workflow_id)
-        if not workflow:
-            return None
-
-        # Check for explicit next workflow ID first
-        if "auto_invoke_next_workflow_id" in workflow:
-            next_id = workflow["auto_invoke_next_workflow_id"]
-            return next_id if self.is_workflow_selectable(next_id) else None
-
-        # Check for source field (like workflow_orchestration_plan.recommended_workflow_id)
-        auto_invoke_source = workflow.get("auto_invoke_source")
-        if auto_invoke_source:
-            # The actual resolution happens at runtime when the artifact is
-            # available; this method does not infer a current target.
-            return None
-
-        return None
 
     def get_all_workflows(self) -> Dict[str, Any]:
         """Get all catalog workflow definitions."""
