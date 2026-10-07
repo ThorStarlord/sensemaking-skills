@@ -360,10 +360,10 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             with open(runner.plan_out, encoding="utf-8") as f:
                 content = f.read()
             content = content.replace(
-                "selected_workflow: product-discovery-sprint",
+                "selected_workflow: full-fog-workflow",
                 f"selected_workflow: {DISTINCT_RECOMMENDED_WORKFLOW}")
             content = content.replace(
-                "chosen_workflow_id: product-discovery-sprint",
+                "chosen_workflow_id: full-fog-workflow",
                 f"chosen_workflow_id: {DISTINCT_RECOMMENDED_WORKFLOW}")
             with open(runner.plan_out, "w", encoding="utf-8") as f:
                 f.write(content)
