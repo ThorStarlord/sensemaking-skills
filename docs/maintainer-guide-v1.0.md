@@ -4,8 +4,8 @@ This guide is the short operational entry point for maintainers. The exact
 support and claim ceiling is defined in [`release-v1.0-contract.md`](release-v1.0-contract.md)
 and validated by `scripts/validate-release-contract.py`.
 
-**Current source:** `1.0.0rc4`  
-**Current target:** `1.0.0rc4` (`candidate`; freeze proposal pending exact-head qualification)
+**Current source:** `1.0.0rc5.dev0`  
+**Current target:** `1.0.0rc5` (`development`; post-RC4 shadow line)
 
 ## Authority order
 
@@ -65,9 +65,10 @@ upgrade a semantic or native-harness claim without its required evidence.
 
 ## Release changes
 
-The freeze proposal carries source version `1.0.0rc4` targeting
-`1.0.0rc4` with release status `candidate`. The previously qualified
-`1.0.0rc2` candidate remains immutable at integrated commit
+The post-RC4 shadow carries source version `1.0.0rc5.dev0` targeting
+`1.0.0rc5` with release status `development`. Exact RC4 candidate
+`d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor provenance; the previously qualified
+`1.0.0rc2` candidate also remains immutable at integrated commit
 `c9b86138d3919c4fce87040f14161364a0c1c3a0`. Future RC4 qualification must
 bind a new exact source/tree and artifact evidence. Publication, tagging, and
 final `1.0.0` remain explicit release-owner transitions.
