@@ -2,14 +2,28 @@
 
 The campaign CLI exposes durable campaign state without taking semantic control away from the active coding agent.
 
-## Commands
+## Normal commands
+
+Root help/completion intentionally exposes the small durable kernel:
 
 ```text
 sensemaking-skills campaign init
+sensemaking-skills campaign ingest
 sensemaking-skills campaign status
 sensemaking-skills campaign validate
-sensemaking-skills campaign history
+sensemaking-skills campaign advance
+sensemaking-skills campaign defer
+sensemaking-skills campaign close
+sensemaking-skills campaign inspect
+sensemaking-skills campaign resume-profile
+sensemaking-skills campaign working-context
+sensemaking-skills campaign advanced
 ```
+
+Secondary history, graph, portability, lineage, strategy, schema-evolution, and
+compatibility surfaces are discoverable under `campaign advanced`. Their
+historical root paths remain callable during the compatibility window, but they
+are not part of the normal mental model.
 
 ### `campaign init`
 
@@ -36,9 +50,9 @@ Reconstructs and displays the current durable campaign snapshot.
 sensemaking-skills campaign status --workspace /path/to/campaign
 ```
 
-For a target-bound Campaign, reconstruction also verifies that the live target repository still matches the last durably recorded target snapshot. Unrecorded repository drift therefore fails closed instead of silently allowing a stale Campaign context to masquerade as current state.
+For a target-bound Campaign, status performs read-only inspection of the last materialized durable state and reports live target/recovery diagnostics. If target drift or a blocking lifecycle transaction is present, status still orients the caller but reports `continuation_safe: false`.
 
-It reports what durable state says. It does not recommend what the campaign should do next, and target drift does not automatically create a transition.
+This is deliberately weaker than continuation authority: strict resume, validation, and mutation remain fail-closed until the integrity condition is resolved. Status never recommends the next action and drift never creates a transition.
 
 ### `campaign validate`
 
@@ -50,12 +64,12 @@ sensemaking-skills campaign validate --workspace /path/to/campaign
 
 Success prints `CAMPAIGN_VALID`. Structural/integrity failure prints `CAMPAIGN_INVALID` or a stable campaign error code and exits non-zero. Target-bound validation includes target transition-chain integrity and live target snapshot comparison.
 
-### `campaign history`
+### `campaign advanced history`
 
-Displays transition history in the canonical order reconstructed by `CampaignService` from the campaign trace.
+Displays transition history in the canonical order reconstructed by `CampaignService` from the campaign trace. The historical `campaign history` alias remains callable during the compatibility window.
 
 ```bash
-sensemaking-skills campaign history --workspace /path/to/campaign
+sensemaking-skills campaign advanced history --workspace /path/to/campaign
 ```
 
 History order is not inferred from transition filenames. Target-bound transition records carry source/destination target snapshot SHA-256 values as mechanical provenance; those fields do not classify the repository change as correct or successful.
@@ -86,7 +100,7 @@ external references.
 
 ## JSON output
 
-All four P3 commands accept `--json`.
+The normal inspection/status commands and secondary advanced projections preserve their existing `--json` contracts where supported.
 
 The JSON surface is intended for coding agents and other deterministic consumers. Stable top-level `code` values include:
 

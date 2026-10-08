@@ -75,9 +75,9 @@ Skip architectural review if:
 
 1. **Identify fog type** from repository_sensemaking_brief
 2. **Check trigger conditions** against this checklist
-3. **If triggered**: Write proposed_direction.md and invoke architectural-review-planning-workflow via --from-session
-4. **If not triggered**: Proceed to implementation workflow
-5. **Record decision**: Captured in workflow orchestration plan (with override reason if applicable)
+3. **If triggered**: select the `architectural_review` responsibility and invoke the `architectural-review` Skill directly with the current `repository_sensemaking_brief` plus the proposed direction.
+4. **If not triggered**: return to ordinary bounded implementation/responsibility selection.
+5. **Record decision when durability matters**: preserve it in the normal decision/handoff/Campaign surface already warranted for the task; do not create a workflow plan merely to carry the decision.
 
 ---
 

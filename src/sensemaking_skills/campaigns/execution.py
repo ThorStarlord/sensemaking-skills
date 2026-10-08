@@ -503,6 +503,9 @@ class CampaignExecutionService:
             },
             "previous_digest": previous,
             "worker_completion_establishes_global_closure": False,
+            "independent_verification_established": False,
+            "protected_transition_eligible": False,
+            "closure_eligible": False,
             "campaign_evidence_admitted": False,
             "semantic_truth_established": False,
         }

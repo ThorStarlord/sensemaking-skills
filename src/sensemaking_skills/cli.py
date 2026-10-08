@@ -391,9 +391,45 @@ def setup_skills(
         sys.exit(1)
 
 
-@cli.group()
+_CAMPAIGN_VISIBLE_COMMANDS = frozenset({
+    "init",
+    "ingest",
+    "status",
+    "validate",
+    "advance",
+    "defer",
+    "close",
+    "inspect",
+    "resume-profile",
+    "working-context",
+    "advanced",
+})
+
+
+class _CampaignRootGroup(click.Group):
+    """Progressively disclose the durable Campaign kernel.
+
+    Secondary commands remain addressable at their historical root paths for
+    compatibility, but root help/completion presents only the normal kernel.
+    """
+
+    def list_commands(self, ctx):
+        return [
+            name
+            for name in super().list_commands(ctx)
+            if name in _CAMPAIGN_VISIBLE_COMMANDS
+        ]
+
+
+@cli.group(cls=_CampaignRootGroup)
 def campaign():
-    """Operate durable campaigns without making semantic decisions."""
+    """Operate the small durable Campaign kernel without semantic routing."""
+    pass
+
+
+@campaign.group(name="advanced")
+def campaign_advanced():
+    """Secondary inspection, lineage, portability, strategy, and compatibility surfaces."""
     pass
 
 
@@ -535,18 +571,61 @@ def campaign_ingest(
 )
 @click.option("--json", "output_json", is_flag=True, help="Emit JSON")
 def campaign_status(workspace: Path, output_json: bool):
-    """Show what durable campaign state currently says."""
+    """Orient from durable state without treating read access as continuation authority."""
     try:
-        snapshot = CampaignService(workspace).resume()
+        service = CampaignService(workspace)
+        result, snapshot = service.inspect()
+        transactions = service.store.inspect_lifecycle_transactions()
     except (CampaignWorkspaceError, ContractError) as exc:
         _emit_campaign_error(exc, output_json=output_json)
 
+    blocking_transactions = [
+        item for item in transactions if item["status"] in {"pending", "invalid"}
+    ]
+    continuation_safe = result.valid and not blocking_transactions
+    diagnostics = [
+        {"code": diagnostic.code, "detail": diagnostic.detail}
+        for diagnostic in result.diagnostics
+    ]
     if output_json:
         payload = _status_payload(snapshot)
-        payload["code"] = "CAMPAIGN_STATUS"
+        payload.update(
+            {
+                "ok": True,
+                "code": (
+                    "CAMPAIGN_STATUS"
+                    if continuation_safe
+                    else "CAMPAIGN_STATUS_WITH_DIAGNOSTICS"
+                ),
+                "continuation_safe": continuation_safe,
+                "diagnostics": diagnostics,
+                "blocking_lifecycle_transactions": blocking_transactions,
+                "explicit_limit": (
+                    "Status is read-only orientation. continuation_safe=false "
+                    "means strict resume/mutation still requires resolving the "
+                    "reported integrity or transaction condition."
+                ),
+            }
+        )
         _json_echo(payload)
     else:
-        _echo_campaign_status(snapshot, heading="CAMPAIGN_STATUS")
+        _echo_campaign_status(
+            snapshot,
+            heading=(
+                "CAMPAIGN_STATUS"
+                if continuation_safe
+                else "CAMPAIGN_STATUS_WITH_DIAGNOSTICS"
+            ),
+        )
+        if not continuation_safe:
+            click.echo("Continuation safe: false")
+            for diagnostic in result.diagnostics:
+                click.echo(f"  {diagnostic.code}: {diagnostic.detail}")
+            for item in blocking_transactions:
+                click.echo(
+                    f"  transaction {item.get('name')}: {item.get('status')} "
+                    f"{', '.join(item.get('diagnostics', ())) }"
+                )
 
 
 @campaign.command(name="validate")
@@ -652,6 +731,13 @@ register_campaign_observability_commands(
     emit_error=_emit_campaign_error,
     json_echo=_json_echo,
 )
+
+# Progressive disclosure only: keep historical root command paths callable for
+# compatibility while making `campaign advanced` the discoverable home for
+# every non-kernel Campaign surface. No command semantics or authority change.
+for _campaign_name, _campaign_command in list(campaign.commands.items()):
+    if _campaign_name not in _CAMPAIGN_VISIBLE_COMMANDS:
+        campaign_advanced.add_command(_campaign_command, name=_campaign_name)
 
 register_semantic_commands(cli)
 register_organization_commands(cli)

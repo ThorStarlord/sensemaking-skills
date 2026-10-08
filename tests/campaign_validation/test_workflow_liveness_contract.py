@@ -17,6 +17,8 @@ from sensemaking_skills.registry import WorkflowRegistry  # noqa: E402
 
 COMPATIBILITY_ONLY = {
     "fast-path-workflow",
+    "product-discovery-sprint",
+    "architectural-review-planning-workflow",
     "artifact-reconciliation",
     "autonomous-sprint-preflight",
     "product-strategy-sprint",

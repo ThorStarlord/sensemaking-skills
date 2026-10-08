@@ -550,15 +550,16 @@ def validate_plan(plan_path: str, repo_root: str = ".") -> list[ValidationError]
     # when the plan carries no explicit `system_recommended_workflow`. Following #232,
     # the fog map is a fallback recommendation, not an unquestionable routing authority:
     # the audit compares the recorded system recommendation against the selection.
-    # Every fallback MUST be liveness-active (ADR 0027); the pre-liveness
-    # *-implementation-workflow defaults are compatibility_only and must never be
-    # recommended. No active ui-family workflow exists, so ui_fog falls back to
-    # the comprehensive full-fog-workflow (generic diagnostic route).
+    # A fallback is present only where an evidenced liveness-active workflow still
+    # exists. Product and architecture fog intentionally have no default workflow:
+    # the active agent selects the bounded responsibility/Skill directly, while a
+    # brief can use the already-supported truthful no-match state. UI keeps the
+    # generic full-fog diagnostic fallback and docs keeps docs-implementation.
     fog_to_workflow = {
-        "product_fog": "product-discovery-sprint",
+        "product_fog": None,
         "ui_fog": "full-fog-workflow",
         "docs_fog": "docs-implementation-workflow",
-        "architecture_fog": "architectural-review-planning-workflow",
+        "architecture_fog": None,
     }
 
     fog_type = plan_data.get("primary_fog_type")

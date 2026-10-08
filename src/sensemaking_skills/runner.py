@@ -80,10 +80,9 @@ class SkillsOrchestrator:
 
         Args:
             workflow_id: ID of the workflow to execute
-            execution_mode: Required explicit execution mode (plan_only,
-                guided_execution, autonomous_execution, or the legacy explicit
-                yolo_execution compatibility mode). No implicit execution mode
-                is selected.
+            execution_mode: Required explicit current execution mode. Historical
+                yolo_execution records remain readable but the mode is no longer
+                executable. No implicit execution mode is selected.
             from_session: Path to artifact session directory from a prior workflow run
             **kwargs: Additional arguments to pass to the runner (plan_out, log_dir, etc.)
 
@@ -93,8 +92,12 @@ class SkillsOrchestrator:
         if execution_mode is None:
             raise ValueError(
                 "execution_mode is required; implicit workflow execution defaults "
-                "were retired. Pass plan_only, guided_execution, "
-                "autonomous_execution, or explicit legacy yolo_execution."
+                "were retired. Pass plan_only, prompt_chain, guided_execution, "
+                "or autonomous_execution."
+            )
+        if execution_mode == "yolo_execution":
+            raise ValueError(
+                "yolo_execution is retired historical vocabulary and is no longer executable"
             )
 
         project_root = str(self.config.project_root)
@@ -218,88 +221,6 @@ class SkillsOrchestrator:
 
         return skill_class(self.config)
 
-    def _handle_auto_invocation(self, current_workflow_id: str, parent_session: Optional[str] = None) -> int:
-        """Handle automatic chaining to next workflow (authority-gated, ADR 0026).
-
-        Reads candidate next workflow id from an orchestration plan artifact and
-        surfaces it WITHOUT spawning. Per ADR 0026, compatibility/historical
-        transition metadata (auto_invoke_next_workflow) plus a workflow id in an
-        artifact is NOT execution authority; no automatic child workflow is
-        spawned absent a separate explicit authority event. Includes recursion
-        guard and session passing as surface info.
-
-        Args:
-            current_workflow_id: The ID of the currently executing workflow
-            parent_session: Path to the parent session directory (for chained invocation)
-
-        Returns:
-            Exit code (always 0: the run completed successfully without chaining)
-        """
-        try:
-            # Determine which artifact to read based on session
-            if parent_session:
-                artifact_dir = Path(parent_session)
-            else:
-                artifact_dir = self.path_resolver.artifacts_dir()
-
-            # Find the orchestration plan artifact (plan_<workflow_id>.md pattern)
-            plan_file = artifact_dir / f"plan_{current_workflow_id}.md"
-
-            if not plan_file.exists():
-                print(f"[INFO] Orchestration plan not found: {plan_file}")
-                return 0
-
-            # Read and parse the orchestration plan YAML
-            with open(plan_file, "r", encoding="utf-8") as f:
-                content = f.read()
-
-            # Extract YAML front matter
-            if content.startswith("---"):
-                _, yaml_str, _ = content.split("---", 2)
-                try:
-                    plan_data = yaml.safe_load(yaml_str)
-                except yaml.YAMLError as e:
-                    print(f"[INFO] Failed to parse orchestration plan YAML: {e}")
-                    return 0
-            else:
-                print(f"[INFO] Orchestration plan missing YAML front matter: {plan_file}")
-                return 0
-
-            # Extract next workflow ID (check canonical field names per CONTEXT.md)
-            next_workflow_id = (
-                plan_data.get("recommended_workflow_id") or
-                plan_data.get("chosen_workflow_id") or
-                plan_data.get("selected_workflow")
-            )
-
-            if not next_workflow_id:
-                print(f"[INFO] No candidate next workflow found in plan")
-                return 0
-
-            # RECURSION GUARD: still meaningful surface info for a routing
-            # configuration error, even though we do not spawn.
-            if next_workflow_id == current_workflow_id:
-                print(f"[ERROR] RECURSION DETECTED: Workflow '{current_workflow_id}' would invoke itself.")
-                print(f"[ERROR] recommended_workflow_id: {next_workflow_id}")
-
-            # Surface the candidate WITHOUT spawning it (ADR 0026). The metadata
-            # may identify a candidate next workflow, but that is NOT execution
-            # authority; no explicit authority primitive exists, so fail closed
-            # (knowable != authorized).
-            print(f"\n{'='*60}")
-            print(f"CANDIDATE NEXT WORKFLOW (not authorized to execute)")
-            print(f"{'='*60}")
-            print(f"  Current workflow: {current_workflow_id}")
-            print(f"  Candidate workflow: {next_workflow_id}")
-            print(f"  Source artifact: {os.path.basename(str(plan_file))}")
-            print(f"  Reason: compatibility/historical transition metadata identified a candidate next workflow.")
-            print(f"  Execution: NOT AUTHORIZED. No separate explicit authority event present; "
-                  f"automatic chaining is blocked per ADR 0026 (knowable != authorized).")
-            return 0
-
-        except Exception as e:
-            print(f"[INFO] Auto-invocation candidate surfaced with error: {e}")
-            return 0
 
     def _run_workflow_with_parent_session(
         self,

@@ -27,3 +27,8 @@ overrides:
   artifact-reconciliation: compatibility_only
   autonomous-sprint-preflight: compatibility_only
   product-strategy-sprint: compatibility_only
+
+  # Post-RC4 direct-responsibility migration: the active agent now owns
+  # product/architecture responsibility selection without a routing wrapper.
+  product-discovery-sprint: compatibility_only
+  architectural-review-planning-workflow: compatibility_only

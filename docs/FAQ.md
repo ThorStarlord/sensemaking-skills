@@ -1,8 +1,8 @@
 # Frequently Asked Questions
 
-**Current repository source:** `1.0.0rc4`  
-**Release-candidate identity:** `1.0.0rc4`  
-**Release phase:** candidate freeze proposal — exact-head qualification is required before an RC4 qualification claim; RC2 remains the qualified historical candidate.
+**Current repository source:** `1.0.0rc5.dev0`  
+**Release target:** `1.0.0rc5`  
+**Release phase:** development — current source targets RC5 on integrated RC4 `main`; integrated RC4 `9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` remains immutable predecessor provenance.
 
 Current product/release authority lives in `STATUS.md`,
 `docs/product-strategy.md`, `docs/adr/0029-current-product-boundary.md`,
@@ -33,7 +33,7 @@ python -m pip install -e .
 sensemaking-skills --version
 ```
 
-Current freeze-proposal source should report `1.0.0rc4`. Public PyPI identity may differ until publication is separately authorized.
+Current source should report `1.0.0rc5.dev0`. Public PyPI identity may differ until a future RC5 freeze and publication are separately authorized.
 
 ### Q: What are the supported systems?
 

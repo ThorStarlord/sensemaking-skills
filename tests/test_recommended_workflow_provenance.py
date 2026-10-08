@@ -3,8 +3,8 @@ Sensemaking toolchain" with "available as an execution vehicle in the analysed
 target repository".
 
 Goal A (evidence 0024): Auteur Run 1's brief set
-`recommended_workflow_id: architectural-review-planning-workflow` -- a real,
-liveness-active workflow in the toolchain `workflow-registry.yaml` -- for a
+`recommended_workflow_id: architectural-review-planning-workflow` -- a historical
+conceptual pointer now retained as compatibility-only identity -- for a
 target that does not vendor `workflow-planner`. The brief did not flag that the
 recommended execution vehicle is unavailable from the target, pointing a naive
 reader/executor at a dead end. Auteur Run 2 independently produced the truthful
@@ -133,7 +133,7 @@ def test_example_unavailable_workflow_brief_shows_the_pattern():
     text = EXAMPLE_BRIEF.read_text(encoding="utf-8")
     assert re.search(r"recommended_workflow_id:\s*null", text)
     assert re.search(r"escalation_recommended:\s*true", text)
-    # names a real workflow as a conceptual pointer...
+    # names the historical workflow identity only as a conceptual pointer...
     assert "architectural-review-planning-workflow" in text
     # ...explicitly flagged as not available in / vendored by the target.
     assert _AVAILABILITY.search(text) and _TARGET.search(text)

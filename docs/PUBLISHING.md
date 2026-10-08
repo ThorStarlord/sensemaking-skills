@@ -13,12 +13,11 @@ repository development source
 != publicly published distribution
 ```
 
-The current freeze-proposal source is `1.0.0rc4` and the active release target
-is `1.0.0rc4` with status `candidate`. Historical `1.0.0rc1` remains qualified
-provenance for exact commit `70542d47412d98ee6dfae5de6df29bf271304568`;
-qualified `1.0.0rc2` remains frozen at integrated commit
-`c9b86138d3919c4fce87040f14161364a0c1c3a0`. The preceding RC3 candidate
-line does not qualify the current RC4 development bytes.
+The current post-RC4 source is `1.0.0rc5.dev0` and the active release
+target is `1.0.0rc5` with status `development` on integrated RC4 `main`. Integrated RC4
+`d26521005f7ab6696e050844510ff0e3298f002b` remains immutable predecessor
+provenance and its qualification does not transfer to these development bytes.
+Historical `1.0.0rc1` and qualified `1.0.0rc2` also remain immutable provenance.
 
 `pyproject.toml` `[project].version` is the literal source/build version.
 `release-v1.0.yaml` declares the release target and phase.
@@ -34,7 +33,7 @@ While `release.status: candidate`:
 
 ## Candidate freeze
 
-This branch is the `1.0.0rc4` freeze proposal after candidate-changing work converged. It becomes a qualified RC4 candidate only if the exact freeze head satisfies the required qualification gates; integration remains separately authorized.
+RC4 was integrated through PR #520 as `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` with the exact frozen candidate tree. Current RC5 development is not a freeze proposal; a future RC5 candidate requires a new exact-source freeze and qualification after development converges.
 
 Candidate qualification requires:
 

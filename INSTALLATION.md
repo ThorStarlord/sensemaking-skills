@@ -1,6 +1,6 @@
 # Installation & Setup Guide — Sensemaking Skills
 
-This guide covers installation of the public distribution and the current Version 1.0 release-candidate line. Current freeze-proposal source identity is `1.0.0rc4`; the qualified `1.0.0rc2` candidate remains frozen historical provenance, and no prior qualification transfers to RC4.
+This guide covers installation of the public distribution and the current Version 1.0 development line. Current source identity is `1.0.0rc5.dev0` targeting `1.0.0rc5` on integrated RC4 `main`; RC4 remains immutable predecessor provenance and no RC4 qualification transfers to these changed bytes.
 
 ## Requirements
 

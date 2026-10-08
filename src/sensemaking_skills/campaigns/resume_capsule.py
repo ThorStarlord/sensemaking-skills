@@ -84,8 +84,10 @@ def _preflight_projection(workspace: Path) -> dict[str, Any]:
     }
 
 
-def _uncertainty_history_projection(workspace: Path, *, compact: bool) -> dict[str, Any]:
-    summary = UncertaintyHistoryService(workspace).summary()
+def _uncertainty_history_projection(
+    workspace: Path, *, compact: bool, snapshot: Any
+) -> dict[str, Any]:
+    summary = UncertaintyHistoryService(workspace).summary(snapshot=snapshot)
     if not compact:
         return summary
     return {
@@ -130,7 +132,9 @@ def _v1_capsule(
         "current_state": state.current_state,
         "authority": _enum(state.authority),
         "terminal_state": _enum(state.terminal_state),
-        "uncertainty_history": _uncertainty_history_projection(workspace, compact=compact),
+        "uncertainty_history": _uncertainty_history_projection(
+            workspace, compact=compact, snapshot=snapshot
+        ),
         "semantic_recommendation_included": False,
         "semantic_truth_established": False,
         "explicit_limit": "This capsule reconstructs durable declared state and deterministic mechanical summaries; it does not decide the next warranted action.",
@@ -251,7 +255,9 @@ def build_resume_capsule(
                     "transitions": len(snapshot.transitions),
                 },
                 "handoff_present": snapshot.handoff is not None,
-                "uncertainty_history": _uncertainty_history_projection(workspace, compact=True),
+                "uncertainty_history": _uncertainty_history_projection(
+                    workspace, compact=True, snapshot=snapshot
+                ),
             }
         )
     else:
@@ -278,7 +284,9 @@ def build_resume_capsule(
                 "evidence_refs": evidence,
                 "recent_transitions": transitions,
                 "handoff": canonicalize(snapshot.handoff) if snapshot.handoff is not None else None,
-                "uncertainty_history": _uncertainty_history_projection(workspace, compact=False),
+                "uncertainty_history": _uncertainty_history_projection(
+                    workspace, compact=False, snapshot=snapshot
+                ),
             }
         )
         if profile == "audit":

@@ -62,18 +62,12 @@ VALID_ESCALATED_BRIEF_FIXTURE = os.path.join(
 # full-local-sensemaking remains active and is distinct from all four defaults.
 DISTINCT_RECOMMENDED_WORKFLOW = "full-local-sensemaking"
 
-# The fog -> default implementation workflow mapping, taken from validate-plan.py's OWN
-# fog_to_workflow (the consumer/routing authority), NOT from the runtime's private
-# _FOG_TO_WORKFLOW. The test uses it only to construct realistic valid briefs whose
-# recommendation the producer must honor; it never asserts the producer "should" have
-# produced a value from the runtime's private map. Every default is liveness-active
-# (ADR 0027); no active ui-family workflow exists, so ui_fog maps to the comprehensive
-# full-fog-workflow fallback, mirroring the validator.
+# The remaining fog fallbacks from validate-plan.py. Product and architecture fog
+# intentionally have no default workflow after the direct-responsibility migration.
+# Explicit valid brief recommendations are still honored.
 VALIDATOR_FOG_TO_DEFAULT_WORKFLOW = {
-    "product_fog": "product-discovery-sprint",
     "ui_fog": "full-fog-workflow",
     "docs_fog": "docs-implementation-workflow",
-    "architecture_fog": "architectural-review-planning-workflow",
 }
 
 if "workflow_runtime" in sys.modules:
@@ -314,7 +308,7 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
         """
         tmp = tempfile.mkdtemp()
         try:
-            brief = _write_valid_brief("product_fog", "product-discovery-sprint")
+            brief = _write_valid_brief("product_fog", "full-fog-workflow")
             _assert_valid_brief(self, brief)
 
             runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
@@ -328,7 +322,7 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             self.assertEqual(machine.get("selected_workflow"), DISTINCT_RECOMMENDED_WORKFLOW)
             # The brief's recommendation is the system recommendation.
             self.assertEqual(machine.get("system_recommended_workflow"),
-                             "product-discovery-sprint")
+                             "full-fog-workflow")
             # Selection differs from recommendation -> truthful divergence.
             self.assertIs(machine.get("routing_divergence"), True)
             self.assertEqual(machine.get("routing_decision_method"), "user_explicit_override")
@@ -356,7 +350,7 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
         tmp = tempfile.mkdtemp()
         try:
             # Brief recommends the fog-default; a finalized (non-override) plan selects it.
-            brief = _write_valid_brief("product_fog", "product-discovery-sprint")
+            brief = _write_valid_brief("product_fog", "full-fog-workflow")
             _assert_valid_brief(self, brief)
             runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
             runner.generate_plan()
@@ -366,10 +360,10 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
             with open(runner.plan_out, encoding="utf-8") as f:
                 content = f.read()
             content = content.replace(
-                "selected_workflow: product-discovery-sprint",
+                "selected_workflow: full-fog-workflow",
                 f"selected_workflow: {DISTINCT_RECOMMENDED_WORKFLOW}")
             content = content.replace(
-                "chosen_workflow_id: product-discovery-sprint",
+                "chosen_workflow_id: full-fog-workflow",
                 f"chosen_workflow_id: {DISTINCT_RECOMMENDED_WORKFLOW}")
             with open(runner.plan_out, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -419,6 +413,28 @@ class TestTwoStagePlanLifecycle(unittest.TestCase):
                 f.write(content)
             self.assertIsNone(runner.finalize_plan(unknown),
                               "finalize_plan must no-op on an unratified fog type")
+            self._assert_provisional(runner, "fast-local-diagnostic")
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_product_fog_truthful_no_match_stays_provisional(self):
+        """Product fog has no workflow fallback after direct-responsibility migration."""
+        tmp = tempfile.mkdtemp()
+        try:
+            brief = _copy_brief_fixture(VALID_ESCALATED_BRIEF_FIXTURE)
+            with open(brief, encoding="utf-8") as f:
+                content = f.read()
+            content = content.replace(
+                "primary_fog_type: architecture_fog",
+                "primary_fog_type: product_fog",
+            )
+            with open(brief, "w", encoding="utf-8") as f:
+                f.write(content)
+            _assert_valid_brief(self, brief)
+
+            runner = self._runner("fast-local-diagnostic", tmpdir=tmp)
+            runner.generate_plan()
+            self.assertIsNone(runner.finalize_plan(brief))
             self._assert_provisional(runner, "fast-local-diagnostic")
         finally:
             shutil.rmtree(tmp, ignore_errors=True)

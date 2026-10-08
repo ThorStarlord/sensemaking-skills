@@ -41,7 +41,7 @@ Classify the primary type of uncertainty or problem:
 - **docs_fog**: Missing documentation, unclear specifications, knowledge gaps
 - **architecture_fog**: Code structure problems, design issues, unclear boundaries (default if unclear)
 
-This classification determines which implementation workflow will be used downstream.
+This classification is diagnostic metadata. It does not determine an implementation workflow. The active agent selects the warranted responsibility; a workflow recommendation is optional and must be independently supported.
 
 ## 7. Evidence
 File-level evidence supporting the diagnosis (cites specific files and line ranges,
@@ -145,9 +145,11 @@ verified it, or state explicitly that the claim is documented but not
 independently verified.
 
 ## 12. Recommended workflow
-One workflow candidate from the official `workflow-registry.yaml` — and only if
-that workflow is actually available as an execution vehicle from the analysed
-target (the target vendors `workflow-planner` and the workflow's skills, e.g. a
+Optionally name one workflow candidate from the official `workflow-registry.yaml`
+only when the evidence supports that bounded workflow as a current execution
+vehicle. Product or architecture fog does **not** imply a default workflow. If
+a workflow is named, it must actually be available as an execution vehicle from
+the analysed target (the target vendors `workflow-planner` and the workflow's skills, e.g. a
 `skills/workflow-planner/` dir / `skills/VENDORED.yaml` / `sensemaking-config.yaml`,
 or the workflow runs within the Sensemaking toolchain against the target).
 "Exists in the toolchain registry" is not "available in the target repository".
@@ -234,12 +236,12 @@ source_intent_ref: artifacts/01-orchestration-run/00-user-intent.md
 user_implied_fog_type: product_fog
 primary_fog_type: product_fog
 diagnosis_conflict: false
-escalation_recommended: false
+escalation_recommended: true
 evidence:
   - "README.md (lines 5-12): feature requirements are vague, no user context"
   - "docs/ARCHITECTURE.md: does not exist"
-recommended_workflow_id: product-discovery-sprint  # must be a liveness-active top-level id from workflow-registry.yaml
-recommended_execution_mode: guided_execution
+recommended_workflow_id: null  # product fog has no default workflow; active agent selects the responsibility directly
+recommended_execution_mode: plan_only
 weakest_boundary: Zero Validation
 weakness_type: Zero Validation  # must be one of the 7 weakness types (weakness-types.md) or "Other", NOT a fog-type value
 weakness_type_explanation: null
