@@ -758,9 +758,9 @@ validators protect distinct invariants/representations. Shared parsing
 boilerplate alone does not justify a new validator framework or a broader
 failure domain.
 
-PR #518 integrated the selective RC4 contraction on `main@95323faa8a26d06145bc260153048dcc8fb2af23`. RC4 then integrated through PR #520 as `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` with the exact qualified candidate tree. PR #531 layers the post-RC4 pragmatic-kernel contraction on that canonical integrated source.
+PR #518 integrated the selective RC4 contraction on `main@95323faa8a26d06145bc260153048dcc8fb2af23`. RC4 then integrated through PR #520 as `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` with the exact qualified candidate tree. PR #531 integrated the post-RC4 pragmatic-kernel contraction as `main@281cd4d9c7150d072381e14f949f68fc852b2c43`, tree `d760c485729a50f073565978d599a653a5fff627`; integrated-main Product/Lab/Release qualification is green.
 
-**Current reconciliation:** `POST_RC4_PRAGMATIC_KERNEL_CONTRACTION_CANONICAL_BASE` + `FURTHER_DELETION_EVIDENCE_GATED`.
+**Current reconciliation:** `POST_RC4_PRAGMATIC_KERNEL_CONTRACTION_INTEGRATED` + `FURTHER_DELETION_EVIDENCE_GATED`.
 
 The 2026-10-05 adversarial claims-vs-runtime review, the owner-ratified
 `simplify hard` verdict, and the subsequent re-measure now produce an explicit
