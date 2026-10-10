@@ -4,7 +4,7 @@
 **Original date:** 2026-09-25  
 **Current reconciliation:** 2026-10-10  
 **Historical dependency:** PR #476 integrated Trial 001 reconciliation  
-**Current baseline:** PRs #512–#514, #520, #531, and #532 integrated; Issue #515 records current candidate `main@cb4089a44a8d090dda8d2bfdc032ec1abf4e3de9`. At actual launch, re-pin the then-current exact head and verify installed Skill identity; target admission remains UNPINNED.  
+**Current baseline:** PRs #512–#514, #520, #531, and #532 integrated; Issue #515 records the verified 2026-10-10 checkpoint `main@cb4089a44a8d090dda8d2bfdc032ec1abf4e3de9`, not an immutable claim about future `main`. At actual launch, re-pin the then-current exact head and verify installed Skill identity; target admission remains UNPINNED.  
 **Governing references:**
 
 - `skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`
@@ -30,8 +30,10 @@ Sensemaking guidance:
 
 No qualifying Trial 002/002R evidence was collected under the older freeze.
 PRs #512–#514 are integrated, and the current post-RC4/RC5-development
-repository baseline is recorded in Issue #515. Do not treat the intermediate
-post-#514 `main` or an earlier candidate target as the launch identity.
+repository baseline checkpoint is recorded in Issue #515. Do not treat the
+intermediate post-#514 `main` or any earlier candidate target as the launch
+identity. **Merging a documentation-currentness PR itself moves `main`: an
+as-of SHA in this plan must never be treated as an evergreen head pointer.**
 At launch, capture the **then-current exact Sensemaking SHA** and installed
 Skill parity receipt and freeze the evaluated Skill paths through 002/002R,
 unless the failure branch explicitly reopens construction.
