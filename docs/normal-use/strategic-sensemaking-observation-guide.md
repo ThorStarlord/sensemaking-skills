@@ -217,6 +217,7 @@ These are optional qualitative signals, not tracked KPIs or mandatory fields.
 Read-only comparison episodes cannot establish whether spike-versus-hardening
 behavior improved construction outcomes; do not attribute such an effect to
 those trials without construction evidence.
+
 Instead identify **construction-eligible** decisions where:
 
 - repository evidence is already sufficient for a bounded change;

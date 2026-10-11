@@ -98,6 +98,7 @@ Exploratory creative/UI design with unresolved experiential value
 -> expose an isolated bootable preview with enough smoke checks to inspect it
 -> observe genuine interaction before hardening speculative layout behavior
 -> keep no-data-loss, persistence, security and author-authority safeguards
+
 Correct repository responsibility is uncertain
 -> use the Sensemaking control loop; repo-sensemaker may be useful
 
