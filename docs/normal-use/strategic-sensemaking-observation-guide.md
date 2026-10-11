@@ -254,6 +254,14 @@ of a general frequency, a causal effect, or a successful post-guidance repair.
 Do not inflate the normal-use episode count with reconstructed or simulated
 cases.
 
+Also flag **means-ends inversion / harness inversion** when a tool, evaluator,
+or governance artifact grows while the promised product/action observation
+remains unexecuted. In the PR #535 LedgerNote exercise, synthetic fixture
+checks were obtained, but no independent coding-agent trial ran. That is
+evidence about the *cost and executability of the chosen evaluation path*,
+not evidence that the Skill improved. Preserve the claim ceiling; do not add
+a required metric, new episode, or experiment program for this observation.
+
 ```text
 BUILD bias
 != always build

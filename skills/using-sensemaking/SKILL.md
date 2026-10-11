@@ -515,6 +515,19 @@ could invalidate the decision-relevant inference and use the minimum sufficient
 experimental rigor. Normal coding-agent competence/context is not contamination
 by default when the coding agent is part of the intended operating environment.
 
+
+For a small, reversible prompt/Skill wording change, first ask what immediate
+decision a test could change and **whether a real coding-agent execution surface
+is available now**. When behavioral evidence would help, prefer a few direct
+old/new runs on representative, preferably authentic tasks; inspect actions,
+unnecessary escalation, verification, and legitimate stops. Do not build toy
+repositories, randomized runners, hidden answer keys, or elaborate isolation
+merely to obtain stronger evidence than that decision needs. If no agent can
+run, say **behavior NOT TESTED** rather than building an unusable test harness.
+A smoke comparison may inform a reversible decision; it does not prove
+comparative superiority or generalization. Existing trust invariants and
+protected transitions still apply.
+
 Read `references/experiment-economy-v1.md` when experimentation, experimental
 isolation, fresh-agent setup, or contamination control is materially under
 consideration.
