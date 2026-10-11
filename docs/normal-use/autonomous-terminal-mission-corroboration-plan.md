@@ -1,10 +1,10 @@
 # Autonomous Terminal Mission — Normal-Use Corroboration Plan
 
-**Status:** active evidence plan / Trial 001 complete / Trial 002+002R prepared  
+**Status:** active evidence plan / Trial 001 complete / Trial 002+002R target UNPINNED  
 **Original date:** 2026-09-25  
-**Current reconciliation:** 2026-10-04  
+**Current reconciliation:** 2026-10-10  
 **Historical dependency:** PR #476 integrated Trial 001 reconciliation  
-**Current baseline prerequisite:** integrate PRs #512, #513, and #514, then pin the resulting `main` SHA before Trial 002 launch  
+**Current baseline:** PRs #512–#514, #520, #531, and #532 integrated; Issue #515 records the verified 2026-10-10 checkpoint `main@cb4089a44a8d090dda8d2bfdc032ec1abf4e3de9`, not an immutable claim about future `main`. At actual launch, re-pin the then-current exact head and verify installed Skill identity; target admission remains UNPINNED.  
 **Governing references:**
 
 - `skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`
@@ -28,43 +28,43 @@ Sensemaking guidance:
 - PR #513 — bounded Consequence-Depth / Local Completion Bias guidance;
 - PR #514 — Capability Scale Frontier v0 (documentation model).
 
-No Trial 002/002R evidence was collected under the older freeze after those
-changes, so there is no mixed-attribution episode to preserve. Establish one new
-baseline **after #514 integrates**, record its exact `main` SHA in issue #515,
-and freeze the evaluated Skill paths from that point through Trial 002/002R
-unless the failure branch explicitly reopens Sensemaking construction.
+No qualifying Trial 002/002R evidence was collected under the older freeze.
+PRs #512–#514 are integrated, and the current post-RC4/RC5-development
+repository baseline checkpoint is recorded in Issue #515. Do not treat the
+intermediate post-#514 `main` or any earlier candidate target as the launch
+identity. **Merging a documentation-currentness PR itself moves `main`: an
+as-of SHA in this plan must never be treated as an evergreen head pointer.**
+At launch, capture the **then-current exact Sensemaking SHA** and installed
+Skill parity receipt and freeze the evaluated Skill paths through 002/002R,
+unless the failure branch explicitly reopens construction.
 
 ~~~text
-old post-#476 freeze
--> superseded before Trial 002 launch
-
-post-#514 exact main SHA
--> new Trial 002/002R Sensemaking baseline
+old post-#476 freeze                -> historical
+current integrated main candidate  -> Issue #515
+target admission                   -> UNPINNED
+launch                             -> fresh exact-source/Skill receipt
 ~~~
 
-### Pinned Trial 002 target
+### Trial 002 target admission — UNPINNED
 
-The delegated owner selection for Trial 002 is:
+**Authoritative execution tracker:** Issue #515. The previously proposed
+`ThorStarlord/auteur#306` was admissible at its original selection time, but
+became materially in flight before a qualifying Trial 002 launch. Its old
+"pinned" text is **historical**, not an instruction to launch it now.
+Other active Auteur construction/evidence and Metamorfose enrollment work
+already have substantial in-flight PRs; an open issue label by itself does not
+establish a fresh, unclaimed multi-responsibility mission.
 
-> **ThorStarlord/auteur issue #306 — Add Beginner Reconcile New Elements
-> workflow for creative divergence**
+The current decision is **STOP AT TARGET ADMISSION**. Do not invent a target,
+join an existing PR stack, claim the earlier inline Auteur episode is Trial
+002, or run a same-session reconstruction and call it 002R.
 
-The execution tracker is Sensemaking issue #515.
-
-Selection rationale:
-
-1. current open product-ergonomics responsibility;
-2. materially multi-responsibility (candidate freshness/content binding,
-   divergence projection/classification, author-facing action routing,
-   authority-preserving reconciliation, browser/focused qualification);
-3. materially different repository/product shape from Trial 001;
-4. thesis-stable and explicitly preserves Auteur's authority architecture;
-5. mechanically qualifiable through existing focused/server/browser evidence;
-6. no open PR was implementing #306 at selection time.
-
-Recheck criterion 6 immediately before launch. If another actor starts #306
-first, do not contaminate the trial by joining an already-in-flight
-implementation; re-run target admission.
+When a genuine target emerges, record in Issue #515 *before launch*: target
+repository, exact target base SHA, governing issue/authority, terminal goal,
+evidence that work is not materially in flight, admission rationale against
+section 4.2, sealed evaluator expectations, and the qualified execution
+environment. Then select one repo and replace the placeholders in sections
+4.3 and 5 for separate clean coding-agent sessions.
 
 ### Scale-frontier interpretation
 
@@ -100,9 +100,9 @@ The existing one-variable-per-rung discipline remains controlling.
 
 ## 1. What changed from the original sequence
 
-The original sequence (integrate #476 -> sync Skill -> Trial 2 on Auteur ->
-fresh-context resume -> highest-leverage selection -> merge authority ->
-cross-episode reconciliation) is kept. The revisions below fix places where the
+The original sequence (integrate #476 -> verify Skill -> Trial 002 on an
+admitted heterogeneous repository -> fresh-context resume -> highest-leverage
+selection -> merge authority -> cross-episode reconciliation) is kept. The revisions below fix places where the
 original design would have confounded variables or produced unfalsifiable
 evidence.
 
@@ -140,10 +140,36 @@ One new variable per step:
 | Trial | Repository shape | Target | Context | Merge authority | New variable |
 | --- | --- | --- | --- | --- | --- |
 | 001 | React incremental game | explicit (pinned) | single | NO | baseline |
-| 002 | Auteur (product UX / writing workflow) | explicit (pinned) | single segment | NO | repository shape |
-| 002R | Auteur (same mission) | inherited | **fresh** | NO | context boundary |
+| 002 | admitted heterogeneous repo (Auteur preferred) | explicit, **pin before launch** | single segment | NO | repository shape |
+| 002R | same admitted repo and mission | inherited | **fresh** | NO | context boundary |
 | 003 | Auteur or Metamorfose (see 6.1) | **agent-selected** | single | NO | target selection |
 | 004 | any repo with real branch protection | explicit, small | single | **YES** | protected-transition exercise |
+
+### What this ladder does not repeat
+
+The repository already holds synthetic C6R adversarial/replication studies,
+Campaign 2 controller succession, the bounded real Trial 001, and an inline
+Auteur engineering episode with a documented self-review failure. The earlier
+read-only skill-versus-no-skill comparison was independently remeasured
+(three episodes per arm on each of Pydantic, Jellyfin, and AION; 18 total)
+and found **zero clearly skill-favorable tasks**. These findings support the
+ratified **simplify-hard** strategy; they do not prove a negative general
+effect or justify another same-class synthetic benchmark.
+
+A **construction-enabled paired control** is a separate comparative product
+question, not a prerequisite for Trial 002 or a way to upgrade its claim.
+If a real authorized terminal mission and two genuinely independent
+coding-agent sessions become available, hold target SHA, model/runtime,
+authority, evaluation conditions, and objective constant; compare an arm
+using the exact verified Sensemaking Skills with a clean no-Skill arm in
+isolated workspaces. Preserve raw changes/CI/base-drift, unnecessary work,
+interruptions, errors, authority discipline, stopping, and independent
+artifact review; report qualitative differences and the exact claim ceiling.
+Do not combine the control with 002R's fresh-context variable, merge the
+experimental branches, or claim comparative benefit merely from prompt
+replay, agent self-report, or archived simulated user feedback. A paired
+trial should run only when it changes a live product decision and the
+required independent execution surface exists.
 
 ## 3. Step 0 -- integrate Trial 001 reconciliation
 
@@ -229,30 +255,29 @@ Exit: receipt recorded at `BYTE_VERIFIED` or `SEMANTIC_VERIFIED`.
 
 ### 4.2 Target pinning (Step 2, pre-launch)
 
-The owner (or a separate read-only session whose output the owner approves)
-pins one Auteur target before the mission starts. Admission criteria:
+An authorized owner/evaluator or independently delegated admission reviewer must
+pin one genuine target **before** a clean mission session starts. Current
+Issue #515 has **no admitted target**. Admission criteria:
 
-1. **Authoritative:** named by current Auteur authority (roadmap/spec/STATUS/issue
-   that is not contradicted by newer evidence) as unfinished product-facing work.
-2. **Multi-responsibility:** plausibly needs >= 2 distinct bounded
-   responsibilities (e.g. state/persistence, then workflow/UI, then continuity
-   or quality boundary) -- otherwise continuation is not exercised.
-3. **Different shape from Trial 001:** product UX / writing workflow /
-   long-form state / beginner-facing interaction / cross-step continuity /
-   browser-workspace behavior -- not a game-system loop.
-4. **Thesis-stable:** completing it does not require redefining the product
-   thesis (no Level-4 decision expected).
-5. **Qualifiable:** Auteur has an automated check path (tests/build/CI) that
-   can produce exact-head evidence.
-6. **Not already in flight:** no open PR already implementing most of it.
+1. **Authoritative:** named by current target-repository roadmap/spec/STATUS/issue
+   as unfinished work, not contradicted by newer commits, PRs, or qualification.
+2. **Multi-responsibility:** plausibly needs at least two distinct bounded
+   engineering responsibilities; a one-file cleanup is not continuation.
+3. **Different shape from Trial 001:** materially heterogeneous repository,
+   environment, or workflow, with its difference recorded before launch.
+4. **Thesis-stable:** no unratified Level-4 owner choice is needed.
+5. **Qualifiable:** available tests/build/CI can produce meaningful exact-head
+   evidence of the terminal goal.
+6. **Not already in flight:** no other agent or open PR materially implements it;
+   an old issue marked ready-for-agent does not override current code/PR state.
 
-Record: target name, the authority document(s) that define it, why it passes
-criteria 1-6, and the **owner's expected decomposition** (sealed, not given to
-the agent). The sealed decomposition is used only to judge scope and
-continuation afterwards, never as a correctness oracle -- a different valid
-decomposition is fine.
+Record the exact repo/base SHA, goal, admission rationale, and **sealed
+evaluator expectation** before launch. The executor must not read the seal.
+Accept a different valid decomposition when it reaches the same bounded goal.
 
-If no Auteur target passes criteria 1-6, use Metamorfose and record why.
+Prefer Auteur; examine Metamorfose only if a genuine unused target exists there.
+If neither qualifies, preserve **UNPINNED** and stop. Do not create artificial
+engineering work just to satisfy this plan.
 
 ### 4.3 Trial 002 prompt
 
@@ -265,7 +290,7 @@ Use the strategic-sensemaking-loop skill.
 Run this repository mission with FULL AUTONOMY and FULL REPOSITORY DELEGATION.
 
 REPOSITORY:
-ThorStarlord/auteur
+<exact independently admitted repository from Issue #515>
 
 TARGET:
 <pinned target name> as defined by <authority document path(s) / issue #>.
@@ -418,8 +443,8 @@ Resume prompt (restates authority, R5; does *not* restate target or progress):
 ```text
 Use the strategic-sensemaking-loop skill.
 
-Continue the current FULL AUTONOMY terminal mission in ThorStarlord/auteur
-from durable repository state.
+Continue the current FULL AUTONOMY terminal mission in
+<the admitted target repository from Issue #515> from durable repository state.
 
 AUTHORITY (restated; not inferred from repository state):
 FULL REPOSITORY DELEGATION = YES

@@ -1,5 +1,17 @@
 # Week 2 Pilot Rollout: Results & Analysis
 
+> **Historical evidence caveat (2026-10-10):** This is a retained June 2026
+> pilot-status **claim**, not independently established human or external-harness
+> qualification for the current agent-native Sensemaking product. The companion
+> `artifacts/pilot_user_scenarios.md` explicitly calls its participant feedback
+> **"Simulated - Based on Real Usage Patterns."** The 12-participant,
+> 39-diagnostic, satisfaction, and deployment assertions below require separate
+> raw participant/runtime evidence before they can support a real-user claim.
+> The current `qualification-evidence/STATUS.md` reports zero checked-in real
+> external-harness qualification attempts and no empirical PASS. Preserve the
+> archived text for provenance; do not silently convert it into a current PASS.
+
+
 **Period**: 2026-05-26 through 2026-06-02  
 **Pilot Users**: 12 internal team members  
 **Status**: ✅ **SUCCESSFULLY COMPLETED**  
