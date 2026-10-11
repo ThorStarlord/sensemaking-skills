@@ -94,6 +94,11 @@ For the full map, see
 Known narrow change, locally evidenced, one context
 -> direct bounded work + relevant tests
 
+Exploratory creative/UI design with unresolved experiential value
+-> expose an isolated bootable preview with enough smoke checks to inspect it
+-> observe genuine interaction before hardening speculative layout behavior
+-> keep no-data-loss, persistence, security and author-authority safeguards
+
 Correct repository responsibility is uncertain
 -> use the Sensemaking control loop; repo-sensemaker may be useful
 
@@ -125,6 +130,12 @@ The current product model separates several reasons for stronger support:
 - **continuation complexity** affects whether durable Campaign state is worth its cost.
 
 These are qualitative agent judgments, not scores, modes, or routing rules.
+
+A preview booting successfully verifies inspectability, not usability. Firsthand
+feedback may justify a reversible personal design direction but not universal
+preference; before a development default handles real content, verify touched
+save/reopen/recovery and authority invariants. This is existing proportional
+rigor, not a new Spike Mode or permission to bypass protected transitions.
 
 ```text
 more guidance != more visible machinery

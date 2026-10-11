@@ -48,6 +48,7 @@ Keep these invariants:
 7. delegated/orchestrated results return as evidence, not automatic truth or closure;
 8. desired delegation does not expand authority;
 9. durable Campaign state is optional and justified by continuation complexity.
+10. when product value is experiential, get to safe firsthand interaction before hardening speculative design.
 
 Default to **no Campaign** when one context can safely finish the bounded
 responsibility. Escalate to Campaign durability only when state must reliably
@@ -136,6 +137,34 @@ Read `references/experiment-economy-v1.md` for the evidence-economy boundary.
 This is reasoning guidance, not a mandatory runtime phase machine.
 
 New evidence may change the expected solution. That is a feature, not a failure.
+
+### Experience-first discovery: protect trust, not wet-clay layouts
+
+When the open decision concerns the **usefulness or ergonomics** of a creative
+or interactive concept, prefer the shortest authorized, safe path to actual
+interaction. A disposable `SPIKE / PROTOTYPE` or a `REVERSIBLE BUILD` with a
+bootable local preview and focused syntax/import/start/route smoke checks may be
+enough to **inspect a design hypothesis**. Do not make mock-heavy DOM suites,
+full regression qualification, or formal evidence packets prerequisites to
+seeing a speculative layout whose behavior may be discarded.
+
+A smoke PASS establishes only mechanical inspectability, not whether a writer
+finds an interface intuitive or useful. Actual interaction and direct author
+feedback are relevant to those questions; agent simulation is not human
+observation. A user's firsthand preference can select a reversible development
+direction without proving population-wide preference or broad-release fitness.
+
+Keep the spike isolated from real or accepted data where possible. Preserve
+affected trust invariants such as no silent data loss, save/reopen/recovery,
+security, and canonical-authority boundaries. Before default use with real work,
+verify the touched trust paths directly; strengthen regression, accessibility,
+and field-validation evidence as the claim and consequences grow. Do not freeze
+volatile layouts prematurely or waive consequential safety checks.
+
+This applies existing proportional-rigor and evidence-economy doctrine, not a
+formal `SPIKE_MODE`, a `Spike Warrant`, a new Campaign artifact, or permission
+to bypass existing merge/release authority. See
+`references/experiment-economy-v1.md`.
 
 ## Advanced reference: policy decomposition
 
