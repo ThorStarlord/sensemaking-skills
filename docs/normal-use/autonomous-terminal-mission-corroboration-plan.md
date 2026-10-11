@@ -4,7 +4,7 @@
 **Original date:** 2026-09-25  
 **Current reconciliation:** 2026-10-10  
 **Historical dependency:** PR #476 integrated Trial 001 reconciliation  
-**Current baseline:** PRs #512–#514, #520, #531, and #532 integrated; Issue #515 records the verified 2026-10-10 checkpoint `main@cb4089a44a8d090dda8d2bfdc032ec1abf4e3de9`, not an immutable claim about future `main`. At actual launch, re-pin the then-current exact head and verify installed Skill identity; target admission remains UNPINNED.  
+**Current baseline:** PRs #512–#514, #520, #531–#534 integrated. The latest verified as-of checkpoint is `main@eedd317824567b24afbf822cf13e22160731034d` (tree `08f54c08ccd92ebe4fcfd69c634b5fccafe2d86f`), with integrated-main Product Validation `38099225312` and Release Candidate Distribution `38099225332` PASS; this is not immutable future `main`. PR #534 altered `using-sensemaking` guidance, so re-pin exact source and verify the **actually installed** Skills at launch. Issue #515 remains TARGET UNPINNED; no independent executor or trial evidence was established by this update.  
 **Governing references:**
 
 - `skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`

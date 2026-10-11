@@ -106,6 +106,14 @@ This is a preference among actions that already cross the warrant/authority
 threshold. It does not weaken hard authority, evidence, or consequence
 boundaries.
 
+Global roadmap or merge uncertainty does not automatically block a different,
+independently authorized local responsibility. If source evidence already
+grounds a bounded useful diagnosis or reversible fix, choose it rather than
+escalating the entire repository merely because its highest priority is
+unsettled. Keep the wider priority question and any protected merge/release
+decision unresolved. Do **not** use this to invent defects or infer authorization
+to mutate a repository where only read access was granted.
+
 ## 4. Reversible-build dominance test
 
 A REVERSIBLE BUILD normally dominates "experiment first, then rebuild the same

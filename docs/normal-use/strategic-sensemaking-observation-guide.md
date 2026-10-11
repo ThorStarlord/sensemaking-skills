@@ -244,6 +244,16 @@ evidence of inquiry/experiment-selection friction.
 Recurring cases where action skipped a cheap decision-changing uncertainty are
 evidence of the opposite failure.
 
+Also observe **premature owner escalation**: was a concrete, bounded,
+independently authorized repair or diagnostic available despite unresolved
+global priority, or would action genuinely have crossed owner/maintainer
+authority? The September 30 read-only Pydantic comparison reported
+control-favorable bounded task identification while the Skill arm repeatedly
+escalated. Treat that as a *historical warning to check in real work*, not proof
+of a general frequency, a causal effect, or a successful post-guidance repair.
+Do not inflate the normal-use episode count with reconstructed or simulated
+cases.
+
 ```text
 BUILD bias
 != always build
