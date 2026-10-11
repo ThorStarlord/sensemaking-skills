@@ -237,6 +237,38 @@ TOTAL EXPERIMENT COST =
 
 Use qualitative judgment; do not create a numeric expected-value score.
 
+### Executability first: prevent harness inversion
+
+Before constructing a separate evaluator, fixture, benchmark, or runner,
+identify the **near-term engineering decision** it could change. Confirm that
+its decisive observation is executable in the available environment *before*
+building supporting infrastructure. If the required coding-agent sessions
+cannot run, an elaborate harness will not answer whether a Skill changes agent
+behavior; report that observation as **NOT RUN**. Do not substitute successful
+fixture tests for an agent-behavior result.
+
+For a small, reversible prompt/Skill change, inspection of the diff may be
+enough to decide on a proposed change. When a behavioral smoke test is useful,
+try one or a few representative scenarios with direct old/new agent runs;
+prefer an authentic engineering issue when available. Inspect whether the
+agent acted on grounded, authorized work, invented work, escalated needlessly,
+or respected a genuine boundary. A few runs provide directional evidence,
+not reliable causal attribution, broad productivity proof, or release safety.
+
+The PR #535 LedgerNote episode illustrates the failure: fictional matched
+repositories, an answer key, and a randomized trial runner were built, but
+the intended independent coding-agent comparison could not execute in the
+workspace. The fixtures were mechanically checked; **the revised Skill's
+behavioral improvement was not observed**. Do not count this as independent
+normal-use or Trial 002 evidence.
+
+A large harness is not wrong merely because it exceeds the payload's size.
+Stronger isolation or automation can be justified by consequential safety
+risks, repeated use, expensive irreversible decisions, or a genuinely
+comparative/causal claim. Do not waive focused regression, data-integrity,
+security, or authority checks merely to avoid test overhead. The failure is
+support-work displacement without proportionate decision value.
+
 ## 6. Minimum Sufficient Experimental Rigor
 
 If an experiment passes the Experiment Warrant Gate, use the minimum rigor sufficient

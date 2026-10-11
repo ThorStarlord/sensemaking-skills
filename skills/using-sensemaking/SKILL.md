@@ -138,6 +138,35 @@ This is reasoning guidance, not a mandatory runtime phase machine.
 
 New evidence may change the expected solution. That is a feature, not a failure.
 
+### Avoid false owner escalation when useful bounded work is authorized
+
+Missing authority to choose a repository-wide priority, merge, or release does
+**not** by itself make every smaller responsibility owner-blocked. Check whether
+current source, tests, incidents, or an already authorized goal identify a
+specific, independently valuable action within the actual scope. A narrow
+inspection, reproducer, or reversible repair may proceed while the unrelated
+global choice remains undecided; never manufacture work solely to avoid a stop.
+
+This matters when an unaided agent finds a concrete bounded defect but a
+Sensemaking-guided agent only requests a roadmap priority. Compare the usable
+evidence and potential retained value before escalating. Conversely, do not
+interpret an interesting code smell, vague task, or lack of explicit authority as
+permission for broad cleanup, an unrequested fix, or a protected transition.
+
+```text
+global priority uncertain + local authorized defect evidenced
+-> bounded investigation/repair + relevant verification
+-> keep global owner decision unresolved
+
+action authorization genuinely missing
+-> preserve the boundary; do not act or imply approval
+```
+
+This is a correction to ordinary responsibility selection, not a mandatory
+action quota, autonomy override, new experiment, or additional control mode.
+The 2026-09-30 read-only Pydantic comparison is a warning about possible
+over-escalation, **not** evidence that this wording improves coding performance.
+
 ### Experience-first discovery: protect trust, not wet-clay layouts
 
 When the open decision concerns the **usefulness or ergonomics** of a creative
@@ -485,6 +514,19 @@ If experimentation remains materially warranted, control only confounders that
 could invalidate the decision-relevant inference and use the minimum sufficient
 experimental rigor. Normal coding-agent competence/context is not contamination
 by default when the coding agent is part of the intended operating environment.
+
+
+For a small, reversible prompt/Skill wording change, first ask what immediate
+decision a test could change and **whether a real coding-agent execution surface
+is available now**. When behavioral evidence would help, prefer a few direct
+old/new runs on representative, preferably authentic tasks; inspect actions,
+unnecessary escalation, verification, and legitimate stops. Do not build toy
+repositories, randomized runners, hidden answer keys, or elaborate isolation
+merely to obtain stronger evidence than that decision needs. If no agent can
+run, say **behavior NOT TESTED** rather than building an unusable test harness.
+A smoke comparison may inform a reversible decision; it does not prove
+comparative superiority or generalization. Existing trust invariants and
+protected transitions still apply.
 
 Read `references/experiment-economy-v1.md` when experimentation, experimental
 isolation, fresh-agent setup, or contamination control is materially under
