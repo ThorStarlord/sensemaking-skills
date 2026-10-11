@@ -175,6 +175,46 @@ Prefer READ/INSPECT/VERIFY when they answer the question materially cheaper.
 Prefer an experiment when the decision genuinely requires evidence the build
 cannot provide without compromising the inference.
 
+### Experience-first discovery and invariant-bounded assurance
+
+For a creative, visual, or interactive product, the primary uncertainty may be
+**experiential value**, not whether a selected implementation satisfies its
+mechanical contract. Match the evidence source to the decision:
+
+| Decision | Appropriate evidence | Not established by that evidence |
+| --- | --- | --- |
+| Can someone inspect the concept? | Compile/start/route smoke checks and a bootable isolated preview | Ergonomic value or reliability in everyday use |
+| Is the interaction understandable/useful? | Genuine interaction and observations in the actual UI | Security, all edge cases, or population-wide preference |
+| Should this owner's development direction change? | Their firsthand experience and reversible preference decision | General user preference or broad release readiness |
+| May real work rely on this as a default? | Targeted save/reopen/recovery, authority, accessibility, and relevant reliability verification | Long-term field value or universal desirability |
+
+For a disposable visual-canvas spike, make a runnable preview available early,
+use disposable sample content, perform only the smoke checks needed to make it
+inspectable, and seek direct use or feedback before cementing layout details.
+Do not write mock-driven UI regression suites for unchosen layouts merely to
+make them look qualified. If no real browser or user is reachable, state that
+the ergonomic question remains unobserved; mocked DOM behavior or an agent's
+judgment is not substitute evidence of human preference.
+
+Keep stable **trust invariants** separate from volatile **design hypotheses**.
+For example, selecting between canvas and split-view navigation can remain
+fluid while no-silent-canon-change, no-text-loss, and save/reopen/recovery
+behavior continue to require appropriate protection if touched. Showing an
+isolated disposable preview and enabling routine authoring with real content
+are different decisions with different evidence needs.
+
+Minimize **epistemic latency**: time from identifying a product uncertainty
+to receiving evidence that could change the product decision. Revisit or
+discard the design promptly when observation defeats the hypothesis; add
+durable regression tests for behavior worth preserving as stabilization
+becomes warranted. Direct human feedback can be high-fidelity for ergonomics
+but does not replace testing race conditions, subtle data loss, or security.
+
+This is a contextual application of existing `SPIKE`, `REVERSIBLE BUILD`,
+authority, and proportional verification guidance. It creates no formal
+spike exemption, workflow phase gate, binary rigor mode, automatic evaluator,
+or general waiver of safety or publication requirements.
+
 ## 5. Total experiment cost
 
 Do not call an experiment cheap merely because the experimental code is small.

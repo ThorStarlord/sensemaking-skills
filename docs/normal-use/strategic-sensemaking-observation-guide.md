@@ -203,6 +203,20 @@ The target behavior is not "never rerun analysis." It is:
 Do not use a BUILD percentage as a quality metric. Some work genuinely requires
 inquiry.
 
+For exploratory user-facing or creative work, a construction-eligible action
+may be a **disposable spike** rather than a retained BUILD. Observe whether
+the agent reached a safe, usable preview and actual decision-changing feedback
+before investing in tests of speculative interaction details. Keep firsthand
+human preference, agent-observed interaction, mock/DOM checks, and mechanical
+release verification as distinct evidence with distinct claim ceilings.
+
+Where these facts arise naturally, note time to first usable preview, time to
+first decision-changing feedback, avoidable mock/test/setup overhead, and
+discarded design iterations. Record serious trust/safety defects separately.
+These are optional qualitative signals, not tracked KPIs or mandatory fields.
+Read-only comparison episodes cannot establish whether spike-versus-hardening
+behavior improved construction outcomes; do not attribute such an effect to
+those trials without construction evidence.
 Instead identify **construction-eligible** decisions where:
 
 - repository evidence is already sufficient for a bounded change;
@@ -408,6 +422,9 @@ ACTION
 - blocking uncertainty:
 - cheaper sufficient evidence overlooked:
 - build-as-inquiry available:
+- experience-first preview/feedback and source (if material):
+- avoidable speculative test overhead/iterations (if material):
+- essential trust invariant checked or still uncertain (if material):
 
 GOAL FITNESS
 - governing outcome:
@@ -457,6 +474,7 @@ Useful cross-episode questions include:
 - Does resume usually skip already-settled analysis while still reopening on
   genuine invalidation?
 - In construction-eligible cases, is unnecessary inquiry becoming rare?
+- For experiential designs, does safe firsthand feedback arrive before premature UI hardening?
 - Does Goal Fitness catch milestone inversion without blocking legitimate
   qualification frontiers?
 - Are failures concentrated in one product/domain, or do they recur across
