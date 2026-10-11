@@ -5,6 +5,8 @@
 **Last updated:** 2026-10-10  
 **Current phase:** RC5 development on canonical `main` after integration of the post-RC4 pragmatic-kernel contraction through PR #531.
 
+- **2026-10-10/11 UTC documentation/Skill-guidance integration — VERIFIED ON MAIN:** PR #533 (Trial 002 admission/currentness) and PR #534 (experience-first discovery) merged sequentially as `60ede7e146d3c6cd83f799f9648ddc1ed2a0039a` and `eedd317824567b24afbf822cf13e22160731034d`. Exact integrated-main Product Validation `38099225312` (all seven jobs) and Release Candidate Distribution `38099225332` passed. Lab was not triggered; these checks verify repository/contracts/distribution, **not** comparative Skill usefulness, human UX, or an independent external-harness trial. Current source identity must still be inspected at the point of use.
+
 - **Post-RC4 pragmatic-kernel contraction — INTEGRATED / VERIFIED / CLOSED:** PR #531 integrated the behavior-bearing RC5-development source as `main@281cd4d9c7150d072381e14f949f68fc852b2c43` (tree `d760c485729a50f073565978d599a653a5fff627`), with Product/Lab/Release push validation PASS. Docs-only PR #532 then integrated at the verified `main@cb4089a44a8d090dda8d2bfdc032ec1abf4e3de9` checkpoint (tree `f979166e6c87ae6c2fc9381651dc6100c47a0ffa`), byte-identical to its qualified PR head; Product Validation `37722866164` and Release Candidate Distribution `37722866187` passed on the merged commit. Lab was not triggered on #532 because its changes were documentation-only; the preceding behavior-bearing `main` passed Lab `37720641980`. Issues #521 and #506 are closed. Active workflow auto-routing is removed, `yolo_execution` retired, and pragmatic-kernel contraction is complete; further physical deletion remains evidence-gated.
 
 - **Further deletion remains evidence-gated:** compatibility workflow definitions, the Organization implementation, specialized validators, and shipped Skill identities are not physically deleted merely because they are secondary. The contraction rule is outcome-based: retain machinery when it protects demonstrated correctness, integrity, provenance, recovery, or a recurring failure; otherwise prefer direct agent judgment and smaller surfaces.
@@ -12,7 +14,7 @@
 - **Capability Learning Loop v0 — INTEGRATED / EVIDENCE-GATED:** PR #512 merged as `3f6e5e9f4b4a811fcb19724adb18db911e997dd6`; cross-episode reusable doctrine remains evidence-gated, with no self-modifying runtime or automatic Skill promotion.
 - **Consequence-Depth / Local Completion Bias guidance — INTEGRATED / NORMAL-USE OBSERVATION:** PR #513 merged as `bb90f700138749272111b9683ec8671c5593ccce`; `using-sensemaking` and `change-impact-analysis` now zoom outward only while downstream consequences can change the decision, responsibility, verification, invariant, or strategy.
 - **Capability Scale Frontier v0 — INTEGRATED / ROADMAP-SELECTION MODEL:** PR #514 merged as `9931b3438e0dc1a315fc69fb3df85e8bd4a5c407`; the eight-axis qualified-envelope / adjacent-frontier model is descriptive only and adds no score, benchmark runtime, Skill, schema, or automatic frontier selection.
-- **Next normal-use evidence frontier — TRIAL 002/002R TARGET UNPINNED:** Issue #515 is the admission authority; previous Auteur #306/#318 targets are already in flight and unsuitable. The verified baseline candidate at this 2026-10-10 review is `main@cb4089a44a8d090dda8d2bfdc032ec1abf4e3de9`, tree `f979166e6c87ae6c2fc9381651dc6100c47a0ffa`. Product/Release on that exact merge are PASS; Lab PASS applies to the preceding behavior-bearing tree, not a new run on docs-only #532. A documentation PR merge itself advances `main`, so Issue #515 and live repository evidence, not this as-of snapshot, determine the exact launch identity. Before launch, pin an independently admitted genuine multi-responsibility mission, recheck base/installed Skill identities, and perform the existing canary. No valid target or independent coding-agent execution was established merely by repository inspection; no fabricated synthetic mission.
+- **Next normal-use evidence frontier — TRIAL 002/002R TARGET UNPINNED:** Issue #515 remains the admission authority, not a ready-made task. The latest verified as-of integrated checkpoint is `main@eedd317824567b24afbf822cf13e22160731034d`, tree `08f54c08ccd92ebe4fcfd69c634b5fccafe2d86f`, with Product/Release push checks green. PR #534 changed `using-sensemaking` instructions; at actual launch re-pin current source and byte-verify the *installed* Skill copies. The different-repository target and independent coding-agent execution surface are still unavailable, so no Trial 002/002R evidence exists. Normal authorized development is not blocked by trial admission.
 
 - Issue #473 Autonomous Terminal Mission Continuation v1 is complete/integrated on `main` (exact feature head `2ec13d99cd62a3785c0be1036d7bed3b6efa2ca5` passed Product Validation run 36106321929 and Release Candidate Distribution run 36106321954 before PR #474 merged as `3fc1bcf1efd8565513592ddc57870476575eacb7`).
 - Normal-use Trial 001 on `ThorStarlord/React_incremental_game_prototype` now provides one bounded explicit-target support episode: target PR #154 head `70c24d5a11c4238c60e1fdee9f83eb9164dd35f0` passed Build Validation run 36120244452 and stopped at the intentionally withheld merge-authority boundary; attribution to the current #474 Skill revision remains limited because the harness-loaded Skill was reported stale.
@@ -25,7 +27,7 @@
 **Primary program:** agent-native repository decision support with agent-owned semantic judgment, explicit warrant/evidence/authority boundaries, optional durable Campaign state, reconstructible higher-scope strategic decisions, and guidance-first practical agent control  
 **Current implementation frontier:** use Git `main` HEAD as exact repository identity; this projection intentionally does not self-pin a commit that becomes stale when it changes
 
-**Release status:** RC4 integrated at `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` and post-RC4 contraction at `main@281cd4d9c7150d072381e14f949f68fc852b2c43`; the most recent verified docs-only integration checkpoint is `cb4089a44a8d090dda8d2bfdc032ec1abf4e3de9`. Current source remains `1.0.0rc5.dev0` targeting `1.0.0rc5` in `development`. RC5 freeze, tagging, PyPI publication, and final `1.0.0` are separate protected decisions, not a consequence of green development CI. Native-harness portability and semantic usefulness remain outside the current mechanically qualified support claim.
+**Release status:** RC4 integrated at `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` and post-RC4 contraction at `main@281cd4d9c7150d072381e14f949f68fc852b2c43`; the latest verified integrated development checkpoint is `eedd317824567b24afbf822cf13e22160731034d` (PRs #533/#534, Product/Release green). Current source remains `1.0.0rc5.dev0` targeting `1.0.0rc5` in `development`. RC5 freeze, tagging, PyPI publication, and final `1.0.0` are separate protected decisions, not a consequence of green development CI. Native-harness portability and semantic usefulness remain outside the current mechanically qualified support claim.
 Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 `STATUS.md` is the **current Level-3 strategic projection**, not the complete historical development ledger. Detailed qualification and decision history lives in linked handoffs, ADRs, dated audits, and Git/PR history.
@@ -173,7 +175,7 @@ Current material frontier items are:
 34. **Value-Producing Action & High-Delegation v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #465 operationalizes retained product value alongside evidence quality, adds a bounded high-delegation repository envelope, blocked-gate continuation discipline, and compact Decision Trace observability without adding an action engine or permission runtime.
 35. **Strategic Exploration Funnel v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #468 makes coverage-before-convergence explicit at genuine Level-3 analysis boundaries: system mapping and breadth opportunity exploration precede frontier-candidate synthesis; only material finalists receive depth analysis and construction-path synthesis; resumed execution/verification does not repeat the funnel.
 36. **Autonomous Terminal Mission Continuation v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #473 adds repeated responsibility continuation under an explicit FULL AUTONOMY / FULL DELEGATION terminal mission, with conditional Level-3 breadth, decision-relevant vertical completion, mission-scoped construction-before-field-validation, synthetic-persona claim discipline, and separately governed protected transitions. Mechanical/contract qualification is established; normal-use behavioral evidence is not.
-37. **Strategic Sensemaking Normal-Use Observation Guide — CANDIDATE / QUALIFICATION_PENDING.** Makes breadth, frontier compression, proportional depth, resume, action-mode economy, and Goal Fitness observable during ordinary consequential work without introducing a benchmark, score, tracker, policy layer, or automatic strategy reopening.
+37. **Strategic Sensemaking Normal-Use Observation Guide — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Makes breadth, frontier compression, proportional depth, resume, action-mode economy, and Goal Fitness observable during ordinary consequential work without introducing a benchmark, score, tracker, policy layer, or automatic strategy reopening.
 
 ### Current highest-leverage boundary
 
@@ -414,6 +416,20 @@ No current Thesis Tension is promoted into active review.
 ## Current next step
 
 **NO ACTIVE LEVEL-3 CONSTRUCTION PROGRAM — NORMAL-USE VALIDATION.**
+Owner-directed continuation: prefer actual authorized engineering episodes over
+another synthetic benchmark or architecture package. The prior 18 read-only
+episodes across three tasks showed **0 clearly Skill-favorable tasks** against
+a competent control; this warrants continuing the simplify-hard posture and
+watching for concrete value-producing action versus premature escalation. It is
+not proof of ineffectiveness, nor a substitute for a construction-enabled
+independent comparison. Preserve any naturally arising evidence through Issue
+#218; do not invent an episode or require trial completion before normal work.
+
+Separate non-blocking lanes: Issue #226's C6R synthetic study is deprioritized
+unless a real decision-changing gate-confusion pattern warrants it; Issue #384
+still needs actual GitHub-admin branch protection; Issue #255's Goal A external
+harness stop remains binding. Trial 002 stays target-unpinned under #515.
+
 
 Trial 001 is preserved in
 `docs/normal-use/autonomous-terminal-mission-trial-001.md`. Its exact target

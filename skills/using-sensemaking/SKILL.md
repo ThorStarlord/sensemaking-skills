@@ -138,6 +138,35 @@ This is reasoning guidance, not a mandatory runtime phase machine.
 
 New evidence may change the expected solution. That is a feature, not a failure.
 
+### Avoid false owner escalation when useful bounded work is authorized
+
+Missing authority to choose a repository-wide priority, merge, or release does
+**not** by itself make every smaller responsibility owner-blocked. Check whether
+current source, tests, incidents, or an already authorized goal identify a
+specific, independently valuable action within the actual scope. A narrow
+inspection, reproducer, or reversible repair may proceed while the unrelated
+global choice remains undecided; never manufacture work solely to avoid a stop.
+
+This matters when an unaided agent finds a concrete bounded defect but a
+Sensemaking-guided agent only requests a roadmap priority. Compare the usable
+evidence and potential retained value before escalating. Conversely, do not
+interpret an interesting code smell, vague task, or lack of explicit authority as
+permission for broad cleanup, an unrequested fix, or a protected transition.
+
+```text
+global priority uncertain + local authorized defect evidenced
+-> bounded investigation/repair + relevant verification
+-> keep global owner decision unresolved
+
+action authorization genuinely missing
+-> preserve the boundary; do not act or imply approval
+```
+
+This is a correction to ordinary responsibility selection, not a mandatory
+action quota, autonomy override, new experiment, or additional control mode.
+The 2026-09-30 read-only Pydantic comparison is a warning about possible
+over-escalation, **not** evidence that this wording improves coding performance.
+
 ### Experience-first discovery: protect trust, not wet-clay layouts
 
 When the open decision concerns the **usefulness or ergonomics** of a creative
