@@ -43,3 +43,14 @@ Classification against the three outcomes:
 3. **Sufficient knowledge, limits elsewhere** is the best fit: the next step is external product evidence, which no document can supply.
 
 Recommendation: do **not** build a Grounding Pack for Auteur. A pack would duplicate `MISSION.md`. If anything is built, it's a one-page entry index pointing to the mission and status, not a pack.
+
+# Fresh-session usability test (synthetic, 2026-10-12, after PR #166 merged at `2331dd1`)
+
+**Evidence class:** SYNTHETIC. One fresh agent, one onboarding question (how Copy Essence generation works, and what a new Trait effect would require). Read-only. No control arm, so no attribution to the pack is possible.
+
+- **Answered from code, without asking:** the rate function, the per-Copy formula, the files that apply it, and the authority rule for named runtime effects.
+- **Questions it still needed a human for:** stacking rule (additive or multiplicative), whether this request is in Campaign One scope at all, whether a new effect should be Copy-only or a permanent player effect, and balance numbers. The pack answered only the balance question ("none set"). The other three were design or scope decisions that no document records.
+- **Contradictions it found in the repo:** effect naming calls the multiplier "multiplicative" while the code sums it additively. Design docs say "qualifying" Copies contribute, but the rate counts any Copy at maturity 100 or more. `ESSENCE_GENERATION_BONUS` is documented as current but has no reader. One component shadows a shared constant.
+- **Pack coverage:** no entry on the Essence rate or Trait effects. `decisions/` holds two records, so it could not answer the stacking, scope, or target questions.
+
+**Reading:** the pack added little beyond the code for the mechanics. Its value for this task would have been decision records for stacking, scope, and target. Those are missing, and the test shows the code and docs disagree in places. The next useful step is an owner decision on those three questions, recorded as `[owner: date]` lines, rather than more pack content.
