@@ -346,11 +346,13 @@ If the target repository has a `.sensemaking/` Grounding Pack, read `intent.md`
 and `invariants.md` before task work. Honor their non-goals and invariants; treat
 `[hypothesis]` lines as unconfirmed.
 
-Before asking the owner a question, check `intent.md` (open and answered
-questions) and `decisions/`. If the answer is already recorded, use it and do
-not ask again. After the owner answers, record the answer in `intent.md` with an
-`[owner: date]` tag in the same change. Each question the owner must answer is a
-line the owner should never have to give twice.
+Before asking the owner a question, search where owner decisions already live:
+the pack's `intent.md` and `decisions/`, and the repository's own records (ADRs,
+product-decision docs, and open or closed issues and PR descriptions written by the
+owner). If a recorded decision still applies to the current scope, use it and do
+not ask. Ask again only if the scope changed, the decision was superseded, or new
+evidence materially challenges it. After the owner answers, record the answer with
+an `[owner: date]` tag in the same change.
 
 ## 1. Establish goal and authority
 
