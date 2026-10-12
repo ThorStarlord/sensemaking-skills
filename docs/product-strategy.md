@@ -148,6 +148,20 @@ reducing an avoidable wrong turn, preserving decision context, respecting an
 authority boundary, or reaching justified closure with less user routing.
 Comparative superiority over a capable direct agent remains unestablished.
 
+**Value-first comparative evaluation direction (2026-10-11; hypothesis, not a
+ratified product-thesis pivot):** The relevant outcome is whether guidance helps
+an agent choose and deliver the *right useful thing*, including a simpler
+alternative or a justified no-build decision, without unnecessary process or
+weakened trust invariants. A short default instruction may outperform the full
+entrypoint, but prompt length is a hypothesis rather than an established cause
+of the read-only trial results. Compare a direct agent, an isolated compact
+Sensemaking candidate, and verified full Sensemaking on the same authentic
+user-relevant work before shipping a replacement or claiming superiority.
+See the [value-first comparative evaluation plan](normal-use/value-first-sensemaking-comparative-plan.md).
+The comparison complements, rather than replaces, the autonomous terminal-
+mission capability ladder; no outcome, Skill change, or product-boundary
+revision is established by documentation alone.
+
 ### Evidence ceilings
 
 | Claim | Current status |
@@ -276,6 +290,10 @@ problem. Major reversal of a strategic non-goal is a Level-4 decision.
 
 Measure decision quality and delegation quality rather than inventory:
 
+- the actual human-facing goal achieved, including when a simpler alternative
+  or a justified no-build choice outperforms the requested implementation;
+- unnecessary construction, premature escalation, user intervention, and
+  measured total effort relative to a capable direct agent when comparable;
 - grounded central diagnosis;
 - appropriate next responsibility;
 - useful surfacing of decision-relevant considerations the user did not need to

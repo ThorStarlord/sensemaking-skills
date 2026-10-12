@@ -425,6 +425,18 @@ not proof of ineffectiveness, nor a substitute for a construction-enabled
 independent comparison. Preserve any naturally arising evidence through Issue
 #218; do not invent an episode or require trial completion before normal work.
 
+**Owner-requested value-first comparative plan (2026-10-11; DOCUMENTED, NOT
+RUN):** [compare direct-agent, compact experimental Sensemaking, and verified
+full Sensemaking](docs/normal-use/value-first-sensemaking-comparative-plan.md)
+on authentic product-choice and, when warranted, construction tasks. Evaluate
+whether the guidance improves *which solution is chosen* and the useful
+outcome, not merely verification or process adherence. The proposed compact
+300–500-word entrypoint is an experimental hypothesis, **not** a shipped
+replacement or an asserted optimum. No independent three-arm session, runner,
+accepted task, causal prompt-bloat finding, or incremental product-value PASS
+is claimed. The original Trial 002/002R diagnostic ladder stays separate;
+actual work and its admission requirements remain unchanged.
+
 Separate non-blocking lanes: Issue #226's C6R synthetic study is deprioritized
 unless a real decision-changing gate-confusion pattern warrants it; Issue #384
 still needs actual GitHub-admin branch protection; Issue #255's Goal A external
