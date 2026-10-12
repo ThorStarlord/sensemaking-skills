@@ -50,8 +50,8 @@ Template: `templates/grounding-pack/`. Budgets are hard limits.
    before analysis. Reuse an existing `CONTEXT.md`, `docs/adr/`, or `CLAUDE.md` by
    linking to it rather than copying it.
 2. **Fill from evidence.** Write `context.md` and `invariants.md` from code, tests,
-   commit history, and existing docs. Tag every line: `[code: path]`,
-   `[test: path]`, `[owner: date]`, or `[hypothesis]`.
+   commit history, and existing docs. Tag every line with exactly one primary tag:
+   `[policy: path]`, `[code: path]`, `[test: path]`, `[owner: date]`, `[delegated: date]`, or `[hypothesis]`.
 3. **Do not invent intent.** Put candidate goals and non-goals in `intent.md` as
    `[hypothesis]` lines and list each as an open owner question. Never write an
    owner answer that the owner did not give.

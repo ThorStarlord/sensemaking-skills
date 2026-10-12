@@ -32,3 +32,9 @@ Major reversals of this ADR remain Level-4 decisions.
 - Positive: a fresh agent gets target-specific intent and traps without reading the whole codebase; owner answers stop repeating.
 - Negative: the pack can go stale; mitigated by same-change updates and the budgets.
 - Not claimed: that the pack improves outcomes. That is the hypothesis in `docs/product-strategy.md` section 9, to be tested in Phase 3.
+
+## Amendment 2026-10-12 (status amendment; original decisions above are preserved)
+
+- **Provenance (replaces decision 2 above).** Each factual line carries exactly one primary tag: `[policy: path]` (authority document), `[code: path]` (source file), `[test: path]`, `[owner: date]` (owner intent), `[delegated: date]` (agent choice under owner delegation), or `[hypothesis]` (agent inference). Supporting sources use an ordinary Markdown link, not a second tag.
+- **Question ratchet (replaces decision 5).** Reuse a recorded answer while it still applies to the current scope. Ask again only if the scope changed, the decision was superseded, or new evidence materially challenges it.
+- **Status.** The pack exists on PR #166 (target repo) but is not merged. Owner review has not happened. Phase 2 is partially complete; see `docs/normal-use/grounding-pack-build-001.md`. The earlier "blocked by access" note is superseded: access was granted and the pack was built.

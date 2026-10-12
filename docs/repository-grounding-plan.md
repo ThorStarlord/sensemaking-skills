@@ -43,9 +43,12 @@ instead of duplicated).
 **Provenance rule.** Every line in `context.md` and `invariants.md`, and every
 factual claim in `intent.md`, ends with one tag:
 
-- `[code: path]` or `[test: path]` - checkable against the repository;
-- `[owner: date or link]` - an owner decision; authoritative for intent;
-- `[hypothesis]` - the agent's inference; must not be treated as fact.
+- `[policy: path]`, `[code: path]` or `[test: path]` - checkable against the repository;
+- `[owner: date]` - an owner answer; authoritative for intent;
+- `[delegated: date]` - an agent choice under owner delegation; binding only within that delegation;
+- `[hypothesis]` - the agent's inference; never a basis for action alone.
+
+Each factual line carries exactly one primary tag. Supporting sources use a Markdown link.
 
 **Inclusion rule.** A line belongs in the pack only if an agent could not
 recover it from the code in a few minutes. If it can be enforced by a test,
