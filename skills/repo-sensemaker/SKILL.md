@@ -40,6 +40,32 @@ candidate next step != construction path
 weakest boundary != automatically selected strategic direction
 ```
 
+## Build or refresh the Grounding Pack
+
+When the target repository has no `.sensemaking/` Grounding Pack, or the work
+touches behavior a pack line covers, build or refresh it before proposing work.
+Template: `templates/grounding-pack/`. Budgets are hard limits.
+
+1. **Read first.** If `.sensemaking/` exists, read `intent.md` and `invariants.md`
+   before analysis. Reuse an existing `CONTEXT.md`, `docs/adr/`, or `CLAUDE.md` by
+   linking to it rather than copying it.
+2. **Fill from evidence.** Write `context.md` and `invariants.md` from code, tests,
+   commit history, and existing docs. Tag every line: `[code: path]`,
+   `[test: path]`, `[owner: date]`, or `[hypothesis]`.
+3. **Do not invent intent.** Put candidate goals and non-goals in `intent.md` as
+   `[hypothesis]` lines and list each as an open owner question. Never write an
+   owner answer that the owner did not give.
+4. **Keep only non-derivable lines.** Omit anything grep, a type, or a test can
+   supply; cite the enforcing test instead. Omit module lists and file maps.
+5. **Record decisions.** For each non-obvious choice found in history or code,
+   add a short `decisions/NNNN-*.md` record with alternatives and the reason.
+6. **Check budgets.** Cut or merge lines to stay within budget. Do not add files.
+7. **Report what was not established.** In the analysis output, list open owner
+   questions and `[hypothesis]` lines separately from grounded facts.
+
+The pack is decision support, not authority. A pack line does not grant
+permission to act; authority still comes from the owner.
+
 ## Two responsibilities, one skill
 
 This skill has two responsibilities. They stay conceptually separate (see [docs/candidate/architecture-decision.md](../../docs/candidate/architecture-decision.md), Decision 1) but live in one file, not two, because one of them is structurally incapable of running outside conversation:

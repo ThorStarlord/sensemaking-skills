@@ -340,6 +340,18 @@ responsibility selection.
 
 ---
 
+## 0. Read the Grounding Pack and apply the question ratchet
+
+If the target repository has a `.sensemaking/` Grounding Pack, read `intent.md`
+and `invariants.md` before task work. Honor their non-goals and invariants; treat
+`[hypothesis]` lines as unconfirmed.
+
+Before asking the owner a question, check `intent.md` (open and answered
+questions) and `decisions/`. If the answer is already recorded, use it and do
+not ask again. After the owner answers, record the answer in `intent.md` with an
+`[owner: date]` tag in the same change. Each question the owner must answer is a
+line the owner should never have to give twice.
+
 ## 1. Establish goal and authority
 
 Before selecting work, identify:

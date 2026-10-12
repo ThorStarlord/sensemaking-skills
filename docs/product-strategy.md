@@ -33,6 +33,19 @@ This is the current product hypothesis, not eternal truth. It should change when
 material evidence or explicit owner direction shows that the problem, user, or
 intervention is wrong.
 
+### Level-4 revision 2026-10-12: target-repository grounding (ADR 0030)
+
+The owner-delegated Phase 0 of
+[`repository-grounding-plan.md`](repository-grounding-plan.md) revises the
+main lever of the product. The product's output for a target repository is a
+small, provenance-tagged Grounding Pack (intent and non-goals, domain terms,
+invariants and traps, decision records) that a fresh coding agent reads before
+work, and an owner-question ratchet that records each owner answer so it is not
+asked again. The hypothesis is that this improves delegation quality (fewer
+owner questions and less rework) more than additional procedural machinery.
+This revision adds a hypothesis and measures; it does not change the product
+purpose above, the non-goals in section 8, or the ADR 0029 boundary.
+
 ## 2. Problem
 
 Coding agents are increasingly good at executing known implementation tasks.
@@ -269,6 +282,7 @@ problem. Major reversal of a strategic non-goal is a Level-4 decision.
 | Campaign State materially improves continuation | Hypothesis |
 | Claim Evidence Register generalizes beyond Clause B | Hypothesis |
 | Sensemaking consistently beats a capable direct-agent baseline | Not established |
+| A target-repository Grounding Pack reduces owner questions and rework versus a direct agent on the same tasks | Not established; Phase 3 of the grounding plan will test it on one repository |
 | A custom execution runtime is required | No evidence |
 | A deterministic strategic planner is required | No evidence |
 
@@ -294,6 +308,13 @@ Measure decision quality and delegation quality rather than inventory:
 - correct separation of desired delegation from granted authority;
 - owner preference for the Sensemaking-assisted result over asking a strong
   coding agent directly, when/if comparative validation is explicitly resumed.
+
+For the grounding revision, also measure:
+
+- owner questions asked per task, and whether a recorded answer was asked again
+  (ratchet misses);
+- rework after the first "done" claim (follow-up commits and CI failures);
+- invariant violations found in review.
 
 Comparative preference remains a product question, not an assumption.
 
