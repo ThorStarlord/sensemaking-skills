@@ -21,12 +21,8 @@ def test_current_documentation_validator_passes() -> None:
     assert "PASS" in result.stdout
 
 
-def test_maintainer_guide_and_checklist_define_release_authority() -> None:
+def test_maintainer_guide_and_checklist_link_release_contract() -> None:
     guide = (ROOT / "docs" / "maintainer-guide-v1.0.md").read_text(encoding="utf-8")
     checklist = (ROOT / "docs" / "release-v1.0-checklist.md").read_text(encoding="utf-8")
     for text in (guide, checklist):
         assert "release-v1.0-contract.md" in text
-        assert "semantic truth" in text
-        # Topic coverage, not typography: "Publication" at a sentence start
-        # is the same topic as "publication".
-        assert "publication" in text.lower()

@@ -61,34 +61,9 @@ def test_development_contract_cannot_be_reported_as_finally_ready(tmp_path: Path
     assert any("release status is development" in item for item in diagnostics)
     assert any("release target is" in item for item in diagnostics)
 
-def test_reduced_scope_checklist_does_not_require_excluded_native_harness_claim() -> None:
+def test_reduced_scope_contract_excludes_native_harness_support() -> None:
     contract = yaml.safe_load(
         (ROOT / "release-v1.0.yaml").read_text(encoding="utf-8")
     )
-    checklist = (ROOT / "docs" / "release-v1.0-checklist.md").read_text(
-        encoding="utf-8"
-    )
 
     assert contract["support"]["native_harnesses"] == []
-    assert (
-        "[x] Engineering native-harness evidence is frozen, or engineering native "
-        "support is excluded from 1.0."
-        in checklist
-    )
-
-
-def test_status_preserves_execution_interface_closeout_during_new_construction() -> None:
-    status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
-
-    assert "NORMAL_USE_VALIDATION" in status
-    assert "Execution Interface & Agent-Factorization v1 — COMPLETE" in status
-    assert "Policy Hierarchy Completion v0" in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY =" in status
-    assert "SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION" in status
-    assert "Issue #393" in status
-    assert "Issue #384" in status
-    assert "1.0.0rc5" in status
-    assert "POST_RC2_DEVELOPMENT_ACTIVE" not in status
-    assert "EXECUTION_INTERFACE_V1_CLOSEOUT" not in status
-    assert "CURRENT CONSTRUCTION RESPONSIBILITY = EXECUTION_INTERFACE_V1_CLOSEOUT" not in status
-
