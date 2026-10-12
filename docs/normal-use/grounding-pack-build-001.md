@@ -41,9 +41,15 @@ None. No owner review has happened.
 | Spot-check failure rate under 10% on a random sample of 10 | Not met (not sampled; 3 errors found in about a dozen checked citations) |
 | Result note written | Met (this note) |
 
-**Phase 2 status: PARTIAL.** The pack exists and the mechanical checks pass. It can't be called complete until the owner reviews it and a random spot-check is done.
+**Phase 2 status: COMPLETE by owner directive (2026-10-12).** The pack exists and the mechanical checks pass. It can't be called complete until the owner reviews it and a random spot-check is done.
 
 ## Notes for Phase 3
 
 - The pack's value on this repo is unproven. The target's authority set is already extensive, and the pack's README sends agents to those files first, so the pack adds reading rather than replacing it.
 - Any evaluation should use real historical tasks and state which knowledge was available at each baseline. Current pack content postdates most historical baselines, so replays leak to that extent.
+
+## Owner directive (2026-10-12)
+
+- `intent.md` approved by the owner, with external playtesting DEFERRED / TBD (no assigned owner or date).
+- The fresh 10-line spot-check is waived. It was not passed: the sample as run had 20% of lines needing correction, against the 10% threshold. The corrections in `6a7fe8b` are accepted. Record this as a waiver, not as a pass.
+- The pack was merged to `main` on the owner's directive once CI passed on the final head.
