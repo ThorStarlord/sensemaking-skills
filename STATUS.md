@@ -2,7 +2,7 @@
 
 **Source version:** 1.0.0rc5.dev0
 **Release target:** 1.0.0rc5 (development; post-RC4 reduced-scope candidate target)
-**Last updated:** 2026-10-10  
+**Last updated:** 2026-10-11  
 **Current phase:** RC5 development on canonical `main` after integration of the post-RC4 pragmatic-kernel contraction through PR #531.
 
 - **2026-10-10/11 UTC documentation/Skill-guidance integration — VERIFIED ON MAIN:** PR #533 (Trial 002 admission/currentness) and PR #534 (experience-first discovery) merged sequentially as `60ede7e146d3c6cd83f799f9648ddc1ed2a0039a` and `eedd317824567b24afbf822cf13e22160731034d`. Exact integrated-main Product Validation `38099225312` (all seven jobs) and Release Candidate Distribution `38099225332` passed. Lab was not triggered; these checks verify repository/contracts/distribution, **not** comparative Skill usefulness, human UX, or an independent external-harness trial. Current source identity must still be inspected at the point of use.
