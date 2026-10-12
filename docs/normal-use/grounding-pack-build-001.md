@@ -10,7 +10,7 @@ A thin pack at `.sensemaking/`: `README.md`, `intent.md`, `context.md`, `invaria
 
 ## Measured
 
-- Words: `intent.md` 308, `context.md` 165, `invariants.md` 105, decision records together about 60 (total about 640 words in files plus README; within budgets of 800 / 800 / 600 / 250 each).
+- Words: `intent.md` 308, `context.md` 165, `invariants.md` 105 (within budgets of 800 / 800 / 600); README and two decision records together make the pack 897 words in total (decision records within the 250 each budget).
 - Tag-bearing lines: 37 (bullets and decision lines). Primary tags: `policy` 28, `delegated` 3, `test` 2, `hypothesis` 1, `code` 1, `owner` 0.
 - Owner-confirmed lines: **0**. The owner has not reviewed the pack. Delegated choices are tagged `[delegated: 2026-10-12]`, not `[owner]`.
 - Time to build: not measured.
