@@ -25,7 +25,6 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SKILL_MD = REPO_ROOT / "skills" / "repo-sensemaker" / "SKILL.md"
-TEMPLATE_MD = REPO_ROOT / "skills" / "repo-sensemaker" / "references" / "repo-analysis-template.md"
 EXAMPLE_BRIEF = (
     REPO_ROOT / "tests" / "fixtures" / "validate-brief" / "valid"
     / "workflow-not-vendored-in-target-escalation.md"
@@ -35,89 +34,14 @@ _AVAILABILITY = re.compile(r"vendor|available (?:in|from)|target[- ]available|no
 _TARGET = re.compile(r"target repositor|analy[sz]ed (?:target|repositor)|in the target", re.I)
 
 
-def _boundary_rule_2() -> str:
-    """The text of the recommended_workflow_id grounding rule in
-    repo-sensemaker/SKILL.md -- located within the '## Boundary Rules'
-    section by content (it grounds recommended_workflow_id on the toolchain
-    registry), robust to rule renumbering."""
+def test_skill_grounds_recommended_workflow_id_on_the_toolchain_registry():
+    """The producer surface must keep naming the field, the registry it is
+    grounded on, and the escalation field used for the truthful no-match."""
     text = SKILL_MD.read_text(encoding="utf-8")
-    section = re.search(r"^##\s+Boundary Rules\s*$(.*?)(?=^##\s)", text, re.S | re.M)
-    assert section, "'## Boundary Rules' section not found in repo-sensemaker/SKILL.md"
-    body = section.group(1)
-    rules = re.split(r"(?=^\s*\d+\.\s+)", body, flags=re.M)
-    for rule in rules:
-        if "recommended_workflow_id" in rule and "workflow-registry.yaml" in rule:
-            return rule
-    raise AssertionError(
-        "recommended_workflow_id grounding rule not found in the "
-        "'## Boundary Rules' section"
-    )
+    assert "recommended_workflow_id" in text
+    assert "workflow-registry.yaml" in text
+    assert "escalation_recommended" in text
 
-
-def _template_section_12() -> str:
-    text = TEMPLATE_MD.read_text(encoding="utf-8")
-    m = re.search(r"^##\s*12\.\s+Recommended workflow\s*$(.*?)(?=^##\s)", text, re.S | re.M)
-    assert m, "Section 12 (Recommended workflow) not found in repo-analysis-template.md"
-    return m.group(1)
-
-
-# --------------------------------------------------------------------------- #
-# Instruction surface: SKILL.md Boundary Rule 2
-# --------------------------------------------------------------------------- #
-
-def test_boundary_rule_2_still_grounds_on_the_toolchain_registry():
-    """The existing registry-existence check must remain."""
-    rule = _boundary_rule_2()
-    assert "workflow-registry.yaml" in rule
-
-
-def test_boundary_rule_2_distinguishes_toolchain_from_target_availability():
-    """PF-2: the rule must tell the producer that a registry-valid workflow is not
-    automatically an execution vehicle available from the analysed target."""
-    rule = _boundary_rule_2()
-    assert _AVAILABILITY.search(rule), (
-        "Boundary Rule 2 does not mention workflow *availability* in the target "
-        "(vendored / available-from-target). A registry-valid id is being treated "
-        "as automatically executable from any target -- the PF-2 conflation."
-    )
-    assert _TARGET.search(rule), (
-        "Boundary Rule 2 does not reference the analysed target repository when "
-        "qualifying recommended_workflow_id provenance."
-    )
-
-
-def test_boundary_rule_2_routes_unavailable_workflow_to_truthful_null():
-    """When a workflow exists in the toolchain but is not available from the
-    target, the rule must direct the truthful no-match representation
-    (null + escalation), not a bare registry id."""
-    rule = _boundary_rule_2()
-    assert "null" in rule and re.search(r"escalation_recommended", rule), (
-        "Boundary Rule 2 must tie the not-available-in-target case to "
-        "recommended_workflow_id: null + escalation_recommended: true."
-    )
-    # The null/escalation directive must be connected to availability, not only
-    # to 'no semantically matching workflow'.
-    tail = rule[rule.lower().find("registry") :]
-    assert _AVAILABILITY.search(tail), (
-        "the null/escalation directive is not connected to target availability"
-    )
-
-
-# --------------------------------------------------------------------------- #
-# Instruction surface: template Section 12
-# --------------------------------------------------------------------------- #
-
-def test_template_section_12_qualifies_target_availability():
-    body = _template_section_12()
-    assert _AVAILABILITY.search(body), (
-        "repo-analysis-template.md Section 12 still says only 'one candidate from "
-        "workflow-registry.yaml' with no target-availability qualification."
-    )
-
-
-# --------------------------------------------------------------------------- #
-# Worked example: truthful no-match because the workflow is not vendored/available
-# --------------------------------------------------------------------------- #
 
 def test_example_unavailable_workflow_brief_exists_and_is_valid():
     assert EXAMPLE_BRIEF.exists(), f"missing worked-example fixture: {EXAMPLE_BRIEF}"

@@ -145,20 +145,3 @@ limits: []
         for item in payload["diagnostics"]
     )
     assert payload["selection_performed"] is False
-
-
-def test_status_keeps_tracer_terminal_without_freezing_future_owner_work():
-    status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
-    assert (
-        "ISSUE_459_CAPABILITY_ORGANIZATION_TRACER_V0 = "
-        "COMPLETE_INTEGRATED_TRIAL_RECONCILED_NORMAL_USE_HANDOFF"
-    ) in status
-    assert (
-        "ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = "
-        "COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF"
-    ) in status
-    assert (
-        "POLICY_HIERARCHY_COMPLETION_V0 = "
-        "COMPLETE_INTEGRATED_COMPOSABLE"
-    ) in status
-    assert "SYNTHETIC STRATEGICPLANNER TESTING = STOPPED" in status

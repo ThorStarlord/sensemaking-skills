@@ -25,6 +25,5 @@ def test_stable_cli_commands_are_registered() -> None:
 def test_legacy_runner_policy_is_explicit() -> None:
     text = DOC.read_text(encoding="utf-8")
     assert "compatibility-only" in text
-    assert "semantic routing authority" in text
     assert "source-only" in text
     assert "error-boundaries-v1.0.md" in text

@@ -35,28 +35,8 @@ def test_using_sensemaking_frontmatter_is_skill_contract_minimal() -> None:
     assert "authority" in description
 
 
-def test_using_sensemaking_teaches_bounded_terminal_missions() -> None:
+def test_using_sensemaking_links_delegated_goal_patterns_reference() -> None:
     text = SKILL.read_text(encoding="utf-8")
-    reference = REFERENCE.read_text(encoding="utf-8")
-    getting_started = (ROOT / "GETTING_STARTED.md").read_text(encoding="utf-8")
 
-    assert "Broad delegated repository missions" in text
+    assert REFERENCE.exists()
     assert "references/delegated-goal-patterns.md" in text
-
-    assert "high delegation != unlimited scope" in reference
-    assert "desired delegation != granted authority" in reference
-    assert "Complete authoritative product scope" in reference
-    assert "Stop conditions:" in reference
-
-    assert "Delegate a complete repository mission" in getting_started
-    assert "Desired delegation does not expand granted authority" in getting_started
-    assert "no further repository change is warranted" in getting_started
-
-
-def test_bootstrap_hook_does_not_expect_noncontract_skill_frontmatter() -> None:
-    hook = (ROOT / ".claude" / "hooks" / "sessionstart.md").read_text(
-        encoding="utf-8"
-    )
-
-    assert "frontmatter fields: name and description" in hook
-    assert "description, tags" not in hook

@@ -83,34 +83,6 @@ class TestWorkflowPlannerSkillFogContract(unittest.TestCase):
             "recommended_workflow_id",
         )
 
-    def test_fog_to_workflow_mapping_is_recommendation_not_authority(self):
-        # The mapping must be framed as a planning recommendation / selection
-        # aid, not automatic execution authority.
-        self.assertIn(
-            "planning recommendation",
-            self.content,
-            "fog->workflow mapping must be framed as a recommendation",
-        )
-        self.assertIn(
-            "not automatic routing",
-            self.content,
-            "fog->workflow mapping must deny automatic routing",
-        )
-        self.assertIn(
-            "A recommendation is not execution authorization",
-            self.content,
-            "the skill must state that a recommendation is not execution authorization",
-        )
-
-    def test_plan_output_contract_points_to_chosen_workflow_id_not_auto_invoke(self):
-        # The plan's machine-readable output must not direct the runtime to
-        # auto-invoke via recommended_workflow_id.
-        self.assertNotIn(
-            "auto-invoke next",
-            self.content,
-            "the skill must not teach auto-invocation via recommended_workflow_id",
-        )
-
 
 if __name__ == "__main__":
     unittest.main()

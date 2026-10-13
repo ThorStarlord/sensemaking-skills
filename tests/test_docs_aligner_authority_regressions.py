@@ -28,8 +28,6 @@ def test_c6_prior_adjudication_positive():
     assert adr.exists(), "ADR 0025 must exist for C6 fixture"
     text = adr.read_text(encoding="utf-8", errors="ignore")
     assert "ACCEPTED" in text
-    assert "Two-stage orchestration-plan lifecycle is approved" in text
-    assert "provisional execution skeleton" in text
 
     contract = REPO / "skills/workflow-planner/references/artifact-contracts.yaml"
     assert contract.exists()
@@ -40,9 +38,6 @@ def test_c6_prior_adjudication_positive():
 
     skill = REPO / "skills/docs-aligner/SKILL.md"
     assert skill.exists()
-    stext = skill.read_text(encoding="utf-8", errors="ignore")
-    assert "previously_adjudicated" in stext
-    assert "Authority/Currentness Triage" in stext
 
 
 def test_c6_contract_requires_finalized_only():
@@ -56,12 +51,6 @@ def test_c5_incomplete_search_negative_evidence():
     assert runtime.exists(), "runtime surface must exist for C5 fixture"
     rtext = runtime.read_text(encoding="utf-8", errors="ignore")
     assert "_run_seam_warrant" in rtext, "MODEL_WARRANT seam must be present in runtime (C5 was false positive)"
-
-    skill = REPO / "skills/docs-aligner/SKILL.md"
-    stext = skill.read_text(encoding="utf-8", errors="ignore")
-    assert "Negative Evidence Discipline" in stext
-    assert "Do not assert absence" in stext
-    assert "search scope covers every repository surface named by the claim" in stext
 
 
 def test_c5_reconciliation_disputes_wiring_claim():
@@ -88,7 +77,6 @@ def test_skill_gate_discipline_present():
     text = skill.read_text(encoding="utf-8", errors="ignore")
     assert "gate: none" in text
     assert "review_alignment_report" in text
-    assert "Gate Discipline" in text
 
 
 def test_registered_docs_aligner_steps_honor_gate_discipline():

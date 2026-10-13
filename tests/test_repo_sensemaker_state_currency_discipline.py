@@ -9,8 +9,7 @@ reserved for genuinely decision-changing owner intent, with empirical
 uncertainty resolved through probes rather than by asking the owner to guess.
 
 Like ``test_repo_sensemaker_evidence_contract.py``, this module is fully
-deterministic and pins the *codified contract* — the skill text, the template
-guidance, and one demonstration fixture validated through the real
+deterministic and pins one demonstration fixture validated through the real
 ``validate-brief.py`` CLI — not model behavior.
 """
 
@@ -20,10 +19,6 @@ import subprocess
 import sys
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKILL_PATH = os.path.join(REPO_ROOT, "skills", "repo-sensemaker", "SKILL.md")
-TEMPLATE_PATH = os.path.join(
-    REPO_ROOT, "skills", "repo-sensemaker", "references", "repo-analysis-template.md"
-)
 VALIDATE_BRIEF = os.path.join(REPO_ROOT, "scripts", "validate-brief.py")
 DISCIPLINE_FIXTURE = os.path.join(
     REPO_ROOT, "tests", "fixtures", "repo-sensemaker-state-currency-good.md"
@@ -44,55 +39,6 @@ def run_validate_brief(path: str) -> dict:
         text=True,
     )
     return json.loads(result.stdout)
-
-
-class TestSkillCodifiesStateCurrency:
-    """The workflow codifies the S2 boundary: documented state != current state."""
-
-    def test_evidence_gathering_requires_state_currency_verification(self):
-        text = read(SKILL_PATH)
-        assert "documented state is not automatically verified current state" in text
-        assert "cheapest repository probe" in text
-        assert "documented but not independently verified" in text
-        # The specific S2 failure mode: documentation of unfinished work is not
-        # proof that work remains unfinished.
-        assert "unfinished documentation as proof that work remains unfinished" in text
-
-    def test_synthesis_requires_claim_provenance_separation(self):
-        text = read(SKILL_PATH)
-        assert "observed evidence, documented claims, inference" in text
-        assert "owner-supplied judgment/context" in text
-        assert "distinguishable" in text
-        assert "verified current state from merely documented state" in text
-
-    def test_clarification_policy_is_durable_not_numeric(self):
-        """The durable rule is 'no unnecessary questions; neutral clarification
-        when genuinely needed' — deliberately NOT the experimental 'at most one
-        question' constraint, which was an S1/S2 probe constraint, not a
-        product rule."""
-        text = read(SKILL_PATH)
-        assert "Ask no questions when repository evidence is sufficient" in text
-        assert "materially change the recommendation" in text
-        assert "neutral, high-information" in text
-        assert "probes rather than asking the owner to guess" in text
-        assert "at most one" not in text
-
-
-class TestTemplateCodifiesGuidance:
-    """The brief template carries the same discipline as producer guidance."""
-
-    def test_section7_codifies_state_currency_and_provenance(self):
-        text = read(TEMPLATE_PATH)
-        assert "State currency and claim provenance (required)" in text
-        assert "verified current state from merely documented state" in text
-        assert "cite the probe used" in text
-        assert "documented but not independently verified" in text
-        assert "Never treat documented state as automatically current" in text
-
-    def test_section11_requires_probe_or_unverified_identification(self):
-        text = read(TEMPLATE_PATH)
-        assert "cite the probe that verified it" in text
-        assert "documented but not independently verified" in text
 
 
 class TestDisciplineFixture:

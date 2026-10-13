@@ -340,6 +340,20 @@ responsibility selection.
 
 ---
 
+## 0. Read the Grounding Pack and apply the question ratchet
+
+If the target repository has a `.sensemaking/` Grounding Pack, read `intent.md`
+and `invariants.md` before task work. Honor their non-goals and invariants; treat
+`[hypothesis]` lines as unconfirmed.
+
+Before asking the owner a question, search where owner decisions already live:
+the pack's `intent.md` and `decisions/`, and the repository's own records (ADRs,
+product-decision docs, and open or closed issues and PR descriptions written by the
+owner). If a recorded decision still applies to the current scope, use it and do
+not ask. Ask again only if the scope changed, the decision was superseded, or new
+evidence materially challenges it. After the owner answers, record the answer with
+an `[owner: date]` tag in the same change.
+
 ## 1. Establish goal and authority
 
 Before selecting work, identify:
@@ -699,28 +713,7 @@ precondition materially defeats responsibility
 
 ### Warrant / Choice Policy v0
 
-For a consequential contemplated target, ask:
-
-> **What does the current evidence, state, constraints, and authority warrant for this specific target?**
-
-Name the target first. Useful targets include claims, inquiries, responsibilities, actions, continue/stop/escalate choices, closure claims, protected transitions, and strategic directions.
-
-```text
-warrant for target A
-!= warrant for target B
-
-WARRANTED
-!= authorized
-!= executed
-!= successful
-
-candidate set exists
-!= one candidate must be selected
-```
-
-When several materially credible targets exist, compare only what matters to the current decision: target-specific support, nearest warrant gap, smallest sufficient intervention, reversibility, currentness, and authority. Select one when commitment is actually needed; otherwise preserve alternatives or return `NO_SELECTION`.
-
-Read `references/warrant-choice-policy-v0.md` when explicit target adjudication or choice is material.
+The full policy is in `references/policy-details-v1.md` (section "Warrant / Choice Policy v0"). Read it when this decision is in play.
 
 ### Learning / Reconciliation Policy v0
 
@@ -774,41 +767,7 @@ Read `references/inquiry-policy-v0.md` when explicit inquiry selection is materi
 
 ### Metareasoning Policy v0
 
-When the real question is **how to spend the next unit of reasoning/action effort**, select the smallest useful control move:
-
-```text
-ACT
-INQUIRE
-CHALLENGE
-EXPLORE
-VERIFY
-ESCALATE
-STOP
-```
-
-Use `ACT` when an already-selected authorized bounded responsibility is sufficiently warranted and more thinking is not worth its cost.
-
-Use `INQUIRE` when Inquiry Policy has identified decision-changing evidence worth obtaining.
-
-Use `CHALLENGE` for consequential, low-reversibility, conflicting, or weakly supported commitments.
-
-Use `EXPLORE` when the frame or option set may be too narrow.
-
-Use `VERIFY` when a consequential result, repair, or closure claim still needs direct confirmation.
-
-Use `ESCALATE` when the real gap is owner intent, higher-scope commitment, protected authority, or external control.
-
-Use `STOP` when no additional effort is warranted.
-
-```text
-control move selected
-!= responsibility authorized
-
-cheap + reversible + low consequence + information-producing
--> acting can dominate thinking longer
-```
-
-Keep this implicit for obvious local work. Read `references/metareasoning-policy-v0.md` when control-mode selection is consequential or ambiguous.
+The full policy is in `references/policy-details-v1.md` (section "Metareasoning Policy v0"). Read it when this decision is in play.
 
 ### Challenge and exploration when commitment risk is material
 
