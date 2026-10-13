@@ -56,144 +56,37 @@ survive contexts, actors, machines, long-running execution, or a comparable
 continuation boundary.
 
 
-The detailed named policies remain **advanced reference vocabulary**, not a
-mandatory default mental model. When a decision actually needs finer-grained
-reasoning, the existing references remain available: **Inquiry Policy v0**,
-**Metareasoning Policy v0**, **Exploration Policy v0**, **Warrant / Choice
-Policy v0**, **Learning / Reconciliation Policy v0**, and **Adaptive Policy
-Coordinator v0**. Do not enumerate or activate them merely because they exist.
-See `references/inquiry-policy-v0.md`,
-`references/metareasoning-policy-v0.md`,
-`references/exploration-policy-v0.md`,
-`references/warrant-choice-policy-v0.md`,
-`references/learning-reconciliation-policy-v0.md`, and
-`references/adaptive-policy-coordinator-v0.md` only when the current decision
-benefits from that extra distinction.
+The named policies (Inquiry, Metareasoning, Exploration, Warrant / Choice, Learning / Reconciliation, Adaptive Policy Coordinator) are advanced reference vocabulary, not a default mental model. Read their files in **References** only when a decision needs that extra distinction.
 
 This Skill does **not** make every task require `repo-sensemaker`, a Campaign,
 or an explicit policy decomposition. It does not authorize automatic downstream
 routing and does not grant mutation/publication authority merely because a
 finding or recommendation exists.
 
-## The recursive operating loop
+### Act on authorized, bounded value
 
-For consequential work, use the compact doctrine first:
+Missing authority for a repository-wide priority, merge, or release does not by
+itself block a smaller responsibility. When current evidence identifies a specific,
+independently valuable action inside the authorized scope, investigate or repair it
+and verify it, while the global choice stays with its owner. Do not manufacture
+work to avoid a stop, and do not treat an interesting smell or a vague task as
+permission for broad cleanup or a protected transition. Where authorization is
+genuinely missing, preserve the boundary and do not imply approval.
 
-```text
-GOAL / AUTHORIZED SCOPE
--> consequential decision
--> decision-changing evidence gap, if any
--> smallest sufficient inquiry or reversible action
--> warranted bounded responsibility
--> authority check
--> execute
--> verify
--> reconcile returned evidence
--> continue / stop / escalate
-```
+Prefer a `REVERSIBLE BUILD` over a separate experiment followed by duplicate
+implementation when the retained capability is useful if it works, cheap to revise
+or remove, and ordinary use can produce the evidence the decision needs. Safe-enough
+and warranted do not mean lowest-risk; weigh the cost of omission too. Do not
+convert this into an expected-value score or an automatic router.
 
-If experimentation is materially considered, apply **Experiment Economy & Proportional Rigor v1** so `INVESTIGATE != EXPERIMENT`, retained useful value
-counts, and controls scale to the claim. If search or control-mode selection is
-genuinely difficult, the advanced policy references above can refine the compact
-loop without turning it into a phase machine.
-
-### Value-Producing Action Preference
-
-Use this preference only after candidate actions cross the relevant warrant and
-authority thresholds.
-
-Descriptive action shapes include:
-
-```text
-BUILD
-REVERSIBLE BUILD
-VERIFY / QUALIFY
-PROBE / INQUIRE
-SPIKE / PROTOTYPE
-EXPERIMENT
-STOP / ESCALATE
-```
-
-When a bounded retained capability is useful if it works, cheap enough to
-revise/remove, and ordinary use can produce evidence strong enough for the
-current decision, a **REVERSIBLE BUILD** should normally dominate a separate
-experiment followed by duplicate implementation when total cost/downside is not
-materially worse.
-
-```text
-safe-enough + warranted
-does not mean
-choose the lowest-risk action automatically
-
-omission cost
-+ lost product value
-+ lost learning-through-use
-are decision-relevant
-```
-
-Do not convert this into a scalar expected-value score or automatic action router.
-Read `references/experiment-economy-v1.md` for the evidence-economy boundary.
-
-This is reasoning guidance, not a mandatory runtime phase machine.
-
-New evidence may change the expected solution. That is a feature, not a failure.
-
-### Avoid false owner escalation when useful bounded work is authorized
-
-Missing authority to choose a repository-wide priority, merge, or release does
-**not** by itself make every smaller responsibility owner-blocked. Check whether
-current source, tests, incidents, or an already authorized goal identify a
-specific, independently valuable action within the actual scope. A narrow
-inspection, reproducer, or reversible repair may proceed while the unrelated
-global choice remains undecided; never manufacture work solely to avoid a stop.
-
-This matters when an unaided agent finds a concrete bounded defect but a
-Sensemaking-guided agent only requests a roadmap priority. Compare the usable
-evidence and potential retained value before escalating. Conversely, do not
-interpret an interesting code smell, vague task, or lack of explicit authority as
-permission for broad cleanup, an unrequested fix, or a protected transition.
-
-```text
-global priority uncertain + local authorized defect evidenced
--> bounded investigation/repair + relevant verification
--> keep global owner decision unresolved
-
-action authorization genuinely missing
--> preserve the boundary; do not act or imply approval
-```
-
-This is a correction to ordinary responsibility selection, not a mandatory
-action quota, autonomy override, new experiment, or additional control mode.
-The 2026-09-30 read-only Pydantic comparison is a warning about possible
-over-escalation, **not** evidence that this wording improves coding performance.
-
-### Experience-first discovery: protect trust, not wet-clay layouts
-
-When the open decision concerns the **usefulness or ergonomics** of a creative
-or interactive concept, prefer the shortest authorized, safe path to actual
-interaction. A disposable `SPIKE / PROTOTYPE` or a `REVERSIBLE BUILD` with a
-bootable local preview and focused syntax/import/start/route smoke checks may be
-enough to **inspect a design hypothesis**. Do not make mock-heavy DOM suites,
-full regression qualification, or formal evidence packets prerequisites to
-seeing a speculative layout whose behavior may be discarded.
-
-A smoke PASS establishes only mechanical inspectability, not whether a writer
-finds an interface intuitive or useful. Actual interaction and direct author
-feedback are relevant to those questions; agent simulation is not human
-observation. A user's firsthand preference can select a reversible development
-direction without proving population-wide preference or broad-release fitness.
-
-Keep the spike isolated from real or accepted data where possible. Preserve
-affected trust invariants such as no silent data loss, save/reopen/recovery,
-security, and canonical-authority boundaries. Before default use with real work,
-verify the touched trust paths directly; strengthen regression, accessibility,
-and field-validation evidence as the claim and consequences grow. Do not freeze
-volatile layouts prematurely or waive consequential safety checks.
-
-This applies existing proportional-rigor and evidence-economy doctrine, not a
-formal `SPIKE_MODE`, a `Spike Warrant`, a new Campaign artifact, or permission
-to bypass existing merge/release authority. See
-`references/experiment-economy-v1.md`.
+For a creative or interactive question about usefulness or ergonomics, get to safe
+firsthand interaction quickly: a disposable spike or reversible build with a bootable
+preview and focused smoke checks. Keep the spike away from real or accepted data.
+A smoke pass shows only that the thing is inspectable. Before real work depends on it,
+verify the touched trust paths directly: no silent data loss, save and recovery,
+security, canonical-authority boundaries. Do not freeze volatile layouts early or
+waive consequential safety checks. This applies existing evidence economy and does
+not create a special mode or bypass merge or release authority.
 
 ## Advanced reference: policy decomposition
 
@@ -380,185 +273,35 @@ merged         != original-finding closure
 
 ## 2. Decide whether repository sensemaking is warranted
 
-Ask:
+Ask: **would repository sensemaking materially change how I should interpret or execute this request?**
 
-> **Would repository sensemaking materially change how I should interpret or execute this request?**
+Use `repo-sensemaker` when repository reality may contradict the task, ownership of the responsibility is unclear, the consequential boundary is unknown, docs/architecture/tests/implementation may disagree, or the correct responsibility needs a repository-wide evidence picture. Skip it when the task is locally evidenced and mechanically narrow.
 
-Use `repo-sensemaker` when, for example:
-
-- repository reality may contradict the apparent task;
-- ownership/provenance of a responsibility is unclear;
-- the consequential boundary is unknown;
-- docs, architecture, tests, and implementation may disagree;
-- the request crosses unfamiliar subsystem boundaries;
-- deciding the correct responsibility requires a repository-wide evidence picture.
-
-Skip it when the task is already locally evidenced and mechanically narrow, such as a known schema rename with known affected tests and no material ownership uncertainty.
-
-### When the repository's future is the problem
-
-Use `strategic-repository-analysis` when the user is not primarily asking for a
-diagnosis or a preselected task, but for a high-level repository evolution
-decision such as:
-
-- what could this repository become from here?
-- what are the coherent ways to construct/develop it?
-- which major capability directions are plausible?
-- what do those paths build on, require, unlock, or risk?
-- what strategic uncertainty would change the choice?
-
-Its output is a `strategic_repository_analysis`:
+Use `strategic-repository-analysis` only when the question is the repository's future: what it could become, which construction paths are coherent, and which uncertainty would change the choice. Its output carries a disposition (`BUILD`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`, `OWNER_DECISION`, `THESIS_REVIEW`). Zero paths is a valid result; do not manufacture one.
 
 ```text
-current system model
--> capability / limitation map
--> Strategic Frontier
--> 0–5 coherent construction paths when materially real
--> qualitative path comparison
--> decision-changing uncertainty
--> strategic synthesis
--> BUILD / INVESTIGATE / DEFER / NO_CHANGE / OWNER_DECISION / THESIS_REVIEW
+repository-relevant work  != strategic repository evolution
+strategic disposition     != implementation authorization
+BUILD                     -> nominate the smallest bounded responsibility, then check authority
 ```
 
-A current `repository_sensemaking_brief` may be used as evidence, but it is not
-a mandatory prerequisite when the strategic analysis can establish current
-repository state directly.
+Use `multi-repository-strategic-analysis` only for an explicitly supplied repository set whose ownership or boundary is the decision. Never discover or add repositories silently.
 
-Zero construction paths is valid when current evidence/authority does not support even
-one coherent construction trajectory yet. Do not manufacture an alternative merely to
-make the analysis look complete. A `BUILD` disposition still requires a selected real
-path.
+Reserved dispositions route to their packets: `OWNER_DECISION` to `owner-decision-capsule`, `THESIS_REVIEW` to `thesis-review-packet`, decision-changing external evidence to `external-evidence-packet`. After consequential strategic evidence returns, `strategic-repository-reconciliation` shows how it changed prior claims. A packet or reconciliation does not make the decision or mutate strategy. New strategic analyses use `schema_version: 2` grounding; historical versionless analyses remain legacy v1.
 
-Before promoting a repository finding into a Strategic Frontier/path, require a
-material future-state consequence. Local maintenance, documentation currentness,
-routine repair, or an already-selected implementation task may warrant bounded
-work without becoming Level-3 strategy.
+### Experiments: prefer the cheapest evidence that is strong enough
 
 ```text
-repository-relevant work != strategic repository evolution
-bounded repair != construction path
-strategic warrant precedes intervention minimization
+uncertainty       != experiment
+INVESTIGATE       != EXPERIMENT
+experiment possible != experiment warranted
 ```
 
-New canonical strategic analyses use `schema_version: 2` grounding so frontier
-entries and paths explicitly reference evidence/capability/frontier identifiers.
-Historical versionless analyses remain legacy v1.
+Check existing evidence, inspection, verification, owner or external clarification, and bounded probes first. Cheap reversible construction within authority can produce the needed evidence better than a separate experiment. If an experiment is warranted, control only confounders that could invalidate the decision, and treat normal coding-agent competence as part of the intended environment, not contamination. For a small reversible wording change, a few direct old/new runs on authentic tasks usually suffice; if no agent can run, record **behavior NOT TESTED** rather than building a harness. Read `references/experiment-economy-v1.md` only when experiment design or isolation is actually under consideration.
 
-```text
-repo-sensemaker = diagnostic repository understanding
-strategic-repository-analysis = Level-3 repository evolution synthesis
-multi-repository-strategic-analysis = Level-3 explicit repository-set boundary/allocation synthesis
+A diagnostic Skill may surface an empirical uncertainty, but experiment warrant belongs to the active control loop. Do not select `experiment-design` merely because a Skill suggested a validation idea.
 
-strategic disposition
-!= implementation authorization
-```
-
-If the strategic disposition is `BUILD`, only then nominate the smallest
-bounded repository responsibility and check execution authority independently.
-Do not translate construction paths into an automatic backlog.
-
-When the consequential question is **which explicitly selected repository should own a capability or how those repositories should relate**, use `multi-repository-strategic-analysis` rather than forcing the question into one repository. The target set must be supplied explicitly; the Skill may not discover or silently add repositories.
-
-```text
-repository set explicitly selected
-+ boundary / ownership decision material
--> multi-repository-strategic-analysis
-
-related repository merely exists
-!= multi-repository analysis automatically required
-
-repository observed during analysis
-!= target scope expanded
-```
-
-When the disposition is reserved or evidence must cross an authority boundary:
-
-```text
-OWNER_DECISION
--> owner-decision-capsule when a durable owner-facing packet is useful
-
-THESIS_REVIEW
--> thesis-review-packet when Level-4 review must be reconstructible
-
-external evidence is decision-changing
--> external-evidence-packet when source/currentness provenance should persist
-```
-
-After consequential Level-3 evidence returns, use
-`strategic-repository-reconciliation` when a fresh context must reconstruct how
-the evidence changed (or did not change) prior claims, assumptions, path
-continuation, or strategic state.
-
-```text
-packet produced != reserved decision made
-reconciliation produced != strategy automatically mutated
-```
-
-Sensemaking is not ceremony. Use the lightest surface that can change the
-decision.
-
-### Experiment economy: do not privilege experimentation
-
-When an `INVESTIGATE` disposition or inquiry could lead to an experiment, do
-not jump from uncertainty to experimental design.
-
-```text
-uncertainty
-!= experiment
-
-INVESTIGATE
-!= EXPERIMENT
-
-experiment possible
-!= experiment warranted
-
-research-grade evidence
-!= default product-development evidence
-```
-
-Prefer the lowest-cost evidence strong enough for the current decision and
-claim. Check existing evidence, reading, inspection, verification,
-owner/external clarification, bounded probes, and cheap reversible construction
-before a separate experiment.
-
-When cheap reversible construction is within authority, sufficiently safe, and
-itself produces the needed evidence, it may dominate a separate experiment.
-
-If experimentation remains materially warranted, control only confounders that
-could invalidate the decision-relevant inference and use the minimum sufficient
-experimental rigor. Normal coding-agent competence/context is not contamination
-by default when the coding agent is part of the intended operating environment.
-
-
-For a small, reversible prompt/Skill wording change, first ask what immediate
-decision a test could change and **whether a real coding-agent execution surface
-is available now**. When behavioral evidence would help, prefer a few direct
-old/new runs on representative, preferably authentic tasks; inspect actions,
-unnecessary escalation, verification, and legitimate stops. Do not build toy
-repositories, randomized runners, hidden answer keys, or elaborate isolation
-merely to obtain stronger evidence than that decision needs. If no agent can
-run, say **behavior NOT TESTED** rather than building an unusable test harness.
-A smoke comparison may inform a reversible decision; it does not prove
-comparative superiority or generalization. Existing trust invariants and
-protected transitions still apply.
-
-Read `references/experiment-economy-v1.md` when experimentation, experimental
-isolation, fresh-agent setup, or contamination control is materially under
-consideration.
-
-A domain/diagnostic Skill may surface the uncertainty and evidence need, but the active
-control loop retains experiment warrant:
-
-```text
-diagnostic recommendation
-!= experimentation responsibility
-
-experiment warrant
--> then experiment-design
-```
-
-Do not select `experiment-design` merely because a Skill emitted an empirical
-uncertainty or a validation idea.
+Sensemaking is not ceremony. Use the lightest surface that can change the decision.
 
 ---
 
@@ -1167,16 +910,8 @@ Read these when the task needs deeper detail:
 
 ## Summary: your job as the active agent
 
-1. Establish the goal and authority boundary.
-2. Decide how much scaffolding, investigation rigor, verification, and durable state the situation warrants.
-3. Ask what uncertainty could change the correct next action.
-4. Resolve that uncertainty from the right evidence source.
-5. Select the responsibility before the Skill or solution.
-6. Perform bounded work through the appropriate capability.
-7. Validate mechanics without confusing PASS with truth or closure.
-8. Reconcile consequential work claims.
-9. Repair-verify original findings when relevant.
-10. Update the warrant from new evidence.
-11. Continue, stop, escalate, or ask the owner deliberately.
-
-**Most importantly:** the goal is not to follow a predetermined workflow. The goal is to move from uncertainty to warranted engineering action while keeping evidence, claims, authority, and continuation proportional to the situation.
+Keep the goal and authority boundary explicit. Find the uncertainty that could change
+the next action, resolve it from the right evidence, and act through the lightest
+capable responsibility. Verify the mechanical facts, reconcile claims with what they
+actually show, then continue, stop, or escalate deliberately. The goal is warranted
+engineering action proportionate to the situation, not a predetermined workflow.
