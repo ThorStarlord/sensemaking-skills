@@ -233,19 +233,39 @@ responsibility selection.
 
 ---
 
-## 0. Read the Grounding Pack and apply the question ratchet
+## 0. Ground the decision, act, and update what matters
 
-If the target repository has a `.sensemaking/` Grounding Pack, read `intent.md`
-and `invariants.md` before task work. Honor their non-goals and invariants; treat
-`[hypothesis]` lines as unconfirmed.
+A repository's knowledge is a **means to autonomous product judgment**, not
+an artifact-production goal. For consequential work, connect the human-facing
+outcome and non-goals to the current domain behavior, relevant implementation,
+and the highest-value remaining difference. Challenge a proposed feature when
+an existing capability, small repair, or safe prototype could meet the
+underlying need better; do not invent alternatives for an obvious local task.
 
-Before asking the owner a question, search where owner decisions already live:
-the pack's `intent.md` and `decisions/`, and the repository's own records (ADRs,
-product-decision docs, and open or closed issues and PR descriptions written by the
-owner). If a recorded decision still applies to the current scope, use it and do
-not ask. Ask again only if the scope changed, the decision was superseded, or new
-evidence materially challenges it. After the owner answers, record the answer with
-an `[owner: date]` tag in the same change.
+If the target repo has a `.sensemaking/` Grounding Pack, read `intent.md`
+and task-relevant `invariants.md` first, then retrieve only relevant domain
+terms and decisions. Follow source links into current code, tests, or governing
+documents when a claim affects the choice. Distinguish owner intent, delegated
+choices, observed behavior, and hypotheses; a pack is **not** a substitute
+for source inspection or an independent authority grant.
+
+**No pack is not a blocker.** Read existing `CONTEXT.md`, `AGENTS.md`,
+`CLAUDE.md`, product definitions, code, or tests as needed. Build or refresh
+only the missing **non-derivable**, decision-relevant knowledge; no exhaustive
+ontology, file map, or mandatory documentation stage.
+
+**Question ratchet.** Before asking the owner, inspect applicable intent and
+decision records, ADRs, and owner-authored issues/PRs. Reuse an answer while
+its scope still applies. Ask again only when superseded or materially
+challenged; record a genuine new owner answer with `[owner: YYYY-MM-DD]`
+in the same change. Never relabel an agent inference as owner intent.
+
+After consequential construction or observation, revise only the affected
+non-derivable pack facts, decisions, and evidence anchors in that same change
+when the pack exists. Keep domain tests as executable evidence. Do not
+document every commit, duplicate signatures, or turn a working hypothesis
+into a permanent rule. Continue from the new product/repository evidence
+toward the delegated outcome.
 
 ## 1. Establish goal and authority
 
