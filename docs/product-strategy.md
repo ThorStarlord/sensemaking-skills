@@ -45,6 +45,13 @@ asked again. The hypothesis is that this improves delegation quality (fewer
 owner questions and less rework) more than additional procedural machinery.
 This revision adds a hypothesis and measures; it does not change the product
 purpose above, the non-goals in section 8, or the ADR 0029 boundary.
+The intended capability is **continuous, autonomous domain grounding**:
+the agent retrieves only decision-relevant intent and system relationships,
+finds a valuable difference between desired and actual user experience,
+selects and implements a bounded improvement, observes its consequences, and
+updates only durable non-derivable knowledge before continuing. Perfect
+upfront understanding and documentation volume are not product outcomes.
+This is the intended behavior, **not** established comparative effectiveness.
 
 ## 2. Problem
 
@@ -309,7 +316,10 @@ Measure decision quality and delegation quality rather than inventory:
 - owner preference for the Sensemaking-assisted result over asking a strong
   coding agent directly, when/if comparative validation is explicitly resumed.
 
-For the grounding revision, also measure:
+For the grounding revision, also measure the quality of **which product
+improvement was selected** and its actual user-facing outcome. Reducing
+questions by simply avoiding consultation or doing the wrong work is failure.
+In addition, measure:
 
 - owner questions asked per task, and whether a recorded answer was asked again
   (ratchet misses);

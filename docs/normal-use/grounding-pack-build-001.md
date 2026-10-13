@@ -34,6 +34,10 @@ None. No owner review has happened.
 
 ## Exit conditions
 
+The table below records the **pre-waiver** evidence checkpoint. The later
+owner directive below supersedes the merge/intent states but **does not**
+convert the failed sample into a pass.
+
 | Condition | Status |
 | --- | --- |
 | Pack merged | Not met (PR #166 open) |
