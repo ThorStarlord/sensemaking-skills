@@ -139,3 +139,15 @@ stands and is not reopened by the added episodes.
 - The control arm 002 agent incidentally created a `.venv` (then removed it) — a
   read-only slip, recorded, and a point in the skill's favor on authority
   discipline rather than against it.
+
+## Post-verdict normal-use observation (2026-10-13; separate from the ratified comparison)
+
+[Normal-use episode 011](https://github.com/ThorStarlord/sensemaking-skills/issues/218#issuecomment-6138906343) records a later **write-enabled, owner-delegated** Auteur/Sensemaking construction episode. This is a follow-up observation, **not** a fourth arm of the September controlled review, a new Trial 002/002R, or a revision to the owner's ratified `simplify hard` verdict.
+
+The episode addresses one prior coverage gap—what an agent did when it **could build**:
+
+- An agent integrated the existing graph-first Auteur Studio draft stack into [PR #404](https://github.com/ThorStarlord/auteur/pull/404), exercised a real browser flow, and reported finding concrete import-safety and authoring-UX problems. The PR remains open at `f2fd2a4` under a protected, human-controlled merge. Its 88 Studio-test and 16/16 browser-check results are **agent reports**, not hosted Auteur qualification or human author feedback.
+- Narrow review of the Stage-B script found claimed content-integrity coverage that only compared filenames, plus unsafe project cleanup and a fixed-port ownership assumption. After correction, the script hashes file contents and refuses an occupied port. Likewise, removing wording-pinned tests under [PR #537](https://github.com/ThorStarlord/sensemaking-skills/pull/537) left stale CI selectors that had to be repaired; [PR #538](https://github.com/ThorStarlord/sensemaking-skills/pull/538) then simplified one Skill file. Both Sensemaking PRs merged with hosted Product and Release workflows passing on their verified heads.
+- The Auteur merge hold did not block independently warranted Sensemaking work. Conversely, after that work was complete, the hold **was** a legitimate reason to stop rather than bypass protected authority or invent more tasks. Source inspection also corrected the inference that two editors sharing one `item.content` field necessarily remain synchronized; transition code still determines that behavior.
+
+**Interpretation and limits:** This supports construction and firsthand interaction as valuable *evidence sources*, finding-specific verification, and dependency-aware continuation. It does **not** prove Skill-induced improvement over a competent no-Skill agent: a matched control, exact installed Skill attribution, human usability observations, and Trial 002/002R admission are absent. The observed corrections are already covered by existing authority, evidence, and action-preference guidance. **No new policy, Skill, schema, benchmark, or qualification ceremony is warranted by this episode alone.** Preserve future observations in the existing [issue #218 lane](https://github.com/ThorStarlord/sensemaking-skills/issues/218); revisit doctrine only if a recurring, decision-changing failure emerges.
