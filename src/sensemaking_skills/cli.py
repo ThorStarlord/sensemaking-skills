@@ -10,7 +10,9 @@ responsibilities, rank capabilities, or decide what work should happen next.
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -239,42 +241,125 @@ def analyze(repo, output):
     )
 
 
+def _artifact_result_error(artifact_path: Path, message: str, *, validator_error: bool) -> dict[str, Any]:
+    """Return the existing unified-validator JSON shape for CLI-level errors."""
+    error_id = (
+        "unknown.validator.execution_error"
+        if validator_error else "unknown.artifact.missing_field"
+    )
+    return {
+        "valid": False,
+        "artifact_id": "unknown",
+        "artifact_path": str(artifact_path),
+        "validator": "validate-and-report.py",
+        "errors": [{"error_id": error_id, "error_type": "logic_error" if validator_error else "missing_field",
+                    "field": "validator" if validator_error else "artifact", "message": message}],
+        "validation_timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+    }
+
+
+def _emit_artifact_result(payload: dict[str, Any], *, output_json: bool, exit_code: int) -> None:
+    if output_json:
+        _json_echo(payload)
+    elif exit_code == 0:
+        click.echo(f"ARTIFACT_VALID: {payload['artifact_path']}")
+    else:
+        label = "ARTIFACT_VALIDATOR_ERROR" if exit_code == ARTIFACT_VALIDATOR_EXIT else "ARTIFACT_INVALID"
+        click.echo(f"{label}: {payload.get('artifact_path', 'unknown')}", err=True)
+        for error in payload.get("errors", []):
+            if isinstance(error, dict):
+                click.echo(f"  - {error.get('message', error)}", err=True)
+    if exit_code:
+        raise click.exceptions.Exit(exit_code)
+
+
 @cli.command()
 @click.option(
-    "--artifact",
-    type=click.Path(exists=True),
-    required=True,
+    "--artifact", type=click.Path(dir_okay=False, path_type=Path), required=True,
     help="Path to artifact to validate",
 )
 @click.option(
-    "--json",
-    "output_json",
-    is_flag=True,
-    help="Output validation results as JSON",
+    "--json", "output_json", is_flag=True, help="Output validation results as JSON",
 )
-def validate(artifact, output_json):
+@click.option(
+    "--repo-root", type=click.Path(file_okay=False, path_type=Path), default=None,
+    help="Sensemaking source checkout containing the canonical scripts/ validators",
+)
+@click.option(
+    "--target-repo", type=click.Path(file_okay=False, path_type=Path), default=None,
+    help="Optional target repository that the artifact describes",
+)
+def validate(artifact: Path, output_json: bool, repo_root: Path | None, target_repo: Path | None) -> None:
+    """Validate an artifact through the canonical source validators.
+
+    Source checkouts resolve scripts/ automatically. Installed-wheel callers
+    outside a checkout supply --repo-root. Missing validators fail closed (6).
     """
-    Validate a repository sensemaking brief or workflow orchestration plan.
+    artifact_path = artifact.resolve()
+    if not artifact_path.is_file():
+        payload = _artifact_result_error(
+            artifact_path, f"Artifact does not exist or is not a file: {artifact_path}",
+            validator_error=False,
+        )
+        _emit_artifact_result(payload, output_json=output_json, exit_code=ARTIFACT_INVALID_EXIT)
+        return
 
-    Usage:
-        sensemaking-skills validate --artifact artifacts/repository_sensemaking_brief.md
-    """
-    artifact_path = Path(artifact).resolve()
+    candidates = (
+        [repo_root.resolve()] if repo_root is not None
+        else [Path.cwd().resolve(), Path(__file__).resolve().parents[2]]
+    )
+    validator_root = next(
+        (candidate for candidate in candidates
+         if (candidate / "scripts" / "validate-and-report.py").is_file()),
+        None,
+    )
+    if validator_root is None:
+        payload = _artifact_result_error(
+            artifact_path,
+            "Canonical validator scripts are unavailable. "
+            "Run from a Sensemaking source checkout or provide --repo-root.",
+            validator_error=True,
+        )
+        _emit_artifact_result(payload, output_json=output_json, exit_code=ARTIFACT_VALIDATOR_EXIT)
+        return
 
-    if not artifact_path.exists():
-        click.echo(f"Error: Artifact not found: {artifact_path}", err=True)
-        sys.exit(1)
+    command = [
+        sys.executable, str(validator_root / "scripts" / "validate-and-report.py"),
+        str(artifact_path), "--repo-root", str(validator_root),
+    ]
+    if target_repo is not None:
+        command.extend(["--target-repo", str(target_repo.resolve())])
+    try:
+        completed = subprocess.run(
+            command, cwd=validator_root, capture_output=True, text=True,
+            check=False, timeout=120,
+        )
+        payload = json.loads(completed.stdout)
+        if (
+            not isinstance(payload, dict)
+            or not isinstance(payload.get("valid"), bool)
+            or not isinstance(payload.get("errors"), list)
+        ):
+            raise ValueError("Canonical validator returned an invalid result envelope")
+    except (OSError, subprocess.TimeoutExpired, ValueError, json.JSONDecodeError) as exc:
+        payload = _artifact_result_error(
+            artifact_path, f"Canonical validator execution failed: {exc}", validator_error=True,
+        )
+        _emit_artifact_result(payload, output_json=output_json, exit_code=ARTIFACT_VALIDATOR_EXIT)
+        return
 
-    click.echo(f"Validating: {artifact_path}")
-    click.echo()
-    click.echo("To validate artifacts, run:")
-    click.echo()
-    click.echo(f"    python scripts/validate-and-report.py {artifact_path}")
-    click.echo()
-    click.echo("Or use Python directly:")
-    click.echo()
-    click.echo(f"    python scripts/validate-brief.py {artifact_path} --json")
-
+    execution_error = any(
+        isinstance(error, dict)
+        and str(error.get("error_id", "")).endswith(".validator.execution_error")
+        for error in payload["errors"]
+    )
+    if execution_error or (completed.returncode != 0 and payload["valid"]):
+        code = ARTIFACT_VALIDATOR_EXIT
+    elif not payload["valid"]:
+        code = ARTIFACT_INVALID_EXIT
+    else:
+        code = 0
+    _emit_artifact_result(payload, output_json=output_json, exit_code=code)
 
 @cli.command()
 @click.option(
