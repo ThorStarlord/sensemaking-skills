@@ -250,9 +250,9 @@ choices, observed behavior, and hypotheses; a pack is **not** a substitute
 for source inspection or an independent authority grant.
 
 **No pack is not a blocker.** Read existing `CONTEXT.md`, `AGENTS.md`,
-`CLAUDE.md`, product definitions, code, or tests as needed. Build or refresh
-only the missing **non-derivable**, decision-relevant knowledge; no exhaustive
-ontology, file map, or mandatory documentation stage.
+`CLAUDE.md`, product definitions, code, or tests as needed. Record non-derivable knowledge only when its source, the decision it changes,
+and its staleness condition are clear. A hypothesis names weakening evidence.
+No exhaustive ontology, file map, or mandatory documentation stage.
 
 **Question ratchet.** Before asking the owner, inspect applicable intent and
 decision records, ADRs, and owner-authored issues/PRs. Reuse an answer while
