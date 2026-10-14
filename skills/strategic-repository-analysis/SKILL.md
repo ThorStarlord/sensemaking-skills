@@ -64,6 +64,13 @@ Distinguish:
 A strategic request grants authority to analyze. It does not automatically
 grant authority to implement the resulting direction.
 
+If the target has a `.sensemaking/` pack, use its `intent.md`, non-goals,
+and relevant domain decisions as **navigation** to existing authority. Confirm
+material claims against their current cited sources. Missing packs, stale
+summaries, and unverified hypotheses are not reasons to defer an otherwise
+grounded, authorized improvement. Inspect live code or user-visible behavior
+where the strategic choice depends on it.
+
 ### 1A. Test goal fitness before treating the stated objective as the frontier
 
 A stated objective remains authoritative owner input, but it may be a terminal
@@ -139,7 +146,11 @@ semantically or that strategy must reopen.
 
 ### 3. Build the current-system model
 
-Describe the repository as a system/product:
+Describe the repository as a system/product, connecting intended user
+workflows to domain relationships, current capabilities, and the outcome they
+enable. Look for material **unmet user outcomes**, unnecessary complexity,
+and leverage between existing capabilities, rather than treating a module
+inventory or the easiest visible defect as the opportunity map.
 
 - purpose and primary use;
 - major capabilities;

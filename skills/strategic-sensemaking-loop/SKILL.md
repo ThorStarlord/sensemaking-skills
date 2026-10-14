@@ -83,6 +83,8 @@ Inspect the smallest sufficient set of current sources:
 
 - the user's current request and explicit authority;
 - current repository/source identity and decision-relevant governing docs;
+- relevant target `.sensemaking/` intent, non-goals, invariants, and
+  decisions **when present**, verifying decision-changing claims at source;
 - `artifacts/strategic_repository_analysis.md` when present;
 - `artifacts/strategic_reconciliation.md` when present;
 - current responsibility/decision artifacts such as
@@ -332,6 +334,13 @@ Do not stop merely because one responsibility completed. Do not force exactly
 three strategic alternatives or rerun breadth after every responsibility. When
 Level 3 is settled, do not execute backlog items blindly, manufacture irrelevant
 vertical layers, or treat synthetic personas as empirical evidence.
+
+After consequential work, use the resulting code, tests, user interaction, and
+owner decisions to update the **affected** target-repository grounding facts
+only if they are non-derivable and useful for a future decision. Record them in
+the same work change when a pack exists; never block continuation to produce
+a complete ontology or a redundant mission ledger. Distinguish the next
+user-relevant improvement from the next available issue.
 
 ## 4. Artifact-aware resume rules
 

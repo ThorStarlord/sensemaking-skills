@@ -66,6 +66,27 @@ Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless
 
 You do not need to create a Campaign for every task. The coding agent should use the lightest process that preserves the required engineering invariants.
 
+### Ground an unfamiliar target repository for autonomous work
+
+Start with the target's product intent and current code, not a procedural
+checklist. If `.sensemaking/intent.md` and `invariants.md` already exist,
+read those plus the task-relevant context or decisions, then check consequential
+claims at their sources. If no pack exists, reuse `CONTEXT.md`, `AGENTS.md`,
+`CLAUDE.md`, tests, and product documentation; a pack is **optional** and
+must not block useful authorized work. The small
+[`templates/grounding-pack/`](templates/grounding-pack/README.md) format is
+for non-derivable intent, domain distinctions, traps, and decisions that
+another session would otherwise lose. Never duplicate the repository's class
+or module inventory.
+
+For a delegated product goal, the agent should identify the highest-value
+remaining difference between intended user experience and current behavior;
+select, implement, and verify a bounded improvement; update only affected
+durable knowledge; and continue without repeated owner routing until the
+goal or a genuine authority/external boundary is reached. The owner can
+delegate product and architectural choices within an agreed goal; delegation
+does not itself authorize protected external actions.
+
 ### Default product-facing path
 
 You normally need only three entry surfaces:

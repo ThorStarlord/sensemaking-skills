@@ -1,9 +1,26 @@
 # Repository Grounding Plan
 
-**Status:** owner-directed plan (2026-10-12); Phase 0 not started  
+**Status:** Phases 0-2 integrated/accepted with an explicit Phase 2 spot-check waiver; Phases 3-5 not executed (2026-10-13)  
 **Direction and rationale:** [`research/repository-grounding-direction-2026-10.md`](research/repository-grounding-direction-2026-10.md)  
-**Level-4 authority:** `docs/product-strategy.md` changes only through Phase 0
-below, per `docs/product-thesis-revision.md`.
+**Level-4 authority:** ADR 0030 and the 2026-10-12 revision in
+`docs/product-strategy.md` record the completed Phase 0 choice.
+
+**Currentness:** Phase 1's template and Skill entry points are integrated.
+The first Grounding Pack was merged into
+`ThorStarlord/React_incremental_game_prototype` from PR #166, with intent
+approved and external playtesting deferred. The sampled source check was
+**20% needing correction, over the planned 10% threshold**; the owner
+waived a fresh sample. This is a waiver, **not a validation PASS**.
+See `docs/normal-use/grounding-pack-build-001.md`.
+The independent construction-enabled Phase 3 comparison has **not**
+run. Do not count pack creation, green CI, or an agent's self-review as
+evidence that it improves product decisions or autonomous completion.
+
+**Operating clarification:** Grounding is gathered **on demand** from
+current code, intent, evidence, and existing source artifacts. Absence of
+a complete pack cannot block an otherwise authorized, locally evidenced
+change. Preserve only new non-derivable knowledge that future decisions
+need. No full ontology, compulsory preflight, or status-producing loop.
 
 ## 1. Goal
 
@@ -28,6 +45,11 @@ over successive tasks.
 - No change to merge, release, or publication authority. Those stay reserved.
 
 ## 3. The Grounding Pack
+
+An optional, compact index for non-derivable knowledge when it earns its
+maintenance cost. A fresh agent should first retrieve the **relevant**
+facts, verify their sources, and act; it need not load the whole ontology
+or regenerate a pack for every task.
 
 Four files, stored in the **target** repository (default location
 `.sensemaking/`; an existing `CONTEXT.md` / `docs/adr/` / `CLAUDE.md` is reused
@@ -126,14 +148,26 @@ considers essential (the format is wrong; revise section 3 before continuing).
 
 ### Phase 3 - Use it on real work (target repo)
 
+**Admission/status:** NOT STARTED. Choose currently useful, independent,
+authorized product or repair work from current repository reality; do not
+invent a batch of tasks merely to populate a comparison. The original
+6-10-task observation program below is a *candidate sample plan*, not
+a blocker for ordinary construction. A fresh human playtest is external
+evidence and cannot be manufactured by an agent.
+
 Work:
 
-1. Take the next 6 to 10 real tasks from the target repository's backlog,
-   chosen by the owner before seeing results. Mix sizes: at least two that
-   touch more than one module.
-2. Alternate arms by task order (odd: agent with pack; even: same agent and
-   model, pack hidden by working from a branch without `.sensemaking/`). Both
-   arms keep normal repository access and CI.
+1. Select actual task(s) **before** observing outcomes, with concrete user
+   goals and acceptance checks. Aim for variety if sufficient real work
+   exists, but do not assign fake work to meet the original 6-10 target.
+2. For a **causal pack-versus-no-pack claim**, run the **same task from the
+   same exact base** in independent clean coding-agent contexts using the
+   same model, tools, budget, authority, and evaluation; change only the
+   visibility of the pack. Alternating different tasks by odd/even order
+   is useful observationally but **confounds task difficulty** and cannot
+   by itself establish superiority. If independent runners are unavailable,
+   record **NOT TESTED** and preserve actual normal-use evidence rather
+   than simulating a comparator.
 3. For each task, record in a single table in
    `docs/normal-use/grounding-pack-use-001.md`:
    - owner questions asked;
@@ -147,14 +181,21 @@ Work:
 
 Exit: table complete for all chosen tasks.
 
-Decision rules (applied in Phase 4):
+Decision rules (applied in Phase 4), with claim ceilings tied to the
+actual comparison quality:
 
-- **Adopt** if the pack arm has fewer owner questions and no more rework, and
-  the owner does not prefer the no-pack results overall.
-- **Revise format** if the pack arm asks fewer questions but has equal or more
-  rework (the pack may hold the wrong content).
-- **Stop the direction** if there is no difference in questions or rework;
-  record the result and return to the Level-4 strategy.
+- **Retain/adopt provisionally** when matched evidence shows fewer owner
+  questions, no worse meaningful rework or invariant violations, and a
+  user-relevant outcome at least as good as control. A single real episode
+  supports only a local conclusion.
+- **Revise format** if questions decrease but rework, wrong product choices,
+  or context maintenance burden increase.
+- **No demonstrated benefit** if tasks are comparable and no meaningful
+  difference emerges. Stop adding grounding machinery by inertia; this
+  does not retroactively prove universal ineffectiveness.
+- **Inconclusive/NOT TESTED** for unpaired tasks, stale loaded guidance,
+  missing independent execution, or blocked external evidence. Continue
+  real work; do not promote observational results to a causal PASS.
 
 ### Phase 4 - Decide and simplify (this repo)
 
@@ -213,9 +254,18 @@ Validator pass rates are not a success measure for this plan.
 | Planning replaces doing | No new plan documents between phases; each phase ends in a change or a one-page result |
 | Owner availability limits intent capture | Owner reviews only `intent.md` and open decisions; everything else is agent-maintained |
 
-## 7. Owner decisions needed
+## 7. Owner decisions and evidence boundaries
 
-1. Approve the Level-4 change and ADR 0030 (Phase 0).
-2. Choose the first target repository and the task list for Phase 3.
-3. Answer the open intent questions in the first pack (Phase 2).
-4. Apply the Phase 3 decision rule (Phase 4).
+1. **Resolved:** the owner delegated ADR 0030 and selected
+   `ThorStarlord/React_incremental_game_prototype` as first target.
+2. **Resolved with waiver:** intent approved, external playtesting deferred,
+   and the Phase 2 sample threshold waived rather than passed.
+3. **Not yet an owner question:** Phase 3 task admission and independent runner
+   availability are repository/execution facts to establish, not reasons
+   to ask the owner to design an evaluation framework.
+4. **Future decision:** simplify shipped Skills only after relevant behavioral
+   evidence; preserve existing authority and compatibility boundaries.
+   The already-open value-first plan in PR #536 asks a related but separate
+   direct-agent/compact/full-guidance question. Do not combine study claims.
+
+Do not update these statements to PASS until the respective evidence exists.

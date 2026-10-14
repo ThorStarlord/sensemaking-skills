@@ -40,31 +40,41 @@ candidate next step != construction path
 weakest boundary != automatically selected strategic direction
 ```
 
-## Build or refresh the Grounding Pack
+## Ground the repository without documentation theater
 
-When the target repository has no `.sensemaking/` Grounding Pack, or the work
-touches behavior a pack line covers, build or refresh it before proposing work.
-Template: `templates/grounding-pack/`. Budgets are hard limits.
+Start with the question that could change the **next useful product or
+engineering decision**. Read the target's current intent, non-goals,
+domain invariants, relevant code, tests, and owner decisions. An existing
+`.sensemaking/` pack is a convenient index, **not** a replacement for its
+cited sources and not an additional permission layer.
 
-1. **Read first.** If `.sensemaking/` exists, read `intent.md` and `invariants.md`
-   before analysis. Reuse an existing `CONTEXT.md`, `docs/adr/`, or `CLAUDE.md` by
-   linking to it rather than copying it.
-2. **Fill from evidence.** Write `context.md` and `invariants.md` from code, tests,
-   commit history, and existing docs. Tag every line with exactly one primary tag:
-   `[policy: path]`, `[code: path]`, `[test: path]`, `[owner: date]`, `[delegated: date]`, or `[hypothesis]`.
-3. **Do not invent intent.** Put candidate goals and non-goals in `intent.md` as
-   `[hypothesis]` lines and list each as an open owner question. Never write an
-   owner answer that the owner did not give.
-4. **Keep only non-derivable lines.** Omit anything grep, a type, or a test can
-   supply; cite the enforcing test instead. Omit module lists and file maps.
-5. **Record decisions.** For each non-obvious choice found in history or code,
-   add a short `decisions/NNNN-*.md` record with alternatives and the reason.
-6. **Check budgets.** Cut or merge lines to stay within budget. Do not add files.
-7. **Report what was not established.** In the analysis output, list open owner
-   questions and `[hypothesis]` lines separately from grounded facts.
+If the existing sources already answer the question, **act or diagnose**
+without rewriting them. Do not make creation of a complete pack a prerequisite
+for proposing a local repair or executing an authorized responsibility.
 
-The pack is decision support, not authority. A pack line does not grant
-permission to act; authority still comes from the owner.
+When a genuinely missing or stale **non-derivable** fact would otherwise
+cause repeated misinterpretation, wrong construction, or owner escalation,
+create or refresh only the affected entries in `templates/grounding-pack/`'s
+format:
+
+1. Reuse `CONTEXT.md`, `CLAUDE.md`, `AGENTS.md`, ADRs, and product
+   decisions by linking rather than copying; keep the existing word budgets.
+2. Ground non-obvious terms, invariants, and traps in **current** code,
+   tests, authority documents, or actual observations. Every factual line
+   needs exactly one primary tag: `[policy: path]`, `[code: path]`,
+   `[test: path]`, `[owner: date]`, `[delegated: date]`, or
+   `[hypothesis]`. Check what the cited source **says**, not just its path.
+3. Keep inferred intent as `[hypothesis]` and explicit open questions.
+   Never fabricate owner approval. An unsupported hypothesis cannot alone
+   justify an irreversible product decision.
+4. Preserve the reasoning behind meaningful past choices; avoid class
+   catalogs, module maps, restated function signatures, and empty templates.
+5. When implementation invalidates a pack line, update the affected line in
+   the **same change**. Record only information worth retrieving later.
+   Report unresolved gaps without blocking unrelated authorized work.
+
+The value is **better grounded decisions and useful code**, not pack volume,
+schema compliance, or a perfect representation before action.
 
 ## Two responsibilities, one skill
 
