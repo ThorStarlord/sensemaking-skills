@@ -165,3 +165,35 @@ def test_installed_wheel_contains_product_but_not_source_only_lab(tmp_path):
     )
     assert run.returncode == 0, run.stdout + run.stderr
     assert "CORE_WHEEL_SMOKE_OK" in run.stdout
+
+    # Exercise the installed CLI as a subprocess, outside the source checkout.
+    # Campaign ingest has already qualified this bundled validator_runtime; the
+    # top-level validate command must resolve that exact same runtime by default.
+    valid_artifact = work_dir / "valid-architecture.md"
+    valid_artifact.write_bytes(
+        (REPO_ROOT / "tests" / "fixtures" / "architectural-review-recommendation"
+         / "fixture-valid-pursue.md").read_bytes()
+    )
+    invalid_artifact = work_dir / "invalid-architecture.md"
+    invalid_artifact.write_text("# No authoritative machine-readable block\n", encoding="utf-8")
+
+    executable = venv_dir / ("Scripts" if sys.platform.startswith("win") else "bin")
+    cli_path = executable / (
+        "sensemaking-skills.exe" if sys.platform.startswith("win") else "sensemaking-skills"
+    )
+    assert cli_path.is_file()
+
+    for artifact, expected_exit, expected_valid in (
+        (valid_artifact, 0, True),
+        (invalid_artifact, 5, False),
+    ):
+        completed = subprocess.run(
+            [str(cli_path), "validate", "--artifact", str(artifact), "--json"],
+            capture_output=True, text=True, cwd=str(work_dir), timeout=120,
+        )
+        assert completed.returncode == expected_exit, completed.stdout + completed.stderr
+        payload = __import__("json").loads(completed.stdout)
+        assert payload["valid"] is expected_valid
+        assert isinstance(payload["errors"], list)
+        assert payload["artifact_path"] == str(artifact)
+        assert not (work_dir / "scripts").exists()
