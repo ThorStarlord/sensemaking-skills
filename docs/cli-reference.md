@@ -85,6 +85,22 @@ Never decides semantic truth or Skill quality.
 `audit [--repo-root] [--json]`. Exit code 3 on error findings. See
 `docs/release-authority-audit.md`.
 
+## `validate`
+
+`sensemaking-skills validate --artifact PATH [--json] [--repo-root CHECKOUT] [--target-repo TARGET]`
+runs the **existing** `scripts/validate-and-report.py` router and its
+artifact-specific canonical validator. Unlike the former instruction-only
+placeholder, it validates file contents and returns exit code 5 on invalid
+artifacts, 6 when canonical validators are unavailable or fail, and 0 on a
+valid result. `--json` emits the router's single structured result object.
+
+Run from a Sensemaking source checkout, or provide `--repo-root` pointing
+to that checkout. The wheel contains the CLI, but does **not** independently
+bundle every operator script and the associated repository-local validator
+contracts. Running the installed CLI outside a checkout without
+`--repo-root` therefore fails **closed** with exit code 6 rather than
+claiming the artifact is valid.
+
 ## Exit codes and JSON
 
 Exit-code and JSON-envelope semantics are normative in
