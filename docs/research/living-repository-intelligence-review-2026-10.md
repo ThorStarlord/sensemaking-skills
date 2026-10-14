@@ -24,8 +24,14 @@ choose and build worthwhile improvements under delegation. **The plan does not
 hold.** Its flagship pilot targets knowledge that the repository's own
 evidence says agents already get from code. It re-plans guidance that PR #540
 already shipped. It adds an unbudgeted knowledge store that works around ADR
-0030. It does not plan for the three external blockers that have actually
-held up evaluation. And T2's reversal of T1 is not backed by any new evidence.
+0030. It does not plan for the three external blockers that have held up the
+one comparison it depends on: pack versus no pack on real construction work.
+And T2's reversal of T1 is not backed by any new evidence.
+
+Many tests have already been run, including two write-enabled trials. Section
+4 lists them and the question each one answered. The plan's weakness is not a
+lack of tests. Its central claim rests on the one question those tests have
+not yet answered conclusively.
 
 The repository's evidence points to a narrower lever:
 **unrecorded decisions, not missing structure.** Part II therefore proposes a
@@ -46,7 +52,7 @@ Each claim was checked against the repository or GitHub on 2026-10-14.
 | --- | --- | --- |
 | PR #536 is open and its comparison should be reused (T1 section 7, T3 Phase 0.7 and Phase 5) | **Closed, not merged**, 2026-10-14. The owner closed it as superseded by PR #540 and the canonical grounding plan. The three-arm study **was never executed**. | T3 Phase 5 builds on a closed plan. |
 | The grounding plan's status predates the merged pack (T3 Phase 0.1) | PR #540 already reconciled `repository-grounding-plan.md`. Three stale statements remain: the ADR 0030 amendment still says the pack is "not merged" and "owner review has not happened"; a `STATUS.md` bullet says "No Skill, contract, or Level-4 strategy text has changed yet"; and `grounding-pack-build-001.md` says both "COMPLETE by owner directive" and "can't be called complete" in one paragraph. | Small currentness repairs. They are not a phase. |
-| Phase 0.2-0.4, Phase 2 (retrieval) and Phase 3 (learning loop) are future work | PR #540 already ships them as guidance. `using-sensemaking` section 0 covers selective retrieval, source verification, "no exhaustive ontology", and same-change updates after construction. `strategic-sensemaking-loop` updates affected grounding facts after consequential work. `product-strategy.md` now names "continuous, autonomous domain grounding". | **The guidance for T3 Phases 0, 2, and 3 is already merged.** What is missing is behavioral evidence, not guidance. |
+| Phase 0.2-0.4, Phase 2 (retrieval) and Phase 3 (learning loop) are future work | PR #540 already ships them as guidance. `using-sensemaking` section 0 covers selective retrieval, source verification, "no exhaustive ontology", and same-change updates after construction. `strategic-sensemaking-loop` updates affected grounding facts after consequential work. `product-strategy.md` now names "continuous, autonomous domain grounding". | **The guidance for T3 Phases 0, 2, and 3 is already merged.** What is missing is a conclusive pack-versus-no-pack result on construction work, not more guidance. |
 | `validate` CLI misreports success (T1 P0, T3 Phase 0.6) | **Confirmed.** `sensemaking-skills validate --artifact <malformed> --json` prints usage instructions as text and exits **0**. `docs/cli-contract-v1.0.yaml` declares `artifact_invalid: 5`, `artifact_validator_error: 6`, and one JSON object on stdout. On the same file, `scripts/validate-brief.py` returns `valid: false` and exits 1, which also differs from the contract's 5. `tests/test_cli.py` covers only help, missing, and nonexistent paths. | Real defect, but independent of the strategy (see B13). |
 | The installed Skill differs from the GitHub version (T1 P2, T3 Phase 0.5) | **Confirmed, and larger than stated.** The #515 comment of 2026-10-14 reports installed/source sizes of 46,936/40,325 characters for `using-sensemaking` and 15,240/18,209 for `strategic-sensemaking-loop`. | Any attribution-sensitive trial must byte-verify first. |
 | 51 Skill packages; 18 read-only episodes with 0 clearly Skill-favorable tasks; replay and stress-test findings | Correct. | None. |
@@ -272,7 +278,46 @@ make it part of the strategy.
 | T2 | Learning means new evidence changes a later judgment, as a four-step update. Documentation counts only if it changes the ability to predict, decide, or act. Retrieve; do not inject. |
 | T3 | Four *logical* knowledge kinds (not files). "Long-term product knowledge survives the mission; temporary mission state does not." The comparison controls: separate installs, no future leakage, verified Skill identity. The risk register. "No work package is automatically a reason to add a Skill, schema, validator, or CLI command." |
 
-## 4. The bottleneck question, against the evidence so far
+## 4. What has already been tested, and the bottleneck question
+
+### 4.1 Tests already run
+
+In this record, a **test** is a run that was set up in advance, whose outcome
+was recorded, and where some outcome would have counted against the claim
+being tested. Every entry below meets that definition. They differ in **which
+question** each one answers.
+
+- A *behavior test* asks whether the agent does the right thing. It needs no
+  comparison arm.
+- A *comparison test* asks whether X does better than the same agent without
+  X. It needs a control arm on the same task and base.
+
+| Test | Kind | Question it answered | Result |
+| --- | --- | --- | --- |
+| **Trial 001** (`React_incremental_game_prototype`, 2026-09-25, target PR #154) | Write-enabled behavior test on a real repository; one arm | Can an agent using Sensemaking resume from stale state, build one bounded responsibility end to end, verify it, and stop at the authority boundary? | **Supported** on all 12 observed properties. Hosted Build Validation passed on the exact head. Limits: one repository, a stale installed Skill, no control arm. |
+| **Trial 002 mission, run inline** (Auteur, 2026-09-27, Auteur PRs #291-#293) | Write-enabled behavior test, run in the same session, so its evidence ceiling is lower | Can it build a multi-package construction on a second repository without prompts? | Three green PRs with no prompts in between. An **independent review returned No-go** and found real defects: unresolvable IDs silently dropped, an invariant claimed without a test, and focused CI that never ran the existing suites. The defects were fixed after owner decisions and the PRs merged. |
+| **Strategic trials 002-004, controls, and remeasure** (Pydantic, Jellyfin, AION; 2026-09-29/30) | Read-only comparison test, Skill versus no-Skill control; 3 episodes per arm per task in the remeasure | Does the Skill change which responsibility the agent picks? | **0 of 3** tasks clearly favored the Skill, against a pre-registered bar of 2 of 3. The owner ratified "simplify hard". |
+| **Grounding stress test** (2026-10-12) | Read-only comparison test, pack versus no pack; 4 trap probes | Does the pack prevent specific mistakes? | Both arms avoided all four traps. The pack's marginal value was not shown. |
+| **Historical replays** (2026-10-12) | Write-enabled comparison test, pack versus no pack; 2 merged tasks | Does the pack change outcomes on real past tasks? | Both arms were correct. **Inconclusive**, because the tasks were fully specified, information leaked from later commits, and the arms shared a cache. |
+| **Fresh-session usability test** (2026-10-12) | Read-only behavior test; one arm | Can a fresh agent onboard using the pack? | It got the mechanics from code. Three decisions were not recorded anywhere. |
+| **Episode 011** (Auteur Studio, 2026-10-13, Auteur PR #404) | Write-enabled normal-use episode | Real construction under delegation | A real browser flow exposed import-safety and authoring-UX problems. The results are agent-reported, and the PR is open. |
+| **StoryLedger rehearsal** (#515, 2026-10-14) | Synthetic practice | Calibrate the Trial 002 evaluator | 9/9 acceptance checks passed on the completed candidate. This was practice, not a trial. |
+
+What these tests support: **bounded autonomous construction behavior**
+(Trials 001 and the inline 002 mission, Episode 011), and good stopping at
+authority boundaries.
+
+What they have not settled:
+
+1. **Pack versus no pack on construction work.** The replays tried this and
+   were inconclusive.
+2. **Skill versus no Skill on construction work.** Every comparison test so
+   far was read-only.
+3. **Official Trial 002/002R with a fresh-context resume** (#515).
+
+The Living Repository Intelligence plan's central claim depends on item 1.
+
+### 4.2 The bottleneck question
 
 T1 rightly says the "repository knowledge is the principal bottleneck"
 premise is not established. Here is the evidence tagged by *binding
@@ -280,19 +325,23 @@ constraint*, meaning what actually limited progress.
 
 | Observation | Binding constraint | Was missing derivable or relational repository knowledge binding? |
 | --- | --- | --- |
+| Trial 001 | Merge authority (withheld by design); human play evidence deferred | No. The agent rebuilt current state from stale local state on its own. |
+| Trial 002 mission, inline | Verification scope (focused CI skipped the existing suites); defects caught by independent review; owner-content inputs (target, seals) | No |
+| Episode 011 | Merge held by the owner; human author feedback | No |
 | Synthetic stress test, 4 probes x 2 arms | None. Existing target docs already guarded every trap. | No |
 | Historical replays, 2 tasks x 2 arms | None. The tasks were fully specified. | No |
 | Fresh-session usability test (Copy Essence) | Three **unrecorded decisions**, plus doc/code contradictions | No for mechanics; **yes for decisions** |
 | Auteur assessment | External product evidence | No |
 | Trial program and remeasure (3 + 18 episodes) | Judgment and escalation calibration | No |
-| Trial 002/002R (#515) | Target admission and an independent runner | No |
+| Official Trial 002/002R (#515) | Target admission and an independent runner | No |
 | Dark Factory #83 (#218, 2026-10-14) | Provider transport and observability | No |
 
 **Claim ceiling.** None of these was designed to detect a knowledge
-bottleneck. Most are synthetic, and the target repositories are unusually well
-documented. Even so, there are **zero** observations where missing relational
-structure was binding. There is **one** where missing *decisions* were, and
-the rest were limited by external evidence, infrastructure, or authority.
+bottleneck. Several are synthetic, and the target repositories are unusually
+well documented. Even so, across ten observations, including three
+write-enabled ones, there are **zero** where missing relational structure was
+binding. There is **one** where missing *decisions* were. The rest were limited
+by verification, external evidence, infrastructure, or authority.
 
 ---
 
