@@ -6,7 +6,6 @@ from .conformance import (
     ConformanceResult,
     validate_conformance,
 )
-from .impact import (CandidateSurface, EvidenceLink, GroundingClaim, ImpactPreview, build_impact_preview)
 from .map import build_repository_semantic_map
 from .models import (
     Completeness,
@@ -69,10 +68,5 @@ __all__ = [
     "probe_manifest_dependencies",
     "probe_python_imports",
     "to_dict",
-    "GroundingClaim",
-    "CandidateSurface",
-    "EvidenceLink",
-    "ImpactPreview",
-    "build_impact_preview",
     "validate_conformance",
 ]
