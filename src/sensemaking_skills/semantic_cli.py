@@ -18,13 +18,13 @@ from .semantic_architecture import (
     build_repository_semantic_map,
     build_semantic_catalog,
     probe_exact_search,
-    build_impact_preview,
     probe_file_containment,
     probe_manifest_dependencies,
     probe_python_imports,
     to_dict,
     validate_conformance,
 )
+from .semantic_architecture.impact import build_impact_preview
 
 
 def _emit(payload: dict[str, Any], *, output_json: bool) -> None:
