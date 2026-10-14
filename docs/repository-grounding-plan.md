@@ -265,7 +265,9 @@ Validator pass rates are not a success measure for this plan.
    to ask the owner to design an evaluation framework.
 4. **Future decision:** simplify shipped Skills only after relevant behavioral
    evidence; preserve existing authority and compatibility boundaries.
-   The already-open value-first plan in PR #536 asks a related but separate
-   direct-agent/compact/full-guidance question. Do not combine study claims.
+   PR #536 was closed unmerged on 2026-10-14 as superseded by PR #540 and
+   this canonical plan. Its direct-agent/compact/full-guidance question remains
+   an optional historical hypothesis, not an active or completed comparison.
+   Do not combine study claims.
 
 Do not update these statements to PASS until the respective evidence exists.
