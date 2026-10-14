@@ -1,9 +1,11 @@
 # Living Repository Intelligence: Adversarial Review and Architecture Synthesis (2026-10)
 
-**Status:** analysis record and proposed amendments; **not ratified**
+**Status:** analysis record and proposed amendments; **not ratified**.
+Part II was revised on 2026-10-14 under the owner's long-term stewardship
+mandate.
 **Authority:** research only. Does not supersede ADR 0030 or
 [`../repository-grounding-plan.md`](../repository-grounding-plan.md). Part II
-proposes amendments to that plan; it is not a parallel roadmap.
+proposes amendments to them; it is not a parallel roadmap.
 **Evidence as of:** `main@758bd85` (PR #540 merged), GitHub state read 2026-10-14.
 **Evidence class:** repository and GitHub inspection, plus two local CLI runs.
 No new agent trial was run.
@@ -33,12 +35,20 @@ Many tests have already been run, including two write-enabled trials. Section
 lack of tests. Its central claim rests on the one question those tests have
 not yet answered conclusively.
 
-The repository's evidence points to a narrower lever:
-**unrecorded decisions, not missing structure.** Part II therefore proposes a
-*decision-first* design. Every change is an amendment to existing primitives:
-an admission test for knowledge, a delegated-decision ratchet, a
-citation-on-use convention, and separate evaluations for cold-start and
-accumulation. It adds no new runtime, schema, tag, Skill, or validator.
+**Horizon correction.** All of that evidence is short-horizon: single sessions
+or a few days. It cannot judge what a multi-month steward needs. Under the
+owner's mandate of **long-term autonomous repository stewardship**, Part II
+proposes the **Stewardship Kernel**:
+
+- three small typed files: boundaries and invariants, a capability map tied to
+  goals, and short-lived arc state;
+- one CI check for shape, references, coverage and budgets;
+- one loop rule: no silent drift, so every boundary change is an explicit,
+  delegated amendment.
+
+Everything that can be checked is pushed into tests and lint rules. Prose is
+kept only for *why* and *what for*. The kernel is a hypothesis, with a
+long-horizon test that can run now.
 
 ---
 
@@ -86,7 +96,7 @@ and code") is therefore **predicted to fire by evidence T3 cites**.
 
 - record the four contradictions as invariants or traps;
 - close the stacking and Copy-only/permanent questions through the
-  delegated-decision ratchet (Part II, D3);
+  delegated-decision ratchet (Part II, section 8.7);
 - send the scope question to the owner.
 
 ### B2 (High): an unbudgeted second store works around ADR 0030
@@ -107,10 +117,12 @@ commits.
 
 **Contradicts ADR 0030 decision 4** (flagged per `docs/agents/domain.md`).
 
-**Repair.** Admit knowledge entry by entry, through a decision-changing test
-(D1), and keep the budgets. Hitting budget pressure while dropping
-owner-essential lines is the only evidence that would justify a separate
-relational layer.
+**Repair.** Admit knowledge entry by entry, through a decision-changing test,
+and keep a budget on every store. Part II's kernel (section 8) does this for
+structure: typed files with count budgets that a check enforces. Structure can
+grow where it is checkable, but the store is never unbounded. Repeated budget
+pressure that would drop owner-essential entries is the evidence that would
+justify changing the format.
 
 ### B3 (High): T3 re-plans shipped work and leaves the real blockers unplanned
 
@@ -127,8 +139,9 @@ or plan for:
 3. **Human product evidence.** External playtesting was approved as
    "DEFERRED / TBD" with no owner and no date.
 
-**Repair.** Make these three blockers the critical path, with the cheapest
-unblocking step for each (Part II, section 11).
+**Repair.** Make these three blockers the critical path. Part II, section 11,
+shows that the main long-horizon test (a series of sequential fresh sessions)
+avoids the runner blocker entirely.
 
 ### B4 (High): T2 reverses T1 without new evidence
 
@@ -142,8 +155,8 @@ skepticism was calibrated to the stress test, the replays, and the usability
 test, and that evidence has not changed.
 
 **Repair.** A stance changes only when an observation changes. Each position
-should state the observation that would move it. Part II, section 6 does this
-for its own thesis.
+should state the observation that would move it. Part II, section 5, applies
+this rule to its own change of position.
 
 T2's real contributions are framing, not evidence: a working definition of
 learning, and "retrieve, don't inject".
@@ -158,7 +171,8 @@ Accumulation needs **successive ordinary tasks on the same repository**. That
 also avoids the admission bottleneck in B3: a series of real tasks does not
 need a "fresh, unused, multi-responsibility mission".
 
-**Repair.** Run separate tests (E1 and E2 in Part II).
+**Repair.** Run separate tests. Part II, section 11, makes accumulation the
+main test: a session series on one repository.
 
 ### B6 (Medium): the key metrics have no collection method
 
@@ -173,7 +187,7 @@ recorded.
 
 **Repair.**
 
-- **Citation-on-use** (D4): log a decision that a grounding entry changed at
+- **Citation-on-use** (Part II, section 8.6): log a decision that a grounding entry changed at
   the moment it happens.
 - **Trap replays** built from *real incidents* (recurring ones where
   possible), not designed probes. Candidates:
@@ -206,7 +220,8 @@ minutes. It is not a playtest.
 the fact. The repository already has a precedent: the trial program used a
 pre-registered "skill-favorable on at least 2 of 3" bar.
 
-**Repair.** Pre-register the bar before running anything (section 12).
+**Repair.** Pre-register the bar before running anything (Part II, section
+11).
 
 ### B9 (Medium): the guidance cost is not netted against "simplify hard"
 
@@ -242,7 +257,8 @@ T3 correctly says temporary mission state must not become permanent product
 truth. It does not say what happens to durable discoveries made *inside* a
 mission. When the Campaign or handoff is archived, they are lost.
 
-**Repair.** Ask one promotion question at mission close (D4).
+**Repair.** Promote durable lessons when each arc closes (Part II, section
+8.3).
 
 ### B12 (Low): a typed relationship vocabulary invites schema growth
 
@@ -255,7 +271,7 @@ Pack, Campaign, handoff). That goes against the glossary rule in
 `docs/agents/domain.md`.
 
 **Repair.** Keep prose. State causal claims as `[hypothesis]` lines with a
-falsifier (D2). Use the glossary vocabulary.
+falsifier (Part II, section 8.6). Use the glossary vocabulary.
 
 ### B13 (Low strategic, real defect): the `validate` CLI belongs in its own fix
 
@@ -343,233 +359,377 @@ write-enabled ones, there are **zero** where missing relational structure was
 binding. There is **one** where missing *decisions* were. The rest were limited
 by verification, external evidence, infrastructure, or authority.
 
+**Horizon ceiling.** Every observation above was short-horizon: one session,
+or at most a few days. Several were substantial construction, but none ran
+across many sessions. This table therefore says nothing about what
+multi-month stewardship needs. Architectural drift and intent drift build up
+across sessions, and no test here could have exposed them. Part II, section 5,
+takes this up.
+
 ---
 
-# Part II: Architecture synthesis (PRD/spec)
+# Part II: Architecture synthesis under a long-term stewardship mandate (PRD/spec)
 
-## 5. Problem
+*Revised 2026-10-14. This replaces the earlier decision-first synthesis. Its
+parts that still hold (delegated decisions, the admission test, causal
+hypotheses with falsifiers) are folded in below (section 8.6).*
 
-Under delegation, a capable coding agent working in a well-documented
-repository stalls or escalates mainly at **decision gaps**: owner intent
-nobody recorded, choices nobody made, alternatives rejected without a written
-reason, and traps learned once but not kept. Each gap costs an owner question,
-or risks invented intent. Today the Grounding Pack records owner *answers* but
-offers no legitimate way to *close* a gap without the owner. Nothing records
-whether a pack entry ever changed a decision.
+## 5. Mandate, and what it changes
 
-## 6. Thesis (falsifiable)
+**Owner mandate (stated in session, 2026-10-14):** *long-term autonomous
+repository stewardship*. An agent evolves a complex repository over dozens of
+sessions across months. It carries multi-stage feature arcs, explores
+divergent options, and prevents architectural drift, without continuous human
+micro-steering. Recording this in `product-strategy.md` would be a Level-4
+revision; it is proposed here, not made.
 
-**H1 (adopted as the working hypothesis).** For delegated product work in
-documented repositories, autonomy is limited more by unrecorded decisions and
-by external evidence or infrastructure than by missing derivable or relational
-structure. The grounding lever is therefore **decision closure plus decision
-memory**. Relational knowledge is admitted only where it changes a decision.
+**What the mandate changes in this review.**
 
-**H1 is weakened by:**
+- **The section 4 evidence is short-horizon.** All ten observations were
+  single sessions or a few days. Several were substantial construction:
+  Trial 001 changed 13 files across domain, engine, UI and tests. None ran
+  across many sessions, so none can show what a multi-month steward needs.
+  "Zero cases of missing relational structure" is a short-horizon result. It
+  is not an argument against long-horizon mechanisms.
+- **Two failure modes become central** that short tasks cannot expose:
+  - *Architectural drift.* Each session makes a locally reasonable change,
+    and together they erode the boundaries. This is the "erosion and drift"
+    of Perry and Wolf (1992) and the "Big Ball of Mud" of Foote and Yoder
+    (1997).
+  - *Intent drift.* Features accumulate that no longer serve a stated goal.
+- **The owner cannot be the memory.** Delegated decisions (section 8.7) must
+  cover architectural decisions too.
 
-- binding-constraint tags (section 11, E1) that show *relationship
-  misinterpretation* binding in a material share of real episodes; or
-- a paired comparison in which a relational-map arm beats a decisions-only arm
-  (E4).
+**What it does not change.**
 
-**H2 (the T2/T3 thesis, kept open).** A richer relational model materially
-improves decisions. H2 is tested only when H1's evidence points to
-misinterpretation (E4).
+- **Prose documentation is not the established remedy for drift; it erodes
+  too.** The established remedies are *executable* architecture rules
+  (fitness functions and dependency rules; Ford, Parsons and Kua, 2017) plus
+  recorded *rationale* (decision records; Nygard, 2011).
+- This repository shows the same pattern at small scale. The first Grounding
+  Pack had 3 wrong citations among about a dozen checked, within a day of
+  being written. ADR 0030's status amendment went stale within two days.
+  Prose about code drifts faster than code.
+- **Nothing here has yet been shown to improve outcomes.** The design below is
+  a hypothesis, with a cheap long-horizon test (section 11).
 
-## 7. Users and job
+**Why this position changed.** Part I criticized T2 for reversing without new
+evidence, so the same rule applies here. Two things moved:
 
-**Primary user:** the high-delegation repository owner (`product-strategy.md`,
-section 3).
+1. **A validity argument.** Horizon is a dimension the evidence never varied,
+   and the first synthesis under-weighted that.
+2. **Re-weighting existing evidence.** The doc-rot observations above argue
+   for knowledge that is *mechanically checked*.
 
-**Job:** "Let the agent keep building toward my goal without asking me
-things it could legitimately settle. Show me what it settled, so I can
-overturn it cheaply."
+No new outcome evidence was added. The result is therefore a design to test,
+not a finding.
 
-## 8. Design
+## 6. What a steward must not lose between sessions
 
-The design reuses existing primitives throughout. Retrieval is **unchanged**
-(it shipped in PR #540).
+| Failure across sessions | What prevents it | Where it lives |
+| --- | --- | --- |
+| **Architectural drift**: boundaries erode a little each session | Boundary rules enforced in CI; every change to a boundary is explicit | `architecture.yaml` plus native lint rules |
+| **Intent drift**: features stop serving goals | Every capability links to a stated goal | `capabilities.yaml` -> goal IDs in `intent.md` |
+| **Lost arcs**: a multi-session feature stalls or restarts | Durable stage state the next session resumes from | `arcs/<id>.yaml` |
+| **Re-exploration**: rejected designs get retried | Rejected options recorded with the reason | `decisions/` |
+| **Kernel rot**: the knowledge itself decays | Reference, coverage and budget checks that fail CI | the check |
+| **Owner micro-steering** | The agent amends the kernel itself as `[delegated]`; the owner reviews diffs in batches | provenance tags |
 
-### D1: Knowledge unit and admission test
+## 7. Design principle
 
-Every grounding entry must answer four questions. This covers intent lines,
-invariants, decision records, and any relational note.
+**Enforce what can be checked. Index what must be read. Delete what is
+finished.**
 
-1. **Decision:** which future decision does it change?
-2. **Non-derivability:** why would a competent agent not recover it from
-   code, tests, or docs in a few minutes?
-3. **Source:** what single primary provenance tag supports it, and has the
-   source's *content* been checked, not only its path?
-4. **Recheck:** what change would invalidate it?
+1. **Executable first.** If an invariant can be a test, a type or a lint rule,
+   it becomes one, and the kernel only points to it. Prose invariants are
+   capped.
+2. **Typed index, prose rationale.** Things the agent navigates and a checker
+   verifies go in small typed YAML files: components, invariants,
+   capabilities and arcs. Prose is kept only for *why* (decision records)
+   and *what for* (`intent.md`).
+3. **Lifecycle with deletion.** Arc state is deleted when the arc closes,
+   after its durable lessons are promoted. Budgets are counts of entries, so
+   files cannot grow by accumulating prose.
 
-An entry that fails any question is not recorded. If it is mechanically
-checkable, write a test instead. Relational content lives in `decisions/` or
-`context.md`, under the existing budgets.
+## 8. The Stewardship Kernel
 
-### D2: Claim kinds
+The kernel extends the existing Grounding Pack at `.sensemaking/`. It adds
+three typed files and one check. `invariants.md` shrinks or disappears as its
+content moves into tests, lint rules, or typed `manual` entries.
 
-The six existing tags stay. Causal product claims are `[hypothesis]` lines
-with a one-clause falsifier ("weakened by: ..."). A hypothesis may motivate a
-reversible prototype. It never justifies an irreversible change on its own
-(this is existing rule).
+| File | Kind | Status |
+| --- | --- | --- |
+| `intent.md` | prose, 800 words | exists; goals get stable IDs (`G1`, `G2`, ...) |
+| `architecture.yaml` | typed | new |
+| `capabilities.yaml` | typed | new |
+| `arcs/<id>.yaml` | typed; deleted when the arc closes | new |
+| `decisions/NNNN-*.md` | prose, 250 words each | exists; also records options explored and rejected |
+| `context.md` | prose | optional; only domain terms that are easy to confuse |
 
-### D3: Delegated-decision ratchet (amends ADR 0030 decision 5)
+### 8.1 `architecture.yaml`: boundaries and invariants
 
-When delegated work hits an owner-dependent question:
+The examples in this section are illustrative. Their names are not taken from
+any real repository.
 
-1. **Search existing records.** This is the current ratchet. If an applicable
-   decision exists, use it.
-2. **Reversible, inside the delegated objective, and not protected.** The
-   agent decides. It writes `decisions/NNNN-*.md` tagged
-   `[delegated: date]`, with the rejected alternatives, the reason, and the
-   reversal cost. It adds one line to the open decisions in `intent.md`
-   ("delegated, awaiting confirmation"), then continues.
-3. **Irreversible, value-laden beyond the delegation, or protected**
-   (scope boundaries, merge, release, deploy). The agent asks the owner and
-   keeps doing independent reversible work in the meantime. The answer is
-   recorded as `[owner: date]`.
-4. **Blocked on external evidence** (for example, balance numbers). The
-   question is recorded as open. Nothing is invented.
+```yaml
+version: 1
+components:            # 5-15 boundaries, not a file map
+  - id: core
+    paths: ["src/game/core/**"]
+    owns: "Deterministic simulation state and rules"
+    may_depend_on: []
+  - id: features
+    paths: ["src/features/**"]
+    owns: "Player-facing feature slices"
+    may_depend_on: [core]
+unowned_ok: ["scripts/**"]
+invariants:
+  - id: INV-1
+    rule: "Simulation code never imports UI or browser APIs"
+    enforced_by: {lint: ".dependency-cruiser.cjs#core-is-headless"}
+    why: decisions/0003-deterministic-core.md
+    tag: "[delegated: 2026-10-15]"
+  - id: INV-2
+    rule: "Balance numbers come from playtest evidence, never invented"
+    enforced_by: {manual: "not mechanically checkable; reviewed at arc close"}
+    why: intent.md
+    tag: "[owner: 2026-10-12]"
+retired:               # removed invariants keep their reason until the next arc close
+  - {id: INV-0, why: decisions/0006-merge-stores.md}
+```
 
-The owner reviews delegated decisions **asynchronously and in batches**.
-Confirming one upgrades its tag to `[owner: date]`. Reversing one records the
-reason, which becomes a high-value intent line.
+Import rules are enforced by the ecosystem's own tool (for example
+dependency-cruiser, import-linter or ArchUnit). The kernel does not parse
+imports itself.
 
-**Worked example (Copy Essence):**
+### 8.2 `capabilities.yaml`: what the product can do, and its gaps
 
-- Make the naming and docs match the additive code. This is a delegated,
-  behavior-neutral change, and the agent records "multiplicative was intended"
-  as a `[hypothesis]` for the owner.
-- Copy-only versus permanent effect: delegated, if it can be prototyped
-  reversibly.
-- Campaign One scope: owner.
-- Balance numbers: blocked on external evidence.
+```yaml
+version: 1
+capabilities:          # user-visible outcomes, not functions
+  - id: CAP-essence
+    outcome: "Player gains Essence passively from mature Copies"
+    serves: [G2]
+    status: shipped    # planned | partial | shipped | deprecated
+    components: [core]
+    verified_by: ["src/game/core/__tests__/essenceRate.test.ts"]
+    gaps:
+      - "Stacking is additive in code but named multiplicative -> decisions/0007 (delegated, awaiting confirmation)"
+      - "[hypothesis] Showing per-Copy contribution improves pacing; weakened by: playtest shows no change in session length"
+```
 
-### D4: Learning as promotion at transitions
+This file is the **starting point for exploration**:
 
-- **At each PR.** Ask one question: "Did this produce a decision-changing,
-  non-derivable fact, or invalidate an entry?" If yes, update it in the same
-  PR. If no, change nothing. This is already the guidance.
-- **Citation-on-use.** When an entry changes a decision, the PR description
-  says so in one line: `Grounding used: <entry> -> chose X over Y`. Its
-  consumers are the retain/simplify decision (plan Phase 4) and E1. It needs
-  no validator and no schema.
-- **At mission close.** Promote durable facts from Campaign or handoff state
-  through D1, and discard the rest.
+- A new arc starts from a gap in a capability that serves a goal.
+- Divergent exploration happens on throwaway branches.
+- The chosen option ships. The rejected options go into a decision record,
+  so later sessions do not try them again.
 
-### D5: Retirement
+### 8.3 `arcs/<id>.yaml`: multi-session feature arcs
 
-At each refresh, entries that current code contradicts are corrected or
-removed. At the Phase 4 decision, entries never cited across the E1 series
-become candidates for removal. Budgets remain hard.
+```yaml
+id: ARC-forge-v2
+goal: "Standing orders handle maintenance without player micromanagement"
+serves: [G1]
+capabilities: [CAP-forge-assistance]
+stages:                # at most 8
+  - {id: S1, outcome: "Domain model and rules", status: done, evidence: "PR #154"}
+  - {id: S2, outcome: "Player-facing configuration", status: next}
+  - {id: S3, outcome: "Balance hooks behind the evidence gate", status: planned}
+open_decisions: ["decisions/0011 (delegated, awaiting confirmation)"]
+exit: ["S1-S3 done", "CAP-forge-assistance is shipped", "check passes"]
+```
 
-### D6: Hygiene, independent of the thesis
+At most three arcs may be active at once. When an arc closes:
 
-- the `validate` CLI fix (B13);
-- the currentness repairs (section 1);
-- byte-verifying the installed Skill before any attribution-sensitive trial.
+1. Its durable lessons are promoted into invariants, capabilities or decision
+   records.
+2. Everything else is discarded, and the file is deleted. Git history keeps
+   it.
 
-## 9. Non-goals
+**Dark Factory boundary.** When Dark Factory runs a mission, its Campaign
+state is canonical and no arc file is created. The arc file is the lean,
+in-repository form for missions started through the Sensemaking front door
+(`docs/dark-factory-autonomy-boundary.md`). It is state stored in the target
+repository, not a runtime controller.
 
-The design adds no ontology runtime, graph store, search index, new provenance
-tag, artifact field, validator, Skill, or CLI command. It adds no plan
-document beyond amendments to the canonical plan. It makes no change to merge,
-release, or deploy authority. Mission state does not become product truth. No
-"Living Repository Intelligence" brand is introduced; the glossary vocabulary
-stays.
+### 8.4 The check
 
-## 10. Guidance budget
+The check is one small script, shipped as a template and run in the target
+repository's CI. It exits non-zero on any failure and supports `--json`,
+unlike the `validate` CLI defect in B13.
 
-D1, D3, and D4 enter `using-sensemaking` section 0 **by replacement**, so the
-net word count is zero or negative. The plan's Phase 4 target (a core of at
-most 1,500 words) stays binding.
+It verifies five things:
 
-## 11. Evaluation
+1. **Shape:** required fields, types and enums in the three YAML files.
+2. **References:**
+   - path globs match files;
+   - `enforced_by` tests and lint configs exist;
+   - `why` links resolve;
+   - capability `components` and `serves` goal IDs exist;
+   - arc capabilities exist.
+3. **Coverage:** every source file under the configured roots maps to exactly
+   one component, or to `unowned_ok`. New code that creates an unmapped area
+   fails the check, which makes this the cheapest drift signal available.
+4. **Budgets:**
+   - at most 15 components;
+   - at most 25 invariants, of which at most 5 are `manual`;
+   - at most 40 capabilities;
+   - at most 3 active arcs;
+   - at most 8 stages per arc.
+5. **Completion:** every `shipped` capability has at least one verifier.
 
-There are four tests, kept separate (B5, B10).
+It does not judge meaning, score anything, or parse imports.
 
-| Test | Question | Design | Gate |
-| --- | --- | --- | --- |
-| **E1 Accumulation** (warm) | Do owner questions and rework fall as decisions accumulate? | Successive **real, authorized** tasks on `React_incremental_game_prototype`, logged in the plan's Phase 3 table plus three columns: delegated decisions made, delegated decisions later reversed, and citations-on-use. Each row also tags the binding constraint. | Target access only. **No manufactured tasks.** |
-| **E2 Paired cold-start** (causal) | Does pack visibility change outcomes? | Same task and base in separate containers, with only pack visibility varied. At least 3 tasks with an applicable recorded decision, plus 1 warranted-decline task. The owner judges blind and pairwise. | A qualified runner (WP-6). Otherwise record **NOT TESTED**. |
-| **E3 Continuation** | Can a fresh context resume? | Trial 002R as specified in #515. | #515 admission. |
-| **E4 Relational** (conditional) | Does a relational map beat decisions-only? | Decisions-only arm against decisions plus a relational-map arm, on a domain where E1 recorded misinterpretation. | At least 2 E1 rows tagged with relationship misinterpretation as the binding constraint. |
+### 8.5 The stewardship loop
 
-**Metrics.**
+Every session follows this loop, whether a person or Dark Factory started it.
 
-- owner questions per task;
-- ratchet misses;
-- **delegated-decision reversal rate** (the autonomy-quality signal);
-- rework commits and CI failures after "done";
-- invariant violations;
-- citations-on-use;
-- pack words;
-- core guidance words.
+1. **Orient.** Run the check. Read the goals and non-goals in `intent.md`,
+   the three YAML files, and the active arc. Together these should stay under
+   about 3,000 words.
+2. **Select.** Take the active arc's next stage. If there is no active arc,
+   open one from a capability gap that serves a goal.
+3. **Build.** Work inside the component boundaries.
+   - If the change needs a different boundary, amend `architecture.yaml` in
+     the same PR, with a decision record.
+   - Removing an invariant moves it to `retired:`, with a reason.
+   - **There is no silent drift:** every architecture change either conforms
+     or is explicitly amended.
+4. **Close.** Update the stage status with evidence. When an arc closes,
+   promote its lessons, delete the arc file, and review the `manual`
+   invariants.
 
-**Unblocking the critical path (B3).**
+### 8.6 What carries over from the earlier synthesis
 
-- **Runner.** Check whether separate cloud coding-agent sessions meet the
-  isolation controls: a fresh container and dependency install, no
-  transcript, a pinned model, and byte-verified Skill copies. This is a
-  checkable fact, not an owner design question.
-- **Target.** E1 needs ordinary successive tasks, not a fresh multi-step
-  mission.
-- **Human evidence.** Use a blind diff preference, which takes minutes, in
-  place of a playtest wherever the claim is about code or product choice
-  rather than player experience.
+- **Admission test for prose.** A decision record or intent line must name
+  the decision it changes, why an agent could not derive it from code, its
+  source, and what would make it stale.
+- **Causal hypotheses with a falsifier.** These now live in capability
+  `gaps`.
+- **Citation-on-use** (optional). When a kernel entry changes a decision, the
+  PR description says so in one line.
+- **Delegated decisions,** now extended to architecture (section 8.7).
 
-## 12. Decision rules (pre-registered)
+### 8.7 Authority
 
-| Condition | Action |
+- **The agent may amend** components, invariants, capabilities and arcs as
+  `[delegated: date]` entries. Every boundary or invariant change needs a
+  decision record.
+- **The owner reviews** kernel diffs in batches, and a typed diff is short to
+  read. Confirming an entry changes its tag to `[owner: date]`.
+- **Protected** (owner only): changing goals or non-goals in `intent.md`;
+  deprecating a shipped capability; merge, release and deploy.
+
+## 9. What the kernel deliberately excludes
+
+- file maps, class taxonomies, and any ontology of relationship types;
+- a graph store or search index;
+- an import parser of its own;
+- new provenance tags;
+- any Sensemaking runtime or scheduler;
+- an arc file when Dark Factory owns the mission;
+- growth beyond the count budgets.
+
+When a budget binds, merge or retire entries. Repeated budget pressure is
+evidence that the format itself is wrong.
+
+## 10. Why typed, and why only this much
+
+`CLAUDE.md` requires every validator rule to trace to a real consumer. Each
+typed field here has two:
+
+- the check, run in CI;
+- the next session's agent, which uses it to find its way.
+
+Fields that neither consumer reads are left out. Typing is what lets the
+check enforce coverage and references. The check, in turn, keeps the kernel
+from rotting the way prose did in this repository.
+
+## 11. Testing over a long horizon
+
+A long-horizon claim needs a long-horizon test, and the evidence in section 4
+cannot provide one.
+
+| Test | Design | Measures |
+| --- | --- | --- |
+| **Session series** (the main test) | One real multi-stage arc in `React_incremental_game_prototype`, run over at least 6 **fresh sessions**. Each session starts from repository state only, with no transcript. | correct next stage chosen on resume; silent drift (boundary changes without an amendment, found by review); retries of rejected options; owner interventions per session; delegated-decision reversal rate; kernel size over time |
+| **Drift probes** (cheap and synthetic, and labeled as such) | 2-3 tasks whose quickest implementation breaks a recorded boundary, each run in fresh sessions with and without the kernel | whether the boundary is respected, explicitly amended, or silently broken |
+
+The session series needs only **sequential** fresh sessions, which any
+harness can provide. It does **not** need the isolated parallel runner that
+blocks the paired comparison (B3). It can therefore run now, given access to
+the target repository and an arc the owner chooses.
+
+**Decision rules**, pre-registered and applied after session 6:
+
+| Result | Action |
 | --- | --- |
-| E1 after at least 5 tasks: owner questions per task not below the first two tasks **and** zero citations-on-use | NO DEMONSTRATED BENEFIT (local). Stop adding grounding content and keep the pack minimal. |
-| Delegated-decision reversal rate above 1/3 | Delegation is outrunning recorded intent. Ask, record intent, and do not widen delegated scope. |
-| Reversal rate at or below 1/3 **and** owner questions per task falling | Supports D3 locally. Keep it and carry it to a second repository. |
-| E2: pack arm preferred or tied with fewer owner questions on at least 2 of 3 tasks, and no more invariant violations | Retain provisionally (one repository, small N). |
-| E2 misses the bar | Simplify, per plan Phase 3 rules. |
-| Any irreversible action justified only by `[hypothesis]` or `[delegated]` | **Material failure.** Pause D3. |
+| Silent drift is 0; correct resume in at least 5 of 6 sessions; owner interventions are not rising | Keep the kernel and extend it to a second repository. |
+| The check is bypassed, or the kernel is stale despite the check | The mechanism is wrong. Revise it before extending. |
+| Budgets bind repeatedly, and owner-essential entries would be lost | The format is wrong. Revise the budgets or the granularity. |
+| Delegated-decision reversal rate is above 1/3 | Delegation is running ahead of recorded intent. Record more intent before widening scope. |
 
-## 13. Work packages
+## 12. Build sequence
 
-Each work package is one small PR.
+Three steps, each of one or two PRs.
 
-| WP | Repo | Change | Depends on |
-| --- | --- | --- | --- |
-| WP-1 | this | `validate` CLI: honest exit codes and JSON, plus malformed-artifact tests | none |
-| WP-2 | this | Currentness: ADR 0030 status amendment, the stale `STATUS.md` bullet, the build-001 contradiction | none |
-| WP-3 | this | Amend `repository-grounding-plan.md` and `using-sensemaking` section 0 with D1-D4 and the E1-E4 split, word-neutral | owner ratification of D3 (ADR 0030 amendment) |
-| WP-4 | target | Copy Essence decision closure: four traps recorded, delegated decisions, scope question queued (the first E1 row) | WP-3, target access |
-| WP-5 | target | E1 series over subsequent real tasks | WP-4 |
-| WP-6 | this | Runner qualification: one throwaway isolation check and a result note | owner approval of spend |
-| WP-7 | target | E2 paired comparison | WP-6, admitted tasks |
-| WP-8 | this | Plan Phase 4 decision (retain, revise, or simplify) and the core-guidance shrink | E1, optionally E2 |
-| WP-9 | target | E4, only if triggered | E1 trigger |
+1. **This repository.**
+   - Add the three YAML templates and the check script to
+     `templates/grounding-pack/`, with tests for exit codes, JSON output and
+     malformed files.
+   - Add the stewardship loop to `using-sensemaking` section 0 **by
+     replacement**, so the word count does not grow.
+   - Fix the `validate` CLI (B13) in a separate PR.
+2. **Target repository: bootstrap.**
+   - Build the kernel from existing authority: `AGENTS.md`, `CLAUDE.md`,
+     `specification/`, and the current pack.
+   - Add one to three native dependency rules for the boundaries that matter
+     most.
+   - Wire the check into CI.
+3. **Target repository: run the series.** Run the session series on the arc
+   the owner chooses, record one table row per session, and decide after
+   session 6.
 
-## 14. Risks
+## 13. Risks
 
 | Risk | Mitigation |
 | --- | --- |
-| Delegated decisions drift into invented intent | Scoped to the delegated objective; reversible only; asynchronous owner review; reversal rate tracked. |
-| Citation-on-use becomes ceremony | One line, only when a decision actually changed. A missing citation is data, not a violation. |
-| E1 trend read as causation | Trend claims are local and observational. Causal claims need E2. |
-| Admission test applied loosely | Phase 4 retirement removes uncited entries, and the budgets bind. |
-| This record becomes another plan pile | It only proposes amendments. WP-3 folds the accepted ones into the canonical plan, and this file stays an analysis record. |
+| The kernel becomes the new documentation pile | Count budgets enforced by the check; arc files deleted on close; prose limited to intent and decisions |
+| Components are drawn too fine and become a file map | At most 15 components, each owning a stated responsibility |
+| Agents amend boundaries too freely | Every amendment needs a decision record; the owner reviews in batches; the reversal rate is tracked |
+| Typed files give false confidence | The check verifies references and coverage, not meaning; meaning is reviewed when each arc closes |
+| Duplicate state with Dark Factory | No arc file when Dark Factory owns the mission |
 
-## 15. Owner decisions requested
+## 14. Owner decisions requested
 
-These three are genuinely the owner's. Everything else here is agent-decidable.
+1. **Ratify the kernel** as an amendment to ADR 0030: three typed files, the
+   check, and count budgets.
+2. **Choose the real arc** in `React_incremental_game_prototype` for the
+   session series.
+3. **Ratify delegated authority** over kernel amendments, including
+   architecture amendments, with batched review.
+4. **Record the stewardship mandate** in `product-strategy.md` as a Level-4
+   revision, if you want it there.
 
-1. **Ratify D3.** May the agent settle reversible, in-scope product questions
-   as `[delegated]` decisions, with asynchronous review? This amends ADR 0030
-   decision 5.
-2. **Approve spend for WP-6** (runner qualification).
-3. **Answer or delegate** the Copy Essence Campaign One scope question.
+## 15. Answer to the owner's question
 
-## 16. Answer to T1's deeper question
+> What is the leanest, most executable mechanism that lets an autonomous
+> agent maintain long-term architectural coherence and explore product
+> improvements across sessions, without documentation bloat?
 
-Sensemaking should make an agent better at *moving a product toward a
-desirable future*. On current evidence, the mechanism is not accumulating
-understanding as such. It is **closing decision gaps at the lowest legitimate
-authority, and remembering the closures**. Understanding is admitted when it
-changes a decision. Autonomy is measured by how rarely the owner has to
-overturn what the agent decided.
+Three small typed files and one check, with everything that can be checked
+pushed down into tests and lint rules:
+
+- **Boundaries and invariants** (`architecture.yaml`), enforced by native
+  tools.
+- **A capability map** tied to goals (`capabilities.yaml`). This is where
+  exploration starts.
+- **Short-lived arc state** (`arcs/`), deleted when each arc closes.
+- **A check** for shape, references, coverage and budgets, run in CI.
+- **One loop rule:** no silent drift. Every boundary change is an explicit,
+  delegated amendment.
+
+Prose is limited to *why* (decision records) and *what for* (intent). The
+agent maintains all of it. The owner reviews typed diffs instead of answering
+questions.
