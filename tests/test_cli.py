@@ -177,3 +177,16 @@ def test_validate_router_execution_failure_is_exit_6(monkeypatch, tmp_path):
     result = CliRunner().invoke(cli, ["validate", "--artifact", str(artifact), "--repo-root", str(root), "--json"])
     assert result.exit_code == 6, result.output
     assert json.loads(result.stdout)["valid"] is False
+
+
+def test_validate_real_known_good_plan_is_valid():
+    root = Path(__file__).resolve().parents[1]
+    artifact = root / "tests" / "fixtures" / "validate-and-report" / "valid" / "dispatches-to-validate-plan.md"
+    result = CliRunner().invoke(
+        cli, ["validate", "--artifact", str(artifact), "--repo-root", str(root), "--json"]
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    assert payload["valid"] is True
+    assert payload["artifact_id"] == "workflow_orchestration_plan"
+    assert payload["errors"] == []
