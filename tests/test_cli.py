@@ -1,5 +1,7 @@
 """CLI integration tests."""
 import importlib.util
+import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -107,3 +109,71 @@ def test_runner_implicit_execution_mode_deprecation_contract(tmp_path):
     module.test_explicit_yolo_execution_is_rejected_without_spawning(tmp_path)
     module.test_explicit_guided_execution_has_no_deprecation_warning(tmp_path)
     module.test_parent_session_path_requests_guided_execution_explicitly(tmp_path)
+
+
+def test_validate_invalid_artifact_uses_real_router_and_contract_exit(tmp_path):
+    artifact = tmp_path / "bad.md"
+    artifact.write_text("# Not a machine-readable Sensemaking artifact\n", encoding="utf-8")
+    root = Path(__file__).resolve().parents[1]
+    result = CliRunner().invoke(
+        cli, ["validate", "--artifact", str(artifact), "--repo-root", str(root), "--json"]
+    )
+    assert result.exit_code == 5, result.output
+    payload = json.loads(result.stdout)
+    assert payload["valid"] is False
+    assert payload["errors"]
+    assert payload["artifact_path"] == str(artifact)
+
+
+def test_validate_missing_artifact_json_is_not_a_success(tmp_path):
+    missing = tmp_path / "missing.md"
+    result = CliRunner().invoke(
+        cli, ["validate", "--artifact", str(missing), "--json"]
+    )
+    assert result.exit_code == 5
+    payload = json.loads(result.stdout)
+    assert payload["valid"] is False
+    assert "does not exist" in payload["errors"][0]["message"]
+
+
+def test_validate_missing_canonical_scripts_is_operational_error(tmp_path):
+    artifact = tmp_path / "artifact.md"
+    artifact.write_text("example", encoding="utf-8")
+    result = CliRunner().invoke(
+        cli, ["validate", "--artifact", str(artifact), "--repo-root", str(tmp_path), "--json"]
+    )
+    assert result.exit_code == 6
+    payload = json.loads(result.stdout)
+    assert payload["valid"] is False
+    assert payload["errors"][0]["error_id"].endswith(".validator.execution_error")
+
+
+def test_validate_routes_valid_canonical_result(monkeypatch, tmp_path):
+    artifact = tmp_path / "artifact.md"
+    artifact.write_text("fixture", encoding="utf-8")
+    payload = {
+        "valid": True, "artifact_id": "repository_sensemaking_brief",
+        "artifact_path": str(artifact), "validator": "validate-brief.py",
+        "errors": [], "validation_timestamp": "2026-10-14T00:00:00Z",
+    }
+    def fake_run(command, **kwargs):
+        assert command[1].endswith("scripts/validate-and-report.py")
+        assert str(artifact) in command
+        return subprocess.CompletedProcess(command, 0, stdout=json.dumps(payload), stderr="")
+    monkeypatch.setattr("sensemaking_skills.cli.subprocess.run", fake_run)
+    root = Path(__file__).resolve().parents[1]
+    result = CliRunner().invoke(cli, ["validate", "--artifact", str(artifact), "--repo-root", str(root), "--json"])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.stdout) == payload
+
+
+def test_validate_router_execution_failure_is_exit_6(monkeypatch, tmp_path):
+    artifact = tmp_path / "artifact.md"
+    artifact.write_text("fixture", encoding="utf-8")
+    root = Path(__file__).resolve().parents[1]
+    def fail_run(*args, **kwargs):
+        return subprocess.CompletedProcess(args[0], 1, stdout="not-json", stderr="validator crashed")
+    monkeypatch.setattr("sensemaking_skills.cli.subprocess.run", fail_run)
+    result = CliRunner().invoke(cli, ["validate", "--artifact", str(artifact), "--repo-root", str(root), "--json"])
+    assert result.exit_code == 6, result.output
+    assert json.loads(result.stdout)["valid"] is False
