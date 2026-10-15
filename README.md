@@ -5,6 +5,8 @@
 
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
+**Owner-selected long-term direction (October 2026):** build a **persistent, typed, queryable semantic memory of software products**—their intent, capabilities, constraints, architecture, decisions, verification and engineering history—operated and improved through specialized Skills over many development episodes. This is an **architectural destination, not a shipped or proven capability**. See [ADR 0031](docs/adr/0031-persistent-semantic-stewardship.md), the [current product strategy](docs/product-strategy.md), and the [detailed development plan](docs/persistent-semantic-stewardship-plan.md). The existing compact Grounding Pack and current control/authority boundaries remain in force during implementation.
+
 **Source version:** 1.0.0rc5.dev0
 **Release target:** 1.0.0rc5 (post-RC4 development target)
 **Historical candidates:** RC1 was qualified at `70542d47412d98ee6dfae5de6df29bf271304568`; RC2 was qualified at `c9b86138d3919c4fce87040f14161364a0c1c3a0`; RC4 is the exact qualified predecessor candidate at `d26521005f7ab6696e050844510ff0e3298f002b` and supplies no qualification to post-RC4 development bytes.

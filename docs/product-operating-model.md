@@ -1,7 +1,7 @@
 # Sensemaking Skills Product Operating Model
 
 **Status:** current operating model  
-**Authority:** product strategy plus ADRs 0013/0029  
+**Authority:** product strategy plus ADRs 0013/0029; ADR 0031 is the owner-selected long-term knowledge direction  
 **Scope:** how value is delivered and who owns each reasoning/control boundary
 
 This is a compact value-stream and responsibility map. The more detailed
@@ -76,6 +76,35 @@ continue / owner decision / defer / stop
 
 This is a recursive loop, not a fixed lifecycle. New evidence may warrant a
 responsibility conventionally considered earlier, later, or sideways.
+
+## Selected long-horizon knowledge loop (ADR 0031)
+
+The bounded control process above is **not** the total product objective.
+The owner selected a persistent semantic stewardship destination:
+versioned, typed, queryable understanding of the product's goals, domain,
+capabilities, architecture, constraints, decisions, source evidence and history.
+
+```text
+accepted product intent + source reality + past reasoning/evidence
+        -> source-bound semantic knowledge and temporal relationships
+        -> selective Skill-guided exploration / architectural evaluation
+        -> useful bounded construction, review and verification
+        -> reconcile new facts, corrections, lessons and supersession
+        -> durable context for a future independent coding agent
+```
+
+The knowledge plane records **what is known, why, by whom, at which revision,
+and with what uncertainty**; the active coding agent remains responsible for
+what to do next. Good tests and reviews provide indispensable evidence but
+are not the ultimate success metric. Durable learning is evidenced when
+**later episodes** correctly reuse or revise earlier product understanding.
+
+This is a **selected architectural direction, not an already implemented
+semantic database**. The existing Grounding Pack remains a compact retrieval
+entry point under ADR 0030. For the planned build, see
+[`persistent-semantic-stewardship-plan.md`](persistent-semantic-stewardship-plan.md).
+No new control level, automatic semantic router, factory executor or merge/
+release authority is created by this revision.
 
 ## Adaptive guidance and rigor
 

@@ -252,7 +252,20 @@ for source inspection or an independent authority grant.
 **No pack is not a blocker.** Read existing `CONTEXT.md`, `AGENTS.md`,
 `CLAUDE.md`, product definitions, code, or tests as needed. Record non-derivable knowledge only when its source, the decision it changes,
 and its staleness condition are clear. A hypothesis names weakening evidence.
-No exhaustive ontology, file map, or mandatory documentation stage.
+No mandatory **upfront** ontology, file map, or documentation stage.
+ADR 0031 nevertheless selects a persistent semantic knowledge plane as
+Sensemaking's long-term product destination; its size is not limited by
+Grounding Pack budgets. A typed index may preserve or reconstruct mechanical
+relations while a compact pack avoids duplicating code.
+
+**Optional semantic knowledge:** if a current source-bound index exists and
+earlier rationale, architectural relationships or contradictory claims could
+change the next decision, retrieve only the needed `semantic knowledge-query`
+result; confirm decisive sources, including their exact revision and limits.
+The index is not a truth oracle or an autonomous authority. Do not block
+ordinary coding because a repository has not yet built an index; when
+consequential reasoning yields a durable non-derivable lesson, place its
+authoritative record in Git and rebuild the index when warranted.
 
 **Question ratchet.** Before asking the owner, inspect applicable intent and
 decision records, ADRs, and owner-authored issues/PRs. Reuse an answer while

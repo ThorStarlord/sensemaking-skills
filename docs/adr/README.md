@@ -61,6 +61,13 @@ disagree, the ADR file is authoritative.
 | [0026](0026-workflow-execution-authority.md) | Execution Authority for `auto_invoke_next_workflow` | Accepted |
 | [0027](0027-workflow-registry-liveness.md) | Workflow Registry Identity vs Liveness | Accepted |
 | [0028](0028-agent-agnostic-product-management-domain.md) | Product Management as an Agent-Agnostic Campaign Domain | Accepted |
-| [0029](0029-current-product-boundary.md) | Current Product Boundary | Accepted (current boundary) |
+| [0029](0029-current-product-boundary.md) | Current Product Boundary | Accepted (current external boundary) |
+| [0030](0030-target-repository-grounding.md) | Target-Repository Grounding Pack | Accepted (compact pack contract) |
+| [0031](0031-persistent-semantic-stewardship.md) | Persistent Semantic Stewardship as Long-Term Product Direction | Accepted (owner-selected destination, not implemented) |
 
-For the current product boundary read ADR 0029, not 0014.
+For the current **external product boundary** read ADR 0029, not 0014.
+For the **owner-selected product destination**, read ADR 0031.
+For the optional **compact target-repository Grounding Pack**, read ADR 0030.
+ADR 0031 extends the product direction without weakening the strict source,
+authority, and currentness distinctions. It does not assert that the semantic
+platform has been implemented or empirically proven.

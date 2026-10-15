@@ -1,11 +1,12 @@
 # Autonomous Terminal Mission — Normal-Use Corroboration Plan
 
-**Status:** active evidence plan / Trial 001 complete / Trial 002+002R target UNPINNED  
+**Status:** active evidence plan / Trial 001 complete / Trial 002 target admitted (#101), first Session A attempt VOID (credits) / Trial 002R NOT RUN  
 **Original date:** 2026-09-25  
-**Current reconciliation:** 2026-10-14  
+**Current reconciliation:** 2026-10-15  
 **Historical dependency:** PR #476 integrated Trial 001 reconciliation  
-**Current baseline:** PRs #512–#514, #520, #531–#534 integrated. The latest verified as-of checkpoint is `main@eedd317824567b24afbf822cf13e22160731034d` (tree `08f54c08ccd92ebe4fcfd69c634b5fccafe2d86f`), with integrated-main Product Validation `38099225312` and Release Candidate Distribution `38099225332` PASS; this is not immutable future `main`. PR #534 altered `using-sensemaking` guidance, so re-pin exact source and verify the **actually installed** Skills at launch. Issue #515 remains TARGET UNPINNED; no independent executor or trial evidence was established by this update.  
-**Later operator observation (2026-10-14 local):** Issue #515 reports a separate working Codex CLI executor and byte-matched local Skill files; a throwaway canary used `MANUAL_EXPLICIT_LOAD` because native discovery is unverified. This is an operator-reported preflight, **not** a Trial 002/002R run. The target remains unpinned. Re-pin source, installed files and executor at actual launch.  
+**Historical baseline (2026-10-10):** PRs #512–#514, #520, #531–#534 integrated. The latest verified as-of checkpoint is `main@eedd317824567b24afbf822cf13e22160731034d` (tree `08f54c08ccd92ebe4fcfd69c634b5fccafe2d86f`), with integrated-main Product Validation `38099225312` and Release Candidate Distribution `38099225332` PASS; this is not immutable future `main`. PR #534 altered `using-sensemaking` guidance, so re-pin exact source and verify the **actually installed** Skills at launch. At that historical checkpoint Issue #515 had no admitted target; this statement is superseded by the 2026-10-15 operator admission.  
+**Later operator observation (2026-10-14 local):** Issue #515 reports a separate working Codex CLI executor and byte-matched local Skill files; a throwaway canary used `MANUAL_EXPLICIT_LOAD` because native discovery is unverified. This is an operator-reported preflight, **not** a Trial 002/002R run. At that preflight point the target was not yet pinned. Re-pin source, installed files and executor at the next funded launch.  
+**2026-10-15 actual operator state (Issue #515):** Chess-Mentor-Engine issue #101 was admitted as the authentic, heterogeneous Trial 002 target. A separate Codex participant Session A was launched, then hit a workspace-credit boundary before a committed responsibility. The attempt is VOID as qualification evidence, Trial 002R is NOT RUN, D4 remains NOT TESTED, and a fresh funded attempt must re-verify exact source/Skill/authority. This is an operator report, not a trial reproduced by this documentation merge.  
 **Governing references:**
 
 - `skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`
@@ -42,11 +43,11 @@ unless the failure branch explicitly reopens construction.
 ~~~text
 old post-#476 freeze                -> historical
 current integrated main candidate  -> Issue #515
-target admission                   -> UNPINNED
+target admission                   -> ADMITTED #101 (post-2026-10-14 operator discovery)
 launch                             -> fresh exact-source/Skill receipt
 ~~~
 
-### Trial 002 target admission — UNPINNED
+### Trial 002 target admission — ADMITTED #101 (first attempt void)
 
 **Authoritative execution tracker:** Issue #515. The previously proposed
 `ThorStarlord/auteur#306` was admissible at its original selection time, but
@@ -56,11 +57,11 @@ Other active Auteur construction/evidence and Metamorfose enrollment work
 already have substantial in-flight PRs; an open issue label by itself does not
 establish a fresh, unclaimed multi-responsibility mission.
 
-**Current trial disposition: TARGET UNPINNED; do not launch.** This is an
-admission result, **not** evidence that these products have no valuable future
-construction opportunity. The prior issue/PR audit established that no
-eligible *already-defined, unused* mission was found. It did not perform
-strategic product-opportunity discovery for every selected repository.
+**Historical 2026-10-14 disposition: TARGET UNPINNED.** The previous issue/PR
+audit did not find an eligible *already-defined, unused* mission. The later
+proactive operator discovery admitted Chess-Mentor-Engine #101 (Issue #515),
+and its first funded Session A attempt stopped at a credit boundary. That
+attempt supplies no D4/Trial 002R completion evidence.
 
 Before repeating an exhaustive backlog audit or concluding that no authentic
 target could exist, the independent operator may conduct **bounded Level-3
@@ -271,7 +272,7 @@ Exit: receipt recorded at `BYTE_VERIFIED` or `SEMANTIC_VERIFIED`.
 
 An authorized owner/evaluator or independently delegated admission reviewer
 must **pin one real product-value target before** launching the clean Trial 002
-participant. Issue #515 currently has **no admitted target**.
+participant. Issue #515 has since admitted Chess-Mentor-Engine #101; this section records the repeatable admission protocol, not a request to invent another target.
 
 **Proactive operator discovery (outside the Trial 002 participant):** When the
 existing backlog offers no unused mission, this does **not** imply that the

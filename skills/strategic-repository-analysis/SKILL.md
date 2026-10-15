@@ -71,6 +71,19 @@ summaries, and unverified hypotheses are not reasons to defer an otherwise
 grounded, authorized improvement. Inspect live code or user-visible behavior
 where the strategic choice depends on it.
 
+### 1B. Optional cross-episode semantic grounding
+
+For architecture-heavy, long-horizon decisions, when the owner-selected
+ADR 0031 knowledge index exists **at the target Git revision**, query relevant
+goals, capabilities, decision history, contradictions and explicit
+relationships before comparing construction paths. See
+`../../docs/semantic-architecture/persistent-knowledge-cli.md`.
+Treat results as source pointers and defeasible claims, not a complete
+option set, normative authority, or evidence that an apparent gap is a
+missing product capability. Inspect underlying artifacts, recognize stale
+revisions, and keep independent divergent exploration possible. Do not
+build a compulsory ontology merely to start this Skill.
+
 ### 1A. Test goal fitness before treating the stated objective as the frontier
 
 A stated objective remains authoritative owner input, but it may be a terminal
