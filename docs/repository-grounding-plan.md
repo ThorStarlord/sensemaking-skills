@@ -16,11 +16,30 @@ The independent construction-enabled Phase 3 comparison has **not**
 run. Do not count pack creation, green CI, or an agent's self-review as
 evidence that it improves product decisions or autonomous completion.
 
-**Operating clarification:** Grounding is gathered **on demand** from
-current code, intent, evidence, and existing source artifacts. Absence of
-a complete pack cannot block an otherwise authorized, locally evidenced
-change. Preserve only new non-derivable knowledge that future decisions
-need. No full ontology, compulsory preflight, or status-producing loop.
+**Operating clarification (Grounding Pack scope):** Grounding is
+gathered **on demand** from current code, intent, evidence, and existing source
+artifacts. Absence of a complete pack cannot block an otherwise authorized,
+locally evidenced change. The *compact pack* retains non-derivable context
+and owner answers rather than duplicating files or implementing an ontology
+inside Markdown. This is **not** a platform-wide ban on structured ontology
+construction after ADR 0031.
+
+**2026-10-15 Level-4 reconciliation — ADR 0031:** The owner subsequently
+selected **persistent semantic stewardship** as Sensemaking's long-term
+product destination. This document remains the narrower, historically
+approved **Grounding Pack rollout and Phase 3 comparison plan**; its completed
+Phase 0–2 state, spot-check waiver and unexecuted Phase 3 are unchanged.
+The Grounding Pack is a compact entry point to authoritative product intent;
+its size and "non-derivable content" rules do **not** limit a future typed,
+queryable and persistent semantic index of goals, capabilities, constraints,
+architecture, source evidence and history. Derived structural facts may be
+indexed/recomputed there without being copied into the pack. Currentness,
+authority and semantic uncertainty must remain explicit.
+
+The broader, newly selected knowledge-platform trajectory is documented in
+[`persistent-semantic-stewardship-plan.md`](persistent-semantic-stewardship-plan.md).
+It should evolve through real software construction and longitudinal learning,
+not reinterpret this phase history as evidence that a complete ontology exists.
 
 ## 1. Goal
 
@@ -35,8 +54,10 @@ over successive tasks.
 
 ## 2. Non-goals
 
-- No repository ontology of code structure (module lists, class taxonomies,
-  file maps). The agent derives these on demand.
+- No **comprehensive repository ontology inside the Grounding Pack** or
+  duplicate Markdown inventory of code structure. Machine-derived structural
+  relations belong in the separately governed semantic knowledge/index
+  system selected by ADR 0031.
 - No new runtime, router, planner, scoring, or evaluation harness.
 - No validator unless a named consumer reads the field it checks (see
   `CLAUDE.md`, "A validator rule must trace to a real consumer").
