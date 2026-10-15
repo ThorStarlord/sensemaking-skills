@@ -1,7 +1,7 @@
 # Sensemaking Skills Product Strategy
 
 **Status:** current product hypothesis and strategic authority  
-**Updated:** 2026-09-11  
+**Updated:** 2026-10-15  
 **Control level:** Level 4 — Product Thesis / Strategy Revision  
 **Scope:** public repository strategy; empirical claims retain the ceilings of their source evidence
 
@@ -25,15 +25,50 @@ The 2026-09-11 Product Boundary Reconciliation v1 is an owner-ratified Level-4
 
 ## 1. Product purpose
 
-Sensemaking Skills exists to improve repository-level decisions when a capable
-coding agent cannot safely determine the correct next engineering
-responsibility from the user's request alone.
+Sensemaking Skills exists to enable **long-term autonomous software
+stewardship** by equipping capable coding agents with persistent, typed,
+queryable, evidence-grounded understanding of a product's purpose, domain,
+architecture, constraints, decisions, verification and engineering history.
+Specialized Skills help agents acquire, challenge, reconcile and apply that
+knowledge while developing software across responsibilities and sessions.
 
-This is the current product hypothesis, not eternal truth. It should change when
-material evidence or explicit owner direction shows that the problem, user, or
-intervention is wrong.
+Selecting the correct next engineering responsibility remains essential, but
+is now an **instrumental capability** inside a longer arc of cumulative
+product understanding and development. This is a selected product direction,
+not a claim that durable semantic memory already improves outcomes.
 
-### Level-4 revision 2026-10-12: target-repository grounding (ADR 0030)
+### Level-4 revision 2026-10-15: persistent semantic stewardship (ADR 0031)
+
+The owner explicitly selected **Path 3 — Persistent Semantic Stewardship
+Platform** as Sensemaking's long-term architectural destination. Continuous
+product-grounded development (Path 2) is the operational loop that uses and
+enriches this knowledge. Lean decision assistance (Path 1) remains a
+low-ceremony mode for tasks that do not need deeper context.
+
+The intended product has two cooperating planes:
+
+- **Persistent semantic knowledge:** goals, capabilities, constraints,
+  dependencies, architectural rationale, source/verification relationships,
+  decisions, contradictions, uncertainties and historical lessons.
+- **Skill-mediated reasoning and construction:** divergent exploration,
+  convergent evaluation, adversarial review, bounded implementation,
+  verification, reconciliation and revision of retained knowledge.
+
+Important semantic relationships may merit typed representation even when
+parts of their underlying code topology can be derived automatically. Build
+the model progressively, distinguish prescriptive/descriptive/epistemic
+knowledge, and preserve exact source/authority/temporal identity. Code review,
+tests and CI remain essential evidence sources, but the overarching product
+outcome is **knowledge that compounds to improve future engineering
+decisions** rather than test or documentation volume.
+
+The accepted decision is [ADR 0031](adr/0031-persistent-semantic-stewardship.md);
+the detailed construction trajectory is
+[persistent semantic stewardship plan](persistent-semantic-stewardship-plan.md).
+ADR 0029's external execution/authority boundary remains controlling.
+The comparative and long-horizon benefits remain **unproven**.
+
+### Historical Level-4 revision 2026-10-12: target-repository grounding (ADR 0030)
 
 The owner-delegated Phase 0 of
 [`repository-grounding-plan.md`](repository-grounding-plan.md) revises the
@@ -43,9 +78,11 @@ invariants and traps, decision records) that a fresh coding agent reads before
 work, and an owner-question ratchet that records each owner answer so it is not
 asked again. The hypothesis is that this improves delegation quality (fewer
 owner questions and less rework) more than additional procedural machinery.
-This revision adds a hypothesis and measures; it does not change the product
-purpose above, the non-goals in section 8, or the ADR 0029 boundary.
-The intended capability is **continuous, autonomous domain grounding**:
+At its adoption this added a grounding hypothesis and measures without
+changing the then-current product purpose, strategic non-goals or ADR 0029.
+ADR 0031 now broadens the **product destination**: the compact Grounding Pack
+is a useful entry point, not a global ontology format or size ceiling.
+The 2026-10-12 intended capability was **continuous, autonomous domain grounding**:
 the agent retrieves only decision-relevant intent and system relationships,
 finds a valuable difference between desired and actual user experience,
 selects and implements a bounded improvement, observes its consequences, and
@@ -64,6 +101,12 @@ The failure mode is often not poor implementation. It is choosing or continuing
 the wrong responsibility: implementing prematurely, solving a local symptom,
 following stale architecture, inventing work, making claims beyond evidence,
 or continuing when the right outcome is to stop or ask the owner.
+
+Across months or many agents, a second failure emerges: the organization loses
+the *why* behind architectural choices, repeats abandoned alternatives,
+misapplies superseded evidence, and fails to reuse earlier lessons. Code and
+tests describe particular implementation and verification states but do not
+reliably preserve product intent, rejected alternatives or historical rationale.
 
 For the primary user, another failure mode is **missing-question risk**: the user
 may not know, remember, or want to enumerate every engineering consideration the
@@ -129,8 +172,10 @@ scaffolding and more visible machinery are not the same thing.
 > responsibility is uncertain, help my coding agent surface relevant
 > considerations, establish sufficient evidence, determine the warranted
 > responsibility, exercise the judgment I delegated within granted authority,
-> execute bounded work when authorized, preserve decision context when the work
-> spans contexts, and stop or escalate when appropriate.
+> execute bounded work when authorized, and preserve a structured, revisable
+> understanding of the product so later agents can reuse, challenge, and improve
+> earlier decisions across many development episodes; stop or escalate when
+> the relevant authority or evidence boundary is reached.
 
 Triggering situations include an unfamiliar repository, ambiguous architecture
 problem, large refactor, modernization effort, uncertain roadmap,
@@ -144,18 +189,17 @@ is warranted; automatic routing is not implied.
 
 ## 5. Value proposition
 
-Sensemaking adds repository-specific decision structure around a capable coding
-agent:
+Sensemaking adds **persistent, queryable product and engineering knowledge**
+plus Skill-mediated reasoning around a capable coding agent:
 
 ```text
-opinionated engineering guidance
-+ evidence discipline
-+ explicit uncertainty
-+ warranted responsibility
-+ authority boundaries
-+ durable state when needed
-+ specialized capabilities
-+ mechanical qualification
+typed product/domain/architecture knowledge
++ evidence-bound provenance and temporal history
++ specialized Skills for exploration, challenge and learning
++ warranted engineering responsibility
++ authority boundaries and uncertainty
++ code/test/runtime verification
++ long-term knowledge reconciliation
 ```
 
 It does not replace agent intelligence. It aims to make repository-level agent
@@ -167,6 +211,8 @@ also come from surfacing a consideration the user did not know to request,
 reducing an avoidable wrong turn, preserving decision context, respecting an
 authority boundary, or reaching justified closure with less user routing.
 Comparative superiority over a capable direct agent remains unestablished.
+A short task-completion comparison cannot alone measure multi-session
+knowledge retention; long-horizon utility must also be observed directly.
 
 ### Evidence ceilings
 
@@ -190,6 +236,19 @@ product-value or comparative experiments are not prerequisites for the current
 outer-loop foundation and require explicit owner direction when resumed.
 
 ## 6. Positioning and boundary
+
+### Selected long-term destination (ADR 0031)
+
+- A persistent, typed, queryable knowledge system for software product intent,
+  capabilities, architecture, constraints, evidence, decisions and history,
+  operated by coding agents through specialized Skills.
+- A cumulative engineering-development loop that improves that knowledge
+  through implementation, verification, experience and correction.
+- Reconstructible semantic understanding that remains contestable and
+  source-grounded across independent agent sessions.
+
+**Architecture selected does not mean implemented.** Current product-facing
+surfaces below form a partial foundation, not a finished semantic platform.
 
 ### Probably is
 
@@ -219,6 +278,9 @@ outer-loop foundation and require explicit owner direction when resumed.
 
 The current external product boundary is ratified by
 [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md).
+ADR 0031 selects a knowledge-and-Skills product destination **within** that
+boundary. It does not grant a deterministic planner, autonomous factory,
+merging, deployment, or new external product authority.
 ADR 0014 remains historical evidence for the narrower July 2026 boundary and
 for experiments/protocols that were explicitly conducted against that earlier
 scope. The broader current boundary does not expand empirical claim ceilings or
@@ -257,6 +319,15 @@ turn every available product surface into mandatory ceremony.
     requiring the user to understand Sensemaking's internal machinery. Experts
     should be able to consume concise evidence/control surfaces without losing
     the same invariants.
+18. **Preserve knowledge that compounds:** authoritative rationale, capability
+    relationships, architectural assumptions and consequential lessons should
+    survive changing code and agent contexts; derived topology should be
+    refreshable rather than copied into a second manual truth.
+19. **Separate intent, observations and inference:** no model, graph edge,
+    test result or extracted symbol silently becomes owner authority.
+20. **Learn by correction as well as retention:** make contradiction,
+    supersession and historical scope queryable; more records are not
+    automatically more knowledge.
 
 ## 8. Strategic non-goals
 
@@ -275,6 +346,11 @@ Reconsider a non-goal only when repository/product evidence shows that its
 absence is decision-changing and a smaller intervention cannot address the
 problem. Major reversal of a strategic non-goal is a Level-4 decision.
 
+The prohibition on a central deterministic semantic router or semantic truth
+oracle does **not** prohibit a substantial, persistent semantic knowledge
+store. Grounding Pack word budgets are local presentation constraints,
+not limits on the selected future typed ontology (ADR 0031).
+
 ## 9. Hypotheses and bets
 
 | Hypothesis | Current status |
@@ -290,6 +366,8 @@ problem. Major reversal of a strategic non-goal is a Level-4 decision.
 | Claim Evidence Register generalizes beyond Clause B | Hypothesis |
 | Sensemaking consistently beats a capable direct-agent baseline | Not established |
 | A target-repository Grounding Pack reduces owner questions and rework versus a direct agent on the same tasks | Not established; Phase 3 of the grounding plan will test it on one repository |
+| A typed semantic model preserves architectural rationale and constraint relationships more reliably across changing implementations and fresh contexts | Selected long-term product hypothesis; not implemented or validated at the intended horizon |
+| Longitudinal semantic knowledge accumulation improves later architectural decisions beyond direct code/history inspection | Not established; requires later-episode evidence, not row counts |
 | A custom execution runtime is required | No evidence |
 | A deterministic strategic planner is required | No evidence |
 
@@ -326,6 +404,19 @@ In addition, measure:
 - rework after the first "done" claim (follow-up commits and CI failures);
 - invariant violations found in review.
 
+For the persistent semantic stewardship direction, measure additionally:
+
+- whether a **later fresh-context agent** correctly retrieves and applies a
+  previously accepted decision or lessons from a different development episode;
+- whether it identifies stale, superseded, conflicting or unsupported knowledge
+  **before consequential action**;
+- whether preserved architectural rationale changes a later selection or
+  reduces repeated rediscovery/rework relative to available alternatives;
+- longitudinal correctness of source-revision/provenance links and the
+  cost of incremental maintenance, rebuilding and targeted retrieval;
+- user-relevant software outcomes across several linked development episodes,
+  not ontology size, test quantity or instantaneous completion speed alone.
+
 Comparative preference remains a product question, not an assumption.
 
 ## 11. Product-level strategic frontier
@@ -334,11 +425,22 @@ This section records product-thesis questions and strategic bets. The current
 repository-development frontier belongs to Level 3 and is projected in
 `STATUS.md`.
 
-The major unresolved product question remains:
+The newly selected long-term strategic question is:
 
-> Does agent-controlled adaptive repository/campaign execution materially
-> improve the primary user's ability to delegate ambiguous repository work
-> without manual task-by-task routing?
+> Can persistent, typed and evidence-grounded product knowledge **compound**
+> across many real engineering episodes so that later coding agents make
+> demonstrably better architectural and product-development decisions,
+> without accumulating stale authority or disproportionate maintenance cost?
+
+The prior unresolved question also remains relevant as an operational
+subproblem: does adaptive agent-controlled repository/campaign execution
+improve delegation without manual task-by-task routing?
+
+Path 3 (persistent semantic stewardship) is the architectural destination;
+Path 2 (continuous product-grounded construction) is its learning/action loop;
+Path 1 (lean decision assistance) remains a proportional default for simple
+work. The construction sequence is in
+[`persistent-semantic-stewardship-plan.md`](persistent-semantic-stewardship-plan.md).
 
 The Persona & Adaptive Guidance Model v0 sharpens that question rather than
 answering it empirically. The primary user is now explicitly interpreted as a
@@ -395,6 +497,11 @@ alternatives, and draft a recommendation. Major changes to product mission,
 primary user, external product boundary, strategic non-goals, or public claim
 ceilings remain owner-reserved unless authority is explicitly delegated.
 
+The 2026-10-15 owner selection uses **REVISE**: the product purpose becomes
+long-term semantic stewardship rather than only immediate repository
+responsibility selection. ADR 0031 preserves ADR 0029's external boundary
+and applies ADR 0030 only to the compact Grounding Pack presentation.
+
 After a ratified Level-4 change, Level 3 must reassess the Strategic Frontier
 rather than blindly continue the previous repository responsibility.
 
@@ -410,6 +517,9 @@ underlying record.
 ## 14. Authority and related documents
 
 - Current product-boundary authority: [ADR 0029](adr/0029-current-product-boundary.md)
+- Owner-selected persistent semantic stewardship: [ADR 0031](adr/0031-persistent-semantic-stewardship.md)
+- Detailed development trajectory: [persistent-semantic-stewardship-plan.md](persistent-semantic-stewardship-plan.md)
+- Compact target-repository Grounding Pack: [ADR 0030](adr/0030-target-repository-grounding.md)
 - Product-boundary reconciliation record: [product-boundary-reconciliation-v1.md](product-boundary-reconciliation-v1.md)
 - Historical July 2026 product boundary: [ADR 0014](adr/0014-product-boundary.md)
 - Persona/adaptive-guidance reinterpretation preflight: [persona-adaptive-guidance-design-preflight.md](persona-adaptive-guidance-design-preflight.md)
