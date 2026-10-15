@@ -190,7 +190,7 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
         for record in data["claims"]:
             claim = read_authored_claim(record, source_ref=f"file:{p}")
             _check_authored_evidence(root, tracked, claim.evidence_refs)
-            references = claim.evidence_refs
+            references = (*claim.evidence_refs, f"file:{p}")
             if claim.authority_kind in {"policy", "code", "test"}:
                 _source(root, tracked, claim.authority_ref)
                 references = (*references, f"file:{claim.authority_ref}")
@@ -205,7 +205,7 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
             edges.append(KnowledgeRelation(
                 **{**relation.__dict__, "attributes": {
                     **relation.attributes,
-                    "source_sha256": _source_hashes(root, tracked, relation.evidence_refs),
+                    "source_sha256": _source_hashes(root, tracked, (*relation.evidence_refs, f"file:{p}")),
                 }}
             ))
     return claims, edges
