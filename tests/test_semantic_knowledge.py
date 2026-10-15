@@ -14,7 +14,7 @@ from sensemaking_skills.semantic_architecture.knowledge import (
     KnowledgeClaim, KnowledgeRelation, KnowledgeSnapshot, validate_snapshot,
 )
 from sensemaking_skills.semantic_architecture.knowledge_sources import build_knowledge_snapshot
-from sensemaking_skills.semantic_architecture.knowledge_store import query_knowledge, store_snapshot
+from sensemaking_skills.semantic_architecture.knowledge_store import audit_knowledge_sources, query_knowledge, store_snapshot
 
 
 def git(root: Path, *args: str) -> str:
@@ -315,3 +315,55 @@ def test_relationship_integrity_rejects_unbound_endpoints(repo):
     )
     with pytest.raises(ValueError, match="endpoint"):
         validate_snapshot(tampered)
+
+
+
+def test_read_only_source_drift_audit_across_two_revisions(repo, tmp_path):
+    root, original_sha = repo
+    db = tmp_path / "knowledge.db"
+    snapshot = build(repo)
+    store_snapshot(db, snapshot, source_root=root)
+    same = audit_knowledge_sources(
+        db, repository=snapshot.repository, indexed_ref=original_sha,
+        current_repo_root=root, current_ref=original_sha,
+    )
+    assert same["source_status_counts"]["source_changed"] == 0
+    assert same["source_status_counts"]["source_missing_or_unsafe"] == 0
+
+    (root / "src/replay.py").write_text("import json\n# new implementation\n", encoding="utf8")
+    current_sha = commit(root, "change replay")
+    found = audit_knowledge_sources(
+        db, repository=snapshot.repository, indexed_ref=original_sha,
+        current_repo_root=root, current_ref=current_sha,
+    )
+    assert found["source_status_counts"]["source_changed"] >= 2
+    assert any(r["id"] == "component:replay" for r in found["affected_records"])
+    assert not found["semantic_truth_established"]
+    assert not found["action_authorized"]
+
+    (root / "src/replay.py").unlink()
+    newest = commit(root, "remove replay module")
+    missing = audit_knowledge_sources(
+        db, repository=snapshot.repository, indexed_ref=original_sha,
+        current_repo_root=root, current_ref=newest,
+    )
+    assert missing["source_status_counts"]["source_missing_or_unsafe"] >= 2
+    assert any(r["id"] == "component:replay" and "src/replay.py" in r["missing_or_unsafe_sources"]
+               for r in missing["affected_records"])
+
+
+def test_cli_source_audit_after_new_commit(repo, tmp_path):
+    root, previous = repo
+    db = tmp_path / "index.db"
+    store_snapshot(db, build(repo), source_root=root)
+    (root / "src/replay.py").write_text("import json\n# now different\n", encoding="utf-8")
+    current = commit(root, "change evidence")
+    r = CliRunner().invoke(cli, [
+        "semantic", "knowledge-audit", "--db", str(db),
+        "--repo", str(root), "--repository", "example/product",
+        "--indexed-ref", previous, "--current-ref", current, "--json",
+    ])
+    assert r.exit_code == 0, r.output
+    payload = json.loads(r.output)
+    assert payload["code"] == "SEMANTIC_KNOWLEDGE_SOURCE_AUDIT"
+    assert payload["source_status_counts"]["source_changed"] > 0
