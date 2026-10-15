@@ -24,6 +24,7 @@ from .semantic_architecture import (
     to_dict,
     validate_conformance,
 )
+from .semantic_architecture.impact import build_impact_preview
 from .semantic_architecture.knowledge_sources import build_knowledge_snapshot
 from .semantic_architecture.knowledge_store import audit_knowledge_sources, query_knowledge, store_snapshot
 
@@ -152,6 +153,39 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_SOURCE_AUDIT"
+        _emit(payload, output_json=output_json)
+
+    @semantic_group.command(name="impact-preview")
+    @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--target-ref", required=True, help="Full SHA of checked-out clean Git HEAD")
+    @click.option("--subject", required=True, help="Explicit literal change subject")
+    @click.option("--related-term", "related_terms", multiple=True, help="Additional caller-selected literal term")
+    @click.option("--include-glob", "include_globs", multiple=True, default=("*",), help="Explicit source scope glob")
+    @click.option("--max-matches", type=click.IntRange(1, 2000), default=100, show_default=True)
+    @click.option("--output", type=click.Path(path_type=Path), default=None)
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_impact_preview(
+        repo_root: Path,
+        target_ref: str,
+        subject: str,
+        related_terms: tuple[str, ...],
+        include_globs: tuple[str, ...],
+        max_matches: int,
+        output: Path | None,
+        output_json: bool,
+    ) -> None:
+        """Preview Grounding Pack claims and candidate source mentions, never infer impacts."""
+        try:
+            result = build_impact_preview(
+                repo_root, target_ref=target_ref, subject=subject,
+                related_terms=related_terms, include_globs=include_globs,
+                max_matches=max_matches,
+            )
+        except (ValueError, OSError, UnicodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = to_dict(result)
+        payload["code"] = "SEMANTIC_IMPACT_PREVIEW"
+        _write_payload(output, payload)
         _emit(payload, output_json=output_json)
 
     @semantic_group.command(name="probe")
