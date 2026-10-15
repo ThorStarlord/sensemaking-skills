@@ -94,12 +94,14 @@ placeholder, it validates file contents and returns exit code 5 on invalid
 artifacts, 6 when canonical validators are unavailable or fail, and 0 on a
 valid result. `--json` emits the router's single structured result object.
 
-Run from a Sensemaking source checkout, or provide `--repo-root` pointing
-to that checkout. The wheel contains the CLI, but does **not** independently
-bundle every operator script and the associated repository-local validator
-contracts. Running the installed CLI outside a checkout without
-`--repo-root` therefore fails **closed** with exit code 6 rather than
-claiming the artifact is valid.
+By default, the command uses the **existing** canonical validator runtime
+already bundled in installed wheels for `campaign ingest`. In an editable
+checkout it uses that checkout's canonical `scripts/` directory. An explicit
+`--repo-root` overrides this resolution with the provided framework checkout.
+No arbitrary current-working-directory search is performed. Missing or
+untrusted validator runtime files fail **closed** with exit code 6; they never
+produce false validation success. This does not add a second validator
+implementation or change artifact semantics.
 
 ## Exit codes and JSON
 

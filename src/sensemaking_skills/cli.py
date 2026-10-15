@@ -283,7 +283,7 @@ def _emit_artifact_result(payload: dict[str, Any], *, output_json: bool, exit_co
 )
 @click.option(
     "--repo-root", type=click.Path(file_okay=False, path_type=Path), default=None,
-    help="Sensemaking source checkout containing the canonical scripts/ validators",
+    help="Optional canonical validator checkout override (default: installed runtime)",
 )
 @click.option(
     "--target-repo", type=click.Path(file_okay=False, path_type=Path), default=None,
@@ -292,8 +292,10 @@ def _emit_artifact_result(payload: dict[str, Any], *, output_json: bool, exit_co
 def validate(artifact: Path, output_json: bool, repo_root: Path | None, target_repo: Path | None) -> None:
     """Validate an artifact through the canonical source validators.
 
-    Source checkouts resolve scripts/ automatically. Installed-wheel callers
-    outside a checkout supply --repo-root. Missing validators fail closed (6).
+    Resolve the canonical source-checkout or installed-wheel validator runtime
+    through the existing Campaign artifact-admission resolver. An explicit
+    --repo-root overrides that runtime for development; missing validators fail
+    closed with exit code 6.
     """
     artifact_path = artifact.resolve()
     if not artifact_path.is_file():
@@ -304,27 +306,22 @@ def validate(artifact: Path, output_json: bool, repo_root: Path | None, target_r
         _emit_artifact_result(payload, output_json=output_json, exit_code=ARTIFACT_INVALID_EXIT)
         return
 
-    candidates = (
-        [repo_root.resolve()] if repo_root is not None
-        else [Path.cwd().resolve(), Path(__file__).resolve().parents[2]]
-    )
-    validator_root = next(
-        (candidate for candidate in candidates
-         if (candidate / "scripts" / "validate-and-report.py").is_file()),
-        None,
-    )
-    if validator_root is None:
+    try:
+        # Campaign ingest already resolves the build-derived installed runtime
+        # and the exact editable-checkout fallback. Reuse its physical-root
+        # validation rather than searching cwd or shipping a second validator.
+        validator_root, validator_script = ArtifactAdmissionService._require_framework_root(
+            repo_root
+        )
+    except ArtifactValidatorError as exc:
         payload = _artifact_result_error(
-            artifact_path,
-            "Canonical validator scripts are unavailable. "
-            "Run from a Sensemaking source checkout or provide --repo-root.",
-            validator_error=True,
+            artifact_path, str(exc), validator_error=True,
         )
         _emit_artifact_result(payload, output_json=output_json, exit_code=ARTIFACT_VALIDATOR_EXIT)
         return
 
     command = [
-        sys.executable, str(validator_root / "scripts" / "validate-and-report.py"),
+        sys.executable, str(validator_script),
         str(artifact_path), "--repo-root", str(validator_root),
     ]
     if target_repo is not None:

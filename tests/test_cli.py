@@ -190,3 +190,33 @@ def test_validate_real_known_good_plan_is_valid():
     assert payload["valid"] is True
     assert payload["artifact_id"] == "workflow_orchestration_plan"
     assert payload["errors"] == []
+
+
+def test_validate_default_root_reuses_campaign_validator_resolver(monkeypatch, tmp_path):
+    """Top-level validation shares the shipped Campaign validator runtime."""
+    artifact = tmp_path / "artifact.md"
+    artifact.write_text("fixture", encoding="utf-8")
+    expected_root = Path(__file__).resolve().parents[1]
+    payload = {
+        "valid": True, "artifact_id": "repository_sensemaking_brief",
+        "artifact_path": str(artifact), "validator": "validate-brief.py",
+        "errors": [], "validation_timestamp": "2026-10-14T00:00:00Z",
+    }
+
+    def fake_root(requested):
+        assert requested is None
+        return expected_root, expected_root / "scripts" / "validate-and-report.py"
+
+    def fake_run(command, **kwargs):
+        assert command[1] == str(expected_root / "scripts" / "validate-and-report.py")
+        assert kwargs["cwd"] == expected_root
+        return subprocess.CompletedProcess(command, 0, stdout=json.dumps(payload), stderr="")
+
+    monkeypatch.setattr(
+        "sensemaking_skills.cli.ArtifactAdmissionService._require_framework_root",
+        fake_root,
+    )
+    monkeypatch.setattr("sensemaking_skills.cli.subprocess.run", fake_run)
+    result = CliRunner().invoke(cli, ["validate", "--artifact", str(artifact), "--json"])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.stdout) == payload
