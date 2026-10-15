@@ -73,7 +73,7 @@ def repo(tmp_path: Path) -> tuple[Path, str]:
         (root / part).mkdir(parents=True, exist_ok=True)
     (root / "docs/adr/0031-stewardship.md").write_text(
         "# ADR 0031: Durable stewardship\n\n**Status**: ACCEPTED - owner selected\n"
-        "\nChoice: keep intent separate from implementation.\n", encoding="utf-8"
+        "\n## Decision\nChoice: keep intent separate from implementation.\n", encoding="utf-8"
     )
     (root / "src/replay.py").write_text("import json\n# event revision ordering\n", encoding="utf-8")
     (root / ".sensemaking/intent.md").write_text(
@@ -102,7 +102,10 @@ def test_semantic_claims_and_boundaries(repo):
     validate_snapshot(snap)
     ids = {c.id for c in snap.claims}
     assert {"goal:continuity", "cap:replay", "adr:0031", "inv:ordering"} <= ids
-    assert "observed" == next(c.epistemic_status for c in snap.claims if c.id == "adr:0031")
+    adr = next(c for c in snap.claims if c.id == "adr:0031")
+    assert adr.epistemic_status == "observed"
+    assert "keep intent separate" in adr.attributes["verbatim_sections"]["decision"]
+    assert adr.attributes["authority_verified"] is False
     owner = next(c for c in snap.claims if c.authority_kind == "owner")
     assert owner.attributes["authority_verified"] is False
     cited_missing = [c for c in snap.claims if c.attributes.get("cited_source_present") is False]
