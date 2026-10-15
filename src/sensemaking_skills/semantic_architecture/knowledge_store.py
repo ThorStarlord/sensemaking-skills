@@ -7,6 +7,7 @@ Queries expose only explicit edges and preserve uncertainty and history.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
 from pathlib import Path
@@ -254,5 +255,81 @@ def query_knowledge(
         }
         envelope.update(extra)
         return envelope
+    finally:
+        conn.close()
+
+
+
+def audit_knowledge_sources(
+    db_path: str | Path, *,
+    repository: str, indexed_ref: str,
+    current_repo_root: str | Path, current_ref: str,
+    limit: int = 100,
+) -> dict:
+    """Report source-byte drift between an indexed past revision and clean HEAD.
+
+    A changed byte means evidence should be re-examined; unchanged bytes do
+    NOT establish that the asserted policy or architecture remains applicable.
+    """
+    from .knowledge_sources import _source, verified_tracked_sources
+
+    if not 1 <= limit <= 500:
+        raise ValueError("audit limit must be between 1 and 500")
+    root, tracked = verified_tracked_sources(current_repo_root, current_ref)
+    conn = _read_only(db_path)
+    try:
+        _snapshot(conn, repository, indexed_ref)
+        key = (repository, indexed_ref)
+        records = [
+            ("claim", c) for c in _read_claims(conn, key).values()
+        ] + [
+            ("relation", r) for r in _read_relations(conn, key)
+        ]
+        digests: dict[str, str | None] = {}
+        results = []
+        totals = {"unchanged_source_bytes": 0, "source_changed": 0,
+                  "source_missing_or_unsafe": 0, "not_assessed": 0}
+        for kind, item in records:
+            expected = item.get("attributes", {}).get("source_sha256", {})
+            if not isinstance(expected, dict) or not expected:
+                status = "not_assessed"
+                changed: list[str] = []
+                missing: list[str] = []
+            else:
+                changed, missing = [], []
+                for path, previous_hash in sorted(expected.items()):
+                    if path not in digests:
+                        try:
+                            digests[path] = hashlib.sha256(_source(root, tracked, path).read_bytes()).hexdigest()
+                        except (ValueError, OSError):
+                            digests[path] = None
+                    actual = digests[path]
+                    if actual is None:
+                        missing.append(path)
+                    elif actual != previous_hash:
+                        changed.append(path)
+                status = (
+                    "source_missing_or_unsafe" if missing else
+                    "source_changed" if changed else "unchanged_source_bytes"
+                )
+            totals[status] += 1
+            if status != "unchanged_source_bytes":
+                results.append({
+                    "record_type": kind, "id": item["id"], "source_status": status,
+                    "changed_sources": changed, "missing_or_unsafe_sources": missing,
+                })
+        return {
+            "repository": repository, "indexed_ref": indexed_ref,
+            "current_ref": current_ref, "record_count": len(records),
+            "source_status_counts": totals,
+            "affected_records": results[:limit],
+            "truncated": len(results) > limit,
+            "explicit_limits": [
+                "This compares cited SOURCE BYTES, not semantic validity or Git ancestry.",
+                "Unchanged files may contain stale interpretations; unindexed sources are NOT ASSESSED.",
+                "Changed source evidence requires inspection, not automatic invalidation.",
+            ],
+            "semantic_truth_established": False, "action_authorized": False,
+        }
     finally:
         conn.close()
