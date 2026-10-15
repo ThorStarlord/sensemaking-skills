@@ -7,6 +7,7 @@ We never synthesize owner intent, semantic dependencies or test guarantees.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import subprocess
@@ -91,6 +92,17 @@ def _check_authored_evidence(root: Path, tracked: set[str], refs: tuple[str, ...
             _source(root, tracked, path)
 
 
+def _source_hashes(root: Path, tracked: set[str], refs: tuple[str, ...]) -> dict[str, str]:
+    """Hash supported, tracked evidence so a changed cited file is visible in a later snapshot."""
+    hashes: dict[str, str] = {}
+    for ref in refs:
+        local = _local_evidence_path(ref)
+        if local is not None:
+            data = _source(root, tracked, local).read_bytes()
+            hashes[local] = hashlib.sha256(data).hexdigest()
+    return dict(sorted(hashes.items()))
+
+
 def _grounding_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
     paths = [* _GROUNDING, *(p for p in sorted(tracked) if p.startswith(".sensemaking/decisions/") and p.endswith(".md"))]
     found: list[KnowledgeClaim] = []
@@ -117,6 +129,9 @@ def _grounding_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
                     present = True
                 except ValueError:
                     present = False
+            hashes = _source_hashes(root, tracked, (source_ref,))
+            if present is True and referenced:
+                hashes.update(_source_hashes(root, tracked, (f"file:{referenced}",)))
             found.append(KnowledgeClaim(
                 id=stable_id("pack", path, str(line_num), statement, authority),
                 kind=kind, statement=statement,
@@ -124,7 +139,8 @@ def _grounding_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
                 authority_kind=authority, authority_ref=authority_ref,
                 source_ref=source_ref, evidence_refs=(source_ref,),
                 attributes={"cited_source_present": present, "authority_verified": False,
-                            "scope": "tagged Grounding Pack statement"},
+                            "scope": "tagged Grounding Pack statement",
+                            "source_sha256": hashes},
             ))
     return found
 
@@ -152,6 +168,7 @@ def _adr_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
             authority_kind="document", authority_ref=p,
             source_ref=source_ref, evidence_refs=(source_ref,),
             attributes={"declared_adr_status": state, "authority_verified": False,
+                        "source_sha256": _source_hashes(root, tracked, (source_ref,)),
                         "scope": "ADR title and declared status; read source for rationale"},
         ))
     return result
@@ -173,13 +190,24 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
         for record in data["claims"]:
             claim = read_authored_claim(record, source_ref=f"file:{p}")
             _check_authored_evidence(root, tracked, claim.evidence_refs)
+            references = claim.evidence_refs
             if claim.authority_kind in {"policy", "code", "test"}:
                 _source(root, tracked, claim.authority_ref)
-            claims.append(claim)
+                references = (*references, f"file:{claim.authority_ref}")
+            claims.append(KnowledgeClaim(
+                **{**claim.__dict__, "attributes": {
+                    **claim.attributes, "source_sha256": _source_hashes(root, tracked, references),
+                }}
+            ))
         for record in data["relations"]:
             relation = read_authored_relation(record, source_ref=f"file:{p}")
             _check_authored_evidence(root, tracked, relation.evidence_refs)
-            edges.append(relation)
+            edges.append(KnowledgeRelation(
+                **{**relation.__dict__, "attributes": {
+                    **relation.attributes,
+                    "source_sha256": _source_hashes(root, tracked, relation.evidence_refs),
+                }}
+            ))
     return claims, edges
 
 
