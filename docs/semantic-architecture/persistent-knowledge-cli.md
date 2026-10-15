@@ -47,7 +47,19 @@ From a CLEAN target Git checkout, store the SQLite index outside the checkout:
       --target-ref "$REF" --operation impact \
       --subject "cap:semantic-queries" --depth 2 --json
 
-Other operations: snapshot, search, contradictions, history and changes. Changes also requires --base-ref with a *previously indexed* revision. The import-syntax option is --include-python-imports with --max-imports cap.
+Other operations: snapshot, search, contradictions, history and changes.
+Changes also requires --base-ref with a *previously indexed* revision.
+The import-syntax option is --include-python-imports with --max-imports cap.
+
+To inspect whether the **original source evidence** has drifted since an
+indexed revision, while standing in a newer clean target checkout:
+
+    sensemaking-skills semantic knowledge-audit       --db /tmp/semantic-knowledge.sqlite       --repo . --repository "ThorStarlord/sensemaking-skills"       --indexed-ref "$OLD_SHA" --current-ref "$(git rev-parse HEAD)" --json
+
+This audit distinguishes unchanged source bytes, changed evidence sources,
+missing/unsafe sources, and unassessed fingerprints. A change is a reason to
+inspect the evidence, **not automatic revocation of its original authority**.
+The command does not update SQLite or mutate the checkout.
 
 ## Authored source example
 
