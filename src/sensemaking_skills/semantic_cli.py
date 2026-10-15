@@ -25,7 +25,7 @@ from .semantic_architecture import (
     validate_conformance,
 )
 from .semantic_architecture.knowledge_sources import build_knowledge_snapshot
-from .semantic_architecture.knowledge_store import query_knowledge, store_snapshot
+from .semantic_architecture.knowledge_store import audit_knowledge_sources, query_knowledge, store_snapshot
 
 
 def _emit(payload: dict[str, Any], *, output_json: bool) -> None:
@@ -129,6 +129,29 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
+        _emit(payload, output_json=output_json)
+
+    @semantic_group.command(name="knowledge-audit")
+    @click.option("--db", "db_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
+    @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--repository", "repository_id", required=True)
+    @click.option("--indexed-ref", required=True, help="Historical snapshot already in SQLite")
+    @click.option("--current-ref", required=True, help="Exact clean Git HEAD currently checked out")
+    @click.option("--limit", type=click.IntRange(1, 500), default=100)
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_knowledge_audit(
+        db_path: Path, repo_root: Path, repository_id: str,
+        indexed_ref: str, current_ref: str, limit: int, output_json: bool,
+    ) -> None:
+        """Audit source drift without deciding whether historical claims remain valid."""
+        try:
+            payload = audit_knowledge_sources(
+                db_path, repository=repository_id, indexed_ref=indexed_ref,
+                current_repo_root=repo_root, current_ref=current_ref, limit=limit,
+            )
+        except (ValueError, OSError, UnicodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload["code"] = "SEMANTIC_KNOWLEDGE_SOURCE_AUDIT"
         _emit(payload, output_json=output_json)
 
     @semantic_group.command(name="probe")
