@@ -44,7 +44,8 @@ Release scope and support claims: `docs/release-v1.0-contract.md`.
 
 ### Current product strategy
 
-- **Level-4 authority:** `docs/product-strategy.md` and owner-selected ADR 0031 for persistent semantic stewardship; ADR 0029 remains the external boundary, ADR 0030 governs only compact Grounding Packs.
+- **Level-4 authority:** `docs/product-strategy.md`.
+- **Level-4 selected knowledge-platform direction:** ADR 0031 governs persistent semantic stewardship; ADR 0029 remains the external product boundary; ADR 0030 governs compact Grounding Packs.
 - **Control model:** `docs/strategic-outer-loop.md`.
 - **Level-3 contract:** `docs/strategic-state-contract.md`.
 - **Level-4 revision contract:** `docs/product-thesis-revision.md`.
