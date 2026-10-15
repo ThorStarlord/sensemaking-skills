@@ -45,7 +45,7 @@ convert the failed sample into a pass.
 | Spot-check failure rate under 10% on a random sample of 10 | Not met (not sampled; 3 errors found in about a dozen checked citations) |
 | Result note written | Met (this note) |
 
-**Phase 2 status: COMPLETE by owner directive (2026-10-12).** The pack exists and the mechanical checks pass. It can't be called complete until the owner reviews it and a random spot-check is done.
+**Phase 2 final disposition (2026-10-12): COMPLETE BY OWNER DIRECTIVE WITH WAIVER; quality threshold NOT PASSED.** The table above is a pre-waiver snapshot. The later owner-approved `intent.md`, accepted citation corrections, and merge of target PR #166 close Phase 2 administratively; the fresh spot-check needed correction on 20% of sampled lines versus a 10% ceiling. This acceptance must not be relabeled as a validation pass or comparative Grounding Pack effectiveness.
 
 ## Notes for Phase 3
 

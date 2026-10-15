@@ -41,6 +41,24 @@ State exactly what is changing/changed and what authority exists.
 Inspect only evidence capable of changing implementation, verification,
 reconciliation, closure, or authority.
 
+### 2A. Optional persistent-knowledge consultation (ADR 0031)
+
+When a **current, exact-revision** semantic knowledge index already exists and
+cross-episode architectural rationale might change the impact decision, use
+`semantic knowledge-query --operation impact --subject <claim-id>` to retrieve
+explicit edges, governing intent, historical decisions and evidence pointers.
+Use `why` on an exact decision ID and `contradictions` when competing
+claims may matter. See
+`../../docs/semantic-architecture/persistent-knowledge-cli.md`.
+
+**Recheck actual cited source.** Indexed edge `depends_on` is an
+attributed source claim, not automatically an architectural dependency;
+impact paths are *candidates*, not proof of downstream consequences.
+Missing links mean NOT ASSESSED, not absence. If no suitable current index
+exists, inspect code/ADRs/tests directly without creating an ontology
+preflight. The knowledge store cannot select a responsibility or authorize
+a merge, release or cross-repo action.
+
 ### 3. Identify affected surfaces
 
 Use categories:

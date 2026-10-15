@@ -18,8 +18,8 @@ Files and hard budgets:
 
 Rules:
 
-- **Provenance.** Every factual line carries exactly one primary tag: `[policy: path]` (authority document), `[code: path]` (source file), `[test: path]`, `[owner: YYYY-MM-DD]` (owner intent), `[delegated: YYYY-MM-DD]` (agent choice under delegation), or `[hypothesis]` (agent inference). Supporting sources go in a Markdown link, not a second tag. A `[hypothesis]` never justifies an action alone.
-- **Inclusion.** Write a line only if an agent could not recover it from the code in a few minutes. If a rule can be enforced by a test, type, or lint, write that and cite it.
+- **Provenance.** Every factual line carries exactly one primary tag: `[policy: path]` (authority document), `[code: path]` (source file), `[test: path]`, `[owner: YYYY-MM-DD]` (owner intent), `[delegated: YYYY-MM-DD]` (agent choice under delegation), or `[hypothesis]` (agent inference). Supporting sources go in a Markdown link, not a second tag. A `[hypothesis]` must name an observation that would weaken it; it never justifies consequential action alone.
+- **Decision-first admission.** Before recording a line, name the future decision it could change, why code cannot supply it cheaply, its evidence/authority source, and what would make it stale or false. Otherwise omit it. Put enforceable rules in tests, types, or lints and cite them rather than restating them.
 - **Budgets are hard.** Over budget: cut or merge lines. Do not add files.
 - **Ratchet.** Before asking the owner, check `intent.md` and `decisions/`. Reuse a recorded answer while it still applies to the current scope. Ask again only if the scope changed, the decision was superseded, or new evidence materially challenges it. Record each answer with its date in the same change.
 - **Staleness.** A change that alters behavior covered by a line updates that line in the same change. Verify the **content** of a consequential cited claim; a file existing does not establish that the claim is correct. Markdown links resolve relative to `.sensemaking/` (e.g. `../specification/...`), whereas provenance tags describe paths relative to the repository root.

@@ -4,11 +4,29 @@
 **Scope:** Repository reasoning, evidence semantics, work/product semantics, bounded mechanical observations, cross-Skill provenance, conformance, Campaign observability, reference audit, and portability  
 **Semantic authority:** The active agent/human owns interpretation and warrant; executable semantic machinery implements only documented mechanical subsets
 
+## ADR 0031 evolution: persistent product knowledge
+
+On 2026-10-15 the owner selected **persistent semantic stewardship** as
+Sensemaking's long-term architectural destination. Earlier B1-B7 design
+constraints governed a bounded mechanical substrate; they were not a
+permanent prohibition against a durable, typed and queryable software
+knowledge model. The model must still preserve epistemic/authority
+boundaries and avoid claiming comprehensive repository truth.
+
+The first implementation slice extends the existing semantic package with
+source-pinned typed claims and relations, Git-reviewed authored knowledge,
+a local rebuildable SQLite index, and source-linked historical queries.
+The guide is [persistent-knowledge-cli.md](persistent-knowledge-cli.md).
+Correctness of this first slice does **not** establish improved
+cross-session reasoning or architectural decisions. Skills remain
+responsible for reasoning; active agents own judgment and protected
+actions remain externally authorized.
+
 ## Purpose
 
 Sensemaking needs a shared semantic model so different Skills can reason about repositories with consistent meanings for repository structure, evidence, claims, uncertainty, responsibility, capability, authority, change, and validation.
 
-The goal is not an ontology of every software concept. It is the **minimal-but-sufficient semantic architecture needed to reason reliably about an unfamiliar repository, preserve provenance, and state the limits of what has actually been established**.
+The bounded earlier substrate focused on a **minimal-but-sufficient semantic architecture** to preserve provenance and state what had actually been established. ADR 0031 selects a richer long-horizon typed knowledge model for products and their development history, built incrementally from real sources. This is not a universal ontology of every possible software concept or an automated semantic truth oracle.
 
 ## Canonical hierarchy
 
@@ -335,7 +353,8 @@ real-agent product value empirically established
 This architecture does **not** authorize:
 
 - a universal ontology of all software engineering;
-- a complete repository knowledge graph;
+- a graph presumed **complete or authoritative solely because it was indexed**;
+- compulsory full-repository knowledge extraction before every local edit;
 - a universal semantic-reference namespace or registry;
 - automatic semantic routing;
 - automatic architecture judgment;

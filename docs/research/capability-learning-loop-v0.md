@@ -478,6 +478,14 @@ owner acceptance
 != empirical generalization
 ```
 
+### Dated normal-use case: Dark Factory Organic #83 (2026-10-14)
+
+The [Attempt 15 process/autonomy observation](../normal-use/dark-factory-organic-083-process-autonomy-2026-10-14.md) records a real repository episode: valuable implementation, A1/A2 runtime evidence and work identity survived multiple executor failures, while the read-only reconciliation provider repeatedly rejected requests and the Campaign stopped without an admitted qualification or integration.
+
+The episode distinguishes task competence, mission-level continuation and full end-to-end outcome autonomy; **retry eligibility is not retry value**, and an input-file digest is not proof of outbound HTTP-request identity. The postmortem names the transport root cause **UNKNOWN** rather than assigning blame to an agent or provider without evidence.
+
+This **corroborates existing** Learning/Reconciliation, protected-authority and blocked-gate continuation guidance; it does not by itself qualify a new universal Skill rule, evaluator, runtime or model-transport theory. Causal attribution to the installed Sensemaking Skill revision was not established. Further doctrine changes require independent normal-use comparison and counterevidence.
+
 ## 12. Explicit non-goals
 
 Capability Learning Loop v0 does not authorize or introduce:

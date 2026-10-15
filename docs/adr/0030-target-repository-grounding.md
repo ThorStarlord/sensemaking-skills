@@ -37,4 +37,22 @@ Major reversals of this ADR remain Level-4 decisions.
 
 - **Provenance (replaces decision 2 above).** Each factual line carries exactly one primary tag: `[policy: path]` (authority document), `[code: path]` (source file), `[test: path]`, `[owner: date]` (owner intent), `[delegated: date]` (agent choice under owner delegation), or `[hypothesis]` (agent inference). Supporting sources use an ordinary Markdown link, not a second tag.
 - **Question ratchet (replaces decision 5).** Reuse a recorded answer while it still applies to the current scope. Ask again only if the scope changed, the decision was superseded, or new evidence materially challenges it.
-- **Status.** The pack exists on PR #166 (target repo) but is not merged. Owner review has not happened. Phase 2 is partially complete; see `docs/normal-use/grounding-pack-build-001.md`. The earlier "blocked by access" note is superseded: access was granted and the pack was built.
+- **Status correction (2026-10-14; supersedes the earlier Phase 2 snapshot).** The first target Grounding Pack was merged via `ThorStarlord/React_incremental_game_prototype` PR #166 on 2026-10-12. The owner approved `intent.md` and accepted the corrected citations with a **spot-check waiver**, not a passing quality sample: 20% of the fresh 10-line check needed correction against the planned 10% ceiling. Phase 2 is complete by owner directive; comparative Phase 3 remains unexecuted. See `docs/normal-use/grounding-pack-build-001.md`. The earlier "blocked by access" note is historical.
+
+## 2026-10-15 Level-4 scope clarification (ADR 0031)
+
+The owner subsequently selected **persistent semantic stewardship** as the
+long-term product direction in [ADR 0031](0031-persistent-semantic-stewardship.md).
+This ADR stays **ACCEPTED** for the compact, human-/agent-readable Grounding
+Pack, including its provenance rules, small-file budgets, and owner-question
+ratchet. The budgets and the "non-derivable only" rule were never a sound
+global limit on what a distinct typed, queryable semantic knowledge/index
+system may represent. Such a system may index automatically derivable
+architecture and implementation relationships while retaining source
+authority and exact revision identity. The accepted product destination,
+its staged implementation and its still-unproven long-term effect are
+documented in ADR 0031 and
+[`persistent-semantic-stewardship-plan.md`](../persistent-semantic-stewardship-plan.md).
+
+This clarification does not retroactively change the Phase 2 spot-check
+waiver or fabricate the still-unexecuted Grounding Pack Phase 3 comparison.

@@ -2,7 +2,15 @@
 
 ## Current product definition
 
-Sensemaking Skills is an **agent-native engineering sensemaking and control layer for software-engineering agents**. It helps an active coding agent move from repository uncertainty to **evidence-grounded, warranted next action** while preserving durable state across different scopes of repository development.
+Sensemaking Skills is an **agent-native semantic knowledge and engineering
+reasoning layer for software-development agents**. The owner-selected
+2026-10-15 long-term destination is a **persistent, typed, queryable,
+evidence-grounded model of the product and its development history**, used and
+improved through specialized Skills across many engineering episodes.
+Existing repository decision support and Campaign/authority machinery remain
+important *operational capabilities*, not the whole product thesis. This is
+the selected architectural direction, not a claim that the platform is
+already implemented.
 
 The repository now distinguishes four control scopes:
 
@@ -45,10 +53,33 @@ New evidence may warrant a responsibility conventionally considered earlier, lat
 
 The Strategic Repository Evolution loop operates above bounded Campaign work. It evaluates product/repository capability state against current strategy, maintains the Strategic Frontier, states the **Strategic Decision to Support**, qualitatively compares credible boundaries, selects or declines one boundary/responsibility, delegates bounded work downward, and reassesses after qualified results. It is not a roadmap processor and does not automatically rank work.
 
-The current ratified product boundary is ADR 0029: Sensemaking is an agent-native repository decision-support and control layer with optional durable Campaign and continuation/reconstruction surfaces while semantic selection remains agent-owned. ADR 0014 is preserved as historical evidence for the narrower July 2026 boundary around the validated, human-reviewed `repository_sensemaking_brief`; historical Goal A evidence remains bounded to the scope under which it was produced.
+The current external product boundary remains ADR 0029: Sensemaking is an
+agent-native repository decision-support/knowledge layer with optional
+Campaign and continuation/reconstruction surfaces while semantic judgment
+remains agent-owned. **ADR 0031** is the new Level-4 architectural destination:
+cumulative software knowledge (intent, capabilities, constraints,
+architecture, evidence, decisions and lessons) with provenance, time,
+uncertainty and source-grounded relationships. **ADR 0030** remains operative
+for the *compact Grounding Pack* only; its word limits do not constrain the
+future typed knowledge system. The knowledge system is neither a semantic
+truth oracle nor an execution/merge/deploy authority. ADR 0014 remains
+historical evidence for the July 2026 brief-focused product boundary; old
+Goal A evidence retains its original claim scope.
+
+The knowledge plane preserves **prescriptive** authority, **descriptive**
+source/runtime observations and **epistemic** inferences separately.
+Code reviews, tests and CI provide essential validity evidence. Skills
+guide exploration, evaluation, architectural challenge, development and
+semantic reconciliation. The desired benefit is more accurate knowledge
+and better *later* engineering decisions, not simply more graph rows.
+See [ADR 0031](docs/adr/0031-persistent-semantic-stewardship.md) and
+[the development plan](docs/persistent-semantic-stewardship-plan.md).
 
 See:
 - [docs/product-strategy.md](docs/product-strategy.md) — Level-4 product thesis and strategic authority
+- [docs/adr/0031-persistent-semantic-stewardship.md](docs/adr/0031-persistent-semantic-stewardship.md) — owner-selected persistent knowledge platform direction
+- [docs/persistent-semantic-stewardship-plan.md](docs/persistent-semantic-stewardship-plan.md) — detailed staged knowledge-model and long-term learning construction
+- [docs/adr/0030-target-repository-grounding.md](docs/adr/0030-target-repository-grounding.md) — compact Grounding Pack contract, not a platform-wide ontology budget
 - [docs/adr/0029-current-product-boundary.md](docs/adr/0029-current-product-boundary.md) — current ratified product-boundary authority
 - [docs/strategic-outer-loop.md](docs/strategic-outer-loop.md) — canonical four-level control model
 - [docs/policy-hierarchy-v0.md](docs/policy-hierarchy-v0.md) — canonical middle semantic-policy architecture; Inquiry, Metareasoning, Exploration, Warrant / Choice, Learning / Reconciliation, stable Strategic Alternatives, and Adaptive Policy Coordinator v0 are integrated
@@ -86,6 +117,13 @@ Keep distinct:
 - **native-harness/product-value evidence** = remains unestablished where the relevant protocol requires it.
 
 The owner-directed build-first rule does not delete empirical questions. It says those questions need not control the current construction phase while existing contracts can still resolve a concrete mechanical/reconstruction boundary.
+
+The 2026-10-15 product revision commits to a *long-horizon semantic
+stewardship destination*. Its platform is not yet qualified. Short-task
+Skill-versus-control studies and the first Grounding Pack's source spot check
+do not establish (or falsify) knowledge-compounding value over months. The
+future implementation must separately establish source integrity, query
+quality, useful architectural decisions, and longitudinal knowledge reuse.
 
 ## Top operating rule — Level 2
 
