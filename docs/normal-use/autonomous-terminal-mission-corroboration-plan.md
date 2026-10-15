@@ -75,8 +75,10 @@ its origin, product-value rationale, target repository, exact target base SHA,
 governing target-repository issue/authority, terminal goal, evidence that work
 is not materially in flight, admission rationale against section 4.2, the
 **hash only** of evaluator expectations sealed outside participant access,
-and the qualified execution environment. Then select one repo and replace the placeholders in sections
-4.3 and 5 for separate clean coding-agent sessions.
+and the qualified execution environment.
+
+Then select one repository and replace the placeholders in sections 4.3 and 5
+for separate clean coding-agent sessions.
 
 ### Scale-frontier interpretation
 
@@ -282,7 +284,7 @@ repository, the operator may use the existing
 - explore materially different unmet outcomes, cross-system opportunities,
   simplifications and worthwhile construction paths, then compare the strongest
   possibilities at proportional depth;
-- ask whether the improvement would still merit construction **if the Sensemaking
+- ask whether the improvement would still merit construction **if the
   experiment were canceled**; this is a useful intrinsic-value test, not an
   automatic or sufficient admission rule;
 - distinguish no *predefined task* from no *warranted opportunity* and from
