@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -389,3 +390,24 @@ def test_multiple_repository_namespaces_do_not_leak(repo, tmp_path):
         query_knowledge(db, repository="unindexed/product", target_ref=sha, operation="snapshot")
     assert query_knowledge(db, repository=base.repository, target_ref=sha,
                            operation="snapshot")["repository"] == "example/product"
+
+
+
+def test_separate_python_process_recovers_persisted_knowledge(repo, tmp_path):
+    root, sha = repo
+    snapshot = build(repo)
+    db = tmp_path / "index.db"
+    store_snapshot(db, snapshot, source_root=root)
+    result = subprocess.run(
+        [sys.executable, "-m", "sensemaking_skills.cli", "semantic", "knowledge-query",
+         "--db", str(db), "--repository", "example/product",
+         "--target-ref", sha, "--operation", "why",
+         "--subject", "adr:0031", "--json"],
+        text=True, capture_output=True, check=False, timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+    output = json.loads(result.stdout)
+    assert output["code"] == "SEMANTIC_KNOWLEDGE_QUERY"
+    assert output["claims"][0]["id"] == "adr:0031"
+    assert output["action_authorized"] is False
+    # Fresh Python process != independent coding-agent context or D4 autonomy.
