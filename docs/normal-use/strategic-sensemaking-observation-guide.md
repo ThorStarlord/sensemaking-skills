@@ -77,6 +77,17 @@ inside one narrow fixture.
 
 A single repository does not need to exercise all six questions.
 
+**Proactive opportunity discovery is a legitimate normal-use episode.** An
+empty or stale backlog is not proof that a product has no valuable unfinished
+construction direction. Where repository strategy is genuinely open, assess
+current experience, unmet user outcomes, cross-system leverage, constraints and
+material alternatives using the existing Strategic Exploration Funnel. A
+product-warranted new opportunity may be proposed even when nobody previously
+opened an issue; promoting it into authoritative scope still requires the
+appropriate owner/Level-3 decision. An evidence-grounded `NO_CHANGE` is also
+valid. Do not force feature discovery or confuse absence of authority with
+absence of value.
+
 ## 4. Observation 1 — breadth before convergence
 
 When `ANALYZE / REOPEN_ANALYSIS` genuinely invokes the Strategic Exploration
@@ -109,7 +120,11 @@ possible frontiers:
 
 Negative evidence includes first-visible-problem capture, mechanically legible
 work crowding out product work, or manufactured alternatives with no different
-strategic effect.
+strategic effect. A search that checks only existing tickets and then concludes
+`no authentic development opportunity exists` demonstrates **backlog-availability
+reasoning**, not strategic opportunity discovery. Record whether the agent
+actually inspected product intent and user outcomes before treating no ready
+issue as a stop. Do not penalize a legitimate stop after that deeper comparison.
 
 Breadth serves the decision, not a template. Examine the systems and candidate
 themes the decision actually needs, and stop once the frame is stable; continued
@@ -337,6 +352,16 @@ AMBIGUOUS
 Do not turn the matrix into a score.
 
 ### Mission boundary versus validation-program boundary
+
+When Trial 002 has no admissible pre-existing target, **operator discovery** may
+use ordinary Strategic Repository Analysis to find a worthwhile outcome in an
+authorized candidate repository. The operator must establish the target's
+product warrant, current authority and independent admission *before* launch;
+this search is not evidence of the participant's proactive selection. The
+participant receives only the pinned target, and a separate Trial 003 is needed
+to attribute autonomous target discovery to the evaluated agent. Preserve a
+`NO_CHANGE` disposition if no product-value opportunity is justified. See the
+corroboration plan section 4.2; do not create a new trial or observation schema.
 
 Keep these distinct:
 
