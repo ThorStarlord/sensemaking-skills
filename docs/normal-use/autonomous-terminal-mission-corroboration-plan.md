@@ -2,9 +2,10 @@
 
 **Status:** active evidence plan / Trial 001 complete / Trial 002+002R target UNPINNED  
 **Original date:** 2026-09-25  
-**Current reconciliation:** 2026-10-10  
+**Current reconciliation:** 2026-10-14  
 **Historical dependency:** PR #476 integrated Trial 001 reconciliation  
 **Current baseline:** PRs #512–#514, #520, #531–#534 integrated. The latest verified as-of checkpoint is `main@eedd317824567b24afbf822cf13e22160731034d` (tree `08f54c08ccd92ebe4fcfd69c634b5fccafe2d86f`), with integrated-main Product Validation `38099225312` and Release Candidate Distribution `38099225332` PASS; this is not immutable future `main`. PR #534 altered `using-sensemaking` guidance, so re-pin exact source and verify the **actually installed** Skills at launch. Issue #515 remains TARGET UNPINNED; no independent executor or trial evidence was established by this update.  
+**Later operator observation (2026-10-14 local):** Issue #515 reports a separate working Codex CLI executor and byte-matched local Skill files; a throwaway canary used `MANUAL_EXPLICIT_LOAD` because native discovery is unverified. This is an operator-reported preflight, **not** a Trial 002/002R run. The target remains unpinned. Re-pin source, installed files and executor at actual launch.  
 **Governing references:**
 
 - `skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`
@@ -55,15 +56,26 @@ Other active Auteur construction/evidence and Metamorfose enrollment work
 already have substantial in-flight PRs; an open issue label by itself does not
 establish a fresh, unclaimed multi-responsibility mission.
 
-The current decision is **STOP AT TARGET ADMISSION**. Do not invent a target,
-join an existing PR stack, claim the earlier inline Auteur episode is Trial
-002, or run a same-session reconstruction and call it 002R.
+**Current trial disposition: TARGET UNPINNED; do not launch.** This is an
+admission result, **not** evidence that these products have no valuable future
+construction opportunity. The prior issue/PR audit established that no
+eligible *already-defined, unused* mission was found. It did not perform
+strategic product-opportunity discovery for every selected repository.
 
-When a genuine target emerges, record in Issue #515 *before launch*: target
-repository, exact target base SHA, governing issue/authority, terminal goal,
-evidence that work is not materially in flight, admission rationale against
-section 4.2, sealed evaluator expectations, and the qualified execution
-environment. Then select one repo and replace the placeholders in sections
+Before repeating an exhaustive backlog audit or concluding that no authentic
+target could exist, the independent operator may conduct **bounded Level-3
+opportunity discovery** in an already-authorized candidate repository, as
+specified in section 4.2. Do not invent unnecessary features to satisfy the
+trial, join an existing PR stack, claim the earlier inline Auteur episode as
+Trial 002, or call a same-session reconstruction Trial 002R.
+
+When a genuine target is identified (from existing work **or** newly discovered
+and authorized product opportunity), record in Issue #515 *before launch*:
+its origin, product-value rationale, target repository, exact target base SHA,
+governing target-repository issue/authority, terminal goal, evidence that work
+is not materially in flight, admission rationale against section 4.2, the
+**hash only** of evaluator expectations sealed outside participant access,
+and the qualified execution environment. Then select one repo and replace the placeholders in sections
 4.3 and 5 for separate clean coding-agent sessions.
 
 ### Scale-frontier interpretation
@@ -255,29 +267,80 @@ Exit: receipt recorded at `BYTE_VERIFIED` or `SEMANTIC_VERIFIED`.
 
 ### 4.2 Target pinning (Step 2, pre-launch)
 
-An authorized owner/evaluator or independently delegated admission reviewer must
-pin one genuine target **before** a clean mission session starts. Current
-Issue #515 has **no admitted target**. Admission criteria:
+An authorized owner/evaluator or independently delegated admission reviewer
+must **pin one real product-value target before** launching the clean Trial 002
+participant. Issue #515 currently has **no admitted target**.
 
-1. **Authoritative:** named by current target-repository roadmap/spec/STATUS/issue
-   as unfinished work, not contradicted by newer commits, PRs, or qualification.
-2. **Multi-responsibility:** plausibly needs at least two distinct bounded
-   engineering responsibilities; a one-file cleanup is not continuation.
-3. **Different shape from Trial 001:** materially heterogeneous repository,
-   environment, or workflow, with its difference recorded before launch.
-4. **Thesis-stable:** no unratified Level-4 owner choice is needed.
-5. **Qualifiable:** available tests/build/CI can produce meaningful exact-head
-   evidence of the terminal goal.
-6. **Not already in flight:** no other agent or open PR materially implements it;
-   an old issue marked ready-for-agent does not override current code/PR state.
+**Proactive operator discovery (outside the Trial 002 participant):** When the
+existing backlog offers no unused mission, this does **not** imply that the
+product has no worthwhile next step. Within an already-authorized candidate
+repository, the operator may use the existing
+`strategic-repository-analysis` / Strategic Exploration Funnel to:
 
-Record the exact repo/base SHA, goal, admission rationale, and **sealed
-evaluator expectation** before launch. The executor must not read the seal.
-Accept a different valid decomposition when it reaches the same bounded goal.
+- ground the product's governing intent, actual user experience, capabilities,
+  constraints, current state and unresolved outcomes (not just issue labels);
+- explore materially different unmet outcomes, cross-system opportunities,
+  simplifications and worthwhile construction paths, then compare the strongest
+  possibilities at proportional depth;
+- ask whether the improvement would still merit construction **if the Sensemaking
+  experiment were canceled**; this is a useful intrinsic-value test, not an
+  automatic or sufficient admission rule;
+- distinguish no *predefined task* from no *warranted opportunity* and from
+  *insufficient authority*; accept `NO_CHANGE` when genuinely warranted;
+- have an authorized actor establish the selected bounded outcome in the target
+  repository's existing roadmap/spec/issue/decision surface **before** admission,
+  keeping proposed hypotheses distinct from ratified owner/Level-3 intent.
 
-Prefer Auteur; examine Metamorfose only if a genuine unused target exists there.
-If neither qualifies, preserve **UNPINNED** and stop. Do not create artificial
-engineering work just to satisfy this plan.
+Do not fabricate a feature for the trial quota, infer new user preferences,
+override target-repository strategy, promote a hypothesis into a Level-4 product
+thesis, or silently expand to unrelated repositories. If a decisive choice is
+owner-reserved, obtain that decision before treating the proposal as authorized.
+The search should be bounded by product relevance and evidence value, not
+continued through every repository or repeated as an issue-list census.
+
+**Admission criteria** (existing task or newly authorized target alike):
+
+1. **Product-grounded and authoritative:** the objective creates a defensible
+   product benefit independent of the experiment; it is documented as current
+   unfinished authorized work in the target repository before participant
+   launch, even if first discovered through Level-3 exploration.
+2. **Multi-responsibility:** it plausibly requires two or more consequential
+   engineering responsibilities, not a one-file cleanup.
+3. **Heterogeneous:** the repository/environment/workflow materially differs
+   from Trial 001, with the difference recorded beforehand.
+4. **Thesis-stable and delegated:** no unratified Level-4 or preference-sensitive
+   owner choice is needed; normal repository-answerable continuation is allowed,
+   while protected merge/release/deploy authority stays withheld.
+5. **Qualifiable:** meaningful exact-head tests/build/CI or other authorized
+   mechanical evidence can discriminate goal completion from failure.
+6. **Unfinished and unclaimed:** current code and PR evidence show it is not
+   already complete or materially implemented by another ongoing workstream.
+7. **Continuable:** most intermediate choices can be answered from repository
+   evidence without mandatory human/provider input after each responsibility.
+8. **Bounded terminal goal:** the intended outcome and non-goals are clear
+   enough for an independent evaluator to adjudicate without prescribing the
+   participant's internal decomposition.
+
+The independent admission reviewer checks the origin (pre-existing versus
+operator-discovered), product-value rationale, actual authorizing decision,
+repository/base SHA, terminal criteria, target ownership and live PR conflicts.
+Record these facts in Issue #515 **before** Session A. Keep evaluator
+expectations sealed **outside** the participant-accessible repository and
+public issue; post only their hash. A correct alternative decomposition is
+acceptable when it reaches the same authorized bounded outcome.
+
+**Experimental isolation:** the operator may proactively *discover* and
+authorize a target, but Trial 002 receives the **already-pinned** goal. The
+participant must not see the exploratory shortlist, evaluator seal, operator
+protocol, planned interruption or Issue #515. This is not evidence that the
+Trial 002 participant selected the target. Trial 003 separately evaluates
+`AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK` selection.
+
+Prefer the product-relevant, already-authorized candidate repositories rather
+than mechanically repeating an entire portfolio scan. If no product-warranted,
+authorized, admissible objective emerges after a proportional inquiry, leave
+`TARGET UNPINNED` and stop the *trial*; normal product development can proceed
+independently.
 
 ### 4.3 Trial 002 prompt
 
@@ -293,7 +356,8 @@ REPOSITORY:
 <exact independently admitted repository from Issue #515>
 
 TARGET:
-<pinned target name> as defined by <authority document path(s) / issue #>.
+<pinned target name> as defined by <target-repository authority path(s) / issue #>.
+Do not provide Issue #515 or the operator's trial/admission notes.
 
 TERMINAL GOAL:
 Advance that bounded target to construction-complete, repository-qualified
@@ -407,6 +471,15 @@ Portability is a property of the prompt, not of the measurement. Whatever the
 surface, the identity receipt (4.1) must record the agent, its **model**, and the
 loaded Skill copy, or the episode is `UNVERIFIED`.
 
+When the harness does not discover a byte-verified installed Skill natively,
+the operator may explicitly instruct the participant to read the **pinned
+Skill files and relevant autonomous-terminal-mission reference only**. Record
+`GUIDANCE APPLICATION = MANUAL_EXPLICIT_LOAD` and do not claim native
+discovery. Never preload this corroboration plan, Issue #515, private evaluator
+expectations, or the planned break into either participant's context. Because
+some operator documents are public, audit actual participant reads/transcripts
+and invalidate any blind-break claim contaminated by the interruption rules.
+
 Two session modes:
 
 - **Fresh-session (default).** Required for Trial 002 and 002R as planned. The
@@ -486,6 +559,13 @@ If Trial 002R completes the mission, Trial 002 as a whole gets its stop
 disposition from 002R.
 
 ## 6. Step 4 -- Trial 003: autonomous target selection
+
+Operator-led proactive target discovery during Trial 002 admission **does not
+count as Trial 003 evidence**. In Trial 002 the participant receives an already
+pinned terminal goal; here, for the first time in this ladder, the evaluated
+participant selects its own highest-value bounded responsibility. Preserve this
+variable separation even if the operator used the same Sensemaking guidance to
+find Trial 002's authentic product target.
 
 Precondition: Trials 002 and 002R have no `MATERIAL FAILURE` (section 9).
 
