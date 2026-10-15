@@ -145,6 +145,28 @@ def _grounding_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
     return found
 
 
+def _adr_excerpts(lines: list[str], max_chars: int = 1600) -> dict[str, str]:
+    """Bounded verbatim ADR context/decision/consequence excerpts, NOT a summary."""
+    sections: dict[str, list[str]] = {}
+    current: str | None = None
+    for line in lines:
+        if line.startswith("## "):
+            name = line[3:].strip().lower()
+            current = name if name in {"context", "decision", "consequences", "rationale", "alternatives"} else None
+            if current is not None:
+                sections.setdefault(current, [])
+        elif current is not None:
+            sections[current].append(line)
+    result: dict[str, str] = {}
+    for name, body in sections.items():
+        full_text = "\n".join(body).strip()
+        if full_text:
+            result[name] = full_text[:max_chars]
+            if len(full_text) > max_chars:
+                result[name + "_excerpt_truncated"] = "true"
+    return result
+
+
 def _adr_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
     result = []
     for p in sorted(tracked):
@@ -169,7 +191,8 @@ def _adr_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
             source_ref=source_ref, evidence_refs=(source_ref,),
             attributes={"declared_adr_status": state, "authority_verified": False,
                         "source_sha256": _source_hashes(root, tracked, (source_ref,)),
-                        "scope": "ADR title and declared status; read source for rationale"},
+                        "verbatim_sections": _adr_excerpts(lines),
+                        "scope": "ADR title/status + bounded literal excerpts; source remains authoritative"},
         ))
     return result
 
