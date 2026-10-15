@@ -9,6 +9,14 @@
 **Current Level-3 state:** [`../STATUS.md`](../STATUS.md)  
 **Control model:** [`strategic-outer-loop.md`](strategic-outer-loop.md)
 
+**Current owner choice (2026-10-15):** Persistent semantic stewardship is
+**no longer merely an unratified candidate direction**. Path 3 is selected
+by [ADR 0031](adr/0031-persistent-semantic-stewardship.md), with
+[the staged construction plan](persistent-semantic-stewardship-plan.md).
+This file remains an uncommitted idea reservoir for *other* future directions;
+historical candidate descriptions are not evidence that ADR 0031 was already
+implemented or comparatively proven.
+
 ## 1. Purpose
 
 This document preserves strategically interesting ways Sensemaking Skills could evolve without turning brainstorming into a roadmap, backlog, or implementation queue.
