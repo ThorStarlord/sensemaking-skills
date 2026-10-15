@@ -7,8 +7,11 @@ thing first. It is navigation only and grants no authority.
 Rule of thumb: prefer files linked from the root `README.md`, the ADR index,
 and the sections marked **Current** below. A document that opens with a
 `HISTORICAL` or `SUPERSEDED` banner (many pre-ADR-0013 files do) is preserved
-evidence, not current guidance. Where two documents disagree, ADR 0029, ADR
-0013, and the canonical contracts win.
+evidence, not current guidance. Where two documents disagree,
+**source-specific authority matters**: ADR 0029 governs the external product
+boundary; ADR 0031 governs the newly selected long-term product destination;
+ADR 0030 governs compact Grounding Packs; ADR 0013 and the mechanical contracts
+govern agent-native control and existing validation behavior.
 
 ## Start here — default spine
 
@@ -20,7 +23,8 @@ A fresh maintainer or agent should normally need only this spine:
 | Agent operating doctrine | `../skills/using-sensemaking/SKILL.md` |
 | Strategic one-prompt continuation | `../skills/strategic-sensemaking-loop/SKILL.md` |
 | Current repository state | `../STATUS.md` |
-| Product/authority model | [`product-operating-model.md`](product-operating-model.md), [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md) |
+| Product/authority model | [`product-strategy.md`](product-strategy.md), [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md), [`adr/0031-persistent-semantic-stewardship.md`](adr/0031-persistent-semantic-stewardship.md) |
+| Long-term semantic knowledge architecture and plan | [`persistent-semantic-stewardship-plan.md`](persistent-semantic-stewardship-plan.md) (implementation roadmap, not shipped functionality) |
 | Operations / qualification | [`operations-runbook.md`](operations-runbook.md) |
 | Commands | [`cli-reference.md`](cli-reference.md) |
 
