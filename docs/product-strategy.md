@@ -223,12 +223,14 @@ knowledge retention; long-horizon utility must also be observed directly.
 | Comparative superiority over a capable direct agent | Mixed / not established |
 | Adaptive multi-step campaign autonomy | Hypothesis; not a current construction prerequisite |
 | General autonomous software development | Not established |
+| Persistent typed semantic stewardship knowledge platform | Owner-selected direction, not yet implemented or qualified |
+| Accumulated knowledge improves later agents' architectural judgment | Long-horizon hypothesis; not established |
 
-The current external product-validation priority is Goal A/A1. Its protocol,
-admissibility rules, and independent evaluator semantics remain canonical for
-the narrower brief/diagnosis claim they were designed to test. Superseding ADR
-0014 as the current product boundary does not retroactively broaden that
-protocol's evidentiary scope.
+Goal A/A1 remains a canonical **historical/narrower brief-diagnosis**
+external validation lane with its own admissibility rules and independent
+evaluator semantics. It is **not** the sole validation criterion or the
+current product-level priority for ADR 0031's long-term knowledge thesis.
+Superseding ADR 0014 did not retroactively broaden earlier evidence.
 
 Current repository construction may continue under the ratified build-first
 policy when architecture/integrity remains mechanically informative. New
