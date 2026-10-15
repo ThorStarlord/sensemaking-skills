@@ -15,7 +15,7 @@ from typing import Any, Mapping
 
 SCHEMA_VERSION = 1
 SHA_PATTERN = re.compile(r"[0-9a-f]{40}\Z")
-ID_PATTERN = re.compile(r"[a-zA-Z][a-zA-Z0-9_.:-]{2,127}\Z")
+ID_PATTERN = re.compile(r"[a-zA-Z][a-zA-Z0-9_.:\-]{2,127}\Z")
 CLAIM_KINDS = frozenset({
     "goal", "non_goal", "domain_concept", "capability", "constraint",
     "invariant", "contract", "component", "source", "verification",
