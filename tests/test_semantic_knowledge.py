@@ -370,3 +370,22 @@ def test_cli_source_audit_after_new_commit(repo, tmp_path):
     payload = json.loads(r.output)
     assert payload["code"] == "SEMANTIC_KNOWLEDGE_SOURCE_AUDIT"
     assert payload["source_status_counts"]["source_changed"] > 0
+
+
+
+def test_multiple_repository_namespaces_do_not_leak(repo, tmp_path):
+    root, sha = repo
+    base = build(repo)
+    db = tmp_path / "shared.sqlite"
+    store_snapshot(db, base, source_root=root)
+    other = KnowledgeSnapshot(
+        repository="other/product", target_ref=sha, claims=base.claims,
+        relations=base.relations, source_scope=base.source_scope, limits=base.limits,
+    )
+    store_snapshot(db, other, source_root=root)
+    assert query_knowledge(db, repository="other/product", target_ref=sha,
+                           operation="snapshot")["counts"]["claims"] == len(base.claims)
+    with pytest.raises(ValueError, match="not been indexed"):
+        query_knowledge(db, repository="unindexed/product", target_ref=sha, operation="snapshot")
+    assert query_knowledge(db, repository=base.repository, target_ref=sha,
+                           operation="snapshot")["repository"] == "example/product"
