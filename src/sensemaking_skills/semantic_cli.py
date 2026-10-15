@@ -24,6 +24,8 @@ from .semantic_architecture import (
     to_dict,
     validate_conformance,
 )
+from .semantic_architecture.knowledge_sources import build_knowledge_snapshot
+from .semantic_architecture.knowledge_store import audit_knowledge_sources, query_knowledge, store_snapshot
 
 
 def _emit(payload: dict[str, Any], *, output_json: bool) -> None:
@@ -74,6 +76,83 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @root_cli.group(name="semantic")
     def semantic_group() -> None:
         """Operate mechanical semantic substrate; never decide semantic truth."""
+
+    @semantic_group.command(name="knowledge-build")
+    @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--repository", "repository_id", required=True, help="Explicit stable repository identity")
+    @click.option("--target-ref", required=True, help="Exact 40-character Git HEAD of a CLEAN target checkout")
+    @click.option("--db", "db_path", required=True, type=click.Path(path_type=Path), help="Local index outside the repository checkout")
+    @click.option("--include-python-imports", is_flag=True, help="Index syntactic Python imports as mechanical observations")
+    @click.option("--max-imports", type=click.IntRange(0, 10000), default=1000)
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_knowledge_build(
+        repo_root: Path, repository_id: str, target_ref: str, db_path: Path,
+        include_python_imports: bool, max_imports: int, output_json: bool,
+    ) -> None:
+        """Index source-pinned knowledge while retaining historical revisions."""
+        try:
+            snapshot = build_knowledge_snapshot(
+                repo_root, repository=repository_id, target_ref=target_ref,
+                include_python_imports=include_python_imports, max_imports=max_imports,
+            )
+            payload = store_snapshot(db_path, snapshot, source_root=repo_root)
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload["code"] = "SEMANTIC_KNOWLEDGE_INDEXED"
+        payload["source_scope"] = list(snapshot.source_scope)
+        payload["limits"] = list(snapshot.limits)
+        _emit(payload, output_json=output_json)
+
+    @semantic_group.command(name="knowledge-query")
+    @click.option("--db", "db_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
+    @click.option("--repository", "repository_id", required=True)
+    @click.option("--target-ref", required=True, help="Exact indexed revision to examine")
+    @click.option("--operation", required=True,
+                  type=click.Choice(["snapshot", "search", "explain", "impact", "why", "contradictions", "history", "changes"]))
+    @click.option("--subject", default=None, help="Exact claim id, or literal search text for search")
+    @click.option("--base-ref", default=None, help="Exact previously indexed revision for changes")
+    @click.option("--limit", type=click.IntRange(1, 250), default=50)
+    @click.option("--depth", type=click.IntRange(0, 4), default=2)
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_knowledge_query(
+        db_path: Path, repository_id: str, target_ref: str, operation: str,
+        subject: str | None, base_ref: str | None, limit: int, depth: int,
+        output_json: bool,
+    ) -> None:
+        """Read explicit source-bound semantic records; infer no automatic authority."""
+        try:
+            payload = query_knowledge(
+                db_path, repository=repository_id, target_ref=target_ref,
+                operation=operation, subject=subject, base_ref=base_ref,
+                limit=limit, depth=depth,
+            )
+        except (ValueError, OSError, UnicodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
+        _emit(payload, output_json=output_json)
+
+    @semantic_group.command(name="knowledge-audit")
+    @click.option("--db", "db_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
+    @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--repository", "repository_id", required=True)
+    @click.option("--indexed-ref", required=True, help="Historical snapshot already in SQLite")
+    @click.option("--current-ref", required=True, help="Exact clean Git HEAD currently checked out")
+    @click.option("--limit", type=click.IntRange(1, 500), default=100)
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_knowledge_audit(
+        db_path: Path, repo_root: Path, repository_id: str,
+        indexed_ref: str, current_ref: str, limit: int, output_json: bool,
+    ) -> None:
+        """Audit source drift without deciding whether historical claims remain valid."""
+        try:
+            payload = audit_knowledge_sources(
+                db_path, repository=repository_id, indexed_ref=indexed_ref,
+                current_repo_root=repo_root, current_ref=current_ref, limit=limit,
+            )
+        except (ValueError, OSError, UnicodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload["code"] = "SEMANTIC_KNOWLEDGE_SOURCE_AUDIT"
+        _emit(payload, output_json=output_json)
 
     @semantic_group.command(name="probe")
     @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))

@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "goal:longterm-stewardship",
+      "kind": "goal",
+      "statement": "Later coding-agent sessions should be able to use and correct accumulated product knowledge rather than reconstruct every consequential decision.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "attributes": {
+        "claim_ceiling": "Selected product direction; long-horizon benefit not yet demonstrated"
+      }
+    },
+    {
+      "id": "cap:semantic-queries",
+      "kind": "capability",
+      "statement": "The knowledge plane supplies bounded, source-linked queries over explicitly indexed claims, relationships, contradictions and recorded history.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:docs/persistent-semantic-stewardship-plan.md"
+      ],
+      "attributes": {
+        "claim_ceiling": "Desired and partially implemented capability; no semantic truth or comparative benefit proven"
+      }
+    },
+    {
+      "id": "inv:source-boundary",
+      "kind": "invariant",
+      "statement": "A knowledge record must not silently promote extracted code facts, lexical associations, or agent hypotheses into owner intent or action authority.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ]
+    },
+    {
+      "id": "component:knowledge-store",
+      "kind": "component",
+      "statement": "The semantic knowledge store implements exact-revision SQLite indexing and evidence-preserving query operations.",
+      "epistemic_status": "observed",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "claim_ceiling": "Source implementation, not test result or product-value proof"
+      }
+    },
+    {
+      "id": "verification:knowledge-tests",
+      "kind": "verification",
+      "statement": "The semantic knowledge test module covers version identity, query shape, history, and authored-authority adversarial cases.",
+      "epistemic_status": "observed",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_semantic_knowledge.py",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge.py"
+      ],
+      "attributes": {
+        "claim_ceiling": "Test source exists; whether it passed is a separate CI observation"
+      }
+    },
+    {
+      "id": "lesson:grounding-waiver",
+      "kind": "lesson",
+      "statement": "The first target Grounding Pack required corrections to 20% of a ten-line spot check; acceptance was by explicit owner waiver, not a passing quality sample.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0030-target-repository-grounding.md",
+      "evidence_refs": [
+        "file:docs/normal-use/grounding-pack-build-001.md"
+      ],
+      "attributes": {
+        "scope": "Historical pilot quality finding; no inference about all future packs"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:query-serves-goal",
+      "subject": "cap:semantic-queries",
+      "predicate": "serves_goal",
+      "object": "goal:longterm-stewardship",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "attributes": {
+        "scope": "Intended purpose, not proven effect"
+      }
+    },
+    {
+      "id": "rel:query-constrained",
+      "subject": "cap:semantic-queries",
+      "predicate": "constrained_by",
+      "object": "inv:source-boundary",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ]
+    },
+    {
+      "id": "rel:query-implemented",
+      "subject": "cap:semantic-queries",
+      "predicate": "implemented_by",
+      "object": "component:knowledge-store",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "scope": "Current feature slice only"
+      }
+    },
+    {
+      "id": "rel:query-tested",
+      "subject": "cap:semantic-queries",
+      "predicate": "tested_by",
+      "object": "verification:knowledge-tests",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "Declared test coverage subject to execution evidence"
+      }
+    },
+    {
+      "id": "rel:query-decision",
+      "subject": "cap:semantic-queries",
+      "predicate": "decided_by",
+      "object": "adr:0031",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ]
+    },
+    {
+      "id": "rel:lesson-origin",
+      "subject": "lesson:grounding-waiver",
+      "predicate": "learned_from",
+      "object": "adr:0030",
+      "evidence_refs": [
+        "file:docs/normal-use/grounding-pack-build-001.md"
+      ],
+      "attributes": {
+        "scope": "Historical documented observation"
+      }
+    }
+  ]
+}
