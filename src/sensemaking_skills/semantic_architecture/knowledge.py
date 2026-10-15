@@ -159,12 +159,19 @@ def read_authored_claim(data: dict[str, Any], *, source_ref: str) -> KnowledgeCl
     refs = data.get("evidence_refs")
     if not isinstance(refs, list) or any(not isinstance(ref, str) for ref in refs):
         raise ValueError("authored claim evidence_refs must be a list of strings")
+    status = data.get("epistemic_status", "declared")
+    authority = data["authority_kind"]
+    attrs = data.get("attributes", {})
+    if not isinstance(attrs, dict) or {"authority_verified", "semantic_truth_established", "action_authorized"} & attrs.keys():
+        raise ValueError("authored data may not assert verified authority or action permission")
+    if status == "observed" and authority not in {"code", "test", "document", "mechanical"}:
+        raise ValueError("authored normative claim cannot masquerade as observed evidence")
     return KnowledgeClaim(
         id=data["id"], kind=data["kind"], statement=data["statement"],
-        epistemic_status=data.get("epistemic_status", "declared"),
-        authority_kind=data["authority_kind"], authority_ref=data["authority_ref"],
+        epistemic_status=status,
+        authority_kind=authority, authority_ref=data["authority_ref"],
         source_ref=source_ref, evidence_refs=tuple(refs),
-        attributes=data.get("attributes", {}),
+        attributes={**attrs, "authority_verified": False},
     )
 
 
@@ -177,9 +184,15 @@ def read_authored_relation(data: dict[str, Any], *, source_ref: str) -> Knowledg
     refs = data.get("evidence_refs")
     if not isinstance(refs, list) or any(not isinstance(ref, str) for ref in refs):
         raise ValueError("authored relation evidence_refs must be a list of strings")
+    derivation = data.get("derivation", "authored")
+    attrs = data.get("attributes", {})
+    if derivation not in {"authored", "declared"}:
+        raise ValueError("authored relations cannot claim mechanical derivation")
+    if not isinstance(attrs, dict) or {"authority_verified", "semantic_truth_established", "action_authorized"} & attrs.keys():
+        raise ValueError("authored relations cannot assert verified authority or permission")
     return KnowledgeRelation(
         id=data["id"], subject=data["subject"], predicate=data["predicate"],
         object=data["object"], epistemic_status=data.get("epistemic_status", "declared"),
-        derivation=data.get("derivation", "authored"), source_ref=source_ref,
-        evidence_refs=tuple(refs), attributes=data.get("attributes", {}),
+        derivation=derivation, source_ref=source_ref,
+        evidence_refs=tuple(refs), attributes={**attrs, "authority_verified": False},
     )
