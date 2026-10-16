@@ -177,6 +177,62 @@ def test_multiple_revisions_preserve_history_and_cited_source_drift(repo, tmp_pa
     assert "not proven Git ancestry" in hist["history_limit"]
 
 
+
+def test_impact_depth_means_one_declared_edge_per_hop(repo, tmp_path):
+    snap = build(repo)
+    # The reverse edge makes the existing implementation's two sequential
+    # direction passes visit a second hop within depth=1.
+    reverse = KnowledgeRelation(
+        id="edge:reverse-two-hop",
+        subject="decision:obsolete", predicate="references", object="inv:ordering",
+        epistemic_status="declared", derivation="authored",
+        source_ref="file:docs/adr/0031-stewardship.md",
+        evidence_refs=("file:docs/adr/0031-stewardship.md",),
+    )
+    extended = KnowledgeSnapshot(
+        repository=snap.repository, target_ref=snap.target_ref,
+        claims=snap.claims, relations=(*snap.relations, reverse),
+        source_scope=snap.source_scope, limits=snap.limits,
+    )
+    db = tmp_path / "bounded.sqlite"
+    store_snapshot(db, extended, source_root=repo[0])
+    args = dict(repository=snap.repository, target_ref=snap.target_ref)
+    one = query_knowledge(db, operation="impact", subject="cap:replay", depth=1, **args)
+    two = query_knowledge(db, operation="impact", subject="cap:replay", depth=2, **args)
+    assert "inv:ordering" in {c["id"] for c in one["claims"]}
+    assert "decision:obsolete" not in {c["id"] for c in one["claims"]}
+    assert "decision:obsolete" in {c["id"] for c in two["claims"]}
+    assert not one["semantic_truth_established"] and not one["action_authorized"]
+
+
+def test_history_and_delta_limits_never_hide_omissions(repo, tmp_path):
+    root, old_sha = repo
+    db = tmp_path / "index.sqlite"
+    store_snapshot(db, build(repo), source_root=root)
+    authored = authored_data()
+    authored["claims"][0]["statement"] = "Knowledge persists across separate agents"
+    authored["claims"][1]["statement"] = "Replay requires explicit revision discipline"
+    (root / ".sensemaking/knowledge/stewardship.json").write_text(
+        json.dumps(authored, indent=2), encoding="utf-8"
+    )
+    new_sha = commit(root, "change multiple substantive knowledge claims")
+    store_snapshot(db, build((root, new_sha)), source_root=root)
+    args = dict(repository="example/product", target_ref=new_sha)
+    limited_changes = query_knowledge(db, operation="changes", base_ref=old_sha, limit=1, **args)
+    assert limited_changes["truncated"] is True
+    assert limited_changes["delta_total_counts"]["claims"]["changed"] > 1
+    assert len(limited_changes["claim_delta"]["changed"]) == 1
+    full_changes = query_knowledge(db, operation="changes", base_ref=old_sha, limit=250, **args)
+    assert full_changes["truncated"] is False
+    limited_history = query_knowledge(db, operation="history", subject="cap:replay", limit=1, **args)
+    assert len(limited_history["claim_history"]) == 1
+    assert limited_history["history_total_entries"] == 2
+    assert limited_history["truncated"] is True
+    full_history = query_knowledge(db, operation="history", subject="cap:replay", limit=2, **args)
+    assert [h["revision"] for h in full_history["claim_history"]] == [old_sha, new_sha]
+    assert full_history["truncated"] is False
+
+
 def test_authored_owner_authority_cannot_self_verify(repo):
     root, _ = repo
     p = root / ".sensemaking/knowledge/stewardship.json"
