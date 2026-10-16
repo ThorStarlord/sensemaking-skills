@@ -1,6 +1,6 @@
 # Persistent Semantic Knowledge — CLI and source contract
 
-**Status:** Candidate S1-S4 implementation on PR #550, stacked on owner strategy PR #549.
+**Status:** S1–S3 source/query implementation and optional S4 guidance merged via PR #550 after owner strategy PR #549; integrated `main@3a20bd80737b5df247791e4ff86256c0b4f54b83` passed Product Validation and Release Candidate Distribution. A follow-up query-integrity repair is proposed separately and requires its own qualification.
 **Authority:** ADR 0031 and the Git-reviewed original source documents. The index is never authority.
 **Existing interface:** sensemaking-skills semantic (no new runtime or registered Skill).
 
@@ -12,7 +12,7 @@ Build a local, versioned, queryable semantic projection over a specific reposito
 
 The source builder ingests only:
 - Tagged lines from tracked .sensemaking/intent.md, context.md, invariants.md and decisions/*.md.
-- Tracked docs/adr/NNNN-*.md title and declared status (not the full rationale; follow the source).
+- Tracked docs/adr/NNNN-*.md title, declared status and bounded verbatim rationale/decision excerpts (not a complete semantic interpretation; inspect the source).
 - Git-reviewed, tracked .sensemaking/knowledge/*.json records (schema version 1).
 - Optionally bounded Python AST import **syntax** observations through the existing probe.
 
@@ -107,9 +107,9 @@ Build checks exact 40-character Git HEAD, clean target worktree, tracked non-sym
 
 The SQLite index retains multiple repository/SHA snapshots. Indexing identical inputs is idempotent, and conflicting data under the same source revision is rejected. Authored semantic conclusions remain Git-reviewed; do not commit or manually mutate the generated SQLite file.
 
-- History reports **database indexing order**, not Git ancestry or causal chronology.
-- Changes reports set differences, not proved semantic consequences.
-- Impact follows explicit edges only; an indexed path is not a transitive or causal proof.
+- History reports **database indexing order**, not Git ancestry or causal chronology. The proposed Episode A fix adds `history_total_entries` and marks `truncated` when the limit omits entries.
+- Changes reports set differences, not proved semantic consequences. The proposed Episode A fix adds `delta_total_counts` and marks `truncated` if any of the six delta arrays is shortened.
+- Impact follows explicit edges only; an indexed path is not a transitive or causal proof. The Episode A repair bounds `depth` to one explicit edge per hop in either direction.
 - Contradictions reports explicit conflicts only; missing conflicts means NOT ASSESSED.
 - Query results carry currentness/revision, source/evidence provenance, limits and no-authority flags.
 
@@ -125,6 +125,6 @@ No mandatory indexing stage is required for routine local coding. The index is a
 
 ## Qualification boundaries
 
-Machine tests can establish schema integrity, deterministic reconstruction, exact source revision binding and query behavior. The real-repository exact-head worktree smoke test establishes only source reconstruction and retrieval, NOT a fresh independent model's reuse of prior lessons. Genuine longitudinal compounding and incremental architectural benefit remain future evidence questions under ADR 0031.
+Machine tests can establish schema integrity, deterministic reconstruction, exact source revision binding and query behavior. The subsequent [query-integrity Episode A](../normal-use/semantic-stewardship-episode-a-2026-10-15.md) records an actual bounded development responsibility and a Git-authored lesson; it is NOT an independent-agent longitudinal success. The real-repository exact-head worktree smoke test establishes only source reconstruction and retrieval, NOT a fresh independent model's reuse of prior lessons. Genuine longitudinal compounding and incremental architectural benefit remain future evidence questions under ADR 0031.
 
 S6 richness (other language adapters, domain-specific graph types, optional visualization or cross-repository fusion) should be driven by real consumers rather than auto-generating a complete ontology from arbitrary code.
