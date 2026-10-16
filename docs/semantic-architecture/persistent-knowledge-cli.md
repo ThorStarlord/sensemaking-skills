@@ -1,6 +1,6 @@
 # Persistent Semantic Knowledge — CLI and source contract
 
-**Status:** S1–S3 source/query implementation and optional S4 guidance merged via PR #550 after owner strategy PR #549; integrated `main@3a20bd80737b5df247791e4ff86256c0b4f54b83` passed Product Validation and Release Candidate Distribution. A follow-up query-integrity repair is proposed separately and requires its own qualification.
+**Status:** S1–S3 source/query implementation and optional S4 guidance merged via PR #550 after owner strategy PR #549; integrated `main@3a20bd80737b5df247791e4ff86256c0b4f54b83` passed Product Validation and Release Candidate Distribution. The follow-up bounded-query integrity repair is proposed in PR #551; check the PR's exact-head workflow receipts before treating any particular revision as qualified.
 **Authority:** ADR 0031 and the Git-reviewed original source documents. The index is never authority.
 **Existing interface:** sensemaking-skills semantic (no new runtime or registered Skill).
 
