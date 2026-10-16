@@ -1,6 +1,6 @@
 # Semantic stewardship S5 — Episode A: bounded knowledge-query integrity
 
-**Status:** actual product repair proposed on `feat/s5-knowledge-query-integrity-episode-a`; exact-head qualification pending until hosted checks report; **independent-session S5 outcome NOT TESTED**.  
+**Status:** product repair and reviewed historical knowledge proposed in [PR #551](https://github.com/ThorStarlord/sensemaking-skills/pull/551). Qualification is evidenced by that PR's exact-head workflow receipts, not this document; **independent-session S5 outcome NOT TESTED**.  
 **Scope:** `ThorStarlord/sensemaking-skills` only, under owner-selected ADR 0031 and the existing S5 roadmap.  
 **Before-source identity:** `main@3a20bd80737b5df247791e4ff86256c0b4f54b83` (merged PR #541); both Product Validation and Release Candidate Distribution passed on that prior baseline.  
 **Participants:** one active implementation agent in one conversation context. No second coding agent has consumed this record; a fresh Python subprocess is not an independent coding agent.
