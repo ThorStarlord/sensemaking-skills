@@ -128,3 +128,32 @@ No mandatory indexing stage is required for routine local coding. The index is a
 Machine tests can establish schema integrity, deterministic reconstruction, exact source revision binding and query behavior. The real-repository exact-head worktree smoke test establishes only source reconstruction and retrieval, NOT a fresh independent model's reuse of prior lessons. Genuine longitudinal compounding and incremental architectural benefit remain future evidence questions under ADR 0031.
 
 S6 richness (other language adapters, domain-specific graph types, optional visualization or cross-repository fusion) should be driven by real consumers rather than auto-generating a complete ontology from arbitrary code.
+
+
+## First-visit repository orientation and bounded structural skeleton
+
+Use \`knowledge-orient\` to inspect a clean Git checkout without creating
+an index or reading unreviewed product semantics:
+
+\`\`\`bash
+REF="$(git rev-parse HEAD)"
+sensemaking-skills semantic knowledge-orient --repo . \
+  --repository "owner/repository" --target-ref "$REF" --json
+\`\`\`
+
+The output contains Git path counts and bounded representative source/test
+paths, manifest/document candidates, explicit truncation, source scope and
+authority disclaimers. It cannot prove module ownership or application
+behavior. \`--max-files\` and \`--sample-limit\` bound output work.
+If \`--db /path/outside/repository.sqlite\` is supplied, exact-revision
+semantic index counts/source scope are also returned (no index mutation).
+
+Optionally include mechanically observed file/directory containment using
+\`knowledge-build --include-repository-structure --max-structural-files 600\`.
+The resulting \`contained_in\` relation is purely a tracked path relationship,
+not a product dependency. It can coexist with \`--include-python-imports\`.
+No new knowledge schema version, database or automatic semantic authority is
+introduced.
+
+See [Repository Semantic Bootstrap](repository-bootstrap.md) for scope,
+evidence boundaries, source-drift handling and real-world qualification.

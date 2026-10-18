@@ -280,6 +280,27 @@ document every commit, duplicate signatures, or turn a working hypothesis
 into a permanent rule. Continue from the new product/repository evidence
 toward the delegated outcome.
 
+### Source-pinned orientation for sustained repository stewardship
+
+When entering a repository for sustained work, prefer a cheap initial
+orientation over repeatedly reconstructing major paths. On a clean checkout
+with known full Git HEAD, use the existing
+\`sensemaking-skills semantic knowledge-orient --repo . --repository <id> --target-ref <sha> --json\`
+if the command is available. The output is tracked *path metadata*, not
+architectural understanding. Do not run a costly bootstrap for a narrow task
+that can be resolved directly.
+
+When a persistent knowledge index exists for the **same** exact revision,
+retrieve relevant claims with \`knowledge-query\`, verify original cited
+sources, and use \`knowledge-audit\` when the source revision has changed.
+The optional \`knowledge-build --include-repository-structure\` creates only
+mechanical file/directory containment, not semantic dependencies. Reviewed
+product-to-code links belong to the existing authored knowledge records.
+
+Preserve explicit NOT ASSESSED scope and uncertainty; never let an extracted
+path, import or semantic graph authorize a new responsibility or protected
+action. See \`docs/semantic-architecture/repository-bootstrap.md\`.
+
 ## 1. Establish goal and authority
 
 Before selecting work, identify:

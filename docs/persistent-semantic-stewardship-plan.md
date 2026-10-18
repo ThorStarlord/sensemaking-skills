@@ -465,3 +465,28 @@ The goal is not to accumulate as many ontology rows as possible. The goal is
 for **the next coding agent to have a more accurate, traceable, and useful
 understanding of the product than the previous agent had**, and to be able
 to explain how that accumulated knowledge changed what it built.
+
+
+## 16. Repository first-visit semantic bootstrap — implementation extension
+
+**Owner selection:** first-visit orientation plus a broad, bounded structural
+skeleton; progressively deepened semantic knowledge, not a mandatory exhaustive
+ontology. This extends S1-S6 without resetting accepted strategy or claiming
+independent agent-learning qualification.
+
+The implementation contracts, CLI, PR delivery slices, explicit deferments and
+acceptance boundaries are in
+[Repository Semantic Bootstrap](semantic-architecture/repository-bootstrap.md).
+
+- RSB-0/1/2: read-only pinned orientation, optional tracked-source containment
+  indexing and focused mechanical qualification.
+- RSB-3/4/5: reuse reviewed S1-S4 semantic records, explicit contradictions,
+  currentness audit and optional source-checked consultation in existing Skills.
+- RSB-6: real fresh independent-session qualification after S5's original
+  Episode B gate, without counting same-session simulations as independent.
+- RSB-7: conditional transfer/domain adapters selected by real tasks and
+  observed limitations, not automatic completeness targets.
+
+No permission, merger/deployment authority or new autonomous controller is
+derived from a knowledge record or repository onboarding. A repository can
+still be developed directly when a local bounded responsibility is clear.
