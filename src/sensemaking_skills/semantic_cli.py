@@ -138,7 +138,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 payload["knowledge_index"] = {
                     "counts": indexed["counts"],
                     "source_scope": indexed["source_scope"],
-                    "limits": indexed["limits"],
+                    "limits": indexed["explicit_limits"],
                     "semantic_truth_established": False,
                 }
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
