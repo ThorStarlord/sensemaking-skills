@@ -197,7 +197,7 @@ def structural_records(
             directory_id = stable_id("directory", directory)
             if directory_id not in claims:
                 claims[directory_id] = KnowledgeClaim(
-                    id=directory_id, kind="component",
+                    id=directory_id, kind="directory",
                     statement=f"Tracked directory: {directory}",
                     epistemic_status="observed", authority_kind="mechanical",
                     authority_ref="git:tracked-path",

@@ -57,7 +57,7 @@ sensemaking-skills semantic knowledge-build \
 ```
 
 The existing rebuildable SQLite index retains the current schema and history.
-The new additive relation `contained_in` describes *lexical Git file/directory
+The additive `directory` claim kind and `contained_in` relation describe *lexical Git file/directory
 placement only*, not runtime dependency or component responsibility.
 Indexed file records store exact source SHA256 fingerprints for later audit.
 Structural scope covers recognized entry documents, manifests and Python source

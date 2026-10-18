@@ -114,7 +114,8 @@ def test_opt_in_structure_preserves_epistemics_and_fingerprints(target, tmp_path
     assert service.attributes["authority_verified"] is False
     assert service.attributes["source_sha256"]["src/app/service.py"]
     assert sum(c.id == service_id for c in snap.claims) == 1
-    assert next(c for c in snap.claims if c.id == dir_id).kind == "component"
+    assert next(c for c in snap.claims if c.id == dir_id).kind == "directory"
+    assert not any(c.kind == "component" and c.authority_kind == "mechanical" for c in snap.claims)
     assert any(r.subject == service_id and r.object == dir_id
                and r.predicate == "contained_in" and r.derivation == "mechanical"
                for r in snap.relations)
