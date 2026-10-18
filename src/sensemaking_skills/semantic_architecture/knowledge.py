@@ -35,7 +35,7 @@ PREDICATES = frozenset({
     "serves_goal", "requires_capability", "constrained_by", "depends_on",
     "implemented_by", "tested_by", "decided_by", "supersedes",
     "contradicts", "derived_from", "affected_by_change", "learned_from",
-    "candidate_opportunity_for", "defines", "references",
+    "candidate_opportunity_for", "defines", "references", "contained_in",
 })
 
 
