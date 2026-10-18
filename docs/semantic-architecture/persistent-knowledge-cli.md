@@ -132,26 +132,26 @@ S6 richness (other language adapters, domain-specific graph types, optional visu
 
 ## First-visit repository orientation and bounded structural skeleton
 
-Use \`knowledge-orient\` to inspect a clean Git checkout without creating
+Use `knowledge-orient` to inspect a clean Git checkout without creating
 an index or reading unreviewed product semantics:
 
-\`\`\`bash
+```bash
 REF="$(git rev-parse HEAD)"
 sensemaking-skills semantic knowledge-orient --repo . \
   --repository "owner/repository" --target-ref "$REF" --json
-\`\`\`
+```
 
 The output contains Git path counts and bounded representative source/test
 paths, manifest/document candidates, explicit truncation, source scope and
 authority disclaimers. It cannot prove module ownership or application
-behavior. \`--max-files\` and \`--sample-limit\` bound output work.
-If \`--db /path/outside/repository.sqlite\` is supplied, exact-revision
+behavior. `--max-files` and `--sample-limit` bound output work.
+If `--db /path/outside/repository.sqlite` is supplied, exact-revision
 semantic index counts/source scope are also returned (no index mutation).
 
 Optionally include mechanically observed file/directory containment using
-\`knowledge-build --include-repository-structure --max-structural-files 600\`.
-The resulting \`contained_in\` relation is purely a tracked path relationship,
-not a product dependency. It can coexist with \`--include-python-imports\`.
+`knowledge-build --include-repository-structure --max-structural-files 600`.
+The resulting `contained_in` relation is purely a tracked path relationship,
+not a product dependency. It can coexist with `--include-python-imports`.
 No new knowledge schema version, database or automatic semantic authority is
 introduced.
 

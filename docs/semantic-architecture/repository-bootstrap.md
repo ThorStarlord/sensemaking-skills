@@ -24,11 +24,11 @@ proof of product behavior. Missing edges mean NOT ASSESSED.
 
 On a **clean checkout**, pin the full Git HEAD. Then run:
 
-\`\`\`bash
+```bash
 REF="$(git rev-parse HEAD)"
 sensemaking-skills semantic knowledge-orient \
   --repo . --repository "owner/repository" --target-ref "$REF" --json
-\`\`\`
+```
 
 The output reports: repository/revision, tracked and eligible path counts,
 inspected count, truncation, top-level tracked-path distribution, recognized file
@@ -42,22 +42,22 @@ Both have bounded CLI options. Source-tree priority prevents archival files
 from starving relevant product source paths when selection is truncated.
 Names outside the recognized convention are NOT ASSESSED.
 
-An optional \`--db /outside-checkout/semantic.sqlite\` retrieves exact-revision
+An optional `--db /outside-checkout/semantic.sqlite` retrieves exact-revision
 counts/scope of a preexisting semantic index. It does not build or change the
 database. A DB without that revision produces a clear NOT ASSESSED error.
 
 ## Opt-in structural projection — RSB-2
 
-\`\`\`bash
+```bash
 sensemaking-skills semantic knowledge-build \
   --repo . --repository "owner/repository" --target-ref "$REF" \
   --db /outside-checkout/semantic.sqlite \
   --include-repository-structure --max-structural-files 600 \
   --include-python-imports --max-imports 1000 --json
-\`\`\`
+```
 
 The existing rebuildable SQLite index retains the current schema and history.
-The new additive relation \`contained_in\` describes *lexical Git file/directory
+The new additive relation `contained_in` describes *lexical Git file/directory
 placement only*, not runtime dependency or component responsibility.
 Indexed file records store exact source SHA256 fingerprints for later audit.
 Structural scope covers recognized entry documents, manifests and Python source
@@ -71,17 +71,17 @@ semantics, database correctness, tests executed, or product intent.
 ## Semantic enrichment — existing S1-S4 facilities
 
 Read source-linked accepted ADRs and Grounding Pack claims with existing
-\`knowledge-query search|explain|why\`. Use \`knowledge-query impact\` as a
-*declared-edge candidate view* and \`contradictions\` only for **explicitly**
+`knowledge-query search|explain|why`. Use `knowledge-query impact` as a
+*declared-edge candidate view* and `contradictions` only for **explicitly**
 authored contested relationships. Neither operation automatically discovers
 all consequences or conflicts.
 
 For genuinely useful product-to-code or test-to-capability relationships, a
 coding agent examines cited original files and authors **reviewed** typed
-claims/edges in tracked \`.sensemaking/knowledge/*.json\`. Hypotheses stay
+claims/edges in tracked `.sensemaking/knowledge/*.json`. Hypotheses stay
 hypotheses. Review must not convert a generated inference into owner intent.
 
-After source changes, use existing \`knowledge-audit\`, then rebuild/reconcile
+After source changes, use existing `knowledge-audit`, then rebuild/reconcile
 the snapshot at the new clean HEAD. Preserve indexed history; source drift
 is not automatic semantic invalidation.
 

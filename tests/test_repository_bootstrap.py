@@ -75,9 +75,9 @@ def test_orientation_is_pinned_bounded_and_non_authoritative(target):
     result = orient_repository(valid, tracked, repository="example/product", target_ref=sha)
     assert result["repository"] == "example/product"
     assert result["target_ref"] == sha
-    assert result["entry_documents"] == ["README.md", "docs/product-strategy.md", ".sensemaking/intent.md"] or (
-        set(result["entry_documents"]) == {"README.md", "docs/product-strategy.md", ".sensemaking/intent.md"}
-    )
+    assert set(result["entry_documents"]) == {
+        "README.md", "docs/product-strategy.md", ".sensemaking/intent.md",
+    }
     assert "pyproject.toml" in result["manifest_examples"]
     assert "src/app/service.py" in result["source_examples"]
     assert "tests/test_service.py" in result["test_examples"]
@@ -233,7 +233,6 @@ def test_symlink_evidence_fails_closed(target, tmp_path):
 
 def test_unsupported_language_remains_just_path_observation(target):
     snap = snapshot(target, include_repository_structure=True)
-    assert "Python" not in " ".join(snap.source_scope) or "syntax" not in " ".join(snap.source_scope)
-    assert not any("frontend/page.tsx" in c.statement and c.kind == "component"
-                   for c in snap.claims)
+    assert not any("syntax" in scope.lower() for scope in snap.source_scope)
+    assert stable_id("file", "frontend/page.tsx") not in {c.id for c in snap.claims}
     assert all(not r.attributes.get("authority_verified", False) for r in snap.relations)
