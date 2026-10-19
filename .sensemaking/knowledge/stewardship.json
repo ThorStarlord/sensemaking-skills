@@ -77,6 +77,49 @@
       "attributes": {
         "scope": "Historical pilot quality finding; no inference about all future packs"
       }
+    },
+    {
+      "id": "incident:query-omissions-baseline",
+      "kind": "incident",
+      "statement": "Source inspection at the recorded pre-repair main revision identified incomplete history/changes result slices incorrectly reported as untruncated, and impact traversals potentially exceeding a requested hop budget.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md"
+      ],
+      "attributes": {
+        "examined_revision": "3a20bd80737b5df247791e4ff86256c0b4f54b83",
+        "scope": "Historical source-inspection claim; pre-fix runtime reproduction not recorded; not a statement about repaired code"
+      }
+    },
+    {
+      "id": "inv:bounded-query-disclosure",
+      "kind": "invariant",
+      "statement": "Bounded knowledge queries must disclose omissions in every returned section and impact traversal must respect the declared edge-hop depth without pretending to establish causal dependencies.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:tests/test_semantic_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "Delegated engineering contract for a bounded query repair, not a new owner mandate",
+        "claim_ceiling": "Qualified runtime behavior requires exact-head regression/hosted test evidence"
+      }
+    },
+    {
+      "id": "lesson:query-completeness-is-evidence",
+      "kind": "lesson",
+      "statement": "When a limited historical or change query silently reports completeness, absence of entries can be mistaken for absence of evidence; communicate omissions and totals before treating the result as architectural context.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md"
+      ],
+      "attributes": {
+        "scope": "One source-grounded bug class; whether later independent agents use this lesson remains NOT TESTED"
+      }
     }
   ],
   "relations": [
@@ -144,6 +187,31 @@
       ],
       "attributes": {
         "scope": "Historical documented observation"
+      }
+    },
+    {
+      "id": "rel:query-bound-disclosure",
+      "subject": "cap:semantic-queries",
+      "predicate": "constrained_by",
+      "object": "inv:bounded-query-disclosure",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md",
+        "file:tests/test_semantic_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "Delegated current query contract; source tests required"
+      }
+    },
+    {
+      "id": "rel:query-lesson-incident",
+      "subject": "lesson:query-completeness-is-evidence",
+      "predicate": "learned_from",
+      "object": "incident:query-omissions-baseline",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md"
+      ],
+      "attributes": {
+        "scope": "Historical source inspection; not causal proof of a subsequent agent outcome"
       }
     }
   ]

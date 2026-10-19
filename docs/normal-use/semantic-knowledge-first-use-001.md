@@ -5,6 +5,17 @@ first slice on PR #550 (stacked on strategy PR #549).
 **Evidence:** exact committed source plus GitHub hosted CI; no real-user study,
 independent model session, external target checkout or longitudinal outcome claim.
 
+**Post-merge currentness (2026-10-15):** Strategy PR #549 merged as
+`3ca44d0433d048ecbe5e75772b6d4f35266d41b6`; knowledge PR #550
+merged as `28258413a11dd72d28f5c02f0e3abbd51dc5c55c`. The subsequent
+five-PR integration reached `main@3a20bd80737b5df247791e4ff86256c0b4f54b83`;
+its [Product Validation](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/38822699678)
+(seven passing jobs) and
+[Release Candidate Distribution](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/38822699683)
+passed. The original text below retains its candidate-era evidence limits.
+[Episode A](semantic-stewardship-episode-a-2026-10-15.md) is a distinct,
+later knowledge-query repair and **not** proof of independent-agent learning.
+
 ## What now exists
 
 The code uses the existing Semantic Architecture package without creating a new

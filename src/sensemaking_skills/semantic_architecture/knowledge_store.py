@@ -182,6 +182,7 @@ def query_knowledge(
         found_claims: list[dict] = []
         found_relations: list[dict] = []
         extra: dict = {}
+        extra_truncated = False
         if operation == "snapshot":
             extra["counts"] = {"claims": len(claims), "relations": len(relations)}
             extra["digest"] = snap["digest"]
@@ -201,9 +202,18 @@ def query_knowledge(
             if subject not in claims:
                 raise ValueError("claim id not found in selected revision; NOT ASSESSED")
             selected = {subject}
+            frontier = {subject}
             for _ in range(depth):
-                selected |= {r["object"] for r in relations if r["subject"] in selected}
-                selected |= {r["subject"] for r in relations if r["object"] in selected}
+                # One hop per iteration. Do not allow the second direction to
+                # traverse vertices added by the first direction in this hop.
+                neighbors = (
+                    {r["object"] for r in relations if r["subject"] in frontier}
+                    | {r["subject"] for r in relations if r["object"] in frontier}
+                )
+                frontier = neighbors - selected
+                selected.update(frontier)
+                if not frontier:
+                    break
             found_claims = [claims[k] for k in sorted(selected)]
             found_relations = [r for r in relations if r["subject"] in selected and r["object"] in selected]
             extra["impact_limit"] = "Only declared edges are traversed (either direction); paths are CANDIDATES, not causal or transitive proofs."
@@ -223,6 +233,8 @@ def query_knowledge(
                 {"revision": r["revision"], "indexed_order": r["indexed_order"], "claim": json.loads(r["claim"])}
                 for r in rows[:limit]
             ]
+            extra["history_total_entries"] = len(rows)
+            extra_truncated = len(rows) > limit
             extra["history_limit"] = "Indexed order is not proven Git ancestry or chronology."
         elif operation == "changes":
             assert base_ref is not None
@@ -231,20 +243,28 @@ def query_knowledge(
             old_claims = _read_claims(conn, old_key)
             old_relations = {r["id"]: r for r in _read_relations(conn, old_key)}
             new_relations = {r["id"]: r for r in relations}
-            extra["claim_delta"] = {
-                "added": sorted(claims.keys() - old_claims.keys())[:limit],
-                "removed": sorted(old_claims.keys() - claims.keys())[:limit],
-                "changed": sorted(k for k in claims.keys() & old_claims.keys() if claims[k] != old_claims[k])[:limit],
+            claim_deltas = {
+                "added": sorted(claims.keys() - old_claims.keys()),
+                "removed": sorted(old_claims.keys() - claims.keys()),
+                "changed": sorted(k for k in claims.keys() & old_claims.keys() if claims[k] != old_claims[k]),
             }
-            extra["relation_delta"] = {
-                "added": sorted(new_relations.keys() - old_relations.keys())[:limit],
-                "removed": sorted(old_relations.keys() - new_relations.keys())[:limit],
+            relation_deltas = {
+                "added": sorted(new_relations.keys() - old_relations.keys()),
+                "removed": sorted(old_relations.keys() - new_relations.keys()),
                 "changed": sorted(k for k in new_relations.keys() & old_relations.keys()
-                                  if new_relations[k] != old_relations[k])[:limit],
+                                  if new_relations[k] != old_relations[k]),
+            }
+            extra_truncated = any(len(items) > limit for changes in (claim_deltas, relation_deltas)
+                                  for items in changes.values())
+            extra["claim_delta"] = {kind: items[:limit] for kind, items in claim_deltas.items()}
+            extra["relation_delta"] = {kind: items[:limit] for kind, items in relation_deltas.items()}
+            extra["delta_total_counts"] = {
+                "claims": {kind: len(items) for kind, items in claim_deltas.items()},
+                "relations": {kind: len(items) for kind, items in relation_deltas.items()},
             }
             extra["comparison_limit"] = "Snapshot set differences only; repository ancestry and semantic effects are NOT established."
 
-        truncated = len(found_claims) > limit or len(found_relations) > limit
+        truncated = extra_truncated or len(found_claims) > limit or len(found_relations) > limit
         envelope = {
             "repository": repository, "target_ref": target_ref, "operation": operation,
             "claims": found_claims[:limit], "relations": found_relations[:limit],
