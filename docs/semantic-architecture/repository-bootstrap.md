@@ -129,3 +129,15 @@ The meaningful product criterion is an independent coding agent that, when
 working on a real engineering responsibility, uses source-cited accumulated
 knowledge to make a materially better warranted decision or to correct stale
 knowledge, preserving accurate history and reporting its costs.
+
+
+## Agent-driven living repository knowledge (RSS candidate)
+
+`skills/repository-semantic-steward/SKILL.md` now describes source-grounded
+first-visit semantic construction, revision-aware recall, and selective
+reconciliation after actual development. The agent interprets original
+sources; orientation and structural records remain path/syntax observations.
+`knowledge-proposal-check` safely preflights dirty/untracked proposals without
+committing their content as truth. Three-/four-digit ADR identifiers, entry
+documents such as `MISSION.md`, and path-only JavaScript/TypeScript observations
+support the initial Auteur transfer. These do not prove product benefit.

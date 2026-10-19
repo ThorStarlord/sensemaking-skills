@@ -1,6 +1,6 @@
 # Persistent Semantic Knowledge — CLI and source contract
 
-**Status:** Candidate S1-S4 implementation on PR #550, stacked on owner strategy PR #549.
+**Status:** S1-S4 is integrated; repository orientation and stewardship extensions are candidate PRs #553 and #555, not yet main.
 **Authority:** ADR 0031 and the Git-reviewed original source documents. The index is never authority.
 **Existing interface:** sensemaking-skills semantic (no new runtime or registered Skill).
 
@@ -12,7 +12,7 @@ Build a local, versioned, queryable semantic projection over a specific reposito
 
 The source builder ingests only:
 - Tagged lines from tracked .sensemaking/intent.md, context.md, invariants.md and decisions/*.md.
-- Tracked docs/adr/NNNN-*.md title and declared status (not the full rationale; follow the source).
+- Tracked docs/adr/NNNN-*.md and, in RSS candidate, NNN-*.md title/status and bounded literal excerpts (source authority remains unverified).
 - Git-reviewed, tracked .sensemaking/knowledge/*.json records (schema version 1).
 - Optionally bounded Python AST import **syntax** observations through the existing probe.
 
@@ -157,3 +157,20 @@ introduced.
 
 See [Repository Semantic Bootstrap](repository-bootstrap.md) for scope,
 evidence boundaries, source-drift handling and real-world qualification.
+
+
+## Semantic steward candidate — safe draft authoring
+
+`skills/repository-semantic-steward/SKILL.md` provides BOOTSTRAP, RECALL,
+RECONCILE and read-only AUDIT instructions. While drafting an untracked
+`.sensemaking/knowledge/*.json` file in a dirty working tree, use:
+
+```bash
+sensemaking-skills semantic knowledge-proposal-check --repo . \
+  --proposal .sensemaking/knowledge/my-domain.json --json
+```
+
+This checks schema, endpoints and Git-tracked local evidence. It does NOT
+establish semantic truth, current committed evidence, or owner authority.
+For source-pinned indexing, commit the reviewed source/knowledge changes and
+build the SQLite snapshot at the exact new SHA in a separate clean worktree.

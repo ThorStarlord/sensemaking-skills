@@ -490,3 +490,25 @@ acceptance boundaries are in
 No permission, merger/deployment authority or new autonomous controller is
 derived from a knowledge record or repository onboarding. A repository can
 still be developed directly when a local bounded responsibility is clear.
+
+
+## 17. Repository Semantic Steward — RSS implementation direction
+
+The approved reusable Skill `repository-semantic-steward` belongs in
+Sensemaking Skills. BOOTSTRAP reconstructs a source-grounded product ontology,
+design, implementation relationships, tests and decisions; RECALL offers
+revision-aware knowledge for real work; RECONCILE corrects or preserves relevant
+knowledge after consequential evidence. AUDIT does not change claims.
+
+PR #555 is a candidate, stacked on unmerged PR #553; PR #551's query-integrity
+work remains an independent candidate and needs normal reconciliation rather
+than being silently claimed as integrated. Reviewed Git-authored semantic
+records and the versioned SQLite index remain the only knowledge substrate.
+Dirty workspace authoring is permissible, but exact committed source indexing
+requires a separate clean snapshot. No universal ontology migration is selected.
+
+Auteur's Book Workspace and graph-first Studio are the first external pilot.
+Source accuracy, real engineering usefulness and genuinely independent agent
+continuation are separate qualification levels. Existing S5 Issue #552 and
+RSB-6 Issue #554 remain unexecuted until independent coding-agent evidence
+exists; this candidate does not authorize merge or release.

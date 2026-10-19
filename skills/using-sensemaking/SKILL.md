@@ -21,6 +21,15 @@ Skill does not replace or duplicate its semantic judgment.
 
 Do not turn this bootstrap into a fixed choreography. Registered workflows and scripts can coordinate already-selected work, but they do not replace your responsibility-selection judgment.
 
+## Optional persistent repository knowledge
+
+Use `../repository-semantic-steward/SKILL.md` when an actual multi-session
+architectural-memory responsibility is warranted. RECALL retrieves selectively
+and checks cited original sources; BOOTSTRAP builds a reviewed first-visit model;
+RECONCILE preserves consequential learning after engineering. None is mandatory
+for a trivial local fix, an authority source, or a second planner.
+`repo-sensemaker` remains the diagnostic capability.
+
 ## Default doctrine
 
 Normal use should fit in one compact loop:

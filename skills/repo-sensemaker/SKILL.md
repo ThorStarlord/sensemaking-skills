@@ -48,6 +48,12 @@ domain invariants, relevant code, tests, and owner decisions. An existing
 `.sensemaking/` pack is a convenient index, **not** a replacement for its
 cited sources and not an additional permission layer.
 
+When the responsibility is to build, recall or correct a persistent
+repository ontology/architecture model, use
+`../repository-semantic-steward/SKILL.md`. The diagnostic Brief may provide
+evidence but is not a durable architecture memory. Do not require a complete
+semantic model for routine diagnostics.
+
 If the existing sources already answer the question, **act or diagnose**
 without rewriting them. Do not make creation of a complete pack a prerequisite
 for proposing a local repair or executing an authorized responsibility.
