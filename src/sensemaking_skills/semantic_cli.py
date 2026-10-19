@@ -27,6 +27,7 @@ from .semantic_architecture import (
 from .semantic_architecture.impact import build_impact_preview
 from .semantic_architecture.knowledge_sources import build_knowledge_snapshot, verified_tracked_sources
 from .semantic_architecture.repository_bootstrap import orient_repository
+from .semantic_architecture.stewardship_validation import inspect_knowledge_proposal
 from .semantic_architecture.knowledge_store import audit_knowledge_sources, query_knowledge, store_snapshot
 
 
@@ -144,6 +145,20 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
             raise click.ClickException(str(exc)) from exc
         payload["code"] = "SEMANTIC_REPOSITORY_ORIENTATION"
+        _emit(payload, output_json=output_json)
+
+    @semantic_group.command(name="knowledge-proposal-check")
+    @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--proposal", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_knowledge_proposal_check(
+        repo_root: Path, proposal: Path, output_json: bool,
+    ) -> None:
+        """Validate a dirty/untracked authored proposal without indexing it as fact."""
+        try:
+            payload = inspect_knowledge_proposal(repo_root, proposal)
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError, json.JSONDecodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)
 
     @semantic_group.command(name="knowledge-query")

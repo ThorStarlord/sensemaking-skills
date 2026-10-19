@@ -32,6 +32,9 @@ _MANIFESTS = frozenset({
 })
 _DOCS = frozenset({
     "README.md", "STATUS.md", "CONTEXT.md", "AGENTS.md",
+    "MISSION.md", "FACTORY_RULES.md", "ARCHITECTURE.md", "PRD.md",
+    "docs/PRD.md", "docs/architecture.md", "docs/narrative-architecture.md",
+    "docs/architecture-constitution.md", "docs/product-evolution-roadmap.md",
     "docs/product-strategy.md", "docs/persistent-semantic-stewardship-plan.md",
     ".sensemaking/intent.md", ".sensemaking/context.md",
     ".sensemaking/invariants.md",
@@ -41,6 +44,11 @@ _SKIP_PARTS = frozenset({
     "__pycache__", ".next", "vendor", ".tox",
 })
 _MAX_SOURCE_BYTES = 524288
+# File observations only. These suffixes do NOT imply a parsed import graph or
+# verified runtime ownership. Keep support for the languages found in Auteur.
+_STRUCTURAL_CODE_SUFFIXES = frozenset({
+    ".py", ".js", ".jsx", ".ts", ".tsx", ".rs", ".cs", ".go", ".gd",
+})
 
 
 def _candidate(path: str) -> bool:
@@ -160,15 +168,17 @@ def structural_records(
 ) -> tuple[list[KnowledgeClaim], list[KnowledgeRelation], bool]:
     """Create evidence-backed file/directory placement edges, not dependencies.
 
-    Root/docs manifests and Python files under recognized source/test roots are
-    represented. The scope is intentionally smaller than a whole-program graph.
+    Entry docs, manifests and source files under recognized roots are represented.
+    Non-Python paths are observed as files only, not as executable AST
+    relationships. The scope remains smaller than a whole-program graph.
     """
     if not 1 <= max_structural_files <= 2000:
         raise ValueError("max_structural_files must be 1..2000")
     eligible = [
         p for p in tracked if _candidate(p) and (
             p in _DOCS or Path(p).name in _MANIFESTS
-            or (Path(p).parts[0] in _SOURCE_ROOTS and p.endswith(".py"))
+            or (Path(p).parts[0] in _SOURCE_ROOTS
+                and Path(p).suffix.lower() in _STRUCTURAL_CODE_SUFFIXES)
         )
     ]
     eligible.sort(key=_rank)

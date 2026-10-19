@@ -232,8 +232,91 @@ def test_symlink_evidence_fails_closed(target, tmp_path):
         snapshot((root, altered), include_repository_structure=True)
 
 
-def test_unsupported_language_remains_just_path_observation(target):
+def test_non_python_source_is_observed_without_inferred_semantics(target):
     snap = snapshot(target, include_repository_structure=True)
     assert not any("syntax" in scope.lower() for scope in snap.source_scope)
-    assert stable_id("file", "frontend/page.tsx") not in {c.id for c in snap.claims}
+    node = next(c for c in snap.claims if c.id == stable_id("file", "frontend/page.tsx"))
+    assert node.kind == "source" and node.authority_kind == "mechanical"
+    assert not any(r.predicate in {"depends_on", "implemented_by", "tested_by"}
+                   for r in snap.relations)
     assert all(not r.attributes.get("authority_verified", False) for r in snap.relations)
+
+
+def test_auteur_entry_docs_and_three_digit_adrs(target):
+    root, _ = target
+    (root / "MISSION.md").write_text("# Mission\n", encoding="utf-8")
+    (root / "docs/narrative-architecture.md").write_text("# Architecture\n", encoding="utf-8")
+    (root / "docs/adr/019-map.md").write_text(
+        "# ADR 019: Map authority\n\n**Status:** Accepted\n", encoding="utf-8"
+    )
+    sha = commit(root, "add Auteur-shaped documents")
+    valid, tracked = verified_tracked_sources(root, sha)
+    oriented = orient_repository(valid, tracked, repository="example/product", target_ref=sha)
+    assert "MISSION.md" in oriented["entry_documents"]
+    assert "docs/narrative-architecture.md" in oriented["entry_documents"]
+    snap = snapshot((root, sha))
+    adr = next(c for c in snap.claims if c.id == "adr:019")
+    assert "Map authority" in adr.statement
+    assert adr.source_ref == "file:docs/adr/019-map.md:line:1"
+
+
+def test_proposal_check_accepts_dirty_untracked_draft_but_does_not_index_it(target):
+    from sensemaking_skills.semantic_architecture.stewardship_validation import inspect_knowledge_proposal
+
+    root, sha = target
+    proposal = root / ".sensemaking/knowledge/proposed.json"
+    proposal.write_text(json.dumps({
+        "schema_version": 1,
+        "claims": [{
+            "id": "cap:book-reentry", "kind": "capability",
+            "statement": "Book re-entry is a proposed capability",
+            "authority_kind": "document",
+            "authority_ref": "docs/adr/0031-stewardship.md",
+            "evidence_refs": ["file:docs/adr/0031-stewardship.md"],
+        }],
+        "relations": [{
+            "id": "rel:book-adr", "subject": "cap:book-reentry",
+            "predicate": "decided_by", "object": "adr:0031",
+            "evidence_refs": ["file:docs/adr/0031-stewardship.md"],
+        }],
+    }), encoding="utf-8")
+    response = inspect_knowledge_proposal(root, proposal)
+    assert response["code"] == "SEMANTIC_KNOWLEDGE_PROPOSAL_VALID"
+    assert response["head_sha"] == sha
+    assert response["worktree_clean"] is False
+    assert response["existing_endpoints_checked"] == 1
+    assert response["semantic_truth_established"] is False
+    runner = CliRunner()
+    cli_out = runner.invoke(cli, [
+        "semantic", "knowledge-proposal-check", "--repo", str(root),
+        "--proposal", str(proposal), "--json",
+    ])
+    assert cli_out.exit_code == 0, cli_out.output
+    assert json.loads(cli_out.output)["valid"] is True
+    assert git(root, "rev-parse", "HEAD") == sha
+
+
+def test_proposal_check_rejects_missing_evidence_and_unknown_relation(target):
+    from sensemaking_skills.semantic_architecture.stewardship_validation import inspect_knowledge_proposal
+
+    root, _ = target
+    path = root / ".sensemaking/knowledge/draft.json"
+    candidate = {
+        "schema_version": 1,
+        "claims": [{"id": "cap:draft", "kind": "capability", "statement": "Proposed",
+                    "authority_kind": "hypothesis", "authority_ref": "hypothesis",
+                    "evidence_refs": ["file:missing-source.py"]}],
+        "relations": [],
+    }
+    path.write_text(json.dumps(candidate), encoding="utf-8")
+    with pytest.raises(ValueError, match="not Git-tracked|missing|tracked"):
+        inspect_knowledge_proposal(root, path)
+    candidate["claims"][0]["evidence_refs"] = ["file:README.md"]
+    candidate["relations"] = [{
+        "id": "edge:missing", "subject": "cap:draft", "predicate": "references",
+        "object": "component:not-real", "evidence_refs": ["file:README.md"],
+    }]
+    path.write_text(json.dumps(candidate), encoding="utf-8")
+    with pytest.raises(ValueError, match="unresolved relationship endpoint"):
+        inspect_knowledge_proposal(root, path)
+

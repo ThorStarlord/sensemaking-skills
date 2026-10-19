@@ -170,7 +170,7 @@ def _adr_excerpts(lines: list[str], max_chars: int = 1600) -> dict[str, str]:
 def _adr_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
     result = []
     for p in sorted(tracked):
-        if not re.fullmatch(r"docs/adr/\d{4}-[^/]+\.md", p):
+        if not re.fullmatch(r"docs/adr/\d{3,4}-[^/]+\.md", p):
             continue
         lines = _source(root, tracked, p).read_text(encoding="utf-8").splitlines()
         title = lines[0].lstrip("# ").strip() if lines else ""
@@ -184,7 +184,7 @@ def _adr_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
                 break
         source_ref = f"file:{p}:line:1"
         result.append(KnowledgeClaim(
-            id="adr:" + Path(p).name[:4],
+            id="adr:" + Path(p).name.split("-", 1)[0],
             kind="decision",
             statement=title, epistemic_status="observed",
             authority_kind="document", authority_ref=p,
