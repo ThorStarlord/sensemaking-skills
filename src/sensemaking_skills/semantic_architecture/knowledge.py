@@ -18,7 +18,7 @@ SHA_PATTERN = re.compile(r"[0-9a-f]{40}\Z")
 ID_PATTERN = re.compile(r"[a-zA-Z][a-zA-Z0-9_.:\-]{2,127}\Z")
 CLAIM_KINDS = frozenset({
     "goal", "non_goal", "domain_concept", "capability", "constraint",
-    "invariant", "contract", "component", "source", "verification",
+    "invariant", "contract", "component", "directory", "source", "verification",
     "decision", "alternative", "incident", "lesson", "hypothesis",
     "opportunity", "observation",
 })
@@ -35,7 +35,7 @@ PREDICATES = frozenset({
     "serves_goal", "requires_capability", "constrained_by", "depends_on",
     "implemented_by", "tested_by", "decided_by", "supersedes",
     "contradicts", "derived_from", "affected_by_change", "learned_from",
-    "candidate_opportunity_for", "defines", "references",
+    "candidate_opportunity_for", "defines", "references", "contained_in",
 })
 
 

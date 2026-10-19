@@ -1,6 +1,6 @@
 # Persistent Semantic Knowledge — CLI and source contract
 
-**Status:** Candidate S1-S4 implementation on PR #550, stacked on owner strategy PR #549.
+**Status:** S1-S4 is integrated; repository orientation and stewardship extensions are candidate PRs #553 and #555, not yet main.
 **Authority:** ADR 0031 and the Git-reviewed original source documents. The index is never authority.
 **Existing interface:** sensemaking-skills semantic (no new runtime or registered Skill).
 
@@ -12,7 +12,7 @@ Build a local, versioned, queryable semantic projection over a specific reposito
 
 The source builder ingests only:
 - Tagged lines from tracked .sensemaking/intent.md, context.md, invariants.md and decisions/*.md.
-- Tracked docs/adr/NNNN-*.md title and declared status (not the full rationale; follow the source).
+- Tracked docs/adr/NNNN-*.md and, in RSS candidate, NNN-*.md title/status and bounded literal excerpts (source authority remains unverified).
 - Git-reviewed, tracked .sensemaking/knowledge/*.json records (schema version 1).
 - Optionally bounded Python AST import **syntax** observations through the existing probe.
 
@@ -128,3 +128,49 @@ No mandatory indexing stage is required for routine local coding. The index is a
 Machine tests can establish schema integrity, deterministic reconstruction, exact source revision binding and query behavior. The real-repository exact-head worktree smoke test establishes only source reconstruction and retrieval, NOT a fresh independent model's reuse of prior lessons. Genuine longitudinal compounding and incremental architectural benefit remain future evidence questions under ADR 0031.
 
 S6 richness (other language adapters, domain-specific graph types, optional visualization or cross-repository fusion) should be driven by real consumers rather than auto-generating a complete ontology from arbitrary code.
+
+
+## First-visit repository orientation and bounded structural skeleton
+
+Use `knowledge-orient` to inspect a clean Git checkout without creating
+an index or reading unreviewed product semantics:
+
+```bash
+REF="$(git rev-parse HEAD)"
+sensemaking-skills semantic knowledge-orient --repo . \
+  --repository "owner/repository" --target-ref "$REF" --json
+```
+
+The output contains Git path counts and bounded representative source/test
+paths, manifest/document candidates, explicit truncation, source scope and
+authority disclaimers. It cannot prove module ownership or application
+behavior. `--max-files` and `--sample-limit` bound output work.
+If `--db /path/outside/repository.sqlite` is supplied, exact-revision
+semantic index counts/source scope are also returned (no index mutation).
+
+Optionally include mechanically observed file/directory containment using
+`knowledge-build --include-repository-structure --max-structural-files 600`.
+The resulting `contained_in` relation is purely a tracked path relationship,
+not a product dependency. It can coexist with `--include-python-imports`.
+No new knowledge schema version, database or automatic semantic authority is
+introduced.
+
+See [Repository Semantic Bootstrap](repository-bootstrap.md) for scope,
+evidence boundaries, source-drift handling and real-world qualification.
+
+
+## Semantic steward candidate — safe draft authoring
+
+`skills/repository-semantic-steward/SKILL.md` provides BOOTSTRAP, RECALL,
+RECONCILE and read-only AUDIT instructions. While drafting an untracked
+`.sensemaking/knowledge/*.json` file in a dirty working tree, use:
+
+```bash
+sensemaking-skills semantic knowledge-proposal-check --repo . \
+  --proposal .sensemaking/knowledge/my-domain.json --json
+```
+
+This checks schema, endpoints and Git-tracked local evidence. It does NOT
+establish semantic truth, current committed evidence, or owner authority.
+For source-pinned indexing, commit the reviewed source/knowledge changes and
+build the SQLite snapshot at the exact new SHA in a separate clean worktree.

@@ -170,7 +170,7 @@ def _adr_excerpts(lines: list[str], max_chars: int = 1600) -> dict[str, str]:
 def _adr_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
     result = []
     for p in sorted(tracked):
-        if not re.fullmatch(r"docs/adr/\d{4}-[^/]+\.md", p):
+        if not re.fullmatch(r"docs/adr/\d{3,4}-[^/]+\.md", p):
             continue
         lines = _source(root, tracked, p).read_text(encoding="utf-8").splitlines()
         title = lines[0].lstrip("# ").strip() if lines else ""
@@ -184,7 +184,7 @@ def _adr_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
                 break
         source_ref = f"file:{p}:line:1"
         result.append(KnowledgeClaim(
-            id="adr:" + Path(p).name[:4],
+            id="adr:" + Path(p).name.split("-", 1)[0],
             kind="decision",
             statement=title, epistemic_status="observed",
             authority_kind="document", authority_ref=p,
@@ -265,11 +265,15 @@ def build_knowledge_snapshot(
     repository: str, target_ref: str,
     include_python_imports: bool = False,
     max_imports: int = 1000,
+    include_repository_structure: bool = False,
+    max_structural_files: int = 600,
 ) -> KnowledgeSnapshot:
     if not repository.strip() or len(repository) > 255:
         raise ValueError("explicit repository identity is required")
     if not 0 <= max_imports <= 10000:
         raise ValueError("max_imports must be between 0 and 10000")
+    if not 1 <= max_structural_files <= 2000:
+        raise ValueError("max_structural_files must be between 1 and 2000")
     root, tracked = verified_tracked_sources(repo_root, target_ref)
     claims = [*_grounding_claims(root, tracked), *_adr_claims(root, tracked)]
     authored_claims, authored_edges = _authored_records(root, tracked)
@@ -277,9 +281,26 @@ def build_knowledge_snapshot(
     edges = [*authored_edges]
     limits = list(_LIMITS)
     scope = ["tracked Grounding Pack lines", "tracked ADR title/status", "tracked authored knowledge JSON"]
+    if include_repository_structure:
+        from .repository_bootstrap import structural_records
+        structural_claims, structural_edges, partial = structural_records(
+            root, tracked, max_structural_files=max_structural_files,
+        )
+        claims.extend(structural_claims)
+        edges.extend(structural_edges)
+        scope.append("opt-in Git-tracked file/directory containment skeleton")
+        if partial:
+            limits.append("Structural file selection truncated; unselected paths are NOT ASSESSED.")
     if include_python_imports:
         extra_claims, extra_edges, partial = _import_syntax(root, tracked, target_ref, max_imports)
-        claims.extend(extra_claims)
+        existing = {claim.id: claim for claim in claims}
+        for claim in extra_claims:
+            previous = existing.get(claim.id)
+            if previous is None:
+                claims.append(claim)
+                existing[claim.id] = claim
+            elif not (previous.kind == claim.kind and previous.statement == claim.statement):
+                raise ValueError(f"conflicting knowledge claim identity: {claim.id}")
         edges.extend(extra_edges)
         scope.append("opt-in Python AST import syntax")
         if partial:

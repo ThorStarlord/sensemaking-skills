@@ -99,6 +99,7 @@ skill_inventory:
     - unknowns-mapper
     - usage-researcher
     - using-sensemaking
+    - repository-semantic-steward
     - workflow-planner
   experimental: []
 

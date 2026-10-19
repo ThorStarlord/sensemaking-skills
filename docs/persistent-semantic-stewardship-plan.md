@@ -465,3 +465,50 @@ The goal is not to accumulate as many ontology rows as possible. The goal is
 for **the next coding agent to have a more accurate, traceable, and useful
 understanding of the product than the previous agent had**, and to be able
 to explain how that accumulated knowledge changed what it built.
+
+
+## 16. Repository first-visit semantic bootstrap — implementation extension
+
+**Owner selection:** first-visit orientation plus a broad, bounded structural
+skeleton; progressively deepened semantic knowledge, not a mandatory exhaustive
+ontology. This extends S1-S6 without resetting accepted strategy or claiming
+independent agent-learning qualification.
+
+The implementation contracts, CLI, PR delivery slices, explicit deferments and
+acceptance boundaries are in
+[Repository Semantic Bootstrap](semantic-architecture/repository-bootstrap.md).
+
+- RSB-0/1/2: read-only pinned orientation, optional tracked-source containment
+  indexing and focused mechanical qualification.
+- RSB-3/4/5: reuse reviewed S1-S4 semantic records, explicit contradictions,
+  currentness audit and optional source-checked consultation in existing Skills.
+- RSB-6: real fresh independent-session qualification after S5's original
+  Episode B gate, without counting same-session simulations as independent.
+- RSB-7: conditional transfer/domain adapters selected by real tasks and
+  observed limitations, not automatic completeness targets.
+
+No permission, merger/deployment authority or new autonomous controller is
+derived from a knowledge record or repository onboarding. A repository can
+still be developed directly when a local bounded responsibility is clear.
+
+
+## 17. Repository Semantic Steward — RSS implementation direction
+
+The approved reusable Skill `repository-semantic-steward` belongs in
+Sensemaking Skills. BOOTSTRAP reconstructs a source-grounded product ontology,
+design, implementation relationships, tests and decisions; RECALL offers
+revision-aware knowledge for real work; RECONCILE corrects or preserves relevant
+knowledge after consequential evidence. AUDIT does not change claims.
+
+PR #555 is a candidate, stacked on unmerged PR #553; PR #551's query-integrity
+work remains an independent candidate and needs normal reconciliation rather
+than being silently claimed as integrated. Reviewed Git-authored semantic
+records and the versioned SQLite index remain the only knowledge substrate.
+Dirty workspace authoring is permissible, but exact committed source indexing
+requires a separate clean snapshot. No universal ontology migration is selected.
+
+Auteur's Book Workspace and graph-first Studio are the first external pilot.
+Source accuracy, real engineering usefulness and genuinely independent agent
+continuation are separate qualification levels. Existing S5 Issue #552 and
+RSB-6 Issue #554 remain unexecuted until independent coding-agent evidence
+exists; this candidate does not authorize merge or release.
