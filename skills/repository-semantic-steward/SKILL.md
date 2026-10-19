@@ -36,7 +36,56 @@ Use [knowledge contract](references/knowledge-contract.md) for types, provenance
 7. When new work materially changes knowledge, update the **affected** records and preserve earlier revisions; reconstruct the index at the new clean commit. Do not rewrite all knowledge by default.
 8. A knowledge claim is not permission to accept an author's content, choose a product thesis, change scope, merge, deploy, release or invoke a model. Preserve all existing authority boundaries.
 
-## CLI interfaces (installed Sensemaking candidate with Repository Bootstrap)
+## Verify and pin the CLI
+
+Do not assume the first `sensemaking-skills` executable on `PATH` contains the
+commands documented below. Editable installs and scripts from another Python
+installation can leave the shell resolving a different version than the
+checked-out repository.
+
+Before running a workflow, inspect the executable and its command tree:
+
+```bash
+sensemaking-skills --version
+sensemaking-skills semantic --help
+```
+
+If the required command is absent, install the exact reviewed Sensemaking Git
+SHA selected for this task into an isolated `uv` tool environment. Replace the
+placeholder with a full 40-character SHA; do not use a moving branch name. Pin
+the resolved runtime dependencies when recording an exact qualification run.
+This leaves unrelated global or editable installs untouched:
+
+```bash
+uv tool install --python <installed-python-3.11-or-newer> \
+  --with 'click==<verified-version>' \
+  --with 'PyYAML==<verified-version>' \
+  --from "git+https://github.com/ThorStarlord/sensemaking-skills.git@<SENSEMAKING_SHA>" \
+  sensemaking-skills
+```
+
+Invoke the pinned tool with the same exact source ref. Keep `--from`; an
+unpinned `uv tool run sensemaking-skills` can resolve an unrelated executable
+already on `PATH`:
+
+```bash
+uv tool run \
+  --from "git+https://github.com/ThorStarlord/sensemaking-skills.git@<SENSEMAKING_SHA>" \
+  sensemaking-skills semantic knowledge-orient \
+  --repo . --repository owner/repo --target-ref "$REF" --json
+```
+
+Record the Sensemaking source SHA, `--version` output, runtime Python, and
+resolved dependency versions alongside the target repository SHA. These are
+separate pins. Use the same `uv tool run --from ... sensemaking-skills semantic`
+prefix for `knowledge-build`, `knowledge-query`, `knowledge-audit`, and
+`knowledge-proposal-check` when the resolved global executable lacks them.
+
+## CLI interfaces
+
+The examples below use the `sensemaking-skills` executable name. Apply the
+verified pinned `uv tool run` prefix above when the active environment's
+executable does not expose these commands.
 
 ```bash
 REF="$(git rev-parse HEAD)"
