@@ -2,14 +2,14 @@
 
 ## Trigger
 
-A consequential change to product intent, accepted design, important implementation, tests, migration, failure analysis or incident evidence. Minor edits with no durable knowledge consequence use NO_MODEL_CHANGE.
+Consequential new evidence about product intent, accepted design, important implementation, tests, migration, failure analysis or incidents. A corrected test assumption or a task blocked by an overlooked architectural alternative can justify a durable lesson **without changing product code**. Minor edits and unsurprising confirmations with no reusable consequence use NO_MODEL_CHANGE.
 
 ## Procedure
 
 1. Pin old and current repository revisions. Read the changed-source set and relevant prior claims. A dirty active checkout may be inspected but is not a committed revision.
 2. Compare source fingerprints using `semantic knowledge-audit` on a clean checkout of the **current** commit, with `--indexed-ref` set to the old indexed SHA and `--current-ref` to HEAD.
 3. If both snapshots are indexed, use `knowledge-query --operation changes --base-ref OLD --target-ref NEW` to inspect recorded set differences. This is not proof of actual semantic consequences.
-4. Follow changed evidence to claims/relations, verify original affected code and tests, and check documented product/architecture authority.
+4. Follow changed evidence **and consequential newly understood evidence** to claims/relations, verify original affected code and tests, and check documented product/architecture authority. Do not assume only changed source files can teach something worth retaining.
 5. Choose a disposition per consequential affected claim:
    - **CONFIRM:** current evidence supports the existing interpretation.
    - **REVISE:** correct an unsupported or mistaken interpretation.
@@ -17,6 +17,8 @@ A consequential change to product intent, accepted design, important implementat
    - **ADD:** introduce a meaningful new concept, relationship, decision or lesson.
    - **CONTEST:** preserve contradictory sources as unresolved.
    - **NO_MODEL_CHANGE:** no durable change is justified.
+
+   Distinguish *no existing claim was falsified* from *nothing reusable was learned*. Before selecting NO_MODEL_CHANGE after a repaired test, incorrect blocker inference or architecture rediscovery, ask whether a future agent would plausibly repeat the mistake without one source-linked invariant, decision link or lesson. Use **ADD** only if the distinction is stable, decision-relevant, source-supported and not already represented. A successful no-change run is not a quota failure.
 6. Edit only the relevant reviewed Git-authored knowledge files and source documents. If a record's interpretation is disputed, never silently change its historical assertion to disguise the conflict.
 7. Check structured record integrity, cited paths and epistemic states. Publish the changes through the repository's normal branch/review workflow.
 8. At the resulting clean committed SHA, rebuild the index outside the repo, check currentness, and preserve older indexed snapshots for history queries.
