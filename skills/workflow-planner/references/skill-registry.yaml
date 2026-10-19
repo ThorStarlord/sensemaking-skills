@@ -19,6 +19,10 @@ ecosystems:
         artifact: repository_sensemaking_brief
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         invocation: { runtime: claude_code, command: "/repo-sensemaker" }
+      - id: repository-semantic-steward
+        purpose: bootstrap, recall and reconcile source-grounded repository architecture memory
+        availability: { type: local, executable_by_orchestrator: false, requires_installed_skill: true }
+        status: current
       - id: strategic-repository-analysis
         purpose: model repository evolution paths and strategic tradeoffs
         artifact: strategic_repository_analysis

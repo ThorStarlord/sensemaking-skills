@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "cap:repository-orientation",
+      "kind": "capability",
+      "statement": "A first-visit agent can inspect bounded committed repository paths and relate reviewed product knowledge to the selected source revision.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/repository-bootstrap.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/repository-bootstrap.md"
+      ],
+      "attributes": {
+        "claim_ceiling": "Candidate source implementation; usability and longitudinal benefit not qualified"
+      }
+    },
+    {
+      "id": "component:repository-bootstrap",
+      "kind": "component",
+      "statement": "The repository bootstrap module produces source-pinned path orientation and optional mechanical file containment.",
+      "epistemic_status": "observed",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/repository_bootstrap.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/repository_bootstrap.py"
+      ],
+      "attributes": {
+        "claim_ceiling": "Observed source implementation, not architecture completeness"
+      }
+    },
+    {
+      "id": "verification:repository-bootstrap-tests",
+      "kind": "verification",
+      "statement": "Repository bootstrap regression tests exercise source pinning, containment, truncation, currentness and no inferred authority.",
+      "epistemic_status": "observed",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_repository_bootstrap.py",
+      "evidence_refs": [
+        "file:tests/test_repository_bootstrap.py"
+      ],
+      "attributes": {
+        "claim_ceiling": "Test source presence, not execution or hosted PASS"
+      }
+    },
+    {
+      "id": "decision:incremental-bootstrap",
+      "kind": "decision",
+      "statement": "First-visit knowledge construction starts with a bounded path skeleton and selectively deepens reviewed semantic relationships.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/repository-bootstrap.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/repository-bootstrap.md",
+        "file:docs/persistent-semantic-stewardship-plan.md"
+      ],
+      "attributes": {
+        "scope": "Current candidate construction policy, not a new Level-4 thesis"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:bootstrap-purpose",
+      "subject": "cap:repository-orientation",
+      "predicate": "serves_goal",
+      "object": "goal:longterm-stewardship",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "attributes": {
+        "scope": "Intended purpose, not validated learning advantage"
+      }
+    },
+    {
+      "id": "rel:bootstrap-boundary",
+      "subject": "cap:repository-orientation",
+      "predicate": "constrained_by",
+      "object": "inv:source-boundary",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/repository-bootstrap.md"
+      ],
+      "attributes": {
+        "scope": "Preserve source and owner authority"
+      }
+    },
+    {
+      "id": "rel:bootstrap-component",
+      "subject": "cap:repository-orientation",
+      "predicate": "implemented_by",
+      "object": "component:repository-bootstrap",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/repository_bootstrap.py"
+      ],
+      "attributes": {
+        "scope": "Reviewed intended feature relation; not measured product outcome"
+      }
+    },
+    {
+      "id": "rel:bootstrap-tests",
+      "subject": "cap:repository-orientation",
+      "predicate": "tested_by",
+      "object": "verification:repository-bootstrap-tests",
+      "evidence_refs": [
+        "file:tests/test_repository_bootstrap.py"
+      ],
+      "attributes": {
+        "scope": "Declared test coverage; green execution separately evidenced"
+      }
+    },
+    {
+      "id": "rel:bootstrap-decision",
+      "subject": "cap:repository-orientation",
+      "predicate": "decided_by",
+      "object": "decision:incremental-bootstrap",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/repository-bootstrap.md"
+      ],
+      "attributes": {
+        "scope": "Candidate implementation construction decision"
+      }
+    },
+    {
+      "id": "rel:bootstrap-strategy",
+      "subject": "decision:incremental-bootstrap",
+      "predicate": "derived_from",
+      "object": "adr:0031",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "attributes": {
+        "scope": "Compatible with owner-selected strategy; not new thesis authority"
+      }
+    }
+  ]
+}
