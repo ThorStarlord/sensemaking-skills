@@ -185,6 +185,40 @@
       "attributes": {
         "scope": "One same-session observation; whether later agents apply it is NOT TESTED"
       }
+    },
+    {
+      "id": "incident:shared-authored-pack-fingerprint-fanout",
+      "kind": "incident",
+      "statement": "During the 2026-10-21 self-repository stewardship episode, an edit to the shared authored JSON pack was reported to flag all 19 prior reviewed pack records in knowledge-audit and list 15 changed claims in changes; source inspection confirms whole-pack fingerprints can produce record-level change noise without proving each claim's authored meaning changed.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "scope": "Agent-reported source-revision comparison from PR #560 self-dogfooding; counts are not independently reproduced in this follow-up",
+        "claim_ceiling": "Mechanism is supported by current source inspection; source-byte flags remain valid and specific semantic false-positive counts are not established",
+        "status": "OPEN / classification granularity not repaired in PR #560"
+      }
+    },
+    {
+      "id": "lesson:distinguish-provenance-content-and-meaning",
+      "kind": "lesson",
+      "statement": "Distinguish whole-file provenance drift, changes to individual authored record fields, changes to independently cited evidence, and source-verified changes in architectural meaning before concluding that a reviewed knowledge claim was revised.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "scope": "Interpretation hygiene for existing knowledge-audit/changes; follow-up classification improvement still unimplemented",
+        "claim_ceiling": "Source-grounded guidance, not a claim that semantic changes can currently be detected automatically"
+      }
     }
   ],
   "relations": [
@@ -335,6 +369,20 @@
       "evidence_refs": [
         "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md"
       ]
+    },
+    {
+      "id": "rel:shared-authored-pack-fanout-lesson",
+      "subject": "lesson:distinguish-provenance-content-and-meaning",
+      "predicate": "learned_from",
+      "object": "incident:shared-authored-pack-fingerprint-fanout",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "scope": "Source-inspected mechanism and agent-reported incident; no repaired-code or independent reuse claim"
+      }
     }
   ]
 }

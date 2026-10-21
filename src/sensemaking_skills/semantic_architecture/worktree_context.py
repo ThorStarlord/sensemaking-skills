@@ -77,7 +77,8 @@ def changed_paths_since_indexed_ref(repo_root: Path, indexed_ref: str) -> dict[s
     """List paths whose working-tree state differs from the indexed commit.
 
     Covers commits made after indexing plus staged/unstaged/untracked edits.
-    Path names only: no file contents are read, hashed or indexed.
+    Return path names only. Git diff may inspect working-tree bytes internally;
+    those bytes are not stored in the semantic index or treated as indexed evidence.
     """
     if not re.fullmatch(r"[0-9a-f]{40}", indexed_ref):
         raise ValueError("indexed_ref must be an exact 40-character Git SHA")

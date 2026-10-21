@@ -108,9 +108,12 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
   `source_sha256` keys. `workspace_impact.affected_records` separates
   `record_source_changed` (the authored knowledge file itself was edited)
   from `changed_evidence_sources`; mechanical path/containment matches are
-  only counted in `mechanical_overlap_counts`. No file contents are read or
-  hashed (`overlay_indexed=false`), the same filter/fsmonitor protections
-  apply, and an indexed SHA missing from local Git is NOT ASSESSED. A listed
+  only counted in `mechanical_overlap_counts`. The overlap calculation
+  consumes paths only; Git's diff machinery may inspect working-tree bytes
+  when finding changed paths. Uncommitted bytes are **not incorporated into
+  the indexed semantic snapshot or treated as indexed evidence**
+  (`overlay_indexed=false`); the same filter/fsmonitor protections apply,
+  and an indexed SHA missing from local Git is NOT ASSESSED. A listed
   record needs re-inspection, not revocation; changed code that no record
   cites is a coverage gap, not evidence of no semantic effect. Use
   `knowledge-audit` for byte-level drift once the checkout is clean.
@@ -123,6 +126,34 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
 implementation behavior at the tested revision; they do not establish
 independent-session cumulative value, cross-repository transfer, release
 readiness, or a benchmark advantage.
+
+## Change granularity and shared authored-pack limitation
+
+Source change and semantic change are different questions:
+
+- **Source-byte drift:** a cited file's bytes differ from a previously indexed committed revision. `knowledge-audit` reports this faithfully but cannot decide whether an authored architectural claim remains applicable.
+- **Authored-record content change:** the specific claim's or relation's authored fields have changed; this is not the same as a changed fingerprint of the JSON file containing it.
+- **Cited evidence change:** an implementation, test or decision source referenced by the record has changed, with no automatic conclusion about the record's validity.
+- **Semantic reinterpretation:** a source-checking agent establishes a consequential change in meaning, rationale, decision status or applicability; neither a hash nor an unchanged file proves this.
+
+**Known unresolved limitation (self-repository episode, 2026-10-21):**
+`_authored_records()` fingerprints the entire `.sensemaking/knowledge/*.json`
+container for every record it contains. Editing one record can therefore
+cause `knowledge-audit` to flag every record in the pack as having changed
+source bytes. Similarly, `knowledge-query --operation changes` compares
+full record payloads, including `attributes.source_sha256`, so metadata-only
+fingerprint changes can appear as `changed` claim/relation IDs. These
+signals remain valid at their **stated** source/revision granularity but
+are too coarse to infer which individual authored records changed meaning.
+Treat them as re-inspection candidates rather than semantic deltas.
+
+See [the self-repository episode](../normal-use/semantic-steward-workspace-impact-2026-10-21.md)
+for the agent-reported counts, source explanation and the separately scoped
+follow-up. A future improvement should distinguish shared-container
+provenance, individual record-content differences and independent evidence
+drift without suppressing real source changes, dropping historical context
+or treating an unassessed dependency as absent. No such repair is implemented
+by this documentation update.
 
 ## Authored source example
 

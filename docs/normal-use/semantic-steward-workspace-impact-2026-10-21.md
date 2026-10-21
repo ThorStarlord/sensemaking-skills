@@ -19,7 +19,7 @@ The retrieved records were followed to `knowledge_store.py`, `knowledge_sources.
 1. `inv:index-snapshot-vs-working-overlay` and `verified_tracked_sources` mean `knowledge-audit` (byte-level drift) is deliberately unavailable while the checkout is dirty.
 2. RECONCILE step 1 tells the agent to "inspect changed code and existing knowledge through `knowledge-query --repo .`", but `workspace_context` only reports counts. Nothing mapped "files I edited" to "reviewed records citing them" during active work; the agent had to grep JSON by hand.
 
-The selected responsibility was therefore a read-only `workspace-impact` query operation. The invariant ruled out the tempting alternative of making `knowledge-audit` accept a dirty tree (hashing uncommitted bytes would present the overlay as compared evidence). The design keeps the overlay unread: it matches **path names** from `git diff --no-renames <indexed_ref>` plus untracked paths against each indexed record's `source_sha256` keys.
+The selected responsibility was therefore a read-only `workspace-impact` query operation. The invariant ruled out the tempting alternative of making `knowledge-audit` accept a dirty tree (hashing uncommitted bytes would present the overlay as compared evidence). The query matches **path names** returned by `git diff --no-renames <indexed_ref>` plus untracked paths against each indexed record's `source_sha256` keys. Git may inspect working-tree bytes internally when determining changed paths, but the query does not incorporate those bytes into the semantic index or treat them as indexed evidence.
 
 `bounded_coverage` for `cap:semantic-queries` also reported `alternative` as NOT ASSESSED in its neighborhood: no rejected design alternative had been recorded anywhere in the stewardship pack.
 
@@ -33,9 +33,19 @@ It also exposed a coverage gap: `knowledge_retrieval.py` (search, coverage and n
 
 - `component:knowledge-store`: **REVISE** evidence scope to include `knowledge_retrieval.py`, which the store imports for search, coverage and workspace overlap. Statement unchanged.
 - `inv:bounded-query-disclosure`: **CONFIRM**. The new operation reports `affected_record_total` and `truncated`.
-- `inv:index-snapshot-vs-working-overlay`: **CONFIRM**. The operation reads no overlay bytes (`overlay_indexed=false`); its tests are added as evidence.
+- `inv:index-snapshot-vs-working-overlay`: **CONFIRM**. The overlap calculation consumes paths and reports `overlay_indexed=false`; Git may inspect local bytes to determine changed paths, but those bytes are not incorporated as indexed semantic evidence. Its tests are added as evidence.
 - **ADD** `decision:workspace-impact-path-overlap`, `alternative:dirty-tree-byte-audit` (rejected) and `lesson:uncited-change-is-coverage-gap`, with explicit relations.
 - Other records: **NO_MODEL_CHANGE**.
+
+## Open finding: shared authored-pack fingerprint fanout (not repaired)
+
+After rebuilding the index and comparing revisions, the coding agent reported that editing the shared `.sensemaking/knowledge/stewardship.json` pack caused `knowledge-audit` to flag all **19 reviewed records** from the preceding pack, while `knowledge-query --operation changes` labeled **15 claims** as changed. These counts are the agent's recorded observation, not an independently rerun comparison in this documentation follow-up; some claims were also genuinely added or edited.
+
+Source inspection explains why this happens. In `_authored_records()` (`knowledge_sources.py`), every authored claim and relation includes the **whole containing JSON file** in its `source_sha256` fingerprints. Consequently, `knowledge-audit` truthfully reports source-byte drift across every record in that pack when the shared file changes. The `changes` operation (`knowledge_store.py`) compares the entire serialized indexed record, including fingerprint metadata, so an unchanged authored statement can be classified as `changed` when only the shared-pack fingerprint differs. This is a **granularity/diagnostic-noise problem**, not proof that `knowledge-audit` is incorrect or that every reported change is semantically false.
+
+Distinguish four separate observations: **source-file provenance drift**, **individual authored-record content change**, **change to separately cited supporting evidence**, and **a consequential change in architectural meaning**. None implies the next automatically. `workspace-impact` remains a path-level candidate selector, not a fix for this revision-comparison behavior.
+
+**Bounded follow-up, separate from PR #560:** provide a way to distinguish record-content differences and evidence drift from shared-container provenance changes, while preserving the conservative source-byte audit and explicit limits. Characterize at least two records in the same authored JSON pack: change only one record, rebuild and compare; separately change one cited implementation/test source; verify that authored-content changes, shared-pack drift and external evidence drift remain distinguishable without falsely declaring semantic validity or completeness. Do not silently filter legitimate source drift or rewrite historical snapshots.
 
 ## Limits
 
