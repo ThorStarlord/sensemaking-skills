@@ -1,6 +1,6 @@
 # Repository Semantic Bootstrap — staged implementation and use
 
-**Status:** Source-pinned orientation and opt-in structural skeleton are implemented on a candidate branch; the first independent-agent longitudinal-value qualification remains unproven.
+**Status:** source-pinned orientation and opt-in structural skeleton are integrated on main through PR #553; Repository Semantic Steward through PR #555; query integrity through PR #551. Current development is **CONSTRUCTION**. Independent-agent longitudinal and transfer-value qualification remains unproven and deferred to the release stage.
 **Product authority:** [ADR 0031](../adr/0031-persistent-semantic-stewardship.md).
 **Parent roadmap:** [Persistent Semantic Stewardship Plan](../persistent-semantic-stewardship-plan.md).
 **Compatibility:** Existing semantic knowledge JSON v1, SQLite index, queries, and Skill authority boundaries are preserved.
@@ -131,7 +131,7 @@ knowledge to make a materially better warranted decision or to correct stale
 knowledge, preserving accurate history and reporting its costs.
 
 
-## Agent-driven living repository knowledge (RSS candidate)
+## Agent-driven living repository knowledge (integrated substrate)
 
 `skills/repository-semantic-steward/SKILL.md` now describes source-grounded
 first-visit semantic construction, revision-aware recall, and selective
@@ -140,4 +140,4 @@ sources; orientation and structural records remain path/syntax observations.
 `knowledge-proposal-check` safely preflights dirty/untracked proposals without
 committing their content as truth. Three-/four-digit ADR identifiers, entry
 documents such as `MISSION.md`, and path-only JavaScript/TypeScript observations
-support the initial Auteur transfer. These do not prove product benefit.
+support the initial Auteur transfer. These do not prove independent-session or comparative product benefit. During the Construction Phase, use the active workspace and in-session agent context; commit working code and run ordinary tests without substituting a clean-room benchmark. The [construction-first implementation plan](../superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md) extends recall and bounded coverage without loosening the clean-HEAD indexing invariant.
