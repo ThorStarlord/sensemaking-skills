@@ -147,13 +147,62 @@ signals remain valid at their **stated** source/revision granularity but
 are too coarse to infer which individual authored records changed meaning.
 Treat them as re-inspection candidates rather than semantic deltas.
 
+### Additive indexed change classification (PR #561 candidate)
+
+Given two **already indexed committed revisions**, `knowledge-query --operation
+changes --base-ref OLD --target-ref NEW` continues returning the original
+`claim_delta`, `relation_delta`, `delta_total_counts` and top-level `truncated`.
+Raw `changed` IDs still compare entire indexed payloads, including generated
+source fingerprints. A new `change_classification` section explains those
+raw changes without redefining them:
+
+- `claims` / `relations`: stable-ID, deterministic, separately limited rows for
+  records present in both revisions with unequal indexed payloads.
+- `counts`: **pre-limit** totals per type, including assessed, NOT_ASSESSED,
+  authored-field changes, authoring-location changes, origin-source drift,
+  supporting-source differences and provenance-only cases.
+- `truncated`: whether either detailed list omitted changed records under
+  `--limit` (the original delta lists retain their own truncation semantics).
+- Each assessed row includes `authored_fields_changed`,
+  `authoring_location_changed`, `authoring_source_changed`,
+  `changed_supporting_sources` and `provenance_only`.
+- `changed_supporting_sources` reports path-level `fingerprint_changed`,
+  `reference_added`, or `reference_removed`. Added/removed references indicate
+  that the source was newly cited or no longer cited, **not** that its bytes
+  changed.
+- `assessment_status=NOT_ASSESSED` and `unassessed_reason` disclose unsupported
+  record origin, missing/invalid fingerprints or missing container fingerprint.
+  Unassessed facets return `null`, not a false assertion of no change.
+
+`provenance_only=true` means the individual authored fields and location are
+unchanged and no separately fingerprinted supporting-source difference was
+observed; the full indexed payload difference is limited to generated
+provenance fields. It does **not** certify that the architectural claim
+remains true or that uncited/external evidence is unchanged.
+
+Example (run from a clean source-index snapshot database containing both refs):
+
+```sh
+sensemaking-skills semantic knowledge-query --db /tmp/semantic-knowledge.sqlite \
+  --repository ThorStarlord/sensemaking-skills --operation changes \
+  --base-ref "$OLD_SHA" --target-ref "$NEW_SHA" --json
+```
+
+The classification reads existing SQLite payloads only; it requires no
+schema migration and no new source indexer. It does not automatically assess
+mechanical/ADR records, changes across different IDs, Git ancestry, semantic
+validity, external evidence or unindexed information. `knowledge-audit`
+continues its unchanged conservative source-byte drift contract.
+
 See [the self-repository episode](../normal-use/semantic-steward-workspace-impact-2026-10-21.md)
 for the agent-reported counts, source explanation and the separately scoped
 follow-up. A future improvement should distinguish shared-container
 provenance, individual record-content differences and independent evidence
 drift without suppressing real source changes, dropping historical context
 or treating an unassessed dependency as absent. No such repair is implemented
-by this documentation update.
+by the earlier PR #560 documentation follow-up. PR #561 introduces a candidate
+per-record classification for `changes`, without narrowing source-byte audit,
+erasing original raw deltas or establishing semantic truth.
 
 ## Authored source example
 

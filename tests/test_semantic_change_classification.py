@@ -324,3 +324,19 @@ def test_old_snapshot_readable_and_cli_response_additive(indexed):
     assert payload["claim_delta"]["changed"] == ["cap:a", "cap:b"]
     assert payload["change_classification"]["counts"]["claims"]["changed_total"] == 2
     assert not payload["semantic_truth_established"] and not payload["action_authorized"]
+
+
+def test_self_repository_reviewed_knowledge_proposal_preflight():
+    """Preflight authored edits before source-pinned indexing at a clean HEAD."""
+    from sensemaking_skills.semantic_architecture.stewardship_validation import (
+        inspect_knowledge_proposal,
+    )
+
+    root = Path(__file__).resolve().parents[1]
+    receipt = inspect_knowledge_proposal(root, root / PACK)
+    assert receipt["valid"] is True
+    assert receipt["code"] == "SEMANTIC_KNOWLEDGE_PROPOSAL_VALID"
+    assert receipt["claims_checked"] >= 15
+    assert receipt["relations_checked"] >= 14
+    assert not receipt["semantic_truth_established"]
+    assert not receipt["action_authorized"]

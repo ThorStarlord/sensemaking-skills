@@ -47,6 +47,22 @@ Distinguish four separate observations: **source-file provenance drift**, **indi
 
 **Bounded follow-up, separate from PR #560:** provide a way to distinguish record-content differences and evidence drift from shared-container provenance changes, while preserving the conservative source-byte audit and explicit limits. Characterize at least two records in the same authored JSON pack: change only one record, rebuild and compare; separately change one cited implementation/test source; verify that authored-content changes, shared-pack drift and external evidence drift remain distinguishable without falsely declaring semantic validity or completeness. Do not silently filter legitimate source drift or rewrite historical snapshots.
 
+### Bounded construction follow-up (PR #561 candidate; not integrated)
+
+A separate stacked PR now implements additive indexed-revision change
+classification using existing fingerprint metadata. It preserves raw
+`changes` IDs and `knowledge-audit` source-byte drift, and exposes per-record
+authored-field differences versus shared-container provenance differences.
+Source-linked Git fixtures exercise edited sibling claims, separately cited
+implementation changes, combined changes, formatting, record moves,
+relationship edits and incomplete fingerprints. The original observed pack
+counts remain historical, agent-reported evidence; no automatic semantic
+validity or later-independent-agent benefit follows from the new classifier.
+
+The underlying whole-pack fingerprint fanout is **not removed**: the audit
+intentionally remains conservative, and the raw delta ID lists remain
+backward-compatible. PR #561 addresses the ability to interpret that fanout.
+
 ## Limits
 
 Same-session use and local tests establish implementation behavior at the tested revision only. Whether a later independent agent uses `workspace-impact` or the new lesson is NOT TESTED (Issue #552 remains release-stage qualification). Path overlap cannot see semantic effects on records whose evidence lives in uncited files.
