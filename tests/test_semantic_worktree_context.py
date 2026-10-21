@@ -73,3 +73,15 @@ def test_staged_changes_are_reported(checkout):
 def test_non_repository_is_rejected(tmp_path: Path):
     with pytest.raises(ValueError, match="Git repository"):
         inspect_worktree_context(tmp_path, "f" * 40)
+
+
+def test_git_status_must_not_execute_repository_fsmonitor_hook(checkout, tmp_path):
+    root, sha = checkout
+    marker = tmp_path / "fsmonitor-ran.txt"
+    hook = tmp_path / "fsmonitor.sh"
+    hook.write_text(f"#!/bin/sh\nprintf 'ran' > '{marker}'\nexit 0\n", encoding="utf-8")
+    hook.chmod(0o755)
+    git(root, "config", "core.fsmonitor", str(hook))
+    result = inspect_worktree_context(root, sha)
+    assert result["head_matches_indexed_ref"] is True
+    assert not marker.exists(), "read-only worktree inspection must not invoke repo-configured executables"
