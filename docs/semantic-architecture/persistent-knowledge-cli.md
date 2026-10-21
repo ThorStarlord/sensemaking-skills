@@ -47,7 +47,8 @@ From a CLEAN target Git checkout, store the SQLite index outside the checkout:
       --target-ref "$REF" --operation impact \
       --subject "cap:semantic-queries" --depth 2 --json
 
-Other operations: snapshot, search, contradictions, history and changes.
+Other operations: snapshot, search, contradictions, history, changes and
+workspace-impact (see active-workspace recall below).
 Changes also requires --base-ref with a *previously indexed* revision.
 The import-syntax option is --include-python-imports with --max-imports cap.
 
@@ -100,6 +101,19 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
   `bounded_coverage` reports expected claim kinds already returned,
   omitted by `--limit`, or **not assessed in the explicit one-hop
   neighborhood**. This is never a global completeness result.
+- `--operation workspace-impact` requires `--repo` and answers "which
+  reviewed indexed records cite files I changed?" It compares path names
+  from `git diff --no-renames <indexed_ref>` (commits after indexing plus
+  staged/unstaged edits) and untracked paths with each record's
+  `source_sha256` keys. `workspace_impact.affected_records` separates
+  `record_source_changed` (the authored knowledge file itself was edited)
+  from `changed_evidence_sources`; mechanical path/containment matches are
+  only counted in `mechanical_overlap_counts`. No file contents are read or
+  hashed (`overlay_indexed=false`), the same filter/fsmonitor protections
+  apply, and an indexed SHA missing from local Git is NOT ASSESSED. A listed
+  record needs re-inspection, not revocation; changed code that no record
+  cites is a coverage gap, not evidence of no semantic effect. Use
+  `knowledge-audit` for byte-level drift once the checkout is clean.
 - For source truth, inspect affected current code, owner documentation,
   tests and architectural alternatives. To retain a reusable decision in
   dirty work, preflight JSON with `knowledge-proposal-check`, run local tests

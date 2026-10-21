@@ -27,7 +27,7 @@ from .semantic_architecture import (
 from .semantic_architecture.impact import build_impact_preview
 from .semantic_architecture.knowledge_sources import build_knowledge_snapshot, verified_tracked_sources
 from .semantic_architecture.repository_bootstrap import orient_repository
-from .semantic_architecture.worktree_context import inspect_worktree_context
+from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
 from .semantic_architecture.stewardship_validation import inspect_knowledge_proposal
 from .semantic_architecture.knowledge_store import audit_knowledge_sources, query_knowledge, store_snapshot
 
@@ -167,7 +167,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--repository", "repository_id", required=True)
     @click.option("--target-ref", required=True, help="Exact indexed revision to examine")
     @click.option("--operation", required=True,
-                  type=click.Choice(["snapshot", "search", "explain", "impact", "why", "contradictions", "history", "changes"]))
+                  type=click.Choice(["snapshot", "search", "explain", "impact", "why", "contradictions", "history", "changes",
+                                     "workspace-impact"]))
     @click.option("--subject", default=None, help="Exact claim id, or literal search text for search")
     @click.option("--base-ref", default=None, help="Exact previously indexed revision for changes")
     @click.option("--repo", "repo_root", type=click.Path(exists=True, file_okay=False, path_type=Path),
@@ -187,11 +188,17 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     ) -> None:
         """Read committed semantic records; optionally report active worktree state."""
         try:
+            changed_paths = None
+            if operation == "workspace-impact":
+                if repo_root is None:
+                    raise ValueError("workspace-impact requires --repo (the active Git worktree)")
+                changed_paths = changed_paths_since_indexed_ref(repo_root, target_ref)["paths"]
             payload = query_knowledge(
                 db_path, repository=repository_id, target_ref=target_ref,
                 operation=operation, subject=subject, base_ref=base_ref,
                 limit=limit, depth=depth,
                 search_terms=search_terms, expected_kinds=expected_kinds,
+                workspace_changed_paths=changed_paths,
             )
             if repo_root is not None:
                 payload["workspace_context"] = inspect_worktree_context(repo_root, target_ref)

@@ -14,7 +14,9 @@ from pathlib import Path
 from urllib.parse import quote
 
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
-from .knowledge_retrieval import bounded_kind_coverage, search_matches, validate_retrieval_options
+from .knowledge_retrieval import (
+    bounded_kind_coverage, search_matches, validate_retrieval_options, workspace_source_overlap,
+)
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS snapshots (
@@ -160,21 +162,26 @@ def query_knowledge(
     base_ref: str | None = None,
     limit: int = 50, depth: int = 2,
     search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
+    workspace_changed_paths: frozenset[str] | None = None,
 ) -> dict:
     """Retrieve exact, explicitly declared links; never infer semantic closure.
 
     history/changes are about *indexed* revisions, NOT automatically proven
-    chronological or Git-ancestry relationships.
+    chronological or Git-ancestry relationships. workspace-impact matches
+    caller-observed changed paths against indexed source fingerprints only.
     """
     if not 1 <= limit <= 250 or not 0 <= depth <= 4:
         raise ValueError("query limit must be 1..250 and depth 0..4")
-    valid = {"search", "explain", "impact", "why", "contradictions", "history", "changes", "snapshot"}
+    valid = {"search", "explain", "impact", "why", "contradictions", "history", "changes", "snapshot",
+             "workspace-impact"}
     if operation not in valid:
         raise ValueError(f"unsupported semantic knowledge query: {operation}")
     if operation in {"explain", "impact", "why", "history"} and not subject:
         raise ValueError(f"{operation} requires a claim identifier")
     if operation == "changes" and not base_ref:
         raise ValueError("changes requires explicit base_ref")
+    if (operation == "workspace-impact") != (workspace_changed_paths is not None):
+        raise ValueError("workspace-impact requires workspace changed paths (CLI --repo), and only it accepts them")
     validate_retrieval_options(
         operation=operation, subject=subject, search_terms=search_terms,
         expected_kinds=expected_kinds,
@@ -271,6 +278,13 @@ def query_knowledge(
                 "relations": {kind: len(items) for kind, items in relation_deltas.items()},
             }
             extra["comparison_limit"] = "Snapshot set differences only; repository ancestry and semantic effects are NOT established."
+        elif operation == "workspace-impact":
+            assert workspace_changed_paths is not None
+            found_claims, found_relations, overlap = workspace_source_overlap(
+                claims, relations, changed_paths=workspace_changed_paths, limit=limit,
+            )
+            extra["workspace_impact"] = overlap
+            extra_truncated = overlap["affected_record_total"] > limit
 
         if expected_kinds:
             extra["bounded_coverage"] = bounded_kind_coverage(
