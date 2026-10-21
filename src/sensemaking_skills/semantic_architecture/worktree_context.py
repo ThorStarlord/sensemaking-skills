@@ -4,6 +4,7 @@ The checked-out source overlay is never part of the indexed knowledge result.
 """
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -12,7 +13,8 @@ from pathlib import Path
 def _git(root: Path, *args: str) -> bytes:
     try:
         return subprocess.check_output(
-            ["git", "-C", str(root), *args],
+            ["git", "-c", "core.fsmonitor=false", "-C", str(root), *args],
+            env={**os.environ, "GIT_OPTIONAL_LOCKS": "0", "GIT_TERMINAL_PROMPT": "0"},
             stderr=subprocess.PIPE,
             timeout=20,
         )
@@ -29,7 +31,7 @@ def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, obj
         raise ValueError("target must be a Git repository directory")
     top = Path(_git(root, "rev-parse", "--show-toplevel").decode("utf-8").strip()).resolve()
     head = _git(top, "rev-parse", "HEAD").decode("ascii").strip()
-    tracked = _git(top, "diff", "--no-ext-diff", "--name-only", "-z", "HEAD", "--").split(b"\x00")
+    tracked = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--name-only", "-z", "HEAD", "--").split(b"\x00")
     untracked = _git(top, "ls-files", "--others", "--exclude-standard", "-z").split(b"\x00")
     status = _git(top, "status", "--porcelain=v1", "--untracked-files=all", "-z")
     return {
