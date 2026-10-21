@@ -354,3 +354,26 @@ def test_authority_status_and_authored_attributes_are_not_discarded(indexed):
     assert row["authored_fields_changed"] is True
     assert row["provenance_only"] is False
     assert row["assessment_status"] == "ASSESSED"
+
+
+def test_missing_independently_cited_fingerprint_is_not_assessed(indexed):
+    root, db, old = indexed
+    (root / "README.md").write_text("Unrelated new file\n", encoding="utf-8")
+    new = _commit(root, "second indexed revision")
+    snapshot = build_knowledge_snapshot(root, repository=REPOSITORY, target_ref=new)
+    snapshot = replace(snapshot, claims=tuple(
+        replace(claim, attributes={
+            **claim.attributes,
+            "source_sha256": {
+                path: digest for path, digest in claim.attributes["source_sha256"].items()
+                if path != "src/a.py"
+            },
+        }) if claim.id == "cap:a" else claim
+        for claim in snapshot.claims
+    ))
+    store_snapshot(db, snapshot, source_root=root)
+    row = _records(_changes(db, old, new))["cap:a"]
+    assert row["assessment_status"] == "NOT_ASSESSED"
+    assert row["authored_fields_changed"] is False
+    assert row["changed_supporting_sources"] is None
+    assert row["unassessed_reason"] == "cited_source_fingerprints_unavailable"

@@ -152,6 +152,27 @@ def _source_fingerprints(record: dict) -> dict[str, str] | None:
     return fingerprints
 
 
+def _expected_local_fingerprints(record: dict) -> set[str] | None:
+    """Local cited paths should have indexed hashes in both snapshots."""
+    references = record.get("evidence_refs")
+    if not isinstance(references, (list, tuple)) or any(
+        not isinstance(reference, str) for reference in references
+    ):
+        return None
+    paths = set()
+    for reference in references:
+        if reference.startswith("file:"):
+            path = reference[5:].split("#", 1)[0]
+            prefix, marker, line = path.rpartition(":line:")
+            paths.add(prefix if marker and line.isdigit() else path)
+    if record.get("authority_kind") in {"policy", "code", "test"}:
+        authority = record.get("authority_ref")
+        if not isinstance(authority, str) or not authority:
+            return None
+        paths.add(authority)
+    return paths
+
+
 def _classify_record_change(previous: dict, current: dict) -> dict:
     """Explain raw indexed changes without inferring architectural truth."""
     result = {
@@ -178,6 +199,13 @@ def _classify_record_change(previous: dict, current: dict) -> dict:
         return result
     if old_pack not in old_fingerprints or new_pack not in new_fingerprints:
         result["unassessed_reason"] = "authored_container_fingerprint_unavailable"
+        return result
+    old_cited = _expected_local_fingerprints(previous)
+    new_cited = _expected_local_fingerprints(current)
+    if (old_cited is None or new_cited is None
+            or not old_cited.issubset(old_fingerprints)
+            or not new_cited.issubset(new_fingerprints)):
+        result["unassessed_reason"] = "cited_source_fingerprints_unavailable"
         return result
 
     # A moved record can refer to two distinct packs; location is a separate
