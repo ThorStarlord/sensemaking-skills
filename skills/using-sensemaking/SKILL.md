@@ -23,12 +23,19 @@ Do not turn this bootstrap into a fixed choreography. Registered workflows and s
 
 ## Optional persistent repository knowledge
 
-Use `../repository-semantic-steward/SKILL.md` when an actual multi-session
-architectural-memory responsibility is warranted. RECALL retrieves selectively
-and checks cited original sources; BOOTSTRAP builds a reviewed first-visit model;
-RECONCILE preserves consequential learning after engineering. None is mandatory
-for a trivial local fix, an authority source, or a second planner.
-`repo-sensemaker` remains the diagnostic capability.
+Use `../repository-semantic-steward/SKILL.md` when source-grounded architectural
+memory could materially affect a bounded engineering decision, including when
+**Sensemaking Skills itself** is the target repository. If reviewed knowledge
+already exists, begin with narrow **RECALL** (or read its Git-authored records
+directly when no indexed snapshot is available), verify cited current code,
+tests and decisions, then do the engineering work. **BOOTSTRAP** is for
+materially inadequate first-visit knowledge, not a mandatory restart.
+After consequential new evidence, **RECONCILE** only affected durable
+knowledge or record **NO_MODEL_CHANGE**. An existing committed index may be
+queried beside dirty active work with explicit `workspace_context`; building
+a new source-pinned index still requires an exact clean committed checkout.
+Neither mode grants decision or merge authority; `repo-sensemaker` remains
+the distinct diagnostic capability.
 
 ## Default doctrine
 

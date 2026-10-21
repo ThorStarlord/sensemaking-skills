@@ -1,6 +1,6 @@
 # Persistent Semantic Knowledge — CLI and source contract
 
-**Status:** Source/index foundation, orientation, Repository Semantic Steward and query-integrity repair are integrated (PRs #550/#553/#555/#551). Construction now extends active-workspace query context, explicit multi-phrase literal search and bounded decision-coverage metadata. Local and hosted check receipts remain source-revision-specific; independent release qualification is still unproven.
+**Status:** Source/index foundation, orientation, Repository Semantic Steward and query-integrity repair are integrated (PRs #550/#553/#555/#551). Active-workspace context, explicit multi-phrase literal search and bounded decision-coverage metadata are integrated via PR #558. Local and hosted check receipts remain source-revision-specific; independent release qualification is still unproven.
 **Authority:** ADR 0031 and the Git-reviewed original source documents. The index is never authority.
 **Existing interface:** sensemaking-skills semantic (no new runtime or registered Skill).
 

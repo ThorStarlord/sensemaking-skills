@@ -2,15 +2,15 @@
 
 **Source version:** 1.0.0rc5.dev0
 **Release target:** 1.0.0rc5 (development; post-RC4 reduced-scope candidate target)
-**Last updated:** 2026-10-20  
-**Current phase:** **CONSTRUCTION** during RC5 development. Persistent semantic stewardship S1–S4 is implemented on `main`; the current selected responsibility is active-workspace recall, source-linked retrieval and bounded decision-context coverage. Independent S5/S6 qualification remains open for release-stage verification.
+**Last updated:** 2026-10-21  
+**Current phase:** **CONSTRUCTION** during RC5 development. Persistent semantic stewardship S1–S4 and PR #558's active-workspace recall/coverage slice are integrated on `main`. The next bounded responsibility is source-checked, self-repository use of `repository-semantic-steward`, focused Skill/currentness reconciliation and selective knowledge maintenance. Independent S5/S6 qualification remains open for release-stage verification.
 
 - **2026-10-14 proactive product-target discovery — HISTORICAL OWNER DIRECTION, NOW APPLIED:** Absence of a ready-made unused issue does not prove that a repository has no valuable frontier. Within an authorized candidate repository, independent Trial 002 operators may conduct bounded strategic opportunity discovery and have an intrinsically valuable objective ratified *before* the participant runs. Trial 002 still tests an externally pinned outcome, while Trial 003 tests participant-led target selection. Operator records in Issue #515 subsequently admitted Chess-Mentor-Engine #101 and attempted Session A; the attempt was void after workspace credits expired, and Trial 002R remains NOT RUN. This historical direction is not evidence of a passing autonomy trial.
 
 - **2026-10-15 owner-selected Path 3 — LEVEL-4 PRODUCT THESIS REVISION:** The owner selected **Persistent Semantic Stewardship** as the long-term product destination. [ADR 0031](docs/adr/0031-persistent-semantic-stewardship.md) is the accepted authority and the [construction plan](docs/persistent-semantic-stewardship-plan.md) defines S0–S6. Path 2 is the building/learning loop, Path 1 remains lean mode, ADR 0029 retains external runtime/permission limits, and ADR 0030 budgets the compact Grounding Pack only. PR #549 implemented this strategic **documentation** revision, not software; the subsequent implementation is recorded separately below. The full platform and its longitudinal usefulness remain unproven.
 - **2026-10-15 persistent semantic knowledge foundation — INTEGRATED / EXACT-MAIN CI PASS:** PR #550 merged typed epistemic/source-linked records, Git-revision ingestion, local rebuildable SQLite snapshots, bounded search/explain/why/impact/contradictions/history/changes queries, source-drift audit and optional existing-Skill guidance. PR #541 subsequently merged the separate optional lexical impact preview (not a dependency oracle). At integrated `main@3a20bd80737b5df247791e4ff86256c0b4f54b83`, [Product Validation](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/38822699678) passed all seven jobs and [Release Candidate Distribution](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/38822699683) passed. S1–S3 mechanics and S4 source-level integration exist; independent fresh coding-agent reuse/correction (S5), comparative architectural benefit and cross-product semantic transfer (S6) are **NOT TESTED**. This is a historical qualified checkpoint; always verify newer revisions separately. See [first-use record](docs/normal-use/semantic-knowledge-first-use-001.md).
 
-- **2026-10-15 S5 first product episode — IMPLEMENTED ON PR #551 / INDEPENDENT AGENT NOT RUN:** The bounded query-integrity repair, regression coverage and [Episode A record](docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md) are proposed together in [PR #551](https://github.com/ThorStarlord/sensemaking-skills/pull/551). The PR's exact-head check receipts govern candidate qualification; no documentation claim self-qualifies a newer head. The episode can establish an actual code repair and retained rationale, **not** a later independent coding agent's use of historical knowledge. S6 remains downstream of meaningful S5 evidence.
+- **2026-10-15 S5 first product episode — REPAIR INTEGRATED VIA PR #551 / INDEPENDENT AGENT NOT RUN:** The bounded query-integrity repair, regression coverage and [Episode A record](docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md) were merged through [PR #551](https://github.com/ThorStarlord/sensemaking-skills/pull/551). Exact-head check receipts govern code qualification; no documentation claim self-qualifies a newer head. The episode establishes an actual code repair and retained rationale, **not** a later independent coding agent's use of historical knowledge. S6 remains downstream of meaningful S5 evidence.
 
 - **2026-10-15 Trial 002 currentness (Issue #515):** operator-discovered Chess-Mentor-Engine #101 was independently admitted at exact base `86866634d92254b91896cff3a6f65b889eb338e6`. A separate Codex Session A was attempted but failed at a workspace-credit/billing boundary before a committed responsibility, so **Trial 002 = attempted/void**, **002R = NOT RUN**, **D4 = NOT TESTED**, comparative advantage **NOT ESTABLISHED**. Executor credits are an external blocker; the reserved target remains unconsumed. This report is based on the operator's Issue #515 receipt and does not itself re-run that executor.
 - **2026-10-13 continuous domain-grounding guidance — SOURCE CHANGE / NOT BEHAVIORALLY VALIDATED:** The target-specific Grounding Pack is an optional, selectively retrieved decision index, not an automatic documentation stage. Agents should link product intent and current domain behavior, choose valuable improvements, verify consequential source claims, and update only affected non-derivable knowledge after construction. The existing Phase 3 comparison remains unexecuted; no autonomous product-value gain is established. See `docs/repository-grounding-plan.md`.
@@ -191,11 +191,11 @@ Strategic frontier ledger (historical programs 1–37; current construction fron
 35. **Strategic Exploration Funnel v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #468 makes coverage-before-convergence explicit at genuine Level-3 analysis boundaries: system mapping and breadth opportunity exploration precede frontier-candidate synthesis; only material finalists receive depth analysis and construction-path synthesis; resumed execution/verification does not repeat the funnel.
 36. **Autonomous Terminal Mission Continuation v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #473 adds repeated responsibility continuation under an explicit FULL AUTONOMY / FULL DELEGATION terminal mission, with conditional Level-3 breadth, decision-relevant vertical completion, mission-scoped construction-before-field-validation, synthetic-persona claim discipline, and separately governed protected transitions. Mechanical/contract qualification is established; normal-use behavioral evidence is not.
 37. **Strategic Sensemaking Normal-Use Observation Guide — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Makes breadth, frontier compression, proportional depth, resume, action-mode economy, and Goal Fitness observable during ordinary consequential work without introducing a benchmark, score, tracker, policy layer, or automatic strategy reopening.
-38. **Persistent Semantic Stewardship active-workspace construction — ACTIVE / PR #558.** Use existing source-linked knowledge during ordinary code edits with truthful dirty-workspace context, explicit literal multi-phrase recall, omission-aware bounded decision evidence and source-checked local learning. Independent longitudinal/transfer evaluation remains later release qualification, not a build gate.
+38. **Persistent Semantic Stewardship active-workspace construction — COMPLETE / INTEGRATED VIA PR #558.** The committed index vs dirty-worktree disclosure, explicit literal multi-phrase recall, omission-aware bounded decision-context evidence and in-session learning guidance merged into `main` as `c2b20176d3ef5b12086bfe236835a2abb155b078`. Its final PR head `7922ab8dbbb6e07bd263760c828fab6e0d5aeddd` passed [Product Validation](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/39535941094) and [Release Candidate Distribution](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/39535941107). Independent longitudinal/transfer evaluation is later release qualification, not a construction gate.
 
 ### Current highest-leverage boundary
 
-**Current: active-workspace knowledge retrieval and decision-coverage construction.** The highest-leverage near-term boundary is not more scientific evaluation: it is helping the coding agent retrieve and challenge source-linked intent, alternatives, constraints and tests while implementing in the **current context**. The [six-task construction plan](docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md) is the implementation scope, with local tests and normal commits; no additional planner or generic autonomous runtime is warranted.
+**Current: use the now-integrated Steward on Sensemaking itself.** Retrieve existing source-linked architectural intent, constraints and verification, verify the original code/tests, and make only corrections demonstrated by this real repository-local work. The [six-task construction plan](docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md) is complete through merged PR #558; no second planner, generic runtime, or independent clean-room research gate is warranted for this bounded guidance work.
 
 **Historical boundary (before ADR 0031 construction):** Strategic Sensemaking normal-use validation and autonomous terminal-mission corroboration after Trial 001. Issues #468 and #473 are integrated. The earlier question was whether heterogeneous real repository episodes corroborated control/autonomy behavior without exposing a new stable failure boundary.
 
@@ -233,11 +233,11 @@ full delegation
 
 **Decision:** how should the existing persistent semantic stewardship substrate help the active coding agent make better source-grounded decisions **during real construction**, without introducing another orchestration layer?
 
-**Current judgment:** **CONSTRUCT / CURRENT_WORKSPACE_SEMANTIC_STEWARDSHIP.** The former `NO_CHANGE / NORMAL_USE_HANDOFF` disposition belongs to the completed strategic-control line, not to the newer owner-selected ADR 0031 construction program. Detailed tasks: [`docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md`](docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md).
+**Current judgment:** **CONSTRUCT / CURRENT_WORKSPACE_SEMANTIC_STEWARDSHIP**, with PR #558's six-task slice now integrated. Continue with a smaller self-repository RECALL → bounded implementation → RECONCILE responsibility. The former `NO_CHANGE / NORMAL_USE_HANDOFF` disposition applies to the completed strategic-control line, not the newer ADR 0031 construction program. The [completed slice plan](docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md) remains historical evidence, not a new backlog.
 
 ### Current decision-changing uncertainty
 
-**For this construction slice:** preserve the distinction between indexed committed evidence and dirty-workspace changes, improve literal recall without claiming semantic completeness, and expose whether bounded query results omitted relevant decision kinds. Implement, test, use and commit these capabilities in the current context; independent-context qualification is a release-stage responsibility.
+**For the next bounded use:** verify that current Skill entrypoints teach the already-implemented distinction between clean committed indexing and dirty-workspace recall, and that reviewed knowledge explains it without promoting lexical/source observations into owner authority. Fix concrete guidance and model gaps in the current context; independent-context/longitudinal qualification stays a release-stage responsibility.
 
 **Historical normal-use questions from the completed strategic-control program:**
 
@@ -275,13 +275,13 @@ normal-use evidence
 
 ### Current warranted repository-level responsibility
 
-**Active repository-local construction responsibility:** implement the six-task construction-first persistent semantic stewardship plan on the existing feature branch. The strategic/control programs listed below remain historically integrated; they are not reopened by this new feature slice.
+**Active repository-local construction responsibility:** use the integrated persistent semantic knowledge on `sensemaking-skills` itself; correct the Steward and general Skill's in-session recall guidance, reconcile affected durable knowledge, and validate a normal reviewable source change. The six-task PR #558 implementation is already integrated; the strategic/control programs below remain historically complete.
 
 Level-3 disposition: `CONSTRUCT / CURRENT_WORKSPACE_SEMANTIC_STEWARDSHIP`. 
 
 ```text
 CURRENT CONSTRUCTION RESPONSIBILITY = ACTIVE_WORKSPACE_SEMANTIC_STEWARDSHIP
-PRIMARY CONSTRUCTION PROGRAM = docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md
+LAST COMPLETED CONSTRUCTION PROGRAM = docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md
 OPERATING MODE = CONSTRUCTION
 ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_426_POLICY_HIERARCHY_INTERFACE_CLARIFICATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
@@ -322,7 +322,7 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-The current `sensemaking-skills` construction vehicle is the owner-authorized implementation branch for [PR #558](https://github.com/ThorStarlord/sensemaking-skills/pull/558). That PR began as a committed plan; **feature implementation and tests must be evidenced separately** rather than treated as complete because this pointer exists.
+**Completed construction vehicle:** [PR #558](https://github.com/ThorStarlord/sensemaking-skills/pull/558) merged into `main` at `c2b20176d3ef5b12086bfe236835a2abb155b078`; the [exact final feature-head checks](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/39535941094) passed. Current self-repository guidance follow-through is a separate bounded source review, not a reopening of that completed implementation or an automatic RC5 release.
 
 The current external normal-use evidence vehicle is
 `ThorStarlord/React_incremental_game_prototype#154` at
@@ -345,7 +345,7 @@ The terminal qualification/integration receipts for earlier programs are preserv
 
 ### Expected evidence and reassessment
 
-**Current construction evidence:** tests that correctly distinguish committed index state from local dirty edits; deterministic explicit search/coverage behavior; source-checked real-repository use; commits on a reviewable branch. **Not release evidence:** fresh independent coding-agent utility, full product ontology coverage, semantic truth or comparative advantage.
+**Integrated PR #558 evidence:** exact-head tests distinguish committed index state from local edits, bounded literal search and coverage behavior, and source-pinned real-repository smoke use. Follow-on self-repository Skill-guidance maintenance is separately validated on its own head. **Not release evidence:** independent coding-agent longitudinal benefit, full ontology coverage, semantic truth or comparative advantage.
 
 **Historical autonomy/tracer evidence:** Trial 001 now provides direct tracer evidence about role clarity, capability coverage, evidence flow, authority boundaries, and organization ceremony. It does not establish the value of independent semantic actors. Reopen broader Organization construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
 
@@ -426,8 +426,8 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**ACTIVE LEVEL-3 CONSTRUCTION — SEMANTIC STEWARDSHIP.**
-Owner-directed continuation: execute the six tasks of the [construction-first implementation plan](docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md) directly in the current workspace, run focused and full local tests, commit tested slices, and report the result. Do not require fresh-context/clean-room benchmarking during ordinary development. Independent S5/#552, RSB-6/#554 and comparative results remain unproven and reserved for later release qualification.
+**ACTIVE CONSTRUCTION — SELF-REPOSITORY SEMANTIC STEWARDSHIP.**
+PR #558's [six-task implementation](docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md) is merged. Next, use `repository-semantic-steward` on the `sensemaking-skills` repository's own source and reviewed knowledge; reconcile entrypoint/currentness guidance and retain only genuinely useful source-linked learning. Work in the active development context, validate normal commits, and do not insert an independent clean-room gate. Independent S5/#552, RSB-6/#554 and comparative results remain unproven and reserved for later release qualification.
 
 Historical strategic-control guidance: prefer actual authorized engineering episodes over
 another synthetic benchmark or architecture package. The prior 18 read-only

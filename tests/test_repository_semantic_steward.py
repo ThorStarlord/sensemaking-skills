@@ -63,6 +63,28 @@ def test_steward_skill_registered_and_compact():
     assert "repository-semantic-steward" in release["skill_inventory"]["internal"]
 
 
+def test_steward_self_repository_recall_and_index_guidance():
+    """Doc contracts match source-pinned recall rather than mandating a fresh checkout."""
+    control = (ROOT / "skills/using-sensemaking/SKILL.md").read_text(encoding="utf-8")
+    steward = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+    recall = (SKILL / "references/recall.md").read_text(encoding="utf-8")
+    evidence = json.loads((ROOT / ".sensemaking/knowledge/stewardship.json").read_text(encoding="utf-8"))
+    assert "Sensemaking Skills itself" in control
+    assert "NO_MODEL_CHANGE" in control
+    assert "`knowledge-query --repo .`" in steward
+    assert "clean checked-out" in steward
+    assert "dirty active checkout" in steward
+    assert "source" in recall.lower()
+    claim = next(c for c in evidence["claims"] if c["id"] == "inv:index-snapshot-vs-working-overlay")
+    assert claim["kind"] == "invariant"
+    assert all((ROOT / p.removeprefix("file:")).is_file() for p in claim["evidence_refs"])
+    assert any(
+        rel["subject"] == "cap:semantic-queries"
+        and rel["object"] == claim["id"]
+        and rel["predicate"] == "constrained_by"
+        for rel in evidence["relations"]
+    )
+
 def test_stewardship_revision_lifecycle_and_currentness(tmp_path: Path):
     root = tmp_path / "auteur-like"
     root.mkdir()
