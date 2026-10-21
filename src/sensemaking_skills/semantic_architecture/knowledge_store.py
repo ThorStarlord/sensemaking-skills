@@ -14,6 +14,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
+from .knowledge_retrieval import bounded_kind_coverage, search_matches, validate_retrieval_options
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS snapshots (
@@ -158,6 +159,7 @@ def query_knowledge(
     subject: str | None = None,
     base_ref: str | None = None,
     limit: int = 50, depth: int = 2,
+    search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
 ) -> dict:
     """Retrieve exact, explicitly declared links; never infer semantic closure.
 
@@ -173,6 +175,10 @@ def query_knowledge(
         raise ValueError(f"{operation} requires a claim identifier")
     if operation == "changes" and not base_ref:
         raise ValueError("changes requires explicit base_ref")
+    validate_retrieval_options(
+        operation=operation, subject=subject, search_terms=search_terms,
+        expected_kinds=expected_kinds,
+    )
     conn = _read_only(db_path)
     try:
         snap = _snapshot(conn, repository, target_ref)
@@ -187,8 +193,10 @@ def query_knowledge(
             extra["counts"] = {"claims": len(claims), "relations": len(relations)}
             extra["digest"] = snap["digest"]
         elif operation == "search":
-            needle = (subject or "").casefold()
-            found_claims = [c for c in claims.values() if needle in c["statement"].casefold() or needle in c["id"].casefold()]
+            found_claims, search_metadata = search_matches(
+                claims, subject=subject, search_terms=search_terms,
+            )
+            extra.update(search_metadata)
         elif operation in {"explain", "why"}:
             if subject not in claims:
                 raise ValueError("claim id not found in selected revision; NOT ASSESSED")
@@ -263,6 +271,11 @@ def query_knowledge(
                 "relations": {kind: len(items) for kind, items in relation_deltas.items()},
             }
             extra["comparison_limit"] = "Snapshot set differences only; repository ancestry and semantic effects are NOT established."
+
+        if expected_kinds:
+            extra["bounded_coverage"] = bounded_kind_coverage(
+                found_claims, expected_kinds=expected_kinds, limit=limit,
+            )
 
         truncated = extra_truncated or len(found_claims) > limit or len(found_relations) > limit
         envelope = {
