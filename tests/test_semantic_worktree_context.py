@@ -85,3 +85,23 @@ def test_git_status_must_not_execute_repository_fsmonitor_hook(checkout, tmp_pat
     result = inspect_worktree_context(root, sha)
     assert result["head_matches_indexed_ref"] is True
     assert not marker.exists(), "read-only worktree inspection must not invoke repo-configured executables"
+
+
+def test_git_diff_must_not_execute_repository_clean_filter(checkout, tmp_path):
+    root, _ = checkout
+    (root / ".gitattributes").write_text("tracked.txt filter=evil\n", encoding="utf-8")
+    git(root, "add", ".gitattributes")
+    git(root, "commit", "-qm", "tracked attributes")
+    sha = git(root, "rev-parse", "HEAD")
+    marker = tmp_path / "filter-ran.txt"
+    clean = tmp_path / "clean.sh"
+    clean.write_text(f"#!/bin/sh\nprintf 'ran' > '{marker}'\ncat\n", encoding="utf-8")
+    clean.chmod(0o755)
+    git(root, "config", "filter.evil.clean", str(clean))
+    (root / "tracked.txt").write_text("changed\n", encoding="utf-8")
+    result = inspect_worktree_context(root, sha)
+    assert result["worktree_clean"] is False
+    assert result["modified_tracked_count"] == 1
+    assert result["external_filter_commands_disabled_count"] >= 1
+    assert result["submodule_worktrees_not_assessed"] is True
+    assert not marker.exists(), "inspecting worktree must not execute configured filters"
