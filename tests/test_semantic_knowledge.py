@@ -467,3 +467,76 @@ def test_separate_python_process_recovers_persisted_knowledge(repo, tmp_path):
     assert output["claims"][0]["id"] == "adr:0031"
     assert output["action_authorized"] is False
     # Fresh Python process != independent coding-agent context or D4 autonomy.
+
+
+def test_explicit_search_terms_return_union_in_stable_order(repo, tmp_path):
+    snap = build(repo)
+    db = tmp_path / "multi.sqlite"
+    store_snapshot(db, snap, source_root=repo[0])
+    args = {"repository": snap.repository, "target_ref": snap.target_ref}
+    first = query_knowledge(db, operation="search", search_terms=("replay", "authoritative"), **args)
+    second = query_knowledge(db, operation="search", search_terms=("replay", "authoritative"), **args)
+    ids = [claim["id"] for claim in first["claims"]]
+    assert ids == [claim["id"] for claim in second["claims"]]
+    assert {"cap:replay", "component:replay", "inv:ordering"} <= set(ids)
+    assert first["search_mode"] == "explicit_terms_any"
+    assert first["search_hit_total"] == len(first["claims"])
+    assert first["semantic_truth_established"] is False
+
+
+def test_search_term_limit_reports_total_and_truncation(repo, tmp_path):
+    snap = build(repo)
+    db = tmp_path / "limited.sqlite"
+    store_snapshot(db, snap, source_root=repo[0])
+    args = {"repository": snap.repository, "target_ref": snap.target_ref}
+    full = query_knowledge(db, operation="search", search_terms=("replay", "knowledge"), **args)
+    limited = query_knowledge(db, operation="search", search_terms=("replay", "knowledge"), limit=1, **args)
+    assert full["search_hit_total"] > 1
+    assert limited["search_hit_total"] == full["search_hit_total"]
+    assert limited["truncated"] is True
+    assert len(limited["claims"]) == 1
+
+
+def test_legacy_literal_search_still_returns_matching_claims(repo, tmp_path):
+    snap = build(repo)
+    db = tmp_path / "legacy.sqlite"
+    store_snapshot(db, snap, source_root=repo[0])
+    result = query_knowledge(db, repository=snap.repository, target_ref=snap.target_ref,
+                             operation="search", subject="replay")
+    assert result["search_mode"] == "literal"
+    assert result["search_hit_total"] >= 2
+    assert {"cap:replay", "component:replay"} <= {c["id"] for c in result["claims"]}
+
+
+def test_invalid_search_term_combinations_fail(repo, tmp_path):
+    snap = build(repo)
+    db = tmp_path / "invalid.sqlite"
+    store_snapshot(db, snap, source_root=repo[0])
+    args = {"repository": snap.repository, "target_ref": snap.target_ref}
+    with pytest.raises(ValueError, match="cannot"):
+        query_knowledge(db, operation="search", subject="replay", search_terms=("history",), **args)
+    with pytest.raises(ValueError, match="only"):
+        query_knowledge(db, operation="explain", subject="cap:replay",
+                        search_terms=("history",), **args)
+    for terms in (("",), ("a" * 81,), tuple("x" + str(i) for i in range(9))):
+        with pytest.raises(ValueError, match="search terms"):
+            query_knowledge(db, operation="search", search_terms=terms, **args)
+
+
+def test_cli_search_terms_are_explicit_and_backward_compatible(repo, tmp_path):
+    snap = build(repo)
+    db = tmp_path / "cli-multi.sqlite"
+    store_snapshot(db, snap, source_root=repo[0])
+    common = [
+        "semantic", "knowledge-query", "--db", str(db),
+        "--repository", snap.repository, "--target-ref", snap.target_ref,
+        "--operation", "search", "--json",
+    ]
+    multi = CliRunner().invoke(cli, common + ["--term", "replay", "--term", "authoritative"])
+    assert multi.exit_code == 0, multi.output
+    payload = json.loads(multi.output)
+    assert payload["search_mode"] == "explicit_terms_any"
+    assert payload["search_hit_total"] >= 3
+    mixed = CliRunner().invoke(cli, common + ["--subject", "replay", "--term", "history"])
+    assert mixed.exit_code != 0
+    assert "cannot" in mixed.output
