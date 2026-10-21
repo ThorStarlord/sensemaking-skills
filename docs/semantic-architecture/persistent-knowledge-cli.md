@@ -85,6 +85,7 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
 
 **Output and safety semantics:**
 
+- Worktree inspection disables Git filesystem-monitor hooks and configured external clean/smudge/process filters; it also ignores submodule working-tree state, rather than execute repository-configured commands. `external_filter_commands_disabled_count` and `submodule_worktrees_not_assessed` disclose those limitations. Filter-managed files may therefore be conservatively reported as modified. Inspect submodules or custom filters separately before relying on a clean claim.
 - `--repo .` adds `workspace_context` to any knowledge query. It reports
   `current_head`, `indexed_ref`, `head_matches_indexed_ref`,
   `worktree_clean`, `modified_tracked_count`, `untracked_count`,
