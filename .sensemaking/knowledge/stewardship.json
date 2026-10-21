@@ -120,6 +120,23 @@
       "attributes": {
         "scope": "One source-grounded bug class; whether later independent agents use this lesson remains NOT TESTED"
       }
+    },
+    {
+      "id": "inv:index-snapshot-vs-working-overlay",
+      "kind": "invariant",
+      "statement": "Exact-source semantic index builds require a clean, pinned committed HEAD. Recall can query an existing committed index while the active working tree is dirty, but workspace context must disclose unindexed changes and must not promote that working overlay into indexed truth.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/worktree_context.py",
+        "file:tests/test_semantic_knowledge_self_repo.py"
+      ],
+      "attributes": {
+        "scope": "Source-documented self-repository operating boundary; record is not a runtime invocation receipt",
+        "claim_ceiling": "Source implementation and test coverage exist; pass claims require exact-head check receipts and do not establish independent-agent utility"
+      }
     }
   ],
   "relations": [
@@ -212,6 +229,20 @@
       ],
       "attributes": {
         "scope": "Historical source inspection; not causal proof of a subsequent agent outcome"
+      }
+    },
+    {
+      "id": "rel:query-snapshot-overlay-boundary",
+      "subject": "cap:semantic-queries",
+      "predicate": "constrained_by",
+      "object": "inv:index-snapshot-vs-working-overlay",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/worktree_context.py",
+        "file:tests/test_semantic_knowledge_self_repo.py"
+      ],
+      "attributes": {
+        "scope": "Clean committed build vs dirty-checkout recall; not a guarantee of current working-overlay semantics"
       }
     }
   ]
