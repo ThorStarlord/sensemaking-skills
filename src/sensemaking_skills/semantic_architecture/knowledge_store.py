@@ -15,7 +15,8 @@ from urllib.parse import quote
 
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
 from .knowledge_retrieval import (
-    bounded_kind_coverage, search_matches, validate_retrieval_options, workspace_source_overlap,
+    bounded_kind_coverage, classify_indexed_changes, search_matches,
+    validate_retrieval_options, workspace_source_overlap,
 )
 
 _SCHEMA = """
@@ -276,6 +277,23 @@ def query_knowledge(
             extra["delta_total_counts"] = {
                 "claims": {kind: len(items) for kind, items in claim_deltas.items()},
                 "relations": {kind: len(items) for kind, items in relation_deltas.items()},
+            }
+            claim_details, claim_counts = classify_indexed_changes(old_claims, claims, limit=limit)
+            relation_details, relation_counts = classify_indexed_changes(old_relations, new_relations, limit=limit)
+            extra["change_classification"] = {
+                "claims": claim_details,
+                "relations": relation_details,
+                "counts": {"claims": claim_counts, "relations": relation_counts},
+                "truncated": (
+                    claim_counts["changed_total"] > limit or relation_counts["changed_total"] > limit
+                ),
+                "explicit_limits": [
+                    "Raw claim_delta/relation_delta.changed retain their historical full-payload meaning.",
+                    "Authored-field and fingerprint classifications are mechanical, not semantic validity.",
+                    "Supporting-source entries describe indexed fingerprint/reference differences, not causal impact.",
+                    "Unindexed, external or uncited evidence remains NOT ASSESSED; no Git ancestry is inferred.",
+                    "Added/removed IDs are raw set differences; renames and replacements are NOT ASSESSED.",
+                ],
             }
             extra["comparison_limit"] = "Snapshot set differences only; repository ancestry and semantic effects are NOT established."
         elif operation == "workspace-impact":
