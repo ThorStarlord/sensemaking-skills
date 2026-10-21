@@ -27,6 +27,7 @@ from .semantic_architecture import (
 from .semantic_architecture.impact import build_impact_preview
 from .semantic_architecture.knowledge_sources import build_knowledge_snapshot, verified_tracked_sources
 from .semantic_architecture.repository_bootstrap import orient_repository
+from .semantic_architecture.worktree_context import inspect_worktree_context
 from .semantic_architecture.stewardship_validation import inspect_knowledge_proposal
 from .semantic_architecture.knowledge_store import audit_knowledge_sources, query_knowledge, store_snapshot
 
@@ -169,21 +170,25 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   type=click.Choice(["snapshot", "search", "explain", "impact", "why", "contradictions", "history", "changes"]))
     @click.option("--subject", default=None, help="Exact claim id, or literal search text for search")
     @click.option("--base-ref", default=None, help="Exact previously indexed revision for changes")
+    @click.option("--repo", "repo_root", type=click.Path(exists=True, file_okay=False, path_type=Path),
+                  help="Optional current Git worktree; does not index uncommitted source")
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
     @click.option("--depth", type=click.IntRange(0, 4), default=2)
     @click.option("--json", "output_json", is_flag=True)
     def semantic_knowledge_query(
         db_path: Path, repository_id: str, target_ref: str, operation: str,
-        subject: str | None, base_ref: str | None, limit: int, depth: int,
-        output_json: bool,
+        subject: str | None, base_ref: str | None, repo_root: Path | None,
+        limit: int, depth: int, output_json: bool,
     ) -> None:
-        """Read explicit source-bound semantic records; infer no automatic authority."""
+        """Read committed semantic records; optionally report active worktree state."""
         try:
             payload = query_knowledge(
                 db_path, repository=repository_id, target_ref=target_ref,
                 operation=operation, subject=subject, base_ref=base_ref,
                 limit=limit, depth=depth,
             )
+            if repo_root is not None:
+                payload["workspace_context"] = inspect_worktree_context(repo_root, target_ref)
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
