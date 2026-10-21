@@ -168,8 +168,10 @@ def query_knowledge(
     """Retrieve exact, explicitly declared links; never infer semantic closure.
 
     history/changes are about *indexed* revisions, NOT automatically proven
-    chronological or Git-ancestry relationships. workspace-impact matches
-    caller-observed changed paths against indexed source fingerprints only.
+    chronological or Git-ancestry relationships. Changes classifies existing
+    indexed payload/fingerprint differences without inspecting current source.
+    workspace-impact matches caller-observed changed paths against indexed
+    source fingerprints only.
     """
     if not 1 <= limit <= 250 or not 0 <= depth <= 4:
         raise ValueError("query limit must be 1..250 and depth 0..4")

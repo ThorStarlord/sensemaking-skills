@@ -340,3 +340,17 @@ def test_self_repository_reviewed_knowledge_proposal_preflight():
     assert receipt["relations_checked"] >= 14
     assert not receipt["semantic_truth_established"]
     assert not receipt["action_authorized"]
+
+
+def test_authority_status_and_authored_attributes_are_not_discarded(indexed):
+    root, db, old = indexed
+    data = _pack(root)
+    data["claims"][0]["epistemic_status"] = "contested"
+    data["claims"][0]["attributes"] = {"scope": "reexamined"}
+    _save(root, data)
+    new = _commit(root, "revise A authority interpretation")
+    _index(root, db, new)
+    row = _records(_changes(db, old, new))["cap:a"]
+    assert row["authored_fields_changed"] is True
+    assert row["provenance_only"] is False
+    assert row["assessment_status"] == "ASSESSED"
