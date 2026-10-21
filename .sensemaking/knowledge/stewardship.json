@@ -45,7 +45,8 @@
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_store.py",
       "evidence_refs": [
-        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
       ],
       "attributes": {
         "claim_ceiling": "Source implementation, not test result or product-value proof"
@@ -131,11 +132,58 @@
         "file:docs/semantic-architecture/persistent-knowledge-cli.md",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
         "file:src/sensemaking_skills/semantic_architecture/worktree_context.py",
-        "file:tests/test_semantic_knowledge_self_repo.py"
+        "file:tests/test_semantic_knowledge_self_repo.py",
+        "file:tests/test_semantic_workspace_impact.py"
       ],
       "attributes": {
         "scope": "Source-documented self-repository operating boundary; record is not a runtime invocation receipt",
         "claim_ceiling": "Source implementation and test coverage exist; pass claims require exact-head check receipts and do not establish independent-agent utility"
+      }
+    },
+    {
+      "id": "decision:workspace-impact-path-overlap",
+      "kind": "decision",
+      "statement": "Map active-workspace changes to reviewed indexed records inside knowledge-query by path-level overlap between changed paths since the indexed revision and each record's cited source fingerprints, instead of relaxing knowledge-audit's clean-HEAD byte comparison.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+        "file:src/sensemaking_skills/semantic_architecture/worktree_context.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:tests/test_semantic_workspace_impact.py"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
+        "claim_ceiling": "Same-session implementation and local tests; independent-agent use NOT TESTED"
+      }
+    },
+    {
+      "id": "alternative:dirty-tree-byte-audit",
+      "kind": "alternative",
+      "statement": "Rejected alternative: let knowledge-audit hash a dirty working tree, which would present uncommitted bytes as compared evidence and blur the indexed-snapshot versus working-overlay boundary.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Rejected for the current construction phase; revisit only with a design that keeps overlay evidence explicitly unindexed"
+      }
+    },
+    {
+      "id": "lesson:uncited-change-is-coverage-gap",
+      "kind": "lesson",
+      "statement": "A changed file that no reviewed record cites is a knowledge coverage gap, not evidence that the change has no semantic effect; workspace-impact first exposed this when the query modules knowledge_retrieval.py and semantic_cli.py changed without any citing record.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md"
+      ],
+      "attributes": {
+        "scope": "One same-session observation; whether later agents apply it is NOT TESTED"
       }
     }
   ],
@@ -244,6 +292,49 @@
       "attributes": {
         "scope": "Clean committed build vs dirty-checkout recall; not a guarantee of current working-overlay semantics"
       }
+    },
+    {
+      "id": "rel:workspace-impact-decision",
+      "subject": "cap:semantic-queries",
+      "predicate": "decided_by",
+      "object": "decision:workspace-impact-path-overlap",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "One query operation within the capability"
+      }
+    },
+    {
+      "id": "rel:workspace-impact-overlay-boundary",
+      "subject": "decision:workspace-impact-path-overlap",
+      "predicate": "constrained_by",
+      "object": "inv:index-snapshot-vs-working-overlay",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+        "file:tests/test_semantic_workspace_impact.py"
+      ]
+    },
+    {
+      "id": "rel:workspace-impact-rejected-alternative",
+      "subject": "decision:workspace-impact-path-overlap",
+      "predicate": "references",
+      "object": "alternative:dirty-tree-byte-audit",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:uncited-change-lesson",
+      "subject": "lesson:uncited-change-is-coverage-gap",
+      "predicate": "learned_from",
+      "object": "decision:workspace-impact-path-overlap",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md"
+      ]
     }
   ]
 }
