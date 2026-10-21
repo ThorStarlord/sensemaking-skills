@@ -540,3 +540,85 @@ def test_cli_search_terms_are_explicit_and_backward_compatible(repo, tmp_path):
     mixed = CliRunner().invoke(cli, common + ["--subject", "replay", "--term", "history"])
     assert mixed.exit_code != 0
     assert "cannot" in mixed.output
+
+
+def test_expected_kind_present_in_one_hop_and_limit_omissions(repo, tmp_path):
+    snap = build(repo)
+    db = tmp_path / "coverage.sqlite"
+    store_snapshot(db, snap, source_root=repo[0])
+    args = {"repository": snap.repository, "target_ref": snap.target_ref}
+    requested = ("decision", "alternative", "verification")
+    full = query_knowledge(db, operation="explain", subject="cap:replay",
+                           expected_kinds=requested, limit=250, **args)
+    assert full["bounded_coverage"]["present_in_returned_claims"] == ["decision"]
+    assert full["bounded_coverage"]["not_assessed_in_neighborhood"] == ["alternative", "verification"]
+    assert full["bounded_coverage"]["semantic_completeness_established"] is False
+    small = query_knowledge(db, operation="explain", subject="cap:replay",
+                            expected_kinds=requested, limit=1, **args)
+    assert small["bounded_coverage"]["present_but_omitted_by_limit"] == ["decision"]
+    assert small["bounded_coverage"]["not_assessed_in_neighborhood"] == ["alternative", "verification"]
+    assert small["truncated"] is True
+
+
+def test_authored_related_alternative_can_be_reported_as_present(repo, tmp_path):
+    root, _ = repo
+    authored = authored_data()
+    doc = "docs/adr/0031-stewardship.md"
+    authored["claims"].append({
+        "id": "alternative:arrival", "kind": "alternative",
+        "statement": "Consider arrival ordering", "authority_kind": "policy",
+        "authority_ref": doc, "evidence_refs": [f"file:{doc}"],
+    })
+    authored["relations"].append({
+        "id": "edge:alternative", "subject": "cap:replay",
+        "predicate": "references", "object": "alternative:arrival",
+        "evidence_refs": [f"file:{doc}"],
+    })
+    (root / ".sensemaking/knowledge/stewardship.json").write_text(json.dumps(authored), encoding="utf-8")
+    sha = commit(root, "reviewed alternative")
+    snap = build((root, sha))
+    db = tmp_path / "alternative.sqlite"
+    store_snapshot(db, snap, source_root=root)
+    result = query_knowledge(db, repository=snap.repository, target_ref=sha,
+                             operation="explain", subject="cap:replay", expected_kinds=("alternative",))
+    assert result["bounded_coverage"]["present_in_returned_claims"] == ["alternative"]
+    assert not result["bounded_coverage"]["not_assessed_in_neighborhood"]
+
+
+def test_no_expect_kind_preserves_existing_query_shape(repo, tmp_path):
+    snap = build(repo)
+    db = tmp_path / "old-explain.sqlite"
+    store_snapshot(db, snap, source_root=repo[0])
+    output = query_knowledge(db, repository=snap.repository, target_ref=snap.target_ref,
+                             operation="explain", subject="cap:replay")
+    assert "bounded_coverage" not in output
+    assert output["claims"] and output["relations"]
+
+
+def test_invalid_coverage_kind_or_operation_fails(repo, tmp_path):
+    snap = build(repo)
+    db = tmp_path / "invalid-kind.sqlite"
+    store_snapshot(db, snap, source_root=repo[0])
+    args = {"repository": snap.repository, "target_ref": snap.target_ref}
+    with pytest.raises(ValueError, match="unknown"):
+        query_knowledge(db, operation="explain", subject="cap:replay",
+                        expected_kinds=("unexpected-kind",), **args)
+    with pytest.raises(ValueError, match="only"):
+        query_knowledge(db, operation="search", subject="replay",
+                        expected_kinds=("alternative",), **args)
+
+
+def test_cli_expected_kind_reports_unassessed_alternatives(repo, tmp_path):
+    snap = build(repo)
+    db = tmp_path / "cli-coverage.sqlite"
+    store_snapshot(db, snap, source_root=repo[0])
+    result = CliRunner().invoke(cli, [
+        "semantic", "knowledge-query", "--db", str(db),
+        "--repository", snap.repository, "--target-ref", snap.target_ref,
+        "--operation", "explain", "--subject", "cap:replay",
+        "--expect-kind", "alternative", "--expect-kind", "verification", "--json",
+    ])
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["bounded_coverage"]["not_assessed_in_neighborhood"] == ["alternative", "verification"]
+    assert payload["action_authorized"] is False
