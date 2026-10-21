@@ -11,6 +11,9 @@ import subprocess
 from pathlib import Path
 
 import yaml
+from click.testing import CliRunner
+
+from sensemaking_skills.cli import cli
 
 from sensemaking_skills.semantic_architecture.knowledge_sources import build_knowledge_snapshot
 from sensemaking_skills.semantic_architecture.knowledge_store import (
@@ -139,3 +142,64 @@ def test_stewardship_revision_lifecycle_and_currentness(tmp_path: Path):
     assert "component:studio" in changed["claim_delta"]["changed"]
     assert any(c.id == "cap:book-reentry" for c in after.claims)
     assert after.semantic_truth_established is False
+
+
+def test_steward_cli_uses_committed_knowledge_from_dirty_active_workspace(tmp_path: Path):
+    root = tmp_path / "book-project"
+    root.mkdir()
+    _git(root, "init", "-q")
+    _git(root, "config", "user.email", "steward@example.invalid")
+    _git(root, "config", "user.name", "Steward Test")
+    (root / "docs/adr").mkdir(parents=True)
+    (root / ".sensemaking/knowledge").mkdir(parents=True)
+    (root / "MISSION.md").write_text("# Product\nAuthor controls acceptance.\n", encoding="utf-8")
+    (root / "docs/adr/019-book.md").write_text(
+        "# ADR 019: Book re-entry\n\n**Status:** Accepted\n", encoding="utf-8",
+    )
+    records = {
+        "schema_version": 1,
+        "claims": [{
+            "id": "cap:book-reentry", "kind": "capability",
+            "statement": "Book re-entry is explicitly author controlled",
+            "authority_kind": "policy", "authority_ref": "MISSION.md",
+            "evidence_refs": ["file:MISSION.md"],
+        }],
+        "relations": [],
+    }
+    (root / ".sensemaking/knowledge/book.json").write_text(
+        json.dumps(records), encoding="utf-8",
+    )
+    sha = _commit(root, "reviewed product knowledge")
+    index = tmp_path / "knowledge.sqlite"
+    snap = build_knowledge_snapshot(root, repository="example/book", target_ref=sha)
+    store_snapshot(index, snap, source_root=root)
+
+    (root / "MISSION.md").write_text("# Product\nChanged but not committed.\n", encoding="utf-8")
+    base = [
+        "semantic", "knowledge-query", "--db", str(index),
+        "--repository", "example/book", "--target-ref", sha, "--json",
+    ]
+    runner = CliRunner()
+    search = runner.invoke(cli, base + [
+        "--operation", "search", "--term", "book re-entry", "--term", "author",
+        "--repo", str(root),
+    ])
+    assert search.exit_code == 0, search.output
+    search_payload = json.loads(search.output)
+    assert search_payload["search_mode"] == "explicit_terms_any"
+    assert search_payload["search_hit_total"] >= 1
+    assert search_payload["workspace_context"]["worktree_clean"] is False
+
+    explain = runner.invoke(cli, base + [
+        "--operation", "explain", "--subject", "cap:book-reentry",
+        "--expect-kind", "alternative", "--expect-kind", "verification",
+        "--repo", str(root),
+    ])
+    assert explain.exit_code == 0, explain.output
+    payload = json.loads(explain.output)
+    assert payload["bounded_coverage"]["not_assessed_in_neighborhood"] == [
+        "alternative", "verification",
+    ]
+    assert payload["workspace_context"]["uncommitted_changes_not_indexed"] is True
+    assert payload["action_authorized"] is False
+    assert payload["semantic_truth_established"] is False
