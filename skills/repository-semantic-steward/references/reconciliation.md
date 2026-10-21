@@ -6,8 +6,8 @@ Consequential new evidence about product intent, accepted design, important impl
 
 ## Procedure
 
-1. Pin old and current repository revisions. Read the changed-source set and relevant prior claims. A dirty active checkout may be inspected but is not a committed revision.
-2. Compare source fingerprints using `semantic knowledge-audit` on a clean checkout of the **current** commit, with `--indexed-ref` set to the old indexed SHA and `--current-ref` to HEAD.
+1. Pin the prior indexed revision and current Git HEAD. **Continue in the active checkout and context**, including while it is dirty. Inspect changed code and existing knowledge through `knowledge-query --repo .`; the workspace metadata says whether the index is historical or local changes are unindexed. A dirty checkout is never a committed source revision.
+2. Do not create a clean-room development session just to proceed. After an ordinary code/knowledge commit, at the naturally clean current HEAD, compare source fingerprints with `semantic knowledge-audit --indexed-ref OLD_SHA --current-ref HEAD_SHA`. Source drift does not automatically invalidate historical decisions.
 3. If both snapshots are indexed, use `knowledge-query --operation changes --base-ref OLD --target-ref NEW` to inspect recorded set differences. This is not proof of actual semantic consequences.
 4. Follow changed evidence **and consequential newly understood evidence** to claims/relations, verify original affected code and tests, and check documented product/architecture authority. Do not assume only changed source files can teach something worth retaining.
 5. Choose a disposition per consequential affected claim:
@@ -20,8 +20,8 @@ Consequential new evidence about product intent, accepted design, important impl
 
    Distinguish *no existing claim was falsified* from *nothing reusable was learned*. Before selecting NO_MODEL_CHANGE after a repaired test, incorrect blocker inference or architecture rediscovery, ask whether a future agent would plausibly repeat the mistake without one source-linked invariant, decision link or lesson. Use **ADD** only if the distinction is stable, decision-relevant, source-supported and not already represented. A successful no-change run is not a quota failure.
 6. Edit only the relevant reviewed Git-authored knowledge files and source documents. If a record's interpretation is disputed, never silently change its historical assertion to disguise the conflict.
-7. Check structured record integrity, cited paths and epistemic states. Publish the changes through the repository's normal branch/review workflow.
-8. At the resulting clean committed SHA, rebuild the index outside the repo, check currentness, and preserve older indexed snapshots for history queries.
+7. In the active dirty checkout run `semantic knowledge-proposal-check --repo . --proposal .sensemaking/knowledge/NAME.json --json` to preflight reviewed draft records. Run relevant local code tests; commit source and knowledge in the repository's normal feature-branch workflow. No fresh-context handoff is required after every commit.
+8. At the resulting **naturally clean committed SHA**, rebuild the index outside the repo, check currentness and preserve older snapshots. Exact committed indexing requires clean bytes; dirty-worktree querying and feature construction do not.
 9. Report affected domains, corrections, remains-unknown evidence, tests actually run, and where future agents should look for the reasoning.
 
 ## Memory hygiene

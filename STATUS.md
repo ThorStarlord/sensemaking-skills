@@ -2,8 +2,8 @@
 
 **Source version:** 1.0.0rc5.dev0
 **Release target:** 1.0.0rc5 (development; post-RC4 reduced-scope candidate target)
-**Last updated:** 2026-10-15  
-**Current phase:** RC5 development on canonical `main`; persistent semantic knowledge S1–S3 and optional S4 guidance integrated, with S5 independent-agent qualification still open.
+**Last updated:** 2026-10-20  
+**Current phase:** **CONSTRUCTION** during RC5 development. Persistent semantic stewardship S1–S4 is implemented on `main`; the current selected responsibility is active-workspace recall, source-linked retrieval and bounded decision-context coverage. Independent S5/S6 qualification remains open for release-stage verification.
 
 - **2026-10-14 proactive product-target discovery — HISTORICAL OWNER DIRECTION, NOW APPLIED:** Absence of a ready-made unused issue does not prove that a repository has no valuable frontier. Within an authorized candidate repository, independent Trial 002 operators may conduct bounded strategic opportunity discovery and have an intrinsically valuable objective ratified *before* the participant runs. Trial 002 still tests an externally pinned outcome, while Trial 003 tests participant-led target selection. Operator records in Issue #515 subsequently admitted Chess-Mentor-Engine #101 and attempted Session A; the attempt was void after workspace credits expired, and Trial 002R remains NOT RUN. This historical direction is not evidence of a passing autonomy trial.
 
@@ -149,7 +149,7 @@ Experiment Responsibility Boundary v1 is summarized in `docs/experiment-responsi
 
 ### Strategic Frontier
 
-Current material frontier items are:
+Strategic frontier ledger (historical programs 1–37; current construction frontier 38):
 
 1. **Product Boundary Reconciliation v1 — COMPLETE / OWNER_RATIFIED / INTEGRATED.** ADR 0029 is current product-boundary authority; ADR 0014 remains historical evidence.
 2. **Level-3 Strategic Decision Model v1 — COMPLETE / INTEGRATED.** Strategic Decision to Support, qualitative comparison, decision-changing uncertainty, and smallest warranted intervention are explicit without scoring/ranking automation.
@@ -165,7 +165,7 @@ Current material frontier items are:
 12. **Sensemaking Protocol / product-category expansion — LONG_HORIZON / REQUIRES_LEVEL_4_REVIEW.** No independent consumer currently warrants a product-category pivot.
 13. **General Agency Model v0.1 — COMPLETE / RESEARCH_REFERENCE.** The broader value-to-action-to-learning grammar is coherent with current Sensemaking but does not change ADR 0029 or authorize a generic agent product/runtime.
 14. **Practical Agent Architecture v0 — COMPLETE / GUIDANCE_ONLY_WARRANTED / INTEGRATED.** The warrant-centered hybrid design reconciled against current Sensemaking without establishing a state, schema, assurance, runtime, or public-API gap; compact guidance is integrated into `using-sensemaking`.
-15. **Normal-use validation — ACTIVE / SUPPORTING EVIDENCE MODE.** Preserve qualifying real episodes and use the execution interfaces during ordinary consequential repository work; it no longer blocks construction explicitly authorized under Issue #399.
+15. **Normal-use validation — HISTORICAL / SUPPORTING EVIDENCE MODE.** Preserve qualifying real episodes and use the execution interfaces during ordinary consequential repository work; it no longer blocks construction explicitly authorized under Issue #399.
 16. **Execution Interface & Agent-Factorization v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Release-authority audit, execution handoff/result, working-context projection, generic executor interchange, AI Software Factory projection, explicit GitHub provenance publication, and cross-repository execution projection are integrated without adding semantic planning/scheduling authority. Feature-integrated `main@4f89e92030af4dee5c931b59b839869911e6c366` passed Product/Lab/Release Distribution validation; PR #394 / Issue #393 carry the terminal closeout qualification/result receipt.
    - Historical closeout mode: `NORMAL_USE_VALIDATION`; historical receipt token: `SUPPORTING EVIDENCE MODE = NORMAL_USE_VALIDATION`. These describe the completed Execution Interface milestone and do not override the separately owner-authorized Issue #459 build.
 17. **Experimental Intelligence Components v0 — DEFERRED / LAB_ONLY / `RESEARCH_MORE` / SYNTHETIC TESTING STOPPED.** StrategicPlanner v0 under Issue #395 remains historical lab evidence at its original claim ceiling. It is not an active construction or experiment program and is not promoted by Strategic Repository Sensemaking v1.
@@ -191,16 +191,13 @@ Current material frontier items are:
 35. **Strategic Exploration Funnel v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #468 makes coverage-before-convergence explicit at genuine Level-3 analysis boundaries: system mapping and breadth opportunity exploration precede frontier-candidate synthesis; only material finalists receive depth analysis and construction-path synthesis; resumed execution/verification does not repeat the funnel.
 36. **Autonomous Terminal Mission Continuation v1 — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Issue #473 adds repeated responsibility continuation under an explicit FULL AUTONOMY / FULL DELEGATION terminal mission, with conditional Level-3 breadth, decision-relevant vertical completion, mission-scoped construction-before-field-validation, synthetic-persona claim discipline, and separately governed protected transitions. Mechanical/contract qualification is established; normal-use behavioral evidence is not.
 37. **Strategic Sensemaking Normal-Use Observation Guide — COMPLETE / INTEGRATED / NORMAL_USE_HANDOFF.** Makes breadth, frontier compression, proportional depth, resume, action-mode economy, and Goal Fitness observable during ordinary consequential work without introducing a benchmark, score, tracker, policy layer, or automatic strategy reopening.
+38. **Persistent Semantic Stewardship active-workspace construction — ACTIVE / PR #558.** Use existing source-linked knowledge during ordinary code edits with truthful dirty-workspace context, explicit literal multi-phrase recall, omission-aware bounded decision evidence and source-checked local learning. Independent longitudinal/transfer evaluation remains later release qualification, not a build gate.
 
 ### Current highest-leverage boundary
 
-**Strategic Sensemaking normal-use validation — autonomous terminal-mission
-corroboration after Trial 001.**
+**Current: active-workspace knowledge retrieval and decision-coverage construction.** The highest-leverage near-term boundary is not more scientific evaluation: it is helping the coding agent retrieve and challenge source-linked intent, alternatives, constraints and tests while implementing in the **current context**. The [six-task construction plan](docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md) is the implementation scope, with local tests and normal commits; no additional planner or generic autonomous runtime is warranted.
 
-Issues #468 and #473 are integrated. The current question is no longer whether
-to add more search/control/autonomy machinery, but whether heterogeneous real
-repository episodes corroborate the existing behavior without exposing a stable
-decision-relevant failure boundary.
+**Historical boundary (before ADR 0031 construction):** Strategic Sensemaking normal-use validation and autonomous terminal-mission corroboration after Trial 001. Issues #468 and #473 are integrated. The earlier question was whether heterogeneous real repository episodes corroborated control/autonomy behavior without exposing a new stable failure boundary.
 
 Trial 001 supports one explicit bounded-target mission while preserving a loaded-
 Skill attribution limitation. The next useful evidence should vary repository
@@ -234,17 +231,15 @@ full delegation
 
 ### Current strategic decision to support
 
-**Decision:** does normal use across heterogeneous repositories support the
-current Strategic Sensemaking + autonomous terminal-mission behavior, or reveal
-a recurring material failure in semantic resume, breadth/depth allocation,
-responsibility continuation, construction bias, scope/verticality, evidence
-promotion, or authority-aware stopping that warrants another refinement?
+**Decision:** how should the existing persistent semantic stewardship substrate help the active coding agent make better source-grounded decisions **during real construction**, without introducing another orchestration layer?
 
-**Current judgment:** **NO_CHANGE / NORMAL_USE_HANDOFF.**
+**Current judgment:** **CONSTRUCT / CURRENT_WORKSPACE_SEMANTIC_STEWARDSHIP.** The former `NO_CHANGE / NORMAL_USE_HANDOFF` disposition belongs to the completed strategic-control line, not to the newer owner-selected ADR 0031 construction program. Detailed tasks: [`docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md`](docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md).
 
 ### Current decision-changing uncertainty
 
-The remaining questions are normal-use questions:
+**For this construction slice:** preserve the distinction between indexed committed evidence and dirty-workspace changes, improve literal recall without claiming semantic completeness, and expose whether bounded query results omitted relevant decision kinds. Implement, test, use and commit these capabilities in the current context; independent-context qualification is a release-stage responsibility.
+
+**Historical normal-use questions from the completed strategic-control program:**
 
 - whether system maps are broad enough without becoming exhaustive;
 - whether breadth exploration finds materially different opportunities;
@@ -280,17 +275,14 @@ normal-use evidence
 
 ### Current warranted repository-level responsibility
 
-**No active repository-local construction responsibility.** The current
-strategic/control capabilities are integrated; the next warranted source is
-heterogeneous normal-use evidence, not another Sensemaking construction
-package.
+**Active repository-local construction responsibility:** implement the six-task construction-first persistent semantic stewardship plan on the existing feature branch. The strategic/control programs listed below remain historically integrated; they are not reopened by this new feature slice.
 
-Level-3 disposition: `NO_CHANGE / NORMAL_USE_HANDOFF`.
+Level-3 disposition: `CONSTRUCT / CURRENT_WORKSPACE_SEMANTIC_STEWARDSHIP`. 
 
 ```text
-CURRENT CONSTRUCTION RESPONSIBILITY = NONE
-PRIMARY CONSTRUCTION PROGRAM = NONE
-OPERATING MODE = NORMAL_USE_VALIDATION
+CURRENT CONSTRUCTION RESPONSIBILITY = ACTIVE_WORKSPACE_SEMANTIC_STEWARDSHIP
+PRIMARY CONSTRUCTION PROGRAM = docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md
+OPERATING MODE = CONSTRUCTION
 ISSUE_416_STRATEGIC_CONTINUITY_RECONCILIATION_MULTI_REPO_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_426_POLICY_HIERARCHY_INTERFACE_CLARIFICATION_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
 ISSUE_430_STRATEGIC_CONTINUITY_REFINEMENT_V1 = COMPLETE_INTEGRATED_NORMAL_USE_HANDOFF
@@ -330,7 +322,7 @@ Issue #384 remains the separate external GitHub-admin branch/ruleset governance 
 
 ### Active execution vehicle
 
-There is **no active `sensemaking-skills` construction vehicle**.
+The current `sensemaking-skills` construction vehicle is the owner-authorized implementation branch for [PR #558](https://github.com/ThorStarlord/sensemaking-skills/pull/558). That PR began as a committed plan; **feature implementation and tests must be evidenced separately** rather than treated as complete because this pointer exists.
 
 The current external normal-use evidence vehicle is
 `ThorStarlord/React_incremental_game_prototype#154` at
@@ -353,7 +345,9 @@ The terminal qualification/integration receipts for earlier programs are preserv
 
 ### Expected evidence and reassessment
 
-Trial 001 now provides direct tracer evidence about role clarity, capability coverage, evidence flow, authority boundaries, and organization ceremony. It does not establish the value of independent semantic actors. Reopen broader Organization construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
+**Current construction evidence:** tests that correctly distinguish committed index state from local dirty edits; deterministic explicit search/coverage behavior; source-checked real-repository use; commits on a reviewable branch. **Not release evidence:** fresh independent coding-agent utility, full product ontology coverage, semantic truth or comparative advantage.
+
+**Historical autonomy/tracer evidence:** Trial 001 now provides direct tracer evidence about role clarity, capability coverage, evidence flow, authority boundaries, and organization ceremony. It does not establish the value of independent semantic actors. Reopen broader Organization construction only when ordinary use or explicit owner direction establishes a decision-changing gap such as:
 
 - typed strategic currentness still cannot expose a mechanically decidable change needed for a real reassessment;
 - path-transition identity proves insufficient to reconstruct trajectory position without introducing roadmap semantics;
@@ -383,6 +377,8 @@ Trial 001 now provides direct tracer evidence about role clarity, capability cov
 Do not reopen from synthetic planner curiosity alone.
 
 ### Authority / owner direction
+
+**2026-10-20 current owner direction:** CONSTRUCTION, not Scientific Benchmarking. Use the current workspace and active context, implement the six-task semantic-stewardship plan, run tests and commit without approval pauses. Choose routine implementation decisions within ADR 0029/0031 and the plan. Independent clean-room/context qualification belongs to release; protected external merge, publication and credential transitions are separate from implementation.
 
 The owner explicitly authorized Policy Hierarchy Completion v0 under Issue #399 and directed the repository to stop synthetic experiments as the active development mode. The owner subsequently authorized Strategic Repository Sensemaking v1 under Issue #401 and explicitly directed the repository to build the strategic-analysis layers without another experiment gate. The owner authorized Issue #416 to implement the full Strategic Continuity / Reconciliation / Multi-Repository / Change-Impact package set sequentially without another approval pause, later authorized Issue #426 to clarify policy/continuity interfaces, authorized Issue #430 to implement the strategic-continuity refinement program, authorized Issue #432 to implement Decision Journey Productization v1, and explicitly authorized Issue #435 to implement Strategic Repository Analysis Semantic Grounding v1. The owner then authorized Issue #438 to implement Experiment Economy & Proportional Rigor v1 from observed normal-use friction and Issue #441 to propagate the resulting responsibility boundary through diagnostic/product Skills and experiment-design without another experiment gate or approval pause. The owner subsequently authorized Issue #444 to implement the bounded Adaptive Agency Abstraction Stack v0 research/reconciliation package without another approval pause; that direction does not itself expand ADR 0029 or grant organization-runtime authority. The owner then explicitly authorized Issue #446 Strategic Hypothesis Admission v1 to correct the conservative path-admission behavior, proceed without approval pauses, and preserve existing evidence/authority ceilings. The owner subsequently authorized Issue #449 Goal Fitness & Frontier Integrity v1 to implement the normal-use milestone-inversion corrections end-to-end without approval pauses while preserving owner authority and avoiding new runtime/schema machinery. The owner then authorized Issue #452 Strategic Sensemaking Loop v1 to compress the repetitive multi-prompt strategic episode into one front-door Skill, proceed without approval pauses, and preserve the existing modular semantic/authority boundaries. The owner subsequently authorized Issue #459 Capability & Organization Tracer v0 to build the executable thin slice directly, proceed without approval pauses, and use real repository work to test the Skill-substrate / organizational-topology hypothesis while explicitly avoiding premature industrialization. The owner then authorized Issue #462 to reconcile the integrated outcome into `strategic-sensemaking-loop`, validate the bounded guidance update, and package the complete Skill without approval pauses.
 
@@ -430,8 +426,10 @@ No current Thesis Tension is promoted into active review.
 
 ## Current next step
 
-**NO ACTIVE LEVEL-3 CONSTRUCTION PROGRAM — NORMAL-USE VALIDATION.**
-Owner-directed continuation: prefer actual authorized engineering episodes over
+**ACTIVE LEVEL-3 CONSTRUCTION — SEMANTIC STEWARDSHIP.**
+Owner-directed continuation: execute the six tasks of the [construction-first implementation plan](docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md) directly in the current workspace, run focused and full local tests, commit tested slices, and report the result. Do not require fresh-context/clean-room benchmarking during ordinary development. Independent S5/#552, RSB-6/#554 and comparative results remain unproven and reserved for later release qualification.
+
+Historical strategic-control guidance: prefer actual authorized engineering episodes over
 another synthetic benchmark or architecture package. The prior 18 read-only
 episodes across three tasks showed **0 clearly Skill-favorable tasks** against
 a competent control; this warrants continuing the simplify-hard posture and
@@ -443,7 +441,7 @@ independent comparison. Preserve any naturally arising evidence through Issue
 Separate non-blocking lanes: Issue #226's C6R synthetic study is deprioritized
 unless a real decision-changing gate-confusion pattern warrants it; Issue #384
 still needs actual GitHub-admin branch protection; Issue #255's Goal A external
-harness stop remains binding. Trial 002 stays target-unpinned under #515.
+harness stop remains binding. Trial 002 remains attempted/void after Chess-Mentor-Engine #101 was admitted under #515; Trial 002R has not run.
 
 
 Trial 001 is preserved in
@@ -458,7 +456,7 @@ Skill surfaces require their own installation/update mechanism. Unknown or stale
 loaded identity lowers the attribution claim but does not invalidate ordinary
 behavioral evidence.
 
-The next useful evidence is **Trial 2 on a meaningfully different repository
+For the **historical autonomous-mission qualification lane**, the next useful evidence is **Trial 2 on a meaningfully different repository
 shape with an explicit bounded terminal target**, preferably in a fresh context.
 After that, test fresh-context continuation, then
 `AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK`, and only later test separately

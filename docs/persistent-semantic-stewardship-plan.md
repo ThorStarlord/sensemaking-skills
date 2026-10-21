@@ -1,9 +1,9 @@
 # Persistent Semantic Stewardship — Detailed Development Plan
 
-**Status:** canonical proposed construction trajectory for the owner-selected long-term product direction; **implementation not yet started by this plan**  
+**Status:** owner-selected canonical construction trajectory; S1–S4 implemented and integrated on main, with construction continuing through the [active-workspace plan](superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md); longitudinal/transfer qualification not established.  
 **Owner selection:** 2026-10-15, Path 3 (persistent semantic stewardship platform)  
 **Level-4 authority:** [ADR 0031](adr/0031-persistent-semantic-stewardship.md) and [product strategy](product-strategy.md)  
-**Level-3 operation:** staged, source-grounded construction under the existing strategic/responsibility authority model  
+**Level-3 operation:** **CONSTRUCTION** in the active agent workspace/context, with local tests, incremental commits and source-checked reconciliation; independent clean-room qualification at release, not as a development gate.  
 **Initial repository:** `ThorStarlord/sensemaking-skills`; target-repository pilots require independently verified scope and source identity  
 **Baseline during authoring:** `main@c5bb7b045a5557fa03bd57adce7d3df417f1cfff`  
 **Execution boundary:** this plan authorizes no merge/release/deploy, new external executor, or automatic Skill publication
@@ -69,11 +69,7 @@ Do not create a second semantic-control loop or a competing software factory.
 | Tests, runtime behavior, CI, code review | Primary *verification and observation surfaces*, not replacements for semantic intent |
 | Dark Factory or existing coding agent | Durable execution where appropriate; Sensemaking does **not** schedule, merge or deploy itself |
 
-**Existing PR #541:** optional lexical impact preview is a possible
-observation adapter. It is **not** persistent semantic memory, a dependency
-oracle or evidence of comparative benefit. Adopt, adapt or retire it based
-on the new architecture's explicit consumer needs; do not silently merge
-it as fulfillment of this plan.
+**Integrated PR #541:** optional lexical impact preview is an observation adapter, not a dependency oracle or evidence of comparative benefit. It is already merged; use it only for tasks where its bounded evidence is helpful.
 
 **Existing research:** the Semantic Control Map persistence trial and earlier
 unmerged Stewardship Kernel exploration supply cost/staleness hypotheses.
@@ -455,11 +451,8 @@ be revised, narrowed or replaced without abandoning the selected north star.
   independent product work over construction theater.
 - **This change's authority:** documentation and planning, not coding,
   publishing, merging, deploying, credentials or billing.
-- **Next valid build frontier:** S1 typed epistemic/source model with one
-  consequential read/query consumer; then S2/S3 persistent reconstruction.
-- **Current evidence:** Architectural intent is owner-selected; repository
-  implementation, long-term learning and comparative advantage are **not
-  yet established** by the documentation.
+- **Current construction frontier:** usable recall from the active dirty workspace, explicit bounded multi-phrase lookup, omission-aware decision context, and real coding-agent consumption. See the October 20 construction plan.
+- **Current evidence:** S1–S4 substrate exists and is test-covered on main; the specific active-workspace improvements remain implementation work. Independent longitudinal learning, comparative benefit and cross-repository semantic transfer are **not established**.
 
 The goal is not to accumulate as many ontology rows as possible. The goal is
 for **the next coding agent to have a more accurate, traceable, and useful
@@ -500,12 +493,9 @@ design, implementation relationships, tests and decisions; RECALL offers
 revision-aware knowledge for real work; RECONCILE corrects or preserves relevant
 knowledge after consequential evidence. AUDIT does not change claims.
 
-PR #555 is a candidate, stacked on unmerged PR #553; PR #551's query-integrity
-work remains an independent candidate and needs normal reconciliation rather
-than being silently claimed as integrated. Reviewed Git-authored semantic
+PRs #553 (source-pinned first-visit orientation), #555 (Repository Semantic Steward Skill), and #551 (query-integrity repair) have **merged** into main; PRs #556/#557 subsequently refined literal recall and decision coverage guidance. They form the existing foundation rather than pending candidate prerequisites. Reviewed Git-authored semantic
 records and the versioned SQLite index remain the only knowledge substrate.
-Dirty workspace authoring is permissible, but exact committed source indexing
-requires a separate clean snapshot. No universal ontology migration is selected.
+Dirty workspace authoring and current-context coding are permitted. Exact committed-source **indexing** still requires a clean HEAD at a normal commit boundary; routine retrieval may use an earlier committed index with explicit dirty-overlay caveats. No independent agent or separate clean-room session is required to write, test and commit feature code. No universal ontology migration is selected.
 
 Auteur's Book Workspace and graph-first Studio are the first external pilot.
 Source accuracy, real engineering usefulness and genuinely independent agent

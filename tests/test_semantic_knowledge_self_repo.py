@@ -7,7 +7,11 @@ independent-agent longitudinal learning or of better product decisions.
 from __future__ import annotations
 
 import subprocess
+import json
 from pathlib import Path
+
+from click.testing import CliRunner
+from sensemaking_skills.cli import cli
 
 from sensemaking_skills.semantic_architecture.knowledge_sources import build_knowledge_snapshot
 from sensemaking_skills.semantic_architecture.knowledge_store import store_snapshot, query_knowledge
@@ -43,5 +47,37 @@ def test_real_repo_stewardship_knowledge_rebuild(tmp_path):
         assert impact["action_authorized"] is False
         cached = store_snapshot(db, snap, source_root=checkout)
         assert cached["already_indexed"]
+
+        runner = CliRunner()
+        base = [
+            "semantic", "knowledge-query", "--db", str(db),
+            "--repository", snap.repository, "--target-ref", head, "--json",
+        ]
+        search = runner.invoke(cli, base + [
+            "--operation", "search", "--term", "semantic queries",
+            "--term", "stewardship", "--repo", str(checkout),
+        ])
+        assert search.exit_code == 0, search.output
+        found = json.loads(search.output)
+        assert found["search_hit_total"] > 0
+        assert found["search_mode"] == "explicit_terms_any"
+        assert found["workspace_context"]["worktree_clean"] is True
+
+        # Development can continue in this exact checkout without reindexing
+        # uncommitted source or creating another agent context.
+        (checkout / "dev-unindexed.tmp").write_text(
+            "current in-session edit, not source authority\n", encoding="utf-8",
+        )
+        queried = runner.invoke(cli, base + [
+            "--operation", "explain", "--subject", "cap:semantic-queries",
+            "--expect-kind", "alternative", "--expect-kind", "verification",
+            "--repo", str(checkout),
+        ])
+        assert queried.exit_code == 0, queried.output
+        result = json.loads(queried.output)
+        assert result["workspace_context"]["worktree_clean"] is False
+        assert result["workspace_context"]["uncommitted_changes_not_indexed"] is True
+        assert result["bounded_coverage"]["semantic_completeness_established"] is False
+        assert result["semantic_truth_established"] is False
     finally:
         _git(source, "worktree", "remove", "--force", str(checkout))

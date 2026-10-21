@@ -320,3 +320,46 @@ def test_proposal_check_rejects_missing_evidence_and_unknown_relation(target):
     with pytest.raises(ValueError, match="unresolved relationship endpoint"):
         inspect_knowledge_proposal(root, path)
 
+
+
+def test_knowledge_query_can_inspect_dirty_workspace_without_reindexing(target, tmp_path):
+    root, sha = target
+    db = tmp_path / "history.sqlite"
+    store_snapshot(db, snapshot(target), source_root=root)
+    runner = CliRunner()
+    base_args = [
+        "semantic", "knowledge-query", "--db", str(db),
+        "--repository", "example/product", "--target-ref", sha,
+        "--operation", "search", "--subject", "product", "--json",
+    ]
+    old = runner.invoke(cli, base_args)
+    assert old.exit_code == 0, old.output
+    assert "workspace_context" not in json.loads(old.output)
+    (root / "README.md").write_text("# revised but uncommitted\n", encoding="utf-8")
+    (root / "untracked.txt").write_text("unindexed\n", encoding="utf-8")
+    query = runner.invoke(cli, base_args + ["--repo", str(root)])
+    assert query.exit_code == 0, query.output
+    payload = json.loads(query.output)
+    assert payload["workspace_context"]["head_matches_indexed_ref"] is True
+    assert payload["workspace_context"]["worktree_clean"] is False
+    assert payload["workspace_context"]["uncommitted_changes_not_indexed"] is True
+    assert payload["semantic_truth_established"] is False
+    assert payload["action_authorized"] is False
+
+
+def test_knowledge_query_marks_clean_historical_index(target, tmp_path):
+    root, old_sha = target
+    db = tmp_path / "history.sqlite"
+    store_snapshot(db, snapshot(target), source_root=root)
+    (root / "README.md").write_text("# newer committed\n", encoding="utf-8")
+    commit(root, "newer")
+    result = CliRunner().invoke(cli, [
+        "semantic", "knowledge-query", "--db", str(db),
+        "--repository", "example/product", "--target-ref", old_sha,
+        "--operation", "snapshot", "--repo", str(root), "--json",
+    ])
+    assert result.exit_code == 0, result.output
+    context = json.loads(result.output)["workspace_context"]
+    assert context["head_matches_indexed_ref"] is False
+    assert context["worktree_clean"] is True
+    assert context["source_alignment_not_semantic_truth"] is True

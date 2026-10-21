@@ -1,6 +1,6 @@
 # Persistent Semantic Knowledge — CLI and source contract
 
-**Status:** Repository orientation and the stewardship Skill are integrated via PR #555 at `main@73b253e70f9986dd3546dd50c5e7a6457c976333`. The bounded-query integrity repair from PR #551 is being revalidated against this new main; consult its exact-head checks before treating the repair as qualified.
+**Status:** Source/index foundation, orientation, Repository Semantic Steward and query-integrity repair are integrated (PRs #550/#553/#555/#551). Construction now extends active-workspace query context, explicit multi-phrase literal search and bounded decision-coverage metadata. Local and hosted check receipts remain source-revision-specific; independent release qualification is still unproven.
 **Authority:** ADR 0031 and the Git-reviewed original source documents. The index is never authority.
 **Existing interface:** sensemaking-skills semantic (no new runtime or registered Skill).
 
@@ -61,6 +61,55 @@ missing/unsafe sources, and unassessed fingerprints. A change is a reason to
 inspect the evidence, **not automatic revocation of its original authority**.
 The command does not update SQLite or mutate the checkout.
 
+## Construction: active-workspace recall (no clean-room development gate)
+
+Build an index once at a normal clean committed HEAD, outside the checkout.
+While source files are dirty, continue querying the previously indexed SHA;
+the result is still a **committed-source snapshot**, not the working overlay.
+
+Example for PowerShell on Windows (the indexed SHA must already exist in
+the external database):
+
+```powershell
+$repository = 'ThorStarlord/sensemaking-skills'
+$indexedSha = (git rev-parse HEAD).Trim()
+$db = Join-Path $env:TEMP 'sensemaking-knowledge.sqlite'
+sensemaking-skills semantic knowledge-query --db $db --repository $repository `
+  --target-ref $indexedSha --operation search `
+  --term 'semantic queries' --term 'query integrity' --repo . --json
+sensemaking-skills semantic knowledge-query --db $db --repository $repository `
+  --target-ref $indexedSha --operation explain `
+  --subject 'cap:semantic-queries' --expect-kind alternative `
+  --expect-kind verification --repo . --json
+```
+
+**Output and safety semantics:**
+
+- Worktree inspection disables Git filesystem-monitor hooks and configured external clean/smudge/process filters; it also ignores submodule working-tree state, rather than execute repository-configured commands. `external_filter_commands_disabled_count` and `submodule_worktrees_not_assessed` disclose those limitations. Filter-managed files may therefore be conservatively reported as modified. Inspect submodules or custom filters separately before relying on a clean claim.
+- `--repo .` adds `workspace_context` to any knowledge query. It reports
+  `current_head`, `indexed_ref`, `head_matches_indexed_ref`,
+  `worktree_clean`, `modified_tracked_count`, `untracked_count`,
+  `uncommitted_changes_not_indexed`, and `source_alignment_not_semantic_truth`.
+  Without `--repo`, old calls remain valid and omit this object.
+- Repeated `--term` accepts 1–8 explicit nonempty phrases of at most 80
+  characters, with case-insensitive literal OR semantics over claim ID or
+  statement. Do not combine with `--subject`. `search_mode` and
+  `search_hit_total` disclose the selection method and pre-limit match count.
+  No synonyms, token search, embeddings or claim authority is inferred.
+- `--expect-kind` applies only to `explain` and `why`. Its optional
+  `bounded_coverage` reports expected claim kinds already returned,
+  omitted by `--limit`, or **not assessed in the explicit one-hop
+  neighborhood**. This is never a global completeness result.
+- For source truth, inspect affected current code, owner documentation,
+  tests and architectural alternatives. To retain a reusable decision in
+  dirty work, preflight JSON with `knowledge-proposal-check`, run local tests
+  and commit normally. Rebuild the derived index at the new clean commit.
+
+**Construction claim ceiling:** same-session tests and dogfooding confirm
+implementation behavior at the tested revision; they do not establish
+independent-session cumulative value, cross-repository transfer, release
+readiness, or a benchmark advantage.
+
 ## Authored source example
 
 A reviewed .sensemaking/knowledge/sample.json can use this schema:
@@ -105,11 +154,13 @@ Authored records may declare owner/policy references but cannot assert that auth
 
 Build checks exact 40-character Git HEAD, clean target worktree, tracked non-symlink input paths, and in-root cited local files. Evidence files are SHA-256 hashed, making an underlying source change visible in a later revision even when the claim statement remains identical.
 
+A query may examine the current **dirty active checkout** with `knowledge-query --repo .`, which adds `workspace_context` including current HEAD, indexed revision, modified/untracked counts and a clear flag that uncommitted edits were **not indexed**. This never relaxes the clean HEAD requirement for `knowledge-build` and `knowledge-audit`.
+
 The SQLite index retains multiple repository/SHA snapshots. Indexing identical inputs is idempotent, and conflicting data under the same source revision is rejected. Authored semantic conclusions remain Git-reviewed; do not commit or manually mutate the generated SQLite file.
 
-- History reports **database indexing order**, not Git ancestry or causal chronology. The proposed Episode A fix adds `history_total_entries` and marks `truncated` when the limit omits entries.
-- Changes reports set differences, not proved semantic consequences. The proposed Episode A fix adds `delta_total_counts` and marks `truncated` if any of the six delta arrays is shortened.
-- Impact follows explicit edges only; an indexed path is not a transitive or causal proof. The Episode A repair bounds `depth` to one explicit edge per hop in either direction.
+- History reports **database indexing order**, not Git ancestry or causal chronology. The merged Episode A fix adds `history_total_entries` and marks `truncated` when the limit omits entries.
+- Changes reports set differences, not proved semantic consequences. The merged Episode A fix adds `delta_total_counts` and marks `truncated` if any of the six delta arrays is shortened.
+- Impact follows explicit edges only; an indexed path is not a transitive or causal proof. The merged Episode A repair bounds `depth` to one explicit edge per hop in either direction.
 - Contradictions reports explicit conflicts only; missing conflicts means NOT ASSESSED.
 - Query results carry currentness/revision, source/evidence provenance, limits and no-authority flags.
 
@@ -159,7 +210,7 @@ See [Repository Semantic Bootstrap](repository-bootstrap.md) for scope,
 evidence boundaries, source-drift handling and real-world qualification.
 
 
-## Semantic steward candidate — safe draft authoring
+## Semantic steward — same-session safe draft authoring
 
 `skills/repository-semantic-steward/SKILL.md` provides BOOTSTRAP, RECALL,
 RECONCILE and read-only AUDIT instructions. While drafting an untracked
@@ -172,5 +223,4 @@ sensemaking-skills semantic knowledge-proposal-check --repo . \
 
 This checks schema, endpoints and Git-tracked local evidence. It does NOT
 establish semantic truth, current committed evidence, or owner authority.
-For source-pinned indexing, commit the reviewed source/knowledge changes and
-build the SQLite snapshot at the exact new SHA in a separate clean worktree.
+For source-pinned indexing, commit the reviewed source/knowledge changes and rebuild the SQLite snapshot at the exact new SHA in the **same current checkout when naturally clean**. A fresh agent or separate clean-room worktree is not a construction prerequisite.
