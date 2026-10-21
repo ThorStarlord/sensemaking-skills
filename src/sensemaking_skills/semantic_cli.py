@@ -172,12 +172,17 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--base-ref", default=None, help="Exact previously indexed revision for changes")
     @click.option("--repo", "repo_root", type=click.Path(exists=True, file_okay=False, path_type=Path),
                   help="Optional current Git worktree; does not index uncommitted source")
+    @click.option("--term", "search_terms", multiple=True,
+                  help="Repeat explicit literal OR phrase (search operation only)")
+    @click.option("--expect-kind", "expected_kinds", multiple=True,
+                  help="Repeat claim kinds to assess in the explicit one-hop explain/why neighborhood")
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
     @click.option("--depth", type=click.IntRange(0, 4), default=2)
     @click.option("--json", "output_json", is_flag=True)
     def semantic_knowledge_query(
         db_path: Path, repository_id: str, target_ref: str, operation: str,
         subject: str | None, base_ref: str | None, repo_root: Path | None,
+        search_terms: tuple[str, ...], expected_kinds: tuple[str, ...],
         limit: int, depth: int, output_json: bool,
     ) -> None:
         """Read committed semantic records; optionally report active worktree state."""
@@ -186,6 +191,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 db_path, repository=repository_id, target_ref=target_ref,
                 operation=operation, subject=subject, base_ref=base_ref,
                 limit=limit, depth=depth,
+                search_terms=search_terms, expected_kinds=expected_kinds,
             )
             if repo_root is not None:
                 payload["workspace_context"] = inspect_worktree_context(repo_root, target_ref)
