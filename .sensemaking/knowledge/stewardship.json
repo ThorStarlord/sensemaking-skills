@@ -200,7 +200,7 @@
       "attributes": {
         "scope": "Agent-reported source-revision comparison from PR #560 self-dogfooding; counts are not independently reproduced in this follow-up",
         "claim_ceiling": "Mechanism is supported by current source inspection; source-byte flags remain valid and specific semantic false-positive counts are not established",
-        "status": "OPEN / classification granularity not repaired in PR #560"
+        "status": "OPEN for conservative whole-pack audit; PR #561 candidate adds finer changes diagnostics but is not yet integrated"
       }
     },
     {
@@ -216,8 +216,39 @@
         "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
       ],
       "attributes": {
-        "scope": "Interpretation hygiene for existing knowledge-audit/changes; follow-up classification improvement still unimplemented",
+        "scope": "Source-grounded interpretation hygiene; PR #561 candidate implements additive classification of indexed record differences without automatic truth",
         "claim_ceiling": "Source-grounded guidance, not a claim that semantic changes can currently be detected automatically"
+      }
+    },
+    {
+      "id": "decision:granular-indexed-delta-classification",
+      "kind": "decision",
+      "statement": "Preserve the existing raw changes ID lists and source-byte audit, while adding source-fingerprint-based classifications of Git-authored record fields, shared-container provenance, independent supporting evidence, and NOT_ASSESSED cases to indexed revision comparisons.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:tests/test_semantic_change_classification.py"
+      ],
+      "attributes": {
+        "scope": "Selected bounded PR #561 construction choice; no owner-level policy change, no SQLite schema migration",
+        "claim_ceiling": "Candidate source implementation and regression tests; pass claims require exact-head receipts; no semantic truth or independent agent reuse inferred"
+      }
+    },
+    {
+      "id": "verification:granular-delta-classification-tests",
+      "kind": "verification",
+      "statement": "The semantic change-classification test module contains Git-revision fixtures for shared authored packs, supporting evidence changes, incomplete fingerprints, provenance-only output, bounded totals and CLI compatibility.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_semantic_change_classification.py",
+      "evidence_refs": [
+        "file:tests/test_semantic_change_classification.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
+      ],
+      "attributes": {
+        "scope": "Test definitions and coverage only; actual test passes require revision-pinned execution receipts"
       }
     }
   ],
@@ -383,6 +414,48 @@
       "attributes": {
         "scope": "Source-inspected mechanism and agent-reported incident; no repaired-code or independent reuse claim"
       }
+    },
+    {
+      "id": "rel:granular-delta-decision",
+      "subject": "cap:semantic-queries",
+      "predicate": "decided_by",
+      "object": "decision:granular-indexed-delta-classification",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ]
+    },
+    {
+      "id": "rel:granular-delta-tests",
+      "subject": "cap:semantic-queries",
+      "predicate": "tested_by",
+      "object": "verification:granular-delta-classification-tests",
+      "evidence_refs": [
+        "file:tests/test_semantic_change_classification.py"
+      ],
+      "attributes": {
+        "scope": "Test source linkage, not proof of current pass"
+      }
+    },
+    {
+      "id": "rel:granular-delta-incident",
+      "subject": "decision:granular-indexed-delta-classification",
+      "predicate": "derived_from",
+      "object": "incident:shared-authored-pack-fingerprint-fanout",
+      "evidence_refs": [
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
+    },
+    {
+      "id": "rel:granular-delta-source-boundary",
+      "subject": "decision:granular-indexed-delta-classification",
+      "predicate": "constrained_by",
+      "object": "inv:source-boundary",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
     }
   ]
 }

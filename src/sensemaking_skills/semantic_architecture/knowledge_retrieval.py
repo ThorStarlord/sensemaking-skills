@@ -117,3 +117,144 @@ def bounded_kind_coverage(
         "not_assessed_in_neighborhood": [k for k in requested if k not in all_kinds],
         "semantic_completeness_established": False,
     }
+
+
+# Authored-record classification is a projection over existing indexed payloads.
+# It never re-reads a working tree, changes snapshot identity or judges truth.
+def _authored_pack(record: dict) -> str | None:
+    ref = record.get("source_ref")
+    if isinstance(ref, str) and ref.startswith("file:.sensemaking/knowledge/") and ref.endswith(".json"):
+        return ref[5:]
+    return None
+
+
+def _authored_fields(record: dict) -> dict | None:
+    attrs = record.get("attributes")
+    if not isinstance(attrs, dict):
+        return None
+    # source_ref and these two attributes are produced by the index builder,
+    # not by an individual claim/relation's Git-reviewed authored fields.
+    authored_attrs = {key: value for key, value in attrs.items()
+                      if key not in {"source_sha256", "authority_verified"}}
+    return {**{key: value for key, value in record.items()
+               if key not in {"source_ref", "attributes"}}, "attributes": authored_attrs}
+
+
+def _source_fingerprints(record: dict) -> dict[str, str] | None:
+    attrs = record.get("attributes")
+    fingerprints = attrs.get("source_sha256") if isinstance(attrs, dict) else None
+    if not isinstance(fingerprints, dict) or not fingerprints:
+        return None
+    if any(not isinstance(path, str) or not path or
+           not isinstance(digest, str) or len(digest) != 64
+           for path, digest in fingerprints.items()):
+        return None
+    return fingerprints
+
+
+def _expected_local_fingerprints(record: dict) -> set[str] | None:
+    """Local cited paths should have indexed hashes in both snapshots."""
+    references = record.get("evidence_refs")
+    if not isinstance(references, (list, tuple)) or any(
+        not isinstance(reference, str) for reference in references
+    ):
+        return None
+    paths = set()
+    for reference in references:
+        if reference.startswith("file:"):
+            path = reference[5:].split("#", 1)[0]
+            prefix, marker, line = path.rpartition(":line:")
+            paths.add(prefix if marker and line.isdigit() else path)
+    if record.get("authority_kind") in {"policy", "code", "test"}:
+        authority = record.get("authority_ref")
+        if not isinstance(authority, str) or not authority:
+            return None
+        paths.add(authority)
+    return paths
+
+
+def _classify_record_change(previous: dict, current: dict) -> dict:
+    """Explain raw indexed changes without inferring architectural truth."""
+    result = {
+        "id": current["id"],
+        "assessment_status": "NOT_ASSESSED",
+        "authored_fields_changed": None,
+        "authoring_location_changed": None,
+        "authoring_source_changed": None,
+        "changed_supporting_sources": None,
+        "provenance_only": None,
+    }
+    old_pack, new_pack = _authored_pack(previous), _authored_pack(current)
+    old_fields, new_fields = _authored_fields(previous), _authored_fields(current)
+    if old_pack is None or new_pack is None or old_fields is None or new_fields is None:
+        result["unassessed_reason"] = "not_two_supported_git_authored_records"
+        return result
+
+    result["authored_fields_changed"] = old_fields != new_fields
+    result["authoring_location_changed"] = old_pack != new_pack
+    old_fingerprints = _source_fingerprints(previous)
+    new_fingerprints = _source_fingerprints(current)
+    if old_fingerprints is None or new_fingerprints is None:
+        result["unassessed_reason"] = "source_fingerprints_unavailable"
+        return result
+    if old_pack not in old_fingerprints or new_pack not in new_fingerprints:
+        result["unassessed_reason"] = "authored_container_fingerprint_unavailable"
+        return result
+    old_cited = _expected_local_fingerprints(previous)
+    new_cited = _expected_local_fingerprints(current)
+    if (old_cited is None or new_cited is None
+            or not old_cited.issubset(old_fingerprints)
+            or not new_cited.issubset(new_fingerprints)):
+        result["unassessed_reason"] = "cited_source_fingerprints_unavailable"
+        return result
+
+    # A moved record can refer to two distinct packs; location is a separate
+    # observation, even if the two packs happen to have identical bytes.
+    result["authoring_source_changed"] = (
+        old_fingerprints[old_pack] != new_fingerprints[new_pack]
+    )
+    supporting = []
+    for path in sorted((old_fingerprints.keys() | new_fingerprints.keys()) - {old_pack, new_pack}):
+        if path not in old_fingerprints:
+            supporting.append({"path": path, "change": "reference_added"})
+        elif path not in new_fingerprints:
+            supporting.append({"path": path, "change": "reference_removed"})
+        elif old_fingerprints[path] != new_fingerprints[path]:
+            supporting.append({"path": path, "change": "fingerprint_changed"})
+    result["changed_supporting_sources"] = supporting
+    result["provenance_only"] = bool(
+        not result["authored_fields_changed"]
+        and not result["authoring_location_changed"]
+        and not supporting
+    )
+    result["assessment_status"] = "ASSESSED"
+    return result
+
+
+def classify_indexed_changes(
+    previous: Mapping[str, dict], current: Mapping[str, dict], *, limit: int,
+) -> tuple[list[dict], dict]:
+    """Classify changed common IDs; preserve raw deltas and all pre-limit totals."""
+    changed = sorted(
+        identifier for identifier in previous.keys() & current.keys()
+        if previous[identifier] != current[identifier]
+    )
+    counts = {
+        "changed_total": len(changed), "assessed": 0, "not_assessed": 0,
+        "authored_fields_changed": 0, "authoring_location_changed": 0,
+        "authoring_source_changed": 0, "supporting_sources_changed": 0,
+        "provenance_only": 0,
+    }
+    entries = []
+    for identifier in changed:
+        detail = _classify_record_change(previous[identifier], current[identifier])
+        counts["assessed" if detail["assessment_status"] == "ASSESSED" else "not_assessed"] += 1
+        for facet in ("authored_fields_changed", "authoring_location_changed",
+                      "authoring_source_changed", "provenance_only"):
+            if detail[facet] is True:
+                counts[facet] += 1
+        if detail["changed_supporting_sources"]:
+            counts["supporting_sources_changed"] += 1
+        if len(entries) < limit:
+            entries.append(detail)
+    return entries, counts
