@@ -136,7 +136,7 @@ Source change and semantic change are different questions:
 - **Cited evidence change:** an implementation, test or decision source referenced by the record has changed, with no automatic conclusion about the record's validity.
 - **Semantic reinterpretation:** a source-checking agent establishes a consequential change in meaning, rationale, decision status or applicability; neither a hash nor an unchanged file proves this.
 
-**Known unresolved limitation (self-repository episode, 2026-10-21):**
+**Known limitation at audit granularity (self-repository episode, 2026-10-21; still present):**
 `_authored_records()` fingerprints the entire `.sensemaking/knowledge/*.json`
 container for every record it contains. Editing one record can therefore
 cause `knowledge-audit` to flag every record in the pack as having changed
@@ -145,9 +145,12 @@ full record payloads, including `attributes.source_sha256`, so metadata-only
 fingerprint changes can appear as `changed` claim/relation IDs. These
 signals remain valid at their **stated** source/revision granularity but
 are too coarse to infer which individual authored records changed meaning.
-Treat them as re-inspection candidates rather than semantic deltas.
+Treat them as re-inspection candidates rather than semantic deltas. The
+integrated `change_classification` output (below) helps interpret this
+fanout for `changes`; it does not remove it from `knowledge-audit` or from
+the raw delta ID lists.
 
-### Additive indexed change classification (PR #561 candidate)
+### Additive indexed change classification (integrated, PR #561)
 
 Given two **already indexed committed revisions**, `knowledge-query --operation
 changes --base-ref OLD --target-ref NEW` continues returning the original
@@ -196,13 +199,12 @@ continues its unchanged conservative source-byte drift contract.
 
 See [the self-repository episode](../normal-use/semantic-steward-workspace-impact-2026-10-21.md)
 for the agent-reported counts, source explanation and the separately scoped
-follow-up. A future improvement should distinguish shared-container
-provenance, individual record-content differences and independent evidence
-drift without suppressing real source changes, dropping historical context
-or treating an unassessed dependency as absent. No such repair is implemented
-by the earlier PR #560 documentation follow-up. PR #561 introduces a candidate
-per-record classification for `changes`, without narrowing source-byte audit,
-erasing original raw deltas or establishing semantic truth.
+follow-up. PR #561 (merged as `db6b546f`) implements the per-record
+classification for `changes` that this episode called for, without narrowing
+source-byte audit, erasing original raw deltas, suppressing real source
+changes or establishing semantic truth. The whole-pack fingerprint fanout is
+**not** eliminated: `knowledge-audit` remains intentionally conservative and
+raw `changed` IDs retain their earlier full-payload semantics.
 
 ## Authored source example
 
