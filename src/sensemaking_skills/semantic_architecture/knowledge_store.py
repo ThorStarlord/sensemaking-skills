@@ -304,7 +304,9 @@ def query_knowledge(
                 claims, relations, changed_paths=workspace_changed_paths, limit=limit,
             )
             extra["workspace_impact"] = overlap
-            extra_truncated = overlap["affected_record_total"] > limit
+            extra_truncated = (
+                overlap["affected_record_total"] > limit or overlap["uncited_changed_path_total"] > limit
+            )
 
         if expected_kinds:
             extra["bounded_coverage"] = bounded_kind_coverage(
