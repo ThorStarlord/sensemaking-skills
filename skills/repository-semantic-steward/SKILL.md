@@ -93,9 +93,10 @@ sensemaking-skills semantic knowledge-orient --repo . --repository owner/repo --
 sensemaking-skills semantic knowledge-build --repo . --repository owner/repo --target-ref "$REF" --db /tmp/semantic.sqlite --include-repository-structure --json
 sensemaking-skills semantic knowledge-query --db /tmp/semantic.sqlite --repository owner/repo --target-ref "$REF" --operation search --term "semantic queries" --term "query omissions" --repo . --json
 sensemaking-skills semantic knowledge-query --db /tmp/semantic.sqlite --repository owner/repo --target-ref "$REF" --operation explain --subject "cap:semantic-queries" --expect-kind alternative --expect-kind verification --repo . --json
+sensemaking-skills semantic knowledge-query --db /tmp/semantic.sqlite --repository owner/repo --target-ref "$REF" --operation workspace-impact --repo . --json
 ```
 
-**Only orientation/build (and source audit) require a clean checked-out source revision.** Query reads the previously indexed committed SHA and can run from a dirty active checkout with `--repo .`, whose `workspace_context` explicitly reports unindexed modifications. Literal repeated `--term` is OR search, not semantic retrieval; `--expect-kind` reports only bounded explicit-neighborhood coverage. Choose another external DB location on systems without `/tmp`. Consult [knowledge contract](references/knowledge-contract.md) for `knowledge-audit`, `changes`, and authoring rules; never claim unavailable flags exist.
+**Only orientation/build (and source audit) require a clean checked-out source revision.** Query reads the previously indexed committed SHA and can run from a dirty active checkout with `--repo .`, whose `workspace_context` explicitly reports unindexed modifications. Literal repeated `--term` is OR search, not semantic retrieval; `--expect-kind` reports only bounded explicit-neighborhood coverage; `workspace-impact` lists reviewed records whose cited files changed since the indexed revision (path-level re-inspection candidates, not invalidation). Choose another external DB location on systems without `/tmp`. Consult [knowledge contract](references/knowledge-contract.md) for `knowledge-audit`, `changes`, and authoring rules; never claim unavailable flags exist.
 
 ## Stop and report
 

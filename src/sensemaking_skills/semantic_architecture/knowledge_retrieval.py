@@ -54,6 +54,55 @@ def search_matches(
     return found, {"search_mode": "explicit_terms_any", "search_hit_total": len(found)}
 
 
+def _is_mechanical(record: dict) -> bool:
+    return record.get("authority_kind") == "mechanical" or record.get("derivation") == "mechanical"
+
+
+def workspace_source_overlap(
+    claims: Mapping[str, dict], relations: tuple[dict, ...], *,
+    changed_paths: frozenset[str], limit: int,
+) -> tuple[list[dict], list[dict], dict]:
+    """Match indexed source fingerprints to changed workspace paths.
+
+    A match is a reason to re-inspect the record, never revocation: the
+    working overlay is not indexed and its bytes are not compared.
+    """
+    affected: list[dict] = []
+    hit_claims: list[dict] = []
+    hit_relations: list[dict] = []
+    mechanical = {"claims": 0, "relations": 0}
+    records = [("claim", c) for c in claims.values()] + [("relation", r) for r in relations]
+    for record_type, record in records:
+        cited = record.get("attributes", {}).get("source_sha256", {})
+        overlap = sorted(path for path in cited if path in changed_paths) if isinstance(cited, dict) else []
+        if not overlap:
+            continue
+        if _is_mechanical(record):
+            mechanical[f"{record_type}s"] += 1
+            continue
+        source_ref = record.get("source_ref", "")
+        record_source = source_ref[5:] if source_ref.startswith("file:") else None
+        affected.append({
+            "record_type": record_type, "id": record["id"],
+            "record_source_changed": record_source in overlap,
+            "changed_evidence_sources": [p for p in overlap if p != record_source],
+        })
+        (hit_claims if record_type == "claim" else hit_relations).append(record)
+    metadata = {
+        "changed_path_total": len(changed_paths),
+        "affected_record_total": len(affected),
+        "affected_records": affected[:limit],
+        "mechanical_overlap_counts": mechanical,
+        "overlay_indexed": False,
+        "workspace_impact_limit": (
+            "Path-level overlap between cited source fingerprints and working-tree changes since the "
+            "indexed revision. Re-inspect listed records; a change does not invalidate them, and "
+            "records without fingerprints or uncited consequences are NOT ASSESSED."
+        ),
+    }
+    return hit_claims, hit_relations, metadata
+
+
 def bounded_kind_coverage(
     found_claims: list[dict], *, expected_kinds: tuple[str, ...], limit: int,
 ) -> dict:

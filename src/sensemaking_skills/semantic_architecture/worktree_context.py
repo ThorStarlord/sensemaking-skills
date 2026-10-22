@@ -71,3 +71,31 @@ def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, obj
         "external_filter_commands_disabled_count": len(disabled),
         "submodule_worktrees_not_assessed": True,
     }
+
+
+def changed_paths_since_indexed_ref(repo_root: Path, indexed_ref: str) -> dict[str, object]:
+    """List paths whose working-tree state differs from the indexed commit.
+
+    Covers commits made after indexing plus staged/unstaged/untracked edits.
+    Return path names only. Git diff may inspect working-tree bytes internally;
+    those bytes are not stored in the semantic index or treated as indexed evidence.
+    """
+    if not re.fullmatch(r"[0-9a-f]{40}", indexed_ref):
+        raise ValueError("indexed_ref must be an exact 40-character Git SHA")
+    root = Path(repo_root).expanduser().resolve()
+    if not root.is_dir():
+        raise ValueError("target must be a Git repository directory")
+    top = Path(_git(root, "rev-parse", "--show-toplevel").decode("utf-8").strip()).resolve()
+    disabled = _configured_external_filters(top)
+    try:
+        _git(top, "cat-file", "-e", f"{indexed_ref}^{{commit}}", disable_filters=disabled)
+    except ValueError as exc:
+        raise ValueError("indexed revision is not available in the local Git repository; NOT ASSESSED") from exc
+    tracked = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--ignore-submodules=all",
+                   "--name-only", "-z", indexed_ref, "--", disable_filters=disabled).split(b"\x00")
+    untracked = _git(top, "ls-files", "--others", "--exclude-standard", "-z",
+                     disable_filters=disabled).split(b"\x00")
+    paths = frozenset(
+        item.decode("utf-8", "surrogateescape") for item in (*tracked, *untracked) if item
+    )
+    return {"paths": paths, "external_filter_commands_disabled_count": len(disabled)}
