@@ -37,7 +37,7 @@ It also exposed a coverage gap: `knowledge_retrieval.py` (search, coverage and n
 - **ADD** `decision:workspace-impact-path-overlap`, `alternative:dirty-tree-byte-audit` (rejected) and `lesson:uncited-change-is-coverage-gap`, with explicit relations.
 - Other records: **NO_MODEL_CHANGE**.
 
-## Open finding: shared authored-pack fingerprint fanout (not repaired)
+## Open finding: shared authored-pack fingerprint fanout (not repaired at the time of this episode)
 
 After rebuilding the index and comparing revisions, the coding agent reported that editing the shared `.sensemaking/knowledge/stewardship.json` pack caused `knowledge-audit` to flag all **19 reviewed records** from the preceding pack, while `knowledge-query --operation changes` labeled **15 claims** as changed. These counts are the agent's recorded observation, not an independently rerun comparison in this documentation follow-up; some claims were also genuinely added or edited.
 
@@ -62,6 +62,15 @@ validity or later-independent-agent benefit follows from the new classifier.
 The underlying whole-pack fingerprint fanout is **not removed**: the audit
 intentionally remains conservative, and the raw delta ID lists remain
 backward-compatible. PR #561 addresses the ability to interpret that fanout.
+
+> **Integration note (2026-10-21, added after the episode):** PR #560 merged
+> as `f00713ee` and PR #561 merged as `db6b546f`; post-merge Product
+> Validation and Release Candidate Distribution passed for both. The
+> classification is now available as the additive `change_classification`
+> section of `knowledge-query --operation changes`, covered by
+> `tests/test_semantic_change_classification.py`. The episode text above is
+> preserved as written: the classifier did **not** exist when the observations
+> were made, and the whole-pack audit fanout remains by design.
 
 ## Limits
 

@@ -203,7 +203,7 @@
       "attributes": {
         "scope": "Agent-reported source-revision comparison from PR #560 self-dogfooding; counts are not independently reproduced in this follow-up",
         "claim_ceiling": "Mechanism is supported by current source inspection; source-byte flags remain valid and specific semantic false-positive counts are not established",
-        "status": "OPEN for conservative whole-pack audit; PR #561 candidate adds finer changes diagnostics but is not yet integrated"
+        "status": "OPEN for conservative whole-pack audit by design; integrated PR #561 (db6b546f) adds change_classification to interpret the fanout in changes, while raw delta IDs keep full-payload semantics"
       }
     },
     {
@@ -219,7 +219,7 @@
         "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
       ],
       "attributes": {
-        "scope": "Source-grounded interpretation hygiene; PR #561 candidate implements additive classification of indexed record differences without automatic truth",
+        "scope": "Source-grounded interpretation hygiene; integrated PR #561 implements additive classification of indexed record differences without automatic truth",
         "claim_ceiling": "Source-grounded guidance, not a claim that semantic changes can currently be detected automatically"
       }
     },
@@ -236,8 +236,8 @@
         "file:tests/test_semantic_change_classification.py"
       ],
       "attributes": {
-        "scope": "Selected bounded PR #561 construction choice; no owner-level policy change, no SQLite schema migration",
-        "claim_ceiling": "Candidate source implementation and regression tests; pass claims require exact-head receipts; no semantic truth or independent agent reuse inferred"
+        "scope": "Bounded PR #561 construction choice, integrated as db6b546f; no owner-level policy change, no SQLite schema migration",
+        "claim_ceiling": "Integrated source implementation and regression tests (post-merge CI passed at db6b546f); no semantic truth or independent agent reuse inferred"
       }
     },
     {
