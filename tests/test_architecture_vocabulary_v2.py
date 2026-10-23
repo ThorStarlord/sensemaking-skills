@@ -240,3 +240,21 @@ def test_authored_contract_flow_detects_wrong_consumer_and_accepts_correct_one(t
     artifact.write_text("artifacts:\\n  - id: output\\n    produced_by: producer\\n    consumed_by: [elsewhere]\\n".replace("\\n", "\n"), encoding="utf-8")
     with pytest.raises(ValueError, match="contradicts artifact contract"):
         knowledge_sources._authored_records(tmp_path, tracked)
+
+def test_owned_paths_must_refer_to_tracked_source(tmp_path):
+    owner = _claim(id="component:real", attributes={"owned_paths": ["src/missing.py"]})
+    _write_doc(tmp_path, "arch.json", 2, [owner])
+    tracked = {".sensemaking/knowledge/arch.json", "docs/architecture.md"}
+    with pytest.raises(ValueError, match="source not tracked"):
+        knowledge_sources._authored_records(tmp_path, tracked)
+
+
+def test_flows_to_carries_must_be_string():
+    producer = _claim_obj(_claim(id="component:producer"))
+    consumer = _claim_obj(_claim(id="component:consumer"))
+    bad = read_authored_relation(
+        {"id": "rel:bad", "subject": producer.id, "predicate": "flows_to",
+         "object": consumer.id, "attributes": {"carries": ["contract:bad"]},
+         "evidence_refs": ["file:x"]}, source_ref="file:x", schema_version=2)
+    with pytest.raises(ValueError, match="flows_to must reference a contract"):
+        validate_snapshot(_snapshot([producer, consumer], (bad,)))

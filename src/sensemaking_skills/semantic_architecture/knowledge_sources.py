@@ -255,6 +255,8 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
         for record in data["claims"]:
             claim = read_authored_claim(record, source_ref=f"file:{p}", schema_version=data["schema_version"])
             _check_authored_evidence(root, tracked, claim.evidence_refs)
+            for owned_path in claim.attributes.get("owned_paths", []):
+                _source(root, tracked, owned_path)
             references = (*claim.evidence_refs, f"file:{p}")
             if claim.authority_kind in {"policy", "code", "test"}:
                 _source(root, tracked, claim.authority_ref)

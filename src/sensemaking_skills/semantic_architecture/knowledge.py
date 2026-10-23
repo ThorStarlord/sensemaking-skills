@@ -161,7 +161,8 @@ def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
             if relation.predicate == "flows_to":
                 if a != "component" or b != "component":
                     raise ValueError(f"flows_to needs component endpoints: {relation.id}")
-                if kinds.get(relation.attributes.get("carries")) != "contract":
+                carries = relation.attributes.get("carries")
+                if not isinstance(carries, str) or kinds.get(carries) != "contract":
                     raise ValueError(f"flows_to must reference a contract in carries: {relation.id}")
             if relation.predicate in {"synonym_of", "distinct_from"} and (a != "domain_concept" or b != "domain_concept"):
                 raise ValueError(f"{relation.predicate} needs two domain concepts: {relation.id}")
