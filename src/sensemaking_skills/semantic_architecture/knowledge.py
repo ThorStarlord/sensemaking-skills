@@ -166,6 +166,10 @@ def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
                     raise ValueError(f"flows_to must reference a contract in carries: {relation.id}")
             if relation.predicate in {"synonym_of", "distinct_from"} and (a != "domain_concept" or b != "domain_concept"):
                 raise ValueError(f"{relation.predicate} needs two domain concepts: {relation.id}")
+    scoped_rules = {rel.subject for rel in snapshot.relations if rel.predicate == "applies_to"}
+    for claim in snapshot.claims:
+        if claim.kind == "architecture_rule" and not claim.attributes.get("applies_to") and claim.id not in scoped_rules:
+            raise ValueError(f"architecture_rule has no path or graph scope: {claim.id}")
 
 
 def is_path_scope(reference: str) -> bool:
@@ -194,15 +198,24 @@ def validate_v2_attributes(kind: str | None, predicate: str | None, attrs: Mappi
             raise ValueError(f"architecture_rule needs rule_type in {sorted(RULE_TYPES)}: {reference}")
         if attrs.get("severity") not in RULE_SEVERITIES:
             raise ValueError(f"architecture_rule needs severity warning|error: {reference}")
-        scope = attrs.get("applies_to")
-        if not isinstance(scope, list) or not scope or any(not isinstance(v, str) or not v.strip() for v in scope):
-            raise ValueError(f"architecture_rule needs a non-empty applies_to list: {reference}")
+        scope = attrs.get("applies_to", [])
+        if not isinstance(scope, list) or any(not isinstance(v, str) or not v.strip() for v in scope):
+            raise ValueError(f"architecture_rule applies_to must list repository paths or be empty for graph-only scope: {reference}")
         for item in scope:
             if not is_path_scope(item) or not _valid_repo_path(item, glob=True):
                 raise ValueError(f"applies_to path must be repository-relative: {reference}")
         rule_type = attrs["rule_type"]
+        for key in ("allowed_targets", "forbidden_targets"):
+            if key in attrs and attrs[key] is not None and (
+                not isinstance(attrs[key], list) or any(not isinstance(v, str) or not v.strip() for v in attrs[key])
+            ):
+                raise ValueError(f"{key} must be a list of claim IDs: {reference}")
         if rule_type == "dependency_direction" and not (attrs.get("allowed_targets") or attrs.get("forbidden_targets")):
             raise ValueError(f"dependency_direction needs allowed_targets or forbidden_targets: {reference}")
+        allowed = set(attrs.get("allowed_targets") or [])
+        forbidden = set(attrs.get("forbidden_targets") or [])
+        if allowed & forbidden:
+            raise ValueError(f"dependency_direction has contradictory allowed/forbidden targets: {reference}")
         if rule_type in {"placement", "naming"} and not isinstance(attrs.get("pattern"), str):
             raise ValueError(f"{rule_type} rule needs a pattern: {reference}")
         if rule_type == "forbidden_term" and not (isinstance(attrs.get("terms"), list) and attrs["terms"]):

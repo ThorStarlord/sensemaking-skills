@@ -165,7 +165,7 @@ def test_duplicate_explicit_owners_are_disclosed():
 def test_graph_layer_scope_matches_owned_component():
     claims = dict(CLAIMS)
     claims["rule:layer"] = _claim("rule:layer", "architecture_rule", "Layer rule",
-        attributes={"rule_type": "convention", "severity": "warning", "applies_to": ["src/elsewhere/**"]})
+        attributes={"rule_type": "convention", "severity": "warning", "applies_to": []})
     edges = [*RELATIONS, _rel("r7", "rule:layer", "applies_to", "layer:semantic-plane")]
     result = rules_for(claims, edges, path="src/sensemaking_skills/semantic_architecture/knowledge_store.py", limit=50)
     assert any(r["claim_id"] == "rule:layer" for r in result["applicable_rules"])

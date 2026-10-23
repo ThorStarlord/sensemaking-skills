@@ -95,7 +95,7 @@ def test_architecture_rule_with_valid_attributes_is_accepted():
 @pytest.mark.parametrize("attrs,message", [
     ({"rule_type": "vibes"}, "rule_type"),
     ({"severity": "fatal"}, "severity"),
-    ({"applies_to": []}, "applies_to"),
+    ({"applies_to": ["component:not-a-path"]}, "repository-relative"),
     ({"applies_to": ["/etc/passwd"]}, "repository-relative"),
     ({"applies_to": ["src/../secret"]}, "repository-relative"),
     ({"forbidden_targets": None, "allowed_targets": None}, "allowed_targets or forbidden_targets"),
@@ -268,3 +268,19 @@ def test_owned_path_fingerprint_tracks_implementation_even_if_only_metadata_cite
     tracked = {".sensemaking/knowledge/arch.json", "docs/architecture.md", "src/engine.py"}
     claims, _relations = knowledge_sources._authored_records(tmp_path, tracked)
     assert "src/engine.py" in claims[0].attributes["source_sha256"]
+
+def test_graph_only_architecture_rule_is_valid_with_relation_scope():
+    rule = _claim_obj(_rule(applies_to=[]))
+    owner = _claim_obj(_claim(id="component:exporter"))
+    lab = _claim_obj(_claim(id="component:lab"))
+    with pytest.raises(ValueError, match="no path or graph scope"):
+        validate_snapshot(_snapshot([rule, owner, lab]))
+    scope = read_authored_relation({"id": "rel:scope", "subject": rule.id,
+        "predicate": "applies_to", "object": owner.id,
+        "evidence_refs": ["file:docs/architecture.md"]}, source_ref="file:x", schema_version=2)
+    validate_snapshot(_snapshot([rule, owner, lab], (scope,)))
+
+
+def test_rule_rejects_contradictory_allowed_and_forbidden_targets():
+    with pytest.raises(ValueError, match="contradictory"):
+        _claim_obj(_rule(allowed_targets=["component:lab"], forbidden_targets=["component:lab"]))
