@@ -98,6 +98,26 @@ sensemaking-skills semantic knowledge-query --db /tmp/semantic.sqlite --reposito
 
 **Only orientation/build (and source audit) require a clean checked-out source revision.** Query reads the previously indexed committed SHA and can run from a dirty active checkout with `--repo .`, whose `workspace_context` explicitly reports unindexed modifications. Literal repeated `--term` is OR search, not semantic retrieval; `--expect-kind` reports only bounded explicit-neighborhood coverage; `workspace-impact` lists reviewed records whose cited files changed since the indexed revision (path-level re-inspection candidates, not invalidation). Choose another external DB location on systems without `/tmp`. Consult [knowledge contract](references/knowledge-contract.md) for `knowledge-audit`, `changes`, and authoring rules; never claim unavailable flags exist.
 
+## Architecture and ontology records (schema_version 2, ADR 0033)
+
+Reviewed records may also describe architecture and ontology. Use them when a
+change could cross a layer, a bounded context or a confusable term.
+
+- **Constructs:** `layer`, `bounded_context`, `lifecycle_state`, `external_system`,
+  `architecture_rule` (with `rule_type`, `severity`, `applies_to`); relations
+  `belongs_to`, `relates_to` (with `cardinality`), `transitions_to`, `flows_to`,
+  `exposes`, `applies_to`, `synonym_of`, `distinct_from`. Only a document that
+  declares `schema_version: 2` may use them.
+- **Before editing a path:** `knowledge-query --operation rules-for --subject <path>`.
+  An uncovered path is `NOT_ASSESSED`, never "no rules apply".
+- **Terms:** `--operation term --subject <term>` shows distinct and synonymous neighbours.
+- **Map:** `--operation orientation-summary` gives a bounded, disclosed overview.
+- **Rule drift:** `semantic knowledge-check-rules --repo . --target-ref <HEAD>` reports
+  possible dependency violations. It is warning-only and reads committed bytes only.
+
+Every item is a declared claim with evidence, not proof of architecture.
+Generated import edges never count as reviewed architecture.
+
 ## Record every run in a query receipt
 
 Each Steward invocation writes or updates one `semantic_query_receipt` at

@@ -469,3 +469,11 @@ Before producing the brief, extract whatever the owner has already established f
 - Does not treat this procedure as running during automated workflow execution — see the mode check above.
 - Does not ask more than one clarifying question without explicitly noting why the default was insufficient.
 - Does not present Section 15's fields or this interaction procedure as experimental in the final output to the user — they are ratified (ADR 0024); represent them as such, without hedging.
+
+## Declared architecture rules (optional)
+
+When the target has architecture records (`schema_version: 2`), compare the
+diagnosis with its declared rules and cite them by claim id, for example
+`rule:stable-core-no-lab-imports`. A rule that does not cover the
+diagnosed path is `NOT_ASSESSED`, not evidence of absence. Declared rules are
+claims to verify against code, not verified facts.

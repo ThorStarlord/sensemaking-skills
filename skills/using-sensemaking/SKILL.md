@@ -112,6 +112,10 @@ receipt         != authority (it records grants; it never creates them)
 receipt written != receipt persisted
 ```
 
+When the target repository has architecture records, ask the steward for
+`rules-for` on the paths you are about to edit. A `NOT_ASSESSED` answer means
+inspect the code yourself; it does not mean no rule applies.
+
 Schema, lifecycle, persistence rules and examples:
 `references/session-receipt-v1.md`. When `repository-semantic-steward` runs,
 it adds a `semantic_query_receipt` under the same `session_ref`.

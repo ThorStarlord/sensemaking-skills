@@ -36,3 +36,4 @@ Consequential new evidence about product intent, accepted design, important impl
 - If concurrent work changes the same authored pack, reconcile Git conflicts through source inspection rather than overwriting another agent's knowledge.
 
 AUDIT returns currentness/coverage findings without mutating the record; reconciliation is a separate meaning judgment.
+- **Architecture drift:** run `knowledge-check-rules` at the new clean HEAD. Changed files that no component covers are coverage candidates. A finding is evidence for review, never a verdict; a rule changes only through the same disposition vocabulary as any other claim.
