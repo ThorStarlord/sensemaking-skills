@@ -19,7 +19,8 @@ def _claims():
         "component:core": {"id": "component:core", "kind": "component", "statement": "core",
                            "evidence_refs": ["file:src/core/engine.py"], "attributes": {}},
         "component:lab": {"id": "component:lab", "kind": "component", "statement": "lab",
-                          "evidence_refs": ["file:src/lab/experiment.py"], "attributes": {}},
+                          "evidence_refs": ["file:src/lab/experiment.py"],
+                          "attributes": {"owned_paths": ["src/lab/experiment.py"]}},
         "rule:core-no-lab": {"id": "rule:core-no-lab", "kind": "architecture_rule",
                              "statement": "Core must not import lab.", "evidence_refs": ["file:src/core/engine.py"],
                              "attributes": {"rule_type": "dependency_direction", "severity": "error",
@@ -96,7 +97,8 @@ def _authored(version: int) -> str:
              "authority_ref": "docs/arch.md", "evidence_refs": ["file:src/core/engine.py"]},
             {"id": "component:lab", "kind": "component", "statement": "Lab package.",
              "epistemic_status": "declared", "authority_kind": "document",
-             "authority_ref": "docs/arch.md", "evidence_refs": ["file:src/lab/experiment.py"]},
+             "authority_ref": "docs/arch.md", "evidence_refs": ["file:src/lab/experiment.py"],
+             "attributes": {"owned_paths": ["src/lab/experiment.py"]} if version == 2 else {}},
             {"id": "rule:core-no-lab", "kind": "architecture_rule", "statement": "Core must not import lab.",
              "epistemic_status": "declared", "authority_kind": "document",
              "authority_ref": "docs/arch.md", "evidence_refs": ["file:docs/arch.md"],
@@ -160,6 +162,7 @@ def test_cli_rejects_version_two_constructs_in_version_one_document(tmp_path):
 def test_package_init_claim_covers_the_whole_package():
     claims = _claims()
     claims["component:lab"]["evidence_refs"] = ["file:src/lab/__init__.py"]
+    claims["component:lab"]["attributes"]["owned_paths"] = ["src/lab/__init__.py"]
     sources = {"src/core/engine.py": "from lab.deep.module import thing\n"}
     tracked = {"src/core/engine.py", "src/lab/__init__.py", "src/lab/deep/module.py"}
     result = check_rule_findings(claims, read_source=lambda p: sources.get(p, ""), tracked=tracked)
@@ -168,6 +171,7 @@ def test_package_init_claim_covers_the_whole_package():
 def test_relative_import_and_import_from_submodule_are_detected():
     claims = _claims()
     claims["component:lab"]["evidence_refs"] = ["file:src/pkg/lab/__init__.py"]
+    claims["component:lab"]["attributes"]["owned_paths"] = ["src/pkg/lab/__init__.py"]
     claims["rule:core-no-lab"]["attributes"]["applies_to"] = ["src/pkg/core/**"]
     tracked = {"src/pkg/core/engine.py", "src/pkg/core/__init__.py",
                "src/pkg/lab/__init__.py", "src/pkg/lab/deep/module.py"}
@@ -214,9 +218,19 @@ def test_allowlist_flags_only_modeled_internal_components():
 def test_source_only_manifest_coverage_gap_is_explicit():
     claims = _claims()
     claims["component:lab"]["evidence_refs"] = ["file:src/lab/__init__.py"]
+    claims["component:lab"]["attributes"]["owned_paths"] = ["src/lab/__init__.py"]
     files = {"release-v1.0.yaml": (
         "package_boundary:\n  source_only_modules:\n    - lab\n    - another_lab\n"
     ), "src/core/engine.py": "import lab\n"}
     tracked = set(files) | {"src/lab/__init__.py", "src/another_lab/__init__.py"}
     result = check_rule_findings(claims, read_source=lambda p: files.get(p, ""), tracked=tracked)
     assert any("every source-only package" in s for s in result["not_assessed"])
+
+def test_evidence_only_target_is_unassessed_not_denylist_coverage():
+    claims = _claims()
+    claims["component:lab"]["attributes"].pop("owned_paths")
+    result = check_rule_findings(claims, read_source=lambda p: "import lab.experiment\n",
+                                 tracked={"src/core/engine.py", "src/lab/experiment.py"})
+    assert result["findings_total"] == 0
+    assert result["rule_assessments"][0]["assessment_status"] == "PARTIALLY_ASSESSED"
+    assert any("no explicit owned_paths" in s for s in result["not_assessed"])

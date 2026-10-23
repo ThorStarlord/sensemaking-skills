@@ -231,9 +231,8 @@ def _python_imports(source: str, module_of_file: str) -> list[str]:
 
 
 def _component_files(claim: Mapping[str, Any]) -> set[str]:
-    """Explicit owned paths plus source-supported package roots for checker targeting."""
+    """Only explicit reviewed ownership locates component code; citations are not ownership."""
     paths = set(claim.get("attributes", {}).get("owned_paths", []))
-    paths.update(ref[5:] for ref in claim.get("evidence_refs", []) if ref.startswith("file:"))
     return {p.rsplit("/", 1)[0] + "/" if p.endswith("/__init__.py") else p for p in paths}
 
 
@@ -309,7 +308,10 @@ def check_rule_findings(
             if claim is None:
                 reasons.append(f"target {target} is not a claim")
                 continue
-            dest.update(_component_files(claim))
+            owned = _component_files(claim)
+            if not owned:
+                reasons.append(f"target {target} has no explicit owned_paths")
+            dest.update(owned)
         if manifest_modules is not None and forbidden:
             recorded_packages = {p for p in forbidden_files if p.endswith("/")}
             expected_packages = {"src/" + module.replace(".", "/") + "/" for module in manifest_modules}
