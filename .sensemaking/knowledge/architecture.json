@@ -304,6 +304,39 @@
           "src/sensemaking_skills/**"
         ]
       }
+    },
+    {
+      "id": "layer:skills",
+      "kind": "layer",
+      "statement": "Agent Skills: bounded responsibilities defined in SKILL.md with references and contracts.",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/SKILL.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "verification:brief-validator-tests",
+      "kind": "verification",
+      "statement": "Fixture and regression runner for the brief validator.",
+      "authority_kind": "test",
+      "authority_ref": "tests/run_validate_brief_tests.py",
+      "evidence_refs": [
+        "file:tests/run_validate_brief_tests.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "verification:receipt-validator-tests",
+      "kind": "verification",
+      "statement": "Tests for receipt validation, summarizer and CLI routing.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_sensemaking_receipts.py",
+      "evidence_refs": [
+        "file:tests/test_sensemaking_receipts.py"
+      ],
+      "epistemic_status": "declared"
     }
   ],
   "relations": [
@@ -407,6 +440,46 @@
       "object": "verification:architecture-vocabulary-tests",
       "evidence_refs": [
         "file:tests/test_architecture_vocabulary_v2.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:repo-sensemaker-skill-layer",
+      "subject": "component:repo-sensemaker-skill",
+      "predicate": "belongs_to",
+      "object": "layer:skills",
+      "evidence_refs": [
+        "file:skills/repo-sensemaker/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:workflow-planner-skill-layer",
+      "subject": "component:workflow-planner-skill",
+      "predicate": "belongs_to",
+      "object": "layer:skills",
+      "evidence_refs": [
+        "file:skills/workflow-planner/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:brief-validator-tested",
+      "subject": "component:brief-validator",
+      "predicate": "tested_by",
+      "object": "verification:brief-validator-tests",
+      "evidence_refs": [
+        "file:tests/run_validate_brief_tests.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:receipt-validator-tested",
+      "subject": "component:receipt-validator",
+      "predicate": "tested_by",
+      "object": "verification:receipt-validator-tests",
+      "evidence_refs": [
+        "file:tests/test_sensemaking_receipts.py"
       ],
       "epistemic_status": "declared"
     }

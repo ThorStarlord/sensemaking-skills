@@ -143,6 +143,16 @@
         "file:skills/using-sensemaking/references/session-receipt-v1.md"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:responsibility-context",
+      "subject": "domain_concept:responsibility",
+      "predicate": "belongs_to",
+      "object": "bounded_context:workflow-control",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md"
+      ],
+      "epistemic_status": "declared"
     }
   ]
 }
