@@ -261,7 +261,7 @@
     {
       "id": "rule:stable-core-no-lab-imports",
       "kind": "architecture_rule",
-      "statement": "Semantic architecture modules must not import the source-only lab package.",
+      "statement": "Stable semantic architecture and setup-skills modules must not import any source-only package.",
       "authority_kind": "document",
       "authority_ref": "release-v1.0.yaml",
       "evidence_refs": [
@@ -272,7 +272,8 @@
         "rule_type": "dependency_direction",
         "severity": "error",
         "applies_to": [
-          "src/sensemaking_skills/semantic_architecture/**"
+          "src/sensemaking_skills/semantic_architecture/**",
+          "src/sensemaking_skills/setup_skills.py"
         ],
         "forbidden_targets": [
           "component:lab-package"

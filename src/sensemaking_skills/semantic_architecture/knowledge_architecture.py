@@ -271,14 +271,17 @@ def check_rule_findings(
     findings: list[dict] = []
     not_assessed: list[str] = []
     assessments: list[dict] = []
+    assessed_scope_files: set[str] = set()
     edges = list(relations)
     manifest_modules: set[str] | None = None
+    stable_modules: set[str] | None = None
     if "release-v1.0.yaml" in tracked:
         try:
             import yaml
 
             release = yaml.safe_load(read_source("release-v1.0.yaml")) or {}
             manifest_modules = set(release.get("package_boundary", {}).get("source_only_modules", []))
+            stable_modules = set(release.get("public_surface", {}).get("stable_python_modules", []))
         except (ValueError, KeyError, TypeError, yaml.YAMLError) as exc:
             not_assessed.append(f"release manifest could not be read: {exc}")
     for rule_id, rule in sorted(claims.items()):
@@ -288,6 +291,8 @@ def check_rule_findings(
         reasons: list[str] = []
         in_scope = _rule_scoped_files(rule_id, rule, claims, edges, tracked)
         python_files = sorted(p for p in in_scope if p.endswith(".py"))
+        if attrs.get("rule_type") == "dependency_direction":
+            assessed_scope_files.update(python_files)
         if not in_scope:
             reasons.append("no tracked files match the declared scope")
         if len(python_files) != len(in_scope):
@@ -351,6 +356,16 @@ def check_rule_findings(
                             "files_examined": examined, "scope_files_total": len(in_scope),
                             "not_assessed_reasons": sorted(set(reasons))})
         not_assessed.extend(f"{rule_id}: {reason}" for reason in sorted(set(reasons)))
+    if stable_modules is not None:
+        for module in sorted(stable_modules):
+            stem = "src/" + module.replace(".", "/")
+            stable_files = {p for p in tracked if p.endswith(".py") and (
+                p == stem + ".py" or p.startswith(stem + "/")
+            )}
+            if not stable_files:
+                not_assessed.append(f"stable manifest module has no tracked Python source: {module}")
+            for uncovered in sorted(stable_files - assessed_scope_files):
+                not_assessed.append(f"stable module not covered by a dependency rule: {uncovered}")
     unique_findings: dict[tuple[str, str, str, str], dict] = {}
     for item in findings:
         key = (item["rule_id"], item["file"], item["resolves_to"], item["note"])

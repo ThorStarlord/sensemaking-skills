@@ -234,3 +234,19 @@ def test_evidence_only_target_is_unassessed_not_denylist_coverage():
     assert result["findings_total"] == 0
     assert result["rule_assessments"][0]["assessment_status"] == "PARTIALLY_ASSESSED"
     assert any("no explicit owned_paths" in s for s in result["not_assessed"])
+
+def test_stable_module_manifest_scope_gap_is_reported():
+    claims = _claims()
+    claims["component:lab"]["attributes"]["owned_paths"] = ["src/lab/__init__.py"]
+    claims["rule:core-no-lab"]["attributes"]["applies_to"] = ["src/core/engine.py"]
+    files = {
+        "release-v1.0.yaml": (
+            "public_surface:\n  stable_python_modules: [core.engine, core.setup]\n"
+            "package_boundary:\n  source_only_modules: [lab]\n"
+        ),
+        "src/core/engine.py": "import lab\n", "src/core/setup.py": "pass\n"
+    }
+    tracked = set(files) | {"src/lab/__init__.py"}
+    result = check_rule_findings(claims, read_source=lambda p: files.get(p, ""), tracked=tracked)
+    assert any("stable module not covered" in reason and "src/core/setup.py" in reason
+               for reason in result["not_assessed"])
