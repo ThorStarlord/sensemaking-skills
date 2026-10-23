@@ -393,7 +393,7 @@
     {
       "id": "rel:knowledge-tested",
       "subject": "component:semantic-knowledge-plane",
-      "predicate": "depends_on",
+      "predicate": "tested_by",
       "object": "verification:semantic-knowledge-tests",
       "evidence_refs": [
         "file:tests/test_semantic_knowledge.py"
@@ -403,7 +403,7 @@
     {
       "id": "rel:knowledge-verified",
       "subject": "component:semantic-knowledge-plane",
-      "predicate": "depends_on",
+      "predicate": "tested_by",
       "object": "verification:architecture-vocabulary-tests",
       "evidence_refs": [
         "file:tests/test_architecture_vocabulary_v2.py"

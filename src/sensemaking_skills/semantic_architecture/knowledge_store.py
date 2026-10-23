@@ -13,7 +13,7 @@ import sqlite3
 from pathlib import Path
 from urllib.parse import quote
 
-from .knowledge import KnowledgeSnapshot, fingerprint, is_path_scope, record_dict, validate_snapshot, SCHEMA_VERSION
+from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
 from .knowledge_architecture import orientation_summary, rules_for, term
 from .knowledge_retrieval import (
     bounded_kind_coverage, classify_indexed_changes, search_matches,
@@ -184,6 +184,9 @@ def query_knowledge(
         raise ValueError(f"{operation} requires a claim identifier")
     if operation == "rules-for" and not subject:
         raise ValueError("rules-for requires --subject <repository-relative path>")
+    if operation == "rules-for" and ("*" in subject or "?" in subject or subject.startswith("/")
+                                     or ".." in subject.split("/")):
+        raise ValueError("rules-for subject must be one repository-relative file path (no globs)")
     if operation == "term" and not subject:
         raise ValueError("term requires --subject <term>")
     if operation == "changes" and not base_ref:
@@ -315,8 +318,6 @@ def query_knowledge(
 
         elif operation == "rules-for":
             assert subject is not None
-            if is_path_scope(subject) or subject.startswith("/") or ".." in subject.split("/"):
-                raise ValueError("rules-for subject must be a plain repository-relative file path")
             extra["architecture"] = rules_for(claims, relations, path=subject, limit=limit)
             found_claims = [claims[r["claim_id"]] for r in extra["architecture"]["applicable_rules"]
                             if r["claim_id"] in claims]

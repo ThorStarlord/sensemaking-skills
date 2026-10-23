@@ -125,3 +125,19 @@ def test_orientation_summary_caps_lines_and_reports_omission():
     summary = orientation_summary(CLAIMS, RELATIONS, max_lines=2)
     assert len(summary["lines"]) == 2
     assert summary["lines_omitted"] > 0
+
+
+def test_rules_for_subject_validation_at_the_store_boundary(tmp_path):
+    """A real file path must be accepted; globs and escapes must be refused."""
+    from sensemaking_skills.semantic_architecture.knowledge_store import query_knowledge
+    import pytest
+
+    db = tmp_path / "missing.sqlite"
+    for subject in ("src/a/*.py", "/etc/passwd", "../outside.py"):
+        with pytest.raises(ValueError, match="repository-relative"):
+            query_knowledge(db, repository="o/r", target_ref="a" * 40, operation="rules-for", subject=subject)
+    # A plain path passes validation and only then fails on the missing database.
+    with pytest.raises(Exception) as excinfo:
+        query_knowledge(db, repository="o/r", target_ref="a" * 40, operation="rules-for",
+                        subject="src/sensemaking_skills/x.py")
+    assert "repository-relative" not in str(excinfo.value)
