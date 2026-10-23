@@ -14,7 +14,7 @@ import subprocess
 from pathlib import Path
 
 from .knowledge import (
-    KnowledgeClaim, KnowledgeRelation, KnowledgeSnapshot, read_authored_claim,
+    AUTHORED_SCHEMA_VERSIONS, KnowledgeClaim, KnowledgeRelation, KnowledgeSnapshot, read_authored_claim,
     read_authored_relation, stable_id, validate_snapshot,
 )
 from .models import ObservationKind
@@ -204,14 +204,14 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
         if not p.startswith(".sensemaking/knowledge/") or not p.endswith(".json"):
             continue
         data = json.loads(_source(root, tracked, p).read_text(encoding="utf-8"))
-        if not isinstance(data, dict) or set(data) != {"schema_version", "claims", "relations"} or data["schema_version"] != 1:
+        if not isinstance(data, dict) or set(data) != {"schema_version", "claims", "relations"} or data["schema_version"] not in AUTHORED_SCHEMA_VERSIONS:
             raise ValueError(f"invalid authored knowledge document: {p}")
         if not isinstance(data["claims"], list) or not isinstance(data["relations"], list):
             raise ValueError(f"authored claim/relation sets must be arrays: {p}")
         if len(data["claims"]) > 500 or len(data["relations"]) > 1000:
             raise ValueError(f"authored record oversized: {p}")
         for record in data["claims"]:
-            claim = read_authored_claim(record, source_ref=f"file:{p}")
+            claim = read_authored_claim(record, source_ref=f"file:{p}", schema_version=data["schema_version"])
             _check_authored_evidence(root, tracked, claim.evidence_refs)
             references = (*claim.evidence_refs, f"file:{p}")
             if claim.authority_kind in {"policy", "code", "test"}:
@@ -223,7 +223,7 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
                 }}
             ))
         for record in data["relations"]:
-            relation = read_authored_relation(record, source_ref=f"file:{p}")
+            relation = read_authored_relation(record, source_ref=f"file:{p}", schema_version=data["schema_version"])
             _check_authored_evidence(root, tracked, relation.evidence_refs)
             edges.append(KnowledgeRelation(
                 **{**relation.__dict__, "attributes": {

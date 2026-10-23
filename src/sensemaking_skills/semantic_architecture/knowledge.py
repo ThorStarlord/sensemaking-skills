@@ -14,6 +14,10 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Mapping
 
 SCHEMA_VERSION = 1
+# Version of the reviewed authored-document format. Kept separate from
+# SCHEMA_VERSION, which versions the SQLite store: bumping the store would force
+# a rebuild of every existing index.
+AUTHORED_SCHEMA_VERSIONS = frozenset({1, 2})
 SHA_PATTERN = re.compile(r"[0-9a-f]{40}\Z")
 ID_PATTERN = re.compile(r"[a-zA-Z][a-zA-Z0-9_.:\-]{2,127}\Z")
 CLAIM_KINDS = frozenset({
@@ -31,6 +35,18 @@ AUTHORITY_KINDS = frozenset({
     "hypothesis", "mechanical", "document",
 })
 DERIVATIONS = frozenset({"authored", "declared", "mechanical", "lexical"})
+# Version-2 additions (ADR 0033). Only reviewed authored documents declaring
+# schema_version 2 may use them; generated and version-1 content never does.
+V2_CLAIM_KINDS = frozenset({
+    "layer", "bounded_context", "lifecycle_state", "external_system", "architecture_rule",
+})
+V2_PREDICATES = frozenset({
+    "belongs_to", "relates_to", "transitions_to", "flows_to", "exposes",
+    "applies_to", "synonym_of", "distinct_from",
+})
+RULE_TYPES = frozenset({"dependency_direction", "placement", "naming", "forbidden_term", "convention"})
+CARDINALITIES = frozenset({"1:1", "1:N", "N:M"})
+RULE_SEVERITIES = frozenset({"warning", "error"})
 PREDICATES = frozenset({
     "serves_goal", "requires_capability", "constrained_by", "depends_on",
     "implemented_by", "tested_by", "decided_by", "supersedes",
@@ -102,7 +118,7 @@ def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
         if not _required_id(item.id) or item.id in seen_claims:
             raise ValueError(f"invalid or duplicate claim id: {item.id}")
         seen_claims.add(item.id)
-        if item.kind not in CLAIM_KINDS or item.epistemic_status not in EPISTEMIC_STATES:
+        if item.kind not in CLAIM_KINDS | V2_CLAIM_KINDS or item.epistemic_status not in EPISTEMIC_STATES:
             raise ValueError(f"invalid claim kind/status: {item.id}")
         if item.authority_kind not in AUTHORITY_KINDS:
             raise ValueError(f"invalid authority kind: {item.id}")
@@ -111,12 +127,15 @@ def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
         if not item.evidence_refs or any(not str(v).strip() for v in item.evidence_refs):
             raise ValueError(f"claim requires evidence references: {item.id}")
         _json_object(item.attributes, item.id)
+    for item in snapshot.claims:
+        if item.kind == "architecture_rule":
+            _check_rule_references(item, seen_claims)
     seen_edges: set[str] = set()
     for relation in snapshot.relations:
         if not _required_id(relation.id) or relation.id in seen_edges:
             raise ValueError(f"invalid or duplicate relation id: {relation.id}")
         seen_edges.add(relation.id)
-        if relation.predicate not in PREDICATES or relation.epistemic_status not in EPISTEMIC_STATES:
+        if relation.predicate not in PREDICATES | V2_PREDICATES or relation.epistemic_status not in EPISTEMIC_STATES:
             raise ValueError(f"invalid relationship kind/status: {relation.id}")
         if relation.derivation not in DERIVATIONS:
             raise ValueError(f"invalid relationship derivation: {relation.id}")
@@ -125,6 +144,45 @@ def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
         if not relation.source_ref.strip() or not relation.evidence_refs:
             raise ValueError(f"relationship missing evidence: {relation.id}")
         _json_object(relation.attributes, relation.id)
+
+
+def is_path_scope(reference: str) -> bool:
+    """A path scope contains a separator or glob; identifiers never do."""
+    return "/" in reference or "*" in reference
+
+
+def validate_v2_attributes(kind: str | None, predicate: str | None, attrs: Mapping[str, Any], reference: str) -> None:
+    """Check the typed attributes version-2 constructs require (ADR 0033)."""
+    if kind == "architecture_rule":
+        if attrs.get("rule_type") not in RULE_TYPES:
+            raise ValueError(f"architecture_rule needs rule_type in {sorted(RULE_TYPES)}: {reference}")
+        if attrs.get("severity") not in RULE_SEVERITIES:
+            raise ValueError(f"architecture_rule needs severity warning|error: {reference}")
+        scope = attrs.get("applies_to")
+        if not isinstance(scope, list) or not scope or any(not isinstance(v, str) or not v.strip() for v in scope):
+            raise ValueError(f"architecture_rule needs a non-empty applies_to list: {reference}")
+        for item in scope:
+            if is_path_scope(item) and (item.startswith("/") or ".." in item.split("/")):
+                raise ValueError(f"applies_to path must be repository-relative: {reference}")
+        rule_type = attrs["rule_type"]
+        if rule_type == "dependency_direction" and not (attrs.get("allowed_targets") or attrs.get("forbidden_targets")):
+            raise ValueError(f"dependency_direction needs allowed_targets or forbidden_targets: {reference}")
+        if rule_type in {"placement", "naming"} and not isinstance(attrs.get("pattern"), str):
+            raise ValueError(f"{rule_type} rule needs a pattern: {reference}")
+        if rule_type == "forbidden_term" and not (isinstance(attrs.get("terms"), list) and attrs["terms"]):
+            raise ValueError(f"forbidden_term rule needs terms: {reference}")
+    if predicate == "relates_to" and attrs.get("cardinality") not in CARDINALITIES:
+        raise ValueError(f"relates_to needs cardinality in {sorted(CARDINALITIES)}: {reference}")
+
+
+def _check_rule_references(item: "KnowledgeClaim", claim_ids: set[str]) -> None:
+    """Every non-path scope or target of a rule must name a claim in the snapshot."""
+    refs = list(item.attributes.get("applies_to", []))
+    refs += list(item.attributes.get("allowed_targets", []) or [])
+    refs += list(item.attributes.get("forbidden_targets", []) or [])
+    for ref in refs:
+        if not is_path_scope(ref) and ref not in claim_ids:
+            raise ValueError(f"architecture_rule references unknown claim {ref!r}: {item.id}")
 
 
 def _json_object(value: Mapping[str, Any], reference: str) -> None:
@@ -149,7 +207,7 @@ def fingerprint(snapshot: KnowledgeSnapshot) -> str:
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
-def read_authored_claim(data: dict[str, Any], *, source_ref: str) -> KnowledgeClaim:
+def read_authored_claim(data: dict[str, Any], *, source_ref: str, schema_version: int = 1) -> KnowledgeClaim:
     """Parse a reviewed authored record; its declared authority is NOT validated."""
     if not isinstance(data, dict):
         raise ValueError("authored claim must be an object")
@@ -166,6 +224,10 @@ def read_authored_claim(data: dict[str, Any], *, source_ref: str) -> KnowledgeCl
         raise ValueError("authored data may not assert verified authority or action permission")
     if status == "observed" and authority not in {"code", "test", "document", "mechanical"}:
         raise ValueError("authored normative claim cannot masquerade as observed evidence")
+    if data["kind"] in V2_CLAIM_KINDS:
+        if schema_version < 2:
+            raise ValueError(f"kind {data['kind']} requires schema_version 2: {data['id']}")
+        validate_v2_attributes(data["kind"], None, attrs, data["id"])
     return KnowledgeClaim(
         id=data["id"], kind=data["kind"], statement=data["statement"],
         epistemic_status=status,
@@ -175,7 +237,7 @@ def read_authored_claim(data: dict[str, Any], *, source_ref: str) -> KnowledgeCl
     )
 
 
-def read_authored_relation(data: dict[str, Any], *, source_ref: str) -> KnowledgeRelation:
+def read_authored_relation(data: dict[str, Any], *, source_ref: str, schema_version: int = 1) -> KnowledgeRelation:
     if not isinstance(data, dict):
         raise ValueError("authored relation must be an object")
     allowed = {"id", "subject", "predicate", "object", "epistemic_status", "derivation", "evidence_refs", "attributes"}
@@ -190,6 +252,10 @@ def read_authored_relation(data: dict[str, Any], *, source_ref: str) -> Knowledg
         raise ValueError("authored relations cannot claim mechanical derivation")
     if not isinstance(attrs, dict) or {"authority_verified", "semantic_truth_established", "action_authorized"} & attrs.keys():
         raise ValueError("authored relations cannot assert verified authority or permission")
+    if data["predicate"] in V2_PREDICATES:
+        if schema_version < 2:
+            raise ValueError(f"predicate {data['predicate']} requires schema_version 2: {data['id']}")
+        validate_v2_attributes(None, data["predicate"], attrs, data["id"])
     return KnowledgeRelation(
         id=data["id"], subject=data["subject"], predicate=data["predicate"],
         object=data["object"], epistemic_status=data.get("epistemic_status", "declared"),
