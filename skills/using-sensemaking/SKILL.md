@@ -112,6 +112,12 @@ receipt         != authority (it records grants; it never creates them)
 receipt written != receipt persisted
 ```
 
+When the target repository has relevant reviewed architecture records and the guidance
+could materially change the next edit, ask the steward for `rules-for` on the affected path.
+Inspect the governing source for consequential rules; `NOT_ASSESSED`, hypothetical
+status, ambiguous ownership, or partial checker coverage never establishes clearance.
+Do not introduce mandatory knowledge ceremony for straightforward local fixes.
+
 Schema, lifecycle, persistence rules and examples:
 `references/session-receipt-v1.md`. When `repository-semantic-steward` runs,
 it adds a `semantic_query_receipt` under the same `session_ref`.

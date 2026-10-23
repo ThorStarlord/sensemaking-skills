@@ -13,3 +13,11 @@ For each proposed extension:
 6. Obtain the required schema/owner authority before a permanent shared ontology change.
 
 Avoid repository-specific type proliferation, sweeping renames, compulsory schema-v2 migrations, or treating generated classifications as architectural truth. A target can have rich concepts without modifying Sensemaking's universal schema.
+
+## Recorded extension: architecture and ontology (ADR 0033)
+
+Passed this gate: `docs/semantic-architecture/architecture-ontology-competency-v1.md`
+tested 15 questions; eight were not expressible. The additions target
+those needs plus the explicitly justified `exposes` contract-clarification predicate (path-scoped rules, cardinality, lifecycle,
+layers and contexts, data flow, confusable terms). Version-1 documents and the
+store version are unchanged.

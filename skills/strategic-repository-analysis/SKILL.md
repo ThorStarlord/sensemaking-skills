@@ -73,6 +73,10 @@ where the strategic choice depends on it.
 
 ### 1B. Optional cross-episode semantic grounding
 
+When reviewed architecture records exist at the target revision, layers and
+bounded contexts are useful pointers for the system model in step 3. Treat
+them as declared claims and verify any that matter to the frontier.
+
 For architecture-heavy, long-horizon decisions, when the owner-selected
 ADR 0031 knowledge index exists **at the target Git revision**, query relevant
 goals, capabilities, decision history, contradictions and explicit

@@ -14,7 +14,7 @@ import subprocess
 from pathlib import Path
 
 from .knowledge import (
-    KnowledgeClaim, KnowledgeRelation, KnowledgeSnapshot, read_authored_claim,
+    AUTHORED_SCHEMA_VERSIONS, KnowledgeClaim, KnowledgeRelation, KnowledgeSnapshot, read_authored_claim,
     read_authored_relation, stable_id, validate_snapshot,
 )
 from .models import ObservationKind
@@ -197,6 +197,48 @@ def _adr_claims(root: Path, tracked: set[str]) -> list[KnowledgeClaim]:
     return result
 
 
+def _validate_authored_contract_flows(
+    root: Path, tracked: set[str], claims: list[KnowledgeClaim], edges: list[KnowledgeRelation],
+) -> None:
+    """Check cited artifact-manifest producer/consumer flows, not arbitrary graph edges.
+
+    This optional, evidence-specific adapter preserves the general knowledge schema
+    in repos without Sensemaking's artifact-contracts.yaml format.
+    """
+    import yaml
+
+    by_id = {c.id: c for c in claims}
+    manifests: dict[str, dict] = {}
+    for edge in edges:
+        if edge.predicate != "flows_to":
+            continue
+        references = [r[5:] for r in edge.evidence_refs
+                      if r.startswith("file:") and r.endswith("artifact-contracts.yaml")]
+        if not references:
+            continue
+        contract = by_id.get(edge.attributes.get("carries"))
+        source = by_id.get(edge.subject)
+        target = by_id.get(edge.object)
+        if not contract or not source or not target:
+            raise ValueError(f"flow has unresolved endpoints/contract: {edge.id}")
+        artifact_id = contract.attributes.get("artifact_id")
+        producer = source.attributes.get("contract_actor")
+        consumer = target.attributes.get("contract_actor")
+        if not all(isinstance(x, str) and x for x in (artifact_id, producer, consumer)):
+            raise ValueError(f"flow lacks artifact_id or actor mapping: {edge.id}")
+        for reference in references:
+            if reference not in manifests:
+                body = yaml.safe_load(_source(root, tracked, reference).read_text(encoding="utf-8"))
+                artifacts = (body or {}).get("artifacts", []) if isinstance(body, dict) else []
+                if not isinstance(artifacts, list):
+                    raise ValueError(f"artifact contract source has no artifacts list: {reference}")
+                manifests[reference] = {item["id"]: item for item in artifacts
+                                        if isinstance(item, dict) and isinstance(item.get("id"), str)}
+            entry = manifests[reference].get(artifact_id)
+            if not entry or entry.get("produced_by") != producer or consumer not in entry.get("consumed_by", []):
+                raise ValueError(f"authored data flow contradicts artifact contract: {edge.id}")
+
+
 def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClaim], list[KnowledgeRelation]]:
     claims: list[KnowledgeClaim] = []
     edges: list[KnowledgeRelation] = []
@@ -204,16 +246,20 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
         if not p.startswith(".sensemaking/knowledge/") or not p.endswith(".json"):
             continue
         data = json.loads(_source(root, tracked, p).read_text(encoding="utf-8"))
-        if not isinstance(data, dict) or set(data) != {"schema_version", "claims", "relations"} or data["schema_version"] != 1:
+        if not isinstance(data, dict) or set(data) != {"schema_version", "claims", "relations"} or data["schema_version"] not in AUTHORED_SCHEMA_VERSIONS:
             raise ValueError(f"invalid authored knowledge document: {p}")
         if not isinstance(data["claims"], list) or not isinstance(data["relations"], list):
             raise ValueError(f"authored claim/relation sets must be arrays: {p}")
         if len(data["claims"]) > 500 or len(data["relations"]) > 1000:
             raise ValueError(f"authored record oversized: {p}")
         for record in data["claims"]:
-            claim = read_authored_claim(record, source_ref=f"file:{p}")
+            claim = read_authored_claim(record, source_ref=f"file:{p}", schema_version=data["schema_version"])
             _check_authored_evidence(root, tracked, claim.evidence_refs)
-            references = (*claim.evidence_refs, f"file:{p}")
+            for owned_path in claim.attributes.get("owned_paths", []):
+                _source(root, tracked, owned_path)
+            references = (*claim.evidence_refs,
+                          *(f"file:{owned}" for owned in claim.attributes.get("owned_paths", [])),
+                          f"file:{p}")
             if claim.authority_kind in {"policy", "code", "test"}:
                 _source(root, tracked, claim.authority_ref)
                 references = (*references, f"file:{claim.authority_ref}")
@@ -223,7 +269,7 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
                 }}
             ))
         for record in data["relations"]:
-            relation = read_authored_relation(record, source_ref=f"file:{p}")
+            relation = read_authored_relation(record, source_ref=f"file:{p}", schema_version=data["schema_version"])
             _check_authored_evidence(root, tracked, relation.evidence_refs)
             edges.append(KnowledgeRelation(
                 **{**relation.__dict__, "attributes": {
@@ -231,6 +277,7 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
                     "source_sha256": _source_hashes(root, tracked, (*relation.evidence_refs, f"file:{p}")),
                 }}
             ))
+    _validate_authored_contract_flows(root, tracked, claims, edges)
     return claims, edges
 
 

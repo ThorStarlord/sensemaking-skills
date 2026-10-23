@@ -30,3 +30,4 @@ Construct a useful architectural mental model that survives the coding agent's c
 ## Stop rule
 
 Bootstrap once per materially new target or inadequate knowledge foundation, then enrich incrementally. Neither document count nor graph density is a completion metric. Finish with inspectable architectural value and an honest gap report.
+10. **Architecture coverage map (schema_version 2):** model each top-level component and each ADR still in force, or list it explicitly as NOT ASSESSED. No minimum entry count is required. Add `layer`, `bounded_context` and `architecture_rule` records only where a real rule or distinction needs one, and give every rule a `rule_type`, `severity` and `applies_to` scope.

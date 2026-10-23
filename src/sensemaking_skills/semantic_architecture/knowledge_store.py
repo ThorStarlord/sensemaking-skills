@@ -14,6 +14,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
+from .knowledge_architecture import orientation_summary, rules_for, term
 from .knowledge_retrieval import (
     bounded_kind_coverage, classify_indexed_changes, search_matches,
     validate_retrieval_options, workspace_source_overlap,
@@ -176,11 +177,18 @@ def query_knowledge(
     if not 1 <= limit <= 250 or not 0 <= depth <= 4:
         raise ValueError("query limit must be 1..250 and depth 0..4")
     valid = {"search", "explain", "impact", "why", "contradictions", "history", "changes", "snapshot",
-             "workspace-impact"}
+             "workspace-impact", "rules-for", "term", "orientation-summary"}
     if operation not in valid:
         raise ValueError(f"unsupported semantic knowledge query: {operation}")
     if operation in {"explain", "impact", "why", "history"} and not subject:
         raise ValueError(f"{operation} requires a claim identifier")
+    if operation == "rules-for" and not subject:
+        raise ValueError("rules-for requires --subject <repository-relative path>")
+    if operation == "rules-for" and ("*" in subject or "?" in subject or subject.startswith("/")
+                                     or ".." in subject.split("/")):
+        raise ValueError("rules-for subject must be one repository-relative file path (no globs)")
+    if operation == "term" and not subject:
+        raise ValueError("term requires --subject <term>")
     if operation == "changes" and not base_ref:
         raise ValueError("changes requires explicit base_ref")
     if (operation == "workspace-impact") != (workspace_changed_paths is not None):
@@ -307,6 +315,30 @@ def query_knowledge(
             extra_truncated = (
                 overlap["affected_record_total"] > limit or overlap["uncited_changed_path_total"] > limit
             )
+
+        elif operation == "rules-for":
+            assert subject is not None
+            extra["architecture"] = rules_for(claims, relations, path=subject, limit=limit)
+            ids = {r["claim_id"] for r in extra["architecture"]["applicable_rules"]}
+            for name in ("owning_components", "layers", "bounded_contexts", "tests"):
+                ids.update(extra["architecture"][name])
+            found_claims = [claims[cid] for cid in sorted(ids) if cid in claims]
+            found_relations = [r for r in relations if (
+                r["predicate"] in {"belongs_to", "tested_by", "applies_to"}
+                and (r["subject"] in ids or r["object"] in ids)
+                and r["subject"] in claims and r["object"] in claims
+            )]
+            extra_truncated = extra["architecture"]["truncated"]
+        elif operation == "term":
+            assert subject is not None
+            extra["term"] = term(claims, relations, name=subject, limit=limit)
+            term_ids = set(extra["term"]["matched_claims"]) | set(extra["term"]["synonyms"]) | set(extra["term"]["distinct_from"])
+            found_claims = [claims[c] for c in sorted(term_ids) if c in claims]
+            found_relations = [r for r in relations if r["predicate"] in {"synonym_of", "distinct_from"}
+                               and r["subject"] in term_ids and r["object"] in term_ids]
+            extra_truncated = extra["term"]["truncated"]
+        elif operation == "orientation-summary":
+            extra["orientation"] = orientation_summary(claims, relations)
 
         if expected_kinds:
             extra["bounded_coverage"] = bounded_kind_coverage(

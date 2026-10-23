@@ -1,0 +1,584 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "layer:knowledge-plane",
+      "kind": "layer",
+      "statement": "Persistent semantic knowledge plane: reviewed records, source-pinned index, queries and audit.",
+      "authority_kind": "document",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "layer:validation",
+      "kind": "layer",
+      "statement": "Validators and the router that check artifacts and receipts against declared contracts.",
+      "authority_kind": "document",
+      "authority_ref": "CLAUDE.md",
+      "evidence_refs": [
+        "file:CLAUDE.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "layer:package-core",
+      "kind": "layer",
+      "statement": "Shipped product package: CLI, semantic architecture and stable campaign modules.",
+      "authority_kind": "document",
+      "authority_ref": "release-v1.0.yaml",
+      "evidence_refs": [
+        "file:release-v1.0.yaml"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "layer:lab-source-only",
+      "kind": "layer",
+      "statement": "Source-only lab modules excluded from the shipped core wheel.",
+      "authority_kind": "document",
+      "authority_ref": "release-v1.0.yaml",
+      "evidence_refs": [
+        "file:release-v1.0.yaml"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "bounded_context:knowledge-stewardship",
+      "kind": "bounded_context",
+      "statement": "The context in which 'knowledge' means reviewed, source-bound records (ADR 0031).",
+      "authority_kind": "document",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "bounded_context:workflow-control",
+      "kind": "bounded_context",
+      "statement": "The context in which 'responsibility' means the agent's selected bounded work (using-sensemaking).",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/SKILL.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "component:semantic-knowledge-plane",
+      "kind": "component",
+      "statement": "Knowledge model, source reader, store, queries and architecture queries.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/semantic_architecture/knowledge.py",
+          "src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+          "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+        ]
+      }
+    },
+    {
+      "id": "component:validator-router",
+      "kind": "component",
+      "statement": "Single agent-facing validation entrypoint that selects a canonical validator by artifact id.",
+      "authority_kind": "code",
+      "authority_ref": "scripts/validate-and-report.py",
+      "evidence_refs": [
+        "file:scripts/validate-and-report.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "scripts/validate-and-report.py"
+        ]
+      }
+    },
+    {
+      "id": "component:brief-validator",
+      "kind": "component",
+      "statement": "Validates the repository sensemaking brief contract.",
+      "authority_kind": "code",
+      "authority_ref": "scripts/validate-brief.py",
+      "evidence_refs": [
+        "file:scripts/validate-brief.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "scripts/validate-brief.py"
+        ]
+      }
+    },
+    {
+      "id": "component:receipt-validator",
+      "kind": "component",
+      "statement": "Validates session and semantic query receipts and reads them at session start.",
+      "authority_kind": "code",
+      "authority_ref": "scripts/validate-receipt.py",
+      "evidence_refs": [
+        "file:scripts/validate-receipt.py",
+        "file:scripts/summarize-receipts.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "scripts/validate-receipt.py",
+          "scripts/summarize-receipts.py"
+        ]
+      }
+    },
+    {
+      "id": "component:repo-sensemaker-skill",
+      "kind": "component",
+      "statement": "Diagnostic Skill that produces the repository sensemaking brief.",
+      "authority_kind": "document",
+      "authority_ref": "skills/repo-sensemaker/SKILL.md",
+      "evidence_refs": [
+        "file:skills/repo-sensemaker/SKILL.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "skills/repo-sensemaker/SKILL.md"
+        ],
+        "contract_actor": "repo-sensemaker"
+      }
+    },
+    {
+      "id": "component:workflow-planner-skill",
+      "kind": "component",
+      "statement": "Consumes the brief and plans bounded work.",
+      "authority_kind": "document",
+      "authority_ref": "skills/workflow-planner/SKILL.md",
+      "evidence_refs": [
+        "file:skills/workflow-planner/SKILL.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "skills/workflow-planner/SKILL.md"
+        ],
+        "contract_actor": "workflow-planner"
+      }
+    },
+    {
+      "id": "component:lab-package",
+      "kind": "component",
+      "statement": "All four source-only packages in release-v1.0.yaml; stable packages must not import them.",
+      "authority_kind": "code",
+      "authority_ref": "release-v1.0.yaml",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaign_validation/__init__.py",
+        "file:src/sensemaking_skills/campaign_accounting/__init__.py",
+        "file:src/sensemaking_skills/exploratory_authorization/__init__.py",
+        "file:src/sensemaking_skills/exploratory_execution/__init__.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/campaign_validation/__init__.py",
+          "src/sensemaking_skills/campaign_accounting/__init__.py",
+          "src/sensemaking_skills/exploratory_authorization/__init__.py",
+          "src/sensemaking_skills/exploratory_execution/__init__.py"
+        ]
+      }
+    },
+    {
+      "id": "component:legacy-brief-producer",
+      "kind": "component",
+      "statement": "Legacy Python producer of the brief artifact id; known to write tracked artifacts directly (open finding).",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/skills/repo_sensemaker.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/skills/repo_sensemaker.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/skills/repo_sensemaker.py"
+        ]
+      }
+    },
+    {
+      "id": "contract:repository-sensemaking-brief",
+      "kind": "contract",
+      "statement": "Artifact contract consumed by workflow-planner and three other Skills.",
+      "authority_kind": "code",
+      "authority_ref": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "evidence_refs": [
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "artifact_id": "repository_sensemaking_brief"
+      }
+    },
+    {
+      "id": "contract:receipt-schema",
+      "kind": "contract",
+      "statement": "Typed schema for sensemaking_session_receipt; distinct from semantic_query_receipt.",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/session-receipt-v1.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "verification:semantic-knowledge-tests",
+      "kind": "verification",
+      "statement": "Tests for the semantic knowledge model, store and queries.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_semantic_knowledge.py",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "verification:architecture-vocabulary-tests",
+      "kind": "verification",
+      "statement": "Tests for version-2 vocabulary, typed attributes and architecture queries.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_architecture_vocabulary_v2.py",
+      "evidence_refs": [
+        "file:tests/test_architecture_vocabulary_v2.py",
+        "file:tests/test_architecture_queries.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rule:stable-core-no-lab-imports",
+      "kind": "architecture_rule",
+      "statement": "Stable semantic architecture and setup-skills modules must not import any source-only package.",
+      "authority_kind": "document",
+      "authority_ref": "release-v1.0.yaml",
+      "evidence_refs": [
+        "file:release-v1.0.yaml"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "rule_type": "dependency_direction",
+        "severity": "error",
+        "applies_to": [
+          "src/sensemaking_skills/semantic_architecture/**",
+          "src/sensemaking_skills/setup_skills.py"
+        ],
+        "forbidden_targets": [
+          "component:lab-package"
+        ]
+      }
+    },
+    {
+      "id": "rule:stable-campaigns-no-lab-imports",
+      "kind": "architecture_rule",
+      "statement": "Stable campaign modules must not import the source-only lab package.",
+      "authority_kind": "document",
+      "authority_ref": "release-v1.0.yaml",
+      "evidence_refs": [
+        "file:release-v1.0.yaml"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "rule_type": "dependency_direction",
+        "severity": "error",
+        "applies_to": [
+          "src/sensemaking_skills/campaigns/**",
+          "src/sensemaking_skills/campaign_semantics/**"
+        ],
+        "forbidden_targets": [
+          "component:lab-package"
+        ]
+      }
+    },
+    {
+      "id": "rule:runtime-owns-artifact-paths",
+      "kind": "architecture_rule",
+      "statement": "Producers write only to the runtime-supplied artifact path; they must not recompute artifacts/<id>.md. Known open violation: component:legacy-brief-producer.",
+      "authority_kind": "document",
+      "authority_ref": "docs/adr/0010-runtime-owns-artifact-path-resolution.md",
+      "evidence_refs": [
+        "file:docs/adr/0010-runtime-owns-artifact-path-resolution.md",
+        "file:CLAUDE.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "rule_type": "convention",
+        "severity": "error",
+        "applies_to": [
+          "src/sensemaking_skills/skills/**",
+          "skills/**"
+        ]
+      }
+    },
+    {
+      "id": "rule:validators-placement",
+      "kind": "architecture_rule",
+      "statement": "Candidate convention suggested by existing validator filenames, not a documented universal obligation.",
+      "authority_kind": "hypothesis",
+      "authority_ref": "observation:validator-path-layout",
+      "evidence_refs": [
+        "file:scripts/validate-brief.py",
+        "file:scripts/validate-receipt.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "rule_type": "placement",
+        "severity": "warning",
+        "applies_to": [
+          "scripts/**"
+        ],
+        "pattern": "scripts/validate-[a-z0-9-]+\\.py"
+      }
+    },
+    {
+      "id": "rule:console-output-ascii",
+      "kind": "architecture_rule",
+      "statement": "Console output is ASCII-only because the codebase runs on Windows cp1252.",
+      "authority_kind": "document",
+      "authority_ref": "CLAUDE.md",
+      "evidence_refs": [
+        "file:CLAUDE.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "rule_type": "convention",
+        "severity": "warning",
+        "applies_to": [
+          "scripts/**",
+          "src/sensemaking_skills/**"
+        ]
+      }
+    },
+    {
+      "id": "layer:skills",
+      "kind": "layer",
+      "statement": "Agent Skills: bounded responsibilities defined in SKILL.md with references and contracts.",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/SKILL.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "verification:brief-validator-tests",
+      "kind": "verification",
+      "statement": "Fixture and regression runner for the brief validator.",
+      "authority_kind": "test",
+      "authority_ref": "tests/run_validate_brief_tests.py",
+      "evidence_refs": [
+        "file:tests/run_validate_brief_tests.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "verification:receipt-validator-tests",
+      "kind": "verification",
+      "statement": "Tests for receipt validation, summarizer and CLI routing.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_sensemaking_receipts.py",
+      "evidence_refs": [
+        "file:tests/test_sensemaking_receipts.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "component:repository-semantic-steward-skill",
+      "kind": "component",
+      "statement": "Semantic steward Skill produces query receipts.",
+      "authority_kind": "document",
+      "authority_ref": "skills/repository-semantic-steward/SKILL.md",
+      "evidence_refs": [
+        "file:skills/repository-semantic-steward/SKILL.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "skills/repository-semantic-steward/SKILL.md"
+        ],
+        "contract_actor": "repository-semantic-steward"
+      }
+    },
+    {
+      "id": "contract:semantic-query-receipt",
+      "kind": "contract",
+      "statement": "The semantic_query_receipt artifact contract, produced by repository-semantic-steward.",
+      "authority_kind": "document",
+      "authority_ref": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "evidence_refs": [
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "artifact_id": "semantic_query_receipt"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:knowledge-plane-layer",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "belongs_to",
+      "object": "layer:knowledge-plane",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:knowledge-plane-context",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "belongs_to",
+      "object": "bounded_context:knowledge-stewardship",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:validator-router-layer",
+      "subject": "component:validator-router",
+      "predicate": "belongs_to",
+      "object": "layer:validation",
+      "evidence_refs": [
+        "file:CLAUDE.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:brief-validator-layer",
+      "subject": "component:brief-validator",
+      "predicate": "belongs_to",
+      "object": "layer:validation",
+      "evidence_refs": [
+        "file:CLAUDE.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:receipt-validator-layer",
+      "subject": "component:receipt-validator",
+      "predicate": "belongs_to",
+      "object": "layer:validation",
+      "evidence_refs": [
+        "file:CLAUDE.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:lab-layer",
+      "subject": "component:lab-package",
+      "predicate": "belongs_to",
+      "object": "layer:lab-source-only",
+      "evidence_refs": [
+        "file:release-v1.0.yaml"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:brief-contract-exposed",
+      "subject": "component:repo-sensemaker-skill",
+      "predicate": "exposes",
+      "object": "contract:repository-sensemaking-brief",
+      "evidence_refs": [
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:brief-flow",
+      "subject": "component:repo-sensemaker-skill",
+      "predicate": "flows_to",
+      "object": "component:workflow-planner-skill",
+      "evidence_refs": [
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "carries": "contract:repository-sensemaking-brief"
+      }
+    },
+    {
+      "id": "rel:knowledge-tested",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "tested_by",
+      "object": "verification:semantic-knowledge-tests",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:knowledge-verified",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "tested_by",
+      "object": "verification:architecture-vocabulary-tests",
+      "evidence_refs": [
+        "file:tests/test_architecture_vocabulary_v2.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:repo-sensemaker-skill-layer",
+      "subject": "component:repo-sensemaker-skill",
+      "predicate": "belongs_to",
+      "object": "layer:skills",
+      "evidence_refs": [
+        "file:skills/repo-sensemaker/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:workflow-planner-skill-layer",
+      "subject": "component:workflow-planner-skill",
+      "predicate": "belongs_to",
+      "object": "layer:skills",
+      "evidence_refs": [
+        "file:skills/workflow-planner/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:brief-validator-tested",
+      "subject": "component:brief-validator",
+      "predicate": "tested_by",
+      "object": "verification:brief-validator-tests",
+      "evidence_refs": [
+        "file:tests/run_validate_brief_tests.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:receipt-validator-tested",
+      "subject": "component:receipt-validator",
+      "predicate": "tested_by",
+      "object": "verification:receipt-validator-tests",
+      "evidence_refs": [
+        "file:tests/test_sensemaking_receipts.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:semantic-receipt-exposed",
+      "subject": "component:repository-semantic-steward-skill",
+      "predicate": "exposes",
+      "object": "contract:semantic-query-receipt",
+      "evidence_refs": [
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "declared"
+    }
+  ]
+}

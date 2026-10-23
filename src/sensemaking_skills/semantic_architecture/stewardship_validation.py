@@ -14,7 +14,7 @@ import subprocess
 from pathlib import Path
 
 from .knowledge import (
-    KnowledgeClaim, KnowledgeSnapshot, read_authored_claim,
+    AUTHORED_SCHEMA_VERSIONS, KnowledgeClaim, KnowledgeSnapshot, read_authored_claim,
     read_authored_relation, stable_id, validate_snapshot,
 )
 from .knowledge_sources import _local_evidence_path, _source
@@ -71,12 +71,13 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict) or set(data) != {"schema_version", "claims", "relations"}:
         raise ValueError("proposal must contain exactly schema_version, claims and relations")
-    if data["schema_version"] != 1 or not isinstance(data["claims"], list) or not isinstance(data["relations"], list):
-        raise ValueError("proposal must use authored semantic schema_version 1 with array records")
+    if data["schema_version"] not in AUTHORED_SCHEMA_VERSIONS or not isinstance(data["claims"], list) or not isinstance(data["relations"], list):
+        raise ValueError("proposal must use an authored semantic schema_version (1 or 2) with array records")
     if len(data["claims"]) > 500 or len(data["relations"]) > 1000:
         raise ValueError("proposal exceeds authored record limits")
-    claims = [read_authored_claim(item, source_ref=f"file:{relative}") for item in data["claims"]]
-    relations = [read_authored_relation(item, source_ref=f"file:{relative}") for item in data["relations"]]
+    version = data["schema_version"]
+    claims = [read_authored_claim(item, source_ref=f"file:{relative}", schema_version=version) for item in data["claims"]]
+    relations = [read_authored_relation(item, source_ref=f"file:{relative}", schema_version=version) for item in data["relations"]]
     evidence: set[str] = set()
     for item in [*claims, *relations]:
         for ref in item.evidence_refs:
@@ -84,6 +85,10 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
             if local is not None:
                 _source(root, tracked, local)
                 evidence.add(local)
+        if isinstance(item, KnowledgeClaim):
+            for owned_path in item.attributes.get("owned_paths", []):
+                _source(root, tracked, owned_path)
+                evidence.add(owned_path)
         if isinstance(item, KnowledgeClaim) and item.authority_kind in {"policy", "code", "test"}:
             _source(root, tracked, item.authority_ref)
             evidence.add(item.authority_ref)
@@ -91,6 +96,9 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
     # Cross-pack and observed-file/ADR endpoints are legitimate. Load only
     # currently Git-tracked authored claim identities; do not fabricate claims.
     known_ids = {c.id for c in claims}
+    # Preserve the declared kind of cross-pack references so v2 endpoint
+    # checking does not mistake a known external component for a hypothesis.
+    external_kinds: dict[str, str] = {}
     for name in sorted(tracked):
         match = _ADR_PATH.fullmatch(name)
         if match:
@@ -107,11 +115,19 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
         for record in other["claims"]:
             if isinstance(record, dict) and isinstance(record.get("id"), str):
                 known_ids.add(record["id"])
+                if isinstance(record.get("kind"), str):
+                    external_kinds[record["id"]] = record["kind"]
 
     candidate_ids = {item.id for item in claims}
     if len(candidate_ids) != len(claims):
         raise ValueError("duplicate authored claim ids")
     needed = {id for rel in relations for id in (rel.subject, rel.object)}
+    needed.update(rel.attributes["carries"] for rel in relations
+                  if rel.predicate == "flows_to" and isinstance(rel.attributes.get("carries"), str))
+    for claim in claims:
+        if claim.kind == "architecture_rule":
+            needed.update(claim.attributes.get("allowed_targets", []) or [])
+            needed.update(claim.attributes.get("forbidden_targets", []) or [])
     missing = needed - known_ids
     if missing:
         raise ValueError(f"unresolved relationship endpoint(s): {', '.join(sorted(missing)[:15])}")
@@ -120,7 +136,8 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
     # NEVER indexed, persisted, displayed as factual claims or marked verified.
     placeholders = [
         KnowledgeClaim(
-            id=identifier, kind="hypothesis", statement="External endpoint, source not semantically reviewed",
+            id=identifier, kind=external_kinds.get(identifier, "hypothesis"),
+            statement="External endpoint, source not semantically reviewed",
             epistemic_status="hypothetical", authority_kind="hypothesis",
             authority_ref="proposal-validation-only", source_ref="proposal-validation-only",
             evidence_refs=("proposal-validation-only",),

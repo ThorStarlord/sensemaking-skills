@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "claims": [
     {
       "id": "goal:longterm-stewardship",
@@ -49,7 +49,11 @@
         "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
       ],
       "attributes": {
-        "claim_ceiling": "Source implementation, not test result or product-value proof"
+        "claim_ceiling": "Source implementation, not test result or product-value proof",
+        "owned_paths": [
+          "src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+          "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
+        ]
       }
     },
     {
@@ -253,6 +257,17 @@
       "attributes": {
         "scope": "Test definitions and coverage only; actual test passes require revision-pinned execution receipts"
       }
+    },
+    {
+      "id": "verification:clean-index-tests",
+      "kind": "verification",
+      "statement": "Regression tests enforce the clean pinned committed HEAD boundary for knowledge snapshot builds.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_semantic_knowledge_self_repo.py",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge_self_repo.py"
+      ],
+      "epistemic_status": "declared"
     }
   ],
   "relations": [
@@ -459,6 +474,36 @@
         "file:docs/adr/0031-persistent-semantic-stewardship.md",
         "file:docs/semantic-architecture/persistent-knowledge-cli.md"
       ]
+    },
+    {
+      "id": "rel:clean-index-tested",
+      "subject": "inv:index-snapshot-vs-working-overlay",
+      "predicate": "tested_by",
+      "object": "verification:clean-index-tests",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge_self_repo.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:store-layer",
+      "subject": "component:knowledge-store",
+      "predicate": "belongs_to",
+      "object": "layer:knowledge-plane",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:store-context",
+      "subject": "component:knowledge-store",
+      "predicate": "belongs_to",
+      "object": "bounded_context:knowledge-stewardship",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
     }
   ]
 }
