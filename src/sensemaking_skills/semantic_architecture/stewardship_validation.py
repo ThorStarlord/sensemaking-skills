@@ -14,7 +14,7 @@ import subprocess
 from pathlib import Path
 
 from .knowledge import (
-    KnowledgeClaim, KnowledgeSnapshot, read_authored_claim,
+    AUTHORED_SCHEMA_VERSIONS, KnowledgeClaim, KnowledgeSnapshot, read_authored_claim,
     read_authored_relation, stable_id, validate_snapshot,
 )
 from .knowledge_sources import _local_evidence_path, _source
@@ -71,12 +71,13 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict) or set(data) != {"schema_version", "claims", "relations"}:
         raise ValueError("proposal must contain exactly schema_version, claims and relations")
-    if data["schema_version"] != 1 or not isinstance(data["claims"], list) or not isinstance(data["relations"], list):
-        raise ValueError("proposal must use authored semantic schema_version 1 with array records")
+    if data["schema_version"] not in AUTHORED_SCHEMA_VERSIONS or not isinstance(data["claims"], list) or not isinstance(data["relations"], list):
+        raise ValueError("proposal must use an authored semantic schema_version (1 or 2) with array records")
     if len(data["claims"]) > 500 or len(data["relations"]) > 1000:
         raise ValueError("proposal exceeds authored record limits")
-    claims = [read_authored_claim(item, source_ref=f"file:{relative}") for item in data["claims"]]
-    relations = [read_authored_relation(item, source_ref=f"file:{relative}") for item in data["relations"]]
+    version = data["schema_version"]
+    claims = [read_authored_claim(item, source_ref=f"file:{relative}", schema_version=version) for item in data["claims"]]
+    relations = [read_authored_relation(item, source_ref=f"file:{relative}", schema_version=version) for item in data["relations"]]
     evidence: set[str] = set()
     for item in [*claims, *relations]:
         for ref in item.evidence_refs:

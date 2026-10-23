@@ -155,3 +155,12 @@ def test_cli_rejects_version_two_constructs_in_version_one_document(tmp_path):
     result = _cli(repo, head)
     assert result.returncode != 0
     assert "requires schema_version 2" in result.stderr
+
+
+def test_package_init_claim_covers_the_whole_package():
+    claims = _claims()
+    claims["component:lab"]["evidence_refs"] = ["file:src/lab/__init__.py"]
+    sources = {"src/core/engine.py": "from lab.deep.module import thing\n"}
+    tracked = {"src/core/engine.py", "src/lab/__init__.py", "src/lab/deep/module.py"}
+    result = check_rule_findings(claims, read_source=lambda p: sources.get(p, ""), tracked=tracked)
+    assert [f["resolves_to"] for f in result["findings"]] == ["src/lab/deep/module.py"]

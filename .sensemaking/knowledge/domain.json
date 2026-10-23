@@ -1,0 +1,148 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "domain_concept:campaign",
+      "kind": "domain_concept",
+      "statement": "A Campaign is durable state for multi-session work at Level 2 (CONTEXT.md:26).",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:responsibility",
+      "kind": "domain_concept",
+      "statement": "A responsibility is the class of bounded work the current evidence demands (CONTEXT.md:26).",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:skill-responsibility",
+      "kind": "domain_concept",
+      "statement": "A Skill is one bounded way to perform a responsibility; it is not the responsibility itself (using-sensemaking section 5).",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/SKILL.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:fog-type",
+      "kind": "domain_concept",
+      "statement": "The four-valued diagnosis of the dominant uncertainty (product, ui, docs, architecture).",
+      "authority_kind": "document",
+      "authority_ref": "docs/canonical-vocabulary.yaml",
+      "evidence_refs": [
+        "file:docs/canonical-vocabulary.yaml"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:weakness-type",
+      "kind": "domain_concept",
+      "statement": "The seven-valued classification of a diagnosed weakest boundary.",
+      "authority_kind": "document",
+      "authority_ref": "skills/repo-sensemaker/references/weakness-types.md",
+      "evidence_refs": [
+        "file:skills/repo-sensemaker/references/weakness-types.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:epistemic-status",
+      "kind": "domain_concept",
+      "statement": "How well a claim is supported: OBSERVED, DERIVED, INFERRED and so on.",
+      "authority_kind": "document",
+      "authority_ref": "skills/repo-sensemaker/references/evidence-rules.md",
+      "evidence_refs": [
+        "file:skills/repo-sensemaker/references/evidence-rules.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "lifecycle_state:receipt-in-progress",
+      "kind": "lifecycle_state",
+      "statement": "A receipt that is still being written; may be a tombstone if no session is running.",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/session-receipt-v1.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "lifecycle_state:receipt-final",
+      "kind": "lifecycle_state",
+      "statement": "A stopped session's receipt: immutable and never edited by a later session.",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/session-receipt-v1.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md"
+      ],
+      "epistemic_status": "declared"
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:campaign-responsibility-cardinality",
+      "subject": "domain_concept:campaign",
+      "predicate": "relates_to",
+      "object": "domain_concept:responsibility",
+      "evidence_refs": [
+        "file:CONTEXT.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "cardinality": "1:N"
+      }
+    },
+    {
+      "id": "rel:skill-not-responsibility",
+      "subject": "domain_concept:skill-responsibility",
+      "predicate": "distinct_from",
+      "object": "domain_concept:responsibility",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:fog-not-weakness",
+      "subject": "domain_concept:fog-type",
+      "predicate": "distinct_from",
+      "object": "domain_concept:weakness-type",
+      "evidence_refs": [
+        "file:skills/repo-sensemaker/references/weakness-types.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:fog-not-epistemic",
+      "subject": "domain_concept:fog-type",
+      "predicate": "distinct_from",
+      "object": "domain_concept:epistemic-status",
+      "evidence_refs": [
+        "file:skills/repo-sensemaker/references/evidence-rules.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:receipt-transition",
+      "subject": "lifecycle_state:receipt-in-progress",
+      "predicate": "transitions_to",
+      "object": "lifecycle_state:receipt-final",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md"
+      ],
+      "epistemic_status": "declared"
+    }
+  ]
+}

@@ -217,7 +217,12 @@ def check_rule_findings(
             if owner is None:
                 not_assessed.append(f"{rule_id}: target {target} is not a claim")
                 continue
-            forbidden_files.update(ref[5:] for ref in owner.get("evidence_refs", []) if ref.startswith("file:"))
+            for ref in owner.get("evidence_refs", []):
+                if not ref.startswith("file:"):
+                    continue
+                path = ref[5:]
+                # A package's __init__.py claims its whole directory.
+                forbidden_files.add(path.rsplit("/", 1)[0] + "/" if path.endswith("/__init__.py") else path)
         scope = rule["attributes"].get("applies_to", [])
         in_scope = sorted(p for p in tracked if p.endswith(".py") and any(
             glob_to_regex(s).match(p) for s in scope if is_path_scope(s)))
@@ -228,7 +233,7 @@ def check_rule_findings(
                 target_file = _module_file(module, tracked)
                 if target_file is None:
                     continue
-                if any(target_file == f or target_file.startswith(f.rstrip("/") + "/") for f in forbidden_files):
+                if any(target_file == f or (f.endswith("/") and target_file.startswith(f)) for f in forbidden_files):
                     findings.append({"rule_id": rule_id, "severity": rule["attributes"].get("severity"),
                                      "file": path, "imports": module, "resolves_to": target_file,
                                      "note": "Possible violation; import syntax only, for review."})
