@@ -38,7 +38,7 @@ DERIVATIONS = frozenset({"authored", "declared", "mechanical", "lexical"})
 # Version-2 additions (ADR 0033). Only reviewed authored documents declaring
 # schema_version 2 may use them; generated and version-1 content never does.
 V2_CLAIM_KINDS = frozenset({
-    "layer", "bounded_context", "lifecycle_state", "external_system", "architecture_rule",
+    "layer", "bounded_context", "lifecycle_state", "architecture_rule",
 })
 V2_PREDICATES = frozenset({
     "belongs_to", "relates_to", "transitions_to", "flows_to", "exposes",
@@ -127,6 +127,9 @@ def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
         if not item.evidence_refs or any(not str(v).strip() for v in item.evidence_refs):
             raise ValueError(f"claim requires evidence references: {item.id}")
         _json_object(item.attributes, item.id)
+        if item.kind == "architecture_rule" or (item.kind == "component" and "owned_paths" in item.attributes):
+            validate_v2_attributes(item.kind, None, item.attributes, item.id)
+    kinds = {item.id: item.kind for item in snapshot.claims}
     for item in snapshot.claims:
         if item.kind == "architecture_rule":
             _check_rule_references(item, seen_claims)
@@ -144,15 +147,47 @@ def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
         if not relation.source_ref.strip() or not relation.evidence_refs:
             raise ValueError(f"relationship missing evidence: {relation.id}")
         _json_object(relation.attributes, relation.id)
+        if relation.predicate in V2_PREDICATES:
+            validate_v2_attributes(None, relation.predicate, relation.attributes, relation.id)
+            a, b = kinds[relation.subject], kinds[relation.object]
+            if relation.predicate == "applies_to" and (a != "architecture_rule" or b not in {"component", "layer", "bounded_context"}):
+                raise ValueError(f"applies_to needs rule -> component/layer/context: {relation.id}")
+            if relation.predicate == "belongs_to" and b not in {"layer", "bounded_context"}:
+                raise ValueError(f"belongs_to needs layer/context target: {relation.id}")
+            if relation.predicate == "transitions_to" and (a != "lifecycle_state" or b != "lifecycle_state"):
+                raise ValueError(f"transitions_to needs lifecycle states: {relation.id}")
+            if relation.predicate == "exposes" and (a != "component" or b != "contract"):
+                raise ValueError(f"exposes needs component -> contract: {relation.id}")
+            if relation.predicate == "flows_to":
+                if a != "component" or b != "component":
+                    raise ValueError(f"flows_to needs component endpoints: {relation.id}")
+                if kinds.get(relation.attributes.get("carries")) != "contract":
+                    raise ValueError(f"flows_to must reference a contract in carries: {relation.id}")
+            if relation.predicate in {"synonym_of", "distinct_from"} and (a != "domain_concept" or b != "domain_concept"):
+                raise ValueError(f"{relation.predicate} needs two domain concepts: {relation.id}")
 
 
 def is_path_scope(reference: str) -> bool:
     """A path scope contains a separator or glob; identifiers never do."""
-    return "/" in reference or "*" in reference
+    return "/" in reference or "*" in reference or "?" in reference or (
+        ":" not in reference and "." in reference
+    )
+
+
+def _valid_repo_path(value: str, *, glob: bool) -> bool:
+    if not isinstance(value, str) or not value or "\\" in value or ":" in value:
+        return False
+    if value.startswith(("/", "~")) or any(x in {"", ".", ".."} for x in value.rstrip("/").split("/")):
+        return False
+    return glob or not any(c in value for c in "*?[]")
 
 
 def validate_v2_attributes(kind: str | None, predicate: str | None, attrs: Mapping[str, Any], reference: str) -> None:
     """Check the typed attributes version-2 constructs require (ADR 0033)."""
+    if kind == "component" and "owned_paths" in attrs:
+        paths = attrs["owned_paths"]
+        if not isinstance(paths, list) or not paths or any(not _valid_repo_path(x, glob=False) for x in paths) or len(set(paths)) != len(paths):
+            raise ValueError(f"component owned_paths must be distinct repository-relative paths: {reference}")
     if kind == "architecture_rule":
         if attrs.get("rule_type") not in RULE_TYPES:
             raise ValueError(f"architecture_rule needs rule_type in {sorted(RULE_TYPES)}: {reference}")
@@ -162,7 +197,7 @@ def validate_v2_attributes(kind: str | None, predicate: str | None, attrs: Mappi
         if not isinstance(scope, list) or not scope or any(not isinstance(v, str) or not v.strip() for v in scope):
             raise ValueError(f"architecture_rule needs a non-empty applies_to list: {reference}")
         for item in scope:
-            if is_path_scope(item) and (item.startswith("/") or ".." in item.split("/")):
+            if not is_path_scope(item) or not _valid_repo_path(item, glob=True):
                 raise ValueError(f"applies_to path must be repository-relative: {reference}")
         rule_type = attrs["rule_type"]
         if rule_type == "dependency_direction" and not (attrs.get("allowed_targets") or attrs.get("forbidden_targets")):
@@ -224,7 +259,7 @@ def read_authored_claim(data: dict[str, Any], *, source_ref: str, schema_version
         raise ValueError("authored data may not assert verified authority or action permission")
     if status == "observed" and authority not in {"code", "test", "document", "mechanical"}:
         raise ValueError("authored normative claim cannot masquerade as observed evidence")
-    if data["kind"] in V2_CLAIM_KINDS:
+    if data["kind"] in V2_CLAIM_KINDS or (data["kind"] == "component" and "owned_paths" in attrs):
         if schema_version < 2:
             raise ValueError(f"kind {data['kind']} requires schema_version 2: {data['id']}")
         validate_v2_attributes(data["kind"], None, attrs, data["id"])

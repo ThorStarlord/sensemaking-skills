@@ -79,7 +79,14 @@
         "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
       ],
-      "epistemic_status": "declared"
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/semantic_architecture/knowledge.py",
+          "src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+          "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+        ]
+      }
     },
     {
       "id": "component:validator-router",
@@ -90,7 +97,12 @@
       "evidence_refs": [
         "file:scripts/validate-and-report.py"
       ],
-      "epistemic_status": "declared"
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "scripts/validate-and-report.py"
+        ]
+      }
     },
     {
       "id": "component:brief-validator",
@@ -101,7 +113,12 @@
       "evidence_refs": [
         "file:scripts/validate-brief.py"
       ],
-      "epistemic_status": "declared"
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "scripts/validate-brief.py"
+        ]
+      }
     },
     {
       "id": "component:receipt-validator",
@@ -113,7 +130,13 @@
         "file:scripts/validate-receipt.py",
         "file:scripts/summarize-receipts.py"
       ],
-      "epistemic_status": "declared"
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "scripts/validate-receipt.py",
+          "scripts/summarize-receipts.py"
+        ]
+      }
     },
     {
       "id": "component:repo-sensemaker-skill",
@@ -124,7 +147,12 @@
       "evidence_refs": [
         "file:skills/repo-sensemaker/SKILL.md"
       ],
-      "epistemic_status": "declared"
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "skills/repo-sensemaker/SKILL.md"
+        ]
+      }
     },
     {
       "id": "component:workflow-planner-skill",
@@ -135,18 +163,34 @@
       "evidence_refs": [
         "file:skills/workflow-planner/SKILL.md"
       ],
-      "epistemic_status": "declared"
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "skills/workflow-planner/SKILL.md"
+        ]
+      }
     },
     {
       "id": "component:lab-package",
       "kind": "component",
-      "statement": "Source-only lab package; stable product modules must not import it.",
+      "statement": "All four source-only packages in release-v1.0.yaml; stable packages must not import them.",
       "authority_kind": "code",
       "authority_ref": "release-v1.0.yaml",
       "evidence_refs": [
-        "file:src/sensemaking_skills/campaign_validation/__init__.py"
+        "file:src/sensemaking_skills/campaign_validation/__init__.py",
+        "file:src/sensemaking_skills/campaign_accounting/__init__.py",
+        "file:src/sensemaking_skills/exploratory_authorization/__init__.py",
+        "file:src/sensemaking_skills/exploratory_execution/__init__.py"
       ],
-      "epistemic_status": "declared"
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/campaign_validation/__init__.py",
+          "src/sensemaking_skills/campaign_accounting/__init__.py",
+          "src/sensemaking_skills/exploratory_authorization/__init__.py",
+          "src/sensemaking_skills/exploratory_execution/__init__.py"
+        ]
+      }
     },
     {
       "id": "component:legacy-brief-producer",
@@ -157,7 +201,12 @@
       "evidence_refs": [
         "file:src/sensemaking_skills/skills/repo_sensemaker.py"
       ],
-      "epistemic_status": "observed"
+      "epistemic_status": "observed",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/skills/repo_sensemaker.py"
+        ]
+      }
     },
     {
       "id": "contract:repository-sensemaking-brief",
@@ -270,18 +319,19 @@
     {
       "id": "rule:validators-placement",
       "kind": "architecture_rule",
-      "statement": "Validators live at scripts/validate-*.py, one hyphenated name each.",
-      "authority_kind": "document",
-      "authority_ref": "CLAUDE.md",
+      "statement": "Candidate convention suggested by existing validator filenames, not a documented universal obligation.",
+      "authority_kind": "hypothesis",
+      "authority_ref": "observation:validator-path-layout",
       "evidence_refs": [
-        "file:CLAUDE.md"
+        "file:scripts/validate-brief.py",
+        "file:scripts/validate-receipt.py"
       ],
-      "epistemic_status": "declared",
+      "epistemic_status": "hypothetical",
       "attributes": {
         "rule_type": "placement",
         "severity": "warning",
         "applies_to": [
-          "scripts/validate-*.py"
+          "scripts/**"
         ],
         "pattern": "scripts/validate-[a-z0-9-]+\\.py"
       }

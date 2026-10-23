@@ -49,66 +49,56 @@ def _scope_matches(scope: str, path: str) -> bool:
     return False
 
 
-def _file_refs(claim: Mapping[str, Any]) -> list[str]:
-    return [ref[len("file:"):] for ref in claim.get("evidence_refs", []) if ref.startswith("file:")]
-
-
 def _components_for_path(claims: Mapping[str, dict], path: str) -> list[str]:
-    owners = []
-    for claim_id, claim in claims.items():
-        if claim["kind"] != "component":
-            continue
-        for ref in _file_refs(claim):
-            if ref == path or (ref.endswith("/") and path.startswith(ref)) or _scope_matches(ref, path):
-                owners.append(claim_id)
-                break
-    return sorted(owners)
+    """A citation is provenance, not ownership."""
+    return sorted(cid for cid, claim in claims.items()
+                  if claim["kind"] == "component"
+                  and path in claim.get("attributes", {}).get("owned_paths", []))
 
 
-def _rule_applies(rule: Mapping[str, Any], path: str, owners: set[str]) -> list[str]:
-    reasons = []
-    for scope in rule["attributes"].get("applies_to", []):
-        if _scope_matches(scope, path):
-            reasons.append(f"path scope {scope}")
-        elif not is_path_scope(scope) and scope in owners:
-            reasons.append(f"component {scope}")
-    return reasons
+def _rule_applies(rule_id: str, rule: Mapping[str, Any], path: str,
+                  targets: set[str], relations: Iterable[dict]) -> list[str]:
+    reasons = [f"path scope {scope}" for scope in rule["attributes"].get("applies_to", [])
+               if _scope_matches(scope, path)]
+    reasons.extend(f"declared graph target {rel['object']}" for rel in relations
+                   if rel["predicate"] == "applies_to" and rel["subject"] == rule_id
+                   and rel["object"] in targets)
+    return sorted(set(reasons))
 
 
-def rules_for(
-    claims: Mapping[str, dict], relations: Iterable[dict], *, path: str, limit: int,
-) -> dict:
-    """Which declared component, layer, rules and tests apply to an edit at `path`."""
-    rel_list = list(relations)
+def rules_for(claims: Mapping[str, dict], relations: Iterable[dict], *, path: str, limit: int) -> dict:
+    """Retrieve declared architecture guidance while preserving its evidence limits."""
+    edges = list(relations)
     owners = _components_for_path(claims, path)
     owner_set = set(owners)
+    layers = sorted({r["object"] for r in edges if r["predicate"] == "belongs_to"
+                     and r["subject"] in owner_set and claims.get(r["object"], {}).get("kind") == "layer"})
+    contexts = sorted({r["object"] for r in edges if r["predicate"] == "belongs_to"
+                       and r["subject"] in owner_set and claims.get(r["object"], {}).get("kind") == "bounded_context"})
+    tests = sorted({r["object"] for r in edges if r["predicate"] == "tested_by" and r["subject"] in owner_set})
+    targets = owner_set | set(layers) | set(contexts)
     applicable = []
-    for claim_id, claim in sorted(claims.items()):
+    for cid, claim in sorted(claims.items()):
         if claim["kind"] != "architecture_rule":
             continue
-        reasons = _rule_applies(claim, path, owner_set)
+        reasons = _rule_applies(cid, claim, path, targets, edges)
         if reasons:
-            applicable.append({"claim_id": claim_id, "rule_type": claim["attributes"].get("rule_type"),
-                               "severity": claim["attributes"].get("severity"), "matched_by": reasons,
-                               "statement": claim["statement"]})
-    layers = sorted({rel["object"] for rel in rel_list
-                     if rel["predicate"] == "belongs_to" and rel["subject"] in owner_set
-                     and claims.get(rel["object"], {}).get("kind") == "layer"})
-    contexts = sorted({rel["object"] for rel in rel_list
-                       if rel["predicate"] == "belongs_to" and rel["subject"] in owner_set
-                       and claims.get(rel["object"], {}).get("kind") == "bounded_context"})
-    tests = sorted({rel["object"] for rel in rel_list
-                    if rel["predicate"] == "tested_by" and rel["subject"] in owner_set})
-    status = "COVERED" if owners else "NOT_ASSESSED"
+            applicable.append({
+                "claim_id": cid, "rule_type": claim["attributes"].get("rule_type"),
+                "severity": claim["attributes"].get("severity"),
+                "epistemic_status": claim.get("epistemic_status"),
+                "authority_kind": claim.get("authority_kind"),
+                "authority_ref": claim.get("authority_ref"),
+                "evidence_refs": claim.get("evidence_refs", []),
+                "matched_by": reasons, "statement": claim["statement"],
+            })
     return {
-        "path": path,
-        "coverage_status": status,
+        "path": path, "coverage_status": "COVERED" if owners else "NOT_ASSESSED",
+        "ownership_ambiguous": len(owners) > 1,
         "owning_components": owners[:limit],
-        "layers": layers[:limit],
-        "bounded_contexts": contexts[:limit],
-        "applicable_rules": applicable[:limit],
-        "tests": tests[:limit],
-        "truncated": len(applicable) > limit or len(owners) > limit or len(tests) > limit,
+        "layers": layers[:limit], "bounded_contexts": contexts[:limit],
+        "applicable_rules": applicable[:limit], "tests": tests[:limit],
+        "truncated": any(len(a) > limit for a in (owners, layers, contexts, applicable, tests)),
         "note": None if owners else NOT_ASSESSED_NOTE,
     }
 
