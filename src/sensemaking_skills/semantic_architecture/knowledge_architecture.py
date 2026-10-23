@@ -347,6 +347,11 @@ def check_rule_findings(
                             "files_examined": examined, "scope_files_total": len(in_scope),
                             "not_assessed_reasons": sorted(set(reasons))})
         not_assessed.extend(f"{rule_id}: {reason}" for reason in sorted(set(reasons)))
+    unique_findings: dict[tuple[str, str, str, str], dict] = {}
+    for item in findings:
+        key = (item["rule_id"], item["file"], item["resolves_to"], item["note"])
+        unique_findings.setdefault(key, item)
+    findings = list(unique_findings.values())
     return {
         "warning_only": True, "findings": findings[:limit], "findings_total": len(findings),
         "not_assessed": not_assessed, "rule_assessments": assessments,

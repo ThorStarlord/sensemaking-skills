@@ -43,7 +43,7 @@ def test_forbidden_import_is_reported_as_warning_only_finding():
     finding = result["findings"][0]
     assert finding["imports"] == "lab.experiment"
     assert finding["resolves_to"] == "src/lab/experiment.py"
-    assert "import syntax only" in result["limits"][0]
+    assert "Python AST imports" in result["limits"][0]
 
 
 def test_clean_scope_produces_no_findings():
@@ -167,13 +167,14 @@ def test_package_init_claim_covers_the_whole_package():
 
 def test_relative_import_and_import_from_submodule_are_detected():
     claims = _claims()
-    claims["component:lab"]["evidence_refs"] = ["file:src/lab/__init__.py"]
-    tracked = {"src/core/engine.py", "src/core/__init__.py", "src/lab/__init__.py",
-               "src/lab/deep/module.py"}
-    sources = {"src/core/engine.py": "from ..lab.deep import module\nfrom lab import deep\n"}
+    claims["component:lab"]["evidence_refs"] = ["file:src/pkg/lab/__init__.py"]
+    claims["rule:core-no-lab"]["attributes"]["applies_to"] = ["src/pkg/core/**"]
+    tracked = {"src/pkg/core/engine.py", "src/pkg/core/__init__.py",
+               "src/pkg/lab/__init__.py", "src/pkg/lab/deep/module.py"}
+    sources = {"src/pkg/core/engine.py": "from ..lab.deep import module\n"}
     found = check_rule_findings(claims, read_source=lambda p: sources.get(p, ""),
                                 tracked=tracked)
-    assert any(f["imports"] == "lab.deep.module" for f in found["findings"])
+    assert any(f["imports"] == "pkg.lab.deep.module" for f in found["findings"])
 
 
 def test_parser_failure_is_reported_not_ignored():
