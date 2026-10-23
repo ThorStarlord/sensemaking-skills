@@ -218,3 +218,25 @@ def test_graph_rule_scope_requires_correct_endpoint_kinds():
         source_ref="file:x", schema_version=2)
     with pytest.raises(ValueError, match="applies_to needs rule"):
         validate_snapshot(_snapshot([component, layer], (relation,)))
+
+def test_authored_contract_flow_detects_wrong_consumer_and_accepts_correct_one(tmp_path):
+    producer = _claim(id="component:producer", attributes={
+        "owned_paths": ["docs/architecture.md"], "contract_actor": "producer"})
+    consumer = _claim(id="component:consumer", attributes={
+        "owned_paths": ["docs/architecture.md"], "contract_actor": "consumer"})
+    contract = _claim(id="contract:output", kind="contract", attributes={"artifact_id": "output"})
+    edge = {"id": "rel:flow", "subject": "component:producer", "predicate": "flows_to",
+            "object": "component:consumer",
+            "evidence_refs": ["file:skills/workflow-planner/references/artifact-contracts.yaml"],
+            "attributes": {"carries": "contract:output"}}
+    _write_doc(tmp_path, "arch.json", 2, [producer, consumer, contract], [edge])
+    artifact = tmp_path / "skills/workflow-planner/references/artifact-contracts.yaml"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text("artifacts:\\n  - id: output\\n    produced_by: producer\\n    consumed_by: [consumer]\\n".replace("\\n", "\n"), encoding="utf-8")
+    tracked = {".sensemaking/knowledge/arch.json", "docs/architecture.md",
+               "skills/workflow-planner/references/artifact-contracts.yaml"}
+    claims, relations = knowledge_sources._authored_records(tmp_path, tracked)
+    assert len(relations) == 1
+    artifact.write_text("artifacts:\\n  - id: output\\n    produced_by: producer\\n    consumed_by: [elsewhere]\\n".replace("\\n", "\n"), encoding="utf-8")
+    with pytest.raises(ValueError, match="contradicts artifact contract"):
+        knowledge_sources._authored_records(tmp_path, tracked)

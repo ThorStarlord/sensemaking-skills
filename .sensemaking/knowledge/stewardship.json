@@ -257,6 +257,17 @@
       "attributes": {
         "scope": "Test definitions and coverage only; actual test passes require revision-pinned execution receipts"
       }
+    },
+    {
+      "id": "verification:clean-index-tests",
+      "kind": "verification",
+      "statement": "Regression tests enforce the clean pinned committed HEAD boundary for knowledge snapshot builds.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_semantic_knowledge_self_repo.py",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge_self_repo.py"
+      ],
+      "epistemic_status": "declared"
     }
   ],
   "relations": [
@@ -463,6 +474,16 @@
         "file:docs/adr/0031-persistent-semantic-stewardship.md",
         "file:docs/semantic-architecture/persistent-knowledge-cli.md"
       ]
+    },
+    {
+      "id": "rel:clean-index-tested",
+      "subject": "inv:index-snapshot-vs-working-overlay",
+      "predicate": "tested_by",
+      "object": "verification:clean-index-tests",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge_self_repo.py"
+      ],
+      "epistemic_status": "declared"
     }
   ]
 }

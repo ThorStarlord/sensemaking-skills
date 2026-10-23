@@ -151,7 +151,8 @@
       "attributes": {
         "owned_paths": [
           "skills/repo-sensemaker/SKILL.md"
-        ]
+        ],
+        "contract_actor": "repo-sensemaker"
       }
     },
     {
@@ -167,7 +168,8 @@
       "attributes": {
         "owned_paths": [
           "skills/workflow-planner/SKILL.md"
-        ]
+        ],
+        "contract_actor": "workflow-planner"
       }
     },
     {
@@ -217,12 +219,15 @@
       "evidence_refs": [
         "file:skills/workflow-planner/references/artifact-contracts.yaml"
       ],
-      "epistemic_status": "declared"
+      "epistemic_status": "declared",
+      "attributes": {
+        "artifact_id": "repository_sensemaking_brief"
+      }
     },
     {
       "id": "contract:receipt-schema",
       "kind": "contract",
-      "statement": "Typed YAML schema for session and query receipts.",
+      "statement": "Typed schema for sensemaking_session_receipt; distinct from semantic_query_receipt.",
       "authority_kind": "document",
       "authority_ref": "skills/using-sensemaking/references/session-receipt-v1.md",
       "evidence_refs": [
@@ -387,6 +392,37 @@
         "file:tests/test_sensemaking_receipts.py"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "component:repository-semantic-steward-skill",
+      "kind": "component",
+      "statement": "Semantic steward Skill produces query receipts.",
+      "authority_kind": "document",
+      "authority_ref": "skills/repository-semantic-steward/SKILL.md",
+      "evidence_refs": [
+        "file:skills/repository-semantic-steward/SKILL.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "skills/repository-semantic-steward/SKILL.md"
+        ],
+        "contract_actor": "repository-semantic-steward"
+      }
+    },
+    {
+      "id": "contract:semantic-query-receipt",
+      "kind": "contract",
+      "statement": "The semantic_query_receipt artifact contract, produced by repository-semantic-steward.",
+      "authority_kind": "document",
+      "authority_ref": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "evidence_refs": [
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "artifact_id": "semantic_query_receipt"
+      }
     }
   ],
   "relations": [
@@ -530,6 +566,16 @@
       "object": "verification:receipt-validator-tests",
       "evidence_refs": [
         "file:tests/test_sensemaking_receipts.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:semantic-receipt-exposed",
+      "subject": "component:repository-semantic-steward-skill",
+      "predicate": "exposes",
+      "object": "contract:semantic-query-receipt",
+      "evidence_refs": [
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
       ],
       "epistemic_status": "declared"
     }
