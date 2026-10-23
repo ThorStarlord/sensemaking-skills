@@ -23,8 +23,8 @@ Verdict key: **answered** (query returns the needed fact), **partial** (answered
 | Q5 | Book vs Book Workspace | `term` | n/a | this repository has no Book concept |
 | Q6 | Fog type vs weakness type | `term fog-type` | answered | `distinct_from` `domain_concept:weakness-type` and `epistemic-status` |
 | Q7 | Receipt lifecycle transitions | `explain lifecycle_state:receipt-in-progress` | answered | `transitions_to` `receipt-final` |
-| Q8 | Layer of the brief producer | `rules-for` on `skills/repo-sensemaker/SKILL.md` | **partial** | owner found, but **no layer** is recorded for the Skills |
-| Q9 | Bounded context of "responsibility" | `term responsibility` and `explain` | **partial** | the term is found, but **no context link** exists; `bounded_context:workflow-control` is declared and unused |
+| Q8 | Layer of the brief producer | `rules-for` on `skills/repo-sensemaker/SKILL.md` | answered after gap closure | `layer:skills` |
+| Q9 | Bounded context of "responsibility" | `explain domain_concept:responsibility` | answered after gap closure | `belongs_to` `bounded_context:workflow-control` |
 | Q10 | Data flow brief → planner | `explain component:repo-sensemaker-skill` | answered | `flows_to` `component:workflow-planner-skill`, carries the contract |
 | Q11 | Interface of a receipt | existing `contract` | answered (unchanged) | `contract:receipt-schema` |
 | Q12 | Decision and rejected alternative | existing `decision` / `alternative` | answered (unchanged) | ADR-derived records |
@@ -32,16 +32,18 @@ Verdict key: **answered** (query returns the needed fact), **partial** (answered
 | Q14 | Placement convention for validators | `rules-for` on `scripts/validate-brief.py` | answered | `rule:validators-placement` |
 | Q15 | Meaning of `observed` | existing epistemic status | answered (unchanged) | model separates status from authority |
 
-Summary: 9 answered (Q1–Q4, Q6, Q7, Q10, Q14 and the unchanged Q11–Q13, Q15 count as unchanged, not new), 2 partial (Q8, Q9), 1 n/a (Q5). Q4 is answered only as a hypothesis.
+Summary after gap closure: 11 answered, 0 partial, 1 n/a (Q5). Q4 is answered only as a hypothesis. Q11–Q13 and Q15 are answered by records that existed before this pilot.
 
-## Gaps the evaluation exposed
+## Gaps found and how they were closed
 
-1. **No `tested_by` links for the validators.** `rules-for scripts/validate-brief.py` returns `tests: []` even though validator fixtures and tests exist. The pilot did not record them. This is a pilot omission, not a query defect, and it is the most useful gap to close first.
-2. **No layer for the Skills.** `skills/**` components have no `belongs_to` edge, so the layer question returns nothing for them.
-3. **No context link for domain concepts.** Bounded contexts are declared but no concept is linked to one.
-4. **The pilot's cardinality is a hypothesis.** Nothing in the repository states it. It should be verified or removed; it is not evidence.
+The first run found four gaps. All four were closed in a follow-up commit, with evidence for each new record.
 
-None of these gaps comes from the query logic. The answers are exactly as complete as the reviewed records.
+1. **No `tested_by` links for the validators.** Closed: `component:brief-validator` → `tests/run_validate_brief_tests.py`; `component:receipt-validator` → `tests/test_sensemaking_receipts.py`.
+2. **No layer for the Skills.** Closed: `layer:skills`, with `belongs_to` edges for the repo-sensemaker and workflow-planner components.
+3. **No context link for domain concepts.** Closed: `domain_concept:responsibility` `belongs_to` `bounded_context:workflow-control`, citing `skills/using-sensemaking/SKILL.md`.
+4. **The Campaign-to-Responsibility cardinality is unverified.** Decision: keep it, labelled `hypothetical` with `cardinality: 1:N`. No source states it, so it is not a fact. Removing it would hide a question the vocabulary needs to be able to ask. Verify it before any decision depends on it.
+
+After closure the index holds 88 claims and 44 relations at the commit that carries these records.
 
 ## Warning-only checker on this repository
 
@@ -53,9 +55,10 @@ None of these gaps comes from the query logic. The answers are exactly as comple
 - The regression check on `main@86b132c` gave the same index digest with the old and new code (`00417827…`), so existing indexes are unaffected.
 - `knowledge-proposal-check` accepts both pilot files, and rejects the same files if relabelled version 1 (covered by `test_architecture_vocabulary_v2.py`).
 
-## Decision for the owner
+## Decisions made without waiting for the owner
 
-Keep the pilot as it is and treat gaps 1–4 as follow-up work, or complete them before ADR 0033 is considered for acceptance? The evaluation recommends completing gap 1 and gap 4 before acceptance, since one leaves a rule unqueryable for tests and the other records an unverified claim as a pilot fact.
+- Gaps 1–3 were closed because each could be backed by a tracked file. Gap 4 was kept, labelled, because removing it would hide a real question.
+- ADR 0033 stays **Proposed**. Acceptance is an owner decision, and this evaluation is not a substitute for it.
 
 ## Reassessment (ADR 0033 trigger)
 
