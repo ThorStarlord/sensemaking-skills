@@ -65,6 +65,7 @@ disagree, the ADR file is authoritative.
 | [0030](0030-target-repository-grounding.md) | Target-Repository Grounding Pack | Accepted (compact pack contract) |
 | [0031](0031-persistent-semantic-stewardship.md) | Persistent Semantic Stewardship as Long-Term Product Direction | Accepted (owner-selected destination, not implemented) |
 | [0032](0032-session-and-query-receipts.md) | Session and Query Receipts | Proposed (owner ratification pending) |
+| [0033](0033-architecture-and-ontology-vocabulary.md) | Architecture and Ontology Vocabulary for Reviewed Knowledge | Proposed (owner acceptance pending) |
 
 For the current **external product boundary** read ADR 0029, not 0014.
 For the **owner-selected product destination**, read ADR 0031.
