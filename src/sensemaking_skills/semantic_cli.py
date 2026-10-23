@@ -148,6 +148,32 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         payload["code"] = "SEMANTIC_REPOSITORY_ORIENTATION"
         _emit(payload, output_json=output_json)
 
+    @semantic_group.command(name="knowledge-check-rules")
+    @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path),
+                  help="Exact clean Git checkout whose committed authored rules are checked")
+    @click.option("--target-ref", required=True, help="Exact committed HEAD SHA of the checkout")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_knowledge_check_rules(repo_root: Path, target_ref: str, output_json: bool) -> None:
+        """Report possible dependency-rule violations. Warning-only; never fails."""
+        from .semantic_architecture.knowledge import record_dict
+        from .semantic_architecture.knowledge_architecture import check_rule_findings
+        from .semantic_architecture.knowledge_sources import _authored_records, _source
+
+        try:
+            root, tracked = verified_tracked_sources(repo_root, target_ref)
+            claims, _relations = _authored_records(root, tracked)
+            claim_map = {c.id: record_dict(c) for c in claims}
+            payload = check_rule_findings(
+                claim_map,
+                read_source=lambda rel: _source(root, tracked, rel).read_text(encoding="utf-8", errors="replace"),
+                tracked=tracked,
+            )
+        except (ValueError, OSError, UnicodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload.update({"repository_target_ref": target_ref, "action_authorized": False,
+                        "semantic_truth_established": False})
+        _emit(payload, output_json=output_json)
+
     @semantic_group.command(name="knowledge-proposal-check")
     @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
     @click.option("--proposal", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
@@ -168,7 +194,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--target-ref", required=True, help="Exact indexed revision to examine")
     @click.option("--operation", required=True,
                   type=click.Choice(["snapshot", "search", "explain", "impact", "why", "contradictions", "history", "changes",
-                                     "workspace-impact"]))
+                                     "workspace-impact", "rules-for", "term", "orientation-summary"]))
     @click.option("--subject", default=None, help="Exact claim id, or literal search text for search")
     @click.option("--base-ref", default=None, help="Exact previously indexed revision for changes")
     @click.option("--repo", "repo_root", type=click.Path(exists=True, file_okay=False, path_type=Path),

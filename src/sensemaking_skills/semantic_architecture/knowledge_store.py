@@ -13,7 +13,8 @@ import sqlite3
 from pathlib import Path
 from urllib.parse import quote
 
-from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
+from .knowledge import KnowledgeSnapshot, fingerprint, is_path_scope, record_dict, validate_snapshot, SCHEMA_VERSION
+from .knowledge_architecture import orientation_summary, rules_for, term
 from .knowledge_retrieval import (
     bounded_kind_coverage, classify_indexed_changes, search_matches,
     validate_retrieval_options, workspace_source_overlap,
@@ -176,11 +177,15 @@ def query_knowledge(
     if not 1 <= limit <= 250 or not 0 <= depth <= 4:
         raise ValueError("query limit must be 1..250 and depth 0..4")
     valid = {"search", "explain", "impact", "why", "contradictions", "history", "changes", "snapshot",
-             "workspace-impact"}
+             "workspace-impact", "rules-for", "term", "orientation-summary"}
     if operation not in valid:
         raise ValueError(f"unsupported semantic knowledge query: {operation}")
     if operation in {"explain", "impact", "why", "history"} and not subject:
         raise ValueError(f"{operation} requires a claim identifier")
+    if operation == "rules-for" and not subject:
+        raise ValueError("rules-for requires --subject <repository-relative path>")
+    if operation == "term" and not subject:
+        raise ValueError("term requires --subject <term>")
     if operation == "changes" and not base_ref:
         raise ValueError("changes requires explicit base_ref")
     if (operation == "workspace-impact") != (workspace_changed_paths is not None):
@@ -307,6 +312,22 @@ def query_knowledge(
             extra_truncated = (
                 overlap["affected_record_total"] > limit or overlap["uncited_changed_path_total"] > limit
             )
+
+        elif operation == "rules-for":
+            assert subject is not None
+            if is_path_scope(subject) or subject.startswith("/") or ".." in subject.split("/"):
+                raise ValueError("rules-for subject must be a plain repository-relative file path")
+            extra["architecture"] = rules_for(claims, relations, path=subject, limit=limit)
+            found_claims = [claims[r["claim_id"]] for r in extra["architecture"]["applicable_rules"]
+                            if r["claim_id"] in claims]
+            extra_truncated = extra["architecture"]["truncated"]
+        elif operation == "term":
+            assert subject is not None
+            extra["term"] = term(claims, relations, name=subject, limit=limit)
+            found_claims = [claims[c] for c in extra["term"]["matched_claims"]]
+            extra_truncated = extra["term"]["truncated"]
+        elif operation == "orientation-summary":
+            extra["orientation"] = orientation_summary(claims, relations)
 
         if expected_kinds:
             extra["bounded_coverage"] = bounded_kind_coverage(
