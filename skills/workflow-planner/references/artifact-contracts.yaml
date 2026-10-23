@@ -534,6 +534,96 @@ artifacts:
         - autonomous_execution
         - yolo_execution
 
+  # Session receipts (proposed ADR 0032). Whole-file YAML records, not
+  # Markdown documents: they live in the TARGET repository under
+  # .sensemaking/receipts/ (never ingested by the semantic knowledge index) and
+  # survive only when committed/pushed or uploaded by the host. Schema and
+  # field caps: the reference docs named in `schema_reference`; every rule is
+  # enforced by scripts/validate-receipt.py, the single validator for both ids.
+  - id: sensemaking_session_receipt
+    path: ".sensemaking/receipts/{session_id}.session.yaml"
+    produced_by: using-sensemaking
+    consumed_by:
+      - using-sensemaking
+      - strategic-sensemaking-loop
+      - handoff
+      - user
+    description: "Typed flight-recorder record of one control-loop session: goal, delegated authority, responsibilities run, consequential findings, open questions, stop disposition and next warranted responsibility"
+    format: yaml
+    schema_reference: skills/using-sensemaking/references/session-receipt-v1.md
+    required_machine_fields:
+      - artifact_id
+      - schema_version
+      - session_ref
+      - state
+      - created_at
+      - updated_at
+      - target_repository
+      - source_identity
+      - skill_identity
+      - goal
+      - delegation
+      - continuity
+      - responsibilities
+      - findings
+      - open_questions
+      - stop
+      - next
+      - persistence
+      - claim_ceiling
+      - action_authorized_by_receipt
+      - immutable
+    notes:
+      - "Opened in_progress once goal and authority are established, updated at checkpoints, finalized (immutable) at stop; a later session never edits a final receipt."
+      - "Read at session start through scripts/summarize-receipts.py (unfinished sessions, open questions, next responsibility, pending/repeated knowledge misses)."
+      - "Records authority; never grants it. action_authorized_by_receipt must remain false."
+      - "Text fields are capped (300/120 characters): the receipt carries facts and repository-relative pointers, never narrative or reasoning."
+    verification:
+      generic_validator: "python scripts/validate-receipt.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: semantic_query_receipt
+    path: ".sensemaking/receipts/{session_id}.query.yaml"
+    produced_by: repository-semantic-steward
+    consumed_by:
+      - repository-semantic-steward
+      - using-sensemaking
+      - user
+    description: "Typed record of one session's semantic knowledge operations: pinned index/CLI identity, queries asked and their outcomes, source checks, recorded misses (negative knowledge) and RECONCILE dispositions"
+    format: yaml
+    schema_reference: skills/repository-semantic-steward/references/query-receipt.md
+    required_machine_fields:
+      - artifact_id
+      - schema_version
+      - session_ref
+      - state
+      - created_at
+      - updated_at
+      - target_repository
+      - modes
+      - decision
+      - cli_identity
+      - index
+      - queries
+      - source_checks
+      - misses
+      - reconcile
+      - persistence
+      - action_authorized
+      - semantic_truth_established
+      - immutable
+    notes:
+      - "Every decision-relevant query with outcome MISS or NOT_ASSESSED must have a misses entry; NO_MODEL_CHANGE is recorded, not omitted."
+      - "Never indexed as knowledge; a recorded miss becomes knowledge only through RECONCILE ADD and normal review."
+      - "action_authorized and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-receipt.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
   - id: discovery_findings
     path: "artifacts/discovery_findings.md"
     produced_by: discovery

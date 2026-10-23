@@ -515,6 +515,18 @@ artifact_ids:
     consumed_by: [user, workflow-planner, prompt-handoff, output-reconciler, repair-verifier, strategic-repository-reconciliation]
     artifact_type: diagnostic
 
+  - id: sensemaking_session_receipt
+    description: "Typed flight-recorder record of one control-loop session: goal, authority, responsibilities, findings, open questions, stop and next responsibility"
+    produced_by: using-sensemaking
+    consumed_by: [using-sensemaking, strategic-sensemaking-loop, handoff, user]
+    artifact_type: handoff
+
+  - id: semantic_query_receipt
+    description: "Typed record of semantic knowledge queries, outcomes, source checks, recorded misses and RECONCILE dispositions for one session"
+    produced_by: repository-semantic-steward
+    consumed_by: [repository-semantic-steward, using-sensemaking, user]
+    artifact_type: evidence
+
   - id: discovery_findings
     description: "User research and discovery findings"
     produced_by: discovery
