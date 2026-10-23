@@ -41,6 +41,7 @@ class ValidationResult(TypedDict):
 _AUTHORITATIVE_HEADING_PATTERNS = [
     r"## (?:\d+\.\s*)?Machine-readable (?:handoff|plan|decision)",
 ]
+_RECEIPT_ARTIFACT_IDS = frozenset({"sensemaking_session_receipt", "semantic_query_receipt"})
 _ARTIFACT_ID_LINE_RE = re.compile(
     r'^[ \t]*artifact_id[ \t]*:[ \t]*["\']?([A-Za-z0-9_\-.]+)["\']?[ \t]*$',
     re.MULTILINE,
@@ -149,6 +150,23 @@ def _extract_artifact_id_from_block(block_text: str) -> ArtifactIdExtraction:
     return _resolve_line_matches(matches)
 
 
+def _extract_receipt_artifact_id(artifact_path: str, content: str) -> ArtifactIdExtraction | None:
+    """Receipts are whole-file YAML: the file itself is the authoritative block.
+
+    Only a .yaml/.yml file whose top-level artifact_id is a receipt id is
+    accepted here, so every Markdown artifact keeps its existing routing.
+    """
+    if not artifact_path.endswith((".yaml", ".yml")):
+        return None
+    try:
+        data = yaml.safe_load(content)
+    except yaml.YAMLError:
+        return None
+    if isinstance(data, dict) and data.get("artifact_id") in _RECEIPT_ARTIFACT_IDS:
+        return ArtifactIdExtraction("ok", artifact_id=data["artifact_id"])
+    return None
+
+
 def extract_artifact_id_detailed(artifact_path: str) -> ArtifactIdExtraction:
     if not os.path.exists(artifact_path):
         return ArtifactIdExtraction(
@@ -164,6 +182,9 @@ def extract_artifact_id_detailed(artifact_path: str) -> ArtifactIdExtraction:
 
     blocks = _find_authoritative_blocks(content)
     if not blocks:
+        receipt = _extract_receipt_artifact_id(artifact_path, content)
+        if receipt is not None:
+            return receipt
         return ArtifactIdExtraction("no_authoritative_block")
     if len(blocks) > 1:
         return ArtifactIdExtraction(
@@ -249,6 +270,8 @@ def _routing_error_result(status: str, detail: str, artifact_path: str) -> Valid
 def select_validator(artifact_id: str | None) -> str:
     if artifact_id == "repository_sensemaking_brief":
         return "scripts/validate-brief.py"
+    if artifact_id in _RECEIPT_ARTIFACT_IDS:
+        return "scripts/validate-receipt.py"
     if artifact_id == "workflow_orchestration_plan":
         return "scripts/validate-plan.py"
     if artifact_id == "architectural_review_recommendation":
@@ -298,7 +321,7 @@ def invoke_validator(
                 repo_root,
                 "--json",
             ]
-            if target_repo and validator_path.endswith("validate-brief.py"):
+            if target_repo and validator_path.endswith(("validate-brief.py", "validate-receipt.py")):
                 cmd.extend(["--target-repo", target_repo])
             if probe_report and validator_path.endswith("validate-brief.py"):
                 cmd.extend(["--probe-report", probe_report])

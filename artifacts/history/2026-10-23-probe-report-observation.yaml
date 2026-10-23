@@ -1,0 +1,812 @@
+schema_version: 1
+probe_tool: sensemaking-skills probe-repo v1
+generated_at: '2026-10-23T05:49:42Z'
+repo_root: /home/user/sensemaking-skills
+git_state:
+  is_git_repo: true
+  branch: claude/hopeful-hamilton-nmm3od
+  head_sha: aa13f40
+  head_message: 'Merge pull request #562 from ThorStarlord/docs/reconcile-pr560-561-currentness'
+  tracked_file_count: 4722
+  untracked_file_count: 0
+  ignored_present_entry_count: 7
+  ignored_status_measured: true
+  dirty_file_count: 0
+verification_gap:
+  declared_checks: []
+  enforced_checks:
+  - pytest
+  - scripts/validate-release-contract.py
+  - scripts/validate-contract-authority.py
+  - scripts/validate-docs-currentness.py
+  - scripts/validate-error-boundaries.py
+  - scripts/validate-product-boundary.py
+  - scripts/validate-repo.py
+  - scripts/validate-strategic-state.py
+  - scripts/validate-candidate-directions.py
+  - scripts/probe-repo.py
+  - scripts/validate-probe-report.py
+  - scripts/gate_relationship_findings.py
+  declared_in_ci: []
+  vg: 0.0
+  notes: no declared verification entrypoints found in README
+context_entropy:
+  tracked_volume: 4722
+  untracked_volume: 0
+  ignored_present_volume: 7
+  ce: 0.0
+  notes: untracked+ignored (7) / tracked (4722)
+test_collection:
+  test_file_count: 258
+  test_case_count: null
+  pytest_config_present: true
+  markers_declared: ''
+fixtures_coverage:
+  total_validators: 39
+  covered_validators: 14
+  missing_fixtures:
+  - validate-candidate-directions
+  - validate-change-impact-analysis
+  - validate-contract-authority
+  - validate-docs-currentness
+  - validate-error-boundaries
+  - validate-multi-repository-strategic-analysis
+  - validate-pm-artifact
+  - validate-pm-customer-model
+  - validate-pm-feature-definition
+  - validate-pm-launch-communication
+  - validate-pm-measurement
+  - validate-pm-strategy
+  - validate-product-boundary
+  - validate-release-contract
+  - validate-release-readiness
+  - validate-semantic-reasoning-profile
+  - validate-skill-registry-liveness
+  - validate-strategic-companion
+  - validate-strategic-repository-analysis
+  - validate-strategic-state
+  coverage: 0.49
+  valid_only: []
+  excluded_by_convention:
+  - validate-repo
+  - validate-output
+  - validate-run-log
+  - validate-mode-coverage
+  - validate-skill-hygiene
+churn:
+  commits_scanned: 50
+  changed_files_last_n: 31
+  top_changed_files:
+  - STATUS.md
+  - .sensemaking/knowledge/stewardship.json
+  - src/sensemaking_skills/semantic_architecture/knowledge_store.py
+  - skills/repository-semantic-steward/references/reconciliation.md
+  - skills/repository-semantic-steward/SKILL.md
+relationships:
+  doc_surface:
+    total: 1392
+    live: 455
+    by_class:
+      candidate: 14
+      example: 159
+      fixture: 133
+      generated: 64
+      historical: 567
+      live: 455
+  version:
+    declarations: 1
+    subpackage_declarations: 0
+    claims: 98
+    distinct_values:
+    - 1.0.0
+    - 1.0.0rc5.dev0
+    findings:
+    - concept: product_version
+      finding_type: conflicting_values
+      observations:
+      - source: pyproject.toml
+        location: pyproject.toml:7
+        value: 1.0.0rc5.dev0
+        evidence: version = "1.0.0rc5.dev0"
+        source_kind: declaration
+        claim_class: declared
+      - source: EXTENDING.md
+        location: EXTENDING.md:108
+        value: 1.0.0
+        evidence: '"artifact_version": "1.0.0",'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: EXTENDING.md
+        location: EXTENDING.md:25
+        value: 1.0.0
+        evidence: version = "1.0.0"
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: EXTENDING.md
+        location: EXTENDING.md:326
+        value: 1.0.0
+        evidence: version = "1.0.0"
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: EXTENDING.md
+        location: EXTENDING.md:342
+        value: 1.0.0
+        evidence: '"artifact_version": "1.0.0",'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: EXTENDING.md
+        location: EXTENDING.md:69
+        value: 1.0.0
+        evidence: '"artifact_version": "1.0.0",'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: STATUS.md
+        location: STATUS.md:44
+        value: 1.0.0
+        evidence: '**Release status:** RC4 integrated at `main@9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776`
+          and post-RC4 contraction at `main@281cd4d9c7150d072381e14f949f68fc852b2c43`.
+          The documented 2026-10-15 knowledge-f'
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: STATUS.md
+        location: STATUS.md:480
+        value: 1.0.0
+        evidence: PyPI publication, release tagging, and final `1.0.0` remain owner-controlled.
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: docs/maintainer-guide-v1.0.md
+        location: docs/maintainer-guide-v1.0.md:74
+        value: 1.0.0
+        evidence: final `1.0.0` remain explicit release-owner transitions.
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: docs/strategic-continuity-reconciliation-multi-repository-v1-handoff.md
+        location: docs/strategic-continuity-reconciliation-multi-repository-v1-handoff.md:257
+        value: 1.0.0
+        evidence: freeze RC3, publish a package, tag a release, or authorize final
+          `1.0.0`.
+        source_kind: documentation
+        claim_class: current
+        source_class: live
+      - source: tests/test_cli.py
+        location: tests/test_cli.py:25
+        value: 1.0.0
+        evidence: assert "1.0.0" in result.output
+        source_kind: verification
+        claim_class: current
+        source_class: verification
+      confidence: high
+      requires_semantic_review: true
+      notes: Values disagree mechanically across sources. Which source has authority,
+        which is historical, and whether it matters is for the model to interpret.
+        Claims of other version families are excluded from this decision set.
+  adr:
+    files: 31
+    catalog:
+    - id: '0001'
+      file: docs/adr/0001-strict-validation-in-execution-modes.md
+      title: 'ADR 0001: Strict Validation in Execution Modes'
+      status: accepted
+      raw_status: Accepted
+    - id: '0002'
+      file: docs/adr/0002-workflow-separation-of-concerns.md
+      title: 'ADR 0002: Workflow Separation of Concerns'
+      status: accepted
+      raw_status: Accepted
+    - id: '0003'
+      file: docs/adr/0003-artifact-composition-pattern.md
+      title: 'ADR 0003: Artifact Composition Pattern'
+      status: accepted
+      raw_status: Accepted
+    - id: '0004'
+      file: docs/adr/0004-evidence-tracking-for-trust.md
+      title: 'ADR 0004: Evidence Tracking for Trust'
+      status: accepted
+      raw_status: Accepted
+    - id: '0005'
+      file: docs/adr/0005-skill-invocation-via-workflows.md
+      title: 'ADR 0005: Skill Invocation via Workflow Registry (No Direct Skill-to-Skill
+        Calls)'
+      status: accepted
+      raw_status: Accepted
+    - id: '0006'
+      file: docs/adr/0006-intent-as-durable-artifact.md
+      title: 'ADR 0006: User Intent as Immutable Durable Artifact'
+      status: proposed
+      raw_status: Proposed
+    - id: '0007'
+      file: docs/adr/0007-soft-context-routing.md
+      title: "ADR 0007: Soft Context Routing \u2014 User Intent as Weighted Input,\
+        \ Not Authority"
+      status: proposed
+      raw_status: Proposed
+    - id: 0008
+      file: docs/adr/0008-routing-divergence-audit.md
+      title: 'ADR 0008: Routing Divergence and Action Audit Trail'
+      status: proposed
+      raw_status: Proposed
+    - id: 0009
+      file: docs/adr/0009-handoff-skill-naming-convention.md
+      title: 'ADR 0009: Handoff Skill Naming Convention'
+      status: accepted
+      raw_status: Accepted
+    - id: '0010'
+      file: docs/adr/0010-runtime-owns-artifact-path-resolution.md
+      title: 'ADR 0010: Runtime Owns Artifact Path Resolution'
+      status: accepted
+      raw_status: Accepted
+    - id: '0011'
+      file: docs/adr/0011-canonical-vocabulary-enforcement.md
+      title: 'ADR 0011: Canonical Vocabulary Enforcement'
+      status: accepted
+      raw_status: Accepted
+    - id: '0012'
+      file: docs/adr/0012-invocation-paths.md
+      title: 'ADR 0012: Manual vs Automation Invocation Paths'
+      status: accepted
+      raw_status: Accepted
+    - id: '0013'
+      file: docs/adr/0013-agent-native-orchestration-primary.md
+      title: 'ADR 0013: Agent-Native Orchestration as Primary Model'
+      status: accepted
+      raw_status: Accepted
+    - id: '0014'
+      file: docs/adr/0014-product-boundary.md
+      title: 'ADR 0014: Product Boundary of Sensemaking Skills'
+      status: superseded
+      raw_status: "SUPERSEDED \u2014 2026-09-11 by ADR 0029"
+    - id: '0015'
+      file: docs/adr/0015-deterministic-vs-model-variable-fields.md
+      title: 'ADR 0015: Deterministic versus Model-Variable Artifact Fields'
+      status: accepted
+      raw_status: "ACCEPTED (with a ratified addendum) \u2014 2026-07-26 by explicit"
+    - id: '0016'
+      file: docs/adr/0016-evidence-policy-for-findings.md
+      title: 'ADR 0016: Evidence Policy for Repository Findings'
+      status: accepted
+      raw_status: "ACCEPTED (with a ratified addendum) \u2014 2026-07-26 by explicit"
+    - id: '0017'
+      file: docs/adr/0017-readiness-criteria-for-new-features.md
+      title: 'ADR 0017: Readiness Criteria for Adding New Features'
+      status: superseded
+      raw_status: "SUPERSEDED \u2014 2026-08-18; historical proposal, never Accepted"
+    - id: 0018
+      file: docs/adr/0018-workflow-routing-policy.md
+      title: 'ADR 0018: Workflow-Routing Policy'
+      status: superseded
+      raw_status: "SUPERSEDED \u2014 2026-08-18; historical proposal, never Accepted"
+    - id: 0019
+      file: docs/adr/0019-findings-to-tracker-tasks-policy.md
+      title: 'ADR 0019: When Findings Become Recommendations versus Tracker Tasks'
+      status: superseded
+      raw_status: "SUPERSEDED \u2014 historical proposal, never Accepted"
+    - id: '0020'
+      file: docs/adr/0020-wayfinder-and-prototypes-scope.md
+      title: 'ADR 0020: Whether Wayfinder and Prototypes Belong in the Core'
+      status: superseded
+      raw_status: "SUPERSEDED \u2014 historical proposal, never Accepted"
+    - id: '0021'
+      file: docs/adr/0021-production-readiness-requirements.md
+      title: 'ADR 0021: Production-Readiness Requirements'
+      status: superseded
+      raw_status: "SUPERSEDED \u2014 historical proposal, never Accepted"
+    - id: '0022'
+      file: docs/adr/0022-gate-a-authorization-consumer-placement.md
+      title: 'ADR 0022: Gate A Authorization Consumer Placement and Invocation Binding'
+      status: proposed
+      raw_status: "PROPOSED \u2014 awaiting independent adversarial review. Merging\
+        \ this"
+    - id: '0023'
+      file: docs/adr/0023-two-lane-experiment-authorization.md
+      title: 'ADR 0023: Two-Lane Experiment Authorization'
+      status: accepted
+      raw_status: "ACCEPTED \u2014 independently reviewed at exact head"
+    - id: '0024'
+      file: docs/adr/0024-extended-analysis-field-classification.md
+      title: 'ADR 0024: Section 15 "Extended analysis" field classification'
+      status: accepted
+      raw_status: "ACCEPTED \u2014 owner decision 2026-08-10: (a) accept the"
+    - id: '0025'
+      file: docs/adr/0025-workflow-orchestration-plan-lifecycle.md
+      title: 'ADR 0025: Two-stage workflow_orchestration_plan lifecycle'
+      status: accepted
+      raw_status: "ACCEPTED \u2014 owner decision 2026-08-23 (ratified during #232\
+        \ triage"
+    - id: '0026'
+      file: docs/adr/0026-workflow-execution-authority.md
+      title: 'ADR 0026: Execution Authority for `auto_invoke_next_workflow`'
+      status: accepted
+      raw_status: "ACCEPTED \u2014 owner decision 2026-08-24 (ratified after the #230"
+    - id: '0027'
+      file: docs/adr/0027-workflow-registry-liveness.md
+      title: 'ADR 0027: Workflow registry identity is separate from current liveness'
+      status: accepted
+      raw_status: Accepted
+    - id: 0028
+      file: docs/adr/0028-agent-agnostic-product-management-domain.md
+      title: 'ADR 0028: Product Management is an agent-agnostic Campaign domain'
+      status: accepted
+      raw_status: Accepted
+    - id: 0029
+      file: docs/adr/0029-current-product-boundary.md
+      title: 'ADR 0029: Current Product Boundary of Sensemaking Skills'
+      status: accepted
+      raw_status: "ACCEPTED \u2014 owner-ratified 2026-09-11"
+    - id: '0030'
+      file: docs/adr/0030-target-repository-grounding.md
+      title: 'ADR 0030: Target-Repository Grounding Pack'
+      status: accepted
+      raw_status: "ACCEPTED \u2014 owner-delegated 2026-10-12 (owner asked the agent\
+        \ to choose owner decisions and proceed)"
+    - id: '0031'
+      file: docs/adr/0031-persistent-semantic-stewardship.md
+      title: 'ADR 0031: Persistent Semantic Stewardship as the Long-Term Product Direction'
+      status: accepted
+      raw_status: "ACCEPTED \u2014 owner-selected 2026-10-15; this ADR records the\
+        \ selection, not an implemented capability"
+    references: 660
+    findings:
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: CONTEXT.md
+        location: CONTEXT.md:433
+        value: superseded
+        evidence: '| `docs/adr/0029-current-product-boundary.md` | current owner-ratified
+          product-boundary authority; supersedes ADR 0014 for current scope decisions
+          |'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0019-findings-to-tracker-tasks-policy.md
+        location: docs/adr/0019-findings-to-tracker-tasks-policy.md:13
+        value: superseded
+        evidence: '- ADR 0014''s accepted product boundary keeps generic tracker synchronization'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0019-findings-to-tracker-tasks-policy.md
+        location: docs/adr/0019-findings-to-tracker-tasks-policy.md:39
+        value: superseded
+        evidence: 'job. If ADR 0014 is accepted, this would resolve most of #34''s
+          open'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0020-wayfinder-and-prototypes-scope.md
+        location: docs/adr/0020-wayfinder-and-prototypes-scope.md:13
+        value: superseded
+        evidence: '- ADR 0014''s accepted product boundary does not make Wayfinder-style
+          issue'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0024-extended-analysis-field-classification.md
+        location: docs/adr/0024-extended-analysis-field-classification.md:14
+        value: superseded
+        evidence: "by this ADR), ADR 0014 (Accepted \u2014 the repo-sensemaker / architectural-review"
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0025-workflow-orchestration-plan-lifecycle.md
+        location: docs/adr/0025-workflow-orchestration-plan-lifecycle.md:20
+        value: superseded
+        evidence: "- ADR 0014 (Accepted \u2014 product boundary: automatic downstream\
+          \ routing is"
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0026-workflow-execution-authority.md
+        location: docs/adr/0026-workflow-execution-authority.md:19
+        value: superseded
+        evidence: "- ADR 0014 (Accepted \u2014 product boundary: automatic downstream\
+          \ routing is"
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/adr/0029-current-product-boundary.md
+        location: docs/adr/0029-current-product-boundary.md:10
+        value: superseded
+        evidence: ADR 0014 correctly recorded the owner-ratified July 2026 boundary
+          around repository diagnosis and a validated, human-reviewed `repository_sensemaking_brief`.
+          Since then, Sensemaking has evolved into a
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/agent-native-operating-workflow.md
+        location: docs/agent-native-operating-workflow.md:258
+        value: superseded
+        evidence: 'Automatic routing is deliberately **not** ratified: ADR 0014 defers
+          routing'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/agent-native-operating-workflow.md
+        location: docs/agent-native-operating-workflow.md:549
+        value: superseded
+        evidence: '| Repository diagnosis | `repo-sensemaker` + probe engine | REAL
+          (ratified, ADR 0014) | diagnosis does not authorize repair |'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/campaigns/agent-native-self-development/CAMPAIGN-STATE.md
+        location: docs/campaigns/agent-native-self-development/CAMPAIGN-STATE.md:86
+        value: superseded
+        evidence: '| Product boundary | Human-reviewed `repository_sensemaking_brief`
+          is the ratified external scope; routing deferred | ADR 0014 |'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/campaigns/agent-native-self-development/R1-fresh-context-reconstruction.md
+        location: docs/campaigns/agent-native-self-development/R1-fresh-context-reconstruction.md:140
+        value: superseded
+        evidence: '| Owner ratifies product boundary, execution authority, liveness
+          (pattern: owner decision -> ADR Accepted) | ADR 0014 header (owner decision
+          D1, `docs/OWNER-DECISION-PACKAGE-2026-07-26.md`); ADR 0026 '
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/campaigns/agent-native-self-development/R6-workflow-system-disposition.md
+        location: docs/campaigns/agent-native-self-development/R6-workflow-system-disposition.md:223
+        value: superseded
+        evidence: '| `docs/adr/0014-product-boundary.md` | the "ratified product spine"
+          clause (F4) |'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/campaigns/durable-repo-self-development/FINAL-REPORT.md
+        location: docs/campaigns/durable-repo-self-development/FINAL-REPORT.md:246
+        value: superseded
+        evidence: ratified boundary (ADR 0014); Campaign 1 result +
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/campaigns/durable-repo-self-development/controllers/A-reconstruction-and-selection.md
+        location: docs/campaigns/durable-repo-self-development/controllers/A-reconstruction-and-selection.md:33
+        value: superseded
+        evidence: routing is **not** ratified (ADR 0014; ADR 0018 SUPERSEDED).
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/campaigns/durable-repo-self-development/controllers/A-task-A1-reconstruction-probe.md
+        location: docs/campaigns/durable-repo-self-development/controllers/A-task-A1-reconstruction-probe.md:153
+        value: superseded
+        evidence: human-reviewed `repository_sensemaking_brief` (the ratified scope,
+          ADR 0014)
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/campaigns/durable-repo-self-development/controllers/A-task-A1-reconstruction-probe.md
+        location: docs/campaigns/durable-repo-self-development/controllers/A-task-A1-reconstruction-probe.md:324
+        value: superseded
+        evidence: APPROVED FOR DEPLOYMENT" and cites "ADR 0017 ... unmet external-repo
+          readiness
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0017: docs/adr/0017-readiness-criteria-for-new-features.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/campaigns/durable-repo-self-development/controllers/A-task-A1-reconstruction-probe.md
+        location: docs/campaigns/durable-repo-self-development/controllers/A-task-A1-reconstruction-probe.md:329
+        value: superseded
+        evidence: Accepted." A reader who finds "ADR 0021 Production Readiness Requirements"
+          or
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0021: docs/adr/0021-production-readiness-requirements.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/campaigns/durable-repo-self-development/controllers/B-reconstruction-and-selection.md
+        location: docs/campaigns/durable-repo-self-development/controllers/B-reconstruction-and-selection.md:108
+        value: superseded
+        evidence: "(ADR 0014); automatic fog\u2192implementation routing **not** ratified.\
+          \ Repo posture:"
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/product-boundary-reconciliation-v1.md
+        location: docs/product-boundary-reconciliation-v1.md:14
+        value: superseded
+        evidence: The question is about authority reconciliation, not whether the
+          July decision was wrong. ADR 0014 correctly captured the product boundary
+          that was owner-ratified on 2026-07-26. The repository has sinc
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/semantic-control-map.md
+        location: docs/semantic-control-map.md:52
+        value: superseded
+        evidence: "| SA11 | Product scope vs \"production ready\" | ADR 0014 (Accepted,\
+          \ owner-ratified 2026-07-26) \u2014 human-reviewed brief; routing/tracker-sync/deploy\
+          \ out of scope; **GA not claimed** (`STATUS.md`) | owner"
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/workflow-system-disposition.md
+        location: docs/workflow-system-disposition.md:133
+        value: superseded
+        evidence: '4. The **ratified product spine** is what ADR 0014 ratifies as
+          in scope:'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: docs/workflow-system-disposition.md
+        location: docs/workflow-system-disposition.md:29
+        value: superseded
+        evidence: '[ADR 0014](adr/0014-product-boundary.md) (ratified product boundary);'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed accepted; actual ADR status is superseded (ADR 0014: docs/adr/0014-product-boundary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: skills/workflow-planner/references/execution-modes.md
+        location: skills/workflow-planner/references/execution-modes.md:13
+        value: accepted
+        evidence: '| `yolo_execution` | Compatibility/legacy | Full automation of
+          local steps with mandatory post-step verification. Retained for mechanical
+          compatibility only (retired programmatic runner, ADR 0013); no'
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed not accepted; actual ADR status is accepted (ADR 0013: docs/adr/0013-agent-native-orchestration-primary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: status_claim_mismatch
+      observations:
+      - source: skills/workflow-planner/references/execution-modes.md
+        location: skills/workflow-planner/references/execution-modes.md:35
+        value: accepted
+        evidence: "> **COMPATIBILITY / LEGACY** \u2014 retained for mechanical compatibility\
+          \ only (retired programmatic runner, ADR 0013). Not ratified product behavior."
+        source_kind: documentation
+        claim_class: status_claim
+      confidence: high
+      requires_semantic_review: true
+      notes: 'claimed not accepted; actual ADR status is accepted (ADR 0013: docs/adr/0013-agent-native-orchestration-primary.md).
+        Which side is stale is for the model to interpret.'
+    - concept: adr_status
+      finding_type: stale_accepted_adr_candidate
+      observations:
+      - source: docs/adr/0013-agent-native-orchestration-primary.md
+        location: docs/adr/0013-agent-native-orchestration-primary.md:258
+        value: '0012'
+        evidence: '- **ADR 0012**: Manual vs. automation invocation paths (now superceded
+          by skill-led model)'
+        source_kind: contract
+        claim_class: status_claim
+      confidence: medium
+      requires_semantic_review: true
+      notes: 'ADR 0013 (itself Accepted) uses supersession language about ADR 0012,
+        whose own **Status** is still Accepted. Candidate inconsistency only: the
+        model must decide whether ADR 0012''s status line is stale or ADR 0013 overstates
+        the supersession. Advisory / non-blocking.'
+    - concept: adr_status
+      finding_type: stale_accepted_adr_candidate
+      observations:
+      - source: docs/adr/0025-workflow-orchestration-plan-lifecycle.md
+        location: docs/adr/0025-workflow-orchestration-plan-lifecycle.md:22
+        value: '0005'
+        evidence: "- ADR 0005 (Accepted, historical \u2014 \"orchestrator chains skills\
+          \ automatically\";"
+        source_kind: contract
+        claim_class: status_claim
+      confidence: medium
+      requires_semantic_review: true
+      notes: 'ADR 0025 (itself Accepted) uses supersession language about ADR 0005,
+        whose own **Status** is still Accepted. Candidate inconsistency only: the
+        model must decide whether ADR 0005''s status line is stale or ADR 0025 overstates
+        the supersession. Advisory / non-blocking.'
+    - concept: adr_status
+      finding_type: stale_accepted_adr_candidate
+      observations:
+      - source: docs/adr/0030-target-repository-grounding.md
+        location: docs/adr/0030-target-repository-grounding.md:5
+        value: 0029
+        evidence: '**Supersedes**: none. Does not change ADR 0029.'
+        source_kind: contract
+        claim_class: status_claim
+      confidence: medium
+      requires_semantic_review: true
+      notes: 'ADR 0030 (itself Accepted) uses supersession language about ADR 0029,
+        whose own **Status** is still Accepted. Candidate inconsistency only: the
+        model must decide whether ADR 0029''s status line is stale or ADR 0030 overstates
+        the supersession. Advisory / non-blocking.'
+skill_distribution:
+  canonical_skills_root: /home/user/sensemaking-skills/skills
+  checked:
+  - ab-test-analysis
+  - acceptance-criteria
+  - architectural-review
+  - battlecard
+  - change-impact-analysis
+  - coding-agent-native-campaign
+  - competitive-analysis
+  - customer-journey
+  - discovery
+  - docs-aligner
+  - experiment-design
+  - external-evidence-packet
+  - gtm
+  - handoff
+  - hypothesis
+  - ideal-customer-profile
+  - interview-synthesis
+  - launch-checklist
+  - lean-canvas
+  - measure-pmf
+  - multi-repository-strategic-analysis
+  - north-star
+  - okr
+  - opportunity-tree
+  - output-reconciler
+  - owner-decision-capsule
+  - persona
+  - pre-mortem
+  - pricing
+  - prioritize
+  - problem-framer
+  - release-notes
+  - repair-verifier
+  - repo-sensemaker
+  - repository-semantic-steward
+  - roadmap
+  - sensemaking-docs-reconciler
+  - setup-sensemaking-skills
+  - skill-maintainer
+  - stakeholder-update
+  - strategic-repository-analysis
+  - strategic-repository-reconciliation
+  - strategic-sensemaking-loop
+  - strategy
+  - thesis-review-packet
+  - to-issues
+  - to-prd
+  - unknowns-mapper
+  - usage-researcher
+  - user-stories
+  - using-sensemaking
+  - workflow-planner
+  drifted: []
+  findings: []
+  notes: ''

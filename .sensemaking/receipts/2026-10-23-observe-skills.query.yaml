@@ -1,0 +1,159 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-23-observe-skills
+state: final
+created_at: "2026-10-23T07:00:01Z"
+updated_at: "2026-10-23T07:00:01Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: >-
+  STATUS.md decision-changing uncertainty: do Skill entrypoints and reviewed
+  knowledge teach clean committed indexing vs dirty-workspace recall; then,
+  does knowledge cover the artifact path contract the brief needed.
+cli_identity:
+  sensemaking_source_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+  invocation_prefix: PYTHONPATH=src python -m sensemaking_skills.cli
+  version_output: "python -m sensemaking_skills.cli, version 0+unknown"
+index:
+  indexed_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+  current_head: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+    result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-2
+    operation: search
+    terms: [dirty, clean, overlay]
+    subject: null
+    expect_kinds: []
+    target_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+    result:
+      hit_count: 3
+      claim_ids: [inv:index-snapshot-vs-working-overlay, alternative:dirty-tree-byte-audit, decision:workspace-impact-path-overlap]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-3
+    operation: explain
+    terms: []
+    subject: inv:index-snapshot-vs-working-overlay
+    expect_kinds: [alternative, verification]
+    target_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+    result:
+      hit_count: 3
+      claim_ids: [inv:index-snapshot-vs-working-overlay, cap:semantic-queries, decision:workspace-impact-path-overlap]
+      truncated: false
+      not_assessed_kinds: [alternative, verification]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-4
+    operation: explain
+    terms: []
+    subject: decision:workspace-impact-path-overlap
+    expect_kinds: [alternative, verification]
+    target_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+    result:
+      hit_count: 5
+      claim_ids: [decision:workspace-impact-path-overlap, alternative:dirty-tree-byte-audit, cap:semantic-queries, inv:index-snapshot-vs-working-overlay, lesson:uncited-change-is-coverage-gap]
+      truncated: false
+      not_assessed_kinds: [verification]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-5
+    operation: workspace-impact
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+    result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-6
+    operation: search
+    terms: [artifact path, expected_output_path, "0010", brief, producer]
+    subject: null
+    expect_kinds: []
+    target_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+    result: {hit_count: 1, claim_ids: ["adr:0010"], truncated: false, not_assessed_kinds: []}
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-7
+    operation: explain
+    terms: []
+    subject: "adr:0010"
+    expect_kinds: [component, verification]
+    target_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+    result: {hit_count: 1, claim_ids: ["adr:0010"], truncated: false, not_assessed_kinds: [component, verification]}
+    outcome: NOT_ASSESSED
+    decision_relevant: true
+  - id: QY-8
+    operation: proposal-check
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+    result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+source_checks:
+  - claim_id: inv:index-snapshot-vs-working-overlay
+    sources:
+      - docs/semantic-architecture/persistent-knowledge-cli.md:65-68
+      - docs/semantic-architecture/persistent-knowledge-cli.md:251-253
+      - src/sensemaking_skills/semantic_architecture/worktree_context.py:1-3
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-7
+    needed_for: >-
+      Which components and tests own runtime artifact path resolution (ADR
+      0010), to diagnose the legacy run_repo_sensemaker_skill producer.
+    kind: NOT_ASSESSED
+    resolved_by: >-
+      Source inspection: CLAUDE.md:83-90, src/sensemaking_skills/paths.py:69,
+      src/sensemaking_skills/runner.py:181; behavior observed in a disposable clone.
+    follow_up: ADD_PROPOSED
+    proposal_ref: artifacts/history/2026-10-23-knowledge-proposal-product-contracts.json
+  - id: M-2
+    query_ref: QY-3
+    needed_for: Which tests verify the clean-index vs dirty-recall invariant.
+    kind: NOT_ASSESSED
+    resolved_by: >-
+      Ran tests/test_semantic_workspace_impact.py and
+      tests/test_semantic_knowledge_self_repo.py locally: pass.
+    follow_up: ADD_PROPOSED
+    proposal_ref: artifacts/history/2026-10-23-knowledge-proposal-product-contracts.json
+reconcile:
+  - claim_id: inv:index-snapshot-vs-working-overlay
+    disposition: CONFIRM
+    applied: false
+    proposal_ref: null
+    proposal_check: NOT_RUN
+  - claim_id: inv:runtime-owned-artifact-paths
+    disposition: ADD
+    applied: false
+    proposal_ref: artifacts/history/2026-10-23-knowledge-proposal-product-contracts.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: observation:legacy-brief-producer-bypasses-runtime-paths
+    disposition: ADD
+    applied: false
+    proposal_ref: artifacts/history/2026-10-23-knowledge-proposal-product-contracts.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: verification:workspace-impact-tests
+    disposition: ADD
+    applied: false
+    proposal_ref: artifacts/history/2026-10-23-knowledge-proposal-product-contracts.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true

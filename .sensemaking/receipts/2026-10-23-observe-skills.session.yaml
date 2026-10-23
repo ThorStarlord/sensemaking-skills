@@ -1,0 +1,154 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-23-observe-skills
+state: final
+created_at: "2026-10-23T07:00:01Z"
+updated_at: "2026-10-23T07:10:57Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+  end_ref: 9daf692390ff0c14996e95f734fd943a7addc92c
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: aa13f40115b52f9e7687d742cbc8430d5a9a4a25
+goal:
+  statement: >-
+    Observe the Sensemaking Skills operating on this repository, then make
+    using-sensemaking and repository-semantic-steward leave durable, typed
+    session artifacts.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr]
+  withheld: [merge, release, knowledge_edit, tracker_write]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: knowledge recall
+    capability: repository-semantic-steward
+    status: completed
+    reason: Reviewed knowledge existed and STATUS.md named self-repository Steward use as the current responsibility.
+    artifact_refs: [.sensemaking/receipts/2026-10-23-observe-skills.query.yaml]
+    validation:
+      - command: python -m pytest tests/test_semantic_workspace_impact.py tests/test_semantic_knowledge_self_repo.py -q
+        result: PASS
+  - id: R-2
+    responsibility: repository sensemaking
+    capability: repo-sensemaker
+    status: completed
+    reason: Requested for observation; probe and source reads diagnosed the weakest boundary.
+    artifact_refs:
+      - artifacts/history/2026-10-23-repository-sensemaking-brief-observation.md
+      - artifacts/history/2026-10-23-probe-report-observation.yaml
+    validation:
+      - command: python scripts/validate-brief.py <brief> --target-repo . --probe-report <probe-report>
+        result: PASS
+  - id: R-3
+    responsibility: Level-3 currentness reassessment
+    capability: strategic-repository-analysis
+    status: completed
+    reason: Level 3 was current, so the funnel was not rerun; returned evidence tested against STATUS.md.
+    artifact_refs: [artifacts/history/2026-10-23-strategic-repository-analysis.md]
+    validation:
+      - command: python scripts/validate-strategic-repository-analysis.py <analysis>
+        result: PASS
+  - id: R-4
+    responsibility: knowledge reconciliation
+    capability: repository-semantic-steward
+    status: partial
+    reason: Three ADD records drafted and preflighted; not applied because knowledge_edit was not granted.
+    artifact_refs: [artifacts/history/2026-10-23-knowledge-proposal-product-contracts.json]
+    validation:
+      - command: semantic knowledge-proposal-check (disposable clone at aa13f40)
+        result: PASS
+  - id: R-5
+    responsibility: receipt contract implementation
+    capability: ordinary_coding
+    status: completed
+    reason: Owner directed typed receipts so session findings and owner questions survive the container.
+    artifact_refs:
+      - scripts/validate-receipt.py
+      - scripts/summarize-receipts.py
+      - skills/using-sensemaking/references/session-receipt-v1.md
+      - skills/repository-semantic-steward/references/query-receipt.md
+      - docs/adr/0032-session-and-query-receipts.md
+    validation:
+      - command: python -m pytest -q -n auto
+        result: PASS
+      - command: python scripts/validate-repo.py
+        result: PASS
+findings:
+  - id: F-1
+    statement: Legacy SkillsOrchestrator.run_repo_sensemaker_skill overwrites the tracked brief with a contract-invalid file and reports success.
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/runner.py:181, src/sensemaking_skills/paths.py:69]
+    disposition: open
+  - id: F-2
+    statement: All 21 reviewed knowledge claims describe the knowledge plane itself; product contracts exist only as ADR titles.
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/stewardship.json, .sensemaking/knowledge/repository-bootstrap.json]
+    disposition: handed_off
+  - id: F-3
+    statement: validate-artifact.py checks dotted extended_analysis.* fields as literal Section 13 keys, so it always warns.
+    epistemic_status: OBSERVED
+    evidence_refs: [scripts/validate-artifact.py:265]
+    disposition: open
+  - id: F-4
+    statement: The operating map cites superseded ADR 0014 as ratified authority; the cited rule still holds under ADR 0029.
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/agent-native-operating-workflow.md:549, docs/adr/0029-current-product-boundary.md:85]
+    disposition: open
+  - id: F-5
+    statement: Steward reference wording on separate clean worktrees predates PR 559 and is outside the doc guard's scan.
+    epistemic_status: OBSERVED
+    evidence_refs: [skills/repository-semantic-steward/references/bootstrap.md:9, tests/test_repository_semantic_steward.py:66-86]
+    disposition: open
+  - id: F-6
+    statement: Before this session the control loop left no durable record, so these findings lived only in a scratch directory.
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/adr/0032-session-and-query-receipts.md]
+    disposition: resolved
+open_questions:
+  - id: Q-1
+    question: What should happen to the legacy run_repo_sensemaker_skill path?
+    source: owner_intent
+    blocking: true
+    options:
+      - option: Remove it
+        consequence: Method and RepoSensemakerSkill are deleted; outside callers break; no in-repo caller exists.
+      - option: Keep it, fail closed
+        consequence: Name stays importable but raises an error pointing to the agent-native Skill and writes nothing.
+      - option: Keep it as is
+        consequence: No code change; a regression test documents the overwrite behavior as known.
+    durable_ref: null
+  - id: Q-2
+    question: Ratify ADR 0032 (session and query receipts)?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Accept
+        consequence: Receipts become ratified operating contract; ADR status changes to Accepted.
+      - option: Revise
+        consequence: Schema or lifecycle changes before acceptance; receipts stay Proposed meanwhile.
+      - option: Reject
+        consequence: Revert to triggered durable surfaces only; receipt files and validator are removed.
+    durable_ref: docs/adr/0032-session-and-query-receipts.md
+stop:
+  disposition: OWNER_DECISION_REQUIRED
+  reason: Receipts implemented and committed for review; fixing the legacy producer needs the owner's choice (Q-1).
+next:
+  warranted_responsibility: >-
+    After Q-1, fix the legacy producer as RECALL -> BUILD -> RECONCILE with a
+    regression test, and apply the path-ownership knowledge ADD.
+  blocked_on: [Q-1, "authority:merge", "authority:knowledge_edit"]
+persistence: committed
+claim_ceiling: >-
+  Receipts written at session end because this session created the contract;
+  Skills loaded manually from aa13f40; one agent judged its own work; local
+  tests only, hosted CI not yet observed.
+action_authorized_by_receipt: false
+immutable: true

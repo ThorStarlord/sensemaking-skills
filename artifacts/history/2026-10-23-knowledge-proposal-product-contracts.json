@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "inv:runtime-owned-artifact-paths",
+      "kind": "invariant",
+      "statement": "Only the runtime resolves artifact paths; a producer writes exactly to the runtime-supplied expected_output_path and never recomputes artifacts/<id>.md itself.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0010-runtime-owns-artifact-path-resolution.md",
+      "evidence_refs": [
+        "file:docs/adr/0010-runtime-owns-artifact-path-resolution.md",
+        "file:CLAUDE.md",
+        "file:skills/repo-sensemaker/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "observation:legacy-brief-producer-bypasses-runtime-paths",
+      "kind": "observation",
+      "statement": "At aa13f40, SkillsOrchestrator.run_repo_sensemaker_skill writes repository_sensemaking_brief to <project_root>/artifacts/<id>.md through PathResolver.artifact_path; run against a disposable clone it replaced the tracked brief with a contract-invalid inventory and reported success.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/runner.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/runner.py",
+        "file:src/sensemaking_skills/paths.py",
+        "file:src/sensemaking_skills/skills/repo_sensemaker.py"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "verification:workspace-impact-tests",
+      "kind": "verification",
+      "statement": "The workspace-impact test module exercises dirty-checkout recall against a committed index, including unindexed-change disclosure.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_semantic_workspace_impact.py",
+      "evidence_refs": [
+        "file:tests/test_semantic_workspace_impact.py"
+      ],
+      "epistemic_status": "declared"
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:legacy-producer-contradicts-path-ownership",
+      "subject": "observation:legacy-brief-producer-bypasses-runtime-paths",
+      "predicate": "contradicts",
+      "object": "inv:runtime-owned-artifact-paths",
+      "attributes": {
+        "scope": "Legacy compatibility path only; runtime-invoked path resolution was not inspected in this episode"
+      },
+      "evidence_refs": [
+        "file:src/sensemaking_skills/runner.py",
+        "file:src/sensemaking_skills/paths.py",
+        "file:docs/adr/0010-runtime-owns-artifact-path-resolution.md"
+      ]
+    },
+    {
+      "id": "rel:overlay-invariant-tested",
+      "subject": "inv:index-snapshot-vs-working-overlay",
+      "predicate": "tested_by",
+      "object": "verification:workspace-impact-tests",
+      "attributes": {
+        "scope": "Declared test linkage; green execution separately evidenced"
+      },
+      "evidence_refs": [
+        "file:tests/test_semantic_workspace_impact.py"
+      ]
+    }
+  ]
+}
