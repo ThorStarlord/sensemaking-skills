@@ -120,12 +120,14 @@ def term(claims: Mapping[str, dict], relations: Iterable[dict], *, name: str, li
                        and (rel["subject"] in matches or rel["object"] in matches)})
     return {
         "term": name,
+        "match_quality": "exact_id" if any(cid.split(":", 1)[-1].lower() == needle for cid in matches) else "statement_substring",
+        "multiple_matches": len(matches) > 1,
         "matched_claims": matches[:limit],
         "synonyms": synonyms[:limit],
         "distinct_from": distinct[:limit],
         "coverage_status": "COVERED" if matches else "NOT_ASSESSED",
         "note": None if matches else "NOT ASSESSED: no reviewed definition matches this term.",
-        "truncated": len(matches) > limit,
+        "truncated": any(len(items) > limit for items in (matches, synonyms, distinct)),
     }
 
 
@@ -136,7 +138,7 @@ def orientation_summary(claims: Mapping[str, dict], relations: Iterable[dict], *
     for cid, claim in sorted(claims.items()):
         by_kind.setdefault(claim["kind"], []).append(cid)
     lines: list[str] = []
-    for kind in ("layer", "bounded_context", "component", "architecture_rule", "contract", "external_system"):
+    for kind in ("layer", "bounded_context", "component", "architecture_rule", "contract"):
         for cid in by_kind.get(kind, []):
             lines.append(f"{kind}: {cid}")
     for rel in rel_list:

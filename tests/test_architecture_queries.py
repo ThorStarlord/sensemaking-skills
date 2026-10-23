@@ -169,3 +169,29 @@ def test_graph_layer_scope_matches_owned_component():
     edges = [*RELATIONS, _rel("r7", "rule:layer", "applies_to", "layer:semantic-plane")]
     result = rules_for(claims, edges, path="src/sensemaking_skills/semantic_architecture/knowledge_store.py", limit=50)
     assert any(r["claim_id"] == "rule:layer" for r in result["applicable_rules"])
+
+def test_pilot_provenance_and_explicit_ownership_not_confused():
+    import json
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    records = [json.loads((root / ".sensemaking/knowledge" / n).read_text(encoding="utf-8"))
+               for n in ("architecture.json", "domain.json", "stewardship.json")]
+    claims = {c["id"]: c for r in records for c in r["claims"]}
+    relations = [e for r in records for e in r["relations"]]
+    store = rules_for(claims, relations,
+        path="src/sensemaking_skills/semantic_architecture/knowledge_store.py", limit=50)
+    assert store["owning_components"] == ["component:knowledge-store"]
+    assert not store["ownership_ambiguous"]
+    assert any(r["claim_id"] == "rule:stable-core-no-lab-imports"
+               for r in store["applicable_rules"])
+    validator = rules_for(claims, relations, path="scripts/validate-brief.py", limit=50)
+    assert validator["owning_components"] == ["component:brief-validator"]
+    placement = next(r for r in validator["applicable_rules"]
+                     if r["claim_id"] == "rule:validators-placement")
+    assert placement["epistemic_status"] == "hypothetical"
+    assert placement["authority_kind"] == "hypothesis"
+    assert any(r["subject"] == "component:repository-semantic-steward-skill"
+               and r["predicate"] == "exposes"
+               and r["object"] == "contract:semantic-query-receipt" for r in relations)
+    assert not any(r["subject"] == "contract:repository-sensemaking-brief"
+                   and r["predicate"] == "belongs_to" for r in relations)

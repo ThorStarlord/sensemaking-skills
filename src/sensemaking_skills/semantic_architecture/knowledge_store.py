@@ -319,13 +319,23 @@ def query_knowledge(
         elif operation == "rules-for":
             assert subject is not None
             extra["architecture"] = rules_for(claims, relations, path=subject, limit=limit)
-            found_claims = [claims[r["claim_id"]] for r in extra["architecture"]["applicable_rules"]
-                            if r["claim_id"] in claims]
+            ids = {r["claim_id"] for r in extra["architecture"]["applicable_rules"]}
+            for name in ("owning_components", "layers", "bounded_contexts", "tests"):
+                ids.update(extra["architecture"][name])
+            found_claims = [claims[cid] for cid in sorted(ids) if cid in claims]
+            found_relations = [r for r in relations if (
+                r["predicate"] in {"belongs_to", "tested_by", "applies_to"}
+                and (r["subject"] in ids or r["object"] in ids)
+                and r["subject"] in claims and r["object"] in claims
+            )]
             extra_truncated = extra["architecture"]["truncated"]
         elif operation == "term":
             assert subject is not None
             extra["term"] = term(claims, relations, name=subject, limit=limit)
-            found_claims = [claims[c] for c in extra["term"]["matched_claims"]]
+            term_ids = set(extra["term"]["matched_claims"]) | set(extra["term"]["synonyms"]) | set(extra["term"]["distinct_from"])
+            found_claims = [claims[c] for c in sorted(term_ids) if c in claims]
+            found_relations = [r for r in relations if r["predicate"] in {"synonym_of", "distinct_from"}
+                               and r["subject"] in term_ids and r["object"] in term_ids]
             extra_truncated = extra["term"]["truncated"]
         elif operation == "orientation-summary":
             extra["orientation"] = orientation_summary(claims, relations)
