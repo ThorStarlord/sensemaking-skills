@@ -171,69 +171,190 @@ def _module_file(module: str, tracked: set[str]) -> str | None:
     return None
 
 
-def _python_imports(source: str, module_of_file: str) -> list[str]:
+def _module_namespace(path: str) -> list[str]:
+    """Resolve source-relative modules for Python's relative import syntax."""
+    local = path.removeprefix("src/").removesuffix(".py").split("/")
+    return local[:-1] if local[-1] != "__init__" else local[:-1]
+
+
+def _python_imports_with_issues(source: str, module_of_file: str) -> tuple[list[str], list[str]]:
+    """Return statically resolvable imports and parser/dynamic-import limitations."""
     import ast
 
     try:
         tree = ast.parse(source)
-    except SyntaxError:
-        return []
+    except SyntaxError as exc:
+        return [], [f"Python syntax error at line {exc.lineno}; imports not assessed"]
     found: list[str] = []
+    issues: list[str] = []
+    namespace = _module_namespace(module_of_file)
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             found.extend(alias.name for alias in node.names)
-        elif isinstance(node, ast.ImportFrom) and node.module and node.level == 0:
-            found.append(node.module)
-    return found
+        elif isinstance(node, ast.ImportFrom):
+            if node.level:
+                up = node.level - 1
+                if up >= len(namespace):
+                    issues.append(f"unresolvable relative import at line {node.lineno}")
+                    continue
+                base = namespace[:len(namespace) - up]
+                if node.module:
+                    base += node.module.split(".")
+                module = ".".join(base)
+            else:
+                module = node.module or ""
+            if module:
+                found.append(module)
+                found.extend(module + "." + name.name for name in node.names if name.name != "*")
+            else:
+                issues.append(f"unresolvable import-from at line {node.lineno}")
+        elif isinstance(node, ast.Call) and isinstance(node.func, (ast.Name, ast.Attribute)):
+            is_import = (
+                isinstance(node.func, ast.Name) and node.func.id == "__import__"
+            ) or (
+                isinstance(node.func, ast.Attribute) and node.func.attr == "import_module"
+                and isinstance(node.func.value, ast.Name) and node.func.value.id == "importlib"
+            )
+            if is_import:
+                if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
+                    found.append(node.args[0].value)
+                else:
+                    issues.append(f"dynamic import target unknown at line {node.lineno}")
+    return sorted(set(found)), issues
+
+
+def _python_imports(source: str, module_of_file: str) -> list[str]:
+    """Compatibility reader: import syntax only, without assessment metadata."""
+    return _python_imports_with_issues(source, module_of_file)[0]
+
+
+def _component_files(claim: Mapping[str, Any]) -> set[str]:
+    """Explicit owned paths plus source-supported package roots for checker targeting."""
+    paths = set(claim.get("attributes", {}).get("owned_paths", []))
+    paths.update(ref[5:] for ref in claim.get("evidence_refs", []) if ref.startswith("file:"))
+    return {p.rsplit("/", 1)[0] + "/" if p.endswith("/__init__.py") else p for p in paths}
+
+
+def _matches_file(target: str, scopes: Iterable[str]) -> bool:
+    return any(target == p or (p.endswith("/") and target.startswith(p)) for p in scopes)
+
+
+def _rule_scoped_files(rule_id: str, rule: Mapping[str, Any], claims: Mapping[str, dict],
+                       relations: Iterable[dict], tracked: set[str]) -> set[str]:
+    scopes = rule["attributes"].get("applies_to", [])
+    files = {p for p in tracked if any(_scope_matches(scope, p) for scope in scopes)}
+    targets = {r["object"] for r in relations if r["predicate"] == "applies_to" and r["subject"] == rule_id}
+    for target in targets:
+        if claims.get(target, {}).get("kind") == "component":
+            for p in claims[target].get("attributes", {}).get("owned_paths", []):
+                if p in tracked:
+                    files.add(p)
+        elif claims.get(target, {}).get("kind") in {"layer", "bounded_context"}:
+            members = {r["subject"] for r in relations if r["predicate"] == "belongs_to" and r["object"] == target}
+            for cid in members:
+                for p in claims.get(cid, {}).get("attributes", {}).get("owned_paths", []):
+                    if p in tracked:
+                        files.add(p)
+    return files
 
 
 def check_rule_findings(
     claims: Mapping[str, dict], *, read_source, tracked: set[str], limit: int = 200,
+    relations: Iterable[dict] = (),
 ) -> dict:
-    """Report possible violations of dependency_direction rules. Warning-only.
+    """Warning-only Python dependency checker with explicit per-rule assessment.
 
-    Import syntax is not architectural proof: a finding is evidence for review.
-    Only Python sources are inspected; other scopes are NOT ASSESSED.
+    Unsupported rules, unresolved imports, non-Python scopes and parser errors
+    never masquerade as zero-violation checks.
     """
     findings: list[dict] = []
     not_assessed: list[str] = []
+    assessments: list[dict] = []
+    edges = list(relations)
+    manifest_modules: set[str] | None = None
+    if "release-v1.0.yaml" in tracked:
+        try:
+            import yaml
+
+            release = yaml.safe_load(read_source("release-v1.0.yaml")) or {}
+            manifest_modules = set(release.get("package_boundary", {}).get("source_only_modules", []))
+        except (ValueError, KeyError, TypeError, yaml.YAMLError) as exc:
+            not_assessed.append(f"release manifest could not be read: {exc}")
     for rule_id, rule in sorted(claims.items()):
-        if rule["kind"] != "architecture_rule" or rule["attributes"].get("rule_type") != "dependency_direction":
+        if rule["kind"] != "architecture_rule":
             continue
-        forbidden = list(rule["attributes"].get("forbidden_targets") or [])
-        forbidden_files: set[str] = set()
-        for target in forbidden:
-            owner = claims.get(target)
-            if owner is None:
-                not_assessed.append(f"{rule_id}: target {target} is not a claim")
-                continue
-            for ref in owner.get("evidence_refs", []):
-                if not ref.startswith("file:"):
-                    continue
-                path = ref[5:]
-                # A package's __init__.py claims its whole directory.
-                forbidden_files.add(path.rsplit("/", 1)[0] + "/" if path.endswith("/__init__.py") else path)
-        scope = rule["attributes"].get("applies_to", [])
-        in_scope = sorted(p for p in tracked if p.endswith(".py") and any(
-            glob_to_regex(s).match(p) for s in scope if is_path_scope(s)))
+        attrs = rule.get("attributes", {})
+        reasons: list[str] = []
+        in_scope = _rule_scoped_files(rule_id, rule, claims, edges, tracked)
+        python_files = sorted(p for p in in_scope if p.endswith(".py"))
         if not in_scope:
-            not_assessed.append(f"{rule_id}: no tracked Python file matches its scope")
-        for path in in_scope:
-            for module in _python_imports(read_source(path), path):
+            reasons.append("no tracked files match the declared scope")
+        if len(python_files) != len(in_scope):
+            reasons.append("non-Python files not evaluated")
+        if attrs.get("rule_type") != "dependency_direction":
+            reasons.append(f"rule type {attrs.get('rule_type')} has no executable checker")
+            status = "NOT_ASSESSED"
+            assessments.append({"rule_id": rule_id, "assessment_status": status, "files_examined": 0,
+                                "scope_files_total": len(in_scope), "not_assessed_reasons": reasons})
+            not_assessed.extend(f"{rule_id}: {reason}" for reason in reasons)
+            continue
+        forbidden = list(attrs.get("forbidden_targets") or [])
+        allowed = list(attrs.get("allowed_targets") or [])
+        forbidden_files: set[str] = set()
+        allowed_files: set[str] = set()
+        for target, dest in [(x, forbidden_files) for x in forbidden] + [(x, allowed_files) for x in allowed]:
+            claim = claims.get(target)
+            if claim is None:
+                reasons.append(f"target {target} is not a claim")
+                continue
+            dest.update(_component_files(claim))
+        if manifest_modules is not None and forbidden:
+            recorded_packages = {p for p in forbidden_files if p.endswith("/")}
+            expected_packages = {"src/" + module.replace(".", "/") + "/" for module in manifest_modules}
+            if expected_packages and not expected_packages.issubset(recorded_packages):
+                reasons.append("forbidden targets do not cover every source-only package in release manifest")
+        if not python_files:
+            reasons.append("no tracked Python file matches its scope")
+        examined = 0
+        for path in python_files:
+            imported, parse_issues = _python_imports_with_issues(read_source(path), path)
+            if parse_issues:
+                reasons.extend(f"{path}: {issue}" for issue in parse_issues)
+            if any("syntax error" in issue for issue in parse_issues):
+                continue
+            examined += 1
+            for module in imported:
                 target_file = _module_file(module, tracked)
                 if target_file is None:
                     continue
-                if any(target_file == f or (f.endswith("/") and target_file.startswith(f)) for f in forbidden_files):
-                    findings.append({"rule_id": rule_id, "severity": rule["attributes"].get("severity"),
+                if _matches_file(target_file, forbidden_files):
+                    findings.append({"rule_id": rule_id, "severity": attrs.get("severity"),
                                      "file": path, "imports": module, "resolves_to": target_file,
                                      "note": "Possible violation; import syntax only, for review."})
+                if allowed and not _matches_file(target_file, allowed_files):
+                    # Only judge modules that have reviewed owners; unmodeled
+                    # source modules cannot prove an allowlist breach.
+                    owners = [cid for cid, claim in claims.items() if claim["kind"] == "component"
+                              and _matches_file(target_file, _component_files(claim))]
+                    if owners:
+                        findings.append({"rule_id": rule_id, "severity": attrs.get("severity"),
+                                         "file": path, "imports": module, "resolves_to": target_file,
+                                         "note": "Import of modeled component outside allowed_targets; for review."})
+                    else:
+                        reasons.append(f"{path}: imported {module} has no modeled target for allowlist")
+        status = "NOT_ASSESSED" if examined == 0 else ("PARTIALLY_ASSESSED" if reasons else "ASSESSED")
+        assessments.append({"rule_id": rule_id, "assessment_status": status,
+                            "files_examined": examined, "scope_files_total": len(in_scope),
+                            "not_assessed_reasons": sorted(set(reasons))})
+        not_assessed.extend(f"{rule_id}: {reason}" for reason in sorted(set(reasons)))
     return {
-        "warning_only": True,
-        "findings": findings[:limit],
-        "findings_total": len(findings),
-        "not_assessed": not_assessed,
+        "warning_only": True, "findings": findings[:limit], "findings_total": len(findings),
+        "not_assessed": not_assessed, "rule_assessments": assessments,
+        "rules_total": len(assessments),
+        "truncated": len(findings) > limit,
         "limits": [
-            "Python import syntax only; runtime coupling and architectural significance are NOT ASSESSED.",
+            "Python AST imports and literal import calls only; runtime coupling is NOT ASSESSED.",
+            "Unmodeled code, unsupported rule types, and unresolved import syntax cannot establish compliance.",
             "Findings are evidence for review, not proof of a defect; this check never fails CI in v1.",
         ],
     }

@@ -161,12 +161,13 @@ def register_semantic_commands(root_cli: click.Group) -> None:
 
         try:
             root, tracked = verified_tracked_sources(repo_root, target_ref)
-            claims, _relations = _authored_records(root, tracked)
+            claims, relations = _authored_records(root, tracked)
             claim_map = {c.id: record_dict(c) for c in claims}
             payload = check_rule_findings(
                 claim_map,
                 read_source=lambda rel: _source(root, tracked, rel).read_text(encoding="utf-8", errors="replace"),
                 tracked=tracked,
+                relations=[record_dict(r) for r in relations],
             )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc

@@ -164,3 +164,58 @@ def test_package_init_claim_covers_the_whole_package():
     tracked = {"src/core/engine.py", "src/lab/__init__.py", "src/lab/deep/module.py"}
     result = check_rule_findings(claims, read_source=lambda p: sources.get(p, ""), tracked=tracked)
     assert [f["resolves_to"] for f in result["findings"]] == ["src/lab/deep/module.py"]
+
+def test_relative_import_and_import_from_submodule_are_detected():
+    claims = _claims()
+    claims["component:lab"]["evidence_refs"] = ["file:src/lab/__init__.py"]
+    tracked = {"src/core/engine.py", "src/core/__init__.py", "src/lab/__init__.py",
+               "src/lab/deep/module.py"}
+    sources = {"src/core/engine.py": "from ..lab.deep import module\nfrom lab import deep\n"}
+    found = check_rule_findings(claims, read_source=lambda p: sources.get(p, ""),
+                                tracked=tracked)
+    assert any(f["imports"] == "lab.deep.module" for f in found["findings"])
+
+
+def test_parser_failure_is_reported_not_ignored():
+    result = check_rule_findings(_claims(), read_source=lambda p: "def broken(:\n",
+                                 tracked={"src/core/engine.py"})
+    assert result["rule_assessments"][0]["assessment_status"] == "NOT_ASSESSED"
+    assert any("syntax error" in note for note in result["not_assessed"])
+
+
+def test_non_dependency_rules_have_explicit_assessment_records():
+    claims = _claims()
+    claims["rule:placement"] = {"kind": "architecture_rule", "attributes": {
+        "rule_type": "placement", "severity": "warning", "applies_to": ["src/core/**"],
+        "pattern": "src/core/[a-z]+\\.py"}}
+    result = check_rule_findings(claims, read_source=lambda p: "pass\n",
+                                 tracked={"src/core/engine.py"})
+    item = next(r for r in result["rule_assessments"] if r["rule_id"] == "rule:placement")
+    assert item["assessment_status"] == "NOT_ASSESSED"
+    assert any("no executable checker" in s for s in item["not_assessed_reasons"])
+
+
+def test_allowlist_flags_only_modeled_internal_components():
+    claims = _claims()
+    claims["component:core"]["attributes"] = {"owned_paths": ["src/core/engine.py"]}
+    claims["component:lab"]["attributes"] = {"owned_paths": ["src/lab/experiment.py"]}
+    claims["rule:core-no-lab"]["attributes"] = {
+        "rule_type": "dependency_direction", "severity": "warning",
+        "applies_to": ["src/core/**"], "allowed_targets": ["component:core"]
+    }
+    sources = {"src/core/engine.py": "import lab.experiment\n"}
+    result = check_rule_findings(claims, read_source=lambda p: sources.get(p, ""),
+                                 tracked={"src/core/engine.py", "src/lab/experiment.py"})
+    assert len(result["findings"]) == 1
+    assert "outside allowed_targets" in result["findings"][0]["note"]
+
+
+def test_source_only_manifest_coverage_gap_is_explicit():
+    claims = _claims()
+    claims["component:lab"]["evidence_refs"] = ["file:src/lab/__init__.py"]
+    files = {"release-v1.0.yaml": (
+        "package_boundary:\n  source_only_modules:\n    - lab\n    - another_lab\n"
+    ), "src/core/engine.py": "import lab\n"}
+    tracked = set(files) | {"src/lab/__init__.py", "src/another_lab/__init__.py"}
+    result = check_rule_findings(claims, read_source=lambda p: files.get(p, ""), tracked=tracked)
+    assert any("every source-only package" in s for s in result["not_assessed"])

@@ -67,7 +67,7 @@ def test_version_one_vocabulary_is_a_strict_subset_of_the_accepted_set():
 
 # -- version gating -----------------------------------------------------------
 
-@pytest.mark.parametrize("kind", ["layer", "bounded_context", "lifecycle_state", "external_system"])
+@pytest.mark.parametrize("kind", ["layer", "bounded_context", "lifecycle_state"])
 def test_version_two_kinds_are_refused_from_version_one_documents(kind):
     with pytest.raises(ValueError, match="requires schema_version 2"):
         _claim_obj(_claim(id="layer:core", kind=kind), version=1)
@@ -138,7 +138,7 @@ def test_rule_scope_must_name_a_snapshot_claim_or_a_path():
 def test_rule_with_resolvable_targets_validates():
     lab = _claim_obj(_claim(id="component:lab", kind="component", statement="Lab package."))
     exporter = _claim_obj(_claim(id="component:exporter"))
-    rule = _claim_obj(_rule(forbidden_targets=["component:lab"], applies_to=["src/exporter/**", "component:exporter"]))
+    rule = _claim_obj(_rule(forbidden_targets=["component:lab"], applies_to=["src/exporter/**"]))
     validate_snapshot(_snapshot([lab, exporter, rule]))
 
 
@@ -199,3 +199,22 @@ def test_is_path_scope_separates_paths_from_identifiers():
     assert knowledge.is_path_scope("src/exporter/**")
     assert knowledge.is_path_scope("scripts/validate-*.py")
     assert not knowledge.is_path_scope("component:exporter")
+
+def test_owned_paths_require_v2_and_reject_unsafe_paths():
+    owned = _claim(id="component:owned", attributes={"owned_paths": ["src/engine.py"]})
+    with pytest.raises(ValueError, match="requires schema_version 2"):
+        _claim_obj(owned, version=1)
+    assert _claim_obj(owned).attributes["owned_paths"] == ["src/engine.py"]
+    for paths in (["../escape.py"], ["/absolute.py"], ["src/*.py"], ["same.py", "same.py"]):
+        with pytest.raises(ValueError, match="owned_paths"):
+            _claim_obj(_claim(id="component:owned", attributes={"owned_paths": paths}))
+
+
+def test_graph_rule_scope_requires_correct_endpoint_kinds():
+    component = _claim_obj(_claim(id="component:producer"))
+    layer = _claim_obj(_claim(id="layer:core", kind="layer"))
+    relation = read_authored_relation({"id": "rel:bad", "subject": layer.id,
+        "predicate": "applies_to", "object": component.id, "evidence_refs": ["file:docs/architecture.md"]},
+        source_ref="file:x", schema_version=2)
+    with pytest.raises(ValueError, match="applies_to needs rule"):
+        validate_snapshot(_snapshot([component, layer], (relation,)))

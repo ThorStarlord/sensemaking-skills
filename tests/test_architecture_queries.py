@@ -17,10 +17,13 @@ def _rel(rid, subject, predicate, obj):
 
 CLAIMS = {c["id"]: c for c in [
     _claim("component:semantic-store", "component",
-           evidence=["file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"]),
+           evidence=["file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"],
+           attributes={"owned_paths": ["src/sensemaking_skills/semantic_architecture/knowledge_store.py"]}),
     _claim("component:semantic-retrieval", "component",
-           evidence=["file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"]),
-    _claim("component:lab", "component", evidence=["file:src/sensemaking_skills/campaign_validation/x.py"]),
+           evidence=["file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"],
+           attributes={"owned_paths": ["src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"]}),
+    _claim("component:lab", "component", evidence=["file:src/sensemaking_skills/campaign_validation/x.py"],
+           attributes={"owned_paths": ["src/sensemaking_skills/campaign_validation/x.py"]}),
     _claim("layer:semantic-plane", "layer"),
     _claim("bounded_context:knowledge", "bounded_context"),
     _claim("rule:semantic-no-lab", "architecture_rule", "Semantic modules must not import lab code.",
@@ -29,7 +32,7 @@ CLAIMS = {c["id"]: c for c in [
                        "forbidden_targets": ["component:lab"]}),
     _claim("rule:store-only-writes", "architecture_rule", "Only the store writes the database.",
            attributes={"rule_type": "convention", "severity": "warning",
-                       "applies_to": ["component:semantic-store"]}),
+                       "applies_to": ["src/other/**"]}),
     _claim("domain_concept:fog-type", "domain_concept", "A fog type classifies the uncertainty."),
     _claim("domain_concept:weakness-type", "domain_concept", "A weakness type classifies a boundary."),
     _claim("domain_concept:fog", "domain_concept", "fog"),
@@ -40,6 +43,7 @@ RELATIONS = [
     _rel("r3", "component:semantic-store", "tested_by", "verification:store-tests"),
     _rel("r4", "domain_concept:fog-type", "distinct_from", "domain_concept:weakness-type"),
     _rel("r5", "domain_concept:fog", "synonym_of", "domain_concept:fog-type"),
+    _rel("r6", "rule:store-only-writes", "applies_to", "component:semantic-store"),
 ]
 
 
@@ -74,7 +78,7 @@ def test_component_scoped_rule_matches_through_its_owner_only():
     result = rules_for(CLAIMS, RELATIONS,
                        path="src/sensemaking_skills/semantic_architecture/knowledge_store.py", limit=20)
     store_rule = next(r for r in result["applicable_rules"] if r["claim_id"] == "rule:store-only-writes")
-    assert store_rule["matched_by"] == ["component component:semantic-store"]
+    assert store_rule["matched_by"] == ["declared graph target component:semantic-store"]
 
 
 def test_uncovered_path_is_not_assessed_not_empty_success():
@@ -141,3 +145,27 @@ def test_rules_for_subject_validation_at_the_store_boundary(tmp_path):
         query_knowledge(db, repository="o/r", target_ref="a" * 40, operation="rules-for",
                         subject="src/sensemaking_skills/x.py")
     assert "repository-relative" not in str(excinfo.value)
+
+def test_evidence_reference_cannot_establish_ownership():
+    claims = dict(CLAIMS)
+    claims["component:reader"] = _claim("component:reader", "component",
+        evidence=["file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"])
+    result = rules_for(claims, RELATIONS, path="src/sensemaking_skills/semantic_architecture/knowledge_store.py", limit=50)
+    assert result["owning_components"] == ["component:semantic-store"]
+
+
+def test_duplicate_explicit_owners_are_disclosed():
+    claims = dict(CLAIMS)
+    claims["component:duplicate"] = _claim("component:duplicate", "component",
+        attributes={"owned_paths": ["src/sensemaking_skills/semantic_architecture/knowledge_store.py"]})
+    result = rules_for(claims, RELATIONS, path="src/sensemaking_skills/semantic_architecture/knowledge_store.py", limit=50)
+    assert result["ownership_ambiguous"] is True
+
+
+def test_graph_layer_scope_matches_owned_component():
+    claims = dict(CLAIMS)
+    claims["rule:layer"] = _claim("rule:layer", "architecture_rule", "Layer rule",
+        attributes={"rule_type": "convention", "severity": "warning", "applies_to": ["src/elsewhere/**"]})
+    edges = [*RELATIONS, _rel("r7", "rule:layer", "applies_to", "layer:semantic-plane")]
+    result = rules_for(claims, edges, path="src/sensemaking_skills/semantic_architecture/knowledge_store.py", limit=50)
+    assert any(r["claim_id"] == "rule:layer" for r in result["applicable_rules"])
