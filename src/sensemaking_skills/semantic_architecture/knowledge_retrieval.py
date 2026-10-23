@@ -71,9 +71,12 @@ def workspace_source_overlap(
     hit_claims: list[dict] = []
     hit_relations: list[dict] = []
     mechanical = {"claims": 0, "relations": 0}
+    reviewed_cited: set[str] = set()
     records = [("claim", c) for c in claims.values()] + [("relation", r) for r in relations]
     for record_type, record in records:
         cited = record.get("attributes", {}).get("source_sha256", {})
+        if isinstance(cited, dict) and not _is_mechanical(record):
+            reviewed_cited.update(cited)
         overlap = sorted(path for path in cited if path in changed_paths) if isinstance(cited, dict) else []
         if not overlap:
             continue
@@ -88,16 +91,22 @@ def workspace_source_overlap(
             "changed_evidence_sources": [p for p in overlap if p != record_source],
         })
         (hit_claims if record_type == "claim" else hit_relations).append(record)
+    # Changed paths no reviewed record cites (mechanical-only citation does not
+    # count): coverage gaps to inspect directly, not evidence of no effect.
+    uncited = sorted(changed_paths - reviewed_cited)
     metadata = {
         "changed_path_total": len(changed_paths),
         "affected_record_total": len(affected),
         "affected_records": affected[:limit],
+        "uncited_changed_path_total": len(uncited),
+        "uncited_changed_paths": uncited[:limit],
         "mechanical_overlap_counts": mechanical,
         "overlay_indexed": False,
         "workspace_impact_limit": (
             "Path-level overlap between cited source fingerprints and working-tree changes since the "
             "indexed revision. Re-inspect listed records; a change does not invalidate them, and "
-            "records without fingerprints or uncited consequences are NOT ASSESSED."
+            "records without fingerprints or uncited consequences are NOT ASSESSED. "
+            "uncited_changed_paths are coverage gaps, not evidence of no semantic effect."
         ),
     }
     return hit_claims, hit_relations, metadata

@@ -181,3 +181,34 @@ def test_cli_workspace_impact_from_dirty_checkout(indexed):
     assert "component:studio" in _by_id(payload)
     assert payload["workspace_context"]["uncommitted_changes_not_indexed"] is True
     assert payload["workspace_impact"]["overlay_indexed"] is False
+
+
+def test_uncited_changed_paths_expose_reviewed_coverage_gaps(indexed):
+    root, db, sha = indexed
+    (root / "src/studio.js").write_text("revised\n", encoding="utf-8")
+    # Cited only by mechanical structure records, never by reviewed knowledge.
+    (root / "src/unrelated.js").write_text("export const other = 2;\n", encoding="utf-8")
+    (root / "NOTES.md").write_text("untracked note\n", encoding="utf-8")
+    impact = _impact(db, root, sha)["workspace_impact"]
+    assert impact["uncited_changed_paths"] == ["NOTES.md", "src/unrelated.js"]
+    assert impact["uncited_changed_path_total"] == 2
+    assert impact["changed_path_total"] == 3
+
+
+def test_clean_workspace_has_no_uncited_changed_paths(indexed):
+    root, db, sha = indexed
+    impact = _impact(db, root, sha)["workspace_impact"]
+    assert impact["uncited_changed_paths"] == []
+    assert impact["uncited_changed_path_total"] == 0
+
+
+def test_uncited_changed_paths_are_bounded_and_disclose_truncation(indexed):
+    root, db, sha = indexed
+    for name in ("a.md", "b.md", "c.md"):
+        (root / name).write_text("new\n", encoding="utf-8")
+    payload = _impact(db, root, sha, limit=2)
+    impact = payload["workspace_impact"]
+    assert impact["affected_record_total"] == 0
+    assert impact["uncited_changed_paths"] == ["a.md", "b.md"]
+    assert impact["uncited_changed_path_total"] == 3
+    assert payload["truncated"] is True

@@ -115,7 +115,12 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
   (`overlay_indexed=false`); the same filter/fsmonitor protections apply,
   and an indexed SHA missing from local Git is NOT ASSESSED. A listed
   record needs re-inspection, not revocation; changed code that no record
-  cites is a coverage gap, not evidence of no semantic effect. Use
+  cites is a coverage gap, not evidence of no semantic effect.
+  `uncited_changed_paths` lists those changed paths that no **reviewed**
+  record cites (a mechanical path/containment record does not count), sorted
+  and bounded by `--limit`; `uncited_changed_path_total` is the pre-limit
+  count, and top-level `truncated` is true when either the affected-record or
+  the uncited-path list omits entries. Use
   `knowledge-audit` for byte-level drift once the checkout is clean.
 - For source truth, inspect affected current code, owner documentation,
   tests and architectural alternatives. To retain a reusable decision in

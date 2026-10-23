@@ -180,10 +180,13 @@
       "authority_kind": "document",
       "authority_ref": "docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
       "evidence_refs": [
-        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md"
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:tests/test_semantic_workspace_impact.py"
       ],
       "attributes": {
-        "scope": "One same-session observation; whether later agents apply it is NOT TESTED"
+        "scope": "One same-session observation; whether later agents apply it is NOT TESTED",
+        "operationalized_by": "workspace-impact uncited_changed_paths / uncited_changed_path_total list changed paths no reviewed record cites (2026-10-21 construction follow-up); a listed path is a coverage gap to inspect, not a semantic-effect judgment"
       }
     },
     {
