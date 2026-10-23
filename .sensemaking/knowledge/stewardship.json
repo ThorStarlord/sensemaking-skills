@@ -484,6 +484,26 @@
         "file:tests/test_semantic_knowledge_self_repo.py"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:store-layer",
+      "subject": "component:knowledge-store",
+      "predicate": "belongs_to",
+      "object": "layer:knowledge-plane",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:store-context",
+      "subject": "component:knowledge-store",
+      "predicate": "belongs_to",
+      "object": "bounded_context:knowledge-stewardship",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
     }
   ]
 }

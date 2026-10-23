@@ -182,6 +182,8 @@ def test_pilot_provenance_and_explicit_ownership_not_confused():
         path="src/sensemaking_skills/semantic_architecture/knowledge_store.py", limit=50)
     assert store["owning_components"] == ["component:knowledge-store"]
     assert not store["ownership_ambiguous"]
+    assert store["layers"] == ["layer:knowledge-plane"]
+    assert store["bounded_contexts"] == ["bounded_context:knowledge-stewardship"]
     assert any(r["claim_id"] == "rule:stable-core-no-lab-imports"
                for r in store["applicable_rules"])
     validator = rules_for(claims, relations, path="scripts/validate-brief.py", limit=50)
