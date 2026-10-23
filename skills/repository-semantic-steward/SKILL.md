@@ -103,17 +103,17 @@ sensemaking-skills semantic knowledge-query --db /tmp/semantic.sqlite --reposito
 Reviewed records may also describe architecture and ontology. Use them when a
 change could cross a layer, a bounded context or a confusable term.
 
-- **Constructs:** `layer`, `bounded_context`, `lifecycle_state`, `external_system`,
+- **Constructs:** `layer`, `bounded_context`, `lifecycle_state`,
   `architecture_rule` (with `rule_type`, `severity`, `applies_to`); relations
   `belongs_to`, `relates_to` (with `cardinality`), `transitions_to`, `flows_to`,
   `exposes`, `applies_to`, `synonym_of`, `distinct_from`. Only a document that
   declares `schema_version: 2` may use them.
-- **Before editing a path:** `knowledge-query --operation rules-for --subject <path>`.
-  An uncovered path is `NOT_ASSESSED`, never "no rules apply".
+- **Before an architecture-sensitive edit:** when the current reviewed index exists and its guidance could change the edit, use `knowledge-query --operation rules-for --subject <path>`.
+  Check explicit ownership, rule epistemic status, scope-match reason and the original decisive authority. `NOT_ASSESSED` or ambiguous ownership is not clearance.
 - **Terms:** `--operation term --subject <term>` shows distinct and synonymous neighbours.
 - **Map:** `--operation orientation-summary` gives a bounded, disclosed overview.
 - **Rule drift:** `semantic knowledge-check-rules --repo . --target-ref <HEAD>` reports
-  possible dependency violations. It is warning-only and reads committed bytes only.
+  possible dependency violations **and per-rule `rule_assessments`**. Unsupported kinds, parse failures, and non-Python scopes are NOT ASSESSED. It is warning-only and reads committed bytes only.
 
 Every item is a declared claim with evidence, not proof of architecture.
 Generated import edges never count as reviewed architecture.

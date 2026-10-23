@@ -1,7 +1,7 @@
 # Architecture and Ontology Competency Check v1
 
 **Status:** Phase 0 evidence for proposed ADR 0033 (`docs/adr/0033-architecture-and-ontology-vocabulary.md`)
-**Purpose:** decide, before any vocabulary change, which architecture, ontology and design questions the current knowledge vocabulary cannot express. Only questions marked **not expressible** justify additions.
+**Purpose:** decide, before any vocabulary change, which architecture, ontology and design questions the current knowledge vocabulary cannot express. Questions marked **not expressible** are the primary extension gate; additional convenient predicates need an explicit independent rationale.
 **Vocabulary tested:** `src/sensemaking_skills/semantic_architecture/knowledge.py` as of `main@86b132c` (18 claim kinds, 6 epistemic states, 8 authority kinds, 16 predicates).
 
 ## Verdict scale
@@ -42,13 +42,13 @@ Each question states the decision it serves (from the six purposes in the plan),
 
 ## Gate outcome
 
-The gate passes: eight questions are not expressible, and they group into four needs:
+The gate passes: eight questions are not expressible, and they group into five needs:
 
 1. **Path-scoped rules** (Q2, Q3, Q14): a rule kind with a `rule_type` and an `applies_to` scope.
 2. **Cardinality** (Q4): an `N:M`-capable relation with a required cardinality attribute, checked by ingestion.
 3. **Lifecycle** (Q7): a state kind and a transition predicate.
 4. **Layers and contexts** (Q8, Q9): membership predicates over new `layer` and `bounded_context` kinds.
-5. **Data flow** (Q10): a `flows_to` predicate, checked against `artifact-contracts.yaml` in Phase 2.
+5. **Data flow** (Q10): a `flows_to` predicate, checked against `artifact-contracts.yaml` in the authored-source verification adapter.
 
 Q5 and Q6 are awkward, but cheap to fix with two predicates (`distinct_from`, `synonym_of`); they are included.
 
@@ -59,3 +59,5 @@ Q10 (data flow) is included as need 5. Indexing `artifact-contracts.yaml` would 
 - It does not show that these additions will change any agent decision. That is tested in Phase 5 of the plan.
 - The verdicts are a single reviewer's judgment, checked against code, not a measured benchmark.
 - Q1 can already be approximated by listing component paths in prose; the verdict reflects that a query cannot do it.
+
+**Post-review clarification:** `external_system` was deferred because no competency failure justified it. `exposes` is retained to make the already-expressible Q11 component-to-contract relation explicit; this is a scoped convenience, not evidence of a new failure. See the corrected pilot evaluation for the actual answer ceiling.

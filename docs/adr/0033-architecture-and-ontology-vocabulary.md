@@ -20,18 +20,18 @@ The coding agent needs these before editing ("which rules apply to this file?", 
 ## Decision
 
 1. **Extend the existing graph; do not add a parallel schema.** The index, queries, drift audit, preflight check and PR review already operate on it.
-2. **Add the vocabulary only for the needs the competency check proves**:
-   - kinds: `layer`, `bounded_context`, `lifecycle_state`, `external_system`, `architecture_rule` (with a typed `rule_type`);
+2. **Add the minimum useful vocabulary, identifying both failed competencies and explicitly justified conveniences**:
+   - kinds: `layer`, `bounded_context`, `lifecycle_state`, `architecture_rule` (with a typed `rule_type`);
    - predicates: `belongs_to`, `relates_to` (with required `cardinality`), `transitions_to`, `flows_to`, `exposes`, `applies_to`, `synonym_of`, `distinct_from`.
 3. **Additive and versioned.** Documents using new types declare `schema_version: 2`. Version-1 documents load unchanged, and the v1 snapshot digest is a regression test. An older tool that meets v2 rejects it explicitly.
 4. **Generated entries stay mechanical.** Files, directories and Python import edges may be generated, but they count as architecture only after review.
-5. **Rules are warnings in v1.** A rule checker reports findings with rule IDs and evidence, marks uncovered or non-Python surfaces NOT ASSESSED, and never fails CI.
-6. **Coverage is explicit.** Each top-level component and each ADR in force is either modeled or listed NOT ASSESSED. No minimum entry count.
+5. **Rules are warnings in v1.** The checker reports findings and per-rule assessment status; unsupported rule types and unassessed source surfaces remain visible, and the checker never fails CI on violations.
+6. **Coverage is honestly bounded.** Explicit ownership is distinct from evidence citations. Unmodeled components and ADRs remain NOT ASSESSED; no repository-wide completeness claim or minimum entry count is established.
 
 ## Consequences
 
-- Knowledge gains a path-scoped query surface. The agent asks "what applies to this file?" before editing.
-- The vocabulary grows by a bounded number of kinds and predicates, each justified by a failed competency question.
+- Knowledge gains a path-scoped query surface. For materially architecture-sensitive edits, the agent asks "what applies to this file?" and checks decisive sources.
+- The vocabulary grows by a bounded set of kinds and predicates; `exposes` is an explicit convenience for the already-representable contract-exposure question, not a newly proven expressive failure.
 - Authoring cost rises for architecture entries. Coverage and drift reporting partly offset it.
 - Information about rules can go stale. Drift detection reports changed paths that no entry covers; it does not decide that a rule is wrong.
 
@@ -53,3 +53,7 @@ The coding agent needs these before editing ("which rules apply to this file?", 
 - The `rules-for` query is not used, or does not change an agent's edit, in the pilot evaluation.
 - The checker's warnings are routinely dismissed as noise.
 - A second repository needs a construct that none of the added kinds can express.
+
+## Remediation qualification note
+
+The initial pilot evaluation overstated the answer count. The corrected 15-question matrix records 10 answered, 3 partial, 1 not answered, 1 N/A. A nonempty query is not proof of a warranted answer. Rule checking is static and warning-only; source-grounded contracts are checked where their canonical artifact manifest is cited. No agent decision improvement or complete rule coverage has yet been demonstrated.

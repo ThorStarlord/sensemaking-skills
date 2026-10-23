@@ -1,65 +1,60 @@
-# Architecture and Ontology Pilot Evaluation v1
+# Architecture and Ontology Pilot Evaluation v2 — Corrected
 
-**Status:** Phase 5 evidence for ADR 0033 (Proposed)
-**Index:** committed HEAD `c3afebf`, 85 claims (23 architecture, 8 domain, and the existing records), built with `knowledge-build` from a clean checkout
-**Pilot records:** `.sensemaking/knowledge/architecture.json`, `.sensemaking/knowledge/domain.json`
+**Status:** evidence review for ADR 0033 (PROPOSED), based on the remediation branch of PR #565.
+**Original competency source:** `docs/semantic-architecture/architecture-ontology-competency-v1.md`.
+**Measurement ceiling:** current source/contract inspection and focused tests, NOT an independent coding-agent behavioral evaluation.
 
-## What this evaluation measures, and what it does not
+## Method
 
-It measures whether each Phase 0 competency question can now be answered **by a bounded query** on the committed index, and whether the answer is correct as far as the reviewed records go.
+The original Phase 0 questions (Q1–Q15) are frozen. A query retrieving a matching record is not automatically an answer. Each verdict considers: exact entity identity, cited evidence, semantic relationship, epistemic status, rule/graph coverage and decision relevance.
 
-It does **not** measure whether an agent makes a different decision. That is the reassessment trigger in ADR 0033, and it needs an independent session that is not in place. Nothing here is a benchmark or proof of benefit.
+- **Answered:** the modeled entity/relationship is supported by the original source for the question's scope.
+- **Partial:** some relevant information is modeled, but the decisive detail is hypothetical, incomplete or unsupported.
+- **Not answered:** the original question has no sufficiently evidenced answer.
+- **N/A:** the question is about a different repository's domain; it is not scored as success.
+- Mechanical validation, current-source inspection and actual agent decision improvement are separate claims.
 
-## Results per competency question
+## Frozen-question results
 
-Verdict key: **answered** (query returns the needed fact), **partial** (answered with a gap the query exposes), **not answered** (no reviewed fact exists to return), **n/a** (question concerns a repository this pilot does not model).
+| Q | Original question, abbreviated | Verdict | Evidence and remaining limits |
+|---|---|---|---|
+| Q1 | Owner of a validator file | **Answered** | Explicit `component:brief-validator` / `component:receipt-validator` `owned_paths`, not a citation-derived owner; source file must still be inspected when consequential. |
+| Q2 | Rules for a semantic-architecture edit | **Answered** | Path-scoped stable-core dependency rule is returned; full architectural compliance is not inferred. |
+| Q3 | Can stable code import source-only lab modules? | **Answered (normative)** | `release-v1.0.yaml` excludes four packages; rule checker reports static findings and its assessment limitations, not runtime proof. |
+| Q4 | Campaign-to-Responsibility cardinality | **Partial** | `rel:campaign-responsibility-cardinality` is a `1:N` **hypothesis**, not an established contract. |
+| Q5 | Book vs Book Workspace | **N/A** | This is an Auteur question. The current repository cannot establish that external distinction. |
+| Q6 | Fog type vs weakness type | **Answered** | Canonical vocabulary and weakness-type sources support their `distinct_from` relationship. |
+| Q7 | Receipt lifecycle transitions | **Answered** | `session-receipt-v1.md` specifies `in_progress` -> `final`; no broader transition state machine is asserted. |
+| Q8 | Layer of `repository_sensemaking_brief` | **Not answered** | `layer:skills` describes the producing Skill, **not** the artifact. No authoritative artifact-layer classification established. |
+| Q9 | Bounded context of Skill vs Campaign responsibility | **Partial** | `bounded_context:workflow-control` gives a useful context; the pilot does not fully disambiguate responsibility subtypes. |
+| Q10 | Data flow brief -> workflow planner | **Answered** | Authored `flows_to` carries `repository_sensemaking_brief`; the loader checks producer and consumer against `artifact-contracts.yaml`. |
+| Q11 | Component exposing `semantic_query_receipt` | **Answered** | `component:repository-semantic-steward-skill` `exposes` `contract:semantic-query-receipt`; the manifest names the producer. |
+| Q12 | Index revision decision and rejected alternative | **Answered** | Existing decision/alternative records preserve that source-grounded historical distinction. |
+| Q13 | Test protecting clean-commit index invariant | **Answered** | `inv:index-snapshot-vs-working-overlay` explicitly links to `verification:clean-index-tests`; test existence is not a claim that every run passed. |
+| Q14 | Placement convention for new validators | **Partial** | `rule:validators-placement` is now **hypothetical**. Existing filenames do not establish a universal mandatory placement policy. |
+| Q15 | Does `observed` establish current truth? | **Answered** | The model distinguishes epistemic status from verified authority/current source; observation is not a durable guarantee. |
 
-| # | Question | Query used | Verdict | Evidence |
-|---|---|---|---|---|
-| Q1 | Owner of `scripts/validate-receipt.py` | `rules-for` | answered | owner `component:receipt-validator` |
-| Q2 | Rules for an edit under `semantic_architecture/` | `rules-for` on `knowledge_store.py` | answered | `rule:stable-core-no-lab-imports` matched by path scope |
-| Q3 | May a stable module import lab code? | `rules-for` + `knowledge-check-rules` | answered | rule present; checker reports 0 findings on this repo |
-| Q4 | Campaign and Responsibility cardinality | `explain domain_concept:campaign` | answered, **hypothetical** | `relates_to`, `cardinality: 1:N`, status `hypothetical` |
-| Q5 | Book vs Book Workspace | `term` | n/a | this repository has no Book concept |
-| Q6 | Fog type vs weakness type | `term fog-type` | answered | `distinct_from` `domain_concept:weakness-type` and `epistemic-status` |
-| Q7 | Receipt lifecycle transitions | `explain lifecycle_state:receipt-in-progress` | answered | `transitions_to` `receipt-final` |
-| Q8 | Layer of the brief producer | `rules-for` on `skills/repo-sensemaker/SKILL.md` | answered after gap closure | `layer:skills` |
-| Q9 | Bounded context of "responsibility" | `explain domain_concept:responsibility` | answered after gap closure | `belongs_to` `bounded_context:workflow-control` |
-| Q10 | Data flow brief → planner | `explain component:repo-sensemaker-skill` | answered | `flows_to` `component:workflow-planner-skill`, carries the contract |
-| Q11 | Interface of a receipt | existing `contract` | answered (unchanged) | `contract:receipt-schema` |
-| Q12 | Decision and rejected alternative | existing `decision` / `alternative` | answered (unchanged) | ADR-derived records |
-| Q13 | Test protecting an invariant | existing `tested_by` | answered (unchanged) | `inv:index-snapshot-vs-working-overlay` |
-| Q14 | Placement convention for validators | `rules-for` on `scripts/validate-brief.py` | answered | `rule:validators-placement` |
-| Q15 | Meaning of `observed` | existing epistemic status | answered (unchanged) | model separates status from authority |
+**Corrected tally: 10 answered, 3 partial, 1 not answered, 1 N/A (15 total).** Q3's answer concerns the package-boundary contract, not the checker proving runtime compliance. Q4 and Q14 deliberately remain hypothetical.
 
-Summary after gap closure: 11 answered, 0 partial, 1 n/a (Q5). Q4 is answered only as a hypothesis. Q11–Q13 and Q15 are answered by records that existed before this pilot.
+## Finding-specific repairs
 
-## Gaps found and how they were closed
+1. **Citation/ownership conflation:** `rules-for` uses explicit v2 `owned_paths`, not `evidence_refs`, and discloses multiple declared owners.
+2. **Scope inconsistency:** repository-relative path globs remain in rule metadata; graph `applies_to` edges cover components, layers and bounded contexts through reviewed membership.
+3. **Incomplete rule checker:** all authored architecture rules receive `ASSESSED`, `PARTIALLY_ASSESSED`, or `NOT_ASSESSED` outcomes. Unsupported rule kinds, syntax errors and source-only package mismatch are disclosed. Static import analysis is not runtime dependency proof.
+4. **Contract-free flow:** a cited Sensemaking artifact manifest is parsed and compared with the authored producer, consumer and carried artifact ID. Other repositories are not required to adopt this manifest format.
+5. **Entity substitution and unjustified convention:** Q8 remains unanswered; Q11 uses the exact receipt artifact; validator placement is an explicit hypothesis.
+6. **Score inflation:** success is based on the original questions and their evidence, not merely nonempty query responses.
 
-The first run found four gaps. All four were closed in a follow-up commit, with evidence for each new record.
+## What the checker does not establish
 
-1. **No `tested_by` links for the validators.** Closed: `component:brief-validator` → `tests/run_validate_brief_tests.py`; `component:receipt-validator` → `tests/test_sensemaking_receipts.py`.
-2. **No layer for the Skills.** Closed: `layer:skills`, with `belongs_to` edges for the repo-sensemaker and workflow-planner components.
-3. **No context link for domain concepts.** Closed: `domain_concept:responsibility` `belongs_to` `bounded_context:workflow-control`, citing `skills/using-sensemaking/SKILL.md`.
-4. **The Campaign-to-Responsibility cardinality is unverified.** Decision: keep it, labelled `hypothetical` with `cardinality: 1:N`. No source states it, so it is not a fact. Removing it would hide a question the vocabulary needs to be able to ask. Verify it before any decision depends on it.
+The checker evaluates statically resolvable Python imports and literal import calls for dependency-direction rules. It cannot fully prove dynamic/runtime dependencies, all architectural invariants, or non-Python placement/naming conventions. `rule_assessments` and `not_assessed` show the difference between zero findings and sufficient scope. It remains warning-only.
 
-After closure the index holds 88 claims and 44 relations at the commit that carries these records.
+## Compatibility and currency
 
-## Warning-only checker on this repository
+Schema v2 is an additive **authored-document** format; the SQLite store schema remains v1. Historical v1 documents continue to load, and prior exact-revision digests remain pinned to their original commits. This revised evaluation is not itself a fresh index build: build the final committed HEAD and record observed counts in CI or the release receipt. Do not copy historical pilot counts into a claim about the newer revision.
 
-`knowledge-check-rules --repo . --target-ref c3afebf` reports **0 findings** and **0 not-assessed** items. This matches the existing `validate-contract-authority.py` result that stable modules import no lab code. The checker's ability to detect a violation is covered by the fixture tests (`tests/test_architecture_rule_checker.py`), not by this repository, which has no violation to find.
+## Practical qualification
 
-## Cross-check of the index against the source
+See `architecture-ontology-normal-use-qualification-v1.md` for concrete source-inspected editing cases and bounded test evidence. Independent agent behavior and incremental value are **NOT ESTABLISHED**; neither clean CI nor complete record retrieval can establish them.
 
-- Version-2 documents index with `schema_version: 2`; the 21 pre-existing records are unchanged.
-- The regression check on `main@86b132c` gave the same index digest with the old and new code (`00417827…`), so existing indexes are unaffected.
-- `knowledge-proposal-check` accepts both pilot files, and rejects the same files if relabelled version 1 (covered by `test_architecture_vocabulary_v2.py`).
-
-## Decisions made without waiting for the owner
-
-- Gaps 1–3 were closed because each could be backed by a tracked file. Gap 4 was kept, labelled, because removing it would hide a real question.
-- ADR 0033 stays **Proposed**. Acceptance is an owner decision, and this evaluation is not a substitute for it.
-
-## Reassessment (ADR 0033 trigger)
-
-The trigger is not yet testable. It requires an independent session that uses `rules-for` before an edit and records whether the result changed what it did. Until that exists, the claim ceiling is: the queries answer the competency questions on this repository's reviewed records; decision benefit is NOT ESTABLISHED.
+**ADR 0033 remains PROPOSED.** Its acceptance and integration are separate from implementation and mechanical verification.
