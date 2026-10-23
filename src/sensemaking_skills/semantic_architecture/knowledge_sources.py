@@ -257,7 +257,9 @@ def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClai
             _check_authored_evidence(root, tracked, claim.evidence_refs)
             for owned_path in claim.attributes.get("owned_paths", []):
                 _source(root, tracked, owned_path)
-            references = (*claim.evidence_refs, f"file:{p}")
+            references = (*claim.evidence_refs,
+                          *(f"file:{owned}" for owned in claim.attributes.get("owned_paths", [])),
+                          f"file:{p}")
             if claim.authority_kind in {"policy", "code", "test"}:
                 _source(root, tracked, claim.authority_ref)
                 references = (*references, f"file:{claim.authority_ref}")

@@ -258,3 +258,13 @@ def test_flows_to_carries_must_be_string():
          "evidence_refs": ["file:x"]}, source_ref="file:x", schema_version=2)
     with pytest.raises(ValueError, match="flows_to must reference a contract"):
         validate_snapshot(_snapshot([producer, consumer], (bad,)))
+
+def test_owned_path_fingerprint_tracks_implementation_even_if_only_metadata_cites_it(tmp_path):
+    owner = _claim(id="component:code-owner", attributes={"owned_paths": ["src/engine.py"]})
+    _write_doc(tmp_path, "arch.json", 2, [owner])
+    file = tmp_path / "src/engine.py"
+    file.parent.mkdir()
+    file.write_text("pass\n", encoding="utf-8")
+    tracked = {".sensemaking/knowledge/arch.json", "docs/architecture.md", "src/engine.py"}
+    claims, _relations = knowledge_sources._authored_records(tmp_path, tracked)
+    assert "src/engine.py" in claims[0].attributes["source_sha256"]
