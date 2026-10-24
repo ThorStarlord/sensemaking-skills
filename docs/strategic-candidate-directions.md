@@ -713,6 +713,17 @@ When reviewing this file:
 8. Never promote a candidate merely because it is attractive, old, frequently mentioned, or easy to implement.
 9. After implementation, reconcile this file so completed work is not rediscovered as future work.
 
+### Choosing a capability form (for prospective Skills)
+
+Before proposing a new Skill directory, identify the **distinct reusable responsibility**, the decision its result could change, and its plausible consumer. Inspect existing Skill responsibilities and registered artifact contracts for overlap. Then compare the smallest suitable form:
+
+- **Ordinary agent work:** a bounded task needs no repeatable specialized instructions.
+- **Existing Skill reference, mode, or Domain Pack:** the responsibility already exists; only focused methods, knowledge or terminology are missing.
+- **Deterministic tool or validator:** the new need is a mechanically checkable operation, not independent semantic judgment.
+- **New specialized Skill:** a genuinely distinct recurring responsibility has a recognizable trigger, bounded inputs/output or result consumer, and non-obvious reusable guidance that does not fit an existing owner.
+
+Do not force every idea into an old Skill, or create a new one merely because it has a memorable name. Record speculative value and missing evidence as hypotheses. This comparison classifies possibilities; it neither ranks them nor grants implementation authority.
+
 Useful promotion test:
 
 ```text
