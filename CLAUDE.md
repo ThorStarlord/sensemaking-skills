@@ -103,3 +103,7 @@ are part of that API. These rules exist because each was violated and caused a r
   characters in `print()`/stdout crash the process. Use ASCII (`->` not `→`).
 - **Compare like-for-like when checking for regressions.** Run the same test set the same
   way on both the baseline and your change before attributing a failure to your work.
+- **Core Skill text needs a reason to load first.** Before adding instructions to a Skill's
+  core `SKILL.md`, name the decision they change, why they must be visible when the Skill
+  loads, and which existing guidance does not already cover them. Otherwise put the detail in
+  an existing reference and leave a one-line trigger in the core.
