@@ -85,6 +85,12 @@ RESPONSIBILITY / EXECUTE / VERIFY / RECONCILE
 
 This prevents breadth search from becoming recurring ceremony.
 
+### Exploration-only requests
+
+An explicitly **possibility-only** request (for example, "what future Skills could exist?") does not by itself warrant a full Level-3 `ANALYZE` or `REOPEN_ANALYSIS`. The active agent may reuse the system-map and breadth questions here without claiming to have completed the full funnel. If the user wants possibilities rather than selection, stop with a useful, source-scoped opportunity landscape; do not name a selected Strategic Frontier, construction path, next responsibility, or implementation commitment.
+
+If a later decision about what to construct is warranted, apply the existing Level-3 gate and proportionate candidate synthesis, depth and comparison. Prior exploratory ideas remain hypotheses, not automatically admitted frontier candidates; do not reopen an otherwise settled strategic analysis solely because ideas were generated.
+
 ## 3. System map
 
 Before converging on a Strategic Frontier, identify the major product/control
@@ -152,12 +158,27 @@ opportunity discovery
 
 Do not limit breadth to known bugs/issues.
 
+### Grounded and counterfactual divergence
+
+Use these as **optional complementary lenses**, not two mandatory passes:
+
+- **Grounded divergence:** explore materially different capabilities or simplifications under currently accepted product intent, protected constraints and available evidence. A proposed future capability need not already exist to be a legitimate hypothesis; source evidence should ground its present problem, leverage, or intended value.
+- **Counterfactual divergence:** deliberately challenge an inherited architectural assumption or imagine a different product/system boundary. State the altered premise, its plausibility and what would have to change. If it conflicts with an accepted commitment or non-goal, label the required owner/Level-4 decision; imagining the option does not authorize implementing it.
+
+Distinguish **governing commitments** (accepted owner intent, non-goals, safety and authority boundaries), **current engineering decisions** (revisable through appropriate authority), **observed implementation facts**, and **uncertainties/hypotheses**. Retrieve decision-relevant sources selectively and retain their scope and currentness. The present architecture is evidence of what exists, not automatically a permanent design constraint. An imagined outcome is not observed behavior or proof of feasibility.
+
+Explore novel user value, combinations and simplifications alongside known deficiencies. Preserve meaningful alternatives without manufacturing a gap for every subsystem.
+
 ### Breadth output
 
 Produce a compact **opportunity landscape** of material observations. It may
 contain more items than the final Strategic Frontier.
 
 Do not assign numeric opportunity scores.
+
+### From possibilities to construction: conditional order
+
+A useful explanatory order is **ground current reality -> explore possibilities -> examine overlap and capability form where relevant -> challenge material assumptions -> compare strategic paths if selection is warranted -> construct, verify and reconcile only within authority**. This is not a required six-stage workflow, runtime state machine or mandate to construct. An exploration-only request ends with the landscape; sections 5-8 govern later Level-3 convergence when applicable.
 
 ## 5. Frontier candidate synthesis
 
