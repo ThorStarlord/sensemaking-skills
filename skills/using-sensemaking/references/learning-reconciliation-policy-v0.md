@@ -403,3 +403,19 @@ Avoid:
 - creating a universal LearningEngine / ReconciliationEngine;
 - persisting every reasoning step;
 - confusing learning with model-weight training.
+
+## Strategic reassessment: return path (moved verbatim from using-sensemaking section 4)
+
+
+When a prior strategic analysis exists and later repository/evidence state may matter,
+use Strategic Continuity and Learning / Reconciliation as a bounded return path:
+
+```text
+prior strategic analysis
++ later result / observation / reassessment trigger
+-> use strategy compare/drift only for mechanical projection when useful
+-> ask whether the new evidence is decision-changing
+-> apply Learning / Reconciliation when consequential
+-> persist strategic_reconciliation only when another context/actor needs it
+-> reopen Strategic Repository Sensemaking only when warranted
+```

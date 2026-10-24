@@ -685,3 +685,26 @@ General Agency concepts
 ```
 
 The active coding agent remains the semantic controller.
+
+## Inherited-responsibility backstop: worked example
+
+(Moved verbatim from `using-sensemaking/SKILL.md` section 3. The rule and its distinctions remain in the core.)
+
+Example:
+
+```text
+inherited responsibility:
+qualify / release / verify the candidate
+
+decision-critical prerequisite:
+the candidate represents the intended sufficiently complete product state
+
+repository evidence:
+buildable/reachable = established
+product/content completion = materially unresolved
+
+result:
+RESPONSIBILITY_PRECONDITION_NOT_ESTABLISHED
+-> return upstream through Learning / Reconciliation
+-> do not optimize the downstream qualification responsibility yet
+```

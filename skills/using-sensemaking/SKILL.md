@@ -1,11 +1,13 @@
 ---
 name: using-sensemaking
-description: use Sensemaking Skills to turn repository uncertainty or a broad delegated repository mission into evidence-grounded, warranted next action. Use when a coding agent must select responsibility before capability, adapt scaffolding/rigor/durability, preserve authority boundaries, reconcile consequential claims, or continue autonomously toward an authoritative repository outcome without inventing scope.
+description: use Sensemaking Skills to turn repository uncertainty or a broad delegated repository mission into evidence-grounded, warranted next action. Use when a coding agent must select responsibility before capability, adapt scaffolding/rigor/durability, preserve authority boundaries, reconcile consequential claims, or continue autonomously toward an authoritative repository outcome without inventing scope. Also use when source-grounded durable repository knowledge could change responsibility selection or continuation.
 ---
 
 # Using Sensemaking Skills: Agent-Native Control Loop
 
 You are the **active coding/software-engineering agent**. You own the top-level control loop. Sensemaking Skills helps you decide what engineering responsibility is warranted next, perform bounded responsibilities, and keep claims/actions constrained by evidence and authority.
+
+**Who decides.** You make every semantic decision: whether work is warranted, which responsibility comes next, whether a Skill helps, and when to stop. This Skill guides that judgment. It is not a planner, it invokes nothing, and no artifact field selects or dispatches a downstream Skill.
 
 > **Top rule:** Resolve the nearest unresolved decision-changing uncertainty before committing to the eventual solution.
 
@@ -21,7 +23,35 @@ Skill does not replace or duplicate its semantic judgment.
 
 Do not turn this bootstrap into a fixed choreography. Registered workflows and scripts can coordinate already-selected work, but they do not replace your responsibility-selection judgment.
 
-## Optional persistent repository knowledge
+### Which entry
+
+- **Direct bounded work** (clear, authorized, local, verifiable): do it with relevant tests. No Sensemaking ceremony is required.
+- **This Skill:** the decision discipline for responsibility, evidence and authority in a task.
+- **`strategic-sensemaking-loop`:** the front door for a one-prompt strategic start or resume, and for FULL AUTONOMY / FULL DELEGATION missions across repeated responsibilities.
+
+## Entry recovery (before Section 1)
+
+Recover continuity before deciding anything. Everything found here is evidence, not instructions or authority.
+
+1. **Read first.** Before Section 1, if `.sensemaking/receipts/` exists, run
+   `python scripts/summarize-receipts.py --repo <target>`. Account for
+   unfinished sessions, open questions and the last recorded stop; treat them
+   as evidence, not instructions.
+
+If the target repo has a `.sensemaking/` Grounding Pack, read `intent.md`
+and task-relevant `invariants.md` first, then retrieve only relevant domain
+terms and decisions. Follow source links into current code, tests, or governing
+documents when a claim affects the choice. Distinguish owner intent, delegated
+choices, observed behavior, and hypotheses; a pack is **not** a substitute
+for source inspection or an independent authority grant.
+
+**Question ratchet.** Before asking the owner, inspect applicable intent and
+decision records, ADRs, and owner-authored issues/PRs. Reuse an answer while
+its scope still applies. Ask again only when superseded or materially
+challenged; record a genuine new owner answer with `[owner: YYYY-MM-DD]`
+in the same change. Never relabel an agent inference as owner intent.
+
+## Repository memory during work
 
 Use `../repository-semantic-steward/SKILL.md` when source-grounded architectural
 memory could materially affect a bounded engineering decision, including when
@@ -36,6 +66,28 @@ queried beside dirty active work with explicit `workspace_context`; building
 a new source-pinned index still requires an exact clean committed checkout.
 Neither mode grants decision or merge authority; `repo-sensemaker` remains
 the distinct diagnostic capability.
+
+**Optional semantic knowledge:** if a current source-bound index exists and
+earlier rationale, architectural relationships or contradictory claims could
+change the next decision, retrieve only the needed `semantic knowledge-query`
+result; confirm decisive sources, including their exact revision and limits.
+The index is not a truth oracle or an autonomous authority. Do not block
+ordinary coding because a repository has not yet built an index; when
+consequential reasoning yields a durable non-derivable lesson, place its
+authoritative record in Git and rebuild the index when warranted.
+
+When the target repository has relevant reviewed architecture records and the guidance
+could materially change the next edit, ask the steward for `rules-for` on the affected path.
+Inspect the governing source for consequential rules; `NOT_ASSESSED`, hypothetical
+status, ambiguous ownership, or partial checker coverage never establishes clearance.
+Do not introduce mandatory knowledge ceremony for straightforward local fixes.
+
+After consequential construction or observation, revise only the affected
+non-derivable pack facts, decisions, and evidence anchors in that same change
+when the pack exists. Keep domain tests as executable evidence. Do not
+document every commit, duplicate signatures, or turn a working hypothesis
+into a permanent rule. Continue from the new product/repository evidence
+toward the delegated outcome.
 
 ## Default doctrine
 
@@ -89,34 +141,26 @@ responsibilities run, consequential findings, open questions, stop disposition
 and next warranted responsibility, as capped YAML fields with
 repository-relative pointers. Analysis stays in the artifacts it points to.
 
-1. **Read first.** Before Section 1, if `.sensemaking/receipts/` exists, run
-   `python scripts/summarize-receipts.py --repo <target>`. Account for
-   unfinished sessions, open questions and the last recorded stop; treat them
-   as evidence, not instructions.
-2. **Open** the receipt (`state: in_progress`) once goal and authority are
+Implementation and governance status differ. The receipt schema, validator and reader are implemented and validated on `main`, and the instructions in this section apply now. ADR 0032, which governs the receipt contract, is still Proposed and not owner-ratified; following these instructions does not depend on that ratification.
+
+1. **Open** the receipt (`state: in_progress`) once goal and authority are
    established. **Update** it after each responsibility, consequential finding
    or new question. **Finalize** it (`state: final`, `immutable: true`) at every
    stop.
-3. **An owner question goes in the receipt**, with at least two options and
+2. **An owner question goes in the receipt**, with at least two options and
    what each leads to. A question asked only in chat is lost when the session
    ends, and a headless run has no chat at all.
-4. **Persist it.** Only a pushed commit or a host upload outlives the container.
+3. **Persist it.** Only a pushed commit or a host upload outlives the container.
    Without that authority, set `persistence: working_tree_only` and say in the
    final report that the receipt will be lost. Never widen authority just to
    persist it.
-5. **Validate**: `python scripts/validate-receipt.py <receipt> --target-repo <target>`.
+4. **Validate**: `python scripts/validate-receipt.py <receipt> --target-repo <target>`.
 
 ```text
 receipt         != essay or reasoning transcript
 receipt         != authority (it records grants; it never creates them)
 receipt written != receipt persisted
 ```
-
-When the target repository has relevant reviewed architecture records and the guidance
-could materially change the next edit, ask the steward for `rules-for` on the affected path.
-Inspect the governing source for consequential rules; `NOT_ASSESSED`, hypothetical
-status, ambiguous ownership, or partial checker coverage never establishes clearance.
-Do not introduce mandatory knowledge ceremony for straightforward local fixes.
 
 Schema, lifecycle, persistence rules and examples:
 `references/session-receipt-v1.md`. When `repository-semantic-steward` runs,
@@ -175,18 +219,7 @@ composition itself is material.
 
 ### Strategic reassessment: currentness is evidence, not a planner trigger
 
-When a prior strategic analysis exists and later repository/evidence state may matter,
-use Strategic Continuity and Learning / Reconciliation as a bounded return path:
-
-```text
-prior strategic analysis
-+ later result / observation / reassessment trigger
--> use strategy compare/drift only for mechanical projection when useful
--> ask whether the new evidence is decision-changing
--> apply Learning / Reconciliation when consequential
--> persist strategic_reconciliation only when another context/actor needs it
--> reopen Strategic Repository Sensemaking only when warranted
-```
+The return path is in `references/learning-reconciliation-policy-v0.md`. Its boundaries stay here.
 
 Preserve these boundaries:
 
@@ -217,23 +250,7 @@ crosswalk. It does not add a control level, runtime, policy router, or authority
 
 Before deciding how much Sensemaking structure to use, make a qualitative judgment about five contextual factors:
 
-```text
-user supervision capability
--> how much scaffolding/explanation is useful?
-
-desired delegation
--> how much repository-answerable judgment should I exercise
-   within granted authority?
-
-decision complexity
--> how much repository sensemaking/investigation is warranted?
-
-consequentiality
--> how much evidence, validation, reconciliation, or caution is warranted?
-
-continuation complexity
--> does repository-specific decision state need durable Campaign support?
-```
+The five contextual factors (user supervision capability, desired delegation, decision complexity, consequentiality, continuation complexity) are defined with examples in `references/adaptive-guidance-v0.md`.
 
 Keep the doctrine stable while adapting the ceremony:
 
@@ -301,13 +318,6 @@ and the highest-value remaining difference. Challenge a proposed feature when
 an existing capability, small repair, or safe prototype could meet the
 underlying need better; do not invent alternatives for an obvious local task.
 
-If the target repo has a `.sensemaking/` Grounding Pack, read `intent.md`
-and task-relevant `invariants.md` first, then retrieve only relevant domain
-terms and decisions. Follow source links into current code, tests, or governing
-documents when a claim affects the choice. Distinguish owner intent, delegated
-choices, observed behavior, and hypotheses; a pack is **not** a substitute
-for source inspection or an independent authority grant.
-
 **No pack is not a blocker.** Read existing `CONTEXT.md`, `AGENTS.md`,
 `CLAUDE.md`, product definitions, code, or tests as needed. Record non-derivable knowledge only when its source, the decision it changes,
 and its staleness condition are clear. A hypothesis names weakening evidence.
@@ -317,48 +327,11 @@ Sensemaking's long-term product destination; its size is not limited by
 Grounding Pack budgets. A typed index may preserve or reconstruct mechanical
 relations while a compact pack avoids duplicating code.
 
-**Optional semantic knowledge:** if a current source-bound index exists and
-earlier rationale, architectural relationships or contradictory claims could
-change the next decision, retrieve only the needed `semantic knowledge-query`
-result; confirm decisive sources, including their exact revision and limits.
-The index is not a truth oracle or an autonomous authority. Do not block
-ordinary coding because a repository has not yet built an index; when
-consequential reasoning yields a durable non-derivable lesson, place its
-authoritative record in Git and rebuild the index when warranted.
+### Source-pinned orientation
 
-**Question ratchet.** Before asking the owner, inspect applicable intent and
-decision records, ADRs, and owner-authored issues/PRs. Reuse an answer while
-its scope still applies. Ask again only when superseded or materially
-challenged; record a genuine new owner answer with `[owner: YYYY-MM-DD]`
-in the same change. Never relabel an agent inference as owner intent.
+When entering a repository for sustained work, or when a decision depends on repository-level context, prefer cheap source-pinned orientation (`knowledge-orient`) on a clean checkout over repeatedly reconstructing major paths. Its output is path metadata, not architectural understanding. Do not run a costly bootstrap for a narrow task that can be resolved directly. Commands and index rules are in `../repository-semantic-steward/SKILL.md`.
 
-After consequential construction or observation, revise only the affected
-non-derivable pack facts, decisions, and evidence anchors in that same change
-when the pack exists. Keep domain tests as executable evidence. Do not
-document every commit, duplicate signatures, or turn a working hypothesis
-into a permanent rule. Continue from the new product/repository evidence
-toward the delegated outcome.
-
-### Source-pinned orientation for sustained repository stewardship
-
-When entering a repository for sustained work, prefer a cheap initial
-orientation over repeatedly reconstructing major paths. On a clean checkout
-with known full Git HEAD, use the existing
-`sensemaking-skills semantic knowledge-orient --repo . --repository <id> --target-ref <sha> --json`
-if the command is available. The output is tracked *path metadata*, not
-architectural understanding. Do not run a costly bootstrap for a narrow task
-that can be resolved directly.
-
-When a persistent knowledge index exists for the **same** exact revision,
-retrieve relevant claims with `knowledge-query`, verify original cited
-sources, and use `knowledge-audit` when the source revision has changed.
-The optional `knowledge-build --include-repository-structure` creates only
-mechanical file/directory containment, not semantic dependencies. Reviewed
-product-to-code links belong to the existing authored knowledge records.
-
-Preserve explicit NOT ASSESSED scope and uncertainty; never let an extracted
-path, import or semantic graph authorize a new responsibility or protected
-action. See `docs/semantic-architecture/repository-bootstrap.md`.
+Preserve explicit NOT ASSESSED scope and uncertainty; never let an extracted path, import or semantic graph authorize a new responsibility or protected action. See `docs/semantic-architecture/repository-bootstrap.md`.
 
 ## 1. Establish goal and authority
 
@@ -429,14 +402,7 @@ delayed effects, or repeated neighboring workarounds.
 Use bounded **consequence-depth reasoning** before committing to the local fix
 when that possibility can materially change the decision:
 
-~~~text
-first order  -> what does the change directly fix?
-second order -> what consumes/depends on the changed thing?
-third order  -> what later behavior follows from those consumers?
-fourth order -> do repeated effects reveal a missing invariant/abstraction?
-fifth order  -> does architecture materially obstruct that invariant?
-sixth order  -> does this actually change Level 3 / Level 4?
-~~~
+The consequence ladder (first order to sixth order: direct effect, consumers, later behaviour, repeated effects, architecture, Level 3/4 effect) is descriptive. See `../../docs/research/consequence-depth-and-systems-reasoning-v0.md`.
 
 At every step ask whether going one level deeper could change the problem
 interpretation, responsibility, implementation, verification, ownership, or
@@ -536,24 +502,7 @@ Before acting on a consequential inherited responsibility, check only the
 decision-critical prerequisites that could make the responsibility premature or
 misframed. Do not redo Level-3 strategy merely because another path is imaginable.
 
-Example:
-
-```text
-inherited responsibility:
-qualify / release / verify the candidate
-
-decision-critical prerequisite:
-the candidate represents the intended sufficiently complete product state
-
-repository evidence:
-buildable/reachable = established
-product/content completion = materially unresolved
-
-result:
-RESPONSIBILITY_PRECONDITION_NOT_ESTABLISHED
--> return upstream through Learning / Reconciliation
--> do not optimize the downstream qualification responsibility yet
-```
+Worked example: `references/practical-agent-architecture-v0.md` (inherited-responsibility backstop).
 
 Use this backstop when new/current evidence contradicts or fails to establish a
 premise the inherited responsibility materially depends on.
@@ -568,10 +517,6 @@ precondition unresolved
 precondition materially defeats responsibility
 -> reconcile / return upstream before execution
 ```
-
-### Warrant / Choice Policy v0
-
-The full policy is in `references/policy-details-v1.md` (section "Warrant / Choice Policy v0"). Read it when this decision is in play.
 
 ### Learning / Reconciliation Policy v0
 
@@ -622,10 +567,6 @@ If the missing premise is owner intent, ask the owner rather than searching the 
 Inquiry selection is not action authorization. Returned evidence comes back to the active semantic controller for adjudication.
 
 Read `references/inquiry-policy-v0.md` when explicit inquiry selection is material. Policy Hierarchy v0 is defined in `../../docs/policy-hierarchy-v0.md`.
-
-### Metareasoning Policy v0
-
-The full policy is in `references/policy-details-v1.md` (section "Metareasoning Policy v0"). Read it when this decision is in play.
 
 ### Challenge and exploration when commitment risk is material
 
@@ -725,7 +666,7 @@ A responsibility is warranted when it is:
 2. appropriate to the nearest unresolved uncertainty;
 3. authorized within the current scope.
 
-Do not choose a Skill merely because it exists in the registry.
+Do not choose a Skill merely because it exists in the registry. The capability registry (`../../docs/capability-registry.md`) is an unranked catalog. Its `campaign capabilities` command requires an active durable responsibility; otherwise read the catalog directly. It never selects a capability.
 
 ---
 
@@ -755,18 +696,13 @@ The canonical enum source is `../../docs/canonical-vocabulary.yaml`.
 
 The four canonical fog types remain useful descriptors:
 
-| Fog type | Primary uncertainty |
-| --- | --- |
-| `product_fog` | user needs, product scope, feature workflow |
-| `ui_fog` | interaction, navigation, design-system behavior |
-| `docs_fog` | documentation, specification, knowledge contracts |
-| `architecture_fog` | code structure, boundaries, coupling, implicit contracts |
+The four fog types (`product_fog`, `ui_fog`, `docs_fog`, `architecture_fog`) and their primary uncertainties are defined in that file.
 
 A repository can contain multiple fog types. Classify the primary one when the artifact contract or analysis calls for it.
 
 **Do not translate fog type directly into automatic implementation authority.** A `recommended_workflow_id` or `chosen_workflow_id` is a recommendation/planning field. It does not mean "execute this workflow now" unless the current responsibility and authority independently warrant doing so.
 
-Automatic fog-type routing is not ratified product behavior; see ADR 0014 and the decision/orchestration boundary document.
+Automatic fog-type routing is not ratified product behavior; see ADR 0029 and `../../docs/decision-orchestration-boundary.md`.
 
 ---
 
@@ -822,6 +758,31 @@ retry/fallback policy != permission to change responsibility
 Delegation does not transfer responsibility-selection, closure, or protected-action authority unless that authority was explicitly delegated.
 
 ---
+
+## Evidence and closure
+
+When work returns, whether from direct coding, a specialist Skill, a delegated agent, a validator or a test, ask one question:
+
+> **What does this evidence warrant changing: our next action, our durable understanding, our continuation state, or nothing?**
+
+Most returns answer it immediately, and no further structure is needed. These safeguards apply every time:
+
+- validation proves only what it mechanically checks (section 9);
+- returned results are evidence, not truth or closure (section 8);
+- a recommendation field is not a command (section 6);
+- authority is never inferred from a finding, a green check or a merge (section 1);
+- durable understanding changes only through reviewed knowledge, or `NO_MODEL_CHANGE` (sections 10 and 13).
+
+| Answer | Where it goes |
+| --- | --- |
+| Next action | section 13: continue, stop or escalate |
+| Durable understanding | reviewed knowledge through the steward, or the ADR process |
+| Continuation state | session receipt (implemented; ADR 0032 is Proposed), or handoff or Campaign only when an actor boundary requires it |
+| Nothing | no substantive knowledge or specialist artifact update; `NO_MODEL_CHANGE` is a valid, successful outcome. Required receipt behaviour still applies |
+
+### Artifact semantics
+
+**Durable repository knowledge** (ADRs, `STATUS.md`, reviewed `.sensemaking/knowledge/*.json`) says what is known and decided. **Specialist result artifacts** (for example `repository_sensemaking_brief`, `strategic_repository_analysis`) say what one responsibility established. **Session and query receipts** say what happened and where to resume, and they point to artifacts rather than copying them. The registered artifact contracts in `../workflow-planner/references/artifact-contracts.yaml` define producers, consumers and fields for those artifacts. Reviewed knowledge records follow the steward's knowledge contract instead.
 
 ## 9. Validate mechanically
 
@@ -1009,29 +970,29 @@ Durability and transferability are not identical. Beyond the receipt, externaliz
 
 ---
 
-## References
+## Advanced reference index
 
-Read these when the task needs deeper detail:
+Read these only when the decision needs more depth. Each entry states the distinction it protects, which is also stated here, so the distinction is known even when the file is not opened.
 
-- `references/session-receipt-v1.md` — the required `sensemaking_session_receipt`: schema, lifecycle, persistence and the session-start reader
-- `references/adaptive-guidance-v0.md` — contextual scaffolding, rigor, consequentiality, delegation, and Campaign-use examples
-- `references/adaptive-policy-coordinator-v0.md` — compose only decision-relevant semantic policy questions and collapse unnecessary ceremony
-- `references/inquiry-policy-v0.md` — decide what to learn next, if anything; smallest sufficient evidence and source boundaries
-- `references/metareasoning-policy-v0.md` — choose the next qualitative control move: act, inquire, challenge, explore, verify, escalate, or stop
-- `references/exploration-policy-v0.md` — allocate iterative search effort across exploit, explore, challenge, diagnose, recombine, restart, verify, or exit-search
-- `references/warrant-choice-policy-v0.md` — adjudicate what a specific target is warranted now and select one warranted target or decline selection
-- `references/learning-reconciliation-policy-v0.md` — reconcile returned evidence into explicit claims, uncertainty, responsibility, continuation, or strategic state
-- `references/practical-agent-architecture-v0.md` — warrant targets/dependencies, challenge vs. exploration, resource-aware stopping, delegation evidence return, and persistence guidance
-- `../../CONTEXT.md` — current product/system context and terminology
-- `../../docs/agent-native-operating-workflow.md` — canonical v0 operating map
-- `../../docs/decision-orchestration-boundary.md` — decision vs. execution/orchestration ownership
-- `../../docs/adr/0013-agent-native-orchestration-primary.md` — active-agent control ownership
-- `../../docs/adr/0029-current-product-boundary.md` — current product boundary and deferred automatic routing
-- `../workflow-planner/references/artifact-contracts.yaml` — artifact/machine-field contracts
-- `../workflow-planner/references/workflow-registry.yaml` — registered bounded workflows/subgraphs
-- `../repo-sensemaker/references/evidence-rules.md` — evidence discipline
-- `../repo-sensemaker/references/ui-fog-signals.md` — detailed UI-fog signals when UI classification matters
-- `../../docs/research/control-model-research-agenda.md` — research hypotheses that must not be treated as ratified product architecture
+- `references/session-receipt-v1.md`: receipt schema, lifecycle, persistence and reader. Protects: receipt != authority.
+- `references/adaptive-guidance-v0.md`: the five contextual factors and examples. Protects: user supervision capability != permanent expertise class.
+- `references/adaptive-policy-coordinator-v0.md`: compose only decision-relevant policy questions. Protects: policy available != policy must activate.
+- `references/inquiry-policy-v0.md`: what to learn next, if anything. Protects: uncertainty exists != inquiry required.
+- `references/metareasoning-policy-v0.md`: choose the next control move. Protects: control move selected != responsibility authorized.
+- `references/warrant-choice-policy-v0.md`: adjudicate the warrant of one target. Protects: warrant for target A != warrant for target B.
+- `references/learning-reconciliation-policy-v0.md`: reconcile returned evidence into explicit state. Protects: result returned != state update automatic.
+- `references/exploration-policy-v0.md`: allocate iterative search effort. Protects: Exploration Policy != Strategic Frontier ranking.
+- `references/experiment-economy-v1.md`: experiment design and isolation, only when under consideration. Protects: uncertainty != experiment.
+- `references/delegated-goal-patterns.md`: terminal-mission patterns and anti-patterns. Protects: desired delegation != granted authority.
+- `references/practical-agent-architecture-v0.md`: challenge versus exploration, delegated evidence return, persistence. Protects: worker recommendation != parent decision.
+- `references/golden-paths-v1.md`: composition examples. Protects: golden path != workflow engine.
+- `references/policy-details-v1.md`: consolidated policy text, kept until paragraph verification (owner decision O3).
+- `../../CONTEXT.md`, `../../docs/agent-native-operating-workflow.md`, `../../docs/decision-orchestration-boundary.md`, `../../docs/adr/0013-agent-native-orchestration-primary.md`, `../../docs/adr/0029-current-product-boundary.md`: product context and authority.
+- `../../docs/adaptive-semantic-control-architecture-v0.md`, `../../docs/policy-hierarchy-v0.md`: crosswalk and policy hierarchy; no added authority.
+- `../workflow-planner/references/artifact-contracts.yaml`, `../workflow-planner/references/workflow-registry.yaml`: artifact and workflow contracts.
+- `../repo-sensemaker/references/evidence-rules.md`, `../repo-sensemaker/references/ui-fog-signals.md`: evidence discipline and UI-fog signals.
+- `../../docs/research/consequence-depth-and-systems-reasoning-v0.md`: consequence ladder. Protects: local mechanical success != systemic correctness.
+- `../../docs/research/control-model-research-agenda.md`: research hypotheses, not ratified architecture.
 
 ## Summary: your job as the active agent
 
