@@ -139,7 +139,9 @@ Every session that runs this loop leaves one typed
 flight recorder, not an essay. It holds goal, granted and withheld authority,
 responsibilities run, consequential findings, open questions, stop disposition
 and next warranted responsibility, as capped YAML fields with
-repository-relative pointers. Analysis stays in the artifacts it points to. This is a proposed contract (ADR 0032); its validator and reader are implemented and validated on `main`.
+repository-relative pointers. Analysis stays in the artifacts it points to.
+
+Implementation and governance status differ. The receipt schema, validator and reader are implemented and validated on `main`, and the instructions in this section apply now. ADR 0032, which governs the receipt contract, is still Proposed and not owner-ratified; following these instructions does not depend on that ratification.
 
 1. **Open** the receipt (`state: in_progress`) once goal and authority are
    established. **Update** it after each responsibility, consequential finding
@@ -327,7 +329,7 @@ relations while a compact pack avoids duplicating code.
 
 ### Source-pinned orientation
 
-On a clean checkout, prefer cheap, source-pinned orientation (`knowledge-orient`) over repeatedly reconstructing major paths. Its output is path metadata, not architectural understanding. Do not run a costly bootstrap for a narrow task that can be resolved directly. Commands and index rules are in `../repository-semantic-steward/SKILL.md`.
+When entering a repository for sustained work, or when a decision depends on repository-level context, prefer cheap source-pinned orientation (`knowledge-orient`) on a clean checkout over repeatedly reconstructing major paths. Its output is path metadata, not architectural understanding. Do not run a costly bootstrap for a narrow task that can be resolved directly. Commands and index rules are in `../repository-semantic-steward/SKILL.md`.
 
 Preserve explicit NOT ASSESSED scope and uncertainty; never let an extracted path, import or semantic graph authorize a new responsibility or protected action. See `docs/semantic-architecture/repository-bootstrap.md`.
 
@@ -775,12 +777,12 @@ Most returns answer it immediately, and no further structure is needed. These sa
 | --- | --- |
 | Next action | section 13: continue, stop or escalate |
 | Durable understanding | reviewed knowledge through the steward, or the ADR process |
-| Continuation state | session receipt (Proposed contract, ADR 0032), or handoff or Campaign only when an actor boundary requires it |
-| Nothing | no write; `NO_MODEL_CHANGE` is a valid, successful outcome |
+| Continuation state | session receipt (implemented; ADR 0032 is Proposed), or handoff or Campaign only when an actor boundary requires it |
+| Nothing | no substantive knowledge or specialist artifact update; `NO_MODEL_CHANGE` is a valid, successful outcome. Required receipt behaviour still applies |
 
 ### Artifact semantics
 
-**Durable repository knowledge** (ADRs, `STATUS.md`, reviewed `.sensemaking/knowledge/*.json`) says what is known and decided. **Specialist result artifacts** (for example `repository_sensemaking_brief`, `strategic_repository_analysis`) say what one responsibility established. **Session and query receipts** say what happened and where to resume, and they point to artifacts rather than copying them. Producers, consumers and fields are defined only in `../workflow-planner/references/artifact-contracts.yaml`.
+**Durable repository knowledge** (ADRs, `STATUS.md`, reviewed `.sensemaking/knowledge/*.json`) says what is known and decided. **Specialist result artifacts** (for example `repository_sensemaking_brief`, `strategic_repository_analysis`) say what one responsibility established. **Session and query receipts** say what happened and where to resume, and they point to artifacts rather than copying them. The registered artifact contracts in `../workflow-planner/references/artifact-contracts.yaml` define producers, consumers and fields for those artifacts. Reviewed knowledge records follow the steward's knowledge contract instead.
 
 ## 9. Validate mechanically
 
