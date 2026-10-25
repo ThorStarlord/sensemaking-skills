@@ -70,7 +70,7 @@
     {
       "id": "component:semantic-knowledge-plane",
       "kind": "component",
-      "statement": "Knowledge model, source reader, store, v1/v2 retrieval options and architecture queries.",
+      "statement": "Knowledge model, source reader, v1/v2 retrieval options and architecture queries; the store and retrieval modules are owned by component:knowledge-store.",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge.py",
       "evidence_refs": [
@@ -84,8 +84,6 @@
       "attributes": {
         "owned_paths": [
           "src/sensemaking_skills/semantic_architecture/knowledge.py",
-          "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
-          "src/sensemaking_skills/semantic_architecture/knowledge_store.py",
           "src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
           "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
         ]
