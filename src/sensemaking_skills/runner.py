@@ -99,6 +99,11 @@ class SkillsOrchestrator:
             raise ValueError(
                 "yolo_execution is retired historical vocabulary and is no longer executable"
             )
+        if kwargs.get("context_artifacts"):
+            raise ValueError(
+                "context_artifacts is not supported; pass from_session to continue "
+                "from a prior session"
+            )
 
         project_root = str(self.config.project_root)
         cmd = [
@@ -125,6 +130,11 @@ class SkillsOrchestrator:
             cmd.append("--use-fixtures")
         if kwargs.get("resume"):
             cmd.append("--resume")
+
+        # The runtime takes the user's problem as a trailing positional argument.
+        problem_statement = kwargs.get("problem_statement")
+        if problem_statement:
+            cmd.extend(["--", problem_statement])
 
         # Run the workflow
         result = subprocess.run(cmd, cwd=project_root)

@@ -92,9 +92,12 @@ result = orchestrator.run_workflow(
 ```
 
 Pass `execution_mode` explicitly when calling `SkillsOrchestrator.run_workflow`.
-Omitting it raises `ValueError`; there is no implicit `yolo_execution` (or
-other) default. Explicit `yolo_execution` remains compatibility-only and is not
-ratified product behavior.
+Omitting it raises `ValueError`; there is no implicit default. Explicit
+`yolo_execution` is retired historical vocabulary and also raises `ValueError`;
+historical records remain readable. A `problem_statement` keyword is forwarded to
+the runtime as the user's problem. `context_artifacts` is not supported and raises
+`ValueError`; pass `from_session` to continue from a prior session. The method
+returns the integer subprocess exit code.
 
 ---
 
@@ -212,21 +215,21 @@ class SkillsOrchestrator:
     def run_workflow(
         self,
         workflow_id: str,
-        execution_mode: str,  # required; no implicit mode
-        problem_statement: str = "",
-        context_artifacts: Dict[str, str] = None,
-    ) -> Dict[str, Any]:
+        execution_mode: Optional[str] = None,  # required; None raises ValueError
+        from_session: Optional[str] = None,
+        **kwargs,  # problem_statement, plan_out, log_dir, gate_decision, executor, use_fixtures, resume
+    ) -> int:
         """
         Run a workflow.
         
         Args:
             workflow_id: ID of workflow to run (e.g., "fast-path-workflow")
             execution_mode: Explicit execution mode. Callers should pass one of
-                plan_only, guided_execution, autonomous_execution, or yolo_execution.
-                The argument is required. yolo_execution is accepted only when
-                selected explicitly for compatibility.
-            problem_statement: User's problem description (optional)
-            context_artifacts: Prior artifacts for chained workflows (optional)
+                plan_only, prompt_chain, guided_execution, or autonomous_execution.
+                The argument is required. yolo_execution is retired and raises ValueError.
+            from_session: Path to a prior artifact session directory (optional)
+            problem_statement: User's problem description, forwarded to the runtime (optional)
+            context_artifacts: Not supported; raises ValueError. Use from_session.
         
         Returns:
             Integer subprocess exit code (0 for success, non-zero for failure).
