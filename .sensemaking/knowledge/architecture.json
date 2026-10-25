@@ -664,7 +664,7 @@
     {
       "id": "component:generic-artifact-validator",
       "kind": "component",
-      "statement": "Generic Level-2 contract validator checks declared artifact sections, main machine fields and recommendation fields; for repository_sensemaking_brief it does not interpret Section 15's optional nested extended_analysis metadata as required top-level fields.",
+      "statement": "Generic Level-2 contract validator checks declared artifact sections, main machine fields and recommendation fields; it preserves advisory findings in the existing severity-tagged JSON error envelope without making them blocking and keeps optional Section 15 metadata out of top-level brief field checks.",
       "authority_kind": "code",
       "authority_ref": "scripts/validate-artifact.py",
       "evidence_refs": [
@@ -697,6 +697,26 @@
         "applies_to": [
           "scripts/validate-artifact.py",
           "scripts/validate-brief.py"
+        ]
+      }
+    },
+    {
+      "id": "rule:generic-validator-nonblocking-advisories",
+      "kind": "architecture_rule",
+      "statement": "The generic artifact validator's advisory findings (missing recommended fields and large-artifact section/field/excerpt caveats) are non-blocking. In --json output they must remain visible with severity warning in the existing errors array; valid and exit status are determined by blocking errors, not advisory entries. Sequential in-process validation must not carry warnings from another artifact.",
+      "authority_kind": "code",
+      "authority_ref": "scripts/validate-artifact.py",
+      "evidence_refs": [
+        "file:scripts/validate-artifact.py",
+        "file:scripts/validate-brief.py",
+        "file:docs/task-2-2-validate-and-report-helper.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "rule_type": "convention",
+        "severity": "warning",
+        "applies_to": [
+          "scripts/validate-artifact.py"
         ]
       }
     }
@@ -1109,6 +1129,17 @@
       "object": "component:brief-validator",
       "evidence_refs": [
         "file:docs/adr/0024-extended-analysis-field-classification.md",
+        "file:scripts/validate-brief.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:generic-validator-advisories-apply",
+      "subject": "rule:generic-validator-nonblocking-advisories",
+      "predicate": "applies_to",
+      "object": "component:generic-artifact-validator",
+      "evidence_refs": [
+        "file:scripts/validate-artifact.py",
         "file:scripts/validate-brief.py"
       ],
       "epistemic_status": "declared"
