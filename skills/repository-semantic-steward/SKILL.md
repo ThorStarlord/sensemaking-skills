@@ -118,6 +118,13 @@ change could cross a layer, a bounded context or a confusable term.
 Every item is a declared claim with evidence, not proof of architecture.
 Generated import edges never count as reviewed architecture.
 
+**Architecture exploration support (ADR 0031 / Wave 4):** For a consequential
+architecture choice with genuine alternatives, read the optional
+[architecture exploration](references/architecture-exploration.md) guidance under
+RECALL. It composes existing source-pinned queries for divergence, qualitative
+comparison and adversarial challenge without introducing a new Steward mode,
+semantic planner, authority, schema or mandatory index bootstrap.
+
 ## Record every run in a query receipt
 
 Each Steward invocation writes or updates one `semantic_query_receipt` at
