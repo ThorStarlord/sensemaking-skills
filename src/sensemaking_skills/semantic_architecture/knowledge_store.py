@@ -16,8 +16,9 @@ from urllib.parse import quote
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
 from .knowledge_architecture import context_for, is_repository_file_path, orientation_summary, rules_for, term
 from .knowledge_retrieval import (
-    bounded_kind_coverage, classify_indexed_changes, context_workspace_overlap,
-    search_matches, validate_retrieval_options, workspace_source_overlap,
+    assess_current_authored_record, bounded_kind_coverage, classify_indexed_changes,
+    context_workspace_overlap, search_matches, validate_retrieval_options,
+    workspace_source_overlap,
 )
 
 _SCHEMA = """
@@ -539,6 +540,17 @@ def audit_knowledge_sources(
             ("relation", r) for r in _read_relations(conn, key)
         ]
         digests: dict[str, str | None] = {}
+        # A pack is loaded at most once, and only after the original source-byte
+        # audit has identified its container as changed/missing. No overlay
+        # content is ever indexed or taken as reviewed semantic authority.
+        current_packs: dict[str, object] = {}
+        authored_details: list[dict] = []
+        authored_counts = {
+            "authored_fields_changed": 0,
+            "authored_fields_unchanged": 0,
+            "record_absent_from_original_pack": 0,
+            "not_assessed": 0,
+        }
         results = []
         totals = {"unchanged_source_bytes": 0, "source_changed": 0,
                   "source_missing_or_unsafe": 0, "not_assessed": 0}
@@ -566,21 +578,78 @@ def audit_knowledge_sources(
                     "source_changed" if changed else "unchanged_source_bytes"
                 )
             totals[status] += 1
-            if status != "unchanged_source_bytes":
-                results.append({
-                    "record_type": kind, "id": item["id"], "source_status": status,
-                    "changed_sources": changed, "missing_or_unsafe_sources": missing,
+            result_row = {
+                "record_type": kind, "id": item["id"], "source_status": status,
+                "changed_sources": changed, "missing_or_unsafe_sources": missing,
+            }
+            # A changed shared authored JSON pack affects every contained source
+            # fingerprint. Disambiguate its individual record fields without
+            # weakening the conservative source-status result.
+            source_ref = item.get("source_ref", "")
+            pack = source_ref[5:] if (
+                isinstance(source_ref, str)
+                and source_ref.startswith("file:.sensemaking/knowledge/")
+                and source_ref.endswith(".json")
+            ) else None
+            if pack is not None and (pack in changed or pack in missing):
+                if pack not in current_packs:
+                    try:
+                        data = _source(root, tracked, pack).read_bytes()
+                        if len(data) > 2_000_000:
+                            raise ValueError("oversized current authored pack")
+                        current_packs[pack] = json.loads(data.decode("utf-8"))
+                    except (ValueError, OSError, UnicodeError):
+                        current_packs[pack] = None
+                detail = assess_current_authored_record(
+                    item, record_type=kind, current_pack=current_packs[pack],
+                )
+                detail.update({
+                    "record_type": kind, "id": item["id"], "authored_pack": pack,
+                    "other_changed_sources": [p for p in changed if p != pack],
+                    "other_missing_or_unsafe_sources": [p for p in missing if p != pack],
                 })
+                if detail["record_at_original_path"] is False:
+                    authored_counts["record_absent_from_original_pack"] += 1
+                elif detail["assessment_status"] != "ASSESSED":
+                    authored_counts["not_assessed"] += 1
+                elif detail["authored_fields_changed"]:
+                    authored_counts["authored_fields_changed"] += 1
+                else:
+                    authored_counts["authored_fields_unchanged"] += 1
+                authored_details.append(detail)
+                result_row["authored_record_assessment"] = {
+                    "assessment_status": detail["assessment_status"],
+                    "authored_fields_changed": detail["authored_fields_changed"],
+                    "record_at_original_path": detail["record_at_original_path"],
+                    **({"unassessed_reason": detail["unassessed_reason"]}
+                       if "unassessed_reason" in detail else {}),
+                }
+            if status != "unchanged_source_bytes":
+                results.append(result_row)
         return {
             "repository": repository, "indexed_ref": indexed_ref,
             "current_ref": current_ref, "record_count": len(records),
             "source_status_counts": totals,
             "affected_records": results[:limit],
+            "authored_record_audit": {
+                "assessed_container_record_total": len(authored_details),
+                "counts": authored_counts,
+                "records": authored_details[:limit],
+                "truncated": len(authored_details) > limit,
+                "note": (
+                    "Comparison of normalized authored fields at the record's "
+                    "previous tracked pack path only. Unchanged authored fields "
+                    "do NOT establish current semantic validity. A missing record "
+                    "may have moved; changed or missing supporting sources still "
+                    "require inspection."
+                ),
+            },
             "truncated": len(results) > limit,
             "explicit_limits": [
                 "This compares cited SOURCE BYTES, not semantic validity or Git ancestry.",
                 "Unchanged files may contain stale interpretations; unindexed sources are NOT ASSESSED.",
                 "Changed source evidence requires inspection, not automatic invalidation.",
+                "Record-aware pack assessment is additive; it does not erase conservative byte drift.",
             ],
             "semantic_truth_established": False, "action_authorized": False,
         }
