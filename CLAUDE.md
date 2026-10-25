@@ -78,8 +78,10 @@ are part of that API. These rules exist because each was violated and caused a r
   field from an artifact, confirm the field name is declared in
   `skills/workflow-planner/references/artifact-contracts.yaml` for that artifact.
   Producers and consumers must agree on field names — do not read fields from memory.
-  `tests/test_field_contract_agreement.py` enforces this for routing field reads; if you
-  add a field-read alias to the runtime, declare it in a contract too.
+  The test that enforced this for routing field reads, `tests/test_field_contract_agreement.py`,
+  was retired with the auto-routing consumer it guarded (see
+  `tests/quarantine-retired-runner/README.md`). If you add a field-read alias to the runtime,
+  declare it in a contract too.
 - **Artifact *paths* are part of the contract, too — not just field names.** One component
   owns path resolution: the runtime, via `OrchestrationRunner._resolve_artifact_path`
   (which session-scopes paths). Any component that *writes* an artifact (e.g. a skill
