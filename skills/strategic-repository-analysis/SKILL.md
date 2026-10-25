@@ -88,6 +88,13 @@ missing product capability. Inspect underlying artifacts, recognize stale
 revisions, and keep independent divergent exploration possible. Do not
 build a compulsory ontology merely to start this Skill.
 
+For architecture-heavy alternatives, the optional Repository Semantic Steward
+[architecture exploration](../repository-semantic-steward/references/architecture-exploration.md)
+reference connects existing source-grounded queries to divergence, qualitative
+comparison and adversarial challenge. Architectural **options** are not
+automatically Strategic Frontier candidates or construction paths; the
+Level-3 funnel and active agent retain that semantic responsibility.
+
 ### 1A. Test goal fitness before treating the stated objective as the frontier
 
 A stated objective remains authoritative owner input, but it may be a terminal

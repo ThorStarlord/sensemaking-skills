@@ -311,6 +311,13 @@ agents across architectural tasks.
    to authored records or a clearly attributed hypothesis register.
 4. Preserve small-context mode when no consequential semantic query is needed.
 
+**Construction continuation (PATH-1/T9, 2026-10-25):** An optional,
+agent-native architecture-exploration reference connects existing exact-revision
+semantic queries to divergent option generation, qualitative convergence,
+adversarial challenge and ordinary RECONCILE. It is an integration of Wave 4
+guidance, not a new runtime or proof that architectural decisions improved.
+The Wave 4 real-decision exit criterion remains unproven.
+
 **Verification:** Inspect actual agent output against source; test false-positive
 impact links and counterevidence; ensure no automatic architectural authority,
 owner-intent inference or unsupported release/merge recommendation.

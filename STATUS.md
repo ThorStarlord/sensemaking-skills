@@ -444,6 +444,15 @@ No current Thesis Tension is promoted into active review.
 
 **2026-10-25 construction continuation (T8):** source inspection distinguishes the actual `scripts/workflow-runtime.py` execution/materialization component from the agent-native `workflow-planner` Skill and the deliberately inert legacy `WorkflowPlannerSkill`. The reviewed knowledge graph now declares the runtime's owned source path, the plan contract it materializes within its limited compatibility role, and the pre-existing executor-path test source. No runtime routing, user/agent selection authority or legacy behavior changed; no unit/evidence tests were executed.
 
+**2026-10-25 construction continuation (T9, Wave 4):** Add optional
+source-grounded architectural exploration guidance to the existing Repository
+Semantic Steward and link it from Using Sensemaking and Strategic Repository
+Analysis. Keep exploration-only landscapes separate from Level-3 selection,
+compare options without numeric scores or a new planner, challenge decisive
+assumptions, and reconcile only consequential authorized knowledge. Existing
+query contracts, authority boundaries and CI stay unchanged; no unit or
+synthetic evidence tests are executed in this construction step.
+
 ## Current next step
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**

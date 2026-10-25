@@ -76,6 +76,13 @@ ordinary coding because a repository has not yet built an index; when
 consequential reasoning yields a durable non-derivable lesson, place its
 authoritative record in Git and rebuild the index when warranted.
 
+When an architecture decision genuinely needs options and counterarguments,
+use the Steward's optional
+[architecture exploration](../repository-semantic-steward/references/architecture-exploration.md)
+reference. This supports, but does not automatically activate, the current
+Exploration Policy or Strategic Exploration Funnel and does not delegate
+responsibility selection away from the active agent.
+
 When the target repository has relevant reviewed architecture records and the guidance
 could materially change the next edit, ask the steward for `rules-for` on the affected path.
 Inspect the governing source for consequential rules; `NOT_ASSESSED`, hypothetical
