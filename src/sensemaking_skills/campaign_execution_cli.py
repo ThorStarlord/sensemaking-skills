@@ -8,6 +8,10 @@ from typing import Any, Callable
 
 import click
 
+from .campaign_knowledge_context import (
+    CampaignKnowledgeError,
+    build_reviewed_knowledge,
+)
 from .campaign_semantics import ContractError
 from .campaigns import CampaignWorkspaceError
 from .campaigns.execution import CampaignExecutionService
@@ -432,8 +436,50 @@ def register_campaign_execution_commands(
     @campaign.command(name="working-context")
     @click.option("--workspace", required=True, type=click.Path(path_type=Path))
     @click.option("--json", "output_json", is_flag=True)
-    def campaign_working_context(workspace: Path, output_json: bool) -> None:
+    @click.option(
+        "--target-alias", default=None,
+        help="Opt-in: Campaign target to bind reviewed knowledge to; required when several are bound.",
+    )
+    @click.option(
+        "--knowledge-db", default=None, type=click.Path(exists=True, dir_okay=False, path_type=Path),
+        help="Opt-in: local semantic index. The four --knowledge options are all-or-nothing.",
+    )
+    @click.option("--knowledge-repository", default=None,
+                  help="Opt-in: repository identity the index was built under.")
+    @click.option("--knowledge-ref", default=None,
+                  help="Opt-in: exact 40-character indexed Git SHA.")
+    @click.option(
+        "--knowledge-repo", default=None, type=click.Path(exists=True, file_okay=False, path_type=Path),
+        help="Opt-in: active Git checkout for identity and worktree overlay.",
+    )
+    @click.option(
+        "--knowledge-path", "knowledge_paths", multiple=True,
+        help="Opt-in: one repository-relative source file to explain.",
+    )
+    def campaign_working_context(
+        workspace: Path, output_json: bool, target_alias: str | None,
+        knowledge_db: Path | None, knowledge_repository: str | None,
+        knowledge_ref: str | None, knowledge_repo: Path | None,
+        knowledge_paths: tuple[str, ...],
+    ) -> None:
         """Project compact high-delegation context without selecting a next action."""
+        knowledge_options = {
+            "--knowledge-db": knowledge_db,
+            "--knowledge-repository": knowledge_repository,
+            "--knowledge-ref": knowledge_ref,
+            "--knowledge-repo": knowledge_repo,
+            "--knowledge-path": knowledge_paths or None,
+        }
+        supplied = [name for name, value in knowledge_options.items() if value is not None]
+        if supplied and len(supplied) < len(knowledge_options):
+            missing = [name for name, value in knowledge_options.items() if value is None]
+            raise click.UsageError(
+                "reviewed knowledge options are all-or-nothing; missing " + ", ".join(missing)
+            )
+        if not supplied and target_alias is not None:
+            raise click.UsageError("--target-alias applies only with the reviewed knowledge options")
+        if supplied and len(knowledge_paths) != 1:
+            raise click.UsageError("working-context accepts exactly one --knowledge-path")
         try:
             context = CampaignExecutionService(workspace).working_context()
         except (CampaignWorkspaceError, ContractError) as exc:
@@ -446,6 +492,19 @@ def register_campaign_execution_commands(
             "code": "CAMPAIGN_WORKING_CONTEXT",
             **context,
         }
+        if supplied:
+            try:
+                payload["reviewed_knowledge"] = build_reviewed_knowledge(
+                    targets=context["targets"], target_alias=target_alias,
+                    knowledge_db=knowledge_db, knowledge_repository=knowledge_repository,
+                    knowledge_ref=knowledge_ref, knowledge_repo=knowledge_repo,
+                    knowledge_path=knowledge_paths[0],
+                )
+            except CampaignKnowledgeError as exc:
+                # An explicit request that cannot be bound or queried fails visibly;
+                # it never falls back to the unaugmented Campaign view.
+                emit_error(exc, output_json=output_json)
+                return
         if output_json:
             json_echo(payload)
         else:
