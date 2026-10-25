@@ -503,9 +503,12 @@ references before comparing authored fields, preventing false changed-field
 reports solely from serialization shape. This is a bounded construction fix;
 no unit or synthetic evidence tests were run.
 
+**2026-10-25 PATH-1/T15 — generic brief-validator Section 15 contract repair:** Source review found that the generic artifact validator compares dotted `extended_analysis.*` recommended entries against the main machine-readable YAML block. This can report spurious missing-field warnings even for a valid separate Section 15, or turn an entirely optional block into a failure under `--strict-recommended`, contrary to ADR 0024. For `repository_sensemaking_brief` only, generic checking now skips those dotted metadata entries; the specialized `validate-brief.py` continues to interpret supplied Section 15 values as non-blocking warnings. Required fields and other recommended fields remain unchanged. Reviewed source-linked validator ownership and the optionality rule are added to the semantic knowledge pack. The change was source-reviewed; no unit or synthetic evidence tests were authored, executed, or claimed, and the new committed head still needs its own qualification for release-stage assertions.
+
 ## Current next step
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**
+T15 aligns the generic repository-brief validation path with ADR 0024's optional, non-blocking Section 15 contract and retains source-linked validator knowledge. Continue with the next independently warranted real engineering responsibility; do not treat this code review as test execution or S5/S6 evidence.
 T9 (PR #580) integrated optional architecture exploration with persistent
 knowledge. T10 clarifies the source-coverage limits of the existing context
 envelope so the agent can detect an incomplete answer before comparing options;
