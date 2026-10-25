@@ -22,6 +22,7 @@ from .target_snapshot import CampaignService
 
 
 EXECUTION_HANDOFFS_FILENAME = "execution-handoffs.jsonl"
+WORKING_CONTEXT_DIAGNOSTIC_LIMIT = 20
 EXECUTION_RESULTS_FILENAME = "execution-results.jsonl"
 EXECUTION_COMPANION_VERSION = "1"
 _SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
@@ -550,6 +551,11 @@ class CampaignExecutionService:
             "evidence_refs": list(snapshot.evidence_refs),
             "stop_conditions": stop_conditions,
             "execution_companion_valid": inspected.valid,
+            "execution_companion_diagnostic_count": len(inspected.diagnostics),
+            "execution_companion_diagnostics": [
+                {"code": item.code, "record_id": item.record_id, "line_number": item.line_number}
+                for item in inspected.diagnostics[:WORKING_CONTEXT_DIAGNOSTIC_LIMIT]
+            ],
             "latest_execution_handoff": (
                 inspected.handoffs[-1] if inspected.handoffs else None
             ),
