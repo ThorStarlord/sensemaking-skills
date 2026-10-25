@@ -1,0 +1,52 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-25-path1-t4-context-for
+state: final
+created_at: "2026-10-25T07:29:00Z"
+updated_at: "2026-10-25T07:37:41Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "PATH-1/T4: whether one repository file's reviewed ownership, rules, contracts, decisions, history and tests can be returned as a bounded, source-linked context view, and which gaps must be disclosed."
+cli_identity:
+  sensemaking_source_ref: 37cf85c2b365318a0b24cd6261fb42e6d1c10a45
+  invocation_prefix: "sensemaking-skills (editable install of this checkout)"
+  version_output: "sensemaking-skills, version 1.0.0rc5.dev0"
+index:
+  indexed_ref: 37cf85c2b365318a0b24cd6261fb42e6d1c10a45
+  current_head: 37cf85c2b365318a0b24cd6261fb42e6d1c10a45
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - {id: QY-1, operation: build, terms: [], subject: null, expect_kinds: [], target_ref: 37cf85c2b365318a0b24cd6261fb42e6d1c10a45, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: false}
+  - {id: QY-2, operation: context-for, terms: [], subject: "src/sensemaking_skills/semantic_architecture/knowledge_store.py", expect_kinds: [], target_ref: 37cf85c2b365318a0b24cd6261fb42e6d1c10a45, result: {hit_count: 5, claim_ids: [bounded_context:knowledge-stewardship, component:knowledge-store, layer:knowledge-plane, rule:console-output-ascii, rule:stable-core-no-lab-imports], truncated: false, not_assessed_kinds: [contracts, decisions, history, verification_refs]}, outcome: PARTIAL, decision_relevant: true}
+  - {id: QY-3, operation: context-for, terms: [], subject: "src/sensemaking_skills/skills/workflow_planner.py", expect_kinds: [], target_ref: 37cf85c2b365318a0b24cd6261fb42e6d1c10a45, result: {hit_count: 8, claim_ids: [component:legacy-workflow-planner, decision:legacy-planner-fails-closed, observation:legacy-brief-producer-bypasses-runtime-paths, observation:legacy-plan-producer-overwrites-tracked-plan, rule:console-output-ascii, rule:runtime-owns-artifact-paths, verification:executor-path-handoff-tests, verification:legacy-planner-fail-closed-tests], truncated: false, not_assessed_kinds: [contracts]}, outcome: PARTIAL, decision_relevant: false}
+  - {id: QY-4, operation: context-for, terms: [], subject: "src/sensemaking_skills/semantic_cli.py", expect_kinds: [], target_ref: 37cf85c2b365318a0b24cd6261fb42e6d1c10a45, result: {hit_count: 1, claim_ids: [rule:console-output-ascii], truncated: false, not_assessed_kinds: [ownership, contracts, decisions, history, verification_refs]}, outcome: PARTIAL, decision_relevant: false}
+  - {id: QY-5, operation: context-for, terms: [], subject: "src/sensemaking_skills/skills/workflow_planner.py", expect_kinds: [], target_ref: 37cf85c2b365318a0b24cd6261fb42e6d1c10a45, result: {hit_count: 1, claim_ids: [component:legacy-workflow-planner], truncated: true, not_assessed_kinds: [contracts]}, outcome: PARTIAL, decision_relevant: false}
+source_checks:
+  - claim_id: component:knowledge-store
+    sources: [.sensemaking/knowledge/stewardship.json, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    result: SUPPORTED
+  - claim_id: component:legacy-workflow-planner
+    sources: [.sensemaking/knowledge/architecture.json, src/sensemaking_skills/skills/workflow_planner.py]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-3
+    needed_for: "A declared contract that the legacy workflow planner exposes, so the context view can name the plan contract it writes."
+    kind: NOT_ASSESSED
+    resolved_by: null
+    follow_up: DEFERRED
+    proposal_ref: null
+  - id: M-2
+    query_ref: QY-4
+    needed_for: "An owning component for src/sensemaking_skills/semantic_cli.py, so ownership-scoped context is available to a CLI change."
+    kind: NOT_ASSESSED
+    resolved_by: null
+    follow_up: DEFERRED
+    proposal_ref: null
+reconcile:
+  - {claim_id: null, disposition: NO_MODEL_CHANGE, applied: false, proposal_ref: null, proposal_check: NOT_RUN}
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true

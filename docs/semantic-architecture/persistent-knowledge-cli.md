@@ -265,6 +265,50 @@ The SQLite index retains multiple repository/SHA snapshots. Indexing identical i
 - Contradictions reports explicit conflicts only; missing conflicts means NOT ASSESSED.
 - Query results carry currentness/revision, source/evidence provenance, limits and no-authority flags.
 
+## Task-specific architectural context (`context-for`)
+
+`knowledge-query --operation context-for` returns the reviewed architecture that
+bears on one repository file, as one bounded, read-only result:
+
+```bash
+sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository" \
+  --target-ref "$sha" --operation context-for \
+  --subject src/sensemaking_skills/skills/workflow_planner.py --repo . --limit 25 --json
+```
+
+- `context.ownership`: owners declared by `owned_paths`, with `coverage_status`
+  (`COVERED` or `NOT_ASSESSED`), `ambiguous` when several owners declare the
+  path, and the layers and bounded contexts they belong to.
+- `context.architecture_rules`: rules matched by a path scope or a declared
+  graph link, computed exactly as `rules-for` computes them.
+- `context.contracts`: contracts linked by `exposes`, or by `flows_to` through
+  its `carries` attribute.
+- `context.decisions`: decisions linked by `decided_by`.
+- `context.history`: incidents, lessons and observations linked by `references`,
+  `contradicts` or `learned_from`. One second hop follows `derived_from` from a
+  linked decision to a recorded incident, lesson or observation, and is labelled as
+  such.
+- `context.verification_refs`: verification records linked by `tested_by` from
+  an owner or a matched rule.
+- `context.knowledge_gaps`: `NOT_ASSESSED`, `AMBIGUOUS`, `EPISTEMIC_CAVEAT` and
+  `TRUNCATED` entries. An empty category is reported as not assessed, never as
+  the absence of a contract, decision, lesson or test.
+- `context.omitted`: how many records each category held beyond `--limit`.
+
+Each contract, decision, history, verification and rule item keeps its
+`epistemic_status`, `authority_kind`, `authority_ref`, evidence references and
+`matched_by`, which names the relation or scope that selected it. Owners and
+layers are returned as claim IDs. Superseded, contested and invalidated records
+keep that status, add an `EPISTEMIC_CAVEAT` gap, and are not current obligations.
+Hypothetical records keep their status but add no caveat gap.
+
+The subject must be one repository-relative file. Globs, directories, absolute
+paths, `..` and backslashes are rejected. No heuristic links a file to an owner,
+rule, decision or test from its name or its neighbours. The result states
+`semantic_truth_established: false` and `action_authorized: false`. With
+`--repo`, `workspace_context` reports whether the checkout matches the indexed
+revision and whether it has uncommitted changes.
+
 ## Skill usage
 
 1. Find a relevant claim or decision with search/why/explain.
