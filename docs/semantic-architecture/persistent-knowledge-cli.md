@@ -338,6 +338,42 @@ relevance assessment is made.
 For complete changed-path coverage across *all* reviewed records, continue to
 use the separate `--operation workspace-impact --repo .` query.
 
+### Multi-file context for one engineering task (PATH-1/T7)
+
+When a genuine task touches several related source paths, repeat `--path` with
+**2 through 8 distinct repository-relative paths** instead of using the
+single-file `--subject`. This is one bounded request, not a new operation
+or a new graph-inference method:
+
+```bash
+sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository" \
+  --target-ref "$sha" --operation context-for \
+  --path src/sensemaking_skills/semantic_cli.py \
+  --path src/sensemaking_skills/semantic_architecture/knowledge_store.py \
+  --repo . --limit 25 --json
+```
+
+- `contexts` contains the **existing single-file context** for each path,
+  including its own ownership, rules, decisions, unresolved gaps, and optional
+  workspace relevance. A path without a declared owner stays `NOT_ASSESSED`
+  even if another path has a known owner.
+- Top-level `claims` and `relations` contain the **deduplicated records
+  actually returned** by those bounded queries. The per-path `claim_ids` and
+  `relation_ids` preserve the selection provenance; `shared_claim_ids`
+  identifies repeated claim records without inventing dependencies between files.
+- `multi_file_context.per_path_limit` and `truncated_paths` disclose limits.
+  The global union may contain up to `8 * --limit` records of each type;
+  a non-truncated result still does not prove that the task's architecture
+  is semantically complete.
+- `--path` is mutually exclusive with `--subject`, cannot be used with any
+  other operation, and rejects duplicates. The existing single-file query and
+  its JSON response remain unchanged. Worktree changes remain **unindexed**.
+
+A semantic query receipt records **one `context-for` entry per requested
+path** with the corresponding returned IDs and caveats; batch convenience
+does not change the receipt schema or turn per-path coverage into global
+`HIT` evidence.
+
 ## Skill usage
 
 1. Find a relevant claim or decision with search/why/explain.
