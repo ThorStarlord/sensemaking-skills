@@ -44,6 +44,19 @@ Five canonical labels using the skill defaults. See `docs/agents/triage-labels.m
 
 Single-context repo — `CONTEXT.md` at root, ADRs in `docs/adr/`. See `docs/agents/domain.md`.
 
+### Source-linked semantic knowledge (optional, task-relevant)
+
+This repository also maintains reviewed architectural memory under
+`.sensemaking/knowledge/*.json`. When historical decisions, component ownership,
+constraints, or alternatives could materially change a coding decision, read
+`skills/repository-semantic-steward/SKILL.md` and use its lightweight RECALL
+path (or inspect the Git-authored records directly if no exact-commit SQLite
+index is available). Inspect decisive original sources; a knowledge claim
+is not permission or semantic truth. Do not bootstrap a complete index or
+restart strategic analysis before an otherwise warranted local build.
+This is a pointer for **this repository**, not proof of native discovery by
+other coding-agent harnesses or target repositories.
+
 ## Current operating discipline
 
 The active coding agent owns the top-level control loop (ADR 0013). Use
@@ -112,7 +125,19 @@ are part of that API. These rules exist because each was violated and caused a r
 
 ## Local verification scope
 
-Match local checks to the change's risk. The hosted full-suite CI job remains the comprehensive safety net.
+**Current owner construction direction (2026-10-25):** In the architect/builder
+phase, Continuous Construction IS the Probe. Use the accepted roadmap and
+Strategic Analysis as a compass, not as a gate that delays retained work. For
+the current `sensemaking-skills` construction PRs, **do not add, manually run,
+or wait for unit tests or synthetic evidence tests**; complete source/diff
+inspection, merge authorized PRs promptly, and state `NOT_RUN` plainly.
+Keep all existing GitHub CI, branch protection and release qualification
+contracts unchanged. Merged construction is not proof of tested correctness,
+semantic truth or distribution/release readiness.
+
+**Outside that explicitly owner-directed construction phase**, match local
+checks to the change's risk. The hosted full-suite CI job remains the
+comprehensive safety net.
 
 - **Level A (always):** run the tests you added or changed, the existing tests for the behavior you changed, and the relevant validators, lint and static checks. "Test only the changes" means the changed behavior and its plausible regressions, not just the new test files. For a documentation-only change, run the validators and the tests that read the edited file.
 - **Level B (real boundaries):** also run the tests for a shared interface or API, an artifact producer/consumer contract, a serialization or schema, a permission boundary, external command execution, or runtime integration. Choose these from actual callers and contracts, not file names.

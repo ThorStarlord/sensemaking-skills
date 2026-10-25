@@ -5,7 +5,11 @@
 
 An agent-native engineering sensemaking and control layer for software-engineering agents. It turns repository uncertainty into durable evidence, explicit decisions, and reconstructible next-action context without replacing the active agent's semantic judgment.
 
-**Owner-selected long-term direction (October 2026):** build a **persistent, typed, queryable semantic memory of software products**—their intent, capabilities, constraints, architecture, decisions, verification and engineering history—operated and improved through specialized Skills over many development episodes. This is an **architectural destination, not a shipped or proven capability**. See [ADR 0031](docs/adr/0031-persistent-semantic-stewardship.md), the [current product strategy](docs/product-strategy.md), and the [detailed development plan](docs/persistent-semantic-stewardship-plan.md). The existing compact Grounding Pack and current control/authority boundaries remain in force during implementation.
+**Owner-selected long-term direction (October 2026):** build a **persistent, typed, queryable semantic memory of software products**—their intent, capabilities, constraints, architecture, decisions, verification and engineering history—operated and improved through specialized Skills over many development episodes. The **Git-reviewed knowledge model, exact-revision SQLite queries, source
+audit, task-specific context and architecture-exploration guidance are now
+implemented in repository development source**. The broader persistent
+stewardship destination remains under construction: cross-session value,
+transfer and release qualification are **not yet proven**. See [ADR 0031](docs/adr/0031-persistent-semantic-stewardship.md), the [current product strategy](docs/product-strategy.md), and the [detailed development plan](docs/persistent-semantic-stewardship-plan.md). The existing compact Grounding Pack and current control/authority boundaries remain in force during implementation.
 
 **Source version:** 1.0.0rc5.dev0
 **Release target:** 1.0.0rc5 (post-RC4 development target)
