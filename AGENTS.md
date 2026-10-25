@@ -23,6 +23,10 @@
    change the next responsibility, claim, or authority decision. Do not turn
    unresolved hypotheses into confident claims.
 
+## Local verification
+
+Choose local test scope by the change's risk. The full policy is in `CLAUDE.md`, section "Local verification scope"; follow it.
+
 ## Evaluation & benchmark work
 
 For evaluation or benchmark work, do not silently resolve an ambiguity that can
