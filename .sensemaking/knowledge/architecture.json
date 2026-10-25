@@ -176,6 +176,25 @@
       }
     },
     {
+      "id": "component:workflow-runtime",
+      "kind": "component",
+      "statement": "The Python workflow runtime owns session-scoped artifact path resolution, runs selected registered workflows, writes provisional execution plans and can finalize a contract-shaped workflow orchestration plan from a suitable brief. It is bounded compatibility/execution machinery, not the active agent's workflow-selection authority or the fail-closed legacy WorkflowPlannerSkill.",
+      "authority_kind": "code",
+      "authority_ref": "scripts/workflow-runtime.py",
+      "evidence_refs": [
+        "file:scripts/workflow-runtime.py",
+        "file:docs/adr/0010-runtime-owns-artifact-path-resolution.md",
+        "file:skills/workflow-planner/references/artifact-contracts.yaml",
+        "file:skills/workflow-planner/SKILL.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "owned_paths": [
+          "scripts/workflow-runtime.py"
+        ]
+      }
+    },
+    {
       "id": "component:workflow-planner-skill",
       "kind": "component",
       "statement": "Agent-native workflow-planner Skill, not the legacy Python WorkflowPlannerSkill (component:legacy-workflow-planner): consumes the brief and produces the workflow orchestration plan; workflow selection stays with the active agent.",
@@ -761,6 +780,41 @@
         "file:skills/repo-sensemaker/SKILL.md"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:workflow-runtime-bounded-context",
+      "subject": "component:workflow-runtime",
+      "predicate": "belongs_to",
+      "object": "bounded_context:workflow-control",
+      "evidence_refs": [
+        "file:scripts/workflow-runtime.py",
+        "file:skills/workflow-planner/SKILL.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:workflow-runtime-exposes-plan-contract",
+      "subject": "component:workflow-runtime",
+      "predicate": "exposes",
+      "object": "contract:workflow-orchestration-plan",
+      "evidence_refs": [
+        "file:scripts/workflow-runtime.py",
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Runtime's provisional/finalized plan materialization only; the agent-native workflow-planner owns the recommendation and the active agent retains selection authority."
+      }
+    },
+    {
+      "id": "rel:workflow-runtime-path-handoff-tested",
+      "subject": "component:workflow-runtime",
+      "predicate": "tested_by",
+      "object": "verification:executor-path-handoff-tests",
+      "evidence_refs": [
+        "file:tests/test_executor_path_handoff.py"
+      ],
+      "epistemic_status": "observed"
     },
     {
       "id": "rel:workflow-planner-skill-layer",
