@@ -1,0 +1,137 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-25-legacy-planner-fail-closed
+state: final
+created_at: "2026-10-25T05:26:00Z"
+updated_at: "2026-10-25T05:26:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: f40c4bd822222e6314ec4931c01945d46f21d753
+  end_ref: c9b257ab1510fe916b981828af5bcfa5371065eb
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: f40c4bd822222e6314ec4931c01945d46f21d753
+goal:
+  statement: "PATH-1/T2: keep the legacy workflow-planner API importable but make its invalid plan producer fail closed; RECALL, BUILD, VERIFY and RECONCILE; update STATUS.md; present one focused pull request."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, knowledge_edit]
+  withheld: [merge, release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-10-25-legacy-brief-producer-fail-closed
+  campaign_ref: null
+  resolves_questions: ["2026-10-25-legacy-brief-producer-fail-closed#Q-1"]
+responsibilities:
+  - id: R-1
+    responsibility: knowledge recall
+    capability: repository-semantic-steward
+    status: completed
+    reason: The planner's reviewed records were queried at the clean main revision; the query receipt lists what was returned and what was not assessed.
+    artifact_refs: [.sensemaking/receipts/2026-10-25-legacy-planner-fail-closed.query.yaml]
+    validation:
+      - command: sensemaking-skills semantic knowledge-build at f40c4bd8
+        result: PASS
+  - id: R-2
+    responsibility: regression tests demonstrating the defect
+    capability: ordinary_coding
+    status: completed
+    reason: Tests drive every legacy route for valid, invalid and absent briefs. On the previous code 31 of 44 failed, including overwrites of a tracked sentinel plan and success true.
+    artifact_refs: [tests/test_legacy_workflow_planner_fail_closed.py]
+    validation:
+      - command: python -m pytest tests/test_legacy_workflow_planner_fail_closed.py -q (previous code, expected RED)
+        result: FAIL
+  - id: R-3
+    responsibility: fail-closed legacy workflow planner
+    capability: ordinary_coding
+    status: completed
+    reason: WorkflowPlannerSkill.run() is the one method every legacy route reaches; it now reads and writes nothing and returns LEGACY_PLANNER_UNSUPPORTED. The private generation helpers were removed.
+    artifact_refs: [src/sensemaking_skills/skills/workflow_planner.py, API.md]
+    validation:
+      - command: python -m pytest tests/test_legacy_workflow_planner_fail_closed.py -q
+        result: PASS
+      - command: python -m pytest tests/ -q at c9b257ab (3629 passed, 22 skipped, 5 xfailed)
+        result: PASS
+      - command: all four legacy routes in disposable clones at f40c4bd8 and 856db119
+        result: PASS
+      - command: repository validators, ruff on CI paths, probe gate and semantic conformance
+        result: PASS
+  - id: R-4
+    responsibility: knowledge reconciliation
+    capability: repository-semantic-steward
+    status: completed
+    reason: The legacy planner had no owner component and its plan contract was unmodelled. The reviewed records now link code, tests and the owner decision; the historical observation is kept and superseded only where its contradiction is resolved.
+    artifact_refs: [.sensemaking/knowledge/architecture.json]
+    validation:
+      - command: sensemaking-skills semantic knowledge-proposal-check
+        result: PASS
+      - command: sensemaking-skills semantic knowledge-build at 002ba742
+        result: PASS
+      - command: workspace-impact drift probe on a disposable clone with an uncommitted planner edit
+        result: PASS
+  - id: R-5
+    responsibility: Level-3 currency reconciliation
+    capability: ordinary_coding
+    status: completed
+    reason: STATUS.md records PR #568, the planner repair and the owner direction. Level-4 and S5/S6 statements are unchanged.
+    artifact_refs: [STATUS.md]
+    validation:
+      - command: python scripts/validate-strategic-state.py --repo-root .
+        result: PASS
+      - command: python scripts/validate-docs-currentness.py --repo-root .
+        result: PASS
+findings:
+  - id: F-1
+    statement: Before the repair, all four legacy routes overwrote the tracked plan (bb82565d to b2652566) and returned success true for the tracked brief.
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/skills/workflow_planner.py:88-97, artifacts/workflow_orchestration_plan.md]
+    disposition: resolved
+  - id: F-2
+    statement: The legacy static table emits non-canonical fog types and workflow IDs absent from workflow-registry.yaml. It is retained, inert, for import compatibility.
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/skills/workflow_planner.py:20-42, skills/workflow-planner/references/workflow-registry.yaml]
+    disposition: handed_off
+  - id: F-3
+    statement: The runtime's finalize_plan keeps a fog-to-workflow map that differs from the canonical vocabulary. This repair does not change it.
+    epistemic_status: OBSERVED
+    evidence_refs: [scripts/workflow-runtime.py:898-903]
+    disposition: handed_off
+  - id: F-4
+    statement: The query-receipt contract does not list rules-for, so that query cannot be recorded in a receipt. Unchanged here; it is outside this authorization.
+    epistemic_status: OBSERVED
+    evidence_refs: [scripts/validate-receipt.py:95-98]
+    disposition: open
+  - id: F-5
+    statement: knowledge-query --expect-kind accepts only version-1 claim kinds; architecture_rule is rejected. Unchanged here.
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py:27]
+    disposition: open
+  - id: F-6
+    statement: The legacy planner file had no owning component, so path rules could not see it. The reconciled model now covers it, and a drift probe flags it.
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/architecture.json]
+    disposition: resolved
+open_questions:
+  - id: Q-1
+    question: Should the runtime's compatibility fog-to-workflow map be reconciled with the canonical four fog types?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Reconcile to the canonical four fog types
+        consequence: Routing for ui_fog and docs_fog changes; this needs its own responsibility and tests.
+      - option: Retire the map
+        consequence: Automatic fog-to-workflow selection in finalize_plan stops; the agent selects workflows as SKILL.md requires.
+      - option: Keep as is
+        consequence: The divergence stays recorded in observation:legacy-planner-static-routing-table.
+    durable_ref: .sensemaking/knowledge/architecture.json
+stop:
+  disposition: GOAL_SATISFIED
+  reason: Repair, regression tests, knowledge reconciliation, STATUS.md and receipts are committed and verified locally. Merge is withheld.
+next:
+  warranted_responsibility: "Owner review and merge decision on the pull request. Afterwards select the next PATH-1 responsibility from current evidence. Q-1 is an owner choice, not a queued task."
+  blocked_on: ["authority:merge"]
+persistence: committed
+claim_ceiling: "Local tests, validators and disposable-clone runs only; hosted CI pending when written. Legacy routes were exercised directly, not by an external agent. Skills loaded from repository files (manual_explicit_load); one agent judged its own work. Index PASS is not semantic truth."
+action_authorized_by_receipt: false
+immutable: true
