@@ -91,6 +91,24 @@
       }
     },
     {
+      "id": "component:semantic-cli",
+      "kind": "component",
+      "statement": "The shipped semantic CLI registers source-pinned knowledge build, query, audit, orientation and architecture-inspection commands.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_cli.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/semantic_cli.py"
+        ]
+      }
+    },
+    {
       "id": "component:validator-router",
       "kind": "component",
       "statement": "Single agent-facing validation entrypoint that selects a canonical validator by artifact id.",
@@ -249,6 +267,17 @@
         "file:tests/test_semantic_knowledge.py"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "verification:semantic-cli-self-repo-tests",
+      "kind": "verification",
+      "statement": "The semantic self-repository test module invokes knowledge queries through the shipped CLI and checks revision/working-tree metadata; test existence is not a pass claim.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_semantic_knowledge_self_repo.py",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge_self_repo.py"
+      ],
+      "epistemic_status": "observed"
     },
     {
       "id": "verification:architecture-vocabulary-tests",
@@ -618,6 +647,27 @@
         "file:docs/adr/0031-persistent-semantic-stewardship.md"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:semantic-cli-knowledge-layer",
+      "subject": "component:semantic-cli",
+      "predicate": "belongs_to",
+      "object": "layer:knowledge-plane",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:semantic-cli-tested-by-self-repo",
+      "subject": "component:semantic-cli",
+      "predicate": "tested_by",
+      "object": "verification:semantic-cli-self-repo-tests",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge_self_repo.py"
+      ],
+      "epistemic_status": "observed"
     },
     {
       "id": "rel:validator-router-layer",
