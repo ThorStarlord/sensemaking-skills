@@ -87,10 +87,10 @@ index:
   uncommitted_changes_not_indexed: true | false
 queries:                                   # >=1 required in RECALL mode
   - id: QY-1
-    operation: orient | build | search | explain | why | impact | workspace-impact | changes | contradictions | history | audit | proposal-check
+    operation: orient | build | snapshot | search | explain | why | impact | workspace-impact | changes | contradictions | history | rules-for | term | orientation-summary | audit | proposal-check
     terms: ["literal phrase"]              # <=8, <=80 chars each; [] when not a search
-    subject: <claim id> | null
-    expect_kinds: [alternative, verification]
+    subject: <claim id, repository-relative path, or term> | null
+    expect_kinds: [alternative, architecture_rule] # only explain/why; v1/v2 kinds
     target_ref: <40-hex> | null
     result:
       hit_count: 0
@@ -130,6 +130,22 @@ Field notes:
   `PARTIAL` means some of what was needed came back, for example claims
   returned while an `--expect-kind` was NOT ASSESSED. Use `NOT_APPLICABLE` for
   `orient`, `build` and `proposal-check`, which retrieve nothing.
+- `rules-for`, `term` and `orientation-summary` are existing architecture
+  query operations. For `rules-for`, `subject` is one repository-relative file
+  path (not a glob); for `term`, it is the literal term. `snapshot` and
+  `orientation-summary` do not require a subject.
+- For `rules-for` and `term`, set `result.claim_ids` to the IDs in the query
+  envelope's returned `claims`, and `hit_count` to their count. Preserve the
+  `truncated` indication; do not turn `coverage_status: NOT_ASSESSED` into
+  `outcome: HIT` just because an isolated rule or neighbor was retrieved.
+  Use `NOT_ASSESSED` or `PARTIAL` according to the decision's actual coverage,
+  and record a miss when the outcome is decision-relevant.
+- `snapshot` and `orientation-summary` return index-level summaries, not a
+  bounded list of claim hits. Record `hit_count: 0`, `claim_ids: []` and
+  `outcome: NOT_APPLICABLE` for them. For `orientation-summary`, mark
+  `truncated: true` if `lines_omitted` is positive.
+- `expect_kinds` accepts version-1 and version-2 claim kinds for `explain` and
+  `why`, with the same one-hop coverage and NOT ASSESSED limits as before.
 - `reconcile[].applied` says whether the disposition's change was written to
   `.sensemaking/knowledge/`. It is always `false` for `CONFIRM` and
   `NO_MODEL_CHANGE`, and `false` for a proposal that was drafted but not

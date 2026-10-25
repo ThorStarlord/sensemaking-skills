@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from .knowledge import CLAIM_KINDS
+from .knowledge import CLAIM_KINDS, V2_CLAIM_KINDS
 
 
 def validate_retrieval_options(
@@ -24,7 +24,7 @@ def validate_retrieval_options(
     if expected_kinds:
         if operation not in {"explain", "why"}:
             raise ValueError("expected kinds are supported only for explain or why")
-        if any(kind not in CLAIM_KINDS for kind in expected_kinds):
+        if any(kind not in CLAIM_KINDS | V2_CLAIM_KINDS for kind in expected_kinds):
             raise ValueError("unknown expected claim kind")
 
 

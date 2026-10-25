@@ -203,7 +203,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--term", "search_terms", multiple=True,
                   help="Repeat explicit literal OR phrase (search operation only)")
     @click.option("--expect-kind", "expected_kinds", multiple=True,
-                  help="Repeat claim kinds to assess in the explicit one-hop explain/why neighborhood")
+                  help="Repeat v1/v2 claim kinds to assess in the explicit one-hop explain/why neighborhood")
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
     @click.option("--depth", type=click.IntRange(0, 4), default=2)
     @click.option("--json", "output_json", is_flag=True)

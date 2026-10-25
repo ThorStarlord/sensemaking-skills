@@ -70,12 +70,13 @@
     {
       "id": "component:semantic-knowledge-plane",
       "kind": "component",
-      "statement": "Knowledge model, source reader, store, queries and architecture queries.",
+      "statement": "Knowledge model, source reader, store, v1/v2 retrieval options and architecture queries.",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge.py",
       "evidence_refs": [
         "file:src/sensemaking_skills/semantic_architecture/knowledge.py",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
       ],
@@ -83,6 +84,7 @@
       "attributes": {
         "owned_paths": [
           "src/sensemaking_skills/semantic_architecture/knowledge.py",
+          "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
           "src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
           "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
         ]
@@ -423,7 +425,9 @@
       "authority_kind": "document",
       "authority_ref": "skills/workflow-planner/references/artifact-contracts.yaml",
       "evidence_refs": [
-        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+        "file:skills/workflow-planner/references/artifact-contracts.yaml",
+        "file:skills/repository-semantic-steward/references/query-receipt.md",
+        "file:scripts/validate-receipt.py"
       ],
       "epistemic_status": "declared",
       "attributes": {
