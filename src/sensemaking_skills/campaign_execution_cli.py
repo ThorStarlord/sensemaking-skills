@@ -9,6 +9,7 @@ from typing import Any, Callable
 import click
 
 from .campaign_knowledge_context import (
+    MAX_KNOWLEDGE_PATHS,
     CampaignKnowledgeError,
     build_reviewed_knowledge,
 )
@@ -454,7 +455,7 @@ def register_campaign_execution_commands(
     )
     @click.option(
         "--knowledge-path", "knowledge_paths", multiple=True,
-        help="Opt-in: one repository-relative source file to explain.",
+        help="Opt-in: repository-relative source file to explain; repeat for up to eight distinct files.",
     )
     def campaign_working_context(
         workspace: Path, output_json: bool, target_alias: str | None,
@@ -478,8 +479,12 @@ def register_campaign_execution_commands(
             )
         if not supplied and target_alias is not None:
             raise click.UsageError("--target-alias applies only with the reviewed knowledge options")
-        if supplied and len(knowledge_paths) != 1:
-            raise click.UsageError("working-context accepts exactly one --knowledge-path")
+        if len(knowledge_paths) > MAX_KNOWLEDGE_PATHS:
+            raise click.UsageError(
+                f"working-context accepts at most {MAX_KNOWLEDGE_PATHS} --knowledge-path values"
+            )
+        if len(set(knowledge_paths)) != len(knowledge_paths):
+            raise click.UsageError("--knowledge-path values must be distinct")
         try:
             context = CampaignExecutionService(workspace).working_context()
         except (CampaignWorkspaceError, ContractError) as exc:
@@ -498,7 +503,7 @@ def register_campaign_execution_commands(
                     targets=context["targets"], target_alias=target_alias,
                     knowledge_db=knowledge_db, knowledge_repository=knowledge_repository,
                     knowledge_ref=knowledge_ref, knowledge_repo=knowledge_repo,
-                    knowledge_path=knowledge_paths[0],
+                    knowledge_paths=knowledge_paths,
                 )
             except CampaignKnowledgeError as exc:
                 # An explicit request that cannot be bound or queried fails visibly;
