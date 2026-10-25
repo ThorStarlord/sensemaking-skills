@@ -692,7 +692,7 @@
       ],
       "epistemic_status": "declared",
       "attributes": {
-        "rule_type": "contract",
+        "rule_type": "convention",
         "severity": "warning",
         "applies_to": [
           "scripts/validate-artifact.py",
