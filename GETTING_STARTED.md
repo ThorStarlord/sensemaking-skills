@@ -87,6 +87,33 @@ goal or a genuine authority/external boundary is reached. The owner can
 delegate product and architectural choices within an agreed goal; delegation
 does not itself authorize protected external actions.
 
+### Use existing repository knowledge during active coding
+
+When a consequential architecture choice depends on a previous design
+decision, look for reviewed `.sensemaking/knowledge/*.json` records in the
+target repository. The
+[Repository Semantic Steward](skills/repository-semantic-steward/SKILL.md)
+provides source-checked RECALL and RECONCILE guidance, including historical
+alternatives and conservative change auditing. For an exact committed index
+already present outside the target checkout, retrieve relevant context with:
+
+```bash
+sensemaking-skills semantic knowledge-query --db /outside/knowledge.sqlite \
+  --repository owner/repository --target-ref "$INDEXED_SHA" \
+  --operation context-for --subject src/relevant_module.py --repo . --json
+```
+
+`owner/repository`, the source path and `$INDEXED_SHA` are caller-provided
+examples, not repository-specific facts. If no suitable index exists, read the
+Git-authored knowledge and cited current source directly; normal engineering
+work must not wait for an index bootstrap. The query only describes its
+indexed revision, and `workspace_context` discloses unindexed edits. Review
+`context.alternatives` and any `NOT_ASSESSED` / `TRUNCATED` gaps rather than
+assuming historical information is complete. See the
+[persistent knowledge CLI contract](docs/semantic-architecture/persistent-knowledge-cli.md).
+This discovery guidance does not install Skills or enable other harnesses
+automatically.
+
 ### Default product-facing path
 
 You normally need only three entry surfaces:

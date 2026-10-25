@@ -485,6 +485,16 @@ Git-authored semantic knowledge. A `references` relation is historical
 traceability, not a general rejection/approval inference. This improves the
 next architecture exploration through retained source-grounded understanding.
 
+**2026-10-25 PATH-1/T13 — self-repository reachability:** The strategic
+reconciliation identified knowledge discovery as a cross-session bottleneck.
+Provide a narrow self-repository instruction-file pointer to the existing
+reviewed `.sensemaking/knowledge/` and RECALL surfaces and a human-facing
+first-use example. This improves discoverability for agents reading these
+files, but does not establish installation, automatic Skill discovery, or
+knowledge reuse in external target repositories. Record the owner's
+construction-phase test instruction explicitly while preserving CI and
+release boundaries.
+
 ## Current next step
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**
