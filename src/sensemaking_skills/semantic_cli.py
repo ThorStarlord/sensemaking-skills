@@ -195,8 +195,10 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--target-ref", required=True, help="Exact indexed revision to examine")
     @click.option("--operation", required=True,
                   type=click.Choice(["snapshot", "search", "explain", "impact", "why", "contradictions", "history", "changes",
-                                     "workspace-impact", "rules-for", "term", "orientation-summary"]))
-    @click.option("--subject", default=None, help="Exact claim id, or literal search text for search")
+                                     "workspace-impact", "rules-for", "term", "orientation-summary", "context-for"]))
+    @click.option("--subject", default=None,
+                  help="Exact claim id; literal search text (search); one repository-relative "
+                       "file path (rules-for, context-for); literal term (term)")
     @click.option("--base-ref", default=None, help="Exact previously indexed revision for changes")
     @click.option("--repo", "repo_root", type=click.Path(exists=True, file_okay=False, path_type=Path),
                   help="Optional current Git worktree; does not index uncommitted source")

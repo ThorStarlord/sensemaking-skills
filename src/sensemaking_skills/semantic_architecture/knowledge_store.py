@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
-from .knowledge_architecture import orientation_summary, rules_for, term
+from .knowledge_architecture import context_for, is_repository_file_path, orientation_summary, rules_for, term
 from .knowledge_retrieval import (
     bounded_kind_coverage, classify_indexed_changes, search_matches,
     validate_retrieval_options, workspace_source_overlap,
@@ -177,7 +177,7 @@ def query_knowledge(
     if not 1 <= limit <= 250 or not 0 <= depth <= 4:
         raise ValueError("query limit must be 1..250 and depth 0..4")
     valid = {"search", "explain", "impact", "why", "contradictions", "history", "changes", "snapshot",
-             "workspace-impact", "rules-for", "term", "orientation-summary"}
+             "workspace-impact", "rules-for", "term", "orientation-summary", "context-for"}
     if operation not in valid:
         raise ValueError(f"unsupported semantic knowledge query: {operation}")
     if operation in {"explain", "impact", "why", "history"} and not subject:
@@ -187,6 +187,11 @@ def query_knowledge(
     if operation == "rules-for" and ("*" in subject or "?" in subject or subject.startswith("/")
                                      or ".." in subject.split("/")):
         raise ValueError("rules-for subject must be one repository-relative file path (no globs)")
+    if operation == "context-for" and not subject:
+        raise ValueError("context-for requires --subject <repository-relative file path>")
+    if operation == "context-for" and not is_repository_file_path(subject):
+        raise ValueError("context-for subject must be one repository-relative file path "
+                         "(no globs, directories or traversal)")
     if operation == "term" and not subject:
         raise ValueError("term requires --subject <term>")
     if operation == "changes" and not base_ref:
@@ -329,6 +334,14 @@ def query_knowledge(
                 and r["subject"] in claims and r["object"] in claims
             )]
             extra_truncated = extra["architecture"]["truncated"]
+        elif operation == "context-for":
+            assert subject is not None
+            extra["context"], selected_claims, selected_relations = context_for(
+                claims, relations, path=subject, limit=limit,
+            )
+            found_claims = [claims[cid] for cid in selected_claims]
+            found_relations = [r for r in relations if r["id"] in set(selected_relations)]
+            extra_truncated = extra["context"]["truncated"]
         elif operation == "term":
             assert subject is not None
             extra["term"] = term(claims, relations, name=subject, limit=limit)
