@@ -42,7 +42,7 @@ responsibilities:
     validation:
       - command: "ruff check --select E4,E7,E9,F on the CI shipped-source paths and semantic_cli.py"
         result: PASS
-      - command: "pytest on 16 targeted files covering semantic knowledge, architecture queries, receipts, skill hygiene and CLI contracts, PYTHONPATH=src"
+      - command: "pytest on 15 targeted files covering semantic knowledge, architecture queries, receipts, skill hygiene and CLI contracts, PYTHONPATH=src"
         result: PASS
       - command: "context-for on the 37cf85c2 index: covered, uncovered and truncated subjects; seven rejected path forms and a missing subject exit 1"
         result: PASS
