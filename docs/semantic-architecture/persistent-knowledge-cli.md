@@ -412,10 +412,10 @@ does not change the receipt schema or turn per-path coverage into global
 
 ### Opt-in Campaign working context (PATH-1/T17)
 
-`campaign working-context` can attach one `context-for` result to an active
-Campaign's working context. Without the knowledge options the output is
-unchanged. The four knowledge identity/index options are all-or-nothing, and
-exactly one `--knowledge-path` is accepted in this release:
+`campaign working-context` can attach `context-for` results for one to eight
+distinct files to an active Campaign's working context. Without the knowledge
+options the output is unchanged. The four knowledge identity/index options are
+all-or-nothing:
 
 ```bash
 sensemaking-skills campaign working-context --workspace "$CAMPAIGN" --json \
@@ -423,7 +423,8 @@ sensemaking-skills campaign working-context --workspace "$CAMPAIGN" --json \
   --knowledge-repository ThorStarlord/sensemaking-skills \
   --knowledge-ref "$SHA" \
   --knowledge-repo "$CHECKOUT" \
-  --knowledge-path src/sensemaking_skills/campaigns/execution.py
+  --knowledge-path src/sensemaking_skills/campaigns/execution.py \
+  --knowledge-path src/sensemaking_skills/campaign_execution_cli.py
 ```
 
 - `--knowledge-ref` must be the exact 40-character revision the index was built from.
@@ -443,16 +444,22 @@ When requested, the payload gains `reviewed_knowledge`:
 - `applicability`: `HISTORICAL` when the indexed ref differs from the target head or the
   checkout HEAD; `ALIGNED_TO_INDEXED_REVISION` when both match; `NOT_ASSESSED` when the
   target records no head.
-- `query`: the unmodified `context-for` envelope, with owners, rules, contracts, decisions,
+- `query`: for one file, the unmodified `context-for` envelope. For two to eight files, the
+  unmodified multi-file envelope: `contexts` with one entry per file, deduplicated `claims`
+  and `relations`, and `multi_file_context` (shared record IDs, truncated paths, and
+  `coverage_complete: false`). Each file keeps its own owners, rules, contracts, decisions,
   history, verification references, gaps, omitted counts and truncation.
 - `caveats`: codes such as `HISTORICAL_TARGET_HEAD`, `HISTORICAL_CHECKOUT_HEAD`,
   `UNINDEXED_WORKTREE_CHANGES`, `TARGET_SNAPSHOT_DIRTY`,
   `WORKSPACE_RELEVANCE_NOT_ASSESSED`, `COVERAGE_NOT_ASSESSED`, `OWNERSHIP_AMBIGUOUS`,
-  `EPISTEMIC_CAVEAT`, `TRUNCATED` and `INSPECT_ORIGINAL_SOURCE`.
+  `EPISTEMIC_CAVEAT`, `TRUNCATED`, `MULTI_FILE_NOT_COMPLETE` (two to eight files; no
+  dependency is implied between them) and `INSPECT_ORIGINAL_SOURCE`. In multi-file mode,
+  per-file caveats carry a `path` field.
 - `semantic_truth_established` and `action_authorized`, both `false`.
 
 Failures are explicit and never fall back to the unaugmented view. Partial options,
-`--target-alias` without knowledge options, or more than one path exit 2. A Campaign with
+`--target-alias` without knowledge options, more than eight paths, or duplicate paths exit 2.
+A Campaign with
 no bound target, an identity mismatch, an unindexed revision, an invalid path, or a
 checkout that is not a Git worktree exit 4 with `CAMPAIGN_WORKSPACE_ERROR`. A Campaign whose
 own target snapshot has drifted fails with its existing integrity error (exit 3) before any

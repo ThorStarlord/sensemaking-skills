@@ -741,7 +741,7 @@
     {
       "id": "component:campaign-knowledge-context",
       "kind": "component",
-      "statement": "Opt-in adapter that binds one source-pinned context-for result to a mechanically verified Campaign target, with historical, dirty and coverage caveats; read-only and grants no authority.",
+      "statement": "Opt-in adapter that binds one to eight source-pinned context-for results to a mechanically verified Campaign target, with historical, dirty and coverage caveats; read-only and grants no authority.",
       "epistemic_status": "declared",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/campaign_knowledge_context.py",
