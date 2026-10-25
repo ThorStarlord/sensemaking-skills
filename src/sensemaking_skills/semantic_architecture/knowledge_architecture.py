@@ -123,7 +123,7 @@ _EMPTY_CATEGORY_NOTES = {
 
 
 def is_repository_file_path(value: str) -> bool:
-    """One repository-relative file: no glob, traversal, absolute form, or trailing slash."""
+    """Validate path syntax only, without checking whether a file exists."""
     return _valid_repo_path(value, glob=False) and not value.endswith("/")
 
 
@@ -214,8 +214,10 @@ def context_for(
     if not owners:
         gaps.append({"category": "ownership", "status": "NOT_ASSESSED", "note": NOT_ASSESSED_NOTE})
     elif len(owners) > 1:
+        shown = min(len(owners), limit)
         gaps.append({"category": "ownership", "status": "AMBIGUOUS",
-                     "note": f"{len(owners)} reviewed components declare this path; all are shown."})
+                     "note": f"{len(owners)} reviewed components declare this path; "
+                             f"{shown} shown, {len(owners) - shown} omitted by limit."})
     if not rule_ids:
         gaps.append({"category": "architecture_rules", "status": "NOT_ASSESSED",
                      "note": "No rule matched this path by declared scope or graph link. "
@@ -225,13 +227,25 @@ def context_for(
             note = (_EMPTY_CATEGORY_NOTES[name] if anchors else
                     "Cannot assess: no owning component or applicable rule anchors this path.")
             gaps.append({"category": name, "status": "NOT_ASSESSED", "note": note})
-    linked = [*base["applicable_rules"], *(item for group in lists.values() for item in group)]
-    inactive = sorted(item["claim_id"] for item in linked if item["epistemic_status"] in INACTIVE_STATUSES)
+    # Include owner and layer claims as well as the expanded linked categories:
+    # a hypothetical owner or constraint is not an established obligation.
+    considered_ids = owners | layer_ids | rule_ids | {
+        item["claim_id"] for group in lists.values() for item in group
+    }
+    inactive = sorted(cid for cid in considered_ids
+                      if claims[cid].get("epistemic_status") in INACTIVE_STATUSES)
     if inactive:
         gaps.append({"category": "epistemic_status", "status": "EPISTEMIC_CAVEAT",
-                     "note": f"{len(inactive)} linked record(s) are superseded, contested or "
-                             f"invalidated and are shown with that status: {', '.join(inactive[:8])}. "
+                     "note": f"{len(inactive)} contextual record(s) are superseded, contested or "
+                             f"invalidated: {', '.join(inactive[:8])}. "
                              "They are not current obligations."})
+    hypothetical = sorted(cid for cid in considered_ids
+                          if claims[cid].get("epistemic_status") == "hypothetical")
+    if hypothetical:
+        gaps.append({"category": "epistemic_status", "status": "HYPOTHETICAL_CAVEAT",
+                     "note": f"{len(hypothetical)} contextual record(s) are hypothetical: "
+                             f"{', '.join(hypothetical[:8])}. "
+                             "These are unconfirmed possibilities, not established architectural obligations."})
     if truncated:
         gaps.append({"category": "limits", "status": "TRUNCATED",
                      "note": f"Categories above the limit of {limit} are cut; see omitted counts."})

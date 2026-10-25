@@ -190,8 +190,8 @@ def query_knowledge(
     if operation == "context-for" and not subject:
         raise ValueError("context-for requires --subject <repository-relative file path>")
     if operation == "context-for" and not is_repository_file_path(subject):
-        raise ValueError("context-for subject must be one repository-relative file path "
-                         "(no globs, directories or traversal)")
+        raise ValueError("context-for subject must be a repository-relative source path "
+                         "(no globs, absolute paths, traversal or trailing slash)")
     if operation == "term" and not subject:
         raise ValueError("term requires --subject <term>")
     if operation == "changes" and not base_ref:

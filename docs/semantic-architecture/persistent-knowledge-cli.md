@@ -290,8 +290,9 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
   such.
 - `context.verification_refs`: verification records linked by `tested_by` from
   an owner or a matched rule.
-- `context.knowledge_gaps`: `NOT_ASSESSED`, `AMBIGUOUS`, `EPISTEMIC_CAVEAT` and
-  `TRUNCATED` entries. An empty category is reported as not assessed, never as
+- `context.knowledge_gaps`: `NOT_ASSESSED`, `AMBIGUOUS`, `EPISTEMIC_CAVEAT`,
+  `HYPOTHETICAL_CAVEAT` and `TRUNCATED` entries. An empty category is reported
+  as not assessed, never as
   the absence of a contract, decision, lesson or test.
 - `context.omitted`: how many records each category held beyond `--limit`.
 
@@ -299,12 +300,17 @@ Each contract, decision, history, verification and rule item keeps its
 `epistemic_status`, `authority_kind`, `authority_ref`, evidence references and
 `matched_by`, which names the relation or scope that selected it. Owners and
 layers are returned as claim IDs. Superseded, contested and invalidated records
-keep that status, add an `EPISTEMIC_CAVEAT` gap, and are not current obligations.
-Hypothetical records keep their status but add no caveat gap.
+keep that status and add an `EPISTEMIC_CAVEAT` gap. Hypothetical contextual
+records add a distinct, non-blocking `HYPOTHETICAL_CAVEAT`; neither is
+automatically treated as a current architectural obligation. When ownership
+is ambiguous, the note reports how many owners were omitted by the limit.
 
-The subject must be one repository-relative file. Globs, directories, absolute
-paths, `..` and backslashes are rejected. No heuristic links a file to an owner,
-rule, decision or test from its name or its neighbours. The result states
+The subject must have syntactically valid repository-relative path form intended
+for a source file. Globs, absolute paths, `..` traversal, backslashes and trailing
+slashes are rejected; the query does not inspect the filesystem to establish file
+existence or distinguish a directory without a trailing slash from a file.
+No heuristic links a file to an owner, rule, decision or test from its name or
+its neighbours. The result states
 `semantic_truth_established: false` and `action_authorized: false`. With
 `--repo`, `workspace_context` reports whether the checkout matches the indexed
 revision and whether it has uncommitted changes.
