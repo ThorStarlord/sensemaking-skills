@@ -477,6 +477,14 @@ fields from shared-pack byte-drift fanout using the current clean Git revision.
 The conservative source audit remains intact. This is useful normal
 construction maintenance rather than another standalone qualification loop.
 
+**2026-10-25 PATH-1/T12:** Continue architecture-and-builder construction
+under the selected roadmap by surfacing explicitly recorded alternative
+designs adjacent to already-linked component decisions in `context-for`.
+Reconcile the owner-documented unchosen legacy-planner removal option to
+Git-authored semantic knowledge. A `references` relation is historical
+traceability, not a general rejection/approval inference. This improves the
+next architecture exploration through retained source-grounded understanding.
+
 ## Current next step
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**
