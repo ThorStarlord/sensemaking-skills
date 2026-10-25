@@ -8,6 +8,15 @@ semantic, setup, and Skill capabilities into applications.
 > stable Python module and is not the agent-native control surface. It never
 > chooses an execution mode implicitly.
 
+> **Legacy brief producer fails closed:** `RepoSensemakerSkill` and
+> `SkillsOrchestrator.run_repo_sensemaker_skill()` remain importable, but they no
+> longer generate or write `repository_sensemaking_brief`. Their old file
+> inventory did not satisfy the brief contract and overwrote tracked briefs. A
+> call writes no files and returns `success: False`, `artifact_id: None`,
+> `authority: None` and `code: "LEGACY_PRODUCER_UNSUPPORTED"`. Produce the brief
+> with the agent-native `repo-sensemaker` Skill and check it with
+> `scripts/validate-brief.py`.
+
 ---
 
 ## Installation
