@@ -29,7 +29,9 @@ from .semantic_architecture.knowledge_sources import build_knowledge_snapshot, v
 from .semantic_architecture.repository_bootstrap import orient_repository
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
 from .semantic_architecture.stewardship_validation import inspect_knowledge_proposal
-from .semantic_architecture.knowledge_store import audit_knowledge_sources, query_knowledge, store_snapshot
+from .semantic_architecture.knowledge_store import (
+    audit_knowledge_sources, query_context_paths, query_knowledge, store_snapshot,
+)
 
 
 def _emit(payload: dict[str, Any], *, output_json: bool) -> None:
@@ -199,6 +201,9 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--subject", default=None,
                   help="Exact claim id; literal search text (search); one repository-relative "
                        "file path (rules-for, context-for); literal term (term)")
+    @click.option("--path", "path_subjects", multiple=True,
+                  help="Repeat 2..8 distinct paths for a bounded multi-file context-for query; "
+                       "mutually exclusive with --subject")
     @click.option("--base-ref", default=None, help="Exact previously indexed revision for changes")
     @click.option("--repo", "repo_root", type=click.Path(exists=True, file_okay=False, path_type=Path),
                   help="Optional current Git worktree; does not index uncommitted source")
@@ -211,12 +216,20 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--json", "output_json", is_flag=True)
     def semantic_knowledge_query(
         db_path: Path, repository_id: str, target_ref: str, operation: str,
-        subject: str | None, base_ref: str | None, repo_root: Path | None,
+        subject: str | None, path_subjects: tuple[str, ...],
+        base_ref: str | None, repo_root: Path | None,
         search_terms: tuple[str, ...], expected_kinds: tuple[str, ...],
         limit: int, depth: int, output_json: bool,
     ) -> None:
         """Read committed semantic records; optionally report active worktree state."""
         try:
+            if path_subjects:
+                if operation != "context-for":
+                    raise ValueError("--path is supported only for context-for")
+                if subject is not None:
+                    raise ValueError("--path and --subject are mutually exclusive")
+                if base_ref is not None:
+                    raise ValueError("--base-ref is not used with context-for --path")
             changed_paths = None
             workspace_relevance_error = None
             if operation == "workspace-impact" and repo_root is None:
@@ -230,22 +243,35 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                     # A valid indexed context remains useful even if its historical
                     # Git commit is unavailable in this local worktree.
                     workspace_relevance_error = str(exc)
-            payload = query_knowledge(
-                db_path, repository=repository_id, target_ref=target_ref,
-                operation=operation, subject=subject, base_ref=base_ref,
-                limit=limit, depth=depth,
-                search_terms=search_terms, expected_kinds=expected_kinds,
-                workspace_changed_paths=changed_paths,
-            )
+            if path_subjects:
+                payload = query_context_paths(
+                    db_path, repository=repository_id, target_ref=target_ref,
+                    paths=path_subjects, limit=limit, depth=depth,
+                    search_terms=search_terms, expected_kinds=expected_kinds,
+                    workspace_changed_paths=changed_paths,
+                )
+            else:
+                payload = query_knowledge(
+                    db_path, repository=repository_id, target_ref=target_ref,
+                    operation=operation, subject=subject, base_ref=base_ref,
+                    limit=limit, depth=depth,
+                    search_terms=search_terms, expected_kinds=expected_kinds,
+                    workspace_changed_paths=changed_paths,
+                )
             if repo_root is not None:
                 payload["workspace_context"] = inspect_worktree_context(repo_root, target_ref)
             if workspace_relevance_error is not None:
-                payload["context"]["workspace_relevance"] = {
+                unassessed = {
                     "assessment": "NOT_ASSESSED", "overlay_indexed": False,
                     "semantic_staleness_established": False,
                     "note": "Cannot compare worktree changes with the indexed revision: "
                             + workspace_relevance_error,
                 }
+                if path_subjects:
+                    for item in payload["contexts"]:
+                        item["context"]["workspace_relevance"] = dict(unassessed)
+                else:
+                    payload["context"]["workspace_relevance"] = unassessed
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"

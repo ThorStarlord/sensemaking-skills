@@ -385,6 +385,88 @@ def query_knowledge(
 
 
 
+
+def query_context_paths(
+    db_path: str | Path, *, repository: str, target_ref: str,
+    paths: tuple[str, ...], limit: int = 50, depth: int = 2,
+    search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
+    workspace_changed_paths: frozenset[str] | None = None,
+) -> dict:
+    """Compose existing source-pinned context-for responses for 2..8 files.
+
+    No new inference or cross-file ownership is made: each file retains its own
+    coverage, caveats and truncation. Top-level claims/relations deduplicate only
+    the already-bounded per-file results, without claiming global completeness.
+    """
+    if not 2 <= len(paths) <= 8:
+        raise ValueError("context-for --path requires 2..8 repository-relative source paths")
+    if len(set(paths)) != len(paths):
+        raise ValueError("context-for --path values must be distinct")
+    if any(not is_repository_file_path(path) for path in paths):
+        raise ValueError("context-for --path requires valid repository-relative source paths")
+
+    contexts: list[dict] = []
+    unique_claims: dict[str, dict] = {}
+    unique_relations: dict[str, dict] = {}
+    encountered: dict[str, list[str]] = {}
+    any_truncated = False
+    first: dict | None = None
+    for path in paths:
+        result = query_knowledge(
+            db_path, repository=repository, target_ref=target_ref,
+            operation="context-for", subject=path, limit=limit, depth=depth,
+            search_terms=search_terms, expected_kinds=expected_kinds,
+            workspace_changed_paths=workspace_changed_paths,
+        )
+        if first is None:
+            first = result
+        claim_ids = [record["id"] for record in result["claims"]]
+        relation_ids = [record["id"] for record in result["relations"]]
+        contexts.append({
+            "path": path, "context": result["context"],
+            "claim_ids": claim_ids, "relation_ids": relation_ids,
+            "truncated": result["truncated"],
+        })
+        any_truncated |= result["truncated"]
+        for record in result["claims"]:
+            unique_claims[record["id"]] = record
+            encountered.setdefault(record["id"], []).append(path)
+        for record in result["relations"]:
+            unique_relations[record["id"]] = record
+
+    assert first is not None
+    return {
+        "repository": repository, "target_ref": target_ref,
+        "operation": "context-for", "paths": list(paths),
+        "contexts": contexts,
+        "claims": [unique_claims[cid] for cid in sorted(unique_claims)],
+        "relations": [unique_relations[rid] for rid in sorted(unique_relations)],
+        "multi_file_context": {
+            "path_count": len(paths), "per_path_limit": limit,
+            "maximum_returned_claims": len(paths) * limit,
+            "maximum_returned_relations": len(paths) * limit,
+            "returned_unique_claim_count": len(unique_claims),
+            "returned_unique_relation_count": len(unique_relations),
+            "shared_claim_ids": sorted(cid for cid, sources in encountered.items()
+                                      if len(sources) > 1),
+            "truncated_paths": [item["path"] for item in contexts if item["truncated"]],
+            "coverage_complete": False,
+            "note": (
+                "Deduplicated returned records only. Each path retains its own "
+                "NOT_ASSESSED, epistemic caveats and truncation. A shared record "
+                "does not imply a new dependency between the requested files."
+            ),
+        },
+        "truncated": any_truncated, "source_scope": first["source_scope"],
+        "explicit_limits": [
+            *first["explicit_limits"],
+            "Batch bounds apply per path; union records do not establish complete "
+            "coverage of the task or relationships across paths.",
+        ],
+        "semantic_truth_established": False, "action_authorized": False,
+    }
+
+
 def audit_knowledge_sources(
     db_path: str | Path, *,
     repository: str, indexed_ref: str,

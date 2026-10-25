@@ -134,7 +134,11 @@ Field notes:
   query operations. For `rules-for`, `subject` is one repository-relative file
   path (not a glob); for `term`, it is the literal term. `snapshot` and
   `orientation-summary` do not require a subject.
-- `context-for` takes one repository-relative file path as `subject`. Set
+- `context-for` takes one repository-relative file path as `subject` or 2..8
+  distinct paths via repeated CLI `--path` flags (not both). For a batch,
+  record one `context-for` query receipt entry **per path** using that path
+  as `subject`; batch union results do not establish cross-file authority.
+  Set
   `result.claim_ids` to the IDs in the returned `claims` and `hit_count` to
   their count, and preserve `truncated`. A path whose `ownership.coverage_status`
   is `NOT_ASSESSED` is never `outcome: HIT`: use `NOT_ASSESSED` or `PARTIAL`
