@@ -399,11 +399,13 @@
     {
       "id": "rule:console-output-ascii",
       "kind": "architecture_rule",
-      "statement": "Console output is ASCII-only because the codebase runs on Windows cp1252.",
+      "statement": "Source-authored console text follows the repository's ASCII-only convention for Windows cp1252 safety. At the CLI entry point (src/sensemaking_skills/cli.py main), characters that the active output stream cannot encode are escaped as JSON-compatible Unicode sequences so commands do not report failure after writing state. User-supplied characters that the stream can encode are preserved, so emitted bytes are not universally ASCII or UTF-8.",
       "authority_kind": "document",
       "authority_ref": "CLAUDE.md",
       "evidence_refs": [
-        "file:CLAUDE.md"
+        "file:CLAUDE.md",
+        "file:src/sensemaking_skills/cli.py",
+        "file:docs/cli-reference.md"
       ],
       "epistemic_status": "declared",
       "attributes": {

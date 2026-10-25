@@ -107,8 +107,11 @@ implementation or change artifact semantics.
 
 Exit-code and JSON-envelope semantics are normative in
 `docs/cli-contract-v1.0.yaml` and `docs/cli-json-contract-v1.0.yaml`; campaign
-commands additionally follow `docs/campaign-cli.md`. Console output is
-ASCII-only by repository rule (Windows cp1252 safety).
+commands additionally follow `docs/campaign-cli.md`. Source-authored console text
+stays ASCII-only by repository rule. User-supplied text that the terminal's code
+page cannot encode is written as JSON-compatible `\uXXXX` escapes instead of
+failing the command after it has written state; text the code page can encode is
+written unchanged.
 
 ## Scripts that are not CLI commands
 
